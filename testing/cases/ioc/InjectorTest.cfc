@@ -9,23 +9,23 @@
 		injector.init();
 	}
 		
-	function testBuildConfiguration(){
+	function testbuildBinder(){
 		//1: plain CFC path
-		makePublic(injector,"buildConfiguration");
-		binder = injector.buildConfiguration("coldbox.testing.cases.ioc.config.samples.SampleWireBox",{});
+		makePublic(injector,"buildBinder");
+		binder = injector.buildBinder("coldbox.testing.cases.ioc.config.samples.SampleWireBox",{});
 		assertTrue( isObject(binder) );
 		
 		//2: WireBox Binder instance
 		binder = getMockBox().createMock("coldbox.testing.cases.ioc.config.samples.WireBox");
 		binder.$("configure");
-		injector.buildConfiguration(binder,{});
+		injector.buildBinder(binder,{});
 		assertEquals(1, binder.$count("configure") );
 		
 		//3: Simple Binder CFC
 		binder = getMockBox().createMock("coldbox.testing.cases.ioc.config.samples.SampleWireBox");
 		system = createObject("java","java.lang.System");
 		id = system.identityHashCode(binder);
-		binder2 = injector.buildConfiguration(binder,{});
+		binder2 = injector.buildBinder(binder,{});
 		assertFalse( system.identityHashCode(binder2) eq id);
 	}
 	

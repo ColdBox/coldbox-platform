@@ -58,7 +58,7 @@ Description :
 			// If sent and a data CFC instance
 			if( structKeyExists(arguments,"config") and isObject(arguments.config) ){
 				// Decorate our data CFC
-				arguments.config.getPropertyMixin = utility.getPropertyMixin;
+				arguments.config.getPropertyMixin = utility.getMixerUtil().getPropertyMixin;
 				// Execute the configuration
 				arguments.config.configure(this);
 				// Load the DSL

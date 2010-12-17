@@ -114,22 +114,20 @@ Description :
 		<!--- Lock For Configuration --->
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
-			// Store binder object built accordingly by building and configuring our binder
-			instance.binder = buildConfiguration( arguments.binder, arguments.properties );
+			// Store binder object built accordingly to our binder building procedures
+			instance.binder = buildBinder( arguments.binder, arguments.properties );
 			
-			// Create local cache, logging and event management if not coldbox linked.
+			// Create local cache, logging and event management if not coldbox context linked.
 			if( NOT isColdBoxLinked() ){ 
 				// Running standalone, so create our own logging first
 				configureLogBox( instance.binder.getLogBoxConfig() );
-				// Configure Logging for this injector
-				instance.log = getLogBox().getLogger( this );
 				// Create local CacheBox reference
 				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
 				// Create local event manager
 				configureEventManager();
 			}		
 			
-			// Register Scopes
+			// Register Life Cycle Scopes
 			registerScopes();
 			
 			// Register DSLs
@@ -431,6 +429,8 @@ Description :
 			
 			// Create LogBox
 			instance.logBox = createObject("component","coldbox.system.logging.LogBox").init( config );
+			// Configure Logging for this injector
+			instance.log = instance.logBox.getLogger( this );	
 		</cfscript>
     </cffunction>
 	
@@ -451,8 +451,8 @@ Description :
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 	
-	<!--- buildConfiguration --->
-    <cffunction name="buildConfiguration" output="false" access="private" returntype="any" hint="Load a configuration binder object according to passed in type">
+	<!--- buildBinder --->
+    <cffunction name="buildBinder" output="false" access="private" returntype="any" hint="Load a configuration binder object according to passed in type">
     	<cfargument name="binder" 		type="any" 		required="true" hint="The data CFC configuration instance, instantiation path or programmatic binder object to configure this injector with"/>
 		<cfargument name="properties" 	type="struct" 	required="true" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfscript>
@@ -464,7 +464,7 @@ Description :
 			}
 			
 			// Now decorate it with properties, a self reference, and a coldbox reference if needed.
-			arguments.binder.injectPropertyMixin = instance.utility.injectPropertyMixin;
+			arguments.binder.injectPropertyMixin = instance.utility.getMixerUtil().injectPropertyMixin;
 			arguments.binder.injectPropertyMixin("properties",arguments.properties,"instance");
 			arguments.binder.injectPropertyMixin("wirebox",this);
 			if( isColdBoxLinked() ){
