@@ -9,32 +9,23 @@ Date        :	9/3/2007
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="SessionStoragetest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent plugin="coldbox.system.plugins.CookieStorage" extends="coldbox.system.testing.BasePluginTest">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
 		super.setup();
+		
+		//mocks
+		mockController.$("getCFMLEngine", getMockBox().createEmptyMock("coldbox.system.core.cf.CFMLEngine").$("getEngine","ADOBE"));
+		plugin.$("settingExists",false)
+			.$("getPlugin").$args("JSON").$results( getMockBox().createMock("coldbox.system.plugins.JSON") );
+		plugin.init(mockController);
 		</cfscript>
 	</cffunction>
-	
-	<cffunction name="testPlugin" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("CookieStorage");
-			
-			AssertTrue( isObject(plugin) );
-			
-		</cfscript>
-	</cffunction>	
 	
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("CookieStorage");
 			var complex = structnew();
 			
 			complex.date = now();
@@ -63,7 +54,6 @@ Description :
 	<cffunction name="testWithEncryption" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("CookieStorage");
 			var complex = structnew();
 			
 			complex.date = now();
@@ -90,6 +80,18 @@ Description :
 		
 		</cfscript>
 	</cffunction>
-		
+	
+	<!--- testBackwardsCompatWDDX --->
+    <cffunction name="testBackwardsCompatWDDX" output="false" access="public" returntype="any" hint="">
+    	<cfset data = {
+			name="Luis Majano", coolLevel="8"
+		}>
+    	<cfwddx action="cfml2wddx" input="#data#" output="cookie.unitTest">
+    	
+    	<cfset val = plugin.getVar("unitTest")>
+    	
+    	<cfset debug(val)>
+    	<cfset debug(cookie)>
+    </cffunction>		
 	
 </cfcomponent>

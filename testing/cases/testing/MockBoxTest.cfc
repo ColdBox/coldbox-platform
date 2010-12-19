@@ -5,6 +5,134 @@
 		test = getMockBox().createEmptyMock("coldbox.testing.cases.testing.Test");
 	}
 	
+	function testMockRealMethods(){
+		Test = getMockBox().createMock("coldbox.testing.cases.testing.Test");
+		test.getData();
+		assertEquals(-1, test.$count("getData") );
+		test.$("getData",1000);
+		assertEquals(0, test.$count("getData") );
+		test.getData();test.getData();
+		assertEquals(2, test.$count("getData") );
+		
+		// With DSL
+		test.$reset().$("getData").$results(1000);
+		assertEquals(0, test.$count("getData") );
+		test.getData();test.getData();
+		assertEquals(2, test.$count("getData") );
+		assertEquals( 1000, test.getData() );
+	}
+	
+	function testVirtualMethods(){
+		Test = getMockBox().createMock("coldbox.testing.cases.testing.Test");
+		test.$("virtualReturn").$results('Virtual Called Baby!!');
+		assertEquals(0, test.$count("virtualReturn") );
+		assertEquals("Virtual Called Baby!!", test.virtualReturn() );
+		debug(test.$callLog());
+		assertTrue( structKeyExists( test.$callLog(), "virtualReturn") );
+	}
+	
+	function testProperties(){
+		Test = getMockBox().createMock("coldbox.testing.cases.testing.Test");
+		// reload original property value
+		original = test.getReload();
+		test.$property(propertyName="reload",propertyScope="variables",mock=true);
+		assertEquals( true, test.getReload() );
+	}
+	
+	function testMockPrivateMethods(){
+		Test = getMockBox().createMock("coldbox.testing.cases.testing.Test");
+		name = test.getFullName();
+		debug(name);
+		test.$("getName","Mock Ruler");
+		assertEquals( "Mock Ruler", test.getFullName() );
+	}
+	
+	function testSpys(){
+		Test = createObject("component","coldbox.testing.cases.testing.Test");
+		getMockBox().prepareMock(test);
+		// mock un-spy methods
+		assertEquals( 5, test.getData() );
+		assertEquals( 5, test.spyTest() );
+		// spy the methods
+		test.$("getData").$results(1000);
+		assertEquals( 1000, test.getData() );
+		assertEquals( 0, test.spyTest() );
+	}
+	
+	function testMockWithArguments(){
+		Test = getMockBox().createMock("coldbox.testing.cases.testing.Test");
+		//unmocked
+		assertEquals( "/mockFactory", test.getSetting("AppMapping") );
+		assertEquals( "NOT FOUND", test.getSetting("DebugMode") );
+		
+		// Mock
+		test.$(method='getSetting',callLogging=true).$args("AppMapping").$results("mockbox.testing");
+		test.$(method='getSetting',callLogging=true).$args("DebugMode").$results("true");
+		assertEquals( "mockbox.testing", test.getSetting("AppMapping") );
+		assertEquals( "true", test.getSetting("DebugMode") );		
+	}
+	
+	function testCollaborator(){
+		Test = createObject("component","coldbox.testing.cases.testing.Test");
+		mockCollaborator = getMockBox().createMock(className="coldbox.testing.cases.testing.Collaborator",callLogging=true);
+		
+		mockCollaborator.$("getDataFromDB").$results(queryNew(""));
+		Test.setCollaborator(mockCollaborator);
+		debug( mockCollaborator.$callLog() );
+		assertEquals(queryNew(""),  test.displayData() );
+	}
+	
+	function testStateMachineResults(){
+		Test = getMockBox().createMock("coldbox.testing.cases.testing.Test");
+		test.$("getSetting").$results("S1","S2","S3");
+		
+		assertEquals( "S1", test.getSetting() );
+		assertEquals( "S2", test.getSetting() );
+		assertEquals( "S3", test.getSetting() );
+		assertEquals( "S1", test.getSetting() );
+		assertEquals( "S2", test.getSetting() );
+	}
+	
+	function testStubs(){
+		stub = getMockBox().createStub().$("getName","Luis Majano");
+		assertEquals( "Luis Majano", stub.getName() );
+	}
+	
+	function testVerifyOnce(){
+		test.$("displayData",queryNew('')).$("testIt").$("testNone");
+		test.testIt();
+		assertTrue( test.$once() );
+		test.displayData();
+		assertTrue( test.$once("displayData") );
+		
+		assertFalse( test.$once("testNone") );
+	}
+	
+	
+	function testVerifyNever(){
+		test.$("displayData",queryNew(''));
+		test.$("testIt");
+		assertTrue( test.$never() );
+		test.testIt();
+		assertTrue( test.$never("displayData") );
+		test.displayData();
+		assertFalse( test.$never("displayData") );
+	}
+	
+	function testVerifyAtMost(){
+		test.$("displayData",queryNew(''));
+		test.displayData();test.displayData();test.displayData();test.displayData();test.displayData();
+		assertFalse( test.$atMost(3) );
+		assertTrue( test.$atMost(5) );		
+	}
+	
+	function testVerifyAtLeast(){
+		test.$("displayData",queryNew(''));
+		assertTrue( test.$atLeast(0) );
+		test.displayData();test.displayData();test.displayData();test.displayData();test.displayData();
+		assertTrue( test.$atLeast(3) );
+		
+	}
 	function testVerifyCallCount(){
 		test.$("displayData",queryNew(''));
 		assertTrue( test.$verifyCallCount(0) );

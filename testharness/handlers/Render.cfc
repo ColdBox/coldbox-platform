@@ -1,8 +1,16 @@
 <cfcomponent output="false">
 <cfscript>
 
-	this.aroundHandler_except = "json,pass";
+	this.aroundHandler_except = "json,pass,index";
 
+	function index(event){
+		var rc = event.getCollection();
+		var data = {
+			name="luis",age="33", cool=true
+		};
+		event.renderData(type=rc.format,data=data);
+	}
+	
 	function wddx(event){
 		var data = {
 			name="luis",age="33", cool=true

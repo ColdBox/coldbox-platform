@@ -5,11 +5,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author     :	Luis Majano
-Date        :	3/13/2009
 Description :
-	This resembles a logging event within log box.
+	This resembles a logging event within LogBox
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="Resembles a logging event.">
+<cfcomponent output="false" hint="Resembles a logging event within logBox.">
 
 	<cfscript>
 		instance 			= structnew();
@@ -18,6 +17,9 @@ Description :
 		instance.message 	= "";
 		instance.severity 	= "";
 		instance.extraInfo	= "";
+		// converters
+		instance.xmlConverter = createObject("component","coldbox.system.core.conversion.XMLConverter").init();
+		instance.jsonConverter = createObject("component","coldbox.system.core.conversion.JSON").init();
 	</cfscript>
 	
 	<!--- init --->
@@ -38,51 +40,61 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getExtraInfoAsString" access="public" returntype="string" output="false">
-		<cfset var info = instance.extraInfo>
-		<cfif NOT isSimpleValue(info)>
-			<cfreturn info.toString()>
-		<cfelse>
-			<cfreturn info>
-		</cfif>
+	<cffunction name="getExtraInfoAsString" access="public" returntype="string" output="false" hint="Get the extra info as a string representation">
+		<cfscript>
+			// Simple value, just return it
+			if( isSimpleValue(instance.extraInfo) ){ return instance.extraInfo; }
+			
+			// Convention translation: $toString();
+			if( isObject(instance.extraInfo) AND structKeyExists(instance.extraInfo,"$toString") ){ return instance.extraInfo.$toString(); }
+		
+			// Component XML conversion
+			if( isObject(instance.extraInfo) ){
+				return instance.xmlConverter.toXML( instance.extraInfo );
+			}
+			
+			// Complex values, return serialized in json (update by 3.1 when JSON is replaced by native functions)
+			return instance.jsonConverter.encode( instance.extraInfo );			
+		</cfscript>
 	</cffunction>
-	<cffunction name="getExtraInfo" access="public" returntype="any" output="false">
+	
+	<cffunction name="getExtraInfo" access="public" returntype="any" output="false" hint="Get the extra info param">
 		<cfreturn instance.extraInfo>
 	</cffunction>
-	<cffunction name="setExtraInfo" access="public" returntype="void" output="false">
-		<cfargument name="extraInfo" type="any" required="true">
+	<cffunction name="setExtraInfo" access="public" returntype="void" output="false" hint="Set the extra info param">
+		<cfargument name="extraInfo" required="true">
 		<cfset instance.extraInfo = arguments.extraInfo>
 	</cffunction>
 	
-	<cffunction name="getCategory" access="public" returntype="string" output="false">
+	<cffunction name="getCategory" access="public" returntype="string" output="false" hint="Get the category of this log">
 		<cfreturn instance.category>
 	</cffunction>
-	<cffunction name="setCategory" access="public" returntype="void" output="false">
-		<cfargument name="category" type="string" required="true">
+	<cffunction name="setCategory" access="public" returntype="void" output="false" hint="Set the category">
+		<cfargument name="category" required="true">
 		<cfset instance.category = arguments.category>
 	</cffunction>
 	
-	<cffunction name="getTimestamp" access="public" returntype="string" output="false">
+	<cffunction name="getTimestamp" access="public" returntype="string" output="false" hint="Get the timestamp">
 		<cfreturn instance.timestamp>
 	</cffunction>
-	<cffunction name="setTimestamp" access="public" returntype="void" output="false">
-		<cfargument name="timestamp" type="string" required="true">
+	<cffunction name="setTimestamp" access="public" returntype="void" output="false" hint="Set the timestamp">
+		<cfargument name="timestamp" required="true">
 		<cfset instance.timestamp = arguments.timestamp>
 	</cffunction>
 	
-	<cffunction name="getMessage" access="public" returntype="string" output="false">
+	<cffunction name="getMessage" access="public" returntype="string" output="false" hint="Get the message to log">
 		<cfreturn instance.message>
 	</cffunction>
-	<cffunction name="setMessage" access="public" returntype="void" output="false">
-		<cfargument name="message" type="string" required="true">
+	<cffunction name="setMessage" access="public" returntype="void" output="false" hint="Set the message to log">
+		<cfargument name="message" required="true">
 		<cfset instance.message = arguments.message>
 	</cffunction>
 	
-	<cffunction name="getSeverity" access="public" returntype="numeric" output="false">
+	<cffunction name="getSeverity" access="public" returntype="numeric" output="false" hint="Get the severity to log">
 		<cfreturn instance.severity>
 	</cffunction>
-	<cffunction name="setSeverity" access="public" returntype="void" output="false">
-		<cfargument name="severity" type="numeric" required="true">
+	<cffunction name="setSeverity" access="public" returntype="void" output="false" hint="Set the severity to log">
+		<cfargument name="severity" required="true">
 		<cfset instance.severity = arguments.severity>
 	</cffunction>
 
