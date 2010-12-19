@@ -62,32 +62,32 @@ Description :
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Find which route this URL matches */
-			var aRoute = "";
-			var key = "";
-			var cleanedPaths = getCleanedPaths();
+			// Find which route this URL matches
+			var aRoute 		 = "";
+			var key 		 = "";
 			var routedStruct = structnew();
-			var rc = event.getCollection();
-
+			var rc 			 = arguments.event.getCollection();
+			var cleanedPaths = getCleanedPaths(rc);
+			
 			// Check if active or in proxy mode
-			if ( NOT getEnabled() OR arguments.event.isProxyRequest() )
-				return;
-
-			//Auto Reload?
+			if ( NOT getEnabled() OR arguments.event.isProxyRequest() ){ return; }
+			//Auto Reload, usually in dev?
 			if( getAutoReload() ){ configure(); }
-
 			// Set that we are in ses mode
 			arguments.event.setIsSES(true);
-
-			// Check for invalid URLs if in strict mode
+			// Check for invalid URLs if in strict mode via unique URLs
 			if( getUniqueURLs() ){
 				checkForInvalidURL( cleanedPaths["pathInfo"] , cleanedPaths["scriptName"], arguments.event );
 			}
+			// Extension detection if enabled, so we can do cool extension formats
+			if( getExtensionDetection() ){
+				cleanedPaths["pathInfo"] = detectExtension(cleanedPaths["pathInfo"],arguments.event);
+			}
 			
-			// Find a route to dispatch
-			aRoute = findRoute( cleanedPaths["pathInfo"], arguments.event );
+			// Find a route to dispatch now
+			aRoute = findRoute(action=cleanedPaths["pathInfo"],event=arguments.event);
 
-			// Now route should have all the key/pairs from the URL we need to pass to our event object
+			// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 			for( key in aRoute ){
 				// Reserved Keys Check, only translate NON reserved keys
 				if( not listFindNoCase(instance.RESERVED_KEYS,key) ){
@@ -451,7 +451,6 @@ Description :
 			
 			// check if extension found
 			if( listLen(arguments.requestString,".") GT 1 AND len(extension) ){
-				
 				// Check if extension is valid?
 				if( listFindNoCase(validExtensions, extension) ){
 					// set the format request collection variable
@@ -697,21 +696,21 @@ Description :
 	<!--- Find a route --->
 	<cffunction name="findRoute" access="private" output="false" returntype="Struct" hint="Figures out which route matches this request">
 		<!--- ************************************************************* --->
-		<cfargument name="action" type="any"    required="true"  hint="The action evaluated by the path_info">
-		<cfargument name="event"  type="any"    required="true"  hint="The event object.">
-		<cfargument name="module" type="string" required="false" default="" hint="Find a route on a module"/>
+		<cfargument name="action" 			 type="any" required="true"  hint="The action evaluated by the path_info">
+		<cfargument name="event"  			 type="any" required="true"  hint="The event object.">
+		<cfargument name="module" 			 type="any" required="false" default="" hint="Find a route on a module"/>
 		<!--- ************************************************************* --->
-		<cfset var requestString = arguments.action />
+		<cfset var requestString 		 = arguments.action />
 		<cfset var packagedRequestString = "">
-		<cfset var match = structNew() />
-		<cfset var foundRoute = structNew() />
-		<cfset var params = structNew() />
-		<cfset var key = "" />
-		<cfset var i = 1 />
-		<cfset var x = 1 >
-		<cfset var rc = event.getCollection()>
-		<cfset var _routes = getRoutes()>
-		<cfset var _routesLength = ArrayLen(_routes)>
+		<cfset var match 				 = structNew() />
+		<cfset var foundRoute 			 = structNew() />
+		<cfset var params 				 = structNew() />
+		<cfset var key					 = "" />
+		<cfset var i 					 = 1 />
+		<cfset var x 					 = 1 >
+		<cfset var rc 					 = event.getCollection()>
+		<cfset var _routes 				 = getRoutes()>
+		<cfset var _routesLength 		 = ArrayLen(_routes)>
 
 		<cfscript>
 		
@@ -721,14 +720,6 @@ Description :
 				_routesLength = arrayLen(_routes);
 			}
 
-			// fix URL vars after ?
-			requestString = fixIISURLVars(requestString,rc);
-			
-			// Extension detection if enabled
-			if( getExtensionDetection() ){
-				requestString = detectExtension(requestString,arguments.event);
-			}
-			
 			//Remove the leading slash
 			if( len(requestString) GT 1 AND left(requestString,1) eq "/" ){
 				requestString = right(requestString,len(requestString)-1);
@@ -799,7 +790,7 @@ Description :
 					log.debug("SES Package Resolved: #packagedRequestString#");
 
 					// Return found Route recursively.
-					return findRoute(packagedRequestString,arguments.event);
+					return findRoute(action=packagedRequestString,event=arguments.event);
 				}
 			}
 
@@ -877,6 +868,7 @@ Description :
 
 	<!--- getCleanedPaths --->
 	<cffunction name="getCleanedPaths" access="private" returntype="struct" hint="Get and Clean the path_info and script names" output="false" >
+		<cfargument name="rc" type="any" required="true" hint="The request collection to incorporate items into"/>
 		<cfscript>
 			var items = structnew();
 
@@ -898,6 +890,9 @@ Description :
 			
 			// clean 1 or > / in front of route in some cases, scope = one by default
 			items["pathInfo"] = reReplaceNoCase(items["pathInfo"], "^/+", "/");
+			
+			// fix URL vars after ?
+			items["pathInfo"] = fixIISURLVars(items["pathInfo"],arguments.rc);
 			
 			return items;
 		</cfscript>

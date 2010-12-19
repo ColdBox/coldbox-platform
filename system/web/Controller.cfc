@@ -420,8 +420,7 @@ Only one instance of a specific ColdBox application exists.
 
 					// Check SSL?
 					if( structKeyExists(arguments, "ssl") ){
-						if( arguments.ssl ){  relocationURL = replacenocase(relocationURL,"http:","https:"); }
-						else{ relocationURL = replacenocase(relocationURL,"https:","http:"); }
+						relocationURL = updateSSL(relocationURL,arguments.ssl);
 					}
 					
 					// Finalize the URL
@@ -432,6 +431,10 @@ Only one instance of a specific ColdBox application exists.
 				default :{
 					// Basic URL Relocation
 					relocationURL = "#frontController#?#eventName#=#arguments.event#";
+					// Check SSL?
+					if( structKeyExists(arguments, "ssl") ){
+						relocationURL = updateSSL(relocationURL,arguments.ssl);
+					}
 					// Query String?
 					if( len(trim(arguments.queryString)) ){ relocationURL = relocationURL & "&#arguments.queryString#"; }
 				}
@@ -455,7 +458,7 @@ Only one instance of a specific ColdBox application exists.
 			sendRelocation(URL=relocationURL,addToken=arguments.addToken,statusCode=arguments.statusCode);
 		</cfscript>
 	</cffunction>
-
+	
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file." output="false">
 		<!--- ************************************************************* --->
@@ -626,7 +629,7 @@ Only one instance of a specific ColdBox application exists.
 			<cfcatch>
 				<!--- Check if onError exists? --->
 				<cfif oHandler._actionExists("onError")>
-					<cfset loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),e,arguments.eventArguments)>
+					<cfset loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),cfcatch,arguments.eventArguments)>
 				<cfelse>
 					<!--- rethrow not supported in cfscript <cfthrow object="e"> doesn't work properly as we lose context --->
 					<cfrethrow>
@@ -738,6 +741,18 @@ Only one instance of a specific ColdBox application exists.
 		<cfelse>
 			<cfinclude template="/coldbox/system/includes/cf7_cflocation_compat.cfm">
 		</cfif>
+    </cffunction>
+
+	<!--- updateSSL --->
+    <cffunction name="updateSSL" output="false" access="private" returntype="any" hint="update SSL or not on a request string">
+    	<cfargument name="inURL" required="true">
+		<cfargument name="ssl"	 required="true">
+		<cfscript>
+			// Check SSL?
+			if( arguments.ssl ){  arguments.inURL = replacenocase(arguments.inURL,"http:","https:"); }
+			else{ arguments.inURL = replacenocase(arguments.inURL,"https:","http:"); }
+			return arguments.inURL;
+		</cfscript>
     </cffunction>
 
 </cfcomponent>

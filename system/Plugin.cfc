@@ -45,7 +45,7 @@ Modification History:
 			instance.pluginDescription = "";
 			instance.pluginAuthor = "";
 			instance.pluginAuthorURL = "";
-			instance.pluginPath = getMetadata(this).path;
+			instance.pluginPath = "";
 			
 			return this;
 		</cfscript>
@@ -100,7 +100,7 @@ Modification History:
 
 	<!--- Get Plugin Path --->
 	<cffunction name="getpluginPath" access="public" hint="Get the instance's pluginPath" returntype="string" output="false">
-		<cfreturn instance.pluginPath>
+		<cfreturn getMetadata(this).path>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE METHODS ------------------------------------------->
