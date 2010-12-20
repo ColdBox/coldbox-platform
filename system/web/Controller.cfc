@@ -751,6 +751,7 @@ Only one instance of a specific ColdBox application exists.
 			// Check SSL?
 			if( arguments.ssl ){  arguments.inURL = replacenocase(arguments.inURL,"http:","https:"); }
 			else{ arguments.inURL = replacenocase(arguments.inURL,"https:","http:"); }
+			return arguments.inURL;
 		</cfscript>
     </cffunction>
 
