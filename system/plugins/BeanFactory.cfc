@@ -335,7 +335,8 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="locations" type="string" required="true" hint="Locations to remove from the lookup.  Comma delimited allowed."/>
 		<cfscript>
 			var currentList = getExternalLocations();
-			var x = 1;
+			var x 				= 1;
+			var idxFound 	= "";
 
 			// Validate locations
 			if( len(trim(arguments.locations)) eq 0){ return; }
