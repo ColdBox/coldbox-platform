@@ -442,7 +442,10 @@ Description :
 				// Replace it
 				instance.caches[ name ] = arguments.decoratedCache;
 				
-				instance.log.debug("Cache #name# replaced with decorated cache: #getMetadata(arguments.decoratedCache).name# on factoryID: #getFactoryID()#");
+				// debugging
+				if( instance.log.canDebug() ){
+					instance.log.debug("Cache #name# replaced with decorated cache: #getMetadata(arguments.decoratedCache).name# on factoryID: #getFactoryID()#");
+				}
 			</cfscript>
 		</cflock>
 		

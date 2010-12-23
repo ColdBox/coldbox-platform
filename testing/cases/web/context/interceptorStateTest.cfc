@@ -3,7 +3,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.state = createObject("component","coldbox.system.web.context.InterceptorState");		
+			this.state = getMockBox().createMock("coldbox.system.web.context.InterceptorState");		
 			this.event = getMockRequestContext();
 			this.event.$("getEventName","event");
 			this.mock = createObject("component","coldbox.testing.testinterceptors.mock");
@@ -51,6 +51,7 @@
 			// Now process with other method for event pattern
 			this.event.setValue("unittest",false);
 			this.mock.unittest = variables.unittest;
+			this.state.$property("MDMap","instance",structnew());
 			this.state.process(this.event,structnew());
 			assertEquals(false,this.event.getValue('unittest'));
 			

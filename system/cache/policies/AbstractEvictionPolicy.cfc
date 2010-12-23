@@ -23,7 +23,11 @@ Description :
 			variables.cacheProvider = arguments.cacheProvider;
 			// setup logger
 			variables.logger = arguments.cacheProvider.getCacheFactory().getLogBox().getLogger( this );
-			variables.logger.debug("Policy #getMetadata(this).name# constructed for cache: #arguments.cacheProvider.getname()#");
+			
+			// Debug logging
+			if( variables.logger.canDebug() ){
+				variables.logger.debug("Policy #getMetadata(this).name# constructed for cache: #arguments.cacheProvider.getname()#");
+			}
 			
 			return this;
 		</cfscript>

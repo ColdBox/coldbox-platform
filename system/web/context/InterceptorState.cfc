@@ -20,6 +20,12 @@ Description :
 	    <!--- ************************************************************* --->
 		<cfscript>
 			super.init(argumentCollection=arguments);			
+			
+			// md ref map
+			instance.MDMap = structnew();
+			// java system
+			instance.javaSystem = createObject('java','java.lang.System');
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -91,7 +97,16 @@ Description :
 		<cfargument name="target" type="any" required="true" hint="The target interceptor to check"/>
 		<cfargument name="event"  type="any" required="true" hint="The event context object.">
 		<cfscript>
-			var fncMetadata = getMetadata(target[getState()]);
+			var state			= getState();
+			var idCode 			= instance.javaSystem.identityHashCode(arguments.target) & state;
+			var fncMetadata 	= "";
+			
+			// check md if it exists, else set it
+			if( NOT structKeyExists(instance.MDMap, idCode) ){
+				instance.MDMap[idCode] = getMetadata(arguments.target[state]);
+			}
+			// Get md now
+			fncMetadata = instance.MDMap[idCode];
 			
 			// Check if the event pattern matches the current event, else return false
 			if( structKeyExists(fncMetadata,"eventPattern") AND

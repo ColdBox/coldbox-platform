@@ -66,10 +66,11 @@ Description :
 			var objectName 		 = "";
 			var eventStatesFound = structNew();
 			var stateKey 		 = "";
+			var md				 = getMetadata(arguments.target);
 			
 			// Check if name sent? If not, get the name from the last part of its name
 			if( NOT len(trim(arguments.name)) ){
-				arguments.name = listLast(getMetadata(arguments.target).name,".");
+				arguments.name = listLast(md.name,".");
 			}
 			
 			// Set the local name
@@ -85,7 +86,7 @@ Description :
 				
 				// discover event states by convention
 				eventStatesFound = structnew();
-				eventStatesFound = parseMetadata( getMetaData(arguments.target), eventStatesFound);
+				eventStatesFound = parseMetadata( md, eventStatesFound);
 				
 				// Register this target's event observation states with its appropriate interceptor/observation state
 				for(stateKey in eventStatesFound){
