@@ -55,7 +55,10 @@ Description :
 
 	<!--- Get the current CFML Version --->
 	<cffunction name="getVersion" access="public" returntype="numeric" hint="Returns the current running CFML version" output="false" >
-		<cfreturn listfirst(server.coldfusion.productversion)>
+		<cfscript>
+			if ( server.coldfusion.productname eq "BlueDragon" ){ return server.bluedragon.edition; }
+			return listfirst(server.coldfusion.productversion);
+		</cfscript>
 	</cffunction>
 	
 	<!--- Get the CFML Engine according to my standards --->
