@@ -208,12 +208,16 @@ Loads a coldbox xml configuration file
 			//Check For DebugMode in settings
 			if ( not structKeyExists(configStruct, "DebugMode") or not isBoolean(configStruct.DebugMode) )
 				configStruct["DebugMode"] = "false";
+			
 			//Check for DebugPassword in settings, else leave blank.
-			if ( not structKeyExists(configStruct, "DebugPassword") )
-				configStruct["DebugPassword"] = "";
+			if ( not structKeyExists(configStruct, "DebugPassword") ){ configStruct["DebugPassword"] = ""; }
+			else if( len(configStruct["DebugPassword"]) ){ configStruct["DebugPassword"] = hash(configStruct["DebugPassword"]); }
+			
 			//Check for ReinitPassword
-			if ( not structKeyExists(configStruct, "ReinitPassword") )
-				configStruct["ReinitPassword"] = "";
+			if ( not structKeyExists(configStruct, "ReinitPassword") ){ configStruct["ReinitPassword"] = ""; }
+			else if( len(configStruct["ReinitPassword"]) ){ configStruct["ReinitPassword"] = hash(configStruct["ReinitPassword"]); }
+			
+			
 			//Check For UDFLibraryFile
 			if ( not StructKeyExists(configStruct, "UDFLibraryFile") )
 				configStruct["UDFLibraryFile"] = "";

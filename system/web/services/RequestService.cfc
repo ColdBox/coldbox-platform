@@ -114,7 +114,7 @@ Modification History:
 				if ( NOT len(debugPassword) ){
 					controller.getDebuggerService().setDebugMode( rc.debugMode );
 				}
-				else if ( structKeyExists(rc,"debugpass") AND CompareNoCase(debugPassword,rc.debugpass) eq 0 ){
+				else if ( structKeyExists(rc,"debugpass") AND CompareNoCase(debugPassword, hash(rc.debugpass) ) eq 0 ){
 					controller.getDebuggerService().setDebugMode( rc.debugMode );
 				}
 			}

@@ -508,7 +508,7 @@ Description :
 				}
 				
 				// Compare the passwords
-				if( compare(reinitPass, incomingPass) eq 0 ){
+				if( compare(reinitPass, hash(incomingPass)) eq 0 ){
 					return true;
 				}
 			}//else if reinit found.
