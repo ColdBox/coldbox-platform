@@ -304,7 +304,7 @@ Description :
 			// Else, unregister from all states
 			for(key in states){
 				if( len(trim(state)) eq 0 OR trim(state) eq key ){
-					structFind(states,key).unregister(arguments.interceptorName);
+					structFind(states,key).unregister(getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorName);
 					unregistered = true;
 				}				
 			}
