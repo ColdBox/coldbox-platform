@@ -183,6 +183,12 @@ component accessors="true"{
 	any function findIt(string query,any params=structnew(), any example){
 		var options = {maxresults=1};
 
+		// Caching?
+		if( getUseQueryCaching() ){
+			options.cacheName  = getQueryCacheRegion();
+			options.cacheable  = true;
+		}
+
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
 			return entityLoadByExample( arguments.example, true );
@@ -209,6 +215,12 @@ component accessors="true"{
 		}
 		if( arguments.max neq 0 ){
 			options.maxresults = arguments.max;
+		}
+
+		// Caching?
+		if( getUseQueryCaching() ){
+			options.cacheName  = getQueryCacheRegion();
+			options.cacheable  = true;
 		}
 
 		// Get entry by example
@@ -466,6 +478,8 @@ component accessors="true"{
 		var tx 		= ORMGetSession().beginTransaction();
 		var count   = 0;
 
+		id = convertIDValueToJavaType(arguments.entityName,arguments.id);
+
 		//id conversion to array
 		if( isSimpleValue(arguments.id) ){
 			arguments.id = listToArray(arguments.id);
@@ -612,26 +626,32 @@ component accessors="true"{
 	* Ex: count('User','age > ? AND name = ?',[40,"joe"])
 	*/
 	numeric function count(required string entityName,string where="", any params=structNew()){
-		 var buffer   = createObject("java","java.lang.StringBuffer").init('');
-		 var key      = "";
-		 var operator = "AND";
+		var buffer   = createObject("java","java.lang.StringBuffer").init('');
+		var key      = "";
+		var operator = "AND";
+		var options = {};
 
-		 buffer.append('select count(*) from #arguments.entityName#');
+		// Caching?
+		if( getUseQueryCaching() ){
+			options.cacheName  = getQueryCacheRegion();
+			options.cacheable  = true;
+		}
+		buffer.append('select count(*) from #arguments.entityName#');
 
-		 // build params
-		 if( len(trim(arguments.where)) ){
-		 	buffer.append(" WHERE #arguments.where#");
-		 }
+		// build params
+		if( len(trim(arguments.where)) ){
+			buffer.append(" WHERE #arguments.where#");
+		}
 
-		 // execute query as unique for the count
-		 try{
-		 	return ORMExecuteQuery( buffer.toString(), arguments.params, true);
-		 }
-		 catch("java.lang.NullPointerException" e){
-		 	throw(message="A null pointer exception occurred when running the query",
+		// execute query as unique for the count
+		try{
+			return ORMExecuteQuery( buffer.toString(), arguments.params, true, options);
+		}
+		catch("java.lang.NullPointerException" e){
+			throw(message="A null pointer exception occurred when running the query",
 				  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(arguments.params)#",
 				  type="ORMService.MaybeInvalidParamCaseException");
-		 }
+		}
 
 	}
 
@@ -641,21 +661,22 @@ component accessors="true"{
 	* Ex: countWhere(entityName="User",age="20");
 	*/
 	numeric function countWhere(required string entityName){
-		 var buffer   = createObject("java","java.lang.StringBuffer").init('');
-		 var key      = "";
-		 var operator = "AND";
-		 var params	  = {};
-		 var idx	  = 1;
+		var buffer   = createObject("java","java.lang.StringBuffer").init('');
+		var key      = "";
+		var operator = "AND";
+		var params	  = {};
+		var idx	  = 1;
+		var options = {};
 
-		 buffer.append('select count(*) from #arguments.entityName#');
+		buffer.append('select count(*) from #arguments.entityName#');
 
-		 // Do we have params?
-		 if( structCount(arguments) gt 1){
-		 	buffer.append(" WHERE");
-		 }
-		 // Go over Params
-		 for(key in arguments){
-		 	// Build where parameterized
+		// Do we have params?
+		if( structCount(arguments) gt 1){
+			buffer.append(" WHERE");
+		}
+		// Go over Params
+		for(key in arguments){
+			// Build where parameterized
 			if( key neq "entityName" ){
 				params[key] = arguments[key];
 				buffer.append(" #key# = :#key#");
@@ -665,17 +686,21 @@ component accessors="true"{
 					buffer.append(" AND");
 				}
 			}
-		 }
-
-		 // execute query as unique for the count
-		 try{
-		 	return ORMExecuteQuery( buffer.toString(), params, true);
-		 }
-		 catch("java.lang.NullPointerException" e){
-		 	throw(message="A null pointer exception occurred when running the count",
+		}
+		// Caching?
+		if( getUseQueryCaching() ){
+			options.cacheName  = getQueryCacheRegion();
+			options.cacheable  = true;
+		}
+		// execute query as unique for the count
+		try{
+			return ORMExecuteQuery( buffer.toString(), params, true, options);
+		}
+		catch("java.lang.NullPointerException" e){
+			throw(message="A null pointer exception occurred when running the count",
 				  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
 				  type="ORMService.MaybeInvalidParamCaseException");
-		 }
+		}
 	}
 
 	/**
@@ -849,4 +874,28 @@ component accessors="true"{
 		return ArrayNew(1);
 	}
 
+	/**
+	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
+	* The method returns a coverted array of ID's
+	*/
+	array function convertIDValueToJavaType(required string entityName, required any id){
+		var hibernateMD = ormGetSessionFactory().getClassMetaData(arguments.entityName);
+
+		//id conversion to array
+		if( isSimpleValue(arguments.id) ){
+			arguments.id = listToArray(arguments.id);
+		}
+
+		try {
+			for (var i=1; i lte arrayLen(arguments.id); i=i+1){
+				arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
+			}
+		}
+		catch(Any e){
+			tx.rollback();
+			throw(e);
+		}
+
+		return arguments.id;
+	}
 }
