@@ -68,7 +68,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get the cachebox instance --->
-	<cffunction name="getCacheBox" output="false" access="public" returntype="any" hint="Get the CacheBox reference." colddoc:generic="coldbox.system.logging.LogBox">
+	<cffunction name="getCacheBox" output="false" access="public" returntype="any" hint="Get the CacheBox reference." colddoc:generic="coldbox.system.cache.CacheFactory">
 		<cfreturn getColdbox().getCacheBox()>
 	</cffunction>
 	
