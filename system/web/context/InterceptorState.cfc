@@ -83,10 +83,7 @@ Description :
 			// Check if we can execute this Interceptor
 			if( isExecutable(thisInterceptor,arguments.event) ){
 				// Invoke the execution point
-				stopChain = invoker( thisInterceptor, arguments.event, arguments.interceptData );
-				
-				// Check for results
-				if( stopChain ){ break; }
+				if ( invoker( thisInterceptor, arguments.event, arguments.interceptData ) ){ break; }
 			}
 		}		
 		</cfscript>
