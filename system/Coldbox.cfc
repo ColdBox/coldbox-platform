@@ -75,14 +75,14 @@ Description :
 	<!--- Reload Checks --->
 	<cffunction name="reloadChecks" access="public" returntype="void" hint="Reload checks and reload settings." output="false" >
 		<cfset var exceptionService = "">
-		<cfset var ExceptionBean = "">
-		<cfset var appKey = locateAppKey()>
-		<cfset var cbController = 0>
-		<cfset var needReinit = isfwReinit()>
+		<cfset var ExceptionBean 	= "">
+		<cfset var appKey 			= locateAppKey()>
+		<cfset var cbController 	= 0>
+		<cfset var needReinit 		= isfwReinit()>
 		
 		<!--- Initialize the Controller If Needed, double locked --->
 		<cfif NOT structkeyExists(application,appkey) OR NOT application[appKey].getColdboxInitiated() OR needReinit>
-			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+			<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
 				<cfif NOT structkeyExists(application,appkey) OR NOT application[appKey].getColdboxInitiated() OR needReinit>
 					
 					<!--- Verify if we are Reiniting? --->
@@ -98,50 +98,55 @@ Description :
 					<cfset loadColdBox()>
 				</cfif>
 			</cflock>
-		<cfelse>
-			<cftry>
-				<!--- Get Controller Reference --->
-				<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-					<cfset cbController = application[appKey]>
-				</cflock>
-				<!--- AutoReload Tests --->
-				<cfif cbController.getSetting("ConfigAutoReload")>
-					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-						<cfif cbController.getSetting("ConfigAutoReload")>
-							<cfset cbController.setAppStartHandlerFired(false)>
-							<cfset cbController.getLoaderService().loadApplication(COLDBOX_CONFIG_FILE)>
-						</cfif>
-					</cflock>
-				<cfelse>
-					<!--- Modules Auto Reload --->
-					<cfif cbController.getSetting("ModulesAutoReload")>
-						<cfset cbController.getModuleService().reloadAll()>
-					</cfif>
-					<!--- Handler's Index Auto Reload --->
-					<cfif cbController.getSetting("HandlersIndexAutoReload")>
-						<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-							<cfif cbController.getSetting("HandlersIndexAutoReload")>
-								<cfset cbController.getHandlerService().registerHandlers()>
-							</cfif>
-						</cflock>
-					</cfif>
-					<!--- IOC Framework Reload --->
-					<cfif cbController.getSetting("IOCFrameworkReload")>
-						<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-							<cfset cbController.getPlugin("IOC").configure()>
-						</cflock>
-					</cfif>
-				</cfif>
-				
-				<!--- Trap Framework Errors --->
-				<cfcatch type="any">
-					<cfset exceptionService = cbController.getExceptionService()>
-					<cfset ExceptionBean = exceptionService.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
-					<cfoutput>#exceptionService.renderBugReport(ExceptionBean)#</cfoutput>
-					<cfabort>
-				</cfcatch>
-			</cftry>
+			<cfreturn>
 		</cfif>
+		
+		<cftry>
+			<!--- Get Controller Reference --->
+			<cflock type="readonly" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
+				<cfset cbController = application[appKey]>
+			</cflock>
+			
+			<!--- AutoReload Tests --->
+			<cfif cbController.getSetting("ConfigAutoReload")>
+				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
+					<cfif cbController.getSetting("ConfigAutoReload")>
+						<cfset cbController.setAppStartHandlerFired(false)>
+						<cfset cbController.getLoaderService().loadApplication(COLDBOX_CONFIG_FILE)>
+					</cfif>
+				</cflock>
+				<cfreturn>
+			</cfif>
+				
+			<!--- Modules Auto Reload --->
+			<cfif cbController.getSetting("ModulesAutoReload")>
+				<cfset cbController.getModuleService().reloadAll()>
+			</cfif>
+			
+			<!--- Handler's Index Auto Reload --->
+			<cfif cbController.getSetting("HandlersIndexAutoReload")>
+				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
+					<cfif cbController.getSetting("HandlersIndexAutoReload")>
+						<cfset cbController.getHandlerService().registerHandlers()>
+					</cfif>
+				</cflock>
+			</cfif>
+			
+			<!--- IOC Framework Reload --->
+			<cfif cbController.getSetting("IOCFrameworkReload")>
+				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
+					<cfset cbController.getPlugin("IOC").configure()>
+				</cflock>
+			</cfif>
+			
+			<!--- Trap Framework Errors --->
+			<cfcatch type="any">
+				<cfset exceptionService = cbController.getExceptionService()>
+				<cfset exceptionBean = exceptionService.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
+				<cfoutput>#exceptionService.renderBugReport(ExceptionBean)#</cfoutput>
+				<cfabort>
+			</cfcatch>
+		</cftry>
 	</cffunction>
 	
 	<!--- Process A ColdBox Request --->
@@ -156,12 +161,19 @@ Description :
 		<cfset var renderData 	    = structnew()>
 		<cfset var refResults 		= structnew()>
 		<cfset var debugPanel		= "">
+		<cfset var interceptorService = "">
+		<cfset var debugMode		= false>
 		
 		<!--- Start Application Requests --->
-		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+		<cflock type="readonly" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset cbController = application[locateAppKey()]>
 		</cflock>
-			
+		
+		<!--- Setup Local Vars --->
+		<cfset interceptorService 	= cbController.getInterceptorService()>
+		<cfset debugMode 		 	= cbController.getDebuggerService().getDebugMode()>
+		<cfset templateCache		= cbController.getColdboxOCM("template")>
+		
 		<cftry>
 			<!--- set request time --->
 			<cfset request.fwExecTime = getTickCount()>
@@ -170,7 +182,7 @@ Description :
 			<cfset event = cbController.getRequestService().requestCapture()>
 			
 			<!--- Debugging Monitors & Commands Check --->
-			<cfif cbController.getDebuggerService().getDebugMode()>
+			<cfif debugMode>
 				
 				<!--- ColdBox Command Executions --->
 				<cfset coldboxCommands(cbController,event)>
@@ -208,7 +220,7 @@ Description :
 			</cfif>
 			
 			<!--- Execute preProcess Interception --->
-			<cfset cbController.getInterceptorService().processState("preProcess")>
+			<cfset interceptorService.processState("preProcess")>
 			
 			<!--- IF Found in config, run onRequestStart Handler --->
 			<cfif len(cbController.getSetting("RequestStartHandler"))>
@@ -216,8 +228,8 @@ Description :
 			</cfif>
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
-			<cfif event.isEventCacheable() AND cbController.getColdboxOCM("template").lookupQuiet(event.getEventCacheableEntry())>
-				<cfset renderedContent = cbController.getColdboxOCM("template").get(event.getEventCacheableEntry())>
+			<cfif event.isEventCacheable() AND templateCache.lookupQuiet(event.getEventCacheableEntry())>
+				<cfset renderedContent = templateCache.get(event.getEventCacheableEntry())>
 				<cfoutput>#renderedContent#</cfoutput>
 			<cfelse>
 				
@@ -230,7 +242,7 @@ Description :
 				<cfif not event.isNoRender()>
 					
 					<!--- Execute preLayout Interception --->
-					<cfset cbController.getInterceptorService().processState("preLayout")>
+					<cfset interceptorService.processState("preLayout")>
 					
 					<!--- Check for Marshalling and data render --->
 					<cfset renderData = event.getRenderData()>
@@ -247,7 +259,7 @@ Description :
 					<!--- PreRender Data:--->
 					<cfset interceptorData.renderedContent = renderedContent>
 					<!--- Execute preRender Interception --->
-					<cfset cbController.getInterceptorService().processState("preRender",interceptorData)>
+					<cfset interceptorService.processState("preRender",interceptorData)>
 					<!--- Replace back Content --->
 					<cfset renderedContent = interceptorData.renderedContent>
 					
@@ -255,7 +267,7 @@ Description :
 					<cfif event.isEventCacheable()>
 						<cfset eventCacheEntry = event.getEventCacheableEntry()>
 						<!--- Cache the content of the event --->
-						<cfset cbController.getColdboxOCM("template").set(eventCacheEntry.cacheKey,
+						<cfset templateCache.set(eventCacheEntry.cacheKey,
 																		  renderedContent,
 																   		  eventCacheEntry.timeout,
 																		  eventCacheEntry.lastAccessTimeout)>
@@ -276,7 +288,7 @@ Description :
 					<cfoutput>#renderedContent#</cfoutput>
 						
 					<!--- Execute postRender Interception --->
-					<cfset cbController.getInterceptorService().processState("postRender")>
+					<cfset interceptorService.processState("postRender")>
 				</cfif>
 			
 			<!--- End else if not cached event --->
@@ -288,7 +300,7 @@ Description :
 			</cfif>
 			
 			<!--- Execute postProcess Interception --->
-			<cfset cbController.getInterceptorService().processState("postProcess")>
+			<cfset interceptorService.processState("postProcess")>
 			
 			<!--- Trap Application Errors --->
 			<cfcatch type="any">
@@ -298,7 +310,7 @@ Description :
 				<!--- Intercept The Exception --->
 				<cfset interceptorData = structnew()>
 				<cfset interceptorData.exception = cfcatch>
-				<cfset cbController.getInterceptorService().processState("onException",interceptorData)>
+				<cfset interceptorService.processState("onException",interceptorData)>
 				
 				<!--- Handle The Exception --->
 				<cfset ExceptionBean = exceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
@@ -312,25 +324,25 @@ Description :
 		<cfset request.fwExecTime = getTickCount() - request.fwExecTime>
 		
 		<!--- DebugMode Routines --->
-		<cfif cbController.getDebuggerService().getDebugMode()>
+		<cfif debugMode>
 			<!--- Record Profilers --->
 			<cfset cbController.getDebuggerService().recordProfiler()>
 			<!--- Render DebugPanel --->
 			<cfif event.getDebugPanelFlag()>
 				<!--- Render Debug Log --->
-				<cfoutput>#cbController.getInterceptorService().processState("beforeDebuggerPanel")##cbController.getDebuggerService().renderDebugLog()##cbController.getInterceptorService().processState("afterDebuggerPanel")#</cfoutput>
+				<cfoutput>#interceptorService.processState("beforeDebuggerPanel")##cbController.getDebuggerService().renderDebugLog()##interceptorService.processState("afterDebuggerPanel")#</cfoutput>
 			</cfif>
 		</cfif>		
 	</cffunction>
 	
 	<!--- OnMissing Template --->
 	<cffunction	name="onMissingTemplate" access="public" returntype="boolean" output="true" hint="I execute when a non-existing CFM page was requested.">
-		<cfargument name="template"	type="string" required="true"	hint="I am the template that the user requested."/>
+		<cfargument name="template"	type="any" required="true"	hint="I am the template that the user requested."/>
 		<cfset var cbController = "">
 		<cfset var event = "">
 		<cfset var interceptData = structnew()>
 		
-		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+		<cflock type="readonly" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset cbController = application[locateAppKey()]>
 		</cflock>	
 		
@@ -357,7 +369,7 @@ Description :
 	<cffunction name="onSessionStart" returnType="void" output="false" hint="An onSessionStart method to use or call from your Application.cfc">
 		<cfset var cbController = "">
 		
-		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+		<cflock type="readonly" name="#getAppHash()#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset cbController = application[locateAppKey()]>
 		</cflock>	
 		
@@ -382,7 +394,7 @@ Description :
 		<cfset var event = "">
 		<cfset var iData = structnew()>
 		
-		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+		<cflock type="readonly" name="#getAppHash()#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				//Check for cb Controller
 				if ( structKeyExists(arguments.appScope,locateAppKey()) ){
@@ -462,19 +474,19 @@ Description :
 	
 	<!--- Getter setter lock timeout --->
 	<cffunction name="setLockTimeout" access="public" output="false" returntype="void" hint="Set LockTimeout">
-		<cfargument name="LockTimeout" type="numeric" required="true"/>
-		<cfset instance.LockTimeout = arguments.LockTimeout/>
+		<cfargument name="lockTimeout" type="any" required="true" hint="Numeric"/>
+		<cfset instance.lockTimeout = arguments.lockTimeout/>
 	</cffunction>
 	<!--- Get Lock Timeout --->
-	<cffunction name="getLockTimeout" access="public" output="false" returntype="numeric" hint="Get LockTimeout">
-		<cfreturn instance.LockTimeout/>
+	<cffunction name="getLockTimeout" access="public" output="false" returntype="any" hint="Get LockTimeout for inits">
+		<cfreturn instance.lockTimeout/>
 	</cffunction>
 	
 	<!--- FW needs reinit --->
-	<cffunction name="isfwReinit" access="public" returntype="boolean" hint="Verify if we need to reboot the framework" output="false" >
-		<cfset var reinitPass = "">
+	<cffunction name="isfwReinit" access="public" returntype="any" hint="Verify if we need to reboot the framework. Boolean" output="false" >
+		<cfset var reinitPass 	= "">
 		<cfset var incomingPass = "">
-		<cfset var appKey = locateAppKey()>
+		<cfset var appKey 		= locateAppKey()>
 		
 		<!--- CF Parm Structures just in case. --->
 		<cfparam name="FORM" default="#structNew()#">
@@ -486,13 +498,13 @@ Description :
 				return true;
 			}
 			
-			// Check if we have a reinit password at hand.
-			if ( application[appKey].settingExists("ReinitPassword") ){
-				reinitPass = application[appKey].getSetting("ReinitPassword");
-			}			
-			
 			// Verify the reinit key is passed
 			if ( structKeyExists(url,"fwreinit") or structKeyExists(form,"fwreinit") ){
+				
+				// Check if we have a reinit password at hand.
+				if ( application[appKey].settingExists("ReinitPassword") ){
+					reinitPass = application[appKey].getSetting("ReinitPassword");
+				}			
 				
 				// pass Checks
 				if ( NOT len(reinitPass) ){
@@ -559,24 +571,22 @@ Description :
 	</cffunction>
 	
 	<!--- Locate the Application Key --->
-	<cffunction name="locateAppKey" access="private" output="false" returntype="string" hint="Get COLDBOX_APP_KEY used in this application">
+	<cffunction name="locateAppKey" access="private" output="false" returntype="any" hint="Get COLDBOX_APP_KEY used in this application">
 		<cfscript>
 			if( len(trim(COLDBOX_APP_KEY)) ){
 				return variables.COLDBOX_APP_KEY;
 			}
-			else{
-				return "cbController";
-			}
+			return "cbController";
 		</cfscript>
 	</cffunction>
 	
 	<!--- AppHash --->
-	<cffunction name="getAppHash" access="public" output="false" returntype="string" hint="Get AppHash used in the cflocks">
-		<cfreturn instance.AppHash/>
+	<cffunction name="getAppHash" access="public" output="false" returntype="any" hint="Get AppHash used in the cflocks">
+		<cfreturn instance.appHash/>
 	</cffunction>
 	<cffunction name="setAppHash" access="public" output="false" returntype="void" hint="Set AppHash used in the cflocks">
-		<cfargument name="AppHash" type="string" required="true"/>
-		<cfset instance.AppHash = arguments.AppHash/>
+		<cfargument name="appHash" type="any" required="true"/>
+		<cfset instance.appHash = arguments.appHash/>
 	</cffunction>
 	
 </cfcomponent>

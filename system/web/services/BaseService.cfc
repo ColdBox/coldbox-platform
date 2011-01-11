@@ -27,8 +27,8 @@ Modification History:
 
 	<!--- convertToColdBox --->
     <cffunction name="convertToColdBox" output="false" access="public" returntype="void" hint="Decorate an object as a ColdBox object">
-    	<cfargument name="family" type="string" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
-		<cfargument name="target" type="any" 	required="true" hint="The target object"/>
+    	<cfargument name="family" type="any" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
+		<cfargument name="target" type="any" required="true" hint="The target object"/>
 		<cfscript>
 			return getUtil().convertToColdBox(argumentCollection=arguments);
 		</cfscript>

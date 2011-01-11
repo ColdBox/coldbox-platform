@@ -83,8 +83,8 @@ Description :
 	<!--- Process a State's Interceptors --->
 	<cffunction name="processState" access="public" returntype="void" hint="Process an interception state announcement" output="true">
 		<!--- ************************************************************* --->
-		<cfargument name="state" 		 required="true" 	type="string" hint="An interception state to process">
-		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
+		<cfargument name="state" 		 required="true" 	type="any" hint="An interception state to process">
+		<cfargument name="interceptData" required="false" 	type="any" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfset var timerHash = 0><cfsilent>
 		<cfscript>

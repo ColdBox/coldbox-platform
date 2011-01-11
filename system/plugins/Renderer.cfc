@@ -30,6 +30,7 @@ Description :
 			instance.viewsExternalLocation 		= controller.getSetting('ViewsExternalLocation');
 			instance.layoutsExternalLocation 	= controller.getSetting('LayoutsExternalLocation');
 			instance.modulesConfig				= controller.getSetting("modules");
+			instance.debuggerService			= controller.getDebuggerService();
 			// Template Cache
 			instance.templateCache 				= controller.getColdboxOCM("template");
 
@@ -54,12 +55,12 @@ Description :
 	<!--- Render the View --->
 	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="view" 					required="false" type="string"  default=""		hint="If not passed in, the value in the currentView in the current RequestContext will be used">
-		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view">
-		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout for the view contents">
-		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout for the view contents">
-		<cfargument name="cacheSuffix" 				required="false" type="string"  default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
-		<cfargument name="module" 					required="false" type="string"  default=""      hint="Explicitly render a view from this module by passing the module name"/>
+		<cfargument name="view" 					required="false" type="any"  default=""			hint="If not passed in, the value in the currentView in the current RequestContext will be used">
+		<cfargument name="cache" 					required="false" type="any"  default="false" 	hint="True if you want to cache the view">
+		<cfargument name="cacheTimeout" 			required="false" type="any"  default=""			hint="The cache timeout for the view contents">
+		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  default="" 		hint="The last access timeout for the view contents">
+		<cfargument name="cacheSuffix" 				required="false" type="any"  default=""     	hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
+		<cfargument name="module" 					required="false" type="any"  default=""      	hint="Explicitly render a view from this module by passing the module name"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cbox_RenderedView 	= "";
@@ -114,9 +115,9 @@ Description :
 			// Is the view already cached?
 			if( instance.templateCache.lookup(cbox_cacheKey) ){
 				// Render it out
-				cbox_timerHash = controller.getDebuggerService().timerStart("rendering Cached View [#arguments.view#.cfm]");
+				cbox_timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm]");
 				cbox_renderedView = instance.templateCache.get(cbox_cacheKey);
-				controller.getDebuggerService().timerEnd(cbox_timerHash);
+				instance.debuggerService.timerEnd(cbox_timerHash);
 				// Post View Render Interception
 				cbox_iData.renderedView = cbox_RenderedView;
 				announceInterception("postViewRender", cbox_iData);
@@ -141,9 +142,9 @@ Description :
 		</cfscript>
 
 		<!--- Render The View & Its Helpers --->
-		<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering View [#arguments.view#.cfm]")>
+		<cfset cbox_timerHash = instance.debuggerService.timerStart("rendering View [#arguments.view#.cfm]")>
 		<cfsavecontent variable="cbox_RenderedView"><cfif len(cbox_viewHelperPath)><cfoutput><cfinclude template="#cbox_viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#cbox_viewpath#.cfm"></cfoutput></cfsavecontent>
-		<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
+		<cfset instance.debuggerService.timerEnd(cbox_timerHash)>
 
 		<cfscript>
 			// Post View Render Interception point
@@ -180,13 +181,13 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif instance.templateCache.lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering Cached External View [#arguments.view#.cfm]")>
+			<cfset cbox_timerHash = instance.debuggerService.timerStart("rendering Cached External View [#arguments.view#.cfm]")>
 				<cfset cbox_RenderedView = instance.templateCache.get(cbox_cacheKey)>
-			<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
+			<cfset instance.debuggerService.timerEnd(cbox_timerHash)>
 			<cfreturn cbox_RenderedView>
 		</cfif>
 
-		<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering External View [#arguments.view#.cfm]")>
+		<cfset cbox_timerHash = instance.debuggerService.timerStart("rendering External View [#arguments.view#.cfm]")>
 			<cftry>
 				<!--- Render the View --->
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
@@ -198,7 +199,7 @@ Description :
 					<cfrethrow />
 				</cfcatch>
 			</cftry>
-		<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
+		<cfset instance.debuggerService.timerEnd(cbox_timerHash)>
 
 		<!--- Are we caching explicitly --->
 		<cfif arguments.cache>
@@ -243,7 +244,7 @@ Description :
 		</cfif>
 
 		<!--- Start Timer --->
-		<cfset cbox_timerhash = controller.getDebuggerService().timerStart("rendering Layout [#cbox_currentLayout#]")>
+		<cfset cbox_timerhash = instance.debuggerService.timerStart("rendering Layout [#cbox_currentLayout#]")>
 
 		<!--- If Layout is blank, then just delegate to the view --->
 		<cfif len(cbox_currentLayout) eq 0>
@@ -254,7 +255,7 @@ Description :
 		</cfif>
 
 		<!--- Stop Timer --->
-		<cfset controller.getDebuggerService().timerEnd(cbox_timerhash)>
+		<cfset instance.debuggerService.timerEnd(cbox_timerhash)>
 
 		<!--- Return Rendered Layout --->
 		<cfreturn cbox_RederedLayout>

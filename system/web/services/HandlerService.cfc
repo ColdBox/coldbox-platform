@@ -50,6 +50,7 @@ Description :
 			instance.cache						= getColdboxOCM();
 			instance.templateCache				= getColdboxOCM("template");
 			instance.modules					= controller.getSetting("modules");
+			instance.interceptorService			= controller.getInterceptorService();
     	</cfscript>
     </cffunction>
 
@@ -80,7 +81,7 @@ Description :
 			iData.oHandler 		= oHandler;
 
 			// Fire Interception
-			controller.getInterceptorService().processState("afterHandlerCreation",iData);
+			instance.interceptorService.processState("afterHandlerCreation",iData);
 
 			//return handler
 			return oHandler;
@@ -344,7 +345,7 @@ Description :
 			iData.invalidEvent 	= arguments.event;
 			iData.ehBean 		= arguments.ehBean;
 			iData.override 		= false;
-			controller.getInterceptorService().processState("onInvalidEvent",iData);
+			instance.interceptorService.processState("onInvalidEvent",iData);
 			
 			//If the override was changed by the interceptors then they updated the ehBean of execution
 			if( iData.override ){

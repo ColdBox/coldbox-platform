@@ -67,8 +67,8 @@ Description :
 	<!--- Process the Interceptors --->
 	<cffunction name="process" access="public" returntype="void" hint="Process this state's interceptors" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" 	type="any"    hint="The event context object.">
-		<cfargument name="interceptData" required="true" 	type="struct" hint="A data structure used to pass intercepted information.">
+		<cfargument name="event" 		 required="true" 	type="any"  hint="The event context object.">
+		<cfargument name="interceptData" required="true" 	type="any" 	hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var key 			= "";
@@ -90,7 +90,7 @@ Description :
 	</cffunction>
 	
 	<!--- isExecutable --->
-	<cffunction name="isExecutable" output="false" access="public" returntype="boolean" hint="Checks if an interceptor is executable or not">
+	<cffunction name="isExecutable" output="false" access="public" returntype="any" hint="Checks if an interceptor is executable or not. Boolean">
 		<cfargument name="target" type="any" required="true" hint="The target interceptor to check"/>
 		<cfargument name="event"  type="any" required="true" hint="The event context object.">
 		<cfscript>
