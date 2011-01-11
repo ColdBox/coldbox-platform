@@ -48,6 +48,8 @@ Modification History:
 	<!--- onConfigurationLoad --->
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
+			// Cache Reference
+			instance.cache = getColdboxOCM();
 			// Set the custom plugin paths
 			setCustomPluginsPath(controller.getSetting("MyPluginsInvocationPath"));
 			setCustomPluginsPhysicalPath(controller.getSetting("MyPluginsPath"));
@@ -66,10 +68,10 @@ Modification History:
 	<!--- Get a new plugin Instance --->
 	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance whether it is core or custom" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" type="any"  	  required="true"  hint="The name (classpath) of the plugin to create">
-		<cfargument name="custom" type="boolean"  required="true"  hint="Custom plugin or coldbox plugin">
-		<cfargument name="module" type="any" 	  required="false" default="" hint="The module to retrieve the plugin from"/>
-		<cfargument name="init"   type="boolean"  required="false" default="true" hint="Auto init() the plugin upon construction"/>
+		<cfargument name="plugin" type="any"  	  	required="true"  hint="The name (classpath) of the plugin to create">
+		<cfargument name="custom" type="any"  		required="true"  hint="Custom plugin or coldbox plugin: Boolean" colddoc:generic="Boolean">
+		<cfargument name="module" type="any" 	  	required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="init"   type="any"  		required="false" default="true" hint="Auto init() the plugin upon construction: Boolean" colddoc:generic="Boolean"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oPlugin 	= 0;
@@ -130,7 +132,7 @@ Modification History:
 			var oPlugin					= "";
 			
 			// Lookup plugin in Cache
-			refLocal.oPlugin = controller.getColdboxOCM().get(pluginKey);
+			refLocal.oPlugin = instance.cache.get(pluginKey);
 			
 			// Verify it, COMPAT MODE Remove later
 			if( NOT structKeyExists(refLocal,"oPlugin") OR NOT isObject(refLocal.oPlugin) ){
@@ -142,7 +144,7 @@ Modification History:
 				
 				// Do we Cache the plugin?
 				if ( pluginDictionaryEntry.cacheable ){
-					controller.getColdboxOCM().set(pluginKey,refLocal.oPlugin,pluginDictionaryEntry.timeout,pluginDictionaryEntry.lastAccessTimeout);
+					instance.cache.set(pluginKey,refLocal.oPlugin,pluginDictionaryEntry.timeout,pluginDictionaryEntry.lastAccessTimeout);
 				}				
 			}
 			//end else if instance not in cache.
@@ -281,11 +283,11 @@ Modification History:
 	</cffunction>
 	
 	<!--- Locate a Plugin Instantiation Path --->
-	<cffunction name="locatePluginPath" access="private" returntype="string" hint="Locate a full plugin instantiation path from the requested plugin name" output="false" >
+	<cffunction name="locatePluginPath" access="private" returntype="any" hint="Locate a full plugin instantiation path from the requested plugin name" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" type="any" 	 required="true" hint="The plugin to validate the path on.">
-		<cfargument name="custom" type="boolean" required="true" hint="Whether its a custom plugin or not.">
-		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="plugin" type="any" 	 	required="true" hint="The plugin to validate the path on.">
+		<cfargument name="custom" type="any" 		required="true" hint="Whether its a custom plugin or not. Boolean">
+		<cfargument name="module" type="any" 	 	required="false" default="" hint="The module to retrieve the plugin from"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var pluginFilePath = "";
@@ -346,21 +348,21 @@ Modification History:
 	</cffunction>
 
 	<!--- getPluginCacheKey --->
-	<cffunction name="getPluginCacheKey" output="false" access="private" returntype="string" hint="Get the plugin Cache Key">
-		<cfargument name="plugin" type="any"     required="true"  hint="The name (classpath) of the plugin to create">
-		<cfargument name="custom" type="boolean" required="true"  hint="Custom plugin or coldbox plugin">
-		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
+	<cffunction name="getPluginCacheKey" output="false" access="private" returntype="any" hint="Get the plugin Cache Key">
+		<cfargument name="plugin" type="any"    required="true"  hint="The name (classpath) of the plugin to create">
+		<cfargument name="custom" type="any" 	required="true"  hint="Custom plugin or coldbox plugin. Boolean">
+		<cfargument name="module" type="any" 	required="false" default="" hint="The module to retrieve the plugin from"/>
 		<cfscript>
-			var pluginKey = getColdboxOCM().PLUGIN_CACHEKEY_PREFIX & arguments.plugin;
+			var pluginKey = instance.cache.PLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			
 			// A module Plugin
 			if( len(arguments.module) ){
-				return getColdboxOCM().CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.module & ":" & arguments.plugin;
+				return instance.cache.CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.module & ":" & arguments.plugin;
 			}
 			
 			// Differentiate a Custom PluginKey
 			if ( arguments.custom ){
-				return getColdboxOCM().CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.plugin;
+				return instance.cache.CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			}
 			
 			return pluginKey;
