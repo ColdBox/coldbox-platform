@@ -46,6 +46,10 @@ Description :
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<cfscript>
+    		// Setup Logging
+    		instance.log = controller.getLogBox().getLogger(this);
+    		// Setup Configuration
+    		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
     		// Register The Interceptors
 			registerInterceptors();
     	</cfscript>
@@ -56,22 +60,22 @@ Description :
 	<!--- Register All the interceptors --->
 	<cffunction name="registerInterceptors" access="public" returntype="void" hint="Register all the interceptors according to configuration. All interception states are lazy loaded in." output="false" >
 		<cfscript>
-			var interceptorConfig = controller.getSetting("InterceptorConfig");
 			var x = 1;
 			
 			// Create a spanking new Interception States Container
 			createInterceptionStates();
 			
 			// Check if we have custom interception points, and register them if we do
-			if( len(interceptorConfig.CustomInterceptionPoints) ){
-				appendInterceptionPoints( interceptorConfig.CustomInterceptionPoints);
+			if( len(instance.interceptorConfig.customInterceptionPoints) ){
+				appendInterceptionPoints( instance.interceptorConfig.CustomInterceptionPoints );
+				instance.log.debug("Registering custom interception points: #instance.interceptorConfig.CustomInterceptionPoints#");
 			}
 			
 			// Loop over the Interceptor Array, to begin registration
-			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
-				registerInterceptor(interceptorClass=interceptorConfig.interceptors[x].class,
-									interceptorProperties=interceptorConfig.interceptors[x].properties,
-									interceptorName=interceptorConfig.interceptors[x].name);				
+			for (; x lte arrayLen(instance.interceptorConfig.interceptors); x=x+1){
+				registerInterceptor(interceptorClass=instance.interceptorConfig.interceptors[x].class,
+									interceptorProperties=instance.interceptorConfig.interceptors[x].properties,
+									interceptorName=instance.interceptorConfig.interceptors[x].name);				
 			}		
 		</cfscript>
 	</cffunction>
@@ -79,8 +83,8 @@ Description :
 	<!--- Process a State's Interceptors --->
 	<cffunction name="processState" access="public" returntype="void" hint="Process an interception state announcement" output="true">
 		<!--- ************************************************************* --->
-		<cfargument name="state" 		 required="true" 	type="string" hint="An interception state to process">
-		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
+		<cfargument name="state" 		 required="true" 	type="any" hint="An interception state to process">
+		<cfargument name="interceptData" required="false" 	type="any" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfset var timerHash = 0><cfsilent>
 		<cfscript>
@@ -90,21 +94,21 @@ Description :
 		}
 		
 		// Validate Incoming State
-		if ( controller.getSetting("InterceptorConfig").throwOnInvalidStates AND NOT listfindnocase(getInterceptionPoints(),arguments.state) ){
-			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","InterceptorService.InvalidInterceptionState");
+		if ( instance.interceptorConfig.throwOnInvalidStates AND NOT listfindnocase(instance.interceptionPoints,arguments.state) ){
+			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","Valid states are #instance.interceptionPoints#","InterceptorService.InvalidInterceptionState");
 		}
 		
 		// Process The State if it exists, else just exit out
-		if( structKeyExists(getinterceptionStates(), arguments.state) ){
+		if( structKeyExists(instance.interceptionStates, arguments.state) ){
 			// Execute Interception
 			timerHash = controller.getDebuggerService().timerStart("interception [#arguments.state#]");
-			structFind( getinterceptionStates(), arguments.state).process(controller.getRequestService().getContext(),arguments.interceptData);
+			structFind( instance.interceptionStates, arguments.state).process(controller.getRequestService().getContext(),arguments.interceptData);
 			controller.getDebuggerService().timerEnd(timerHash);
 		}
 		
 		// Process Output Buffer: looks weird, but we are outputting stuff
 		</cfscript>
-		</cfsilent><cfif getRequestBuffer().isBufferInScope()><cfset writeOutput(getRequestBuffer().getString())><cfset getRequestBuffer().clear()></cfif>
+		</cfsilent><cfif instance.RequestBuffer.isBufferInScope()><cfset writeOutput(instance.RequestBuffer.getString())><cfset instance.RequestBuffer.clear()></cfif>
 	</cffunction>
 	
 	<!--- Register an Interceptor --->
@@ -153,6 +157,7 @@ Description :
 						oInterceptor = createInterceptor(arguments.interceptorClass, arguments.interceptorProperties);
 					}
 					catch(Any e){
+						instance.log.error("Error creating interceptor: #arguments.interceptorClass#",e);
 						getUtil().rethrowit(e);
 					}
 					
@@ -176,6 +181,9 @@ Description :
 				// Register this Interceptor's interception point with its appropriate interceptor state
 				for(stateKey in interceptionPointsFound){
 					registerInterceptionPoint(objectKey,stateKey,oInterceptor);
+					if( instance.log.canDebug() ){
+						instance.log.debug("Registering #objectName# on '#statekey#' interception point ");
+					}
 				}
 				
 				// Autowire this interceptor only if called after aspect registration
@@ -304,7 +312,7 @@ Description :
 			// Else, unregister from all states
 			for(key in states){
 				if( len(trim(state)) eq 0 OR trim(state) eq key ){
-					structFind(states,key).unregister(arguments.interceptorName);
+					structFind(states,key).unregister(getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorName);
 					unregistered = true;
 				}				
 			}

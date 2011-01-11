@@ -70,7 +70,16 @@ Modification History:
 			}
 			
 			//Get Local Logger Configured
-			instance.logger = controller.getLogBox().getLogger(this);
+			instance.log = controller.getLogBox().getLogger(this);
+			// Local Configuration data and dependencies
+			instance.debugPassword  	= controller.getSetting("debugPassword");
+			instance.eventName			= controller.getSetting("eventName");
+			instance.eventCaching		= controller.getSetting("EventCaching");
+			instance.interceptorService = controller.getInterceptorService();
+			instance.handlerService		= controller.getHandlerService();
+			instance.cacheBox			= controller.getCacheBox();
+			instance.cache				= controller.getColdBoxOCM();
+			instance.templateCache		= controller.getColdBoxOCM("template");
 		</cfscript>
 	</cffunction>
 
@@ -79,58 +88,57 @@ Modification History:
 	<!--- Request Capture --->
 	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture an incoming request. Returns: coldbox.system.web.context.RequestContext" colddoc:generic="coldbox.system.web.context.RequestContext">
 		<cfscript>
-			var context 		= getContext();
-			var debugPassword 	= controller.getSetting("debugPassword");
-			var eventName 		= controller.getSetting("EventName");
-			var rc				= context.getCollection();
+			var context 	= getContext();
+			var rc			= context.getCollection();
+			var prc 		= context.getCollection(private=true);
 			
 			// Capture FORM/URL
 			if( isDefined("FORM") ){ structAppend(rc, FORM); }
 			if( isDefined("URL")  ){ structAppend(rc, URL); }
 			
 			// Execute onRequestCapture interceptionPoint
-			controller.getInterceptorService().processState("onRequestCapture");
+			instance.interceptorService.processState("onRequestCapture");
 			
 			// Take snapshot of incoming collection
-			context.setValue(name="cbox_incomingContextHash",value=hash(rc.toString()),private=true);
+			prc["controller.getInterceptorService()"] = hash(rc.toString());
 			
 			// Do we have flash elements to inflate?
-			if( getFlashScope().flashExists() ){
-				instance.logger.debug("Flash RAM detected, inflating flash...");
-				getFlashScope().inflateFlash();
+			if( instance.flashScope.flashExists() ){
+				instance.log.debug("Flash RAM detected, inflating flash...");
+				instance.flashScope.inflateFlash();
 			}
 					
 			// Object Caching Garbage Collector, check if using cachebox first
-			if( isObject(controller.getCacheBox()) ){
-				controller.getCacheBox().reapAll();
+			if( isObject( instance.cacheBox ) ){
+				instance.cacheBox.reapAll();
 			}
 			else{
 				// Compat mode, remove this at release
-				controller.getColdboxOCM().reap();
+				instance.cache.reap();
 			}
 			
 			// Debug Mode Checks
 			if ( structKeyExists(rc,"debugMode") AND isBoolean(rc.debugMode) ){
-				if ( NOT len(debugPassword) ){
+				if ( NOT len(instance.debugPassword) ){
 					controller.getDebuggerService().setDebugMode( rc.debugMode );
 				}
-				else if ( structKeyExists(rc,"debugpass") AND CompareNoCase(debugPassword,rc.debugpass) eq 0 ){
+				else if ( structKeyExists(rc,"debugpass") AND CompareNoCase(instance.debugPassword, hash(rc.debugpass) ) eq 0 ){
 					controller.getDebuggerService().setDebugMode( rc.debugMode );
 				}
 			}
 
 			// Default Event Determination
-			if ( NOT structKeyExists(rc, eventName)){
-				rc[eventName] = controller.getSetting("DefaultEvent");
+			if ( NOT structKeyExists(rc, instance.eventName)){
+				rc[instance.eventName] = controller.getSetting("DefaultEvent");
 			}
 			
 			// Event More Than 1 Check, grab the first event instance, other's are discarded
-			if ( listLen( rc[eventName] ) GTE 2 ){
-				rc[eventName] = getToken( rc[eventName], 2, ",");
+			if ( listLen( rc[instance.eventName] ) GTE 2 ){
+				rc[instance.eventName] = getToken( rc[instance.eventName], 2, ",");
 			}
 			
 			// Default Event Action Checks
-			controller.getHandlerService().defaultEventCheck(context);
+			instance.handlerService.defaultEventCheck(context);
 			
 			// Are we using event caching?
 			eventCachingTest(context);
@@ -144,18 +152,17 @@ Modification History:
 		<cfargument name="context" 	required="true"  type="any" hint="The request context to test for event caching." colddoc:generic="coldbox.system.web.context.RequestContext">
 		<cfscript>
 			var eventCacheKey   = "";
-			var oEventURLFacade = controller.getColdboxOCM("template").getEventURLFacade();
+			var oEventURLFacade = instance.templateCache.getEventURLFacade();
 			var eventDictionary = 0;
-			var oOCM 		    = controller.getColdboxOCM("template");
 			var currentEvent    = arguments.context.getCurrentEvent();
 			
 			// Are we using event caching?
-			if ( controller.getSetting("EventCaching") ){
+			if ( instance.eventCaching ){
 				// Cleanup the cache key, just in case, maybe ses interceptor has been used.
 				arguments.context.removeEventCacheableEntry();
 					
 				// Get metadata entry for event that's fired.
-				eventDictionary = controller.getHandlerService().getEventMetaDataEntry(currentEvent);	
+				eventDictionary = instance.handlerService.getEventMetaDataEntry(currentEvent);	
 				
 				// Verify that it is cacheable, else quit, no need for testing anymore.
 				if( NOT eventDictionary.cacheable ){
@@ -169,7 +176,7 @@ Modification History:
 				// Check for Event Cache Purge
 				if ( context.valueExists("fwCache") ){
 					// Clear the key from the cache
-					oOCM.clearKey( eventCacheKey );
+					instance.templateCache.clearKey( eventCacheKey );
 					return;
 				}
 				
@@ -177,7 +184,9 @@ Modification History:
 				arguments.context.setEventCacheableEntry(eventCacheKey);
 				
 				// debug logging
-				instance.logger.debug("Event caching detected for : #eventCacheKey.toString()#");
+				if( instance.log.canDebug() ){
+					instance.log.debug("Event caching detected for : #eventCacheKey.toString()#");
+				}
 				
 			}//end if using event caching.
 		</cfscript>
@@ -186,19 +195,16 @@ Modification History:
 	<!--- Get the context --->
 	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request context from request scope or create a new one.">
 		<cfscript>
-			if ( structKeyExists(request,"cb_requestContext") )
-				return request.cb_requestContext;
-			else
-				return createContext();
+			if ( structKeyExists(request,"cb_requestContext") ){ return request.cb_requestContext; }
+			return createContext();
 		</cfscript>
 	</cffunction>
 
 	<!--- Set the context --->
 	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request context">
-		<cfargument name="Context" type="any" required="true">
+		<cfargument name="context" type="any" required="true">
 		<cfscript>
-			instance.logger.debug("Request Context set on request scope");
-			request.cb_requestContext = arguments.Context;
+			request.cb_requestContext = arguments.context;
 		</cfscript>
 	</cffunction>
 

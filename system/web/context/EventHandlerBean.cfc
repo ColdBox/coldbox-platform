@@ -31,11 +31,11 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- Get/Set View Dispatch --->
-	<cffunction name="getViewDispatch" access="public" returntype="boolean" output="false" hint="Get the view dispatch flag">
+	<cffunction name="getViewDispatch" access="public" returntype="any" output="false" hint="Get the view dispatch flag: Boolean">
     	<cfreturn instance.viewDispatch>
     </cffunction>
     <cffunction name="setViewDispatch" access="public" returntype="any" output="false" hint="Setup a view dispatch or not">
-    	<cfargument name="viewDispatch" type="boolean" required="true">
+    	<cfargument name="viewDispatch" type="any" required="true" hint="boolean" colddoc:generic="boolean">
     	<cfset instance.viewDispatch = arguments.viewDispatch>
     	<cfreturn this>
     </cffunction>    
@@ -67,7 +67,7 @@ Description :
 	
 	<!--- Get/Set Method --->
 	<cffunction name="setMethod" access="public" returntype="any" output="false" hint="Set the method to execute">
-		<cfargument name="method" type="string" required="true" />
+		<cfargument name="method" type="any" required="true" />
 		<cfset instance.method = arguments.method>
 		<cfreturn this>
 	</cffunction>
@@ -80,7 +80,7 @@ Description :
 		<cfreturn instance.isPrivate>
 	</cffunction>
 	<cffunction name="setIsPrivate" access="public" returntype="any" output="false" hint="Set the private execution flag">
-		<cfargument name="isPrivate" type="boolean" required="true">
+		<cfargument name="isPrivate" type="any" required="true" hint="Boolean" colddoc:generic="Boolean">
 		<cfset instance.isPrivate = arguments.isPrivate>
 		<cfreturn this>
 	</cffunction>
@@ -126,11 +126,11 @@ Description :
 	</cffunction>
 	
 	<!--- Missing Action item. --->
-	<cffunction name="getMissingAction" access="public" returntype="string" output="false" hint="Get the missing action flag">
+	<cffunction name="getMissingAction" access="public" returntype="any" output="false" hint="Get the missing action flag">
 		<cfreturn instance.missingAction>
 	</cffunction>
 	<cffunction name="setMissingAction" access="public" returntype="any" output="false" hint="Set the missing action flag">
-		<cfargument name="missingAction" type="string" required="true">
+		<cfargument name="missingAction" type="any" required="true">
 		<cfset instance.missingAction = arguments.missingAction>
 		<cfreturn this>
 	</cffunction>

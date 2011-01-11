@@ -101,12 +101,12 @@ Description :
 	</cffunction>
 	
 	<!--- getter setter state --->
-	<cffunction name="getState" access="public" output="false" returntype="string" hint="Get the event pool's state name">
+	<cffunction name="getState" access="public" output="false" returntype="any" hint="Get the event pool's state name">
 		<cfreturn instance.state/>
 	</cffunction>	
 	<cffunction name="setState" access="public" output="false" returntype="void" hint="Set the event pool's state name">
 		<!--- ************************************************************* --->
-		<cfargument name="state" type="string" required="true"/>
+		<cfargument name="state" type="any" required="true"/>
 		<!--- ************************************************************* --->
 		<cfset instance.state = arguments.state/>
 	</cffunction>

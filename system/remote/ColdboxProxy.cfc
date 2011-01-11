@@ -214,6 +214,11 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Get the cachebox instance --->
+	<cffunction name="getCacheBox" output="false" access="private" returntype="any" hint="Get the CacheBox reference." colddoc:generic="coldbox.system.cache.CacheFactory">
+		<cfreturn getController().getCacheBox()>
+	</cffunction>
+	
 	<!--- Get the LogBox. --->
 	<cffunction name="getLogBox" output="false" access="private" returntype="any" hint="Get the LogBox reference of this application.">
 		<cfreturn getController().getLogBox()>

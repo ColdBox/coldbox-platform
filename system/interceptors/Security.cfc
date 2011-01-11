@@ -65,6 +65,11 @@ For the latest usage, please visit the wiki.
 		<cfscript>
 			var oValidator = "";
 			
+			// if no preEvent, then unregister yourself.
+			if( NOT getProperty("preEVentSecurity") ){
+				unregister("preEvent");
+			}
+			
 			// Load Rules
 			switch( getProperty('rulesSource') ){
 				case "xml" : { 

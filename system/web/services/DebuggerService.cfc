@@ -34,15 +34,25 @@ Description :
 		</cfscript>
 	</cffunction>
 
+
+<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
+
+	<!--- onConfigurationLoad --->
+    <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
+    	<cfscript>
+			instance.debugMode = controller.getSetting("debugMode");
+    	</cfscript>
+    </cffunction>
+    
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- timersExist --->
-    <cffunction name="timersExist" output="false" access="public" returntype="boolean" hint="Do we have any request timers">
+    <cffunction name="timersExist" output="false" access="public" returntype="any" hint="Do we have any request timers. Boolean">
     	<cfreturn structKeyExists(request, "DebugTimers")>
     </cffunction>
 	
 	<!--- getTimers --->
-    <cffunction name="getTimers" output="false" access="public" returntype="query" hint="Get the timers query from the request. Empty query if it does not exist.">
+    <cffunction name="getTimers" output="false" access="public" returntype="any" hint="Get the timers query from the request. Empty query if it does not exist. Query">
     	<cfscript>
     		if( NOT timersExist() ){
 				request.debugTimers = QueryNew("ID,Method,Time,Timestamp,RC,PRC");
@@ -52,8 +62,8 @@ Description :
     </cffunction>
 	
 	<!--- timerStart --->
-	<cffunction name="timerStart" output="false" access="public" returntype="string" hint="Start an internal code timer and get a hash of the timer storage">
-		<cfargument name="label" type="string" required="true" hint="The timer label to record"/>
+	<cffunction name="timerStart" output="false" access="public" returntype="any" hint="Start an internal code timer and get a hash of the timer storage">
+		<cfargument name="label" type="any" required="true" hint="The timer label to record"/>
 		<cfscript>
 			var labelHash = 0;
 			var timerInfo = 0;
@@ -80,7 +90,7 @@ Description :
 	
 	<!--- timerEnd --->
 	<cffunction name="timerEnd" output="false" access="public" returntype="void" hint="End an internal code timer">
-		<cfargument name="labelHash" type="string" required="true" default="" hint="The timer label hash to stop"/>
+		<cfargument name="labelHash" type="any" required="true" default="" hint="The timer label hash to stop"/>
 		<cfscript>
 			var timerInfo = 0;
 			var qTimers = "";
@@ -118,34 +128,30 @@ Description :
 	</cffunction>
 	
 	<!--- Get the debug mode flag --->
-	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
+	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode. Boolean" returntype="any"  output="false" colddoc:generic="Boolean">
 		<cfscript>
 			// Check global debug Mode and cookie setup, else init their debug cookie
-			if( controller.getSetting('debugMode') AND NOT isDebugCookieValid() ){
+			if( instance.debugMode AND NOT isDebugCookieValid() ){
 				setDebugmode(true);
 			}
 			// Check vapor cookie
-			if( structKeyExists(cookie,getCookieName()) ){
-				if( isBoolean(cookie[getCookieName()]) ){
-					return cookie[getCookieName()];
+			if( structKeyExists(cookie,instance.cookieName) ){
+				if( isBoolean(cookie[instance.cookieName]) ){
+					return cookie[instance.cookieName];
 				}
-				else{
-					structDelete(cookie, getCookieName());
-				}
+				structDelete(cookie, instance.cookieName);
 			}
 			return false;
 		</cfscript>
 	</cffunction>
 	
 	<!--- isDebugCookieValid --->
-    <cffunction name="isDebugCookieValid" output="false" access="public" returntype="boolean" hint="Checks if the debug cookie is a valid cookie">
+    <cffunction name="isDebugCookieValid" output="false" access="public" returntype="any" hint="Checks if the debug cookie is a valid cookie. Boolean">
 	    <cfscript>
-	    	if( structKeyExists(cookie, getCookieName() ) AND isBoolean(cookie[getCookieName()]) ){ 
+	    	if( structKeyExists(cookie, instance.cookieName ) AND isBoolean(cookie[instance.cookieName]) ){ 
 				return true;
 			}
-			else{
-				return false;
-			}
+			return false;
 	    </cfscript>
     </cffunction>
 
@@ -157,10 +163,10 @@ Description :
 			<cfcookie name="#getCookieName()#" value="true">
 		<!--- False with global True --->
 		<cfelseif structKeyExists(cookie,getCookieName()) AND controller.getSetting('debugMode')>
-			<cfcookie name="#getCookieName()#" value="false">
+			<cfcookie name="#instance.cookieName#" value="false">
 		<!--- Flase with global False --->
 		<cfelse>
-			<cfcookie name="#getCookieName()#" value="false" expires="#now()#">
+			<cfcookie name="#instance.cookieName#" value="false" expires="#now()#">
 		</cfif>
 	</cffunction>
 
@@ -391,7 +397,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get set the cookie name --->
-	<cffunction name="getCookieName" access="public" output="false" returntype="string" hint="Get cookieName">
+	<cffunction name="getCookieName" access="public" output="false" returntype="any" hint="Get cookieName">
 		<cfreturn instance.cookieName/>
 	</cffunction>
 	<cffunction name="setCookieName" access="public" output="false" returntype="void" hint="Set cookieName">
@@ -400,7 +406,7 @@ Description :
 	</cffunction>
 	
 	<!--- Configuration Bean --->
-	<cffunction name="getDebuggerConfig" access="public" output="false" returntype="coldbox.system.web.config.DebuggerConfig" hint="Get DebuggerConfig">
+	<cffunction name="getDebuggerConfig" access="public" output="false" returntype="any" hint="Get DebuggerConfig: coldbox.system.web.config.DebuggerConfig">
 		<cfreturn instance.DebuggerConfig/>
 	</cffunction>	
 	<cffunction name="setDebuggerConfig" access="public" output="false" returntype="void" hint="Set DebuggerConfig">

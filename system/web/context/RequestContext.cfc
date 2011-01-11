@@ -113,7 +113,7 @@ Description :
 	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the public or private request collection." output="false">
 		<cfargument name="name"         type="any" 		required="true"  hint="Name of the variable to get from the request collection">
 		<cfargument name="defaultValue"	type="any" 		required="false" hint="Default value to return if not found.">
-		<cfargument name="private" 		type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
+		<cfargument name="private" 		type="any" 		required="false" default="false" hint="Use public or private request collection. Boolean"/>
 		<cfscript>
 			var collection = instance.context;
 			
@@ -282,20 +282,20 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout for rendering" returntype="string" output="false">
+	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout for rendering" returntype="any" output="false">
 		<cfreturn getValue("currentLayout","",true)>
 	</cffunction>
 	
-	<cffunction name="getCurrentRoute" output="false" access="public" returntype="string" hint="Get the current request's SES route that matched">
+	<cffunction name="getCurrentRoute" output="false" access="public" returntype="any" hint="Get the current request's SES route that matched">
     	<cfreturn getValue("currentRoute","",true)>
     </cffunction>
 	
-	<cffunction name="getCurrentRoutedURL" output="false" access="public" returntype="string" hint="Get the current routed URL that matched the SES route">
+	<cffunction name="getCurrentRoutedURL" output="false" access="public" returntype="any" hint="Get the current routed URL that matched the SES route">
     	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
-		<cfargument name="name"  hint="The name or alias of the layout file to set." type="string" >
+		<cfargument name="name"  hint="The name or alias of the layout file to set." type="any" >
 		<cfscript>
 			var layouts = getRegisteredLayouts();
 			
@@ -382,7 +382,7 @@ Description :
 		</cfscript>		
 	</cffunction>
 	
-	<cffunction name="isNoRender" access="public" returntype="boolean" hint="Is this a no render request" output="false">
+	<cffunction name="isNoRender" access="public" returntype="any" hint="Is this a no render request" output="false">
 		<cfreturn getValue(name="coldbox_norender",defaultValue=false,private=true)>
 	</cffunction>
 	
@@ -445,7 +445,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="isEventCacheable" access="public" returntype="boolean" hint="Check wether the incoming event has been flagged for caching" output="false" >
+	<cffunction name="isEventCacheable" access="public" returntype="any" hint="Check wether the incoming event has been flagged for caching. Boolean" output="false" >
 		<cfscript>
 			return valueExists(name="cbox_eventCacheableEntry",private=true);
 		</cfscript>
@@ -618,11 +618,11 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getRenderData" access="public" output="false" returntype="struct" hint="Get the renderData structure.">
+	<cffunction name="getRenderData" access="public" output="false" returntype="any" hint="Get the renderData structure.">
 		<cfreturn getValue(name="cbox_renderdata",defaultValue=structnew(),private=true)/>
 	</cffunction>
 
-	<cffunction name="getHTTPMethod" access="public" returntype="string" hint="Get the HTTP Request Method Type" output="false" >
+	<cffunction name="getHTTPMethod" access="public" returntype="any" hint="Get the HTTP Request Method Type" output="false" >
 		<cfreturn cgi.REQUEST_METHOD>
 	</cffunction>
 	
@@ -671,7 +671,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="isNoExecution" access="public" returntype="boolean" hint="Determine if we need to execute an incoming event or not." output="false" >
+	<cffunction name="isNoExecution" access="public" returntype="any" hint="Determine if we need to execute an incoming event or not." output="false" >
 		<cfreturn instance.isNoExecution>
 	</cffunction>
 	

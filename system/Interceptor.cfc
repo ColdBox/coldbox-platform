@@ -86,9 +86,8 @@ Description :
 	<cffunction name="unregister" access="public" returntype="boolean" hint="Unregister this interceptor from a passed state. If the state does not exists, it returns false" output="false" >
 		<cfargument name="state" required="true" type="string" hint="The named state to unregister this interceptor from">
 		<cfscript>
-			var interceptorClass = getMetadata(this).name;
-			
-			return getController().getInterceptorService().unregister(interceptorClass,arguments.state);			
+			var interceptorClass = listLast(getMetadata(this).name,".");
+			return variables.controller.getInterceptorService().unregister(interceptorClass,arguments.state);			
 		</cfscript>
 	</cffunction>
 
