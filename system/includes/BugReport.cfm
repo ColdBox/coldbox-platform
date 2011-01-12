@@ -60,7 +60,7 @@ Description :
 			<td align="right" class="fw_errorTablesTitles">LINE:</td>
 		    <td >#arrayTagContext[i].LINE#</td>
 		   </tr>		
-		   <tr >
+		   <tr class="fw_errorTablesBreak">
 			<td align="right" class="fw_errorTablesTitles">Template:</td>
 		    <td >#arrayTagContext[i].Template#</td>
 		   </tr>
@@ -138,12 +138,14 @@ Description :
 	   <td >#htmlEditFormat(cgi.HTTP_REFERER)#</td>
 	 </tr>
 	</cfif>
-	
 	<tr>
 	   <td align="right" class="fw_errorTablesTitles">Browser:</td>
 	   <td >#htmlEditFormat(cgi.HTTP_USER_AGENT)#</td>
 	</tr>
-	
+	<tr>
+	   <td align="right" class="fw_errorTablesTitles"> Remote Address: </td>
+	   <td >#htmlEditFormat(cgi.remote_addr)#</td>
+	 </tr>
 	 <cfif isStruct(Exception.getExceptionStruct()) >
 	 
 	  <cfif Exception.getmissingFileName() neq  "">
@@ -188,7 +190,37 @@ Description :
 		  </tr>
 	  </cfif>
 	</cfif>
-	  
+	 <tr >
+		<th colspan="2" >Form variables:</th>
+	 </tr>
+	 <cfloop collection="#form#" item="key">
+	 	<cfif key neq "fieldnames">
+	 <tr>
+	   <td align="right" class="fw_errorTablesTitles"> #key#: </td>
+	   <td >#htmlEditFormat(form[key])#</td>
+	 </tr>
+	 	</cfif>
+	 </cfloop>
+	 <tr >
+		<th colspan="2" >Session variables:</th>
+	 </tr>
+	 <cfset sessioncbstorage = controller.getPlugin('SessionStorage').getStorage()>
+	 <cfloop collection="#sessioncbstorage#" item="key">
+	 <tr>
+	   <td align="right" class="fw_errorTablesTitles"> #key#: </td>
+	   <td ><cfif IsSimpleValue(sessioncbstorage[key])>#htmlEditFormat(sessioncbstorage[key])#<cfelse>[complex]</cfif></td>
+	 </tr>
+	 </cfloop>
+	 <tr >
+		<th colspan="2" >Cookies:</th>
+	 </tr>
+	 <cfloop collection="#cookie#" item="key">
+	 <tr>
+	   <td align="right" class="fw_errorTablesTitles"> #key#: </td>
+	   <td >#htmlEditFormat(cookie[key])#</td>
+	 </tr>
+	 </cfloop>
+	 
 	 <tr >
 		<th colspan="2" >Stack Trace:</th>
 	 </tr>

@@ -184,6 +184,9 @@
 	background-color: #EDEDEA;
 	padding: 5px 5px 5px 5px;
 }
+.fw_errorTables tr.fw_errorTablesBreak td{ 
+	border-bottom:1px solid black; 
+}
 .fw_overflowScroll{
 	width: 600px;
 	overflow:scroll;

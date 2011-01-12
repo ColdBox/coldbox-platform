@@ -31,6 +31,7 @@
 .fw_errorTables th { background-color:#969491; color:#000000; font-weight:bold; padding:5px; }
 .fw_errorTables td { font-size:10px; background-color:#ffffff; border:1px dotted #cccccc; padding:5px; }
 .fw_errorTables td.fw_errorTablesTitles { font-size:10px; font-weight:bold; background-color:#EDEDEA; padding:5px; }
+.fw_errorTables tr.fw_errorTablesBreak td { border-bottom:1px solid black; }
 .fw_overflowScroll { width:600px; overflow:scroll; height:300px; }
 .fw_errorDiv { font-size:12px; font-family:verdana; margin:5px; padding:5px; }
 .fw_errorDiv h3 { margin-top:3px; margin-bottom:3px; color:##993333; }
