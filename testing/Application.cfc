@@ -23,8 +23,7 @@ Description :
 	<cfset this.sessionTimeout = createTimeSpan(0,0,5,0)>
 	
 	<cfset this.mappings["/testmodel"] = expandPath("/coldbox/testing/testmodel")>
-	
-	
+	<cfset this.mappings["/testing"] = expandPath("/coldbox/testing")>
 	
 	<cfif NOT structKeyExists(server,"railo")>
 		<cfset this.datasource = "coolblog">

@@ -34,6 +34,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	}
 
 	function testGetSessionStatistics(){
+		ormservice.clear();
 		stats = ormservice.getSessionStatistics();
 		assertEquals( 0, stats.entityCount );
 		assertEquals( 0, stats.collectionCount );
@@ -366,7 +367,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	function testGetKey(){
 
 		test = ormservice.getKey(entityName="Category");
-		assertEquals( 'id', test );
+		assertEquals( 'catid', test );
 
 		test = ormservice.getKey(entityName="User");
 		assertEquals( 'id', test );
@@ -411,7 +412,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		assertEquals( 'users', test );
 
 		test = CategoryService.getKey();
-		assertEquals( 'id', test );
+		assertEquals( 'catid', test );
 
 		test=CategoryService.getTableName();
 		assertEquals( 'categories', test );

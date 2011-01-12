@@ -19,8 +19,8 @@ Description :
 	
 	<cffunction name="init" access="public" returntype="BaseDictionary" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="name" 		required="false" type="string" default="BaseDictionary" hint="The dictionary name">
-		<cfargument name="dictionary" 	required="false" type="struct" default="#structnew()#"  hint="The default dictionary [struct]">
+		<cfargument name="name" 		required="false" type="any" default="BaseDictionary" hint="The dictionary name">
+		<cfargument name="dictionary" 	required="false" type="any" default="#structnew()#"  hint="The default dictionary [struct]">
 		<!--- ************************************************************* --->
 		<cfscript>
 			//Set PRoperties
@@ -37,21 +37,20 @@ Description :
 	<!--- Get Key --->
 	<cffunction name="getKey" access="public" returntype="any" hint="Get a dictionary key, else return a blank" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="key" required="true" type="string" hint="The key to return">
+		<cfargument name="key" required="true" type="any" hint="The key to return">
 		<!--- ************************************************************* --->
 		<cfscript>
 			if ( keyExists(arguments.key) ){
 				return structFind( getDictionary(), arguments.key );
 			}
-			else
-				return "";
+			return "";
 		</cfscript>
 	</cffunction>
 	
 	<!--- Key Exists --->
-	<cffunction name="keyExists" access="public" returntype="boolean" hint="Check if a key exists" output="false" >
+	<cffunction name="keyExists" access="public" returntype="any" hint="Check if a key exists: Boolean" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="key" required="true" type="string" hint="The key to return">
+		<cfargument name="key" required="true" type="any" hint="The key to return">
 		<!--- ************************************************************* --->
 		<cfreturn structKeyExists( getDictionary(), arguments.key )>
 	</cffunction>
@@ -59,7 +58,7 @@ Description :
 	<!--- set a new Key --->
 	<cffunction name="setKey" access="public" returntype="void" hint="Set a new key in the dictionary" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="key" 	 required="true" type="string" 	hint="The key to return">
+		<cfargument name="key" 	 required="true" type="any" 	hint="The key to return">
 		<cfargument name="value" required="true" type="any" 	hint="The value of the key">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -69,7 +68,7 @@ Description :
 	</cffunction>
 	
 	<!--- Clear a key --->
-	<cffunction name="clearKey" access="public" returntype="boolean" hint="Clear a key from the dictionary" output="false" >
+	<cffunction name="clearKey" access="public" returntype="any" hint="Clear a key from the dictionary, returns true or false if removed" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="key" required="true" type="string" hint="The key to remove">
 		<!--- ************************************************************* --->
@@ -86,20 +85,20 @@ Description :
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
 	<!--- Dictionary --->
-	<cffunction name="getDictionary" access="public" output="false" returntype="struct" hint="Get Dictionary">
+	<cffunction name="getDictionary" access="public" output="false" returntype="any" hint="Get Dictionary as struct">
 		<cfreturn instance.Dictionary/>
 	</cffunction>
 	<cffunction name="setDictionary" access="public" output="false" returntype="void" hint="Set Dictionary">
-		<cfargument name="Dictionary" type="struct" required="true"/>
-		<cfset instance.Dictionary = arguments.Dictionary/>
+		<cfargument name="dictionary" type="any" required="true"/>
+		<cfset instance.dictionary = arguments.dictionary/>
 	</cffunction>
 	
 	<!--- Dictionary Name --->
-	<cffunction name="getname" access="public" output="false" returntype="string" hint="Get dictionary name">
+	<cffunction name="getName" access="public" output="false" returntype="any" hint="Get dictionary name">
 		<cfreturn instance.name/>
 	</cffunction>
-	<cffunction name="setname" access="public" output="false" returntype="void" hint="Set dictionary name">
-		<cfargument name="name" type="string" required="true"/>
+	<cffunction name="setName" access="public" output="false" returntype="void" hint="Set dictionary name">
+		<cfargument name="name" type="any" required="true"/>
 		<cfset instance.name = arguments.name/>
 	</cffunction>
 

@@ -100,7 +100,7 @@ Modification History:
 			instance.interceptorService.processState("onRequestCapture");
 			
 			// Take snapshot of incoming collection
-			prc["controller.getInterceptorService()"] = hash(rc.toString());
+			prc["cbox_incomingContextHash"] = hash(rc.toString());
 			
 			// Do we have flash elements to inflate?
 			if( instance.flashScope.flashExists() ){
