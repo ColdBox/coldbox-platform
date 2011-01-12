@@ -40,7 +40,7 @@ Description :
 		<cfargument name="CFC" required="true" hint="The cfc to mixin">
 		<cfset var udf = 0>
 		
-		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="5" throwontimeout="true">
+		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
 			<cfscript>
 				for( udf in instance.mixins ){
 					arguments.CFC[udf] = instance.mixins[udf];
@@ -54,7 +54,7 @@ Description :
 		<cfargument name="CFC" hint="The cfc to inject the method into" type="any" required="Yes">
 		<cfset var udf = 0>
 		
-		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="5" throwontimeout="true">
+		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
 			<cfscript>
 				for( udf in instance.mixins ){
 					arguments.CFC[udf] = instance.mixins[udf];

@@ -24,8 +24,8 @@ Description: This is the framework's simple bean factory.
 			super.init(arguments.controller);
 
 			//Plugin properties
-			setpluginName("Bean Factory");
-			setpluginVersion("3.0");
+			setpluginName("Bean Factory - WireBox lite");
+			setpluginVersion("4.0");
 			setpluginDescription("I am an awesome conventions,IoC and DI bean factory plugin.");
 			setpluginAuthor("Luis Majano, Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
@@ -36,6 +36,10 @@ Description: This is the framework's simple bean factory.
 			instance.ModelsObjectCaching 	= getSetting("ModelsObjectCaching");
 			instance.ModelsExternalLocation = getSetting("ModelsExternalLocation");
 			instance.ModelsDefinitionFile 	= getSetting("ModelsDefinitionFile");
+			intsance.ModelsStopRecursion	= getSetting("ModelsStopRecursion");
+			instance.ModelsSetterInjection	= getSetting("ModelsSetterInjection");
+			instance.ModelsDICompleteUDF	= getSetting("ModelsDICompleteUDF");
+			instance.cacheCompatMode		= getSetting("cacheSettings").compatMode;
 
 			// Model Mappings Map
 			instance.modelMappings 	= structnew();
@@ -62,11 +66,13 @@ Description: This is the framework's simple bean factory.
 
 			// Setup the Autowire DI Dictionary
 			setDICacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('DIMetadata'));
+			instance.autowireCache = structnew();
 			// Bean Populator
-			instance.beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
+			instance.beanPopulator 	= createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
 			// Mixer util
-			instance.mixerUtil     = CreateObject("component","coldbox.system.core.dynamic.MixerUtil").init();
-			
+			instance.mixerUtil     	= CreateObject("component","coldbox.system.core.dynamic.MixerUtil").init();
+			// Cache Reference
+			instance.cache			= getColdBoxOCM();
 			// Configure the plugin
 			configure();
 
@@ -121,11 +127,10 @@ Description: This is the framework's simple bean factory.
 	<!--- Add Model Mapping --->
 	<cffunction name="addModelMapping" access="public" returntype="void" hint="Add a new model mapping. Ex: addModelMapping('myBean','security.test.FormBean'). The alias can be a single item or a comma delimmitted list" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="alias" required="false" type="string" hint="The model alias to use, this can also be a list of aliases. Ex: SecurityService,Security">
-		<cfargument name="path"  required="true"  type="string" hint="The model path (From the model conventions downward). Do not add full path, this is a convenience">
+		<cfargument name="alias" required="false" type="any" hint="The model alias to use, this can also be a list of aliases. Ex: SecurityService,Security">
+		<cfargument name="path"  required="true"  type="any" hint="The model path (From the model conventions downward). Do not add full path, this is a convenience">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var mappings = getModelMappings();
 			var x = 1;
 
 			// Default Alias is from the path if alias not sent.
@@ -135,7 +140,7 @@ Description: This is the framework's simple bean factory.
 
 			// Loop and add aliases
 			for(x=1;x lte listlen(arguments.alias); x=x+1){
-				mappings[listgetAt(arguments.alias,x)] = arguments.path;
+				instance.modelMappings[listgetAt(arguments.alias,x)] = arguments.path;
 			}
 		</cfscript>
 	</cffunction>
@@ -143,7 +148,7 @@ Description: This is the framework's simple bean factory.
 	<!--- Just create and call init, simple --->
 	<cffunction name="create" hint="Create a named bean, simple as that. If the bean has an init() method, it will be called." access="public" output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="bean" 		required="true"  type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.ExceptionBean">
+		<cfargument name="bean" required="true"  type="any" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.ExceptionBean">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var beanInstance = "";
@@ -168,26 +173,24 @@ Description: This is the framework's simple bean factory.
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 				required="false" type="string" default="" hint="The name of the model to retrieve">
-		<cfargument name="useSetterInjection" 	required="false" type="boolean" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="onDICompleteUDF" 		required="false" type="string"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="stopRecursion"		required="false" type="string"  hint="A comma-delimmited list of stoprecursion classpaths.">
-		<cfargument name="dsl"					required="false" type="string"  hint="The dsl string to use to retrieve the domain object"/>
-		<cfargument name="executeInit"			required="false" type="boolean" default="true" hint="Whether to execute the init() constructor or not.  Defaults to execute"/>
+		<cfargument name="name" 				required="false" type="any" default="" hint="The name of the model to retrieve">
+		<cfargument name="useSetterInjection" 	required="false" type="any" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean" colddoc:generic="Boolean">
+		<cfargument name="onDICompleteUDF" 		required="false" type="any"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="stopRecursion"		required="false" type="any"  hint="A comma-delimmited list of stoprecursion classpaths.">
+		<cfargument name="dsl"					required="false" type="any"  hint="The dsl string to use to retrieve the domain object"/>
+		<cfargument name="executeInit"			required="false" type="any" default="true" hint="Whether to execute the init() constructor or not.  Defaults to execute, Boolean" colddoc:generic="Boolean"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oModel 			 = 0;
 			var modelClassPath   = 0;
 			var md 				 = 0;
-			var modelMappings	 = getModelMappings();
 			var announceData 	 = structnew();
 			var isModelFinalized = false;
 			var definition		 = structnew();
 			var alias			 = arguments.name;
 			var cacheKey		 = "";
-			var cache			 = getColdBoxOCM();
 			var refLocal		 = structnew();
-			var cacheCompatMode	 = getSetting("cacheSettings").compatMode;
+			var cacheCompatMode	 = instance.compatMode;
 
 			// Are we using dsl or name localization?
 			if( structKeyExists(arguments,"dsl") ){
@@ -211,7 +214,7 @@ Description: This is the framework's simple bean factory.
 			// Construct CacheKey
 			cacheKey = buildCacheKey(alias,modelClassPath);
 			// Get model
-			refLocal.oModel = cache.get( cacheKey );
+			refLocal.oModel = instance.cache.get( cacheKey );
 			// Test it, existance is enough for cacheBox
 			if( structKeyExists(refLocal,"oModel") AND NOT cacheCompatMode){
 				return refLocal.oModel;				
@@ -221,7 +224,7 @@ Description: This is the framework's simple bean factory.
 				(
 					( NOT isSimpleValue(refLocal.oModel) ) 
 					 OR 
-					( refLocal.oModel neq cache.NOT_FOUND )
+					( refLocal.oModel neq instance.cache.NOT_FOUND )
 				)
 				){
 				return refLocal.oModel;
@@ -229,13 +232,13 @@ Description: This is the framework's simple bean factory.
 			
 			// Argument Overrides, else grab from existing settings
 			if( not structKeyExists(arguments,"useSetterInjection") ){
-				arguments.useSetterInjection = getSetting("ModelsSetterInjection");
+				arguments.useSetterInjection = instance.ModelsSetterInjection;
 			}
 			if( not structKeyExists(arguments,"onDICompleteUDF") ){
-				arguments.onDICompleteUDF = getSetting("ModelsDICompleteUDF");
+				arguments.onDICompleteUDF = instance.ModelsDICompleteUDF;
 			}
 			if( not structKeyExists(arguments,"stopRecursion") ){
-				arguments.stopRecursion = getSetting("ModelsStopRecursion");
+				arguments.stopRecursion = instance.ModelsStopRecursion;
 			}
 		</cfscript>
 
@@ -262,8 +265,12 @@ Description: This is the framework's simple bean factory.
 					}
 					// Persistence Checks
 					if( instance.ModelsObjectCaching ){
-						// Caching Metadata
-						md = getMetadata(oModel);
+						// Caching Metadata exists?
+						if( NOT structKeyExists(instance.autowireCache, modelClassPath) ){
+							instance.autowireCache[modelClassPath] = getMetadata(oModel);
+						}
+						md = instance.autowireCache[modelClassPath];
+						// persistence checks
 						if( not structKeyExists(md,"cache") or not isBoolean(md.cache) ){
 							md.cache = false;
 						}
@@ -282,7 +289,7 @@ Description: This is the framework's simple bean factory.
 								md.cacheLastAccessTimeout = "";
 							}
 							// Cache This Puppy.
-							cache.set(cacheKey,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
+							instance.cache.set(cacheKey,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
 						}
 					}//end if caching enabled via settings.
 
@@ -291,11 +298,13 @@ Description: This is the framework's simple bean factory.
 							 useSetterInjection=arguments.useSetterInjection,
 							 annotationCheck=false,
 							 onDICompleteUDF=arguments.onDICompleteUDF,
-							 stopRecursion=arguments.stopRecursion);
+							 stopRecursion=arguments.stopRecursion,
+							 targetID=modelClassPath);
 
 					// Announce Model Creation
 					announceData.oModel = oModel;
 					announceData.modelName = arguments.name;
+					announceData.modelClassPath = modelClassPath;
 					announceInterception("afterModelCreation",announceData);
 					// Model Creation Finalized
 					isModelFinalized = true;
@@ -313,12 +322,11 @@ Description: This is the framework's simple bean factory.
 
 	<!--- Resolve Model Alias --->
 	<cffunction name="resolveModelAlias" access="public" returntype="string" hint="Resolve the real name of any incoming argument model name or alias" output="false" >
-		<cfargument name="name" required="true"  type="string" hint="The model alias or name to resolve">
+		<cfargument name="name" required="true"  type="any" hint="The model alias or name to resolve">
 		<cfscript>
-			var mappings = getModelMappings();
 			// Resolve name in Aliases
-			if( structKeyExists(mappings,arguments.name) ){
-				return mappings[arguments.name];
+			if( structKeyExists(instance.modelMappings,arguments.name) ){
+				return instance.modelMappings[arguments.name];
 			}
 
 			return arguments.name;
@@ -380,8 +388,8 @@ Description: This is the framework's simple bean factory.
 
 	<!--- Locate a Model Object --->
 	<cffunction name="locateModel" access="public" returntype="string" hint="Get the location instantiation path for a model object. If the model location is not found, this method returns an empty string." output="false" >
-		<cfargument name="name" 		type="string"  required="true" hint="The model to locate">
-		<cfargument name="resolveAlias" type="boolean" required="false" default="false" hint="Resolve model aliases">
+		<cfargument name="name" 		type="any"  required="true" hint="The model to locate">
+		<cfargument name="resolveAlias" type="any"  required="false" default="false" hint="Resolve model aliases">
 		<cfscript>
 			var checkPath 			= 0;
 			var checkExternalPath 	= 0;
@@ -597,34 +605,52 @@ Description: This is the framework's simple bean factory.
 	<!--- Autowire --->
 	<cffunction name="autowire" access="public" returntype="void" output="false" hint="Autowire an object using the ColdBox DSL">
 		<!--- ************************************************************* --->
-		<cfargument name="target" 				required="true" 	type="any" 		hint="The object to autowire">
-		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="annotationCheck" 		required="false" 	type="boolean"  default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire automatically.">
-		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="stopRecursion" 		required="false" 	type="string"   default="" hint="The stop recursion class. Ex: transfer.com.TransferDecorator. By default all ColdBox base classes are included.">
+		<cfargument name="target" 				required="true" 	type="any" 	hint="The object to autowire">
+		<cfargument name="useSetterInjection" 	required="false" 	type="any" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean Value" colddoc:generic="Boolean">
+		<cfargument name="annotationCheck" 		required="false" 	type="any"  default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire automatically. Boolean Value" colddoc:generic="Boolean">
+		<cfargument name="onDICompleteUDF" 		required="false" 	type="any"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete" colddoc:generic="string">
+		<cfargument name="stopRecursion" 		required="false" 	type="any"  default="" hint="The stop recursion class. Ex: transfer.com.TransferDecorator. By default all ColdBox base classes are included." colddoc:generic="string">
+		<cfargument name="targetID"				required="false"	type="any"	default="" hint="A unique resource target identifier used for wiring the sent in target. If not sent, then this will become getMetadata(target).name and use resources." colddoc:generic="string">
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Targets
-			var targetObject = arguments.target;
-			var metaData = getMetaData(targetObject);
-			var targetCacheKey = MetaData.name;
-
+			var targetObject 	= arguments.target;
+			var targetCacheKey 	= arguments.targetID;
+			var metaData 		= "";
+			
 			// Dependencies
 			var thisDependency = instance.NOT_FOUND;
 
 			// Metadata entry structures
-			var mdEntry = "";
-			var targetDIEntry = "";
-			var dependenciesLength = 0;
-			var x = 1;
-			var tmpBean = "";		
+			var mdEntry 			= "";
+			var targetDIEntry 		= "";
+			var dependenciesLength 	= 0;
+			var x 					= 1;
+			var tmpBean 			= "";	
+			
+			// do we have a targetCache Key?
+			if( NOT len(targetCacheKey) ){
+				// Not sent, so get metadata, cache it and build cache id
+				metadata 		= getMetadata(targetObject);
+				targetCacheKey 	= metadata.name;
+				instance.autowireCache[targetCacheKey] = metadata;
+			}	
+			// is md cached for target?
+			else if( NOT structKeyExists(instance.autowireCache, targetCacheKey) ){
+				metadata = getMetadata(targetObject);
+				instance.autowireCache[targetCacheKey] = metadata;
+			}
+			else{
+				// Get metadata for autowire target
+				metadata = instance.autowireCache[targetCacheKey];
+			}
 		</cfscript>
 
 		<!--- Do we have the incoming target object's data in the cache? or caching disabled for objects --->
-		<cfif not getDICacheDictionary().keyExists(targetCacheKey) OR NOT instance.ModelsObjectCaching>
+		<cfif NOT instance.DICacheDictionary.keyExists(targetCacheKey) OR NOT instance.modelsObjectCaching>
 			<cflock type="exclusive" name="plugins.autowire.#targetCacheKey#" timeout="30" throwontimeout="true">
 				<cfscript>
-					if ( not getDICacheDictionary().keyExists(targetCacheKey) ){
+					if ( not instance.DICacheDictionary.keyExists(targetCacheKey) ){
 						// Get Empty Default MD Entry, default autowire = false
 						mdEntry = getNewMDEntry();
 
@@ -643,7 +669,7 @@ Description: This is the framework's simple bean factory.
 						}
 
 						// Set Entry in dictionary
-						getDICacheDictionary().setKey(targetCacheKey,mdEntry);
+						instance.DICacheDictionary.setKey(targetCacheKey,mdEntry);
 					}
 				</cfscript>
 			</cflock>
@@ -651,7 +677,7 @@ Description: This is the framework's simple bean factory.
 
 		<cfscript>
 		// We are now assured that the DI cache has data.
-		targetDIEntry = getDICacheDictionary().getKey(targetCacheKey);
+		targetDIEntry = instance.DICacheDictionary.getKey(targetCacheKey);
 
 		// Do we Inject Dependencies, are we AutoWiring
 		if ( targetDIEntry.autowire ){
@@ -665,7 +691,6 @@ Description: This is the framework's simple bean factory.
 			if( structKeyExists(targetObject,"setColdBox") ){
 				targetObject.setColdBox( controller );
 			}
-
 
 			// Dependencies Length
 			dependenciesLength = arrayLen(targetDIEntry.dependencies);
@@ -719,7 +744,7 @@ Description: This is the framework's simple bean factory.
 	<!--- getConstructorArguments --->
 	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection for a model object">
 		<!--- ************************************************************* --->
-		<cfargument name="model" 				required="true" 	type="any"		default="" hint="The model object"/>
+		<cfargument name="model" required="true" 	type="any"		default="" hint="The model object"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var md = getMetadata(model.init);
@@ -762,7 +787,7 @@ Description: This is the framework's simple bean factory.
 	<!--- getDSLDependency --->
 	<cffunction name="getDSLDependency" output="false" access="private" returntype="any" hint="get a dsl dependency">
 		<!--- ************************************************************* --->
-		<cfargument name="definition" 			required="true" 	type="any" hint="The dependency definition structure">
+		<cfargument name="definition" required="true" 	type="any" hint="The dependency definition structure">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var dependency = instance.NOT_FOUND;
@@ -913,7 +938,7 @@ Description: This is the framework's simple bean factory.
 						case "pluginService"		: { locatedDependency = getController().getPluginService(); break; }
 						case "handlerService"		: { locatedDependency = getController().gethandlerService(); break; }
 						case "interceptorService"	: { locatedDependency = getController().getinterceptorService(); break; }
-						case "cacheManager"			: { locatedDependency = getController().getColdboxOCM(); break; }
+						case "cacheManager"			: { locatedDependency = instance.cache; break; }
 						case "moduleService"		: { locatedDependency = getController().getModuleService(); break; }
 					}//end of services
 					break;
@@ -1085,7 +1110,6 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var oOCM = getColdboxOCM();
 			var thisDependency = arguments.Definition;
 			var thisType = thisDependency.type;
 			var thisTypeLen = listLen(thisType,":");
@@ -1101,8 +1125,8 @@ Description: This is the framework's simple bean factory.
 			}
 
 			// Verify that dependency exists in the Cache container
-			if( oOCM.lookup(thisLocationKey) ){
-				locatedDependency = oOCM.get(thisLocationKey);
+			if( instance.cache.lookup(thisLocationKey) ){
+				locatedDependency = instance.cache.get(thisLocationKey);
 			}
 			else if( log.canDebug() ){
 				log.debug("getOCMDependency() cannot find cache Key: #thisLocationKey# using definition: #arguments.definition.toString()#");
@@ -1116,9 +1140,9 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="parseMetadata" returntype="array" access="private" output="false" hint="I get a components dependencies via searching for 'setters'">
 		<!--- ************************************************************* --->
 		<cfargument name="metadata" 			required="true"  type="any" 	hint="The recursive metadata">
-		<cfargument name="dependencies" 		required="true"  type="array" 	hint="The dependencies">
-		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="stopRecursion" 		required="false" type="string" 	default="" hint="The stop recursion class">
+		<cfargument name="dependencies" 		required="true"  type="any" 	hint="The dependencies array" colddoc:generic="array">
+		<cfargument name="useSetterInjection" 	required="false" type="any" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean" colddoc:generic="Boolean">
+		<cfargument name="stopRecursion" 		required="false" type="any" 	default="" hint="The stop recursion class(es)">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var x = 1;
@@ -1214,10 +1238,10 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 	<!--- Stop Recursion --->
-	<cffunction name="stopClassRecursion" access="private" returntype="boolean" hint="Should we stop recursion or not due to class name found" output="false" >
+	<cffunction name="stopClassRecursion" access="private" returntype="any" hint="Should we stop recursion or not due to class name found: Boolean" output="false" colddoc:generic="Boolean">
 		<!--- ************************************************************* --->
-		<cfargument name="classname" 		required="true" type="string" hint="The class name to check">
-		<cfargument name="stopRecursion" 	required="true" type="string" hint="The comma delimmitted list of stop recurssion classes">
+		<cfargument name="classname" 		required="true" type="any" hint="The class name to check">
+		<cfargument name="stopRecursion" 	required="true" type="any" hint="The comma delimmitted list of stop recurssion classes">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var coldboxReservedClasses = "coldbox.system.Plugin,coldbox.system.EventHandler,coldbox.system.Interceptor";
@@ -1240,10 +1264,10 @@ Description: This is the framework's simple bean factory.
 	<!--- Inject Bean --->
 	<cffunction name="injectBean" access="private" returntype="void" output="false" hint="Inject a bean with dependencies via setters or property injections">
 		<!--- ************************************************************* --->
-		<cfargument name="targetBean"  	 type="any" 	required="true" hint="The bean that will be injected with dependencies" />
-		<cfargument name="beanName"  	 type="string" 	required="true" hint="The name of the property to inject"/>
-		<cfargument name="beanObject" 	 type="any" 	required="true" hint="The bean object to inject." />
-		<cfargument name="scope" 		 type="string"  required="true" hint="The scope to inject a property into.">
+		<cfargument name="targetBean"  	 type="any" required="true" hint="The bean that will be injected with dependencies" />
+		<cfargument name="beanName"  	 type="any" required="true" hint="The name of the property to inject"/>
+		<cfargument name="beanObject" 	 type="any" required="true" hint="The bean object to inject." />
+		<cfargument name="scope" 		 type="any" required="true" hint="The scope to inject a property into.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var argCollection = structnew();
@@ -1269,8 +1293,8 @@ Description: This is the framework's simple bean factory.
 	<!--- Process After DI Complete --->
 	<cffunction name="processAfterCompleteDI" hint="see if we have a method to call after DI, and if so, call it" access="private" returntype="void" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="targetObject" 	required="Yes"  	type="any"	hint="the target object to call on">
-		<cfargument name="onDICompleteUDF" 	required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists.">
+		<cfargument name="targetObject" 	required="true"  	type="any"	hint="the target object to call on">
+		<cfargument name="onDICompleteUDF" 	required="false" 	type="any"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists.">
 		<!--- ************************************************************* --->
 		<!--- Check if method exists --->
 		<cfif StructKeyExists(arguments.targetObject, arguments.onDICompleteUDF )>
@@ -1282,7 +1306,7 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 	<!--- Get a new MD cache entry structure --->
-	<cffunction name="getNewMDEntry" access="private" returntype="struct" hint="Get a new metadata entry structure" output="false" >
+	<cffunction name="getNewMDEntry" access="private" returntype="any" hint="Get a new metadata entry structure" output="false" >
 		<cfscript>
 			var mdEntry = structNew();
 
@@ -1294,11 +1318,11 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 	<!--- Get Set DI CACHE Dictionary --->
-	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.core.collections.BaseDictionary" hint="Get DICacheDictionary">
+	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="any" hint="Get DICacheDictionary" colddoc:generic="coldbox.system.core.collections.BaseDictionary">
 		<cfreturn instance.DICacheDictionary/>
 	</cffunction>
 	<cffunction name="setDICacheDictionary" access="private" output="false" returntype="void" hint="Set DICacheDictionary">
-		<cfargument name="DICacheDictionary" type="coldbox.system.core.collections.BaseDictionary" required="true"/>
+		<cfargument name="DICacheDictionary" type="any" required="true" colddoc:generic="coldbox.system.core.collections.BaseDictionary"/>
 		<cfset instance.DICacheDictionary = arguments.DICacheDictionary/>
 	</cffunction>
 
