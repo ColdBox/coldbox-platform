@@ -19,7 +19,8 @@ component implements="iValidationMessageProvider" {
 	public string function getMessageByType(String type,Struct prop){
 		var messages = getMessages();
 		var errorMessage = "";
-			
+		var i = 1;
+		
 		for(i=1; i <= arrayLen(messages); ++i){
 			if(messages[i].type == arguments.type){
 				if(!structKeyExists(arguments.prop,"display")){
@@ -36,6 +37,8 @@ component implements="iValidationMessageProvider" {
 	private string function replaceTemplateText(String message,Struct prop){
 		var templates = reMatchNoCase("({)([\w])+?(})",arguments.message);
 		var m = arguments.message;
+		var i = "";
+		var key = "";
 		
 		if( arrayLen(templates) ) {
 			// looop over the array, in each
