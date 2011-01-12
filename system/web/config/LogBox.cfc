@@ -9,8 +9,6 @@ Description :
 This is the Default ColdBox LogBox Configuration for immediate operation 
 of ColdBox once it loads.  Once the configuration file is read then the
 LogBox instance is reconfigured with the user settings, if used at all.
-
-It is configured to log up to INFO via ConsoleAppender
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The default ColdBox LogBox Configuration Data Object">
 <cfscript>
@@ -23,11 +21,12 @@ It is configured to log up to INFO via ConsoleAppender
 		
 		// Define Appenders
 		logBox.appenders = structnew();
-		logBox.appenders.console.class="coldbox.system.logging.appenders.ConsoleAppender";
+		logBox.appenders.console.class="coldbox.system.logging.appenders.DummyAppender";
+		
 		// Root Logger
 		logBox.root = structnew();
-		logBox.root.levelmax="INFO";
-		logBox.root.levelMin="FATAL";
+		logBox.root.levelmax="OFF";
+		logBox.root.levelMin="OFF";
 		logBox.root.appenders="*";		
 	}
 </cfscript>
