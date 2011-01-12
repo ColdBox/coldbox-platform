@@ -36,7 +36,7 @@ Description: This is the framework's simple bean factory.
 			instance.ModelsObjectCaching 	= getSetting("ModelsObjectCaching");
 			instance.ModelsExternalLocation = getSetting("ModelsExternalLocation");
 			instance.ModelsDefinitionFile 	= getSetting("ModelsDefinitionFile");
-			intsance.ModelsStopRecursion	= getSetting("ModelsStopRecursion");
+			instance.ModelsStopRecursion	= getSetting("ModelsStopRecursion");
 			instance.ModelsSetterInjection	= getSetting("ModelsSetterInjection");
 			instance.ModelsDICompleteUDF	= getSetting("ModelsDICompleteUDF");
 			instance.cacheCompatMode		= getSetting("cacheSettings").compatMode;
@@ -190,7 +190,7 @@ Description: This is the framework's simple bean factory.
 			var alias			 = arguments.name;
 			var cacheKey		 = "";
 			var refLocal		 = structnew();
-			var cacheCompatMode	 = instance.compatMode;
+			var cacheCompatMode	 = instance.cacheCompatMode;
 
 			// Are we using dsl or name localization?
 			if( structKeyExists(arguments,"dsl") ){
