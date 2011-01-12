@@ -21,8 +21,8 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	/**
 	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
 	*/
-	public void function postNew(any entity){
-		announceInterception("ORMPostNew",{entity = arguments.entity});
+	public void function postNew(any entity,any entityName){
+		announceInterception("ORMPostNew",{entity = arguments.entity, entityName=arguments.entityName});
 	}
 
 	/**
@@ -36,7 +36,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	* postLoad called by hibernate which in turn announces a coldbox interception: ORMPostLoad
 	*/
 	public void function postLoad(any entity){
-		announceInterception("ORMPostLoad",{entity=arguments.entity});
+		announceInterception("ORMPostLoad",{entity=arguments.entity,entityName=ORMGetSession().getEntityName( arguments.entity )});
 	}
 
 	/**

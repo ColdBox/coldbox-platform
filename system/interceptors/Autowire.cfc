@@ -151,7 +151,7 @@ Description :
 		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [entity=The created entity]">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var entityName		= ORMGetSession().getEntityName( arguments.interceptData.entity );
+			var entityName		= arguments.interceptData.entityName;
 			var injectorInclude = getProperty("entityInclude");
 			var injectorExclude = getProperty("entityExclude");
 			
