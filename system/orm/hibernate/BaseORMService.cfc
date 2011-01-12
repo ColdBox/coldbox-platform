@@ -265,7 +265,7 @@ component accessors="true"{
 
 		// Event Handling? If enabled, call the postNew() interception
 		if( getEventHandling() ){
-			ORMEventHandler.postNew( entity );
+			ORMEventHandler.postNew( entity, arguments.entityName );
 		}
 
 		return entity;
