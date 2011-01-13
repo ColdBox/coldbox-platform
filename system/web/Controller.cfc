@@ -387,7 +387,14 @@ Only one instance of a specific ColdBox application exists.
 					routeString = replace(arguments.event,".","/","all");
 					// Convert Query String to convention name value-pairs
 					if( len(trim(arguments.queryString)) ){
-						routeString = routeString & "/" & replace(arguments.queryString,"&","/","all");
+						// If the routestring ends with '/' we do not want to
+						// double append '/'
+						if (right(routeString,1) NEQ "/")
+						{
+							routeString = routeString & "/" & replace(arguments.queryString,"&","/","all");
+						} else {
+							routeString = routeString & replace(arguments.queryString,"&","/","all");
+						}
 						routeString = replace(routeString,"=","/","all");
 					}
 
