@@ -172,7 +172,9 @@ For the latest usage, please visit the wiki.
 			for(x=1; x lte rulesLen; x=x+1){
 				// is current event in this whitelist pattern? then continue to next rule
 				if( isEventInPattern(currentEvent,rules[x].whitelist) ){
-					log.debug("#currentEvent# found in whitelist: #rules[x].whitelist#");
+					if( log.canDebug() ){
+						log.debug("#currentEvent# found in whitelist: #rules[x].whitelist#");
+					}
 					continue;
 				}
 				
@@ -182,7 +184,9 @@ For the latest usage, please visit the wiki.
 					if( _isUserInValidState(rules[x]) eq false ){
 						
 						// Log if Necessary
-						log.debug("User did not validate security for secured event=#currentEvent#. Rule: #rules[x].toString()#");
+						if( log.canDebug() ){
+							log.debug("User did not validate security for secured event=#currentEvent#. Rule: #rules[x].toString()#");
+						}
 						
 						//Redirect
 						if( arguments.event.isSES() ){
@@ -210,12 +214,16 @@ For the latest usage, please visit the wiki.
 						break;
 					}//end user in roles
 					else{
-						log.debug("Secure event=#currentEvent# matched and user validated for rule: #rules[x].toString()#.");
+						if( log.canDebug() ){
+							log.debug("Secure event=#currentEvent# matched and user validated for rule: #rules[x].toString()#.");
+						}
 						break;
 					}
 				}//end if current event did not match a secure event.
 				else{
-					log.debug("#currentEvent# Did not match this rule: #rules[x].toString()#");
+					if( log.canDebug() ){
+						log.debug("#currentEvent# Did not match this rule: #rules[x].toString()#");
+					}
 				}							
 			}//end of rules checks
 		</cfscript>

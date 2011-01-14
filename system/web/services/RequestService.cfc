@@ -104,7 +104,9 @@ Modification History:
 			
 			// Do we have flash elements to inflate?
 			if( instance.flashScope.flashExists() ){
-				instance.log.debug("Flash RAM detected, inflating flash...");
+				if( instance.log.canDebug() ){
+					instance.log.debug("Flash RAM detected, inflating flash...");
+				}
 				instance.flashScope.inflateFlash();
 			}
 					

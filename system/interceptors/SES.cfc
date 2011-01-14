@@ -108,7 +108,9 @@ Description :
 					if( structKeyExists(aRoute.action,event.getHTTPMethod()) ){
 						aRoute.action = aRoute.action[event.getHTTPMethod()];
 						// Send for logging in debug mode
-						log.debug("Matched HTTP Method (#event.getHTTPMethod()#) to routed action: #aRoute.action#");
+						if( log.canDebug() ){
+							log.debug("Matched HTTP Method (#event.getHTTPMethod()#) to routed action: #aRoute.action#");
+						}
 					}
 					else{
 						throwInvalidHTTP("The HTTP method used: #event.getHTTPMethod()# is not valid for the current executing event.");
@@ -456,7 +458,9 @@ Description :
 					// set the format request collection variable
 					event.setValue("format", lcase(extension));
 					// debug logging
-					log.debug("Extension: #lcase(extension)# detected and set in rc.format");
+					if( log.canDebug() ){
+						log.debug("Extension: #lcase(extension)# detected and set in rc.format");
+					}
 					// remove it from the string and return string for continued parsing.
 					return left(requestString, len(arguments.requestString) - extensionLen - 1 );
 				}
@@ -650,7 +654,9 @@ Description :
 			</cfif>
 
 			<!--- Debug Logging --->
-			<cfset log.debug("SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#")>
+			<cfif log.canDebug()>
+				<cfset log.debug("SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#")>
+			</cfif>
 
 			<!--- Relocation headers --->
 			<cfif httpRequestData.method EQ "GET">
@@ -740,7 +746,9 @@ Description :
 					// Setup the found Route
 					foundRoute = _routes[i];
 					// Debug logging
-					log.debug("SES Route matched: #foundRoute.toString()# on routed string: #requestString#");
+					if( log.canDebug() ){
+						log.debug("SES Route matched: #foundRoute.toString()# on routed string: #requestString#");
+					}
 					break;
 				}
 
@@ -748,7 +756,9 @@ Description :
 
 			// Check if we found a route, else just return empty params struct
 			if( structIsEmpty(foundRoute) ){
-				log.debug("No SES routes matched on routed string: #requestString#");
+				if( log.canDebug() ){
+					log.debug("No SES routes matched on routed string: #requestString#");
+				}
 				return params;
 			}
 
@@ -787,7 +797,9 @@ Description :
 				if( compare(packagedRequestString,requestString) NEQ 0 ){
 
 					// Log package resolved
-					log.debug("SES Package Resolved: #packagedRequestString#");
+					if( log.canDebug() ){
+						log.debug("SES Package Resolved: #packagedRequestString#");
+					}
 
 					// Return found Route recursively.
 					return findRoute(action=packagedRequestString,event=arguments.event);

@@ -98,7 +98,9 @@ Description: This is the framework's simple bean factory.
 				//Check absolute location as not found inside our app
 				configFilePath = instance.ModelsDefinitionFile;
 				if( NOT fileExists(expandPath(configFilePath)) ){
-					log.info("No bean factory model mappings configuration file found, continuing operation.");
+					if( log.canInfo() ){
+						log.info("No bean factory model mappings configuration file found, continuing operation.");
+					}
 					return this;
 				}
 			}

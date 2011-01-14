@@ -68,7 +68,10 @@ Description :
 			// Check if we have custom interception points, and register them if we do
 			if( len(instance.interceptorConfig.customInterceptionPoints) ){
 				appendInterceptionPoints( instance.interceptorConfig.CustomInterceptionPoints );
-				instance.log.debug("Registering custom interception points: #instance.interceptorConfig.CustomInterceptionPoints#");
+				
+				if( instance.log.canDebug() ){
+					instance.log.debug("Registering custom interception points: #instance.interceptorConfig.CustomInterceptionPoints#");
+				}
 			}
 			
 			// Loop over the Interceptor Array, to begin registration
