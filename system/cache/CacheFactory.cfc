@@ -16,9 +16,9 @@ Description :
 		
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor" output="false" >
-		<cfargument name="config"  		type="coldbox.system.cache.config.CacheBoxConfig" required="false" hint="The CacheBoxConfig object to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration."/>
-		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" 			  required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
-		<cfargument name="factoryID" 	type="string" 									  required="false" default="" hint="A unique ID or name for this factory. If not passed I will make one up for you."/>
+		<cfargument name="config"  		required="false" hint="The CacheBoxConfig object to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration." colddoc:generic="coldbox.system.cache.config.CacheBoxConfig"/>
+		<cfargument name="coldbox" 		required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it." colddoc:generic="coldbox.system.web.Controller"/>
+		<cfargument name="factoryID" 	required="false" default="" hint="A unique ID or name for this factory. If not passed I will make one up for you."/>
 		<cfscript>
 			var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
 			
@@ -91,7 +91,7 @@ Description :
 			}
 			
 			// Configure Logging for the Cache Factory
-			instance.log = getLogBox().getLogger( this );
+			instance.log = instance.logBox.getLogger( this );
 			
 			// Configure the Cache Factory
 			configure( arguments.config );
@@ -125,7 +125,7 @@ Description :
 				}
 				
 				// Now register listener
-				getEventManager().register(thisListener,listeners[x].name);
+				instance.eventManager.register(thisListener,listeners[x].name);
 				
 			}			
 		</cfscript>
@@ -133,7 +133,7 @@ Description :
 	
 	<!--- configure --->
 	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the cache factory for operation, called by the init(). You can also re-configure CacheBox programmatically.">
-		<cfargument name="config" type="coldbox.system.cache.config.CacheBoxConfig" required="true" hint="The CacheBoxConfig object to use to configure this instance of CacheBox"/>
+		<cfargument name="config" required="true" hint="The CacheBoxConfig object to use to configure this instance of CacheBox" colddoc:generic="coldbox.system.cache.config.CacheBoxConfig"/>
 		<cfscript>
 			var defaultCacheConfig = "";
 			var caches 	= "";
@@ -172,7 +172,7 @@ Description :
 			
 			// Announce To Listeners
 			iData.cacheFactory = this;
-			getEventManager().processState("afterCacheFactoryConfiguration",iData);	
+			instance.eventManager.processState("afterCacheFactoryConfiguration",iData);	
 			</cfscript>
 		</cflock>
 	</cffunction>
@@ -181,7 +181,7 @@ Description :
 
 	<!--- getCache --->
     <cffunction name="getCache" output="false" access="public" returntype="any" hint="Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception. Type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
-    	<cfargument name="name" type="string" required="true" hint="The named cache to retrieve"/>
+    	<cfargument name="name" required="true" hint="The named cache to retrieve"/>
 		
 		<cflock name="#instance.lockName#" type="readonly" timeout="20" throwontimeout="true">
 			<cfif structKeyExists(instance.caches, arguments.name)>
@@ -195,13 +195,13 @@ Description :
 	
 	<!--- addCache --->
     <cffunction name="addCache" output="false" access="public" returntype="void" hint="Register a new instantiated cache with this cache factory">
-    	<cfargument name="cache" 	 type="any" required="true" hint="The cache instance to register with this factory of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
+    	<cfargument name="cache" required="true" hint="The cache instance to register with this factory of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
     	<cfset registerCache( arguments.cache )>
 	</cffunction>
 	
 	<!--- addDefaultCache --->
     <cffunction name="addDefaultCache" output="false" access="public" returntype="any" hint="Add a default named cache to our registry, create it, config it, register it and return it of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
-    	<cfargument name="name" type="string" required="true" hint="The name of the default cache to create"/>
+    	<cfargument name="name" required="true" hint="The name of the default cache to create"/>
     	<cfscript>
     		var defaultCacheConfig	  = instance.config.getDefaultCache();
 			
@@ -242,26 +242,30 @@ Description :
 			
 			// Notify Listeners
 			iData = {cacheFactory=this};
-			getEventManager().processState("beforeCacheFactoryShutdown",iData);
+			instance.eventManager.processState("beforeCacheFactoryShutdown",iData);
 			
 			// safely iterate and shutdown caches
 			for( i=1; i lte cacheLen; i++){
 				
 				// Get cache to shutdown
 				cache = getCache( cacheNames[i] );
+				
+				// Log it
 				if( instance.log.canDebug() ){
 					instance.log.debug("Shutting down cache: #cacheNames[i]# on factoryID: #getFactoryID()#.");
 				}
 				
 				//process listners
 				iData = {cache=cache};
-				getEventManager().processState("beforeCacheShutdown",iData);
+				instance.eventManager.processState("beforeCacheShutdown",iData);
 				
 				//Shutdown each cache
 				cache.shutdown();
 				
 				//process listeners
-				getEventManager().processState("afterCacheShutdown",iData);
+				instance.eventManager.processState("afterCacheShutdown",iData);
+				
+				// log
 				if( instance.log.canDebug() ){
 					instance.log.debug("Cache: #cacheNames[i]# was shut down on factoryID: #getFactoryID()#.");
 				}				
@@ -275,7 +279,7 @@ Description :
 			
 			// Notify Listeners
 			iData = {cacheFactory=this};
-			getEventManager().processState("afterCacheFactoryShutdown",iData);
+			instance.eventManager.processState("afterCacheFactoryShutdown",iData);
 			
 			if( instance.log.canInfo() ){
 				instance.log.info("Shutdown of cache factory: #getFactoryID()# completed.");
@@ -285,7 +289,7 @@ Description :
 	
 	<!--- shutdownCache --->
     <cffunction name="shutdownCache" output="false" access="public" returntype="void" hint="Send a shutdown command to a specific cache provider to bring down gracefully. It also removes it from the cache factory">
-    	<cfargument name="name" type="string" required="true" hint="The cache provider name to shutdown"/>
+    	<cfargument name="name" required="true" hint="The cache provider name to shutdown"/>
     	<cfscript>
     		var iData 		= {};
 			var cache 	   	= "";
@@ -301,6 +305,7 @@ Description :
 			
 			//get Cache
 			cache = getCache(arguments.name);
+		
 			// log it
 			if( instance.log.canInfo() ){
 				instance.log.info("Shutdown of cache: #arguments.name# requested and started on factoryID: #getFactoryID()#");
@@ -308,13 +313,13 @@ Description :
 			
 			// Notify Listeners
 			iData = {cache=cache};
-			getEventManager().processState("beforeCacheShutdown",iData);
+			instance.eventManager.processState("beforeCacheShutdown",iData);
 			
 			//Shutdown the cache
 			cache.shutdown();
 				
 			//process listeners
-			getEventManager().processState("afterCacheShutdown",iData);
+			instance.eventManager.processState("afterCacheShutdown",iData);
 			
 			// remove cache
 			removeCache(arguments.name);
@@ -330,18 +335,15 @@ Description :
     <cffunction name="removeFromScope" output="false" access="public" returntype="void" hint="Remove the cache factory from scope registration if enabled, else does nothing">
     	<cfscript>
 			var scopeInfo 		= instance.config.getScopeRegistration();
-			var scopeStorage	= "";
-			
 			if( scopeInfo.enabled ){
-				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init();
-				scopeStorage.delete(scopeInfo.key, scopeInfo.scope);
+				createObject("component","coldbox.system.core.collections.ScopeStorage").init().delete(scopeInfo.key, scopeInfo.scope);
 			}
 		</cfscript>
     </cffunction>
 
 	<!--- removeCache --->
-    <cffunction name="removeCache" output="false" access="public" returntype="boolean" hint="Try to remove a named cache from this factory">
-    	<cfargument name="name" type="string" required="true" hint="The name of the cache to remove"/>
+    <cffunction name="removeCache" output="false" access="public" returntype="any" hint="Try to remove a named cache from this factory, returns Boolean if successfull or not" colddoc:generic="Boolean">
+    	<cfargument name="name" required="true" hint="The name of the cache to remove"/>
 		<cfset var cache = "">
 		<cfset var iData = {}>
 						
@@ -351,14 +353,17 @@ Description :
 					// double check
 					if( structKeyExists( instance.caches, arguments.name ) ){
 					
-						instance.log.debug("Cache: #arguments.name# asked to be removed from factory: #getFactoryID()#");
+						//Log
+						if( instance.log.canDebug() ){
+							instance.log.debug("Cache: #arguments.name# asked to be removed from factory: #getFactoryID()#");
+						}
 						
 						// Retrieve it
 						cache = instance.caches[ arguments.name ];
 						
 						// Notify listeners here
 						iData.cache = cache;
-						getEventManager().processState("beforeCacheRemoval",iData);
+						instance.eventManager.processState("beforeCacheRemoval",iData);
 						
 						// process shutdown
 						cache.shutdown();
@@ -366,10 +371,11 @@ Description :
 						// Remove it
 						structDelete( instance.caches, arguments.name );
 						
-						// Log It
+						// Announce it
 						iData.cache = arguments.name;
-						getEventManager().processState("afterCacheRemoval",iData);
+						instance.eventManager.processState("afterCacheRemoval",iData);
 						
+						// Log it
 						if( instance.log.canDebug() ){
 							instance.log.debug("Cache: #arguments.name# removed from factory: #getFactoryID()#");
 						}
@@ -428,11 +434,11 @@ Description :
     </cffunction>
 	
 	<!--- cacheExists --->
-    <cffunction name="cacheExists" output="false" access="public" returntype="boolean" hint="Check if the passed in named cache is already registered in this factory">
-    	<cfargument name="name" type="string" required="true" hint="The name of the cache to check"/>
+    <cffunction name="cacheExists" output="false" access="public" returntype="any" hint="Check if the passed in named cache is already registered in this factory or not" colddoc:generic="Boolean">
+    	<cfargument name="name" required="true" hint="The name of the cache to check"/>
     	
 		<cflock name="#instance.lockName#" type="readonly" timeout="20" throwontimeout="true">
-			<cfreturn structKeyExists(getCaches(), arguments.name )>
+			<cfreturn structKeyExists(instance.caches, arguments.name )>
 		</cflock>
 		
     </cffunction>
@@ -460,7 +466,7 @@ Description :
 				// Announce to listeners
 				iData.oldCache = instance.caches[name];
 				iData.newCache = arguments.decoratedCache;
-				getEventManager().processState("beforeCacheReplacement",iData);
+				instance.eventManager.processState("beforeCacheReplacement",iData);
 				// remove old Cache
 				structDelete( instance.caches, name);
 				// Replace it
@@ -514,7 +520,7 @@ Description :
     </cffunction>
 
 	<!--- getCacheNames --->
-    <cffunction name="getCacheNames" output="false" access="public" returntype="array" hint="Get the array of caches registered with this factory">
+    <cffunction name="getCacheNames" output="false" access="public" returntype="any" hint="Get the array of caches registered with this factory" colddoc:Generic="array">
     	
     	<cflock name="#instance.lockName#" type="readonly" timeout="20" throwontimeout="true">
 			<cfreturn structKeyArray( instance.caches )>
@@ -525,32 +531,32 @@ Description :
 <!----------------------------------------- PUBLIC PROPERTY RETRIEVERS ------------------------------------->	
 	
 	<!--- getCaches --->
-    <cffunction name="getCaches" output="false" access="public" returntype="struct" hint="Get a reference to all the registered caches in the cache factory">
+    <cffunction name="getCaches" output="false" access="public" returntype="any" hint="Get a reference to all the registered caches in the cache factory as a structure" colddoc:generic="Struct">
     	<cfreturn instance.caches>
     </cffunction>
 	
 	<!--- getColdbox --->
-    <cffunction name="getColdbox" output="false" access="public" returntype="coldbox.system.web.Controller" hint="Get the instance of ColdBox linked in this cache factory. Empty if using standalone version">
+    <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the instance of ColdBox linked in this cache factory. Empty if using standalone version" colddoc:generic="coldbox.system.web.Controller">
     	<cfreturn instance.coldbox>
     </cffunction>
 	
 	<!--- isColdBoxLinked --->
-    <cffunction name="isColdBoxLinked" output="false" access="public" returntype="boolean" hint="Checks if Coldbox application controller is linked">
+    <cffunction name="isColdBoxLinked" output="false" access="public" returntype="any" hint="Checks if Coldbox application controller is linked" colddoc:generic="Boolean">
     	<cfreturn isObject(instance.coldbox)>
     </cffunction>
 
 	<!--- getLogBox --->
-    <cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the instance of LogBox configured for this cache factory">
+    <cffunction name="getLogBox" output="false" access="public" returntype="any" hint="Get the instance of LogBox configured for this cache factory" colddoc:generic="coldbox.system.logging.LogBox">
     	<cfreturn instance.logBox>
     </cffunction>
 
 	<!--- Get Version --->
-	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the CacheBox version string.">
+	<cffunction name="getVersion" access="public" returntype="any" output="false" hint="Get the CacheBox version string.">
 		<cfreturn instance.version>
 	</cffunction>
 	
 	<!--- Get the config object --->
-	<cffunction name="getConfig" access="public" returntype="coldbox.system.cache.config.CacheBoxConfig" output="false" hint="Get this LogBox's configuration object.">
+	<cffunction name="getConfig" access="public" returntype="any" output="false" hint="Get this LogBox's configuration object." colddoc:generic="coldbox.system.cache.config.CacheBoxConfig">
 		<cfreturn instance.config>
 	</cffunction>
 	
@@ -570,7 +576,7 @@ Description :
     </cffunction>
 
 	<!--- getScopeRegistration --->
-    <cffunction name="getScopeRegistration" output="false" access="public" returntype="struct" hint="Get the scope registration information">
+    <cffunction name="getScopeRegistration" output="false" access="public" returntype="any" hint="Get the scope registration information" colddoc:generic="struct">
     	<cfreturn instance.config.getScopeRegistration()>
     </cffunction>
 
@@ -588,9 +594,9 @@ Description :
 	
 	<!--- createCache --->
     <cffunction name="createCache" output="false" access="private" returntype="any" hint="Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
-    	<cfargument name="name" 		type="string" required="true" hint="The name of the cache to add"/>
-		<cfargument name="provider" 	type="string" required="true" hint="The provider class path of the cache to add"/>
-		<cfargument name="properties" 	type="struct" required="false" default="#structNew()#" hint="The properties of the cache to configure with"/>
+    	<cfargument name="name" 		required="true" hint="The name of the cache to add"/>
+		<cfargument name="provider" 	required="true" hint="The provider class path of the cache to add"/>
+		<cfargument name="properties" 	required="false" default="#structNew()#" hint="The properties of the cache to configure with" colddoc:generic="struct"/>
 		<cfscript>
 			// Create Cache
 			var oCache = createObject("component",arguments.provider).init();
@@ -607,7 +613,7 @@ Description :
 	
 	<!--- registerCache --->
     <cffunction name="registerCache" output="false" access="private" returntype="void" hint="Register a cache instance internaly">
-    	<cfargument name="cache" 	 type="any" required="true" hint="The cache instance to register with this factory of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
+    	<cfargument name="cache" required="true" hint="The cache instance to register with this factory of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
     	<cfset var name		= arguments.cache.getName()>
     	<cfset var oCache 	= arguments.cache>
     	<cfset var iData 	= {}>
@@ -637,7 +643,7 @@ Description :
 						
 						// Announce new cache registration now 
 						iData.cache = oCache;
-						getEventManager().processState("afterCacheRegistration",iData);
+						instance.eventManager.processState("afterCacheRegistration",iData);
 					}
 				</cfscript>
 			</cflock>
@@ -665,7 +671,7 @@ Description :
     </cffunction>
 
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" colddoc:generic="coldbox.system.core.util.Util">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 	
