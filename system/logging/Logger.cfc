@@ -32,10 +32,10 @@ Description :
 	
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="Logger" hint="Create a new logger object." output="false" >
-		<cfargument name="category"  type="string"  required="true" hint="The category name to use this logger with"/>
-		<cfargument name="levelMin"  type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="levelMax"  type="numeric" required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="appenders" type="struct"  required="false" default="#structnew()#" hint="A map of already created appenders for this category, or blank to use the root logger."/>
+		<cfargument name="category"  required="true" hint="The category name to use this logger with"/>
+		<cfargument name="levelMin"  required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric">
+		<cfargument name="levelMax"  required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric">
+		<cfargument name="appenders" required="false" default="#structnew()#" hint="A struct of already created appenders for this category, or blank to use the root logger." colddoc:generic="struct"/>
 		<cfscript>
 			
 			// Save Properties
@@ -51,25 +51,25 @@ Description :
 	</cffunction>
 	
 	<!--- get/set the root logger --->
-	<cffunction name="getRootLogger" access="public" returntype="coldbox.system.logging.Logger" output="false" hint="Get the root logger">
+	<cffunction name="getRootLogger" access="public" returntype="any" output="false" hint="Get the root logger" colddoc:generic="coldbox.system.logging.Logger">
 		<cfreturn instance.RootLogger>
 	</cffunction>
 	<cffunction name="setRootLogger" access="public" returntype="void" output="false" hint="Set the root logger for this named logger.">
-		<cfargument name="RootLogger" type="coldbox.system.logging.Logger" required="true">
+		<cfargument name="RootLogger" required="true" colddoc:generic="coldbox.system.logging.Logger">
 		<cfset instance.RootLogger = arguments.RootLogger>
 	</cffunction>
 
 <!------------------------------------------- APPENDER METHODS ------------------------------------------->
 
 	<!--- hasAppenders --->
-	<cffunction name="hasAppenders" output="false" access="public" returntype="boolean" hint="Checks to see if we have registered any appenders yet">
+	<cffunction name="hasAppenders" output="false" access="public" returntype="any" hint="Checks to see if we have registered any appenders yet" colddoc:generic="boolean">
 		<cflock name="#instance.lockName#" type="readonly" throwontimeout="true" timeout="#instance.lockTimeout#">
 			<cfreturn NOT structIsEmpty(instance.appenders)>
 		</cflock>
 	</cffunction>
 	
 	<!--- Get the Appenders --->
-	<cffunction name="getAppenders" access="public" returntype="struct" output="false" hint="Get all the registered appenders for this logger. ">
+	<cffunction name="getAppenders" access="public" returntype="any" output="false" hint="Get all the registered appenders for this logger. " colddoc:generic="struct">
 		<cflock name="#instance.lockName#" type="readonly" throwontimeout="true" timeout="#instance.lockTimeout#">
 			<cfreturn instance.appenders>
 		</cflock>
@@ -77,7 +77,7 @@ Description :
 	
 	<!--- getAppender --->
 	<cffunction name="getAppender" output="false" access="public" returntype="any" hint="Get a named appender from this logger class. If the appender does not exists, it will throw an exception.">
-		<cfargument name="name" type="string" required="true" hint="The appender's name"/>
+		<cfargument name="name" required="true" hint="The appender's name"/>
 		
 		<cflock name="#instance.lockName#" type="readonly" throwontimeout="true" timeout="#instance.lockTimeout#">
 		<cfscript>
@@ -94,8 +94,8 @@ Description :
 	</cffunction>
 	
 	<!--- appenderExists --->
-	<cffunction name="appenderExists" output="false" access="public" returntype="boolean" hint="Checks to see if a specified appender exists by name.">
-		<cfargument name="name" type="string" required="true" hint="The name of the appender to check if it is registered"/>
+	<cffunction name="appenderExists" output="false" access="public" returntype="any" hint="Checks to see if a specified appender exists by name." colddoc:generic="Boolean">
+		<cfargument name="name" required="true" hint="The name of the appender to check if it is registered"/>
 		<cflock name="#instance.lockName#" type="readonly" throwontimeout="true" timeout="#instance.lockTimeout#">
 			<cfreturn structKeyExists(instance.appenders, arguments.name)>
 		</cflock>
@@ -103,7 +103,7 @@ Description :
 
 	<!--- addAppender --->
 	<cffunction name="addAppender" output="false" access="public" returntype="void" hint="Add a new appender to the list of appenders for this logger. If the appender already exists, then it will not be added.">
-		<cfargument name="newAppender" type="coldbox.system.logging.AbstractAppender" required="true" default="" hint="The new appender to add to this logger programmatically."/>
+		<cfargument name="newAppender" required="true" default="" hint="The new appender to add to this logger programmatically." colddoc:generic="coldbox.system.logging.AbstractAppender"/>
 		<cfscript>
 			var name= "";
 			//Verify Appender's name
@@ -134,8 +134,8 @@ Description :
 	</cffunction>
 	
 	<!--- unRegister --->
-	<cffunction name="removeAppender" output="false" access="public" returntype="boolean" hint="Unregister an appender from this Logger. True if successful or false otherwise.">
-		<cfargument name="name" type="string" required="true" hint="The name of the appender to unregister"/>
+	<cffunction name="removeAppender" output="false" access="public" returntype="any" hint="Unregister an appender from this Logger. True if successful or false otherwise." colddoc:generic="Boolean">
+		<cfargument name="name" required="true" hint="The name of the appender to unregister"/>
 		<cfset var appender = "">
 		<cfset var removed = false>
 		
@@ -174,11 +174,11 @@ Description :
 <!------------------------------------------- PUBLIC METHODS ------------------------------------------->
 		
 	<!--- Level Min --->
-	<cffunction name="getlevelMin" access="public" returntype="numeric" output="false" hint="Get the level min setting">
+	<cffunction name="getlevelMin" access="public" returntype="any" output="false" hint="Get the level min setting" colddoc:generic="numeric">
 		<cfreturn instance.levelMin>
 	</cffunction>
 	<cffunction name="setLevelMin" access="public" output="false" returntype="void" hint="Set the appender's default levelMin">
-		<cfargument name="levelMin" type="numeric" required="true"/>
+		<cfargument name="levelMin" required="true"/>
 		<cfscript>
 			// Verify level
 			if( this.logLevels.isLevelValid(arguments.levelMin) AND
@@ -192,11 +192,11 @@ Description :
 	</cffunction>
 	
 	<!--- GetSet level Max --->
-	<cffunction name="getlevelMax" access="public" returntype="numeric" output="false" hint="Get the level Max setting">
+	<cffunction name="getlevelMax" access="public" returntype="any" output="false" hint="Get the level Max setting" colddoc:generic="Boolean">
 		<cfreturn instance.levelMax>
 	</cffunction>
 	<cffunction name="setLevelMax" access="public" output="false" returntype="void" hint="Set the appender's default levelMax">
-		<cfargument name="levelMax" type="numeric" required="true"/>
+		<cfargument name="levelMax" required="true"/>
 		<cfscript>
 			// Verify level
 			if( this.logLevels.isLevelValid(arguments.levelMax) AND
@@ -210,11 +210,11 @@ Description :
 	</cffunction>
 	
 	<!--- get/set category object. --->
-	<cffunction name="getCategory" access="public" returntype="string" output="false" hint="Get the configured category for this logger">
+	<cffunction name="getCategory" access="public" returntype="any" output="false" hint="Get the configured category for this logger">
 		<cfreturn instance.Category>
 	</cffunction>
 	<cffunction name="setCategory" access="public" returntype="void" output="false" hint="Set the category for this logger">
-		<cfargument name="category" type="string" required="true">
+		<cfargument name="category" required="true">
 		<cfset instance.category = arguments.category>
 	</cffunction>
 
@@ -223,8 +223,8 @@ Description :
 	<!--- Debug --->
 	<cffunction name="debug" access="public" output="false" returntype="void" hint="I log a debug message.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string" required="true"  hint="The message to log.">
-		<cfargument name="extraInfo" type="any"    required="false" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="message" 	 required="true"  hint="The message to log.">
+		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.severity = this.logLevels.DEBUG;
@@ -235,8 +235,8 @@ Description :
 	<!--- Info --->
 	<cffunction name="info" access="public" output="false" returntype="void" hint="I log an information message.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string" required="true"  hint="The message to log.">
-		<cfargument name="extraInfo" type="any"    required="false" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="message" 	 required="true"  hint="The message to log.">
+		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.severity = this.logLevels.INFO;
@@ -247,8 +247,8 @@ Description :
 	<!--- warn --->
 	<cffunction name="warn" access="public" output="false" returntype="void" hint="I log a warning message.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string" required="true"  hint="The message to log.">
-		<cfargument name="extraInfo" type="any"    required="false" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="message" 	 required="true"  hint="The message to log.">
+		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.severity = this.logLevels.WARN;
@@ -259,8 +259,8 @@ Description :
 	<!--- Error --->
 	<cffunction name="error" access="public" output="false" returntype="void" hint="I log an error message.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string" required="true"  hint="The message to log.">
-		<cfargument name="extraInfo" type="any"    required="false" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="message" 	 required="true"  hint="The message to log.">
+		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.severity = this.logLevels.ERROR;
@@ -271,8 +271,8 @@ Description :
 	<!--- Fatal --->
 	<cffunction name="fatal" access="public" output="false" returntype="void" hint="I log a fatal message.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string" required="true"  hint="The message to log.">
-		<cfargument name="extraInfo" type="any"    required="false" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="message" 	 required="true"  hint="The message to log.">
+		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.severity = this.logLevels.fatal;
@@ -283,9 +283,9 @@ Description :
 	<!--- logMessage --->
 	<cffunction name="logMessage" output="false" access="public" returntype="void" hint="Write an entry into the loggers registered with this LogBox instance.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string"  required="true"   hint="The message to log.">
-		<cfargument name="severity"  type="numeric" required="true"   hint="The severity level to log, if invalid, it will default to INFO">
-		<cfargument name="extraInfo" type="any"     required="false" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="message" 	 required="true"   hint="The message to log.">
+		<cfargument name="severity"  required="true"   hint="The severity level to log, if invalid, it will default to INFO" colddoc:generic="numeric">
+		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var key 		 = "";
@@ -332,35 +332,35 @@ Description :
 	</cffunction>
 	
 	<!--- canLog --->
-	<cffunction name="canLog" output="false" access="public" returntype="boolean" hint="Checks wether a log can be made on this Logger using a passed in level">
-		<cfargument name="level" type="numeric" required="true" hint="The level to check if it can be logged in this Logger"/>
+	<cffunction name="canLog" output="false" access="public" returntype="any" hint="Checks wether a log can be made on this Logger using a passed in level" colddoc:generic="Boolean">
+		<cfargument name="level" required="true" hint="The level to check if it can be logged in this Logger" colddoc:generic="numeric"/>
 		<cfscript>
 			return (arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
 		</cfscript>
 	</cffunction>
 	
 	<!--- canFatal --->
-    <cffunction name="canFatal" output="false" access="public" returntype="boolean" hint="Can log fatal messages">
+    <cffunction name="canFatal" output="false" access="public" returntype="any" hint="Can log fatal messages" colddoc:generic="Boolean">
     	<cfreturn canLog( this.logLevels.FATAL )>
     </cffunction>
 	
 	<!--- canError --->
-    <cffunction name="canError" output="false" access="public" returntype="boolean" hint="Can log error messages">
+    <cffunction name="canError" output="false" access="public" returntype="any" hint="Can log error messages" colddoc:generic="Boolean">
     	<cfreturn canLog( this.logLevels.ERROR )>
     </cffunction>
 	
 	<!--- canWarn --->
-    <cffunction name="canWarn" output="false" access="public" returntype="boolean" hint="Can log warn messages">
+    <cffunction name="canWarn" output="false" access="public" returntype="any" hint="Can log warn messages" colddoc:generic="Boolean">
     	<cfreturn canLog( this.logLevels.WARN )>
     </cffunction>
     
 	<!--- canInfo --->
-    <cffunction name="canInfo" output="false" access="public" returntype="boolean" hint="Can log info messages">
+    <cffunction name="canInfo" output="false" access="public" returntype="any" hint="Can log info messages" colddoc:generic="Boolean">
     	<cfreturn canLog( this.logLevels.INFO )>
     </cffunction>
 	
 	<!--- canDebug --->
-    <cffunction name="canDebug" output="false" access="public" returntype="boolean" hint="Can log debug messages">
+    <cffunction name="canDebug" output="false" access="public" returntype="any" hint="Can log debug messages" colddoc:generic="Boolean">
     	<cfreturn canLog( this.logLevels.DEBUG )>
     </cffunction>
 	

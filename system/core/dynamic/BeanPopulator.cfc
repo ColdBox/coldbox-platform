@@ -71,7 +71,6 @@ Description :
 			
 			// check children
 			if( NOT structKeyExists(arguments.xml[arguments.root],"XMLChildren") ){
-				log.debug("XML root does not have any XMLChildren, aborting population", arguments.xml);
 				return;
 			}
 			

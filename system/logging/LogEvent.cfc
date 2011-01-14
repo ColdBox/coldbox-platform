@@ -24,10 +24,10 @@ Description :
 	
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">
-		<cfargument name="message" 	 type="string"  required="true"   hint="The message to log.">
-		<cfargument name="severity"  type="numeric" required="true"   hint="The severity level to log.">
-		<cfargument name="extraInfo" type="any"     required="false" default="" hint="Extra information to send to the loggers.">
-		<cfargument name="category"  type="string"  required="false" default="" hint="The category to log this message under.  By default it is blank."/>
+		<cfargument name="message" 	 required="true"   hint="The message to log.">
+		<cfargument name="severity"  required="true"   hint="The severity level to log." colddoc:generic="numeric">
+		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="category"  required="false" default="" hint="The category to log this message under.  By default it is blank."/>
 		<cfscript>
 			var key = "";
 			for(key in arguments){
@@ -40,7 +40,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getExtraInfoAsString" access="public" returntype="string" output="false" hint="Get the extra info as a string representation">
+	<cffunction name="getExtraInfoAsString" access="public" returntype="any" output="false" hint="Get the extra info as a string representation">
 		<cfscript>
 			// Simple value, just return it
 			if( isSimpleValue(instance.extraInfo) ){ return instance.extraInfo; }
@@ -66,7 +66,7 @@ Description :
 		<cfset instance.extraInfo = arguments.extraInfo>
 	</cffunction>
 	
-	<cffunction name="getCategory" access="public" returntype="string" output="false" hint="Get the category of this log">
+	<cffunction name="getCategory" access="public" returntype="any" output="false" hint="Get the category of this log">
 		<cfreturn instance.category>
 	</cffunction>
 	<cffunction name="setCategory" access="public" returntype="void" output="false" hint="Set the category">
@@ -74,7 +74,7 @@ Description :
 		<cfset instance.category = arguments.category>
 	</cffunction>
 	
-	<cffunction name="getTimestamp" access="public" returntype="string" output="false" hint="Get the timestamp">
+	<cffunction name="getTimestamp" access="public" returntype="any" output="false" hint="Get the timestamp">
 		<cfreturn instance.timestamp>
 	</cffunction>
 	<cffunction name="setTimestamp" access="public" returntype="void" output="false" hint="Set the timestamp">
@@ -82,7 +82,7 @@ Description :
 		<cfset instance.timestamp = arguments.timestamp>
 	</cffunction>
 	
-	<cffunction name="getMessage" access="public" returntype="string" output="false" hint="Get the message to log">
+	<cffunction name="getMessage" access="public" returntype="any" output="false" hint="Get the message to log">
 		<cfreturn instance.message>
 	</cffunction>
 	<cffunction name="setMessage" access="public" returntype="void" output="false" hint="Set the message to log">
@@ -90,7 +90,7 @@ Description :
 		<cfset instance.message = arguments.message>
 	</cffunction>
 	
-	<cffunction name="getSeverity" access="public" returntype="numeric" output="false" hint="Get the severity to log">
+	<cffunction name="getSeverity" access="public" returntype="any" output="false" hint="Get the severity to log" colddoc:generic="numeric">
 		<cfreturn instance.severity>
 	</cffunction>
 	<cffunction name="setSeverity" access="public" returntype="void" output="false" hint="Set the severity to log">

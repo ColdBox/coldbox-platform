@@ -113,7 +113,9 @@ any kind of cleanup code or anything you like:
 		<cfargument name="interceptData">
 		<!--- ************************************************************* --->
 		<cfscript>
-			log.info("Deploy tag registered successfully.");
+			if( log.canInfo() ){
+				log.info("Deploy tag registered successfully.");
+			}
 		</cfscript>	
 	</cffunction>
 
@@ -148,8 +150,9 @@ any kind of cleanup code or anything you like:
 							getController().setAspectsInitiated(false);
 							
 							// Log Reloading
-							log.info("Deploy tag reloaded successfully.");
-							
+							if( log.canInfo() ){
+								log.info("Deploy tag reloaded successfully.");
+							}
 						}
 						catch(Any e){
 							//Log Error

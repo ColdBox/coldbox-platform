@@ -25,7 +25,7 @@ Description :
 		// private instance scope
 		instance = structnew();
 		// LogBox Unique ID
-		instance._hash = createObject('java','java.lang.System').identityHashCode(this);	
+		instance.logboxID = createObject('java','java.lang.System').identityHashCode(this);	
 		// Appenders
 		instance.appenderRegistry = structnew();
 		// Loggers
@@ -58,7 +58,7 @@ Description :
 	
 	<!--- configure --->
 	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories">
-		<cfargument name="config" type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
+		<cfargument name="config" type="any" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox: coldbox.system.logging.config.LogBoxConfig" colddoc:generic="coldbox.system.logging.config.LogBoxConfig"/>
 		<cfscript>
 			var appenders 	= "";
 			var key 		= "";
@@ -67,7 +67,7 @@ Description :
 			var args 		= structnew();
 		</cfscript>
 		
-		<cflock name="#instance._hash#.logBox.config" type="exclusive" timeout="30">
+		<cflock name="#instance.logboxID#.logBox.config" type="exclusive" timeout="30">
 			<cfscript>
 			// Store config object
 			instance.config = arguments.config;
@@ -103,30 +103,30 @@ Description :
 	</cffunction>
 	
 	<!--- Get Version --->
-	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the LogBox version string.">
+	<cffunction name="getVersion" access="public" returntype="any" output="false" hint="Get the LogBox version string.">
 		<cfreturn instance.Version>
 	</cffunction>
 	
 	<!--- Get the config object --->
-	<cffunction name="getConfig" access="public" returntype="coldbox.system.logging.config.LogBoxConfig" output="false" hint="Get this LogBox's configuration object.">
+	<cffunction name="getConfig" access="public" returntype="any" output="false" hint="Get this LogBox's configuration object." colddoc:generic="coldbox.system.logging.config.LogBoxConfig">
 		<cfreturn instance.config>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- getRootLogger --->
-	<cffunction name="getRootLogger" output="false" access="public" returntype="coldbox.system.logging.Logger" hint="Get the root logger">
+	<cffunction name="getRootLogger" output="false" access="public" returntype="any" hint="Get the root logger" colddoc:generic="coldbox.system.logging.Logger">
 		<cfreturn instance.loggerRegistry["ROOT"]>
 	</cffunction>
 
 	<!--- getLogger --->
-	<cffunction name="getLogger" output="false" access="public" returntype="coldbox.system.logging.Logger" hint="Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox">
+	<cffunction name="getLogger" output="false" access="public" returntype="any" hint="Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox" colddoc:generic="coldbox.system.logging.Logger">
 		<cfargument name="category" type="any" required="true" hint="The category name to use in this logger or pass in the target object will log from and we will inspect the object and use its metadata name."/>
 		<cfscript>
 			var args = structnew();
 			var categoryConfig = "";
 			var oLogger = "";
-			var root = getRootLogger();
+			var root = instance.loggerRegistry["ROOT"];
 			
 			// is category object?
 			if( isObject(arguments.category) ){ arguments.category = getMetadata(arguments.category).name; }
@@ -139,8 +139,8 @@ Description :
 				return instance.loggerRegistry[arguments.category];
 			}
 			//Do we have a category definition, so we can build it?
-			if( getConfig().categoryExists(arguments.category) ){
-				categoryConfig = getConfig().getCategory(arguments.category);
+			if( instance.config.categoryExists(arguments.category) ){
+				categoryConfig = instance.config.getCategory(arguments.category);
 				// Setup creation arguments
 				args.category = categoryConfig.name;
 				args.levelMin = categoryConfig.levelMin;
@@ -159,7 +159,7 @@ Description :
 		</cfscript>
 
 		<!--- Create New Logger --->
-		<cflock name="#instance._hash#.logBox.logger.#arguments.category#" type="exclusive" throwontimeout="true" timeout="30">
+		<cflock name="#instance.logboxID#.logBox.logger.#arguments.category#" type="exclusive" throwontimeout="true" timeout="30">
 			<cfscript>
 				if( NOT structKeyExists(instance.loggerRegistry,arguments.category) ){
 					// Create logger	
@@ -176,12 +176,12 @@ Description :
 	</cffunction>
 	
 	<!--- getCurrentLoggers --->
-	<cffunction name="getCurrentLoggers" output="false" access="public" returntype="string" hint="Get the list of currently instantiated loggers.">
+	<cffunction name="getCurrentLoggers" output="false" access="public" returntype="any" hint="Get the list of currently instantiated loggers.">
 		<cfreturn structKeyList(instance.loggerRegistry)>
 	</cffunction>
 	
 	<!--- getCurrentAppenders --->
-	<cffunction name="getCurrentAppenders" output="false" access="public" returntype="string" hint="Get the list of currently registered appenders.">
+	<cffunction name="getCurrentAppenders" output="false" access="public" returntype="any" hint="Get the list of currently registered appenders.">
 		<cfreturn structKeyList(instance.appenderRegistry)>
 	</cffunction>
 
@@ -189,7 +189,7 @@ Description :
 	
 	<!--- locateCategoryParentLogger --->
 	<cffunction name="locateCategoryParentLogger" output="false" access="private" returntype="any" hint="Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.">
-		<cfargument name="category" type="string" required="true" hint="The category name to investigate for parents."/>
+		<cfargument name="category" required="true" hint="The category name to investigate for parents."/>
 		<cfscript>
 			// Get parent category name shortened by one.
 			var parentCategory = listDeleteAt(arguments.category, listLen(arguments.category,"."), ".");
@@ -197,14 +197,14 @@ Description :
 			// Check if parent Category is empty
 			if( len(parentCategory) EQ 0 ){
 				// Just return the root logger, nothing found.
-				return getRootLogger();
+				return instance.loggerRegistry["ROOT"];
 			}			
 			// Does it exist already in the instantiated loggers?
 			if( structKeyExists(instance.loggerRegistry,parentCategory) ){
 				return instance.loggerRegistry[parentCategory];
 			}
 			// Do we need to create it, lazy loading?
-			if( getConfig().categoryExists(parentCategory) ){
+			if( instance.config.categoryExists(parentCategory) ){
 				return getLogger(parentCategory);	
 			}
 			// Else, it was not located, recurse
@@ -215,19 +215,19 @@ Description :
 	<!--- registerAppender --->
 	<cffunction name="registerAppender" output="false" access="private" returntype="any" hint="Register a new appender object in the appender registry.">
 		<!--- ************************************************************* --->
-		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
-		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
-		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="levelMax"  	type="numeric" required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
+		<cfargument name="name" 		required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
+		<cfargument name="class" 		required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
+		<cfargument name="properties" 	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with." colddoc:generic="struct"/>
+		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
+		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
+		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
 		<!--- ************************************************************* --->
 		<cfset var appenders = instance.appenderRegistry>
 		<cfset var oAppender = "">
 		
 		<!--- Verify Registration --->
 		<cfif NOT structKeyExists(appenders,arguments.name)>
-			<cflock name="#instance._hash#.registerappender.#name#" type="exclusive" timeout="15">
+			<cflock name="#instance.logboxID#.registerappender.#name#" type="exclusive" timeout="15">
 				<cfscript>
 					if( NOT structKeyExists(appenders,arguments.name) ){
 						// Create appender
@@ -247,8 +247,8 @@ Description :
 	</cffunction>
 	
 	<!--- getAppendersMap --->
-	<cffunction name="getAppendersMap" output="false" access="private" returntype="struct" hint="Get a map of appenders by list. Usually called to get a category of appenders.">
-		<cfargument name="appenders" type="string" required="true" hint="The list of appenders to get"/>
+	<cffunction name="getAppendersMap" output="false" access="private" returntype="any" hint="Get a map of appenders by list. Usually called to get a category of appenders." colddoc:generic="struct">
+		<cfargument name="appenders" required="true" hint="The list of appenders to get"/>
 		<cfscript>
 			var x =1;
 			var appendersMap = structnew();
@@ -264,7 +264,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" colddoc:generic="coldbox.system.core.util.Util">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 

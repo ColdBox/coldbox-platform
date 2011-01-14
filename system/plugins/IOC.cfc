@@ -51,14 +51,20 @@ Description :
 			var paretDefinitionFile	= getSetting("IOCParentFactoryDefinitionFile");
 			var parentAdapter		= "";
 			
-			log.info("IOC integration detected, beginning configuration of IOC Factory");
+			if( log.canInfo() ){
+				log.info("IOC integration detected, beginning configuration of IOC Factory");
+			}
 			
 			// build adapter using application chosen properties
 			instance.adapter = buildAdapter(framework, definitionFile);
 			
 			// Do we have a parent to build?
 			if( len(parentFramework) ){
-				log.debug("Parent Factory detected: #parentFramework#:#paretDefinitionFile# and loading...");
+				
+				if( log.canDebug() ){
+					log.debug("Parent Factory detected: #parentFramework#:#paretDefinitionFile# and loading...");
+				}
+				
 				// Build parent adapter and set it on original adapter factory.
 				parentAdapter = buildAdapter(parentFramework, paretDefinitionFile);
 				instance.adapter.setParentFactory( parentAdapter.getFactory() );
@@ -69,7 +75,9 @@ Description :
 	<!--- reloadDefinitionFile --->
 	<cffunction name="reloadDefinitionFile" access="public" output="false" returntype="void" hint="Reloads the IoC factory. Basically calls configure again. DEPRECATED">
 		<cfscript>
-			log.info("Reloading ioc definition files...");
+			if( log.canInfo() ){
+				log.info("Reloading ioc definition files...");
+			}
 			configure();
 		</cfscript>
 	</cffunction>
@@ -157,7 +165,11 @@ Description :
 					if( not structKeyExists(MetaData,"cacheLastAccessTimeout") or not isNumeric(metadata.cacheLastAccessTimeout) ){
 						metaData.cacheLastAccessTimeout = "";
 					}
-					log.debug("Bean: #metadata.name# ioc caching detected, saving on buffer cache");
+					
+					if( log.canDebug() ){
+						log.debug("Bean: #metadata.name# ioc caching detected, saving on buffer cache");
+					}
+					
 					getColdboxOCM().set(arguments.cacheKey,target,metadata.cacheTimeout,metadata.cacheLastAccessTimeout);
 				}
 			</cfscript>
@@ -184,7 +196,10 @@ Description :
 			// Create Adapter
 			try{
 				adapter = createObject("component",adapterPath).init(validateDefinitionFile(arguments.definitionFile),controller.getConfigSettings(),controller);
-				log.debug("ioc factory adapter: #adapterPath# built successfully");
+				
+				if( log.canDebug() ){
+					log.debug("ioc factory adapter: #adapterPath# built successfully");
+				}
 			}
 			catch(Any e){
 				log.error("Error creating ioc factory adapter (#adapterPath#). Arguments: #arguments.toString()#, Message: #e.message# #e.detail# #e.stacktrace#");
@@ -194,14 +209,19 @@ Description :
 			// Create Adapter Factory
 			try{
 				adapter.createFactory();
-				log.debug("ioc framework: #getMetadata(adapter.getFactory()).name# loaded successfully and ready for operation.");
+				
+				if( log.canDebug() ){
+					log.debug("ioc framework: #getMetadata(adapter.getFactory()).name# loaded successfully and ready for operation.");
+				}
 			}
 			catch(Any e){
 				log.error("Error creating ioc factory from adapter. Arguments: #arguments.toString()#, Message: #e.message# #e.detail# #e.stacktrace#");
 				$throw(message="Error Creating ioc factory: #e.message#",detail="#e.detail# #e.stacktrace#",type="IOC.AdapterFactoryCreationException");
 			}
 			
-			log.info("IoC factory: #arguments.framework#:#arguments.definitionFile# loaded and configured for operation");
+			if( log.canInfo() ){
+				log.info("IoC factory: #arguments.framework#:#arguments.definitionFile# loaded and configured for operation");
+			}
 			
 			return adapter;
 		</cfscript>

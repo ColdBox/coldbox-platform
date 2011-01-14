@@ -236,7 +236,9 @@ Description :
 			var cache 	   = "";
 			var i 		   = 1;
 			
-    		instance.log.info("Shutdown of cache factory: #getFactoryID()# requested and started.");
+			if( instance.log.canInfo() ){
+    			instance.log.info("Shutdown of cache factory: #getFactoryID()# requested and started.");
+    		}
 			
 			// Notify Listeners
 			iData = {cacheFactory=this};
@@ -247,7 +249,9 @@ Description :
 				
 				// Get cache to shutdown
 				cache = getCache( cacheNames[i] );
-				instance.log.debug("Shutting down cache: #cacheNames[i]# on factoryID: #getFactoryID()#.");
+				if( instance.log.canDebug() ){
+					instance.log.debug("Shutting down cache: #cacheNames[i]# on factoryID: #getFactoryID()#.");
+				}
 				
 				//process listners
 				iData = {cache=cache};
@@ -258,8 +262,9 @@ Description :
 				
 				//process listeners
 				getEventManager().processState("afterCacheShutdown",iData);
-				
-				instance.log.debug("Cache: #cacheNames[i]# was shut down on factoryID: #getFactoryID()#.");				
+				if( instance.log.canDebug() ){
+					instance.log.debug("Cache: #cacheNames[i]# was shut down on factoryID: #getFactoryID()#.");
+				}				
 			}
 			
 			// Remove all caches
@@ -272,7 +277,9 @@ Description :
 			iData = {cacheFactory=this};
 			getEventManager().processState("afterCacheFactoryShutdown",iData);
 			
-			instance.log.info("Shutdown of cache factory: #getFactoryID()# completed.");
+			if( instance.log.canInfo() ){
+				instance.log.info("Shutdown of cache factory: #getFactoryID()# completed.");
+			}
 		</cfscript>
     </cffunction>
 	
@@ -286,14 +293,18 @@ Description :
 			
     		// Check if cache exists, else exit out
 			if( NOT cacheExists(arguments.name) ){
-				instance.log.warn("Trying to shutdown #arguments.name#, but that cache does not exist, skipping.");
+				if( instance.log.canWarn() ){
+					instance.log.warn("Trying to shutdown #arguments.name#, but that cache does not exist, skipping.");
+				}
 				return;
 			}
 			
 			//get Cache
 			cache = getCache(arguments.name);
 			// log it
-			instance.log.info("Shutdown of cache: #arguments.name# requested and started on factoryID: #getFactoryID()#");
+			if( instance.log.canInfo() ){
+				instance.log.info("Shutdown of cache: #arguments.name# requested and started on factoryID: #getFactoryID()#");
+			}
 			
 			// Notify Listeners
 			iData = {cache=cache};
@@ -309,7 +320,9 @@ Description :
 			removeCache(arguments.name);
 			
 			// Log it
-			instance.log.debug("Cache: #arguments.name# was shut down and removed on factoryID: #getFactoryID()#.");
+			if( instance.log.canDebug() ){
+				instance.log.debug("Cache: #arguments.name# was shut down and removed on factoryID: #getFactoryID()#.");
+			}
 		</cfscript>
     </cffunction>
 	
@@ -356,7 +369,10 @@ Description :
 						// Log It
 						iData.cache = arguments.name;
 						getEventManager().processState("afterCacheRemoval",iData);
-						instance.log.debug("Cache: #arguments.name# removed from factory: #getFactoryID()#");
+						
+						if( instance.log.canDebug() ){
+							instance.log.debug("Cache: #arguments.name# removed from factory: #getFactoryID()#");
+						}
 						
 						return true;
 					}
@@ -364,7 +380,9 @@ Description :
 			</cflock>
 		</cfif>
 		
-		<cfset instance.log.debug("Cache: #arguments.name# not removed because it does not exist in registered caches: #arrayToList(getCacheNames())#. FactoryID: #getFactoryID()#")>
+		<cfif instance.log.canDebug()>
+			<cfset instance.log.debug("Cache: #arguments.name# not removed because it does not exist in registered caches: #arrayToList(getCacheNames())#. FactoryID: #getFactoryID()#")>
+		</cfif>
 		
 		<cfreturn false>
     </cffunction>
@@ -376,13 +394,17 @@ Description :
 			var cacheLen   	= arraylen(cacheNames);
 			var i 		   	= 1;
 		
-			instance.log.debug("Removal of all caches requested on factoryID: #getFactoryID()#");
+			if( instance.log.canDebug() ){
+				instance.log.debug("Removal of all caches requested on factoryID: #getFactoryID()#");
+			}
 		
 			for( i=1; i lte cacheLen; i++){
 				removeCache( cacheNames[i] );
 			}
 			
-			instance.log.debug("All caches removed.");
+			if( instance.log.canDebug() ){
+				instance.log.debug("All caches removed.");
+			}
 		</cfscript>
     </cffunction>
 	
@@ -394,7 +416,9 @@ Description :
 			var i 		   = 1;
 			var cache 	   = "";
 		
-			instance.log.debug("Executing reap on factoryID: #getFactoryID()#");
+			if( instance.log.canDebug() ){
+				instance.log.debug("Executing reap on factoryID: #getFactoryID()#");
+			}
 		
 			for( i=1; i lte cacheLen; i++){
 				cache = getCache( cacheNames[i] );
@@ -459,7 +483,9 @@ Description :
 			var i 		   = 1;
 			var cache 	   = "";
 		
-			instance.log.debug("Clearing all registered caches of their content on factoryID: #getFactoryID()#");
+			if( instance.log.canDebug() ){
+				instance.log.debug("Clearing all registered caches of their content on factoryID: #getFactoryID()#");
+			}
 		
 			for( i=1; i lte cacheLen; i++){
 				cache = getCache( cacheNames[i] );
@@ -476,7 +502,9 @@ Description :
 			var i 		   = 1;
 			var cache 	   = "";
 		
-			instance.log.debug("Expiring all registered caches of their content on factoryID: #getFactoryID()#");
+			if( instance.log.canDebug() ){
+				instance.log.debug("Expiring all registered caches of their content on factoryID: #getFactoryID()#");
+			}
 		
 			for( i=1; i lte cacheLen; i++){
 				cache = getCache( cacheNames[i] );

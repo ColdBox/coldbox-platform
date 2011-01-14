@@ -54,7 +54,9 @@ Description :
 			
 			if( results.error ){
 				// Log it
-				log.error("Error sending mail: #arrayToList(results.errorArray)#",arguments.mail.getMemento());
+				if( log.canError() ){
+					log.error("Error sending mail: #arrayToList(results.errorArray)#",arguments.mail.getMemento());
+				}
 			}
 			
 			return results;
