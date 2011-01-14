@@ -29,7 +29,7 @@ Only one instance of a specific ColdBox application exists.
 
 			// Set Main Application Properties
 			instance.coldboxInitiated 		= false;
-			instance.aspsectsInitiated 		= false;
+			instance.aspectsInitiated 		= false;
 			instance.appStartHandlerFired 	= false;
 			instance.appHash				= hash(arguments.appRootPath);
 			instance.appRootPath			= arguments.appRootPath;
@@ -91,6 +91,12 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="setLogBox" output="false" access="public" returntype="void" hint="Set the logBox instance">
 		<cfargument name="logBox" required="true" hint="The logBox instance" colddoc:generic="coldbox.system.logging.LogBox"/>
 		<cfset instance.logBox = arguments.logBox>
+	</cffunction>
+	
+	<!--- setLog --->
+	<cffunction name="setLog" output="false" access="public" returnType="void" hint="Set the class logger object">
+		<cfargument name="logger" required="true">
+		<cfset instance.log = arguments.logger>
 	</cffunction>
 
 	<!--- getServices --->

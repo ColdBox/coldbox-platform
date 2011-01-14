@@ -26,11 +26,11 @@ Properties:
 	<!--- Constructor --->
 	<cffunction name="init" access="public" returntype="FileAppender" hint="Constructor" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
-		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="levelMax"  	type="numeric" required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
+		<cfargument name="name" 		required="true" hint="The unique name for this appender."/>
+		<cfargument name="properties" 	required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
+		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
+		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
+		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.init(argumentCollection=arguments);
@@ -72,10 +72,10 @@ Properties:
 	</cffunction>
 	
 	<!--- Get Lock Name --->
-	<cffunction name="getlockname" access="public" returntype="string" output="false" hint="The file Lock name">
+	<cffunction name="getlockname" access="public" returntype="any" output="false" hint="The file Lock name">
 		<cfreturn instance.lockname>
 	</cffunction>
-	<cffunction name="getlockTimeout" access="public" returntype="numeric" output="false" hint="The lock timeout">
+	<cffunction name="getlockTimeout" access="public" returntype="any" output="false" hint="The lock timeout">
 		<cfreturn instance.lockTimeout>
 	</cffunction>
 	
@@ -92,7 +92,7 @@ Properties:
 	<!--- Log Message --->
 	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender.">
 		<!--- ************************************************************* --->
-		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent" required="true" hint="The logging event"/>
+		<cfargument name="logEvent" type="any" required="true" hint="The logging event"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var loge = arguments.logEvent;
@@ -101,7 +101,9 @@ Properties:
 			var entry = "";
 			
 			// Does file still exist?
-			if( NOT fileExists(getLogFullpath()) ){ initLogLocation(); }
+			if( NOT fileExists( instance.logFullpath )) ){ 
+				initLogLocation(); 
+			}
 			
 			if( hasCustomLayout() ){
 				entry = getCustomLayout().format(loge);
@@ -124,15 +126,15 @@ Properties:
 	</cffunction>
 	
 	<!--- get/set log full path --->
-	<cffunction name="getlogFullpath" access="public" returntype="string" output="false" hint="Get the full log path used.">
+	<cffunction name="getlogFullpath" access="public" returntype="any" output="false" hint="Get the full log path used.">
 		<cfreturn instance.logFullpath>
 	</cffunction>
 	
 	<!--- Remove the log File --->
 	<cffunction name="removeLogFile" access="public" hint="Removes the log file" output="false" returntype="void">
-		<cfif fileExists(getLogFullPath())>
+		<cfif fileExists( instance.logFullpath )>
 			<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
-				<cffile action="delete" file="#getLogFullPath()#">
+				<cffile action="delete" file="#instance.logFullpath#">
 			</cflock>
 		</cfif>
 	</cffunction>
@@ -142,18 +144,18 @@ Properties:
 		<cfset var fileObj = "">
 		
 		<!--- Create Log File if It does not exist and initialize it. --->
-		<cfif not fileExists(getLogFullPath())>
+		<cfif not fileExists( instance.logFullpath )>
 			<!--- Log File Setup --->
 			<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				// Double Lock
-				if( not fileExists(getLogFullpath()) ){
+				if( not fileExists( instance.logFullpath ) ){
 					// Create empty log file
 					try{
-						fileObj = createObject("java","java.io.File").init(JavaCast("string",getLogFullPath())).createNewFile();
+						fileObj = createObject("java","java.io.File").init(JavaCast("string", instance.logFullpath )).createNewFile();
 					}
 					catch(Any e){
-						$log("ERROR","Cannot create appender's: #getName()# log file. File #getLogFullPath()#. #e.message# #e.detail#");
+						$log("ERROR","Cannot create appender's: #getName()# log file. File #instance.logFullpath#. #e.message# #e.detail#");
 					}					
 				}	
 			</cfscript>		
@@ -163,9 +165,9 @@ Properties:
 		<cfelse>
 			<cfscript>
 			//Check if we can write
-			fileObj = createObject("java","java.io.File").init(JavaCast("string",getLogFullPath()));
+			fileObj = createObject("java","java.io.File").init(JavaCast("string",instance.logFullpath));
 			if( NOT fileObj.canWrite() ){
-				$log("ERROR","Cannot write to file: #getLogFullpath()# by appender #getName()#");
+				$log("ERROR","Cannot write to file: #instance.logFullpath# by appender #getName()#");
 			}
 			</cfscript>
 		</cfif>
@@ -177,11 +179,12 @@ Properties:
 
 	<!--- append --->
 	<cffunction name="append" output="false" access="private" returntype="void" hint="Append a message to a file">
-		<cfargument name="message" type="any" required="true" hint="The message to append"/>
+		<cfargument name="message" required="true" hint="The message to append"/>
+		
 		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cffile action="append" 
 					addnewline="true" 
-					file="#getlogFullPath()#" 
+					file="#instance.logFullpath#" 
 					output="#arguments.message#"
 					charset="#getProperty("fileEncoding")#">		
 		</cflock>				
@@ -189,7 +192,7 @@ Properties:
 
 	<!--- Ensure directory --->
 	<cffunction name="ensureDefaultLogDirectory" access="private" hint="Ensures the log directory." output="false" returntype="void">
-		<cfset var dirPath = getDirectoryFrompath(getLogFullpath())>
+		<cfset var dirPath = getDirectoryFrompath(instance.logFullpath)>
 		
 		<!--- Check if the directory already exists --->
 		<cfif not directoryExists(dirPath)>
