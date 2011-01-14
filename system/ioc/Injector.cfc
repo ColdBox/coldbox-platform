@@ -157,23 +157,73 @@ Description :
 			</cfscript>
 		</cflock>
 	</cffunction>
-		
-	<!--- containsMapping --->
-    <cffunction name="containsMapping" output="false" access="public" returntype="boolean" hint="Checks if this container contains a specific object mapping or not">
-    	<cfargument name="name" type="string" required="true" hint="The object name or alias to search for if this container has information about it"/>
-		<cfreturn true>
-    </cffunction>
-	
-	<!--- locateInstance --->
-    <cffunction name="locateInstance" output="false" access="public" returntype="any" hint="Tries to locate a specific instance by name or alias">
-    	
-    </cffunction>
 	
 	<!--- getInstance --->
     <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object instance">
-    	<cfargument name="name" type="any" required="true" hint="The mapping name or alias to retrieve"/>
+    	<cfargument name="name" 			type="any" 		required="true" 	hint="The mapping name or CFC instance path to retrieve via scan locations"/>
+		<cfargument name="dsl"				type="string"  	required="false" 	hint="The dsl string to use to retrieve the instance object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	type="struct" 	required="false" 	hint="The constructor arguments to passthrough when initializing the instance"/>
+		<cfscript>
+			var instancePath 	= "";
+			var binder			= getBinder();
+			
+			// Get by DSL?
+			if( structKeyExists(arguments,"dsl") ){ }
+			
+			// Check if Mapping Exists?
+			if( binder.mappingExists(arguments.name) ){
+				// No Mapping exists, let's try to locate it first. We are now dealing with request by conventions
+				instancePath = locateInstance(arguments.name);
+				// If Empty Throw Exception
+				if( NOT len(instancePath) ){
+					instance.log.error("Requested instance:#arguments.name# was not located in any declared scan locations: #structKeyList(getBinder().getScanLocations())# or full CFC path");
+					getUtil().throwit(message="Requested instance not found: '#arguments.name#'",
+									  detail="The instance could not be located in any declared scan location(s) (#structKeyList(getBinder().getScanLocations())#) or full path location",
+									  type="Injector.InstanceNotFoundException");
+				}
+				// Let's create a mapping for this requested convention name+path
+				binder.map(arguments.name).to(instancePath);
+			}
+		
+		</cfscript>
     </cffunction>
+		
+	<!--- containsMapping --->
+    <cffunction name="containsMapping" output="false" access="public" returntype="boolean" hint="Checks if this injector's binder contains a specific object mapping or not">
+    	<cfargument name="name" type="string" required="true" hint="The object name or alias to search for if this container has information about it"/>
+		<cfreturn getBinder().mappingExists(arguments.name)>
+    </cffunction>
+		
+	<!--- locateInstance --->
+    <cffunction name="locateInstance" output="false" access="public" returntype="any" hint="Tries to locate a specific instance by scanning all scan locations and returning the instantiation path. If model not found then the returned instantiation path will be empty">
+    	<cfargument name="name" type="any"  required="true" hint="The model instance name to locate" colddoc:generic="string">
+		<cfscript>
+			var scanLocations		= getBinder().getScanLocations();
+			var thisScanPath		= "";
+			var CFCName				= replace(arguments.name,".","/","all") & ".cfc";
+			
+			// Check Scan Locations In Order
+			for(thisScanPath in scanLocations){
+				// Check if located? If so, return instantiation path
+				if( fileExists( scanLocations[thisScanPath] & CFCName ) ){
+					if( instance.log.canDebug() ){ instance.log.debug("Instance: #arguments.name# located in #thisScanPath#"); }
+					return thisScanPath & "." & arguments.name;
+				}
+			}
 
+			// Not found, so let's do full namespace location
+			if( fileExists( expandPath("/" & CFCName) ) ){
+				if( instance.log.canDebug() ){ instance.log.debug("Instance: #arguments.name# located as is."); }
+				return arguments.name;
+			}
+			
+			// debug info, NADA found!
+			if( instance.log.canDebug() ){ instance.log.debug("Instance: #arguments.name# was not located anywhere"); }
+			
+			return "";			
+		</cfscript>
+    </cffunction>
+	
 	<!--- autowire --->
     <cffunction name="autowire" output="false" access="public" returntype="any" hint="The main method that does the magical autowiring">
     	
@@ -466,16 +516,18 @@ Description :
 			// Now decorate it with properties, a self reference, and a coldbox reference if needed.
 			arguments.binder.injectPropertyMixin = instance.utility.getMixerUtil().injectPropertyMixin;
 			arguments.binder.injectPropertyMixin("properties",arguments.properties,"instance");
-			arguments.binder.injectPropertyMixin("wirebox",this);
+			arguments.binder.injectPropertyMixin("injector",this);
 			if( isColdBoxLinked() ){
 				arguments.binder.injectPropertyMixin("coldbox",getColdBox());
 			}
 			
-			// Check if already a programmatic binder object
+			// Check if already a programmatic binder object?
 			if( isInstanceOf(arguments.binder, "coldbox.system.ioc.config.Binder") ){
 				// Configure it
 				arguments.binder.configure();
-				// use it
+				// Load it
+				arguments.binder.loadDataDSL();
+				// Use it
 				return arguments.binder;
 			}
 			

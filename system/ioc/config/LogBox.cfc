@@ -22,11 +22,13 @@ Description :
 			appenders = {
 				console = { 
 					class="coldbox.system.logging.appenders.ConsoleAppender"
-				},
+				}
+				/**,
 				cflogs = {
 					class="coldbox.system.logging.appenders.CFAppender",
 					properties = { fileName="ColdBox-WireBox"}
 				}
+				**/
 			},
 			// Root Logger
 			root = { levelmax="INFO", appenders="*" }

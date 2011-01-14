@@ -61,7 +61,7 @@ Description :
 				arguments.config.getPropertyMixin = utility.getMixerUtil().getPropertyMixin;
 				// Execute the configuration
 				arguments.config.configure(this);
-				// Load the DSL
+				// Load the raw data DSL
 				loadDataDSL( arguments.config.getPropertyMixin("wireBox","variables",structnew()) );
 			}
 			
@@ -75,8 +75,10 @@ Description :
     </cffunction>
 
 	<!--- reset --->
-	<cffunction name="reset" output="false" access="public" returntype="void" hint="Reset the configuration back to the defaults">
+	<cffunction name="reset" output="false" access="public" returntype="void" hint="Reset the configuration back to the original binder defaults">
 		<cfscript>
+			// Main wirebox structure
+			variables.wirebox = {};
 			// logBox File
 			instance.logBoxConfig = DEFAULTS.logBoxConfig;
 			// CacheBox integration
@@ -105,21 +107,21 @@ Description :
 <!------------------------------------------- BINDING PROPERTIES ------------------------------------------>
 
 	<!--- getProperties --->
-    <cffunction name="getProperties" output="false" access="public" returntype="struct" hint="Get the binded properties structure">
+    <cffunction name="getProperties" output="false" access="public" returntype="any" hint="Get the binded properties structure" colddoc:generic="struct">
     	<cfreturn instance.properties>
     </cffunction>
 	
 	<!--- setProperties --->
     <cffunction name="setProperties" output="false" access="public" returntype="any" hint="Set the binded properties structure">
-    	<cfargument name="properties" type="struct" required="true"/>
+    	<cfargument name="properties" required="true" colddoc:generic="struct"/>
 		<cfset instance.properties = arguments.properties>
 		<cfreturn this>
     </cffunction>
 	
 	<!--- getProperty --->
     <cffunction name="getProperty" output="false" access="public" returntype="any" hint="Get a binded property. If not found it will try to return the default value passed, else it returns a java null">
-    	<cfargument name="name" 	type="string" 	required="true" hint="The name of the property"/>
-		<cfargument name="default"	type="any" 		required="false" hint="A default value if property does not exist"/>
+    	<cfargument name="name" 	required="true" hint="The name of the property"/>
+		<cfargument name="default"	required="false" hint="A default value if property does not exist"/>
 		<cfscript>
 			if( propertyExists(arguments.name) ){
 				return instance.properties[arguments.name];
@@ -132,27 +134,27 @@ Description :
 	
 	<!--- setProperty --->
     <cffunction name="setProperty" output="false" access="public" returntype="void" hint="Create a new binding property">
-    	<cfargument name="name" 	type="string" 	required="true" hint="The name of the property"/>
-		<cfargument name="value" 	type="any" 			required="true" hint="The value of the property"/>
+    	<cfargument name="name" 	required="true" hint="The name of the property"/>
+		<cfargument name="value" 	required="true" hint="The value of the property"/>
 		<cfset instance.properties[arguments.name] = arguments.value>
     </cffunction>
 
 	<!--- propertyExists --->
     <cffunction name="propertyExists" output="false" access="public" returntype="boolean" hint="Checks if a property exists">
-    	<cfargument name="name" 	type="string" 	required="true" hint="The name of the property"/>
+    	<cfargument name="name" required="true" hint="The name of the property"/>
 		<cfreturn structKeyExists(instance.properties, arguments.name)>
     </cffunction>
 
 <!------------------------------------------- PARENT INJECTOR ------------------------------------------>
 	
 	<!--- getParentInjector --->
-    <cffunction name="getParentInjector" output="false" access="public" returntype="any" hint="Get a parent injector if linked">
+    <cffunction name="getParentInjector" output="false" access="public" returntype="any" hint="Get the parent injector reference this binder is linked to">
     	<cfreturn instance.parentInjector>
     </cffunction>
 	
 	<!--- parentInjector --->
-    <cffunction name="parentInjector" output="false" access="public" returntype="any" hint="Link a parent injector to the configuration">
-    	<cfargument name="injector" type="any" required="true" hint="A parent injector to configure link"/>
+    <cffunction name="parentInjector" output="false" access="public" returntype="any" hint="Link a parent injector to this configuration binder">
+    	<cfargument name="injector" required="true" hint="A parent injector to configure link"/>
 		<cfset instance.parentInjector = arguments.injector>
 		<cfreturn this>
     </cffunction>
@@ -160,13 +162,13 @@ Description :
 <!------------------------------------------- MAPPING METHODS ------------------------------------------>
 	
 	<!--- getMappings --->
-    <cffunction name="getMappings" output="false" access="public" returntype="struct" hint="Get all the registered object mappings">
+    <cffunction name="getMappings" output="false" access="public" returntype="any" hint="Get all the registered object mappings structure" colddoc:generic="struct">
     	<cfreturn instance.mappings>
     </cffunction>
 	
 	<!--- getMapping --->
     <cffunction name="getMapping" output="false" access="public" returntype="any" hint="Get a specific object mapping: coldbox.system.ioc.config.Mapping" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="name" type="string" required="true" hint="The name of the mapping to retrieve"/>
+    	<cfargument name="name" required="true" hint="The name of the mapping to retrieve"/>
     	
 		<cfif NOT structKeyExists(instance.mappings, arguments.name)>
     		<cfthrow message="Mapping #arguments.name# has not been registered"
@@ -178,8 +180,8 @@ Description :
     </cffunction>
 
 	<!--- mappingExists --->
-    <cffunction name="mappingExists" output="false" access="public" returntype="boolean" hint="Check if an object mapping exists">
-    	<cfargument name="name" type="string" required="true" hint="The name of the mapping to verify"/>
+    <cffunction name="mappingExists" output="false" access="public" returntype="any" hint="Check if an object mapping exists" colddoc:generic="Boolean">
+    	<cfargument name="name" required="true" hint="The name of the mapping to verify"/>
     	<cfreturn structKeyExists(instance.mappings, arguments.name)>
     </cffunction>
 
@@ -187,7 +189,7 @@ Description :
 
 	<!--- mapPath --->
     <cffunction name="mapPath" output="false" access="public" returntype="any" hint="Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.">
-    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+    	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
 			// directly map to a path
 			return map( listlast(arguments.path,".") ).to(arguments.path);
@@ -196,12 +198,12 @@ Description :
 	
 	<!--- mapDirectory --->
     <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Map an entire instantiation path directory, please note that the unique name of each file will be used.">
-    	<cfargument name="packagePath" type="string" required="true" hint="The instantiation packagePath to map"/>
+    	<cfargument name="packagePath" required="true" hint="The instantiation packagePath to map"/>
     </cffunction>
 	
 	<!--- map --->
     <cffunction name="map" output="false" access="public" returntype="any" hint="Create a mapping to an object">
-    	<cfargument name="alias" type="any" required="true" hint="A single alias or a list or an array of aliases for this mapping. Remember an object can be refered by many names"/>
+    	<cfargument name="alias" required="true" hint="A single alias or a list or an array of aliases for this mapping. Remember an object can be refered by many names"/>
 		<cfscript>
 			// generate mapping entry for this dude.
 			var name 	= "";
@@ -234,7 +236,7 @@ Description :
 	
 	<!--- to --->
     <cffunction name="to" output="false" access="public" returntype="any" hint="Map to a destination CFC class path.">
-    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+    	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
 			currentMapping.setPath( arguments.path ).setType( this.TYPES.CFC );
 			return this;
@@ -243,7 +245,7 @@ Description :
 	
 	<!--- toJava --->
     <cffunction name="toJava" output="false" access="public" returntype="any" hint="Map to a java destination class path.">
-    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+    	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
 			currentMapping.setPath( arguments.path ).setType( this.TYPES.JAVA );
 			return this;
@@ -252,7 +254,7 @@ Description :
 	
 	<!--- toWebservice --->
     <cffunction name="toWebservice" output="false" access="public" returntype="any" hint="Map to a webservice destination class path.">
-    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+    	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
     		currentMapping.setPath( arguments.path ).setType( this.TYPES.WEBSERVICE );
 			return this;
@@ -261,7 +263,7 @@ Description :
 	
 	<!--- toRSS --->
     <cffunction name="toRSS" output="false" access="public" returntype="any" hint="Map to a rss destination class path.">
-    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+    	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
     		currentMapping.setPath( arguments.path ).setType( this.TYPES.RSS );
 			return this;
@@ -270,16 +272,25 @@ Description :
 	
 	<!--- toDSL --->
     <cffunction name="toDSL" output="false" access="public" returntype="any" hint="Map to a dsl that will be used to create the mapped object">
-    	<cfargument name="dsl" type="string" required="true" hint="The DSL string to use"/>
+    	<cfargument name="dsl" required="true" hint="The DSL string to use"/>
 		<cfscript>
 			currentMapping.setDSL( arguments.dsl ).setType( this.TYPES.DSL );
 			return this;
     	</cfscript>
     </cffunction>
 	
+	<!--- toValue --->
+    <cffunction name="toValue" output="false" access="public" returntype="any" hint="Map to a constant value">
+    	<cfargument name="value" required="true" hint="The value to bind to"/>
+		<cfscript>
+			currentMapping.setValue( arguments.value ).setType( this.TYPES.CONSTANT );
+			return this;
+    	</cfscript>
+    </cffunction>
+	
 	<!--- constructor --->
     <cffunction name="constructor" output="false" access="public" returntype="any" hint="You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.">
-    	<cfargument name="constructor" type="string" required="true" hint="The constructor method to use for the mapped object"/>
+    	<cfargument name="constructor" required="true" hint="The constructor method to use for the mapped object"/>
    		<cfscript>
     		currentMapping.setConstructor( arguments.constructor );
 			return this;
@@ -323,7 +334,7 @@ Description :
 	
 	<!--- with --->
     <cffunction name="with" output="false" access="public" returntype="any" hint="Used to set the current working mapping name in place for the maping DSL. An exception is thrown if the mapping does not exist yet.">
-    	<cfargument name="alias" type="string" required="true" hint="The name of the maping to set as current for working with it via the mapping DSL"/>
+    	<cfargument name="alias" required="true" hint="The name of the maping to set as current for working with it via the mapping DSL"/>
 		<cfscript>
 			if( mappingExists(arguments.alias) ){
 				currentMapping = instance.mappings[arguments.alias];
@@ -337,11 +348,11 @@ Description :
 	
 	<!--- initArg --->
     <cffunction name="initArg" output="false" access="public" returntype="any" hint="Map a constructor argument to a mapping">
-    	<cfargument name="name" 	type="string" 	required="false" hint="The name of the constructor argument. NA: JAVA-WEBSERVICE"/>
-		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
-		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
-		<cfargument name="value" 	type="any" 		required="false" hint="The value of the constructor argument, if passed."/>
-    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfargument name="name" 	required="false" hint="The name of the constructor argument. NA: JAVA-WEBSERVICE"/>
+		<cfargument name="ref" 		required="false" hint="The reference mapping id this constructor argument maps to"/>
+		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
+		<cfargument name="value" 	required="false" hint="The value of the constructor argument, if passed."/>
+    	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfscript>
     		currentMapping.addDIConstructorArgument(argumentCollection=arguments);
     		return this;
@@ -350,11 +361,11 @@ Description :
 	
 	<!--- setter --->
     <cffunction name="setter" output="false" access="public" returntype="any" hint="Map a setter function to a mapping">
-    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the setter method (without 'set')."/>
-		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping object this setter method will receive"/>
-		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this setter method will receive"/>
-		<cfargument name="value" 	type="any" 		required="false" hint="The value to pass into the setter method."/>
-    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value. Only used if using dsl or ref arguments"/>
+    	<cfargument name="name" 	required="true"  hint="The name of the setter method (without 'set')."/>
+		<cfargument name="ref" 		required="false" hint="The reference mapping object this setter method will receive"/>
+		<cfargument name="dsl" 		required="false" hint="The construction dsl this setter method will receive"/>
+		<cfargument name="value" 	required="false" hint="The value to pass into the setter method."/>
+    	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value. Only used if using dsl or ref arguments"/>
     	<cfscript>
     		currentMapping.addDISetter(argumentCollection=arguments);
     		return this;
@@ -363,12 +374,12 @@ Description :
 		
 	<!--- property --->
     <cffunction name="property" output="false" access="public" returntype="any" hint="Map a cfproperty to a mapping">
-    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the cfproperty to inject into"/>
-		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this property maps to"/>
-		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this property references. If used, the name value must be used."/>
-		<cfargument name="value" 	type="any" 		required="false" hint="The value of the property, if passed."/>
-    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
-    	<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
+    	<cfargument name="name" 	required="true"  hint="The name of the cfproperty to inject into"/>
+		<cfargument name="ref" 		required="false" hint="The reference mapping id this property maps to"/>
+		<cfargument name="dsl" 		required="false" hint="The construction dsl this property references. If used, the name value must be used."/>
+		<cfargument name="value" 	required="false" hint="The value of the property, if passed."/>
+    	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
+    	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
     	<cfscript>
     		currentMapping.addDIProperty(argumentCollection=arguments);
     		return this;
@@ -377,7 +388,7 @@ Description :
 	
 	<!--- onDIComplete --->
     <cffunction name="onDIComplete" output="false" access="public" returntype="any" hint="The methods to execute once DI completes on the mapping">
-    	<cfargument name="methods" type="any" required="true" hint="A list or an array of methods to execute once the mapping is created, inited and DI has happened."/>
+    	<cfargument name="methods" required="true" hint="A list or an array of methods to execute once the mapping is created, inited and DI has happened."/>
     	<cfscript>
     		//inflate list
 			if( isSimpleValue(arguments.methods) ){ arguments.methods = listToArray(arguments.methods); }
@@ -386,17 +397,38 @@ Description :
 			return this;
 		</cfscript>
     </cffunction>
+	
+	<!--- into --->
+    <cffunction name="into" output="false" access="public" returntype="any" hint="Map an object into a specific persistence scope">
+    	<cfargument name="scope" required="true" hint="The scope to map to, use a valid WireBox Scope by using binder.SCOPES.*" >
+    	<cfscript>
+			if( NOT this.SCOPES.isValid(arguments.scope) ){
+				utility.throwit(message="Invalid WireBox Scope: '#arguments.scope#'",
+								detail="Please make sure you are using a valid scope, valid scopes are: #arrayToList(this.SCOPES.getValidScopes())#",
+								type="Binder.InvalidScopeMapping");
+			}
+			currentMapping.setScope( arguments.scope );
+			return this;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- singleton shortcut --->
+    <cffunction name="asSingleton" output="false" access="public" returntype="any" hint="Map as a singleton, shortcut to using 'in( this.SCOPES.SINGLETON )'">
+    	<cfscript>
+    		return this.into( this.SCOPES.SINGLETON );
+		</cfscript>
+    </cffunction>
 
 <!------------------------------------------- STOP RECURSIONS ------------------------------------------>
 
 	<!--- getStopRecursions --->
-    <cffunction name="getStopRecursions" output="false" access="public" returntype="array" hint="Get all the stop recursion classes">
+    <cffunction name="getStopRecursions" output="false" access="public" returntype="any" hint="Get all the stop recursion classes array" colddoc:generic="Array">
     	<cfreturn instance.stopRecursions>
     </cffunction>
 	
 	<!--- stopRecursions --->
     <cffunction name="stopRecursions" output="false" access="public" returntype="any" hint="Configure the stop recursion classes">
-    	<cfargument name="classes" type="any" required="true" hint="A list or array of classes to use so the injector can stop when looking for dependencies in inheritance chains"/>
+    	<cfargument name="classes" required="true" hint="A list or array of classes to use so the injector can stop when looking for dependencies in inheritance chains"/>
    		<cfscript>
     		// inflate incoming locations
    			if( isSimpleValue(arguments.classes) ){ arguments.classes = listToArray(arguments.classes); }
@@ -411,15 +443,15 @@ Description :
 	
 	<!--- scopeRegistration --->
     <cffunction name="scopeRegistration" output="false" access="public" returntype="any" hint="Use to define injector scope registration">
-    	<cfargument name="enabled" 	type="boolean" 	required="false" default="#DEFAULTS.scopeRegistration.enabled#" hint="Enable registration or not (defaults=false)"/>
-		<cfargument name="scope" 	type="string" 	required="false" default="#DEFAULTS.scopeRegistration.scope#" hint="The scope to register on, defaults to application scope"/>
-		<cfargument name="key" 		type="string" 	required="false" default="#DEFAULTS.scopeRegistration.key#" hint="The key to use in the scope, defaults to wireBox"/>
+    	<cfargument name="enabled" 	required="false" default="#DEFAULTS.scopeRegistration.enabled#" hint="Enable registration or not (defaults=false) Boolean" colddoc:generic="Boolean" />
+		<cfargument name="scope" 	required="false" default="#DEFAULTS.scopeRegistration.scope#" hint="The scope to register on, defaults to application scope"/>
+		<cfargument name="key" 		required="false" default="#DEFAULTS.scopeRegistration.key#" hint="The key to use in the scope, defaults to wireBox"/>
 		<cfset structAppend( instance.scopeRegistration, arguments, true)>
 		<cfreturn this>
     </cffunction>
 
 	<!--- getScopeRegistration --->
-    <cffunction name="getScopeRegistration" output="false" access="public" returntype="struct" hint="Get the scope registration details">
+    <cffunction name="getScopeRegistration" output="false" access="public" returntype="any" hint="Get the scope registration details structure" colddoc:generic="Struct">
     	<cfreturn instance.scopeRegistration>
     </cffunction>
 				
@@ -432,7 +464,7 @@ Description :
 	
 	<!--- scanLocations --->
     <cffunction name="scanLocations" output="false" access="public" returntype="any" hint="Register one or more package scan locations for CFC lookups">
-    	<cfargument name="locations" type="any" required="true" hint="A list or array of locations to add to package scanning.e.g.: ['coldbox','com.myapp','transfer']"/>
+    	<cfargument name="locations" required="true" hint="A list or array of locations to add to package scanning.e.g.: ['coldbox','com.myapp','transfer']"/>
    		<cfscript>
    			var x = 1;
 			
@@ -454,7 +486,7 @@ Description :
 	
 	<!--- removeScanLocations --->
 	<cffunction name="removeScanLocations" output="false" access="public" returntype="void" hint="Try to remove all the scan locations passed in">
-		<cfargument name="locations" type="any" required="true" hint="Locations to remove from the lookup. A list or array of locations"/>
+		<cfargument name="locations" required="true" hint="Locations to remove from the lookup. A list or array of locations"/>
 		<cfscript>
 			var x = 1;
 			
@@ -472,25 +504,25 @@ Description :
 		
 	<!--- cacheBox --->
     <cffunction name="cacheBox" output="false" access="public" returntype="any" hint="Integrate with CacheBox">
-    	<cfargument name="configFile" 		type="string" 	required="false" default="" hint="The configuration file to use for loading CacheBox if creating it."/>
-		<cfargument name="cacheFactory" 	type="any" 		required="false" default="" hint="The CacheBox cache factory instance to link WireBox to"/>
-		<cfargument name="enabled" 			type="boolean" 	required="false" default="true" hint="Enable or Disable CacheBox Integration, if you call this method then enabled is set to true as most likely you are trying to enable it"/>
-    	<cfargument name="classNamespace" 	type="string" 	required="false" default="#DEFAULTS.cachebox.classNamespace#" hint="The package namespace to use for creating or connecting to CacheBox. Defaults to: coldbox.system.cache"/>
+    	<cfargument name="configFile" 		required="false" default="" hint="The configuration file to use for loading CacheBox if creating it."/>
+		<cfargument name="cacheFactory" 	required="false" default="" hint="The CacheBox cache factory instance to link WireBox to"/>
+		<cfargument name="enabled" 			required="false" default="true" hint="Enable or Disable CacheBox Integration, if you call this method then enabled is set to true as most likely you are trying to enable it" colddoc:generic="Boolean"/>
+    	<cfargument name="classNamespace" 	required="false" default="#DEFAULTS.cachebox.classNamespace#" hint="The package namespace to use for creating or connecting to CacheBox. Defaults to: coldbox.system.cache"/>
 		<cfset structAppend(instance.cacheBox, arguments, true)>
 		<cfreturn this>
 	</cffunction>
 	
 	<!--- getCacheBoxConfig --->
-    <cffunction name="getCacheBoxConfig" output="false" access="public" returntype="struct" hint="Get the CacheBox Configuration Integration structure">
+    <cffunction name="getCacheBoxConfig" output="false" access="public" returntype="any" hint="Get the CacheBox Configuration Integration structure" colddoc:generic="Struct">
     	<cfreturn instance.cacheBox>
     </cffunction>
 	
 	<!--- inCacheBox --->
     <cffunction name="inCacheBox" output="false" access="public" returntype="any" hint="Map an object into CacheBox">
-    	<cfargument name="key" 					type="string" 	required="false" default="" hint="You can override the key it will use for storing in cache. By default it uses the name of the mapping."/>
-    	<cfargument name="timeout" 				type="any" 		required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
-		<cfargument name="lastAccessTimeout" 	type="any" 		required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
-		<cfargument name="provider" 			type="string" 	required="false" default="default" hint="Uses the 'default' cache provider by default"/>
+    	<cfargument name="key" 					required="false" default="" hint="You can override the key it will use for storing in cache. By default it uses the name of the mapping."/>
+    	<cfargument name="timeout" 				required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
+		<cfargument name="lastAccessTimeout" 	required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
+		<cfargument name="provider" 			required="false" default="default" hint="Uses the 'default' cache provider by default"/>
 		<cfscript>
 			// if key not passed, use the same mapping name
 			if( NOT len(arguments.key) ){ arguments.key = currentMapping.getName(); }
@@ -506,8 +538,8 @@ Description :
 	
 	<!--- mapDSL --->
     <cffunction name="mapDSL" output="false" access="public" returntype="any" hint="Register a new custom dsl namespace">
-    	<cfargument name="namespace" 	type="string" required="true" hint="The namespace you would like to register"/>
-		<cfargument name="path" 		type="string" required="true" hint="The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLNamespace"/>
+    	<cfargument name="namespace" 	required="true" hint="The namespace you would like to register"/>
+		<cfargument name="path" 		required="true" hint="The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLNamespace"/>
 		<cfset instance.customDSL[arguments.namespace] = arguments.path>
 		<cfreturn this>
     </cffunction>
@@ -521,8 +553,8 @@ Description :
 
 	<!--- mapScope --->
     <cffunction name="mapScope" output="false" access="public" returntype="any" hint="Register a new WireBox custom scope">
-    	<cfargument name="annotation"	type="string" required="true" hint="The unique scope name to register. This translates to an annotation value on CFCs"/>
-    	<cfargument name="path" 		type="string" required="true" hint="The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.scopes.IScope"/>
+    	<cfargument name="annotation"	required="true" hint="The unique scope name to register. This translates to an annotation value on CFCs"/>
+    	<cfargument name="path" 		required="true" hint="The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.scopes.IScope"/>
 		<cfset instance.customScopes[arguments.annotation] = arguments.path>
 		<cfreturn this>
 	</cffunction>
@@ -536,24 +568,29 @@ Description :
 
 	<!--- logBoxConfig --->
     <cffunction name="logBoxConfig" output="false" access="public" returntype="any" hint="Set the logBox Configuration to use">
-    	<cfargument name="config" type="string" required="true" hint="The configuration file to use"/>
+    	<cfargument name="config" required="true" hint="The configuration file to use"/>
 		<cfset instance.logBoxConfig = arguments.config>
 		<cfreturn this>
     </cffunction>
 	
 	<!--- getLogBoxConfig --->
-    <cffunction name="getLogBoxConfig" output="false" access="public" returntype="string" hint="Get the logBox Configuration file to use">
+    <cffunction name="getLogBoxConfig" output="false" access="public" returntype="any" hint="Get the logBox Configuration file to use">
     	<cfreturn instance.logBoxConfig>
     </cffunction>
 
 <!------------------------------------------- DSL METHODS ------------------------------------------>
 
-	<!--- loadDataCFC --->
+	<!--- loadDataDSL --->
     <cffunction name="loadDataDSL" output="false" access="public" returntype="void" hint="Load a data configuration CFC data DSL">
-    	<cfargument name="rawDSL" type="struct" required="true" hint="The data configuration DSL structure"/>
+    	<cfargument name="rawDSL" required="false" hint="The data configuration DSL structure to load, else look internally" colddoc:generic="struct"/>
     	<cfscript>
-			var wireBoxDSL  = arguments.rawDSL;
+			var wireBoxDSL  = variables.wirebox;
 			var key 		= "";
+			
+			// Incoming raw DSL or use locally?
+			if ( structKeyExists(arguments,"rawDSL") ){
+				wireBoxDSL = arguments.rawDSL;
+			}
 			
 			// Register LogBox Configuration
 			if( structKeyExists( wireBoxDSL, "logBoxConfig") ){
@@ -610,12 +647,12 @@ Description :
     </cffunction>
 	
 	<!--- getDefaults --->
-    <cffunction name="getDefaults" output="false" access="public" returntype="struct" hint="Get the default WireBox settings">
+    <cffunction name="getDefaults" output="false" access="public" returntype="any" hint="Get the default WireBox settings structure" colddoc:generic="Struct">
     	<cfreturn variables.DEFAULTS>
     </cffunction>
 		
 	<!--- Get Memento --->
-	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the instance data">
+	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the instance data structure" colddoc:generic="Struct">
 		<cfreturn instance>
 	</cffunction>
 	
@@ -628,9 +665,9 @@ Description :
 
 	<!--- listener --->
 	<cffunction name="listener" output="false" access="public" returntype="any" hint="Add a new listener configuration.">
-		<cfargument name="class" 		type="string" required="true"  hint="The class of the listener"/>
-		<cfargument name="properties" 	type="struct" required="false" default="#structNew()#" hint="The structure of properties for the listner"/>
-		<cfargument name="name" 		type="string" required="false" default=""  hint="The name of the listener"/>
+		<cfargument name="class" 		required="true"  hint="The class of the listener"/>
+		<cfargument name="properties" 	required="false" default="#structNew()#" hint="The structure of properties for the listner" colddoc:generic="Struct"/>
+		<cfargument name="name" 		required="false" default=""  hint="The name of the listener"/>
 		<cfscript>
 			// Name check?
 			if( NOT len(arguments.name) ){
@@ -644,7 +681,7 @@ Description :
 	</cffunction>
 	
 	<!--- getListeners --->
-	<cffunction name="getListeners" output="false" access="public" returntype="array" hint="Get the configured listeners">
+	<cffunction name="getListeners" output="false" access="public" returntype="any" hint="Get the configured listeners array" colddoc:generic="Array">
 		<cfreturn instance.listeners>
 	</cffunction>
 	

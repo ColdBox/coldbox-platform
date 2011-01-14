@@ -5,7 +5,7 @@
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector");
 		
-		config = createObject("component","coldbox.system.ioc.config.Binder").init("coldbox.testing.cases.ioc.listeners.Config");
+		config = createObject("component","coldbox.system.ioc.config.Binder").init("coldbox.testing.cases.ioc.config.listeners.Config");
 		
 		// init factory
 		injector.init(config);	

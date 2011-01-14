@@ -10,8 +10,7 @@ Description :
 	
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="A lookup static CFC that gives you the scopes that WireBox uses by default. Declared Scopes are: NOSCOPE, PROTOTYPE, SINGLETON, SESSION, APPLICATION, REQUEST, SERVER, CACHEBOX" output="false">
-<cfscript>
+<cfcomponent hint="A lookup static CFC that gives you the scopes that WireBox uses by default. Declared Scopes are: NOSCOPE, PROTOTYPE, SINGLETON, SESSION, APPLICATION, REQUEST, SERVER, CACHEBOX" output="false"><cfscript>
 	//DECLARED SCOPES
 	this.NOSCOPE 		= "NoScope";
 	this.PROTOTYPE  	= "NoScope";
@@ -21,5 +20,25 @@ Description :
 	this.REQUEST		= "request";
 	this.SERVER			= "server";
 	this.CACHEBOX		= "cachebox";
-</cfscript>
-</cfcomponent>
+	
+	function isValid(scope){
+		var key = "";
+		for(key in this){
+			if( isSimpleValue(this[key]) and this[key] eq arguments.scope ){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	function getValidScopes(){
+		var key = "";
+		var scopes = {};
+		for(key in this){
+			if( isSimpleValue(this[key]) ){
+				scopes[key] = this[key];
+			}
+		}
+		return structKeyArray(scopes);
+	}
+</cfscript></cfcomponent>

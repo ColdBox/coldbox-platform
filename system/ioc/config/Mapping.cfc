@@ -16,7 +16,7 @@ Description :
 		
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="Mapping" hint="Constructor" output="false" >
-		<cfargument name="name" type="string" required="true" hint="The mapping name"/>
+		<cfargument name="name" required="true" hint="The mapping name"/>
 		<cfscript>
 			
 			// Configure Instance
@@ -27,6 +27,8 @@ Description :
 				alias = [],
 				// Mapping Type
 				type =  "",
+				// Mapping Value (If Any)
+				value = "",
 				// Mapped instantiation path
 				path = "",
 				// Mapped constructor
@@ -68,7 +70,7 @@ Description :
 	
 	<!--- processMemento --->
     <cffunction name="processMemento" output="false" access="public" returntype="any" hint="Process a mapping memento">
-    	<cfargument name="memento" type="struct" required="true" hint="The data memento to process"/>
+    	<cfargument name="memento" required="true" hint="The data memento to process" colddoc:generic="struct"/>
     	<cfscript>
     		var x = 1;
 			var key = "";
@@ -114,7 +116,7 @@ Description :
     </cffunction>
 	
 	<!--- Name --->
-	<cffunction name="getName" access="public" returntype="string" output="false" hint="Get the mapping name">
+	<cffunction name="getName" access="public" returntype="any" output="false" hint="Get the mapping name">
     	<cfreturn instance.name>
     </cffunction>
     <cffunction name="setName" access="public" returntype="any" output="false" hint="Name the mapping">
@@ -124,21 +126,21 @@ Description :
     </cffunction>
 	
 	<!--- Aliases --->
-	<cffunction name="getAlias" access="public" returntype="array" output="false" hint="Get the mapping aliases">
+	<cffunction name="getAlias" access="public" returntype="any" output="false" hint="Get the mapping aliases array" colddoc:generic="Array">
     	<cfreturn instance.alias>
     </cffunction>
     <cffunction name="setAlias" access="public" returntype="any" output="false" hint="Set the mapping aliases">
-    	<cfargument name="alias" type="array" required="true">
+    	<cfargument name="alias" required="true" colddoc:generic="Array">
     	<cfset instance.alias = arguments.alias>
     	<cfreturn this>
     </cffunction>
 	
 	<!--- Path --->
-	<cffunction name="getPath" access="public" returntype="string" output="false" hint="Get the path to this mapping">
+	<cffunction name="getPath" access="public" returntype="any" output="false" hint="Get the path to this mapping">
     	<cfreturn instance.path>
     </cffunction>
     <cffunction name="setPath" access="public" returntype="any" output="false" hint="Set the path to this mapping">
-    	<cfargument name="path" type="string" required="true">
+    	<cfargument name="path" required="true">
     	<cfset instance.path = arguments.path>
     	<cfreturn this>
     </cffunction>
@@ -148,37 +150,47 @@ Description :
     	<cfreturn instance.type>
     </cffunction>
     <cffunction name="setType" access="public" returntype="any" output="false" hint="Set the mapping type">
-    	<cfargument name="type" type="any" required="true">
+    	<cfargument name="type" required="true">
     	<cfset instance.type = arguments.type>
     	<cfreturn this>
     </cffunction>
 	
+	<!--- Value --->
+	<cffunction name="getValue" access="public" returntype="any" output="false" hint="Get the mapping value (if any)">
+    	<cfreturn instance.value>
+    </cffunction>
+    <cffunction name="setValue" access="public" returntype="any" output="false" hint="Set the mapping value">
+    	<cfargument name="value" required="true">
+    	<cfset instance.value = arguments.value>
+    	<cfreturn this>
+    </cffunction>
+	
 	<!--- Constructor --->
-	<cffunction name="getConstructor" access="public" returntype="string" output="false" hint="Get the name of the constructor method">
+	<cffunction name="getConstructor" access="public" returntype="any" output="false" hint="Get the name of the constructor method">
     	<cfreturn instance.constructor>
     </cffunction>
     <cffunction name="setConstructor" access="public" returntype="any" output="false" hint="Override the name of the constructor method">
-    	<cfargument name="constructor" type="string" required="true">
+    	<cfargument name="constructor" required="true">
     	<cfset instance.constructor = arguments.constructor>
     	<cfreturn this>
     </cffunction>
     
 	<!--- isAutowire --->
-    <cffunction name="isAutowire" output="false" access="public" returntype="boolean" hint="Using autowire or not">
+    <cffunction name="isAutowire" output="false" access="public" returntype="any" hint="Flag describing if you are using autowire or not as Boolean" colddoc:generic="Boolean">
     	<cfreturn instance.autowire>
     </cffunction>
     <cffunction name="setAutowire" access="public" returntype="any" output="false" hint="Set autowire property">
-    	<cfargument name="autowire" type="boolean" required="true">
+    	<cfargument name="autowire" required="true" colddoc:generic="Boolean">
     	<cfset instance.autowire = arguments.autowire>
     	<cfreturn this>
     </cffunction>
 	
 	<!--- isAutoInit --->
-    <cffunction name="isAutoInit" output="false" access="public" returntype="boolean" hint="Using auto init of mapping target or not">
+    <cffunction name="isAutoInit" output="false" access="public" returntype="any" hint="Using auto init of mapping target or not as boolean" colddoc:generic="Boolean">
     	<cfreturn instance.autoInit>
     </cffunction>
     <cffunction name="setAutoInit" access="public" returntype="any" output="false" hint="Set autoInit property">
-    	<cfargument name="autoInit" type="boolean" required="true">
+    	<cfargument name="autoInit" required="true">
     	<cfset instance.autoInit = arguments.autoInit>
     	<cfreturn this>
     </cffunction>
@@ -194,45 +206,45 @@ Description :
     </cffunction>
     
 	<!--- DSL --->
-	<cffunction name="isDSL" output="false" access="public" returntype="boolean" hint="Does this mapping have a DSL construction element">
+	<cffunction name="isDSL" output="false" access="public" returntype="any" hint="Does this mapping have a DSL construction element or not as Boolean" colddoc:generic="boolean">
 		<cfreturn (len(instance.dsl) GT 0)>    	
     </cffunction>
-    <cffunction name="getDSL" access="public" returntype="string" output="false" hint="Get the construction DSL">
+    <cffunction name="getDSL" access="public" returntype="any" output="false" hint="Get the construction DSL">
     	<cfreturn instance.dsl>
     </cffunction>
     <cffunction name="setDSL" access="public" returntype="any" output="false" hint="Set the construction DSL">
-    	<cfargument name="dsl" type="string" required="true">
+    	<cfargument name="dsl" required="true">
     	<cfset instance.dsl = arguments.dsl>
     	<cfreturn this>
     </cffunction>
 	
 	<!--- cacheProperties --->
     <cffunction name="setCacheProperties" output="false" access="public" returntype="any" hint="Set the cache properties for this mapping (Needs cachebox integration)">
-    	<cfargument name="key" 					type="string" 	required="true" hint="Cache key."/>
-    	<cfargument name="timeout" 				type="any" 		required="false" default="" hint="Object Timeout"/>
-		<cfargument name="lastAccessTimeout" 	type="any" 		required="false" default="" hint="Object Last Access Timeout"/>
-		<cfargument name="provider" 			type="string" 	required="false" default="default" hint="Cache Provider"/>
+    	<cfargument name="key" 					required="true" hint="Cache key to use"/>
+    	<cfargument name="timeout" 				required="false" default="" hint="Object Timeout"/>
+		<cfargument name="lastAccessTimeout" 	required="false" default="" hint="Object Last Access Timeout"/>
+		<cfargument name="provider" 			required="false" default="default" hint="The Cache Provider to use"/>
 		<cfscript>
 			structAppend( instance.cache, arguments, true);
 			return this;
 		</cfscript>
     </cffunction>
-    <cffunction name="getCacheProperties" output="false" access="public" returntype="struct" hint="Get this mappings cache properties">
+    <cffunction name="getCacheProperties" output="false" access="public" returntype="any" hint="Get this mappings cache properties structure" colddoc:generic="struct">
     	<cfreturn instance.cache>
     </cffunction>
 	
 	<!--- getDIConstructorArguments --->
-    <cffunction name="getDIConstructorArguments" output="false" access="public" returntype="array" hint="Get all the constructor argument definitions">
+    <cffunction name="getDIConstructorArguments" output="false" access="public" returntype="any" hint="Get all the constructor argument definitions array" colddoc:generic="array">
     	<cfreturn instance.DIConstructorArgs>
     </cffunction>
 	
 	<!--- addConstructorArgument --->
-    <cffunction name="addDIConstructorArgument" output="false" access="public" returntype="any" hint="Add a new constructor argument">
-    	<cfargument name="name" 	type="string" 	required="false" hint="The name of the constructor argument (NA: JAVA,WEBSERVICE)"/>
-		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
-		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
-		<cfargument name="value" 	type="any" 		required="false" hint="The explicit value of the constructor argument, if passed."/>
-    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    <cffunction name="addDIConstructorArgument" output="false" access="public" returntype="any" hint="Add a new constructor argument to this mapping">
+    	<cfargument name="name" 	required="false" hint="The name of the constructor argument (NA: JAVA,WEBSERVICE)"/>
+		<cfargument name="ref" 		required="false" hint="The reference mapping id this constructor argument maps to"/>
+		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
+		<cfargument name="value" 	required="false" hint="The explicit value of the constructor argument, if passed."/>
+    	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfscript>
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
@@ -242,18 +254,18 @@ Description :
     </cffunction>
 
 	<!--- getProperties --->
-    <cffunction name="getDIProperties" output="false" access="public" returntype="array" hint="Get all the DI property definitions">
+    <cffunction name="getDIProperties" output="false" access="public" returntype="any" hint="Get all the DI property definitions array" colddoc:generic="Array">
     	<cfreturn instance.DIProperties>
     </cffunction>
 	
 	<!--- addDIProperty --->
     <cffunction name="addDIProperty" output="false" access="public" returntype="any" hint="Add a new cfproperty definition">
-    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the cfproperty to inject"/>
-		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this property maps to"/>
-		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this property references. If used, the name value must be used."/>
-		<cfargument name="value" 	type="any" 		required="false" hint="The value of the property, if passed."/>
-    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
-    	<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
+    	<cfargument name="name" 	required="true"  hint="The name of the cfproperty to inject"/>
+		<cfargument name="ref" 		required="false" hint="The reference mapping id this property maps to"/>
+		<cfargument name="dsl" 		required="false" hint="The construction dsl this property references. If used, the name value must be used."/>
+		<cfargument name="value" 	required="false" hint="The value of the property, if passed."/>
+    	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
+    	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
     	<cfscript>
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
@@ -263,17 +275,17 @@ Description :
     </cffunction>
 
     <!--- getDISetters --->
-    <cffunction name="getDISetters" output="false" access="public" returntype="array" hint="Get all the DI setter definitions">
+    <cffunction name="getDISetters" output="false" access="public" returntype="any" hint="Get all the DI setter definitions array" colddoc:generic="array">
     	<cfreturn instance.DISetters>
     </cffunction>
 	
 	<!--- addDISetter --->
     <cffunction name="addDISetter" output="false" access="public" returntype="any" hint="Add a new DI setter definition">
-    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the setter method."/>
-		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this setter argument maps to"/>
-		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
-		<cfargument name="value" 	type="any" 		required="false" hint="The value of the setter argument, if passed."/>
-    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfargument name="name" 	required="true"  hint="The name of the setter method."/>
+		<cfargument name="ref" 		required="false" hint="The reference mapping id this setter argument maps to"/>
+		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
+		<cfargument name="value" 	required="false" hint="The value of the setter argument, if passed."/>
+    	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfscript>
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
@@ -283,17 +295,17 @@ Description :
     </cffunction>
 	
 	<!--- onDIComplete --->
-    <cffunction name="getOnDIComplete" output="false" access="public" returntype="array" hint="Get all the DI complete methods array">
+    <cffunction name="getOnDIComplete" output="false" access="public" returntype="any" hint="Get all the DI complete methods array" colddoc:generic="array">
     	<cfreturn instance.onDIComplete>
     </cffunction>
     <cffunction name="setOnDIComplete" output="false" access="public" returntype="any" hint="Set the DI Complete method array">
-  		<cfargument name="DIComplete" type="array" required="true" default="" hint="The method array list"/>
+  		<cfargument name="DIComplete" required="true" default="" hint="The method array to set"/>
     	<cfset instance.onDIComplete = arguments.DIComplete>
     	<cfreturn this>
     </cffunction>
 
 	<!--- isDiscovered --->
-    <cffunction name="isDiscovered" output="false" access="public" returntype="boolean" hint="Checks if this mapping has already been processed or not">
+    <cffunction name="isDiscovered" output="false" access="public" returntype="any" hint="Checks if this mapping has already been processed or not" colddoc:generic="Boolean">
     	<cfreturn instance.discovered>
     </cffunction>
 	
@@ -304,38 +316,38 @@ Description :
     </cffunction>
 	
 	<!--- getMetadata --->
-    <cffunction name="getMetadata" output="false" access="public" returntype="any" hint="Get the internal mapping metadata">
+    <cffunction name="getMetadata" output="false" access="public" returntype="any" hint="Get the internal mapping metadata of the object">
     	<cfreturn instance.metadata>
     </cffunction>
 	
 	<!--- setMetadata --->
     <cffunction name="setMetadata" output="false" access="public" returntype="any" hint="Set the mappings CFC target metadata">
-    	<cfargument name="metadata" type="any" required="true" hint="Target CFC metadata"/>
+    	<cfargument name="metadata" required="true" hint="Target CFC metadata"/>
 		<cfset instance.metadata = arguments.metadata>
 		<cfreturn this>
     </cffunction>
 
 	<!--- isEagerInit --->
-    <cffunction name="isEagerInit" output="false" access="public" returntype="boolean" hint="Is this mapping eager initialized">
+    <cffunction name="isEagerInit" output="false" access="public" returntype="any" hint="Is this mapping eager initialized or not as Boolean" colddoc:generic="Boolean">
     	<cfreturn instance.eagerInit>
     </cffunction>
 	
 	<!--- setEagerInit --->
     <cffunction name="setEagerInit" output="false" access="public" returntype="any" hint="Set the eager init flag">
-    	<cfargument name="eagerInit" type="boolean" required="true" hint="Set the eager init flag"/>
+    	<cfargument name="eagerInit" required="true" hint="Set the eager init flag"/>
     	<cfset instance.eagerInit = arguments.eagerInit>
     	<cfreturn this>
 	</cffunction>
 	
 	<!--- getProviderMethods --->
-    <cffunction name="getProviderMethods" output="false" access="public" returntype="array" hint="Get the discovered provider methods">
+    <cffunction name="getProviderMethods" output="false" access="public" returntype="any" hint="Get the discovered provider methods array" colddoc:generic="Array">
     	<cfreturn instance.providerMethods>
     </cffunction>
 	
 	<!--- addProviderMethod --->
-    <cffunction name="addProviderMethod" output="false" access="public" returntype="any" hint="Add a new provider method">
-    	<cfargument name="method" 	type="string" required="true" hint="The provided method"/>
-		<cfargument name="mapping" 	type="string" required="true" hint="The mapping to provide"/>
+    <cffunction name="addProviderMethod" output="false" access="public" returntype="any" hint="Add a new provider method to this mapping">
+    	<cfargument name="method" 	required="true" hint="The provided method to override as a provider"/>
+		<cfargument name="mapping" 	required="true" hint="The mapping to provide via the selected method"/>
 		<cfset arrayAppend( instance.providerMethods, arguments)>
 		<cfreturn this>
     </cffunction>
@@ -343,7 +355,7 @@ Description :
 <!----------------------------------------- PRIVATE ------------------------------------->	
 	
 	<!--- getDIDefinition --->
-    <cffunction name="getDIDefinition" output="false" access="private" returntype="struct" hint="Get a new DI definition structure">
+    <cffunction name="getDIDefinition" output="false" access="private" returntype="any" hint="Get a new DI definition structure" colddoc:generic="structure">
     	<cfreturn duplicate(variables.DIDefinition)>
     </cffunction>
 

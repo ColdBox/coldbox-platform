@@ -1,8 +1,11 @@
 <cfcomponent name="Category">
-
-<cffunction name="init" output="false" returntype="any">
-	<cfreturn THIS>
-</cffunction>
-
+	
+	<cfproperty name="categoryService" inject="model">
+	
+	<cffunction name="init" output="false" returntype="any">
+		<cfargument name="jsonProperty" inject="model">
+		<cfset variables.jsonProperty = arguments.jsonProperty>
+		<cfreturn THIS>
+	</cffunction>
 
 </cfcomponent>

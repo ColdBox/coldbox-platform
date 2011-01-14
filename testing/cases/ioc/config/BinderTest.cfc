@@ -133,6 +133,13 @@
 		assertEquals( this.TYPES.RSS, mapping.getType() );
 		assertEquals( "http://www.coldbox.org/rss", mapping.getPath() );
 	}
+	
+	function testToValue(){
+		config.map("Const").toValue("const");
+		mapping = config.getMapping("Const");
+		assertEquals( this.TYPES.CONSTANT, mapping.getType() );
+		assertEquals( "const", mapping.getValue() );
+	}
 
 	function testToDSL(){
 		config.map("Test").toDSL("provider:user");
@@ -386,5 +393,20 @@
 		config.loadDataDSL( raw );
 	}
 	
+	function testInto(){
+		config.mapPath("Test").into(config.SCOPES.SINGLETON);
+		mapping = config.getMapping("Test");	
+		assertEquals(config.scopes.singleton, mapping.getScope());	
+		
+		config.mapPath("Test").into(config.SCOPES.REQUEST);
+		mapping = config.getMapping("Test");	
+		assertEquals(config.scopes.REQUEST, mapping.getScope());	
+	}
+	
+	function testAsSingleton(){
+		config.mapPath("Test").asSingleton();
+		mapping = config.getMapping("Test");	
+		assertEquals(config.scopes.singleton, mapping.getScope());	
+	}
 </cfscript>
 </cfcomponent>
