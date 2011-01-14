@@ -192,7 +192,12 @@ Description :
 		<cfargument name="category" required="true" hint="The category name to investigate for parents."/>
 		<cfscript>
 			// Get parent category name shortened by one.
-			var parentCategory = listDeleteAt(arguments.category, listLen(arguments.category,"."), ".");
+			var parentCategory = "";
+			
+			// category len check
+			if( len(arguments.category) ){
+				parentCategory = listDeleteAt(arguments.category, listLen(arguments.category,"."), ".");
+			}
 			
 			// Check if parent Category is empty
 			if( len(parentCategory) EQ 0 ){
