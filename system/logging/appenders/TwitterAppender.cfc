@@ -25,11 +25,11 @@ Properties:
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="TwitterAppender" hint="Constructor" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
-		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="levelMax"  	type="numeric" required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
+		<cfargument name="name" 		required="true" hint="The unique name for this appender."/>
+		<cfargument name="properties" 	required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
+		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
+		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
+		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Init supertype
@@ -60,7 +60,7 @@ Properties:
 	<!--- Log Message --->
 	<cffunction name="logMessage" access="public" output="true" returntype="void" hint="Write an entry into the appender.">
 		<!--- ************************************************************* --->
-		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent" required="true" hint="The logging event"/>
+		<cfargument name="logEvent" type="any" required="true" hint="The logging event"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var entry = structnew();
@@ -97,7 +97,7 @@ Properties:
 
 	<!--- directMessage --->
 	<cffunction name="directMessage" output="false" access="private" returntype="void" hint="Send a direct message">
-		<cfargument name="message" type="string" required="true" hint="The message to post"/>
+		<cfargument name="message" required="true" hint="The message to post"/>
 		
 		<cfset var msg = "">
 		<cfhttp url="http://twitter.com/direct_messages/new.xml" 
@@ -113,7 +113,7 @@ Properties:
 	
 	<!--- statusUpdate --->
 	<cffunction name="statusUpdate" output="false" access="private" returntype="void" hint="Send a status update">
-		<cfargument name="message" type="string" required="true" hint="The message to post"/>
+		<cfargument name="message" required="true" hint="The message to post"/>
 		
 		<cfset var msg = "">
 		<cfhttp url="http://twitter.com/statuses/update.xml" 

@@ -74,7 +74,7 @@ Description :
     </cffunction>
 	
 	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
+	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
 		<cfset var results 	= super.lookup( arguments.objectKey )>
@@ -148,7 +148,7 @@ Description :
 		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
 		<cfargument name="timeout"				type="any"  required="false" default="0" hint="Timeout in minutes">
 		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="0" hint="Idle Timeout in minutes">
-		<cfargument name="extras" 				type="struct" default="#structnew()#" hint="A map of extra name-value pairs"/>
+		<cfargument name="extras" 				type="any" default="#structnew()#" hint="A map of extra name-value pairs"/>
 		<!--- ************************************************************* --->
 		
 		<cfset var target 	= 0>
@@ -181,7 +181,7 @@ Description :
 	</cffunction>
 
 	<!--- Clear an object from the pool --->
-	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the storage pool">
+	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool">
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
 		
 		<cfset var softRef = "">
@@ -218,7 +218,7 @@ Description :
 	</cffunction>	
 		
 	<!--- softRefLookup --->
-	<cffunction name="softRefLookup" access="public" returntype="boolean" hint="See if the soft reference is in the reference key map" output="false" >
+	<cffunction name="softRefLookup" access="public" returntype="any" hint="See if the soft reference is in the reference key map" output="false" >
 		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
 		<cfreturn structKeyExists(instance.softRefKeyMap,arguments.softRef)>
 	</cffunction>

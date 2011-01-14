@@ -25,15 +25,15 @@ Description :
     </cffunction>
 	
 	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.store.indexers.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
+	<cffunction name="getIndexer" access="public" returntype="any" output="false" hint="Get the store's pool metadata indexer structure" colddoc:generic="coldbox.system.cache.store.indexers.MetadataIndexer">
 	</cffunction>
 	
 	<!--- getKeys --->
-	<cffunction name="getKeys" output="false" access="public" returntype="array" hint="Get all the store's object keys">
+	<cffunction name="getKeys" output="false" access="public" returntype="any" hint="Get all the store's object keys array" colddoc:generic="Array">
 	</cffunction>
 	
 	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in the store">
+	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in the store">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 	</cffunction>
 	
@@ -53,7 +53,7 @@ Description :
 	</cffunction>
 	
 	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="boolean" hint="Test if an object in the store has expired or not">
+    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not" colddoc:generic="Boolean">
     	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
     </cffunction>
 	
@@ -63,16 +63,16 @@ Description :
 		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
 		<cfargument name="timeout"				type="any"  hint="Timeout in minutes">
 		<cfargument name="lastAccessTimeout"	type="any"  hint="Timeout in minutes">
-		<cfargument name="extras" 				type="struct" hint="A map of extra name-value pairs"/>
+		<cfargument name="extras" 				type="any" 	hint="A map of extra name-value pairs"/>
 	</cffunction>
 	
 	<!--- Clear an object from the pool --->
-	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the storage pool">
-		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
+	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool" colddoc:generic="Boolean">
+		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
 	</cffunction>
 
 	<!--- Get the size of the pool --->
-	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the store's size">
+	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the store's size" colddoc:generic="numeric">
 	</cffunction>
 	
 </cfinterface>

@@ -27,7 +27,7 @@ Description :
 				// CacheBox Factory UniqueID
 				factoryID = createObject('java','java.lang.System').identityHashCode(this),	
 				// Version
-				version = "1.1.2",	 
+				version = "1.1.3",	 
 				// Configuration object
 				config  = "",
 				// ColdBox Application Link
@@ -236,6 +236,7 @@ Description :
 			var cache 	   = "";
 			var i 		   = 1;
 			
+			// Log startup
 			if( instance.log.canInfo() ){
     			instance.log.info("Shutdown of cache factory: #getFactoryID()# requested and started.");
     		}
@@ -281,6 +282,7 @@ Description :
 			iData = {cacheFactory=this};
 			instance.eventManager.processState("afterCacheFactoryShutdown",iData);
 			
+			// Log shutdown complete
 			if( instance.log.canInfo() ){
 				instance.log.info("Shutdown of cache factory: #getFactoryID()# completed.");
 			}
@@ -334,7 +336,7 @@ Description :
 	<!--- removeFromScope --->
     <cffunction name="removeFromScope" output="false" access="public" returntype="void" hint="Remove the cache factory from scope registration if enabled, else does nothing">
     	<cfscript>
-			var scopeInfo 		= instance.config.getScopeRegistration();
+			var scopeInfo = instance.config.getScopeRegistration();
 			if( scopeInfo.enabled ){
 				createObject("component","coldbox.system.core.collections.ScopeStorage").init().delete(scopeInfo.key, scopeInfo.scope);
 			}
@@ -445,8 +447,8 @@ Description :
 	
 	<!--- replaceCache --->
     <cffunction name="replaceCache" output="false" access="public" returntype="void" hint="Replace a registered named cache with a new decorated cache of the same name.">
-    	<cfargument name="cache" 			type="any" required="true" hint="The name of the cache to replace or the actual instance of the cache to replace" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
-		<cfargument name="decoratedCache" 	type="any" required="true" hint="The decorated cache manager instance to replace with of type coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
+    	<cfargument name="cache" 			required="true" hint="The name of the cache to replace or the actual instance of the cache to replace" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
+		<cfargument name="decoratedCache" 	required="true" hint="The decorated cache manager instance to replace with of type coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		
 		<cfscript>
 			var name = "";
@@ -467,6 +469,7 @@ Description :
 				iData.oldCache = instance.caches[name];
 				iData.newCache = arguments.decoratedCache;
 				instance.eventManager.processState("beforeCacheReplacement",iData);
+				
 				// remove old Cache
 				structDelete( instance.caches, name);
 				// Replace it

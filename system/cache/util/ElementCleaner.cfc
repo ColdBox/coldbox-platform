@@ -30,8 +30,8 @@ Description :
 	<!--- Clear By Key Snippet --->
 	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="keySnippet"  	type="string"  required="true"  hint="the cache key snippet to use">
-		<cfargument name="regex" 		type="boolean" required="false" default="false" hint="Use regex or not">
+		<cfargument name="keySnippet"  	required="true"  hint="the cache key snippet to use">
+		<cfargument name="regex" 		required="false" default="false" hint="Use regex or not">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cacheKeys 		= getAssociatedCache().getKeys();
@@ -65,8 +65,8 @@ Description :
 	
 	<!--- Clear an event --->
 	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
-		<cfargument name="eventsnippet" type="string" 	required="true" hint="The event snippet to clear on. Can be partial or full">
-		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
+		<cfargument name="eventsnippet" required="true" hint="The event snippet to clear on. Can be partial or full">
+		<cfargument name="queryString" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
 		<cfscript>
 			//.*- = the cache suffix and appendages for regex to match
 			var cacheKey = getAssociatedCache().getEventCacheKeyPrefix() & replace(arguments.eventsnippet,".","\.","all") & ".*-.*";
@@ -83,8 +83,8 @@ Description :
 	
 	<!--- Clear an event Multi --->
 	<cffunction name="clearEventMulti" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
-		<cfargument name="eventsnippets"    type="any"   	required="true"  hint="The comma-delimmitted list event snippet to clear on. Can be partial or full">
-		<cfargument name="queryString"      type="string"   required="false" default="" hint="The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in."/>
+		<cfargument name="eventsnippets"    required="true"  hint="The comma-delimmitted list event snippet to clear on. Can be partial or full">
+		<cfargument name="queryString"      required="false" default="" hint="The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in."/>
 		<cfscript>
 			var regexCacheKey 	= "";
 			var x 			  	= 1;
@@ -132,7 +132,7 @@ Description :
 
 	<!--- clear View --->
 	<cffunction name="clearView" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
-		<cfargument name="viewSnippet"  required="true" type="string" hint="The view name snippet to purge from the cache">
+		<cfargument name="viewSnippet"  required="true" hint="The view name snippet to purge from the cache">
 		<cfscript>
 			var cacheKey = getAssociatedCache().getViewCacheKeyPrefix() & arguments.viewSnippet;
 			
@@ -143,7 +143,7 @@ Description :
 	
 	<!--- clearViewMulti --->
 	<cffunction name="clearViewMulti" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
-		<cfargument name="viewSnippets"    type="string"   required="true"  hint="The comma-delimmitted list or array of view snippet to clear on. Can be partial or full">
+		<cfargument name="viewSnippets" required="true"  hint="The comma-delimmitted list or array of view snippet to clear on. Can be partial or full">
 		<cfscript>
 			var regexCacheKey 	= "";
 			var x 			  	= 1;

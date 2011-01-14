@@ -50,9 +50,9 @@ Description :
 	
 	<!--- processEvictions --->
     <cffunction name="processEvictions" output="false" access="private" returntype="void" hint="Abstract processing of evictions">
-    	<cfargument name="index" type="array" required="true" hint="The array of metadata keys used for processing evictions"/>
+    	<cfargument name="index" type="any" required="true" hint="The array of metadata keys used for processing evictions"/>
     	<cfscript>
-    		var oCacheManager 	= getAssociatedCache();
+    		var oCacheManager 	= variables.cacheProvider;
 			var indexer			= oCacheManager.getObjectStore().getIndexer();
 			var indexLength 	= arrayLen(arguments.index);
 			var x 				= 1;
@@ -94,7 +94,7 @@ Description :
     </cffunction>
 	
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a ColdBox utility object">
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a ColdBox utility object">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 		

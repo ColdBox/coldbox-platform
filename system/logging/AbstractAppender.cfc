@@ -204,8 +204,12 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
-		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object">
+		<cfscript> 
+			if( structKeyExists(instance,"util") ){ return instance.util; }
+			instance.util = createObject("component","coldbox.system.core.util.Util");
+			return instance.util;
+		</cfscript>
 	</cffunction>
 	
 	<!--- $log --->

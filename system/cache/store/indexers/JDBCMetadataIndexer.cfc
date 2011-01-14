@@ -18,9 +18,9 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cffunction name="init" access="public" output="false" returntype="JDBCMetadataIndexer" hint="Constructor">
-		<cfargument name="fields" 	type="any"	 	required="true" hint="The list or array of fields to bind this index on"/>
-		<cfargument name="config" 	type="struct" 	required="true" hint="JDBC Configuration structure"/>
-		<cfargument name="store" 	type="any" 		required="true" hint="The associated storage"/>
+		<cfargument name="fields" 	required="true" hint="The list or array of fields to bind this index on"/>
+		<cfargument name="config" 	required="true" hint="JDBC Configuration structure"/>
+		<cfargument name="store" 	required="true" hint="The associated storage"/>
 		<cfscript>
 			super.init(arguments.fields);
 			
@@ -56,7 +56,7 @@ Description :
     </cffunction>
 
 	<!--- objectExists --->
-    <cffunction name="objectExists" output="false" access="public" returntype="boolean" hint="Check if the metadata entry exists for an object">
+    <cffunction name="objectExists" output="false" access="public" returntype="any" hint="Check if the metadata entry exists for an object">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
 		<cfset var q 				= "">
@@ -115,7 +115,7 @@ Description :
 	</cffunction>
 	
 	<!--- getSize --->
-    <cffunction name="getSize" output="false" access="public" returntype="numeric" hint="Get the size of the elements indexed">
+    <cffunction name="getSize" output="false" access="public" returntype="any" hint="Get the size of the elements indexed">
     	<cfreturn instance.store.getSize()>
     </cffunction>
 	
