@@ -165,9 +165,9 @@ Properties
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Lookup Multiple Keys --->
-	<cffunction name="lookupMulti" access="public" output="false" returntype="struct" hint="The returned value is a structure of name-value pairs of all the keys that where found or not.">
-		<cfargument name="keys" 	type="any" 		required="true" hint="The comma delimited list or an array of keys to lookup in the cache.">
-		<cfargument name="prefix" 	type="string" 	required="false" default="" hint="A prefix to prepend to the keys">
+	<cffunction name="lookupMulti" access="public" output="false" returntype="any" hint="The returned value is a structure of name-value pairs of all the keys that where found or not." colddoc:generic="struct">
+		<cfargument name="keys" 	type="any" 	required="true" hint="The comma delimited list or an array of keys to lookup in the cache.">
+		<cfargument name="prefix" 	type="any" 	required="false" default="" hint="A prefix to prepend to the keys">
 		<cfscript>
 			var returnStruct 	= structnew();
 			var x 				= 1;
@@ -189,7 +189,7 @@ Properties
 	</cffunction>
 	
 	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
+	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache, if not found it records a miss." colddoc:generic="boolean">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<cfscript>
 			if( lookupQuiet(arguments.objectKey) ){
@@ -206,7 +206,7 @@ Properties
 	</cffunction>
 	
 	<!--- lookupQuiet --->
-	<cffunction name="lookupQuiet" access="public" output="false" returntype="boolean" hint="Check if an object is in cache quietly, advising nobody!">
+	<cffunction name="lookupQuiet" access="public" output="false" returntype="any" hint="Check if an object is in cache quietly, advising nobody!" colddoc:generic="boolean">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<cfscript>
 			// cleanup the key
@@ -253,10 +253,10 @@ Properties
 	</cffunction>
 	
 	<!--- Get multiple objects from the cache --->
-	<cffunction name="getMulti" access="public" output="false" returntype="struct" hint="The returned value is a structure of name-value pairs of all the keys that where found. Not found values will not be returned">
+	<cffunction name="getMulti" access="public" output="false" returntype="any" hint="The returned value is a structure of name-value pairs of all the keys that where found. Not found values will not be returned" colddoc:generic="struct">
 		<!--- ************************************************************* --->
 		<cfargument name="keys" 		type="any" 		required="true" hint="The comma delimited list or array of keys to retrieve from the cache.">
-		<cfargument name="prefix"		type="string" 	required="false" default="" hint="A prefix to prepend to the keys">
+		<cfargument name="prefix"		type="any" 	required="false" default="" hint="A prefix to prepend to the keys">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var returnStruct = structnew();
@@ -284,7 +284,7 @@ Properties
 	</cffunction>
 			
 	<!--- getCachedObjectMetadata --->
-	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure.">
+	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="any" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure." colddoc:generic="struct">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
 		<!--- ************************************************************* --->
@@ -302,10 +302,10 @@ Properties
 	</cffunction>
 	
 	<!--- getCachedObjectMetadata --->
-	<cffunction name="getCachedObjectMetadataMulti" output="false" access="public" returntype="struct" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure.">
+	<cffunction name="getCachedObjectMetadataMulti" output="false" access="public" returntype="any" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure." colddoc:generic="struct">
 		<!--- ************************************************************* --->
-		<cfargument name="keys" 	type="any"	  required="true" hint="The comma delimited list or array of keys to retrieve from the cache.">
-		<cfargument name="prefix" 	type="string" required="false" default="" hint="A prefix to prepend to the keys">
+		<cfargument name="keys" 	type="any" required="true" hint="The comma delimited list or array of keys to retrieve from the cache.">
+		<cfargument name="prefix" 	type="any" required="false" default="" hint="A prefix to prepend to the keys">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var returnStruct = structnew();
@@ -333,10 +333,10 @@ Properties
 	<!--- Set Multi Object in the cache --->
 	<cffunction name="setMulti" access="public" output="false" returntype="void" hint="Sets Multiple Ojects in the cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
 		<!--- ************************************************************* --->
-		<cfargument name="mapping" 				type="struct"  	required="true" hint="The structure of name value pairs to cache">
-		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
-		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="prefix" 				type="string" 	required="false" default="" hint="A prefix to prepend to the keys">
+		<cfargument name="mapping" 				type="any" 	required="true" hint="The structure of name value pairs to cache" colddoc:generic="struct">
+		<cfargument name="timeout"				type="any" 	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="prefix" 				type="any" 	required="false" default="" hint="A prefix to prepend to the keys">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var key = 0;
@@ -351,13 +351,13 @@ Properties
 	</cffunction>
 	
 	<!--- Set an Object in the cache --->
-	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
+	<cffunction name="set" access="public" output="false" returntype="any" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later." colddoc:generic="boolean">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
 		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
 		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
+		<cfargument name="extra" 				type="any" 		required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation" colddoc:generic="struct"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var iData = "";
@@ -399,13 +399,13 @@ Properties
 	</cffunction>
 	
 	<!--- Set an Object in the cache --->
-	<cffunction name="setQuiet" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
+	<cffunction name="setQuiet" access="public" output="false" returntype="any" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later." colddoc:generic="boolean">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
 		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
 		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
+		<cfargument name="extra" 				type="any" 		required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"  colddoc:generic="struct">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var isJVMSafe 		= true;
@@ -443,10 +443,10 @@ Properties
 	</cffunction>
 
 	<!--- Clear an object from the cache --->
-	<cffunction name="clearMulti" access="public" output="false" returntype="struct" hint="Clears objects from the cache by using its cache key. The returned value is a structure of name-value pairs of all the keys that where removed from the operation.">
+	<cffunction name="clearMulti" access="public" output="false" returntype="any" hint="Clears objects from the cache by using its cache key. The returned value is a structure of name-value pairs of all the keys that where removed from the operation." colddoc:generic="struct">
 		<!--- ************************************************************* --->
-		<cfargument name="keys" 		type="any" 	  required="true" hint="The comma-delimmitted list or array of keys to remove.">
-		<cfargument name="prefix" 		type="string" required="false" default="" hint="A prefix to prepend to the keys">
+		<cfargument name="keys" 		type="any" 	required="true" hint="The comma-delimmitted list or array of keys to remove.">
+		<cfargument name="prefix" 		type="any" 	required="false" default="" hint="A prefix to prepend to the keys">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var returnStruct = {};
@@ -473,9 +473,9 @@ Properties
 	
 	<!--- Clear By Key Snippet --->
 	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
-		<cfargument name="keySnippet"  	type="string" required="true"  hint="the cache key snippet to use">
-		<cfargument name="regex" 		type="boolean" default="false" hint="Use regex or not">
-		<cfargument name="async" 		type="boolean" default="false" hint="Run command asynchronously or not"/>
+		<cfargument name="keySnippet"  	type="any" required="true"  hint="the cache key snippet to use">
+		<cfargument name="regex" 		type="any" default="false" hint="Use regex or not" colddoc:generic="boolean">
+		<cfargument name="async" 		type="any" default="false" hint="Run command asynchronously or not" colddoc:generic="boolean"/>
 		
 		<cfset var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
 		
@@ -490,8 +490,8 @@ Properties
 	</cffunction>
 
 	<!--- clearQuiet --->
-	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
-		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+	<cffunction name="clearQuiet" access="public" output="false" returntype="any" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore" colddoc:generic="boolean">
+		<cfargument name="objectKey" type="any"  	required="true" hint="The object cache key">
 		<cfscript>
 			// clean key
 			arguments.objectKey = lcase(trim(arguments.objectKey));
@@ -502,7 +502,7 @@ Properties
 	</cffunction>
 	
 	<!--- clear --->
-	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore" colddoc:generic="boolean">
 		<cfargument name="objectKey" type="any" required="true" hint="The object cache key">
 		<cfscript>
 			var clearCheck = clearQuiet( arguments.objectKey );
@@ -535,13 +535,13 @@ Properties
     </cffunction>
 	
 	<!--- Clear an object from the cache --->
-	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Deprecated, please use clear()">
-		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+	<cffunction name="clearKey" access="public" output="false" returntype="any" hint="Deprecated, please use clear()" colddoc:generic="boolean">
+		<cfargument name="objectKey" type="any"  	required="true" hint="The object cache key">
 		<cfreturn clear( arguments.objectKey )>
 	</cffunction>
 
 	<!--- Get the Cache Size --->
-	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
+	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the cache's size in items" colddoc:generic="numeric">
 		<cfreturn instance.objectStore.getSize()>
 	</cffunction>
 
@@ -665,8 +665,8 @@ Properties
 	<!--- Expire an Object --->
 	<cffunction name="expireByKeySnippet" access="public" returntype="void" hint="Same as expireKey but can touch multiple objects depending on the keysnippet that is sent in." output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="keySnippet" type="string"  required="true" hint="The key snippet to use">
-		<cfargument name="regex" 	  type="boolean" required="false" default="false" hint="Use regex or not">
+		<cfargument name="keySnippet" type="any"  required="true" hint="The key snippet to use">
+		<cfargument name="regex" 	  type="any" required="false" default="false" hint="Use regex or not" colddoc:generic="boolean">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var keyIndex 		= 1;
@@ -698,7 +698,7 @@ Properties
 	</cffunction>
 	
 	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="boolean" hint="Has the object key expired in the cache">
+    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Has the object key expired in the cache" colddoc:generic="boolean">
    		<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
 		<cfreturn instance.objectStore.isExpired( lcase(trim(arguments.objectKey)) )>
    	</cffunction>
@@ -709,7 +709,7 @@ Properties
 	</cffunction>
 
 	<!--- getStoreMetadataReport --->
-	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]">
+	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="any" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]" colddoc:generic="struct">
 		<cfscript>
 			var target = instance.objectStore.getIndexer().getPoolMetadata();
 			
@@ -718,7 +718,7 @@ Properties
 	</cffunction>
 	
 	<!--- getStoreMetadataKeyMap --->
-	<cffunction name="getStoreMetadataKeyMap" output="false" access="public" returntype="struct" hint="Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports">
+	<cffunction name="getStoreMetadataKeyMap" output="false" access="public" returntype="any" hint="Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports" colddoc:generic="struct">
 		<cfscript>	
 			var keyMap = {
 				timeout = "timeout", hits = "hits", lastAccessTimeout = "lastAccessTimeout",
@@ -729,7 +729,7 @@ Properties
 	</cffunction>
 	
 	<!--- get Keys --->
-	<cffunction name="getKeys" access="public" returntype="array" output="false" hint="Get a listing of all the keys of the objects in the cache">
+	<cffunction name="getKeys" access="public" returntype="any" output="false" hint="Get a listing of all the keys of the objects in the cache" colddoc:generic="array">
 		<cfreturn instance.objectStore.getKeys()>
 	</cffunction>
 	

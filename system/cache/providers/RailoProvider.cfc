@@ -53,14 +53,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * get the cache name
     */    
-	string function getName() output=false{
+	any function getName() output=false{
 		return instance.name;
 	}
 	
 	/**
     * set the cache name
     */    
-	void function setName(required string name) output=false{
+	void function setName(required name) output=false{
 		instance.name = arguments.name;
 	}
 	
@@ -81,21 +81,21 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * get the cache configuration structure
     */
-    struct function getConfiguration() output=false{
+    any function getConfiguration() output=false{
 		return instance.configuration;
 	}
 	
 	/**
     * set the cache configuration structure
     */
-    void function setConfiguration(required struct configuration) output=false{
+    void function setConfiguration(required any configuration) output=false{
 		instance.configuration = arguments.configuration;
 	}
 	
 	/**
     * get the associated cache factory
     */
-    coldbox.system.cache.CacheFactory function getCacheFactory() output=false{
+    any function getCacheFactory() output=false{
 		return instance.cacheFactory;
 	}
 	
@@ -149,14 +149,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/*
 	* Indicates if cache is ready for operation
 	*/
-	boolean function isEnabled() output=false{
+	any function isEnabled() output=false{
 		return instance.enabled;
 	} 
 
 	/*
 	* Indicates if cache is ready for reporting
 	*/
-	boolean function isReportingEnabled() output=false{
+	any function isReportingEnabled() output=false{
 		return instance.reportingEnabled;
 	}
 	
@@ -186,7 +186,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * get the cache's metadata report
     */
-    struct function getStoreMetadataReport() output=false{ 
+    any function getStoreMetadataReport() output=false{ 
 		var md 		= {};
 		var keys 	= getKeys();
 		var item	= "";
@@ -201,7 +201,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
 	* Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports
 	*/
-	struct function getStoreMetadataKeyMap() output="false"{
+	any function getStoreMetadataKeyMap() output="false"{
 		var keyMap = {
 				timeout = "timespan", hits = "hitcount", lastAccessTimeout = "idleTime",
 				created = "createdtime", lastAccesed = "lasthit"
@@ -212,7 +212,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * get all the keys in this provider
     */
-    array function getKeys() output=false{
+    any function getKeys() output=false{
 		
 		if( isDefaultCache() ){
 			return cacheGetAllIds();
@@ -224,7 +224,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * get an object's cached metadata
     */
-    struct function getCachedObjectMetadata(required any objectKey) output=false{
+    any function getCachedObjectMetadata(required any objectKey) output=false{
 		if( isDefaultCache() ){
 			return cacheGetMetadata( arguments.objectKey );
 		}
@@ -256,14 +256,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * Not implemented by this cache
     */
-    boolean function isExpired(required any objectKey) output=false{
+    any function isExpired(required any objectKey) output=false{
 		return false;
 	}
 	 
 	/**
     * check if object in cache
     */
-    boolean function lookup(required any objectKey) output=false{
+    any function lookup(required any objectKey) output=false{
 		if( isDefaultCache() ){
 			return cachekeyexists(arguments.objectKey );
 		}
@@ -273,7 +273,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * check if object in cache with no stats: Stats not available on railo
     */
-    boolean function lookupQuiet(required any objectKey) output=false{
+    any function lookupQuiet(required any objectKey) output=false{
 		// not possible yet on railo
 		return lookup(arguments.objectKey);
 	}
@@ -281,11 +281,11 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * set an object in cache
     */
-    boolean function set(required any objectKey,
-						 required any object,
-						 any timeout="0",
-						 any lastAccessTimeout="0",
-						 struct extra) output=false{
+    any function set(required any objectKey,
+					 required any object,
+					 any timeout="0",
+					 any lastAccessTimeout="0",
+					 any extra) output=false{
 		
 		setQuiet(argumentCollection=arguments);
 		
@@ -305,11 +305,11 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * set an object in cache with no advising to events
     */
-    boolean function setQuiet(required any objectKey,
-						 	   required any object,
-						 	   any timeout="0",
-						 	   any lastAccessTimeout="0",
-						  	   struct extra) output=false{
+    any function setQuiet(required any objectKey,
+						  required any object,
+						  any timeout="0",
+						  any lastAccessTimeout="0",
+						  any extra) output=false{
 		
 		if( isDefaultCache() ){
 			cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
@@ -324,7 +324,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * get cache size
     */
-    numeric function getSize() output=false{
+    any function getSize() output=false{
 		if( isDefaultCache() ){
 			return cacheCount();
 		}
@@ -360,7 +360,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * clear an element from cache
     */
-    boolean function clear(required any objectKey) output=false{
+    any function clear(required any objectKey) output=false{
 		
 		if( isDefaultCache() ){
 			cacheRemove( arguments.objectKey );
@@ -382,7 +382,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * clear with no advising to events
     */
-    boolean function clearQuiet(required any objectKey) output=false{
+    any function clearQuiet(required any objectKey) output=false{
 		// normal clear, not implemented by railo
 		clear(arguments.objectKey);
 		return true;
@@ -391,7 +391,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
 	* Clear by key snippet
 	*/
-	void function clearByKeySnippet(required string keySnippet, boolean regex=false, boolean async=false) output=false{
+	void function clearByKeySnippet(required keySnippet, regex=false, async=false) output=false{
 		var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
@@ -422,14 +422,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
 	* Checks if the default cache is in use
 	*/
-	private boolean function isDefaultCache(){
+	private any function isDefaultCache(){
 		return  ( getConfiguration().cacheName EQ instance.DEFAULTS.cacheName );
 	}
 	
 	/**
     * set the associated cache factory
     */
-    void function setCacheFactory(required coldbox.system.cache.CacheFactory cacheFactory) output=false{
+    void function setCacheFactory(required any cacheFactory) output=false{
 		instance.cacheFactory = arguments.cacheFactory;
 	}
 

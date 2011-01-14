@@ -18,7 +18,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 		return this;
 	}
 	
-	numeric function getCachePerformanceRatio() output=false{
+	any function getCachePerformanceRatio() output=false{
 		var hits 		= getHits();
 		var requests 	= hits + getMisses();
 		
@@ -29,7 +29,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 		return (hits/requests) * 100;
 	}
 	
-	numeric function getObjectCount() output=false{
+	any function getObjectCount() output=false{
 		return getCacheStats().getObjectCount();
 	}
 	
@@ -37,30 +37,30 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 		getCacheStats().clearStatistics();
 	}
 	
-	numeric function getGarbageCollections() output=false{
+	any function getGarbageCollections() output=false{
 		return 0;
 	}
 	
-	numeric function getEvictionCount() output=false{
+	any function getEvictionCount() output=false{
 		return getCacheStats().getEvictionCount();
 	}
 	
-	numeric function getHits() output=false{
+	any function getHits() output=false{
 		return getCacheStats().getCacheHits();
 	}
 	
-	numeric function getMisses() output=false{
+	any function getMisses() output=false{
 		return getCacheStats().getCacheMisses();
 	}
 	
-	string function getLastReapDatetime() output=false{
+	any function getLastReapDatetime() output=false{
 		return "";
 	}
 	
 	/*******************************************************
 	ehCache specific functions
 	********************************************************/
-	numeric function getAverageGetTime(){
+	any function getAverageGetTime(){
 		return getCacheStats().getAverageGetTime();
 	}
 	

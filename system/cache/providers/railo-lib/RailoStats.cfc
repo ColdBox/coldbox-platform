@@ -18,7 +18,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 		return this;
 	}
 	
-	numeric function getCachePerformanceRatio() output=false{
+	any function getCachePerformanceRatio() output=false{
 		var hits 		= getHits();
 		var requests 	= hits + getMisses();
 		
@@ -29,7 +29,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 		return (hits/requests) * 100;
 	}
 	
-	numeric function getObjectCount() output=false{
+	any function getObjectCount() output=false{
 		return cacheCount( getCacheProvider().getConfiguration().cacheName );
 	}
 	
@@ -37,15 +37,15 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 		// not yet implemented by railo
 	}
 	
-	numeric function getGarbageCollections() output=false{
+	any function getGarbageCollections() output=false{
 		return 0;
 	}
 	
-	numeric function getEvictionCount() output=false{
+	any function getEvictionCount() output=false{
 		return 0;
 	}
 	
-	numeric function getHits() output=false{
+	any function getHits() output=false{
 		var props = cacheGetProperties("object");
 		if( arrayLen(props) and structKeyExists(props[1], "hit_count") ){
 			return props[1].hit_count;
@@ -53,7 +53,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 		return 0;
 	}
 	
-	numeric function getMisses() output=false{
+	any function getMisses() output=false{
 		var props = cacheGetProperties("object");
 		if( arrayLen(props) and structKeyExists(props[1], "miss_count") ){
 			return props[1].miss_count;
@@ -61,7 +61,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 		return 0;
 	}
 	
-	string function getLastReapDatetime() output=false{
+	any function getLastReapDatetime() output=false{
 		return "";
 	}
 }

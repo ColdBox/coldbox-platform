@@ -15,7 +15,7 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cffunction name="init" access="public" output="false" returntype="CacheStats" hint="Constructor">
-		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache manager/provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
+		<cfargument name="cacheProvider"required="true" hint="The associated cache manager/provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			instance = {
 				cacheProvider = arguments.cacheProvider
@@ -39,7 +39,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get Cache Performance --->
-	<cffunction name="getCachePerformanceRatio" access="public" output="false" returntype="numeric" hint="Get the cache's performance ratio">
+	<cffunction name="getCachePerformanceRatio" access="public" output="false" returntype="any" hint="Get the cache's performance ratio">
 		<cfscript>
 		 	var requests = instance.hits + instance.misses;
 			
@@ -52,7 +52,7 @@ Description :
 	</cffunction>
 	
 	<!--- getObjectCount --->
-	<cffunction name="getObjectCount" access="public" output="false" returntype="numeric" hint="Get the associated cache's live object count">
+	<cffunction name="getObjectCount" access="public" output="false" returntype="any" hint="Get the associated cache's live object count">
 		<cfreturn getAssociatedCache().getSize()>
 	</cffunction>
 	
@@ -67,27 +67,27 @@ Description :
 	</cffunction>	
 
 	<!--- Get/Set Garbage Collections --->
-	<cffunction name="getGarbageCollections" access="public" output="false" returntype="numeric" hint="Get the cache garbage collections">
+	<cffunction name="getGarbageCollections" access="public" output="false" returntype="any" hint="Get the cache garbage collections">
 		<cfreturn instance.garbageCollections/>
 	</cffunction>	
 	
 	<!--- Eviction Count --->
-	<cffunction name="getEvictionCount" access="public" returntype="numeric" output="false" hint="Get the total cache eviction counts">
+	<cffunction name="getEvictionCount" access="public" returntype="any" output="false" hint="Get the total cache eviction counts">
 		<cfreturn instance.evictionCount>
 	</cffunction>
 	
 	<!--- The hits --->
-	<cffunction name="getHits" access="public" returntype="numeric" output="false" hint="Get the cache hits">
+	<cffunction name="getHits" access="public" returntype="any" output="false" hint="Get the cache hits">
 		<cfreturn instance.hits>
 	</cffunction>
 	
 	<!--- The Misses --->
-	<cffunction name="getMisses" access="public" returntype="numeric" output="false" hint="Get the cache misses">
+	<cffunction name="getMisses" access="public" returntype="any" output="false" hint="Get the cache misses">
 		<cfreturn instance.misses>
 	</cffunction>
 	
 	<!--- Last Reap Date Time --->
-	<cffunction name="getLastReapDatetime" access="public" returntype="string" output="false" hint="Get the last reaping date of the cache">
+	<cffunction name="getLastReapDatetime" access="public" returntype="any" output="false" hint="Get the last reaping date of the cache">
 		<cfreturn instance.lastReapDatetime>
 	</cffunction>
 	<cffunction name="setLastReapDatetime" access="public" returntype="void" output="false" hint="Set when the last reaping date of the cache was done">

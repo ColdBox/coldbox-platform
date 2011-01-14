@@ -55,23 +55,23 @@ Properties
     </cffunction>
 
 	<!--- getName --->
-    <cffunction name="getName" output="false" access="public" returntype="string" hint="Get the name of this cache">
+    <cffunction name="getName" output="false" access="public" returntype="any" hint="Get the name of this cache">
     	<cfreturn instance.name>
     </cffunction>
 	
 	<!--- setName --->
     <cffunction name="setName" output="false" access="public" returntype="void" hint="Set the cache name">
-    	<cfargument name="name" type="string" required="true" hint="The cache name"/>
+    	<cfargument name="name" type="any" required="true" hint="The cache name"/>
 		<cfset instance.name = arguments.name>
     </cffunction>
 
 	<!--- isEnabled --->
-    <cffunction name="isEnabled" output="false" access="public" returntype="boolean" hint="Returns a flag indicating if the cache is ready for operation">
+    <cffunction name="isEnabled" output="false" access="public" returntype="any" hint="Returns a flag indicating if the cache is ready for operation" colddoc:generic="boolean">
     	<cfreturn instance.enabled>
     </cffunction>
 	
 	<!--- isReportingEnabled --->
-    <cffunction name="isReportingEnabled" output="false" access="public" returntype="boolean" hint="Returns a flag indicating if the cache has reporting enabled">
+    <cffunction name="isReportingEnabled" output="false" access="public" returntype="any" hint="Returns a flag indicating if the cache has reporting enabled" colddoc:generic="boolean">
    		<cfreturn instance.reportingEnabled>
     </cffunction>
 
@@ -86,24 +86,24 @@ Properties
     </cffunction>
 
 	<!--- getConfiguration --->
-    <cffunction name="getConfiguration" output="false" access="public" returntype="struct" hint="Get the structure of configuration parameters for the cache">
+    <cffunction name="getConfiguration" output="false" access="public" returntype="any" hint="Get the structure of configuration parameters for the cache" colddoc:generic="struct">
     	<cfreturn instance.configuration>
     </cffunction>
 
 	<!--- setConfiguration --->
     <cffunction name="setConfiguration" output="false" access="public" returntype="void" hint="Override the entire configuration structure for this cache">
-    	<cfargument name="configuration" type="struct" required="true" hint="The configuration structure"/>
+    	<cfargument name="configuration" type="any" required="true" hint="The configuration structure"/>
 		<cfset instance.configuration = arguments.configuration>
     </cffunction>
 
 	<!--- getCacheFactory --->
-    <cffunction name="getCacheFactory" output="false" access="public" returntype="coldbox.system.cache.CacheFactory" hint="Get the cache factory reference this cache provider belongs to">
+    <cffunction name="getCacheFactory" output="false" access="public" returntype="any" hint="Get the cache factory reference this cache provider belongs to" colddoc:generic="coldbox.system.cache.CacheFactory">
    		<cfreturn instance.cacheFactory>
     </cffunction>
 	
 	<!--- setCacheFactory --->
     <cffunction name="setCacheFactory" output="false" access="public" returntype="void" hint="Set the cache factory reference for this cache">
-    	<cfargument name="cacheFactory" type="coldbox.system.cache.CacheFactory" required="true"/>
+    	<cfargument name="cacheFactory" type="any" required="true" colddoc:generic="coldbox.system.cache.CacheFactory"/>
 		<cfset instance.cacheFactory = arguments.cacheFactory>
     </cffunction>
 
@@ -126,7 +126,7 @@ Properties
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
 	<!--- Get Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object">
 		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>	
 	
