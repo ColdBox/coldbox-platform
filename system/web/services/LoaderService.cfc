@@ -22,7 +22,7 @@ Modification History:
 			setController(arguments.controller);
 			
 			// service properties
-			instance.logger = "";
+			instance.log = "";
 			instance.appLoader = "";
 			
 			return this;
@@ -56,11 +56,11 @@ Modification History:
 			// reconfigure LogBox with user configurations
 			controller.getLogBox().configure(controller.getLogBox().getConfig());
 			// Reset the controller main logger
-			controller.setLogger(controller.getLogBox().getLogger(controller));
+			controller.setLog(controller.getLogBox().getLogger(controller));
 		}
 		
 		//Get Local Logger Now Configured
-		instance.logger = controller.getLogBox().getLogger(this);
+		instance.log = controller.getLogBox().getLogger(this);
 		
 		// Configure the application debugger.
 		debuggerConfig.populate(controller.getSetting("DebuggerSettings"));
