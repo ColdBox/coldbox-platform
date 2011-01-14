@@ -86,7 +86,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
     </cffunction>
 	
 	<!--- getStoreID --->
-    <cffunction name="getStoreID" output="false" access="public" returntype="string" hint="Get this storage's ID">
+    <cffunction name="getStoreID" output="false" access="public" returntype="any" hint="Get this storage's ID">
     	<cfreturn instance.storeID>
     </cffunction>
 	
@@ -101,12 +101,12 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
     </cffunction>
 
 	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.store.indexers.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
+	<cffunction name="getIndexer" access="public" returntype="any" output="false" hint="Get the store's pool metadata indexer structure">
 		<cfreturn instance.indexer >
 	</cffunction>
 	
 	<!--- getKeys --->
-	<cffunction name="getKeys" output="false" access="public" returntype="array" hint="Get all the store's object keys">
+	<cffunction name="getKeys" output="false" access="public" returntype="any" hint="Get all the store's object keys">
 		<cfset var q = "">
 		
 		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
@@ -137,7 +137,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 
 	
 	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
+	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
 			var q = lookupQuery(arguments.objectKey);
@@ -238,7 +238,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 	</cffunction>
 	
 	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="boolean" hint="Test if an object in the store has expired or not, returns false if object not found">
+    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not, returns false if object not found">
     	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
 		
 		<cfset var normalizedID 	= getNormalizedID(arguments.objectKey)>
@@ -266,7 +266,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
 		<cfargument name="timeout"				type="any"  required="false" default="0" hint="Timeout in minutes">
 		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="0" hint="Timeout in minutes">
-		<cfargument name="extras" 				type="struct" default="#structnew()#" hint="A map of extra name-value pairs"/>
+		<cfargument name="extras" 				type="any" default="#structnew()#" hint="A map of extra name-value pairs"/>
 		<!--- ************************************************************* --->
 		<cfset var q 				= "">
 		<cfset var normalizedID 	= getNormalizedID(arguments.objectKey)>
@@ -321,7 +321,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 	</cffunction>
 
 	<!--- Clear an object from the pool --->
-	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the storage pool">
+	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool">
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
 		
 		<cfset var normalizedID = getNormalizedID(arguments.objectKey)>
@@ -343,7 +343,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 	</cffunction>
 
 	<!--- Get the size of the pool --->
-	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
+	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the cache's size in items">
 		<cfset var q 				= "">
 		
 		<!--- db lookup --->
@@ -366,7 +366,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 

@@ -196,7 +196,7 @@ Description :
 				// Reconfigure LogBox if resset
 				if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
 					controller.getLogBox().configure(controller.getLogBox().getConfig());
-					controller.setLogger(controller.getLogBox().getLogger(controller));
+					controller.setLog(controller.getLogBox().getLogger(controller));
 				}	
 			}			
 		</cfscript>

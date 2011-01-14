@@ -31,12 +31,12 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	}
 	
 	// Cache Key prefixes
-	string function getViewCacheKeyPrefix() output=false{ return this.VIEW_CACHEKEY_PREFIX; }
-	string function getEventCacheKeyPrefix() output=false{ return this.EVENT_CACHEKEY_PREFIX; }
-	string function getHandlerCacheKeyPrefix() output=false{ return this.HANDLER_CACHEKEY_PREFIX; }
-	string function getInterceptorCacheKeyPrefix() output=false{ return this.INTERCEPTOR_CACHEKEY_PREFIX; }
-	string function getPluginCacheKeyPrefix() output=false{ return this.PLUGIN_CACHEKEY_PREFIX; }
-	string function getCustomPluginCacheKeyPrefix() output=false{ return this.CUSTOMPLUGIN_CACHEKEY_PREFIX; }
+	any function getViewCacheKeyPrefix() output=false{ return this.VIEW_CACHEKEY_PREFIX; }
+	any function getEventCacheKeyPrefix() output=false{ return this.EVENT_CACHEKEY_PREFIX; }
+	any function getHandlerCacheKeyPrefix() output=false{ return this.HANDLER_CACHEKEY_PREFIX; }
+	any function getInterceptorCacheKeyPrefix() output=false{ return this.INTERCEPTOR_CACHEKEY_PREFIX; }
+	any function getPluginCacheKeyPrefix() output=false{ return this.PLUGIN_CACHEKEY_PREFIX; }
+	any function getCustomPluginCacheKeyPrefix() output=false{ return this.CUSTOMPLUGIN_CACHEKEY_PREFIX; }
 	
 	// set the coldbox controller
 	void function setColdbox(required any coldbox) output=false{
@@ -47,10 +47,10 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	any function getColdbox() output=false{ return coldbox; }
 	
 	// Get Event URL Facade Tool
-	coldbox.system.cache.util.EventURLFacade function getEventURLFacade() output=false{ return instance.eventURLFacade; }
+	any function getEventURLFacade() output=false{ return instance.eventURLFacade; }
 	
 	// Get Item Type Counts
-	coldbox.system.cache.util.ItemTypeCount function getItemTypes() output=false{
+	any function getItemTypes() output=false{
 		var x 			= 1;
 		var itemList 	= getKeys();
 		var itemTypes	= new coldbox.system.cache.util.ItemTypeCount();
@@ -84,7 +84,7 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	/**
 	* Clear all events
 	*/
-	void function clearAllEvents(boolean async=false) output=false{
+	void function clearAllEvents(async=false) output=false{
 		var threadName = "clearAllEvents_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
@@ -101,7 +101,7 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	/**
 	* Clear all views
 	*/
-	void function clearAllViews(boolean async=false) output=false{
+	void function clearAllViews(async=false) output=false{
 		var threadName = "clearAllViews_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
@@ -118,28 +118,28 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	/**
 	* Clear event
 	*/
-	void function clearEvent(required string eventsnippet, string queryString="") output=false{
+	void function clearEvent(required eventsnippet, queryString="") output=false{
 		instance.elementCleaner.clearEvent(arguments.eventsnippet,arguments.queryString);
 	}
 	
 	/**
 	* Clear multiple events
 	*/
-	void function clearEventMulti(required any eventsnippets,string queryString="") output=false{
+	void function clearEventMulti(required eventsnippets,queryString="") output=false{
 		instance.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
 	}
 	
 	/**
 	* Clear view
 	*/
-	void function clearView(required string viewSnippet) output=false{
+	void function clearView(required viewSnippet) output=false{
 		instance.elementCleaner.clearView(arguments.viewSnippet);
 	}
 	
 	/**
 	* Clear multiple view
 	*/
-	void function clearViewMulti(required any viewsnippets) output=false{
+	void function clearViewMulti(required viewsnippets) output=false{
 		instance.elementCleaner.clearView(arguments.viewsnippets);
 	}
 	

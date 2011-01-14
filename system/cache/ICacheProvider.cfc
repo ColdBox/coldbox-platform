@@ -16,20 +16,20 @@ Description :
 <cfinterface hint="The main interface for a CacheBox cache provider object, you implement it so CacheBox can manage it for you.">
 
 	<!--- getName --->
-    <cffunction name="getName" output="false" access="public" returntype="string" hint="Get the name of this cache">
+    <cffunction name="getName" output="false" access="public" returntype="any" hint="Get the name of this cache">
     </cffunction>
 	
 	<!--- setName --->
     <cffunction name="setName" output="false" access="public" returntype="void" hint="Set the cache name">
-    	<cfargument name="name" type="string" required="true" hint="The cache name"/>
+    	<cfargument name="name" type="any" required="true" hint="The cache name"/>
     </cffunction>
 
 	<!--- isEnabled --->
-    <cffunction name="isEnabled" output="false" access="public" returntype="boolean" hint="Returns a flag indicating if the cache is ready for operation">
+    <cffunction name="isEnabled" output="false" access="public" returntype="any" hint="Returns a flag indicating if the cache is ready for operation" colddoc:generic="Boolean">
     </cffunction>
 	
 	<!--- isReportingEnabled --->
-    <cffunction name="isReportingEnabled" output="false" access="public" returntype="boolean" hint="Returns a flag indicating if the cache has reporting enabled">
+    <cffunction name="isReportingEnabled" output="false" access="public" returntype="any" hint="Returns a flag indicating if the cache has reporting enabled" colddoc:generic="Boolean">
     </cffunction>
 
 	<!--- getStats --->
@@ -41,21 +41,21 @@ Description :
     </cffunction>
 	
 	<!--- getConfiguration --->
-    <cffunction name="getConfiguration" output="false" access="public" returntype="struct" hint="Get the structure of configuration parameters for the cache">
+    <cffunction name="getConfiguration" output="false" access="public" returntype="any" hint="Get the structure of configuration parameters for the cache" colddoc:generic="struct">
     </cffunction>
 
 	<!--- setConfiguration --->
     <cffunction name="setConfiguration" output="false" access="public" returntype="void" hint="Set the entire configuration structure for this cache">
-    	<cfargument name="configuration" type="struct" required="true" hint="The configuration structure"/>
+    	<cfargument name="configuration" type="any" required="true" hint="The configuration structure" colddoc:generic="struct"/>
     </cffunction>
 
 	<!--- getCacheFactory --->
-    <cffunction name="getCacheFactory" output="false" access="public" returntype="coldbox.system.cache.CacheFactory" hint="Get the cache factory reference this cache provider belongs to">
+    <cffunction name="getCacheFactory" output="false" access="public" returntype="any" hint="Get the cache factory reference this cache provider belongs to" colddoc:generic="coldbox.system.cache.CacheFactory">
     </cffunction>
 	
 	<!--- setCacheFactory --->
     <cffunction name="setCacheFactory" output="false" access="public" returntype="void" hint="Set the cache factory reference for this cache">
-    	<cfargument name="cacheFactory" type="coldbox.system.cache.CacheFactory" required="true"/>
+    	<cfargument name="cacheFactory" type="any" required="true" colddoc:generic="coldbox.system.cache.CacheFactory"/>
     </cffunction>
 
 	<!--- getEventManager --->
@@ -80,21 +80,21 @@ Description :
     </cffunction>
 	
 	<!--- getStoreMetadataReport --->
-	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]">
+	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="any" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]" colddoc:generic="struct">
 	</cffunction>
 	
 	<!--- getStoreMetadataKeyMap --->
-	<cffunction name="getStoreMetadataKeyMap" output="false" access="public" returntype="struct" hint="Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports">
+	<cffunction name="getStoreMetadataKeyMap" output="false" access="public" returntype="any" hint="Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports" colddoc:generic="struct">
 	</cffunction>
 	
 <!------------------------------------------- CACHE OPERATIONS ------------------------------------------>
 
 	<!--- getKeys --->
-    <cffunction name="getKeys" output="false" access="public" returntype="array" hint="Returns a list of all elements in the cache, whether or not they are expired.">
+    <cffunction name="getKeys" output="false" access="public" returntype="any" hint="Returns a list of all elements in the cache, whether or not they are expired." colddoc:generic="array">
     </cffunction>
 	
 	<!--- getCachedObjectMetadata --->
-	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get a cache objects metadata about its performance. This value is a structure of name-value pairs of metadata.">
+	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="any" hint="Get a cache objects metadata about its performance. This value is a structure of name-value pairs of metadata."  colddoc:generic="struct">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
 	</cffunction>
 	
@@ -109,42 +109,42 @@ Description :
     </cffunction>	
 	
 	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="boolean" hint="Has the object key expired in the cache">
+    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Has the object key expired in the cache"  colddoc:generic="boolean">
    		<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
    	</cffunction>
 	
 	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
+	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache, if not found it records a miss." colddoc:generic="struct">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 	</cffunction>	
 	
 	<!--- lookupQuiet --->
-	<cffunction name="lookupQuiet" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, no stats updated or listeners">
+	<cffunction name="lookupQuiet" access="public" output="false" returntype="any" hint="Check if an object is in cache, no stats updated or listeners" colddoc:generic="struct">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 	</cffunction>
 	
 	<!--- Set --->
-	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache and returns true if set correctly, else false.">
+	<cffunction name="set" access="public" output="false" returntype="any" hint="sets an object in cache and returns true if set correctly, else false." colddoc:generic="struct">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
 		<cfargument name="timeout"				type="any"  	required="false" hint="The timeout to use on the object (if any, provider specific)">
 		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
+		<cfargument name="extra" 				type="any" 		required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation" colddoc:generic="struct"/>
 	</cffunction>
 	
 	<!--- setQuiet --->
-	<cffunction name="setQuiet" access="public" output="false" returntype="boolean" hint="sets an object in cache and returns true if set correctly, else false. With no statistic updates or listener updates">
+	<cffunction name="setQuiet" access="public" output="false" returntype="any" hint="sets an object in cache and returns true if set correctly, else false. With no statistic updates or listener updates" colddoc:generic="struct">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
 		<cfargument name="timeout"				type="any"  	required="false" hint="The timeout to use on the object (if any, provider specific)">
 		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
+		<cfargument name="extra" 				type="any" 		required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation" colddoc:generic="struct"/>
 	</cffunction>
 	
 	<!--- getSize --->
-    <cffunction name="getSize" output="false" access="public" returntype="numeric" hint="Get the number of elements in the cache">
+    <cffunction name="getSize" output="false" access="public" returntype="any" hint="Get the number of elements in the cache" colddoc:generic="numeric">
     </cffunction>
 
 	<!--- reap --->
@@ -156,12 +156,12 @@ Description :
     </cffunction>
 
 	<!--- clear --->
-	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore" colddoc:generic="boolean">
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 	</cffunction>
 	
 	<!--- clearQuiet --->
-	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners">
+	<cffunction name="clearQuiet" access="public" output="false" returntype="any" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners" colddoc:generic="boolean">
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 	</cffunction>
 	

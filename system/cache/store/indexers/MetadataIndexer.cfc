@@ -16,7 +16,7 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cffunction name="init" access="public" output="false" returntype="MetadataIndexer" hint="Constructor">
-		<cfargument name="fields" type="any" required="true" hint="The list or array of fields to bind this index on"/>
+		<cfargument name="fields" required="true" hint="The list or array of fields to bind this index on"/>
 		<cfscript>
 			instance = {
 				// Create metadata pool
@@ -89,7 +89,7 @@ Description :
 	</cffunction>
 	
 	<!--- objectExists --->
-    <cffunction name="objectExists" output="false" access="public" returntype="boolean" hint="Check if the metadata entry exists for an object">
+    <cffunction name="objectExists" output="false" access="public" returntype="any" hint="Check if the metadata entry exists for an object">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfreturn structKeyExists( instance.poolMetadata, arguments.objectKey )>
     </cffunction>
@@ -122,7 +122,7 @@ Description :
 	</cffunction>
 	
 	<!--- getSize --->
-    <cffunction name="getSize" output="false" access="public" returntype="numeric" hint="Get the size of the indexer">
+    <cffunction name="getSize" output="false" access="public" returntype="any" hint="Get the size of the indexer">
     	<cfreturn structCount( instance.poolMetadata )>
     </cffunction>
 	

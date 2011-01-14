@@ -70,7 +70,7 @@ Description :
     </cffunction>
 	
 	<!--- getStoreID --->
-    <cffunction name="getStoreID" output="false" access="public" returntype="string" hint="Get this storage's ID">
+    <cffunction name="getStoreID" output="false" access="public" returntype="any" hint="Get this storage's ID">
     	<cfreturn instance.storeID>
     </cffunction>
 	
@@ -84,17 +84,17 @@ Description :
     </cffunction>
 
 	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.store.indexers.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
+	<cffunction name="getIndexer" access="public" returntype="any" output="false" hint="Get the store's pool metadata indexer structure">
 		<cfreturn instance.indexer >
 	</cffunction>
 	
 	<!--- getKeys --->
-	<cffunction name="getKeys" output="false" access="public" returntype="array" hint="Get all the store's object keys">
+	<cffunction name="getKeys" output="false" access="public" returntype="any" hint="Get all the store's object keys">
 		<cfreturn instance.indexer.getKeys()>
 	</cffunction>
 	
 	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
+	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
 		<cflock name="DiskStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
@@ -157,7 +157,7 @@ Description :
 	</cffunction>
 	
 	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="boolean" hint="Test if an object in the store has expired or not">
+    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not">
     	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
 		<cfreturn instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired")>
     </cffunction>
@@ -169,7 +169,7 @@ Description :
 		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
 		<cfargument name="timeout"				type="any"  required="false" default="" hint="Timeout in minutes">
 		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="" hint="Timeout in minutes">
-		<cfargument name="extras" 				type="struct" default="#structnew()#" hint="A map of extra name-value pairs"/>
+		<cfargument name="extras" 				type="any" default="#structnew()#" hint="A map of extra name-value pairs"/>
 		<!--- ************************************************************* --->
 		<cfset var metaData		= {}>
 		<cfset var thisFilePath = getCacheFilePath(arguments.objectKey)>
@@ -203,7 +203,7 @@ Description :
 	</cffunction>
 
 	<!--- Clear an object from the pool --->
-	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the storage pool">
+	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool">
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
 		
 		<cfset var thisFilePath = getCacheFilePath(arguments.objectKey)>
@@ -224,7 +224,7 @@ Description :
 	</cffunction>
 
 	<!--- Get the size of the pool --->
-	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
+	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the cache's size in items">
 		<cfreturn instance.indexer.getSize()>
 	</cffunction>
 
@@ -239,7 +239,7 @@ Description :
     </cffunction>
 	
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 

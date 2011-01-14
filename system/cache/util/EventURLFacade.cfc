@@ -30,9 +30,9 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- getUniqueHash --->
-	<cffunction name="getUniqueHash" output="false" access="public" returntype="string" hint="Get's the unique incoming URL hash">
+	<cffunction name="getUniqueHash" output="false" access="public" returntype="any" hint="Get's the unique incoming URL hash">
 		<!--- **************************************************************************** --->
-		<cfargument name="event" type="any" required="true" hint="The event request context to incorporate into the hash"/>
+		<cfargument name="event" required="true" hint="The event request context to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var targetMixer		 = structnew();
@@ -53,9 +53,9 @@ Description :
 	</cffunction>
 	
 	<!--- Build Hash --->
-	<cffunction name="buildHash" output="false" access="public" returntype="string" hint="build a unique hash according to event and args">
+	<cffunction name="buildHash" output="false" access="public" returntype="any" hint="build a unique hash according to event and args">
 		<!--- **************************************************************************** --->
-		<cfargument name="args"  type="string" required="true" hint="The string of args to incorporate into the hash"/>
+		<cfargument name="args"  required="true" hint="The string of args to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var myStruct = structnew();
@@ -77,9 +77,9 @@ Description :
 	<!--- Build Event Key --->
 	<cffunction name="buildEventKey" access="public" returntype="any" hint="Build an event key according to passed in params" output="false" >
 		<!--- **************************************************************************** --->
-		<cfargument name="keySuffix" 	 required="true" type="any" hint="A handler key suffix if used.">
-		<cfargument name="targetEvent" 	 required="true" type="any" hint="The target event string">
-		<cfargument name="targetContext" required="true" type="any" hint="The target event context to test.">
+		<cfargument name="keySuffix" 	 required="true" hint="A handler key suffix if used.">
+		<cfargument name="targetEvent" 	 required="true" hint="The target event string">
+		<cfargument name="targetContext" required="true" hint="The target event context to test.">
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var key = "";
@@ -93,9 +93,9 @@ Description :
 	<!--- Build Event Key --->
 	<cffunction name="buildEventKeyNoContext" access="public" returntype="any" hint="Build an event key according to passed in params and no Context" output="false" >
 		<!--- **************************************************************************** --->
-		<cfargument name="keySuffix" 	 required="true" type="any" 	hint="A handler key suffix if used.">
-		<cfargument name="targetEvent" 	 required="true" type="any" 	hint="The target event string">
-		<cfargument name="targetArgs"  	 required="true" type="string" 	hint="The string of args to incorporate into the hash"/>
+		<cfargument name="keySuffix" 	 required="true" 	hint="A handler key suffix if used.">
+		<cfargument name="targetEvent" 	 required="true" 	hint="The target event string">
+		<cfargument name="targetArgs"  	 required="true" 	hint="The string of args to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var key = "";
@@ -109,8 +109,8 @@ Description :
 	<!--- Build Event Key --->
 	<cffunction name="buildBasicCacheKey" access="public" returntype="any" hint="Builds a basic cache key" output="false" >
 		<!--- **************************************************************************** --->
-		<cfargument name="keySuffix" 	 required="true" type="any" hint="A handler key suffix if used.">
-		<cfargument name="targetEvent" 	 required="true" type="any" hint="The target event string">
+		<cfargument name="keySuffix" 	 required="true" hint="A handler key suffix if used.">
+		<cfargument name="targetEvent" 	 required="true" hint="The target event string">
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var key = "";

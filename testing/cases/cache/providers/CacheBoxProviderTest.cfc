@@ -21,7 +21,7 @@ Description :
 		// Mock Methods
 		mockFactory.$("getLogBox",mockLogBox);
 		mockLogBox.$("getLogger", mockLogger);
-		mockLogger.$("error").$("debug").$("info");
+		mockLogger.$("error").$("debug").$("info").$("canDebug",true).$("canInfo",true).$("canError",true);
 		mockEventManager.$("processState");
 		
 		// Config 
