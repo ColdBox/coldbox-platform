@@ -37,7 +37,7 @@ Loads a coldbox xml configuration file
 	
 	<cffunction name="loadConfiguration" access="public" returntype="void" output="false" hint="Parse the application configuration file.">
 		<!--- ************************************************************* --->
-		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
+		<cfargument name="overrideAppMapping" type="any" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		//Create Config Structure
@@ -175,6 +175,10 @@ Loads a coldbox xml configuration file
 			if(structKeyExists(configStruct,"AppMapping") AND len(configStruct.AppMapping) eq 1 ){
 				configStruct["AppMapping"] = "";
 			}
+			
+			//Common structures
+			configStruct.layoutsRefMap 	= structnew();
+			configStruct.viewsRefMap	= structnew();
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 			

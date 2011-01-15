@@ -33,7 +33,7 @@ Loads a coldbox xml configuration file
 	
 	<cffunction name="loadConfiguration" access="public" returntype="void" output="false" hint="Parse the application configuration file.">
 		<!--- ************************************************************* --->
-		<cfargument name="overrideAppMapping" required="false" type="string" default="" hint="The direct location of the application in the web server."/>
+		<cfargument name="overrideAppMapping" required="false" type="any" default="" hint="The direct location of the application in the web server."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		//Create Config Structure
@@ -172,6 +172,10 @@ Loads a coldbox xml configuration file
 			
 			// collection append
 			structAppend(configStruct,coldboxSettings,true);
+			
+			// Common Structures
+			configStruct.layoutsRefMap 	= structnew();
+			configStruct.viewsRefMap	= structnew();
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 			
