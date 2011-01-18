@@ -53,8 +53,8 @@ Description :
 			
 			lfu.execute();	
 				
-			assertEquals(2 , arrayLen(mockCM.$callLog().expireKey) );			
-			assertEquals( "obj1", mockCM.$callLog().expireKey[1][1] );
+			assertEquals(2 , arrayLen(mockCM.$callLog().expireObject) );			
+			assertEquals( "obj1", mockCM.$callLog().expireObject[1][1] );
 		</cfscript>
 	</cffunction>
 	
