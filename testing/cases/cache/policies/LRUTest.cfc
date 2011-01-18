@@ -55,8 +55,8 @@ Description :
 		<cfscript>
 			lru.execute();	
 			debug( mockLogger.$callLog() );
-			assertEquals(2, arrayLen(mockCM.$callLog().expireKey) );		
-			assertEquals( "obj2", mockCM.$callLog().expireKey[1][1] );		
+			assertEquals(2, arrayLen(mockCM.$callLog().expireObject) );		
+			assertEquals( "obj2", mockCM.$callLog().expireObject[1][1] );		
 		</cfscript>
 	</cffunction>
 	

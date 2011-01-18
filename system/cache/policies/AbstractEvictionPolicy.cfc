@@ -73,7 +73,7 @@ Description :
 				if( md.timeout gt 0 AND NOT md.isExpired ){
 					
 					// Expire Object
-					oCacheManager.expireKey( arguments.index[x] );
+					oCacheManager.expireObject( arguments.index[x] );
 					
 					// Record Eviction 
 					oCacheManager.getStats().evictionHit();
