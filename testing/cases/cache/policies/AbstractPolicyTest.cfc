@@ -23,15 +23,15 @@ Description :
 		mockIndexer  = getMockBox().createEmptyMock(className='coldbox.system.cache.store.indexers.MetadataIndexer');
 		
 		// Mocks
-		mockCM.$("getCacheFactory", mockFactory);
-		mockCM.$('getStats',mockStats);
-		mockCM.$("getName","MockCache");
-		mockCM.$("getObjectStore", mockPool);
-		mockCM.$("expireKey");
+		mockCM.$("getCacheFactory", mockFactory)
+			.$('getStats',mockStats)
+			.$("getName","MockCache")
+			.$("getObjectStore", mockPool)
+			.$("expireObject");
 		mockPool.$("getIndexer", mockIndexer);
 		mockFactory.$("getLogBox",mockLogBox);
 		mockLogBox.$("getLogger", mockLogger);
-		mockLogger.$("error").$("debug").$("info");
+		mockLogger.$("error").$("debug").$("info").$("canDebug",true).$("canInfo",true);
 		mockStats.$('evictionHit');
 		</cfscript>
 	</cffunction>
