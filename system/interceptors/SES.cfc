@@ -452,7 +452,7 @@ Description :
 			extension = reReplace(extension, "/$","","all" );
 			
 			// check if extension found
-			if( listLen(arguments.requestString,".") GT 1 AND len(extension) ){
+			if( listLen(arguments.requestString,".") GT 1 AND len(extension) AND NOT find("/",extension)){
 				// Check if extension is valid?
 				if( listFindNoCase(validExtensions, extension) ){
 					// set the format request collection variable
