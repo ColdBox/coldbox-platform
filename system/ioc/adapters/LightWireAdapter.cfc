@@ -27,7 +27,7 @@ Description :
 			instance.utility  = createObject("component","coldbox.system.core.util.Util");
 			
 			// LightWire Factory Path
-			instance.LIGHTWIRE_FACTORY_PATH = "coldbox.system.ioc.lightwire.LightWire";
+			instance.LIGHTWIRE_FACTORY_PATH = "lightwire.LightWire";
 			
 			return this;
 		</cfscript>

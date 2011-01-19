@@ -998,16 +998,10 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="type" use="required">
+								<xs:attribute name="type" use="required" type="xs:string">
 									<xs:annotation>
-										<xs:documentation>The IOC framework type: coldspring or lightwire.</xs:documentation>
+										<xs:documentation>The IOC framework type: coldspring or lightwire or your own custom class</xs:documentation>
 									</xs:annotation>
-									<xs:simpleType>
-										<xs:restriction base="xs:string">
-											<xs:enumeration value="coldspring"/>
-											<xs:enumeration value="lightwire"/>
-										</xs:restriction>
-									</xs:simpleType>
 								</xs:attribute>
 								<xs:attribute name="objectCaching" use="optional" type="xs:boolean" default="false">
 									<xs:annotation>
@@ -1030,16 +1024,10 @@
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="type" use="required">
+								<xs:attribute name="type" use="required" type="xs:string">
 									<xs:annotation>
-										<xs:documentation>The IOC framework type: coldspring or lightwire.</xs:documentation>
+										<xs:documentation>The IOC framework type: coldspring or lightwire or your own custom class</xs:documentation>
 									</xs:annotation>
-									<xs:simpleType>
-										<xs:restriction base="xs:string">
-											<xs:enumeration value="coldspring"/>
-											<xs:enumeration value="lightwire"/>
-										</xs:restriction>
-									</xs:simpleType>
 								</xs:attribute>
 							</xs:extension>
 						</xs:simpleContent>

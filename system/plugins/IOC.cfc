@@ -33,6 +33,10 @@ Description :
 			// The adapter used by this ioc plugin
 			instance.adapter = "";
 			
+			// Setup depenedencies
+			instance.objCaching 	= getSetting("IOCObjectCaching");
+			instance.beanFactory 	= getPlugin("BeanFactory");
+			
 			// Configure this plugin for operation
 			configure();
 			
@@ -84,14 +88,13 @@ Description :
 
 	<!--- Get a Bean --->
 	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Get a Bean from the loaded object factory">
-		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">
+		<cfargument name="beanName" required="true" hint="The bean name to retrieve from the object factory">
 		<cfscript>
 			var refLocal 		= structnew();
 			var beanKey 		= "ioc_" & arguments.beanName;
-			var objCaching 		= getSetting("IOCObjectCaching");
 			
 			// Check if Ioc Caching
-			if( objCaching ){
+			if( instance.objCaching ){
 				// get bean and verify its existence
 				refLocal.oBean = getColdBoxOCM().get( beanKey );
 				if( structKeyExists(refLocal,"oBean") and isObject(refLocal.oBean) ){
@@ -103,10 +106,10 @@ Description :
 			refLocal.oBean = instance.adapter.getBean( arguments.beanName );
 			
 			// process WireBox autowires
-			getPlugin("BeanFactory").autowire(target=refLocal.oBean,annotationCheck=true);
+			instance.beanFactory.autowire(target=refLocal.oBean,annotationCheck=true);
 			
 			// processObjectCaching?
-			if( objCaching ){
+			if( instance.objCaching ){
 				processObjectCaching( refLocal.oBean, beanKey);
 			}
 			
@@ -115,8 +118,8 @@ Description :
 	</cffunction>
 	
 	<!--- containsBean --->
-	<cffunction name="containsBean" access="public" returntype="boolean" hint="Check if the bean factory contains a bean" output="false" >
-		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">	
+	<cffunction name="containsBean" access="public" returntype="any" hint="Check if the bean factory contains a bean" output="false" colddoc:generic="boolean">
+		<cfargument name="beanName" required="true" hint="The bean name to retrieve from the object factory">	
 		<cfreturn instance.adapter.containsBean( arguments.beanName )>
 	</cffunction>
 
@@ -131,12 +134,12 @@ Description :
 	</cffunction>
 
 	<!--- get which IoC Framework is Used --->
-	<cffunction name="getIOCFramework" access="public" output="false" returntype="string" hint="Get the IoC framework for this plugin to use">
+	<cffunction name="getIOCFramework" access="public" output="false" returntype="any" hint="Get the IoC framework for this plugin to use">
 		<cfreturn getSetting("IOCFramework")/>
 	</cffunction>
 
 	<!--- get The Definition file --->
-	<cffunction name="getIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get the definition file configured for this plugin">
+	<cffunction name="getIOCDefinitionFile" access="public" output="false" returntype="any" hint="Get the definition file configured for this plugin">
 		<cfreturn getSetting("IOCFrameworkDefinitionFile")/>
 	</cffunction>
 
@@ -144,8 +147,8 @@ Description :
 
 	<!--- processObjectCaching --->
     <cffunction name="processObjectCaching" output="false" access="private" returntype="void" hint="Process IoC object Caching">
-    	<cfargument name="target" 	type="any" 		required="true" hint="The bean target to inspect"/>
-		<cfargument name="cacheKey" type="string" 	required="true" hint="CacheKey to use if necessary"/>
+    	<cfargument name="target" 	required="true" hint="The bean target to inspect"/>
+		<cfargument name="cacheKey" required="true" hint="CacheKey to use if necessary"/>
 		<!--- Get Object's MetaData --->
 		<cfset var metaData = getMetaData(arguments.target)>
 			
@@ -179,8 +182,8 @@ Description :
 	
 	<!--- buildAdapter --->
     <cffunction name="buildAdapter" output="false" access="private" returntype="any" hint="Build an IoC framework adapter and return it">
-    	<cfargument name="framework"			type="string" required="true" hint="The framework adapter to build"/>
-		<cfargument name="definitionFile" 		type="string" required="true" hint="The framework definition file to load"/>
+    	<cfargument name="framework"		required="true" hint="The framework adapter to build"/>
+		<cfargument name="definitionFile" 	required="true" hint="The framework definition file to load"/>
 		<cfscript>	
 			var adapterPath = "";
 			var adapter		= "";
@@ -190,6 +193,7 @@ Description :
 				case "coldspring2" 	: { adapterPath = "coldbox.system.ioc.adapters.ColdSpring2Adapter"; break; }
 				case "lightwire" 	: { adapterPath = "coldbox.system.ioc.adapters.LightWireAdapter"; break; }
 				case "wirebox" 		: { adapterPath = "coldbox.system.ioc.adapters.WireBoxAdapter"; break; }
+				// Default as custom object class
 				default				: { adapterPath = arguments.framework; break;}	
 			}
 			
@@ -228,8 +232,8 @@ Description :
     </cffunction>
 	
 	<!--- Validate the definition file --->
-	<cffunction name="validateDefinitionFile" access="private" output="false" returntype="string" hint="Validate the IoC Definition File. Called internally to verify the file location and get the correct path to it.">
-		<cfargument name="definitionFile" type="string" required="true" hint="The definition file to verify for loading"/>
+	<cffunction name="validateDefinitionFile" access="private" output="false" returntype="any" hint="Validate the IoC Definition File. Called internally to verify the file location and get the correct path to it.">
+		<cfargument name="definitionFile" required="true" hint="The definition file to verify for loading"/>
 		<cfscript>
 			var foundFilePath = "";
 			
