@@ -543,7 +543,7 @@ Description :
 			var routeParamsLen 	= arrayLen(arguments.routeParams);
 			var rString 		= arguments.routingString;
 			var returnString 	= arguments.routingString;
-
+			
 			// Verify if we have a handler on the route params
 			if( findnocase("handler", arrayToList(arguments.routeParams)) ){
 				
@@ -556,12 +556,13 @@ Description :
 						break;
 					}
 				}
-				// TODO: packaging for modules add
 				
 				// Now Find Packaging in our stripped rString
 				for(x=1; x lte listLen(rString,"/"); x=x+1){
+					
 					// Get Folder from first part of string
 					thisFolder = listgetAt(rString,x,"/");
+					
 					// Check if package exists in convention OR external location
 					if( directoryExists(root & "/" & foundPaths & thisFolder)
 						OR
@@ -577,15 +578,18 @@ Description :
 							newEvent = newEvent & thisFolder & ".";
 						}
 					}//end if folder found
-					// Now let's check if it is a valid module
-					else if( structkeyExists(instance.modules,thisFolder) ){
-						// Save Module Concatenation
+					// Module check second
+					else if( structKeyExists(instance.modules, thisFolder) ){
+						// Setup the module entry point
 						newEvent = thisFolder & ":";
+						// Change Physical Path to module now, module detected
+						root = instance.modules[thisFolder].handlerPhysicalPath;
 					}
 					else{
 						//newEvent = newEvent & "." & thisFolder;
 						break;
-					}//end not a folder.
+					}//end not a folder or module
+					
 				}//end for loop
 				
 				// Replace Return String if new event packaged found
@@ -595,10 +599,6 @@ Description :
 				}
 			}//end if handler found
 			
-			writeDump(newEvent);
-			writeDump(returnString);
-			abort;
-				
 			return returnString;
 		</cfscript>
 	</cffunction>
