@@ -33,7 +33,11 @@ Description :
 			instance.debuggerService			= controller.getDebuggerService();
 			// Template Cache
 			instance.templateCache 				= controller.getColdboxOCM("template");
-
+			instance.layoutsRefMap				= controller.getSetting("layoutsRefMap");
+			instance.viewsRefMap				= controller.getSetting("viewsRefMap");
+			// Discovery caching is tied to handlers for discovery.
+			instance.isDiscoveryCaching			= controller.getSetting("handlerCaching");
+			
 			// Set event scope, we are not caching, so it is threadsafe.
 			event 	= getRequestContext();
 
@@ -63,17 +67,18 @@ Description :
 		<cfargument name="module" 					required="false" type="any"  default=""      	hint="Explicitly render a view from this module by passing the module name"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cbox_RenderedView 	= "";
-			var cbox_viewpath 		= "";
-			var cbox_viewHelperPath = "";
-			var cbox_local			= structnew();
-			var cbox_cacheKey 		= "";
-			var cbox_cacheEntry 	= "";
-			var cbox_timerHash 		= 0;
-			var cbox_iData 			= arguments;
-			var cbox_locationUDF	= variables.locateView;
-			var cbox_explicitModule = false;
-			
+			var cbox_RenderedView 		= "";
+			var cbox_viewpath 			= "";
+			var cbox_viewHelperPath	 	= "";
+			var cbox_local				= structnew();
+			var cbox_cacheKey 			= "";
+			var cbox_cacheEntry 		= "";
+			var cbox_timerHash 			= 0;
+			var cbox_iData 				= arguments;
+			var cbox_locationUDF		= variables.locateView;
+			var cbox_explicitModule 	= false;
+			var cbox_viewLocationKey 	= "";
+		
 			// If no incoming explicit module call, default the value to the one in the request context for convenience
 			if( NOT len(arguments.module) ){
 				// if no module is execution, this will be empty anyways.
@@ -126,8 +131,14 @@ Description :
 			}
 			
 			// View is not cached, so let's render it out			
-			// Locate the view to render according to discovery algorithm
-			cbox_viewPath = cbox_locationUDF(arguments.view,arguments.module,cbox_explicitModule);
+			//Layout location key
+			cbox_viewLocationKey = arguments.view & arguments.module & cbox_explicitModule;
+			// Return Cached Entry if it exists
+			if( NOT structkeyExists(instance.viewsRefMap,"cbox_viewLocationKey") OR NOT instance.isDiscoveryCaching){
+				// Locate the view to render according to discovery algorithm
+				instance.viewsRefMap[cbox_viewLocationKey] = cbox_locationUDF(arguments.view,arguments.module,cbox_explicitModule);
+			}
+			cbox_viewPath = instance.viewsRefMap[cbox_viewLocationKey];
 			
 			// Check for view helper convention
 			cbox_local.dPath = getDirectoryFromPath(cbox_viewPath);
@@ -215,11 +226,12 @@ Description :
 		<cfargument name="view"   type="any" 	required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
 		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
 		
-		<cfset var cbox_currentLayout 	= implicitViewChecks()>
-		<cfset var cbox_RederedLayout 	= "">
-		<cfset var cbox_timerhash 		= "">
-		<cfset var cbox_locateUDF 		= variables.locateLayout>
-		<cfset var cbox_explicitModule  = false>
+		<cfset var cbox_currentLayout 		= implicitViewChecks()>
+		<cfset var cbox_RederedLayout 		= "">
+		<cfset var cbox_timerhash 			= "">
+		<cfset var cbox_locateUDF 			= variables.locateLayout>
+		<cfset var cbox_explicitModule  	= false>
+		<cfset var cbox_layoutLocationKey 	= "">
 		
 		<!--- Module Default Value --->
 		<cfif NOT len(arguments.module)>
@@ -250,8 +262,18 @@ Description :
 		<cfif len(cbox_currentLayout) eq 0>
 			<cfset cbox_RederedLayout = renderView()>
 		<cfelse>
+			
+			<cfscript>
+			//Layout location key
+			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
+			// Return Cached Entry if it exists
+			if( NOT structkeyExists(instance.layoutsRefMap,"cbox_layoutLocationKey") OR NOT instance.isDiscoveryCaching){
+				instance.layoutsRefMap[cbox_layoutLocationKey] = cbox_locateUDF(cbox_currentLayout,arguments.module,cbox_explicitModule);
+			}
+			</cfscript>
+				
 			<!--- RenderLayout --->
-			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_locateUDF(cbox_currentLayout,arguments.module,cbox_explicitModule)#"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#instance.layoutsRefMap[cbox_layoutLocationKey]#"></cfoutput></cfsavecontent>
 		</cfif>
 
 		<!--- Stop Timer --->
@@ -270,7 +292,7 @@ Description :
 			var extLayoutPath 		= "#instance.layoutsExternalLocation#/#arguments.layout#";
 			var moduleName 			= event.getCurrentModule();
 			var moduleLayoutPath 	= "";
-
+			
 			// If layout exists in module and this is a module call, then use module layout.
 			if( len(moduleName) ){
 				moduleLayoutPath 	= "#instance.modulesConfig[moduleName].mapping#/#instance.layoutsConvention#/#arguments.layout#";

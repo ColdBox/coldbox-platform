@@ -9,9 +9,11 @@
 		config.appender(name="luis2",class="coldbox.system.logging.appenders.ConsoleAppender");
 		//root
 		config.root(appenders="luis,luis2");
+		
 		//Sample categories
+		config.OFF("coldbox.system");
 		config.debug("coldbox.system.interceptors");
-		config.off("coldbox.system");
+		
 		//init logBox
 		logBox.init(config);
 	}
@@ -22,7 +24,8 @@
 		
 		//2: category inheritance
 		logger = logBox.getLogger("coldbox.system.interceptors.SES");
-		assertEquals( logger.getLevelMin(), logger.logLevels.DEBUG);
+		
+		assertEquals( logger.logLevels.DEBUG, logger.getLevelMax() );
 		assertEquals( logger.getRootLogger().getCategory(), "coldbox.system.interceptors");
 		
 		//3: category inheritance
@@ -50,7 +53,7 @@
 		
 		// 2: Expecting a logger with debug levels only
 		logger = logBox.locateCategoryParentLogger("coldbox.system.interceptors.SES");
-		assertEquals( logger.getLevelMin(), logger.logLevels.DEBUG);
+		assertEquals( logger.getLevelMax(), logger.logLevels.DEBUG);
 		
 		// 3: Expecting an OFF logger
 		logger = logBox.locateCategoryParentLogger("coldbox.system.plugins");

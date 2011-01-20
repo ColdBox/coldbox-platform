@@ -59,7 +59,10 @@ Modification History:
 			if( len(controller.getSetting("ColdBoxExtensionsLocation")) ){
 				setExtensionsPath(controller.getSetting("ColdBoxExtensionsLocation") & ".plugins");
 				setExtensionsPhysicalPath(expandPath("/" & replace(getExtensionsPath(),".","/","all") & "/"));
-			}			
+			}		
+			
+			// refLocation map
+			instance.refLocationMap = structnew();	
 		</cfscript>
 	</cffunction>
 
@@ -74,12 +77,20 @@ Modification History:
 		<cfargument name="init"   type="any"  		required="false" default="true" hint="Auto init() the plugin upon construction: Boolean" colddoc:generic="Boolean"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var oPlugin 	= 0;
-			var iData 		= structnew();
-			var pluginKey 	= getPluginCacheKey(argumentCollection=arguments);
+			var oPlugin 			= 0;
+			var iData 				= structnew();
+			var pluginKey 			= getPluginCacheKey(argumentCollection=arguments);
+			var pluginLocation 		= "";
+			var pluginLocationKey 	= arguments.plugin & arguments.custom & arguments.module;
+			
+			// Locate Plugin, lazy loaded and cached
+			if( NOT structKeyExists(instance.refLocationMap, pluginLocationKey) ){
+				instance.refLocationMap[pluginLocationKey] = locatePluginPath(argumentCollection=arguments);
+			}
+			pluginLocation = instance.refLocationMap[pluginLocationKey];
 			
 			// Create Plugin
-			oPlugin = createObject("component",locatePluginPath(argumentCollection=arguments));
+			oPlugin = createObject("component",pluginLocation);
 			
 			// Determine if we have md and cacheable, else store object metadata for efficiency
 			if ( not instance.cacheDictionary.keyExists(pluginKey) ){

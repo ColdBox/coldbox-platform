@@ -101,7 +101,7 @@ Properties:
 			var entry = "";
 			
 			// Does file still exist?
-			if( NOT fileExists( instance.logFullpath )) ){ 
+			if( NOT fileExists( instance.logFullpath ) ){ 
 				initLogLocation(); 
 			}
 			

@@ -79,7 +79,13 @@ Description: This is the framework's simple bean factory.
 			return this;
 		</cfscript>
 	</cffunction>
+	
+	<!--- getAutowireCache --->
+    <cffunction name="getAutowireCache" output="false" access="public" returntype="any" hint="Get a structure of all the metadata available for all autowired model objects">
+    	<cfreturn instance.autowireCache>
+    </cffunction>
 
+	<!--- configure --->
 	<cffunction name="configure" access="public" returntype="BeanFactory" hint="Configure the bean factory for operation from the configuration file." output="false" >
 		<cfscript>
 			var configFilePath = "/";

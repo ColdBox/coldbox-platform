@@ -17,8 +17,8 @@
 	
 	addModuleRoutes(pattern="/space/:spaceUrl/luis",module="test1");
 	
-	addModuleRoutes(pattern="/test1",module="test1");
-	addModuleRoutes(pattern="/modTest1",module="test1");
+	//addModuleRoutes(pattern="/test1",module="test1");
+	//addModuleRoutes(pattern="/modTest1",module="test1");
 	addModuleRoutes(pattern="/forgebox",module="forgebox");
 	
 	// Add Module Routing Here For Common-View Layout Testing
