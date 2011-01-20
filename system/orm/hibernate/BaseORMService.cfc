@@ -878,24 +878,19 @@ component accessors="true"{
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
 	* The method returns a coverted array of ID's
 	*/
-	array function convertIDValueToJavaType(required string entityName, required any id){
+	array function convertIDValueToJavaType(required entityName, required id){
 		var hibernateMD = ormGetSessionFactory().getClassMetaData(arguments.entityName);
 
 		//id conversion to array
 		if( isSimpleValue(arguments.id) ){
 			arguments.id = listToArray(arguments.id);
 		}
-
-		try {
-			for (var i=1; i lte arrayLen(arguments.id); i=i+1){
-				arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
-			}
+		
+		// Convert to hibernate native types
+		for (var i=1; i lte arrayLen(arguments.id); i=i+1){
+			arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
 		}
-		catch(Any e){
-			tx.rollback();
-			throw(e);
-		}
-
+		
 		return arguments.id;
 	}
 }
