@@ -377,22 +377,24 @@ component accessors="true"{
 
 	/**
 	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
-	* @tested true
     */
 	any function get(required string entityName,required any id) {
-		// If ID = 0 then return a new entity
+		var entity = entityLoadByPK(arguments.entityName, arguments.id);
+		
+		// Check if not null, then return it
+		if( NOT isNull(entity) ){
+			return entity;
+		}
+		
+		// Check if ID=0 or empty to do convenience new entity
 		if( isSimpleValue(arguments.id) and ( arguments.id eq 0  OR len(arguments.id) eq 0 ) ){
 			return new(arguments.entityName);
 		}
-		// else return or try to return by PK
-		return entityLoadByPK(arguments.entityName, arguments.id);
 	}
 
 	/**
 	* Retrieve all the instances from the passed in entity name using the id argument if specified
 	* The id can be a list of IDs or an array of IDs or none to retrieve all.
-	* If the id is not found or returns null the array position will have an empty string in it in the specified order
-	* @tested true
     */
 	array function getAll(required string entityName,any id) {
 		var results = [];
@@ -402,25 +404,17 @@ component accessors="true"{
 			return entityLoad(arguments.entityName);
 		}
 
-		// Convert ID to array if simple value
-		if( isSimpleValue(arguments.id) ){ arguments.id = listToArray(arguments.id); }
-
-		// Iterate and get
-		for(var x=1; x lte arraylen(arguments.id); x++ ){
-			var obj = entityLoadByPK(arguments.entityName,arguments.id[x]);
-			if( isNull(obj) ){
-				obj = '';
-			}
-			arrayAppend(results, obj);
-		}
-
-		return results;
+		// type safe conversions
+		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
+		// execute bulk get
+		var query = ORMGetSession().createQuery("FROM #arguments.entityName# where id in (:idlist)");
+		query.setParameterList("idlist",arguments.id);
+		return query.list();
 	}
 
 	/**
     * Delete an entity using hibernate transactions. The entity argument can be a single entity
 	* or an array of entities. You can optionally flush the session also after committing
-	* @tested true
     */
 	void function delete(required any entity,boolean flush=false){
 		var tx 		= ORMGetSession().beginTransaction();
@@ -478,12 +472,8 @@ component accessors="true"{
 		var tx 		= ORMGetSession().beginTransaction();
 		var count   = 0;
 
-		id = convertIDValueToJavaType(arguments.entityName,arguments.id);
-
-		//id conversion to array
-		if( isSimpleValue(arguments.id) ){
-			arguments.id = listToArray(arguments.id);
-		}
+		// type safe conversions
+		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
 
 		try{
 			// delete using lowercase id convention from hibernate for identifier
@@ -589,19 +579,30 @@ component accessors="true"{
 	}
 
 	/**
-    * Save an entity using hibernate transactions. You can optionally flush the session also
+    * Saves an array of passed entities in specified order and transaction safe
+	* @entities An array of entities to save
     */
-	any function save(required any entity, boolean forceInsert=false, boolean flush=false){
-
-		// Event Handling? If enabled, call the preSave() interception
-		if( getEventHandling() ){
-			ORMEventHandler.preSave( arguments.entity );
-		}
-
-		var tx = ORMGetSession().beginTransaction();
+	any function saveAll(required entities, forceInsert=false, flush=false){
+		var count 			=  arrayLen(arguments.entities);
+		var eventHandling 	=  getEventHandling();
+		var tx 				= ORMGetSession().beginTransaction();
+		
 		try{
-			entitySave(arguments.entity, arguments.forceInsert);
-
+			// iterate and save
+			for(var x=1; x lte count; x++){
+				// Event Handling? If enabled, call the preSave() interception
+				if( eventHandling ){
+					ORMEventHandler.preSave( arguments.entities[x] );
+				}
+				// Save it
+				entitySave(arguments.entities[x], arguments.forceInsert);
+				
+				// Event Handling? If enabled, call the postSave() interception
+				if( eventHandling ){
+					ORMEventHandler.postSave( arguments.entities[x] );
+				}
+			}
+			// commit it
 			tx.commit();
 		}
 		catch(Any e){
@@ -612,8 +613,43 @@ component accessors="true"{
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
+		return true;
+	}
+	
+	/**
+    * Save an entity using hibernate transactions. You can optionally flush the session also
+    */
+	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=true){
+		var eventHandling = getEventHandling();
+		
+		// Event Handling? If enabled, call the preSave() interception
+		if( eventHandling ){
+			ORMEventHandler.preSave( arguments.entity );
+		}
+		
+		// Saved transasction or not.
+		if( arguments.transactional ){
+			var tx = ORMGetSession().beginTransaction();
+			try{
+				entitySave(arguments.entity, arguments.forceInsert);
+	
+				tx.commit();
+			}
+			catch(Any e){
+				tx.rollback();
+				throw(e);
+			}
+		}
+		else{
+			entitySave(arguments.entity, arguments.forceInsert);
+		}
+			
+
+		// Auto Flush
+		if( arguments.flush ){ ORMFlush(); }
+
 		// Event Handling? If enabled, call the postSave() interception
-		if( getEventHandling() ){
+		if( eventHandling ){
 			ORMEventHandler.postSave( arguments.entity );
 		}
 

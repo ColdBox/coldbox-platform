@@ -122,20 +122,17 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		r = ormService.getAll('Category');
 		assertTrue( arrayLen(r) );
 
-		r = ormService.getAll('Category','1,2');
-		assertTrue( isSimpleValue( r[1] ) );
-		assertTrue( isSimpleValue( r[2] ) );
-
+		r = ormService.getAll('Category','1,ff80808128c9fa8b0128cc3af5d90007');
+		assertTrue( arraylen( r ) eq 1 );
+		
 		r = ormService.getAll('Category',[1,2]);
-		assertTrue( isSimpleValue( r[1] ) );
-		assertTrue( isSimpleValue( r[2] ) );
+		assertFalse( arraylen( r ) );
 
 		r = ormService.getAll('Category',testCatID);
 		assertTrue( isObject( r[1] ) );
 
 		r = ormService.getAll('Category',[testCatID,testCatID]);
 		assertTrue( isObject( r[1] ) );
-		assertTrue( isObject( r[2] ) );
 
 	}
 
@@ -245,6 +242,63 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		try{
 			ormservice.save( cat );
 			assertTrue( len(cat.getCatID()) );
+			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
+			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			var q = new Query(datasource="coolblog");
+			q.execute(sql="delete from categories where category = 'unitTest'");
+		}
+	}
+	
+	function testSaveNoTransaction(){
+
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("preSave");
+		mockEventHandler.$("postSave");
+		ormService.$property("ORMEventHandler","variables",mockEventHandler);
+
+		cat = entityNew("Category");
+		cat.setCategory('unitTest');
+		cat.setDescription('unitTest at #now()#');
+
+		try{
+			ormservice.save(entity=cat,transactional=false);
+			assertTrue( len(cat.getCatID()) );
+			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
+			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
+			var q = new Query(datasource="coolblog");
+			var result = q.execute(sql="select * from categories where category = 'unitTest'").getResult();
+			assertTrue( result.recordcount eq 0 ); 
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+	}
+	
+	function testSaveAll(){
+
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("preSave").$("postSave");
+		ormService.$property("ORMEventHandler","variables",mockEventHandler);
+
+		cat = entityNew("Category");
+		cat.setCategory('unitTest');
+		cat.setDescription('unitTest at #now()#');
+		
+		cat2 = entityNew("Category");
+		cat2.setCategory("unitTest");
+		cat2.setDescription('unitTest at #now()#');
+
+		try{
+			ormservice.saveAll( [cat,cat2] );
+			assertTrue( len(cat.getCatID()) );
+			assertTrue( len(cat2.getCatID()) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
 		}
