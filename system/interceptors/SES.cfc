@@ -126,7 +126,10 @@ Description :
 						}
 					}
 					else{
-						throwInvalidHTTP("The HTTP method used: #HTTPMethod# is not valid for the current executing event.");
+						getUtil().throwInvalidHTTP(className="SES",
+												   detail="The HTTP method used: #HTTPMethod# is not valid for the current executing resource. Valid methods are: #aRoute.action.toString()#",
+										 		   statusText="The HTTP method used: #HTTPMethod# is not valid for the current executing resource",
+										 		   statusCode="405");
 					}
 				}
 				// Create routed event
@@ -480,26 +483,16 @@ Description :
 					// log invalid extension
 					log.debug("Invalid Extension Detected: #lcase(extension)# detected but it is not in the valid extension list: #instance.validExtensions#");
 					// throw exception
-					throwInvalidHTTP("Invalid Request Extension Detected: #lcase(extension)#","Invalid Request Extension");
+					getUtil().throwInvalidHTTP(className="SES",
+											   detail="Invalid Request Format Extension Detected: #lcase(extension)#. Valid extensions are: #instance.validExtensions#",
+									  		   statusText="Invalid Requested Format Extension: #lcase(extension)#",
+									 		   statusCode="406");
 				}				
 			}
 			
 			// return the same request string, extension not found
 			return requestString;
 		</cfscript>
-    </cffunction>
-
-	<!--- throwInvalidHTTP --->
-    <cffunction name="throwInvalidHTTP" output="false" access="private" returntype="void" hint="Throw an invalid HTTP exception">
-    	<cfargument name="description"	type="string" required="true" hint="The throw description"/>
-		<cfargument name="statusText" 	type="string" required="false" default="403 Invalid HTTP Method Exception" hint="Invalid exception status text"/>
-		
-		<cfheader statuscode="403" statustext="#arguments.statusText#">
-		<cfthrow type="SES.403"
-			     errorcode="403"
-			     message="#arguments.statusText#"
-				 detail="#arguments.description#">
-
     </cffunction>
 
 	<!--- setmoduleRoutingTable --->
@@ -1008,6 +1001,11 @@ Description :
 				$throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
 			}
 		</cfscript>
+	</cffunction>
+	
+	<!--- getUtil --->
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" colddoc:generic="coldbox.system.core.util.Util">
+		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 
 </cfcomponent>
