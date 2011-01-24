@@ -27,9 +27,9 @@ Description :
 		
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="Injector" hint="Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder" output="false" >
-		<cfargument name="binder" 		type="any" 		required="false" default="coldbox.system.ioc.config.DefaultBinder" hint="The WireBox binder or data CFC instance or instantiation path to configure this injector with"/>
-		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A structure of binding properties to passthrough to the Binder Configuration CFC"/>
-		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" required="false" hint="A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it."/>
+		<cfargument name="binder" 		required="false" default="coldbox.system.ioc.config.DefaultBinder" hint="The WireBox binder or data CFC instance or instantiation path to configure this injector with">
+		<cfargument name="properties" 	required="false" default="#structNew()#" hint="A structure of binding properties to passthrough to the Binder Configuration CFC" colddoc:generic="struct">
+		<cfargument name="coldbox" 		required="false" hint="A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it." colddoc:generic="coldbox.system.web.Controller">
 		<cfscript>
 			// Setup Available public scopes
 			this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
@@ -80,8 +80,37 @@ Description :
 			// Prepare Lock Info
 			instance.lockName = "WireBox.Injector.#instance.injectorID#";
 			
-			// Check if linking with ColdBox Application Context
-			if( structKeyExists(arguments, "coldbox") ){ 
+			// Configure the injector for operation
+			configure( arguments.binder, arguments.properties);
+			
+			return this;
+		</cfscript>
+	</cffunction>
+				
+	<!--- configure --->
+	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.">
+		<cfargument name="binder" 		required="true" hint="The configuration binder object or path to configure this Injector instance with" colddoc:generic="coldbox.system.ioc.config.Binder">
+		<cfargument name="properties" 	required="true" hint="A structure of binding properties to passthrough to the Configuration CFC" colddoc:generic="struct">
+		<cfscript>
+			var key 			= "";
+			var iData			= {};
+			var withColdbox 	= isColdBoxLinked();
+		</cfscript>
+		
+		<!--- Lock For Configuration --->
+		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
+			<cfscript>
+			// Create local cache, logging and event management if not coldbox context linked.
+			if( NOT withColdbox ){ 
+				// Running standalone, so create our own logging first
+				configureLogBox( instance.binder.getLogBoxConfig() );
+				// Create local CacheBox reference
+				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
+				// Create local event manager
+				configureEventManager();
+			}
+			else{ 
+				// Link ColdBox
 				instance.coldbox = arguments.coldbox;
 				// link LogBox
 				instance.logBox  = instance.coldbox.getLogBox();
@@ -92,113 +121,106 @@ Description :
 				// Link Event Manager
 				instance.eventManager = instance.coldbox.getInterceptorService();
 				// Link Interception States
-				instance.coldbox.getInterceptorService().appendInterceptionPoints( arrayToList(instance.eventStates) ); 
-			}
+				instance.eventManager.appendInterceptionPoints( arrayToList(instance.eventStates) ); 
+			}	
 			
-			// Configure the injector for operation
-			configure( arguments.binder, arguments.properties);
-			
-			return this;
-		</cfscript>
-	</cffunction>
-				
-	<!--- configure --->
-	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.">
-		<cfargument name="binder" 		type="any"		required="true" hint="The configuration binder object or path to configure this Injector instance with"/>
-		<cfargument name="properties" 	type="struct" 	required="true" hint="A map of binding properties to passthrough to the Configuration CFC"/>
-		<cfscript>
-			var key 	= "";
-			var iData	= {};
-		</cfscript>
-		
-		<!--- Lock For Configuration --->
-		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfscript>
 			// Store binder object built accordingly to our binder building procedures
 			instance.binder = buildBinder( arguments.binder, arguments.properties );
 			
-			// Create local cache, logging and event management if not coldbox context linked.
-			if( NOT isColdBoxLinked() ){ 
-				// Running standalone, so create our own logging first
-				configureLogBox( instance.binder.getLogBoxConfig() );
-				// Create local CacheBox reference
-				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
-				// Create local event manager
-				configureEventManager();
-			}		
+			// Register All Custom Listeners
+			if( NOT withColdBox){
+				registerListeners();
+			}
 			
 			// Register Life Cycle Scopes
 			registerScopes();
 			
-			// Register DSLs
+			// TODO: Register DSLs
 			// registerDSLs();
-			
-			// Register Listeners if not using ColdBox
-			if( NOT isColdBoxLinked() ){
-				registerListeners();
-			}
-			
+		
 			// Parent Injector declared
 			if( isObject(instance.binder.getParentInjector()) ){
 				setParent( instance.binder.getParentInjector() );
 			}
 			
-			// Scope registration
+			// Scope registration if enabled?
 			if( instance.binder.getScopeRegistration().enabled ){
 				doScopeRegistration();
 			}
 			
 			// Announce To Listeners we are online
 			iData.injector = this;
-			getEventManager().processState("afterInjectorConfiguration",iData);
+			instance.eventManager.processState("afterInjectorConfiguration",iData);
 			
-			// Now create eager objects
+			// Create Eager Objects
 			//createEagerMappings();	
 			</cfscript>
 		</cflock>
 	</cffunction>
 	
 	<!--- getInstance --->
-    <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object instance">
-    	<cfargument name="name" 			type="any" 		required="true" 	hint="The mapping name or CFC instance path to retrieve via scan locations"/>
-		<cfargument name="dsl"				type="string"  	required="false" 	hint="The dsl string to use to retrieve the instance object, mutually exclusive with 'name'"/>
-		<cfargument name="initArguments" 	type="struct" 	required="false" 	hint="The constructor arguments to passthrough when initializing the instance"/>
+    <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
+    	<cfargument name="name" 			required="true" 	hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
 			var instancePath 	= "";
-			var binder			= getBinder();
+			var mapping 		= "";
+			var target			= "";
 			
 			// Get by DSL?
-			if( structKeyExists(arguments,"dsl") ){ }
+			if( structKeyExists(arguments,"dsl") ){
+				// TODO: Get by DSL
+			}
 			
 			// Check if Mapping Exists?
-			if( binder.mappingExists(arguments.name) ){
+			if( NOT instance.binder.mappingExists(arguments.name) ){
 				// No Mapping exists, let's try to locate it first. We are now dealing with request by conventions
 				instancePath = locateInstance(arguments.name);
 				// If Empty Throw Exception
 				if( NOT len(instancePath) ){
-					instance.log.error("Requested instance:#arguments.name# was not located in any declared scan locations: #structKeyList(getBinder().getScanLocations())# or full CFC path");
+					instance.log.error("Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList(instance.binder.getScanLocations())# or full CFC path");
 					getUtil().throwit(message="Requested instance not found: '#arguments.name#'",
-									  detail="The instance could not be located in any declared scan location(s) (#structKeyList(getBinder().getScanLocations())#) or full path location",
+									  detail="The instance could not be located in any declared scan location(s) (#structKeyList(instance.binder.getScanLocations())#) or full path location",
 									  type="Injector.InstanceNotFoundException");
 				}
-				// Let's create a mapping for this requested convention name+path
-				binder.map(arguments.name).to(instancePath);
+				// Let's create a mapping for this requested convention name+path as it is the first time we see it
+				instance.binder.map(arguments.name).to(instancePath);
 			}
+			
+			// Get Mapping requested
+			mapping = instance.binder.getMapping( arguments.name );
+			// Check if the mapping has been discovered yet and we need to autowire?
+			if( NOT mapping.isDiscovered() and mapping.isAutowire() ){
+			
+			}
+			
+			// Request object from scope now
+			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping );
 		
+		
+			return target;
 		</cfscript>
     </cffunction>
 		
-	<!--- containsMapping --->
-    <cffunction name="containsMapping" output="false" access="public" returntype="boolean" hint="Checks if this injector's binder contains a specific object mapping or not">
-    	<cfargument name="name" type="string" required="true" hint="The object name or alias to search for if this container has information about it"/>
-		<cfreturn getBinder().mappingExists(arguments.name)>
+	<!--- containsInstance --->
+    <cffunction name="containsInstance" output="false" access="public" returntype="any" hint="Checks if this injector can locate a model instance or not" colddoc:generic="boolean">
+    	<cfargument name="name" required="true" hint="The object name or alias to search for if this container can locate it or has knowledge of it"/>
+		<cfscript>
+			// check if we have a mapping first
+			if( instance.binder.mappingExists(arguments.name) ){ return true; }
+			// check if we can locate it?
+			if( len(locateInstance(arguments.name)) ){ return true; }
+			// NADA!
+			return false;		
+		</cfscript>
     </cffunction>
 		
 	<!--- locateInstance --->
     <cffunction name="locateInstance" output="false" access="public" returntype="any" hint="Tries to locate a specific instance by scanning all scan locations and returning the instantiation path. If model not found then the returned instantiation path will be empty">
-    	<cfargument name="name" type="any"  required="true" hint="The model instance name to locate" colddoc:generic="string">
+    	<cfargument name="name" required="true" hint="The model instance name to locate">
 		<cfscript>
-			var scanLocations		= getBinder().getScanLocations();
+			var scanLocations		= instance.binder.getScanLocations();
 			var thisScanPath		= "";
 			var CFCName				= replace(arguments.name,".","/","all") & ".cfc";
 			
@@ -226,17 +248,21 @@ Description :
 	
 	<!--- autowire --->
     <cffunction name="autowire" output="false" access="public" returntype="any" hint="The main method that does the magical autowiring">
+    	<cfargument name="target" 	required="true" hint="The target object to wire up"/>
+		<cfargument name="targetID" required="false" hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
+    	<cfscript>
     	
+    	</cfscript>
     </cffunction>
 	
 	<!--- setParent --->
     <cffunction name="setParent" output="false" access="public" returntype="void" hint="Link a parent Injector with this injector">
-    	<cfargument name="injector" type="any" required="true" hint="A WireBox Injector to assign as a parent to this Injector"/>
+    	<cfargument name="injector" required="true" hint="A WireBox Injector to assign as a parent to this Injector" colddoc:generic="coldbox.system.ioc.Injector">
     	<cfset instance.parent = arguments.injector>
     </cffunction>
 	
 	<!--- hasParent --->
-    <cffunction name="hasParent" output="false" access="public" returntype="boolean" hint="Checks if this Injector has a defined parent injector">
+    <cffunction name="hasParent" output="false" access="public" returntype="any" hint="Checks if this Injector has a defined parent injector" colddoc:generic="boolean">
     	<cfreturn (isObject(instance.parent))>
     </cffunction>
 	
@@ -246,42 +272,42 @@ Description :
     </cffunction>
 	
 	<!--- getObjectPopulator --->
-    <cffunction name="getObjectPopulator" output="false" access="public" returntype="coldbox.system.core.dynamic.BeanPopulator" hint="Get an object populator useful for populating objects from JSON,XML, etc.">
+    <cffunction name="getObjectPopulator" output="false" access="public" returntype="any" hint="Get an object populator useful for populating objects from JSON,XML, etc." colddoc:generic="coldbox.system.core.dynamic.BeanPopulator">
     	<cfreturn createObject("component","coldbox.system.core.dynamic.BeanPopulator").init()>
     </cffunction>
 	
 	<!--- getColdbox --->
-    <cffunction name="getColdbox" output="false" access="public" returntype="coldbox.system.web.Controller" hint="Get the instance of ColdBox linked in this Injector. Empty if using standalone version">
+    <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the instance of ColdBox linked in this Injector. Empty if using standalone version" colddoc:generic="coldbox.system.web.Controller">
     	<cfreturn instance.coldbox>
     </cffunction>
 	
 	<!--- isColdBoxLinked --->
-    <cffunction name="isColdBoxLinked" output="false" access="public" returntype="boolean" hint="Checks if Coldbox application context is linked">
+    <cffunction name="isColdBoxLinked" output="false" access="public" returntype="any" hint="Checks if Coldbox application context is linked" colddoc:generic="boolean">
     	<cfreturn isObject(instance.coldbox)>
     </cffunction>
 	
 	<!--- getCacheBox --->
-    <cffunction name="getCacheBox" output="false" access="public" returntype="any" hint="Get the instance of CacheBox linked in this Injector. Empty if using standalone version">
+    <cffunction name="getCacheBox" output="false" access="public" returntype="any" hint="Get the instance of CacheBox linked in this Injector. Empty if using standalone version" colddoc:generic="coldbox.system.cache.CacheFactory">
     	<cfreturn instance.cacheBox>
     </cffunction>
 	
 	<!--- isCacheBoxLinked --->
-    <cffunction name="isCacheBoxLinked" output="false" access="public" returntype="boolean" hint="Checks if CacheBox is linked">
+    <cffunction name="isCacheBoxLinked" output="false" access="public" returntype="any" hint="Checks if CacheBox is linked" colddoc:generic="boolean">
     	<cfreturn isObject(instance.cacheBox)>
     </cffunction>
 
 	<!--- getLogBox --->
-    <cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the instance of LogBox configured for this Injector">
+    <cffunction name="getLogBox" output="false" access="public" returntype="any" hint="Get the instance of LogBox configured for this Injector" colddoc:generic="coldbox.system.logging.LogBox">
     	<cfreturn instance.logBox>
     </cffunction>
 
 	<!--- Get Version --->
-	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the Injector's version string.">
+	<cffunction name="getVersion" access="public" returntype="any" output="false" hint="Get the Injector's version string.">
 		<cfreturn instance.version>
 	</cffunction>
 	
 	<!--- Get the binder config object --->
-	<cffunction name="getBinder" access="public" returntype="coldbox.system.ioc.config.Binder" output="false" hint="Get the Injector's configuration binder object">
+	<cffunction name="getBinder" access="public" returntype="any" output="false" hint="Get the Injector's configuration binder object" colddoc:generic="coldbox.system.ioc.config.Binder">
 		<cfreturn instance.binder>
 	</cffunction>
 	
@@ -296,7 +322,7 @@ Description :
     </cffunction>
 
 	<!--- getScopeRegistration --->
-    <cffunction name="getScopeRegistration" output="false" access="public" returntype="struct" hint="Get the scope registration information">
+    <cffunction name="getScopeRegistration" output="false" access="public" returntype="any" hint="Get the structure of scope registration information" colddoc:generic="struct">
     	<cfreturn instance.binder.getScopeRegistration()>
     </cffunction>
 
@@ -318,23 +344,19 @@ Description :
 	<!--- registerScopes --->
     <cffunction name="registerScopes" output="false" access="private" returntype="void" hint="Register all internal and configured WireBox Scopes">
     	<cfscript>
-    		var customScopes 	= "";
+    		var customScopes 	= instance.binder.getCustomScopes();
     		var key				= "";
 			
     		// register no_scope
-			instance.scopes["NOSCOPE"] = createObject("component","coldbox.system.ioc.scopes.NoScope").init();
-			instance.scopes["NOSCOPE"].configure(this);
+			instance.scopes["NOSCOPE"] = createObject("component","coldbox.system.ioc.scopes.NoScope").init( this );
 			// register singleton
-			instance.scopes["SINGLETON"] = createObject("component","coldbox.system.ioc.scopes.Singleton").init();
-			instance.scopes["SINGLETON"].configure(this);
+			instance.scopes["SINGLETON"] = createObject("component","coldbox.system.ioc.scopes.Singleton").init( this );
 			// is cachebox linked?
 			if( isCacheBoxLinked() ){
-				instance.scopes["CACHEBOX"] = createObject("component","coldbox.system.ioc.scopes.CacheBox").init();
-				instance.scopes["CACHEBOX"].configure(this);
+				instance.scopes["CACHEBOX"] = createObject("component","coldbox.system.ioc.scopes.CacheBox").init( this );
 			}
 			// CF Scopes and references
-			instance.scopes["REQUEST"] 	= createObject("component","coldbox.system.ioc.scopes.CFScopes").init();
-			instance.scopes["REQUEST"].configure(this);
+			instance.scopes["REQUEST"] 	= createObject("component","coldbox.system.ioc.scopes.CFScopes").init( this );
 			instance.scopes["SESSION"] 		= instance.scopes["REQUEST"];
 			instance.scopes["SERVER"] 		= instance.scopes["REQUEST"];
 			instance.scopes["APPLICATION"] 	= instance.scopes["REQUEST"];
@@ -344,12 +366,9 @@ Description :
 				instance.log.debug("Registered all internal lifecycle scopes successfully: #structKeyList(instance.scopes)#");
 			}
 			
-			// Custom Scopes
-			customScopes = instance.binder.getCustomScopes();
-			// register Custom Scopes
+			// Register Custom Scopes
 			for(key in customScopes){
-				instance.scopes[key] = createObject("component",customScopes[key]).init();
-				instance.scopes[key].configure(this);
+				instance.scopes[key] = createObject("component",customScopes[key]).init( this );
 				// Debugging
 				if( instance.log.canDebug() ){
 					instance.log.debug("Registered custom scope: #key# (#customScopes[key]#)");
@@ -383,7 +402,7 @@ Description :
 				}
 				
 				// Now register listener
-				getEventManager().register(thisListener,listeners[x].name);
+				instance.eventManager.register(thisListener,listeners[x].name);
 				
 				// debugging
 				if( instance.log.canDebug() ){
@@ -397,9 +416,10 @@ Description :
     <cffunction name="doScopeRegistration" output="false" access="private" returntype="void" hint="Register this injector on a user specified scope">
     	<cfscript>
     		var scopeInfo 		= instance.binder.getScopeRegistration();
-			var scopeStorage	= createObject("component","coldbox.system.core.collections.ScopeStorage").init();
+			
 			// register injector with scope
-			scopeStorage.put(scopeInfo.key, this, scopeInfo.scope);
+			createObject("component","coldbox.system.core.collections.ScopeStorage").init().put(scopeInfo.key, this, scopeInfo.scope);
+			
 			// Log info
 			if( instance.log.canDebug() ){
 				instance.log.debug("Scope Registration enabled and Injector scoped to: #scopeInfo.toString()#");
@@ -409,7 +429,7 @@ Description :
 	
 	<!--- configureCacheBox --->
     <cffunction name="configureCacheBox" output="false" access="private" returntype="void" hint="Configure a standalone version of cacheBox for persistence">
-    	<cfargument name="config" type="struct" required="true" hint="The cacheBox configuration data structure"/>
+    	<cfargument name="config" required="true" hint="The cacheBox configuration data structure" colddoc:generic="struct"/>
     	<cfscript>
     		var args 	= structnew();
 			var oConfig	= "";
@@ -461,7 +481,7 @@ Description :
 	
 	<!--- configureLogBox --->
     <cffunction name="configureLogBox" output="false" access="private" returntype="void" hint="Configure a standalone version of logBox for logging">
-    	<cfargument name="configPath" type="string" required="true" hint="The logBox configuration path to use"/>
+    	<cfargument name="configPath" required="true" hint="The logBox configuration path to use"/>
     	<cfscript>
     		var config 	= ""; 
 			var args 	= structnew();
@@ -497,14 +517,14 @@ Description :
     </cffunction>
 	
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a core util object">
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a core util object" colddoc:generic="coldbox.system.core.util.Util">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 	
 	<!--- buildBinder --->
     <cffunction name="buildBinder" output="false" access="private" returntype="any" hint="Load a configuration binder object according to passed in type">
-    	<cfargument name="binder" 		type="any" 		required="true" hint="The data CFC configuration instance, instantiation path or programmatic binder object to configure this injector with"/>
-		<cfargument name="properties" 	type="struct" 	required="true" hint="A map of binding properties to passthrough to the Configuration CFC"/>
+    	<cfargument name="binder" 		required="true" hint="The data CFC configuration instance, instantiation path or programmatic binder object to configure this injector with"/>
+		<cfargument name="properties" 	required="true" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfscript>
 			var dataCFC = "";
 			

@@ -352,6 +352,15 @@ Description :
 		<cfreturn this>
     </cffunction>
 
+<!------------------------------------------- PROCESSING METHDOS ------------------------------------------>
+
+	<!--- process --->
+    <cffunction name="process" output="false" access="public" returntype="any" hint="Process a mapping for metadata discovery and more">
+    	<cfscript>
+    	
+		</cfscript>
+    </cffunction>
+
 <!----------------------------------------- PRIVATE ------------------------------------->	
 	
 	<!--- getDIDefinition --->

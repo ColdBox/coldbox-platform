@@ -12,12 +12,7 @@ Description :
 <cfcomponent output="false" implements="coldbox.system.ioc.scopes.IScope" hint="I am a scopes that stores in valid CF scopes">
 
 	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">
-    	<cfreturn this>
-    </cffunction>
-	
-	<!--- configure --->
-    <cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the scope for operation">
+    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation">
     	<cfargument name="wirebox" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
     	<cfscript>
 			instance = {
