@@ -505,7 +505,7 @@ Only one instance of a specific ColdBox application exists.
 					// Throw Exceptions
 					getUtil().throwInvalidHTTP(className="Controller",
 											   detail="The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
-											   statusText="The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
+											   statusText="Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
 											   statusCode="405");
 				}
 

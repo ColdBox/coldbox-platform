@@ -128,7 +128,7 @@ Description :
 					else{
 						getUtil().throwInvalidHTTP(className="SES",
 												   detail="The HTTP method used: #HTTPMethod# is not valid for the current executing resource. Valid methods are: #aRoute.action.toString()#",
-										 		   statusText="The HTTP method used: #HTTPMethod# is not valid for the current executing resource",
+										 		   statusText="Invalid HTTP method: #HTTPMethod#",
 										 		   statusCode="405");
 					}
 				}
