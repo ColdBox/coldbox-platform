@@ -151,6 +151,7 @@ Loads a coldbox xml configuration file
 		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
 		
 		//finish by loading configuration
+		configStruct.coldboxConfig = oConfig;
 		getController().setConfigSettings(configStruct);
 		</cfscript>
 	</cffunction>
