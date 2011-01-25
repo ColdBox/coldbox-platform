@@ -88,7 +88,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		
 		str = plugin.link('http://hello.com/luis.css');
 		
-		assertEquals('<link rel="stylesheet" type="text/css" href="http://hello.com/luis.css" />', str);
+		assertEquals('<link rel="stylesheet" charset="UTF-8" type="text/css" href="http://hello.com/luis.css"/>', str);
 	}
 	
 	
