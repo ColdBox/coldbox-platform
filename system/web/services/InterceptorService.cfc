@@ -50,6 +50,10 @@ Description :
     		instance.log = controller.getLogBox().getLogger(this);
     		// Setup Configuration
     		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
+			// Check if using the CFC configuration object, if so, then register it
+			if( controller.settingExists('coldboxConfig') ){
+				registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'),interceptorName="coldboxConfig");
+			}
     		// Register The Interceptors
 			registerInterceptors();
     	</cfscript>
@@ -61,9 +65,6 @@ Description :
 	<cffunction name="registerInterceptors" access="public" returntype="void" hint="Register all the interceptors according to configuration. All interception states are lazy loaded in." output="false" >
 		<cfscript>
 			var x = 1;
-			
-			// Create a spanking new Interception States Container
-			createInterceptionStates();
 			
 			// Check if we have custom interception points, and register them if we do
 			if( len(instance.interceptorConfig.customInterceptionPoints) ){
@@ -396,13 +397,6 @@ Description :
 				//Register it
 				oInterceptorState.register(arguments.interceptorKey, arguments.oInterceptor );	
 			}	
-		</cfscript>
-	</cffunction>
-
-	<!--- Create Interception States --->
-	<cffunction name="createInterceptionStates" access="private" returntype="void" hint="Create the interception states container" output="false" >
-		<cfscript>
-			instance.interceptionStates = structnew();
 		</cfscript>
 	</cffunction>
 

@@ -293,6 +293,12 @@ Optional Methods
 	
 	}
 	
+	// CFC is also an interceptor
+	function afterConfigurationLoad(event,interceptData){
+		var logger = controller.getLogBox().getLogger(this);
+		logger.info("My application just loaded and this message is from the config object");
+	}
+	
 </cfscript>
 
 </cfcomponent>
