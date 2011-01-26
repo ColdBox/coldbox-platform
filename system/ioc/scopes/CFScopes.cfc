@@ -13,12 +13,12 @@ Description :
 
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation">
-    	<cfargument name="wirebox" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
     	<cfscript>
 			instance = {
-				wirebox		 = arguments.wirebox,
+				injector	 = arguments.injector,
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(), 
-				log			 = arguments.wireBox.getLogBox().getLogger( this )
+				log			 = arguments.injector.getLogBox().getLogger( this )
 			};
 		</cfscript>
     </cffunction>
@@ -43,10 +43,10 @@ Description :
 					// some nice debug info.
 					instance.log.debug("Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beggining construction.");
 					// construct it and store it, to satisfy circular dependencies
-					target = instance.wirebox.constructInstance( arguments.mapping );
+					target = instance.injector.constructInstance( arguments.mapping );
 					instance.scopeStorage.put(cacheKey, target, CFScope);
 					// wire it
-					instance.wirebox.autowire( instance.instance.singletons[cacheKey] );
+					instance.injector.autowire( instance.instance.singletons[cacheKey] );
 					// log it
 					instance.log.debug("Object: (#arguments.mapping.getName()#) constructed and stored in CFScope (#CFScope#).");
 					return target;

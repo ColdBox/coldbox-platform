@@ -13,12 +13,12 @@ Description :
 
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation">
-    	<cfargument name="wirebox" type="any" required="true" hint="The linked WireBox injector: coldbox.system.ioc.Injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector: coldbox.system.ioc.Injector" colddoc:generic="coldbox.system.ioc.Injector"/>
 		<cfscript>
 			instance = {
-				wirebox		= arguments.wirebox,
-				cacheBox	= arguments.wireBox.getCacheBox(),
-				log			= arguments.wireBox.getLogBox().getLogger( this )
+				injector	= arguments.injector,
+				cacheBox	= arguments.injector.getCacheBox(),
+				log			= arguments.injector.getLogBox().getLogger( this )
 			};
 		</cfscript>
     </cffunction>
@@ -44,10 +44,10 @@ Description :
 					// some nice debug info.
 					instance.log.debug("Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction.");
 					// construct it and store it, to satisfy circular dependencies
-					refLocal.target = instance.wirebox.constructInstance( arguments.mapping );
+					refLocal.target = instance.injector.constructInstance( arguments.mapping );
 					cacheProvider.set(cacheProperties.key, refLocal.target, cacheProperties.timeout, cacheProperties.lastAccessTimeout);
 					// wire it
-					instance.wirebox.autowire( refLocal.target );
+					instance.injector.autowire( refLocal.target );
 					// log it
 					instance.log.debug("Object: (#cacheProperties.toString()#) constructed and stored in cacheBox.");
 					// return it

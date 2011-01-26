@@ -13,12 +13,12 @@ Description :
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation">
-    	<cfargument name="wirebox" type="any" required="true" hint="The linked WireBox injector: coldbox.system.ioc.Injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector: coldbox.system.ioc.Injector" colddoc:generic="coldbox.system.ioc.Injector"/>
 		<cfscript>
 			instance = {
-				wirebox		= arguments.wirebox,
-				singletons 	= {},
-				log			= arguments.wireBox.getLogBox().getLogger( this )
+				injector	= arguments.injector,
+				singletons 	= createObject("java","java.util.concurrent.ConcurrentHashMap").init(),
+				log			= arguments.injector.getLogBox().getLogger( this )
 			};
 		</cfscript>
     </cffunction>
@@ -39,9 +39,9 @@ Description :
 					// some nice debug info.
 					instance.log.debug("Object: (#cacheKey#) not found in singleton cache, beggining construction.");
 					// construct it and store it, to satisfy circular dependencies
-					instance.singletons[cacheKey] = instance.wirebox.constructInstance( arguments.mapping );
+					instance.singletons[cacheKey] = instance.injector.constructInstance( arguments.mapping );
 					// wire it
-					instance.wirebox.autowire( instance.instance.singletons[cacheKey] );
+					instance.injector.autowire( instance.instance.singletons[cacheKey] );
 					// log it
 					instance.log.debug("Object: (#cacheKey#) constructed and stored in singleton cache.");
 					// return it

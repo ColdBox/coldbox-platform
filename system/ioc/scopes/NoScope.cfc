@@ -13,10 +13,10 @@ Description :
 
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation">
-    	<cfargument name="wirebox" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
 		<cfscript>
 			instance = {
-				wirebox = arguments.wirebox
+				injector = arguments.injector
 			};
 		</cfscript>
     </cffunction>
@@ -26,9 +26,9 @@ Description :
     	<cfargument name="mapping" type="any" required="true" hint="The object mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
 		<cfscript>
 			// create and return the no scope instance, no locking needed.
-			var object = wirebox.constructInstance(arguments.mapping);
+			var object = instance.injector.constructInstance(arguments.mapping);
 			// wire it
-			instance.wireBox.autowire( object );
+			instance.injector.autowire( object );
 			// send it back
 			return object;
 		</cfscript>

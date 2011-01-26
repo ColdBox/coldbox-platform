@@ -56,15 +56,14 @@ Description :
 				eventManager = "",
 				// Configured Event States
 				eventStates = [
-					"afterInjectorConfiguration", 	// once injector is created and configured
-					"beforeObjectCreation", 		// Before an injector creates an object, the mapping is passed.
-					"afterObjectCreation", 			// once an object is created but not initialized via its constructor, the obj reference is passed
-					"beforeObjectInitialized",		// before the constructor is called, the arguments that will be passed to the constructer are sent
-					"afterObjectInitialized",		// once the constructor is called
-					"afterDIComplete",				// after object is completely initialized and DI injections have ocurred
-					"beforeMetadataInspection",		// before an object is inspected for injection metadata
-					"afterMetadataInspection",		// after an object has been inspected and metadata is ready to be saved
-					"onObjectException"				// traps when the injector throws controlled exceptions when building, injeting objects
+					"afterInjectorConfiguration", 	// X once injector is created and configured
+					"beforeInstanceCreation", 		// Before an injector creates or is requested an instance of an object, the mapping is passed.
+					"afterInstanceCreation", 		// once an object is created with DI and everything on it.
+					"beforeInstanceInitialized",	// before the constructor is called, the arguments that will be passed to the constructer are sent
+					"afterInstanceInitialized",		// once the constructor is called
+					"afterInstanceDIComplete",		// after object is completely initialized and DI injections have ocurred
+					"beforeInstanceInspection",		// X before an object is inspected for injection metadata
+					"afterInstanceInspection"		// X after an object has been inspected and metadata is ready to be saved
 				],
 				// LogBox and Class Logger
 				logBox  = "",
@@ -167,6 +166,7 @@ Description :
 			var instancePath 	= "";
 			var mapping 		= "";
 			var target			= "";
+			var iData			= {};
 			
 			// Get by DSL?
 			if( structKeyExists(arguments,"dsl") ){
@@ -185,22 +185,51 @@ Description :
 									  type="Injector.InstanceNotFoundException");
 				}
 				// Let's create a mapping for this requested convention name+path as it is the first time we see it
-				instance.binder.map(arguments.name).to(instancePath);
+				registerNewInstance(arguments.name, instancePath);
 			}
 			
-			// Get Mapping requested
+			// Get Requested Mapping (Guaranteed to exist now)
 			mapping = instance.binder.getMapping( arguments.name );
-			// Check if the mapping has been discovered yet and we need to autowire?
-			if( NOT mapping.isDiscovered() and mapping.isAutowire() ){
 			
+			// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
+			if( NOT mapping.isDiscovered() and mapping.isAutowire() ){ 
+				// announce inspection
+				iData = {mapping=mapping,name=arguments.name,binder=instance.binder};
+				instance.eventManager.process("beforeInstanceInspection",iData);
+				// process inspection of instance
+				mapping.process( instance.binder );
+				// announce it 
+				instance.eventManager.process("afterInstanceInspection",iData);
 			}
 			
-			// Request object from scope now
+			// scope persistence check
+			if( NOT structKeyExists(instance.scopes, mapping.getScope()) ){
+				instance.log.error("The mapping scope: #mapping.getScope()# is invalid and not registered in the valid scopes: #structKeyList(instance.scopes)#");
+				getUtil().throwit(message="Requested mapping scope: #mapping.getScope()# is invalid",
+								  detail="The registered valid object scopes are #structKeyList(instance.scopes)#",
+								  type="Injector.InvalidScopeException");
+			}
+			
+			// Request object from scope now, we now have the scope
 			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping );
-		
-		
+			
 			return target;
 		</cfscript>
+    </cffunction>
+	
+	<!--- registerNewInstance --->
+    <cffunction name="registerNewInstance" output="false" access="private" returntype="void" hint="Register a new requested mapping object instance">
+    	<cfargument name="name" 		required="true" hint="The name of the mapping to register"/>
+		<cfargument name="instancePath" required="true" hint="The path of the mapping to register">
+    	
+    	<!--- Register new instance mapping --->
+    	<cflock name="Injector.RegisterNewInstance.#hash(arguments.instancePath)#" type="exclusive" timeout="20" throwontimeout="true">
+    		<!--- double lock for concurrency --->
+    		<cfif NOT instance.binder.mappingExists(arguments.name)>
+    			<cfset instance.binder.map(arguments.name).to(arguments.instancePath)>
+    		</cfif>
+		</cflock>
+		
     </cffunction>
 		
 	<!--- containsInstance --->

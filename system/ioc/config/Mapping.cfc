@@ -62,7 +62,7 @@ Description :
 			};
 			
 			// DI definition structure
-			DIDefinition = {name="",value="",dsl="",scope="variables",javaCast="",ref=""};
+			DIDefinition = {name="",value="",dsl="",scope="variables",javaCast="",ref="",required=false};
 			
 			return this;
 		</cfscript>
@@ -245,7 +245,8 @@ Description :
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	required="false" hint="The explicit value of the constructor argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
-    	<cfscript>
+    	<cfargument name="required" required="false" hint="If the argument is required or not"/>
+		<cfscript>
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIConstructorArgs, def );
@@ -299,7 +300,7 @@ Description :
     	<cfreturn instance.onDIComplete>
     </cffunction>
     <cffunction name="setOnDIComplete" output="false" access="public" returntype="any" hint="Set the DI Complete method array">
-  		<cfargument name="DIComplete" required="true" default="" hint="The method array to set"/>
+  		<cfargument name="DIComplete" required="true" hint="The method array to set"/>
     	<cfset instance.onDIComplete = arguments.DIComplete>
     	<cfreturn this>
     </cffunction>
@@ -356,12 +357,189 @@ Description :
 
 	<!--- process --->
     <cffunction name="process" output="false" access="public" returntype="any" hint="Process a mapping for metadata discovery and more">
-    	<cfscript>
-    	
+    	<cfargument name="binder" required="true" hint="The binder requesting the processing"/>
+    	<!--- Link the metadata --->
+		<cfset var md = instance.metadata>
+		
+		<!--- Lock for discovery based on path location, only done once per instance of mapping. --->
+		<cflock name="Mapping.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
+		<cfscript>	
+	    	if( NOT instance.discovered ){
+	    		
+				// Get the instance's metadata first, so we can start processing.
+				md = getComponentMetadata( instance.path );
+				
+				// Setup default NO Scope
+				instance.scope = arguments.binder.SCOPES.NOSCOPE;
+				// Singleton Processing
+				if( structKeyExists(md,"singleton") ){ instance.scope = arguments.binder.SCOPES.SINGLETON; }
+				// Registered Scope Processing
+				if( structKeyExists(md,"scope") ){ instance.scope = md.scope; }
+				// CacheBox scope processing if cachebox annotation found, or cache annotation found
+				if( structKeyExists(md,"cacheBox") OR structKeyExists(md,"cache") ){ 
+					instance.scope = arguments.binder.SCOPES.CACHEBOX;
+				}
+				
+				// Cachebox Persistence Processing
+				if( instance.scope eq "cachebox" ){
+					// Prepare to default provider if no cachebox annotation found or it is empty
+					if(NOT structKeyExists(md,"cacheBox") OR len(md.cacheBox) EQ 0){
+						md.cacheBox = "default";
+					}				
+					// Prepare Timeouts
+					if( NOT structKeyExists(md,"cachetimeout") or not isNumeric(md.cacheTimeout) ){
+						md.cacheTimeout = "";
+					}
+					if( NOT structKeyExists(md,"cacheLastAccessTimeout") or not isNumeric(md.cacheLastAccessTimeout) ){
+						md.cacheLastAccessTimeout = "";
+					}
+					// setup cachebox properties
+					setCacheProperties(key="wirebox-#instance.name#",
+									   timeout=md.timeout,
+									   lastAccessTimeout=md.cacheLastAccessTimeout,
+									   provider=md.cachebox);
+				}
+				
+				// Process Methods, Constructors and Properties
+				processDIMetadata( arguments.binder, md );
+				
+				// finished processing mark as discovered
+				instance.discovered = true;
+			}
 		</cfscript>
+		</cflock>
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
+	
+	<!--- processDIMetadata --->
+	<cffunction name="processDIMetadata" returntype="void" access="private" output="false" hint="Process methods/properties for dependency injection">
+		<cfargument name="binder" 		required="true" hint="The binder requesting the processing"/>
+		<cfargument name="metadata" 	required="true" hint="The metadata to process"/>
+		<cfargument name="dependencies" required="false" default="#structnew()#" hint="The dependencies structure">
+		<cfscript>
+			var x 		= 1;
+			var y 		= 1;
+			var md 		= arguments.metadata;
+			var fncLen	= 0;
+			var params	= "";
+			
+			// Look For properties for annotation injections
+			if( structKeyExists(md,"properties") and ArrayLen(md.properties) GT 0){
+				// Loop over each property and identify injectable properties
+				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
+
+					// Check if property not discovered or if inject annotation is found
+					if( NOT structKeyExists(arguments.dependencies,md.properties[x].name) AND structKeyExists(md.properties[x],"inject") ){
+						// default injection scope if not found in object
+						if( NOT structKeyExists(md.properties[x],"scope") ){
+							md.properties[x].scope = "variables";
+						}
+						// Setup the default injection DSL (model) if it is empty
+						if( len(md.properties[x].inject) EQ 0){
+							md.properties[x].inject = "model";
+						}
+						// Add to property to mappings
+						addDIProperty(name=md.properties[x].name,dsl=md.properties[x].inject);
+						// Add to found dependencies
+						arguments.dependencies[md.properties[x].name] = "property";
+					}
+
+				}				
+			}//end DI properties
+
+			// Method DI discovery
+			if( structKeyExists(md, "functions") ){
+				fncLen = arrayLen(md.functions);
+				for(x=1; x lte fncLen; x=x+1 ){
+
+					// Verify Processing or do we continue to next iteration for processing
+					// This is to avoid overriding by parent trees in inheritance chains
+					if( structKeyExists(arguments.dependencies,md.functions[x].name) ){
+						continue;
+					}
+					
+					// Constructor Processing if found
+					if( md.functions[x].name eq instance.constructor ){
+						// Loop Over Arguments to process them for dependencies
+						for(y=1;x lte arrayLen(md.functions[x].parameters); y++){
+							// Check required annotation
+							if( NOT structKeyExists(md.functions[x].parameters[y], "required") ){
+								md.functions[x].parameters[y].required = false;
+							}
+							// Check injection annotation, if not found, default it
+							if( NOT structKeyExists(md.functions[x].parameters[y],"inject") OR len(md.functions[x].parameters[y].inject) EQ 0 ){
+								md.functions[x].parameters[y].inject = "model";
+							}
+							// ADD Constructor argument.
+							addDIConstructorArgument(name=md.functions[x].parameters[y].name,
+													 dsl=md.functions[x].parameters[y].inject,
+													 required=md.functions[x].parameters[y].required);
+						}
+						// add constructor to found list, so it is processed only once in recursions
+						arguments.dependencies[md.functions[x].name] = "constructor";
+					}
+					
+					// Setter discovery, MUST be inject annotation marked to be processed.
+					if( left(md.functions[x].name,3) eq "set" AND structKeyExists(md.functions[x],"inject")){
+						
+						// Check DSL marker if it has a value else use default of Model
+						if( NOT len(md.functions[x].inject) ){
+							md.functions[x].inject = "model";
+						}
+						// Add to setter to mappings
+						addDISetter(name=right(md.functions[x].name, Len(md.functions[x].name)-3),dsl=md.functions[x].inject);
+						// Add to found dependencies
+						arguments.dependencies[md.functions[x].name] = "setter";
+					}
+					
+					// Provider Methods Discovery
+					if( structKeyExists( md.functions[x], "provider") AND len(md.functions[x].provider)){
+						addProviderMethod(md.functions[x].name, md.functions[x].provider);
+						arguments.dependencies[md.functions[x].name] = "provider";
+					}
+					
+					// onDIComplete Method Discovery
+					if( structKeyExists( md.functions[x], "onDIComplete") ){
+						arrayAppend(instance.onDIComplete, md.functions[x].name );
+						arguments.dependencies[md.functions[x].name] = "onDIComplete";
+					}
+
+				}//end loop of functions
+			}//end if functions found
+
+			// Start Registering inheritances, if the exists
+			if ( structKeyExists(md, "extends")
+				 AND
+				 stopClassRecursion(md.extends.name,arguments.binder) EQ FALSE){
+
+				// Recursive lookup
+				processDIMetadata(arguments.dependencies,arguments.binder);
+			}
+
+			return arguments.dependencies;
+		</cfscript>
+	</cffunction>
+	
+	<!--- stopClassRecursion --->
+	<cffunction name="stopClassRecursion" access="private" returntype="any" hint="Should we stop recursion or not due to class name found: Boolean" output="false" colddoc:generic="Boolean">
+		<cfargument name="classname" 	required="true" hint="The class name to check">
+		<cfargument name="binder" 		required="true" hint="The binder requesting the processing"/>
+		<cfscript>
+			var x 				= 1;
+			var stopRecursions 	= arguments.binder.getStopRecursions();
+			var stopLen			= arrayLen(stopRecursions);
+			
+			// Try to find a match
+			for(x=1;x lte stopLen; x=x+1){
+				if( CompareNoCase( stopRecursions[x], arguments.classname) eq 0){
+					return true;
+				}
+			}
+
+			return false;
+		</cfscript>
+	</cffunction>
 	
 	<!--- getDIDefinition --->
     <cffunction name="getDIDefinition" output="false" access="private" returntype="any" hint="Get a new DI definition structure" colddoc:generic="structure">
