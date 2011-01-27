@@ -39,6 +39,8 @@ Description :
 			instance.autoReload = false;
 			// Detect extensions flag, so it can place a 'format' variable on the rc
 			instance.extensionDetection = true;
+			// Throw an exception when extension detection is invalid or not
+			instance.throwOnInvalidExtension = false;
 			// Initialize the valid extensions to detect
 			instance.validExtensions = instance.VALID_EXTENSIONS;
 
@@ -411,6 +413,15 @@ Description :
     	<cfset instance.extensionDetection = arguments.extensionDetection>
     </cffunction>
 	
+	<!--- get/set on Invalid Extension --->
+	<cffunction name="getThrowOnInvalidExtension" access="public" returntype="any" output="false" hint="Get if we are throwing or not on invalid extension detection" colddoc:generic="boolean">
+    	<cfreturn instance.throwOnInvalidExtension>
+    </cffunction>
+    <cffunction name="setThrowOnInvalidExtension" access="public" returntype="void" output="false" hint="Configure the interceptor to throw an exception or not when invalid extensions are detected">
+    	<cfargument name="throwOnInvalidExtension" required="true" colddoc:generic="boolean">
+    	<cfset instance.throwOnInvalidExtension = arguments.throwOnInvalidExtension>
+    </cffunction>    
+	
 	<!--- setValidExtensions --->
     <cffunction name="setValidExtensions" output="false" access="public" returntype="void" hint="Setup the list of valid extensions to detect automatically for you.: e.g.: json,xml,rss">
     	<cfargument name="validExtensions" required="true" hint="A list of valid extensions to allow in a request"/>
@@ -481,12 +492,16 @@ Description :
 				}
 				else{
 					// log invalid extension
-					log.debug("Invalid Extension Detected: #lcase(extension)# detected but it is not in the valid extension list: #instance.validExtensions#");
-					// throw exception
+					if( log.canWarn() ){
+						log.warn("Invalid Extension Detected: #lcase(extension)# detected but it is not in the valid extension list: #instance.validExtensions#");
+					}
+					// throw exception if enabled, else just continue
+					if( instance.throwOnInvalidExtension ){
 					getUtil().throwInvalidHTTP(className="SES",
 											   detail="Invalid Request Format Extension Detected: #lcase(extension)#. Valid extensions are: #instance.validExtensions#",
 									  		   statusText="Invalid Requested Format Extension: #lcase(extension)#",
 									 		   statusCode="406");
+					}
 				}				
 			}
 			
