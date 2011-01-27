@@ -39,6 +39,15 @@
 		//r = injector.getInstance("ioc.category.categoryService");
 	}
 	
+	function testbuildJavaClass(){
+		makePublic(injector,"buildJavaClass");
+		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("Buffer");
+		mapping.setPath("java.util.LinkedHashMap")
+			.addDIConstructorArgument(value="3")
+			.addDIConstructorArgument(value="5",javaCast="float");
+		r = injector.buildJavaClass(mapping);
+		//debug(r);
+	}
 	
 </cfscript>
 </cfcomponent>

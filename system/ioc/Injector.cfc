@@ -42,6 +42,8 @@ Description :
 				javaSystem = createObject('java','java.lang.System'),	
 				// Utility class
 				utility  = createObject("component","coldbox.system.core.util.Util"),
+				// Method Invoker
+				invoker	 = createObject("component","coldbox.system.core.dynamic.MethodInvoker").init(),
 				// Version
 				version  = "1.0.0",	 
 				// The Configuration Binder object
@@ -58,10 +60,8 @@ Description :
 				eventStates = [
 					"afterInjectorConfiguration", 	// X once injector is created and configured
 					"beforeInstanceCreation", 		// Before an injector creates or is requested an instance of an object, the mapping is passed.
-					"afterInstanceCreation", 		// once an object is created with DI and everything on it.
-					"beforeInstanceInitialized",	// before the constructor is called, the arguments that will be passed to the constructer are sent
-					"afterInstanceInitialized",		// once the constructor is called
-					"afterInstanceDIComplete",		// after object is completely initialized and DI injections have ocurred
+					"afterInstanceInitialized",		// once the constructor is called and before DI is performed
+					"afterInstanceCreation", 		// once an object is created, initialized and done with DI
 					"beforeInstanceInspection",		// X before an object is inspected for injection metadata
 					"afterInstanceInspection"		// X after an object has been inspected and metadata is ready to be saved
 				],
@@ -99,16 +99,7 @@ Description :
 		<!--- Lock For Configuration --->
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
-			// Create local cache, logging and event management if not coldbox context linked.
-			if( NOT withColdbox ){ 
-				// Running standalone, so create our own logging first
-				configureLogBox( instance.binder.getLogBoxConfig() );
-				// Create local CacheBox reference
-				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
-				// Create local event manager
-				configureEventManager();
-			}
-			else{ 
+			if( withColdBox ){ 
 				// Link ColdBox
 				instance.coldbox = arguments.coldbox;
 				// link LogBox
@@ -126,8 +117,15 @@ Description :
 			// Store binder object built accordingly to our binder building procedures
 			instance.binder = buildBinder( arguments.binder, arguments.properties );
 			
-			// Register All Custom Listeners
-			if( NOT withColdBox){
+			// Create local cache, logging and event management if not coldbox context linked.
+			if( NOT withColdbox ){ 
+				// Running standalone, so create our own logging first
+				configureLogBox( instance.binder.getLogBoxConfig() );
+				// Create local CacheBox reference
+				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
+				// Create local event manager
+				configureEventManager();
+				// Register All Custom Listeners
 				registerListeners();
 			}
 			
@@ -176,6 +174,7 @@ Description :
 			// Check if Mapping Exists?
 			if( NOT instance.binder.mappingExists(arguments.name) ){
 				// No Mapping exists, let's try to locate it first. We are now dealing with request by conventions
+				// This is done once per instance request as then mappings are cached
 				instancePath = locateInstance(arguments.name);
 				// If Empty Throw Exception
 				if( NOT len(instancePath) ){
@@ -192,9 +191,9 @@ Description :
 			mapping = instance.binder.getMapping( arguments.name );
 			
 			// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
-			if( NOT mapping.isDiscovered() and mapping.isAutowire() ){ 
+			if( NOT mapping.isDiscovered() AND mapping.isAutowire() ){ 
 				// announce inspection
-				iData = {mapping=mapping,name=arguments.name,binder=instance.binder};
+				iData = {mapping=mapping,binder=instance.binder};
 				instance.eventManager.process("beforeInstanceInspection",iData);
 				// process inspection of instance
 				mapping.process( instance.binder );
@@ -210,11 +209,155 @@ Description :
 								  type="Injector.InvalidScopeException");
 			}
 			
-			// Request object from scope now, we now have the scope
+			// Request object from scope now, we now have it from scope
 			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping );
+			
+			// Announce creation, initialization and DI magicfinicitation!
+			iData = {mapping=arguments.mapping,target=target};
+			instance.eventManager.process("afterInstanceCreation",iData);
 			
 			return target;
 		</cfscript>
+    </cffunction>
+	
+	<!--- constructInstance --->
+    <cffunction name="constructInstance" output="false" access="public" returntype="any" hint="Construct an instance, this is called from registered scopes only as they provide locking and transactions">
+    	<cfargument name="mapping" required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfscript>
+    		var thisMap = arguments.mapping;
+			var oModel	= "";
+			var iData	= "";
+			
+			// before construction event
+			iData = {mapping=arguments.mapping};
+			instance.eventManager.process("beforeInstanceCreation",iData);
+			
+    		// determine construction type
+    		switch( thisMap.getType() ){
+				case "cfc" : {
+					oModel = buildCFC( thisMap ); break;
+				}
+				case "java" : {
+					oModel = buildJavaClass( thisMap ); break;
+				}
+				case "webservice" : {
+					oModel = createObject("webservice", thisMap.getPath() ); break;
+				}
+				case "constant" : {
+					oModel = thisMap.getValue(); break;
+				}
+				case "rss" : {
+					oModel = buildFeed(thisMap.getPath()); break;
+				}
+				case "dsl" : {
+					oModel = getDSLDependency(thisMap.getDSL()); break;
+				}
+				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
+			}		
+			
+			// announce afterInstanceInitialized
+			iData = {mapping=arguments.mapping,target=oModel};
+			instance.eventManager.process("afterInstanceInitialized",iData);
+			
+			return oModel;
+		</cfscript>
+    </cffunction>
+	
+	<!--- buildCFC --->
+    <cffunction name="buildCFC" output="false" access="private" returntype="any" hint="Build a cfc class via mappings">
+    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfscript>
+			var thisMap = arguments.mapping;
+			var oModel 	= createObject("component", thisMap.getPath() );
+			
+			// Constructor initialization?
+			if( thisMap.isAutoInit() ){
+				// init this puppy
+				instance.invoker.invokeMethod(oModel,thisMap.getConstructor(),buildConstructorArguments(thisMap));
+			}
+			
+			return oModel;
+		</cfscript>
+    </cffunction>
+	
+	<!--- buildJavaClass --->
+    <cffunction name="buildJavaClass" output="false" access="private" returntype="any" hint="Build a Java class via mappings">
+    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfscript>
+			var x 			= 1;
+			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
+			var DIArgsLen 	= arrayLen(DIArgs);
+			var args		= [];
+
+			// Loop Over Arguments
+			for(x = 1; x <= DIArgsLen; x++){
+				// do we have javacasting?
+				if( len(DIArgs[x].javaCast) ){
+					ArrayAppend(args, "javaCast(DIArgs[#x#].javaCast, DIArgs[#x#].value)");
+				}	
+				else{
+					ArrayAppend(args, "DIArgs[#x#].value");
+				}
+			}
+
+			return evaluate('createObject("java",arguments.mapping.getPath()).init(#arrayToList(args)#)');
+		</cfscript>
+    </cffunction>
+	
+	<!--- buildConstructorArguments --->
+    <cffunction name="buildConstructorArguments" output="false" access="private" returntype="any" hint="Build constructor arguments for a mapping and return the structure representation">
+    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfscript>
+			var x 			= 1;
+			var thisMap 	= arguments.mapping;
+			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
+			var DIArgsLen 	= arrayLen(DIArgs);
+			var args		= structnew();
+
+			// Loop Over Arguments
+			for(x=1;x lte DIArgsLen; x=x+1){
+				
+				// Is value set in mapping? If so, add it and continue
+				if( NOT isSimpleValue(DIArgs[x].value) OR len(DIArgs[x].value) ){
+					args[ DIArgs[x].name ] = DIArgs[x].value;
+					continue;
+				}
+				
+				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
+				if( len(DIArgs[x].dsl) ){
+					args[ DIArgs[x].name ] = getDSLDependency( DIArgs[x].dsl );
+				}
+				
+				// If we get here then it is by ref id, so let's verify it exists and optional
+				if( len(containsInstance( DIArgs[x].ref )) ){
+					args[ DIArgs[x].name ] = getInstance( DIArgs[x].ref );
+				}
+				else if( DIArgs[x].required ){
+					// not found but required, then throw exception
+					getUtil().throwIt(message="Constructor argument reference not located: #DIArgs[x].name#",
+									  detail="Injecting: #thisMap.getMemento().toString()#. The constructor argument details are: #DIArgs[x].toString()#.",
+									  type="Injector.ConstructorArgumentNotFoundException");
+					instance.log.error("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+				}
+				// else just log it via debug
+				else if( instance.log.canDebug() ){
+					instance.log.debug("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+				}
+				
+			}
+
+			return args;
+		</cfscript>
+    </cffunction>
+	
+	<!--- buildFeed --->
+    <cffunction name="buildFeed" output="false" access="private" returntype="any" hint="Build an rss feed the WireBox way">
+    	<cfargument name="source" type="any" required="true" hint="The feed source to read"/>
+    	<cfset var results = {}>
+		
+    	<cffeed action="read" source="#arguments.source#" query="results.items" properties="results.metadata">
+    	
+		<cfreturn results>
     </cffunction>
 	
 	<!--- registerNewInstance --->
@@ -277,11 +420,124 @@ Description :
 	
 	<!--- autowire --->
     <cffunction name="autowire" output="false" access="public" returntype="any" hint="The main method that does the magical autowiring">
-    	<cfargument name="target" 	required="true" hint="The target object to wire up"/>
-		<cfargument name="targetID" required="false" hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
+    	<cfargument name="target" 			required="true" 	hint="The target object to wire up"/>
+		<cfargument name="targetID" 		required="false" 	hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
     	<cfscript>
-    	
-    	</cfscript>
+			// Targets
+			var targetObject 	= arguments.target;
+			var targetCacheKey 	= arguments.targetID;
+			var metaData 		= "";
+			
+			// Dependencies
+			var thisDependency = instance.NOT_FOUND;
+
+			// Metadata entry structures
+			var mdEntry 			= "";
+			var targetDIEntry 		= "";
+			var dependenciesLength 	= 0;
+			var x 					= 1;
+			var tmpBean 			= "";	
+			
+			// do we have a targetCache Key?
+			if( NOT len(targetCacheKey) ){
+				// Not sent, so get metadata, cache it and build cache id
+				metadata 		= getMetadata(targetObject);
+				targetCacheKey 	= metadata.name;
+				instance.autowireCache[targetCacheKey] = metadata;
+			}	
+			// is md cached for target?
+			else if( NOT structKeyExists(instance.autowireCache, targetCacheKey) ){
+				metadata = getMetadata(targetObject);
+				instance.autowireCache[targetCacheKey] = metadata;
+			}
+			else{
+				// Get metadata for autowire target
+				metadata = instance.autowireCache[targetCacheKey];
+			}
+		</cfscript>
+
+		<!--- Do we have the incoming target object's data in the cache? or caching disabled for objects --->
+		<cfif NOT instance.DICacheDictionary.keyExists(targetCacheKey) OR NOT instance.modelsObjectCaching>
+			<cflock type="exclusive" name="plugins.autowire.#targetCacheKey#" timeout="30" throwontimeout="true">
+				<cfscript>
+					if ( not instance.DICacheDictionary.keyExists(targetCacheKey) ){
+						// Get Empty Default MD Entry, default autowire = false
+						mdEntry = getNewMDEntry();
+
+						// Annotation Checks
+						if( arguments.annotationCheck eq false){
+							mdEntry.autowire = true;
+						}
+						else if ( structKeyExists(metaData,"autowire") and isBoolean(metaData["autowire"]) ){
+							mdEntry.autowire = metaData.autowire;
+						}
+
+						// Lookup Dependencies if using autowire and not a ColdBox core object
+						if ( mdEntry.autowire and findNoCase("coldbox.system",metaData.name) EQ 0 ){
+							// Recurse for dependencies here, in order to build them
+							mdEntry.dependencies = parseMetadata(metaData,mdEntry.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
+						}
+
+						// Set Entry in dictionary
+						instance.DICacheDictionary.setKey(targetCacheKey,mdEntry);
+					}
+				</cfscript>
+			</cflock>
+		</cfif>
+
+		<cfscript>
+		// We are now assured that the DI cache has data.
+		targetDIEntry = instance.DICacheDictionary.getKey(targetCacheKey);
+
+		// Do we Inject Dependencies, are we AutoWiring
+		if ( targetDIEntry.autowire ){
+
+			// Bean Factory Awareness
+			if( structKeyExists(targetObject,"setBeanFactory") ){
+				targetObject.setBeanFactory( this );
+			}
+
+			// ColdBox Context Awareness
+			if( structKeyExists(targetObject,"setColdBox") ){
+				targetObject.setColdBox( controller );
+			}
+
+			// Dependencies Length
+			dependenciesLength = arrayLen(targetDIEntry.dependencies);
+			if( dependenciesLength gt 0 ){
+				// Let's inject our mixins
+				instance.mixerUtil.start(targetObject);
+
+				// Loop over dependencies and inject
+				for(x=1; x lte dependenciesLength; x=x+1){
+					// Get Dependency
+					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x]);
+
+					// Was dependency Found?
+					if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
+						if( log.canDebug() ){
+							log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
+						}
+						continue;
+					}
+
+					// Inject dependency
+					injectBean(targetBean=targetObject,
+							   beanName=targetDIEntry.dependencies[x].name,
+							   beanObject=thisDependency,
+							   scope=targetDIEntry.dependencies[x].scope);
+
+					if( log.canDebug() ){
+						log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
+					}
+				}//end for loop of dependencies.
+
+				// Process After ID Complete
+				processAfterCompleteDI(targetObject,onDICompleteUDF);
+
+			}// if dependencies found.
+		}//if autowiring
+	</cfscript>
     </cffunction>
 	
 	<!--- setParent --->

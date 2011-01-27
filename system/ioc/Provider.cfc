@@ -13,19 +13,19 @@ Description :
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="Provider" hint="Constructor">
-    	<cfargument name="wireBox" 	type="coldbox.system.ioc.Injector" required="true" hint="The injector linkage of this provider"/>
-		<cfargument name="name" 	type="string" required="true" hint="The name of the mapping this provider is binded to"/>
+    	<cfargument name="injector" required="true" hint="The injector linkage of this provider" colddoc:generic="coldbox.system.ioc.Injector"/>
+		<cfargument name="name" 	required="true" hint="The name of the mapping this provider is binded to"/>
 		<cfscript>
 			instance = {
-				name 	= arguments.name,
-				wirebox = arguments.wirebox
+				name 		= arguments.name,
+				injector 	= arguments.injector
 			};
 		</cfscript>
     </cffunction>
 
 	<!--- get --->
     <cffunction name="get" output="false" access="public" returntype="any" hint="Get the provided object">
-    	<cfreturn instance.wirebox.getInstance( instance.name )>
+    	<cfreturn instance.injector.getInstance( instance.name )>
     </cffunction>
 
 </cfcomponent>

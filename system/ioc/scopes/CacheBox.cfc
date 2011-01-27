@@ -20,6 +20,7 @@ Description :
 				cacheBox	= arguments.injector.getCacheBox(),
 				log			= arguments.injector.getLogBox().getLogger( this )
 			};
+			return this;
 		</cfscript>
     </cffunction>
 

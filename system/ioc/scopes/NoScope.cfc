@@ -18,6 +18,7 @@ Description :
 			instance = {
 				injector = arguments.injector
 			};
+			return this;
 		</cfscript>
     </cffunction>
 

@@ -20,6 +20,7 @@ Description :
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(), 
 				log			 = arguments.injector.getLogBox().getLogger( this )
 			};
+			return this;
 		</cfscript>
     </cffunction>
 

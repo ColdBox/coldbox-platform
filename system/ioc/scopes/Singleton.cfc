@@ -20,6 +20,7 @@ Description :
 				singletons 	= createObject("java","java.util.concurrent.ConcurrentHashMap").init(),
 				log			= arguments.injector.getLogBox().getLogger( this )
 			};
+			return this;
 		</cfscript>
     </cffunction>
 

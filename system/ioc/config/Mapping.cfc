@@ -68,6 +68,11 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- getMemento --->
+    <cffunction name="getMemento" output="false" access="public" returntype="any" hint="Get the instance memento structure" colddoc:generic="struct">
+    	<cfreturn instance>
+    </cffunction>
+	
 	<!--- processMemento --->
     <cffunction name="processMemento" output="false" access="public" returntype="any" hint="Process a mapping memento">
     	<cfargument name="memento" required="true" hint="The data memento to process" colddoc:generic="struct"/>
@@ -248,7 +253,12 @@ Description :
     	<cfargument name="required" required="false" hint="If the argument is required or not"/>
 		<cfscript>
     		var def = getDIDefinition();
-			structAppend(def, arguments, true);
+			var key = "";
+			
+			for(key in arguments){
+				if( structKeyExists(arguments,key) ){ def[key] = arguments[key]; }
+			}
+			
 			arrayAppend( instance.DIConstructorArgs, def );
 			return this;
     	</cfscript>
@@ -269,7 +279,12 @@ Description :
     	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
     	<cfscript>
     		var def = getDIDefinition();
-			structAppend(def, arguments, true);
+			var key = "";
+			
+			for(key in arguments){
+				if( structKeyExists(arguments,key) ){ def[key] = arguments[key]; }
+			}
+			
 			arrayAppend( instance.DIProperties, def );
 			return this;
     	</cfscript>
@@ -289,7 +304,12 @@ Description :
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfscript>
     		var def = getDIDefinition();
-			structAppend(def, arguments, true);
+			var key = "";
+			
+			for(key in arguments){
+				if( structKeyExists(arguments,key) ){ def[key] = arguments[key]; }
+			}
+			
 			arrayAppend( instance.DISetters, def );
 			return this;
     	</cfscript>
@@ -431,7 +451,7 @@ Description :
 
 					// Check if property not discovered or if inject annotation is found
 					if( NOT structKeyExists(arguments.dependencies,md.properties[x].name) AND structKeyExists(md.properties[x],"inject") ){
-						// default injection scope if not found in object
+						// default injection scope, if not found in object
 						if( NOT structKeyExists(md.properties[x],"scope") ){
 							md.properties[x].scope = "variables";
 						}

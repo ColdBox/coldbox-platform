@@ -1,7 +1,7 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
-		mapping = createObject("component","coldbox.system.ioc.config.Mapping").init("UnitTest");
+		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("UnitTest");
 	}
 	
 	function testInit(){
