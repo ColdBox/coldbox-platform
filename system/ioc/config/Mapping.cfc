@@ -245,20 +245,15 @@ Description :
 	
 	<!--- addConstructorArgument --->
     <cffunction name="addDIConstructorArgument" output="false" access="public" returntype="any" hint="Add a new constructor argument to this mapping">
-    	<cfargument name="name" 	required="false" hint="The name of the constructor argument (NA: JAVA,WEBSERVICE)"/>
+    	<cfargument name="name" 	required="false" hint="The name of the constructor argument (Not used for: JAVA,WEBSERVICE)"/>
 		<cfargument name="ref" 		required="false" hint="The reference mapping id this constructor argument maps to"/>
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	required="false" hint="The explicit value of the constructor argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
-    	<cfargument name="required" required="false" hint="If the argument is required or not"/>
+    	<cfargument name="required" required="false" default="false" hint="If the argument is required or not"/>
 		<cfscript>
     		var def = getDIDefinition();
-			var key = "";
-			
-			for(key in arguments){
-				if( structKeyExists(arguments,key) ){ def[key] = arguments[key]; }
-			}
-			
+			structAppend(def, arguments, true);
 			arrayAppend( instance.DIConstructorArgs, def );
 			return this;
     	</cfscript>
@@ -279,12 +274,7 @@ Description :
     	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
     	<cfscript>
     		var def = getDIDefinition();
-			var key = "";
-			
-			for(key in arguments){
-				if( structKeyExists(arguments,key) ){ def[key] = arguments[key]; }
-			}
-			
+			structAppend(def, arguments, true);
 			arrayAppend( instance.DIProperties, def );
 			return this;
     	</cfscript>
@@ -304,12 +294,7 @@ Description :
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfscript>
     		var def = getDIDefinition();
-			var key = "";
-			
-			for(key in arguments){
-				if( structKeyExists(arguments,key) ){ def[key] = arguments[key]; }
-			}
-			
+			structAppend(def, arguments, true);
 			arrayAppend( instance.DISetters, def );
 			return this;
     	</cfscript>

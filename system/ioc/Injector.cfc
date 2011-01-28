@@ -42,8 +42,6 @@ Description :
 				javaSystem = createObject('java','java.lang.System'),	
 				// Utility class
 				utility  = createObject("component","coldbox.system.core.util.Util"),
-				// Method Invoker
-				invoker	 = createObject("component","coldbox.system.core.dynamic.MethodInvoker").init(),
 				// Version
 				version  = "1.0.0",	 
 				// The Configuration Binder object
@@ -128,6 +126,9 @@ Description :
 				// Register All Custom Listeners
 				registerListeners();
 			}
+			
+			// Create our object builder
+			instance.builder = createObject("component","coldbox.system.ioc.Builder").init( this );
 			
 			// Register Life Cycle Scopes
 			registerScopes();
@@ -235,22 +236,22 @@ Description :
     		// determine construction type
     		switch( thisMap.getType() ){
 				case "cfc" : {
-					oModel = buildCFC( thisMap ); break;
+					oModel = instance.builder.buildCFC( thisMap ); break;
 				}
 				case "java" : {
-					oModel = buildJavaClass( thisMap ); break;
+					oModel = instance.builder.buildJavaClass( thisMap ); break;
 				}
 				case "webservice" : {
-					oModel = createObject("webservice", thisMap.getPath() ); break;
+					oModel = instance.builder.buildWebservice( thisMap ); break;
 				}
 				case "constant" : {
 					oModel = thisMap.getValue(); break;
 				}
 				case "rss" : {
-					oModel = buildFeed(thisMap.getPath()); break;
+					oModel = instance.builder.buildFeed(thisMap.getPath()); break;
 				}
 				case "dsl" : {
-					oModel = getDSLDependency(thisMap.getDSL()); break;
+					oModel = instance.builder.buildDSLDependency(thisMap.getDSL()); break;
 				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}		
@@ -261,103 +262,6 @@ Description :
 			
 			return oModel;
 		</cfscript>
-    </cffunction>
-	
-	<!--- buildCFC --->
-    <cffunction name="buildCFC" output="false" access="private" returntype="any" hint="Build a cfc class via mappings">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfscript>
-			var thisMap = arguments.mapping;
-			var oModel 	= createObject("component", thisMap.getPath() );
-			
-			// Constructor initialization?
-			if( thisMap.isAutoInit() ){
-				// init this puppy
-				instance.invoker.invokeMethod(oModel,thisMap.getConstructor(),buildConstructorArguments(thisMap));
-			}
-			
-			return oModel;
-		</cfscript>
-    </cffunction>
-	
-	<!--- buildJavaClass --->
-    <cffunction name="buildJavaClass" output="false" access="private" returntype="any" hint="Build a Java class via mappings">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfscript>
-			var x 			= 1;
-			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
-			var DIArgsLen 	= arrayLen(DIArgs);
-			var args		= [];
-
-			// Loop Over Arguments
-			for(x = 1; x <= DIArgsLen; x++){
-				// do we have javacasting?
-				if( len(DIArgs[x].javaCast) ){
-					ArrayAppend(args, "javaCast(DIArgs[#x#].javaCast, DIArgs[#x#].value)");
-				}	
-				else{
-					ArrayAppend(args, "DIArgs[#x#].value");
-				}
-			}
-
-			return evaluate('createObject("java",arguments.mapping.getPath()).init(#arrayToList(args)#)');
-		</cfscript>
-    </cffunction>
-	
-	<!--- buildConstructorArguments --->
-    <cffunction name="buildConstructorArguments" output="false" access="private" returntype="any" hint="Build constructor arguments for a mapping and return the structure representation">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfscript>
-			var x 			= 1;
-			var thisMap 	= arguments.mapping;
-			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
-			var DIArgsLen 	= arrayLen(DIArgs);
-			var args		= structnew();
-
-			// Loop Over Arguments
-			for(x=1;x lte DIArgsLen; x=x+1){
-				
-				// Is value set in mapping? If so, add it and continue
-				if( NOT isSimpleValue(DIArgs[x].value) OR len(DIArgs[x].value) ){
-					args[ DIArgs[x].name ] = DIArgs[x].value;
-					continue;
-				}
-				
-				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
-				if( len(DIArgs[x].dsl) ){
-					args[ DIArgs[x].name ] = getDSLDependency( DIArgs[x].dsl );
-				}
-				
-				// If we get here then it is by ref id, so let's verify it exists and optional
-				if( len(containsInstance( DIArgs[x].ref )) ){
-					args[ DIArgs[x].name ] = getInstance( DIArgs[x].ref );
-				}
-				else if( DIArgs[x].required ){
-					// not found but required, then throw exception
-					getUtil().throwIt(message="Constructor argument reference not located: #DIArgs[x].name#",
-									  detail="Injecting: #thisMap.getMemento().toString()#. The constructor argument details are: #DIArgs[x].toString()#.",
-									  type="Injector.ConstructorArgumentNotFoundException");
-					instance.log.error("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
-				}
-				// else just log it via debug
-				else if( instance.log.canDebug() ){
-					instance.log.debug("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
-				}
-				
-			}
-
-			return args;
-		</cfscript>
-    </cffunction>
-	
-	<!--- buildFeed --->
-    <cffunction name="buildFeed" output="false" access="private" returntype="any" hint="Build an rss feed the WireBox way">
-    	<cfargument name="source" type="any" required="true" hint="The feed source to read"/>
-    	<cfset var results = {}>
-		
-    	<cffeed action="read" source="#arguments.source#" query="results.items" properties="results.metadata">
-    	
-		<cfreturn results>
     </cffunction>
 	
 	<!--- registerNewInstance --->
