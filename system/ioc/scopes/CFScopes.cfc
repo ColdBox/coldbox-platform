@@ -44,7 +44,7 @@ Description :
 					// some nice debug info.
 					instance.log.debug("Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beggining construction.");
 					// construct it and store it, to satisfy circular dependencies
-					target = instance.injector.constructInstance( arguments.mapping );
+					target = instance.injector.buildInstance( arguments.mapping );
 					instance.scopeStorage.put(cacheKey, target, CFScope);
 					// wire it
 					instance.injector.autowire( instance.instance.singletons[cacheKey] );

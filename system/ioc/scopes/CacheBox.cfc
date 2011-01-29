@@ -45,7 +45,7 @@ Description :
 					// some nice debug info.
 					instance.log.debug("Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction.");
 					// construct it and store it, to satisfy circular dependencies
-					refLocal.target = instance.injector.constructInstance( arguments.mapping );
+					refLocal.target = instance.injector.buildInstance( arguments.mapping );
 					cacheProvider.set(cacheProperties.key, refLocal.target, cacheProperties.timeout, cacheProperties.lastAccessTimeout);
 					// wire it
 					instance.injector.autowire( refLocal.target );

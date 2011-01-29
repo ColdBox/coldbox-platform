@@ -221,8 +221,8 @@ Description :
 		</cfscript>
     </cffunction>
 	
-	<!--- constructInstance --->
-    <cffunction name="constructInstance" output="false" access="public" returntype="any" hint="Construct an instance, this is called from registered scopes only as they provide locking and transactions">
+	<!--- buildInstance --->
+    <cffunction name="buildInstance" output="false" access="public" returntype="any" hint="Build an instance, this is called from registered scopes only as they provide locking and transactions">
     	<cfargument name="mapping" required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfscript>
     		var thisMap = arguments.mapping;
@@ -248,10 +248,10 @@ Description :
 					oModel = thisMap.getValue(); break;
 				}
 				case "rss" : {
-					oModel = instance.builder.buildFeed(thisMap.getPath()); break;
+					oModel = instance.builder.buildFeed( thisMap ); break;
 				}
 				case "dsl" : {
-					oModel = instance.builder.buildDSLDependency(thisMap.getDSL()); break;
+					oModel = instance.builder.buildDSLDependency( thisMap.getDSL() ); break;
 				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}		
@@ -323,7 +323,7 @@ Description :
     </cffunction>
 	
 	<!--- autowire --->
-    <cffunction name="autowire" output="false" access="public" returntype="any" hint="The main method that does the magical autowiring">
+    <cffunction name="autowire" output="false" access="public" returntype="any" hint="The main method that does the magical autowiring injections">
     	<cfargument name="target" 			required="true" 	hint="The target object to wire up"/>
 		<cfargument name="targetID" 		required="false" 	hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
     	<cfscript>

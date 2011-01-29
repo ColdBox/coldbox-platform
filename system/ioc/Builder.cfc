@@ -38,7 +38,7 @@ Description :
 	</cffunction>
 	
 	<!--- buildCFC --->
-    <cffunction name="buildCFC" output="false" access="private" returntype="any" hint="Build a cfc class via mappings">
+    <cffunction name="buildCFC" output="false" access="public" returntype="any" hint="Build a cfc class via mappings">
     	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfscript>
 			var thisMap = arguments.mapping;
@@ -55,7 +55,7 @@ Description :
     </cffunction>
 	
 	<!--- buildJavaClass --->
-    <cffunction name="buildJavaClass" output="false" access="private" returntype="any" hint="Build a Java class via mappings">
+    <cffunction name="buildJavaClass" output="false" access="public" returntype="any" hint="Build a Java class via mappings">
     	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfscript>
 			var x 			= 1;
@@ -79,7 +79,7 @@ Description :
     </cffunction>
 	
 	<!--- buildConstructorArguments --->
-    <cffunction name="buildConstructorArguments" output="false" access="private" returntype="any" hint="Build constructor arguments for a mapping and return the structure representation">
+    <cffunction name="buildConstructorArguments" output="false" access="public" returntype="any" hint="Build constructor arguments for a mapping and return the structure representation">
     	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfscript>
 			var x 			= 1;
@@ -87,10 +87,9 @@ Description :
 			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
 			var DIArgsLen 	= arrayLen(DIArgs);
 			var args		= structnew();
-
+			
 			// Loop Over Arguments
 			for(x=1;x lte DIArgsLen; x=x+1){
-				
 				// Is value set in mapping? If so, add it and continue
 				if( structKeyExists(DIArgs[x],"value") ){
 					args[ DIArgs[x].name ] = DIArgs[x].value;
@@ -100,18 +99,23 @@ Description :
 				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
 				if( structKeyExists(DIArgs[x],"dsl") ){
 					args[ DIArgs[x].name ] = buildDSLDependency( DIArgs[x].dsl );
+					continue;
 				}
 				
 				// If we get here then it is by ref id, so let's verify it exists and optional
-				if( len(containsInstance( DIArgs[x].ref )) ){
+				if( len(instance.injector.containsInstance( DIArgs[x].ref )) ){
 					args[ DIArgs[x].name ] = instance.injector.getInstance( DIArgs[x].ref );
+					continue;
 				}
-				else if( DIArgs[x].required ){
+				
+				// Not found, so check if it is required
+				if( DIArgs[x].required ){
+					// Log the error
+					instance.log.error("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
 					// not found but required, then throw exception
 					getUtil().throwIt(message="Constructor argument reference not located: #DIArgs[x].name#",
 									  detail="Injecting: #thisMap.getMemento().toString()#. The constructor argument details are: #DIArgs[x].toString()#.",
 									  type="Injector.ConstructorArgumentNotFoundException");
-					instance.log.error("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
 				}
 				// else just log it via debug
 				else if( instance.log.canDebug() ){
@@ -119,27 +123,34 @@ Description :
 				}
 				
 			}
-
+			
 			return args;
 		</cfscript>
     </cffunction>
 	
 	<!--- buildWebservice --->
-    <cffunction name="buildWebservice" output="false" access="private" returntype="any" hint="Build a webservice object">
+    <cffunction name="buildWebservice" output="false" access="public" returntype="any" hint="Build a webservice object">
     	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfscript>
-    		var oModel = createObject("webservice", arguments.mapping.getPath() );
+    		var argStruct 	= {};
+			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
+			var DIArgsLen   = arraylen(DIArgs);
+    		
+			// Loop Over Arguments for wsdl args
+			for(x=1;x lte DIArgsLen; x=x+1){
+				argStruct[ DIArgs[x].name ] = DIArgs[x].value;
+			}
 			
-			return oModel;
+			return createObject("webservice", arguments.mapping.getPath(), argStruct );
 		</cfscript>
     </cffunction>
 	
 	<!--- buildFeed --->
-    <cffunction name="buildFeed" output="false" access="private" returntype="any" hint="Build an rss feed the WireBox way">
-    	<cfargument name="source" type="any" required="true" hint="The feed source to read"/>
+    <cffunction name="buildFeed" output="false" access="public" returntype="any" hint="Build an rss feed the WireBox way">
+    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfset var results = {}>
 		
-    	<cffeed action="read" source="#arguments.source#" query="results.items" properties="results.metadata">
+    	<cffeed action="read" source="#arguments.mapping.getPath()#" query="results.items" properties="results.metadata">
     	
 		<cfreturn results>
     </cffunction>
@@ -167,6 +178,5 @@ Description :
 	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a core util object" colddoc:generic="coldbox.system.core.util.Util">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
-	
 	
 </cfcomponent>

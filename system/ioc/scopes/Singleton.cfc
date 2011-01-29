@@ -40,7 +40,7 @@ Description :
 					// some nice debug info.
 					instance.log.debug("Object: (#cacheKey#) not found in singleton cache, beggining construction.");
 					// construct it and store it, to satisfy circular dependencies
-					instance.singletons[cacheKey] = instance.injector.constructInstance( arguments.mapping );
+					instance.singletons[cacheKey] = instance.injector.buildInstance( arguments.mapping );
 					// wire it
 					instance.injector.autowire( instance.instance.singletons[cacheKey] );
 					// log it

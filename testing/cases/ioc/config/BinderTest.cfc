@@ -408,5 +408,10 @@
 		mapping = config.getMapping("Test");	
 		assertEquals(config.scopes.singleton, mapping.getScope());	
 	}
+	
+	function testMapDirectory(){
+		config.mapDirectory("coldbox.testing.testModel");
+	}
+	
 </cfscript>
 </cfcomponent>

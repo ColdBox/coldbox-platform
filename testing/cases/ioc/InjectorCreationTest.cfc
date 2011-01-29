@@ -8,9 +8,11 @@
 		binder = getMockBox().createMock("coldbox.testing.cases.ioc.config.samples.InjectorCreationTestsBinder");
 		// init injector
 		injector.init(binder);
-		// mock lock
+		// mock logger
 		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug");
 		injector.$property("log","instance",mockLogger);
+		// mock event manager
+		getMockBox().prepareMock( injector.getEventManager() );
 	}
 	
 	function testLocateInstance(){
@@ -39,14 +41,43 @@
 		//r = injector.getInstance("ioc.category.categoryService");
 	}
 	
-	function testbuildJavaClass(){
-		makePublic(injector,"buildJavaClass");
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("Buffer");
-		mapping.setPath("java.util.LinkedHashMap")
-			.addDIConstructorArgument(value="3")
-			.addDIConstructorArgument(value="5",javaCast="float");
-		r = injector.buildJavaClass(mapping);
-		//debug(r);
+	function testbuildInstance(){
+		//mapping
+		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyTest");
+		// mocks
+		mockBuilder = getMockBox().createMock("coldbox.system.ioc.Builder").init( injector );
+		injector.$property("builder","instance",mockBuilder);
+		mockStub = getMockbox().createStub();
+		injector.getEventManager().$("process");
+		
+		// CFC
+		mapping.setType("cfc");
+		mockBuilder.$("buildCFC", mockStub);
+		val = injector.buildInstance( mapping );
+		assertEquals(mockStub, val);
+		
+		// JAVA
+		mapping.setType("java");
+		mockBuilder.$("buildJavaClass", mockStub);
+		val = injector.buildInstance( mapping );
+		assertEquals(mockStub, val);
+		
+		// Webservice
+		mapping.setType("webservice");
+		mockBuilder.$("buildWebService", mockStub);
+		val = injector.buildInstance( mapping );
+		assertEquals(mockStub, val);
+		
+		// Feed
+		mapping.setType("rss");
+		mockBuilder.$("buildFeed", mockStub);
+		val = injector.buildInstance( mapping );
+		assertEquals(mockStub, val);
+		
+		// Constant
+		mapping.setType("constant").setValue("testbaby");
+		val = injector.buildInstance( mapping );
+		assertEquals("testbaby", val);
 	}
 	
 </cfscript>

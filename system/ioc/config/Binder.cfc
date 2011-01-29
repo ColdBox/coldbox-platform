@@ -197,8 +197,25 @@ Description :
     </cffunction>
 	
 	<!--- mapDirectory --->
-    <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Map an entire instantiation path directory, please note that the unique name of each file will be used.">
+    <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection">
     	<cfargument name="packagePath" required="true" hint="The instantiation packagePath to map"/>
+		<cfscript>
+			var directory 	= expandPath("/#replace(arguments.packagePath,".","/","all")#");
+			var qObjects	= "";
+		</cfscript>
+		
+		<!--- Get directory listing --->
+		<cfdirectory action="list" directory="#directory#" filter="*.cfc" recurse="true" listinfo="name" name="qObjects">
+		
+		<!--- Loop and Register --->
+		<cfloop query="qObjects">
+			<!--- Remove .cfc and /\ with . notation--->
+			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase(qObjects.name,".cfc","") ,"(/|\\)",".","all")>
+			<cfset mapPath( thisTargetPath )>
+			<cfset instance.mappings[ listLast(thisTargetPath,".") ]>
+		</cfloop>
+			
+		<cfdump var="#qObjects#"><cfabort>
     </cffunction>
 	
 	<!--- map --->

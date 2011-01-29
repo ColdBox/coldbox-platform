@@ -250,7 +250,7 @@ Description :
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	required="false" hint="The explicit value of the constructor argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
-    	<cfargument name="required" required="false" default="false" hint="If the argument is required or not"/>
+    	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
 		<cfscript>
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
@@ -364,7 +364,10 @@ Description :
     <cffunction name="process" output="false" access="public" returntype="any" hint="Process a mapping for metadata discovery and more">
     	<cfargument name="binder" required="true" hint="The binder requesting the processing"/>
     	<!--- Link the metadata --->
-		<cfset var md = instance.metadata>
+		<cfset var md 			= instance.metadata>
+		<cfset var x 			= 1>
+		<cfset var thisAliases 	= "">
+		<cfset var mappings		= "">
 		
 		<!--- Lock for discovery based on path location, only done once per instance of mapping. --->
 		<cflock name="Mapping.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
@@ -405,8 +408,24 @@ Description :
 									   provider=md.cachebox);
 				}
 				
-				// Process Methods, Constructors and Properties
-				processDIMetadata( arguments.binder, md );
+				// Alias annotations if found, then append them as aliases.
+				if( structKeyExists(md, "alias") ){
+					thisAliases = listToArray(md.alias);
+					instance.alias.addAll( thisAliases );
+					// register alias references on binder
+					for(x=1; x lte arrayLen(thisAliases); x++){
+						mappings[ thisAliases[x] ] = this;
+					}
+				}
+								
+				// Check if autowire annotation found
+				if( structKeyExists(md,"autowire") and isBoolean(md.autowire) and NOT md.autowire){
+					instance.autoWire = false;
+				}
+				else{
+					// Process Methods, Constructors and Properties only if non autowire annotation check found on component.
+					processDIMetadata( arguments.binder, md );
+				}
 				
 				// finished processing mark as discovered
 				instance.discovered = true;
