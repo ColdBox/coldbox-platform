@@ -27,9 +27,9 @@ Description :
     	<cfargument name="mapping" type="any" required="true" hint="The object mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
 		<cfscript>
 			// create and return the no scope instance, no locking needed.
-			var object = instance.injector.buildInstance(arguments.mapping);
+			var object = instance.injector.buildInstance( arguments.mapping );
 			// wire it
-			instance.injector.autowire( object );
+			instance.injector.autowire(target=object,mapping=arguments.mapping);
 			// send it back
 			return object;
 		</cfscript>

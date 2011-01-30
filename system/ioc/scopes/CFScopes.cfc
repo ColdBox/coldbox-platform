@@ -29,7 +29,7 @@ Description :
     	<cfargument name="mapping" type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
 		
 		<!--- Scope CacheKey --->
-		<cfset var cacheKey = "wirebox_scope:#arguments.mapping.getName()#">
+		<cfset var cacheKey = "wirebox:#arguments.mapping.getName()#">
 		<!--- CF Scope --->
 		<cfset var CFScope  = arguments.mapping.getScope()>
 		<cfset var target	= "">
@@ -42,14 +42,18 @@ Description :
 				// double lock it
 				if( NOT instance.scopeStorage.exists(cacheKey, CFScope) ){
 					// some nice debug info.
-					instance.log.debug("Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beggining construction.");
+					if( instance.log.canDebug() ){
+						instance.log.debug("Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beggining construction.");
+					}
 					// construct it and store it, to satisfy circular dependencies
 					target = instance.injector.buildInstance( arguments.mapping );
 					instance.scopeStorage.put(cacheKey, target, CFScope);
 					// wire it
-					instance.injector.autowire( instance.instance.singletons[cacheKey] );
+					instance.injector.autowire(target=target,mapping=arguments.mapping);
 					// log it
-					instance.log.debug("Object: (#arguments.mapping.getName()#) constructed and stored in CFScope (#CFScope#).");
+					if( instance.log.canDebug() ){
+						instance.log.debug("Object: (#arguments.mapping.getName()#) constructed and stored in CFScope (#CFScope#).");
+					}
 					return target;
 				}
 			</cfscript>

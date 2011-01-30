@@ -29,7 +29,7 @@ Description :
     	<cfargument name="mapping" type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
 		
 		<cfset var cacheProperties  = arguments.mapping.getCacheProperties()>
-		<cfset var refLocal			= structnew()>
+		<cfset var refLocal			= {}>
 		<cfset var cacheProvider	= instance.cacheBox.getCache( cacheProperties.provider )>
 		
 		<!--- Get From Cache --->
@@ -43,14 +43,18 @@ Description :
 				// double lock it
 				if( NOT cacheProvider.lookup( cacheProperties.key ) ){
 					// some nice debug info.
-					instance.log.debug("Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction.");
+					if( instance.log.canDebug() ){
+						instance.log.debug("Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction.");
+					}
 					// construct it and store it, to satisfy circular dependencies
 					refLocal.target = instance.injector.buildInstance( arguments.mapping );
 					cacheProvider.set(cacheProperties.key, refLocal.target, cacheProperties.timeout, cacheProperties.lastAccessTimeout);
 					// wire it
-					instance.injector.autowire( refLocal.target );
+					instance.injector.autowire(target=refLocal.target,mapping=arguments.mapping);
 					// log it
-					instance.log.debug("Object: (#cacheProperties.toString()#) constructed and stored in cacheBox.");
+					if( instance.log.canDebug() ){
+						instance.log.debug("Object: (#cacheProperties.toString()#) constructed and stored in cacheBox.");
+					}
 					// return it
 					return refLocal.target;
 				}

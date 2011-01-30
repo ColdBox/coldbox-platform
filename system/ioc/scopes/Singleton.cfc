@@ -38,13 +38,17 @@ Description :
 				// double lock it
 				if( NOT structKeyExists(instance.singletons, cacheKey) ){
 					// some nice debug info.
-					instance.log.debug("Object: (#cacheKey#) not found in singleton cache, beggining construction.");
+					if( instance.log.canDebug() ){
+						instance.log.debug("Object: (#cacheKey#) not found in singleton cache, beggining construction.");
+					}
 					// construct it and store it, to satisfy circular dependencies
 					instance.singletons[cacheKey] = instance.injector.buildInstance( arguments.mapping );
 					// wire it
-					instance.injector.autowire( instance.instance.singletons[cacheKey] );
+					instance.injector.autowire(target=instance.instance.singletons[cacheKey],mapping=arguments.mapping);
 					// log it
-					instance.log.debug("Object: (#cacheKey#) constructed and stored in singleton cache.");
+					if( instance.log.canDebug() ){
+						instance.log.debug("Object: (#cacheKey#) constructed and stored in singleton cache.");
+					}
 					// return it
 					return instance.singletons[cacheKey];
 				}
@@ -57,7 +61,7 @@ Description :
     </cffunction>
 	
 	<!--- getSingletons --->
-    <cffunction name="getSingletons" output="false" access="public" returntype="struct" hint="Get all singletons">
+    <cffunction name="getSingletons" output="false" access="public" returntype="any" hint="Get all singletons structure" colddoc:generic="java.util.concurrent.ConcurrentHashMap">
     	<cfreturn instance.singletons>
     </cffunction>
 	

@@ -362,7 +362,8 @@ Description :
 
 	<!--- process --->
     <cffunction name="process" output="false" access="public" returntype="any" hint="Process a mapping for metadata discovery and more">
-    	<cfargument name="binder" required="true" hint="The binder requesting the processing"/>
+    	<cfargument name="binder" 	required="true" hint="The binder requesting the processing"/>
+		<cfargument name="metadata" required="false" hint="The metadata of an a-la-carte processing, use instead of retrieveing again"/>
     	<!--- Link the metadata --->
 		<cfset var md 			= instance.metadata>
 		<cfset var x 			= 1>
@@ -381,7 +382,12 @@ Description :
 				}
 	    		
 				// Get the instance's metadata first, so we can start processing.
-				md = getComponentMetadata( instance.path );
+				if( structKeyExists(arguments,"metadata") ){
+					md = arguments.metadata;
+				}
+				else{
+					md = getComponentMetadata( instance.path );
+				}
 				
 				// Setup default NO Scope
 				instance.scope = arguments.binder.SCOPES.NOSCOPE;
@@ -422,6 +428,11 @@ Description :
 					for(x=1; x lte arrayLen(thisAliases); x++){
 						mappings[ thisAliases[x] ] = this;
 					}
+				}
+				
+				// eagerInit annotation
+				if( structKeyExists(md,"eagerInit") ){
+					instance.eagerInit = true;
 				}
 								
 				// Check if autowire annotation found

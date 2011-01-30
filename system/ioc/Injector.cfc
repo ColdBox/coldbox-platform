@@ -146,7 +146,7 @@ Description :
 				doScopeRegistration();
 			}
 			
-			// process mappings
+			// process mappings for metadata and initialization.
 			instance.binder.processMappings();
 			
 			// Announce To Listeners we are online
@@ -210,8 +210,10 @@ Description :
 								  type="Injector.InvalidScopeException");
 			}
 			
-			// Request object from scope now, we now have it from scope
+			// Request object from scope now, we now have it from the scope created, initialized and wired
 			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping );
+			
+			// Process Provider Methods
 			
 			// Announce creation, initialization and DI magicfinicitation!
 			iData = {mapping=arguments.mapping,target=target};
@@ -255,6 +257,11 @@ Description :
 				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}		
+			
+			// log data
+			if( instance.log.canDebug() ){
+				instance.log.debug("Instance object built: #arguments.mapping.getMemento().toString()#");
+			}
 			
 			// announce afterInstanceInitialized
 			iData = {mapping=arguments.mapping,target=oModel};
@@ -323,10 +330,12 @@ Description :
     </cffunction>
 	
 	<!--- autowire --->
-    <cffunction name="autowire" output="false" access="public" returntype="any" hint="The main method that does the magical autowiring injections">
-    	<cfargument name="target" 			required="true" 	hint="The target object to wire up"/>
-		<cfargument name="targetID" 		required="false" 	hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
-    	<cfscript>
+    <cffunction name="autowire" output="false" access="public" returntype="any" hint="I wire up target objects with dependencies either by mappings or a-la-carte autowires">
+    	<cfargument name="target" 				required="true" 	hint="The target object to wire up"/>
+		<cfargument name="mapping" 				required="false" 	hint="The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
+		<cfargument name="targetID" 			required="false" 	hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
+    	<cfargument name="annotationCheck" 		required="false" 	default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically." colddoc:generic="Boolean">
+		<cfscript>
 			// Targets
 			var targetObject 	= arguments.target;
 			var targetCacheKey 	= arguments.targetID;
@@ -342,107 +351,121 @@ Description :
 			var x 					= 1;
 			var tmpBean 			= "";	
 			
-			// do we have a targetCache Key?
-			if( NOT len(targetCacheKey) ){
-				// Not sent, so get metadata, cache it and build cache id
-				metadata 		= getMetadata(targetObject);
-				targetCacheKey 	= metadata.name;
-				instance.autowireCache[targetCacheKey] = metadata;
-			}	
-			// is md cached for target?
-			else if( NOT structKeyExists(instance.autowireCache, targetCacheKey) ){
-				metadata = getMetadata(targetObject);
-				instance.autowireCache[targetCacheKey] = metadata;
+			
+			var thisMap				= "";
+			var md					= "";
+			
+			// Do we have a mapping? Or is this a-la-carte wiring
+			if( NOT structKeyExists(arguments,"mapping") ){
+				// no mapping, so we need to build one for the incoming wiring.
+				// do we have id?
+				if( NOT structKeyExists(arguments,"targetID") ){
+					md = getMetadata(arguments.target);
+					arguments.targetID = md.name;
+				}
+				else{
+					md = getMetadata(arguments.target);
+				}
+				
+				// verify instance, if already mapped, then throw exceptions
+				if( instance.binder.mappingExists(arguments.targetID) ){
+					instance.utility.throwit(message="The autowire target sent: #arguments.targetID# is mapped already",
+											 detail="Cannot override a mapping, please verify your definitions.",
+											 type="Injector.DoubleMappingException");
+				}
+				
+				// register new mapping instance
+				registerNewInstance(arguments.targetID,md.path);
+				// get Mapping
+				arguments.mapping = instance.binder.getMapping( arguments.targetID );
+				// process it
+				arguments.mapping.process( instance.binder, md );
+				// prepare it with some mixers for wiring
+				instance.utility.getMixerUtil().start( arguments.target );
 			}
-			else{
-				// Get metadata for autowire target
-				metadata = instance.autowireCache[targetCacheKey];
-			}
-		</cfscript>
+			
+			// Set local variable for easy reference
+			thisMap = arguments.mapping;
 
-		<!--- Do we have the incoming target object's data in the cache? or caching disabled for objects --->
-		<cfif NOT instance.DICacheDictionary.keyExists(targetCacheKey) OR NOT instance.modelsObjectCaching>
-			<cflock type="exclusive" name="plugins.autowire.#targetCacheKey#" timeout="30" throwontimeout="true">
-				<cfscript>
-					if ( not instance.DICacheDictionary.keyExists(targetCacheKey) ){
-						// Get Empty Default MD Entry, default autowire = false
-						mdEntry = getNewMDEntry();
-
-						// Annotation Checks
-						if( arguments.annotationCheck eq false){
-							mdEntry.autowire = true;
+			// Only autowire if no annotation check or if there is one, make sure the mapping is set for autowire
+			if ( (arguments.annotationCheck eq false) OR (arguments.annotationCheck AND thisMap.isAutowire()) ){
+	
+				// Bean Factory Awareness
+				if( structKeyExists(targetObject,"setBeanFactory") ){
+					targetObject.setBeanFactory( this );
+				}
+				if( structKeyExists(targetObject,"setInjector") ){
+					targetObject.setInjector( this );
+				}
+				// ColdBox Context Awareness
+				if( structKeyExists(targetObject,"setColdBox") ){
+					targetObject.setColdBox( getColdBox() );
+				}
+	
+				// Dependencies Length
+				dependenciesLength = arrayLen(targetDIEntry.dependencies);
+				if( dependenciesLength gt 0 ){
+					// Let's inject our mixins
+					instance.mixerUtil.start(targetObject);
+	
+					// Loop over dependencies and inject
+					for(x=1; x lte dependenciesLength; x=x+1){
+						// Get Dependency
+						thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x]);
+	
+						// Was dependency Found?
+						if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
+							if( log.canDebug() ){
+								log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
+							}
+							continue;
 						}
-						else if ( structKeyExists(metaData,"autowire") and isBoolean(metaData["autowire"]) ){
-							mdEntry.autowire = metaData.autowire;
-						}
-
-						// Lookup Dependencies if using autowire and not a ColdBox core object
-						if ( mdEntry.autowire and findNoCase("coldbox.system",metaData.name) EQ 0 ){
-							// Recurse for dependencies here, in order to build them
-							mdEntry.dependencies = parseMetadata(metaData,mdEntry.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
-						}
-
-						// Set Entry in dictionary
-						instance.DICacheDictionary.setKey(targetCacheKey,mdEntry);
-					}
-				</cfscript>
-			</cflock>
-		</cfif>
-
-		<cfscript>
-		// We are now assured that the DI cache has data.
-		targetDIEntry = instance.DICacheDictionary.getKey(targetCacheKey);
-
-		// Do we Inject Dependencies, are we AutoWiring
-		if ( targetDIEntry.autowire ){
-
-			// Bean Factory Awareness
-			if( structKeyExists(targetObject,"setBeanFactory") ){
-				targetObject.setBeanFactory( this );
-			}
-
-			// ColdBox Context Awareness
-			if( structKeyExists(targetObject,"setColdBox") ){
-				targetObject.setColdBox( controller );
-			}
-
-			// Dependencies Length
-			dependenciesLength = arrayLen(targetDIEntry.dependencies);
-			if( dependenciesLength gt 0 ){
-				// Let's inject our mixins
-				instance.mixerUtil.start(targetObject);
-
-				// Loop over dependencies and inject
-				for(x=1; x lte dependenciesLength; x=x+1){
-					// Get Dependency
-					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x]);
-
-					// Was dependency Found?
-					if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
+	
+						// Inject dependency
+						injectBean(targetBean=targetObject,
+								   beanName=targetDIEntry.dependencies[x].name,
+								   beanObject=thisDependency,
+								   scope=targetDIEntry.dependencies[x].scope);
+	
 						if( log.canDebug() ){
-							log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
+							log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
 						}
-						continue;
-					}
-
-					// Inject dependency
-					injectBean(targetBean=targetObject,
-							   beanName=targetDIEntry.dependencies[x].name,
-							   beanObject=thisDependency,
-							   scope=targetDIEntry.dependencies[x].scope);
-
-					if( log.canDebug() ){
-						log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
-					}
-				}//end for loop of dependencies.
-
-				// Process After ID Complete
-				processAfterCompleteDI(targetObject,onDICompleteUDF);
-
-			}// if dependencies found.
-		}//if autowiring
+					}//end for loop of dependencies.
+	
+					// Process After ID Complete
+					processAfterCompleteDI(targetObject,onDICompleteUDF);
+	
+				}// if dependencies found.
+			}//if autowiring
 	</cfscript>
     </cffunction>
+	
+	<!--- Inject Bean --->
+	<cffunction name="injectBean" access="private" returntype="void" output="false" hint="Inject a model object with dependencies via setters or property injections">
+		<cfargument name="target"  	 		required="true" hint="The target that will be injected with dependencies" />
+		<cfargument name="propertyName"  	required="true" hint="The name of the property to inject"/>
+		<cfargument name="propertyObject" 	required="true" hint="The object to inject" />
+		<cfargument name="scope" 			required="true" hint="The scope to inject a property into, if any else empty">
+		
+		<cfset var argCollection = structnew()>
+		<cfset argCollection[arguments.propertyName] = arguments.propertyObject>
+		
+		<!--- Property or Setter --->
+		<cfif len(arguments.scope) eq 0>
+			<!--- Call our mixin invoker: setterMethod--->
+			<cfinvoke component="#arguments.target#" method="invokerMixin">
+				<cfinvokeargument name="method"  		value="set#arguments.propertyName#">
+				<cfinvokeargument name="argCollection"  value="#argCollection#">
+			</cfinvoke>
+		<cfelse>
+			<!--- Call our property injector mixin --->
+			<cfinvoke component="#arguments.target#" method="injectPropertyMixin">
+				<cfinvokeargument name="propertyName"  	value="#arguments.propertyName#">
+				<cfinvokeargument name="propertyValue"  value="#arguments.propertyObject#">
+				<cfinvokeargument name="scope"			value="#arguments.scope#">
+			</cfinvoke>
+		</cfif>
+	</cffunction>
 	
 	<!--- setParent --->
     <cffunction name="setParent" output="false" access="public" returntype="void" hint="Link a parent Injector with this injector">
@@ -706,8 +729,8 @@ Description :
     </cffunction>
 	
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a core util object" colddoc:generic="coldbox.system.core.util.Util">
-		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
+	<cffunction name="getUtil" access="public" output="false" returntype="any" hint="Return the core util object" colddoc:generic="coldbox.system.core.util.Util">
+		<cfreturn instance.utility>
 	</cffunction>
 	
 	<!--- buildBinder --->

@@ -30,9 +30,11 @@ Description :
 		<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
 		<cfscript>
 			instance = {
-				injector = arguments.injector,
-				log		 = arguments.injector.getLogBox().getlogger(this)
+				injector 	= arguments.injector,
+				log		 	= arguments.injector.getLogBox().getlogger(this),
+				utility		= instance.injector.getUtil()
 			};
+			instance.mixerUtil = instance.utility.getMixerUtil();
 			return this;
 		</cfscript>
 	</cffunction>
@@ -49,6 +51,9 @@ Description :
 				// init this puppy
 				invokeMethod(oModel,thisMap.getConstructor(),buildConstructorArguments(thisMap));
 			}
+			
+			// Add some mixers
+			instance.mixerUtil.start( oModel );
 			
 			return oModel;
 		</cfscript>
@@ -113,9 +118,9 @@ Description :
 					// Log the error
 					instance.log.error("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
 					// not found but required, then throw exception
-					getUtil().throwIt(message="Constructor argument reference not located: #DIArgs[x].name#",
-									  detail="Injecting: #thisMap.getMemento().toString()#. The constructor argument details are: #DIArgs[x].toString()#.",
-									  type="Injector.ConstructorArgumentNotFoundException");
+					instance.utility.throwIt(message="Constructor argument reference not located: #DIArgs[x].name#",
+									  		 detail="Injecting: #thisMap.getMemento().toString()#. The constructor argument details are: #DIArgs[x].toString()#.",
+									  		 type="Injector.ConstructorArgumentNotFoundException");
 				}
 				// else just log it via debug
 				else if( instance.log.canDebug() ){
@@ -154,10 +159,9 @@ Description :
     	
 		<cfreturn results>
     </cffunction>
-
-<!------------------------------------------- private ------------------------------------------>
 	
-	<cffunction name="invokeMethod" hint="Invokes a method and returns its result. If no results, then it returns null" access="private" returntype="any" output="false">
+	<!--- invokeMethod --->
+	<cffunction name="invokeMethod" hint="Invokes a method and returns its result. If no results, then it returns null" access="public" returntype="any" output="false">
 		<cfargument name="component"	required="true" hint="The component to invoke against">
 		<cfargument name="methodName"   required="true" hint="The name of the method to invoke">
 		<cfargument name="args" 		required="false" default="#structNew()#" hint="Argument Collection to pass in to execution">
@@ -173,10 +177,7 @@ Description :
 			<cfreturn refLocal.results>
 		</cfif>
 	</cffunction>
-	
-	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a core util object" colddoc:generic="coldbox.system.core.util.Util">
-		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
-	</cffunction>
-	
+
+<!------------------------------------------- private ------------------------------------------>
+		
 </cfcomponent>
