@@ -200,9 +200,15 @@ Description :
     <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection">
     	<cfargument name="packagePath" required="true" hint="The instantiation packagePath to map"/>
 		<cfscript>
-			var directory 	= expandPath("/#replace(arguments.packagePath,".","/","all")#");
-			var qObjects	= "";
+			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
+			var qObjects		= "";
+			var thisTargetPath 	= "";
 		</cfscript>
+		
+		<!--- check directory --->
+		<cfif NOT directoryExists(directory)>
+			<cfthrow message="Directory does not exist" detail="Directory: #directory#" type="Binder.DirectoryNotFoundException">
+		</cfif>
 		
 		<!--- Get directory listing --->
 		<cfdirectory action="list" directory="#directory#" filter="*.cfc" recurse="true" listinfo="name" name="qObjects">
@@ -211,11 +217,11 @@ Description :
 		<cfloop query="qObjects">
 			<!--- Remove .cfc and /\ with . notation--->
 			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase(qObjects.name,".cfc","") ,"(/|\\)",".","all")>
+			<!--- Map the Path --->
 			<cfset mapPath( thisTargetPath )>
-			<cfset instance.mappings[ listLast(thisTargetPath,".") ]>
 		</cfloop>
-			
-		<cfdump var="#qObjects#"><cfabort>
+		
+		<cfreturn this>
     </cffunction>
 	
 	<!--- map --->
@@ -676,6 +682,26 @@ Description :
 	<!--- getCurrentMapping --->
     <cffunction name="getCurrentMapping" output="false" access="public" returntype="any" hint="Get the current set mapping (UTILITY method)">
     	<cfreturn variables.currentMapping>
+    </cffunction>
+	
+	<!--- processMappings --->
+    <cffunction name="processMappings" output="false" access="public" returntype="any" hint="Process all registered mappings, called by injector when ready to start serving requests">
+    	<cfscript>
+			var key 		= "";
+			var thisMapping = "";
+			
+			for(key in instance.mappings){
+				thisMapping = instance.mappings[key];
+				if( NOT thisMapping.isDiscovered() ){
+					// process the metadata
+					thisMapping.process( this );
+					// is it eager?
+					if( thisMapping.isEagerInit() ){
+						injector.getInstance( thisMapping.getName() );
+					}
+				}
+			}
+		</cfscript>
     </cffunction>
 
 <!------------------------------------------- LISTENER METHODS ------------------------------------------>

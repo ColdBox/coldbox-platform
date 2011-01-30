@@ -373,6 +373,12 @@ Description :
 		<cflock name="Mapping.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
 		<cfscript>	
 	    	if( NOT instance.discovered ){
+			
+				// Processing only done for CFC's,rest just mark and return
+				if( instance.type neq arguments.binder.TYPES.CFC ){
+					instance.discovered = true;
+					return;
+				}
 	    		
 				// Get the instance's metadata first, so we can start processing.
 				md = getComponentMetadata( instance.path );
@@ -403,7 +409,7 @@ Description :
 					}
 					// setup cachebox properties
 					setCacheProperties(key="wirebox-#instance.name#",
-									   timeout=md.timeout,
+									   timeout=md.cacheTimeout,
 									   lastAccessTimeout=md.cacheLastAccessTimeout,
 									   provider=md.cachebox);
 				}
@@ -475,7 +481,7 @@ Description :
 			// Method DI discovery
 			if( structKeyExists(md, "functions") ){
 				fncLen = arrayLen(md.functions);
-				for(x=1; x lte fncLen; x=x+1 ){
+				for(x=1; x lte fncLen; x++ ){
 
 					// Verify Processing or do we continue to next iteration for processing
 					// This is to avoid overriding by parent trees in inheritance chains
@@ -486,7 +492,7 @@ Description :
 					// Constructor Processing if found
 					if( md.functions[x].name eq instance.constructor ){
 						// Loop Over Arguments to process them for dependencies
-						for(y=1;x lte arrayLen(md.functions[x].parameters); y++){
+						for(y=1;y lte arrayLen(md.functions[x].parameters); y++){
 							// Check required annotation
 							if( NOT structKeyExists(md.functions[x].parameters[y], "required") ){
 								md.functions[x].parameters[y].required = false;
@@ -540,8 +546,6 @@ Description :
 				// Recursive lookup
 				processDIMetadata(arguments.dependencies,arguments.binder);
 			}
-
-			return arguments.dependencies;
 		</cfscript>
 	</cffunction>
 	

@@ -146,16 +146,16 @@ Description :
 				doScopeRegistration();
 			}
 			
+			// process mappings
+			instance.binder.processMappings();
+			
 			// Announce To Listeners we are online
 			iData.injector = this;
 			instance.eventManager.processState("afterInjectorConfiguration",iData);
-			
-			// Create Eager Objects
-			//createEagerMappings();	
 			</cfscript>
 		</cflock>
 	</cffunction>
-	
+
 	<!--- getInstance --->
     <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
     	<cfargument name="name" 			required="true" 	hint="The mapping name or CFC instance path to try to build up"/>
