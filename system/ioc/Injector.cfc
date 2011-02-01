@@ -57,9 +57,9 @@ Description :
 				// Configured Event States
 				eventStates = [
 					"afterInjectorConfiguration", 	// X once injector is created and configured
-					"beforeInstanceCreation", 		// Before an injector creates or is requested an instance of an object, the mapping is passed.
-					"afterInstanceInitialized",		// once the constructor is called and before DI is performed
-					"afterInstanceCreation", 		// once an object is created, initialized and done with DI
+					"beforeInstanceCreation", 		// X Before an injector creates or is requested an instance of an object, the mapping is passed.
+					"afterInstanceInitialized",		// X once the constructor is called and before DI is performed
+					"afterInstanceCreation", 		// X once an object is created, initialized and done with DI
 					"beforeInstanceInspection",		// X before an object is inspected for injection metadata
 					"afterInstanceInspection"		// X after an object has been inspected and metadata is ready to be saved
 				],
@@ -169,7 +169,7 @@ Description :
 			
 			// Get by DSL?
 			if( structKeyExists(arguments,"dsl") ){
-				// TODO: Get by DSL
+				return instance.builder.buildSimpleDSL( arguments.dsl );
 			}
 			
 			// Check if Mapping Exists?
@@ -253,7 +253,7 @@ Description :
 					oModel = instance.builder.buildFeed( thisMap ); break;
 				}
 				case "dsl" : {
-					oModel = instance.builder.buildDSLDependency( thisMap.getDSL() ); break;
+					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL() ); break;
 				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}		
@@ -336,60 +336,46 @@ Description :
 		<cfargument name="targetID" 			required="false" 	hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
     	<cfargument name="annotationCheck" 		required="false" 	default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically." colddoc:generic="Boolean">
 		<cfscript>
-			// Targets
-			var targetObject 	= arguments.target;
-			var targetCacheKey 	= arguments.targetID;
-			var metaData 		= "";
-			
-			// Dependencies
-			var thisDependency = instance.NOT_FOUND;
-
-			// Metadata entry structures
-			var mdEntry 			= "";
-			var targetDIEntry 		= "";
-			var dependenciesLength 	= 0;
-			var x 					= 1;
-			var tmpBean 			= "";	
-			
-			
-			var thisMap				= "";
-			var md					= "";
+			var targetObject	= arguments.target;
+			var thisMap			= "";
+			var md				= "";
+			var x				= 1;
+			var DIProperties 	= "";
+			var DISetters		= "";
+			var refLocal		= structnew();
 			
 			// Do we have a mapping? Or is this a-la-carte wiring
 			if( NOT structKeyExists(arguments,"mapping") ){
-				// no mapping, so we need to build one for the incoming wiring.
-				// do we have id?
+				// Ok, a-la-carte wiring, let's get our id first
+				// Do we have an incoming target id?
 				if( NOT structKeyExists(arguments,"targetID") ){
+					// need to get metadata to verify identity
 					md = getMetadata(arguments.target);
-					arguments.targetID = md.name;
-				}
-				else{
-					md = getMetadata(arguments.target);
+					// We have identity now, use the full location path
+					arguments.targetID = md.path;
 				}
 				
-				// verify instance, if already mapped, then throw exceptions
-				if( instance.binder.mappingExists(arguments.targetID) ){
-					instance.utility.throwit(message="The autowire target sent: #arguments.targetID# is mapped already",
-											 detail="Cannot override a mapping, please verify your definitions.",
-											 type="Injector.DoubleMappingException");
+				// Now that we know we have an identity, let's verify if we have a mapping already
+				if( NOT instance.binder.mappingExists( arguments.targetID ) ){
+					// No mapping found, means we need to map this object for the first time.
+					// Is md retreived? If not, retrieve it as we need to register it for the first time.
+					if( isSimpleValue(md) ){ md = getMetadata(arguments.target); }
+					// register new mapping instance
+					registerNewInstance(arguments.targetID,md.path);
+					// get Mapping created
+					arguments.mapping = instance.binder.getMapping( arguments.targetID );
+					// process it with current metadata
+					arguments.mapping.process( instance.binder, md );
 				}
-				
-				// register new mapping instance
-				registerNewInstance(arguments.targetID,md.path);
-				// get Mapping
-				arguments.mapping = instance.binder.getMapping( arguments.targetID );
-				// process it
-				arguments.mapping.process( instance.binder, md );
-				// prepare it with some mixers for wiring
-				instance.utility.getMixerUtil().start( arguments.target );
-			}
+			}// end if mapping not found
 			
-			// Set local variable for easy reference
-			thisMap = arguments.mapping;
-
+			// Set local variable for easy reference use mapping to wire object up.
+			thisMap 		= arguments.mapping;
+			
 			// Only autowire if no annotation check or if there is one, make sure the mapping is set for autowire
 			if ( (arguments.annotationCheck eq false) OR (arguments.annotationCheck AND thisMap.isAutowire()) ){
-	
+				// prepare instance for wiring, done once for persisted objects
+				instance.utility.getMixerUtil().start( arguments.target );
 				// Bean Factory Awareness
 				if( structKeyExists(targetObject,"setBeanFactory") ){
 					targetObject.setBeanFactory( this );
@@ -401,51 +387,99 @@ Description :
 				if( structKeyExists(targetObject,"setColdBox") ){
 					targetObject.setColdBox( getColdBox() );
 				}
-	
-				// Dependencies Length
-				dependenciesLength = arrayLen(targetDIEntry.dependencies);
-				if( dependenciesLength gt 0 ){
-					// Let's inject our mixins
-					instance.mixerUtil.start(targetObject);
-	
-					// Loop over dependencies and inject
-					for(x=1; x lte dependenciesLength; x=x+1){
-						// Get Dependency
-						thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x]);
-	
-						// Was dependency Found?
-						if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
-							if( log.canDebug() ){
-								log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
-							}
-							continue;
-						}
-	
-						// Inject dependency
-						injectBean(targetBean=targetObject,
-								   beanName=targetDIEntry.dependencies[x].name,
-								   beanObject=thisDependency,
-								   scope=targetDIEntry.dependencies[x].scope);
-	
-						if( log.canDebug() ){
-							log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
-						}
-					}//end for loop of dependencies.
-	
-					// Process After ID Complete
-					processAfterCompleteDI(targetObject,onDICompleteUDF);
-	
-				}// if dependencies found.
-			}//if autowiring
+				// DIProperty injection
+				processInjection( thisMap.getDIProperties(), arguments.targetID );
+				// DISetter injection
+				processInjection( thisMap.getDISetters(), arguments.targetID );
+				// Process After ID Complete
+				processAfterCompleteDI(targetObject, thisMap.getOnDIComplete() );
+			}
 	</cfscript>
     </cffunction>
 	
-	<!--- Inject Bean --->
-	<cffunction name="injectBean" access="private" returntype="void" output="false" hint="Inject a model object with dependencies via setters or property injections">
+	<!--- Process After DI Complete --->
+	<cffunction name="processAfterCompleteDI" access="private" returntype="void" output="false" hint="Process after DI completion routines">
+		<cfargument name="targetObject" 		required="true"  	hint="The target object to do some goodness on">
+		<cfargument name="DICompleteMethods" 	required="true"  	hint="The array of DI completion methods to call">
+		
+		<cfset var DILen 		= arrayLen(arguments.DICompleteMethods)>
+		<cfset var thisMethod 	= "">
+		
+		<!--- Check for convention first --->
+		<cfif StructKeyExists(arguments.targetObject, "onDIComplete" )>
+			<!--- Call our mixin invoker --->
+			<cfinvoke component="#arguments.targetObject#" method="invokerMixin">
+				<cfinvokeargument name="method"  value="onDIComplete">
+			</cfinvoke>
+		</cfif>
+		
+		<!--- Iterate on DICompleteMethods --->
+		<cfloop array="#arguments.DICompleteMethods#" index="thisMethod">
+			<cfif StructKeyExists(arguments.targetObject, thisMethod )>
+				<!--- Call our mixin invoker --->
+				<cfinvoke component="#arguments.targetObject#" method="invokerMixin">
+					<cfinvokeargument name="method"  value="#thisMethod#">
+				</cfinvoke>
+			</cfif>
+		</cfloop>
+		
+	</cffunction>
+	
+	<!--- processInjection --->
+    <cffunction name="processInjection" output="false" access="private" returntype="void" hint="Process property and setter injection">
+    	<cfargument name="DIData" 	required="true" hint="The DI data to use"/>
+		<cfargument name="targetID" required="true" hint="The target ID to process injections"/>
+    	<cfscript>
+    		var refLocal 	= "";
+			var DILen 	 	= arrayLen(arguments.DIData);
+			var x			= 1;
+			
+			for(x=1; x lte DILen; x++){
+				// Init the lookup structure
+				refLocal = {};
+				// Check if direct value has been placed.
+				if( structKeyExists(arguments.DIData[x],"value") ){
+					refLocal.dependency = arguments.DIData[x].value;
+				}
+				// else check if dsl is used?
+				else if( structKeyExists(arguments.DIData[x], "dsl") ){
+					// Get DSL dependency by sending entire DI structure to retrieve
+					refLocal.dependency = buildDSLDependency( arguments.DIData[x] );
+				}
+				// else we have to have a reference ID or a nasty bug has ocurred
+				else{
+					refLocal.dependency = getInstance( arguments.DIData[x].ref );
+				}
+				
+				// Check if dependency located, else log it and skip
+				if( structKeyExists(refLocal,"dependency") ){
+					// scope or setter determination
+					refLocal.scope = "";
+					if( structKeyExists(arguments.DIData[x],"scope") ){ refLocal.scope = arguments.DIData[x].scope; }
+					// Inject dependency
+					injectTarget(target=targetObject,
+							     propertyName=arguments.DIData[x].name,
+							     propertyValue=refLocal.dependency,
+							     scope="");
+					
+					// some debugging goodness
+					if( instance.log.canDebug() ){
+						instance.log.debug("Dependency: #arguments.DIData[x].toString()# --> injected into #arguments.targetID#");
+					}
+				}
+				else if( instance.log.canDebug() ){
+					instance.log.debug("Dependency: #arguments.DIData[x].toString()# Not Found when wiring #arguments.targetID#");
+				}
+			}
+		</cfscript>
+    </cffunction>
+	
+	<!--- Inject A Target Object --->
+	<cffunction name="injectTarget" access="private" returntype="void" output="false" hint="Inject a model object with dependencies via setters or property injections">
 		<cfargument name="target"  	 		required="true" hint="The target that will be injected with dependencies" />
 		<cfargument name="propertyName"  	required="true" hint="The name of the property to inject"/>
 		<cfargument name="propertyObject" 	required="true" hint="The object to inject" />
-		<cfargument name="scope" 			required="true" hint="The scope to inject a property into, if any else empty">
+		<cfargument name="scope" 			required="true" hint="The scope to inject a property into, if any else empty means it is a setter call">
 		
 		<cfset var argCollection = structnew()>
 		<cfset argCollection[arguments.propertyName] = arguments.propertyObject>

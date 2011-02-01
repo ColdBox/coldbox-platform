@@ -32,9 +32,8 @@ Description :
 			instance = {
 				injector 	= arguments.injector,
 				log		 	= arguments.injector.getLogBox().getlogger(this),
-				utility		= instance.injector.getUtil()
+				utility		= arguments.injector.getUtil()
 			};
-			instance.mixerUtil = instance.utility.getMixerUtil();
 			return this;
 		</cfscript>
 	</cffunction>
@@ -51,9 +50,6 @@ Description :
 				// init this puppy
 				invokeMethod(oModel,thisMap.getConstructor(),buildConstructorArguments(thisMap));
 			}
-			
-			// Add some mixers
-			instance.mixerUtil.start( oModel );
 			
 			return oModel;
 		</cfscript>
@@ -176,6 +172,63 @@ Description :
 		<cfif structKeyExists(refLocal, "results")>
 			<cfreturn refLocal.results>
 		</cfif>
+	</cffunction>
+	
+<!------------------------------------------- Internal DSL Builders ------------------------------------------>
+
+	<!--- buildSimpleDSL --->
+	<cffunction name="buildSimpleDSL" output="false" access="public" returntype="any" hint="Build a DSL Dependency using a simple dsl string">
+		<cfargument name="dsl" required="true" 	hint="The dsl string to build">
+		<cfscript>
+			var definition = {
+				name = "",
+				dsl = arguments.dsl
+			};
+			return buildDSLDependency( definition );
+		</cfscript>
+	</cffunction>
+
+	<!--- buildDSLDependency --->
+	<cffunction name="buildDSLDependency" output="false" access="public" returntype="any" hint="Build a DSL Dependency, if not found, returns null">
+		<cfargument name="definition" required="true" hint="The dependency definition structure: name,dsl as keys">
+		<cfscript>
+			var refLocal 		= {};
+			var DSLNamespace 	= listFirst(arguments.definition.dsl,":");
+
+			// Determine Type of Injection according to Internal Types first
+			switch(DSLNamespace){
+				// ioc dependency usually only when coldbox context is connected
+				case "ioc" 				 : { refLocal.dependency = getIOCDependency(arguments.definition); break; }
+				// ocm is used only on coldbox context
+				case "ocm" 				 : { refLocal.dependency = getOCMDependency(arguments.definition); break; }
+				// coldbox webservice is used only on coldbox context
+				case "webservice" 		 : { refLocal.dependency = getWebserviceDSL(arguments.definition); break; }
+				// javaloader only used on coldbox context
+				case "javaloader"		 : { refLocal.dependency = getJavaLoaderDSL(arguments.definition); break;}
+				// entity service only used on coldbox context
+				case "entityService"	 : { refLocal.dependency = getEntityServiceDSL(arguments.definition); break;}
+				// coldbox is used only on coldbox context
+				case "coldbox" 			 : { refLocal.dependency = getColdboxDSL(arguments.definition); break; }
+				// basic wirebox injection DSL
+				case "model" : case "id" : { refLocal.dependency = getModelDSL(arguments.definition); break; }
+				// logbox injection DSL
+				case "logbox"			 : { refLocal.dependency = getLogBoxDSL(arguments.definition); break;}
+				// cachebox injection DSL
+				case "cacheBox"			 : { refLocal.dependency = getCacheBoxDSL(arguments.definition); break;}
+				default : {
+					// No internal DSL's found, then check custom DSL's
+					// TODO: custom DSL's
+				}
+			}
+				
+			// return only if found, else returns null
+			if( structKeyExists(refLocal,"dependency") ){ return dependency; }
+			
+			// Some warning data
+			if( instance.log.canWarn() ){
+				instance.log.warn("The DSL dependency definition: #arguments.definition# did not produce any result.");
+			}
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- private ------------------------------------------>

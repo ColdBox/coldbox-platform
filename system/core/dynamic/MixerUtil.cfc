@@ -45,6 +45,7 @@ Description :
 				for( udf in instance.mixins ){
 					arguments.CFC[udf] = instance.mixins[udf];
 				}
+				arguments.CFC.$mixed = true;
 			</cfscript>
 		</cflock>		
 	</cffunction>
