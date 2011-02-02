@@ -255,6 +255,9 @@ Optional Methods
 			  }
 			  },
 			 
+			 // Transactional Hibernation annotations
+			 {class="coldbox.system.orm.hibernate.TransactionAspect"},
+			 
 			 //SES
 			 {class="coldbox.system.interceptors.SES",
 			  properties={configFile="config/routes.cfm"}},
