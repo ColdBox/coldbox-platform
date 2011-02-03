@@ -266,6 +266,29 @@ Description :
     	</cfscript>
     </cffunction>
 	
+	<!--- toMethod --->
+    <cffunction name="toMethod" output="false" access="public" returntype="any" hint="Map to a factory method.">
+    	<cfargument name="mapping" 	required="true" hint="The mapping reference name"/>
+		<cfargument name="method" 	required="true" hint="The method to execute"/>
+		<cfscript>
+			currentMapping.setPath( arguments.method ).setType( this.TYPES.FACTORY );
+			return this;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- methodArg --->
+    <cffunction name="methodArg" output="false" access="public" returntype="any" hint="Map a method argument to a factory method">
+    	<cfargument name="name" 	required="false" hint="The name of the argument"/>
+		<cfargument name="ref" 		required="false" hint="The reference mapping id this method argument maps to"/>
+		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
+		<cfargument name="value" 	required="false" hint="The value of the constructor argument, if passed."/>
+    	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfscript>
+    		currentMapping.addDIMethodArgument(argumentCollection=arguments);
+    		return this;
+    	</cfscript>
+    </cffunction>
+	
 	<!--- toJava --->
     <cffunction name="toJava" output="false" access="public" returntype="any" hint="Map to a java destination class path.">
     	<cfargument name="path" required="true" hint="The class path to the object to map"/>

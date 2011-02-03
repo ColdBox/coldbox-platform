@@ -19,5 +19,6 @@ Description :
 	this.RSS		= "rss";	
 	this.DSL		= "dsl";
 	this.CONSTANT	= "constant";
+	this.FACTORY	= "factory";
 	
 </cfscript></cfcomponent>

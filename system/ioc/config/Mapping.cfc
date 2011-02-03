@@ -51,6 +51,8 @@ Description :
 				DIProperties = [],
 				// Explicit Setters
 				DISetters = [],
+				// Explicit method arguments
+				DIMethodArgs = [],
 				// Post Processors
 				onDIComplete = [],
 				// Flag used to distinguish between discovered and non-discovered mappings
@@ -255,6 +257,22 @@ Description :
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIConstructorArgs, def );
+			return this;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- addDIMethodArgument --->
+    <cffunction name="addDIMethodArgument" output="false" access="public" returntype="any" hint="Add a new method argument to this mapping">
+    	<cfargument name="name" 	required="false" hint="The name of the method argument (Not used for: JAVA,WEBSERVICE)"/>
+		<cfargument name="ref" 		required="false" hint="The reference mapping id this method argument maps to"/>
+		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
+		<cfargument name="value" 	required="false" hint="The explicit value of the method argument, if passed."/>
+    	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
+		<cfscript>
+    		var def = getDIDefinition();
+			structAppend(def, arguments, true);
+			arrayAppend( instance.DIMethodArgs, def );
 			return this;
     	</cfscript>
     </cffunction>

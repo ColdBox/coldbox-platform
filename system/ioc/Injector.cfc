@@ -255,6 +255,9 @@ Description :
 				case "dsl" : {
 					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL() ); break;
 				}
+				case "factory" : {
+					oModel = instance.builder.buildFactoryMethod( thisMap ); break;
+				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}		
 			
