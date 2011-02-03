@@ -4,7 +4,8 @@
 	function setup(){
 		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error");
 		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
-			.$("getLogbox", getMockBox().createstub().$("getLogger", mockLogger) );
+			.$("getLogbox", getMockBox().createstub().$("getLogger", mockLogger) )
+			.$("getUtil", getMockBox().createMock("coldbox.system.core.util.Util"));
 		
 		builder = getMockBox().createMock("coldbox.system.ioc.Builder").init( mockInjector );
 	}
@@ -35,8 +36,6 @@
 		mapping.setPath("coldbox.testing.testmodel.ioc.Simple");
 		r = builder.buildCFC(mapping);
 		debug(r);
-		
-		
 	}
 	
 	function testBuildCFCWithArguments(){

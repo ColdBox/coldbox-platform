@@ -444,7 +444,7 @@ Description :
 				// else check if dsl is used?
 				else if( structKeyExists(arguments.DIData[x], "dsl") ){
 					// Get DSL dependency by sending entire DI structure to retrieve
-					refLocal.dependency = buildDSLDependency( arguments.DIData[x] );
+					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x] );
 				}
 				// else we have to have a reference ID or a nasty bug has ocurred
 				else{
