@@ -413,5 +413,26 @@
 		config.mapDirectory("coldbox.testing.testModel");
 	}
 	
+	function testMapFactoryMethod(){
+		config.mapPath("MyFactory").into(config.SCOPES.SINGLETON);
+		config.map("MyFactoryBean").toFactoryMethod("MyFactory","getBean");
+		mapping = config.getMapping("MyFactoryBean");	
+		assertEquals( "MyFactory", mapping.getPath() );
+		assertEquals( "getBean", mapping.getMethod() );
+		
+		// with arguments
+		config.map("MyFactoryBean").toFactoryMethod("MyFactory","getPlugin")
+			.methodArg(name="plugin",value="Logger")
+			.methodArg(name="myRef",ref="BeanRef")
+			.methodArg(name="hello",dsl="provider:cookoo");
+		mapping = config.getMapping("MyFactoryBean");
+			
+		assertEquals( "MyFactory", mapping.getPath() );
+		assertEquals( "getPlugin", mapping.getMethod() );
+		DIMethodArgs = mapping.getDIMethodArguments();
+		assertTrue( 3, arrayLen(DIMethodArgs) );
+		debug( DIMethodArgs );
+	}
+	
 </cfscript>
 </cfcomponent>

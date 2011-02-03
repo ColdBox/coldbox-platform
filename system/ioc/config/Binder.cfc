@@ -266,12 +266,12 @@ Description :
     	</cfscript>
     </cffunction>
 	
-	<!--- toMethod --->
-    <cffunction name="toMethod" output="false" access="public" returntype="any" hint="Map to a factory method.">
-    	<cfargument name="mapping" 	required="true" hint="The mapping reference name"/>
+	<!--- toFactoryMethod --->
+    <cffunction name="toFactoryMethod" output="false" access="public" returntype="any" hint="Map to a factory and its executing method.">
+    	<cfargument name="factory" 	required="true" hint="The mapping factory reference name"/>
 		<cfargument name="method" 	required="true" hint="The method to execute"/>
 		<cfscript>
-			currentMapping.setPath( arguments.method ).setType( this.TYPES.FACTORY );
+			currentMapping.setType( this.TYPES.FACTORY ).setPath( arguments.factory ).setMethod( arguments.method );
 			return this;
     	</cfscript>
     </cffunction>

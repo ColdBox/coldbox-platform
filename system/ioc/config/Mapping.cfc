@@ -29,8 +29,10 @@ Description :
 				type =  "",
 				// Mapping Value (If Any)
 				value = "",
-				// Mapped instantiation path
+				// Mapped instantiation path or mapping
 				path = "",
+				// A factory method to execute on the mapping if this is a factory mapping
+				method = "",
 				// Mapped constructor
 				constructor = "init",
 				// Discovery and wiring flag
@@ -111,6 +113,13 @@ Description :
 						} 
 						break; 
 					}	
+					//process DIMethodArgs
+					case "DIMethodArgs" : {
+						for(x=1; x lte arrayLen(arguments.memento.DIMethodArgs); x++){
+							addDIMethodArgument(argumentCollection=arguments.memento.DIMethodArgs[x] );
+						} 
+						break; 
+					}	
 					
 					default:{
 						instance[key] = arguments.memento[key];
@@ -152,6 +161,16 @@ Description :
     	<cfreturn this>
     </cffunction>
     
+	<!--- method --->
+	<cffunction name="getMethod" access="public" returntype="any" output="false" hint="Get the method that this mapping needs to execute from a mapping factory">
+    	<cfreturn instance.method>
+    </cffunction>
+    <cffunction name="setMethod" access="public" returntype="any" output="false" hint="Set the method used for getting this mapping from a factory">
+    	<cfargument name="method" required="true">
+    	<cfset instance.method = arguments.method>
+    	<cfreturn this>
+    </cffunction>
+	
 	<!--- Type --->
 	<cffunction name="getType" access="public" returntype="any" output="false" hint="Get the mapping type">
     	<cfreturn instance.type>
@@ -275,6 +294,11 @@ Description :
 			arrayAppend( instance.DIMethodArgs, def );
 			return this;
     	</cfscript>
+    </cffunction>
+	
+	<!--- getDIMethodArguments --->
+    <cffunction name="getDIMethodArguments" output="false" access="public" returntype="any" hint="Get all the method argument definitions array" colddoc:generic="array">
+    	<cfreturn instance.DIMethodArgs>
     </cffunction>
 
 	<!--- getProperties --->

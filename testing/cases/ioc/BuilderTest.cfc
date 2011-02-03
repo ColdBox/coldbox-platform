@@ -2,10 +2,15 @@
 <cfscript>
 	
 	function setup(){
+		mockColdBox = getMockBox().createEmptyMock("coldbox.system.web.Controller");
+		mockCacheBox =  getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
 		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error");
 		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
 			.$("getLogbox", getMockBox().createstub().$("getLogger", mockLogger) )
-			.$("getUtil", getMockBox().createMock("coldbox.system.core.util.Util"));
+			.$("getUtil", getMockBox().createMock("coldbox.system.core.util.Util"))
+			.$("isColdBoxLinked",true).$("isCacheBoxLinked",true)
+			.$("getColdbox", mockColdbox )
+			.$("getCacheBox",mockCacheBox );
 		
 		builder = getMockBox().createMock("coldbox.system.ioc.Builder").init( mockInjector );
 	}
@@ -73,8 +78,8 @@
 		try{
 			r = builder.buildCFC(mapping);
 		}
-		catch("Injector.ConstructorArgumentNotFoundException" e){}
-		catch(Any e){ faile(e); }
+		catch("Injector.ArgumentNotFoundException" e){}
+		catch(Any e){ fail(e); }
 	}
 	
 	function testbuildfeed(){
@@ -84,6 +89,32 @@
 		debug(r);
 		assertTrue( isStruct(r.metadata) );
 		assertTrue( isQuery(r.items) );
+	}
+	
+	function testBuildFactoryBean(){
+		// map factory bean
+		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyFactoryBean");
+		mapping.setPath("factory").setMethod("getBean");
+		
+		// mocks
+		mockTest = getMockBox().createStub();
+		mockFactory = getMockBox().createStub().$("getBean", mockTest);
+		mockInjector.$("containsInstance",true).$("getInstance",mockFactory);
+		
+		r = builder.buildFactoryMethod( mapping );
+		assertEquals( mockTest, r);
+		
+		// With Arguments
+		mapping.setPath("factory").setMethod("getBean")
+			.addDIMethodArgument(name="test",value="1")
+			.addDIMethodArgument(name="num2",value="3");
+		// mocks
+		mockTest = getMockBox().createStub();
+		mockFactory = getMockBox().createStub().$("getBean").$args(test="1",num2="3").$results(mockTest);
+		mockInjector.$("containsInstance",true).$("getInstance",mockFactory);
+		
+		r = builder.buildFactoryMethod( mapping );
+		assertEquals( mockTest, r);		
 	}
 	
 </cfscript>

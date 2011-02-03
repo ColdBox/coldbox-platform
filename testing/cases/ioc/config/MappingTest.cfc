@@ -27,6 +27,10 @@
 			DISetters = [
 				{name="Joke",value="You!"},
 				{name="service", ref="MyService"}
+			],
+			DIMethodArgs = [
+				{name="Joke",value="You!"},
+				{name="service", ref="MyService"}
 			]
 		};
 	
@@ -52,6 +56,10 @@
 		
 		setters = mapping.getDISetters();
 		assertEquals( 2, arrayLen(setters));
+		
+		args = mapping.getDIMethodArguments();
+		assertEquals( 2, arrayLen(args));
+		
 		
 	}
 	

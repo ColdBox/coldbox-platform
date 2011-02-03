@@ -59,11 +59,39 @@ Description :
 		<cfif thisMap.isAutoInit()>
 			<cfinvoke component="#oModel#"
 					  method="#thisMap.getConstructor()#"
-					  argumentcollection="#buildConstructorArguments(thisMap)#">
+					  argumentcollection="#buildArgumentCollection(thisMap, thisMap.getDIConstructorArguments() )#">
 		</cfif>
 		
 		<cfreturn oModel>
     </cffunction>
+	
+	<!--- buildFactoryMethod --->
+    <cffunction name="buildFactoryMethod" output="false" access="public" returntype="any" hint="Build an object using a factory method">
+    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfscript>
+    		var thisMap 	= arguments.mapping;
+			var oFactory 	= "";
+			var oModel		= "";
+			var factoryName = thisMap.getPath();
+			
+			// check if factory exists, else throw exception
+			if( NOT instance.injector.containsInstance( factoryName ) ){
+				instance.utility.throwIt(message="The factory mapping: #factoryName# is not registered with the injector",type="Builder.InvalidFactoryMappingException");
+			}
+    		// get Factory mapping
+			oFactory = instance.injector.getInstance( factoryName );
+		</cfscript>
+		
+		<!--- Get From Factory --->
+		<cfinvoke component="#oFactory#"
+				  returnvariable="oModel"
+				  method="#thisMap.getMethod()#"
+			  	  argumentcollection="#buildArgumentCollection(thisMap, thisMap.getDIMethodArguments() )#">
+		
+		<!--- Return factory bean --->
+		<cfreturn oModel>
+    </cffunction>
+
 	
 	<!--- buildJavaClass --->
     <cffunction name="buildJavaClass" output="false" access="public" returntype="any" hint="Build a Java class via mappings">
@@ -89,13 +117,14 @@ Description :
 		</cfscript>
     </cffunction>
 	
-	<!--- buildConstructorArguments --->
-    <cffunction name="buildConstructorArguments" output="false" access="public" returntype="any" hint="Build constructor arguments for a mapping and return the structure representation">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+	<!--- buildArgumentCollection --->
+    <cffunction name="buildArgumentCollection" output="false" access="public" returntype="any" hint="Build arguments for a mapping and return the structure representation">
+    	<cfargument name="mapping" 			required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="argumentArray" 	required="true" hint="The argument array of data"/>
     	<cfscript>
 			var x 			= 1;
 			var thisMap 	= arguments.mapping;
-			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
+			var DIArgs 		= arguments.argumentArray;
 			var DIArgsLen 	= arrayLen(DIArgs);
 			var args		= structnew();
 			
@@ -122,15 +151,15 @@ Description :
 				// Not found, so check if it is required
 				if( DIArgs[x].required ){
 					// Log the error
-					instance.log.error("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+					instance.log.error("Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
 					// not found but required, then throw exception
-					instance.utility.throwIt(message="Constructor argument reference not located: #DIArgs[x].name#",
-									  		 detail="Injecting: #thisMap.getMemento().toString()#. The constructor argument details are: #DIArgs[x].toString()#.",
-									  		 type="Injector.ConstructorArgumentNotFoundException");
+					instance.utility.throwIt(message="Argument reference not located: #DIArgs[x].name#",
+									  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #DIArgs[x].toString()#.",
+									  		 type="Injector.ArgumentNotFoundException");
 				}
 				// else just log it via debug
 				else if( instance.log.canDebug() ){
-					instance.log.debug("Constructor argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+					instance.log.debug("Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
 				}
 				
 			}
