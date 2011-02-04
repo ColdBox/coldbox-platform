@@ -24,10 +24,11 @@ Description :
 
 	<!--- getFromScope --->
     <cffunction name="getFromScope" output="false" access="public" returntype="any" hint="Retrieve an object from scope or create it if not found in scope">
-    	<cfargument name="mapping" type="any" required="true" hint="The object mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
+    	<cfargument name="mapping" 			type="any" required="true"  hint="The object mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
+		<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
 			// create and return the no scope instance, no locking needed.
-			var object = instance.injector.buildInstance( arguments.mapping );
+			var object = instance.injector.buildInstance( arguments.mapping, arguments.initArguments );
 			// wire it
 			instance.injector.autowire(target=object,mapping=arguments.mapping);
 			// send it back

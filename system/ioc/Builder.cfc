@@ -48,18 +48,26 @@ Description :
 	
 	<!--- buildCFC --->
     <cffunction name="buildCFC" output="false" access="public" returntype="any" hint="Build a cfc class via mappings">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfscript>
+    	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfscript>
 			var thisMap = arguments.mapping;
 			var oModel 	= createObject("component", thisMap.getPath() );
-			
+			var constructorArgs = "";
 		</cfscript>
 		
 		<!--- Constructor initialization? --->
 		<cfif thisMap.isAutoInit()>
+			<!--- Get Arguments --->
+			<cfset constructorArgs = buildArgumentCollection(thisMap, thisMap.getDIConstructorArguments() )>
+			<!--- Do We have initArguments to override --->
+			<cfif structKeyExists(Arguments,"initArguments")>
+				<cfset structAppend(constructorArgs,arguments.initArguments,true)>
+			</cfif>
+			<!--- Invoke constructor --->
 			<cfinvoke component="#oModel#"
 					  method="#thisMap.getConstructor()#"
-					  argumentcollection="#buildArgumentCollection(thisMap, thisMap.getDIConstructorArguments() )#">
+					  argumentcollection="#constructorArgs#">
 		</cfif>
 		
 		<cfreturn oModel>
@@ -67,12 +75,14 @@ Description :
 	
 	<!--- buildFactoryMethod --->
     <cffunction name="buildFactoryMethod" output="false" access="public" returntype="any" hint="Build an object using a factory method">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfscript>
+    	<cfargument name="mapping" 			required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="initArguments" 	required="false" 	hint="The structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfscript>
     		var thisMap 	= arguments.mapping;
 			var oFactory 	= "";
 			var oModel		= "";
 			var factoryName = thisMap.getPath();
+			var methodArgs  = "";
 			
 			// check if factory exists, else throw exception
 			if( NOT instance.injector.containsInstance( factoryName ) ){
@@ -80,13 +90,19 @@ Description :
 			}
     		// get Factory mapping
 			oFactory = instance.injector.getInstance( factoryName );
+			// Get Method Arguments
+			methodArgs = buildArgumentCollection(thisMap, thisMap.getDIMethodArguments() );
+			// Do we have overrides
+			if( structKeyExists(Arguments, "initArguments") ){
+				structAppend(methodArgs,arguments.initArguments,true);
+			}
 		</cfscript>
 		
 		<!--- Get From Factory --->
 		<cfinvoke component="#oFactory#"
 				  returnvariable="oModel"
 				  method="#thisMap.getMethod()#"
-			  	  argumentcollection="#buildArgumentCollection(thisMap, thisMap.getDIMethodArguments() )#">
+			  	  argumentcollection="#methodArgs#">
 		
 		<!--- Return factory bean --->
 		<cfreturn oModel>
@@ -170,8 +186,9 @@ Description :
 	
 	<!--- buildWebservice --->
     <cffunction name="buildWebservice" output="false" access="public" returntype="any" hint="Build a webservice object">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfscript>
+    	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="initArguments" 	required="false" 	hint="The structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfscript>
     		var argStruct 	= {};
 			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
 			var DIArgsLen   = arraylen(DIArgs);
@@ -179,6 +196,11 @@ Description :
 			// Loop Over Arguments for wsdl args
 			for(x=1;x lte DIArgsLen; x=x+1){
 				argStruct[ DIArgs[x].name ] = DIArgs[x].value;
+			}
+			
+			// Do we ahve overrides
+			if( structKeyExists(Arguments,"initArguments") ){
+				structAppend(argStruct, arguments.initArguments,true);
 			}
 			
 			return createObject("webservice", arguments.mapping.getPath(), argStruct );

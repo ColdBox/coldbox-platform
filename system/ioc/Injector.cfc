@@ -231,8 +231,9 @@ Description :
 	
 	<!--- buildInstance --->
     <cffunction name="buildInstance" output="false" access="public" returntype="any" hint="Build an instance, this is called from registered scopes only as they provide locking and transactions">
-    	<cfargument name="mapping" required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfscript>
+    	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfscript>
     		var thisMap = arguments.mapping;
 			var oModel	= "";
 			var iData	= "";
@@ -244,13 +245,13 @@ Description :
     		// determine construction type
     		switch( thisMap.getType() ){
 				case "cfc" : {
-					oModel = instance.builder.buildCFC( thisMap ); break;
+					oModel = instance.builder.buildCFC( thisMap, arguments.initArguments ); break;
 				}
 				case "java" : {
 					oModel = instance.builder.buildJavaClass( thisMap ); break;
 				}
 				case "webservice" : {
-					oModel = instance.builder.buildWebservice( thisMap ); break;
+					oModel = instance.builder.buildWebservice( thisMap, arguments.initArguments ); break;
 				}
 				case "constant" : {
 					oModel = thisMap.getValue(); break;
@@ -262,7 +263,7 @@ Description :
 					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL() ); break;
 				}
 				case "factory" : {
-					oModel = instance.builder.buildFactoryMethod( thisMap ); break;
+					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
 				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}		

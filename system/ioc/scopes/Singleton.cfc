@@ -26,7 +26,8 @@ Description :
 
 	<!--- getFromScope --->
     <cffunction name="getFromScope" output="false" access="public" returntype="any" hint="Retrieve an object from scope or create it if not found in scope">
-    	<cfargument name="mapping" type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
+    	<cfargument name="mapping" 			type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
+		<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		
 		<cfset var cacheKey = arguments.mapping.getName()>
 		
@@ -42,7 +43,7 @@ Description :
 						instance.log.debug("Object: (#cacheKey#) not found in singleton cache, beggining construction.");
 					}
 					// construct it and store it, to satisfy circular dependencies
-					instance.singletons[cacheKey] = instance.injector.buildInstance( arguments.mapping );
+					instance.singletons[cacheKey] = instance.injector.buildInstance( arguments.mapping, arguments.initArguments);
 					// wire it
 					instance.injector.autowire(target=instance.instance.singletons[cacheKey],mapping=arguments.mapping);
 					// log it
