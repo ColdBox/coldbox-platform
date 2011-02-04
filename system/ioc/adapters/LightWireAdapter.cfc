@@ -88,7 +88,7 @@ Description :
 			}
 			else{
 				// Create base config Bean
-				lightwireBeanConfig = CreateObject("component", "coldbox.system.ioc.lightwire.BaseConfigObject").init();	
+				lightwireBeanConfig = CreateObject("component", "lightwire.BaseConfigObject").init();	
 			}
 			
 			// Are we using ColdBox Application Container? If so, then do mixins.

@@ -100,7 +100,7 @@ Description :
 			// Binding Properties
 			instance.properties = {};
 			// Stop Recursion classes
-			instance.stopRecursion = [];
+			instance.stopRecursions = [];
 		</cfscript>
 	</cffunction>
 

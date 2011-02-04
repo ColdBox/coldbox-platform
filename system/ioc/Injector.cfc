@@ -588,6 +588,17 @@ Description :
 		</cfscript>
     </cffunction>
 	
+	<!--- getScopes --->
+    <cffunction name="getScopes" output="false" access="public" returntype="any" hint="Get all the registered scopes structure in this injector" colddoc:generic="struct">
+    	<cfreturn instance.scopes>
+    </cffunction>
+	
+	<!--- getScope --->
+    <cffunction name="getScope" output="false" access="public" returntype="any" hint="Get a registered scope in this injector by name">
+    	<cfargument name="scope" type="any" required="true" hint="The name of the scope"/>
+		<cfreturn instance.scopes[ arguments.scope ]>
+    </cffunction>
+	
 <!----------------------------------------- PRIVATE ------------------------------------->	
 
 	<!--- registerScopes --->

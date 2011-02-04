@@ -60,6 +60,11 @@ Description :
 		<cfreturn instance.singletons[cacheKey]>	
     </cffunction>
 	
+	<!--- clear --->
+    <cffunction name="clear" output="false" access="public" returntype="void" hint="Clear the singletons scope">
+    	<cfset instance.singletons.clear()>
+    </cffunction>
+	
 	<!--- getSingletons --->
     <cffunction name="getSingletons" output="false" access="public" returntype="any" hint="Get all singletons structure" colddoc:generic="java.util.concurrent.ConcurrentHashMap">
     	<cfreturn instance.singletons>
