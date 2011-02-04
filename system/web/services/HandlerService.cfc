@@ -297,8 +297,8 @@ Description :
 		// Run invalid event procedures, handler not found
 		invalidEvent(arguments.event,handlerBean);
 
-		// onInvalidEvent detected, so just return the overriden bean
-		return handlerBean;
+		// onInvalidEvent detected, so start over with the overriden handler and method
+		return getRegisteredHandler(handlerBean.getHandler() & "." & handlerBean.getMethod());  
 		</cfscript>
 	</cffunction>
 	
