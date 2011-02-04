@@ -172,16 +172,17 @@ Description :
 				return instance.builder.buildSimpleDSL( arguments.dsl );
 			}
 			
-			// Check if we can locate it, else delegate it to parent if linked.
-			if( NOT containsInstance(arguments.name) AND isObject(instance.parent) ){
-				return instance.parent.getInstance(argumentCollection=arguments);
-			}
-			
 			// Check if Mapping Exists?
 			if( NOT instance.binder.mappingExists(arguments.name) ){
 				// No Mapping exists, let's try to locate it first. We are now dealing with request by conventions
-				// This is done once per instance request as then mappings are cached
 				instancePath = locateInstance(arguments.name);
+				
+				// check if not found and if we have a parent factory
+				if( NOT len(instancePath) AND isObject(instance.parent) ){
+					// we do have a parent factory so just request it from there, let the hierarchy deal with it
+					return instance.parent.getInstance(argumentCollection=arguments);
+				}
+				
 				// If Empty Throw Exception
 				if( NOT len(instancePath) ){
 					instance.log.error("Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList(instance.binder.getScanLocations())# or full CFC path");
@@ -302,7 +303,9 @@ Description :
 			if( instance.binder.mappingExists(arguments.name) ){ return true; }
 			// check if we can locate it?
 			if( len(locateInstance(arguments.name)) ){ return true; }
-			// NADA!
+			// Ask parent hierarchy if set
+			if( isObject(instance.parent) ){ return instance.parent.containsInstance(arguments.name); }
+			// Else NADA!
 			return false;		
 		</cfscript>
     </cffunction>
