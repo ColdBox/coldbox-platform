@@ -172,6 +172,11 @@ Description :
 				return instance.builder.buildSimpleDSL( arguments.dsl );
 			}
 			
+			// Check if we can locate it, else delegate it to parent if linked.
+			if( NOT containsInstance(arguments.name) AND isObject(instance.parent) ){
+				return instance.parent.getInstance(argumentCollection=arguments);
+			}
+			
 			// Check if Mapping Exists?
 			if( NOT instance.binder.mappingExists(arguments.name) ){
 				// No Mapping exists, let's try to locate it first. We are now dealing with request by conventions
