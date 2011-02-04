@@ -72,6 +72,19 @@ Modification History:
 		<cfreturn getColdbox().getCacheBox()>
 	</cffunction>
 	
+	<!--- Get the wirebox configured on this app --->
+	<cffunction name="getWireBox" output="false" access="public" returntype="coldbox.system.ioc.Injector" hint="Get the WireBox Injector reference.">
+		<cfreturn getColdbox().getWireBox()>
+	</cffunction>
+	
+	<!--- Get a wirebox instance --->
+	<cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
+    	<cfargument name="name" 			required="true" 	hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfreturn getWireBox().getInstance(argumentCollection=arguments)>
+	</cffunction>
+	
 	<!--- Get the logbox configured on this app --->
 	<cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the LogBox reference.">
 		<cfreturn getColdbox().getLogBox()>

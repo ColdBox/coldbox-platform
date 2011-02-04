@@ -219,6 +219,19 @@ Description :
 		<cfreturn getController().getCacheBox()>
 	</cffunction>
 	
+	<!--- getWireBox --->
+	<cffunction name="getWireBox" output="false" access="private" returntype="any" hint="Get the WireBox Injector reference of this application.">
+		<cfreturn getController().getWireBox()>
+	</cffunction>
+	
+	<!--- getInstance --->
+    <cffunction name="getInstance" output="false" access="private" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
+    	<cfargument name="name" 			required="true" 	hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfreturn getWireBox().getInstance(argumentCollection=arguments)>
+	</cffunction>	
+	
 	<!--- Get the LogBox. --->
 	<cffunction name="getLogBox" output="false" access="private" returntype="any" hint="Get the LogBox reference of this application.">
 		<cfreturn getController().getLogBox()>
