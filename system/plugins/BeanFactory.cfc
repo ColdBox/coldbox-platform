@@ -262,7 +262,7 @@ Description: This is the framework's simple bean factory.
 						// Verify Constructor: Init() and execute
 						if( structKeyExists(oModel,"init") ){
 							try{
-								oModel.init(argumentCollection=getConstructorArguments(oModel));
+								oModel.init(argumentCollection=getConstructorArguments(oModel,modelClassPath & ".init"));
 							}
 							catch(Any e){
 								$throw(message="Error constructing model: #arguments.name#",
@@ -445,6 +445,7 @@ Description: This is the framework's simple bean factory.
 				return instance.refLocationMap[ arguments.name ];
 			}
 
+			instance.refLocationMap[ arguments.name ] = "";
 			return "";
 		</cfscript>
 	</cffunction>
@@ -752,17 +753,35 @@ Description: This is the framework's simple bean factory.
 	<!--- getConstructorArguments --->
 	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection for a model object">
 		<!--- ************************************************************* --->
-		<cfargument name="model" required="true" 	type="any"		default="" hint="The model object"/>
+		<cfargument name="model" 	required="true" 	type="any"	default="" hint="The model object"/>
+		<cfargument name="targetID"	required="false"	type="any"	default="" hint="A unique resource target identifier used for wiring the sent in target. If not sent, then this will become getMetadata(target).name and use resources." colddoc:generic="string">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var md = getMetadata(model.init);
-			var params = md.parameters;
-			var paramLen = ArrayLen(md.parameters);
+			var md = "";
+			var params = "";
+			var paramLen = "";
 			var x =1;
 			var args = structnew();
 			var definition = structnew();
 			var thisDependency = instance.NOT_FOUND;
+			var targetCacheKey 	= arguments.targetID; 
 
+			// Do we have a targetCache Key?
+			if( NOT len(targetCacheKey) ){
+				// Not sent, so get metadata, cache it and build cache id
+				targetCacheKey 	= getMetadata(model).name & ".init";
+			}	
+			
+			// is md cached for target?
+			if( NOT structKeyExists(instance.autowireCache, targetCacheKey) ){
+				instance.autowireCache[targetCacheKey] = getMetadata(model.init);
+			}
+			
+			// ASSERT: metaData for "init" is in cache now.  
+			md = instance.autowireCache[targetCacheKey];
+			params = md.parameters;
+			paramLen = ArrayLen(md.parameters);
+						
 			// Loop Over Arguments
 			for(x=1;x lte paramLen; x=x+1){
 				// Check Marker and IOC Framework
