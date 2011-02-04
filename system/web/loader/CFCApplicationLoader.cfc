@@ -39,11 +39,11 @@ Loads a coldbox xml configuration file
 		//Create Config Structure
 		var configStruct		= structNew();
 		var coldboxSettings 	= getColdboxSettings();
-		var appRootPath 		= getController().getAppRootPath();
+		var appRootPath 		= instance.controller.getAppRootPath();
 		var configCFCLocation 	= getUtil().ripExtension(replacenocase(coldboxSettings["ConfigFileLocation"],appRootPath,""));
 		var configCreatePath 	= "";
 		var oConfig 			= "";
-		var logBoxConfigHash  	= hash(getController().getLogBox().getConfig().getMemento().toString());
+		var logBoxConfigHash  	= hash(instance.controller.getLogBox().getConfig().getMemento().toString());
 		var appMappingAsDots	= "";
 		
 		//Is incoming app mapping set, or do we auto-calculate
@@ -78,8 +78,8 @@ Loads a coldbox xml configuration file
 		oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
 		
 		//MixIn Variables
-		oConfig.injectPropertyMixin("controller",getController());
-		oConfig.injectPropertyMixin("logBoxConfig",getController().getLogBox().getConfig());
+		oConfig.injectPropertyMixin("controller",instance.controller);
+		oConfig.injectPropertyMixin("logBoxConfig",instance.controller.getLogBox().getConfig());
 		oConfig.injectPropertyMixin("appMapping",configStruct.appMapping);
 		
 		//Configure it
@@ -147,11 +147,14 @@ Loads a coldbox xml configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: LOGBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLogBox(oConfig,configStruct,logBoxConfigHash);
 		
+		/* ::::::::::::::::::::::::::::::::::::::::: WIREBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
+		parseWireBox(oConfig,configStruct,logBoxConfigHash);
+		
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
 		
 		//finish by loading configuration
-		getController().setConfigSettings(configStruct);
+		instance.controller.setConfigSettings(configStruct);
 		</cfscript>
 	</cffunction>
 	
@@ -324,11 +327,11 @@ Loads a coldbox xml configuration file
 			
 			// Defaults if not overriding
 			configStruct.ModelsExternalLocation = "";
-			configStruct.ModelsObjectCaching = fwSettingsStruct["ModelsObjectCaching"];
-			configStruct.ModelsSetterInjection = fwSettingsStruct["ModelsSetterInjection"];
-			configStruct.ModelsDICompleteUDF = fwSettingsStruct["ModelsDICompleteUDF"];
-			configStruct.ModelsStopRecursion = fwSettingsStruct["ModelsStopRecursion"];
-			configStruct.ModelsDefinitionFile = fwSettingsStruct["ModelsDefinitionFile"];
+			configStruct.ModelsObjectCaching 	= fwSettingsStruct["ModelsObjectCaching"];
+			configStruct.ModelsSetterInjection 	= fwSettingsStruct["ModelsSetterInjection"];
+			configStruct.ModelsDICompleteUDF 	= fwSettingsStruct["ModelsDICompleteUDF"];
+			configStruct.ModelsStopRecursion 	= fwSettingsStruct["ModelsStopRecursion"];
+			configStruct.ModelsDefinitionFile 	= fwSettingsStruct["ModelsDefinitionFile"];
 			
 			//Check for Models External Location
 			if ( structKeyExists(models, "ExternalLocation") AND len(models.ExternalLocation)){
@@ -794,7 +797,7 @@ Loads a coldbox xml configuration file
 			
 			}
 			// Check if LogBoxConfig.cfc exists in the config conventions
-			else if( fileExists( getController().getAppRootPath() & "config/CacheBox.cfc") ){
+			else if( fileExists( instance.controller.getAppRootPath() & "config/CacheBox.cfc") ){
 				configStruct.cacheBox.configFile = loadCacheBoxByConvention(configStruct);
 			}
 			// else, load the default coldbox cachebox config
@@ -877,7 +880,7 @@ Loads a coldbox xml configuration file
 		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
 		<cfargument name="configHash"   type="string"  required="true" hint="The initial logBox config hash"/>
 		<cfscript>
-			var logBoxConfig 	  = getController().getLogBox().getConfig();
+			var logBoxConfig 	  = instance.controller.getLogBox().getConfig();
 			var newConfigHash 	  = hash(logBoxConfig.getMemento().toString());
 			var logBoxDSL		  = structnew();
 			var key				  = "";
@@ -906,13 +909,55 @@ Loads a coldbox xml configuration file
 				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();				
 			}
 			// Check if LogBoxConfig.cfc exists in the config conventions and load it.
-			else if( fileExists( getController().getAppRootPath() & "config/LogBox.cfc") ){
+			else if( fileExists( instance.controller.getAppRootPath() & "config/LogBox.cfc") ){
 				loadLogBoxByConvention(logBoxConfig,arguments.config);
 			}
 			// Check if hash changed by means of programmatic object config
 			else if( compare(arguments.configHash, newConfigHash) neq 0 ){
 				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();
 			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- parseWireBox --->
+	<cffunction name="parseWireBox" output="false" access="public" returntype="void" hint="Parse WireBox">
+		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
+		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="configHash"   type="string"  required="true" hint="The initial logBox config hash"/>
+		<cfscript>
+			var wireBoxDSL		  = structnew();
+			
+			// Default Config Structure
+			arguments.config.wirebox 			= structnew();
+			arguments.config.wirebox.enabled	= false;
+			arguments.config.wirebox.binder		= "";
+			arguments.config.wirebox.binderPath	= "";
+			arguments.config.wirebox.singletonReload = false;
+			
+			// Check if we have defined DSL first in application config
+			wireBoxDSL = arguments.oConfig.getPropertyMixin("wireBox","variables",structnew());
+			
+			// Check if enabled is set else return
+			if( NOT structKeyExists(wireBoxDSL,"enabled") OR NOT wireBoxDSL.enabled ){
+				return;
+			}
+			
+			// Get Binder Paths
+			if( structKeyExists(wireBoxDSL,"binder") ){
+				arguments.config.wirebox.binderPath = wireBoxDSL.binder;				
+			}
+			// Check if WireBox.cfc exists in the config conventions, if so create binder
+			else if( fileExists( instance.controller.getAppRootPath() & "config/WireBox.cfc") ){
+				arguments.config.wirebox.binderPath = "config.WireBox";
+				if( len(arguments.config.appMapping) ){
+					arguments.config.wirebox.binderPath = arguments.config.appMapping & ".#arguments.config.wirebox.binderPath#";
+				}
+			} 
+			
+			// Singleton reload
+			if( structKeyExists(wireBoxDSL,"singletonReload") ){ 
+				arguments.config.wirebox.singletonReload = wireBoxDSL.singletonReload;
+			}			
 		</cfscript>
 	</cffunction>
 	

@@ -26,7 +26,7 @@ Description :
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var lightwireBeanConfig = CreateObject("component", "coldbox.system.ioc.lightwire.BaseConfigObject").init();	
+			var lightwireBeanConfig = CreateObject("component", "lightwire.BaseConfigObject").init();	
 			var defFile = getSetting('ApplicationPath') & "/config/parent.xml.cfm";
 			var parentLightwire = 0;
 			
@@ -35,7 +35,7 @@ Description :
 				lightwireBeanConfig.parseXMLConfigFile(defFile,getSettingStructure());
 				
 				/* Create the parent Lightwire factory */
-				parentLightwire = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(lightwireBeanConfig);
+				parentLightwire = createObject("component","lightwire.LightWire").init(lightwireBeanConfig);
 				
 				/* set it up */
 				getPlugin("IOC").getIOCFactory().setParentFactory(parentLightwire);

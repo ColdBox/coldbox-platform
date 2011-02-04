@@ -136,6 +136,12 @@ Optional Methods
 			}
 		};
 		
+		// WireBox
+		wireBox = { 
+			binder="coldbox.testHarness.config.WireBox", 
+			singletonReload=true 
+		};
+		
 		//Model Integration
 		models = {
 			objectCaching = true,

@@ -40,18 +40,18 @@ Abstract application loader
 	
 	<!--- Parse the configuration --->
 	<cffunction name="loadConfiguration" access="public" returntype="void" output="false" hint="Parse the application configuration file.">
-		<cfargument name="overrideAppMapping" 	type="string" 	required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
+		<cfargument name="overrideAppMapping" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 	</cffunction>
 	
 	<!--- Get ColdBox Settings --->
-	<cffunction name="getColdboxSettings" access="public" returntype="struct" output="false" hint="Get the coldbox settings">
+	<cffunction name="getColdboxSettings" access="public" returntype="any" output="false" hint="Get the coldbox settings">
 		<cfreturn instance.coldboxSettings>
 	</cffunction>
 	
 	<!--- loadApplicationPaths --->
 	<cffunction name="loadApplicationPaths" output="false" access="public" returntype="void" hint="Load application paths according to override">
-		<cfargument name="configStruct" 		type="struct"   required="true" hint="The configuration structure"/>
-		<cfargument name="overrideAppMapping" 	type="string" 	required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
+		<cfargument name="configStruct" 		type="any"  required="true" hint="The configuration structure"/>
+		<cfargument name="overrideAppMapping" 	type="any" 	required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 		<cfscript>
 			// Setup Default Application Path from main controller
 			arguments.configStruct.applicationPath = getController().getAppRootPath();
@@ -65,7 +65,7 @@ Abstract application loader
 	
 	<!--- calculateAppMapping --->
     <cffunction name="calculateAppMapping" output="false" access="public" returntype="void" hint="Calculate the AppMapping">
-    	<cfargument name="configStruct" 	type="struct" required="true" hint="The config struct"/>
+    	<cfargument name="configStruct" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			// Get the web path from CGI.
 			var	webPath = replacenocase(cgi.script_name,getFileFromPath(cgi.script_name),"");
@@ -98,14 +98,14 @@ Abstract application loader
 	
 	<!--- getAppMappingAsDots --->
     <cffunction name="getAppMappingAsDots" output="false" access="public" returntype="string" hint="Get the App Mapping as Dots">
-    	<cfargument name="appMapping" type="string" required="true" />
+    	<cfargument name="appMapping" type="any" required="true" />
 		<cfscript>
 			return reReplace(arguments.appMapping,"(/|\\)",".","all");
 		</cfscript>
     </cffunction>
 
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="public" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+	<cffunction name="getUtil" access="public" output="false" returntype="any" hint="Create and return a util object">
 		<cfreturn instance.util/>
 	</cffunction>
 	
@@ -134,7 +134,7 @@ Abstract application loader
 	<!--- loadLogBoxByFile --->
     <cffunction name="loadLogBoxByFile" output="false" access="public" returntype="void" hint="Load logBox by file">
     	<cfargument name="logBoxConfig" type="any" 		required="true"/>
-    	<cfargument name="filePath" 	type="string" 	required="true"/>
+    	<cfargument name="filePath" 	type="any" 		required="true"/>
 		<cfscript>
     		// Load according xml?
 			if( listFindNoCase("cfm,xml", listLast(arguments.filePath,".")) ){
@@ -174,5 +174,4 @@ Abstract application loader
 		<cfreturn instance.controller>
 	</cffunction>
 	
-
 </cfcomponent>

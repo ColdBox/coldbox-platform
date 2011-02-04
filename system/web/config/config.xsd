@@ -23,6 +23,7 @@
 				<xs:element maxOccurs="1" minOccurs="0" ref="IOC"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Models"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Modules"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="WireBox"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -854,6 +855,28 @@
 							</xs:annotation>
 						</xs:attribute>
 					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="WireBox">
+		<xs:annotation><xs:documentation>This is how you configure the ColdBox WireBox DI-AOP</xs:documentation></xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="1" name="Enabled" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>A compatibility flag until next major release that specifically uses WireBox instead of simple model integration.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="1" name="Binder" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The location of the WireBox Binder to load</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="1" name="SingletonReload" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Whether to reload the singleton scope on each request or not. Useful for development</xs:documentation>
+					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>

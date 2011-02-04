@@ -21,7 +21,7 @@ Loads a coldbox xml configuration file
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="any" hint="constructor">
-		<cfargument name="controller" 			type="any" 		required="true" default="" hint="The coldbox application to load the settings into"/>
+		<cfargument name="controller" type="any" required="true" default="" hint="The coldbox application to load the settings into"/>
 		<cfscript>
 			super.init(arguments.controller);
 			
@@ -121,6 +121,9 @@ Loads a coldbox xml configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: LOGBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLogBox(configXML,configStruct);
 		
+		/* ::::::::::::::::::::::::::::::::::::::::: WIREBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
+		parseWireBox(configXML,configStruct);
+		
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = getUtil().fileLastModified(ConfigFileLocation);
 		
@@ -141,7 +144,7 @@ Loads a coldbox xml configuration file
 			
 		
 		//finish by loading configuration
-		getController().setConfigSettings(configStruct);
+		instance.controller.setConfigSettings(configStruct);
 		</cfscript>
 	</cffunction>
 	
@@ -956,7 +959,7 @@ Loads a coldbox xml configuration file
 			
 			}
 			// Check if LogBoxConfig.cfc exists in the config conventions
-			else if( fileExists( getController().getAppRootPath() & "config/CacheBox.cfc") ){
+			else if( fileExists( instance.controller.getAppRootPath() & "config/CacheBox.cfc") ){
 				configStruct.cacheBox.configFile = loadCacheBoxByConvention(configStruct);
 			}
 			// else, load the default coldbox cachebox config
@@ -1119,11 +1122,11 @@ Loads a coldbox xml configuration file
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
 			var logboxXML 		 = xmlSearch(arguments.xml,"//LogBox");
-			var logBoxConfig 	 = getController().getLogBox().getConfig();
+			var logBoxConfig 	 = instance.controller.getLogBox().getConfig();
 			var memento 		 = "";
 			var prop 			 = "";
 			var oUtil 		 	 = getUtil();
-			var appRootPath 	 = getController().getAppRootPath();
+			var appRootPath 	 = instance.controller.getAppRootPath();
 			var appMappingAsDots = "";
 			var configCreatePath  = "config.LogBox";
 			
@@ -1164,6 +1167,51 @@ Loads a coldbox xml configuration file
 			// Check if LogBox.cfc exists in the config conventions and load it.
 			else if( fileExists( appRootPath & "config/LogBox.cfc") ){
 				loadLogBoxByConvention(logBoxConfig,arguments.config);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- parseWireBox --->
+	<cffunction name="parseWireBox" output="false" access="public" returntype="void" hint="Parse WireBox">
+		<cfargument name="xml" 			type="any" 		required="true" hint="The xml object"/>
+		<cfargument name="config" 		type="struct"	required="true" hint="The config struct"/>
+		<cfargument name="isOverride" 	type="boolean" 	required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
+		<cfscript>
+			var wireboxXML 		 = xmlSearch(arguments.xml,"//WireBox");
+			
+			// Default Config Structure
+			if( NOT arguments.isOverride){
+				arguments.config.wirebox 			= structnew();
+				arguments.config.wirebox.enabled	= false;
+				arguments.config.wirebox.binder		= "";
+				arguments.config.wirebox.binderPath	= "";
+				arguments.config.wirebox.singletonReload = false;
+			}
+			
+			// XML Found
+			if( arrayLen(wireboxXML) ){
+				
+				// Check if enabled is set else return
+				if( NOT structKeyExists(wireboxXML[1],"Enabled") OR NOT wireboxXML[1].enabled ){
+					return;
+				}
+				
+				// Binder Path exists?
+				if( structKeyExists(wireboxXML[1], "Binder") ){
+					arguments.config.wirebox.binderPath = wireboxXML[1].Binder;
+				}
+				// Check if WireBox.cfc exists in the config conventions, if so create binder
+				else if( fileExists( instance.controller.getAppRootPath() & "config/WireBox.cfc") ){
+					arguments.config.wirebox.binderPath = "config.WireBox";
+					if( len(arguments.config.appMapping) ){
+						arguments.config.wirebox.binderPath = arguments.config.appMapping & ".#arguments.config.wirebox.binderPath#";
+					}
+				} 
+				
+				// Singleton reload
+				if( structKeyExists(wireboxXML[1],"SingletonReload") ){ 
+					arguments.config.wirebox.singletonReload = wireboxXML[1].singletonReload;
+				}	
 			}
 		</cfscript>
 	</cffunction>
