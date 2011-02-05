@@ -117,5 +117,18 @@
 		assertEquals( mockTest, r);		
 	}
 	
+	function testgetProviderDSL(){
+		makePublic(builder,"geProviderDSL");
+		data = {name="luis", dsl="provider:luis"};
+		
+		// mocks
+		mockLuis = getMockBox().createStub();
+		mockInjector.$("containsInstance",true).$("getInstance", mockLuis);
+		
+		p = builder.geProviderDSL(data);
+		assertEquals(mockLuis, p.get() );
+		
+	}
+	
 </cfscript>
 </cfcomponent>

@@ -269,14 +269,17 @@ Description :
 				case "logbox"			 : { refLocal.dependency = getLogBoxDSL(arguments.definition); break;}
 				// cachebox injection DSL
 				case "cacheBox"			 : { refLocal.dependency = getCacheBoxDSL(arguments.definition); break;}
+				// provider injection DSL
+				case "provider"			: { refLocal.dependency = getProviderDSL(arguments.definition); break; }
+				
+				// No internal DSL's found, then check custom DSL's
 				default : {
-					// No internal DSL's found, then check custom DSL's
 					// TODO: custom DSL's
 				}
 			}
 				
 			// return only if found, else returns null
-			if( structKeyExists(refLocal,"dependency") ){ return dependency; }
+			if( structKeyExists(refLocal,"dependency") ){ return refLocal.dependency; }
 			
 			// Some warning data
 			if( instance.log.canWarn() ){
@@ -486,7 +489,7 @@ Description :
 				return oModel;
 			}
 			else if( instance.log.canDebug() ){
-				instance.log.debug("getModelDSL() cannot find model object #args.name# using definition #arguments.definition.toString()#");
+				instance.log.debug("getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#");
 			}
 		</cfscript>
 	</cffunction>
@@ -565,6 +568,34 @@ Description :
 					}
 					break;
 				} // end level 3 main DSL
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- geProviderDSL --->
+	<cffunction name="geProviderDSL" access="private" returntype="any" hint="Get dependencies using the our provider pattern DSL" output="false" >
+		<cfargument name="definition" required="true" 	type="any" hint="The dependency definition structure">
+		<cfscript>
+			var thisType 		= arguments.definition.dsl;
+			var thisTypeLen 	= listLen(thisType,":");
+			var providerName 	= "";
+			
+			// DSL stages
+			switch(thisTypeLen){
+				// provider default, get name of the provider from property
+				case 1: { providerName = arguments.definition.name; break; }
+				// provider:{name} stage
+				case 2: { providerName = getToken(thisType,2,":"); break;
+				}
+			}
+
+			// Check if model Exists
+			if( instance.injector.containsInstance( providerName ) ){
+				// Build provider and return it.
+				return createObject("component","coldbox.system.ioc.Provider").init(instance.injector, providerName);
+			}
+			else if( instance.log.canDebug() ){
+				instance.log.debug("getProviderDSL() cannot find model object #providerName# using definition #arguments.definition.toString()#");
 			}
 		</cfscript>
 	</cffunction>

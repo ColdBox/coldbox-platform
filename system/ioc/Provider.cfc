@@ -20,6 +20,7 @@ Description :
 				name 		= arguments.name,
 				injector 	= arguments.injector
 			};
+			return this;
 		</cfscript>
     </cffunction>
 
