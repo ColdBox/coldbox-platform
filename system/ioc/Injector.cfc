@@ -382,7 +382,7 @@ Description :
 			}// end if mapping not found
 			
 			// Set local variable for easy reference use mapping to wire object up.
-			thisMap 		= arguments.mapping;
+			thisMap = arguments.mapping;
 			
 			// Only autowire if no annotation check or if there is one, make sure the mapping is set for autowire
 			if ( (arguments.annotationCheck eq false) OR (arguments.annotationCheck AND thisMap.isAutowire()) ){
@@ -403,12 +403,39 @@ Description :
 				processInjection( thisMap.getDIProperties(), arguments.targetID );
 				// DISetter injection
 				processInjection( thisMap.getDISetters(), arguments.targetID );
-				// Process After ID Complete
+				// Process Provider Methods
+				processProviderMethods( targetObject, thisMap );
+				// Process After DI Complete
 				processAfterCompleteDI(targetObject, thisMap.getOnDIComplete() );
 			}
 	</cfscript>
     </cffunction>
 	
+	<!--- processProviderMethods --->
+    <cffunction name="processProviderMethods" output="false" access="public" returntype="void" hint="Process provider methods on the selected target">
+    	<cfargument name="targetObject" 	required="true"  	hint="The target object to do some goodness on">
+		<cfargument name="mapping" 			required="true"  	hint="The target mapping">
+		<cfscript>
+			var providerMethods = arguments.mapping.getProviderMethods();
+			var providerLen 	= arrayLen(providerMethods);
+			var x				= 1;
+			
+			// Decorate the target if provider methods found, in preparation for replacements
+			if( providerLen ){
+				arguments.targetObject.$wirebox = this;
+				arguments.targetObject.$wireboxProviders = {};
+			}
+			
+			// iterate and provide baby!
+			for(x=1; x lte providerLen; x++){
+				// add the provided method to the providers structure.
+				arguments.targetObject.$wireboxProviders[ providerMethods[x].method ] = providerMethods[x].mapping;
+				// Override the function by injecting it, this does private/public functions
+				arguments.targetObject.injectMixin(providerMethods[x].method, instance.builder.buildProviderMixer);
+			}
+		</cfscript>
+    </cffunction>
+
 	<!--- Process After DI Complete --->
 	<cffunction name="processAfterCompleteDI" access="private" returntype="void" output="false" hint="Process after DI completion routines">
 		<cfargument name="targetObject" 		required="true"  	hint="The target object to do some goodness on">
@@ -519,13 +546,8 @@ Description :
     	<cfset instance.parent = arguments.injector>
     </cffunction>
 	
-	<!--- hasParent --->
-    <cffunction name="hasParent" output="false" access="public" returntype="any" hint="Checks if this Injector has a defined parent injector" colddoc:generic="boolean">
-    	<cfreturn (isObject(instance.parent))>
-    </cffunction>
-	
 	<!--- getParent --->
-    <cffunction name="getParent" output="false" access="public" returntype="any" hint="Get a reference to the parent injector, else an empty string" colddoc:generic="coldbox.system.ioc.Injector">
+    <cffunction name="getParent" output="false" access="public" returntype="any" hint="Get a reference to the parent injector instance, else an empty simple string meaning nothing is set" colddoc:generic="coldbox.system.ioc.Injector">
     	<cfreturn instance.parent>
     </cffunction>
 	

@@ -46,6 +46,14 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- buildProviderMixer --->
+    <cffunction name="buildProviderMixer" output="false" access="public" returntype="any" hint="Used to provider providers via mixers on targeted objects">
+    	<cfscript>
+    		// return the instance from the injected counterparts
+			return this.$wirebox.getInstance( this.$wireboxProviders[ getFunctionCalledName() ] );
+		</cfscript>
+    </cffunction>
+	
 	<!--- buildCFC --->
     <cffunction name="buildCFC" output="false" access="public" returntype="any" hint="Build a cfc class via mappings">
     	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
