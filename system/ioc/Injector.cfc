@@ -129,13 +129,12 @@ Description :
 			
 			// Create our object builder
 			instance.builder = createObject("component","coldbox.system.ioc.Builder").init( this );
-			
+			// Register Custom DSL Builders
+			instance.builder.registerCustomBuilders();
+		
 			// Register Life Cycle Scopes
 			registerScopes();
 			
-			// TODO: Register DSLs
-			// registerDSLs();
-		
 			// Parent Injector declared
 			if( isObject(instance.binder.getParentInjector()) ){
 				setParent( instance.binder.getParentInjector() );

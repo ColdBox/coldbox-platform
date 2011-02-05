@@ -585,13 +585,13 @@ Description :
 	<!--- mapDSL --->
     <cffunction name="mapDSL" output="false" access="public" returntype="any" hint="Register a new custom dsl namespace">
     	<cfargument name="namespace" 	required="true" hint="The namespace you would like to register"/>
-		<cfargument name="path" 		required="true" hint="The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLNamespace"/>
+		<cfargument name="path" 		required="true" hint="The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder"/>
 		<cfset instance.customDSL[arguments.namespace] = arguments.path>
 		<cfreturn this>
     </cffunction>
 	
 	<!--- getCustomDSL --->
-    <cffunction name="getCustomDSL" output="false" access="public" returntype="struct" hint="Get the custom dsl namespace registration">
+    <cffunction name="getCustomDSL" output="false" access="public" returntype="any" hint="Get the custom dsl namespace registration structure" colddoc:generic="struct">
     	<cfreturn instance.customDSL>
     </cffunction>
 

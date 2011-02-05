@@ -33,18 +33,42 @@ Description :
 				injector 	= arguments.injector,
 				logBox		= arguments.injector.getLogBox(),
 				log		 	= arguments.injector.getLogBox().getlogger(this),
-				utility		= arguments.injector.getUtil()
+				utility		= arguments.injector.getUtil(),
+				customDSL	= structnew()
 			};
-			// Wire up coldbox context and cachebox if linked.
+			// Do we need to build the coldbox DSL namespace
 			if( instance.injector.isColdBoxLinked() ){
-				instance.coldbox = instance.injector.getColdBox();
+				instance.coldboxDSL = createObject("component","coldbox.system.ioc.dsl.ColdBoxDSL").init( arguments.injector );
 			}
+			// Is CacheBox Linked?
 			if( instance.injector.isCacheBoxLinked() ){
-				instance.cachebox = instance.injector.getCacheBox();
+				instance.cacheBoxDSL = createObject("component","coldbox.system.ioc.dsl.CacheBoxDSL").init( arguments.injector );
 			}
 			return this;
 		</cfscript>
 	</cffunction>
+	
+	<!--- getCustomDSL --->
+    <cffunction name="getCustomDSL" output="false" access="public" returntype="any" hint="Get the registered custom dsl instances structure" colddoc:generic="struct">
+    	<cfreturn instance.customDSL>
+    </cffunction>
+	
+	<!--- registerCustomBuilders --->
+    <cffunction name="registerCustomBuilders" output="false" access="public" returntype="any" hint="Register custom DSL builders with this main wirebox builder">
+    	<cfscript>
+    		var customDSL 	= instance.injector.getBinder().getCustomDSL();
+    		var key				= "";
+			
+    		// Register Custom DSL Builders
+			for(key in customDSL){
+				instance.customDSL[key] = createObject("component",customDSL[key]).init( instance.injector );
+				// Debugging
+				if( instance.log.canDebug() ){
+					instance.log.debug("Registered custom DSL Builder: #customDSL[key]# with namespace: #key#");
+				}
+			}		
+		</cfscript>
+    </cffunction>	
 	
 	<!--- buildProviderMixer --->
     <cffunction name="buildProviderMixer" output="false" access="public" returntype="any" hint="Used to provider providers via mixers on targeted objects">
@@ -259,30 +283,23 @@ Description :
 			// Determine Type of Injection according to Internal Types first
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch(DSLNamespace){
-				// ioc dependency usually only when coldbox context is connected
-				case "ioc" 				 : { refLocal.dependency = getIOCDSL(arguments.definition); break; }
-				// ocm is used only on coldbox context
-				case "ocm" 				 : { refLocal.dependency = getOCMDSL(arguments.definition); break; }
-				// coldbox webservice is used only on coldbox context
-				case "webservice" 		 : { refLocal.dependency = getWebserviceDSL(arguments.definition); break; }
-				// javaloader only used on coldbox context
-				case "javaloader"		 : { refLocal.dependency = getJavaLoaderDSL(arguments.definition); break;}
-				// entity service only used on coldbox context
-				case "entityService"	 : { refLocal.dependency = getEntityServiceDSL(arguments.definition); break;}
-				// coldbox is used only on coldbox context
-				case "coldbox" 			 : { refLocal.dependency = getColdboxDSL(arguments.definition); break; }
-				// basic wirebox injection DSL
+				// ColdBox Context DSL
+				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "entityService" :case "coldbox" : { refLocal.dependency = instance.coldboxDSL.process(arguments.definition); break; } 
+				// CacheBox Context DSL
+				case "cacheBox"			 : { refLocal.dependency = instance.cacheBoxDSL.process(arguments.definition); break;}
+				// WireBox Internal DSL for models and id
 				case "model" : case "id" : { refLocal.dependency = getModelDSL(arguments.definition); break; }
-				// logbox injection DSL
+				// logbox injection DSL always available
 				case "logbox"			 : { refLocal.dependency = getLogBoxDSL(arguments.definition); break;}
-				// cachebox injection DSL
-				case "cacheBox"			 : { refLocal.dependency = getCacheBoxDSL(arguments.definition); break;}
-				// provider injection DSL
+				// provider injection DSL always available
 				case "provider"			: { refLocal.dependency = getProviderDSL(arguments.definition); break; }
 				
 				// No internal DSL's found, then check custom DSL's
 				default : {
-					// TODO: custom DSL's
+					// Check if Custom DSL exists, if it does, execute it
+					if( structKeyExists(instance.customDSL, DSLNamespace) ){
+						refLocal.dependency = instance.customDSL[ DSLNamespace ].process( arguments.definition );
+					}
 				}
 			}
 				
@@ -291,176 +308,13 @@ Description :
 			
 			// Some warning data
 			if( instance.log.canWarn() ){
-				instance.log.warn("The DSL dependency definition: #arguments.definition# did not produce any resulting dependency");
+				instance.log.warn("The DSL dependency definition: #arguments.definition.toString()# did not produce any resulting dependency");
 			}
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- DSL BUILDER METHODS ------------------------------------------>
 
-	<!--- getIOCDSL --->
-	<cffunction name="getIOCDSL" access="private" returntype="any" hint="Get an IOC dependency" output="false" >
-		<cfargument name="definition" required="true" type="any" hint="The dependency definition structure">
-		<cfscript>
-			var thisTypeLen 	= listLen(arguments.definition.dsl,":");
-			var beanName		= "";
-			
-			// DSL stages
-			switch(thisTypeLen){
-				// ioc only, so get name from definition
-				case 1: { beanName = arguments.definition.name; break;}
-				// ioc:beanName, so get it from here
-				case 2: { beanName = getToken(arguments.definition.dsl,2,":"); break;}
-			}
-
-			// Check for Bean existence first
-			if( oIOC.getIOCFactory().containsBean(beanName) ){
-				return instance.coldbox.getPlugin("IOC").getBean(beanName);
-			}
-			else if( instance.log.canDebug() ){
-				instance.log.debug("getIOCDSL() cannot find IOC Bean: #beanName# using definition: #arguments.definition.toString()#");
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- getOCMDSL --->
-	<cffunction name="getOCMDSL" access="private" returntype="any" hint="Get OCM dependencies" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfscript>
-			var thisTypeLen = listLen(arguments.definition.dsl,":");
-			var cacheKey 	= "";
-			var cache		= instance.cacheBox.getCache('default');
-			
-			// DSL stages
-			switch(thisTypeLen){
-				// ocm only
-				case 1: { cacheKey = arguments.definition.name; break;}
-				// ocm:objectKey
-				case 2: { cacheKey = getToken(arguments.definition.dsl,2,":"); break;}
-			}
-
-			// Verify that dependency exists in the Cache container: Change this later once cache compat is removed
-			if( cache.lookup(cacheKey) ){
-				return cache.get(cacheKey);
-			}
-			else if( instance.log.canDebug() ){
-				instance.log.debug("getOCMDSL() cannot find cache Key: #cacheKey# using definition: #arguments.definition.toString()#");
-			}
-		</cfscript>
-	</cffunction>	
-	
-	<!--- getWebserviceDSL --->
-	<cffunction name="getWebserviceDSL" access="private" returntype="any" hint="Get webservice dependencies" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfscript>
-			var oWebservices 	= instance.coldbox.getPlugin("Webservices");
-			var webserviceName  = listLast(arguments.definition.dsl,":");
-
-			// Get Dependency, if not found, exception is thrown.
-			return oWebservices.getWSobj( webserviceName );
-		</cfscript>
-	</cffunction>
-	
-	<!--- getJavaLoaderDSL --->
-	<cffunction name="getJavaLoaderDSL" access="private" returntype="any" hint="Get JavaLoader Dependency" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfscript>
-			var className  		= listLast(arguments.definition.dsl,":");
-
-			// Get Dependency, if not found, exception is thrown
-			return instance.coldbox.getPlugin("JavaLoader").create( className );
-		</cfscript>
-	</cffunction>
-	
-	<!--- getEntityServiceDSL --->
-	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfscript>
-			var entityName  = getToken(arguments.definition.dsl,2,":");
-
-			// Do we have an entity name? If we do create virtual entity service
-			if( len(entityName) ){
-				return createObject("component","coldbox.system.orm.hibernate.VirtualEntityService").init( entityName );
-			}
-
-			// else Return Base ORM Service
-			return createObject("component","coldbox.system.orm.hibernate.BaseORMService").init();
-		</cfscript>
-	</cffunction>
-	
-	<!--- getColdboxDSL --->
-	<cffunction name="getColdboxDSL" access="private" returntype="any" hint="Get dependencies using the coldbox dependency DSL" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfscript>
-			var thisType 			= arguments.definition.dsl;
-			var thisTypeLen 		= listLen(thisType,":");
-			var thisLocationType 	= "";
-			var thisLocationKey 	= "";
-			
-			// DSL stages
-			switch(thisTypeLen){
-				// coldbox only DSL
-				case 1: { return instance.coldbox; }
-				// coldbox:{key} stage 2
-				case 2: {
-					thisLocationKey = getToken(thisType,2,":");
-					switch( thisLocationKey ){
-						case "fwconfigbean" 		: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getColdboxSettings() ); }
-						case "configbean" 			: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getConfigSettings() ); }
-						case "mailsettingsbean"		: { 
-							return createObject("component","coldbox.system.core.mail.MailSettingsBean").init(instance.coldbox.getSetting("MailServer"),
-									instance.coldbox.getSetting("MailUsername"),
-									instance.coldbox.getSetting("MailPassword"), 
-									instance.coldbox.getSetting("MailPort"));
-						}
-						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
-						case "requestService"		: { return instance.coldbox.getrequestService(); }
-						case "debuggerService"		: { return instance.coldbox.getDebuggerService();}
-						case "pluginService"		: { return instance.coldbox.getPluginService(); }
-						case "handlerService"		: { return instance.coldbox.gethandlerService(); }
-						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }
-						case "cacheManager"			: { return instance.coldbox.getColdboxOCM(); }
-						case "moduleService"		: { return instance.coldbox.getModuleService(); }
-					}//end of services
-					break;
-				}
-				//coldobx:{key}:{target} Usually for named factories
-				case 3: {
-					thisLocationType = getToken(thisType,2,":");
-					thisLocationKey  = getToken(thisType,3,":");
-					switch(thisLocationType){
-						case "setting" 				: { return instance.coldbox.getSetting(thisLocationKey); }
-						case "fwSetting" 			: { return instance.coldbox.getSetting(thisLocationKey,true); }
-						case "plugin" 				: { return instance.coldbox.getPlugin(thisLocationKey);}
-						case "myplugin" 			: {
-							// module plugin
-							if( find("@",thisLocationKey) ){
-								return instance.coldbox.getMyPlugin(plugin=listFirst(thisLocationKey,"@"),module=listLast(thisLocationKey,"@"));
-							}
-							// normal custom plugin
-							return instance.coldbox.getMyPlugin(thisLocationKey);
-						}
-						case "datasource" 			: { return getDatasource(thisLocationKey); }
-						case "interceptor" 			: { return instance.coldbox.getInterceptorService().getInterceptor(thisLocationKey,true); }
-					}//end of services
-					break;
-				}
-			}
-		</cfscript>
-	</cffunction>
-	
-	<!--- Get a ColdBox Datasource --->
-	<cffunction name="getDatasource" access="private" output="false" returnType="any" hint="I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct" colddoc:generic="coldbox.system.core.db.DatasourceBean">
-		<cfargument name="alias" type="any" hint="The alias of the datasource to get from the configstruct (alias property in the config file)">
-		<cfscript>
-		var datasources = instance.coldbox.getSetting("Datasources");
-		//Try to get the correct datasource.
-		if ( structKeyExists(datasources, arguments.alias) ){
-			return createObject("component","coldbox.system.core.db.DatasourceBean").init(datasources[arguments.alias]);
-		}
-		</cfscript>
-	</cffunction>
-	
 	<!--- getModelDSL --->
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
 		<cfargument name="definition" required="true" 	type="any" hint="The dependency definition structure">
@@ -538,48 +392,6 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<!--- getCacheBoxDSL --->
-	<cffunction name="getCacheBoxDSL" access="private" returntype="any" hint="Get dependencies using the cacheBox dependency DSL" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfscript>
-			var thisType 			= arguments.definition.dsl;
-			var thisTypeLen 		= listLen(thisType,":");
-			var cacheName 			= "";
-			var cacheElement 		= "";
-			
-			// DSL stages
-			switch(thisTypeLen){
-				// CacheBox
-				case 1 : { return instance.cacheBox; }
-				// CacheBox:CacheName
-				case 2 : {
-					cacheName = getToken(thisType,2,":");
-					// Verify that cache exists
-					if( instance.cacheBox.cacheExists( cacheName ) ){
-						return instance.cacheBox.getCache( cacheName );
-					}
-					else if( instance.log.canDebug() ){
-						instance.log.debug("getCacheBoxDSL() cannot find named cache #cacheName# using definition: #arguments.definition.toString()#. Existing cache names are #instance.cacheBox.getCacheNames().toString#");
-					}
-					break;
-				}
-				// CacheBox:CacheName:Element
-				case 3 : {
-					cacheName 		= getToken(thisType,2,":");
-					cacheElement 	= getToken(thisType,3,":");
-					// Verify that dependency exists in the Cache container
-					if( instance.cacheBox.getCache( cacheName ).lookup( cacheElement ) ){
-						return instance.cacheBox.getCache( cacheName ).get( cacheElement );
-					}
-					else if( instance.log.canDebug() ){
-						instance.log.debug("getCacheBoxDSL() cannot find cache Key: #cacheElement# in the #cacheName# cache using definition: #arguments.definition.toString()#");
-					}
-					break;
-				} // end level 3 main DSL
-			}
-		</cfscript>
-	</cffunction>
-	
 	<!--- geProviderDSL --->
 	<cffunction name="geProviderDSL" access="private" returntype="any" hint="Get dependencies using the our provider pattern DSL" output="false" >
 		<cfargument name="definition" required="true" 	type="any" hint="The dependency definition structure">

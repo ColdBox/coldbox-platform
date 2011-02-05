@@ -4,12 +4,14 @@
 	function setup(){
 		mockColdBox = getMockBox().createEmptyMock("coldbox.system.web.Controller");
 		mockCacheBox =  getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
-		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error");
+		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error").$("canWarn",true).$("warn");
+		mockLogBox = getMockBox().createEmptyMock("coldbox.system.logging.LogBox").$("getLogger", mockLogger);
 		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
 			.$("getLogbox", getMockBox().createstub().$("getLogger", mockLogger) )
 			.$("getUtil", getMockBox().createMock("coldbox.system.core.util.Util"))
 			.$("isColdBoxLinked",true).$("isCacheBoxLinked",true)
 			.$("getColdbox", mockColdbox )
+			.$("getLogBox", mockLogBox )
 			.$("getCacheBox",mockCacheBox );
 		
 		builder = getMockBox().createMock("coldbox.system.ioc.Builder").init( mockInjector );
@@ -127,6 +129,34 @@
 		
 		p = builder.geProviderDSL(data);
 		assertEquals(mockLuis, p.get() );
+		
+	}
+	
+	function testregisterCustomBuilders(){
+		customDSL = {
+			coolLuis = "coldbox.testing.cases.ioc.dsl.TestDSL"
+		};
+		mockBinder = getMockBox().createMock("coldbox.system.ioc.config.Binder")
+			.$("getCustomDSL", customDSL);
+		mockInjector.$("getBinder",mockBinder);
+		builder.registerCustomBuilders();
+		
+		custom = builder.getCustomDSL();
+		assertEquals( true, structKeyExists(custom, "coolLuis") );
+	}
+	
+	function testbuildDSLDependencyCustom(){
+		def = {name="test",dsl="coolLuis:woopee" };
+		customDSL = {
+			coolLuis = "coldbox.testing.cases.ioc.dsl.TestDSL"
+		};
+		mockBinder = getMockBox().createMock("coldbox.system.ioc.config.Binder")
+			.$("getCustomDSL", customDSL);
+		mockInjector.$("getBinder",mockBinder);
+		builder.registerCustomBuilders();
+		
+		test = builder.buildDSLDependency(def);
+		assertEquals( "woopee", test.getName() );
 		
 	}
 	
