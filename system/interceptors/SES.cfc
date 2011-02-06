@@ -39,6 +39,8 @@ Description :
 			instance.autoReload = false;
 			// Detect extensions flag, so it can place a 'format' variable on the rc
 			instance.extensionDetection = true;
+			// Throw an exception when extension detection is invalid or not
+			instance.throwOnInvalidExtension = false;
 			// Initialize the valid extensions to detect
 			instance.validExtensions = instance.VALID_EXTENSIONS;
 
@@ -126,7 +128,10 @@ Description :
 						}
 					}
 					else{
-						throwInvalidHTTP("The HTTP method used: #HTTPMethod# is not valid for the current executing event.");
+						getUtil().throwInvalidHTTP(className="SES",
+												   detail="The HTTP method used: #HTTPMethod# is not valid for the current executing resource. Valid methods are: #aRoute.action.toString()#",
+										 		   statusText="Invalid HTTP method: #HTTPMethod#",
+										 		   statusCode="405");
 					}
 				}
 				// Create routed event
@@ -408,6 +413,15 @@ Description :
     	<cfset instance.extensionDetection = arguments.extensionDetection>
     </cffunction>
 	
+	<!--- get/set on Invalid Extension --->
+	<cffunction name="getThrowOnInvalidExtension" access="public" returntype="any" output="false" hint="Get if we are throwing or not on invalid extension detection" colddoc:generic="boolean">
+    	<cfreturn instance.throwOnInvalidExtension>
+    </cffunction>
+    <cffunction name="setThrowOnInvalidExtension" access="public" returntype="void" output="false" hint="Configure the interceptor to throw an exception or not when invalid extensions are detected">
+    	<cfargument name="throwOnInvalidExtension" required="true" colddoc:generic="boolean">
+    	<cfset instance.throwOnInvalidExtension = arguments.throwOnInvalidExtension>
+    </cffunction>    
+	
 	<!--- setValidExtensions --->
     <cffunction name="setValidExtensions" output="false" access="public" returntype="void" hint="Setup the list of valid extensions to detect automatically for you.: e.g.: json,xml,rss">
     	<cfargument name="validExtensions" required="true" hint="A list of valid extensions to allow in a request"/>
@@ -478,28 +492,22 @@ Description :
 				}
 				else{
 					// log invalid extension
-					log.debug("Invalid Extension Detected: #lcase(extension)# detected but it is not in the valid extension list: #instance.validExtensions#");
-					// throw exception
-					throwInvalidHTTP("Invalid Request Extension Detected: #lcase(extension)#","Invalid Request Extension");
+					if( log.canWarn() ){
+						log.warn("Invalid Extension Detected: #lcase(extension)# detected but it is not in the valid extension list: #instance.validExtensions#");
+					}
+					// throw exception if enabled, else just continue
+					if( instance.throwOnInvalidExtension ){
+					getUtil().throwInvalidHTTP(className="SES",
+											   detail="Invalid Request Format Extension Detected: #lcase(extension)#. Valid extensions are: #instance.validExtensions#",
+									  		   statusText="Invalid Requested Format Extension: #lcase(extension)#",
+									 		   statusCode="406");
+					}
 				}				
 			}
 			
 			// return the same request string, extension not found
 			return requestString;
 		</cfscript>
-    </cffunction>
-
-	<!--- throwInvalidHTTP --->
-    <cffunction name="throwInvalidHTTP" output="false" access="private" returntype="void" hint="Throw an invalid HTTP exception">
-    	<cfargument name="description"	type="string" required="true" hint="The throw description"/>
-		<cfargument name="statusText" 	type="string" required="false" default="403 Invalid HTTP Method Exception" hint="Invalid exception status text"/>
-		
-		<cfheader statuscode="403" statustext="#arguments.statusText#">
-		<cfthrow type="SES.403"
-			     errorcode="403"
-			     message="#arguments.statusText#"
-				 detail="#arguments.description#">
-
     </cffunction>
 
 	<!--- setmoduleRoutingTable --->
@@ -1008,6 +1016,11 @@ Description :
 				$throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
 			}
 		</cfscript>
+	</cffunction>
+	
+	<!--- getUtil --->
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" colddoc:generic="coldbox.system.core.util.Util">
+		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 
 </cfcomponent>

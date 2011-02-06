@@ -139,6 +139,21 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- throwInvalidHTTP --->
+    <cffunction name="throwInvalidHTTP" output="false" access="public" returntype="void" hint="Throw an invalid HTTP exception">
+    	<cfargument name="className" 	required="true" hint="The class producing the exception"/>
+    	<cfargument name="detail"		required="true" hint="The throw detail argument to send out"/>
+		<cfargument name="statusText" 	required="true" hint="Invalid exception status text"/>
+		<cfargument name="statusCode" 	required="true" hint="The status code to send out."/>
+		
+		<cfheader statuscode="#arguments.statusCode#" statustext="#arguments.statusText#">
+		<cfthrow type="#arguments.className#.#arguments.statusCode#"
+			     errorcode="#arguments.statusCode#"
+			     message="#arguments.statusText#"
+				 detail="#arguments.detail#">
+
+    </cffunction>
+	
 <!------------------------------------------- CF Facades ------------------------------------------>
 
 	<!--- throw it --->

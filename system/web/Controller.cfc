@@ -510,8 +510,12 @@ Only one instance of a specific ColdBox application exists.
 				if( NOT structIsEmpty(oHandler.allowedMethods) AND
 					structKeyExists(oHandler.allowedMethods,ehBean.getMethod()) AND
 					NOT listFindNoCase(oHandler.allowedMethods[ehBean.getMethod()],oRequestContext.getHTTPMethod()) ){
-
-					throwInvalidHTTP("The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'.");
+					
+					// Throw Exceptions
+					getUtil().throwInvalidHTTP(className="Controller",
+											   detail="The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
+											   statusText="Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
+											   statusCode="405");
 				}
 
 				// PRE ACTIONS
@@ -707,16 +711,6 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into stack" output="false" >
 		<cfset services.debuggerService.recordProfiler()>
 	</cffunction>
-
-	<!--- throwInvalidHTTP --->
-    <cffunction name="throwInvalidHTTP" output="false" access="private" returntype="void" hint="Throw an invalid HTTP exception">
-    	<cfargument name="description" required="true" hint="The exception description"/>
-		<cfheader statuscode="403" statustext="403 Invalid HTTP Method Exception">
-		<cfthrow type="ColdBox.403"
-			     errorcode="403"
-			     message="403 Invalid HTTP Method Exception"
-				 detail="#arguments.description#">
-    </cffunction>
 
 	<!--- sendRelocation --->
     <cffunction name="sendRelocation" output="false" access="private" returntype="void" hint="Send a CF relocation via ColdBox">

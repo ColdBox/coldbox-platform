@@ -261,6 +261,9 @@ Optional Methods
 			  }
 			  },
 			 
+			 // Transactional Hibernation annotations
+			 {class="coldbox.system.orm.hibernate.TransactionAspect"},
+			 
 			 //SES
 			 {class="coldbox.system.interceptors.SES",
 			  properties={configFile="config/routes.cfm"}},
@@ -297,6 +300,12 @@ Optional Methods
 	
 	function development(){
 	
+	}
+	
+	// CFC is also an interceptor
+	function afterConfigurationLoad(event,interceptData){
+		var logger = controller.getLogBox().getLogger(this);
+		logger.info("My application just loaded and this message is from the config object");
 	}
 	
 </cfscript>
