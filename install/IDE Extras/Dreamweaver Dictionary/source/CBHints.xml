@@ -14,7 +14,6 @@
 	<function pattern="getDatasource(string:alias)" doctypes="ColdFusion,CFC" />
 	<function pattern="getDebugMode()" doctypes="ColdFusion,CFC" />
 	<function pattern="getfwLocale()" doctypes="ColdFusion,CFC" />
-	<function pattern="getHash()" doctypes="ColdFusion,CFC" />
 	<function pattern="getInterceptor(string:interceptorClass)" doctypes="ColdFusion,CFC" />
 	<function pattern="getMailSettings()" doctypes="ColdFusion,CFC" />
 	<function pattern="getMyPlugin(string:plugin, [boolean:newInstance])" doctypes="ColdFusion,CFC" />

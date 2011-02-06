@@ -29,7 +29,9 @@ Description :
 			// Create Mock Objects
 			variables.mockLogBox	 = mockBox.createEmptyMock("coldbox.system.logging.LogBox");
 			variables.mockLogger	 = mockBox.createEmptyMock("coldbox.system.logging.Logger");
-			variables.mockCacheBox   = mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");		
+			variables.mockCacheBox   = mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
+			variables.mockWireBox	 = mockBox.createMock("coldbox.system.ioc.Injector").init();
+				
     	</cfscript>
     </cffunction>
 	

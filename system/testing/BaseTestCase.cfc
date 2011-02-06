@@ -79,6 +79,7 @@ id , name , mail
 	<cffunction name="setup" hint="The main setup method for running ColdBox enabled tests" output="false">
 		<cfscript>
 		var appRootPath = "";
+		var context		= "";
 		
 		// metadataInspection
 		metadataInspection();
@@ -120,8 +121,9 @@ id , name , mail
 			}
 			
 			//Clean up Initial Event Context
-			getRequestContext().clearCollection();
-			getRequestContext().clearCollection(private=true);
+			context = getRequestContext();
+			context.clearCollection();
+			context.clearCollection(private=true);
 		}
 		</cfscript>
 	</cffunction>
@@ -220,11 +222,13 @@ id , name , mail
 			var mockLogger	 		= mockBox.createEmptyMock("coldbox.system.logging.Logger");
 			var mockFlash		 	= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
 			var mockCacheBox   		= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
+			var mockWireBox   		= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
 			
 			// Mock Plugin Dependencies
-			mockController.$("getLogBox",mockLogBox);
-			mockController.$("getCacheBox",mockCacheBox);
-			mockController.$("getRequestService",mockRequestService);
+			mockController.$("getLogBox",mockLogBox)
+				.$("getCacheBox",mockCacheBox)
+				.$("getWireBox",mockWireBox)
+				.$("getRequestService",mockRequestService);
 			mockRequestService.$("getFlashScope",mockFlash);
 			mockLogBox.$("getLogger",mockLogger);
 			
@@ -279,6 +283,21 @@ id , name , mail
 	<cffunction name="getController" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox mock controller">
 		<cfreturn instance.controller>
 	</cffunction>
+	
+	<!--- getWireBox --->
+    <cffunction name="getWireBox" output="false" access="private" returntype="any" hint="Get the wirebox instance">
+    	<cfreturn instance.controller.getwireBox()>
+    </cffunction>
+	
+	<!--- getCacheBox --->
+    <cffunction name="getCacheBox" output="false" access="private" returntype="any" hint="Get a reference to cachebox">
+    	<cfreturn instance.controller.getCacheBox()>
+    </cffunction>
+	
+	<!--- getLogBox --->
+    <cffunction name="getLogBox" output="false" access="public" returntype="any" hint="Get a logbox reference">
+    	<cfreturn instance.controller.getLogBox()>
+    </cffunction>
 	
 	<!--- getColdboxOCM --->
     <cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">

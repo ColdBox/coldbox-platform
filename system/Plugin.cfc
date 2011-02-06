@@ -38,6 +38,8 @@ Modification History:
 			variables.flash = arguments.controller.getRequestService().getFlashScope();
 			// Register CacheBox
 			variables.cacheBox = arguments.controller.getCacheBox();
+			// Register WireBox
+			variables.wireBox = arguments.controller.getWireBox();
 			
 			// Prepare a Plugin properties
 			instance.pluginName = "";

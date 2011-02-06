@@ -36,11 +36,13 @@ Description :
 			variables.mockLogger	 		= mockBox.createEmptyMock("coldbox.system.logging.Logger");
 			variables.mockFlash		 		= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
 			variables.mockCacheBox   		= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
+			variables.mockWireBox		 	= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
 			
 			// Mock Plugin Dependencies
-			variables.mockController.$("getLogBox",variables.mockLogBox);
-			variables.mockController.$("getCacheBox",variables.mockCacheBox);
-			variables.mockController.$("getRequestService",variables.mockRequestService);
+			variables.mockController.$("getLogBox",variables.mockLogBox)
+				.$("getCacheBox",variables.mockCacheBox)
+				.$("getWireBox",variables.mockWireBox)
+				.$("getRequestService",variables.mockRequestService);
 			variables.mockRequestService.$("getFlashScope",variables.mockFlash);
 			variables.mockLogBox.$("getLogger",variables.mockLogger);
 			
