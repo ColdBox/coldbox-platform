@@ -298,7 +298,7 @@ Description :
 		invalidEvent(arguments.event,handlerBean);
 
 		// onInvalidEvent detected, so just return the overriden bean
-		return handlerBean;
+		return getRegisteredHandler(handlerBean.getHandler() & "." & handlerBean.getMethod());
 		</cfscript>
 	</cffunction>
 	
