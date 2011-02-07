@@ -36,6 +36,7 @@ Description :
 			// Setup depenedencies
 			instance.objCaching 	= getSetting("IOCObjectCaching");
 			instance.beanFactory 	= getPlugin("BeanFactory");
+			instance.IOCFramework 	= getSetting("IOCFramework");
 			
 			// Configure this plugin for operation
 			configure();
@@ -49,7 +50,6 @@ Description :
 	<!--- Configure the plugin --->
 	<cffunction name="configure" access="public" returntype="void" hint="Configure or Re-Configure the IoC Plugin. Loads the chosen IoC Factory and configures it for usage" output="false">
 		<cfscript>
-			var framework 			= getSetting("IOCFramework");
 			var definitionFile  	= getSetting("IOCDefinitionFile");
 			var parentFramework		= getSetting("IOCParentFactory");
 			var paretDefinitionFile	= getSetting("IOCParentFactoryDefinitionFile");
@@ -60,7 +60,9 @@ Description :
 			}
 			
 			// build adapter using application chosen properties
-			instance.adapter = buildAdapter(framework, definitionFile);
+			if( instance.IOCFramework neq "wirebox" ){
+				instance.adapter = buildAdapter(instance.IOCFramework, definitionFile);
+			}
 			
 			// Do we have a parent to build?
 			if( len(parentFramework) ){
@@ -105,7 +107,7 @@ Description :
 			// get object from adapter factory
 			refLocal.oBean = instance.adapter.getBean( arguments.beanName );
 			
-			// process WireBox autowires
+			// process WireBox autowires only if not wireBox.
 			instance.beanFactory.autowire(target=refLocal.oBean,annotationCheck=true);
 			
 			// processObjectCaching?
@@ -134,8 +136,8 @@ Description :
 	</cffunction>
 
 	<!--- get which IoC Framework is Used --->
-	<cffunction name="getIOCFramework" access="public" output="false" returntype="any" hint="Get the IoC framework for this plugin to use">
-		<cfreturn getSetting("IOCFramework")/>
+	<cffunction name="getIOCFramework" access="public" output="false" returntype="any" hint="Get the IoC framework name defined for this plugin">
+		<cfreturn instance.IOCFramework/>
 	</cffunction>
 
 	<!--- get The Definition file --->
