@@ -629,6 +629,11 @@ Description :
 		<cfreturn instance.scopes[ arguments.scope ]>
     </cffunction>
 	
+	<!--- clearSingletons --->
+    <cffunction name="clearSingletons" output="false" access="public" returntype="any" hint="Clear the singleton cache">
+    	<cfset instance.scopes["SINGLETON"].clear()>
+    </cffunction>
+	
 <!----------------------------------------- PRIVATE ------------------------------------->	
 
 	<!--- registerScopes --->
