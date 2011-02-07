@@ -236,14 +236,33 @@ component accessors="true"{
 	* Find one entity (or null if not found) according to a criteria structure
 	*/
 	any function findWhere(required string entityName, required struct criteria){
-		return entityLoad( arguments.entityName, arguments.criteria, true);
+		// Caching?
+		if( getUseQueryCaching() ){
+			//if we are caching, we will use find all and return an array since entityLoad does not support both unique and caching
+			var arEntity = findAllWhere(argumentCollection=arguments);
+			//if we found an entity, return it
+			if (arrayLen(arEntity)) {
+				return arEntity[1];
+			//else return NULL, just like entityLoad with unique would
+			} else {
+				return javaCast("null",0);
+			}
+		} else {
+			return entityLoad( arguments.entityName, arguments.criteria, true );
+		}
 	}
 
 	/**
 	* Find all entities according to criteria structure
 	*/
 	array function findAllWhere(required string entityName, required struct criteria){
-		return entityLoad( arguments.entityName, arguments.criteria);
+		var options = {};
+		// Caching?
+		if( getUseQueryCaching() ){
+			options.cacheName  = getQueryCacheRegion();
+			options.cacheable  = true;
+		}
+		return entityLoad( arguments.entityName, arguments.criteria, options);
 	}
 
 	/**
@@ -380,12 +399,12 @@ component accessors="true"{
     */
 	any function get(required string entityName,required any id) {
 		var entity = entityLoadByPK(arguments.entityName, arguments.id);
-		
+
 		// Check if not null, then return it
 		if( NOT isNull(entity) ){
 			return entity;
 		}
-		
+
 		// Check if ID=0 or empty to do convenience new entity
 		if( isSimpleValue(arguments.id) and ( arguments.id eq 0  OR len(arguments.id) eq 0 ) ){
 			return new(arguments.entityName);
@@ -409,6 +428,11 @@ component accessors="true"{
 		// execute bulk get
 		var query = ORMGetSession().createQuery("FROM #arguments.entityName# where id in (:idlist)");
 		query.setParameterList("idlist",arguments.id);
+		// Caching?
+		if( getUseQueryCaching() ){
+			query.setCacheRegion(getQueryCacheRegion());
+			query.setCacheable(true);
+		}
 		return query.list();
 	}
 
@@ -586,7 +610,7 @@ component accessors="true"{
 		var count 			=  arrayLen(arguments.entities);
 		var eventHandling 	=  getEventHandling();
 		var tx 				= ORMGetSession().beginTransaction();
-		
+
 		try{
 			// iterate and save
 			for(var x=1; x lte count; x++){
@@ -596,7 +620,7 @@ component accessors="true"{
 				}
 				// Save it
 				entitySave(arguments.entities[x], arguments.forceInsert);
-				
+
 				// Event Handling? If enabled, call the postSave() interception
 				if( eventHandling ){
 					ORMEventHandler.postSave( arguments.entities[x] );
@@ -615,24 +639,24 @@ component accessors="true"{
 
 		return true;
 	}
-	
+
 	/**
     * Save an entity using hibernate transactions. You can optionally flush the session also
     */
 	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=true){
 		var eventHandling = getEventHandling();
-		
+
 		// Event Handling? If enabled, call the preSave() interception
 		if( eventHandling ){
 			ORMEventHandler.preSave( arguments.entity );
 		}
-		
+
 		// Saved transasction or not.
 		if( arguments.transactional ){
 			var tx = ORMGetSession().beginTransaction();
 			try{
 				entitySave(arguments.entity, arguments.forceInsert);
-	
+
 				tx.commit();
 			}
 			catch(Any e){
@@ -643,7 +667,7 @@ component accessors="true"{
 		else{
 			entitySave(arguments.entity, arguments.forceInsert);
 		}
-			
+
 
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
@@ -921,12 +945,12 @@ component accessors="true"{
 		if( isSimpleValue(arguments.id) ){
 			arguments.id = listToArray(arguments.id);
 		}
-		
+
 		// Convert to hibernate native types
 		for (var i=1; i lte arrayLen(arguments.id); i=i+1){
 			arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
 		}
-		
+
 		return arguments.id;
 	}
 }
