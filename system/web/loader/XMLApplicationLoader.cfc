@@ -1196,6 +1196,9 @@ Loads a coldbox xml configuration file
 					return;
 				}
 				
+				// Set wirebox enabled
+				arguments.config.wirebox.enabled = true;
+			
 				// Binder Path exists?
 				if( structKeyExists(wireboxXML[1], "Binder") ){
 					arguments.config.wirebox.binderPath = wireboxXML[1].Binder;

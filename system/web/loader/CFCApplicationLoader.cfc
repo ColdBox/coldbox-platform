@@ -943,6 +943,9 @@ Loads a coldbox xml configuration file
 				return;
 			}
 			
+			// Set wirebox enabled
+			arguments.config.wirebox.enabled = true;
+			
 			// Get Binder Paths
 			if( structKeyExists(wireBoxDSL,"binder") ){
 				arguments.config.wirebox.binderPath = wireBoxDSL.binder;				
