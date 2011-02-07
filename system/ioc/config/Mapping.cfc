@@ -404,19 +404,26 @@ Description :
 
 	<!--- process --->
     <cffunction name="process" output="false" access="public" returntype="any" hint="Process a mapping for metadata discovery and more">
-    	<cfargument name="binder" 	required="true" hint="The binder requesting the processing"/>
+    	<cfargument name="binder" 	required="true"  hint="The binder requesting the processing"/>
+		<cfargument name="injector" required="true"  hint="The calling injector processing the mappping"/>
 		<cfargument name="metadata" required="false" hint="The metadata of an a-la-carte processing, use instead of retrieveing again"/>
     	<!--- Link the metadata --->
 		<cfset var md 			= instance.metadata>
 		<cfset var x 			= 1>
 		<cfset var thisAliases 	= "">
 		<cfset var mappings		= "">
+		<cfset var iData	 	= "">
+		<cfset var eventManager	= arguments.injector.getEventManager()>
 		
 		<!--- Lock for discovery based on path location, only done once per instance of mapping. --->
 		<cflock name="Mapping.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
 		<cfscript>	
 	    	if( NOT instance.discovered ){
-			
+				
+				// announce inspection
+				iData = {mapping=this,binder=arguments.binder};
+				eventManager.processState("beforeInstanceInspection",iData);
+				
 				// Processing only done for CFC's,rest just mark and return
 				if( instance.type neq arguments.binder.TYPES.CFC ){
 					instance.discovered = true;
@@ -488,6 +495,9 @@ Description :
 				
 				// finished processing mark as discovered
 				instance.discovered = true;
+				
+				// announce it
+				eventManager.processState("afterInstanceInspection",iData);
 			}
 		</cfscript>
 		</cflock>
@@ -523,14 +533,14 @@ Description :
 							md.properties[x].inject = "model";
 						}
 						// Add to property to mappings
-						addDIProperty(name=md.properties[x].name,dsl=md.properties[x].inject);
+						addDIProperty(name=md.properties[x].name,dsl=md.properties[x].inject,scope=md.properties[x].scope);
 						// Add to found dependencies
 						arguments.dependencies[md.properties[x].name] = "property";
 					}
 
 				}				
 			}//end DI properties
-
+			
 			// Method DI discovery
 			if( structKeyExists(md, "functions") ){
 				fncLen = arrayLen(md.functions);
@@ -590,14 +600,13 @@ Description :
 
 				}//end loop of functions
 			}//end if functions found
-
+			
 			// Start Registering inheritances, if the exists
 			if ( structKeyExists(md, "extends")
 				 AND
 				 stopClassRecursion(md.extends.name,arguments.binder) EQ FALSE){
-
 				// Recursive lookup
-				processDIMetadata(arguments.dependencies,arguments.binder);
+				processDIMetadata(arguments.binder, md.extends, arguments.dependencies);
 			}
 		</cfscript>
 	</cffunction>

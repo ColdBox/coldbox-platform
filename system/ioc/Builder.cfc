@@ -6,22 +6,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	    :	Luis Majano
 Description :
-	The WireBox injector is the pivotal class in WireBox that performs
-	dependency injection.  It can be used standalone or it can be used in conjunction
-	of a ColdBox application context.  It can also be configured with a mapping configuration
-	file called a binder, that can provide object/mappings and configuration data.
-	
-	Easy Startup:
-	injector = new coldbox.system.ioc.Injector();
-	
-	Binder Startup
-	injector = new coldbox.system.ioc.Injector(new MyBinder());
-	
-	Binder Path Startup
-	injector = new coldbox.system.ioc.Injector("config.MyBinder");
+	The WireBox builder for components, java, etc. I am in charge of building stuff and 
+	integration dsl builders.
 
+TODO: update dsl consistency, so it is faster.
 ----------------------------------------------------------------------->
-<cfcomponent hint="A WireBox Injector: Builds the graphs of objects that make up your application." output="false" serializable="false">
+<cfcomponent hint="The WireBox builder for components, java, etc. I am in charge of building stuff and integration dsl builders." output="false" serializable="false">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 		
@@ -92,14 +82,25 @@ Description :
 		<cfif thisMap.isAutoInit()>
 			<!--- Get Arguments --->
 			<cfset constructorArgs = buildArgumentCollection(thisMap, thisMap.getDIConstructorArguments() )>
+			
 			<!--- Do We have initArguments to override --->
-			<cfif structKeyExists(Arguments,"initArguments")>
+			<cfif NOT structIsEmpty(arguments.initArguments)>
 				<cfset structAppend(constructorArgs,arguments.initArguments,true)>
 			</cfif>
-			<!--- Invoke constructor --->
-			<cfinvoke component="#oModel#"
-					  method="#thisMap.getConstructor()#"
-					  argumentcollection="#constructorArgs#">
+			
+			<cftry>
+				<!--- Invoke constructor --->
+				<cfinvoke component="#oModel#"
+						  method="#thisMap.getConstructor()#"
+						  argumentcollection="#constructorArgs#">
+						  
+				<cfcatch type="any">
+					<!--- Controlled Exception --->
+					<cfthrow message="Error building: #thisMap.getName()# -> #cfcatch.message# #cfcatch.detail# with constructor arguments: #constructorArgs.toString()#" 
+							 detail="Mapping: #thisMap.getMemento().toString()#, Stacktrace: #cfcatch.stacktrace#" 
+							 type="Builder.BuildCFCDependencyException">
+				</cfcatch>
+			</cftry>
 		</cfif>
 		
 		<cfreturn oModel>
@@ -125,7 +126,7 @@ Description :
 			// Get Method Arguments
 			methodArgs = buildArgumentCollection(thisMap, thisMap.getDIMethodArguments() );
 			// Do we have overrides
-			if( structKeyExists(Arguments, "initArguments") ){
+			if( NOT structIsEmpty(arguments.initArguments) ){
 				structAppend(methodArgs,arguments.initArguments,true);
 			}
 		</cfscript>
@@ -186,13 +187,13 @@ Description :
 				
 				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
 				if( structKeyExists(DIArgs[x],"dsl") ){
-					args[ DIArgs[x].name ] = buildDSLDependency( DIArgs[x].dsl );
+					args[ DIArgs[x].name ] = buildDSLDependency( DIArgs[x] );
 					continue;
 				}
 				
 				// If we get here then it is by ref id, so let's verify it exists and optional
 				if( len(instance.injector.containsInstance( DIArgs[x].ref )) ){
-					args[ DIArgs[x].name ] = instance.injector.getInstance( DIArgs[x].ref );
+					args[ DIArgs[x].name ] = instance.injector.getInstance(name=DIArgs[x].ref);
 					continue;
 				}
 				
@@ -231,7 +232,7 @@ Description :
 			}
 			
 			// Do we ahve overrides
-			if( structKeyExists(Arguments,"initArguments") ){
+			if( NOT structIsEmpty(arguments.initArguments) ){
 				structAppend(argStruct, arguments.initArguments,true);
 			}
 			
@@ -270,7 +271,7 @@ Description :
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
 			var coldboxDSLRegex		= "^(ioc|ocm|webservice|javaloader|entityService|coldbox|cachebox)$";
-
+			
 			// coldbox context check
 			if( refindNoCase(coldboxDSLRegex,DSLNamespace) AND NOT instance.injector.isColdBoxLinked() ){
 				instance.utility.throwIt(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",type="Builder.IllegalDSLException");
@@ -284,7 +285,9 @@ Description :
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch(DSLNamespace){
 				// ColdBox Context DSL
-				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "entityService" :case "coldbox" : { refLocal.dependency = instance.coldboxDSL.process(arguments.definition); break; } 
+				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "entityService" :case "coldbox" : { 
+					refLocal.dependency = instance.coldboxDSL.process(arguments.definition); break; 
+				} 
 				// CacheBox Context DSL
 				case "cacheBox"			 : { refLocal.dependency = instance.cacheBoxDSL.process(arguments.definition); break;}
 				// WireBox Internal DSL for models and id

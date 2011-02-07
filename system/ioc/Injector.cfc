@@ -76,7 +76,11 @@ Description :
 			instance.injectorID = instance.javaSystem.identityHashCode(this);
 			// Prepare Lock Info
 			instance.lockName = "WireBox.Injector.#instance.injectorID#";
-			
+			// Link ColdBox Context if passed
+			if( structKeyExists(arguments, "coldbox") ){
+				instance.coldbox = arguments.coldbox;
+			}
+				
 			// Configure the injector for operation
 			configure( arguments.binder, arguments.properties);
 			
@@ -98,8 +102,6 @@ Description :
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
 			if( withColdBox ){ 
-				// Link ColdBox
-				instance.coldbox = arguments.coldbox;
 				// link LogBox
 				instance.logBox  = instance.coldbox.getLogBox();
 				// Configure Logging for this injector
@@ -159,7 +161,7 @@ Description :
     <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
     	<cfargument name="name" 			required="true" 	hint="The mapping name or CFC instance path to try to build up"/>
 		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
-		<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
 			var instancePath 	= "";
 			var mapping 		= "";
@@ -198,13 +200,8 @@ Description :
 			
 			// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
 			if( NOT mapping.isDiscovered() AND mapping.isAutowire() ){ 
-				// announce inspection
-				iData = {mapping=mapping,binder=instance.binder};
-				instance.eventManager.process("beforeInstanceInspection",iData);
 				// process inspection of instance
-				mapping.process( instance.binder );
-				// announce it 
-				instance.eventManager.process("afterInstanceInspection",iData);
+				mapping.process(binder=instance.binder,injector=this);
 			}
 			
 			// scope persistence check
@@ -216,13 +213,11 @@ Description :
 			}
 			
 			// Request object from scope now, we now have it from the scope created, initialized and wired
-			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping );
-			
-			// Process Provider Methods
+			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments );
 			
 			// Announce creation, initialization and DI magicfinicitation!
-			iData = {mapping=arguments.mapping,target=target};
-			instance.eventManager.process("afterInstanceCreation",iData);
+			iData = {mapping=mapping,target=target};
+			instance.eventManager.processState("afterInstanceCreation",iData);
 			
 			return target;
 		</cfscript>
@@ -239,7 +234,7 @@ Description :
 			
 			// before construction event
 			iData = {mapping=arguments.mapping};
-			instance.eventManager.process("beforeInstanceCreation",iData);
+			instance.eventManager.processState("beforeInstanceCreation",iData);
 			
     		// determine construction type
     		switch( thisMap.getType() ){
@@ -269,12 +264,12 @@ Description :
 			
 			// log data
 			if( instance.log.canDebug() ){
-				instance.log.debug("Instance object built: #arguments.mapping.getMemento().toString()#");
+				instance.log.debug("Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath()#");
 			}
 			
 			// announce afterInstanceInitialized
 			iData = {mapping=arguments.mapping,target=oModel};
-			instance.eventManager.process("afterInstanceInitialized",iData);
+			instance.eventManager.processState("afterInstanceInitialized",iData);
 			
 			return oModel;
 		</cfscript>
@@ -376,12 +371,15 @@ Description :
 					// get Mapping created
 					arguments.mapping = instance.binder.getMapping( arguments.targetID );
 					// process it with current metadata
-					arguments.mapping.process( instance.binder, md );
+					arguments.mapping.process(binder=instance.binder,injector=this,metadata=md);
 				}
 			}// end if mapping not found
 			
 			// Set local variable for easy reference use mapping to wire object up.
 			thisMap = arguments.mapping;
+			if( NOT structKeyExists(arguments,"targetID") ){
+				arguments.targetID = thisMap.getName();
+			}
 			
 			// Only autowire if no annotation check or if there is one, make sure the mapping is set for autowire
 			if ( (arguments.annotationCheck eq false) OR (arguments.annotationCheck AND thisMap.isAutowire()) ){
@@ -399,13 +397,13 @@ Description :
 					targetObject.setColdBox( getColdBox() );
 				}
 				// DIProperty injection
-				processInjection( thisMap.getDIProperties(), arguments.targetID );
+				processInjection( targetObject, thisMap.getDIProperties(), arguments.targetID );
 				// DISetter injection
-				processInjection( thisMap.getDISetters(), arguments.targetID );
+				processInjection( targetObject, thisMap.getDISetters(), arguments.targetID );
 				// Process Provider Methods
 				processProviderMethods( targetObject, thisMap );
 				// Process After DI Complete
-				processAfterCompleteDI(targetObject, thisMap.getOnDIComplete() );
+				processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
 			}
 	</cfscript>
     </cffunction>
@@ -465,8 +463,9 @@ Description :
 	
 	<!--- processInjection --->
     <cffunction name="processInjection" output="false" access="private" returntype="void" hint="Process property and setter injection">
-    	<cfargument name="DIData" 	required="true" hint="The DI data to use"/>
-		<cfargument name="targetID" required="true" hint="The target ID to process injections"/>
+    	<cfargument name="targetObject" required="true" hint="The target object to do some goodness on">
+		<cfargument name="DIData" 		required="true" hint="The DI data to use"/>
+		<cfargument name="targetID" 	required="true" hint="The target ID to process injections"/>
     	<cfscript>
     		var refLocal 	= "";
 			var DILen 	 	= arrayLen(arguments.DIData);
@@ -497,8 +496,8 @@ Description :
 					// Inject dependency
 					injectTarget(target=targetObject,
 							     propertyName=arguments.DIData[x].name,
-							     propertyValue=refLocal.dependency,
-							     scope="");
+							     propertyObject=refLocal.dependency,
+							     scope=refLocal.scope);
 					
 					// some debugging goodness
 					if( instance.log.canDebug() ){

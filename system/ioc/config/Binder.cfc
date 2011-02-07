@@ -710,14 +710,16 @@ Description :
 	<!--- processMappings --->
     <cffunction name="processMappings" output="false" access="public" returntype="any" hint="Process all registered mappings, called by injector when ready to start serving requests">
     	<cfscript>
-			var key 		= "";
-			var thisMapping = "";
+			var key 			= "";
+			var thisMapping 	= "";
 			
+			// iterate over declared mappings,process, announce, eager and the whole nine yards
 			for(key in instance.mappings){
 				thisMapping = instance.mappings[key];
+				// has it been discovered yet?
 				if( NOT thisMapping.isDiscovered() ){
 					// process the metadata
-					thisMapping.process( this );
+					thisMapping.process(binder=this,injector=injector);
 					// is it eager?
 					if( thisMapping.isEagerInit() ){
 						injector.getInstance( thisMapping.getName() );

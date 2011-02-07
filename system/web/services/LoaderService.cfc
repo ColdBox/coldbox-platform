@@ -70,11 +70,11 @@ Modification History:
 		controller.getPluginService().clearDictionary();
 		controller.getHandlerService().clearDictionaries();
 		
-		// Create WireBox Container
-		createWireBox();
-		
 		// Create the Cache Container
 		createCacheContainer();
+		
+		// Create WireBox Container
+		createWireBox();
 				
 		// Execute onConfigurationLoad for coldbox internal services()
 		for(key in services){

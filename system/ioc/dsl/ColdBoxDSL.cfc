@@ -17,7 +17,8 @@ Description :
 		<cfscript>
 			instance = { injector = arguments.injector };
 			instance.coldbox 	= instance.injector.getColdBox();
-			instance.log		= instance.injector.getLogBox().getLogger( this );
+			instance.cachebox	= instance.coldbox.getCacheBox();
+			instance.log		= instance.coldbox.getLogBox().getLogger( this );
 			
 			return this;
 		</cfscript>   
@@ -27,7 +28,9 @@ Description :
     <cffunction name="process" output="false" access="public" returntype="any" hint="Process an incoming DSL definition and produce an object with it.">
 		<cfargument name="definition" required="true" hint="The injection dsl definition structure to process. Keys: name, dsl"/>
 		<cfscript>
-			switch( arguments.definition.dsl ){
+			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
+			
+			switch( DSLNamespace ){
 				case "ioc" 				: { return getIOCDSL(arguments.definition);} 
 				case "ocm" 				: { return getOCMDSL(arguments.definition);}
 				case "webservice" 		: { return getWebserviceDSL(arguments.definition);}
@@ -146,6 +149,11 @@ Description :
 					}//end of services
 					break;
 				}
+			}
+			
+			// debug info
+			if( instance.log.canDebug() ){
+				instance.log.debug("getColdboxDSL() cannot find dependency using definition: #arguments.definition.toString()#");
 			}
 		</cfscript>
 	</cffunction>
