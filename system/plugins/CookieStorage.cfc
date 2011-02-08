@@ -143,7 +143,19 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 					<cfreturn wddxCompat>
 				</cfif>
 			
-				<cfset rtnVar = instance.json.decode(rtnVar)>
+				<cftry>
+					<!--- Try to decode it --->
+				    <cfset rtnVar = instance.json.decode(rtnVar)>
+			    	<cfcatch>
+			    		<!--- If JSON error then it is a simple value --->
+				        <cfif cfcatch.message eq "Invalid JSON">
+				        	<cfset setVar(ucase(arguments.name), rtnVar)>
+				       		<cfreturn rtnVar>
+				        <cfelse>
+				        	<cfrethrow>
+				        </cfif>
+			    	</cfcatch> 
+				</cftry>
 			</cfif>
 		<cfelse>
 			<!--- Return the default value --->
