@@ -18,11 +18,11 @@ Description :
 		<cfargument name="properties" type="any" required="true" hint="The context properties struct">
 		<cfscript>
 			instance = structnew();
-			
+
 			// Create the Collections
 			instance.context		= structnew();
 			instance.privateContext = structnew();
-			
+
 			// flag if using SES
 			instance.isSES 				= false;
 			// routed SES structures
@@ -31,40 +31,40 @@ Description :
 			instance.isNoExecution  	= false;
 			// the name of the event via URL/FORM/REMOTE
 			instance.eventName			= arguments.properties.eventName;
-			
+
 			// Registered Layouts
 			instance.registeredLayouts	= structnew();
 			if( structKeyExists(arguments.properties,"registeredLayouts") ){
 				instance.registeredLayouts = arguments.properties.registeredLayouts;
 			}
-			
+
 			// Registered Folder Layouts
 			instance.folderLayouts	= structnew();
 			if( structKeyExists(arguments.properties,"folderLayouts") ){
 				instance.folderLayouts = arguments.properties.folderLayouts;
 			}
-			
+
 			// Registered View Layouts
 			instance.viewLayouts	= structnew();
 			if( structKeyExists(arguments.properties,"viewLayouts") ){
 				instance.viewLayouts = arguments.properties.viewLayouts;
 			}
-			
+
 			// Modules reference
 			instance.modules = arguments.properties.modules;
-			
+
 			// Default layout + View
 			instance.defaultLayout = arguments.properties.defaultLayout;
 			instance.defaultView = arguments.properties.defaultView;
-			
+
 			// SES Base URL
 			instance.SESBaseURL = "";
 			if( structKeyExists(arguments.properties,"SESBaseURL") ){
 				instance.SESBaseURL = arguments.properties.SESBaseURL;
 			}
-						
+
 			return this;
-		</cfscript>		
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -74,7 +74,7 @@ Description :
 		<cfargument name="private" 		type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			// Private Collection
-			if( arguments.private ){ 
+			if( arguments.private ){
 				if( arguments.deepCopyFlag ){ return duplicate(instance.privateContext); }
 				return instance.privateContext;
 			}
@@ -116,36 +116,36 @@ Description :
 		<cfargument name="private" 		type="any" 		required="false" default="false" hint="Use public or private request collection. Boolean"/>
 		<cfscript>
 			var collection = instance.context;
-			
+
 			// private context switch
 			if( arguments.private ){ collection = instance.privateContext; }
-			
+
 			// Check if key exists
 			if( structKeyExists(collection, arguments.name) ){
 				return collection[arguments.name];
 			}
-			
+
 			// Default value
 			if( structKeyExists(arguments, "defaultValue") ){
 				return arguments.defaultValue;
 			}
-			
+
 			$throw("The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
 				   "Keys Found: #structKeyList(collection)#",
 				   "RequestContext.ValueNotFound");
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="getTrimValue" returntype="Any" access="Public" hint="I Get a value from the request collection and if simple value, I will trim it." output="false">
 		<cfargument name="name"         type="any" 		required="true"  hint="Name of the variable to get from the request collection">
 		<cfargument name="defaultValue"	type="any" 		required="false" hint="Default value to return if not found.">
 		<cfargument name="private" 		type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			var value = getValue(argumentCollection=arguments);
-			
+
 			// Verify if Simple
 			if( isSimpleValue(value) ){ return trim(value); }
-			
+
 			return value;
 		</cfscript>
 	</cffunction>
@@ -157,7 +157,7 @@ Description :
 		<cfscript>
 			var collection = instance.context;
 			if( arguments.private ) { collection = instance.privateContext; }
-		
+
 			collection[arguments.name] = arguments.value;
 		</cfscript>
 	</cffunction>
@@ -168,7 +168,7 @@ Description :
 		<cfscript>
 			var collection = instance.context;
 			if( arguments.private ){ collection = instance.privateContext; }
-			
+
 			if( valueExists(arguments.name,arguments.private) ){
 				structDelete(collection,arguments.name);
 			}
@@ -199,7 +199,7 @@ Description :
 	<cffunction name="getCurrentView" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="string" output="false">
 		<cfreturn getValue("currentView","",true)>
 	</cffunction>
-	
+
 	<cffunction name="setView" access="public" returntype="void" hint="I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout"  output="false">
 		<!--- ************************************************************* --->
 	    <cfargument name="name"     				required="true"  type="string"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
@@ -214,15 +214,15 @@ Description :
 		    var key 		= "";
 		    var cacheEntry 	= structnew();
 			var cModule		= getCurrentModule();
-		    
+
 			// Local Override
 			if( structKeyExists(arguments,"layout") ){
 				setLayout(arguments.layout);
 			}
-			
+
 			// If we need a layout or we haven't overriden the current layout enter if...
 		    else if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false,true) ){
-		    		
+
 		    	//Verify that the view has a layout in the viewLayouts structure.
 			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.name)) ){
 					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.name)],true);
@@ -236,31 +236,31 @@ Description :
 						}
 					}//end for loop
 				}//end else
-				
+
 				//If not layout, then set default from main application
 				if( not valueExists("currentLayout",true) ){
 					setValue("currentLayout", instance.defaultLayout,true);
-				}	
-					
+				}
+
 				// Check for module integration
-				if( len(cModule) 
-				    AND structKeyExists(instance.modules,cModule) 
+				if( len(cModule)
+				    AND structKeyExists(instance.modules,cModule)
 					AND len(instance.modules[cModule].layoutSettings.defaultLayout) ){
 					setValue("currentLayout", instance.modules[getCurrentModule()].layoutSettings.defaultLayout,true);
 				}
-											
+
 			}//end if overridding layout
-			
+
 			// No Layout Rendering?
 			if( arguments.nolayout ){
 				removeValue('currentLayout',true);
 			}
-			
+
 			//Do we need to cache the view
 			if( arguments.cache ){
 				//prepare the cache keys
 				cacheEntry.view = arguments.name;
-				
+
 				//arg cleanup
 				if ( not isNumeric(arguments.cacheTimeout) )
 					cacheEntry.Timeout = "";
@@ -272,11 +272,11 @@ Description :
 					cacheEntry.LastAccessTimeout = arguments.cacheLastAccessTimeout;
 				//cache suffix
 				cacheEntry.cacheSuffix = arguments.cacheSuffix;
-				
+
 				//Save the view cache entry
 				setViewCacheableEntry(cacheEntry);
 			}
-			
+
 			//Set the current view to render.
 			instance.privateContext["currentView"] = arguments.name;
 		</cfscript>
@@ -285,11 +285,11 @@ Description :
 	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout for rendering" returntype="any" output="false">
 		<cfreturn getValue("currentLayout","",true)>
 	</cffunction>
-	
+
 	<cffunction name="getCurrentRoute" output="false" access="public" returntype="any" hint="Get the current request's SES route that matched">
     	<cfreturn getValue("currentRoute","",true)>
     </cffunction>
-	
+
 	<cffunction name="getCurrentRoutedURL" output="false" access="public" returntype="any" hint="Get the current routed URL that matched the SES route">
     	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
@@ -298,15 +298,15 @@ Description :
 		<cfargument name="name"  hint="The name or alias of the layout file to set." type="any" >
 		<cfscript>
 			var layouts = getRegisteredLayouts();
-			
+
 			// Set direct layout first.
 			instance.privateContext["currentLayout"] = trim(arguments.name) & ".cfm";
-			
+
 			// Do an Alias Check and override if found.
 			if( structKeyExists(layouts,arguments.name) ){
 				instance.privateContext["currentLayout"] = layouts[arguments.name];
 			}
-			
+
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
 		</cfscript>
@@ -332,22 +332,22 @@ Description :
 	<cffunction name="getCurrentEvent" access="public" hint="Gets the current incoming event" returntype="any" output="false">
 		<cfreturn getValue(getEventName(),"")>
 	</cffunction>
-	
+
 	<cffunction name="getCurrentHandler" access="public" hint="Gets the current handler requested in the current event: String" returntype="any" output="false">
 		<cfscript>
 			var testHandler = reReplace(getCurrentEvent(),"\.[^.]*$","");
 			if( listLen(testHandler,".") eq 1){
 				return testHandler;
 			}
-			
+
 			return listLast(testHandler,".");
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="getCurrentAction" access="public" hint="Gets the current action requested in the current event: String" returntype="any" output="false">
 		<cfreturn listLast(getCurrentEvent(),".")>
 	</cffunction>
-	
+
 	<cffunction name="overrideEvent" access="Public" hint="I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method."  output="false" returntype="void">
 		<cfargument name="event" hint="The name of the event to override." type="string">
 		 <cfscript>
@@ -363,15 +363,15 @@ Description :
 	<cffunction name="getDebugPanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request." output="false">
 		<cfreturn getValue(name="coldbox_debugpanel",defaultValue=true,private=true)>
 	</cffunction>
-	
+
 	<cffunction name="isProxyRequest" access="public" returntype="boolean" hint="Is this a coldbox proxy request" output="false">
 		<cfreturn getValue(name="coldbox_proxyrequest",defaultValue=false,private=true)>
 	</cffunction>
-	
+
 	<cffunction name="setProxyRequest" access="public" returntype="void" hint="Set that this is a proxy request" output="false">
 		<cfset setValue(name="coldbox_proxyrequest",value=true,private=true)>
 	</cffunction>
-	
+
 	<cffunction name="noRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute" output="false">
 		<cfargument name="remove" required="false" type="boolean" default="false" hint="If true, it removes the flag, else its set.">
 		<cfscript>
@@ -379,21 +379,21 @@ Description :
 				setValue(name="coldbox_norender",value=true,private=true);
 			else
 				removeValue(name="coldbox_norender",private=true);
-		</cfscript>		
+		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="isNoRender" access="public" returntype="any" hint="Is this a no render request" output="false">
 		<cfreturn getValue(name="coldbox_norender",defaultValue=false,private=true)>
 	</cffunction>
-	
+
 	<cffunction name="getEventName" access="public" returntype="any" output="false" hint="The event name used by the application: String">
 		<cfreturn instance.eventName>
 	</cffunction>
-	
+
 	<cffunction name="getSelf" access="public" output="false" returntype="any" hint="Returns index.cfm?{eventName}= : String">
 	   <cfreturn "index.cfm?" & getEventName() & "=">
 	</cffunction>
-	
+
 	<cffunction name="buildLink" access="public" output="false" returntype="any" hint="Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.">
 		<!--- ************************************************************* --->
 		<cfargument name="linkto" 		required="true" 	type="string"  hint="The event or route you want to create the link to">
@@ -405,12 +405,12 @@ Description :
 		<cfscript>
 		var sesBaseURL = getSESbaseURL();
 		var frontController = "index.cfm";
-		
+
 		/* baseURL */
 		if( len(trim(arguments.baseURL)) neq 0 ){
 			frontController = arguments.baseURL;
 		}
-		
+
 		if( isSES() ){
 			/* SSL */
 			if( arguments.ssl ){
@@ -422,7 +422,10 @@ Description :
 			}
 			/* Query String Append */
 			if ( len(trim(arguments.queryString)) ){
-				arguments.linkto = arguments.linkto & "/" & replace(arguments.queryString,"&","/","all");
+				if (right(arguments.queryString,1) neq  "/") {
+					arguments.linkto = arguments.linkto & "/";
+				}
+				arguments.linkto = arguments.linkto & replace(arguments.queryString,"&","/","all");
 				arguments.linkto = replace(arguments.linkto,"=","/","all");
 			}
 			/* Prepare link */
@@ -441,68 +444,68 @@ Description :
 			else{
 				return "#frontController#?#getEventName()#=#arguments.linkto#&#arguments.queryString#";
 			}
-		}		
+		}
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="isEventCacheable" access="public" returntype="any" hint="Check wether the incoming event has been flagged for caching. Boolean" output="false" >
 		<cfscript>
 			return valueExists(name="cbox_eventCacheableEntry",private=true);
 		</cfscript>
-	</cffunction>	
-	
+	</cffunction>
+
 	<cffunction name="setEventCacheableEntry" access="public" returntype="void" hint="Set the event cacheable entry" output="false" >
 		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
 		<cfset setValue(name="cbox_eventCacheableEntry",value=arguments.mdCacheEntry,private=true)>
 	</cffunction>
-	
+
 	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
 		<cfreturn getValue(name="cbox_eventCacheableEntry",defaultValue=structnew(),private=true)>
 	</cffunction>
-	
+
 	<cffunction name="removeEventCacheableEntry" access="public" returntype="void" hint="Remove the cacheable entry" output="false" >
 		<cfset removeValue(name='cbox_eventCacheableEntry',private=true)>
 	</cffunction>
-	
+
 	<cffunction name="isViewCacheable" access="public" returntype="boolean" hint="Check wether the incoming view has been flagged for caching" output="false" >
 		<cfscript>
 			return valueExists(name="cbox_viewCacheableEntry",private=true);
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="setViewCacheableEntry" access="public" returntype="void" hint="Set the view cacheable entry" output="false" >
 		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
 		<cfscript>
 			setValue(name="cbox_viewCacheableEntry",value=arguments.mdCacheEntry,private=true);
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="getViewCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
 		<cfreturn getValue(name="cbox_viewCacheableEntry",defaultValue=structnew(),private=true)>
 	</cffunction>
-	
+
 	<cffunction name="isSES" access="public" output="false" returntype="boolean" hint="Determine if you are in SES mode.">
 		<cfreturn instance.isSES/>
 	</cffunction>
-	
+
 	<cffunction name="setisSES" access="public" output="false" returntype="void" hint="Set the isSES flag, usualy done by the SES interceptor">
 		<cfargument name="isSES" type="boolean" required="true"/>
 		<cfset instance.isSES = arguments.isSES/>
 	</cffunction>
-	
+
 	<cffunction name="getSESBaseURL" access="public" output="false" returntype="string" hint="Get the ses base URL for this request">
 		<cfreturn instance.sesBaseURL/>
 	</cffunction>
-	
+
 	<cffunction name="setSESBaseURL" access="public" output="false" returntype="void" hint="Set the ses base URL for this request">
 		<cfargument name="sesBaseURL" type="string" required="true"/>
 		<cfset instance.sesBaseURL = arguments.sesBaseURL/>
 	</cffunction>
-	
+
 	<cffunction name="getRoutedStruct" access="public" output="false" returntype="struct" hint="Get the routed structure of key-value pairs. What the ses interceptor could match.">
 		<cfreturn instance.routedStruct/>
-	</cffunction>	
-	
+	</cffunction>
+
 	<cffunction name="setRoutedStruct" access="public" output="false" returntype="void" hint="Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.">
 		<cfargument name="routedStruct" type="struct" required="true"/>
 		<cfset instance.routedStruct = arguments.routedStruct/>
@@ -511,33 +514,33 @@ Description :
 	<cffunction name="getDefaultLayout" access="public" returntype="any" output="false" hint="Get's the default layout of the application: String">
 		<cfreturn instance.defaultLayout>
 	</cffunction>
-	
+
 	<cffunction name="setDefaultLayout" access="public" returntype="void" output="false" hint="Override the default layout for a request">
 		<cfargument name="DefaultLayout" type="string" required="true">
 		<cfset instance.defaultLayout = arguments.DefaultLayout>
 	</cffunction>
-	
+
 	<cffunction name="getDefaultView" access="public" returntype="any" output="false" hint="Get's the default view of the application: String">
 		<cfreturn instance.defaultView>
 	</cffunction>
-	
+
 	<cffunction name="setDefaultView" access="public" returntype="void" output="false" hint="Override the default view for a request">
 		<cfargument name="DefaultView" type="string" required="true">
 		<cfset instance.defaultView = arguments.DefaultView>
 	</cffunction>
-	
+
 	<cffunction name="getViewLayouts" access="public" returntype="struct" output="false" hint="Get the registered view layout associations map">
 		<cfreturn instance.ViewLayouts>
 	</cffunction>
-	
+
 	<cffunction name="getRegisteredLayouts" output="false" access="public" returntype="struct" hint="Get all the registered layouts in the configuration file">
     	<cfreturn instance.registeredLayouts>
     </cffunction>
-	
+
 	<cffunction name="getFolderLayouts" access="public" returntype="struct" output="false" hint="Get the registered folder layout associations map">
 		<cfreturn instance.FolderLayouts>
 	</cffunction>
-	
+
 	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the state of this request context">
 		<cfreturn variables.instance>
 	</cffunction>
@@ -545,7 +548,7 @@ Description :
 		<cfargument name="memento" type="any" required="true">
 		<cfset variables.instance = arguments.memento>
 	</cffunction>
-	
+
 	<cffunction name="renderData" access="public" returntype="void" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
@@ -566,38 +569,38 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var rd = structnew();
-			
+
 			// Validate rendering type
 			if( not reFindnocase("^(JSON|JSONT|WDDX|XML|PLAIN|HTML|TEXT)$",arguments.type) ){
 				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
 			}
-			
+
 			// Default Values for incoming variables
 			rd.type = arguments.type;
 			rd.data = arguments.data;
 			rd.encoding = arguments.encoding;
 			rd.contentType = "text/html";
-			
+
 			// HTTP status
 			rd.statusCode = arguments.statusCode;
 			rd.statusText = arguments.statusText;
-			
+
 			// XML Properties
 			rd.xmlColumnList = arguments.xmlColumnList;
 			rd.xmluseCDATA = arguments.xmlUseCDATA;
 			rd.xmlListDelimiter = arguments.xmlListDelimiter;
 			rd.xmlRootName = arguments.xmlRootName;
-			
+
 			// JSON Properties
-			rd.jsonCase = arguments.jsonCase;	
-			rd.jsonQueryFormat = arguments.jsonQueryFormat;		
-			
+			rd.jsonCase = arguments.jsonCase;
+			rd.jsonQueryFormat = arguments.jsonQueryFormat;
+
 			// Automatic Content Types by marshalling type
 			switch( rd.type ){
-				case "JSON" : { 
-					rd.contenttype = 'application/json'; 
+				case "JSON" : {
+					rd.contenttype = 'application/json';
 					if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
-					break; 
+					break;
 				}
 				case "JSONT" :{
 					rd.contentType = "text/plain";
@@ -607,17 +610,17 @@ Description :
 				case "XML" : case "WDDX" : { rd.contentType = "text/xml"; break; }
 				case "TEXT" : { rd.contentType = "text/plain"; break; }
 			}
-			
+
 			// If contenttype passed, then override it?
 			if( len(trim(arguments.contentType)) ){
 				rd.contentType = arguments.contentType;
 			}
-			
+
 			// Save Rendering data privately.
-			setValue(name='cbox_renderdata',value=rd,private=true);			
+			setValue(name='cbox_renderdata',value=rd,private=true);
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="getRenderData" access="public" output="false" returntype="any" hint="Get the renderData structure.">
 		<cfreturn getValue(name="cbox_renderdata",defaultValue=structnew(),private=true)/>
 	</cffunction>
@@ -625,17 +628,17 @@ Description :
 	<cffunction name="getHTTPMethod" access="public" returntype="any" hint="Get the HTTP Request Method Type" output="false" >
 		<cfreturn cgi.REQUEST_METHOD>
 	</cffunction>
-	
+
 	<cffunction name="getHTTPContent" output="false" access="public" returntype="any" hint="Get the raw HTTP content">
     	<cfreturn getHTTPRequestData().content>
     </cffunction>
-	
+
 	<cffunction name="getHTTPHeader" output="false" access="public" returntype="any" hint="Get a HTTP header">
 		<cfargument name="header"  type="string" required="true"  hint="The header key"/>
 		<cfargument name="default" type="any"    required="false" hint="A default value if the header does not exist"/>
 		<cfscript>
 			var headers = getHttpRequestData().headers;
-			
+
 			if( structKeyExists(headers, arguments.header) ){
 				return headers[arguments.header];
 			}
@@ -645,14 +648,14 @@ Description :
 			$throw(message="Header #arguments.header# not found in HTTP headers",detail="Headers found: #structKeyList(headers)#",type="RequestContext.InvalidHTTPHeader");
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="setHTTPHeader" output="false" access="public" returntype="void" hint="Set an HTTP Header">
     	<cfargument name="statusCode" type="string" required="false" hint="A status code"/>
 		<cfargument name="statusText" type="string" required="false" default="" hint="A status text"/>
 		<cfargument name="name" 	  type="string" required="false" hint="The header name"/>
     	<cfargument name="value" 	  type="string" required="false" default="" hint="The header value"/>
-		<cfargument name="charset" 	  type="string" required="false" default="UTF-8" hint="The charset to use"/>	
-    	
+		<cfargument name="charset" 	  type="string" required="false" default="UTF-8" hint="The charset to use"/>
+
 		<!--- statusCode exists? --->
 		<cfif structKeyExists(arguments,"statusCode")>
 			<cfheader statuscode="#arguments.statusCode#" statustext="#arguments.statusText#">
@@ -661,24 +664,24 @@ Description :
 			<cfheader name="#arguments.name#" value="#arguments.value#" charset="#arguments.charset#">
 		<cfelse>
 			<cfthrow message="Invalid header arguments" detail="Pass in either a statusCode or name argument" type="RequestContext.InvalidHTTPHeaderParameters">
-		</cfif>	
+		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="isSSL" access="public" returntype="boolean" hint="Returns boolean result whether current request is in ssl or not" output="false">
 	    <cfscript>
 			if (isBoolean(cgi.server_port_secure) AND cgi.server_port_secure) { return true; }
 			return false;
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="isNoExecution" access="public" returntype="any" hint="Determine if we need to execute an incoming event or not." output="false" >
 		<cfreturn instance.isNoExecution>
 	</cffunction>
-	
+
 	<cffunction name="noExecution" output="false" access="public" returntype="void" hint="Set that the request will not execute an incoming event. Most likely simulating a servlet call.">
    		<cfset instance.isNoExecution = true>
     </cffunction>
-	
+
 	<cffunction name="isAjax" output="false" access="public" returntype="boolean" hint="Determines if in an Ajax call or not by looking at the request headers">
     	<cfscript>
     		return ( getHTTPHeader("X-Requested-With","") eq "XMLHttpRequest" );
@@ -693,12 +696,12 @@ Description :
 		<cfargument name="type"  	type="string" 	required="no" default="Framework">
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
-	
+
 	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void" output="false">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
 		<cfdump var="#var#">
 		<cfif arguments.isAbort><cfabort></cfif>
 	</cffunction>
-	
+
 </cfcomponent>
