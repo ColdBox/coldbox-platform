@@ -633,6 +633,12 @@ Description :
 			var wireBoxDSL  = variables.wirebox;
 			var key 		= "";
 			
+			// Coldbox Context exists
+			if( structKeyExists(variables,"coldbox") ){
+				// create scan location for model convention as the first one.
+				scanLocations( coldbox.getSetting("ModelsInvocationPath") );
+			}
+			
 			// Incoming raw DSL or use locally?
 			if ( structKeyExists(arguments,"rawDSL") ){
 				wireBoxDSL = arguments.rawDSL;
