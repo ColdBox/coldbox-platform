@@ -373,6 +373,10 @@ Description :
 					// process it with current metadata
 					arguments.mapping.process(binder=instance.binder,injector=this,metadata=md);
 				}
+				else{
+					// get the mapping as it exists already
+					arguments.mapping = instance.binder.getMapping( arguments.targetID );
+				}
 			}// end if mapping not found
 			
 			// Set local variable for easy reference use mapping to wire object up.
@@ -404,6 +408,11 @@ Description :
 				processProviderMethods( targetObject, thisMap );
 				// Process After DI Complete
 				processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
+				
+				// Debug Data
+				if( instance.log.canDebug() ){
+					instance.log.debug("Finalized Autowire for: #arguments.targetID#", thisMap.getMemento());
+				}
 			}
 	</cfscript>
     </cffunction>
@@ -505,7 +514,7 @@ Description :
 					}
 				}
 				else if( instance.log.canDebug() ){
-					instance.log.debug("Dependency: #arguments.DIData[x].toString()# Not Found when wiring #arguments.targetID#");
+					instance.log.debug("Dependency: #arguments.DIData[x].toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList(instance.binder.getMappings())#");
 				}
 			}
 		</cfscript>

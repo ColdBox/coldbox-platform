@@ -94,7 +94,7 @@ Description :
 			// Package Scan Locations
 			instance.scanLocations = createObject("java","java.util.LinkedHashMap").init(5);
 			// Object Mappings
-			instance.mappings = createObject("java","java.util.concurrent.ConcurrentHashMap").init();
+			instance.mappings = {};
 			// Parent Injector Mapping
 			instance.parentInjector = "";
 			// Binding Properties

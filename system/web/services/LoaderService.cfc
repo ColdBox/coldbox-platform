@@ -144,7 +144,7 @@ Modification History:
     </cffunction>
 	
 	<!--- createWireBox --->
-    <cffunction name="createWireBox" output="false" access="public" returntype="void" hint="Create WireBox if using it">
+    <cffunction name="createWireBox" output="false" access="public" returntype="void" hint="Create WireBox DI Framework with config settings.">
     	<cfscript>
     		var wireboxData = controller.getSetting("WireBox");
 			var oInjector	= "";
