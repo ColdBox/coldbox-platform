@@ -8,7 +8,7 @@ Author     :	Luis Majano
 Date        :	3/13/2009
 Description :
 	Simple File Appender
-	
+
 Properties:
 
 - filepath : The location of where to store the log file.
@@ -17,12 +17,12 @@ Properties:
 		     Do not append an extension to it. We will append a .log to it.
 - fileEncoding : The file encoding to use, by default we use ISO-8859-1;
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender"
 			 output="false"
 			 hint="This is a simple implementation of an appender that is file based.">
-			 
+
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<!--- Constructor --->
 	<cffunction name="init" access="public" returntype="FileAppender" hint="Constructor" output="false">
 		<!--- ************************************************************* --->
@@ -34,7 +34,7 @@ Properties:
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.init(argumentCollection=arguments);
-			
+
 			// Setup Properties
 			if( NOT propertyExists("filepath") ){
 				$throw(message="Filepath property not defined",type="FileAppender.PropertyNotFound");
@@ -50,27 +50,27 @@ Properties:
 			}
 			// Cleanup File Names
 			setProperty("filename", REreplacenocase(getProperty("filename"), "[^0-9a-z]","","ALL") );
-			
+
 			// Setup the log file full path
 			instance.logFullpath = getProperty("filePath");
 			// Clean ending slash
 			instance.logFullPath = reReplacenocase(instance.logFullPath,"[/\\]$","");
 			// Concatenate Full Log path
 			instance.logFullPath = instance.logFullpath & "/" & getProperty("filename") & ".log";
-			
+
 			// Do we expand the path?
 			if( getProperty("autoExpand") ){
 				instance.logFullPath = expandPath(instance.logFullpath);
 			}
-			
+
 			//lock information
 			instance.lockName = getname() & "logOperation";
 			instance.lockTimeout = 25;
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get Lock Name --->
 	<cffunction name="getlockname" access="public" returntype="any" output="false" hint="The file Lock name">
 		<cfreturn instance.lockname>
@@ -78,7 +78,7 @@ Properties:
 	<cffunction name="getlockTimeout" access="public" returntype="any" output="false" hint="The lock timeout">
 		<cfreturn instance.lockTimeout>
 	</cffunction>
-	
+
 	<!--- onRegistration --->
 	<cffunction name="onRegistration" output="false" access="public" returntype="void" hint="Runs on registration">
 		<cfscript>
@@ -88,7 +88,7 @@ Properties:
 			initLogLocation();
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Log Message --->
 	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender.">
 		<!--- ************************************************************* --->
@@ -99,12 +99,12 @@ Properties:
 			var timestamp = loge.getTimestamp();
 			var message = loge.getMessage();
 			var entry = "";
-			
+
 			// Does file still exist?
 			if( NOT fileExists( instance.logFullpath ) ){ 
 				initLogLocation(); 
 			}
-			
+
 			if( hasCustomLayout() ){
 				entry = getCustomLayout().format(loge);
 			}
@@ -119,17 +119,17 @@ Properties:
 				// Entry string
 				entry = '"#severityToString(logEvent.getSeverity())#","#getname()#","#dateformat(timestamp,"MM/DD/YYYY")#","#timeformat(timestamp,"HH:MM:SS")#","#loge.getCategory()#","#message#"';
 			}
-			
+
 			// Setup the real entry
-			append(entry);		
+			append(entry);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- get/set log full path --->
 	<cffunction name="getlogFullpath" access="public" returntype="any" output="false" hint="Get the full log path used.">
 		<cfreturn instance.logFullpath>
 	</cffunction>
-	
+
 	<!--- Remove the log File --->
 	<cffunction name="removeLogFile" access="public" hint="Removes the log file" output="false" returntype="void">
 		<cfif fileExists( instance.logFullpath )>
@@ -142,7 +142,7 @@ Properties:
 	<!--- Init Log Location --->
 	<cffunction name="initLogLocation" access="public" hint="Initialize the file log location if it does not exist." output="false" returntype="void">
 		<cfset var fileObj = "">
-		
+
 		<!--- Create Log File if It does not exist and initialize it. --->
 		<cfif not fileExists( instance.logFullpath )>
 			<!--- Log File Setup --->
@@ -156,9 +156,9 @@ Properties:
 					}
 					catch(Any e){
 						$log("ERROR","Cannot create appender's: #getName()# log file. File #instance.logFullpath#. #e.message# #e.detail#");
-					}					
-				}	
-			</cfscript>		
+					}
+				}
+			</cfscript>
 			</cflock>
 			<!--- Log First Entry --->
 			<cfset append('"Severity","Appender","Date","Time","Category","Message"')>
@@ -172,33 +172,33 @@ Properties:
 			</cfscript>
 		</cfif>
 	</cffunction>
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	
+
 
 	<!--- append --->
 	<cffunction name="append" output="false" access="private" returntype="void" hint="Append a message to a file">
 		<cfargument name="message" required="true" hint="The message to append"/>
-		
+
 		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
-			<cffile action="append" 
-					addnewline="true" 
-					file="#instance.logFullpath#" 
+			<cffile action="append"
+					addnewline="true"
+					file="#instance.logFullpath#"
 					output="#arguments.message#"
-					charset="#getProperty("fileEncoding")#">		
-		</cflock>				
+					charset="#getProperty("fileEncoding")#">
+		</cflock>
 	</cffunction>
 
 	<!--- Ensure directory --->
 	<cffunction name="ensureDefaultLogDirectory" access="private" hint="Ensures the log directory." output="false" returntype="void">
 		<cfset var dirPath = getDirectoryFrompath(instance.logFullpath)>
-		
+
 		<!--- Check if the directory already exists --->
 		<cfif not directoryExists(dirPath)>
 			<cfdirectory action="create" directory="#dirPath#">
 		</cfif>
 	</cffunction>
-	
+
 
 </cfcomponent>
