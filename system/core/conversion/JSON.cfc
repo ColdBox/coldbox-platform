@@ -200,7 +200,6 @@ Modifications:
 								
 								<!--- Determine if qData is an Array or Structure --->
 								<cfif isArray(qData)>
-									
 									<!--- It is an array, so rebuild to a query --->
 									<cfset ar = StructKeyArray(qData) />
 									<cfloop from="1" to="#ArrayLen(ar)#" index="j">
@@ -210,8 +209,15 @@ Modifications:
 										</cfloop>
 									</cfloop>
 								<cfelse>
-									<!--- It is a structure, so just rebuild it --->
-									<cfset StructInsert( st, structKey, decode(structVal) ) />
+									<cfscript>
+									// iterate over structure and create query out of it
+									for(j in qData){
+										for(qRows=1; qRows lte arrayLen(qData[j]); qRows=qRows+1){
+											qCol = j;
+											querySetCell(st, qCol, qData[j][qRows], qRows);
+										}
+									}
+									</cfscript>
 								</cfif>
 							</cfif>
 						</cfif>
