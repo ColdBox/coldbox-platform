@@ -3,11 +3,7 @@
 	
 	function setup(){
 		// init with defaults
-		injector = getMockBox().createMock("coldbox.system.ioc.Injector");
-		//2: WireBox Binder instance
-		binder = getMockBox().createMock("coldbox.testing.cases.ioc.config.samples.InjectorCreationTestsBinder");
-		// init injector
-		injector.init(binder);
+		injector = getMockBox().createMock("coldbox.system.ioc.Injector").init("coldbox.testing.cases.ioc.config.samples.InjectorCreationTestsBinder");
 		// mock logger
 		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug");
 		injector.$property("log","instance",mockLogger);
@@ -29,17 +25,6 @@
 		assertEquals("coldbox.system.Plugin", r);
 	}
 		
-	function testConstant(){
-	
-		// get Constant
-		//r = injector.getInstance("jsonProperty");
-		
-	}
-	
-	function testByConvention(){
-	
-		//r = injector.getInstance("ioc.category.categoryService");
-	}
 	
 	function testbuildInstance(){
 		//mapping
@@ -80,5 +65,57 @@
 		assertEquals("testbaby", val);
 	}
 	
+	function testProviderMethods(){
+	
+		providerTest = injector.getInstance("ProviderTest");
+		assertEquals( true, isObject(providerTest.getPizza()) );
+		assertEquals( true, structKeyExists(session,"wirebox:pizza") );
+		assertEquals( "coldbox.system.ioc.Provider", getMetadata(providerTest.coolPizza).name);
+		assertEquals( session["wirebox:pizza"], providerTest.coolPizza.get() );
+		structclear(session);
+	}
+	
+	/*
+	function testGoogleNews(){
+		gnews = injector.getInstance("googleNews");
+		assertEquals(true, structKeyExists(gnews, "items") );
+		assertEquals(true, structKeyExists(gnews, "metadata") );
+		assertEquals( true, injector.getCacheBox().getDefaultCache().lookup('wirebox:googlenews') );
+	}
+	*/
+	
+	function testJava(){
+		buffer = injector.getInstance("stringBuffer");
+		assertEquals( "java.lang.StringBuffer", getMetadata(buffer).name );
+	}
+	
+	function testConstant(){
+		prop = injector.getInstance("jsonProperty");
+		assertTrue( len(prop) );
+	}
+	
+	function testWebService(){
+		ws = injector.getInstance("coldboxWS");
+		assertEquals( "coldfusion.xml.rpc.ServiceProxy", getMetadata(ws).name );
+	}
+	
+	function testDSL(){
+		dslobject = injector.getInstance("coolDSL");
+		
+		assertEquals("root", dslObject.getCategory() );
+	}
+	
+	function testFactoryBeans(){
+		b1 = injector.getInstance("factoryBean1");
+		
+		assertEquals( "luis", b1.name );
+		assertEquals( true, b1.cool );
+		
+		b2 = injector.getInstance("factoryBean2");
+		assertEquals( "alexia", b2.name );
+		assertEquals( true, b2.cool );
+		
+	
+	}
 </cfscript>
 </cfcomponent>

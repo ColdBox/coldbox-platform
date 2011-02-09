@@ -15,10 +15,12 @@ Description :
     <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the DSL for operation and returns itself" colddoc:generic="coldbox.system.ioc.dsl.IDSLBuilder">
     	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
 		<cfscript>
-			instance = { injector = arguments.injector };
+			instance = { 
+				injector = arguments.injector 
+			};
 			instance.coldbox 	= instance.injector.getColdBox();
-			instance.cachebox	= instance.coldbox.getCacheBox();
-			instance.log		= instance.coldbox.getLogBox().getLogger( this );
+			instance.cachebox	= instance.injector.getCacheBox();
+			instance.log		= instance.injector.getLogBox().getLogger( this );
 			
 			return this;
 		</cfscript>   

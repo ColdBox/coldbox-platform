@@ -57,7 +57,7 @@ Description :
 	<cffunction name="containsBean" access="public" returntype="boolean" hint="Check if the bean factory contains a bean" output="false" >
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">	
 		<cfscript>
-			return getFactory().containsMapping(arguments.beanName);
+			return getFactory().containsInstance(arguments.beanName);
 		</cfscript>
 	</cffunction>
 	

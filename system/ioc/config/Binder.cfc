@@ -48,8 +48,17 @@ Description :
 	
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="Binder" hint="Constructor: You can pass a data CFC instance, data CFC path or nothing at all for purely programmatic configuration">
-		<cfargument name="config" type="any" required="false" hint="The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programatically"/>
+		<cfargument name="injector" 	required="true" 	hint="The Injector this binder is bound to" colddoc:generic="coldbox.system.ioc.Injector">
+		<cfargument name="config" 		required="false" 	hint="The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programatically"/>
+		<cfargument name="properties" 	required="false" 	default="#structNew()#" hint="A structure of binding properties to passthrough to the Binder Configuration CFC" colddoc:generic="struct">
 		<cfscript>
+			// Setup incoming properties
+			instance.properties = arguments.properties;
+			// Setup Injector this binder is bound to.
+			instance.injector = arguments.injector;
+			// ColdBox Context binding if any?
+			instance.coldbox = instance.injector.getColdBox();
+		
 			// If sent and a path, then create the data CFC
 			if( structKeyExists(arguments, "config") and isSimpleValue(arguments.config) ){
 				arguments.config = createObject("component",arguments.config);
@@ -68,6 +77,16 @@ Description :
 			return this;
 		</cfscript>
 	</cffunction>
+
+	<!--- getInjector --->
+    <cffunction name="getInjector" output="false" access="public" returntype="any" hint="Get the bounded injector for this binder" colddoc:generic="coldbox.system.ioc.Injector">
+    	<cfreturn instance.injector>
+    </cffunction>
+	
+	<!--- getColdBox --->
+    <cffunction name="getColdBox" output="false" access="public" returntype="any" hint="Get the bounded ColdBox context for this binder, if any" colddoc:generic="coldbox.system.web.Controller">
+    	<cfreturn instance.coldbox>
+    </cffunction>
 
 	<!--- configure --->
     <cffunction name="configure" output="false" access="public" returntype="any" hint="The main configuration method that must be overriden by a specific WireBox Binder configuration object">
@@ -245,8 +264,11 @@ Description :
 			// set the current mapping
 			currentMapping = instance.mappings[ name ];
 			
-			// Set aliases
-			instance.mappings[ name ].setAlias( arguments.alias );
+			// Set aliases, scopes and types
+			instance.mappings[ name ]
+				.setAlias( arguments.alias )
+				.setScope( this.SCOPES.NOSCOPE )
+				.setType( this.TYPES.CFC );
 			
 			// Loop and create alias references
 			for(x=2;x lte arrayLen(arguments.alias); x++){
@@ -633,10 +655,10 @@ Description :
 			var wireBoxDSL  = variables.wirebox;
 			var key 		= "";
 			
-			// Coldbox Context exists
-			if( structKeyExists(variables,"coldbox") ){
+			// Coldbox Context Attached
+			if( isObject(instance.coldbox) ){
 				// create scan location for model convention as the first one.
-				scanLocations( coldbox.getSetting("ModelsInvocationPath") );
+				scanLocations( instance.coldbox.getSetting("ModelsInvocationPath") );
 			}
 			
 			// Incoming raw DSL or use locally?
@@ -725,10 +747,10 @@ Description :
 				// has it been discovered yet?
 				if( NOT thisMapping.isDiscovered() ){
 					// process the metadata
-					thisMapping.process(binder=this,injector=injector);
+					thisMapping.process(binder=this,injector=instance.injector);
 					// is it eager?
 					if( thisMapping.isEagerInit() ){
-						injector.getInstance( thisMapping.getName() );
+						instance.injector.getInstance( thisMapping.getName() );
 					}
 				}
 			}

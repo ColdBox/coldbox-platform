@@ -56,11 +56,11 @@ Description :
 			
 			// Register all event listeners here, they are created in the specified order
 			listeners = [
-				{ class="coldbox.testing.cases.ioc.listeners.MyListener", name="MyListener", 
+				{ class="coldbox.testing.cases.ioc.config.listeners.MyListener", name="MyListener", 
 				  properties={
 				  	name="CoolListener"
 				  } },
-				{ class="coldbox.testing.cases.ioc.listeners.MyListener", name="FunkyListener", 
+				{ class="coldbox.testing.cases.ioc.config.listeners.MyListener", name="FunkyListener", 
 				  properties={
 				  	name="FunkyListener"
 				  } }				  

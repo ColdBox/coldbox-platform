@@ -35,6 +35,8 @@ Description :
 		
 		// map to constant value, no need for scope
 		map("jsonProperty").toValue("[{name:'luis'},{name:'Jose'}]");
+		// map to ws
+		map("coldboxWS").toWebservice("http://www.coldbox.org/distribution/updatews.cfc?wsdl");
 		// map to rss feed
 		map("googleNews")
 			.toRSS("http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&output=rss")
@@ -53,6 +55,21 @@ Description :
 		// map by convention
 		map("CategoryBean").to("#myPath#.ioc.category.CategoryBean");
 		map("categoryCoolService").to("#myPath#.ioc.category.CategoryService").asSingleton();
+		// provider stuff
+		map("providerTest").to("#myPath#.ioc.ProviderTest");
+		map("pizza").to("#myPath#.ioc.Simple").into(this.SCOPES.SESSION);
+		// DSL creation 
+		map("coolDSL").toDSL("logbox:root");
+		
+		/// factory beans
+		map("CoolFactory").to("#myPath#.ioc.FactorySimple").asSingleton();
+		map("factoryBean1").toFactoryMethod("coolFactory","getTargetObject")
+			.methodArg(name="name",value="luis")
+			.methodArg(name="cool",value="true");
+		map("factoryBean2").toFactoryMethod("coolFactory","getTargetObject")
+			.methodArg(name="name",value="alexia")
+			.methodArg(name="cool",value="true");
+		
 	}	
 </cfscript>
 </cfcomponent>

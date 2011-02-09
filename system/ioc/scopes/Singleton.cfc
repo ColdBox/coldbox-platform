@@ -45,7 +45,7 @@ Description :
 					// construct it and store it, to satisfy circular dependencies
 					instance.singletons[cacheKey] = instance.injector.buildInstance( arguments.mapping, arguments.initArguments);
 					// wire it
-					instance.injector.autowire(target=instance.instance.singletons[cacheKey],mapping=arguments.mapping);
+					instance.injector.autowire(target=instance.singletons[cacheKey],mapping=arguments.mapping);
 					// log it
 					if( instance.log.canDebug() ){
 						instance.log.debug("Object: (#cacheKey#) constructed and stored in singleton cache.");

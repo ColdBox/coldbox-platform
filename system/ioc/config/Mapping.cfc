@@ -438,8 +438,6 @@ Description :
 					md = getComponentMetadata( instance.path );
 				}
 				
-				// Setup default NO Scope
-				instance.scope = arguments.binder.SCOPES.NOSCOPE;
 				// Singleton Processing
 				if( structKeyExists(md,"singleton") ){ instance.scope = arguments.binder.SCOPES.SINGLETON; }
 				// Registered Scope Processing

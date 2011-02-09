@@ -6,11 +6,13 @@
 		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
 		// Available WireBox public types
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
-		config = createObject("component","coldbox.system.ioc.config.Binder").init(dataConfigPath);
+		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
+			.$("getColdBox", getMockBox().createStub() );
+		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfigPath);
 	}
 	
 	function testBinderStandalone(){
-		config = createObject("component","coldbox.system.ioc.config.Binder").init();
+		config = createObject("component","coldbox.system.ioc.config.Binder").init(mockInjector);
 		memento = config.getMemento();
 		debug(memento);		
 	}
@@ -18,7 +20,7 @@
 	function testBinderWithConfigInstance(){
 		// My Data Object
 		dataConfig = createObject("component",dataConfigPath);
-		config = createObject("component","coldbox.system.ioc.config.Binder").init(dataConfig);
+		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfig);
 		
 		memento = config.getMemento();
 		debug(memento);
@@ -37,7 +39,7 @@
 	
 	function testBinderWithConfigPath(){
 		// My Data Object
-		config = createObject("component","coldbox.system.ioc.config.Binder").init(dataConfigPath);
+		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfigPath);
 		
 		memento = config.getMemento();
 		debug(memento);

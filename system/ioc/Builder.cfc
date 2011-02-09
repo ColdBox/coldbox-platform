@@ -26,6 +26,7 @@ TODO: update dsl consistency, so it is faster.
 				utility		= arguments.injector.getUtil(),
 				customDSL	= structnew()
 			};
+			
 			// Do we need to build the coldbox DSL namespace
 			if( instance.injector.isColdBoxLinked() ){
 				instance.coldboxDSL = createObject("component","coldbox.system.ioc.dsl.ColdBoxDSL").init( arguments.injector );
@@ -71,7 +72,7 @@ TODO: update dsl consistency, so it is faster.
 	<!--- buildCFC --->
     <cffunction name="buildCFC" output="false" access="public" returntype="any" hint="Build a cfc class via mappings">
     	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
 			var thisMap = arguments.mapping;
 			var oModel 	= createObject("component", thisMap.getPath() );
@@ -109,7 +110,7 @@ TODO: update dsl consistency, so it is faster.
 	<!--- buildFactoryMethod --->
     <cffunction name="buildFactoryMethod" output="false" access="public" returntype="any" hint="Build an object using a factory method">
     	<cfargument name="mapping" 			required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="initArguments" 	required="false" 	hint="The structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
     		var thisMap 	= arguments.mapping;
 			var oFactory 	= "";
@@ -220,7 +221,7 @@ TODO: update dsl consistency, so it is faster.
 	<!--- buildWebservice --->
     <cffunction name="buildWebservice" output="false" access="public" returntype="any" hint="Build a webservice object">
     	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="initArguments" 	required="false" 	hint="The structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
     		var argStruct 	= {};
 			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
@@ -245,7 +246,7 @@ TODO: update dsl consistency, so it is faster.
     	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfset var results = {}>
 		
-    	<cffeed action="read" source="#arguments.mapping.getPath()#" query="results.items" properties="results.metadata">
+    	<cffeed action="read" source="#arguments.mapping.getPath()#" query="results.items" properties="results.metadata" timeout="20">
     	
 		<cfreturn results>
     </cffunction>
@@ -395,8 +396,8 @@ TODO: update dsl consistency, so it is faster.
 		</cfscript>
 	</cffunction>
 
-	<!--- geProviderDSL --->
-	<cffunction name="geProviderDSL" access="private" returntype="any" hint="Get dependencies using the our provider pattern DSL" output="false" >
+	<!--- getProviderDSL --->
+	<cffunction name="getProviderDSL" access="private" returntype="any" hint="Get dependencies using the our provider pattern DSL" output="false" >
 		<cfargument name="definition" required="true" 	type="any" hint="The dependency definition structure">
 		<cfscript>
 			var thisType 		= arguments.definition.dsl;

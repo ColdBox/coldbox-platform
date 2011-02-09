@@ -134,7 +134,7 @@
 	
 	function testregisterCustomBuilders(){
 		customDSL = {
-			coolLuis = "coldbox.testing.cases.ioc.dsl.TestDSL"
+			coolLuis = "coldbox.testing.cases.ioc.dsl.MyTestingDSL"
 		};
 		mockBinder = getMockBox().createMock("coldbox.system.ioc.config.Binder")
 			.$("getCustomDSL", customDSL);
@@ -148,7 +148,7 @@
 	function testbuildDSLDependencyCustom(){
 		def = {name="test",dsl="coolLuis:woopee" };
 		customDSL = {
-			coolLuis = "coldbox.testing.cases.ioc.dsl.TestDSL"
+			coolLuis = "coldbox.testing.cases.ioc.dsl.MyTestingDSL"
 		};
 		mockBinder = getMockBox().createMock("coldbox.system.ioc.config.Binder")
 			.$("getCustomDSL", customDSL);

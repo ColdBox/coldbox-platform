@@ -29,7 +29,7 @@ Description :
 	<cffunction name="init" access="public" returntype="Injector" hint="Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder" output="false" >
 		<cfargument name="binder" 		required="false" default="coldbox.system.ioc.config.DefaultBinder" hint="The WireBox binder or data CFC instance or instantiation path to configure this injector with">
 		<cfargument name="properties" 	required="false" default="#structNew()#" hint="A structure of binding properties to passthrough to the Binder Configuration CFC" colddoc:generic="struct">
-		<cfargument name="coldbox" 		required="false" hint="A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it." colddoc:generic="coldbox.system.web.Controller">
+		<cfargument name="coldbox" 		required="false" default="" hint="A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it." colddoc:generic="coldbox.system.web.Controller">
 		<cfscript>
 			// Setup Available public scopes
 			this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
@@ -77,9 +77,7 @@ Description :
 			// Prepare Lock Info
 			instance.lockName = "WireBox.Injector.#instance.injectorID#";
 			// Link ColdBox Context if passed
-			if( structKeyExists(arguments, "coldbox") ){
-				instance.coldbox = arguments.coldbox;
-			}
+			instance.coldbox = arguments.coldbox;
 				
 			// Configure the injector for operation
 			configure( arguments.binder, arguments.properties);
@@ -207,7 +205,7 @@ Description :
 			// scope persistence check
 			if( NOT structKeyExists(instance.scopes, mapping.getScope()) ){
 				instance.log.error("The mapping scope: #mapping.getScope()# is invalid and not registered in the valid scopes: #structKeyList(instance.scopes)#");
-				getUtil().throwit(message="Requested mapping scope: #mapping.getScope()# is invalid",
+				getUtil().throwit(message="Requested mapping scope: #mapping.getScope()# is invalid for #mapping.getName()#",
 								  detail="The registered valid object scopes are #structKeyList(instance.scopes)#",
 								  type="Injector.InvalidScopeException");
 			}
@@ -226,7 +224,7 @@ Description :
 	<!--- buildInstance --->
     <cffunction name="buildInstance" output="false" access="public" returntype="any" hint="Build an instance, this is called from registered scopes only as they provide locking and transactions">
     	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
     		var thisMap = arguments.mapping;
 			var oModel	= "";
@@ -385,10 +383,14 @@ Description :
 				arguments.targetID = thisMap.getName();
 			}
 			
-			// Only autowire if no annotation check or if there is one, make sure the mapping is set for autowire
-			if ( (arguments.annotationCheck eq false) OR (arguments.annotationCheck AND thisMap.isAutowire()) ){
-				// prepare instance for wiring, done once for persisted objects
+			// Only autowire if no annotation check or if there is one, make sure the mapping is set for autowire, and this is a CFC
+			if ( thisMap.getType() eq this.TYPES.CFC 
+				 AND
+				 ( (arguments.annotationCheck eq false) OR (arguments.annotationCheck AND thisMap.isAutowire()) ) ){
+				
+				// prepare instance for wiring, done once for persisted objects and CFCs only
 				instance.utility.getMixerUtil().start( arguments.target );
+				
 				// Bean Factory Awareness
 				if( structKeyExists(targetObject,"setBeanFactory") ){
 					targetObject.setBeanFactory( this );
@@ -836,26 +838,21 @@ Description :
 				arguments.binder = createObject("component",arguments.binder);
 			}
 			
-			// Now decorate it with properties, a self reference, and a coldbox reference if needed.
-			arguments.binder.injectPropertyMixin = instance.utility.getMixerUtil().injectPropertyMixin;
-			arguments.binder.injectPropertyMixin("properties",arguments.properties,"instance");
-			arguments.binder.injectPropertyMixin("injector",this);
-			if( isColdBoxLinked() ){
-				arguments.binder.injectPropertyMixin("coldbox",getColdBox());
+			// Check if data CFC or binder family
+			if( NOT isInstanceOf(arguments.binder, "coldbox.system.ioc.config.Binder") ){
+				// simple data cfc, create native binder and decorate data CFC
+				nativeBinder = createObject("component","coldbox.system.ioc.config.Binder").init(injector=this,config=arguments.binder,properties=arguments.properties);
 			}
-			
-			// Check if already a programmatic binder object?
-			if( isInstanceOf(arguments.binder, "coldbox.system.ioc.config.Binder") ){
+			else{
+				// else init the binder and configur it
+				nativeBinder = arguments.binder.init(injector=this,properties=arguments.properties);
 				// Configure it
-				arguments.binder.configure();
+				nativeBinder.configure();
 				// Load it
-				arguments.binder.loadDataDSL();
-				// Use it
-				return arguments.binder;
+				nativeBinder.loadDataDSL();
 			}
 			
-			// If we get here, then it is a simple data CFC, decorate it with a vanilla binder object and configure it for operation
-			return createObject("component","coldbox.system.ioc.config.Binder").init(arguments.binder);
+			return nativeBinder;
 		</cfscript>
     </cffunction>
 	

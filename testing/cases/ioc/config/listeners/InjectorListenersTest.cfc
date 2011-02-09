@@ -5,18 +5,16 @@
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector");
 		
-		config = createObject("component","coldbox.system.ioc.config.Binder").init("coldbox.testing.cases.ioc.config.listeners.Config");
-		
 		// init factory
-		injector.init(config);	
+		injector.init(binder="coldbox.testing.cases.ioc.config.listeners.Config");	
 	}
 	
 	function testRegisterListeners(){
 		eventContainers = injector.getEventManager().getEventPoolContainer();
 		
 		assertEquals( true, structKeyExists(eventContainers,"afterInjectorConfiguration") );
-		assertEquals( true, structKeyExists(eventContainers,"beforeObjectCreation") );
-		assertEquals( true, structKeyExists(eventContainers,"afterObjectCreation") );
+		assertEquals( true, structKeyExists(eventContainers,"afterInstanceCreation") );
+		assertEquals( true, structKeyExists(eventContainers,"beforeInstanceCreation") );
 		
 		
 	}

@@ -19,15 +19,15 @@
     </cffunction>
 
 	<!--- beforeObjectCreation --->
-    <cffunction name="beforeObjectCreation" output="false" access="public" returntype="any" hint="">
+    <cffunction name="beforeInstanceCreation" output="false" access="public" returntype="any" hint="">
     	<cfargument name="interceptData" type="struct"/>
-		<cfset log.info("#properties.name# -> beforeObjectCreation called", arguments.interceptData.toString())>
+		<cfset log.info("#properties.name# -> beforeInstanceCreation called", arguments.interceptData.toString())>
     </cffunction>
 	
 	<!--- afterObjectCreation --->
-    <cffunction name="afterObjectCreation" output="false" access="public" returntype="any" hint="">
+    <cffunction name="afterInstanceCreation" output="false" access="public" returntype="any" hint="">
     	<cfargument name="interceptData" type="struct"/>
-		<cfset log.info("#properties.name# -> afterObjectCreation called", arguments.interceptData.toString())>
+		<cfset log.info("#properties.name# -> afterInstanceCreation called", arguments.interceptData.toString())>
     </cffunction>
 	
 

@@ -144,11 +144,10 @@
 	
 	function testParenInjector(){
 		assertTrue( isSimpleValue(injector.getParent() ));
-		assertFalse( injector.hasParent() );
+		assertFalse( isObject(injector.getParent() ) );
 		
 		injector.setParent( injector );
 		assertTrue( isObject(injector.getParent() ));
-		assertTrue( injector.hasParent() );
 	}
 	
 	function removeFromScope(){
