@@ -88,23 +88,25 @@ Description:
 
 	<!--- removeExternalLocations --->
 	<cffunction name="removeExternalLocations" output="false" access="public" returntype="void" hint="Try to remove all the external locations passed in. @deprecated by 3.1">
-		<cfargument name="locations" type="string" required="true" hint="Locations to remove from the lookup.  Comma delimited allowed."/>
+		<cfargument name="locations" type="any" required="true" hint="Locations to remove from the lookup.  Comma delimited allowed."/>
 		<cfscript>
 			if( instance.compatMode ){
-				return instance.beanFactory.removeExternalLocations(arguments.locations);
+				instance.beanFactory.removeExternalLocations(arguments.locations);
+				return;
 			}
-			// TODO: wirebox
+			wirebox.getBinder().removeScanLocations( arguments.locations );
 		</cfscript>
 	</cffunction>
 
 	<!--- appendExternalLocation --->
 	<cffunction name="appendExternalLocations" output="false" access="public" returntype="void" hint="Try to append a new model external location. @deprecated by 3.1">
-		<cfargument name="locations" type="string" required="true" hint="Locations to add to the lookup, will be added in passed order.  Comma delimited allowed."/>
+		<cfargument name="locations" type="any" required="true" hint="Locations to add to the lookup, will be added in passed order.  Comma delimited allowed."/>
 		<cfscript>
 			if( instance.compatMode ){
-				return instance.beanFactory.appendExternalLocations(arguments.locations);
+				instance.beanFactory.appendExternalLocations(arguments.locations);
+				return;
 			}
-			// TODO: wirebox
+			wirebox.getBinder().scanLocations( arguments.locations );
 		</cfscript>
 	</cffunction>
 

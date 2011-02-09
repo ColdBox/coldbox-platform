@@ -139,10 +139,10 @@ Description :
 						case "myplugin" 			: {
 							// module plugin
 							if( find("@",thisLocationKey) ){
-								return instance.coldbox.getMyPlugin(plugin=listFirst(thisLocationKey,"@"),module=listLast(thisLocationKey,"@"));
+								return instance.coldbox.getPlugin(plugin=listFirst(thisLocationKey,"@"),customPlugin=true,module=listLast(thisLocationKey,"@"));
 							}
 							// normal custom plugin
-							return instance.coldbox.getMyPlugin(thisLocationKey);
+							return instance.coldbox.getPlugin(plugin=thisLocationKey,customPlugin=true);
 						}
 						case "datasource" 			: { return getDatasource(thisLocationKey); }
 						case "interceptor" 			: { return instance.coldbox.getInterceptorService().getInterceptor(thisLocationKey,true); }

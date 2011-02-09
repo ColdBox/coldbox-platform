@@ -661,20 +661,20 @@ Description :
 			
 			// Register Custom DSL
 			if( structKeyExists( wireBoxDSL, "customDSL") ){
-				instance.customDSL = wireBoxDSL.customDSL;
+				structAppend(instance.customDSL, wireBoxDSL.customDSL, true);
 			}
 			
 			// Register Custom Scopes
 			if( structKeyExists( wireBoxDSL, "customScopes") ){
-				instance.customScopes = wireBoxDSL.customScopes;
+				structAppend(instance.customScopes, wireBoxDSL.customScopes, true);
 			}
 			
-			// Register Scan Locations
+			// Append Register Scan Locations
 			if( structKeyExists( wireBoxDSL, "scanLocations") ){
 				scanLocations( wireBoxDSL.scanLocations );
 			}
 			
-			// Register Stop Recursions
+			// Append Register Stop Recursions
 			if( structKeyExists( wireBoxDSL, "stopRecursions") ){
 				stopRecursions( wireBoxDSL.stopRecursions );
 			}
@@ -692,7 +692,7 @@ Description :
 				for(key in wireboxDSL.mappings){
 					// create mapping & process its data memento
 					map(key);
-					getCurrentMapping().processMemento( wireBoxDSL.mappings[key] );
+					instance.mappings[ key ].processMemento( wireBoxDSL.mappings[key] );
 				}
 			}
 		</cfscript>
