@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <project name="forgebox-build" basedir="." default="do.archive">
+	
 	<!-- dynamic values for build -->
 	<tstamp prefix="start"/>
 	<property name="project.name" value="forgebox" />
@@ -13,7 +14,7 @@
 			
 	<target name="do.archive" depends="cleanALL">
 		<zip destfile="${build.label}.zip">
-			<fileset dir="." excludes="build.xml" />			
+			<fileset dir="../" excludes="forgebox/build.xml" includes="forgebox/*" />			
 		</zip>
 	</target>
 
