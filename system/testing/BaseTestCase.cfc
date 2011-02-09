@@ -295,7 +295,7 @@ id , name , mail
     </cffunction>
 	
 	<!--- getLogBox --->
-    <cffunction name="getLogBox" output="false" access="public" returntype="any" hint="Get a logbox reference">
+    <cffunction name="getLogBox" output="false" access="private" returntype="any" hint="Get a logbox reference">
     	<cfreturn instance.controller.getLogBox()>
     </cffunction>
 	
