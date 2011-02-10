@@ -37,6 +37,8 @@ Description :
 			variables.flash = arguments.controller.getRequestService().getFlashScope();
 			// Register CacheBox
 			variables.cacheBox = arguments.controller.getCacheBox();
+			// Register WireBox
+			variables.wireBox = arguments.controller.getWireBox();
 			
 			// Register properties
 			setProperties(arguments.properties);

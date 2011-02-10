@@ -192,7 +192,7 @@ Description :
 				
 				// Autowire this interceptor only if called after aspect registration
 				if( controller.getAspectsInitiated() ){
-					controller.getPlugin("BeanFactory").autowire(target=oInterceptor);
+					controller.getPlugin("BeanFactory").autowire(target=oInterceptor,targetID=objectKey);
 				}			
 			</cfscript>
 		</cflock>

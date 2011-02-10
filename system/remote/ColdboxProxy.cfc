@@ -219,6 +219,19 @@ Description :
 		<cfreturn getController().getCacheBox()>
 	</cffunction>
 	
+	<!--- getWireBox --->
+	<cffunction name="getWireBox" output="false" access="private" returntype="any" hint="Get the WireBox Injector reference of this application.">
+		<cfreturn getController().getWireBox()>
+	</cffunction>
+	
+	<!--- getInstance --->
+    <cffunction name="getInstance" output="false" access="private" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
+    	<cfargument name="name" 			required="true" 	hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfreturn getWireBox().getInstance(argumentCollection=arguments)>
+	</cffunction>	
+	
 	<!--- Get the LogBox. --->
 	<cffunction name="getLogBox" output="false" access="private" returntype="any" hint="Get the LogBox reference of this application.">
 		<cfreturn getController().getLogBox()>
@@ -270,10 +283,13 @@ Description :
 	<!--- Get Model --->
 	<cffunction name="getModel" access="private" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
-		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="false"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
+		<cfargument name="name" 				required="false" type="any" default="" hint="The name of the model to retrieve">
+		<cfargument name="useSetterInjection" 	required="false" type="any" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean" colddoc:generic="Boolean">
+		<cfargument name="onDICompleteUDF" 		required="false" type="any"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="stopRecursion"		required="false" type="any"  hint="A comma-delimmited list of stoprecursion classpaths.">
+		<cfargument name="dsl"					required="false" type="any"  hint="The dsl string to use to retrieve the domain object"/>
+		<cfargument name="executeInit"			required="false" type="any" default="true" hint="Whether to execute the init() constructor or not.  Defaults to execute, Boolean" colddoc:generic="Boolean"/>
+		<cfargument name="initArguments" 		required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance. Only available for WireBox integration" colddoc:generic="struct"/>
 		<!--- ************************************************************* --->
 		<cfreturn getController().getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
 	</cffunction>

@@ -184,11 +184,5 @@ Description :
 			bf.addModelMapping(path='mypath.whateverman');
 			assertEquals( bf.resolveModelAlias('whateverman'), "mypath.whateverman" );
 		}
-		
-		function testgetModelMappings(){
-			bf = getController().getPlugin("BeanFactory");
-			
-			assertTrue( isStruct(bf.getModelMappings()) );
-		}
 	</cfscript>
 </cfcomponent>

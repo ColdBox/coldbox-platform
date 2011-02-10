@@ -30,16 +30,6 @@
 	</tr>
 	
 	<tr>
-		<td><strong>TestModel:</strong></td>
-		<td>#rc.testModel.getLogger().getHash()#</td>
-	</tr>
-	
-	<tr>
-		<td><strong>Controller:</strong></td>
-		<td>#getPlugin("Logger").getHash()#</td>
-	</tr>
-	
-	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
 	

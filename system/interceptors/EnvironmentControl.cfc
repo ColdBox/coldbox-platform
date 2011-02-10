@@ -20,7 +20,7 @@ Description :
 
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="ENVIRONMENT settings interceptor"
+<cfcomponent hint="ENVIRONMENT settings interceptor when using the XML configuration file. This interceptor will be deprecated by 3.1"
 			 extends="coldbox.system.Interceptor"
 			 output="false">
 
@@ -68,8 +68,8 @@ Description :
 
 	<cffunction name="afterConfigurationLoad" output="false" access="public" returntype="void" hint="ENVIRONMENT control the settings">
 		<!--- *********************************************************************** --->
-		<cfargument name="event" 	required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
+		<cfargument name="event" 		 required="true" hint="The event object.">
+		<cfargument name="interceptData" required="true" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		<!--- *********************************************************************** --->
 		<cfscript>
 			if( getProperty('interceptorCompleted') eq false){
@@ -81,10 +81,10 @@ Description :
 	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->	 
 
-	<cffunction name="getconfigFile" access="public" returntype="string" output="false">
+	<cffunction name="getConfigFile" access="public" returntype="any" output="false">
 		<cfreturn instance.configFile>
 	</cffunction>
-	<cffunction name="setconfigFile" access="public" returntype="void" output="false">
+	<cffunction name="setConfigFile" access="public" returntype="void" output="false">
 		<cfargument name="configFile" type="string" required="true">
 		<cfset instance.configFile = arguments.configFile>
 	</cffunction>
@@ -106,6 +106,7 @@ Description :
 			var oJSON = appLoader.getJSONUtil();
 			var jsonRegex = appLoader.getJSONRegex();
 			var cacheBoxHash	= "";
+			var wireboxHash		= "";
 			
 			//Parse environment config file
 			oXML = XMLParse(getConfigFile());
@@ -198,6 +199,12 @@ Description :
 					controller.getLogBox().configure(controller.getLogBox().getConfig());
 					controller.setLog(controller.getLogBox().getLogger(controller));
 				}	
+				// WireBox additions
+				wireboxHash = hash( configSettings.wirebox );
+				appLoader.parseWireBox(environmentXML,configSettings,true);
+				if( wireboxHash NEQ hash(configSettings.wirebox) ){
+					controller.getLoaderService().createWireBox();
+				}
 			}			
 		</cfscript>
 	</cffunction>

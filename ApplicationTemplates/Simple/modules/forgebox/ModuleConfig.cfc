@@ -44,6 +44,7 @@ Available objects in variable scope
 - moduleMapping (include,cf path)
 - modulePath (absolute path)
 - log (A pre-configured logBox logger object for this object)
+- binder (The wirebox instance binder for DI configuration)
 
 Required Methods
 - configure() : The method ColdBox calls to configure the module.
@@ -59,7 +60,7 @@ Optional Methods
 	this.author 			= "Luis Majano";
 	this.webURL 			= "http://www.coldbox.org";
 	this.description 		= "A module that interacts with forgebox";
-	this.version			= "1.0";
+	this.version			= "1.2";
 	this.viewParentLookup 	= true;
 	this.layoutParentLookup = true;
 	this.entryPoint			= "forgebox";
@@ -70,7 +71,7 @@ Optional Methods
 	function configure(){
 
 		settings = {
-			version = "1.1"
+			version = this.version
 		};
 
 		// Layout Settings
@@ -86,11 +87,8 @@ Optional Methods
 			{pattern="/manager/:orderby/:typeSlug?", handler="manager",action="index"}
 		];
 
-		// Defined Model Mappings for this module.
-		modelMappings = {};
-		modelMappings["forgeService@forgebox"] = {
-			path = "ForgeService"
-		};
+		// WireBox Binder configuration
+		binder.map("forgeService@forgebox").to("#moduleMapping#.model.ForgeService");
 	}
 
 	/**

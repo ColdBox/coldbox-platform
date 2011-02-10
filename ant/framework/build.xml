@@ -111,21 +111,21 @@
 		<!--Export Dashboard-->
 		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}" />
 		
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+			
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		
 		<!-- Cleanup for StandAlone Build -->
+		<delete dir="${dir.build}/ApplicationTemplates"/>
 		<delete dir="${dir.build}/install" />
-		<copy todir="${dir.build}/install">
+		<copy todir="${dir.build}">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />		
-		</copy>
-		
-		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
-		<delete file="${dir.build}/colddoc.html" />
-		
-		
+		</copy>		
+			
 		<!-- Zip Standalone -->
 		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" 
 			 excludes="dashboard/**,samples/**">							

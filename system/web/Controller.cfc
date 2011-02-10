@@ -59,7 +59,7 @@ Only one instance of a specific ColdBox application exists.
 			// CacheBox
 			instance.cacheBox 	= "";
 			instance.wireBox	= "";
-
+		
 			if( instance.log.canInfo() ){
 				instance.log.info("ColdBox Application Controller Created Successfully at #arguments.appRootPath#");
 			}
@@ -92,7 +92,16 @@ Only one instance of a specific ColdBox application exists.
 		<cfargument name="logBox" required="true" hint="The logBox instance" colddoc:generic="coldbox.system.logging.LogBox"/>
 		<cfset instance.logBox = arguments.logBox>
 	</cffunction>
-	
+
+	<!--- getwireBox --->
+	<cffunction name="getWireBox" output="false" access="public" returntype="any" hint="Get the application's LogBox instance" colddoc:generic="coldbox.system.logging.LogBox">
+		<cfreturn instance.wireBox>
+	</cffunction>
+	<cffunction name="setWireBox" output="false" access="public" returntype="void" hint="Set the WireBox instance">
+		<cfargument name="wireBox" required="true" hint="The WireBox instance" colddoc:generic="coldbox.system.ioc.Injector"/>
+		<cfset instance.wireBox = arguments.wireBox>
+	</cffunction>
+		
 	<!--- setLog --->
 	<cffunction name="setLog" output="false" access="public" returnType="void" hint="Set the class logger object">
 		<cfargument name="logger" required="true">

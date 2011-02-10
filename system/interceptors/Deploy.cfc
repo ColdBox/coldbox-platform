@@ -92,14 +92,7 @@ any kind of cleanup code or anything you like:
 			
 			// Deploy Command Model
 			if( propertyExists('deployCommandModel') ){
-				try{
-					instance.deployCommandObject = getModel(getProperty("deployCommandModel"));
-				}
-				catch(Any e){
-					$throw("Error creating command model object #getProperty('deployCommandModel')#",
-						   e.detail & e.message & e.stacktrace,
-						   "Deploy.CommandObjectCreationException");
-				}
+				instance.deployCommandObject = getModel(getProperty("deployCommandModel"));
 			}
 		</cfscript>
 	</cffunction>

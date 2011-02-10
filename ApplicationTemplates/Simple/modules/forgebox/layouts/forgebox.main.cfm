@@ -22,7 +22,7 @@
 <body>
 	<div id="content">
 		<h1>
-			<img src="#event.getModuleRoot()#/includes/images/coldbox_110.png" alt="logo" />
+			<img src="#event.getModuleRoot()#/includes/images/ColdBoxLogoSquare_125.png" height="100" alt="logo" />
 		</h1>
 		<ul id="top">
 			<li><a <cfif rc.orderby eq "popular">class="current"</cfif> 

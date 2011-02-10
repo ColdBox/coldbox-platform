@@ -519,9 +519,6 @@
 				<help><![CDATA[ The path to check ]]></help>
 			</parameter>
 			</function>
-	<function name="getHash" returns="string">
-			<help><![CDATA[ Get the instance's unique ID (Context: FrameworkSuperType) ]]></help>
-		</function>
 	</functions>
 
 

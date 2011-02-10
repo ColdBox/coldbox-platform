@@ -39,8 +39,8 @@ Modification History:
 	<!--- Config Loader Method --->
 	<cffunction name="loadApplication" returntype="void" access="Public" hint="I load a coldbox application for operation." output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="The configuration file to load the application with">
-		<cfargument name="overrideAppMapping" required="false" type="string" default="" hint="The direct location of the application in the web server."/>
+		<cfargument name="overrideConfigFile" required="false" default="" hint="The configuration file to load the application with">
+		<cfargument name="overrideAppMapping" required="false" default="" hint="The direct location of the application in the web server."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var debuggerConfig = createObject("Component","coldbox.system.web.config.DebuggerConfig").init();
@@ -72,6 +72,9 @@ Modification History:
 		
 		// Create the Cache Container
 		createCacheContainer();
+		
+		// Create WireBox Container
+		createWireBox();
 				
 		// Execute onConfigurationLoad for coldbox internal services()
 		for(key in services){
@@ -137,6 +140,20 @@ Modification History:
 		logBoxConfig = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(CFCConfigPath="coldbox.system.web.config.LogBox");
 		
 		return createObject("component","coldbox.system.logging.LogBox").init(logBoxConfig,controller);
+    	</cfscript>
+    </cffunction>
+	
+	<!--- createWireBox --->
+    <cffunction name="createWireBox" output="false" access="public" returntype="void" hint="Create WireBox DI Framework with config settings.">
+    	<cfscript>
+    		var wireboxData = controller.getSetting("WireBox");
+			var oInjector	= "";
+			
+    		// If using cf8 and above then create it with our binder
+			if( controller.getCFMLEngine().isMT() AND wireboxData.enabled ){
+				oInjector = createObject("component","coldbox.system.ioc.Injector").init(wireboxData.binderPath,controller.getConfigSettings(), controller);
+				controller.setWireBox( oInjector );
+			}
     	</cfscript>
     </cffunction>
 	

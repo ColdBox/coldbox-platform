@@ -27,7 +27,7 @@ Description :
 			instance.utility  = createObject("component","coldbox.system.core.util.Util");
 			
 			// LightWire Factory Path
-			instance.LIGHTWIRE_FACTORY_PATH = "coldbox.system.ioc.lightwire.LightWire";
+			instance.LIGHTWIRE_FACTORY_PATH = "lightwire.LightWire";
 			
 			return this;
 		</cfscript>
@@ -36,7 +36,7 @@ Description :
 <!----------------------------------------- PUBLIC ------------------------------------->	
 
 	<!--- createFactory --->
-	<cffunction name="createFactory" access="public" returntype="void" hint="Create the ColdSpring Factory" output="false" >
+	<cffunction name="createFactory" access="public" returntype="void" hint="Create the LightWire Factory" output="false" >
 		<cfscript>
 			var properties = getProperties();
 			
@@ -88,7 +88,7 @@ Description :
 			}
 			else{
 				// Create base config Bean
-				lightwireBeanConfig = CreateObject("component", "coldbox.system.ioc.lightwire.BaseConfigObject").init();	
+				lightwireBeanConfig = CreateObject("component", "lightwire.BaseConfigObject").init();	
 			}
 			
 			// Are we using ColdBox Application Container? If so, then do mixins.

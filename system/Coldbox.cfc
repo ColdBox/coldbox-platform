@@ -117,7 +117,12 @@ Description :
 				</cflock>
 				<cfreturn>
 			</cfif>
-				
+			
+			<!--- WireBox Singleton AutoReload --->
+			<cfif cbController.getSetting("Wirebox").singletonReload>
+				<cfset cbController.getWireBox().clearSingletons()>
+			</cfif>
+			
 			<!--- Modules Auto Reload --->
 			<cfif cbController.getSetting("ModulesAutoReload")>
 				<cfset cbController.getModuleService().reloadAll()>

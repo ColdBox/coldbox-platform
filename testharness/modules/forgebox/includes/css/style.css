@@ -17,7 +17,7 @@ h2 a:hover { background:#A82A15; color:#fff; }
 .hr { color:#ccc; }
 p { margin:5px 0 15px; line-height:1.6em; }
 #content { margin:0 auto; width:900px; }
-#content h1 { margin:3px 0 0; }
+#content h1 { margin:3px 0px 10px 0px; }
 #top { float:right; margin:38px 0 30px; font-size:16px; }
 #top li { list-style:none; display:inline; }
 #top li a { float:left; padding:6px 20px; margin:3px 2px 0 0; color:#ccc; }

@@ -79,6 +79,7 @@ id , name , mail
 	<cffunction name="setup" hint="The main setup method for running ColdBox enabled tests" output="false">
 		<cfscript>
 		var appRootPath = "";
+		var context		= "";
 		
 		// metadataInspection
 		metadataInspection();
@@ -120,8 +121,9 @@ id , name , mail
 			}
 			
 			//Clean up Initial Event Context
-			getRequestContext().clearCollection();
-			getRequestContext().clearCollection(private=true);
+			context = getRequestContext();
+			context.clearCollection();
+			context.clearCollection(private=true);
 		}
 		</cfscript>
 	</cffunction>
@@ -220,11 +222,13 @@ id , name , mail
 			var mockLogger	 		= mockBox.createEmptyMock("coldbox.system.logging.Logger");
 			var mockFlash		 	= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
 			var mockCacheBox   		= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
+			var mockWireBox   		= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
 			
 			// Mock Plugin Dependencies
-			mockController.$("getLogBox",mockLogBox);
-			mockController.$("getCacheBox",mockCacheBox);
-			mockController.$("getRequestService",mockRequestService);
+			mockController.$("getLogBox",mockLogBox)
+				.$("getCacheBox",mockCacheBox)
+				.$("getWireBox",mockWireBox)
+				.$("getRequestService",mockRequestService);
 			mockRequestService.$("getFlashScope",mockFlash);
 			mockLogBox.$("getLogger",mockLogger);
 			
@@ -279,6 +283,21 @@ id , name , mail
 	<cffunction name="getController" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox mock controller">
 		<cfreturn instance.controller>
 	</cffunction>
+	
+	<!--- getWireBox --->
+    <cffunction name="getWireBox" output="false" access="private" returntype="any" hint="Get the wirebox instance">
+    	<cfreturn instance.controller.getwireBox()>
+    </cffunction>
+	
+	<!--- getCacheBox --->
+    <cffunction name="getCacheBox" output="false" access="private" returntype="any" hint="Get a reference to cachebox">
+    	<cfreturn instance.controller.getCacheBox()>
+    </cffunction>
+	
+	<!--- getLogBox --->
+    <cffunction name="getLogBox" output="false" access="private" returntype="any" hint="Get a logbox reference">
+    	<cfreturn instance.controller.getLogBox()>
+    </cffunction>
 	
 	<!--- getColdboxOCM --->
     <cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
@@ -386,10 +405,13 @@ id , name , mail
 	<!--- Get Model --->
 	<cffunction name="getModel" access="private" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
-		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="false"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
+		<cfargument name="name" 				required="false" type="any" default="" hint="The name of the model to retrieve">
+		<cfargument name="useSetterInjection" 	required="false" type="any" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean" colddoc:generic="Boolean">
+		<cfargument name="onDICompleteUDF" 		required="false" type="any"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="stopRecursion"		required="false" type="any"  hint="A comma-delimmited list of stoprecursion classpaths.">
+		<cfargument name="dsl"					required="false" type="any"  hint="The dsl string to use to retrieve the domain object"/>
+		<cfargument name="executeInit"			required="false" type="any" default="true" hint="Whether to execute the init() constructor or not.  Defaults to execute, Boolean" colddoc:generic="Boolean"/>
+		<cfargument name="initArguments" 		required="false" hint="The constructor structure of arguments to passthrough when initializing the instance. Only available for WireBox integration" colddoc:generic="struct"/>
 		<!--- ************************************************************* --->
 		<cfreturn getController().getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
 	</cffunction>

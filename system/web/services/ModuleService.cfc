@@ -225,10 +225,12 @@ I oversee and manage ColdBox modules
 			var mConfig				= "";
 			var iData       		= {};
 			var y					= 1;
+			var key					= "";
 			var interceptorService  = controller.getInterceptorService();
 			var beanFactory 		= controller.getPlugin("BeanFactory");
-			var key					= "";
-
+			var wirebox				= controller.getWireBox();
+			var wireboxEnabled	 	= controller.getSetting("wirebox").enabled;
+			
 			// If module not registered, throw exception
 			if(NOT structKeyExists(modules, arguments.moduleName) ){
 				getUtil().throwit(message="Cannot activate module: #arguments.moduleName#",
@@ -262,22 +264,30 @@ I oversee and manage ColdBox modules
 													   interceptorProperties=mConfig.interceptors[y].properties,
 													   interceptorName=mConfig.interceptors[y].name);
 			}
-
-			// Register Model path if it exists.
+			
+			//////////////// COMPAT MODE WIREBOX + BEANFACTORY REMOVE BY 3.1 FOR WIREBOX ///////////////////////
+			
+			// Register Model path if it exists as a scan location.
 			if( directoryExists( mconfig.modelsPhysicalPath ) ){
 				beanFactory.appendExternalLocations( mConfig.modelsInvocationPath );
 			}
-
-			// Register Model Mappings Now
-			for(key in mConfig.modelMappings){
-				// Default alias check
-				if( NOT structKeyExists(mConfig.modelMappings[key], "alias") ){
-					mConfig.modelMappings[key].alias = "";
+			// Mapping or DSL Registration	
+			if( NOT wireboxEnabled ){
+				// Register Model Mappings Now
+				for(key in mConfig.modelMappings){
+					// Default alias check
+					if( NOT structKeyExists(mConfig.modelMappings[key], "alias") ){
+						mConfig.modelMappings[key].alias = "";
+					}
+					// Register mapping
+					beanFactory.addModelMapping(alias = listAppend(key,mConfig.modelMappings[key].alias),
+												path  = mConfig.modelMappings[key].path);
 				}
-				// Register mapping
-				beanFactory.addModelMapping(alias = listAppend(key,mConfig.modelMappings[key].alias),
-											path  = mConfig.modelMappings[key].path);
 			}
+			else{
+				wirebox.getBinder().loadDataDSL( mConfig.wirebox );
+			}
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			// Call on module configuration object onLoad() if found
 			if( structKeyExists(instance.mConfigCache[arguments.moduleName],"onLoad") ){
@@ -395,13 +405,12 @@ I oversee and manage ColdBox modules
 	<cffunction name="loadModuleConfiguration" output="false" access="public" returntype="any" hint="Load the module configuration object">
 		<cfargument name="config" type="struct" required="true" hint="The module config structure"/>
 		<cfscript>
-			var mConfig = arguments.config;
-			var oConfig = createObject("component", mConfig.invocationPath & ".ModuleConfig");
-			var toLoad = "";
-			// app settings pointer
+			var mConfig 	= arguments.config;
+			var oConfig 	= createObject("component", mConfig.invocationPath & ".ModuleConfig");
+			var toLoad 		= "";
 			var appSettings = controller.getConfigSettings();
-			var x=1;
-
+			var x			= 1;
+			
 			//Decorate It
 			oConfig.injectPropertyMixin = getUtil().getMixerUtil().injectPropertyMixin;
 			oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
@@ -412,6 +421,10 @@ I oversee and manage ColdBox modules
 			oConfig.injectPropertyMixin("moduleMapping",mConfig.mapping);
 			oConfig.injectPropertyMixin("modulePath",mConfig.path);
 			oConfig.injectPropertyMixin("log",controller.getLogBox().getLogger(oConfig));
+			// COMPAT MODE: REMOVE BY 3.1
+			if( appSettings.wirebox.enabled ){
+				oConfig.injectPropertyMixin("binder",controller.getWireBox().getBinder());
+			}
 
 			//Configure the module
 			oConfig.configure();
@@ -474,8 +487,14 @@ I oversee and manage ColdBox modules
 			//Get Routes
 			mConfig.routes = oConfig.getPropertyMixin("routes","variables",arrayNew(1));
 
-			//Get Model Mappings
-			mConfig.modelMappings = oConfig.getPropertyMixin("modelMappings","variables",structnew());
+			// COMPAT MODE: REMOVE BY 3.1
+			if( appSettings.wirebox.enabled ){
+				mConfig.wirebox = oConfig.getPropertyMixin("wirebox","variables",structnew());
+			}
+			else{
+				// Get Model Mappings
+				mConfig.modelMappings = oConfig.getPropertyMixin("modelMappings","variables",structnew());
+			}
 			
 			// Get and Append Module conventions
 			structAppend(mConfig.conventions,oConfig.getPropertyMixin("conventions","variables",structnew()),true);
