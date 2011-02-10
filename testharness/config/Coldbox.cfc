@@ -107,6 +107,7 @@
 		};
 		
 		//Model Integration
+		/*
 		models = {
 			objectCaching = true,
 			definitionFile = "config/modelMappings.cfm",
@@ -119,6 +120,7 @@
 				definitionFile = "config/parent.xml.cfm"
 			}
 		};
+		*/
 		
 		//Debugger Settings
 		debugger = {

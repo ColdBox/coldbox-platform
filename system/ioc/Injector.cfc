@@ -35,7 +35,10 @@ Description :
 			this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
 			// Setup Available public types
 			this.TYPES = createObject("component","coldbox.system.ioc.Types");
-		
+			
+			// Do we have a binder?
+			if( NOT len(trim(arguments.binder)) ){ arguments.binder = "coldbox.system.ioc.config.DefaultBinder"; }
+					
 			// Prepare Injector instance
 			instance = {
 				// Java System

@@ -8,7 +8,8 @@ structures/arrays to create for configuration
 - conventions (struct)
 - environments (struct)
 - ioc (struct)
-- models (struct)
+- models (struct) DEPRECATED use Wirebox instead
+- wirebox (struct)
 - debugger (struct)
 - mailSettings (struct)
 - i18n (struct)
@@ -99,7 +100,7 @@ Optional Methods
 		// Module Directives
 		modules = {
 			//Turn to false in production
-			autoReload = true,
+			autoReload = false,
 			// An array of modules names to load, empty means all of them
 			include = [],
 			// An array of modules names to NOT load, empty means none
@@ -122,6 +123,13 @@ Optional Methods
 		layoutSettings = {
 			defaultLayout = "Layout.Main.cfm",
 			defaultView   = ""
+		};
+		
+		//WireBox Integration
+		wireBox = { 
+			enabled = true,
+			//binder="config.WireBox", 
+			singletonReload=true 
 		};
 		
 		//Interceptor Settings
@@ -152,20 +160,6 @@ Optional Methods
 			  folders = "tags,pdf/single"
 			}
 		];
-		
-		//Model Integration
-		models = {
-			objectCaching = true,
-			definitionFile = "config/modelMappings.cfm",
-			externalLocation = "coldbox.testing.testmodel",
-			SetterInjection = false,
-			DICompleteUDF = "onDIComplete",
-			StopRecursion = "",
-			parentFactory 	= {
-				framework = "coldspring",
-				definitionFile = "config/parent.xml.cfm"
-			}
-		};
 		
 		//Conventions
 		conventions = {

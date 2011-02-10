@@ -8,7 +8,8 @@ structures to create for configuration
 - conventions
 - environments
 - ioc
-- models
+- models DEPRECATED use wirebox instead
+- wirebox
 - debugger
 - mailSettings
 - i18n
@@ -80,12 +81,20 @@ function configure(){
 	// Module Directives
 	modules = {
 		//Turn to false in production
-		autoReload = true,
+		autoReload = false,
 		// An array of modules names to load, empty means all of them
 		include = [],
 		// An array of modules names to NOT load, empty means none
 		exclude = [] 
 	};
+	
+	//WireBox Integration
+	wireBox = { 
+		enabled = true,
+		//binder="config.WireBox", 
+		singletonReload=true 
+	};
+	
 
 	//Layout Settings
 	layoutSettings = {

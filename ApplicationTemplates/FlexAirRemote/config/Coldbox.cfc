@@ -8,7 +8,8 @@ structures to create for configuration
 - conventions
 - environments
 - ioc
-- models
+- models (DEPRECATED use wirebox instead)
+- wirebox
 - debugger
 - mailSettings
 - i18n
@@ -94,14 +95,11 @@ function configure(){
 	
 	};
 	
-	//Model Integration
-	models = {
-		definitionFile = "config/modelMappings.cfm"
-		//objectCaching = true,
-		//externalLocation = "coldbox.testing.testmodel",
-		//SetterInjection = false,
-		//DICompleteUDF = "onDIComplete",
-		//StopRecursion = "",
+	//WireBox Integration
+	wireBox = { 
+		enabled = true,
+		//binder="config.WireBox", 
+		singletonReload=true 
 	};
 	
 	// Module Directives

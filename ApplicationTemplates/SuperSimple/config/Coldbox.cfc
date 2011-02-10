@@ -40,6 +40,12 @@ function configure(){
 		defaultLayout = "Layout.Main.cfm"
 	};
 	
+	//WireBox Integration
+	wireBox = { 
+		enabled = true, 
+		singletonReload=true 
+	};		
+		
 	//Register interceptors as an array, we need order
 	interceptors = [
 		 //Autowire
