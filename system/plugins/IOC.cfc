@@ -60,9 +60,7 @@ Description :
 			}
 			
 			// build adapter using application chosen properties
-			if( instance.IOCFramework neq "wirebox" ){
-				instance.adapter = buildAdapter(instance.IOCFramework, definitionFile);
-			}
+			instance.adapter = buildAdapter(instance.IOCFramework, definitionFile);
 			
 			// Do we have a parent to build?
 			if( len(parentFramework) ){

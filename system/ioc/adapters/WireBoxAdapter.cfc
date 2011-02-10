@@ -37,11 +37,8 @@ Description :
 	<!--- createFactory --->
 	<cffunction name="createFactory" access="public" returntype="void" hint="Create the WireBox Factory" output="false" >
 		<cfscript>
-			var properties = getProperties();
-			
 			//Create a WireBox injector
-			instance.factory = createObject("component", instance.WIREBOX_FACTORY_PATH ).init( getDefinitionFile() );
-			
+			instance.factory = createObject("component", instance.WIREBOX_FACTORY_PATH ).init(binder=getDefinitionFile(),properties=getProperties(),coldbox=getColdbox());
 		</cfscript>
 	</cffunction>
 

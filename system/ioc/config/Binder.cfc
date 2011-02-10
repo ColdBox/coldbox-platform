@@ -58,7 +58,11 @@ Description :
 			instance.injector = arguments.injector;
 			// ColdBox Context binding if any?
 			instance.coldbox = instance.injector.getColdBox();
-		
+			// is coldbox linked
+			if( isObject(instance.coldbox) ){
+				variables.appMapping = instance.coldbox.getSetting("AppMapping");
+			}
+			
 			// If sent and a path, then create the data CFC
 			if( structKeyExists(arguments, "config") and isSimpleValue(arguments.config) ){
 				arguments.config = createObject("component",arguments.config);
@@ -86,6 +90,11 @@ Description :
 	<!--- getColdBox --->
     <cffunction name="getColdBox" output="false" access="public" returntype="any" hint="Get the bounded ColdBox context for this binder, if any" colddoc:generic="coldbox.system.web.Controller">
     	<cfreturn instance.coldbox>
+    </cffunction>
+	
+	<!--- getAppMapping --->
+    <cffunction name="getAppMapping" output="false" access="public" returntype="any" hint="Get the ColdBox app mapping variable if context linked">
+    	<cfreturn instance.coldbox.getSetting("AppMapping")>
     </cffunction>
 
 	<!--- configure --->

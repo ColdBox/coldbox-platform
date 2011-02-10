@@ -180,6 +180,7 @@ TODO: update dsl consistency, so it is faster.
 			
 			// Loop Over Arguments
 			for(x=1;x lte DIArgsLen; x=x+1){
+				
 				// Is value set in mapping? If so, add it and continue
 				if( structKeyExists(DIArgs[x],"value") ){
 					args[ DIArgs[x].name ] = DIArgs[x].value;

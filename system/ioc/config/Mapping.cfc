@@ -482,11 +482,13 @@ Description :
 					instance.eagerInit = true;
 				}
 								
-				// Check if autowire annotation found
-				if( structKeyExists(md,"autowire") and isBoolean(md.autowire) and NOT md.autowire){
-					instance.autoWire = false;
+				// Check if autowire annotation found or autowire already set
+				if( structKeyExists(md,"autowire") and isBoolean(md.autowire) ){
+					instance.autoWire = md.autowire;
 				}
-				else{
+				
+				// Only process if autowiring
+				if( instance.autoWire){
 					// Process Methods, Constructors and Properties only if non autowire annotation check found on component.
 					processDIMetadata( arguments.binder, md );
 				}
