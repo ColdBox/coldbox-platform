@@ -927,7 +927,7 @@ Description: This is the framework's simple bean factory.
 			}
 
 			// Check for Bean
-			if( oIOC.getIOCFactory().containsBean(thisLocationKey) ){
+			if( oIOC.containsBean(thisLocationKey) ){
 				locatedDependency = oIOC.getBean(thisLocationKey);
 			}
 			else if( log.canDebug() ){
