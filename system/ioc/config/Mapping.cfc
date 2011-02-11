@@ -274,8 +274,15 @@ Description :
     	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
 		<cfscript>
     		var def = getDIDefinition();
+			var x   = 1;
+			// check if already registered, if it is, just return
+			for(x=1; x lte arrayLen(instance.DIConstructorArgs); x++){
+				if( instance.DIConstructorArgs[x].name eq arguments.name ){ return this;}
+			}
+			// Register new constructor argument.
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIConstructorArgs, def );
+			
 			return this;
     	</cfscript>
     </cffunction>
@@ -290,6 +297,11 @@ Description :
     	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
 		<cfscript>
     		var def = getDIDefinition();
+			var x	= 1;
+			// check if already registered, if it is, just return
+			for(x=1; x lte arrayLen(instance.DIMethodArgs); x++){
+				if( instance.DIMethodArgs[x].name eq arguments.name ){ return this;}
+			}
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIMethodArgs, def );
 			return this;
@@ -316,6 +328,11 @@ Description :
     	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
     	<cfscript>
     		var def = getDIDefinition();
+			var x	= 1;
+			// check if already registered, if it is, just return
+			for(x=1; x lte arrayLen(instance.DIProperties); x++){
+				if( instance.DIProperties[x].name eq arguments.name ){ return this;}
+			}
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIProperties, def );
 			return this;
@@ -336,6 +353,11 @@ Description :
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfscript>
     		var def = getDIDefinition();
+			var x	= 1;
+			// check if already registered, if it is, just return
+			for(x=1; x lte arrayLen(instance.DISetters); x++){
+				if( instance.DISetters[x].name eq arguments.name ){ return this;}
+			}
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DISetters, def );
 			return this;
@@ -505,36 +527,6 @@ Description :
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
 	
-	<!--- isPropertyDiscovered --->
-    <cffunction name="isPropertyDiscovered" output="false" access="private" returntype="any" hint="Check if a property has been discovered already or not">
-    	<cfargument name="property" required="true" hint="The property to search"/>
-    	<cfscript>
-    		var x = 1;
-			var propLen = arrayLen(instance.DIProperties);
-			
-    		for(x=1; x lte propLen; x++){
-				if( arguments.property eq instance.DIProperties[x].name ){ return true; }
-			}
-			
-			return false;
-		</cfscript>
-    </cffunction>
-
-	<!--- isSetterDiscovered --->
-    <cffunction name="isSetterDiscovered" output="false" access="private" returntype="any" hint="Check if a setter has been discovered already or not">
-    	<cfargument name="setter" required="true" hint="The setter to search"/>
-    	<cfscript>
-    		var x = 1;
-			var setterLen = arrayLen(instance.DISetters);
-			
-    		for(x=1; x lte setterLen; x++){
-				if( arguments.setter eq instance.DISetters[x].name ){ return true; }
-			}
-			
-			return false;
-		</cfscript>
-    </cffunction>
-	
 	<!--- processDIMetadata --->
 	<cffunction name="processDIMetadata" returntype="void" access="private" output="false" hint="Process methods/properties for dependency injection">
 		<cfargument name="binder" 		required="true" hint="The binder requesting the processing"/>
@@ -551,9 +543,8 @@ Description :
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) GT 0){
 				// Loop over each property and identify injectable properties
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
-
 					// Check if property not discovered or if inject annotation is found
-					if( NOT isPropertyDiscovered(md.properties[x].name) AND structKeyExists(md.properties[x],"inject") ){
+					if( structKeyExists(md.properties[x],"inject") ){
 						// default injection scope, if not found in object
 						if( NOT structKeyExists(md.properties[x],"scope") ){
 							md.properties[x].scope = "variables";
@@ -564,8 +555,6 @@ Description :
 						}
 						// Add to property to mappings
 						addDIProperty(name=md.properties[x].name,dsl=md.properties[x].inject,scope=md.properties[x].scope);
-						// Add to found dependencies
-						arguments.dependencies[md.properties[x].name] = "property";
 					}
 
 				}				
@@ -575,10 +564,10 @@ Description :
 			if( structKeyExists(md, "functions") ){
 				fncLen = arrayLen(md.functions);
 				for(x=1; x lte fncLen; x++ ){
-
+					
 					// Verify Processing or do we continue to next iteration for processing
 					// This is to avoid overriding by parent trees in inheritance chains
-					if( isSetterDiscovered(md.functions[x].name) ){
+					if( structKeyExists(arguments.dependencies, md.functions[x].name) ){
 						continue;
 					}
 					
@@ -605,14 +594,12 @@ Description :
 					
 					// Setter discovery, MUST be inject annotation marked to be processed.
 					if( left(md.functions[x].name,3) eq "set" AND structKeyExists(md.functions[x],"inject")){
-						
 						// Check DSL marker if it has a value else use default of Model
 						if( NOT len(md.functions[x].inject) ){
 							md.functions[x].inject = "model";
 						}
-						// Add to setter to mappings
+						// Add to setter to mappings and recursion lookup
 						addDISetter(name=right(md.functions[x].name, Len(md.functions[x].name)-3),dsl=md.functions[x].inject);
-						// Add to found dependencies
 						arguments.dependencies[md.functions[x].name] = "setter";
 					}
 					
