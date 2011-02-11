@@ -147,7 +147,7 @@ Description :
     </cffunction>
 	
 	<!--- getProperty --->
-    <cffunction name="getProperty" output="false" access="public" returntype="any" hint="Get a binded property. If not found it will try to return the default value passed, else it returns a java null">
+    <cffunction name="getProperty" output="false" access="public" returntype="any" hint="Get a binded property. If not found it will try to return the default value passed, else it returns an exception">
     	<cfargument name="name" 	required="true" hint="The name of the property"/>
 		<cfargument name="default"	required="false" hint="A default value if property does not exist"/>
 		<cfscript>
@@ -158,6 +158,9 @@ Description :
 				return arguments.default;
 			}
 		</cfscript>
+		<cfthrow message="The property requested #arguments.name# was not found"
+				 detail="Properties defined are #structKeyList(instance.properties)#"
+				 type="Binder.PropertyNotFoundException">
     </cffunction>
 	
 	<!--- setProperty --->
