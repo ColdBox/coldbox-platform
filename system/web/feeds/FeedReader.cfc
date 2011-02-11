@@ -558,7 +558,7 @@ Description :
 				/* Comments */
 				if( structKeyExists(items[x],"comments") ) {
 					for(y=1; y lte arrayLen(items[x]["comments"]); y=y+1){
-						if( structKeyExists(items[x],"slash:comments") and isNumeric(items[x]["slash:comments"][y].xmlText) ) node.comments.count = items[x]["comments"][y].xmlText;
+						if( structKeyExists(items[x],"slash:comments") and isNumeric(items[x]["slash:comments"].xmlText) ) node.comments.count = items[x]["comments"][y].xmlText;
 						else node.comments.url = items[x]["comments"][y].xmlText;
 					}
 				}
