@@ -42,29 +42,26 @@ Description :
 			<!--- Lock it --->
 			<cflock name="WireBox.CacheBoxScope.#arguments.mapping.getName()#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
-				// double lock it
-				if( NOT cacheProvider.lookup( cacheKey ) ){
-					// some nice debug info.
-					if( instance.log.canDebug() ){
-						instance.log.debug("Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction.");
-					}
-					// construct it and store it, to satisfy circular dependencies
-					refLocal.target = instance.injector.buildInstance( arguments.mapping, arguments.initArguments );
-					cacheProvider.set(cacheKey, refLocal.target, cacheProperties.timeout, cacheProperties.lastAccessTimeout);
-					// wire it
-					instance.injector.autowire(target=refLocal.target,mapping=arguments.mapping);
-					// log it
-					if( instance.log.canDebug() ){
-						instance.log.debug("Object: (#cacheProperties.toString()#) constructed and stored in cacheBox.");
-					}
-					// return it
-					return refLocal.target;
+				// some nice debug info.
+				if( instance.log.canDebug() ){
+					instance.log.debug("Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction.");
 				}
+				// construct it and store it, to satisfy circular dependencies
+				refLocal.target = instance.injector.buildInstance( arguments.mapping, arguments.initArguments );
+				cacheProvider.set(cacheKey, refLocal.target, cacheProperties.timeout, cacheProperties.lastAccessTimeout);
+				// wire it
+				instance.injector.autowire(target=refLocal.target,mapping=arguments.mapping);
+				// log it
+				if( instance.log.canDebug() ){
+					instance.log.debug("Object: (#cacheProperties.toString()#) constructed and stored in cacheBox.");
+				}
+				// return it
+				return refLocal.target;				
 			</cfscript>
 			</cflock>
-		</cfif>
-		
-		<cfreturn refLocal.target>		
+		<cfelse>
+			<cfreturn refLocal.target>
+		</cfif>				
     </cffunction>
 	
 </cfcomponent>

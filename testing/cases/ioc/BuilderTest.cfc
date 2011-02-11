@@ -120,14 +120,14 @@
 	}
 	
 	function testgetProviderDSL(){
-		makePublic(builder,"geProviderDSL");
+		makePublic(builder,"getProviderDSL");
 		data = {name="luis", dsl="provider:luis"};
 		
 		// mocks
 		mockLuis = getMockBox().createStub();
 		mockInjector.$("containsInstance",true).$("getInstance", mockLuis);
 		
-		p = builder.geProviderDSL(data);
+		p = builder.getProviderDSL(data);
 		assertEquals(mockLuis, p.get() );
 		
 	}

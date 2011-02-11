@@ -7,7 +7,7 @@
 		// Available WireBox public types
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
 		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
-			.$("getColdBox", getMockBox().createStub() );
+			.$("getColdBox", getMockBox().createStub().$("getSetting","coldbox.testing") );
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfigPath);
 	}
 	
@@ -34,7 +34,7 @@
 		assertEquals( 0, structCount(config.getCustomScopes()) );
 		assertEquals( 0, structCount(config.getCustomDSL()) );
 		assertEquals( 2, structCount(config.getMappings()) );
-		assertEquals( 0, structCount(config.getScanLocations()) );
+		assertEquals( 1, structCount(config.getScanLocations()) );
 	}
 	
 	function testBinderWithConfigPath(){
@@ -53,7 +53,7 @@
 		assertEquals( 0, structCount(config.getCustomScopes()) );
 		assertEquals( 0, structCount(config.getCustomDSL()) );
 		assertEquals( 2, structCount(config.getMappings()) );
-		assertEquals( 0, structCount(config.getScanLocations()) );
+		assertEquals( 1, structCount(config.getScanLocations()) );
 	}
 	
 	// BINDER PROPERTIES
@@ -274,7 +274,7 @@
 		locs = ["coldbox","mxunit","coldbox.system.plugins"];
 		config.scanLocations(locs);
 		
-		assertEquals(3, structCount(config.getScanLocations() ) );
+		assertEquals(4, structCount(config.getScanLocations() ) );
 		locations = config.getScanLocations();
 		assertEquals( expandPath("/coldbox/")  , locations["coldbox"]);
 		assertEquals( expandPath("/mxunit/")  , locations["mxunit"]);
@@ -297,9 +297,9 @@
 		locs = ["coldbox","mxunit","coldbox.system.plugins"];
 		config.scanLocations(locs);
 		
-		assertEquals(3, structCount(config.getScanLocations() ) );
+		assertEquals(4, structCount(config.getScanLocations() ) );
 		config.removeScanLocations("mxunit");
-		assertEquals(2, structCount(config.getScanLocations() ) );
+		assertEquals(3, structCount(config.getScanLocations() ) );
 		assertFalse( structKeyExists( config.getScanLocations(), "mxunit") );		
 	}
 	

@@ -416,7 +416,7 @@ Description :
 				
 				// Debug Data
 				if( instance.log.canDebug() ){
-					instance.log.debug("Finalized Autowire for: #arguments.targetID#", thisMap.getMemento());
+					instance.log.debug("Finalized Autowire for: #arguments.targetID#", thisMap.getMemento().toString());
 				}
 			}
 	</cfscript>

@@ -505,6 +505,36 @@ Description :
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
 	
+	<!--- isPropertyDiscovered --->
+    <cffunction name="isPropertyDiscovered" output="false" access="private" returntype="any" hint="Check if a property has been discovered already or not">
+    	<cfargument name="property" required="true" hint="The property to search"/>
+    	<cfscript>
+    		var x = 1;
+			var propLen = arrayLen(instance.DIProperties);
+			
+    		for(x=1; x lte propLen; x++){
+				if( arguments.property eq instance.DIProperties[x].name ){ return true; }
+			}
+			
+			return false;
+		</cfscript>
+    </cffunction>
+
+	<!--- isSetterDiscovered --->
+    <cffunction name="isSetterDiscovered" output="false" access="private" returntype="any" hint="Check if a setter has been discovered already or not">
+    	<cfargument name="setter" required="true" hint="The setter to search"/>
+    	<cfscript>
+    		var x = 1;
+			var setterLen = arrayLen(instance.DISetters);
+			
+    		for(x=1; x lte setterLen; x++){
+				if( arguments.setter eq instance.DISetters[x].name ){ return true; }
+			}
+			
+			return false;
+		</cfscript>
+    </cffunction>
+	
 	<!--- processDIMetadata --->
 	<cffunction name="processDIMetadata" returntype="void" access="private" output="false" hint="Process methods/properties for dependency injection">
 		<cfargument name="binder" 		required="true" hint="The binder requesting the processing"/>
@@ -523,7 +553,7 @@ Description :
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
 
 					// Check if property not discovered or if inject annotation is found
-					if( NOT structKeyExists(arguments.dependencies,md.properties[x].name) AND structKeyExists(md.properties[x],"inject") ){
+					if( NOT isPropertyDiscovered(md.properties[x].name) AND structKeyExists(md.properties[x],"inject") ){
 						// default injection scope, if not found in object
 						if( NOT structKeyExists(md.properties[x],"scope") ){
 							md.properties[x].scope = "variables";
@@ -548,7 +578,7 @@ Description :
 
 					// Verify Processing or do we continue to next iteration for processing
 					// This is to avoid overriding by parent trees in inheritance chains
-					if( structKeyExists(arguments.dependencies,md.functions[x].name) ){
+					if( isSetterDiscovered(md.functions[x].name) ){
 						continue;
 					}
 					

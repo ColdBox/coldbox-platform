@@ -29,7 +29,7 @@ Description :
     	<cfargument name="mapping" 			type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
 		<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		
-		<cfset var cacheKey = arguments.mapping.getName()>
+		<cfset var cacheKey = lcase(arguments.mapping.getName())>
 		
 		<!--- Verify in Cache --->
 		<cfif NOT structKeyExists(instance.singletons, cacheKey)>
