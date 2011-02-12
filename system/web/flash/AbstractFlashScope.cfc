@@ -261,8 +261,8 @@ method which will most likely be called by the saveFlash() method in order to pe
 			var somethingToSave = false;
 			
 			// Cleanup
-			arguments.include = trim(arguments.include);
-			arguments.exclude = trim(arguments.exclude);
+			arguments.include = replace(arguments.include, " ", "", "all");
+			arguments.exclude = replace(arguments.exclude, " ", "", "all");
 			
 			// Exclude?
 			if( len(trim(arguments.exclude)) ){
