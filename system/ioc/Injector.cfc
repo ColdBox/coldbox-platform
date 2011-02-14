@@ -340,7 +340,7 @@ Description :
     <cffunction name="autowire" output="false" access="public" returntype="any" hint="I wire up target objects with dependencies either by mappings or a-la-carte autowires">
     	<cfargument name="target" 				required="true" 	hint="The target object to wire up"/>
 		<cfargument name="mapping" 				required="false" 	hint="The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
-		<cfargument name="targetID" 			required="false" 	hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
+		<cfargument name="targetID" 			required="false" 	default="" hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
     	<cfargument name="annotationCheck" 		required="false" 	default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically." colddoc:generic="Boolean">
 		<cfscript>
 			var targetObject	= arguments.target;
@@ -355,7 +355,7 @@ Description :
 			if( NOT structKeyExists(arguments,"mapping") ){
 				// Ok, a-la-carte wiring, let's get our id first
 				// Do we have an incoming target id?
-				if( NOT structKeyExists(arguments,"targetID") ){
+				if( NOT len(arguments.targetID) ){
 					// need to get metadata to verify identity
 					md = getMetadata(arguments.target);
 					// We have identity now, use the full location path
@@ -382,7 +382,7 @@ Description :
 			
 			// Set local variable for easy reference use mapping to wire object up.
 			thisMap = arguments.mapping;
-			if( NOT structKeyExists(arguments,"targetID") ){
+			if( NOT len(arguments.targetID) ){
 				arguments.targetID = thisMap.getName();
 			}
 			
