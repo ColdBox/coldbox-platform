@@ -423,7 +423,7 @@ Description :
     </cffunction>
 	
 	<!--- processProviderMethods --->
-    <cffunction name="processProviderMethods" output="false" access="public" returntype="void" hint="Process provider methods on the selected target">
+    <cffunction name="processProviderMethods" output="false" access="private" returntype="void" hint="Process provider methods on the selected target">
     	<cfargument name="targetObject" 	required="true"  	hint="The target object to do some goodness on">
 		<cfargument name="mapping" 			required="true"  	hint="The target mapping">
 		<cfscript>
