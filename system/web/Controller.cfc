@@ -440,7 +440,7 @@ Only one instance of a specific ColdBox application exists.
 			pushTimers();
 
 			// Post Processors
-			if ( arguments.postProcessExempt ){
+			if( NOT arguments.postProcessExempt ){
 				services.interceptorService.processState("postProcess");
 			}
 
