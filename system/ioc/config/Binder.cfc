@@ -480,11 +480,12 @@ Description :
 	
 	<!--- into --->
     <cffunction name="into" output="false" access="public" returntype="any" hint="Map an object into a specific persistence scope">
-    	<cfargument name="scope" required="true" hint="The scope to map to, use a valid WireBox Scope by using binder.SCOPES.*" >
+    	<cfargument name="scope" required="true" hint="The scope to map to, use a valid WireBox Scope by using binder.SCOPES.* or a custom scope" >
     	<cfscript>
-			if( NOT this.SCOPES.isValid(arguments.scope) ){
+    		// check if invalid scope
+			if( NOT this.SCOPES.isValid(arguments.scope) AND NOT structKeyExists(instance.customScopes,arguments.scope) ){
 				utility.throwit(message="Invalid WireBox Scope: '#arguments.scope#'",
-								detail="Please make sure you are using a valid scope, valid scopes are: #arrayToList(this.SCOPES.getValidScopes())#",
+								detail="Please make sure you are using a valid scope, valid scopes are: #arrayToList(this.SCOPES.getValidScopes())# AND custom scopes: #structKeyList(instance.customScopes)#",
 								type="Binder.InvalidScopeMapping");
 			}
 			currentMapping.setScope( arguments.scope );
