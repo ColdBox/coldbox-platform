@@ -9,7 +9,7 @@
 	// setValidExtensions('xml,json,jsont,rss,html,htm');
 	// If enabled, the interceptor will throw a 406 exception that an invalid format was detected or just ignore it
 	// setThrowOnInvalidExtension(true);
-	
+
 	// Base URL
 	if( len(getSetting('AppMapping') ) lte 1){
 		setBaseURL("http://#cgi.HTTP_HOST#/index.cfm");
@@ -17,10 +17,23 @@
 	else{
 		setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/index.cfm");
 	}
-	
+
 	// Module Routing Added
 	addModuleRoutes(pattern="/forgebox",module="forgebox");
-	
+
 	// Your Application Routes
 	addRoute(pattern=":handler/:action?");
+
+
+	/** Developers can modify the CGI.PATH_INFO value in advance of the SES
+		interceptor to do all sorts of manipulations in advance of route
+		detection. If provided, this function will be called by the SES
+		interceptor instead of referencing the value CGI.PATH_INFO.
+
+		This is a great place to perform custom manipulations to fix systemic
+		URL issues your Web site may have or simplify routes for i18n sites.
+	**/
+	function PathInfoProvider(){
+		return CGI.PATH_INFO;
+	}
 </cfscript>
