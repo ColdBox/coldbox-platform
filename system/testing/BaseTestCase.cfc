@@ -165,17 +165,22 @@ id , name , mail
 		
 	<!--- getMockRequestContext --->
 	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it.">
-		<cfargument name="clearMethods" type="boolean" required="false" default="false" hint="Clear Methods on it?"/>
+		<cfargument name="clearMethods" type="boolean" 	required="false" default="false" hint="Clear Methods on it?"/>
+		<cfargument name="decorator" 	type="any" 		required="false" hint="The class path to the decorator to build into the mock request context"/>
 		<cfscript>
-			var mockRC = "";
-			var rcProps = structnew();
+			var mockRC 			= "";
+			var mockController 	= "";
+			var rcProps 		= structnew();
 			
 			if( arguments.clearMethods ){
-				return getMockBox().createMock(className="coldbox.system.web.context.RequestContext",clearMethods=true);
+				if( structKeyExists(arguments,"decorator") ){
+					return getMockBox().createEmptyMock(arguments.decorator);
+				}
+				return getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
 			}
 			
 			// Create functioning request context
-			mockRC = getMockBox().createMock(className="coldbox.system.web.context.RequestContext");
+			mockRC = getMockBox().createMock("coldbox.system.web.context.RequestContext");
 			
 			// Create mock properties
 			rcProps.DefaultLayout = "";
@@ -187,8 +192,16 @@ id , name , mail
 			rcProps.FolderLayouts = structnew();
 			rcProps.RegisteredLayouts = structnew();
 			rcProps.modules = structnew();
+			mockRC.init(rcProps);
 			
-			return mockRC.init(rcProps);
+			// return decorator context
+			if( structKeyExists(arguments,"decorator") ){
+				mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest');
+				return getMockBox().createMock(arguments.decorator).init(mockRC, mockController);
+			}
+			
+			// return normal RC
+			return mockRC;			
 		</cfscript>
 	</cffunction>
 	

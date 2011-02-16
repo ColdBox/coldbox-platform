@@ -6,6 +6,18 @@
 		test = mockBox.createMock("coldbox.system.testing.BaseTestCase");
 	}
 	
+	function testGetMockRequestContext(){
+		makePublic(test,"getMockRequestContext");
+		rc = test.getMockRequestContext();
+		assertTrue( isObject(rc) );
+		
+		rc = test.getMockRequestContext(true,'coldbox.testharness.model.myRequestContextDecorator');
+		assertTrue( isObject(rc) );	
+		
+		rc = test.getMockRequestContext(false,'coldbox.testharness.model.myRequestContextDecorator');
+		assertTrue( isObject(rc) );	
+	}
+	
 	function testgetMockDatasource(){
 		makePublic(test,"getMockDatasource");
 		dsn = test.getMockDatasource(name="dbtest");
