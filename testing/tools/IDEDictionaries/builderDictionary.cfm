@@ -56,7 +56,9 @@ scopes = {
 	event = "coldbox.system.web.context.RequestContext",
 	flash = "coldbox.system.web.flash.AbstractFlashScope",
 	log = "coldbox.system.logging.Logger",
-	logbox = "coldbox.system.logging.LogBox"
+	logbox = "coldbox.system.logging.LogBox",
+	binder = "coldbox.system.ioc.config.Binder",
+	wirebox = "coldbox.system.ioc.Injector"
 };
 for( key in scopes ){
 	
