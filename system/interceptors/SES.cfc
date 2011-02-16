@@ -77,7 +77,7 @@ Description :
 			var key 		 = "";
 			var routedStruct = structnew();
 			var rc 			 = arguments.event.getCollection();
-			var cleanedPaths = getCleanedPaths(rc);
+			var cleanedPaths = getCleanedPaths(rc,arguments.Event);
 			var HTTPMethod	 = arguments.event.getHTTPMethod();
 
 			// Check if disabled or in proxy mode, if it is, then exit out.
@@ -528,15 +528,15 @@ Description :
 	</cffunction>
 
 	<!--- CGI Element Facade. --->
-	<cffunction name="getCGIElement" access="private" returntype="any" hint="The cgi element facade method" output="false" >
+	<cffunction name="getCGIElement" access="private" returntype="any" hint="The cgi element facade method" output="true" >
 		<cfargument name="cgielement" required="true" hint="The cgi element to retrieve">
+		<cfargument name="Event"  required="true" hint="The event object.">
 		<cfscript>
 			// Allow a UDF to manipulate the CGI.PATH_INFO value
 			// in advance of route detection.
-			if (arguments.CGIElement EQ 'PATH_INFO'
-			AND structKeyExists(variables, 'PathInfoProvider'))
+			if (arguments.cgielement EQ 'path_info' AND structKeyExists(variables, 'PathInfoProvider'))
 			{
-				return PathInfoProvider();
+				return PathInfoProvider(event=arguments.Event);
 			}
 			return CGI[arguments.CGIElement];
 		</cfscript>
@@ -914,12 +914,13 @@ Description :
 	<!--- getCleanedPaths --->
 	<cffunction name="getCleanedPaths" access="private" returntype="any" hint="Get and Clean the path_info and script names structure" output="false" >
 		<cfargument name="rc" required="true" hint="The request collection to incorporate items into"/>
+		<cfargument name="event" required="true" hint="The event object.">
 		<cfscript>
 			var items = structnew();
 
 			// Get path_info & script name
-			items["pathInfo"] 	= getCGIElement('path_info');
-			items["scriptName"] = trim(reReplacenocase(getCGIElement('script_name'),"[/\\]index\.cfm",""));
+			items["pathInfo"] 	= getCGIElement('path_info',arguments.event);
+			items["scriptName"] = trim(reReplacenocase(getCGIElement('script_name',arguments.event),"[/\\]index\.cfm",""));
 
 			// Clean ContextRoots
 			if( len(getContextRoot()) ){
@@ -938,7 +939,7 @@ Description :
 
 			// fix URL vars after ?
 			items["pathInfo"] = fixIISURLVars(items["pathInfo"],arguments.rc);
-
+abort;
 			return items;
 		</cfscript>
 	</cffunction>

@@ -32,8 +32,18 @@
 
 		This is a great place to perform custom manipulations to fix systemic
 		URL issues your Web site may have or simplify routes for i18n sites.
+
+		@Event The ColdBox RequestContext Object
 	**/
-	function PathInfoProvider(){
+	function PathInfoProvider(Event){
+		/* Example:
+		var URI = CGI.PATH_INFO;
+		if (URI eq "api/foo/bar")
+		{
+			Event.setProxyRequest(true);
+			return "some/other/value/for/your/routes";
+		}
+		*/
 		return CGI.PATH_INFO;
 	}
 </cfscript>
