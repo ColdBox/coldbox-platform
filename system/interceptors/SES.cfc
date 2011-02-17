@@ -939,7 +939,7 @@ Description :
 
 			// fix URL vars after ?
 			items["pathInfo"] = fixIISURLVars(items["pathInfo"],arguments.rc);
-abort;
+
 			return items;
 		</cfscript>
 	</cffunction>
