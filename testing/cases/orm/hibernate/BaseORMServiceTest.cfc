@@ -122,7 +122,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		r = ormService.getAll('Category');
 		assertTrue( arrayLen(r) );
 
-		r = ormService.getAll('Category','1,ff80808128c9fa8b0128cc3af5d90007');
+		r = ormService.getAll('Category',"A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91");
 		assertTrue( arraylen( r ) eq 1 );
 		
 		r = ormService.getAll('Category',[1,2]);

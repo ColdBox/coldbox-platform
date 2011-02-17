@@ -9,7 +9,7 @@ Description :
 	A WireBox provider object that retrieves objects by using the provider pattern.
 	
 ----------------------------------------------------------------------->
-<cfcomponent hint="A WireBox provider object that retrieves objects by using the provider pattern." output="false">
+<cfcomponent implements="coldbox.system.ioc.IProvider" hint="A WireBox provider object that retrieves objects by using the provider pattern." output="false">
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="Provider" hint="Constructor">

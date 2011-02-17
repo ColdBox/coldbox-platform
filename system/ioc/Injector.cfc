@@ -260,6 +260,9 @@ Description :
 				case "factory" : {
 					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
 				}
+				case "provider" : {
+					oModel = getInstance( thisMap.getPath() ).get(); break;
+				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}		
 			

@@ -436,5 +436,12 @@
 		debug( DIMethodArgs );
 	}
 	
+	function testToProvider(){
+		config.map("MyProviderObject").toProvider("MyProvider");
+		mapping = config.getMapping("MyProviderObject");	
+		assertEquals( "MyProvider", mapping.getPath() );
+		assertEquals( "provider", mapping.getType() );
+	}
+	
 </cfscript>
 </cfcomponent>

@@ -25,7 +25,6 @@ TODO:
    - getAll{entityName}()
    - count{entityName}()
 - Add find methods by criteria with projections
-- Add validations maybe via Hyrule, but more implicit and mixin methods
 ----------------------------------------------------------------------->
 */
 component accessors="true"{
@@ -916,22 +915,6 @@ component accessors="true"{
 	*/
 	string function getTableName(required string entityName){
 		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
-	}
-
-	/**
-	* Returns array of error or empty array.
-	*/
-	array function validate(required any entity){
-		//TODO: CustomErrorMessage file path. it would be coldbox setting "ValidationErrorMessage" = "file name"
-		var validator	= new coldbox.system.orm.hibernate.hyrule.Validator();
-		var result		= validator.validate(arguments.entity);
-
-		if(result.hasErrors()){
-			// Return Array of error messages
-			return result.getErrors();
-		}
-
-		return ArrayNew(1);
 	}
 
 	/**
