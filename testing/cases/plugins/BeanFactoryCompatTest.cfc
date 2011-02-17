@@ -17,6 +17,28 @@ Description :
 			bf = getController().getPlugin("BeanFactory");
 		}
 	
+		function testcoldboxDSL(){
+			
+		}
+		
+		function testCacheBoxDSL(){
+			makePublic(bf,"getcacheBoxDSL");
+			target = bf.getCacheBoxDSL({type="cacheBox"});
+			assertEquals( getController().getCacheBox(), target);
+			
+			target = bf.getCacheBoxDSL({type="cacheBox:default"});
+			assertEquals( getController().getCacheBox().getDefaultCache(), target);
+		
+			getController().getCacheBox().getDefaultCache().set("unitTest",now(),0);
+			target = bf.getCacheBoxDSL({type="cacheBox:default:unitTest"});
+			assertEquals( getController().getCacheBox().getDefaultCache().get("unitTest"), target);
+		}
+		
+		function testGetModelWithDSL(){
+			target = bf.getModel(dsl="coldbox:cacheManager");
+			assertEquals( getController().getColdBoxOCM(), target); 
+		}
+		
 		function testPopulateFromStruct(){
 			stime = getTickCount();
 			
@@ -137,5 +159,22 @@ Description :
 			
 			assertFalse( bf.locateModel('whatever').length() );
 		}	
+	
+		function testContainsModel(){
+			bf = getController().getPlugin("BeanFactory");
+			assertFalse( bf.containsModel('Nothing') );
+			assertTrue( bf.containsModel('testService') );	
+		}
+	
+		function testResolveModelAlias(){
+			bf = getController().getPlugin("BeanFactory");
+			
+			assertEquals( bf.resolveModelAlias('MyFormBean'), "formBean" );
+			
+			assertEquals( bf.resolveModelAlias('HELLO'), "HELLO" );
+			
+			bf.addModelMapping(path='mypath.whateverman');
+			assertEquals( bf.resolveModelAlias('whateverman'), "mypath.whateverman" );
+		}
 	</cfscript>
 </cfcomponent>

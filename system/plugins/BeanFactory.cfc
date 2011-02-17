@@ -160,7 +160,7 @@ Description:
 			arguments.memento = controller.getRequestService().getContext().getCollection();
 
 			if( isSimpleValue(arguments.target) ){
-				arguments.target = create(arguments.target);
+				arguments.target = getModel(arguments.target);
 			}
 
 			return instance.beanPopulator.populateFromStruct(argumentCollection=arguments);
@@ -179,7 +179,7 @@ Description:
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
-				arguments.target = create(arguments.target);
+				arguments.target = getModel(arguments.target);
 			}
 
 			return instance.beanPopulator.populateFromJSON(argumentCollection=arguments);
@@ -199,7 +199,7 @@ Description:
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
-				arguments.target = create(arguments.target);
+				arguments.target = getModel(arguments.target);
 			}
 
 			return instance.beanPopulator.populateFromXML(argumentCollection=arguments);
@@ -219,7 +219,7 @@ Description:
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
-				arguments.target = create(arguments.target);
+				arguments.target = getModel(arguments.target);
 			}
 
 			return instance.beanPopulator.populateFromQuery(argumentCollection=arguments);
@@ -238,7 +238,7 @@ Description:
 		<cfargument name="prefix"  			required="true" 	type="string"  	hint="The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.">
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
-				arguments.target = create(arguments.target);
+				arguments.target = getModel(arguments.target);
 			}
 
 			//populate bean and return
@@ -258,7 +258,7 @@ Description:
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
-				arguments.target = create(arguments.target);
+				arguments.target = getModel(arguments.target);
 			}
 
 			return instance.beanPopulator.populateFromStruct(argumentCollection=arguments);
