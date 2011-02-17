@@ -359,6 +359,15 @@ Description :
     	</cfscript>
     </cffunction>
 	
+	<!--- toProvider --->
+    <cffunction name="toProvider" output="false" access="public" returntype="any" hint="Map to a provider object that must implement coldbox.system.ioc.IProvider">
+    	<cfargument name="provider" required="true" hint="The provider to map to"/>
+		<cfscript>
+			currentMapping.setPath( arguments.provider ).setType( this.TYPES.PROVIDER );
+			return this;
+    	</cfscript>
+    </cffunction>
+	
 	<!--- toValue --->
     <cffunction name="toValue" output="false" access="public" returntype="any" hint="Map to a constant value">
     	<cfargument name="value" required="true" hint="The value to bind to"/>

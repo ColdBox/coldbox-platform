@@ -20,5 +20,6 @@ Description :
 	this.DSL		= "dsl";
 	this.CONSTANT	= "constant";
 	this.FACTORY	= "factory";
+	this.PROVIDER	= "provider";
 	
 </cfscript></cfcomponent>

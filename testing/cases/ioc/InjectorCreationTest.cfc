@@ -32,8 +32,8 @@
 		// mocks
 		mockBuilder = getMockBox().createMock("coldbox.system.ioc.Builder").init( injector );
 		injector.$property("builder","instance",mockBuilder);
-		mockStub = getMockbox().createStub();
 		injector.getEventManager().$("process");
+		mockStub = getMockbox().createStub();
 		
 		// CFC
 		mapping.setType("cfc");
@@ -63,6 +63,13 @@
 		mapping.setType("constant").setValue("testbaby");
 		val = injector.buildInstance( mapping );
 		assertEquals("testbaby", val);
+		
+		//Provider
+		mockProvider = getMockBox().createEmptyMock("coldbox.system.ioc.Provider").$("get",mockStub);
+		mapping.setType("provider").setPath("MyCoolProvider");
+		injector.$("getInstance").$args("MyCoolProvider").$results(mockProvider);
+		val = injector.buildInstance( mapping );
+		assertEquals(mockStub, val);
 	}
 	
 	function testProviderMethods(){
