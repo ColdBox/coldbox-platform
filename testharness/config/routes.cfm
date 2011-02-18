@@ -14,6 +14,9 @@
 		     action={GET='show', PUT='update', DELETE='delete', POST='save'});
 	
 	*/
+	// Views No Events
+	addRoute(pattern="contactus",view="simpleView",ssl=true);
+	addRoute(pattern="contactus2",view="simpleView",viewnoLayout=true);
 	
 	addModuleRoutes(pattern="/space/:spaceUrl/luis",module="test1");
 	
@@ -29,9 +32,6 @@
 	addRoute(pattern="/test/:id-numeric{2}/:num-numeric/:name/:month{3}?",handler="ehGeneral",action="dspHello");
 	addRoute(pattern="test/:id/:name{4}?",handler="ehGeneral",action="dspHello");
 	
-	// Views No Events
-	addRoute(pattern="contactus",view="simpleView");
-	addRoute(pattern="contactus2",view="simpleView",viewnoLayout=true);
 	
 	// Constraints Implicitly
 	//addRoute(pattern="/const/:test",view="simpleView",constraints={test='(ATest)'});
