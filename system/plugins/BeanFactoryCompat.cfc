@@ -283,7 +283,7 @@ Description: This is the framework's simple bean factory.
 					announceData.oModel = oModel;
 					announceData.modelName = arguments.name;
 					announceData.modelClassPath = modelClassPath;
-					announceInterception("afterModelCreation",announceData);
+					announceInterception("afterInstanceCreation",announceData);
 					// Model Creation Finalized
 					isModelFinalized = true;
 				}

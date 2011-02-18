@@ -42,7 +42,7 @@ component extends="coldbox.system.Interceptor"{
 		adviseBuilder(arguments.interceptData.oHandler);
 	}
 	
-	void function afterModelCreation(event,interceptData){
+	void function afterInstanceCreation(event,interceptData){
 		adviseBuilder(arguments.interceptData.oModel);
 	}
 

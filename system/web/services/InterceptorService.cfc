@@ -23,7 +23,7 @@ Description :
 			// Register the interception points ENUM 
 			// REMOVE Cache Related Items by 3.1 and change this to implicit arrays, I really hate cf7
 			instance.interceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException,onRequestCapture,preReinit,onInvalidEvent," &
-										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
+										  "afterHandlerCreation,afterInstanceCreation,afterPluginCreation," &
 										  "applicationEnd,sessionStart,sessionEnd," &
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
 										  "preLayout,preRender,postRender,preViewRender,postViewRender," &
