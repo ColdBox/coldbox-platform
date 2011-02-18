@@ -12,6 +12,13 @@ Description :
 	This is the BugReport template that gets emailed to the administrators
 ----------------------------------------------------------------------->
 </cfsilent>
+<cfscript>
+	// Detect Session Scope
+	sessionScopeExists = true; 
+	try { structKeyExists(session ,'x'); } catch (any e) { sessionScopeExists = false; }	
+</cfscript>
+
+
 <cfoutput>
 <!--- StyleSheets --->
 <style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
@@ -94,7 +101,7 @@ Description :
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Coldfusion ID: </td>
 	   <td >
-	   	<cftry>
+	   	<cfif sessionScopeExists>
 			<cfif isDefined("session") and structkeyExists(session, "cfid")>
 			CFID=#session.CFID# ;
 			<cfelseif isDefined("client") and structkeyExists(client,"cfid")>
@@ -108,11 +115,9 @@ Description :
 			<cfif isDefined("session") and structkeyExists(session,"sessionID")>
 			JSessionID=#session.sessionID#
 			</cfif>
-			<cfcatch>
-				<!--- ignore, in case there is no session id available --->
-				N/A
-			</cfcatch>
-		</cftry>
+	   <cfelse>
+	   		Session Scope Not Enabled
+	   </cfif>
 		</td>
 	 </tr>
 	 <tr>
@@ -204,13 +209,20 @@ Description :
 	 <tr >
 		<th colspan="2" >Session Storage:</th>
 	 </tr>
-	 <cfset sessioncbstorage = controller.getPlugin('SessionStorage').getStorage()>
-	 <cfloop collection="#sessioncbstorage#" item="key">
-	 <tr>
-	   <td align="right" class="fw_errorTablesTitles"> #key#: </td>
-	   <td ><cfif IsSimpleValue(sessioncbstorage[key])>#htmlEditFormat(sessioncbstorage[key])#<cfelse>#key# [complex]</cfif></td>
-	 </tr>
-	 </cfloop>
+	 <cfif sessionScopeExists>
+	 	 <cfset sessioncbstorage = controller.getPlugin('SessionStorage').getStorage()>
+		 <cfloop collection="#sessioncbstorage#" item="key">
+		 <tr>
+		   <td align="right" class="fw_errorTablesTitles"> #key#: </td>
+		   <td ><cfif IsSimpleValue(sessioncbstorage[key])>#htmlEditFormat(sessioncbstorage[key])#<cfelse>#key# [complex]</cfif></td>
+		 </tr>
+		 </cfloop>
+	 <cfelse>
+		 <tr>
+		   <td align="right" class="fw_errorTablesTitles"> N/A </td>
+		   <td >Session Scope Not Enabled</td>
+		 </tr>	 	
+	 </cfif>
 	 <tr >
 		<th colspan="2" >Cookies:</th>
 	 </tr>
