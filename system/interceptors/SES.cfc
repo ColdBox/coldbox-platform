@@ -209,6 +209,7 @@ Description :
 		<cfargument name="constraints" 			 type="any"  	required="false" default="" hint="A structure or JSON structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
 		<cfargument name="module" 				 type="string"  required="false" default="" hint="The module to add this route to"/>
 		<cfargument name="moduleRouting" 		 type="string"  required="false" default="" hint="Called internally by addModuleRoutes to add a module routing route."/>
+		<cfargument name="ssl" 					 type="boolean" required="true" default="false" hint="Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisRoute = structNew();
@@ -794,7 +795,12 @@ Description :
 				}
 				return params;
 			}
-
+			
+			// SSL Checks
+			if( foundRoute.ssl AND NOT event.isSSL()){
+				setNextEvent(uri=cgi.script_name & cgi.path_info,ssl=true,statusCode=302,queryString=cgi.query_string);
+			}
+			
 			// Check if the match is a module Routing entry point or not?
 			if( len( foundRoute.moduleRouting ) ){
 
