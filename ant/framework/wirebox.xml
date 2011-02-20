@@ -50,7 +50,12 @@
         	<fileset dir="system/cache" />
         </copy>
 		<copy todir="${dir.build}/wirebox/system/core">
-        	<fileset dir="system/core" />
+        	<fileset dir="system/core">
+        		<include name="collections/"/>
+        		<include name="util/"/>
+        		<include name="dynamic/"/>
+        		<include name="events/"/>
+        	</fileset>
         </copy>
 		<copy todir="${dir.build}/wirebox/system/logging">
         	<fileset dir="system/logging" />
@@ -104,6 +109,10 @@
 		<!-- No CacheBox -->
 		<delete dir="${dir.build}/coldbox/system/cache" />
 		<delete dir="${dir.build}/wirebox/system/cache" />
+		
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${wirebox.version}" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/wirebox_${wirebox.version}.zip" basedir="${dir.build}"></zip>
