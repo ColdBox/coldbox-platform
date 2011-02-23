@@ -231,7 +231,7 @@ component extends="coldbox.system.Interceptor"{
 			// Log Error
 			log.error("An exception ocurred in the AOPed transaction: #e.message# #e.detail#",e);
 			// rollback
-			tx.rollback();
+			if(tx.wasCommitted()){ tx.rollback(); }
 			//throw it
 			throw(e);
 		}		

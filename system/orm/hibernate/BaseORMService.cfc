@@ -397,11 +397,14 @@ component accessors="true"{
 	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
     */
 	any function get(required string entityName,required any id) {
-		var entity = entityLoadByPK(arguments.entityName, arguments.id);
-
-		// Check if not null, then return it
-		if( NOT isNull(entity) ){
-			return entity;
+		
+		// check if id exists so entityLoad does not throw error
+		if( (isSimpleValue(arguments.id) and len(arguments.id)) OR NOT isSimpleValue(arguments.id) ){
+			var entity = entityLoadByPK(arguments.entityName, arguments.id);
+			// Check if not null, then return it
+			if( NOT isNull(entity) ){
+				return entity;
+			}
 		}
 
 		// Check if ID=0 or empty to do convenience new entity
@@ -460,7 +463,7 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch(Any e){
-			tx.rollback();
+			if(tx.wasCommitted()){ tx.rollback(); }
 			throw(e);
 		}
 		// Auto Flush
@@ -478,7 +481,7 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch(Any e){
-			tx.rollback();
+			if(tx.wasCommitted()){ tx.rollback(); }
 			throw(e);
 		}
 		// Auto Flush
@@ -506,7 +509,7 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch(Any e){
-			tx.rollback();
+			if(tx.wasCommitted()){ tx.rollback(); }
 			throw(e);
 		}
 
@@ -588,13 +591,13 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch("java.lang.NullPointerException" e){
-			tx.rollback();
+			if(tx.wasCommitted()){ tx.rollback(); }
 			throw(message="A null pointer exception occurred when running the query",
 			  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
 			  type="BaseORMService.MaybeInvalidParamCaseException");
 		}
 		catch(Any e){
-			tx.rollback();
+			if(tx.wasCommitted()){ tx.rollback(); }
 			throw(e);
 		}
 
@@ -629,7 +632,7 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch(Any e){
-			tx.rollback();
+			if(tx.wasCommitted()){ tx.rollback(); }
 			throw(e);
 		}
 
@@ -659,7 +662,7 @@ component accessors="true"{
 				tx.commit();
 			}
 			catch(Any e){
-				tx.rollback();
+				if(tx.wasCommitted()){ tx.rollback(); }
 				throw(e);
 			}
 		}
