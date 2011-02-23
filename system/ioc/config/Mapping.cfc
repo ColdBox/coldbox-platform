@@ -443,7 +443,7 @@ Description :
 	    	if( NOT instance.discovered ){
 				
 				// announce inspection
-				iData = {mapping=this,binder=arguments.binder};
+				iData = {mapping=this,binder=arguments.binder,injector=arguments.binder.getInjector()};
 				eventManager.processState("beforeInstanceInspection",iData);
 				
 				// Processing only done for CFC's,rest just mark and return

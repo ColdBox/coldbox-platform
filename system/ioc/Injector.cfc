@@ -252,7 +252,7 @@ Description :
 			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments );
 			
 			// Announce creation, initialization and DI magicfinicitation!
-			iData = {mapping=mapping,target=target};
+			iData = {mapping=mapping,target=target,injector=this};
 			instance.eventManager.processState("afterInstanceCreation",iData);
 			
 			return target;
@@ -269,7 +269,7 @@ Description :
 			var iData	= "";
 			
 			// before construction event
-			iData = {mapping=arguments.mapping};
+			iData = {mapping=arguments.mapping,injector=this};
 			instance.eventManager.processState("beforeInstanceCreation",iData);
 			
     		// determine construction type
@@ -307,7 +307,7 @@ Description :
 			}
 			
 			// announce afterInstanceInitialized
-			iData = {mapping=arguments.mapping,target=oModel};
+			iData = {mapping=arguments.mapping,target=oModel,injector=this};
 			instance.eventManager.processState("afterInstanceInitialized",iData);
 			
 			return oModel;
