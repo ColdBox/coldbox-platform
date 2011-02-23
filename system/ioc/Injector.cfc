@@ -64,7 +64,9 @@ Description :
 					"afterInstanceInitialized",		// X once the constructor is called and before DI is performed
 					"afterInstanceCreation", 		// X once an object is created, initialized and done with DI
 					"beforeInstanceInspection",		// X before an object is inspected for injection metadata
-					"afterInstanceInspection"		// X after an object has been inspected and metadata is ready to be saved
+					"afterInstanceInspection",		// X after an object has been inspected and metadata is ready to be saved
+					"beforeInjectorShutdown",		// X right before the shutdown procedures start
+					"afterInjectorShutdown"			// X right after the injector is shutdown
 				],
 				// LogBox and Class Logger
 				logBox  = "",
@@ -157,6 +159,39 @@ Description :
 			</cfscript>
 		</cflock>
 	</cffunction>
+	
+	<!--- shutdown --->
+    <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown the injector gracefully by calling the shutdown events internally.">
+    	<cfscript>
+    		var iData = { 
+				injector = this 
+			};
+			
+			// Log
+			if( instance.log.canInfo() ){
+    			instance.log.info("Shutdown of Injector: #getInjectorID()# requested and started.");
+    		}
+			
+			// Notify Listeners
+			instance.eventManager.processState("beforeInjectorShutdown",iData);
+			
+			// standalone cachebox? Yes, then shut it down baby!
+			if( NOT isColdBoxLinked() ){
+				instance.cacheBox.shutdown();
+			}
+			
+			// Remove from scope
+			removeFromScope();		
+			
+			// Notify Listeners
+			instance.eventManager.processState("afterInjectorShutdown",iData);
+			
+			// Log shutdown complete
+			if( instance.log.canInfo() ){
+				instance.log.info("Shutdown of injector: #getInjectorID()# completed.");
+			}	
+		</cfscript>
+    </cffunction>
 
 	<!--- getInstance --->
     <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
