@@ -492,7 +492,7 @@ Description :
     	<cfargument name="scope" required="true" hint="The scope to map to, use a valid WireBox Scope by using binder.SCOPES.* or a custom scope" >
     	<cfscript>
     		// check if invalid scope
-			if( NOT this.SCOPES.isValid(arguments.scope) AND NOT structKeyExists(instance.customScopes,arguments.scope) ){
+			if( NOT this.SCOPES.isValidScope(arguments.scope) AND NOT structKeyExists(instance.customScopes,arguments.scope) ){
 				utility.throwit(message="Invalid WireBox Scope: '#arguments.scope#'",
 								detail="Please make sure you are using a valid scope, valid scopes are: #arrayToList(this.SCOPES.getValidScopes())# AND custom scopes: #structKeyList(instance.customScopes)#",
 								type="Binder.InvalidScopeMapping");

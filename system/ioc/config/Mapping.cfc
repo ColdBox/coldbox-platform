@@ -385,13 +385,13 @@ Description :
     	<cfreturn this>
     </cffunction>
 	
-	<!--- getMetadata --->
-    <cffunction name="getMetadata" output="false" access="public" returntype="any" hint="Get the internal mapping metadata of the object">
+	<!--- getObjectMetadata --->
+    <cffunction name="getObjectMetadata" output="false" access="public" returntype="any" hint="Get the internal mapping metadata of the object">
     	<cfreturn instance.metadata>
     </cffunction>
 	
-	<!--- setMetadata --->
-    <cffunction name="setMetadata" output="false" access="public" returntype="any" hint="Set the mappings CFC target metadata">
+	<!--- setObjectMetadata --->
+    <cffunction name="setObjectMetadata" output="false" access="public" returntype="any" hint="Set the mappings CFC target metadata">
     	<cfargument name="metadata" required="true" hint="Target CFC metadata"/>
 		<cfset instance.metadata = arguments.metadata>
 		<cfreturn this>

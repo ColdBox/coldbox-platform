@@ -21,7 +21,7 @@ Description :
 	this.SERVER			= "server";
 	this.CACHEBOX		= "cachebox";
 	
-	function isValid(scope){
+	function isValidScope(scope){
 		var key = "";
 		for(key in this){
 			if( isSimpleValue(this[key]) and this[key] eq arguments.scope ){
