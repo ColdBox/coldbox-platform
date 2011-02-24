@@ -249,7 +249,7 @@ Modifications
 		if( structKeyExists(md,"properties") ){
 		
 			// loop over properties
-			for(x=1; x lte ArrayLen(md.properties); x=x+1){
+			for(x=1; x lte ArrayLen(md.properties); x++){
 				// check the property name exists and if it has a marshal annotation of false
 				if( structKeyExists(md.properties[x],"name") 
 					OR NOT structKeyExists(md.properties[x],"marhsal")
@@ -349,8 +349,8 @@ Modifications
 	</cffunction>
 	
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
-		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
+	<cffunction name="getUtil" access="private" output="false" returntype="shared.frameworks.coldbox_3_00.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn createObject("component","shared.frameworks.coldbox_3_00.system.core.util.Util")/>
 	</cffunction>
 
 </cfcomponent>
