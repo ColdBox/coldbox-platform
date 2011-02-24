@@ -200,9 +200,9 @@ Description :
 					controller.setLog(controller.getLogBox().getLogger(controller));
 				}	
 				// WireBox additions
-				wireboxHash = hash( configSettings.wirebox );
+				wireboxHash = hash( configSettings.wirebox.toString() );
 				appLoader.parseWireBox(environmentXML,configSettings,true);
-				if( wireboxHash NEQ hash(configSettings.wirebox) ){
+				if( wireboxHash NEQ hash(configSettings.wirebox.toString()) ){
 					controller.getLoaderService().createWireBox();
 				}
 			}			
