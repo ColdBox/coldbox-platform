@@ -76,14 +76,33 @@ Modification History:
 		<cfset var cboxBugReport 	= "">
 		<cfset var exception 		= arguments.exceptionBean>
 		<cfset var event 			= controller.getRequestService().getContext()>
+		<cfset var appLocPrefix				= "/">
+		<cfset var bugReportTemplatePath	= "">
+		<cfset var CustomErrorTemplate		= controller.getSetting("CustomErrorTemplate")>
 		
 		<!--- test for custom bug report --->
-		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomErrorTemplate") neq "">
+		<cfif Exception.getErrortype() eq "application" and CustomErrorTemplate neq "">
 			<cftry>
+					
+				<!--- App location prefix --->
+				<cfif len(controller.getSetting('AppMapping')) >
+						<cfset appLocPrefix = appLocPrefix & controller.getSetting('AppMapping') & "/">
+				</cfif>
+		
+				<!--- Setup the bugReport template Path for relative location first. --->
+				<cfset bugReportTemplatePath = appLocPrefix & reReplace(CustomErrorTemplate,"^/","")>
+					<cfif NOT fileExists(expandPath(bugReportTemplatePath))>
+						<!--- Assume absolute location as not found inside our app --->
+						<cfset bugReportTemplatePath = CustomErrorTemplate>
+						<cfif NOT fileExists(expandPath(bugReportTemplatePath))>
+							<cfthrow message="CustomErrorTemplate cannot be found.  #expandPath(bugReportTemplatePath)#">
+						</cfif>
+					</cfif>
+
 				<!--- Place exception in the requset Collection --->
 				<cfset event.setvalue("exceptionBean",Exception)>
 				<!--- Save the Custom Report --->
-				<cfsavecontent variable="cboxBugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomErrorTemplate")#"></cfsavecontent>
+				<cfsavecontent variable="cboxBugReport"><cfinclude template="#bugReportTemplatePath#"></cfsavecontent>
 				<cfcatch type="any">
 					<cfset exception = ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
 					<!--- Save the Bug Report --->
@@ -105,15 +124,35 @@ Modification History:
 		<cfset var cboxBugReport 	= "">
 		<cfset var exception 		= arguments.exceptionBean>
 		<cfset var event 			= controller.getRequestService().getContext()>
+		<cfset var appLocPrefix					= "/">
+		<cfset var emailBugReportTemplatePath	= "">
+		<cfset var customEmailBugReport			= controller.getSetting("customEmailBugReport")>
 		
 		<!--- test for custom bug report --->
 		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomEmailBugReport") neq "">
 			<cftry>
+					
+				<!--- App location prefix --->
+				<cfif len(controller.getSetting('AppMapping')) >
+						<cfset appLocPrefix = appLocPrefix & controller.getSetting('AppMapping') & "/">
+				</cfif>
+		
+				<!--- Setup the bugReport template Path for relative location first. --->
+				<cfset emailBugReportTemplatePath = appLocPrefix & reReplace(customEmailBugReport,"^/","")>
+					<cfif NOT fileExists(expandPath(emailBugReportTemplatePath))>
+						<!--- Assume absolute location as not found inside our app --->
+						<cfset emailBugReportTemplatePath = customEmailBugReport>
+						<cfif NOT fileExists(expandPath(emailBugReportTemplatePath))>
+							<cfthrow message="customEmailBugReport cannot be found.  #expandPath(customEmailBugReport)#">
+						</cfif>
+					</cfif>
+			
 				<!--- Place exception in the requset Collection --->
 				<cfset event.setvalue("exceptionBean",Exception)>
 				<!--- Save the Custom Email Bug Report --->
-				<cfsavecontent variable="cboxBugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomEmailBugReport")#"></cfsavecontent>
+				<cfsavecontent variable="cboxBugReport"><cfinclude template="#emailBugReportTemplatePath#"></cfsavecontent>
 				<cfcatch type="any">
+					<cfset controller.setSetting("CustomEmailBugReport","")>
 					<cfset exception = ExceptionHandler(cfcatch,"Application","Error creating custom email bug report.")>
 					<!--- Save the Bug Report --->
 					<cfsavecontent variable="cboxBugReport"><cfinclude template="/coldbox/system/includes/BugReport.cfm"></cfsavecontent>
