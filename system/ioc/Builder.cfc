@@ -80,7 +80,7 @@ TODO: update dsl consistency, so it is faster.
 		</cfscript>
 		
 		<!--- Constructor initialization? --->
-		<cfif thisMap.isAutoInit()>
+		<cfif thisMap.isAutoInit()  AND structKeyExists(oModel,thisMap.getConstructor())>
 			<!--- Get Arguments --->
 			<cfset constructorArgs = buildArgumentCollection(thisMap, thisMap.getDIConstructorArguments() )>
 			
