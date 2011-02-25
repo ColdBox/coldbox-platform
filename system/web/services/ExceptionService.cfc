@@ -130,34 +130,25 @@ Modification History:
 		
 		<!--- test for custom bug report --->
 		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomEmailBugReport") neq "">
-			<cftry>
-					
-				<!--- App location prefix --->
-				<cfif len(controller.getSetting('AppMapping')) >
-						<cfset appLocPrefix = appLocPrefix & controller.getSetting('AppMapping') & "/">
+			<!--- App location prefix --->
+			<cfif len(controller.getSetting('AppMapping')) >
+					<cfset appLocPrefix = appLocPrefix & controller.getSetting('AppMapping') & "/">
+			</cfif>
+	
+			<!--- Setup the bugReport template Path for relative location first. --->
+			<cfset emailBugReportTemplatePath = appLocPrefix & reReplace(customEmailBugReport,"^/","")>
+				<cfif NOT fileExists(expandPath(emailBugReportTemplatePath))>
+					<!--- Assume absolute location as not found inside our app --->
+					<cfset emailBugReportTemplatePath = customEmailBugReport>
+					<cfif NOT fileExists(expandPath(emailBugReportTemplatePath))>
+						<cfthrow message="customEmailBugReport cannot be found.  #expandPath(customEmailBugReport)#">
+					</cfif>
 				</cfif>
 		
-				<!--- Setup the bugReport template Path for relative location first. --->
-				<cfset emailBugReportTemplatePath = appLocPrefix & reReplace(customEmailBugReport,"^/","")>
-					<cfif NOT fileExists(expandPath(emailBugReportTemplatePath))>
-						<!--- Assume absolute location as not found inside our app --->
-						<cfset emailBugReportTemplatePath = customEmailBugReport>
-						<cfif NOT fileExists(expandPath(emailBugReportTemplatePath))>
-							<cfthrow message="customEmailBugReport cannot be found.  #expandPath(customEmailBugReport)#">
-						</cfif>
-					</cfif>
-			
-				<!--- Place exception in the requset Collection --->
-				<cfset event.setvalue("exceptionBean",Exception)>
-				<!--- Save the Custom Email Bug Report --->
-				<cfsavecontent variable="cboxBugReport"><cfinclude template="#emailBugReportTemplatePath#"></cfsavecontent>
-				<cfcatch type="any">
-					<cfset controller.setSetting("CustomEmailBugReport","")>
-					<cfset exception = ExceptionHandler(cfcatch,"Application","Error creating custom email bug report.")>
-					<!--- Save the Bug Report --->
-					<cfsavecontent variable="cboxBugReport"><cfinclude template="/coldbox/system/includes/BugReport.cfm"></cfsavecontent>
-				</cfcatch>
-			</cftry>
+			<!--- Place exception in the requset Collection --->
+			<cfset event.setvalue("exceptionBean",Exception)>
+			<!--- Save the Custom Email Bug Report --->
+			<cfsavecontent variable="cboxBugReport"><cfinclude template="#emailBugReportTemplatePath#"></cfsavecontent>
 		<cfelse>
 			<!--- Render the Default Email Bug Report --->
 			<cfsavecontent variable="cboxBugReport"><cfinclude template="/coldbox/system/includes/BugReport.cfm"></cfsavecontent>
