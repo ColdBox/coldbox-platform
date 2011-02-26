@@ -236,21 +236,18 @@ Modification History:
 			var cacheBox = controller.getCacheBox();
 			var wireBox = controller.getWireBox();
 			
-    		// Shutdown any services like cache engine, etc.
+    		// Process services reinit
+			for(key in services){
+				services[key].onShutdown();
+			}
+			// Shutdown any services like cache engine, etc.
 			if( isObject(cacheBox) ){
 				cacheBox.shutdown();
 			}
-			
 			// Shutdown WireBox
 			if( isObject(wireBox) ){
 				wireBox.shutdown();
 			}
-			
-			// Process services reinit
-			for(key in services){
-				services[key].onShutdown();
-			}
-			
 		</cfscript>
     </cffunction>
 	
