@@ -43,7 +43,7 @@ component extends="coldbox.system.Interceptor"{
 	}
 	
 	void function afterInstanceCreation(event,interceptData){
-		adviseBuilder(arguments.interceptData.oModel);
+		adviseBuilder(arguments.interceptData.target);
 	}
 
 	////////////////////////////////////// AOP METHODS //////////////////////////////////////////////
