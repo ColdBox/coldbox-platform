@@ -87,40 +87,12 @@
 			staging		= "test"
 		};
 		
-		//IOC Integration
-		ioc = {
-			framework 		= "lightwire",
-			reload 	  	  	= true,
-			objectCaching 	= false,
-			definitionFile  = "config/coldspring.xml.cfm",
-			parentFactory 	= {
-				framework = "coldspring",
-				definitionFile = "config/parent.xml.cfm"
-			}
-		};
-		
 		// WireBox
 		wireBox = { 
 			enabled = true,
 			//binder="coldbox.testHarness.config.WireBox", 
 			singletonReload=true 
 		};
-		
-		//Model Integration
-		/*
-		models = {
-			objectCaching = true,
-			definitionFile = "config/modelMappings.cfm",
-			externalLocation = "coldbox.testing.testmodel",
-			SetterInjection = false,
-			DICompleteUDF = "onDIComplete",
-			StopRecursion = "",
-			parentFactory 	= {
-				framework = "coldspring",
-				definitionFile = "config/parent.xml.cfm"
-			}
-		};
-		*/
 		
 		//Debugger Settings
 		debugger = {
@@ -236,8 +208,7 @@
 			 
 			 //Observers
 			 {class="#variables.appMapping#.interceptors.errorObserver"},
-			 {class="#variables.appMapping#.interceptors.iocObserver"},
-			 
+				 
 			 //security
 			 {class="coldbox.system.interceptors.Security",
 			  properties={
