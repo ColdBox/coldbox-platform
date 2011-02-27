@@ -166,6 +166,7 @@ Description :
 		<cfscript>
 			var thisTypeLen 	= listLen(arguments.definition.dsl,":");
 			var beanName		= "";
+			var oIOC		 	= instance.coldbox.getPlugin("IOC");
 			
 			// DSL stages
 			switch(thisTypeLen){
@@ -177,7 +178,7 @@ Description :
 
 			// Check for Bean existence first
 			if( oIOC.getIOCFactory().containsBean(beanName) ){
-				return instance.coldbox.getPlugin("IOC").getBean(beanName);
+				return oIOC.getBean(beanName);
 			}
 			else if( instance.log.canDebug() ){
 				instance.log.debug("getIOCDSL() cannot find IOC Bean: #beanName# using definition: #arguments.definition.toString()#");
