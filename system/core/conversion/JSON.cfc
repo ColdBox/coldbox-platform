@@ -323,7 +323,7 @@ Modifications:
 		<cfelseif isObject(_data)>
 			<!--- Let CF Handle IT --->
 			<cfset dJSONString = createObject('java','java.lang.StringBuffer').init("") />
-			<cfset dJSONString = '{"#listLast(getMetaData(_data).name,".")#": #encode( _data )#}'>
+			<cfset dJSONString = '{"#listLast(getMetaData(_data).name,".")#": "#getMetaData(_data).name#"}'>
 			<cfreturn dJSONString.toString()>
 		<!--- STRUCT --->
 		<cfelseif IsStruct(_data)>
