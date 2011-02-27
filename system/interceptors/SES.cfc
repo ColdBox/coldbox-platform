@@ -54,6 +54,9 @@ Description :
 			// Dependencies
 			instance.requestService					= getController().getRequestService();
 
+			// Register Module Entry Points
+			registerModuleEntryPoints();
+			
 			//Import Configuration
 			importConfiguration();
 
@@ -989,6 +992,19 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- registerModuleEntryPoints --->
+    <cffunction name="registerModuleEntryPoints" output="false" access="private" returntype="any" hint="Register all the module entry points">
+    	<cfscript>
+    		var key = "";
+			
+			for(key in instance.modules){
+				if( len(instance.modules[key].entryPoint) ){
+					addModuleRoutes(pattern=instance.modules[key].entryPoint, module=key);
+				}
+			}
+		</cfscript>
+    </cffunction>
+	
 	<!--- importConfiguration --->
 	<cffunction name="importConfiguration" output="false" access="private" returntype="void" hint="Import the routing configuration file">
 		<cfscript>

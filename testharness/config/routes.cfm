@@ -22,8 +22,8 @@
 	
 	//addModuleRoutes(pattern="/test1",module="test1");
 	//addModuleRoutes(pattern="/modTest1",module="test1");
-	addModuleRoutes(pattern="/theforge",module="forgebox");
-	addModuleRoutes(pattern="/forgebox",module="forgebox");
+	//addModuleRoutes(pattern="/theforge",module="forgebox");
+	//addModuleRoutes(pattern="/forgebox",module="forgebox");
 	
 	// Add Module Routing Here For Common-View Layout Testing
 	addModuleRoutes(pattern="/moduleLookup",module="moduleLookup");
