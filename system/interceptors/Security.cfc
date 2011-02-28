@@ -23,6 +23,9 @@ For the latest usage, please visit the wiki.
 
 	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
 		<cfscript>
+			// setup status bit
+			instance.initialized = false;
+			
 			// Start processing properties
 			if( not propertyExists('useRegex') or not isBoolean(getproperty('useRegex')) ){
 				setProperty('useRegex',true);
@@ -121,6 +124,9 @@ For the latest usage, please visit the wiki.
 					$throw("Error creating validatorModel: #getProperty('validatorModel')#",e.message & e.detail & e.tagContext.toString(), "interceptors.Security.validatorCreationException");
 				}
 			}
+			
+			// init flag
+			instance.initialized = true;
 		</cfscript>
 	</cffunction>
 	
@@ -135,6 +141,9 @@ For the latest usage, please visit the wiki.
 			if( getProperty('rulesSource') eq "ocm" and not getProperty('rulesLoaded') ){
 				loadOCMRules();
 			}
+			
+			// Check if inited already
+			if( NOT instance.initialized ){ afterAspectsLoad(arguments.event,arguments.interceptData); }
 			
 			// Execute Rule processing 
 			processRules(arguments.event,arguments.interceptData,arguments.event.getCurrentEvent());
