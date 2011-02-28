@@ -56,7 +56,7 @@ Description :
 
 			// Register Module Entry Points
 			registerModuleEntryPoints();
-			
+
 			//Import Configuration
 			importConfiguration();
 
@@ -798,12 +798,12 @@ Description :
 				}
 				return params;
 			}
-			
+
 			// SSL Checks
 			if( foundRoute.ssl AND NOT event.isSSL()){
 				setNextEvent(uri=cgi.script_name & cgi.path_info,ssl=true,statusCode=302,queryString=cgi.query_string);
 			}
-			
+
 			// Check if the match is a module Routing entry point or not?
 			if( len( foundRoute.moduleRouting ) ){
 
@@ -996,15 +996,15 @@ Description :
     <cffunction name="registerModuleEntryPoints" output="false" access="private" returntype="any" hint="Register all the module entry points">
     	<cfscript>
     		var key = "";
-			
+
 			for(key in instance.modules){
-				if( len(instance.modules[key].entryPoint) ){
+				if( len(instance.modules[key].entryPoint) and NOT find(":",instance.modules[key].entryPoint)){
 					addModuleRoutes(pattern=instance.modules[key].entryPoint, module=key);
 				}
 			}
 		</cfscript>
     </cffunction>
-	
+
 	<!--- importConfiguration --->
 	<cffunction name="importConfiguration" output="false" access="private" returntype="void" hint="Import the routing configuration file">
 		<cfscript>
