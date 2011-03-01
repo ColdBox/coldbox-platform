@@ -685,6 +685,21 @@ Description :
     	<cfset instance.scopes["SINGLETON"].clear()>
     </cffunction>
 	
+	<!--- locateScopedSelf --->
+    <cffunction name="locateScopedSelf" output="false" access="public" returntype="any" hint="Return a self reference using the scoped registration, mostly used by providers or scope widening objects" colddoc:generic="coldbox.system.ioc.Injector">
+    	<cfscript>
+    		var scopeInfo 	= instance.binder.getScopeRegistration();
+			var storage 	= createObject("component","coldbox.system.core.collections.ScopeStorage").init();
+			
+			// Return if it exists, else throw exception
+			if( storage.exists(scopeInfo.key, scopeInfo.scope) ){
+				return storage.get(scopeInfo.key, scopeInfo.scope);
+			}
+			
+			instance.utility.throwit(message="The injector has not be registered in any scope",detail="The scope info is: #scopeInfo.toString()#",type="Injector.InvalidScopeRegistration");	
+		</cfscript>
+    </cffunction>
+	
 <!----------------------------------------- PRIVATE ------------------------------------->	
 
 	<!--- registerScopes --->

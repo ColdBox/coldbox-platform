@@ -26,7 +26,7 @@ Description :
 
 	<!--- get --->
     <cffunction name="get" output="false" access="public" returntype="any" hint="Get the provided object">
-    	<cfreturn instance.injector.getInstance( instance.name )>
+    	<cfreturn instance.injector.locateScopedSelf().getInstance( instance.name )>
     </cffunction>
 
 </cfcomponent>

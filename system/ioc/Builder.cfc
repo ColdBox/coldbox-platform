@@ -65,7 +65,7 @@ TODO: update dsl consistency, so it is faster.
     <cffunction name="buildProviderMixer" output="false" access="public" returntype="any" hint="Used to provider providers via mixers on targeted objects">
     	<cfscript>
     		// return the instance from the injected counterparts
-			return this.$wirebox.getInstance( this.$wireboxProviders[ getFunctionCalledName() ] );
+			return this.$wirebox.locateScopedSelf().getInstance( this.$wireboxProviders[ getFunctionCalledName() ] );
 		</cfscript>
     </cffunction>
 	
