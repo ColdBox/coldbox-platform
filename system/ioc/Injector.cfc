@@ -45,6 +45,8 @@ Description :
 				javaSystem = createObject('java','java.lang.System'),	
 				// Utility class
 				utility  = createObject("component","coldbox.system.core.util.Util"),
+				// Scope Storages
+				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(),
 				// Version
 				version  = "1.0.0",	 
 				// The Configuration Binder object
@@ -662,9 +664,12 @@ Description :
 			var scopeInfo 		= instance.binder.getScopeRegistration();
 			// if enabled remove.
 			if( scopeInfo.enabled ){
-				createObject("component","coldbox.system.core.collections.ScopeStorage")
-					.init()
-					.delete(scopeInfo.key, scopeInfo.scope);
+				instance.scopeStorage.delete(scopeInfo.key, scopeInfo.scope);
+			
+				// Log info
+				if( instance.log.canDebug() ){
+					instance.log.debug("Injector removed from scope: #scopeInfo.toString()#");
+				}
 			}
 		</cfscript>
     </cffunction>
@@ -689,11 +694,10 @@ Description :
     <cffunction name="locateScopedSelf" output="false" access="public" returntype="any" hint="Return a self reference using the scoped registration, mostly used by providers or scope widening objects" colddoc:generic="coldbox.system.ioc.Injector">
     	<cfscript>
     		var scopeInfo 	= instance.binder.getScopeRegistration();
-			var storage 	= createObject("component","coldbox.system.core.collections.ScopeStorage").init();
 			
 			// Return if it exists, else throw exception
-			if( storage.exists(scopeInfo.key, scopeInfo.scope) ){
-				return storage.get(scopeInfo.key, scopeInfo.scope);
+			if( instance.scopeStorage.exists(scopeInfo.key, scopeInfo.scope) ){
+				return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope);
 			}
 			
 			instance.utility.throwit(message="The injector has not be registered in any scope",detail="The scope info is: #scopeInfo.toString()#",type="Injector.InvalidScopeRegistration");	
@@ -779,7 +783,7 @@ Description :
     		var scopeInfo 		= instance.binder.getScopeRegistration();
 			
 			// register injector with scope
-			createObject("component","coldbox.system.core.collections.ScopeStorage").init().put(scopeInfo.key, this, scopeInfo.scope);
+			instance.scopeStorage.put(scopeInfo.key, this, scopeInfo.scope);
 			
 			// Log info
 			if( instance.log.canDebug() ){
