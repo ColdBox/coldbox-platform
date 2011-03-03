@@ -52,6 +52,7 @@
 		<copy todir="${dir.build}/wirebox/system/core">
         	<fileset dir="system/core">
         		<include name="collections/"/>
+        		<include name="conversion/"/>
         		<include name="util/"/>
         		<include name="dynamic/"/>
         		<include name="events/"/>
