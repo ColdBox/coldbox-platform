@@ -28,5 +28,21 @@ Description :
     <cffunction name="get" output="false" access="public" returntype="any" hint="Get the provided object">
     	<cfreturn instance.injector.locateScopedSelf().getInstance( instance.name )>
     </cffunction>
+	
+	<!--- onMissingMethod Proxy --->
+    <cffunction name="onMissingMethod" output="false" access="public" returntype="any" hint="Proxy calls to provided element">
+    	<cfargument	name="missingMethodName"		required="true"	hint="missing method name"	/>
+		<cfargument	name="missingMethodArguments" 	required="true"	hint="missing method arguments"/>
+    	
+		<cfset var refLocal = structnew()>
+		
+		<cfinvoke component="#get()#"
+				  method="#arguments.missingMethodName#"
+				  argumentcollection="#arguments.missingmethodArguments#" returnvariable="refLocal.results">
+				  
+		<cfif structKeyExists(refLocal,"results")>
+			<cfreturn refLocal.results>
+		</cfif>		
+    </cffunction>
 
 </cfcomponent>
