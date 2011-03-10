@@ -13,7 +13,7 @@ Cookie Storage plugin. It provides the user with a mechanism for permanent data 
 
 
 == getEncryptionAlgorithm ==
-Get EncryptionAlgorithm
+Get the EncryptionAlgorithm
 
 === Returns ===
 * This function returns ''string''
@@ -22,7 +22,7 @@ Get EncryptionAlgorithm
 === Examples ===
 
 == setVar ==
-Set a new permanent variable.
+Set a new permanent variable in the storage.
 
 === Returns ===
 * This function returns ''void''
@@ -49,7 +49,7 @@ Set a new permanent variable.
 === Examples ===
 
 == getEncryptionKey ==
-Get EncryptionKey
+Get the EncryptionKey
 
 === Returns ===
 * This function returns ''string''
@@ -58,7 +58,7 @@ Get EncryptionKey
 === Examples ===
 
 == getVar ==
-Get a new permanent variable. If the cookie does not exist. The method returns blank.
+Get a new permanent variable. If the cookie does not exist. The method returns blank or use the default value argument
 
 === Returns ===
 * This function returns ''any''
@@ -77,7 +77,7 @@ Get a new permanent variable. If the cookie does not exist. The method returns b
 === Examples ===
 
 == setEncryptionAlgorithm ==
-Set EncryptionAlgorithm
+Set EncryptionAlgorithm for this storage
 
 === Returns ===
 * This function returns ''void''
@@ -94,7 +94,7 @@ Set EncryptionAlgorithm
 === Examples ===
 
 == setEncryptionEncoding ==
-Set EncryptionEncoding
+Set EncryptionEncoding value
 
 === Returns ===
 * This function returns ''void''
@@ -111,7 +111,7 @@ Set EncryptionEncoding
 === Examples ===
 
 == getEncryptionEncoding ==
-Get EncryptionEncoding
+Get EncryptionEncoding value
 
 === Returns ===
 * This function returns ''string''
@@ -120,7 +120,7 @@ Get EncryptionEncoding
 === Examples ===
 
 == getEncryption ==
-Get Encryption
+Get Encryption flag
 
 === Returns ===
 * This function returns ''boolean''
@@ -129,7 +129,7 @@ Get Encryption
 === Examples ===
 
 == exists ==
-Checks wether the permanent variable exists.
+Checks wether the permanent variable exists in the storage
 
 === Returns ===
 * This function returns ''boolean''
@@ -146,7 +146,7 @@ Checks wether the permanent variable exists.
 === Examples ===
 
 == deleteVar ==
-Tries to delete a permanent cookie var.
+Tries to delete a permanent cookie variable
 
 === Returns ===
 * This function returns ''boolean''
@@ -158,12 +158,14 @@ Tries to delete a permanent cookie var.
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
 | name || string || Yes || --- || The variable name to retrieve.
+|-
+| domain || string || No ||  || Domain in which cookie is valid and to which cookie content can be sent from the user's system.
 |}
 
 === Examples ===
 
 == setEncryption ==
-Set Encryption
+Set Encryption flag
 
 === Returns ===
 * This function returns ''void''
@@ -180,7 +182,7 @@ Set Encryption
 === Examples ===
 
 == setEncryptionKey ==
-Set EncryptionKey
+Set EncryptionKey for this storage
 
 === Returns ===
 * This function returns ''void''

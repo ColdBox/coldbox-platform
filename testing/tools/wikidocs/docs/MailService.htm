@@ -12,15 +12,6 @@
 The ColdBox Mail Service used to send emails in an oo fashion
 
 
-== newMail ==
-Get a new Mail payload object, just use config() on it to prepare it.
-
-=== Returns ===
-* This function returns ''coldbox.system.beans.Mail''
-
-
-=== Examples ===
-
 == send ==
 Send an email payload. Returns a struct: [error:boolean,errorArray:array]
 
@@ -33,7 +24,7 @@ Send an email payload. Returns a struct: [error:boolean,errorArray:array]
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| mail || coldbox.system.beans.Mail || Yes || --- || The mail payload to send.
+| mail || coldbox.system.core.mail.Mail || Yes || --- || The mail payload to send.
 |}
 
 === Examples ===

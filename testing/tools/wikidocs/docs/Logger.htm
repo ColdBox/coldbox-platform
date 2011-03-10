@@ -24,9 +24,9 @@ I log an information message.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| Message || string || Yes || --- || The message to log.
+| message || string || Yes || --- || The message to log.
 |-
-| ExtraInfo || string || No ||  || Extra information to append.
+| extraInfo || any || No ||  || Extra information to append.
 |}
 
 === Examples ===
@@ -43,9 +43,9 @@ I log a fatal message.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| Message || string || Yes || --- || The message to log.
+| message || string || Yes || --- || The message to log.
 |-
-| ExtraInfo || string || No ||  || Extra information to append.
+| extraInfo || any || No ||  || Extra information to append.
 |}
 
 === Examples ===
@@ -62,11 +62,11 @@ Log an error into the framework using arguments. Facade to logErrorWithBean.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| Message || string || Yes || --- || 
+| message || string || Yes || --- || 
 |-
-| ExceptionStruct || any || No || [runtime expression] || The CF cfcatch structure.
+| exceptionStruct || any || No || [runtime expression] || The CF cfcatch structure.
 |-
-| ExtraInfo || any || No ||  || 
+| extraInfo || any || No ||  || 
 |}
 
 === Examples ===
@@ -83,15 +83,15 @@ I log an error message.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| Message || string || Yes || --- || The message to log.
+| message || string || Yes || --- || The message to log.
 |-
-| ExtraInfo || string || No ||  || Extra information to append.
+| extraInfo || any || No ||  || Extra information to append.
 |}
 
 === Examples ===
 
 == logEntry ==
-Log a message to the LogBox
+Log a message to the internal logger object. DEPRECATED, Please use other methods.
 
 === Returns ===
 * This function returns ''void''
@@ -102,11 +102,11 @@ Log a message to the LogBox
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| Severity || string || Yes || --- || Severity: fatal,error,warn,info,debug,trace
+| severity || string || Yes || --- || Severity: fatal,error,warn,info,debug,trace
 |-
-| Message || string || Yes || --- || The message to log.
+| message || string || Yes || --- || The message to log.
 |-
-| ExtraInfo || string || No ||  || Extra information to append.
+| extraInfo || any || No ||  || Extra information to append.
 |}
 
 === Examples ===
@@ -123,7 +123,7 @@ Log an error into the framework using a coldbox exceptionBean
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| ExceptionBean || any || Yes || --- || This is the exception bean
+| exceptionBean || any || Yes || --- || This is the exception bean
 |}
 
 === Examples ===
@@ -140,9 +140,9 @@ I log a warning message.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| Message || string || Yes || --- || The message to log.
+| message || string || Yes || --- || The message to log.
 |-
-| ExtraInfo || string || No ||  || Extra information to append.
+| extraInfo || any || No ||  || Extra information to append.
 |}
 
 === Examples ===
@@ -159,9 +159,9 @@ Log a trace message to the ColdBox debugger panel, not LOGBOX
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| message || string || Yes || --- || Message to Send
+| message || string || Yes || --- || The message to log.
 |-
-| extraInfo || any || No ||  || Extra Information to dump on the trace
+| extraInfo || any || No ||  || Extra information to append.
 |}
 
 === Examples ===
@@ -178,9 +178,9 @@ I log a debug message.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| Message || string || Yes || --- || The message to log.
+| message || string || Yes || --- || The message to log.
 |-
-| ExtraInfo || string || No ||  || Extra information to append.
+| extraInfo || any || No ||  || Extra information to append.
 |}
 
 === Examples ===

@@ -52,7 +52,7 @@ returns array of keys in java resource bundle per locale
 |-
 | rbFile || any || Yes || --- || This must be the path + filename UP to but NOT including the locale. We auto-add the local and .properties to the end.
 |-
-| rbLocale || any || No || [runtime expression] || The locale to use.
+| rbLocale || any || No ||  || The locale to use, if not passed, defaults to default locale.
 |}
 
 === Examples ===
@@ -130,7 +130,7 @@ returns text for given key in given java resource bundle per locale
 |-
 | rbKey || any || Yes || --- || The key to retrieve
 |-
-| rbLocale || any || No || [runtime expression] || The locale of the bundle. Default is en_US
+| rbLocale || any || No ||  || The locale of the bundle. Default is en_US
 |-
 | default || any || No || --- || A default value to send back if resource not found
 |}
@@ -174,7 +174,7 @@ performs messageFormat on compound rb string
 |-
 | args || any || Yes || --- || substitution values, simple or array
 |-
-| thisLocale || any || No || [runtime expression] || locale to use in formatting, defaults to en_US
+| thisLocale || any || No ||  || locale to use in formatting, defaults to en_US
 |}
 
 === Examples ===

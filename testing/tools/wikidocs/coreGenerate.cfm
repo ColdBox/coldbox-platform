@@ -4,36 +4,7 @@ br  	= chr(10);
 dq      = chr(34);
 
 objects = [
-	"coldbox.system.plugins.AntiSamy",
-	"coldbox.system.plugins.ApplicationStorage",
-	"coldbox.system.plugins.BeanFactory",
-	"coldbox.system.plugins.BeanFactoryCompat",
-	"coldbox.system.plugins.CFCViewer",
-	"coldbox.system.plugins.ClientStorage",
-	"coldbox.system.plugins.ClusterStorage",
-	"coldbox.system.plugins.CookieStorage",
-	"coldbox.system.plugins.DateUtils",
-	"coldbox.system.plugins.FileUtils",
-	"coldbox.system.plugins.HTMLHelper",
-	"coldbox.system.plugins.i18n",
-	"coldbox.system.plugins.IOC",
-	"coldbox.system.plugins.JavaLoader",
-	"coldbox.system.plugins.JVMUtils",
-	"coldbox.system.plugins.Logger",
-	"coldbox.system.plugins.MailService",
-	"coldbox.system.plugins.MessageBox",
-	"coldbox.system.plugins.MethodInjector",
-	"coldbox.system.plugins.QueryHelper",
-	"coldbox.system.plugins.ResourceBundle",
-	"coldbox.system.plugins.SessionStorage",
-	"coldbox.system.plugins.StringBuffer",
-	"coldbox.system.plugins.Timer",
-	"coldbox.system.plugins.Utilities",
-	"coldbox.system.plugins.Validator",
-	"coldbox.system.plugins.Webservices",
-	"coldbox.system.plugins.Zip",
-	"coldbox.system.core.util.conversion.XMLConverter",
-	"coldbox.system.orm.hibernate.BaseORMService"
+	"coldbox.system.core.dynamic.BeanPopulator"
 ];
 fncExclude  = "init,onMissingMethod";
 

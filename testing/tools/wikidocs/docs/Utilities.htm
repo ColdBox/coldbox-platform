@@ -12,11 +12,11 @@
 This is a Utilities CFC
 
 
-== sendFile ==
-Send a file to the browser
+== _deserialize ==
+Deserialize a byte array
 
 === Returns ===
-* This function returns ''void''
+* This function returns ''Any''
 
 
 === Arguments ===
@@ -24,90 +24,8 @@ Send a file to the browser
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| file || any || No ||  || The absolute path to the file or a binary file
-|-
-| name || string || No ||  || The name to send the file to the browser. If not sent in, it will use the name of the file or a UUID for a binary file
-|-
-| mimeType || string || No ||  || A valid mime type to use. If not sent in, we will try to use a default one according to file extension
-|-
-| disposition || string || No || attachment || The browser content disposition (attachment/inline)
-|-
-| abortAtEnd || boolean || No || false || Do an abort after content sending
-|-
-| extension || string || No ||  || Only used if file is binary. e.g. jpg or gif
+| binaryString || string || Yes || --- || The byte array string to deserialize
 |}
-
-=== Examples ===
-
-== getInetHost ==
-Get the hostname of the executing machine.
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== getAbsolutePath ==
-Turn any system path, either relative or absolute, into a fully qualified one
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| path || string || Yes || --- || Abstract pathname
-|}
-
-=== Examples ===
-
-== _serializeToFile ==
-Serialize complex objects that implement serializable, into a file.
-
-=== Returns ===
-* This function returns ''void''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| ComplexObject || any || Yes || --- || Any coldfusion primative data type and if cf8 componetns.
-|-
-| fileDestination || string || Yes || --- || The absolute path to the destination file to write to
-|}
-
-=== Examples ===
-
-== getJVMTotalMemory ==
-Get the JVM's total memory.
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== getOSPathSeparator ==
-Get the operating system's path separator character.
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== getJVMfreeMemory ==
-Get the JVM's free memory.
-
-=== Returns ===
-* This function returns ''string''
-
 
 === Examples ===
 
@@ -124,6 +42,39 @@ Converts a querystring into a struct of name value pairs
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
 | qs || string || Yes ||  || The query string
+|}
+
+=== Examples ===
+
+== marshallData ==
+Marshall data according to type
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| type || string || Yes || --- || The type to marshal to. Valid values are JSON, XML, WDDX, PLAIN, HTML, TEXT
+|-
+| data || any || Yes || --- || The data to marshal
+|-
+| encoding || string || No || utf-8 || The default character encoding to use
+|-
+| jsonCase || string || No || lower || JSON Only: Whether to use lower case, upper case or no (none) case translations in the JSON transformation. Lower is default
+|-
+| jsonQueryFormat || string || No || query || JSON Only: query or array
+|-
+| xmlColumnList || string || No ||  || XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
+|-
+| xmlUseCDATA || boolean || No || false || XML Only: Use CDATA content for ALL values. The default is false
+|-
+| xmlListDelimiter || string || No || , || XML Only: The delimiter in the list. Comma by default
+|-
+| xmlRootName || string || No ||  || XML Only: The name of the initial root element of the XML packet
 |}
 
 === Examples ===
@@ -145,6 +96,23 @@ Make the main thread of execution sleep for X amount of seconds.
 
 === Examples ===
 
+== isCFUUID ==
+Checks if a passed string is a valid UUID.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| inStr || string || Yes || --- || 
+|}
+
+=== Examples ===
+
 == _serialize ==
 Serialize complex objects that implement serializable. Returns a binary string.
 
@@ -157,248 +125,7 @@ Serialize complex objects that implement serializable. Returns a binary string.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| ComplexObject || any || Yes || --- || Any coldfusion primative data type and if cf8 componetns.
-|}
-
-=== Examples ===
-
-== readFile ==
-Facade to Read a file's content
-
-=== Returns ===
-* This function returns ''Any''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| FileToRead || String || Yes || --- || The absolute path to the file.
-|-
-| ReadInBinaryFlag || boolean || No || false || Read in binary flag.
-|-
-| CharSet || string || No ||  || CF File CharSet Encoding to use.
-|-
-| CheckCharSetFlag || boolean || No || false || Check the charset.
-|}
-
-=== Examples ===
-
-== getJavaVersion ==
-Get the java version.
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== getOSFileSeparator ==
-Get the operating system's file separator character
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== appendFile ==
-Facade to append to a file's content
-
-=== Returns ===
-* This function returns ''void''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| FileToSave || any || Yes || --- || The absolute path to the file.
-|-
-| FileContents || any || Yes || --- || The file contents
-|-
-| CharSet || string || No || utf-8 || CF File CharSet Encoding to use.
-|-
-| CheckCharSetFlag || boolean || No || false || Check the charset.
-|}
-
-=== Examples ===
-
-== ripExtension ==
-Rip the extension of a filename.
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| filename || string || Yes || --- || 
-|}
-
-=== Examples ===
-
-== checkCharSet ==
-Check a charset with valid CF char sets, if invalid, it returns the framework's default character set
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| charset || string || Yes || --- || Charset to check
-|}
-
-=== Examples ===
-
-== FileLastModified ==
-Get the last modified date of a file
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| filename || string || Yes || --- || 
-|}
-
-=== Examples ===
-
-== FileSize ==
-Get the filesize of a file.
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| filename || string || Yes || --- || 
-|-
-| sizeFormat || string || No || bytes || Available formats: [bytes][kbytes][mbytes][gbytes]
-|}
-
-=== Examples ===
-
-== getIPAddress ==
-Get the ip address of the executing hostname machine.
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== getOSName ==
-Get the operating system's name
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== uploadFile ==
-Facade to upload to a file, returns the cffile variable.
-
-=== Returns ===
-* This function returns ''any''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| FileField || string || Yes || --- || The name of the form field used to select the file
-|-
-| Destination || string || Yes || --- || The absolute path to the destination.
-|-
-| NameConflict || string || No || makeunique || Action to take if filename is the same as that of a file in the directory.
-|-
-| Accept || string || No ||  || Limits the MIME types to accept. Comma-delimited list.
-|-
-| Attributes || string || No || Normal || Comma-delimitted list of window file attributes
-|-
-| Mode || string || No || 755 || The mode of the file for Unix systems, the default is 755
-|}
-
-=== Examples ===
-
-== isSSL ==
-Tells you if you are in SSL mode or not.
-
-=== Returns ===
-* This function returns ''boolean''
-
-
-=== Examples ===
-
-== IsEmail ==
-author Jeff Guillaume (jeff@kazoomis.com): Tests passed value to see if it is a valid e-mail address (supports subdomain nesting and new top-level domains)
-
-=== Returns ===
-* This function returns ''boolean''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| str || any || Yes || --- || 
-|-
-| tlds || string || No ||  || Additional top level domains to add to the evaluation.  Use a | to separate them
-|}
-
-=== Examples ===
-
-== FileCanRead ==
-Check wether you can read a file
-
-=== Returns ===
-* This function returns ''boolean''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| Filename || String || Yes || --- || The absolute path of the file to check.
-|}
-
-=== Examples ===
-
-== createFile ==
-Create a new empty fileusing java.io.File.
-
-=== Returns ===
-* This function returns ''void''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| filename || String || Yes || --- || The absolute path of the file to create.
+| complexObject || any || Yes || --- || Any coldfusion primative data type and if cf8 componetns.
 |}
 
 === Examples ===
@@ -420,11 +147,20 @@ Deserialize a byte array from a file
 
 === Examples ===
 
-== IsURL ==
-author Nathan Dintenfass (nathan@changemedia.com): A quick way to test if a string is a URL
+== isSSL ==
+Tells you if you are in SSL mode or not.
 
 === Returns ===
 * This function returns ''boolean''
+
+
+=== Examples ===
+
+== _serializeToFile ==
+Serialize complex objects that implement serializable, into a file.
+
+=== Returns ===
+* This function returns ''void''
 
 
 === Arguments ===
@@ -432,7 +168,9 @@ author Nathan Dintenfass (nathan@changemedia.com): A quick way to test if a stri
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| str || any || Yes || --- || 
+| complexObject || any || Yes || --- || Any coldfusion primative data type and if cf8 componetns.
+|-
+| fileDestination || string || Yes || --- || The absolute path to the destination file to write to
 |}
 
 === Examples ===
@@ -452,190 +190,6 @@ PlaceHolder Replacer for strings containing ${} patterns
 | str || any || Yes || --- || The string variable to look for replacements
 |-
 | settings || any || Yes || --- || The structure of settings to use in replacing
-|}
-
-=== Examples ===
-
-== FileCanWrite ==
-Check wether you can write to a file
-
-=== Returns ===
-* This function returns ''boolean''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| Filename || String || Yes || --- || The absolute path of the file to check.
-|}
-
-=== Examples ===
-
-== _deserialize ==
-Deserialize a byte array
-
-=== Returns ===
-* This function returns ''Any''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| BinaryString || string || Yes || --- || The byte array string to deserialize
-|}
-
-=== Examples ===
-
-== isFile ==
-Checks whether the filename argument is a file or not.
-
-=== Returns ===
-* This function returns ''boolean''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| Filename || String || Yes || --- || The absolute path of the file to check.
-|}
-
-=== Examples ===
-
-== marshallData ==
-Marshall data according to type
-
-=== Returns ===
-* This function returns ''any''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| type || string || Yes || --- || The type to marshal to. Valid values are JSON, XML, WDDX, PLAIN
-|-
-| data || any || Yes || --- || The data to marshal
-|-
-| encoding || string || No || utf-8 || The default character encoding to use
-|-
-| jsonCase || string || No || lower || JSON Only: Whether to use lower or upper case translations in the JSON transformation. Lower is default
-|-
-| jsonQueryFormat || string || No || query || JSON Only: query or array
-|-
-| xmlColumnList || string || No ||  || XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
-|-
-| xmlUseCDATA || boolean || No || false || XML Only: Use CDATA content for ALL values. The default is false
-|-
-| xmlListDelimiter || string || No || , || XML Only: The delimiter in the list. Comma by default
-|-
-| xmlRootName || string || No ||  || XML Only: The name of the initial root element of the XML packet
-|}
-
-=== Examples ===
-
-== getFileMimeType ==
-Get's the file mime type for a given file extension
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| extension || string || Yes || --- || e.g. jpg or gif
-|}
-
-=== Examples ===
-
-== getJavaRuntime ==
-Get the java runtime version
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== isCFUUID ==
-Checks if a passed string is a valid UUID.
-
-=== Returns ===
-* This function returns ''boolean''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| inStr || string || Yes || --- || 
-|}
-
-=== Examples ===
-
-== removeFile ==
-Remove a file using java.io.File
-
-=== Returns ===
-* This function returns ''boolean''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| filename || string || Yes || --- || The absolute path to the file.
-|}
-
-=== Examples ===
-
-== saveFile ==
-Facade to save a file's content
-
-=== Returns ===
-* This function returns ''void''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| FileToSave || any || Yes || --- || The absolute path to the file.
-|-
-| FileContents || any || Yes || --- || The file contents
-|-
-| CharSet || string || No || utf-8 || CF File CharSet Encoding to use.
-|-
-| CheckCharSetFlag || boolean || No || false || Check the charset.
-|}
-
-=== Examples ===
-
-== isDirectory ==
-Check wether the filename argument is a directory or not
-
-=== Returns ===
-* This function returns ''boolean''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| Filename || String || Yes || --- || The absolute path of the file to check.
 |}
 
 === Examples ===

@@ -9,75 +9,15 @@
 
 
 == Overview ==
-An Inversion Of Control plugin that interfaces with major ColdFusion IoC/DI frameworks such as ColdSpring and LightWire
+An Inversion Of Control plugin that interfaces with major ColdFusion IoC/DI frameworks
 
-
-== getIOCFramework ==
-Gets the IoC Framework string used: lightwire or coldspring
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== setCOLDSPRING_FACTORY ==
-Set the instantiation path for ColdSpring.
-
-=== Returns ===
-* This function returns ''void''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| COLDSPRING_FACTORY || string || Yes || --- || The instantiation path for coldspring
-|}
-
-=== Examples ===
-
-== setIOCFramework ==
-Set the IoC Framework used: lightwire or coldspring
-
-=== Returns ===
-* This function returns ''void''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| IOCFramework || string || Yes || --- || 
-|}
-
-=== Examples ===
 
 == reloadDefinitionFile ==
-Reloads the IoC factory with the Definition File or Object
+Reloads the IoC factory. Basically calls configure again. DEPRECATED
 
 === Returns ===
 * This function returns ''void''
 
-
-=== Examples ===
-
-== setIOCDefinitionFile ==
-Set the definition file configured for this plugin
-
-=== Returns ===
-* This function returns ''void''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| IOCDefinitionFile || string || Yes || --- || The relative or absolute location of the coldspring main xml file.
-|}
 
 === Examples ===
 
@@ -93,31 +33,22 @@ Get a Bean from the loaded object factory
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| beanName || string || Yes || --- || The bean name to retrieve from the object factory
+| beanName || any || Yes || --- || The bean name to retrieve from the object factory
 |}
 
 === Examples ===
 
-== getExpandedIOCDefinitionFile ==
-Get the full expanded path of the configuration file, only used for coldspring
+== getAdapter ==
+Get the IoC Factory Adapter in use by this plugin
 
 === Returns ===
-* This function returns ''string''
+* This function returns ''any''
 
 
 === Examples ===
 
 == getIOCDefinitionFile ==
 Get the definition file configured for this plugin
-
-=== Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== getIoCFactory ==
-Returns the IoC Factory in use.
 
 === Returns ===
 * This function returns ''any''
@@ -134,20 +65,11 @@ Configure or Re-Configure the IoC Plugin. Loads the chosen IoC Factory and confi
 
 === Examples ===
 
-== getLIGHTWIRE_FACTORY ==
-Get LIGHTWIRE_FACTORY. This is the instantiation path for lightwire
+== containsBean ==
+Check if the bean factory contains a bean
 
 === Returns ===
-* This function returns ''string''
-
-
-=== Examples ===
-
-== setIoCFactory ==
-Override and set the IoCFactory the plugin will interface with
-
-=== Returns ===
-* This function returns ''void''
+* This function returns ''any''
 
 
 === Arguments ===
@@ -155,50 +77,25 @@ Override and set the IoCFactory the plugin will interface with
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| IoCFactory || any || Yes || --- || 
+| beanName || any || Yes || --- || The bean name to retrieve from the object factory
 |}
 
 === Examples ===
 
-== getCOLDSPRING_FACTORY ==
-Get COLDSPRING_FACTORY. This is the instantiation path for coldspring
+== getIoCFactory ==
+Returns the IoC Factory in use
 
 === Returns ===
-* This function returns ''string''
+* This function returns ''any''
 
 
 === Examples ===
 
-== setExpandedIOCDefinitionFile ==
-Set the full expanded path of the definition file
+== getIOCFramework ==
+Get the IoC framework name defined for this plugin
 
 === Returns ===
-* This function returns ''void''
+* This function returns ''any''
 
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| ExpandedIOCDefinitionFile || string || Yes || --- || The expanded path of the main coldspring xml file
-|}
-
-=== Examples ===
-
-== setLIGHTWIRE_FACTORY ==
-Set the instantiation path for LightWire
-
-=== Returns ===
-* This function returns ''void''
-
-
-=== Arguments ===
-
-{| cellpadding="5", class="tablelisting"
-! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
-|-
-| LIGHTWIRE_FACTORY || string || Yes || --- || This is the instantiation path for lightwire
-|}
 
 === Examples ===

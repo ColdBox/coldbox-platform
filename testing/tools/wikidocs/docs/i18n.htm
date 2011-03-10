@@ -124,7 +124,7 @@ Set the default locale to use in the framework for a specific user.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| locale || string || No || [runtime expression] || The locale to change and set. Must be Java Style: en_US
+| locale || string || No ||  || The locale to change and set. Must be Java Style: en_US. If none passed, then we default to default locale from configuration settings
 |-
 | dontloadRBFlag || boolean || No || false || Flag to load the resource bundle for the specified locale (If not already loaded) or just change the framework's locale.
 |}

@@ -64,6 +64,23 @@ Surround content with a tag
 
 === Examples ===
 
+== slugify ==
+Create a URL safe slug from a string
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| str || string || Yes || --- || The string to slugify
+|}
+
+=== Examples ===
+
 == ol ==
 Create ordered lists according to passed in values and arguments, compressed HTML
 
@@ -142,6 +159,8 @@ Open and close xhtml style tags so you can easily just add content
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
 | content || any || Yes || --- || The content to render out
+|-
+| addToHeader || boolean || No || false || Send to header or return content
 |}
 
 === Examples ===
@@ -158,17 +177,19 @@ Create link tags, using the SES base URL or not
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| href || string || Yes || --- || The href link or a structure of name-value pairs to render: keys [href,rel,type,title,media]
+| href || any || Yes || --- || The href link or a structure of name-value pairs to render: keys [href,rel,type,title,media]
 |-
-| rel || string || No || stylesheet || The rel attribute
+| rel || any || No || stylesheet || The rel attribute
 |-
-| type || string || No || text/css || The type attribute
+| type || any || No || text/css || The type attribute
 |-
-| title || string || No ||  || The title attribute
+| title || any || No ||  || The title attribute
 |-
-| media || string || No ||  || The media attribute
+| media || any || No ||  || The media attribute
 |-
 | noBaseURL || boolean || No || false || Prepends the setting of baseURL if false
+|-
+| charset || any || No || UTF-8 || The charset to add, defaults to utf-8
 |}
 
 === Examples ===
@@ -279,6 +300,8 @@ Open and close xhtml javascript tags so you can easily just add content
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
 | content || any || Yes || --- || The content to render out
+|-
+| addToHeader || boolean || No || false || Send to header or return content
 |}
 
 === Examples ===
