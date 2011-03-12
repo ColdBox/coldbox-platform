@@ -161,7 +161,7 @@ Description :
 						oInterceptor = createInterceptor(arguments.interceptorClass, arguments.interceptorProperties);
 					}
 					catch(Any e){
-						instance.log.error("Error creating interceptor: #arguments.interceptorClass#",e);
+						instance.log.error("Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",e.tagContext);
 						getUtil().rethrowit(e);
 					}
 					
