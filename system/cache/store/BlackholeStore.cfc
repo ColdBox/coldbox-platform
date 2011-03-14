@@ -5,7 +5,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 Author 	    :	Luis Majano
 Description :
-	I am a disk store, I am not that fancy as I am slower.
+	I am the fastest way to cache objects. I am so fast because I dont do anything. I'm really a tool to use when working on caching strategies. When I am in use nothing is cached. It just vanishes.
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="I am the fastest way to cache objects. I am so fast because I dont do anything. I'm really a tool to use when working on caching strategies. When I am in use nothing is cached. It just vanishes." output="false" implements="coldbox.system.cache.store.IObjectStore">
