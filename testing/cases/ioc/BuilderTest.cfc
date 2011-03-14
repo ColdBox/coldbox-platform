@@ -125,7 +125,8 @@
 		
 		// mocks
 		mockLuis = getMockBox().createStub();
-		mockInjector.$("containsInstance",true).$("getInstance", mockLuis);
+		mockInjector.$("containsInstance",true).$("getInstance", mockLuis)
+			.$("locateScopedSelf", mockInjector);
 		
 		p = builder.getProviderDSL(data);
 		assertEquals(mockLuis, p.get() );
@@ -157,6 +158,50 @@
 		
 		test = builder.buildDSLDependency(def);
 		assertEquals( "woopee", test.getName() );
+		
+	}
+	
+	function testgetWireBoxDSL(){
+		makePublic(builder,"getWireBoxDSL");
+		data = {name="luis", dsl="wirebox"};
+		
+		// wirebox
+		p = builder.getWireBoxDSL(data);
+		assertEquals(mockInjector, p);
+		
+		// wirebox:parent
+		data = {name="luis", dsl="wirebox:parent"};
+		mockInjector.$("getParent","");
+		p = builder.getWireBoxDSL(data);
+		assertEquals("", p);
+		
+		//wirebox:eventmanager
+		data = {name="luis", dsl="wirebox:eventManager"};
+		mockEventManager = getMockBox().createEmptyMock("coldbox.system.core.events.EventPoolManager");
+		mockInjector.$("getEventManager",mockEventManager);
+		p = builder.getWireBoxDSL(data);
+		assertEquals(mockEventManager, p);
+		
+		//wirebox:binder
+		data = {name="luis", dsl="wirebox:binder"};
+		mockBinder = getMockBox().createMock("coldbox.system.ioc.config.Binder");
+		mockInjector.$("getBinder",mockBinder);
+		p = builder.getWireBoxDSL(data);
+		assertEquals(mockBinder, p);
+		
+		//wirebox:populator
+		data = {name="luis", dsl="wirebox:populator"};
+		populator = getMockBox().createEmptyMock("coldbox.system.core.dynamic.BeanPopulator");
+		mockInjector.$("getObjectPopulator", populator);
+		p = builder.getWireBoxDSL(data);
+		assertEquals(populator, p);
+		
+		//wirebox:scope
+		data = {name="luis", dsl="wirebox:scope:singleton"};
+		mockScope = getMockBox().createEmptyMock("coldbox.system.ioc.scopes.Singleton");
+		mockInjector.$("getScope", mockScope);
+		p = builder.getWireBoxDSL(data);
+		assertEquals(mockScope, p);
 		
 	}
 	
