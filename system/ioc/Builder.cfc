@@ -297,7 +297,9 @@ TODO: update dsl consistency, so it is faster.
 				// logbox injection DSL always available
 				case "logbox"			 : { refLocal.dependency = getLogBoxDSL(arguments.definition); break;}
 				// provider injection DSL always available
-				case "provider"			: { refLocal.dependency = getProviderDSL(arguments.definition); break; }
+				case "provider"			 : { refLocal.dependency = getProviderDSL(arguments.definition); break; }
+				// wirebox injection DSL always available
+				case "wirebox"			 : { refLocal.dependency = getWireBoxDSL(arguments.definition); break;}
 				
 				// No internal DSL's found, then check custom DSL's
 				default : {
@@ -319,6 +321,45 @@ TODO: update dsl consistency, so it is faster.
 	</cffunction>
 
 <!------------------------------------------- DSL BUILDER METHODS ------------------------------------------>
+
+	<!--- getWireBoxDSL --->
+	<cffunction name="getWireBoxDSL" access="private" returntype="any" hint="Get dependencies using the wirebox dependency DSL" output="false" >
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfscript>
+			var thisType 			= arguments.definition.dsl;
+			var thisTypeLen 		= listLen(thisType,":");
+			var thisLocationType 	= "";
+			var thisLocationKey 	= "";
+			
+			// DSL stages
+			switch(thisTypeLen){
+				// WireBox injector
+				case 1 : { return instance.injector; }
+				// Level 2 DSL
+				case 2 : {
+					thisLocationKey = getToken(thisType,2,":");
+					switch( thisLocationKey ){
+						case "parent" 		: { return instance.injector.getParent(); }
+						case "eventManager" : { return instance.injector.getEventManager(); }
+						case "binder" 		: { return instance.injector.getBinder(); }
+						case "populator" 	: { return instance.injector.getObjectPopulator(); }
+					}
+					break;
+				}
+				// Scopes
+				case 3 : {
+					thisLocationType 	= getToken(thisType,2,":");
+					thisLocationKey 	= getToken(thisType,3,":");
+					// DSL Level 2 Stage Types
+					switch(thisLocationType){
+						// Scope DSL
+						case "scope" : { return instance.injector.getScope(thisLocationKey); break; }
+					}
+					break;
+				} // end level 3 main DSL
+			}
+		</cfscript>
+	</cffunction>
 
 	<!--- getModelDSL --->
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
