@@ -277,7 +277,8 @@ Description :
 			var x   = 1;
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DIConstructorArgs); x++){
-				if( instance.DIConstructorArgs[x].name eq arguments.name ){ return this;}
+				if( structKeyExists(instance.DIConstructorArgs[x],"name") AND
+					instance.DIConstructorArgs[x].name eq arguments.name ){ return this;}
 			}
 			// Register new constructor argument.
 			structAppend(def, arguments, true);
@@ -300,7 +301,8 @@ Description :
 			var x	= 1;
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DIMethodArgs); x++){
-				if( instance.DIMethodArgs[x].name eq arguments.name ){ return this;}
+				if( structKeyExists(instance.DIMethodArgs[x],"name") AND
+					instance.DIMethodArgs[x].name eq arguments.name ){ return this;}
 			}
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIMethodArgs, def );
