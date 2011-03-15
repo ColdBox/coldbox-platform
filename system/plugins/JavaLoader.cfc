@@ -86,6 +86,11 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 				</cflock>
 			</cfif>
 	</cffunction>
+	
+	<!--- getJavaLoader --->
+    <cffunction name="getJavaLoader" output="false" access="public" returntype="any" hint="Get the original JavaLoader object">
+    	<cfreturn getJavaLoaderFromScope()>
+    </cffunction>
 
 	<!--- Create a Class --->
 	<cffunction name="create" hint="Retrieves a reference to the java class. To create a instance, you must run init() on this object" access="public" returntype="any" output="false">
@@ -130,11 +135,12 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 	<!--- getLoadedURLs --->
 	<cffunction name="getLoadedURLs" output="false" access="public" returntype="array" hint="Returns the paths of all the loaded java classes and resources.">
 		<cfscript>
-			var loadedURLs = getURLClassLoader().getURLs();
+			var loadedURLs 	= getURLClassLoader().getURLs();
 			var returnArray = arrayNew(1);
+			var x			= 1;
 			
-			while( loadedURLs.hasMoreElements() ){
-				arrayAppend(returnArray, loadedURLs.next().toString());
+			for(x=1; x lte ArrayLen(loadedURLs); x=x+1){
+				arrayAppend(returnArray, loadedURLs[x].toString());
 			}
 			
 			return returnArray;
