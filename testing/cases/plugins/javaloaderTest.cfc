@@ -51,7 +51,7 @@ Date        :	9/3/2007
 		javaloader.appendPaths(expandPath("/coldbox/testing/resources/javalib"));
 		urls = javaloader.getLoadedURLs();
 		debug(urls);
-		assertTrue( findNoCase("hello.jar", urls[2]));
+		assertTrue( findNoCase("hello.jar", urls[1]));
 	}
 </cfscript>
 	

@@ -9,13 +9,10 @@ Date        :	November 10, 2008
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="AntiSamyTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent name="AntiSamyTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
@@ -41,6 +38,7 @@ Description :
 		</cfsavecontent>
 		<!--- scan result must be like this: <img src="http://www.coldbox.org/includes/images/logos/coldbox_110.png" /> --->
 		<cfset assertFalse(FindNoCase('onclick=' ,plugin.HtmlSanitizer(trim(htmlcontent))),'Html Sanitaser is not working') />
+		<cfset debug(plugin.HtmlSanitizer(trim(htmlcontent)))>
 	</cffunction>
 
 </cfcomponent>
