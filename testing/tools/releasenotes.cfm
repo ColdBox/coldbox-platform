@@ -1,5 +1,4 @@
-<cfsavecontent variable="ticket">
-1169
+<cfsavecontent variable="ticket">1169
  
 new injector shutdown() method to process graceful injector shutdown
 Fixed
@@ -27,6 +26,21 @@ Fixed
 1174
  
 locateScopedSelf() added to injector to locate itself on a scoped registration to avoid scope widening issues
+Fixed
+ 
+1175
+ 
+onMissingMethod Proxy for WireBox Providers
+Fixed
+ 
+1176
+ 
+new wirebox injection dsl namespace to provide wirebox injector related objects
+Fixed
+ 
+1177
+ 
+mapping methods fail for java or noncfc objects that do not require name arguments
 Fixed
 </cfsavecontent>
 
