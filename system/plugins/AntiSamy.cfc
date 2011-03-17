@@ -39,15 +39,15 @@ Description:
 			getPlugin("JavaLoader").appendPaths(expandPath("#libPath#"));
 			
 			// AntiSamy policyfile
-			instance.policyFileStruct['antisamy'] = expandPath('#libPath#/antisamy-1.4.1.xml');
+			instance.policyFileStruct['antisamy'] = expandPath('#libPath#/antisamy-anythinggoes-1.4.4.xml');
 			//Load eBay policyfile
-			instance.policyFileStruct['ebay']	  = expandPath('#libPath#/antisamy-ebay-1.4.1.xml');
+			instance.policyFileStruct['ebay']	  = expandPath('#libPath#/antisamy-ebay-1.4.4.xml');
 			//Load myspace policyfile
-			instance.policyFileStruct['myspace']  = expandPath('#libPath#/antisamy-myspace-1.4.1.xml');
+			instance.policyFileStruct['myspace']  = expandPath('#libPath#/antisamy-myspace-1.4.4.xml');
 			//Load slashdot policyfile
-			instance.policyFileStruct['slashdot'] = expandPath('#libPath#/antisamy-slashdot-1.4.1.xml');
+			instance.policyFileStruct['slashdot'] = expandPath('#libPath#/antisamy-slashdot-1.4.4.xml');
 			//Load tinymce policyfile
-			instance.policyFileStruct['tinymce'] = expandPath('#libPath#/antisamy-tinymce-1.4.1.xml');
+			instance.policyFileStruct['tinymce'] = expandPath('#libPath#/antisamy-tinymce-1.4.4.xml');
 			
 			// Custom Policy
 			if( settingExists("AntiSamy_Custom_Policy") ){
@@ -64,7 +64,7 @@ Description:
 	<cffunction name="HTMLSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay, myspace, slashdot, custom">
 		<!--- ************************************************************* --->
 		<cfargument name="HTMLData"		 type="string"  required="true" hint="The html text to sanitize">
-		<cfargument name="policyFile"	 type="string"  required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot, tinymce, custom">
+		<cfargument name="policyFile"	 type="string"  required="false" default="ebay" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot, tinymce, custom">
 		<cfargument name="resultsObject" type="boolean" required="false" default="false" hint="Return the cleaned HTML or the results object. By default it is the cleaned HTML"/>
 		<!--- ************************************************************* --->
 		<cfscript>
