@@ -1,47 +1,27 @@
-<cfsavecontent variable="ticket">1169
+<cfsavecontent variable="ticket">
+1180
  
-new injector shutdown() method to process graceful injector shutdown
+cf store does not use createTimeSpan to create minute timespans for puts
+New
+ 
+1181
+ 
+railo store does not use createTimeSpan to create minute timespans for puts
+New
+#	Summary	Status
+ 
+1179
+ 
+new cachebox store: BlackholeStore used for optimization and testing
 Fixed
  
-1170
+1182
  
-new injector events: beforeInjectorShutdown, afterInjectorShutdown
+updates to make it coldbox 3.0 compatible
 Fixed
  
-1171
- 
-all injector events now get a reference to the calling injector
-Fixed
- 
-1172
- 
-builder not checking if constructor exists before executing it.
-Fixed
- 
-1173
- 
-ioc coldbox dsl builder missing ioc factory reference
-Fixed
- 
-1174
- 
-locateScopedSelf() added to injector to locate itself on a scoped registration to avoid scope widening issues
-Fixed
- 
-1175
- 
-onMissingMethod Proxy for WireBox Providers
-Fixed
- 
-1176
- 
-new wirebox injection dsl namespace to provide wirebox injector related objects
-Fixed
- 
-1177
- 
-mapping methods fail for java or noncfc objects that do not require name arguments
-Fixed
+Release FilesEdit release notes and files
+
 </cfsavecontent>
 
 <cfset split = ticket.split(chr(13))>
