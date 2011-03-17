@@ -329,6 +329,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 						  any lastAccessTimeout="0",
 						  any extra) output=false{
 		
+		// check if incoming timoeut is a timespan or minute to convert to timespan
+		if( findnocase("string", arguments.timeout.getClass().getName() ) ){
+			arguments.timeout = createTimeSpan(0,0,arguments.timeout,0);
+		}
+		if( findnocase("string", arguments.lastAccessTimeout.getClass().getName() ) ){
+			arguments.lastAccessTimeout = createTimeSpan(0,0,arguments.lastAccessTimeout,0);
+		}
+		
 		cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
 		
 		return true;
