@@ -1,100 +1,98 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 
 
-<!-- 
+<!--
 W3C rules retrieved from:
 http://www.w3.org/TR/html401/struct/global.html
 -->
-	
-	
+
+
 <anti-samy-rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:noNamespaceSchemaLocation="antisamy.xsd">
-	
+
 	<directives>
 		<directive name="omitXmlDeclaration" value="true"/>
 		<directive name="omitDoctypeDeclaration" value="true"/>
 		<directive name="maxInputSize" value="200000"/>
 		<directive name="useXHTML" value="true"/>
 		<directive name="formatOutput" value="true"/>
-		<directive name="nofollowAnchors" value="true" />
-		<directive name="validateParamAsEmbed" value="true" />
-		
+
 		<!--
 		remember, this won't work for relative URIs - AntiSamy doesn't
 		know anything about the URL or your web structure
 		-->
-		<directive name="embedStyleSheets" value="false"/> 
+		<directive name="embedStyleSheets" value="false"/>
 		<directive name="connectionTimeout" value="5000"/>
 		<directive name="maxStyleSheetImports" value="3"/>
-		
+
 	</directives>
-	
+
 	<common-regexps>
-		
-		<!-- 
+
+		<!--
 		From W3C:
 		This attribute assigns a class name or set of class names to an
 		element. Any number of elements may be assigned the same class
-		name or names. Multiple class names must be separated by white 
+		name or names. Multiple class names must be separated by white
 		space characters.
 		-->
 
 		<!-- The 16 colors defined by the HTML Spec (also used by the CSS Spec) -->
 		<regexp name="colorName" value="(aqua|black|blue|fuchsia|gray|grey|green|lime|maroon|navy|olive|purple|red|silver|teal|white|yellow)"/>
-		
+
 		<!-- HTML/CSS Spec allows 3 or 6 digit hex to specify color -->
 		<regexp name="colorCode" value="(#([0-9a-fA-F]{6}|[0-9a-fA-F]{3}))"/>
-				
+
 		<regexp name="anything" value=".*"/>
 		<regexp name="numberOrPercent" value="(\d)+(%{0,1})"/>
-		<regexp name="paragraph" value="([\p{L}\p{N},'\.\s\-_\(\)\?]|&amp;[0-9]{2};)*"/>	
+		<regexp name="paragraph" value="([\p{L}\p{N},'\.\s\-_\(\)]|&amp;[0-9]{2};)*"/>
 		<regexp name="htmlId" value="[a-zA-Z0-9\:\-_\.]+"/>
 		<regexp name="htmlTitle" value="[\p{L}\p{N}\s\-_',:\[\]!\./\\\(\)&amp;]*"/> <!-- force non-empty with a '+' at the end instead of '*' -->
 		<regexp name="htmlClass" value="[a-zA-Z0-9\s,\-_]+"/>
 
 		<regexp name="onsiteURL" value="([\p{L}\p{N}\\\.\#@\$%\+&amp;;\-_~,\?=/!]+|\#(\w)+)"/>
 		<regexp name="offsiteURL" value="(\s)*((ht|f)tp(s?)://|mailto:)[\p{L}\p{N}]+[\p{L}\p{N}\p{Zs}\.\#@\$%\+&amp;;:\-_~,\?=/!\(\)]*(\s)*"/>
-		
+
 		<regexp name="boolean" value="(true|false)"/>
 		<regexp name="singlePrintable" value="[a-zA-Z0-9]{1}"/> <!-- \w allows the '_' character -->
 
 		<!-- This is for elements (ex: elemName { ... }) -->
-		<regexp name="cssElementSelector" value="[a-zA-Z0-9\-_]+|\*"/>
-		
+		<regexp name="cssElementSelector" value="[a-zA-Z0-9-_]+|\*"/>
+
 		<!--  This is to list out any element names that are *not* valid -->
 		<regexp name="cssElementExclusion" value=""/>
-		
+
 		<!--  This if for classes (ex: .className { ... }) -->
-		<regexp name="cssClassSelector" value="\.[a-zA-Z0-9\-_]+"/>
+		<regexp name="cssClassSelector" value="\.[a-zA-Z0-9-_]+"/>
 
 		<!--  This is to list out any class names that are *not* valid -->
 		<regexp name="cssClassExclusion" value=""/>
-		
+
 		<!--  This is for ID selectors (ex: #myId { ... } -->
-		<regexp name="cssIDSelector" value="#[a-zA-Z0-9\-_]+"/>
-		
+		<regexp name="cssIDSelector" value="#[a-zA-Z0-9-_]+"/>
+
 		<!--  This is to list out any IDs that are *not* valid - FIXME: What should the default be to avoid div hijacking? *? -->
 		<regexp name="cssIDExclusion" value=""/>
-		
+
 		<!--  This is for pseudo-element selector (ex. foo:pseudo-element { ... } -->
 		<regexp name="cssPseudoElementSelector" value=":[a-zA-Z0-9\-_]+"/>
-		
+
 		<!--  This is to list out any psuedo-element names that are *not* valid -->
 		<regexp name="cssPsuedoElementExclusion" value=""/>
-		
+
 		<!--  This is for attribute selectors (ex. foo[attr=value] { ... } -->
 		<regexp name="cssAttributeSelector" value="\[[a-zA-Z0-9\-_]+((=|~=|\|=){1}[a-zA-Z0-9\-_]+){1}\]"/>
-		
+
 		<!--  This is to list out any attribute names that are *not* valid -->
 		<regexp name="cssAttributeExclusion" value=""/>
-		
+
 		<!--  This is for resources referenced from CSS (such as background images and other imported stylesheets) -->
 		<regexp name="cssOnsiteUri" value="url\(([\p{L}\p{N}\\/\.\?=\#&amp;;\-_~]+|\#(\w)+)\)"/>
 		<regexp name="cssOffsiteUri" value="url\((\s)*((ht|f)tp(s?)://)[\p{L}\p{N}]+[~\p{L}\p{N}\p{Zs}\-_\.@#$%&amp;;:,\?=/\+!]*(\s)*\)"/>
-		
+
 		<!--  This if for CSS Identifiers -->
 		<regexp name="cssIdentifier" value="[a-zA-Z0-9\-_]+"/>
-		
+
 		<!--  This is for comments within CSS (ex. /* comment */) -->
 		<regexp name="cssCommentText" value="[\p{L}\p{N}\-_,\/\\\.\s\(\)!\?\=\$#%\^&amp;:&quot;']+"/>
 
@@ -103,60 +101,46 @@ http://www.w3.org/TR/html401/struct/global.html
 		<regexp name="number" value="(-|\+)?([0-9]+(\.[0-9]+)?)"/>
 		<regexp name="angle" value="(-|\+)?([0-9]+(\.[0-9]+)?)(deg|grads|rad)"/>
 		<regexp name="time" value="([0-9]+(\.[0-9]+)?)(ms|s)"/>
-		<regexp name="frequency" value="([0-9]+(\.[0-9]+)?)(hz|khz)"/>	
+		<regexp name="frequency" value="([0-9]+(\.[0-9]+)?)(hz|khz)"/>
 		<regexp name="length" value="((-|\+)?0|(-|\+)?([0-9]+(\.[0-9]+)?)(em|ex|px|in|cm|mm|pt|pc))"/>
 		<regexp name="positiveLength" value="((\+)?0|(\+)?([0-9]+(\.[0-9]+)?)(em|ex|px|in|cm|mm|pt|pc))"/>
 		<regexp name="percentage" value="(-|\+)?([0-9]+(\.[0-9]+)?)%"/>
 		<regexp name="positivePercentage" value="(\+)?([0-9]+(\.[0-9]+)?)%"/>
-		
+
 		<regexp name="absolute-size" value="(xx-small|x-small|small|medium|large|x-large|xx-large)"/>
 		<regexp name="relative-size" value="(larger|smaller)"/>
-		
+
 		<!-- Used for CSS Color specifications (complex regexp expresses integer values of 0-255) -->
 		<regexp name="rgbCode" value="rgb\(([1]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]),([1]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]),([1]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])\)"/>
-		
-		<!-- CSS2 Allowed System Color Values -->		
+
+		<!-- CSS2 Allowed System Color Values -->
 		<regexp name="systemColor" value="(activeborder|activecaption|appworkspace|background|buttonface|buttonhighlight|buttonshadow|buttontext|captiontext|graytext|highlight|highlighttext|inactiveborder|inactivecaption|inactivecaptiontext|infobackground|infotext|menu|menutext|scrollbar|threeddarkshadow|threedface|threedhighlight|threedlightshadow|threedshadow|window|windowframe|windowtext)"/>
 
-		<!-- This is where we specify what Flash src to allow -->
-		<regexp name="flashSites" value="http://(download\.macromedia\.com/pub|www\.macromedia\.com/(go|shockwave)|c\.brightcove\.com/services|gamevideos\.1up\.com/swf|www\.youtube\.com/v|vimeo\.com|www\.gametrailers\.com|videomedia\.ign\.com/ev|image\.com\.com/gamespot|www\.hulu\.com/embed|embed\.break\.com|player\.ordienetworks\.com/flash|www\.adultswim\.com/video/vplayer|www\.dailymotion\.com/swf|www\.ustream\.tv/flash/video|cdn-i\.dmdentertainment\.com|media\.mtvnservices\.com|www\.justin\.tv/widgets|www\.viddler\.com/(player|simple_on_site)|static\.twitter\.com/flash|www\.gamepro\.com/bin|www\.divshare\.com/flash|www\.facebook\.com/v)/.*"/>
 	</common-regexps>
-	
-	<!-- 
-	
+
+	<!--
+
 	Tag.name = a, b, div, body, etc.
 	Tag.action = filter: remove tags, but keep content, validate: keep content as long as it passes rules, remove: remove tag and contents
 	Attribute.name = id, class, href, align, width, etc.
 	Attribute.onInvalid = what to do when the attribute is invalid, e.g., remove the tag (removeTag), remove the attribute (removeAttribute), filter the tag (filterTag)
 	Attribute.description = What rules in English you want to tell the users they can have for this attribute. Include helpful things so they'll be able to tune their HTML
-	 
+
 	 -->
 
-	<!-- 
+	<!--
 	Some attributes are common to all (or most) HTML tags. There aren't many that qualify for this. You have to make sure there's no
 	collisions between any of these attribute names with attribute names of other tags that are for different purposes.
 	-->
 
 	<common-attributes>
-		
+
 
 		<!-- Common to all HTML tags  -->
-		
+
 		<attribute name="id" description="The 'id' of any HTML attribute should not contain anything besides letters and numbers">
 			<regexp-list>
 				<regexp name="htmlId"/>
-			</regexp-list>
-		</attribute>
-	
-		<attribute name="classid">
-			<regexp-list>
-				<regexp name="anything" />
-			</regexp-list>
-		</attribute>
-
-		<attribute name="codebase">
-			<regexp-list>
-				<regexp name="flashSites" />
 			</regexp-list>
 		</attribute>
 
@@ -176,17 +160,17 @@ http://www.w3.org/TR/html401/struct/global.html
 		 		<regexp name="htmlTitle"/>
 		 	</regexp-list>
 		 </attribute>
-		 
+
 		 <attribute name="alt" description="The 'alt' attribute provides alternative text to users when its visual representation is not available">
 		 	<regexp-list>
 		 		<regexp name="paragraph"/>
 		 	</regexp-list>
 		 </attribute>
 
-		 
+
  		<!-- the "style" attribute will be validated by an inline stylesheet scanner, so no need to define anything here - i hate having to special case this but no other choice -->
 		 <attribute name="style" description="The 'style' attribute provides the ability for users to change many attributes of the tag's contents using a strict syntax"/>
-		 
+
 		 <attribute name="media">
 		 	<regexp-list>
 		 		<regexp value="[a-zA-Z0-9,\-\s]+"/>
@@ -203,36 +187,41 @@ http://www.w3.org/TR/html401/struct/global.html
 		 		<literal value="aural"/>
 		 		<literal value="all"/>
 		 	</literal-list>
-		 	
 		 </attribute>
-		 
-		 
+
+
 		 <!-- Anchor related -->
-		 
+
 		 <!--  onInvalid="filterTag" has been removed as per suggestion at OWASP SJ 2007 - just "name" is valid -->
 		<attribute name="href">
 			<regexp-list>
 				<regexp name="onsiteURL"/>
 				<regexp name="offsiteURL"/>
 			</regexp-list>
+			<literal-list>
+				<literal value="javascript:history.go(0)"/>
+				<literal value="javascript:history.go(-1)"/>
+				<literal value="javascript:void(0)"/>
+				<literal value="javascript:location.reload()"/>
+			</literal-list>
 		</attribute>
-		
+
 		<attribute name="name">
 		 	<regexp-list>
-		 		
-		 		<regexp value="[a-zA-Z0-9-\_\$]+"/>
-		 		
+
+		 		<regexp value="[a-zA-Z0-9\-_\$]+"/>
+
 		 		<!--
 		 		have to allow the $ for .NET controls - although,
-		 		will users be supplying input that has server-generated 
+		 		will users be supplying input that has server-generated
 		 		.NET control names? methinks not, but i want to pass my
 		 		test cases
 		 		-->
-		 		
+
 		 	</regexp-list>
 		 </attribute>
-		
-		
+
+
 		<attribute name="shape" description="The 'shape' attribute defines the shape of the selectable area">
 			<literal-list>
 				<literal value="default"/>
@@ -241,17 +230,17 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="poly"/>
 			</literal-list>
 		</attribute>
-		
-		
-		
+
+
+
 		<!--  Table attributes  -->
-		
+
 		<attribute name="border">
 			<regexp-list>
 				<regexp name="number"/>
 			</regexp-list>
 		</attribute>
-		
+
 		<attribute name="cellpadding">
 			<regexp-list>
 				<regexp name="number"/>
@@ -263,7 +252,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<regexp name="number"/>
 			</regexp-list>
 		</attribute>
-		
+
 		<attribute name="colspan">
 			<regexp-list>
 				<regexp name="number"/>
@@ -275,59 +264,59 @@ http://www.w3.org/TR/html401/struct/global.html
 				<regexp name="number"/>
 			</regexp-list>
 		</attribute>
-		
+
 		<attribute name="background">
 			<regexp-list>
 				<regexp name="onsiteURL"/>
 			</regexp-list>
 		</attribute>
 
-		<attribute name="bgcolor">		
+		<attribute name="bgcolor">
 			<regexp-list>
 				<regexp name="colorName"/>
 				<regexp name="colorCode"/>
 			</regexp-list>
 		</attribute>
-		 
+
 		 <attribute name="abbr">
 			<regexp-list>
 			 	<regexp name="paragraph"/>
 		 	</regexp-list>
 		 </attribute>
-		 
+
 		 <attribute name="headers" description="The 'headers' attribute is a space-separated list of cell IDs">
 		 	<regexp-list>
 			 	<regexp value="[a-zA-Z0-9\s*]*"/>
 		 	</regexp-list>
 		 </attribute>
-		 
+
 		 <attribute name="charoff">
 		 	<regexp-list>
 		 		<regexp value="numberOrPercent"/>
 		 	</regexp-list>
 		 </attribute>
-		 
+
 		 <attribute name="char">
 			<regexp-list>
 				<regexp value=".{0,1}"/>
-			</regexp-list>				
+			</regexp-list>
 		 </attribute>
 
 
 		<attribute name="axis" description="The 'headers' attribute is a comma-separated list of related header cells">
 		 	<regexp-list>
 			 	<regexp value="[a-zA-Z0-9\s*,]*"/>
-		 	</regexp-list>		
-		</attribute> 
-		
+		 	</regexp-list>
+		</attribute>
+
 		<attribute name="nowrap" description="The 'nowrap' attribute tells the browser not to wrap text that goes over one line">
 			<regexp-list>
 				<regexp name="anything"/>
 				<!-- <regexp value="(nowrap){0,1}"/>  -->
 			</regexp-list>
 		</attribute>
-		
-		
+
+
 		<!--  Common positioning attributes  -->
 
 		<attribute name="width">
@@ -335,13 +324,13 @@ http://www.w3.org/TR/html401/struct/global.html
 				<regexp name="numberOrPercent"/>
 			</regexp-list>
 		</attribute>
-		
+
 		<attribute name="height">
 			<regexp-list>
 				<regexp name="numberOrPercent"/>
 			</regexp-list>
 		</attribute>
-		
+
 		<attribute name="align" description="The 'align' attribute of an HTML element is a direction word, like 'left', 'right' or 'center'">
 			<literal-list>
 				<literal value="center"/>
@@ -352,7 +341,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="char"/>
 			</literal-list>
 		</attribute>
-		
+
 		<attribute name="valign" description="The 'valign' attribute of an HTML attribute is a direction word, like 'baseline','bottom','middle' or 'top'">
 			<literal-list>
 				<literal value="baseline"/>
@@ -361,11 +350,11 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="top"/>
 			</literal-list>
 		</attribute>
-		
-		
-		
+
+
+
 		<!-- Intrinsic JavaScript Events -->
-		
+
 		<attribute name="onFocus" description="The 'onFocus' event is executed when the control associated with the tag gains focus">
 			<literal-list>
 				<literal value="javascript:void(0)"/>
@@ -379,42 +368,42 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="javascript:history.go(-1)"/>
 			</literal-list>
 		</attribute>
-		 
+
 		 <attribute name="onClick" description="The 'onClick' event is executed when the control associated with the tag is clicked">
 			<literal-list>
 				<literal value="javascript:void(0)"/>
 				<literal value="javascript:history.go(-1)"/>
-			</literal-list>		 
+			</literal-list>
 		 </attribute>
 
 		 <attribute name="onDblClick" description="The 'onDblClick' event is executed when the control associated with the tag is clicked twice immediately">
 			<literal-list>
 				<literal value="javascript:void(0)"/>
 				<literal value="javascript:history.go(-1)"/>
-			</literal-list>		 
+			</literal-list>
 		 </attribute>
-		 
+
 		  <attribute name="onMouseDown" description="The 'onMouseDown' event is executed when the control associated with the tag is clicked but not yet released">
 			<literal-list>
 				<literal value="javascript:void(0)"/>
 				<literal value="javascript:history.go(-1)"/>
-			</literal-list>		 
+			</literal-list>
 		 </attribute>
-		 
+
 		 <attribute name="onMouseUp" description="The 'onMouseUp' event is executed when the control associated with the tag is clicked after the button is released">
 			<literal-list>
 				<literal value="javascript:void(0)"/>
 				<literal value="javascript:history.go(-1)"/>
-			</literal-list>		 
+			</literal-list>
 		 </attribute>
-		 
+
  		 <attribute name="onMouseOver" description="The 'onMouseOver' event is executed when the user's mouse hovers over the control associated with the tag">
 			<literal-list>
 				<literal value="javascript:void(0)"/>
 				<literal value="javascript:history.go(-1)"/>
-			</literal-list>		 
+			</literal-list>
 		 </attribute>
-		 
+
 		 <attribute name="scope" description="The 'scope' attribute defines what's covered by the header cells">
 		 	<literal-list>
 		 		<literal value="row"/>
@@ -423,74 +412,74 @@ http://www.w3.org/TR/html401/struct/global.html
 		 		<literal value="colgroup"/>
 		 	</literal-list>
 		 </attribute>
-		
-		
-		
+
+
+
 		 <!-- If you want users to be able to mess with tabindex, uncomment this -->
-		 <!--  
+		 <!--
 		 <attribute name="tabindex" description="...">
 		 	<regexp-list>
 		 		<regexp name="number"/>
 		 	</regexp-list>
 		 </attribute>
 		  -->
-		 
-		 
+
+
 		 <!-- Input/form related common attributes -->
-		 
+
 		 <attribute name="disabled">
 		 	<regexp-list>
 		 		<regexp name="anything"/>
 		 	</regexp-list>
 		 </attribute>
-		 
+
 		 <attribute name="readonly">
 		 	<regexp-list>
 		 		<regexp name="anything"/>
-		 	</regexp-list>		 
+		 	</regexp-list>
 		 </attribute>
-		 
+
 		 <attribute name="accesskey">
 		 	<regexp-list>
 		 		<regexp name="anything"/>
-		 	</regexp-list>		 
+		 	</regexp-list>
 		 </attribute>
-		 
+
 		 <attribute name="size">
 		 	<regexp-list>
 		 		<regexp name="number"/>
 		 	</regexp-list>
 		 </attribute>
-		 
-		 
+
+
 		<attribute name="autocomplete">
 			<literal-list>
 				<literal value="on"/>
 				<literal value="off"/>
 			</literal-list>
 		</attribute>
-			
+
 		 <attribute name="rows">
 		 	<regexp-list>
 		 		<regexp name="number"/>
-		 	</regexp-list>		 
+		 	</regexp-list>
 		 </attribute>
 
 		 <attribute name="cols">
 		 	<regexp-list>
 		 		<regexp name="number"/>
-		 	</regexp-list>		 
+		 	</regexp-list>
 		 </attribute>
-		 
+
 	</common-attributes>
 
 
 	<!--
 	This requires normal updates as browsers continue to diverge from the W3C and each other. As long as the browser wars continue
-	this is going to continue. I'm not sure war is the right word for what's going on. Doesn't somebody have to win a war after 
+	this is going to continue. I'm not sure war is the right word for what's going on. Doesn't somebody have to win a war after
 	a while? Even wars of attrition, surely?
 	 -->
-	
+
 	<global-tag-attributes>
 		<!-- Not valid in base, head, html, meta, param, script, style, and title elements. -->
 		<attribute name="id"/>
@@ -500,22 +489,22 @@ http://www.w3.org/TR/html401/struct/global.html
 		<!-- Not valid in base, br, frame, frameset, hr, iframe, param, and script elements.  -->
 		<attribute name="lang"/>
 	</global-tag-attributes>
-	
+
 	<tags-to-encode>
 		<tag>g</tag>
 		<tag>grin</tag>
 	</tags-to-encode>
-	
+
 	<tag-rules>
-	
+
 		<!-- You can mess with this stuff if you know what you're doing -->
-		
+
 		<tag name="html" action="validate"/>
-		
+
 		<tag name="body" action="validate">
 			<attribute name="bgcolor"/>
 		</tag>
-		
+
 		<tag name="meta" action="filter"/>
 
 		<tag name="head" action="validate"/>
@@ -528,19 +517,19 @@ http://www.w3.org/TR/html401/struct/global.html
 
 		<tag name="script" action="remove"/>
 		<tag name="noscript" action="validate"/> <!-- although no javascript can fire inside a noscript tag, css is still a viable attack vector -->
-		
-		
-		
+
+
+
 		<!-- Frame & related tags -->
-		
+
 		<tag name="iframe" action="remove"/>
 		<tag name="frameset" action="remove"/>
 		<tag name="frame" action="remove"/>
-		
-		
-		
+
+
+
 		<!-- Form related tags -->
-		
+
 		<tag name="label" action="validate">
 			<attribute name="for">
 				<regexp-list>
@@ -548,35 +537,35 @@ http://www.w3.org/TR/html401/struct/global.html
 				</regexp-list>
 			</attribute>
 		</tag>
-		
+
 
 		<!--
-			If you wish to enable any of the form related tags, change the tag's action below from "filter" or "remove" to "validate". The attributes have been 
+			If you wish to enable any of the form related tags, change the tag's action below from "filter" or "remove" to "validate". The attributes have been
 			hardened so this is safe to do, if it's something you want to allow. Beware the <><ing possibilities!
 		 -->
-			
+
 		<tag name="form" action="validate">
-			
+
 			<attribute name="action">
 				<regexp-list>
 					<regexp name="onsiteURL"/>
 					<regexp name="offsiteURL"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="name"/>
-			
+
 			<attribute name="autocomplete"/>
-			
+
 			<attribute name="method">
 				<literal-list>
 					<literal value="post"/>
 					<literal value="get"/>
 				</literal-list>
 			</attribute>
-			
+
 		</tag>
-		
+
 		<tag name="button" action="validate">
 			<attribute name="name"/>
 			<attribute name="value">
@@ -584,7 +573,7 @@ http://www.w3.org/TR/html401/struct/global.html
 					<regexp name="anything"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="disabled"/>
 			<attribute name="accesskey"/>
 			<attribute name="type">
@@ -595,42 +584,42 @@ http://www.w3.org/TR/html401/struct/global.html
 				</literal-list>
 			</attribute>
 		</tag>
-		
+
 		<tag name="input" action="validate">
-			
+
 			<attribute name="name"/>
-			
+
 			<attribute name="size"/>
-			
+
 			<attribute name="maxlength">
 				<regexp-list>
 					<regexp name="number"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="autocomplete"/>
-			
+
 			<attribute name="checked">
 				<regexp-list>
 					<regexp name="anything"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="alt"/>
-			
+
 			<attribute name="src">
 				<regexp-list>
 					<regexp name="onsiteURL"/>
 					<regexp name="offsiteURL"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="usemap">
 				<regexp-list>
 					<regexp name="onsiteURL"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="type">
 				<literal-list>
 					<literal value="hidden"/>
@@ -645,59 +634,59 @@ http://www.w3.org/TR/html401/struct/global.html
 					<literal value="reset"/>
 				</literal-list>
 			</attribute>
-			
+
 			<attribute name="value">
 				<regexp-list>
 					<regexp name="anything"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="disabled"/>
 			<attribute name="readonly"/>
 			<attribute name="accesskey"/>
-			
+
 			<attribute name="border"/>
-			
+
 		</tag>
-		
+
 		<tag name="select" action="validate">
 
 			<attribute name="name"/>
 			<attribute name="disabled"/>
-			
+
 			<attribute name="multiple">
 				<regexp-list>
 					<regexp name="anything"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="size"/>
-			
+
 		</tag>
-		
+
 		<tag name="option" action="validate">
-		
+
 			<attribute name="disabled"/>
-			
+
 			<attribute name="value">
 				<regexp-list>
 					<regexp name="anything"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="label">
 				<regexp-list>
 					<regexp name="anything"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="selected">
 				<regexp-list>
 					<regexp name="anything"/>
 				</regexp-list>
 			</attribute>
 		</tag>
-		
+
 		<tag name="textarea" action="validate">
 			<attribute name="rows"/>
 			<attribute name="cols"/>
@@ -706,12 +695,12 @@ http://www.w3.org/TR/html401/struct/global.html
 			<attribute name="readonly"/>
 			<attribute name="accesskey"/>
 		</tag>
-		
-		
-		
-		
+
+
+
+
 		<!-- All formatting tags -->
-		
+
 		<tag name="h1" action="validate"/>
 		<tag name="h2" action="validate"/>
 		<tag name="h3" action="validate"/>
@@ -722,12 +711,12 @@ http://www.w3.org/TR/html401/struct/global.html
 		<tag name="p" action="validate">
 			<attribute name="align"/>
 		</tag>
-		
+
 		<tag name="i" action="validate"/>
 		<tag name="b" action="validate"/>
 		<tag name="u" action="validate"/>
 		<tag name="strong" action="validate"/>
-		
+
 		<tag name="em" action="validate"/>
 		<tag name="small" action="validate"/>
 		<tag name="big" action="validate"/>
@@ -740,12 +729,12 @@ http://www.w3.org/TR/html401/struct/global.html
 		<tag name="strike" action="validate"/>
 		<tag name="center" action="validate"/>
 		<tag name="blockquote" action="validate"/>
-		
+
 		<tag name="hr" action="validate"/>
 		<tag name="br" action="validate"/>
-		
+
 		<tag name="col" action="validate"/>
-		
+
 		<tag name="font" action="validate">
 			<attribute name="color">
 				<regexp-list>
@@ -753,23 +742,23 @@ http://www.w3.org/TR/html401/struct/global.html
 					<regexp name="colorCode"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="face">
 				<regexp-list>
 					<regexp value="[\w;, \-]+"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="size">
 				<regexp-list>
 					<regexp value="(\+|-){0,1}(\d)+"/>
 				</regexp-list>
 			</attribute>
 		</tag>
-		
+
 
 		<!-- Anchor and anchor related tags -->
-		
+
 		<tag name="a" action="validate">
 
 			<!--  onInvalid="filterTag" has been removed as per suggestion at OWASP SJ 2007 - just "name" is valid -->
@@ -787,22 +776,22 @@ http://www.w3.org/TR/html401/struct/global.html
 				</literal-list>
 			</attribute>
 			<attribute name="name"/>
-			
+
 		</tag>
 
 		<tag name="map" action="validate"/>
 
 		<!-- base tag removed per demo - this could be enabled with literal-list values you allow -->
-		<!-- 
+		<!--
 		<tag name="base" action="validate">
 			<attribute name="href"/>
 		</tag>
 		-->
-		
-		
-		
+
+
+
 		<!-- Stylesheet Tags -->
-		
+
 		<tag name="style" action="validate">
 			<attribute name="type">
 				<literal-list>
@@ -811,16 +800,22 @@ http://www.w3.org/TR/html401/struct/global.html
 			</attribute>
 			<attribute name="media"/>
 		</tag>
-		
+
 		<tag name="span" action="validate"/>
 
 		<tag name="div" action="validate">
 			<attribute name="align"/>
 		</tag>
 
-	
+		<!-- <attribute name="id"/>  what could an attacker do if they could overwrite an existing div definition? prolly something bad -->
+		<!-- <attribute name="class"/> what could an attacker do if they could specify any class in the namespace? prolly something bad -->
+
+
+
+
+
 		<!-- Image & image related tags -->
-		
+
 		<tag name="img" action="validate">
 			<attribute name="src" onInvalid="removeTag">
 				<regexp-list>
@@ -834,29 +829,29 @@ http://www.w3.org/TR/html401/struct/global.html
 			<attribute name="width"/>
 			<attribute name="border"/>
 			<attribute name="align"/>
-			
+
 			<attribute name="hspace">
 				<regexp-list>
 					<regexp name="number"/>
 				</regexp-list>
 			</attribute>
-			
+
 			<attribute name="vspace">
 				<regexp-list>
 					<regexp name="number"/>
-				</regexp-list>			
+				</regexp-list>
 			</attribute>
 		</tag>
 
 		<!-- no way to do this safely without hooking up the same code to @import to embed the remote stylesheet (malicious user could change offsite resource to be malicious after validation -->
 		<!-- <attribute name="href" onInvalid="removeTag"/>  -->
-			
+
 		<tag name="link" action="validate">
 
 			<!-- <attribute name="href" onInvalid="removeTag"/>  -->
-			
+
 			<attribute name="media"/>
-			
+
 			<attribute name="type" onInvalid="removeTag">
 				<literal-list>
 					<literal value="text/css"/>
@@ -864,7 +859,7 @@ http://www.w3.org/TR/html401/struct/global.html
 					<literal value="image/x-icon"/>
 				</literal-list>
 			</attribute>
-			
+
 			<attribute name="rel">
 				<literal-list>
 					<literal value="stylesheet"/>
@@ -876,52 +871,52 @@ http://www.w3.org/TR/html401/struct/global.html
 				</literal-list>
 			</attribute>
 		</tag>
-		
-		
-		
-				
+
+
+
+
 
 		<!-- List tags -->
 
 		<tag name="ul" action="validate"/>
 		<tag name="ol" action="validate"/>
 		<tag name="li" action="validate"/>
-		
 
-		
-		
+
+
+
 		<!-- Dictionary tags -->
-		
+
 		<tag name="dd" action="truncate"/>
 		<tag name="dl" action="truncate"/>
 		<tag name="dt" action="truncate"/>
-		
 
 
-		
+
+
 		<!-- Table tags (tbody, thead, tfoot)-->
-		
+
 		<tag name="thead" action="validate">
 			<attribute name="align"/>
 			<attribute name="char"/>
 			<attribute name="charoff"/>
 			<attribute name="valign"/>
 		</tag>
-		
+
 		<tag name="tbody" action="validate">
 			<attribute name="align"/>
 			<attribute name="char"/>
 			<attribute name="charoff"/>
 			<attribute name="valign"/>
 		</tag>
-		
+
 		<tag name="tfoot" action="validate">
 			<attribute name="align"/>
 			<attribute name="char"/>
 			<attribute name="charoff"/>
 			<attribute name="valign"/>
 		</tag>
-		
+
 		<tag name="table" action="validate">
 			<attribute name="height"/>
 			<attribute name="width"/>
@@ -938,7 +933,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				</literal-list>
 			</attribute>
 		</tag>
-		
+
 		<tag name="td" action="validate">
 			<attribute name="background"/>
 			<attribute name="bgcolor"/>
@@ -951,12 +946,12 @@ http://www.w3.org/TR/html401/struct/global.html
 			<attribute name="width"/>
 			<attribute name="align"/>
 			<attribute name="char"/>
-			<attribute name="charoff"/>			
+			<attribute name="charoff"/>
 			<attribute name="valign"/>
 			<attribute name="colspan"/>
 			<attribute name="rowspan"/>
 		</tag>
-		
+
 		<tag name="th" action="validate">
 			<attribute name="abbr"/>
 			<attribute name="axis"/>
@@ -968,22 +963,22 @@ http://www.w3.org/TR/html401/struct/global.html
 			<attribute name="width"/>
 			<attribute name="align"/>
 			<attribute name="char"/>
-			<attribute name="charoff"/>			
+			<attribute name="charoff"/>
 			<attribute name="valign"/>
 			<attribute name="colspan"/>
 			<attribute name="rowspan"/>
 		</tag>
-		
+
 		<tag name="tr" action="validate">
 			<attribute name="height"/>
 			<attribute name="width"/>
 			<attribute name="align"/>
 			<attribute name="valign"/>
 			<attribute name="char"/>
-			<attribute name="charoff"/>	
+			<attribute name="charoff"/>
 			<attribute name="background"/>
 		</tag>
-		
+
 		<tag name="colgroup" action="validate">
 
 			<attribute name="span">
@@ -997,7 +992,7 @@ http://www.w3.org/TR/html401/struct/global.html
 			<attribute name="charoff"/>
 			<attribute name="valign"/>
 		</tag>
-		
+
 		<tag name="col" action="validate">
 			<attribute name="align"/>
 			<attribute name="char"/>
@@ -1010,129 +1005,17 @@ http://www.w3.org/TR/html401/struct/global.html
 			</attribute>
 			<attribute name="width"/>
 		</tag>
-				
+
 		<tag name="fieldset" action="validate"/>
 		<tag name="legend" action="validate"/>
-		
 
-		<!-- tags for popular Flash embeds -->
-
-		<tag name="object" action="validate">
-			<attribute name="id" />
-			<attribute name="classid" />
-			<attribute name="codebase" />
-			<attribute name="type" onInvalid="removeTag">
-				<literal-list>
-					<literal value="application/x-shockwave-flash" />
-				</literal-list>
-			</attribute>
-			<attribute name="data" onInvalid="removeTag">
-				<regexp-list>
-					<regexp name="flashSites" />
-				</regexp-list>
-			</attribute>
-			<attribute name="align" />
-			<attribute name="height" />
-			<attribute name="width" />
-			<attribute name="alt" />
-			<attribute name="bgcolor">
-				<regexp-list>
-					<regexp name="colorCode" />
-				</regexp-list>
-			</attribute>
-		</tag>
-
-		<!-- with validateParamAsEmbed=true, this tag rule also covers <param> name/value pairs -->
-		<tag name="embed" action="validate">
-			<attribute name="src" onInvalid="removeTag">
-				<regexp-list>
-					<regexp name="flashSites" />
-				</regexp-list>
-			</attribute>
-			<attribute name="movie" onInvalid="removeTag">
-				<regexp-list>
-					<regexp name="flashSites" />
-				</regexp-list>
-			</attribute>
-			<attribute name="pluginspage">
-				<regexp-list>
-					<regexp name="flashSites" />
-				</regexp-list>
-			</attribute>
-			<attribute name="bgcolor">
-				<regexp-list>
-					<regexp name="colorCode" />
-				</regexp-list>
-			</attribute>
-			<attribute name="base">
-				<literal-list>
-					<literal value="http://admin.brightcove.com" />
-				</literal-list>
-			</attribute>
-			<attribute name="type">
-				<literal-list>
-					<literal value="application/x-shockwave-flash" />
-				</literal-list>
-			</attribute>
-			<attribute name="name">
-				<regexp-list>
-					<regexp name="anything" />
-				</regexp-list>
-			</attribute>
-			<attribute name="flashvars">
-				<regexp-list>
-					<regexp name="anything" /><!-- we could put something complex in here, but this is prolly fine for now-->
-				</regexp-list>
-			</attribute>
-			<attribute name="align" />
-			<attribute name="height" />
-			<attribute name="width" />
-			<attribute name="allowfullscreen">
-				<regexp-list>
-					<regexp name="boolean" />
-				</regexp-list>
-			</attribute>
-			<attribute name="quality">
-				<literal-list>
-					<literal value="high" />
-				</literal-list>
-			</attribute>
-			<attribute name="allowscriptaccess">
-				<literal-list>
-					<literal value="always" />
-					<literal value="samedomain" />
-				</literal-list>
-			</attribute>
-			<attribute name="seamlesstabbing">
-				<regexp-list>
-					<regexp name="boolean" />
-				</regexp-list>
-			</attribute>
-			<attribute name="swliveconnect">
-				<regexp-list>
-					<regexp name="boolean" />
-				</regexp-list>
-			</attribute>
-			<attribute name="wmode">
-				<literal-list>
-					<literal value="transparent" />
-					<literal value="window" />
-				</literal-list>
-			</attribute>
-			<attribute name="allownetworking">
-				<literal-list>
-					<literal value="all" />
-				</literal-list>
-			</attribute>
-		</tag>
-		
 	</tag-rules>
 
 
 	<!--  CSS validation processing rules  -->
 
 	<css-rules>
-	
+
 		<property name="azimuth" description="This property is most likely to be implemented by mixing the same signal into different channels at differing volumes.">
 			<literal-list>
 				<literal value="left-side"/>
@@ -1147,13 +1030,13 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="behind"/>
 				<literal value="leftwards"/>
 				<literal value="rightwards"/>
-				<literal value="inherit"/>			
+				<literal value="inherit"/>
 			</literal-list>
 			<regexp-list>
 				<regexp name="angle"/>
 			</regexp-list>
 		</property>
-			
+
 		<property name="background" description="The 'background' property is a shorthand property for setting the individual background properties (i.e., 'background-color', 'background-image', 'background-repeat', 'background-attachment' and 'background-position') at the same place in the style sheet.">
 			<literal-list>
 				<literal value="inherit"/>
@@ -1163,7 +1046,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<shorthand name="background-image"/>
 				<shorthand name="background-repeat"/>
 				<shorthand name="background-attachment"/>
-				<shorthand name="background-position"/>												
+				<shorthand name="background-position"/>
 			</shorthand-list>
 		</property>
 
@@ -1174,7 +1057,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="inherit"/>
 			</literal-list>
 		</property>
-		
+
 		<property name="background-color" description="This property sets the background color of an element, either a &lt;color&gt; value or the keyword 'transparent', to make the underlying colors shine through.">
 			<literal-list>
 				<literal value="transparent"/>
@@ -1187,7 +1070,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<regexp name="systemColor"/>
 			</regexp-list>
 		</property>
-		
+
 		<property name="background-image" description="This property sets the background image of an element.">
 			<literal-list>
 				<literal value="none"/>
@@ -1198,7 +1081,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<regexp name="cssOnsiteUri"/>
 			</regexp-list>
 		</property>
-		
+
 		<property name="background-position" description="If a background image has been specified, this property specifies its initial position.">
 			<literal-list>
 				<literal value="top"/>
@@ -1206,14 +1089,14 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="bottom"/>
 				<literal value="left"/>
 				<literal value="center"/>
-				<literal value="right"/>			
+				<literal value="right"/>
 				<literal value="inherit"/>
 			</literal-list>
 			<regexp-list>
 				<regexp name="percentage"/>
 				<regexp name="length"/>
 			</regexp-list>
-		</property>		
+		</property>
 
 		<property name="background-repeat" description="If a background image is specified, this property specifies whether the image is repeated (tiled), and how.">
 			<literal-list>
@@ -2118,9 +2001,9 @@ http://www.w3.org/TR/html401/struct/global.html
 				<regexp name="length"/>
 			</regexp-list>
 		</property>
-		
+
 		<!-- end simple properties -->
-		
+
 		<!-- begin medium properties -->
 		<property name="border-style" description="">
 			<category-list>
@@ -2128,7 +2011,7 @@ http://www.w3.org/TR/html401/struct/global.html
 			</category-list>
 			<literal-list>
 				<literal value="inherit"/>
-				<literal value="none"/>				
+				<literal value="none"/>
 				<literal value="hidden"/>
 				<literal value="dotted"/>
 				<literal value="dashed"/>
@@ -2249,7 +2132,7 @@ http://www.w3.org/TR/html401/struct/global.html
 			</literal-list>
 			<regexp-list>
 				<regexp name="positiveLength"/>
-				<regexp name="positivePercentage"/>				
+				<regexp name="positivePercentage"/>
 			</regexp-list>
 		</property>
 		<property name="margin-top" default="0" description="">
@@ -2278,7 +2161,7 @@ http://www.w3.org/TR/html401/struct/global.html
 			<category-list>
 				<category value="visual"/>
 			</category-list>
-			
+
 			<literal-list>
 				<literal value="inherit"/>
 			</literal-list>
@@ -2302,7 +2185,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<category value="visual"/>
 				<category value="interactive"/>
 			</category-list>
-			
+
 			<literal-list>
 				<literal value="inherit"/>
 			</literal-list>
@@ -2332,12 +2215,12 @@ http://www.w3.org/TR/html401/struct/global.html
 			<regexp-list>
 				<regexp name="length"/>
 				<regexp name="percentage"/>
-			</regexp-list>			
+			</regexp-list>
 		</property>
 		<property name="padding-top" default="0" description="">
 			<category-list>
 				<category value="visual"/>
-			</category-list>				
+			</category-list>
 			<literal-list>
 				<literal value="inherit"/>
 			</literal-list>
@@ -2377,15 +2260,15 @@ http://www.w3.org/TR/html401/struct/global.html
 			<shorthand-list>
 				<shorthand name="padding"/>
 			</shorthand-list>
-		</property>		
+		</property>
 		<!-- end medium properties -->
-		
+
 		<!-- begin hard properties -->
 		<property name="border" description="">
 			<category-list>
 				<category value="visual"/>
 			</category-list>
-			
+
 			<literal-list>
 				<literal value="inherit"/>
 			</literal-list>
@@ -2547,7 +2430,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="blink"/>
 				<literal value="inherit"/>
 			</literal-list>
-		</property>		
+		</property>
 		<!-- end hard properties -->
 		<!--  begin manual properties -->
 		<property name="border-spacing" default="0" description="The lengths specify the distance that separates adjacent cell borders. If one length is specified, it gives both the horizontal and vertical spacing. If two are specified, the first gives the horizontal spacing and the second the vertical spacing. Lengths may not be negative.">
@@ -2566,7 +2449,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<category value="visual"/>
 			</category-list>
 			<literal-list>
-				<literal value="auto"/>			
+				<literal value="auto"/>
 				<literal value="inherit"/>
 			</literal-list>
 			<regexp-list>
@@ -2578,7 +2461,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<category value="all"/>
 			</category-list>
 			<literal-list>
-				<literal value="none"/>			
+				<literal value="none"/>
 				<literal value="inherit"/>
 			</literal-list>
 			<regexp-list>
@@ -2591,7 +2474,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<category value="visual"/>
 			</category-list>
 			<literal-list>
-				<literal value="auto"/>			
+				<literal value="auto"/>
 				<literal value="inherit"/>
 			</literal-list>
 			<regexp-list>
@@ -2604,7 +2487,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<category value="interactive"/>
 			</category-list>
 			<literal-list>
-				<literal value="auto"/>			
+				<literal value="auto"/>
 				<literal value="inherit"/>
 				<literal value="crosshair"/>
 				<literal value="default"/>
@@ -2622,17 +2505,17 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="help"/>
 			</literal-list>
 			<regexp-list>
-				<regexp name="cssOffsiteUri"/>			
+				<regexp name="cssOffsiteUri"/>
 				<regexp name="cssOnsiteUri"/>
 			</regexp-list>
 		</property>
-		
+
 		<property name="text-shadow" default="none" description="This property accepts a comma-separated list of shadow effects to be applied to the text of the element.">
 			<category-list>
 				<category value="visual"/>
 			</category-list>
 			<literal-list>
-				<literal value="none"/>			
+				<literal value="none"/>
 				<literal value="inherit"/>
 			</literal-list>
 			<regexp-list>
@@ -2643,7 +2526,7 @@ http://www.w3.org/TR/html401/struct/global.html
 				<regexp name="length"/>
 			</regexp-list>
 		</property>
-		
+
 		<property name="font" description="The 'font' property is, except as described below, a shorthand property for setting 'font-style', 'font-variant', 'font-weight', 'font-size', 'line-height', and 'font-family', at the same place in the style sheet.">
 			<category-list>
 				<category value="visual"/>
@@ -2663,11 +2546,11 @@ http://www.w3.org/TR/html401/struct/global.html
 				<shorthand name="font-variant"/>
 				<shorthand name="font-weight"/>
 				<shorthand name="font-size"/>
-				<shorthand name="line-height"/>	
+				<shorthand name="line-height"/>
 				<shorthand name="font-family"/>
 			</shorthand-list>
 		</property>
-		
+
 		<property name="font-family" description="This property specifies a prioritized list of font family names and/or generic family names.">
 			<category-list>
 				<category value="visual"/>
@@ -2681,14 +2564,14 @@ http://www.w3.org/TR/html401/struct/global.html
 				<literal value="cursive"/>
 				<literal value="verdana"/>
 				<literal value="fantasy"/>
-				<literal value="monospace"/>											
+				<literal value="monospace"/>
 			</literal-list>
-			
-						
+
+
 			<regexp-list>
 				<regexp value="[\w,\-&apos;&quot; ]+"/>
 			</regexp-list>
-			
+
 		</property>
 		<property name="page" description="The 'page' property can be used to specify a particular type of page where an element should be displayed.">
 			<category-list>
@@ -2709,9 +2592,9 @@ http://www.w3.org/TR/html401/struct/global.html
 			<literal-list>
 				<literal value="mix"/>
 				<literal value="repeat"/>
-				<literal value="none"/>		
+				<literal value="none"/>
 				<literal value="auto"/>
-				<literal value="inherit"/>				
+				<literal value="inherit"/>
 			</literal-list>
 			<regexp-list>
 				<regexp name="cssOffsiteUri"/>
@@ -2726,9 +2609,9 @@ http://www.w3.org/TR/html401/struct/global.html
 			<literal-list>
 				<literal value="left"/>
 				<literal value="right"/>
-				<literal value="center"/>		
+				<literal value="center"/>
 				<literal value="justify"/>
-				<literal value="inherit"/>				
+				<literal value="inherit"/>
 			</literal-list>
 		</property>
 		<property name="voice-family" description="The value is a comma-separated, prioritized list of voice family names (compare with 'font-family').">
@@ -2739,10 +2622,10 @@ http://www.w3.org/TR/html401/struct/global.html
 			<literal-list>
 				<literal value="male"/>
 				<literal value="female"/>
-				<literal value="child"/>		
-				<literal value="inherit"/>				
+				<literal value="child"/>
+				<literal value="inherit"/>
 			</literal-list>
-		</property>		
+		</property>
 		<!--  end manual properties -->
 	</css-rules>
 
