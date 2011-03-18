@@ -16,13 +16,7 @@
         <Setting name="FrameworkTrac" value="http://coldbox.assembla.com/spaces/dashboard/index/coldbox"/>
         <Setting name="FrameworkEclipseUpdateSite" value="http://www.coldbox.org/distribution/eclipse"/>
         
-		<!--AvailableLogFileEncodings:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
-        <Setting name="AvailableLogFileEncodings" value="US-ASCII,ISO-8859-1,UTF-8,UTF-16BE,UTF-16LE,UTF-16"/>
-        <Setting name="AvailableCFCharacterSets" value="utf-8,iso-8859-1,windows-1252,us-ascii,shift_jis,iso-2022-jp,euc-jp,euc-kr,big5,euc-cn,utf-16"/>
-        <Setting name="DefaultFileCharacterSet" value="iso-8859-1"/>
-        <Setting name="LogFileEncoding" value="ISO-8859-1"/>
-        
-        <!--  ColdBox Defaults -->
+		<!--  ColdBox Defaults -->
 		<Setting name="EventName" value="event"/>
 		
 		<!--Default Storage Scope For Flash URL Persist session or client only-->
