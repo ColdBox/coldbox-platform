@@ -667,6 +667,30 @@ Description :
 		</cfif>
 	</cffunction>
 
+	<!--- getHTTPBasicCredentials --->
+    <cffunction name="getHTTPBasicCredentials" output="false" access="public" returntype="struct" hint="Returns the username and password sent via HTTP basic authentication">
+    	<cfscript>
+    		var results 	= structnew();
+			var authHeader 	= "";
+			
+			// defaults
+			results.username = "";
+			results.password = "";
+			
+			// set credentials
+			authHeader = getHTTPHeader("Authorization","");
+			
+			// continue if it exists
+			if( len(authHeader) ){
+				authHeader = charsetEncode( binaryDecode( listLast(authHeader," "),"Base64"), "utf-8");
+				results.username = listFirst( authHeader, ":");
+				results.password = listLast( authHeader, ":");
+			}
+			
+			return results;
+    	</cfscript>
+    </cffunction>
+
 	<cffunction name="isSSL" access="public" returntype="boolean" hint="Returns boolean result whether current request is in ssl or not" output="false">
 	    <cfscript>
 			if (isBoolean(cgi.server_port_secure) AND cgi.server_port_secure) { return true; }
