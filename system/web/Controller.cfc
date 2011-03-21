@@ -645,13 +645,15 @@ Only one instance of a specific ColdBox application exists.
 		<cfscript>
 			var flash = getRequestService().getFlashScope();
 
-			// persist persistStruct
+			// persist persistStruct if passed
 			if( structKeyExists(arguments, "persistStruct") ){
 				flash.putAll(map=arguments.persistStruct,saveNow=true);
 			}
 
-			// Persist keys
-			flash.persistRC(include=arguments.persist,saveNow=true);
+			// Persist RC keys if passed.
+			if( len(trim(arguments.persist)) ){
+				flash.persistRC(include=arguments.persist,saveNow=true);
+			}
 		</cfscript>
 	</cffunction>
 
