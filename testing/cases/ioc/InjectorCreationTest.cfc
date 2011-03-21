@@ -73,7 +73,6 @@
 	}
 	
 	function testProviderMethods(){
-	
 		providerTest = injector.getInstance("ProviderTest");
 		assertEquals( true, isObject(providerTest.getPizza()) );
 		assertEquals( true, structKeyExists(session,"wirebox:pizza") );

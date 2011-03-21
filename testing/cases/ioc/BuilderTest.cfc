@@ -125,8 +125,11 @@
 		
 		// mocks
 		mockLuis = getMockBox().createStub();
+		scopeInfo = {enabled=true,scope="application",key="wirebox"};
 		mockInjector.$("containsInstance",true).$("getInstance", mockLuis)
-			.$("locateScopedSelf", mockInjector);
+			.$("getScopeRegistration", scopeInfo)
+			.$("getScopeStorage", getMockBox().createEmptyMock("coldbox.system.core.collections.ScopeStorage")
+				.$("exists",true).$("get",mockInjector) );
 		
 		p = builder.getProviderDSL(data);
 		assertEquals(mockLuis, p.get() );
@@ -203,6 +206,23 @@
 		p = builder.getWireBoxDSL(data);
 		assertEquals(mockScope, p);
 		
+	}
+	
+	function testbuildProviderMixer(){
+		// mocks
+		mockLuis = getMockBox().createStub();
+		scopeInfo = {enabled=true,scope="application",key="wirebox"};
+		scopeStorage = getMockBox().createEmptyMock("coldbox.system.core.collections.ScopeStorage")
+				.$("exists",true).$("get",mockInjector);
+		mockInjector.$("getInstance", mockLuis);
+		
+		//mocks
+		builder.$wbscopeInfo    = scopeInfo;
+		builder.$wbScopeStorage = scopeStorage;
+		builder.$wbProviders  = {buildProviderMixer="luis"};
+		
+		p = builder.buildProviderMixer();
+		assertEquals(mockLuis, p );		
 	}
 	
 </cfscript>

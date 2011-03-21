@@ -473,14 +473,15 @@ Description :
 			
 			// Decorate the target if provider methods found, in preparation for replacements
 			if( providerLen ){
-				arguments.targetObject.$wirebox = this;
-				arguments.targetObject.$wireboxProviders = {};
+				arguments.targetObject.$wbScopeInfo 	= getScopeRegistration();
+				arguments.targetObject.$wbScopeStorage 	= instance.scopeStorage;
+				arguments.targetObject.$wbProviders 	= {};
 			}
 			
 			// iterate and provide baby!
 			for(x=1; x lte providerLen; x++){
 				// add the provided method to the providers structure.
-				arguments.targetObject.$wireboxProviders[ providerMethods[x].method ] = providerMethods[x].mapping;
+				arguments.targetObject.$wbProviders[ providerMethods[x].method ] = providerMethods[x].mapping;
 				// Override the function by injecting it, this does private/public functions
 				arguments.targetObject.injectMixin(providerMethods[x].method, instance.builder.buildProviderMixer);
 			}
@@ -656,6 +657,11 @@ Description :
 	<!--- getScopeRegistration --->
     <cffunction name="getScopeRegistration" output="false" access="public" returntype="any" hint="Get the structure of scope registration information" colddoc:generic="struct">
     	<cfreturn instance.binder.getScopeRegistration()>
+    </cffunction>
+	
+	<!--- getScopeStorage --->
+    <cffunction name="getScopeStorage" output="false" access="public" returntype="any" hint="Get the scope storage utility" colddoc:generic="coldbox.system.core.collections.ScopeStorage">
+    	<cfreturn instance.scopeStorage>
     </cffunction>
 
 	<!--- removeFromScope --->

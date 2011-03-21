@@ -13,12 +13,14 @@ Description :
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="Provider" hint="Constructor">
-    	<cfargument name="injector" required="true" hint="The injector linkage of this provider" colddoc:generic="coldbox.system.ioc.Injector"/>
-		<cfargument name="name" 	required="true" hint="The name of the mapping this provider is binded to"/>
+    	<cfargument name="scopeRegistration" required="true" hint="The injector scope registration structure" colddoc:generic="struct"/>
+		<cfargument name="scopeStorage" 	 required="true" hint="The scope storage utility" 				  colddoc:generic="coldbox.system.core.collections.ScopeStorage"/>
+		<cfargument name="name" 			 required="true" hint="The name of the mapping this provider is binded to"/>
 		<cfscript>
 			instance = {
-				name 		= arguments.name,
-				injector 	= arguments.injector
+				name 				= arguments.name,
+				scopeRegistration 	= arguments.scopeRegistration,
+				scopeStorage 		= arguments.scopeStorage
 			};
 			return this;
 		</cfscript>
@@ -26,7 +28,16 @@ Description :
 
 	<!--- get --->
     <cffunction name="get" output="false" access="public" returntype="any" hint="Get the provided object">
-    	<cfreturn instance.injector.locateScopedSelf().getInstance( instance.name )>
+    	<cfscript>
+    		var scopeInfo = instance.scopeRegistration;
+			
+    		// Return if it exists, else throw exception
+			if( instance.scopeStorage.exists(scopeInfo.key, scopeInfo.scope) ){
+				return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope).getInstance( instance.name );
+			}
+		</cfscript>
+    		
+		<cfthrow type="Provider.InjectorNotOnScope" message="Injector not found in scope registration information" detail="Scope information: #scopeInfo.toString()#">
     </cffunction>
 	
 	<!--- onMissingMethod Proxy --->

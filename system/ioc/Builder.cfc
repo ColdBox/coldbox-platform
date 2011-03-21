@@ -65,7 +65,8 @@ TODO: update dsl consistency, so it is faster.
     <cffunction name="buildProviderMixer" output="false" access="public" returntype="any" hint="Used to provider providers via mixers on targeted objects">
     	<cfscript>
     		// return the instance from the injected counterparts
-			return this.$wirebox.locateScopedSelf().getInstance( this.$wireboxProviders[ getFunctionCalledName() ] );
+			return this.$wbScopeStorage.get(this.$wbScopeInfo.key, this.$wbScopeInfo.scope)
+						.getInstance( this.$wbProviders[ getFunctionCalledName() ] );
 		</cfscript>
     </cffunction>
 	
@@ -458,7 +459,7 @@ TODO: update dsl consistency, so it is faster.
 			// Check if model Exists
 			if( instance.injector.containsInstance( providerName ) ){
 				// Build provider and return it.
-				return createObject("component","coldbox.system.ioc.Provider").init(instance.injector, providerName);
+				return createObject("component","coldbox.system.ioc.Provider").init(instance.injector.getScopeRegistration(), instance.injector.getScopeStorage(), providerName);
 			}
 			else if( instance.log.canDebug() ){
 				instance.log.debug("getProviderDSL() cannot find model object #providerName# using definition #arguments.definition.toString()#");
