@@ -322,9 +322,11 @@ Modifications:
 		<!--- Object --->
 		<cfelseif isObject(_data)>
 			<!--- Let CF Handle IT --->
-			<cfset dJSONString = createObject('java','java.lang.StringBuffer').init("") />
-			<cfset dJSONString = '{"#listLast(getMetaData(_data).name,".")#": "#getMetaData(_data).name#"}'>
-			<cfreturn dJSONString.toString()>
+			<cfif listFirst(server.coldfusion.productVersion) gte 8>
+				<cfreturn serializeJSON(_data)>
+			<cfelse>
+				<cfreturn '{"#listLast(getMetaData(_data).name,".")#": "#getMetaData(_data).name#"}'>
+			</cfif>
 		<!--- STRUCT --->
 		<cfelseif IsStruct(_data)>
 			<cfset dJSONString = createObject('java','java.lang.StringBuffer').init("") />
