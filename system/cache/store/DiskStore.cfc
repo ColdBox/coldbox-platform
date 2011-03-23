@@ -97,7 +97,7 @@ Description :
 	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
-		<cflock name="DiskStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
+		<cflock name="DiskStore.#instance.storeID#.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
 			// check if object is missing and in indexer
 			if( NOT instance.fileUtils.isFile( getCacheFilePath(arguments.objectKey) ) AND instance.indexer.objectExists( arguments.objectKey ) ){
@@ -121,13 +121,19 @@ Description :
 	<!--- get --->
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		
+		<cflock name="DiskStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
-			// Record Metadata Access
-			instance.indexer.setObjectMetadataProperty(arguments.objectKey,"hits", instance.indexer.getObjectMetadataProperty(arguments.objectKey,"hits")+1);
-			instance.indexer.setObjectMetadataProperty(arguments.objectKey,"lastAccesed", now());
-			
-			return getQuiet( arguments.objectKey );
+			if( lookup(arguments.objectKey) ){
+				// Record Metadata Access
+				instance.indexer.setObjectMetadataProperty(arguments.objectKey,"hits", instance.indexer.getObjectMetadataProperty(arguments.objectKey,"hits")+1);
+				instance.indexer.setObjectMetadataProperty(arguments.objectKey,"lastAccesed", now());
+				
+				return getQuiet( arguments.objectKey );
+			}
 		</cfscript>
+		</cflock>
+		
 	</cffunction>
 	
 	<!--- getQuiet --->
@@ -136,15 +142,19 @@ Description :
 		
 		<cfset var thisFilePath = getCacheFilePath(arguments.objectKey)>
 		
-		<cflock name="DiskStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="DiskStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
-			// if simple value, just return it
-			if( instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isSimple") ){
-				return trim(instance.fileUtils.readFile( thisFilePath ));
-			}
+			if( lookup(arguments.objectKey) ){
 			
-			//else we deserialize
-			return instance.converter.deserializeObject(filePath=thisFilePath);
+				// if simple value, just return it
+				if( instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isSimple") ){
+					return trim(instance.fileUtils.readFile( thisFilePath ));
+				}
+				
+				//else we deserialize
+				return instance.converter.deserializeObject(filePath=thisFilePath);
+			
+			}
 		</cfscript>
 		</cflock>
 		
@@ -153,13 +163,21 @@ Description :
 	<!--- expireObject --->
 	<cffunction name="expireObject" output="false" access="public" returntype="void" hint="Mark an object for expiration">
 		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfset instance.indexer.setObjectMetadataProperty(arguments.objectKey,"isExpired", true)>
+		
+		<cflock name="DiskStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+			<cfset instance.indexer.setObjectMetadataProperty(arguments.objectKey,"isExpired", true)>
+		</cflock>
+		
 	</cffunction>
 	
 	<!--- isExpired --->
     <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not">
     	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfreturn instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired")>
+		
+		<cflock name="DiskStore.#instance.storeID#.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
+			<cfreturn instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired")>
+		</cflock>
+		
     </cffunction>
 
 	<!--- Set an Object in the pool --->
@@ -185,7 +203,7 @@ Description :
 			isSimple = true
 		}>
 			
-		<cflock name="DiskStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="DiskStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
 			// If simple value just write it out to disk
 			if( isSimpleValue(arguments.object) ){
@@ -208,7 +226,7 @@ Description :
 		
 		<cfset var thisFilePath = getCacheFilePath(arguments.objectKey)>
 		
-		<cflock name="DiskStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="DiskStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 			<cfscript>
 			// check it
 			if( NOT instance.fileUtils.isFile(thisFilePath) ){

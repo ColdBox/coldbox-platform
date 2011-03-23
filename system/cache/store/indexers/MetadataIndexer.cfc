@@ -100,11 +100,7 @@ Description :
 		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve, must exist in the binded fields or exception is thrown">
 		
 		<cfset validateField( arguments.property )>
-		
-		<cflock name="metadataIndexer.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
-			<cfreturn instance.poolMetadata[ arguments.objectKey ][ arguments.property ] >
-		</cflock>
-		
+		<cfreturn instance.poolMetadata[ arguments.objectKey ][ arguments.property ] >
 	</cffunction>
 	
 	<!--- setObjectMetadataProperty --->
@@ -114,10 +110,7 @@ Description :
 		<cfargument name="value"  	 type="any" required="true" hint="The value of the property">
 		
 		<cfset validateField( arguments.property )>
-		
-		<cflock name="metadataIndexer.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
-			<cfset instance.poolMetadata[ arguments.objectKey ][ arguments.property ] = arguments.value >
-		</cflock>
+		<cfset instance.poolMetadata[ arguments.objectKey ][ arguments.property ] = arguments.value >
 		
 	</cffunction>
 	
