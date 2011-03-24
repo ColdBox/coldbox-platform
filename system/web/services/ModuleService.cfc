@@ -112,6 +112,15 @@ I oversee and manage ColdBox modules
 		</cfscript>
 	</cffunction>
 
+	<!--- registerAndActivateModule --->
+    <cffunction name="registerAndActivateModule" output="false" access="public" returntype="void" hint="Register and activate a new module">
+    	<cfargument name="moduleName" 	type="string" required="true" hint="The name of the module to load. It must exist in our module registry and be valid. Else we ignore it by logging a warning and returning false."/>
+		<cfscript>
+			registerModule(arguments.moduleName);
+			activateModule(arguments.moduleName);
+		</cfscript>
+    </cffunction>
+	
 	<!--- registerModule --->
 	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and config object">
 		<cfargument name="moduleName" 	type="string" required="true" hint="The name of the module to load. It must exist in our module registry and be valid. Else we ignore it by logging a warning and returning false."/>
