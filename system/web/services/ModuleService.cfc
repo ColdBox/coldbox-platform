@@ -64,6 +64,17 @@ I oversee and manage ColdBox modules
     	<cfreturn instance.moduleRegistry>
     </cffunction>
 	
+	<!--- rebuildRegistry --->
+    <cffunction name="rebuildModuleRegistry" output="false" access="public" returntype="any" hint="Rescan the module locations directories and re-register all located modules, this method does NOT register or activate any modules, it just reloads the found registry">
+    	<cfscript>
+    		var modLocations   = [ controller.getSetting("ModulesLocation") ];
+			// construct our locations array, conventions first.
+			modLocations.addAll( controller.getSetting("ModulesExternalLocation") );
+			// iterate through locations and build the module registry in order
+			buildRegistry(modLocations);
+		</cfscript>
+    </cffunction>
+	
 	<!--- registerAllModules --->
 	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all modules for the application. Usually called by framework to load configuration data.">
 		<cfscript>
@@ -71,16 +82,14 @@ I oversee and manage ColdBox modules
 			var x 			   = 1;
 			var key			   = "";
 			var includeModules = controller.getSetting("ModulesInclude");
-			var modLocations   = [ controller.getSetting("ModulesLocation") ];
 			
 			// Register the initial empty module configuration holder structure
 			structClear( controller.getSetting("modules") );
 			
-			// construct our locations array, conventions first.
-			modLocations.addAll( controller.getSetting("ModulesExternalLocation") );
-			
-			// iterate through locations and build the module registry in order
-			buildRegistry( modLocations );
+			// clean the registry as we are registering all modules
+			instance.moduleRegistry = createObject("java","java.util.LinkedHashMap").init();
+			// Now rebuild it
+			rebuildModuleRegistry();
 			
 			// Are we using an include list?
 			if( arrayLen(includeModules) ){
@@ -99,8 +108,7 @@ I oversee and manage ColdBox modules
 				if( canLoad( key ) ){
 					registerModule( key );
 				}
-			}
-			
+			}			
 		</cfscript>
 	</cffunction>
 
@@ -511,13 +519,10 @@ I oversee and manage ColdBox modules
 
 	<!--- buildRegistry --->
     <cffunction name="buildRegistry" output="false" access="private" returntype="void" hint="Build the modules registry">
-    	<cfargument name="locations" type="array" required="true" hint="The array of locations to register"/>
-    	<cfscript>
+    	<cfargument name="locations" type="array" 	required="true" hint="The array of locations to register"/>
+		<cfscript>
     		var x	   = 1;
 			var locLen = arrayLen(arguments.locations);
-			
-			// Init the module registry
-    		instance.moduleRegistry = createObject("java","java.util.LinkedHashMap").init();
 			
 			for(x=1; x lte locLen; x++){
 				if( len(trim(arguments.locations[x])) ){
