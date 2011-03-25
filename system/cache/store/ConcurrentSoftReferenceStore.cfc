@@ -21,7 +21,7 @@ Description :
 			super.init( arguments.cacheProvider );
 			
 			// Override Fields
-			getIndexer().setFields( getIndexer().getFields() & ",isSoftReference");
+			instance.indexer.setFields( instance.indexer.getFields() & ",isSoftReference");
 			
 			// Prepare soft reference lookup maps
 			instance.softRefKeyMap	 = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
@@ -81,7 +81,7 @@ Description :
 		<cfset var target 	= "">
 		<cfset var refLocal = {}>
 			
-		<cflock name="ConcurrentSoftReferenceStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
+		<cflock name="ConcurrentSoftReferenceStore.#instance.storeID#.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
 			
 			// Check if false and return immediately
@@ -91,7 +91,7 @@ Description :
 			
 			// Validate if SR or normal object and if SR is null
 			refLocal.target = getQuiet( arguments.objectKey );
-			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") 
+			if( instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isSoftReference") 
 				AND NOT structKeyExists(refLocal,"target") ){
 				
 				// Mark as dead
@@ -109,17 +109,19 @@ Description :
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If its a soft reference object it might return a null value.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
-			var target = 0;
+			var refLocal = {};
 			
 			// Get via concurrent store
-			target = super.get( arguments.objectKey );
-			
-			// Validate if SR or normal object
-			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") ){
-				return target.get();
-			}
-			
-			return target;
+			refLocal.target = super.get( arguments.objectKey );
+			if( structKeyExists(refLocal,"target") ){
+				
+				// Validate if SR or normal object
+				if( isInstanceOf(refLocal.target, "java.lang.ref.SoftReference") ){
+					return refLocal.target.get();
+				}
+				
+				return refLocal.target;
+			}	
 		</cfscript>
 	</cffunction>
 	
@@ -127,18 +129,21 @@ Description :
 	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from cache. If its a soft reference object it might return a null value.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
-			var target = 0;
+			var refLocal = {};
 			
-			// Get via concurrent store, locking already done here
-			target = super.getQuiet( arguments.objectKey );
+			// Get via concurrent store
+			refLocal.target = super.getQuiet( arguments.objectKey );
 			
-			// Validate if SR or normal object
-			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") ){
-				return target.get();
-			}
-			
-			return target;
-		</cfscript>
+			if( structKeyExists(refLocal,"target") ){
+				
+				// Validate if SR or normal object
+				if( isInstanceOf(refLocal.target, "java.lang.ref.SoftReference") ){
+					return refLocal.target.get();
+				}
+				
+				return refLocal.target;
+			}		
+		</cfscript>		
 	</cffunction>
 	
 	<!--- Set an Object in the pool --->
@@ -155,7 +160,7 @@ Description :
 		<cfset var isSR	= (arguments.timeout GT 0)>
 		
 		<!--- Extra lock due to extra md --->
-		<cflock name="ConcurrentSoftReferenceStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="ConcurrentSoftReferenceStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
 			
 			// Check for eternal object
@@ -175,7 +180,7 @@ Description :
 					  extras=arguments.extras);
 			
 			// Set extra md in indexer
-			getIndexer().setObjectMetadataProperty(arguments.objectKey,"isSoftReference", isSR );
+			instance.indexer.setObjectMetadataProperty(arguments.objectKey,"isSoftReference", isSR );
 		</cfscript>
 		</cflock>
 	</cffunction>
@@ -186,7 +191,7 @@ Description :
 		
 		<cfset var softRef = "">
 		
-		<cflock name="ConcurrentSoftReferenceStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="ConcurrentSoftReferenceStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
 			
 			// Check if it exists
@@ -198,7 +203,7 @@ Description :
 			softRef = instance.pool[arguments.objectKey];
 			
 			// Removal of Soft Ref Lookup
-			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") ){
+			if( instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isSoftReference") ){
 				structDelete(getSoftRefKeyMap(),softRef);
 			}
 			

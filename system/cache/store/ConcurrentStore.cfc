@@ -73,7 +73,7 @@ Description :
 	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
-		<cflock name="ConcurrentStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
+		<cflock name="ConcurrentStore.#instance.storeID#.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
 			// Check if object in pool and object not dead
 			if( structKeyExists( instance.pool , arguments.objectKey)  
@@ -88,37 +88,62 @@ Description :
 	</cffunction>
 	
 	<!--- get --->
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache">
+	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from the object store, returns java null if not found">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
-		<cflock name="ConcurrentStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
+		<cfset var refLocal = structnew()>
+		
+		<cflock name="ConcurrentStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
-			// Record Metadata Access
-			instance.indexer.setObjectMetadataProperty(arguments.objectKey,"hits", instance.indexer.getObjectMetadataProperty(arguments.objectKey,"hits")+1);
-			instance.indexer.setObjectMetadataProperty(arguments.objectKey,"lastAccesed", now());
+			// retrieve from map
+			refLocal.results = instance.pool.get( arguments.objectKey );
+			if( structKeyExists(refLocal,"results") ){
 			
-			// return object
-			return instance.pool[arguments.objectKey];
+				// Record Metadata Access
+				instance.indexer.setObjectMetadataProperty(arguments.objectKey,"hits", instance.indexer.getObjectMetadataProperty(arguments.objectKey,"hits")+1);
+				instance.indexer.setObjectMetadataProperty(arguments.objectKey,"lastAccesed", now());
+				
+				// return object
+				return refLocal.results;
+			}
 		</cfscript>
 		</cflock>
 	</cffunction>
 	
 	<!--- getQuiet --->
-	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from cache with no stats">
+	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from cache with no stats, null if not found">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn instance.pool[arguments.objectKey]>
+		<cfset var refLocal = structnew()>
+		
+		<cflock name="ConcurrentStore.#instance.storeID#.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
+			<cfscript>
+				// retrieve from map
+				refLocal.results = instance.pool.get( arguments.objectKey );
+				if( structKeyExists(refLocal,"results") ){
+					return refLocal.results;
+				}
+			</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<!--- expireObject --->
 	<cffunction name="expireObject" output="false" access="public" returntype="void" hint="Mark an object for expiration">
 		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfset instance.indexer.setObjectMetadataProperty(arguments.objectKey,"isExpired", true)>
+		
+		<cflock name="ConcurrentStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+			<cfset instance.indexer.setObjectMetadataProperty(arguments.objectKey,"isExpired", true)>
+		</cflock>
+		
 	</cffunction>
 	
 	<!--- isExpired --->
     <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not">
     	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfreturn instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired")>
+		
+		<cflock name="ConcurrentStore.#instance.storeID#.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
+			<cfreturn instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired")>
+		</cflock>
+		
     </cffunction>
 
 	<!--- Set an Object in the pool --->
@@ -133,7 +158,7 @@ Description :
 		
 		<cfset var metadata = {}>
 		
-		<cflock name="ConcurrentStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="ConcurrentStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
 			// Set new Object into cache pool
 			instance.pool[arguments.objectKey] = arguments.object;
@@ -160,7 +185,7 @@ Description :
 		
 		<cfset var target = "">
 		
-		<cflock name="ConcurrentStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="ConcurrentStore.#instance.storeID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
 			
 			// Check if it exists
