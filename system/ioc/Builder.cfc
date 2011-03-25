@@ -152,6 +152,7 @@ TODO: update dsl consistency, so it is faster.
 			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
 			var DIArgsLen 	= arrayLen(DIArgs);
 			var args		= [];
+			var thisMap 	= arguments.mapping;
 
 			// Loop Over Arguments
 			for(x = 1; x <= DIArgsLen; x++){
@@ -164,7 +165,16 @@ TODO: update dsl consistency, so it is faster.
 				}
 			}
 
-			return evaluate('createObject("java",arguments.mapping.getPath()).init(#arrayToList(args)#)');
+			// init?
+			if( thisMap.isAutoInit() ){
+				if( arrayLen(args) ){
+					return evaluate('createObject("java",arguments.mapping.getPath()).init(#arrayToList(args)#)');
+				}
+				return createObject("java",arguments.mapping.getPath()).init();
+			}
+			
+			// return with no init
+			return createObject("java",arguments.mapping.getPath());
 		</cfscript>
     </cffunction>
 	

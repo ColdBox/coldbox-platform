@@ -123,5 +123,10 @@
 		
 	
 	}
+	
+	function testTImeZone(){
+		t = injector.getInstance("calendar");
+		t = injector.getInstance("calendar2");
+	}
 </cfscript>
 </cfcomponent>

@@ -70,6 +70,13 @@ Description :
 			.methodArg(name="name",value="alexia")
 			.methodArg(name="cool",value="true");
 		
+		map("calendar")
+        	.noInit()
+            .toJava("java.util.GregorianCalendar");
+		
+		map("calendar2")
+        	.toJava("java.util.GregorianCalendar");
+				  
 	}	
 </cfscript>
 </cfcomponent>
