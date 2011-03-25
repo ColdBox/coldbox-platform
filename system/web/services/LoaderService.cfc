@@ -84,6 +84,11 @@ Modification History:
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		controller.setColdboxInitiated(true);
 		
+		// Activate Modules
+		if( isObject(controller.getModuleService()) ){
+			controller.getModuleService().activateAllModules();
+		}
+		
 		// Execute afterConfigurationLoad
 		controller.getInterceptorService().processState("afterConfigurationLoad");
 		

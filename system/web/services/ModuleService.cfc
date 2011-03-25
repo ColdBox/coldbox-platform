@@ -41,14 +41,6 @@ I oversee and manage ColdBox modules
     	</cfscript>
     </cffunction>
 
-	<!--- onAspectsLoad --->
-    <cffunction name="onAspectsLoad" output="false" access="public" returntype="void" hint="Called by loader service when all aspects have loaded">
-    	<cfscript>
-			// Now that we are up and running we will turn on all the modules.
-			activateAllModules();
-    	</cfscript>
-    </cffunction>
-
 	<!--- onShutdown --->
     <cffunction name="onShutdown" output="false" access="public" returntype="void" hint="Called when the application stops">
     	<cfscript>
@@ -133,7 +125,8 @@ I oversee and manage ColdBox modules
 			var modLocation 			= "";
 			var mConfig 				= "";
 			var modulesConfiguration	= controller.getSetting("modules");
-		
+			var appSettings 			= controller.getConfigSettings();
+			
 			// Check if passed module name is invalid, throw exception
 			if( NOT structKeyExists(instance.moduleRegistry, arguments.moduleName) ){
 				getUtil().throwit(message="The module #arguments.moduleName# is not valid",
@@ -180,6 +173,9 @@ I oversee and manage ColdBox modules
 				modelsInvocationPath     = modulesInvocationPath & "." & modName,
 				modelsPhysicalPath		= modLocation,
 				registeredHandlers 		= '',
+				datasources				= {},
+				webservices			 	= {},
+				parentSettings			= {},
 				settings 				= {},
 				interceptors 			= [],
 				interceptorSettings     = { customInterceptionPoints = "" },
@@ -207,7 +203,16 @@ I oversee and manage ColdBox modules
 			
 			// Store module configuration in main modules configuration
 			modulesConfiguration[modName] = mConfig;
-
+			
+			// Register Custom Interception Points
+			controller.getInterceptorService().appendInterceptionPoints(mConfig.interceptorSettings.customInterceptionPoints);
+			// Register Parent Settings
+			structAppend(appSettings, mConfig.parentSettings, true);
+			// Register Module Datasources
+			structAppend(appSettings.datasources, mConfig.datasources, true);
+			// Register Webservice aliases
+			structAppend(appSettings.webservices, mConfig.webservices, true);
+			
 			// Log registration
 			instance.logger.debug("Module #arguments.moduleName# registered successfully.");
 			</cfscript>
@@ -268,9 +273,6 @@ I oversee and manage ColdBox modules
 			// Register handlers
 			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mconfig.handlerPhysicalPath );
 			mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
-
-			// Register Custom Interception Points
-			interceptorService.appendInterceptionPoints(mConfig.interceptorSettings.customInterceptionPoints);
 
 			// Register the Config as an observable also.
 			interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[arguments.moduleName]);
@@ -467,21 +469,18 @@ I oversee and manage ColdBox modules
 				mConfig.entryPoint 	= oConfig.entryPoint;
 			}
 
-			//Get the parent settings and append them
-			toLoad = oConfig.getPropertyMixin("parentSettings","variables",structnew());
-			structAppend(appSettings, toLoad , true);
-
+			//Get the parent settings
+			mConfig.parentSettings = oConfig.getPropertyMixin("parentSettings","variables",structnew());
+			
 			//Get the module settings
 			mConfig.settings = oConfig.getPropertyMixin("settings","variables",structnew());
 
-			//Get datasources
-			toLoad = oConfig.getPropertyMixin("datasources","variables",structnew());
-			structAppend(appSettings.datasources, toLoad, true);
-
-			//Get webservices
-			toLoad = oConfig.getPropertyMixin("webservices","variables",structnew());
-			structAppend(appSettings.webservices, toLoad, true);
-
+			//Get module datasources
+			mConfig.datasources = oConfig.getPropertyMixin("datasources","variables",structnew());
+			
+			//Get module webservices
+			mConfig.webservices = oConfig.getPropertyMixin("webservices","variables",structnew());
+			
 			//Get Interceptors
 			mConfig.interceptors = oConfig.getPropertyMixin("interceptors","variables",arrayNew(1));
 			for(x=1; x lte arrayLen(mConfig.interceptors); x=x+1){
@@ -501,7 +500,7 @@ I oversee and manage ColdBox modules
 				mConfig.interceptorSettings.customInterceptionPoints = "";
 			}
 			
-			//Get Routes
+			//Get SES Routes
 			mConfig.routes = oConfig.getPropertyMixin("routes","variables",arrayNew(1));
 
 			// COMPAT MODE: REMOVE BY 3.1

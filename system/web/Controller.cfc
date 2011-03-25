@@ -41,6 +41,7 @@ Only one instance of a specific ColdBox application exists.
 			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init(this);
 			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init(this);
 			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init(this);
+			services.ModuleService 		= "";
 			
 			// Nasty cf7, once you die this goes out. Modules are cf8 only and above.
 			if ( instance.CFMLEngine.isMT() ){
