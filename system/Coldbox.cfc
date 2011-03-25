@@ -58,7 +58,7 @@ Description :
 	</cffunction>
 
 	<!--- Load ColdBox --->
-	<cffunction name="loadColdbox" access="public" returntype="void" hint="Load the framework" output="false" >
+	<cffunction name="loadColdbox" access="public" returntype="void" hint="Load the framework, initialize it and execute application start procedures" output="false" >
 		<cfscript>
 			var appKey = locateAppKey();
 			// Cleanup of old code
@@ -68,7 +68,11 @@ Description :
 			// Create Brand New Controller
 			application[appKey] = CreateObject("component","coldbox.system.web.Controller").init(COLDBOX_APP_ROOT_PATH);
 			// Setup the Framework And Application
-			application[appKey].getLoaderService().loadApplication(COLDBOX_CONFIG_FILE,COLDBOX_APP_MAPPING);			
+			application[appKey].getLoaderService().loadApplication(COLDBOX_CONFIG_FILE,COLDBOX_APP_MAPPING);		
+			// Application Start Handler
+			if ( len(application[appKey].getSetting("ApplicationStartHandler")) ){
+				application[appKey].runEvent(application[appKey].getSetting("ApplicationStartHandler"),true);
+			}	
 		</cfscript>
 	</cffunction>
 	
@@ -111,8 +115,10 @@ Description :
 			<cfif cbController.getSetting("ConfigAutoReload")>
 				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
 					<cfif cbController.getSetting("ConfigAutoReload")>
-						<cfset cbController.setAppStartHandlerFired(false)>
 						<cfset cbController.getLoaderService().loadApplication(COLDBOX_CONFIG_FILE)>
+						<cfif ( len(cbController.getSetting("ApplicationStartHandler")) )>
+							<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
+						</cfif>
 					</cfif>
 				</cflock>
 				<cfreturn>
@@ -218,12 +224,6 @@ Description :
 				</cfif>
 			</cfif>
 		
-			<!--- Application Start Handler --->
-			<cfif len(cbController.getSetting("ApplicationStartHandler")) and (not cbController.getAppStartHandlerFired())>
-				<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
-				<cfset cbController.setAppStartHandlerFired(true)>
-			</cfif>
-			
 			<!--- Execute preProcess Interception --->
 			<cfset interceptorService.processState("preProcess")>
 			

@@ -5,7 +5,6 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author 	 		: Luis Majano
-Date     		: September 23, 2005
 Description		:
 
 This is the ColdBox Front Controller that dispatches events and manages your ColdBox application.
@@ -16,21 +15,18 @@ Only one instance of a specific ColdBox application exists.
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cfscript>
-		instance = structnew();
-		services = createObject("java","java.util.LinkedHashMap").init(7);
-	</cfscript>
-
-	<cffunction name="init" returntype="coldbox.system.web.Controller" access="public" hint="Constructor" output="false">
-		<cfargument name="appRootPath" type="any" required="true" hint="The app Root Path"/>
+	<cffunction name="init" returntype="any" access="public" hint="Constructor" output="false" colddoc:generic="coldbox.system.web.Controller">
+		<cfargument name="appRootPath" type="any" required="true" hint="The application root path"/>
 		<cfscript>
+			instance = structnew();
+			services = createObject("java","java.util.LinkedHashMap").init(7);
+		
 			// CFML Engine Utility
 			instance.CFMLEngine = CreateObject("component","coldbox.system.core.cf.CFMLEngine").init();
 
 			// Set Main Application Properties
 			instance.coldboxInitiated 		= false;
 			instance.aspectsInitiated 		= false;
-			instance.appStartHandlerFired 	= false;
 			instance.appHash				= hash(arguments.appRootPath);
 			instance.appRootPath			= arguments.appRootPath;
 			
@@ -248,15 +244,6 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="setAppHash" access="public" output="false" returntype="void" hint="Set AppHash">
 		<cfargument name="appHash" required="true"/>
 		<cfset instance.appHash = arguments.appHash/>
-	</cffunction>
-
-	<!--- Accessor/Mutator App Start Handler Fired --->
-	<cffunction name="setAppStartHandlerFired" access="public" output="false" returntype="void" hint="Set AppStartHandlerFired">
-		<cfargument name="appStartHandlerFired" required="true" colddoc:generic="boolean"/>
-		<cfset instance.appStartHandlerFired = arguments.appStartHandlerFired/>
-	</cffunction>
-	<cffunction name="getAppStartHandlerFired" access="public" output="false" returntype="any" hint="Get AppStartHandlerFired" colddoc:generic="boolean">
-		<cfreturn instance.appStartHandlerFired/>
 	</cffunction>
 
 	<!--- Config Structures Accessors/Mutators --->
