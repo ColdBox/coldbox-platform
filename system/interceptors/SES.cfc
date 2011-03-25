@@ -21,7 +21,7 @@ Description :
 		<cfscript>
 			// STATIC Reserved Keys as needed for cleanups
 			instance.RESERVED_KEYS 			  	= "handler,action,view,viewNoLayout,module,moduleRouting";
-			instance.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation";
+			instance.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation,ssl,append";
 			// STATIC Valid Extensions
 			instance.VALID_EXTENSIONS 			= "json,jsont,xml,html,htm,rss";
 
@@ -166,8 +166,9 @@ Description :
 
 	<!--- addModuleRoutes --->
 	<cffunction name="addModuleRoutes" output="false" access="public" returntype="void" hint="Add modules routes in the specified position">
-		<cfargument name="pattern" type="string" required="true"  hint="The pattern to match against the URL." />
-		<cfargument name="module"  type="string" required="true"  hint="The module to load routes for"/>
+		<cfargument name="pattern" type="string"  required="true"  hint="The pattern to match against the URL." />
+		<cfargument name="module"  type="string"  required="true"  hint="The module to load routes for"/>
+		<cfargument name="append"  type="boolean" required="false" default="true" hint="Whether the module entry point route should be appended or pre-pended to the array. By default we append to the end of the array"/>
 		<cfscript>
 			var mConfig 	 = instance.modules;
 			var routingTable = getModulesRoutingTable();
@@ -187,7 +188,7 @@ Description :
 			}
 
 			// Store the entry point for the module routes.
-			addRoute(pattern=arguments.pattern,moduleRouting=arguments.module);
+			addRoute(pattern=arguments.pattern,moduleRouting=arguments.module,append=arguments.append);
 
 			// Iterate through module routes and process them
 			for(x=1; x lte ArrayLen(mConfig[arguments.module].routes); x=x+1){
@@ -212,7 +213,8 @@ Description :
 		<cfargument name="constraints" 			 type="any"  	required="false" default="" hint="A structure or JSON structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
 		<cfargument name="module" 				 type="string"  required="false" default="" hint="The module to add this route to"/>
 		<cfargument name="moduleRouting" 		 type="string"  required="false" default="" hint="Called internally by addModuleRoutes to add a module routing route."/>
-		<cfargument name="ssl" 					 type="boolean" required="true" default="false" hint="Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl"/>
+		<cfargument name="ssl" 					 type="boolean" required="true"  default="false" hint="Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl"/>
+		<cfargument name="append"  				 type="boolean" required="false" default="true" hint="Whether the module route should be appended or pre-pended to the array. By default we append to the end of the array"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisRoute = structNew();
@@ -361,13 +363,17 @@ Description :
 			thisRoute.regexPattern = thisRoute.regexPattern & thisRegex & "/";
 
 		} // end looping of pattern optionals
-
+		
 		// Add it to the routing map table
 		if( len(arguments.module) ){
-			ArrayAppend(getModuleRoutes(arguments.module), thisRoute);
+			// Append or PrePend
+			if( arguments.append ){	ArrayAppend(getModuleRoutes(arguments.module), thisRoute); }
+			else{ arrayPrePend(getModuleRoutes(arguments.module), thisRoute); }
 		}
 		else{
-			ArrayAppend(getRoutes(), thisRoute);
+			// Append or PrePend
+			if( arguments.append ){	ArrayAppend(getRoutes(), thisRoute); }
+			else{ arrayPrePend(getRoutes(), thisRoute); }
 		}
 		</cfscript>
 	</cffunction>
