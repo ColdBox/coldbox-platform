@@ -471,7 +471,7 @@ Description :
 			// remove module routing entry point
 			for(x=1; x lte routeLen; x=x+1){
 				if( instance.routes[x].moduleRouting eq arguments.module ){
-					arrayDelete(instance.routes, x);
+					arrayDeleteAt(instance.routes, x);
 					break;
 				}
 			}
