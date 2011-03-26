@@ -307,12 +307,17 @@ I oversee and manage ColdBox modules
 				wirebox.getBinder().loadDataDSL( mConfig.wirebox );
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+			
+			// Register module routing entry point pre-pended to routes
+			if( controller.settingExists('sesBaseURL') AND len(mConfig.entryPoint) AND NOT find(":",mConfig.entryPoint)){
+				interceptorService.getInterceptor("SES",true).addModuleRoutes(pattern=mConfig.entryPoint,module=arguments.moduleName,append=false);
+			}
+			
 			// Call on module configuration object onLoad() if found
 			if( structKeyExists(instance.mConfigCache[arguments.moduleName],"onLoad") ){
 				instance.mConfigCache[arguments.moduleName].onLoad();
 			}
-
+			
 			// postModuleLoad interception
 			iData = {moduleLocation=mConfig.path,moduleName=arguments.moduleName,moduleConfig=mConfig};
 			interceptorService.processState("postModuleLoad",iData);
@@ -385,7 +390,12 @@ I oversee and manage ColdBox modules
 			for(x=1; x lte arrayLen(appConfig.modules[arguments.moduleName].interceptors); x++){
 				interceptorService.unregister(appConfig.modules[arguments.moduleName].interceptors[x].name);
 			}
-
+			
+			// Remove SES if enabled.
+			if( controller.settingExists('sesBaseURL') ){
+				interceptorService.getInterceptor("SES",true).removeModuleRoutes(arguments.moduleName);
+			}
+			
 			//Remove Model Mapping Location
 			controller.getPlugin("BeanFactory").removeExternalLocations(appConfig.modules[arguments.moduleName].invocationPath & "." & "model");
 

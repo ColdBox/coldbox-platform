@@ -54,12 +54,9 @@ Description :
 			// Dependencies
 			instance.requestService					= getController().getRequestService();
 
-			// Register Module Entry Points
-			registerModuleEntryPoints();
-
 			//Import Configuration
 			importConfiguration();
-
+			
 			// Save the base URL in the application settings
 			setSetting('sesBaseURL', getBaseURL() );
 			setSetting('htmlBaseURL', replacenocase(getBaseURL(),"index.cfm",""));
@@ -461,6 +458,25 @@ Description :
 	<cffunction name="getModulesRoutingTable" output="false" access="public" returntype="any" hint="Get the entire modules routing table" colddoc:generic="struct">
 		<cfreturn instance.moduleRoutingTable>
 	</cffunction>
+	
+	<!--- removeModuleRoutes --->
+    <cffunction name="removeModuleRoutes" output="false" access="public" returntype="void" hint="Remove a module's routing table and registration points">
+    	<cfargument name="module" required="true" default="" hint="The name of the module to remove"/>
+		<cfscript>
+			var routeLen = arrayLen( instance.routes );
+			var x 		 = 1;
+			
+			// remove all module routes
+    		structDelete(instance.moduleRoutingTable, arguments.module);
+			// remove module routing entry point
+			for(x=1; x lte routeLen; x=x+1){
+				if( instance.routes[x].moduleRouting eq arguments.module ){
+					arrayDelete(instance.routes, x);
+					break;
+				}
+			}
+		</cfscript>
+    </cffunction>
 
 	<!--- getModuleRoutes --->
 	<cffunction name="getModuleRoutes" output="false" access="public" returntype="any" hint="Get a modules routes array" colddoc:generic="array">
@@ -997,19 +1013,6 @@ Description :
 			addRoute(argumentCollection=arguments.thisRoute);
 		</cfscript>
 	</cffunction>
-
-	<!--- registerModuleEntryPoints --->
-    <cffunction name="registerModuleEntryPoints" output="false" access="private" returntype="any" hint="Register all the module entry points">
-    	<cfscript>
-    		var key = "";
-
-			for(key in instance.modules){
-				if( len(instance.modules[key].entryPoint) and NOT find(":",instance.modules[key].entryPoint)){
-					addModuleRoutes(pattern=instance.modules[key].entryPoint, module=key);
-				}
-			}
-		</cfscript>
-    </cffunction>
 
 	<!--- importConfiguration --->
 	<cffunction name="importConfiguration" output="false" access="private" returntype="void" hint="Import the routing configuration file">
