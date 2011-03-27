@@ -66,6 +66,9 @@ component accessors="true"{
 
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
+		
+		// Restrictions orm.hibernate.criterion.Restrictions lazy loaded
+		restrictions = "";
 
 		return this;
 	}
@@ -938,5 +941,112 @@ component accessors="true"{
 		}
 
 		return arguments.id;
+	}
+	
+	/**
+	* Get our hibernate org.hibernate.criterion.Restrictions proxy object
+	*/
+	public any function getRestrictions(){
+		if( NOT isObject(restrictions) ){
+			restrictions = createObject("component","coldbox.system.orm.hibernate.criterion.Restrictions").init();
+		}
+		return restrictions;
+	}
+	
+	/**
+	* Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object
+	*/
+	public any function criteriaQuery(required entityName,
+									  array criteria=ArrayNew(1),
+					  		 		  string sortOrder="",
+					  		 		  numeric offset=0,
+					  				  numeric max=0,
+					  		 		  numeric timeout=0,
+					  		 		  boolean ignoreCase=false,
+					  		 		  boolean asQuery=true){
+		// create Criteria query object					 
+		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
+		
+		// Setup listing options
+		if( arguments.offset NEQ 0 ){
+			qry.setFirstResult(arguments.offset);
+		}
+		if(arguments.max GT 0){
+			qry.setMaxResults(arguments.max);
+		}	
+		if( arguments.timeout NEQ 0 ){
+			qry.setTimeout(arguments.timeout);
+		}
+		
+		// Caching
+		if( getUseQueryCaching() ){
+			qry.setCacheRegion(getQueryCacheRegion());
+			qry.setCacheable(true);
+		}
+		
+		// Sort Order Case
+		if( Len(Trim(arguments.sortOrder)) ){
+			var sortField = Trim(ListFirst(arguments.sortOrder," "));
+			var sortDir = "ASC";
+			var Order = CreateObject("java","org.hibernate.criterion.Order");
+			
+			if(ListLen(arguments.sortOrder," ") GTE 2){
+				sortDir = ListGetAt(arguments.sortOrder,2," ");
+			}
+				
+			switch(UCase(sortDir)) {
+				case "DESC":
+					var orderBy = Order.desc(sortField);
+					break;
+				default:
+					var orderBy = Order.asc(sortField);
+					break;
+			}
+			// ignore case
+			if(arguments.ignoreCase){
+				orderBy.ignoreCase();
+			}
+			// add order to query	
+			qry.addOrder(orderBy);
+		}
+			
+		// Get listing
+		var results = qry.list();
+			
+		// Is it Null? If yes, return empty array
+		if( isNull(results) ){ results = []; }
+
+		// Objects or Query?
+		if( arguments.asQuery ){
+			results = EntityToQuery(results);
+		}
+
+		return results;					
+	}
+	
+	/**
+	* Get the record count using hibernate projections and criterion for specific queries
+	*/
+	numeric function criteriaCount(required entityName, array criteria=ArrayNew(1)){
+		// create a new criteria query object
+		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
+		var projections = CreateObject("java","org.hibernate.criterion.Projections");
+							 
+		qry.setProjection( projections.rowCount() );
+		
+		return qry.uniqueResult();
+	}
+	
+	/**
+	* Create a new hibernate criteria object according to entityname and criterion array objects
+	*/
+	private any function createCriteriaQuery(required entityName, array criteria=ArrayNew(1)){
+		var qry = ORMGetSession().createCriteria( arguments.entityName );
+		
+		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
+			qry.add( arguments.criteria[i] );
+		}
+		
+		return qry;
 	}
 }

@@ -146,4 +146,19 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	string function getTableName(){
 		return super.getTableName(this.getEntityName());
 	}
+	
+	any function criteriaQuery(array criteria=ArrayNew(1),
+					  		 		  string sortOrder="",
+					  		 		  numeric offset=0,
+					  				  numeric max=0,
+					  		 		  numeric timeout=0,
+					  		 		  boolean ignoreCase=false,
+					  		 		  boolean asQuery=true){
+		arguments.entityName = this.getEntityName();
+		return super.criteriaQuery(argumentCollection=arguments);
+	}
+	
+	numeric function criteriaCount(array criteria=ArrayNew(1)){
+		return super.criteriaCount(this.getEntityName(), arguments.criteria);
+	}
 }
