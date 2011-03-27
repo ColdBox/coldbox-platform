@@ -67,11 +67,12 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var interceptorConfig = getSetting("InterceptorConfig");
-			var x = 1;
+			var x 				  = 1;
+			var modules			  = getSetting("Modules");
+			var key				  = "";
 			
 			// Loop over the Interceptor Array, to begin autowiring
 			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
-				
 				// Exclude yourself
 				if( not findnocase("coldbox.system.interceptors.Autowire",interceptorConfig.interceptors[x].class) ){
 					// No locking necessary here, since the after aspects load is executed in thread safe conditions
@@ -79,6 +80,14 @@ Description :
 					processAutowire(getInterceptor(interceptorConfig.interceptors[x].name,true),interceptorConfig.interceptors[x].class);
 				}
 				
+			}
+			
+			// Loop over module interceptors to wire
+			for(key in modules){
+				// Loop over the Interceptor Array, to begin autowiring
+				for (x=1; x lte arrayLen(modules[key].interceptors); x=x+1){
+					processAutowire(getInterceptor(modules[key].interceptors[x].name,true),modules[key].interceptors[x].class);			
+				}
 			}
 		</cfscript>
 	</cffunction>

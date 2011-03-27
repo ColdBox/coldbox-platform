@@ -87,7 +87,9 @@ Optional Methods
 			customInterceptionPoints = "onPio"
 		};
 		// All declared interceptor
-		interceptors = [];
+		interceptors = [
+			{class="#moduleMapping#.interceptors.Simple"}
+		];
 		
 	}
 	

@@ -28,7 +28,16 @@
 				{class="coldbox.system.interceptors.SES",name="SES"}
 			]
 		};
+		modules = {
+			test1 = {
+				interceptors = [
+					{class="coldbox.testharness.modules.test1.interceptors.Simple",name="Simple"}
+				]
+			}
+		};
+		
 		autowire.$("getSetting").$args("InterceptorConfig").$results( ints );
+		autowire.$("getSetting").$args("Modules").$results( modules );
 		autowire.$("processAutowire");
 		autowire.$("getInterceptor",this);
 		
@@ -79,7 +88,8 @@
 	function testProcessEntityInjection(){
 		autowire.$("processAutowire");
 		data = {
-			entity = this
+			entity = this,
+			entityName = "AutowireTest"
 		};
 		
 		makePublic(autowire, "processEntityInjection");
