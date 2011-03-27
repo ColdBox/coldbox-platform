@@ -83,6 +83,27 @@ Converts a struct into XML with no headers.
 
 === Examples ===
 
+== objectToXML ==
+Converts an object(entity) into XML by inspecting its properties and then calling the appropriate getters on it.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| data || any || Yes || --- || The structure, object, any to convert.
+|-
+| useCDATA || boolean || No || false || Use CDATA content for ALL values
+|-
+| rootName || string || Yes ||  || The name of the root element, else it defaults to the internal defaults.
+|}
+
+=== Examples ===
+
 == queryToXML ==
 Converts a query to XML with no headers.
 

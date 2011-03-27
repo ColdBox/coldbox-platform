@@ -32,7 +32,7 @@ objects = [
 	"coldbox.system.plugins.Validator",
 	"coldbox.system.plugins.Webservices",
 	"coldbox.system.plugins.Zip",
-	"coldbox.system.core.util.conversion.XMLConverter",
+	"coldbox.system.core.conversion.XMLConverter",
 	"coldbox.system.orm.hibernate.BaseORMService"
 ];
 fncExclude  = "init,onMissingMethod";
