@@ -107,7 +107,12 @@ method which will most likely be called by the saveFlash() method in order to pe
 					else{ keep = false; }
 					
 					// Save and mark for cleaning
-					put(name=key,value=flash[key].content,keep=keep,autoPurge=flash[key].autoPurge);
+					put(name=key,
+						value=flash[key].content,
+						keep=keep,
+						autoPurge=flash[key].autoPurge,
+						inflateToRC=flash[key].inflateToRC,
+						inflateToPRC=flash[key].inflateToPRC);
 				}
 			}
 			

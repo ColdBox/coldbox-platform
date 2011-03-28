@@ -11,8 +11,8 @@
 		
 		flash.init(mockController);
 		
-		testScope = { name={content="luis majano",keep=true,inflateToRC=true,inflateToPRC=false}, 
-					  date={content=now(),keep=true,inflateToRC=true,inflateToPRC=false} };
+		testScope = { name={content="luis majano",keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true}, 
+					  date={content=now(),keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true} };
 	}	
 	function teardown(){ 
 		structClear(request);
