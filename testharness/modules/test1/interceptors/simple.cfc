@@ -29,6 +29,8 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			log.debug("Cache in instance wired: #structKeyExists(instance,'cache')#");
+			
+			//writeDump(instance);abort;
 		</cfscript>
 	</cffunction>
 

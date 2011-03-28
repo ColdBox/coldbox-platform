@@ -282,6 +282,9 @@ I oversee and manage ColdBox modules
 				interceptorService.registerInterceptor(interceptorClass=mConfig.interceptors[y].class,
 													   interceptorProperties=mConfig.interceptors[y].properties,
 													   interceptorName=mConfig.interceptors[y].name);
+				// Loop over module interceptors to autowire them
+				beanFactory.autowire(target=interceptorService.getInterceptor(mConfig.interceptors[y].name,true),
+					     			 targetID=mConfig.interceptors[y].class);		
 			}
 			
 			//////////////// COMPAT MODE WIREBOX + BEANFACTORY REMOVE BY 3.1 FOR WIREBOX ///////////////////////
