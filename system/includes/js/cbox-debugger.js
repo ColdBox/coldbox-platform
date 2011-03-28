@@ -67,6 +67,17 @@ function fw_cacheClearItem(URLBase, cacheKey, cacheName){
 	var element = document.getElementById('cbox_cache_tr_'+cacheKey);
 	element.parentNode.removeChild(element);
 }
+//CacheBox Expire Item
+function fw_cacheExpireItem(URLBase, cacheKey, cacheName){
+	// Button
+	var btn = document.getElementById('cboxbutton_expireentry_'+cacheKey);
+	btn.disabled = true;
+	btn.value = "Wait";
+	// Execute Command
+	fw_cboxCommand( URLBase + "?cbox_command=expirecacheentry&cbox_cacheentry=" + cacheKey + "&cbox_cacheName="+cacheName);
+	// reload content
+	fw_cacheContentReport(URLBase,cacheName);
+}
 //Execute a command from the cacheBox Toolbar
 function fw_cacheBoxCommand(URLBase, command, btnID, showAlert){
 	if( showAlert == null){ showAlert = true; }

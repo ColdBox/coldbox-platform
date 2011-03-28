@@ -553,6 +553,7 @@ Description :
 				case "expirecache"    		: { cbController.getColdboxOCM(cacheName).expireAll(); break; }
 				case "reapcache"  	  		: { cbController.getColdboxOCM(cacheName).reap(); break;}
 				case "delcacheentry"  		: { cbController.getColdboxOCM(cacheName).clear(event.getValue('cbox_cacheentry',""));break;}
+				case "expirecacheentry"  	: { cbController.getColdboxOCM(cacheName).expireObject(event.getValue('cbox_cacheentry',""));break;}
 				case "clearallevents" 		: { cbController.getColdboxOCM(cacheName).clearAllEvents();break;}
 				case "clearallviews"  		: { cbController.getColdboxOCM(cacheName).clearAllViews();break;}
 				case "cacheBoxReapAll"		: { cbController.getCacheBox().reapAll();break;}

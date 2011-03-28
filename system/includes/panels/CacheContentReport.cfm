@@ -43,7 +43,12 @@
 		</td>
 		<!--- Commands --->
 	 	<td align="center">
-			<input type="button" value="DEL" 
+	 		<input type="button" value="Expire" 
+				   name="cboxbutton_expireentry_#urlEncodedFormat(thisKey)#" id="cboxbutton_expireentry_#urlEncodedFormat(thisKey)#"
+			  	   style="font-size:10px" 
+				   title="Expire this entry from the cache" 
+				   onclick="fw_cacheExpireItem('#URLBase#','#urlEncodedFormat(thisKey)#','#arguments.cacheName#')">
+			<input type="button" value="Delete" 
 				   name="cboxbutton_removeentry_#urlEncodedFormat(thisKey)#" id="cboxbutton_removeentry_#urlEncodedFormat(thisKey)#"
 			  	   style="font-size:10px" 
 				   title="Remove this entry from the cache." 
