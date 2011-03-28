@@ -722,7 +722,7 @@ Properties
 		<cfscript>	
 			var keyMap = {
 				timeout = "timeout", hits = "hits", lastAccessTimeout = "lastAccessTimeout",
-				created = "created", lastAccesed = "lastAccesed", isExpire="isExpired"
+				created = "created", lastAccesed = "lastAccesed", isExpired="isExpired"
 			};
 			return keymap;
 		</cfscript>
