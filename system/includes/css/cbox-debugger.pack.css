@@ -26,7 +26,7 @@
 .fw_debugTables textarea { border:1px solid #eeeeee; background-color:#fffff0; font-size:11px; }
 .fw_debugTables tr.showRC { display:table-row; }
 .fw_debugTables tr.hideRC { display:none; }
-.fw_cachetable { overflow:auto; height:375px; border:2px inset #cccccc; background-color:white; text-align:center; }
+.fw_cacheContentReport { overflow:auto; height:375px; border:2px inset #cccccc; background-color:white; text-align:center; }
 .fw_errorTables { font-size:12px; font-family:verdana; border:1px outset #000000; background-color:#FFFFFF; width:99%; }
 .fw_errorTables th { background-color:#969491; color:#000000; font-weight:bold; padding:5px; }
 .fw_errorTables td { font-size:10px; background-color:#ffffff; border:1px dotted #cccccc; padding:5px; }
@@ -34,5 +34,5 @@
 .fw_errorTables tr.fw_errorTablesBreak td { border-bottom:1px solid black; }
 .fw_overflowScroll { width:600px; overflow:scroll; height:300px; }
 .fw_errorDiv { font-size:12px; font-family:verdana; margin:5px; padding:5px; }
-.fw_errorDiv h3 { margin-top:3px; margin-bottom:3px; color:##993333; }
-.fw_errorNotice { padding:5px; background-color:##FFF6CC; border:1px solid ##999999; }
+.fw_errorDiv h3 { margin-top:3px; margin-bottom:3px; color:#993333; }
+.fw_errorNotice { padding:5px; background-color:#FFF6CC; border:1px solid #999999; }
