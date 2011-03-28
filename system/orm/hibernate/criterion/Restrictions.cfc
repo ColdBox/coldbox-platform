@@ -4,7 +4,7 @@ Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
-Author     :	Michael MkEllip , Luis Majano
+Author     :	Michael McKellip , Luis Majano
 Description :
 	A proxy to hibernate org.hibernate.criterion.Restrictions object to allow
 	for criteria based querying
