@@ -55,6 +55,9 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 					appendPaths( dirs[x] );
 				}
 			}
+			else{
+				setup();
+			}
 			
 			return this;
 		</cfscript>
