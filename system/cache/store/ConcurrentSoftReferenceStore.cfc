@@ -77,30 +77,19 @@ Description :
 	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
-		<cfset var results 	= super.lookup( arguments.objectKey )>
-		<cfset var target 	= "">
 		<cfset var refLocal = {}>
 			
 		<cflock name="ConcurrentSoftReferenceStore.#instance.storeID#.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
-			
-			// Check if false and return immediately
-			if( NOT results ){
-				return results;
-			}
-			
-			// Validate if SR or normal object and if SR is null
+			// check existence via super, if not found, check as it might be a soft reference
+			if( NOT super.lookup( arguments.objectKey ) ){ return false; }
+			// get quiet to test it as it might be a soft reference
 			refLocal.target = getQuiet( arguments.objectKey );
-			if( instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isSoftReference") 
-				AND NOT structKeyExists(refLocal,"target") ){
-				
-				// Mark as dead
-				expireObject( arguments.objectKey );
-				return false;
-			}
+			// is it found?
+			if( NOT structKeyExists(refLocal,"target") ){ return false; }
 			
-			//found
-			return true;			
+			// if we get here, it is found
+			return true;					
 		</cfscript>
 		</cflock>
 	</cffunction>
