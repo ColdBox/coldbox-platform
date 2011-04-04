@@ -323,7 +323,7 @@ Modifications:
 		<cfelseif isObject(_data)>
 			<!--- Let CF Handle IT --->
 			<cfif listFirst(server.coldfusion.productVersion) gte 8>
-				<cfreturn serializeJSON(_data)>
+				<cfreturn '{"#listLast(getMetaData(_data).name,".")#": #serializeJSON( _data )#}'>
 			<cfelse>
 				<cfreturn '{"#listLast(getMetaData(_data).name,".")#": "#getMetaData(_data).name#"}'>
 			</cfif>
