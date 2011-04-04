@@ -438,6 +438,7 @@ Description :
 		<cfset var mappings		= "">
 		<cfset var iData	 	= "">
 		<cfset var eventManager	= arguments.injector.getEventManager()>
+		<cfset var cacheProperties = {}>
 		
 		<!--- Lock for discovery based on path location, only done once per instance of mapping. --->
 		<cflock name="Mapping.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
@@ -472,23 +473,29 @@ Description :
 				}
 				
 				// Cachebox Persistence Processing
-				if( instance.scope eq "cachebox" ){
+				if( structKeyExists(md,"cacheBox") OR structKeyExists(md,"cache") ){
+					// Cache Data instead of md insertion as CF caches md now.
+					cacheProperties = {
+						provider = "default",
+						timeout = "",
+						lastAccessTimeout = ""
+					};
 					// Prepare to default provider if no cachebox annotation found or it is empty
-					if(NOT structKeyExists(md,"cacheBox") OR len(md.cacheBox) EQ 0){
-						md.cacheBox = "default";
+					if( structKeyExists(md,"cacheBox") AND len(md.cacheBox) ){
+						cacheProperties.provider = md.cacheBox;
 					}				
 					// Prepare Timeouts
-					if( NOT structKeyExists(md,"cachetimeout") or not isNumeric(md.cacheTimeout) ){
-						md.cacheTimeout = "";
+					if( structKeyExists(md,"cachetimeout") AND isNumeric(md.cacheTimeout) ){
+						cacheProperties.timeout = md.cacheTimeout;
 					}
-					if( NOT structKeyExists(md,"cacheLastAccessTimeout") or not isNumeric(md.cacheLastAccessTimeout) ){
-						md.cacheLastAccessTimeout = "";
+					if( structKeyExists(md,"cacheLastAccessTimeout") AND isNumeric(md.cacheLastAccessTimeout) ){
+						cacheProperties.lastAccessTimeout = md.cacheLastAccessTimeout;
 					}
 					// setup cachebox properties
 					setCacheProperties(key="wirebox-#instance.name#",
-									   timeout=md.cacheTimeout,
-									   lastAccessTimeout=md.cacheLastAccessTimeout,
-									   provider=md.cachebox);
+									   timeout=cacheProperties.timeout,
+									   lastAccessTimeout=cacheProperties.lastAccessTimeout,
+									   provider=cacheProperties.provider);
 				}
 				
 				// Alias annotations if found, then append them as aliases.
