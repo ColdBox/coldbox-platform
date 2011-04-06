@@ -465,15 +465,20 @@ Description :
 		<cfscript>
 			var routeLen = arrayLen( instance.routes );
 			var x 		 = 1;
+			var toDelete = arrayNew(1);
 			
 			// remove all module routes
     		structDelete(instance.moduleRoutingTable, arguments.module);
 			// remove module routing entry point
 			for(x=1; x lte routeLen; x=x+1){
 				if( instance.routes[x].moduleRouting eq arguments.module ){
-					arrayDeleteAt(instance.routes, x);
-					break;
+					// store position to delete
+					arrayAppend(toDelete, x);
 				}
+			}
+			// Remove positions from routing.
+			for(x=1; x lte arrayLen(toDelete); x=x+1){
+				arrayDeleteAt(instance.routes, toDelete[x]);
 			}
 		</cfscript>
     </cffunction>
