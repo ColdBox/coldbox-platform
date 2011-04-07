@@ -186,6 +186,8 @@ component extends="coldbox.system.Interceptor"{
 			arguments.target.$aop_remove = variables.$aop_remove;
 			// Mix in the transaction invoker
 			arguments.target.$aop_transaction = variables.$aop_transaction;
+			// Mix in new log object for AOP transactions
+			arguments.target.$aop_log = logbox.getLogger(arguments.target);
 			// Finalize decorations
 			arguments.target.$aop_enabled = true;
 			// Log it if possible
@@ -205,6 +207,7 @@ component extends="coldbox.system.Interceptor"{
 	private void function $aop_transaction(jointpoint, jpArguments){
 		var tx 			= ORMGetSession().beginTransaction();
 		var udfPointer	= this.$aop_targets[arguments.jointpoint];
+		var log			= this.$aop_log;
 		
 		// Are we already in a transaction?
 		if( structKeyExists(request,"cbox_aop_transaction") ){
