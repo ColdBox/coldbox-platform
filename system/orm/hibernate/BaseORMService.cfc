@@ -43,6 +43,11 @@ component accessors="true"{
 	* The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, enabled by default.
 	*/
 	property name="eventHandling" type="boolean" default="true";
+	
+	/**
+	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
+	*/
+	property name="useTransactions" type="boolean" default="true";
 
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
 
@@ -55,12 +60,17 @@ component accessors="true"{
 	*/
 	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
 								  boolean useQueryCaching=false,
-								  boolean eventHandling=true){
+								  boolean eventHandling=true,
+								  boolean useTransactions=true){
 		// setup properties
 		setQueryCacheRegion( arguments.queryCacheRegion );
 		setUseQueryCaching( arguments.useQueryCaching );
 		setEventHandling( arguments.eventHandling );
-
+		setUseTransactions( arguments.useTransactions );
+	
+		// prepare transactional methods
+		wrapTransactionalMethods();
+		
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
 
@@ -442,51 +452,39 @@ component accessors="true"{
 	}
 
 	/**
-    * Delete an entity using hibernate transactions. The entity argument can be a single entity
+    * Delete an entity. The entity argument can be a single entity
 	* or an array of entities. You can optionally flush the session also after committing
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
     */
-	void function delete(required any entity,boolean flush=false){
-		var tx 		= ORMGetSession().beginTransaction();
+	void function delete(required any entity,boolean flush=false,boolean transactional=getUseTransactions()){
 		var objects = arrayNew(1);
 		var objLen  = 0;
 
-		try{
-			if( not isArray(arguments.entity) ){
-				arrayAppend(objects, arguments.entity);
-			}
-			else{
-				objects = arguments.entity;
-			}
-
-			objLen = arrayLen(objects);
-			for(var x=1; x lte objLen; x++){
-				entityDelete( objects[x] );
-			}
-
-			tx.commit();
+		if( not isArray(arguments.entity) ){
+			arrayAppend(objects, arguments.entity);
 		}
-		catch(Any e){
-			tx.rollback();
-			rethrow;
+		else{
+			objects = arguments.entity;
 		}
+
+		objLen = arrayLen(objects);
+		for(var x=1; x lte objLen; x++){
+			entityDelete( objects[x] );
+		}
+		
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 	}
 
 	/**
 	* Delete all entries for an entity DLM style and transaction safe. It also returns all the count of deletions
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	numeric function deleteAll(required string entityName,boolean flush=false){
-		var tx 		= ORMGetSession().beginTransaction();
+	numeric function deleteAll(required string entityName,boolean flush=false,boolean transactional=getUseTransactions()){
 		var count   = 0;
-		try{
-			count = ORMExecuteQuery("delete from #arguments.entityName#");
-			tx.commit();
-		}
-		catch(Any e){
-			tx.rollback();
-			rethrow;
-		}
+		
+		count = ORMExecuteQuery("delete from #arguments.entityName#");
+		
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -496,26 +494,19 @@ component accessors="true"{
 	/**
 	* Delete using an entity name and an incoming id, you can also flush the session if needed. The id parameter can be a single id or an array of IDs to delete
 	* The method returns the count of deleted entities.
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	numeric function deleteByID(required string entityName, required any id, boolean flush=false){
-		var tx 		= ORMGetSession().beginTransaction();
+	numeric function deleteByID(required string entityName, required any id, boolean flush=false, boolean transactional=getUseTransactions()){
 		var count   = 0;
 
 		// type safe conversions
 		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
 
-		try{
-			// delete using lowercase id convention from hibernate for identifier
-			var query = ORMGetSession().createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
-			query.setParameterList("idlist",arguments.id);
-			count = query.executeUpdate();
-			tx.commit();
-		}
-		catch(Any e){
-			tx.rollback();
-			rethrow;
-		}
-
+		// delete using lowercase id convention from hibernate for identifier
+		var query = ORMGetSession().createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
+		query.setParameterList("idlist",arguments.id);
+		count = query.executeUpdate();
+		
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -525,8 +516,9 @@ component accessors="true"{
 	/**
 	* Delete by using an HQL query and iterating via the results, it is not performing a delete query but
 	* it actually is a select query that should retrieve objects to remove
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false ){
+	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions() ){
 		var objects = arrayNew(1);
 		var options = {};
 
@@ -545,13 +537,14 @@ component accessors="true"{
 			objects = ORMExecuteQuery(arguments.query, false, options);
 		}
 
-		delete( objects, arguments.flush );
+		delete(entity=objects,flush=arguments.flush,transactional=arguments.transactional);
 	}
 
 	/**
 	* Deletes entities by using name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
 	* The rest of the arguments are used in the where class using AND notation and parameterized.
 	* Ex: deleteWhere(entityName="User",age="4",isActive=true);
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
 	numeric function deleteWhere(required string entityName){
 		var buffer   = createObject("java","java.lang.StringBuffer").init('');
@@ -587,58 +580,45 @@ component accessors="true"{
 			}
 		}
 
-		//start transaction DLM deleteion
-		var tx = ORMGetSession().beginTransaction();
+		//start DLM deleteion
 		try{
 			count = ORMExecuteQuery( buffer.toString(), params, true);
-			tx.commit();
 		}
 		catch("java.lang.NullPointerException" e){
-			tx.rollback();
 			throw(message="A null pointer exception occurred when running the query",
 			  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
 			  type="BaseORMService.MaybeInvalidParamCaseException");
 		}
-		catch(Any e){
-			tx.rollback();
+		catch(any e){
 			rethrow;
 		}
-
 		return count;
 	}
 
 	/**
-    * Saves an array of passed entities in specified order and transaction safe
+    * Saves an array of passed entities in specified order
 	* @entities An array of entities to save
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
     */
-	any function saveAll(required entities, forceInsert=false, flush=false){
+	any function saveAll(required entities, forceInsert=false, flush=false,boolean transactional=getUseTransactions()){
 		var count 			=  arrayLen(arguments.entities);
 		var eventHandling 	=  getEventHandling();
-		var tx 				= ORMGetSession().beginTransaction();
-
-		try{
-			// iterate and save
-			for(var x=1; x lte count; x++){
-				// Event Handling? If enabled, call the preSave() interception
-				if( eventHandling ){
-					ORMEventHandler.preSave( arguments.entities[x] );
-				}
-				// Save it
-				entitySave(arguments.entities[x], arguments.forceInsert);
-
-				// Event Handling? If enabled, call the postSave() interception
-				if( eventHandling ){
-					ORMEventHandler.postSave( arguments.entities[x] );
-				}
+		
+		// iterate and save
+		for(var x=1; x lte count; x++){
+			// Event Handling? If enabled, call the preSave() interception
+			if( eventHandling ){
+				ORMEventHandler.preSave( arguments.entities[x] );
 			}
-			// commit it
-			tx.commit();
-		}
-		catch(Any e){
-			tx.rollback();
-			rethrow;
-		}
+			// Save it
+			entitySave(arguments.entities[x], arguments.forceInsert);
 
+			// Event Handling? If enabled, call the postSave() interception
+			if( eventHandling ){
+				ORMEventHandler.postSave( arguments.entities[x] );
+			}
+		}
+			
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -648,7 +628,7 @@ component accessors="true"{
 	/**
     * Save an entity using hibernate transactions. You can optionally flush the session also
     */
-	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=true){
+	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=getUseTransactions()){
 		var eventHandling = getEventHandling();
 
 		// Event Handling? If enabled, call the preSave() interception
@@ -656,24 +636,9 @@ component accessors="true"{
 			ORMEventHandler.preSave( arguments.entity );
 		}
 
-		// Saved transasction or not.
-		if( arguments.transactional ){
-			var tx = ORMGetSession().beginTransaction();
-			try{
-				entitySave(arguments.entity, arguments.forceInsert);
-
-				tx.commit();
-			}
-			catch(Any e){
-				tx.rollback();
-				rethrow;
-			}
-		}
-		else{
-			entitySave(arguments.entity, arguments.forceInsert);
-		}
-
-
+		// save
+		entitySave(arguments.entity, arguments.forceInsert);
+		
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -1048,5 +1013,65 @@ component accessors="true"{
 		}
 		
 		return qry;
+	}
+	
+	/**
+	* Cool Transactional AOP wrapper for this class
+	*/
+	private void function wrapTransactionalMethods(){
+		var methods = ["save","saveAll","delete","deleteAll","deleteByID","deleteWhere","deleteByQuery"];
+		
+		// start $aopTargets
+		$aopTargets = {};
+		
+		for(var x=1; x lte arrayLen(methods); x++ ){
+			// save target
+			$aopTargets[ methods[x] ] 	= variables[ methods[x] ];
+			// override target
+			variables[ methods[x] ] 	= variables.$aopWrapper;
+			this[ methods[x] ] 			= variables.$aopWrapper;
+		}		
+	}
+	
+	/**
+	* The AOP transactioned wrapper
+	*/
+	private any function $aopWrapper(){
+		var tx 				= "";
+		var udfPointer		= $aopTargets[ getFunctionCalledName() ];
+		// auto transaction flags?
+		var autoTransactions = getUseTransactions();
+		
+		// is incoming argument "transactional"
+		if( structKeyExists(arguments,"transactional") ){ autoTransactions = arguments.transactional; }
+		
+		// Are we already in a transaction? or override?
+		if( structKeyExists(request,"cbox_aop_transaction") OR autoTransactions EQ false ){
+			return udfPointer(argumentCollection=arguments);
+		}
+		
+		// transaction safe call, start one
+		tx = ORMGetSession().beginTransaction();
+		// mark transaction began
+		request["cbox_aop_transaction"] = true;
+			
+		try{
+			// Call method
+			results = udfPointer(argumentCollection=arguments);
+			// commit transaction
+			tx.commit();
+		}
+		catch(Any e){
+			// remove pointer
+			structDelete(request,"cbox_aop_transaction");
+			// rollback
+			tx.rollback();
+			//throw it
+			rethrow;
+		}		
+		// remove pointer, out of transaction now.
+		structDelete(request,"cbox_aop_transaction");
+		// Results? If found, return them.
+		if( NOT isNull(results) ){ return results; }
 	}
 }
