@@ -466,8 +466,8 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
+			tx.rollback();
+			rethrow;
 		}
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
@@ -484,8 +484,8 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
+			tx.rollback();
+			rethrow;
 		}
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
@@ -512,8 +512,8 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
+			tx.rollback();
+			rethrow;
 		}
 
 		// Auto Flush
@@ -594,14 +594,14 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch("java.lang.NullPointerException" e){
-			if(tx.wasCommitted()){ tx.rollback(); }
+			tx.rollback();
 			throw(message="A null pointer exception occurred when running the query",
 			  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
 			  type="BaseORMService.MaybeInvalidParamCaseException");
 		}
 		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
+			tx.rollback();
+			rethrow;
 		}
 
 		return count;
@@ -635,8 +635,8 @@ component accessors="true"{
 			tx.commit();
 		}
 		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
+			tx.rollback();
+			rethrow;
 		}
 
 		// Auto Flush
@@ -665,8 +665,8 @@ component accessors="true"{
 				tx.commit();
 			}
 			catch(Any e){
-				if(tx.wasCommitted()){ tx.rollback(); }
-				throw(e);
+				tx.rollback();
+				rethrow;
 			}
 		}
 		else{

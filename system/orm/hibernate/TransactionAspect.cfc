@@ -234,9 +234,9 @@ component extends="coldbox.system.Interceptor"{
 			// Log Error
 			log.error("An exception ocurred in the AOPed transaction: #e.message# #e.detail#",e);
 			// rollback
-			if(tx.wasCommitted()){ tx.rollback(); }
+			tx.rollback();
 			//throw it
-			throw(e);
+			rethrow;
 		}		
 		// remove pointer, out of transaction now.
 		structDelete(request,"cbox_aop_transaction");
