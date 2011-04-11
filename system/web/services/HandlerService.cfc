@@ -235,6 +235,7 @@ Description :
 	<cffunction name="getRegisteredHandler" access="public" hint="I parse the incoming event string into an event handler bean that is used for executions." returntype="coldbox.system.web.context.EventHandlerBean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"   type="any"  required="true"  hint="The full event string to check and get." >
+		<cfargument name="ehBean"  type="any"  required="false" hint="The event handler bean" colddoc:generic="coldbox.system.web.context.EventHandlerBean">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var handlerIndex 			= 0;
@@ -242,10 +243,18 @@ Description :
 		var methodReceived 			= "";
 		var handlersList 			= instance.registeredHandlers;
 		var handlersExternalList 	= instance.registeredExternalHandlers;
-		var HandlerBean 			= CreateObject("component","coldbox.system.web.context.EventHandlerBean").init(instance.handlersInvocationPath);
+		var HandlerBean 			= "";
 		var moduleReceived			= "";
 		var moduleSettings 			= instance.modules;
 
+		// If an ehBean was passed in override it, otherwise create a new one.
+		if( structKeyExists(arguments,"ehBean") ){
+			HandlerBean = arguments.ehBean; 
+		}
+		else {
+			HandlerBean = CreateObject("component","coldbox.system.web.context.EventHandlerBean").init(instance.handlersInvocationPath);
+		}
+			
 
 		// Rip the handler and method
 		handlerReceived = listLast(reReplace(arguments.event,"\.[^.]*$",""),":");
@@ -298,7 +307,7 @@ Description :
 		invalidEvent(arguments.event,handlerBean);
 
 		// onInvalidEvent detected, so just return the overriden bean
-		return getRegisteredHandler(handlerBean.getHandler() & "." & handlerBean.getMethod());
+		return HandlerBean;
 		</cfscript>
 	</cffunction>
 	
@@ -366,8 +375,7 @@ Description :
 				controller.getRequestService().getContext().setValue("invalidevent",arguments.event,true);
 
 				// Override Event
-				arguments.ehBean.setHandler(reReplace(instance.onInvalidEvent,"\.[^.]*$",""));
-				arguments.ehBean.setMethod(listLast(instance.onInvalidEvent,"."));
+				getRegisteredHandler(instance.onInvalidEvent,arguments.ehBean);
 
 				return;
 			}
