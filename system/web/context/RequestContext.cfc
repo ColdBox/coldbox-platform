@@ -202,7 +202,7 @@ Description :
 
 	<cffunction name="setView" access="public" returntype="void" hint="I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout"  output="false">
 		<!--- ************************************************************* --->
-	    <cfargument name="name"     				required="true"  type="string"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
+	    <cfargument name="view"     				required="false" type="string"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
 		<cfargument name="nolayout" 				required="false" type="boolean" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
 		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
 		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""	hint="The cache timeout">
@@ -214,7 +214,10 @@ Description :
 		    var key 		= "";
 		    var cacheEntry 	= structnew();
 			var cModule		= getCurrentModule();
-
+			
+			// view and name mesh
+			if( structKeyExists(arguments,"name") ){ arguments.view = arguments.name; }
+			
 			// Local Override
 			if( structKeyExists(arguments,"layout") ){
 				setLayout(arguments.layout);
@@ -224,13 +227,13 @@ Description :
 		    else if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false,true) ){
 
 		    	//Verify that the view has a layout in the viewLayouts structure.
-			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.name)) ){
-					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.name)],true);
+			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.view)) ){
+					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.view)],true);
 			    }
 				else{
 					//Check the folders structure
 					for( key in instance.FolderLayouts ){
-						if ( reFindnocase('^#key#', lcase(arguments.name)) ){
+						if ( reFindnocase('^#key#', lcase(arguments.view)) ){
 							setValue("currentLayout",instance.FolderLayouts[key],true);
 							break;
 						}
@@ -259,7 +262,7 @@ Description :
 			//Do we need to cache the view
 			if( arguments.cache ){
 				//prepare the cache keys
-				cacheEntry.view = arguments.name;
+				cacheEntry.view = arguments.view;
 
 				//arg cleanup
 				if ( not isNumeric(arguments.cacheTimeout) )
@@ -278,7 +281,7 @@ Description :
 			}
 
 			//Set the current view to render.
-			instance.privateContext["currentView"] = arguments.name;
+			instance.privateContext["currentView"] = arguments.view;
 		</cfscript>
 	</cffunction>
 
