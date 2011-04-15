@@ -468,12 +468,12 @@ Description :
 				// Registered Scope Processing
 				if( structKeyExists(md,"scope") ){ instance.scope = md.scope; }
 				// CacheBox scope processing if cachebox annotation found, or cache annotation found
-				if( structKeyExists(md,"cacheBox") OR structKeyExists(md,"cache") ){ 
+				if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){ 
 					instance.scope = arguments.binder.SCOPES.CACHEBOX;
 				}
 				
 				// Cachebox Persistence Processing
-				if( structKeyExists(md,"cacheBox") OR structKeyExists(md,"cache") ){
+				if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){
 					// Cache Data instead of md insertion as CF caches md now.
 					cacheProperties = {
 						provider = "default",
