@@ -340,6 +340,23 @@ Description :
 		</cfif>		
 	</cffunction>
 	
+	<!--- on Request Start --->
+	<cffunction name="onRequestStart" returnType="boolean" output="true">
+		<!--- ************************************************************* --->
+		<cfargument name="targetPage" type="string" required="true" />
+		<!--- ************************************************************* --->
+		<!--- Reload Checks --->
+		<cfset reloadChecks()>
+		
+		<!--- Process A ColdBox Request Only --->
+		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
+			<cfset processColdBoxRequest()>
+		</cfif>
+			
+		<!--- WHATEVER YOU WANT BELOW --->
+		<cfreturn true>
+	</cffunction>
+	
 	<!--- OnMissing Template --->
 	<cffunction	name="onMissingTemplate" access="public" returntype="boolean" output="true" hint="I execute when a non-existing CFM page was requested.">
 		<cfargument name="template"	type="any" required="true"	hint="I am the template that the user requested."/>
@@ -429,6 +446,15 @@ Description :
 					cbController.runEvent(event=cbController.getSetting("SessionEndHandler"),prepostExempt=true);
 				}
 			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- on Application Start --->
+	<cffunction name="onApplicationStart" returnType="boolean" output="false" hint="An onApplicationStart method to use or call from your Application.cfc">
+		<cfscript>
+			//Load ColdBox
+			loadColdBox();
+			return true;
 		</cfscript>
 	</cffunction>
 	
