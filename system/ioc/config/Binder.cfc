@@ -564,7 +564,7 @@ Description :
 			// Prepare Locations
 			for(x=1; x lte arrayLen(arguments.locations); x++){
 				// Validate it is not registered already
-				if ( NOT structKeyExists(instance.scanLocations, arguments.locations[x]) ){
+				if ( NOT structKeyExists(instance.scanLocations, arguments.locations[x]) AND len(arguments.locations[x]) ){
 					// Process creation path & Absolute Path
 					instance.scanLocations[ arguments.locations[x] ] = expandPath( "/" & replace(arguments.locations[x],".","/","all") & "/" );
 				}
