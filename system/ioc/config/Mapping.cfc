@@ -435,7 +435,7 @@ Description :
 		<cfset var md 			= instance.metadata>
 		<cfset var x 			= 1>
 		<cfset var thisAliases 	= "">
-		<cfset var mappings		= "">
+		<cfset var mappings		= arguments.binder.getMappings()>
 		<cfset var iData	 	= "">
 		<cfset var eventManager	= arguments.injector.getEventManager()>
 		<cfset var cacheProperties = {}>
