@@ -229,7 +229,9 @@ Description :
 	
 	<!--- mapDirectory --->
     <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection">
-    	<cfargument name="packagePath" required="true" hint="The instantiation packagePath to map"/>
+    	<cfargument name="packagePath"  required="true" hint="The instantiation packagePath to map"/>
+		<cfargument name="include" 		required="true" default="" hint="An include regex that if matches will only include CFCs that match this case insensitive regex"/>
+		<cfargument name="exclude" 		required="true" default="" hint="An exclude regex that if matches will exclude CFCs that match this case insensitive regex"/>
 		<cfscript>
 			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
 			var qObjects		= "";
@@ -248,8 +250,17 @@ Description :
 		<cfloop query="qObjects">
 			<!--- Remove .cfc and /\ with . notation--->
 			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase(qObjects.name,".cfc","") ,"(/|\\)",".","all")>
-			<!--- Map the Path --->
-			<cfset mapPath( thisTargetPath )>
+			
+			<!--- Include/Exclude --->
+			<cfif ( len(arguments.include) AND reFindNoCase(arguments.include, thisTargetPath) )
+			      OR ( len(arguments.exclude) AND NOT reFindNoCase(arguments.exclude,thisTargetPath) )
+				  OR ( NOT len(arguments.include) AND NOT len(arguments.exclude) )>
+				
+				<!--- Map the Path --->
+				<cfset mapPath( thisTargetPath )>
+			
+			</cfif>
+			
 		</cfloop>
 		
 		<cfreturn this>
