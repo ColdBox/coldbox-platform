@@ -67,9 +67,6 @@ component accessors="true"{
 		setUseQueryCaching( arguments.useQueryCaching );
 		setEventHandling( arguments.eventHandling );
 		setUseTransactions( arguments.useTransactions );
-	
-		// prepare transactional methods
-		wrapTransactionalMethods();
 		
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
@@ -457,6 +454,13 @@ component accessors="true"{
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
     */
 	void function delete(required any entity,boolean flush=false,boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$delete, arguments);
+		}
+		return $delete(argumentCollection=arguments);
+	}
+	private void function $delete(required any entity,boolean flush=false){
 		var objects = arrayNew(1);
 		var objLen  = 0;
 
@@ -481,8 +485,14 @@ component accessors="true"{
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
 	numeric function deleteAll(required string entityName,boolean flush=false,boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$deleteAll, arguments);
+		}
+		return $deleteAll(argumentCollection=arguments);
+	}
+	private numeric function $deleteAll(required string entityName,boolean flush=false){
 		var count   = 0;
-		
 		count = ORMExecuteQuery("delete from #arguments.entityName#");
 		
 		// Auto Flush
@@ -497,6 +507,13 @@ component accessors="true"{
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
 	numeric function deleteByID(required string entityName, required any id, boolean flush=false, boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$deleteByID, arguments);
+		}
+		return $deleteByID(argumentCollection=arguments);
+	}
+	private numeric function $deleteByID(required string entityName, required any id, boolean flush=false){
 		var count   = 0;
 
 		// type safe conversions
@@ -519,6 +536,13 @@ component accessors="true"{
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
 	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions() ){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$deleteByQuery, arguments);
+		}
+		return $deleteByQuery(argumentCollection=arguments);
+	}
+	private void function $deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false){
 		var objects = arrayNew(1);
 		var options = {};
 
@@ -546,7 +570,16 @@ component accessors="true"{
 	* Ex: deleteWhere(entityName="User",age="4",isActive=true);
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	numeric function deleteWhere(required string entityName){
+	numeric function deleteWhere(required string entityName,boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			structDelete(arguments,"transactional");
+			return $transactioned(variables.$deleteWhere, arguments);
+		}
+		structDelete(arguments,"transactional");
+		return $deleteWhere(argumentCollection=arguments);
+	}
+	private numeric function $deleteWhere(required string entityName){
 		var buffer   = createObject("java","java.lang.StringBuffer").init('');
 		var key      = "";
 		var operator = "AND";
@@ -601,6 +634,13 @@ component accessors="true"{
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
     */
 	any function saveAll(required entities, forceInsert=false, flush=false,boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$saveAll, arguments);
+		}
+		return $saveAll(argumentCollection=arguments);
+	}
+	private any function $saveAll(required entities, forceInsert=false, flush=false){
 		var count 			=  arrayLen(arguments.entities);
 		var eventHandling 	=  getEventHandling();
 		
@@ -626,11 +666,19 @@ component accessors="true"{
 	}
 
 	/**
-    * Save an entity using hibernate transactions. You can optionally flush the session also
+    * Save an entity using hibernate transactions or not. You can optionally flush the session also
     */
 	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$save, arguments);
+		}
+		return $save(argumentCollection=arguments);
+	}
+	any function $save(required any entity, boolean forceInsert=false, boolean flush=false){
+		// Event handling flag
 		var eventHandling = getEventHandling();
-
+		
 		// Event Handling? If enabled, call the preSave() interception
 		if( eventHandling ){
 			ORMEventHandler.preSave( arguments.entity );
@@ -1016,48 +1064,24 @@ component accessors="true"{
 	}
 	
 	/**
-	* Cool Transactional AOP wrapper for this class
+	* My hibernate safe transaction closure wrapper
+	* @method the method to closure
+	* @argCollection the arguments to passthrough
 	*/
-	private void function wrapTransactionalMethods(){
-		var methods = ["save","saveAll","delete","deleteAll","deleteByID","deleteWhere","deleteByQuery"];
-		
-		// start $aopTargets
-		$aopTargets = {};
-		
-		for(var x=1; x lte arrayLen(methods); x++ ){
-			// save target
-			$aopTargets[ methods[x] ] 	= variables[ methods[x] ];
-			// override target
-			variables[ methods[x] ] 	= variables.$aopWrapper;
-			this[ methods[x] ] 			= variables.$aopWrapper;
-		}		
-	}
-	
-	/**
-	* The AOP transactioned wrapper
-	*/
-	private any function $aopWrapper(){
-		var tx 				= "";
-		var udfPointer		= $aopTargets[ getFunctionCalledName() ];
-		// auto transaction flags?
-		var autoTransactions = getUseTransactions();
-		
-		// is incoming argument "transactional"
-		if( structKeyExists(arguments,"transactional") ){ autoTransactions = arguments.transactional; }
-		
-		// Are we already in a transaction? or override?
-		if( structKeyExists(request,"cbox_aop_transaction") OR autoTransactions EQ false ){
-			return udfPointer(argumentCollection=arguments);
+	private any function $transactioned(method,argCollection=structnew()){
+		// Are we already in a transaction?
+		if( structKeyExists(request,"cbox_aop_transaction") ){
+			return arguments.method(argumentCollection=arguments.argCollection);
 		}
 		
 		// transaction safe call, start one
-		tx = ORMGetSession().beginTransaction();
+		var tx = ORMGetSession().beginTransaction();
 		// mark transaction began
 		request["cbox_aop_transaction"] = true;
 			
 		try{
 			// Call method
-			results = udfPointer(argumentCollection=arguments);
+			results = arguments.method(argumentCollection=arguments.argCollection);
 			// commit transaction
 			tx.commit();
 		}
