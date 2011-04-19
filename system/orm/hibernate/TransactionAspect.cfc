@@ -206,15 +206,18 @@ component extends="coldbox.system.Interceptor"{
 	*/
 	private void function $aop_transaction(jointpoint, jpArguments){
 		var tx 			= ORMGetSession().beginTransaction();
-		var udfPointer	= this.$aop_targets[arguments.jointpoint];
 		var log			= this.$aop_log;
+		var refPointers = {};
+		
+		// store the ref pointer to the UDF according to exact name.
+		refPointers[arguments.jointPoint] = this.$aop_targets[arguments.jointpoint];
 		
 		// Are we already in a transaction?
 		if( structKeyExists(request,"cbox_aop_transaction") ){
 			// debug?
 			if( log.canDebug() ){ log.debug("Call to #arguments.jointpoint# already transactioned, just executing it"); }
 			// Just execute and return;
-			return udfPointer(argumentCollection=arguments.jpArguments);
+			return evaluate("refPointers.#arguments.jointPoint#(argumentCollection=arguments.jpArguments)");
 		}
 		
 		// Else, transaction safe call
@@ -223,8 +226,8 @@ component extends="coldbox.system.Interceptor"{
 			if( log.canDebug() ){ log.debug("Call to #arguments.jointpoint# is now transaction and begins execution"); }
 			// mark transaction began
 			request["cbox_aop_transaction"] = true;
-			// Call method
-			results = udfPointer(argumentCollection=arguments.jpArguments);
+			// Call method exactly as it was called to keep consistent.
+			results = evaluate("refPointers.#arguments.jointPoint#(argumentCollection=arguments.jpArguments)");
 			// commit transaction
 			tx.commit();
 		}
