@@ -53,7 +53,25 @@ Description :
 	<!--- newMail --->
 	<cffunction name="newMail" access="public" returntype="coldbox.system.core.mail.Mail" output="false" hint="Get a new Mail payload object, just use config() on it to prepare it or pass in all the arguments via this method">
 		<cfscript>
-			return createObject("component","coldbox.system.core.mail.Mail").init(argumentCollection=arguments);
+			var mail 		 = createObject("component","coldbox.system.core.mail.Mail").init(argumentCollection=arguments);
+			var mailSettings = getMailSettingsBean();
+			
+			// If mail payload does not have a server and one is defined in the mail settings, use that
+			if( NOT mail.propertyExists("server") AND len(mailSettings.getServer()) ){
+				mail.setServer( mailSettings.getServer() );
+			}
+			// Same with username, password and port
+			if( NOT mail.propertyExists("username") AND len(mailSettings.getUsername()) ){
+				mail.setUsername( mailSettings.getUsername() );
+			}
+			if( NOT mail.propertyExists("password") AND len(mailSettings.getPassword()) ){
+				mail.setPassword( mailSettings.getPassword() );
+			}
+			if( NOT mail.propertyExists("port") AND len(mailSettings.getPort()) ){
+				mail.setPort( mailSettings.getPort() );
+			}
+			
+			return mail;
 		</cfscript>
 	</cffunction>
 	
@@ -63,7 +81,6 @@ Description :
 		<cfscript>
 			var rtnStruct 	 = structnew();
 			var payload 	 = arguments.mail;
-			var mailSettings = getMailSettingsBean();
 			
 			// The return structure
 			rtnStruct.error = true;
@@ -73,21 +90,6 @@ Description :
 			if( NOT payload.validate() ){
 				arrayAppend(rtnStruct.errorArray,"Please check the basic mail fields of To, From and Body as they are empty. To: #payload.getTo()#, From: #payload.getFrom()#, Body Len = #payload.getBody().length()#.");
 				return rtnStruct;
-			}
-			
-			// If mail payload does not have a server and one is defined in the mail settings, use that
-			if( NOT arguments.mail.propertyExists("server") AND len(mailSettings.getServer()) ){
-				mail.setServer( mailSettings.getServer() );
-			}
-			// Same with username, password and port
-			if( NOT arguments.mail.propertyExists("username") AND len(mailSettings.getUsername()) ){
-				mail.setUsername( mailSettings.getUsername() );
-			}
-			if( NOT arguments.mail.propertyExists("password") AND len(mailSettings.getPassword()) ){
-				mail.setPassword( mailSettings.getPassword() );
-			}
-			if( NOT arguments.mail.propertyExists("port") AND len(mailSettings.getPort()) ){
-				mail.setPort( mailSettings.getPort() );
 			}
 			
 			// Parse Tokens
