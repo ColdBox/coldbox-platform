@@ -204,7 +204,7 @@ component extends="coldbox.system.Interceptor"{
 	* @jointpoint The jointpoint to execute
 	* @jpArguments The arguments passed to the jointpoint
 	*/
-	private void function $aop_transaction(jointpoint, jpArguments){
+	private any function $aop_transaction(jointpoint, jpArguments){
 		var tx 			= ORMGetSession().beginTransaction();
 		var log			= this.$aop_log;
 		var refPointers = {};
