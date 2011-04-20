@@ -43,7 +43,7 @@ component accessors="true"{
 	* The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, enabled by default.
 	*/
 	property name="eventHandling" type="boolean" default="true";
-	
+
 	/**
 	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
 	*/
@@ -67,13 +67,13 @@ component accessors="true"{
 		setUseQueryCaching( arguments.useQueryCaching );
 		setEventHandling( arguments.eventHandling );
 		setUseTransactions( arguments.useTransactions );
-		
+
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
 
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
-		
+
 		// Restrictions orm.hibernate.criterion.Restrictions lazy loaded
 		restrictions = "";
 
@@ -407,7 +407,7 @@ component accessors="true"{
 	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
     */
 	any function get(required string entityName,required any id) {
-		
+
 		// check if id exists so entityLoad does not throw error
 		if( (isSimpleValue(arguments.id) and len(arguments.id)) OR NOT isSimpleValue(arguments.id) ){
 			var entity = entityLoadByPK(arguments.entityName, arguments.id);
@@ -475,7 +475,7 @@ component accessors="true"{
 		for(var x=1; x lte objLen; x++){
 			entityDelete( objects[x] );
 		}
-		
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 	}
@@ -494,7 +494,7 @@ component accessors="true"{
 	private numeric function $deleteAll(required string entityName,boolean flush=false){
 		var count   = 0;
 		count = ORMExecuteQuery("delete from #arguments.entityName#");
-		
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -523,7 +523,7 @@ component accessors="true"{
 		var query = ORMGetSession().createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
 		query.setParameterList("idlist",arguments.id);
 		count = query.executeUpdate();
-		
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -643,7 +643,7 @@ component accessors="true"{
 	private any function $saveAll(required entities, forceInsert=false, flush=false){
 		var count 			=  arrayLen(arguments.entities);
 		var eventHandling 	=  getEventHandling();
-		
+
 		// iterate and save
 		for(var x=1; x lte count; x++){
 			// Event Handling? If enabled, call the preSave() interception
@@ -658,7 +658,7 @@ component accessors="true"{
 				ORMEventHandler.postSave( arguments.entities[x] );
 			}
 		}
-			
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -678,7 +678,7 @@ component accessors="true"{
 	any function $save(required any entity, boolean forceInsert=false, boolean flush=false){
 		// Event handling flag
 		var eventHandling = getEventHandling();
-		
+
 		// Event Handling? If enabled, call the preSave() interception
 		if( eventHandling ){
 			ORMEventHandler.preSave( arguments.entity );
@@ -686,7 +686,7 @@ component accessors="true"{
 
 		// save
 		entitySave(arguments.entity, arguments.forceInsert);
-		
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -940,22 +940,24 @@ component accessors="true"{
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
 	* The method returns a coverted array of ID's
 	*/
-	array function convertIDValueToJavaType(required entityName, required id){
+	any function convertIDValueToJavaType(required entityName, required id){
 		var hibernateMD = ormGetSessionFactory().getClassMetaData(arguments.entityName);
 
-		//id conversion to array
-		if( isSimpleValue(arguments.id) ){
-			arguments.id = listToArray(arguments.id);
-		}
+		if(isDefined("hibernateMD") and not hibernateMD.getIdentifierType().isComponentType() ){
+			//id conversion to array
+			if( isSimpleValue(arguments.id) ){
+				arguments.id = listToArray(arguments.id);
+			}
 
-		// Convert to hibernate native types
-		for (var i=1; i lte arrayLen(arguments.id); i=i+1){
-			arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
+			// Convert to hibernate native types
+			for (var i=1; i lte arrayLen(arguments.id); i=i+1){
+				arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
+			}
 		}
 
 		return arguments.id;
 	}
-	
+
 	/**
 	* Get our hibernate org.hibernate.criterion.Restrictions proxy object
 	*/
@@ -965,9 +967,9 @@ component accessors="true"{
 		}
 		return restrictions;
 	}
-	
+
 	/**
-	* Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object that can be retrieved from this service using ''getRestrictions()''.  The Criteria interface allows to create and execute object-oriented queries. It is powerful alternative to the HQL but has own limitations. Criteria Query is used mostly in case of multi criteria search screens, where HQL is not very effective. 
+	* Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object that can be retrieved from this service using ''getRestrictions()''.  The Criteria interface allows to create and execute object-oriented queries. It is powerful alternative to the HQL but has own limitations. Criteria Query is used mostly in case of multi criteria search screens, where HQL is not very effective.
 	*/
 	public any function criteriaQuery(required entityName,
 									  array criteria=ArrayNew(1),
@@ -977,36 +979,36 @@ component accessors="true"{
 					  		 		  numeric timeout=0,
 					  		 		  boolean ignoreCase=false,
 					  		 		  boolean asQuery=true){
-		// create Criteria query object					 
+		// create Criteria query object
 		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
-		
+
 		// Setup listing options
 		if( arguments.offset NEQ 0 ){
 			qry.setFirstResult(arguments.offset);
 		}
 		if(arguments.max GT 0){
 			qry.setMaxResults(arguments.max);
-		}	
+		}
 		if( arguments.timeout NEQ 0 ){
 			qry.setTimeout(arguments.timeout);
 		}
-		
+
 		// Caching
 		if( getUseQueryCaching() ){
 			qry.setCacheRegion(getQueryCacheRegion());
 			qry.setCacheable(true);
 		}
-		
+
 		// Sort Order Case
 		if( Len(Trim(arguments.sortOrder)) ){
 			var sortField = Trim(ListFirst(arguments.sortOrder," "));
 			var sortDir = "ASC";
 			var Order = CreateObject("java","org.hibernate.criterion.Order");
-			
+
 			if(ListLen(arguments.sortOrder," ") GTE 2){
 				sortDir = ListGetAt(arguments.sortOrder,2," ");
 			}
-				
+
 			switch(UCase(sortDir)) {
 				case "DESC":
 					var orderBy = Order.desc(sortField);
@@ -1019,13 +1021,13 @@ component accessors="true"{
 			if(arguments.ignoreCase){
 				orderBy.ignoreCase();
 			}
-			// add order to query	
+			// add order to query
 			qry.addOrder(orderBy);
 		}
-			
+
 		// Get listing
 		var results = qry.list();
-			
+
 		// Is it Null? If yes, return empty array
 		if( isNull(results) ){ results = []; }
 
@@ -1034,9 +1036,9 @@ component accessors="true"{
 			results = EntityToQuery(results);
 		}
 
-		return results;					
+		return results;
 	}
-	
+
 	/**
 	* Get the record count using hibernate projections and criterion for specific queries
 	*/
@@ -1044,25 +1046,25 @@ component accessors="true"{
 		// create a new criteria query object
 		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
 		var projections = CreateObject("java","org.hibernate.criterion.Projections");
-							 
+
 		qry.setProjection( projections.rowCount() );
-		
+
 		return qry.uniqueResult();
 	}
-	
+
 	/**
 	* Create a new hibernate criteria object according to entityname and criterion array objects
 	*/
 	private any function createCriteriaQuery(required entityName, array criteria=ArrayNew(1)){
 		var qry = ORMGetSession().createCriteria( arguments.entityName );
-		
+
 		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
 			qry.add( arguments.criteria[i] );
 		}
-		
+
 		return qry;
 	}
-	
+
 	/**
 	* My hibernate safe transaction closure wrapper
 	* @method the method to closure
@@ -1073,12 +1075,12 @@ component accessors="true"{
 		if( structKeyExists(request,"cbox_aop_transaction") ){
 			return arguments.method(argumentCollection=arguments.argCollection);
 		}
-		
+
 		// transaction safe call, start one
 		var tx = ORMGetSession().beginTransaction();
 		// mark transaction began
 		request["cbox_aop_transaction"] = true;
-			
+
 		try{
 			// Call method
 			results = arguments.method(argumentCollection=arguments.argCollection);
@@ -1092,7 +1094,7 @@ component accessors="true"{
 			tx.rollback();
 			//throw it
 			rethrow;
-		}		
+		}
 		// remove pointer, out of transaction now.
 		structDelete(request,"cbox_aop_transaction");
 		// Results? If found, return them.
