@@ -354,6 +354,7 @@ TODO: update dsl consistency, so it is faster.
 						case "eventManager" : { return instance.injector.getEventManager(); }
 						case "binder" 		: { return instance.injector.getBinder(); }
 						case "populator" 	: { return instance.injector.getObjectPopulator(); }
+						case "properties" 	: { return instance.injector.getBinder().getProperties(); }
 					}
 					break;
 				}
