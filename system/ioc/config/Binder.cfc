@@ -30,7 +30,7 @@ Description :
 			logBoxConfig = "coldbox.system.ioc.config.LogBox",
 			// Scope Defaults
 			scopeRegistration = {
-				enabled = false,
+				enabled = true,
 				scope = "application",
 				key = "wireBox"
 			},
