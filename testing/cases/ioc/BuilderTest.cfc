@@ -214,7 +214,14 @@
 		mockInjector.$("getBinder",mockBinder);
 		p = builder.getWireBoxDSL(data);
 		assertEquals( props, p);
-		
+	
+		//wirebox:property:{}
+		data = {name="luis", dsl="wirebox:property:name"};
+		props = {prop1='hello',name="luis"};
+		mockBinder = getMockBox().createMock("coldbox.system.ioc.config.Binder").setProperties( props );
+		mockInjector.$("getBinder",mockBinder);
+		p = builder.getWireBoxDSL(data);
+		assertEquals( "luis", p);	
 	}
 	
 	function testbuildProviderMixer(){

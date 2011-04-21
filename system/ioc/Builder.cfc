@@ -358,14 +358,15 @@ TODO: update dsl consistency, so it is faster.
 					}
 					break;
 				}
-				// Scopes
+				// Level 3 DSL
 				case 3 : {
 					thisLocationType 	= getToken(thisType,2,":");
 					thisLocationKey 	= getToken(thisType,3,":");
 					// DSL Level 2 Stage Types
 					switch(thisLocationType){
 						// Scope DSL
-						case "scope" : { return instance.injector.getScope(thisLocationKey); break; }
+						case "scope" 	: { return instance.injector.getScope( thisLocationKey ); break; }
+						case "property" : { return instance.injector.getBinder().getProperty( thisLocationKey );break; }
 					}
 					break;
 				} // end level 3 main DSL
