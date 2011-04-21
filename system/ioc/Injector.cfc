@@ -208,7 +208,7 @@ Description :
 			
 			// Get by DSL?
 			if( structKeyExists(arguments,"dsl") ){
-				return instance.builder.buildSimpleDSL( arguments.dsl );
+				return instance.builder.buildSimpleDSL( arguments.dsl, arguments.name );
 			}
 			
 			// Check if Mapping Exists?
@@ -292,7 +292,7 @@ Description :
 					oModel = instance.builder.buildFeed( thisMap ); break;
 				}
 				case "dsl" : {
-					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL() ); break;
+					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL(), thisMap.getName() ); break;
 				}
 				case "factory" : {
 					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
@@ -536,7 +536,7 @@ Description :
 				// else check if dsl is used?
 				else if( structKeyExists(arguments.DIData[x], "dsl") ){
 					// Get DSL dependency by sending entire DI structure to retrieve
-					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x] );
+					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x], arguments.targetID );
 				}
 				// else we have to have a reference ID or a nasty bug has ocurred
 				else{

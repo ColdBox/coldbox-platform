@@ -159,7 +159,7 @@
 		mockInjector.$("getBinder",mockBinder);
 		builder.registerCustomBuilders();
 		
-		test = builder.buildDSLDependency(def);
+		test = builder.buildDSLDependency(def, "UnitTest");
 		assertEquals( "woopee", test.getName() );
 		
 	}

@@ -200,7 +200,7 @@ TODO: update dsl consistency, so it is faster.
 				
 				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
 				if( structKeyExists(DIArgs[x],"dsl") ){
-					args[ DIArgs[x].name ] = buildDSLDependency( DIArgs[x] );
+					args[ DIArgs[x].name ] = buildDSLDependency( DIArgs[x], thisMap.getName() );
 					continue;
 				}
 				
@@ -213,7 +213,7 @@ TODO: update dsl consistency, so it is faster.
 				// Not found, so check if it is required
 				if( DIArgs[x].required ){
 					// Log the error
-					instance.log.error("Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+					instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
 					// not found but required, then throw exception
 					instance.utility.throwIt(message="Argument reference not located: #DIArgs[x].name#",
 									  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #DIArgs[x].toString()#.",
@@ -221,7 +221,7 @@ TODO: update dsl consistency, so it is faster.
 				}
 				// else just log it via debug
 				else if( instance.log.canDebug() ){
-					instance.log.debug("Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+					instance.log.debug("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
 				}
 				
 			}
@@ -267,19 +267,21 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- buildSimpleDSL --->
 	<cffunction name="buildSimpleDSL" output="false" access="public" returntype="any" hint="Build a DSL Dependency using a simple dsl string">
-		<cfargument name="dsl" required="true" 	hint="The dsl string to build">
+		<cfargument name="dsl" 			required="true" 	hint="The dsl string to build">
+		<cfargument name="targetID" 	required="true" 	hint="The target ID we are building this dependency for"/>
 		<cfscript>
 			var definition = {
 				name = "",
 				dsl = arguments.dsl
 			};
-			return buildDSLDependency( definition );
+			return buildDSLDependency( definition, arguments.targetID );
 		</cfscript>
 	</cffunction>
 
 	<!--- buildDSLDependency --->
 	<cffunction name="buildDSLDependency" output="false" access="public" returntype="any" hint="Build a DSL Dependency, if not found, returns null">
-		<cfargument name="definition" required="true" hint="The dependency definition structure: name, dsl as keys">
+		<cfargument name="definition" 	required="true" hint="The dependency definition structure: name, dsl as keys">
+		<cfargument name="targetID" 	required="true" hint="The target ID we are building this dependency for"/>
 		<cfscript>
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
@@ -321,13 +323,18 @@ TODO: update dsl consistency, so it is faster.
 				}
 			}
 				
-			// return only if found, else returns null
+			// return only if found
 			if( structKeyExists(refLocal,"dependency") ){ return refLocal.dependency; }
 			
-			// Some warning data
-			if( instance.log.canWarn() ){
-				instance.log.warn("The DSL dependency definition: #arguments.definition.toString()# did not produce any resulting dependency");
+			// Logging
+			if( instance.log.canError() ){
+				instance.log.error("Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency");
 			}
+			
+			// Throw exception as DSL Dependency requested was not located
+			instance.utility.throwit(message="The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
+									 detail="The target requesting the dependency is: '#arguments.targetID#'",
+									 type="Builder.DSLDependencyNotFoundException");
 		</cfscript>
 	</cffunction>
 
