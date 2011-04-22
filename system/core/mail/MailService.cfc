@@ -13,7 +13,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The ColdBox Mail Service used to send emails in an oo fashion">
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="MailService" hint="Constructor">
 		<cfargument name="mailSettings" type="coldbox.system.core.mail.MailSettingsBean" required="false" hint="A configured mail settings bean with default mail configurations, else ignored and uses payload"/>
@@ -34,7 +34,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+	<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Get/Set Token Marker --->
 	<cffunction name="getTokenMarker" access="public" returntype="string" output="false" hint="Get the token marker">
@@ -97,78 +97,18 @@ Description :
 					
 			//Just mail the darned thing!!
 			try{
-				mailIt(payload);
-				rtnStruct.error = false;
+				// We mail it using the protocol which is defined in the mail settings.
+				rtnStruct = getMailSettings().getTransit().send(payload);
 			}
 			catch(Any e){
 				ArrayAppend(rtnStruct.errorArray,"Error sending mail. #e.message# : #e.detail# : #e.stackTrace#");
-			}			
+			}
 	
 			return rtnStruct;
 		</cfscript>
 	</cffunction>
 	
-<!------------------------------------------- PRIVATE ------------------------------------------->
-	
-	<cffunction name="mailIt" output="false" access="private" returntype="void" hint="Mail a payload">
-		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload" />
-		<cfscript>
-			// Determine Mail Type?
-			if( arrayLen(arguments.mail.getMailParts()) ){
-				mailMultiPart(arguments.mail);
-			}
-			else{
-				mailNormal(arguments.mail);
-			}		
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="mailNormal" output="false" access="private" returntype="void" hint="Mail a payload">
-		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload" />
-		<cfset var payload = arguments.mail>
-		<cfset var mailParam = 0>
-		
-		<cfsetting enablecfoutputonly="true">
-		
-		<!--- I HATE FREAKING CF WHITESPACE, LOOK HOW UGLY THIS IS --->
-		<cfmail attributeCollection="#payload.getMemento()#"><cfoutput>#payload.getBody()#</cfoutput><cfsilent>
-			<cfloop array="#payload.getMailParams()#" index="mailparam">
-				<cfif structKeyExists(mailParam,"name")>
-					<cfmailparam name="#mailparam.name#" attributeCollection="#mailParam#">
-				<cfelseif structKeyExists(mailparam,"file")>
-					<cfmailparam file="#mailparam.file#" attributeCollection="#mailParam#">
-				</cfif>
-			</cfloop></cfsilent></cfmail>
-		
-		<cfsetting enablecfoutputonly="false">
-	</cffunction>
-
-	<cffunction name="mailMultiPart" output="false" access="private" returntype="any" hint="Mail a payload using multi part objects">
-		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload" />
-		<cfset var payload = arguments.mail>
-		<cfset var mailParam = 0>
-		<cfset var mailPart = 0>
-		
-		<cfsetting enablecfoutputonly="true">
-
-		<!--- I HATE FREAKING CF WHITESPACE, LOOK HOW UGLY THIS IS --->
-		<cfmail attributeCollection="#payload.getMemento()#">
-		<!--- Mail Params --->
-		<cfloop array="#payload.getMailParams()#" index="mailparam">
-			<cfif structKeyExists(mailParam,"name")>
-				<cfmailparam name="#mailparam.name#" attributeCollection="#mailParam#">
-			<cfelseif structKeyExists(mailparam,"file")>
-				<cfmailparam file="#mailparam.file#" attributeCollection="#mailParam#">
-			</cfif>
-		</cfloop>
-		<!--- Mail Parts --->
-		<cfloop array="#payload.getMailParts()#" index="mailPart">
-			<cfmailpart attributeCollection="#mailpart#"><cfoutput>#mailpart.body#</cfoutput></cfmailpart>
-		</cfloop>
-		</cfmail>
-
-		<cfsetting enablecfoutputonly="false">	
-	</cffunction>
+	<!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<cffunction name="parseTokens" access="private" returntype="void" output="false" hint="Parse the tokens and do body replacements.">
 		<cfargument name="Mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload" />

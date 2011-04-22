@@ -520,6 +520,7 @@ Loads a coldbox xml configuration file
 			configStruct.MailUsername = "";
 			configStruct.MailPassword = "";
 			configStruct.MailPort = 25;
+			configStruct.MailProtocol = structNew();
 		
 			//Checks
 			if ( structKeyExists(mailSettings, "server") )
@@ -532,6 +533,10 @@ Loads a coldbox xml configuration file
 			//Mail password
 			if ( structKeyExists(mailSettings, "password") )
 				configStruct.MailPassword = trim(mailSettings.password);
+				
+			//Mail password
+			if ( structKeyExists(mailSettings, "protocol") )
+				configStruct.MailProtocol = mailSettings.protocol;						
 			
 			//Mail Port
 			if ( structKeyExists(mailSettings, "port") AND isNumeric(mailSettings.port) ){

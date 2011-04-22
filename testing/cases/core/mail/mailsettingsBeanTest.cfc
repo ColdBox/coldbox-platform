@@ -10,17 +10,52 @@
 			this.instance.username = "mail";
 		    this.instance.password = "pass" ;
 			this.instance.port = "110";
-			
+			this.instance.protocol = structNew();
+						
 			this.mail = this.mail.init(argumentCollection=this.instance);
 			
 		</cfscript>
 	</cffunction>
-
-	<cffunction name="tearDown" returntype="void" access="public">
-		<!--- Any code needed to return your environment to normal goes here --->
-	</cffunction>
 		
 	<!--- Begin specific tests --->
+	
+	<cffunction name="testWithCustomProtocol" access="public" returnType="void">
+		<cfscript>
+			// Establish the custom protocol we're going to use.
+			this.instance.protocol = {
+				class="coldbox.system.core.mail.protocols.cfmailProtocol",
+				properties = {}
+			};
+			
+			// Init the settings with this protocol.
+			this.mail.init(argumentCollection=this.instance);
+		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testWithUnknownCustomProtocol" access="public" returnType="void" mxunit:expectedException="coldbox.mail.FailLoadProtocol">
+		<cfscript>
+			// Establish the custom protocol we're going to use.
+			this.instance.protocol = {
+				class="coldbox.system.core.mail.protocols.someUnknownProtocol",
+				properties = {}
+			};
+			
+			// Init the settings with this protocol.
+			this.mail.init(argumentCollection=this.instance);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testWithCustomProtocolWithoutProperties" access="public" returnType="void">
+		<cfscript>
+			// Establish the custom protocol we're going to use.
+			this.instance.protocol = {
+				class="coldbox.system.core.mail.protocols.cfmailProtocol"
+			};
+			
+			// Init the settings with this protocol.
+			this.mail.init(argumentCollection=this.instance);
+		</cfscript>
+	</cffunction>	
 	
 	<cffunction name="testSetters" access="public" returnType="void">
 		<cfscript>

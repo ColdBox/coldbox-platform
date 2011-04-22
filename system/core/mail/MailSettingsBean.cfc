@@ -21,6 +21,7 @@ Description :
 		<cfargument name="username"	required="false" default="">
 		<cfargument name="password"	required="false" default="">
 		<cfargument name="port"		required="false" default="">
+		<cfargument name="protocol"		required="false" type="struct" default="#structNew()#">
 		<!--- ************************************************************* --->
 		<cfscript>
 			instance 			= structnew();
@@ -28,12 +29,35 @@ Description :
 			instance.username 	= arguments.username;
 			instance.password 	= arguments.password;
 			instance.port 		= arguments.port;
+			instance.protocol = arguments.protocol;
 			
+			// Register the protocol.
+			registerProtocol(argumentcollection=instance.protocol);
+			
+			// Return an instance of the class.
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<cffunction name="registerProtocol" access="public" returntype="void" hint="I register a protocol with the settings.">
+		<cfargument name="class" required="false" default="coldbox.system.core.mail.protocols.cfmailProtocol" />
+		<cfargument name="properties" required="false" default="#structNew()#" />
+		
+		<cfscript>
+			// Try to load this protocol
+			try {
+				// Create an instance with the required settings.
+				_protocol = createObject("component", arguments.class).init(arguments.properties);
+			} catch(Any e) {
+				// We were unable to create an instance of the protocol.
+				// Throw an exception to this effect.
+				throw(message="We were unable to successfully load the supplied mail protocol. (#instance.protocol.class#) because (#e#)", type="coldbox.mail.FailLoadProtocol");
+			};
+		</cfscript>
+	
+	</cffunction>
 
 	<!--- memento --->
 	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the memento">
@@ -52,6 +76,21 @@ Description :
 	</cffunction>
 	<cffunction name="getServer" access="public" return="string" output="false" hint="Get server">
 		<cfreturn instance.server >
+	</cffunction>
+	
+	<!--- get/set protocolsettings --->
+	<cffunction name="setprotocol" access="public" return="any" output="false" hint="Set protocolsettings">
+		<cfargument name="protocol" >
+		<cfset instance.protocol=arguments.protocol >
+		<cfreturn this>
+	</cffunction>
+	<cffunction name="getprotocol" access="public" return="struct" output="false" hint="Get protocolsettings">
+		<cfreturn instance.protocol >
+	</cffunction>	
+	
+	<!--- get the protocol --->
+	<cffunction name="getTransit" access="public" return="any" output="false" hint="Get protocol">
+		<cfreturn _protocol >
 	</cffunction>
 
 	<!--- get/set port --->
