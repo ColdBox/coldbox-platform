@@ -28,17 +28,18 @@ Description :
 	
 	<!--- process --->
     <cffunction name="process" output="false" access="public" returntype="any" hint="Process an incoming DSL definition and produce an object with it.">
-		<cfargument name="definition" required="true" hint="The injection dsl definition structure to process. Keys: name, dsl"/>
+		<cfargument name="definition" 	required="true"  hint="The injection dsl definition structure to process. Keys: name, dsl"/>
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
 			
 			switch( DSLNamespace ){
-				case "ioc" 				: { return getIOCDSL(arguments.definition);} 
-				case "ocm" 				: { return getOCMDSL(arguments.definition);}
-				case "webservice" 		: { return getWebserviceDSL(arguments.definition);}
-				case "javaloader" 		: { return getJavaLoaderDSL(arguments.definition);}
-				case "entityService" 	: { return getEntityServiceDSL(arguments.definition);} 
-				case "coldbox" 			: { return getColdboxDSL(arguments.definition); }
+				case "ioc" 				: { return getIOCDSL(arguments.definition,arguments.targetObject);} 
+				case "ocm" 				: { return getOCMDSL(arguments.definition,arguments.targetObject);}
+				case "webservice" 		: { return getWebserviceDSL(arguments.definition,arguments.targetObject);}
+				case "javaloader" 		: { return getJavaLoaderDSL(arguments.definition,arguments.targetObject);}
+				case "entityService" 	: { return getEntityServiceDSL(arguments.definition,arguments.targetObject);} 
+				case "coldbox" 			: { return getColdboxDSL(arguments.definition,arguments.targetObject); }
 			}
 		</cfscript>    	
     </cffunction>	
@@ -58,6 +59,7 @@ Description :
 	<!--- getWebserviceDSL --->
 	<cffunction name="getWebserviceDSL" access="private" returntype="any" hint="Get webservice dependencies" output="false" >
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var oWebservices 	= instance.coldbox.getPlugin("Webservices");
 			var webserviceName  = listLast(arguments.definition.dsl,":");
@@ -70,6 +72,7 @@ Description :
 	<!--- getJavaLoaderDSL --->
 	<cffunction name="getJavaLoaderDSL" access="private" returntype="any" hint="Get JavaLoader Dependency" output="false" >
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var className  		= listLast(arguments.definition.dsl,":");
 
@@ -81,6 +84,7 @@ Description :
 	<!--- getEntityServiceDSL --->
 	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var entityName  = getToken(arguments.definition.dsl,2,":");
 
@@ -97,6 +101,7 @@ Description :
 	<!--- getColdboxDSL --->
 	<cffunction name="getColdboxDSL" access="private" returntype="any" hint="Get dependencies using the coldbox dependency DSL" output="false" >
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisType 			= arguments.definition.dsl;
 			var thisTypeLen 		= listLen(thisType,":");
@@ -162,7 +167,8 @@ Description :
 	
 	<!--- getIOCDSL --->
 	<cffunction name="getIOCDSL" access="private" returntype="any" hint="Get an IOC dependency" output="false" >
-		<cfargument name="definition" required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisTypeLen 	= listLen(arguments.definition.dsl,":");
 			var beanName		= "";
@@ -189,6 +195,7 @@ Description :
 	<!--- getOCMDSL --->
 	<cffunction name="getOCMDSL" access="private" returntype="any" hint="Get OCM dependencies" output="false" >
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisTypeLen = listLen(arguments.definition.dsl,":");
 			var cacheKey 	= "";

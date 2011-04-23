@@ -35,6 +35,9 @@ TODO: update dsl consistency, so it is faster.
 			if( instance.injector.isCacheBoxLinked() ){
 				instance.cacheBoxDSL = createObject("component","coldbox.system.ioc.dsl.CacheBoxDSL").init( arguments.injector );
 			}
+			// Build LogBox DSL Namespace
+			instance.logBoxDSL = createObject("component","coldbox.system.ioc.dsl.LogBoxDSL").init( arguments.injector );
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -83,7 +86,7 @@ TODO: update dsl consistency, so it is faster.
 		<!--- Constructor initialization? --->
 		<cfif thisMap.isAutoInit()  AND structKeyExists(oModel,thisMap.getConstructor())>
 			<!--- Get Arguments --->
-			<cfset constructorArgs = buildArgumentCollection(thisMap, thisMap.getDIConstructorArguments() )>
+			<cfset constructorArgs = buildArgumentCollection(thisMap, thisMap.getDIConstructorArguments(), oModel )>
 			
 			<!--- Do We have initArguments to override --->
 			<cfif NOT structIsEmpty(arguments.initArguments)>
@@ -126,7 +129,7 @@ TODO: update dsl consistency, so it is faster.
     		// get Factory mapping
 			oFactory = instance.injector.getInstance( factoryName );
 			// Get Method Arguments
-			methodArgs = buildArgumentCollection(thisMap, thisMap.getDIMethodArguments() );
+			methodArgs = buildArgumentCollection(thisMap, thisMap.getDIMethodArguments(), oFactory);
 			// Do we have overrides
 			if( NOT structIsEmpty(arguments.initArguments) ){
 				structAppend(methodArgs,arguments.initArguments,true);
@@ -180,9 +183,10 @@ TODO: update dsl consistency, so it is faster.
 	
 	<!--- buildArgumentCollection --->
     <cffunction name="buildArgumentCollection" output="false" access="public" returntype="any" hint="Build arguments for a mapping and return the structure representation">
-    	<cfargument name="mapping" 			required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="argumentArray" 	required="true" hint="The argument array of data"/>
-    	<cfscript>
+    	<cfargument name="mapping" 			required="true"  hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="argumentArray" 	required="true"  hint="The argument array of data"/>
+    	<cfargument name="targetObject" 	required="true"  hint="The target object we are building the DSL dependency for"/>
+		<cfscript>
 			var x 			= 1;
 			var thisMap 	= arguments.mapping;
 			var DIArgs 		= arguments.argumentArray;
@@ -200,7 +204,7 @@ TODO: update dsl consistency, so it is faster.
 				
 				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
 				if( structKeyExists(DIArgs[x],"dsl") ){
-					args[ DIArgs[x].name ] = buildDSLDependency( DIArgs[x], thisMap.getName() );
+					args[ DIArgs[x].name ] = buildDSLDependency( DIArgs[x], thisMap.getName(), arguments.targetObject );
 					continue;
 				}
 				
@@ -280,8 +284,9 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- buildDSLDependency --->
 	<cffunction name="buildDSLDependency" output="false" access="public" returntype="any" hint="Build a DSL Dependency, if not found, returns null">
-		<cfargument name="definition" 	required="true" hint="The dependency definition structure: name, dsl as keys">
-		<cfargument name="targetID" 	required="true" hint="The target ID we are building this dependency for"/>
+		<cfargument name="definition" 	required="true"  hint="The dependency definition structure: name, dsl as keys">
+		<cfargument name="targetID" 	required="true"  hint="The target ID we are building this dependency for"/>
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
@@ -301,24 +306,24 @@ TODO: update dsl consistency, so it is faster.
 			switch(DSLNamespace){
 				// ColdBox Context DSL
 				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "entityService" :case "coldbox" : { 
-					refLocal.dependency = instance.coldboxDSL.process(arguments.definition); break; 
+					refLocal.dependency = instance.coldboxDSL.process(argumentCollection=arguments); break; 
 				} 
 				// CacheBox Context DSL
-				case "cacheBox"			 : { refLocal.dependency = instance.cacheBoxDSL.process(arguments.definition); break;}
-				// WireBox Internal DSL for models and id
-				case "model" : case "id" : { refLocal.dependency = getModelDSL(arguments.definition); break; }
+				case "cacheBox"			 : { refLocal.dependency = instance.cacheBoxDSL.process(argumentCollection=arguments); break;}
 				// logbox injection DSL always available
-				case "logbox"			 : { refLocal.dependency = getLogBoxDSL(arguments.definition); break;}
+				case "logbox"			 : { refLocal.dependency = instance.logBoxDSL.process(argumentCollection=arguments); break;}
+				// WireBox Internal DSL for models and id
+				case "model" : case "id" : { refLocal.dependency = getModelDSL(argumentCollection=arguments); break; }
 				// provider injection DSL always available
-				case "provider"			 : { refLocal.dependency = getProviderDSL(arguments.definition); break; }
+				case "provider"			 : { refLocal.dependency = getProviderDSL(argumentCollection=arguments); break; }
 				// wirebox injection DSL always available
-				case "wirebox"			 : { refLocal.dependency = getWireBoxDSL(arguments.definition); break;}
+				case "wirebox"			 : { refLocal.dependency = getWireBoxDSL(argumentCollection=arguments); break;}
 				
 				// No internal DSL's found, then check custom DSL's
 				default : {
 					// Check if Custom DSL exists, if it does, execute it
 					if( structKeyExists(instance.customDSL, DSLNamespace) ){
-						refLocal.dependency = instance.customDSL[ DSLNamespace ].process( arguments.definition );
+						refLocal.dependency = instance.customDSL[ DSLNamespace ].process(argumentCollection=arguments);
 					}
 				}
 			}
@@ -342,7 +347,9 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- getWireBoxDSL --->
 	<cffunction name="getWireBoxDSL" access="private" returntype="any" hint="Get dependencies using the wirebox dependency DSL" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="definition" 	required="true"  hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		
 		<cfscript>
 			var thisType 			= arguments.definition.dsl;
 			var thisTypeLen 		= listLen(thisType,":");
@@ -383,7 +390,8 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- getModelDSL --->
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
-		<cfargument name="definition" required="true" 	type="any" hint="The dependency definition structure">
+		<cfargument name="definition" 	required="true"  hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisType 		= arguments.definition.dsl;
 			var thisTypeLen 	= listLen(thisType,":");
@@ -421,46 +429,12 @@ TODO: update dsl consistency, so it is faster.
 			}
 		</cfscript>
 	</cffunction>
-	
-	<!--- getLogBoxDSL --->
-	<cffunction name="getLogBoxDSL" access="private" returntype="any" hint="Get dependencies using the logbox dependency DSL" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfscript>
-			var thisType 			= arguments.definition.dsl;
-			var thisTypeLen 		= listLen(thisType,":");
-			var thisLocationType 	= "";
-			var thisLocationKey 	= "";
-			
-			// DSL stages
-			switch(thisTypeLen){
-				// LogBox
-				case 1 : { return instance.logBox; }
-				// logbox:root 
-				case 2 : {
-					thisLocationKey = getToken(thisType,2,":");
-					switch( thisLocationKey ){
-						case "root" : { return instance.logbox.getRootLogger(); }
-					}
-					break;
-				}
-				// Named Loggers
-				case 3 : {
-					thisLocationType 	= getToken(thisType,2,":");
-					thisLocationKey 	= getToken(thisType,3,":");
-					// DSL Level 2 Stage Types
-					switch(thisLocationType){
-						// Get a named Logger
-						case "logger" : { return instance.logBox.getLogger(thisLocationKey); break; }
-					}
-					break;
-				} // end level 3 main DSL
-			}
-		</cfscript>
-	</cffunction>
 
 	<!--- getProviderDSL --->
 	<cffunction name="getProviderDSL" access="private" returntype="any" hint="Get dependencies using the our provider pattern DSL" output="false" >
-		<cfargument name="definition" required="true" 	type="any" hint="The dependency definition structure">
+		<cfargument name="definition" 	required="true"  hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		
 		<cfscript>
 			var thisType 		= arguments.definition.dsl;
 			var thisTypeLen 	= listLen(thisType,":");
