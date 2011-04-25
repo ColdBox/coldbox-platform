@@ -31,10 +31,12 @@ Description :
 			instance.layoutsExternalLocation 	= controller.getSetting('LayoutsExternalLocation');
 			instance.modulesConfig				= controller.getSetting("modules");
 			instance.debuggerService			= controller.getDebuggerService();
+			
 			// Template Cache
 			instance.templateCache 				= controller.getColdboxOCM("template");
 			instance.layoutsRefMap				= controller.getSetting("layoutsRefMap");
 			instance.viewsRefMap				= controller.getSetting("viewsRefMap");
+			
 			// Discovery caching is tied to handlers for discovery.
 			instance.isDiscoveryCaching			= controller.getSetting("handlerCaching");
 			
@@ -44,8 +46,11 @@ Description :
 			// Create View Scopes
 			rc 		= event.getCollection();
 			prc 	= event.getCollection(private=true);
+			
+			// Set the HTML Helper Plugin Scope
+			html	= getPlugin("HTMLHelper");
 
-			// Inject UDF For Views/Layouts
+			// Inject UDF For Views/Layouts via UDFLibraryFile setting
 			if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
 				includeUDF(controller.getSetting("UDFLibraryFile"));
 			}
