@@ -34,12 +34,12 @@ Description :
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
 			
 			switch( DSLNamespace ){
-				case "ioc" 				: { return getIOCDSL(arguments.definition,arguments.targetObject);} 
-				case "ocm" 				: { return getOCMDSL(arguments.definition,arguments.targetObject);}
-				case "webservice" 		: { return getWebserviceDSL(arguments.definition,arguments.targetObject);}
-				case "javaloader" 		: { return getJavaLoaderDSL(arguments.definition,arguments.targetObject);}
-				case "entityService" 	: { return getEntityServiceDSL(arguments.definition,arguments.targetObject);} 
-				case "coldbox" 			: { return getColdboxDSL(arguments.definition,arguments.targetObject); }
+				case "ioc" 				: { return getIOCDSL(argumentCollection=arguments);} 
+				case "ocm" 				: { return getOCMDSL(argumentCollection=arguments);}
+				case "webservice" 		: { return getWebserviceDSL(argumentCollection=arguments);}
+				case "javaloader" 		: { return getJavaLoaderDSL(argumentCollection=arguments);}
+				case "entityService" 	: { return getEntityServiceDSL(argumentCollection=arguments);} 
+				case "coldbox" 			: { return getColdboxDSL(argumentCollection=arguments); }
 			}
 		</cfscript>    	
     </cffunction>	
