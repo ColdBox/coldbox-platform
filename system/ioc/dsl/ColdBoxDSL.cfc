@@ -62,10 +62,15 @@ Description :
 		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var oWebservices 	= instance.coldbox.getPlugin("Webservices");
-			var webserviceName  = listLast(arguments.definition.dsl,":");
-
-			// Get Dependency, if not found, exception is thrown.
-			return oWebservices.getWSobj( webserviceName );
+			var thisType 		= arguments.definition.dsl;
+			var thisTypeLen 	= listLen(thisType,":");
+			
+			switch(thisTypeLen){
+				// webservice, take name from property as default.
+				case 1: { return oWebservices.getWSobj( arguments.definition.name ); break; }
+				// webservice:alias
+				case 2: { return oWebservices.getWSobj( getToken(thisType,2,":") ); break; }
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -74,7 +79,7 @@ Description :
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
 		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
-			var className  		= listLast(arguments.definition.dsl,":");
+			var className  	= listLast(arguments.definition.dsl,":");
 
 			// Get Dependency, if not found, exception is thrown
 			return instance.coldbox.getPlugin("JavaLoader").create( className );
@@ -112,8 +117,8 @@ Description :
 			// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
 			if(	thisTypeLen eq 2 
 				and listFindNoCase("setting,fwSetting,plugin,myplugin,datasource,interceptor",listLast(thisType,":"))
-				and len(thisName))
-			{				
+				and len(thisName)){				
+				// Add the additional alias to the DSL
 				thisType = thisType & ":" & thisName;
 				thisTypeLen = 3;
 			}

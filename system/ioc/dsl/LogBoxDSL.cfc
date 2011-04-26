@@ -28,30 +28,21 @@ Description :
 		<cfargument name="definition" 	required="true" hint="The injection dsl definition structure to process. Keys: name, dsl"/>
 		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
-			var thisName			= arguments.definition.name;
 			var thisType 			= arguments.definition.dsl;
 			var thisTypeLen 		= listLen(thisType,":");
 			var thisLocationType 	= "";
 			var thisLocationKey 	= "";
 			
-			// Support shortcut for specifying name in the definition instead of the DSl
-			if(	thisTypeLen eq 2 
-				and listLast(thisType,":") eq "logger"
-				and len(thisName))
-			{				
-				thisType = thisType & ":" & thisName;
-				thisTypeLen = 3;
-			}
-			
 			// DSL stages
 			switch(thisTypeLen){
-				// LogBox
+				// logbox
 				case 1 : { return instance.logBox; }
-				// logbox:root 
+				// logbox:root and logbox:logger 
 				case 2 : {
 					thisLocationKey = getToken(thisType,2,":");
 					switch( thisLocationKey ){
-						case "root" : { return instance.logbox.getRootLogger(); }
+						case "root" 	: { return instance.logbox.getRootLogger(); }
+						case "logger" 	: { return instance.logbox.getLogger( arguments.definition.name ); }
 					}
 					break;
 				}

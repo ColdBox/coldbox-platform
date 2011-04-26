@@ -25,6 +25,14 @@
 		r = builder.process(def);
 		assertEquals( mockRoot, r);
 		
+		// logbox:logger with name
+		def = {dsl="logbox:logger",name="myHello"};
+		r = builder.process(def);
+		assertEquals( mockLogger, r);
+		//debug(mockLogBox.$callLog().getLogger);
+		callArgs = mockLogBox.$callLog().getLogger[2];
+		assertEquals( "myHello", callArgs.1 );
+		
 		// logbox:logger:custom
 		def = {dsl="logbox:logger:hello"};
 		r = builder.process(def);
@@ -33,7 +41,7 @@
 		// logbox:logger:{this}
 		def = {dsl="logbox:logger:{this}"};
 		r = builder.process(def, this);
-		callArgs = mockLogBox.$callLog().getLogger[3];
+		callArgs = mockLogBox.$callLog().getLogger[4];
 		assertEquals( this, callArgs.1 );
 		//debug( mockLogBox.$callLog().getLogger[3] );
 	}
