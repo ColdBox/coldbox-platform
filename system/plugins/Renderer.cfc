@@ -70,6 +70,7 @@ Description :
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  default="" 		hint="The last access timeout for the view contents">
 		<cfargument name="cacheSuffix" 				required="false" type="any"  default=""     	hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<cfargument name="module" 					required="false" type="any"  default=""      	hint="Explicitly render a view from this module by passing the module name"/>
+		<cfargument name="args"   					required="false" type="any"  default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cbox_RenderedView 		= "";
@@ -185,6 +186,7 @@ Description :
 		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout">
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
 		<cfargument name="cacheSuffix" 				required="false" type="string"  default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
+		<cfargument name="args"   					required="false" type="any"  	default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView = "">
 		<!--- Cache Entries --->
@@ -230,7 +232,7 @@ Description :
 		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering"/>
 		<cfargument name="view"   type="any" 	required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
 		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
-		
+		<cfargument name="args"   type="any" 	required="false" default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<cfset var cbox_currentLayout 		= implicitViewChecks()>
 		<cfset var cbox_RederedLayout 		= "">
 		<cfset var cbox_timerhash 			= "">
