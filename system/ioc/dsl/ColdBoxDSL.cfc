@@ -34,12 +34,12 @@ Description :
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
 			
 			switch( DSLNamespace ){
-				case "ioc" 				: { return getIOCDSL(arguments.definition,arguments.targetObject);} 
-				case "ocm" 				: { return getOCMDSL(arguments.definition,arguments.targetObject);}
-				case "webservice" 		: { return getWebserviceDSL(arguments.definition,arguments.targetObject);}
-				case "javaloader" 		: { return getJavaLoaderDSL(arguments.definition,arguments.targetObject);}
-				case "entityService" 	: { return getEntityServiceDSL(arguments.definition,arguments.targetObject);} 
-				case "coldbox" 			: { return getColdboxDSL(arguments.definition,arguments.targetObject); }
+				case "ioc" 				: { return getIOCDSL(argumentCollection=arguments);} 
+				case "ocm" 				: { return getOCMDSL(argumentCollection=arguments);}
+				case "webservice" 		: { return getWebserviceDSL(argumentCollection=arguments);}
+				case "javaloader" 		: { return getJavaLoaderDSL(argumentCollection=arguments);}
+				case "entityService" 	: { return getEntityServiceDSL(argumentCollection=arguments);} 
+				case "coldbox" 			: { return getColdboxDSL(argumentCollection=arguments); }
 			}
 		</cfscript>    	
     </cffunction>	
@@ -103,11 +103,21 @@ Description :
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
 		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
+			var thisName 			= arguments.definition.name;
 			var thisType 			= arguments.definition.dsl;
 			var thisTypeLen 		= listLen(thisType,":");
 			var thisLocationType 	= "";
 			var thisLocationKey 	= "";
 			
+			// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
+			if(	thisTypeLen eq 2 
+				and listFindNoCase("setting,fwSetting,plugin,myplugin,datasource,interceptor",listLast(thisType,":"))
+				and len(thisName))
+			{				
+				thisType = thisType & ":" & thisName;
+				thisTypeLen = 3;
+			}
+						
 			// DSL stages
 			switch(thisTypeLen){
 				// coldbox only DSL
@@ -132,7 +142,8 @@ Description :
 						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }
 						case "cacheManager"			: { return instance.coldbox.getColdboxOCM(); }
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
-					}//end of services
+					} // end of services
+					
 					break;
 				}
 				//coldobx:{key}:{target} Usually for named factories
