@@ -597,10 +597,11 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
 		<cfargument name="data" 		required="true"  type="any"    hint="The data you would like to marshall and return by the framework">
-		<cfargument name="contentType"  required="true"  type="string" default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
-		<cfargument name="encoding" 	required="false" type="string" default="utf-8" hint="The default character encoding to use"/>
+		<cfargument name="contentType"  required="true"  type="string"  default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
+		<cfargument name="encoding" 	required="false" type="string"  default="utf-8" hint="The default character encoding to use"/>
 		<cfargument name="statusCode"   required="false" type="numeric" default="200" hint="The HTTP status code to send to the browser. Defaults to 200" />
 		<cfargument name="statusText"   required="false" type="string"  default="" hint="Explains the HTTP status code sent to the browser." />
+		<cfargument name="location" 	required="false" type="string"  default="" hint="Optional argument used to set the HTTP Location header"/>
 		<!--- ************************************************************* --->
 		<cfargument name="jsonCase" 		type="string" required="false" default="lower" hint="JSON Only: Whether to use lower case, upper case or no (none) case translations in the JSON transformation. Lower is default"/>
 		<cfargument name="jsonQueryFormat" 	type="string" required="false" default="query" hint="JSON Only: query or array" />
@@ -659,6 +660,9 @@ Description :
 			if( len(trim(arguments.contentType)) ){
 				rd.contentType = arguments.contentType;
 			}
+			
+			// HTTP Location?
+			if( len(arguments.location) ){ setHTTPHeader(name="location",value="arguments.location"); }
 
 			// Save Rendering data privately.
 			setValue(name='cbox_renderdata',value=rd,private=true);
