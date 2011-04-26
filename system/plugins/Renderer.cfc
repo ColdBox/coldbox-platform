@@ -31,6 +31,7 @@ Description :
 			instance.layoutsExternalLocation 	= controller.getSetting('LayoutsExternalLocation');
 			instance.modulesConfig				= controller.getSetting("modules");
 			instance.debuggerService			= controller.getDebuggerService();
+			instance.explicitView 				= "";
 			
 			// Template Cache
 			instance.templateCache 				= controller.getColdboxOCM("template");
@@ -60,6 +61,15 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- setExplicitView --->
+    <cffunction name="setExplicitView" output="false" access="public" returntype="any" hint="Set the explicit view to render, usually called to create new rendering contexts">
+    	<cfargument name="view" required="true" hint="The view to explicitly set">
+		<cfscript>
+			instance.explicitView = arguments.view;
+			return this;
+		</cfscript>
+    </cffunction>
 
 	<!--- Render the View --->
 	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
@@ -94,6 +104,8 @@ Description :
 				cbox_explicitModule = true;
 			}
 			
+			// Rendering an explicit Renderer view/layout combo?
+			if( len(instance.explicitView) ){ arguments.view = instance.explicitView; }
 			// Rendering an explicit view or do we need to get the view from the context?
 			if( NOT len(arguments.view) ){ arguments.view = event.getCurrentView();	}
 			
@@ -116,8 +128,7 @@ Description :
 				arguments.cache						= true;
 				arguments.cacheTimeout				= cbox_cacheEntry.timeout;
 				arguments.cacheLastAccessTimeout	= cbox_cacheEntry.lastAccessTimeout;
-				arguments.cacheSuffix 				= cbox_cacheEntry.cacheSuffix;
-				
+				arguments.cacheSuffix 				= cbox_cacheEntry.cacheSuffix;				
 			}
 			
 			// Prepare caching key
@@ -230,15 +241,21 @@ Description :
 	<!--- Render the layout --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
 		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering"/>
-		<cfargument name="view"   type="any" 	required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
+		<cfargument name="view"   type="any" 	required="false" default="" hint="The view to render within this layout explicitly"/>
 		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
 		<cfargument name="args"   type="any" 	required="false" default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
+		
 		<cfset var cbox_currentLayout 		= implicitViewChecks()>
 		<cfset var cbox_RederedLayout 		= "">
 		<cfset var cbox_timerhash 			= "">
 		<cfset var cbox_locateUDF 			= variables.locateLayout>
 		<cfset var cbox_explicitModule  	= false>
 		<cfset var cbox_layoutLocationKey 	= "">
+		
+		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
+		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
+			<cfreturn getPlugin("Renderer").setExplicitView(arguments.view).renderLayout(argumentCollection=arguments)>
+		</cfif>
 		
 		<!--- Module Default Value --->
 		<cfif NOT len(arguments.module)>
