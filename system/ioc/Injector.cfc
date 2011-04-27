@@ -21,7 +21,7 @@ Description :
 	injector = new coldbox.system.ioc.Injector("config.MyBinder");
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="A WireBox Injector: Builds the graphs of objects that make up your application." output="false" serializable="false">
+<cfcomponent hint="A WireBox Injector: Builds the graphs of objects that make up your application." output="false" serializable="false" implements="coldbox.system.ioc.IInjector">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 		
@@ -176,6 +176,11 @@ Description :
 			
 			// Notify Listeners
 			instance.eventManager.processState("beforeInjectorShutdown",iData);
+			
+			// Is parent linked
+			if( isObject(instance.parent) ){
+				instance.parent.shutdown();
+			}
 			
 			// standalone cachebox? Yes, then shut it down baby!
 			if( NOT isColdBoxLinked() ){
