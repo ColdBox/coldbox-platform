@@ -1,6 +1,17 @@
-<cfcomponent extends="coldbox.system.core.mail.abstractprotocol">
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+Author 	 :	Luis Majano & Robert Rawlings
+Description :
+	A mail protocol that sends via http://postmarkapp.com/
 
-	<cffunction name="init" access="public" returntype="postmarkProtocol" hint="Constructor" output="false">
+----------------------------------------------------------------------->
+<cfcomponent extends="coldbox.system.core.mail.abstractprotocol" output="false" hint="A mail protocol that sends via http://postmarkapp.com/">
+
+	<!--- init --->
+	<cffunction name="init" access="public" returntype="PostmarkProtocol" hint="Constructor" output="false">
 		<cfargument name="properties" required="false" default="#structnew()#" hint="A map of configuration properties for the protocol" />
 
 		<cfscript>
@@ -9,7 +20,7 @@
 			// Property Checks
 			if(NOT propertyExists("APIKey")){
 				// No API key was found, so throw an exception.
-				throw(message="ApiKey is Required",type="EmailProtocol.PropertyNotFound");
+				throw(message="ApiKey is Required",type="PostmarkProtocol.PropertyNotFound");
 			}			
 
 			return this;
@@ -17,7 +28,7 @@
 		
 	</cffunction>
 	
-	<!--- Public Protocol Methods. --->
+<!------------------------------------------- PUBLIC ------------------------------------------>
 	
 	<cffunction name="send" access="public" returntype="struct" output="true" hint="Send an email payload. Returns a struct: [error:boolean,errorArray:array,messageid:string]">
 		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload to send." />
@@ -136,7 +147,7 @@
 		<cfreturn local.rtnStruct />
 	</cffunction>
 	
-	<!--- Private methods for this protocol. --->
+<!------------------------------------------- PRIVATE ------------------------------------------>
 	
 	<cffunction name="encodeHeader" access="private" returntype="struct" hint="I encode named headers so that PostMark likes it">
 		<cfargument name="MailParam" required="true" type="struct" hint="I'm the file path for the attachment." />

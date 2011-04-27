@@ -15,7 +15,7 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testSend" access="public" output="false" returntype="void" mxunit:expectedException="AbstractProtocol.Overwrite">
+	<cffunction name="testSend" access="public" output="false" returntype="void" mxunit:expectedException="AbstractProtocol.AbstractMethodException">
 		<cfscript>
 			// create a mock payload to pass in.
 			payload = getMockBox().createMock(className="coldbox.system.core.mail.Mail").init();

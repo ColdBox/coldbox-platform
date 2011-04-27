@@ -67,8 +67,18 @@ Description :
 
 	<!--- Get Mail Settings Object --->
 	<cffunction name="getMailSettings" access="public" output="false" returnType="any" hint="I will return to you a mailsettingsBean modeled after your mail settings in your config file." colddoc:generic="coldbox.system.core.mail.MailSettingsBean">
-		<cfreturn CreateObject("component","coldbox.system.core.mail.MailSettingsBean").init(controller.getSetting("MailServer"),controller.getSetting("MailUsername"),controller.getSetting("MailPassword"), controller.getSetting("MailPort"), controller.getSetting("MailProtocol"))>
+		<cfreturn CreateObject("component","coldbox.system.core.mail.MailSettingsBean").init(argumentCollection=controller.getSetting("mailSettings"))>
 	</cffunction>
+	
+	<!--- getMailService --->
+    <cffunction name="getMailService" output="false" access="public" returntype="any" hint="Get a reference to our Mail Service plugin">
+    	<cfreturn controller.getPlugin("MailService")>
+    </cffunction>
+
+	<!--- getNewMail --->
+    <cffunction name="getNewMail" output="false" access="public" returntype="any" hint="Get a new mail payload object ready for sending email through our mail service.  This function's arguments match the cfmail tag, so send whatever you like">
+    	<cfreturn controller.getPlugin("MailService").newMail(argumentCollection=arguments)>
+    </cffunction>
 
 	<!--- Get a Resource --->
 	<cffunction name="getResource" access="public" output="false" returnType="any" hint="Facade to i18n.getResource. Returns a string.">
@@ -95,8 +105,6 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-<!------------------------------------------- FRAMEWORK FACADES ------------------------------------------->
-
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<cfargument name="name" 				required="false" type="any" default="" hint="The name of the model to retrieve">
@@ -283,7 +291,7 @@ Description :
 		<cfset controller.getDebuggerService().setDebugMode(arguments.mode)>
 	</cffunction>
 	
-	<!--- Controller Accessor/Mutators --->
+	<!--- getController --->
 	<cffunction name="getController" access="public" output="false" returntype="any" hint="Get controller: coldbox.system.web.Controller">
 		<cfreturn variables.controller/>
 	</cffunction>

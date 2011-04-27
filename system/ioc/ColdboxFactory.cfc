@@ -161,13 +161,7 @@ Modification History:
 	
 	<!--- Get a mail settings bean --->
 	<cffunction name="getMailSettings" access="public" output="false" returnType="coldbox.system.core.mail.MailSettingsBean" hint="I will return to you a mailsettingsBean modeled after your mail settings in your config file.">
-		<cfset var coldbox = getColdbox()>
-		<cfreturn CreateObject("component",mailsettingsBeanPath).init(coldbox.getSetting("MailServer"),
-																   		coldbox.getSetting("MailUsername"),
-																   		coldbox.getSetting("MailPassword"), 
-																  		coldbox.getSetting("MailPort"),
-																		coldbox.getSetting("MailProtocol"))>
-
+		<cfreturn createObject("component",mailsettingsBeanPath).init(argumentCollection=getColdbox().getSetting("mailSettings"))>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

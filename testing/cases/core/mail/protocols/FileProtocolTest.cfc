@@ -3,12 +3,10 @@
 	<cffunction name="setup" access="public" output="false" returntype="void">
 		<cfscript>
 			// Set any properties this protocol might need.
-			props = {};
-			
-			debug(props);
+			props = { filePath="/coldbox/testing/cases/core/mail/protocols/tmp" };
 			
 			// Create a mock instance of the protocol.
-			protocol =  getMockBox().createMock(className="coldbox.system.core.mail.protocols.CFMailProtocol").init(props);
+			protocol =  getMockBox().createMock(className="coldbox.system.core.mail.protocols.FileProtocol").init(props);
 		</cfscript>
 	</cffunction>
 	
@@ -58,7 +56,21 @@
 			payload.addMailParam(name="Disposition-Notification-To",value="info@coldboxframework.com");
 			rtn = protocol.send(payload);
 			debug(rtn);
+			
+			// Check if files exist
+			
 		</cfscript>
+		
+		<cfdirectory action="list" directory="#expandPath('/coldbox/testing/cases/core/mail/protocols/tmp')#" filter="*.html" listinfo="name" name="qTesting" >
+		
+		<cfset debug(qTesting)>
+		<cfset AssertTrue( qTesting.recordcount )>
+		
+		<cfloop query="qTesting">
+			<cfset fileDelete( expandPath('/coldbox/testing/cases/core/mail/protocols/tmp/#qTesting.name#') )>
+		</cfloop>
+		
+		
 	</cffunction>
 
 </cfcomponent>

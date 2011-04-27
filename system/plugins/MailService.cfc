@@ -18,6 +18,7 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
+	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="MailService" hint="Constructor">
 		<cfscript>
 			var args = {};
@@ -46,17 +47,15 @@ Description :
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- send --->
 	<cffunction name="send" access="public" returntype="struct" output="false" hint="Send an email payload. Returns a struct: [error:boolean,errorArray:array]">
-		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload to send." />
+		<cfargument name="mail" required="true" type="any" hint="The mail payload to send." colddoc:generic="coldbox.system.core.mail.Mail"/>
 		<cfscript>
 			// Proxy in the send call and monitor it.
 			var results = super.send(argumentCollection=arguments);
 			
-			if( results.error ){
-				// Log it
-				if( log.canError() ){
-					log.error("Error sending mail: #arrayToList(results.errorArray)#",arguments.mail.getMemento());
-				}
+			if( results.error AND log.canError() ){
+				log.error("Error sending mail: #arrayToList(results.errorArray)#",arguments.mail.getMemento());
 			}
 			
 			return results;

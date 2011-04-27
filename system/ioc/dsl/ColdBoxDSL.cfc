@@ -133,12 +133,7 @@ Description :
 					switch( thisLocationKey ){
 						case "fwconfigbean" 		: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getColdboxSettings() ); }
 						case "configbean" 			: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getConfigSettings() ); }
-						case "mailsettingsbean"		: { 
-							return createObject("component","coldbox.system.core.mail.MailSettingsBean").init(instance.coldbox.getSetting("MailServer"),
-									instance.coldbox.getSetting("MailUsername"),
-									instance.coldbox.getSetting("MailPassword"), 
-									instance.coldbox.getSetting("MailPort"));
-						}
+						case "mailsettingsbean"		: { return createObject("component","coldbox.system.core.mail.MailSettingsBean").init(argumentCollection=instance.coldbox.getSetting("mailSettings"));	}
 						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
 						case "requestService"		: { return instance.coldbox.getrequestService(); }
 						case "debuggerService"		: { return instance.coldbox.getDebuggerService();}

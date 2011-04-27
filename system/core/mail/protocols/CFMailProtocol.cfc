@@ -1,30 +1,46 @@
-<cfcomponent extends="coldbox.system.core.mail.abstractprotocol">
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+Author 	 :	Luis Majano & Robert Rawlings
+Description :
+	A mail protocol that sends via email
 
-	<cffunction name="init" access="public" returntype="cfmailProtocol" hint="Constructor" output="false">
+----------------------------------------------------------------------->
+<cfcomponent extends="coldbox.system.core.mail.abstractprotocol" output="false" hint="A mail protocol that sends via email">
+
+	<!--- init --->
+	<cffunction name="init" access="public" returntype="CFMailProtocol" hint="Constructor" output="false">
 		<cfargument name="properties" required="false" default="#structnew()#" hint="A map of configuration properties for the protocol" />
-
 		<cfscript>
 			super.init(argumentCollection=arguments);
 
 			return this;
 		</cfscript>
-		
 	</cffunction>
 	
-	<!--- Public Protocol Methods. --->
+<!------------------------------------------- PUBLIC ------------------------------------------>
 	
 	<cffunction name="send" access="public" returntype="struct" hint="I send a payload via the cfmail protocol.">
-		<cfargument name="Payload" required="true" type="coldbox.system.core.mail.mail" hint="I'm the payload to delivery" />
-
+		<cfargument name="payload" required="true" type="any" hint="I'm the payload to delivery" colddoc:generic="coldbox.system.core.mail.mail"/>
 		<cfscript>
 			// The return structure
-			var rtnStruct 	 = structnew();
-			rtnStruct.error = true;
-			rtnStruct.errorArray = ArrayNew(1);		
+			var rtnStruct 	 		= structnew();
+			rtnStruct.error  		= true;
+			rtnStruct.errorArray 	= ArrayNew(1);		
 			
 			//Just mail the darned thing!!
 			try{
-				mailIt(payload);
+				// Determine Mail Type?
+				if( arrayLen(arguments.payload.getMailParts()) ){
+					mailMultiPart(arguments.payload);
+				}
+				else{
+					mailNormal(arguments.payload);
+				}
+				
+				// send success
 				rtnStruct.error = false;
 			}
 			catch(Any e){
@@ -36,23 +52,11 @@
 		</cfscript>
 	</cffunction>
 	
-	<!--- Private methods for this protocol. --->
+<!------------------------------------------- PRIVATE ------------------------------------------>
 	
-	<cffunction name="mailIt" output="false" access="private" returntype="void" hint="Mail a payload">
-		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload" />
-		<cfscript>
-			// Determine Mail Type?
-			if( arrayLen(arguments.mail.getMailParts()) ){
-				mailMultiPart(arguments.mail);
-			}
-			else{
-				mailNormal(arguments.mail);
-			}		
-		</cfscript>
-	</cffunction>
-
+	<!--- mailNormal --->
 	<cffunction name="mailNormal" output="false" access="private" returntype="void" hint="Mail a payload">
-		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload" />
+		<cfargument name="mail" required="true" type="any" hint="The mail payload" colddoc:generic="coldbox.system.core.mail.Mail"/>
 		<cfset var payload = arguments.mail>
 		<cfset var mailParam = 0>
 		
@@ -72,7 +76,7 @@
 	</cffunction>
 
 	<cffunction name="mailMultiPart" output="false" access="private" returntype="any" hint="Mail a payload using multi part objects">
-		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload" />
+		<cfargument name="mail" required="true" type="any" hint="The mail payload" colddoc:generic="coldbox.system.core.mail.Mail"/>
 		<cfset var payload = arguments.mail>
 		<cfset var mailParam = 0>
 		<cfset var mailPart = 0>

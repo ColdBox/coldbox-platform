@@ -1,5 +1,19 @@
-<cfcomponent>
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+Author 	 :	Luis Majano & Robert Rawlings
+Description :
+	An abstract class that give identity to mail protocols when building custom or
+	extending mail protocols the Mail Service uses.
 
+----------------------------------------------------------------------->
+<cfcomponent output="false" hint="An abstract class that give identity to mail protocols when building custom or extending mail protocols the Mail Service uses.">
+
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------>
+
+	<!--- init --->
 	<cffunction name="init" access="public" returntype="AbstractProtocol" hint="Constructor called by a Concrete Protocol" output="false" >
 		<cfargument name="properties" required="false" default="#structnew()#" hint="A map of configuration properties for the protocol" />
 	
@@ -11,17 +25,16 @@
 			return this;
 		</cfscript>
 	</cffunction>
-	
-	<cffunction name="send" access="public" returntype="struct" hint="I send a payload via the cfmail protocol.">
-		<cfargument name="Payload" required="true" type="coldbox.system.core.mail.mail" hint="I'm the payload to delivery" />
 
-		<cfscript>
-			// Throw an exception as the concrete protocol should have overwritten this method.
-			throw(message="Your given mail protocol does not implement the 'send' method.", type="AbstractProtocol.Overwrite");
-		</cfscript>
+<!------------------------------------------- IMPLEMENTABLE METHODS ------------------------------------------>
+	
+	<!--- send --->
+	<cffunction name="send" access="public" returntype="struct" hint="I send a payload via the this protocol.">
+		<cfargument name="payload" required="true" type="any" hint="I'm the payload to delivery" colddoc:generic="coldbox.system.core.mail.Mail"/>
+		<cfthrow message="" type="AbstractProtocol.AbstractMethodException">
 	</cffunction>
 
-	<!------------------------------------------- PROPERTY METHODS ------------------------------------------->
+<!------------------------------------------- PROPERTY METHODS ------------------------------------------>
 	
 	<!--- getter for the properties structure --->
 	<cffunction name="getProperties" access="public" output="false" returntype="any" hint="Get properties structure map" colddoc:generic="struct">

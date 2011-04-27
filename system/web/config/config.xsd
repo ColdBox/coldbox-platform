@@ -114,30 +114,6 @@
 		<xs:annotation>
 			<xs:documentation>These are global mail settings</xs:documentation>
 		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element maxOccurs="1" minOccurs="0" name="MailServer">
-					<xs:annotation>
-						<xs:documentation>The ip or address of the mail server to declare</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="MailPort" default="25">
-					<xs:annotation>
-						<xs:documentation>The port of the mail server. Default is 25</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="MailUsername">
-					<xs:annotation>
-						<xs:documentation>The username of the mail server, if used.</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="MailPassword" >
-					<xs:annotation>
-						<xs:documentation>The password of the mail server, if used.</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
 	</xs:element>
 	
 	<xs:element name="BugTracerReports">

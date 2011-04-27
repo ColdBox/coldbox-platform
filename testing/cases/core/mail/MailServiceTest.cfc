@@ -48,9 +48,11 @@ Modification History:
 	
 	function testSend(){
 		// mockings
-		mockLogger = getMockBox().createMock(className="coldbox.system.plugins.Logger",clearMethods=true);
+		mockProtocol = getMockBox().createStub().$("send", {error=false,errorArray=[]} );
+		mockLogger = getMockBox().createEmptyMock("coldbox.system.plugins.Logger")
+			.$("error");
+		getMockBox().prepareMock( ms.getMailSettingsBean() ).$("getTransit", mockProtocol);
 		ms.$property("log","variables",mockLogger);
-		mockLogger.$("error");
 		
 		// 1:Mail with No Params
 		mail = ms.newMail().config(from="info@coldboxframework.com",to="lmajano@gmail.com",type="html");
@@ -59,8 +61,8 @@ Modification History:
 		mail.setBody("<h1>Hello @name@, how are you today?</h1>  <p>Today is the <b>@time@</b>.</p> <br/><br/><a href=""http://www.coldbox.org"">ColdBox Rules!</a>");
 		mail.setSubject("Mail NO Params-Hello Luis");
 		rtn = ms.send(mail);
-		
-		debug(rtn);
+		assertTrue( mockProtocol.$once("send") );
+		//debug(rtn);
 		
 		// 2:Mail with params
 		mail = ms.newMail().config(from="info@coldboxframework.com",to="lmajano@gmail.com",subject="Mail With Params - Hello Luis");
@@ -68,14 +70,16 @@ Modification History:
 		mail.addMailParam(name="Disposition-Notification-To",value="info@coldboxframework.com");
 		mail.addMailParam(name="Importance",value="High");
 		rtn = ms.send(mail);
-		debug(rtn);
+		assertTrue( mockProtocol.$times(2,"send") );
+		//debug(rtn);
 		
 		// 3:Mail multi-part no params
 		mail = ms.newMail().config(from="info@coldboxframework.com",to="lmajano@gmail.com",subject="Mail MultiPart No Params - Hello Luis");
 		mail.addMailPart(type="text",body="You are reading this message as plain text, because your mail reader does not handle it.");
 		mail.addMailPart(type="html",body="This is the body of the message.");
 		rtn = ms.send(mail);
-		debug(rtn);
+		assertTrue( mockProtocol.$times(3,"send") );
+		//debug(rtn);
 		
 		// 4:Mail multi-part with params
 		mail = ms.newMail().config(from="info@coldboxframework.com",to="lmajano@gmail.com",subject="Mail MultiPart With Params - Hello Luis");
@@ -83,34 +87,32 @@ Modification History:
 		mail.addMailPart(type="html",body="This is the body of the message.");
 		mail.addMailParam(name="Disposition-Notification-To",value="info@coldboxframework.com");
 		rtn = ms.send(mail);
-		debug(rtn);
+		assertTrue( mockProtocol.$times(4,"send") );
+		//debug(rtn);
 	}
 	
 	function testMailWithSettings(){
-		mockSettings = getMockBox().createMock("coldbox.system.core.mail.MailSettingsBean").init("0.0.0.0","test","test",25);
-		ms = ms.init(mockSettings);
-		mail = ms.newMail(from="info@coldboxframework.com",to="lmajano@gmail.com",type="html",body="Test",subject="Test");
-		
 		// Mocks
+		mockProtocol = getMockBox().createStub().$("send", {error=false,errorArray=[]} );
+		mockSettings = getMockBox().createMock("coldbox.system.core.mail.MailSettingsBean")
+			.init("0.0.0.0","test","test",25)
+			.$("getTransit", mockProtocol);
+		ms = ms.init(mockSettings);
 		ms.$("parseTokens").$("mailIt");
-		ms.send( mail );
-		//debug( mail.getMemento() );
 		
-		assertEquals( "0.0.0.0", mail.getServer() );
-		assertEquals( "test", mail.getUsername() );
-		assertEquals( "test", mail.getPassword() );
-		assertEquals( "25", mail.getPort() );
+		mail = ms.newMail(from="info@coldboxframework.com",to="lmajano@gmail.com",type="html",body="TestMailWithSettings",subject="TestMailWithSettings");
+		ms.send( mail );
+		assertTrue( mockProtocol.$once("send") );
 		
 		// Test with No settings
 		ms = ms.init();
-		mail = ms.newMail(from="info@coldboxframework.com",to="lmajano@gmail.com",type="html",body="Test",subject="Test");
+		mockProtocol = getMockBox().createStub().$("send", {error=false,errorArray=[]} );
+		getMockBox().prepareMock( ms.getMailSettingsBean() ).$("getTransit", mockProtocol);
+		mail = ms.newMail(from="info@coldboxframework.com",to="lmajano@gmail.com",type="html",body="TestMailWithSettings",subject="TestMailWithSettings");
 		ms.send( mail );
+		assertTrue( mockProtocol.$once("send") );
 		
 		//debug( mail.getMemento() );
-		assertFalse( mail.propertyExists("server") );
-		assertFalse( mail.propertyExists("username") );
-		assertFalse( mail.propertyExists("password") );
-		assertFalse( mail.propertyExists("port") );		
 	}
 </cfscript>
 </cfcomponent>

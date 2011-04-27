@@ -5,19 +5,18 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author 	    :	Luis Majano
-Date        :	May 8, 2009
 Description :
-	The ColdBox Mail Service used to send emails in an oo fashion
+	The ColdBox Mail Service used to send emails in an oo and ColdBoxy fashion
 
 
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="The ColdBox Mail Service used to send emails in an oo fashion">
+<cfcomponent output="false" hint="The ColdBox Mail Service used to send emails in an oo and ColdBoxy fashion">
 
 	<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="MailService" hint="Constructor">
-		<cfargument name="mailSettings" type="coldbox.system.core.mail.MailSettingsBean" required="false" hint="A configured mail settings bean with default mail configurations, else ignored and uses payload"/>
-		<cfargument name="tokenMarker"  type="string" required="false" default="@" hint="The default token Marker Symbol"/>
+		<cfargument name="mailSettings" type="any" required="false" hint="A configured mail settings bean with default mail configurations, else ignored and uses payload" colddoc:generic="coldbox.system.core.mail.MailSettingsBean"/>
+		<cfargument name="tokenMarker"  type="any" required="false" default="@" hint="The default token Marker Symbol"/>
 		<cfscript>
 			// Mail Token Symbol
 			setTokenMarker( arguments.tokenMarker );
@@ -37,21 +36,21 @@ Description :
 	<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Get/Set Token Marker --->
-	<cffunction name="getTokenMarker" access="public" returntype="string" output="false" hint="Get the token marker">
+	<cffunction name="getTokenMarker" access="public" returntype="string" output="false" hint="Get the token marker to use for body token replacements">
     	<cfreturn tokenMarker>
     </cffunction>
-    <cffunction name="setTokenMarker" access="public" returntype="void" output="false" hint="Set the token marker">
-    	<cfargument name="TokenMarker" type="string" required="true">
-    	<cfset variables.tokenMarker = arguments.TokenMarker>
+    <cffunction name="setTokenMarker" access="public" returntype="void" output="false" hint="Set the token marker to use for body token replacements">
+    	<cfargument name="tokenMarker" type="any" required="true">
+    	<cfset variables.tokenMarker = arguments.tokenMarker>
     </cffunction>
 	
 	<!--- Mail Settings --->
-	<cffunction name="getMailSettingsBean" output="false" access="public" returntype="coldbox.system.core.mail.MailSettingsBean" hint="Get the mail settings configuration object">
+	<cffunction name="getMailSettingsBean" output="false" access="public" returntype="any" hint="Get the mail settings configuration object" colddoc:generic="coldbox.system.core.mail.MailSettingsBean">
 		<cfreturn variables.mailSettings>    	
     </cffunction>
 
 	<!--- newMail --->
-	<cffunction name="newMail" access="public" returntype="coldbox.system.core.mail.Mail" output="false" hint="Get a new Mail payload object, just use config() on it to prepare it or pass in all the arguments via this method">
+	<cffunction name="newMail" access="public" returntype="any" output="false" hint="Get a new Mail payload object, just use config() on it to prepare it or pass in all the arguments via this method" colddoc:generic="coldbox.system.core.mail.Mail">
 		<cfscript>
 			var mail 		 = createObject("component","coldbox.system.core.mail.Mail").init(argumentCollection=arguments);
 			var mailSettings = getMailSettingsBean();
@@ -77,7 +76,7 @@ Description :
 	
 	<!--- send --->
 	<cffunction name="send" access="public" returntype="struct" output="false" hint="Send an email payload. Returns a struct: [error:boolean,errorArray:array]">
-		<cfargument name="mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload to send." />
+		<cfargument name="mail" required="true" type="any" hint="The mail payload to send." colddoc:generic="coldbox.system.core.mail.Mail"/>
 		<cfscript>
 			var rtnStruct 	 = structnew();
 			var payload 	 = arguments.mail;
@@ -92,13 +91,13 @@ Description :
 				return rtnStruct;
 			}
 			
-			// Parse Tokens
+			// Parse Body Tokens
 			parseTokens(payload);
 					
 			//Just mail the darned thing!!
 			try{
 				// We mail it using the protocol which is defined in the mail settings.
-				rtnStruct = getMailSettings().getTransit().send(payload);
+				rtnStruct = variables.mailSettings.getTransit().send(payload);
 			}
 			catch(Any e){
 				ArrayAppend(rtnStruct.errorArray,"Error sending mail. #e.message# : #e.detail# : #e.stackTrace#");
@@ -110,12 +109,13 @@ Description :
 	
 	<!------------------------------------------- PRIVATE ------------------------------------------->
 	
+	<!--- Parse body tokens --->
 	<cffunction name="parseTokens" access="private" returntype="void" output="false" hint="Parse the tokens and do body replacements.">
-		<cfargument name="Mail" required="true" type="coldbox.system.core.mail.Mail" hint="The mail payload" />
+		<cfargument name="mail" required="true" type="any" hint="The mail payload" colddoc:generic="coldbox.system.core.mail.Mail"/>
 		<cfscript>
-			var tokens 		= arguments.Mail.getBodyTokens();
-			var body 		= arguments.Mail.getBody();
-			var mailParts	= arguments.Mail.getMailParts();
+			var tokens 		= arguments.mail.getBodyTokens();
+			var body 		= arguments.mail.getBody();
+			var mailParts	= arguments.mail.getMailParts();
       		var key 		= 0;
 			var tokenMarker = getTokenMarker();
 			var mailPart 	= 1;
@@ -137,7 +137,7 @@ Description :
 				body = replaceNoCase(body,"#tokenMarker##key##tokenMarker#", tokens[key],"all");
 			}
 			// replace back the body
-			arguments.Mail.setBody(body);
+			arguments.mail.setBody(body);
 		</cfscript>
 	</cffunction>
 
