@@ -45,6 +45,7 @@ Modification History:
 		
 		assertEquals( mail.getBody(), "Hello #tokens.name#, how are you today? Today is the #tokens.time#");
 	}
+	
 	function testSend(){
 		// mockings
 		mockLogger = getMockBox().createMock(className="coldbox.system.plugins.Logger",clearMethods=true);
@@ -58,6 +59,7 @@ Modification History:
 		mail.setBody("<h1>Hello @name@, how are you today?</h1>  <p>Today is the <b>@time@</b>.</p> <br/><br/><a href=""http://www.coldbox.org"">ColdBox Rules!</a>");
 		mail.setSubject("Mail NO Params-Hello Luis");
 		rtn = ms.send(mail);
+		
 		debug(rtn);
 		
 		// 2:Mail with params

@@ -165,7 +165,8 @@ Modification History:
 		<cfreturn CreateObject("component",mailsettingsBeanPath).init(coldbox.getSetting("MailServer"),
 																   		coldbox.getSetting("MailUsername"),
 																   		coldbox.getSetting("MailPassword"), 
-																  		coldbox.getSetting("MailPort"))>
+																  		coldbox.getSetting("MailPort"),
+																		coldbox.getSetting("MailProtocol"))>
 
 	</cffunction>
 	
