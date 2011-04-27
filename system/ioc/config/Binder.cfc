@@ -498,6 +498,16 @@ Description :
 		</cfscript>
     </cffunction>
 	
+	<!--- providerMethod --->
+    <cffunction name="providerMethod" output="false" access="public" returntype="any" hint="Add a new provider method mapping">
+    	<cfargument name="method" 	required="true" hint="The provided method to override or inject as a provider"/>
+		<cfargument name="mapping" 	required="true" hint="The mapping to provide via the selected method"/>
+		<cfscript>
+			currentMapping.addProviderMethod(argumentCollection=arguments);
+			return this;
+		</cfscript>
+    </cffunction>
+	
 	<!--- into --->
     <cffunction name="into" output="false" access="public" returntype="any" hint="Map an object into a specific persistence scope">
     	<cfargument name="scope" required="true" hint="The scope to map to, use a valid WireBox Scope by using binder.SCOPES.* or a custom scope" >
