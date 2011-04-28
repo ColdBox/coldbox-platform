@@ -55,6 +55,66 @@
 			
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testSetHTML" access="public" returnType="void">
+		<cfscript>
+			
+			mail.config(subject="Hello",from='lmajano@mail.com',to="lmajano@mail.com",body="Hello");
+			mail.setHTML('What up Dude');
+			
+			//debug( mail.getMailParts() );
+			assertTrue( arrayLen(mail.getMailParts()) );
+			parts = mail.getMailParts();
+			assertEquals( 'text/html', parts[1].type );
+						
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetText" access="public" returnType="void">
+		<cfscript>
+			
+			mail.config(subject="Hello",from='lmajano@mail.com',to="lmajano@mail.com",body="Hello");
+			mail.setText('What up Dude');
+			
+			//debug( mail.getMailParts() );
+			assertTrue( arrayLen(mail.getMailParts()) );
+			parts = mail.getMailParts();
+			assertEquals( 'text/plain', parts[1].type );
+						
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetReceipts" access="public" returnType="void">
+		<cfscript>
+			
+			mail.config(subject="Hello",from='lmajano@mail.com',to="lmajano@mail.com",body="Hello");
+			mail.setSendReceipt('lmajano@coldbox.org').setReadReceipt('lmajano@coldbox.org');
+			
+			//debug( mail.getMailParts() );
+			assertTrue( arrayLen(mail.getMailParams()) );
+			params = mail.getMailParams();
+			assertEquals( 'Return-Receipt-To', params[1].name );
+			assertEquals( 'Read-Receipt-To', params[2].name );
+						
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testAddAttachements" access="public" returnType="void">
+		<cfscript>
+			
+			mail.config(subject="Hello",from='lmajano@mail.com',to="lmajano@mail.com",body="Hello");
+			files = ['file1','file2'];
+			mail.addAttachments(files);
+			
+			debug( mail.getMailParams() );
+			assertTrue( arrayLen(mail.getMailParams()) );
+			params = mail.getMailParams();
+			assertEquals( files[1], params[1].file );
+			assertEquals( files[2], params[2].file );
+			
+							
+		</cfscript>
+	</cffunction>
 
 </cfcomponent>
 

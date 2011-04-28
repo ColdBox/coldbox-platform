@@ -413,6 +413,19 @@
 	
 	function testMapDirectory(){
 		config.mapDirectory("coldbox.testing.testModel");
+		assertTrue( structCount(config.getMappings()) gte 18 );
+		
+		config.reset();
+		
+		config.mapDirectory(packagePath="coldbox.testing.testModel",include="ioc.*");
+		assertTrue( structCount(config.getMappings) gte 10 );
+		
+		config.reset();
+		
+		config.mapDirectory(packagePath="coldbox.testing.testModel",exclude="ioc.*");
+		//debug( config.getMappings() );
+		assertTrue( structCount(config.getMappings()) lte 8 );
+		
 	}
 	
 	function testMapFactoryMethod(){

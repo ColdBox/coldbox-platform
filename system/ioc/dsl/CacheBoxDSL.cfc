@@ -6,10 +6,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	    :	Luis Majano
 Description :
-	The DSL processor for all ColdBox related stuff
+	The DSL processor for all CacheBox related stuff
 	
 ----------------------------------------------------------------------->
-<cfcomponent hint="The DSL processor for all ColdBox related stuff" implements="coldbox.system.ioc.dsl.IDSLBuilder" output="false">
+<cfcomponent hint="The DSL processor for all CacheBox related stuff" implements="coldbox.system.ioc.dsl.IDSLBuilder" output="false">
 
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the DSL for operation and returns itself" colddoc:generic="coldbox.system.ioc.dsl.IDSLBuilder">
@@ -25,7 +25,8 @@ Description :
 	
 	<!--- process --->
     <cffunction name="process" output="false" access="public" returntype="any" hint="Process an incoming DSL definition and produce an object with it.">
-		<cfargument name="definition" required="true" hint="The injection dsl definition structure to process. Keys: name, dsl"/>
+		<cfargument name="definition" 	required="true" hint="The injection dsl definition structure to process. Keys: name, dsl"/>
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisType 			= arguments.definition.dsl;
 			var thisTypeLen 		= listLen(thisType,":");
@@ -44,7 +45,7 @@ Description :
 						return instance.cacheBox.getCache( cacheName );
 					}
 					else if( instance.log.canDebug() ){
-						instance.log.debug("getCacheBoxDSL() cannot find named cache #cacheName# using definition: #arguments.definition.toString()#. Existing cache names are #instance.cacheBox.getCacheNames().toString#");
+						instance.log.debug("getCacheBoxDSL() cannot find named cache #cacheName# using definition: #arguments.definition.toString()#. Existing cache names are #instance.cacheBox.getCacheNames().toString()#");
 					}
 					break;
 				}

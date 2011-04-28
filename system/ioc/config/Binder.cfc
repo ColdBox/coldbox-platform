@@ -30,7 +30,7 @@ Description :
 			logBoxConfig = "coldbox.system.ioc.config.LogBox",
 			// Scope Defaults
 			scopeRegistration = {
-				enabled = false,
+				enabled = true,
 				scope = "application",
 				key = "wireBox"
 			},
@@ -229,7 +229,9 @@ Description :
 	
 	<!--- mapDirectory --->
     <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection">
-    	<cfargument name="packagePath" required="true" hint="The instantiation packagePath to map"/>
+    	<cfargument name="packagePath"  required="true" hint="The instantiation packagePath to map"/>
+		<cfargument name="include" 		required="true" default="" hint="An include regex that if matches will only include CFCs that match this case insensitive regex"/>
+		<cfargument name="exclude" 		required="true" default="" hint="An exclude regex that if matches will exclude CFCs that match this case insensitive regex"/>
 		<cfscript>
 			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
 			var qObjects		= "";
@@ -248,8 +250,17 @@ Description :
 		<cfloop query="qObjects">
 			<!--- Remove .cfc and /\ with . notation--->
 			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase(qObjects.name,".cfc","") ,"(/|\\)",".","all")>
-			<!--- Map the Path --->
-			<cfset mapPath( thisTargetPath )>
+			
+			<!--- Include/Exclude --->
+			<cfif ( len(arguments.include) AND reFindNoCase(arguments.include, thisTargetPath) )
+			      OR ( len(arguments.exclude) AND NOT reFindNoCase(arguments.exclude,thisTargetPath) )
+				  OR ( NOT len(arguments.include) AND NOT len(arguments.exclude) )>
+				
+				<!--- Map the Path --->
+				<cfset mapPath( thisTargetPath )>
+			
+			</cfif>
+			
 		</cfloop>
 		
 		<cfreturn this>
@@ -487,6 +498,16 @@ Description :
 		</cfscript>
     </cffunction>
 	
+	<!--- providerMethod --->
+    <cffunction name="providerMethod" output="false" access="public" returntype="any" hint="Add a new provider method mapping">
+    	<cfargument name="method" 	required="true" hint="The provided method to override or inject as a provider"/>
+		<cfargument name="mapping" 	required="true" hint="The mapping to provide via the selected method"/>
+		<cfscript>
+			currentMapping.addProviderMethod(argumentCollection=arguments);
+			return this;
+		</cfscript>
+    </cffunction>
+	
 	<!--- into --->
     <cffunction name="into" output="false" access="public" returntype="any" hint="Map an object into a specific persistence scope">
     	<cfargument name="scope" required="true" hint="The scope to map to, use a valid WireBox Scope by using binder.SCOPES.* or a custom scope" >
@@ -564,7 +585,7 @@ Description :
 			// Prepare Locations
 			for(x=1; x lte arrayLen(arguments.locations); x++){
 				// Validate it is not registered already
-				if ( NOT structKeyExists(instance.scanLocations, arguments.locations[x]) ){
+				if ( NOT structKeyExists(instance.scanLocations, arguments.locations[x]) AND len(arguments.locations[x]) ){
 					// Process creation path & Absolute Path
 					instance.scanLocations[ arguments.locations[x] ] = expandPath( "/" & replace(arguments.locations[x],".","/","all") & "/" );
 				}

@@ -574,30 +574,14 @@ Loads a coldbox xml configuration file
 			
 			// Overrides?
 			if (NOT arguments.isOverride){
-				configStruct.MailServer = "";
-				configStruct.MailUsername = "";
-				configStruct.MailPassword = "";
-				configStruct.MailPort = 25;
+				configStruct.mailSettings = structnew();
 			}
 			
 			//Check if empty
 			if ( ArrayLen(MailSettingsNodes) gt 0 and ArrayLen(MailSettingsNodes[1].XMLChildren) gt 0){
-				//Checks
-				if ( structKeyExists(MailSettingsNodes[1], "MailServer") )
-					configStruct.MailServer = trim(MailSettingsNodes[1].MailServer.xmlText);
-				
-				//Mail username
-				if ( structKeyExists(MailSettingsNodes[1], "MailUsername") )
-					configStruct.MailUsername = trim(MailSettingsNodes[1].MailUsername.xmlText);
-				
-				//Mail password
-				if ( structKeyExists(MailSettingsNodes[1], "MailPassword") )
-					configStruct.MailPassword = trim(MailSettingsNodes[1].MailPassword.xmlText);
-				
-				//Mail Port
-				if ( structKeyExists(MailSettingsNodes[1], "MailPort") AND isNumeric(MailSettingsNodes[1].MailPort.xmlText) ){
-					configStruct.MailPort = trim(MailSettingsNodes[1].MailPort.xmlText);
-				}				
+				for(x=1; x lte arrayLen( mailSettingsNodes[1].xmlChildren ); x=x+1){
+					configStruct.mailSettings[ reReplaceNoCase(mailSettingsNodes[1].xmlChildren[x].xmlname,"^Mail","") ] = mailSettingsNodes[1].xmlChildren[x].xmlText;		
+				}	
 			}
 		</cfscript>
 	</cffunction>

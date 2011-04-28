@@ -21,7 +21,7 @@ Description :
 	injector = new coldbox.system.ioc.Injector("config.MyBinder");
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="A WireBox Injector: Builds the graphs of objects that make up your application." output="false" serializable="false">
+<cfcomponent hint="A WireBox Injector: Builds the graphs of objects that make up your application." output="false" serializable="false" implements="coldbox.system.ioc.IInjector">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 		
@@ -177,6 +177,11 @@ Description :
 			// Notify Listeners
 			instance.eventManager.processState("beforeInjectorShutdown",iData);
 			
+			// Is parent linked
+			if( isObject(instance.parent) ){
+				instance.parent.shutdown();
+			}
+			
 			// standalone cachebox? Yes, then shut it down baby!
 			if( NOT isColdBoxLinked() ){
 				instance.cacheBox.shutdown();
@@ -208,7 +213,7 @@ Description :
 			
 			// Get by DSL?
 			if( structKeyExists(arguments,"dsl") ){
-				return instance.builder.buildSimpleDSL( arguments.dsl );
+				return instance.builder.buildSimpleDSL( arguments.dsl, arguments.name );
 			}
 			
 			// Check if Mapping Exists?
@@ -292,7 +297,7 @@ Description :
 					oModel = instance.builder.buildFeed( thisMap ); break;
 				}
 				case "dsl" : {
-					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL() ); break;
+					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL(), thisMap.getName() ); break;
 				}
 				case "factory" : {
 					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
@@ -536,7 +541,7 @@ Description :
 				// else check if dsl is used?
 				else if( structKeyExists(arguments.DIData[x], "dsl") ){
 					// Get DSL dependency by sending entire DI structure to retrieve
-					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x] );
+					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x], arguments.targetID, arguments.targetObject );
 				}
 				// else we have to have a reference ID or a nasty bug has ocurred
 				else{

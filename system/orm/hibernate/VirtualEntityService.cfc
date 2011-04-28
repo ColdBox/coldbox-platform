@@ -49,7 +49,8 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	VirtualEntityService function init(required string entityname, 
 										string queryCacheRegion, 
 										boolean useQueryCaching,
-										boolean eventHandling){
+										boolean eventHandling,
+										boolean useTransactions){
 
 		// init parent
 		super.init(argumentCollection=arguments);
@@ -105,12 +106,12 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.getAll(argumentCollection=arguments);
 	}
 
-	numeric function deleteAll(boolean flush=false){
+	numeric function deleteAll(boolean flush=false,boolean transactional=getUseTransactions()){
 		arguments.entityName = this.getEntityName();
 		return super.deleteAll(arguments.entityName,arguments.flush);
 	}
 	
-	boolean function deleteByID(required any id, boolean flush=false){
+	boolean function deleteByID(required any id, boolean flush=false,boolean transactional=getUseTransactions()){
 		arguments.entityName = this.getEntityName();
 		return super.deleteByID(argumentCollection=arguments);
 	}

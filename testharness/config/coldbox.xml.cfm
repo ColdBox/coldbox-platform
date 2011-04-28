@@ -103,7 +103,10 @@
 	</DebuggerSettings>
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings />
+	<MailServerSettings>
+		<MailServer>localhost</MailServer>
+		<MailUsername>test</MailUsername>
+	</MailServerSettings>
 
 	<BugTracerReports enabled="false">
 		<MailFrom>info@coldboxframework.com</MailFrom>

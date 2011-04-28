@@ -202,8 +202,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		
 		str = plugin.table(data=data,includes="firstName");
 		debug(str);
-		assertEquals('<table><thead><tr><th>firstName</th></tr></thead><tbody><tr><td>Joe</td></tr><tr><td>Luis</td></tr></tbody></table>',
-					 str);
+		assertTrue( isXML(str) );
 	}
 	
 	function testTableArrayofStructs(){
@@ -243,6 +242,16 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = plugin.slugify( data.title2 );
 		debug(str);	
 		assertEquals("sept-is-great-for-me-and-you", str);	
+	}
+	
+	function testAutoDiscoveryLink(){
+		str = plugin.autoDiscoveryLink(href="/action/rss",title="MY RSS Feed");
+		//debug(str);
+		assertEquals('<link rel="alternate" type="application/rss+xml" title="MY RSS Feed" href="/action/rss"/>' , str);
+		
+		str = plugin.autoDiscoveryLink(type="atom",href="/action/rss",title="MY RSS Feed");
+		//debug(str);
+		assertEquals('<link rel="alternate" type="application/atom+xml" title="MY RSS Feed" href="/action/rss"/>' , str);
 	}
 	
 </cfscript>

@@ -23,7 +23,7 @@ Modification History:
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="CacheConfig">
 	    <!--- ************************************************************* --->
 	    <cfargument name="ObjectDefaultTimeout" 			type="numeric" required="true">
-	    <cfargument name="ObjectDefaultLastAccessTimeout"  type="numeric" required="true">
+	    <cfargument name="ObjectDefaultLastAccessTimeout"   type="numeric" required="true">
 	    <cfargument name="ReapFrequency" 					type="numeric" required="true">
 	    <cfargument name="MaxObjects" 						type="numeric" required="true">
 	    <cfargument name="FreeMemoryPercentageThreshold" 	type="numeric" required="true">
@@ -32,6 +32,8 @@ Modification History:
 	    <cfargument name="EvictCount"						type="numeric" required="true">
 	    <!--- ************************************************************* --->
 		<cfscript>
+			var key = "";
+			
 			for(key in arguments){
 				instance[key] = arguments[key];
 			}

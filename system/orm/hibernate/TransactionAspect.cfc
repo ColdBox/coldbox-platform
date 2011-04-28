@@ -186,6 +186,8 @@ component extends="coldbox.system.Interceptor"{
 			arguments.target.$aop_remove = variables.$aop_remove;
 			// Mix in the transaction invoker
 			arguments.target.$aop_transaction = variables.$aop_transaction;
+			// Mix in new log object for AOP transactions
+			arguments.target.$aop_log = logbox.getLogger(arguments.target);
 			// Finalize decorations
 			arguments.target.$aop_enabled = true;
 			// Log it if possible
@@ -202,16 +204,20 @@ component extends="coldbox.system.Interceptor"{
 	* @jointpoint The jointpoint to execute
 	* @jpArguments The arguments passed to the jointpoint
 	*/
-	private void function $aop_transaction(jointpoint, jpArguments){
+	private any function $aop_transaction(jointpoint, jpArguments){
 		var tx 			= ORMGetSession().beginTransaction();
-		var udfPointer	= this.$aop_targets[arguments.jointpoint];
+		var log			= this.$aop_log;
+		var refPointers = {};
+		
+		// store the ref pointer to the UDF according to exact name.
+		refPointers[arguments.jointPoint] = this.$aop_targets[arguments.jointpoint];
 		
 		// Are we already in a transaction?
 		if( structKeyExists(request,"cbox_aop_transaction") ){
 			// debug?
 			if( log.canDebug() ){ log.debug("Call to #arguments.jointpoint# already transactioned, just executing it"); }
 			// Just execute and return;
-			return udfPointer(argumentCollection=arguments.jpArguments);
+			return evaluate("refPointers.#arguments.jointPoint#(argumentCollection=arguments.jpArguments)");
 		}
 		
 		// Else, transaction safe call
@@ -220,8 +226,8 @@ component extends="coldbox.system.Interceptor"{
 			if( log.canDebug() ){ log.debug("Call to #arguments.jointpoint# is now transaction and begins execution"); }
 			// mark transaction began
 			request["cbox_aop_transaction"] = true;
-			// Call method
-			results = udfPointer(argumentCollection=arguments.jpArguments);
+			// Call method exactly as it was called to keep consistent.
+			results = evaluate("refPointers.#arguments.jointPoint#(argumentCollection=arguments.jpArguments)");
 			// commit transaction
 			tx.commit();
 		}
@@ -231,9 +237,9 @@ component extends="coldbox.system.Interceptor"{
 			// Log Error
 			log.error("An exception ocurred in the AOPed transaction: #e.message# #e.detail#",e);
 			// rollback
-			if(tx.wasCommitted()){ tx.rollback(); }
+			tx.rollback();
 			//throw it
-			throw(e);
+			rethrow;
 		}		
 		// remove pointer, out of transaction now.
 		structDelete(request,"cbox_aop_transaction");

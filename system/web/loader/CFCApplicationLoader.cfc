@@ -513,30 +513,7 @@ Loads a coldbox xml configuration file
 		<cfargument name="config" 	  type="struct"   required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var mailSettings = arguments.oConfig.getPropertyMixin("mailSettings","variables",structnew());
-			
-			// defaults
-			configStruct.MailServer = "";
-			configStruct.MailUsername = "";
-			configStruct.MailPassword = "";
-			configStruct.MailPort = 25;
-		
-			//Checks
-			if ( structKeyExists(mailSettings, "server") )
-				configStruct.MailServer = trim(mailSettings.server);
-			
-			//Mail username
-			if ( structKeyExists(mailSettings, "username") )
-				configStruct.MailUsername = trim(mailSettings.username);
-			
-			//Mail password
-			if ( structKeyExists(mailSettings, "password") )
-				configStruct.MailPassword = trim(mailSettings.password);
-			
-			//Mail Port
-			if ( structKeyExists(mailSettings, "port") AND isNumeric(mailSettings.port) ){
-				configStruct.MailPort = trim(mailSettings.port);
-			}	
+			configStruct.mailSettings = arguments.oConfig.getPropertyMixin("mailSettings","variables",structnew());
 		</cfscript>
 	</cffunction>
 

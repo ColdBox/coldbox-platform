@@ -52,16 +52,8 @@ Description :
 				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY,COLDBOX_APP_MAPPING)>
 			</cflock>
 		</cfif>
-		<!--- Reload Checks --->
-		<cfset application.cbBootstrap.reloadChecks()>
-		
-		<!--- Process A ColdBox Request Only --->
-		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
-			<cfset application.cbBootstrap.processColdBoxRequest()>
-		</cfif>
-			
-		<!--- WHATEVER YOU WANT BELOW --->
-		<cfreturn true>
+		<!--- On Request Start via ColdBox --->
+		<cfset application.cbBootstrap.onRequestStart(arguments.targetPage)>
 	</cffunction>
 	
 	<!--- on Application End --->
