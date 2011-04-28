@@ -8,7 +8,7 @@ Description :
 	A mail protocol that sends via email
 
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.core.mail.abstractprotocol" output="false" hint="A mail protocol that sends via email">
+<cfcomponent extends="coldbox.system.core.mail.AbstractProtocol" output="false" hint="A mail protocol that sends via email">
 
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="CFMailProtocol" hint="Constructor" output="false">
