@@ -1053,6 +1053,10 @@ Description :
 
 			// We are ready to roll. Import config to setup the routes.
 			try{
+				// Try to remove pathInfoProvider, just in case
+				structdelete(variables,"pathInfoProvider");
+				structdelete(this,"pathInfoProvider");
+				// Include configuration
 				$include(configFilePath);
 			}
 			catch(Any e){
