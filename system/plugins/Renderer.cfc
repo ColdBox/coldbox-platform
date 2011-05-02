@@ -33,10 +33,11 @@ Description :
 			instance.debuggerService			= controller.getDebuggerService();
 			instance.explicitView 				= "";
 			
-			// Template Cache
+			// Template Cache & Caching Maps
 			instance.templateCache 				= controller.getColdboxOCM("template");
 			instance.layoutsRefMap				= controller.getSetting("layoutsRefMap");
 			instance.viewsRefMap				= controller.getSetting("viewsRefMap");
+			instance.renderedHelpers			= {};
 			
 			// Discovery caching is tied to handlers for discovery.
 			instance.isDiscoveryCaching			= controller.getSetting("handlerCaching");
@@ -219,8 +220,6 @@ Description :
 			var buffer 	= createObject("java","java.lang.StringBuffer").init();
 			var x 		= 1;
 			var recLen 	= 0;
-			// only include it once per collection rendering
-			var includeHelper = true; 
 			
 			// Determine the collectionAs key
 			if( NOT len(arguments.collectionAs) ){
@@ -236,10 +235,8 @@ Description :
 					// setup local cvariables
 					variables._counter  = x;
 					variables[ arguments.collectionAs ] = arguments.collection[x];
-					// include helper only on iteration 1
-					if( x NEQ 1){ includeHelper = false; }
 					// render item composite
-					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args,includeHelper) );
+					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
 				}
 				return buffer.toString();
 			}
@@ -252,10 +249,8 @@ Description :
 					// setup local cvariables
 					variables._counter  = arguments.collection.currentRow;
 					variables[ arguments.collectionAs ] = arguments.collection;
-					// include helper only on iteration 1
-					if( x NEQ 1){ includeHelper = false; }
 					// render item composite
-					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args,includeHelper) );
+					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
 				</cfscript>
 			</cfloop>
 			<cfreturn buffer.toString()>		
@@ -266,12 +261,10 @@ Description :
     	<cfargument name="view">
 		<cfargument name="viewpath">
 		<cfargument name="viewHelperPath">
-		<cfargument name="args"/>
-		<cfargument name="includeHelper" default="true">
 		
     	<cfset var cbox_renderedView = "">
-		
-		<cfsavecontent variable="cbox_renderedView"><cfif len(arguments.viewHelperPath) AND arguments.includeHelper><cfoutput><cfinclude template="#arguments.viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#arguments.viewPath#.cfm"></cfoutput></cfsavecontent>
+		<!--- Nasty CF Whitespace --->
+		<cfsavecontent variable="cbox_renderedView"><cfif len(arguments.viewHelperPath) AND NOT structKeyExists(instance.renderedHelpers,arguments.viewHelperPath)><cfoutput><cfinclude template="#arguments.viewHelperPath#"><cfset instance.renderedHelpers[arguments.viewHelperPath]=true></cfoutput></cfif><cfoutput><cfinclude template="#arguments.viewPath#.cfm"></cfoutput></cfsavecontent>
 		
     	<cfreturn cbox_renderedView>
     </cffunction>
