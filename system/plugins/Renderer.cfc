@@ -83,6 +83,7 @@ Description :
 		<cfargument name="args"   					required="false" type="any"  default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<cfargument name="collection" 				required="false" type="any"  hint="A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)"/>
 		<cfargument name="collectionAs" 			required="false" type="any"	 default=""  	    hint="The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention"/>
+		<cfargument name="prepostExempt" 			required="false" type="any"	 default="false" 	hint="If true, pre/post view interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var viewCacheKey 	= "";
@@ -114,11 +115,11 @@ Description :
 			}
 			
 			// Announce preViewRender interception
-			announceInterception("preViewRender", iData);
+			if( NOT arguments.prepostExempt ){ announceInterception("preViewRender", iData); }
 			
 			// Prepare caching arguments if doing implicit caching, and the view to render is the same as the implicitly cached.
 			viewCacheEntry = event.getViewCacheableEntry();
-			if( event.isViewCacheable() AND (arguments.view eq viewCacheEntry.view) ){
+			if( event.isViewCacheable() AND (arguments.view EQ viewCacheEntry.view) ){
 				arguments.cache						= true;
 				arguments.cacheTimeout				= viewCacheEntry.timeout;
 				arguments.cacheLastAccessTimeout	= viewCacheEntry.lastAccessTimeout;
@@ -126,14 +127,14 @@ Description :
 			}
 			// Prepare caching key
 			viewCacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & arguments.module & ":" & arguments.view & arguments.cacheSuffix;
-			// Is the view already cached?
+			// Is the view already cached? UPDATE THIS BY 3.5 to CACHEBOX lookup
 			if( instance.templateCache.lookup(viewCacheKey) ){
 				// Render it out
 				timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm]");
 				iData.renderedView = instance.templateCache.get(viewCacheKey);
 				instance.debuggerService.timerEnd(timerHash);
 				// Post View Render Interception
-				announceInterception("postViewRender", iData);
+				if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
 				// Return it
 				return iData.renderedView;
 			}
@@ -156,7 +157,7 @@ Description :
 			instance.debuggerService.timerEnd(timerHash);
 		
 			// Post View Render Interception point
-			announceInterception("postViewRender",iData);
+			if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
 			
 			// Are we caching view
 			if ( arguments.cache ){
