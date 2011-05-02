@@ -219,6 +219,8 @@ Description :
 			var buffer 	= createObject("java","java.lang.StringBuffer").init();
 			var x 		= 1;
 			var recLen 	= 0;
+			// only include it once per collection rendering
+			var includeHelper = true; 
 			
 			// Determine the collectionAs key
 			if( NOT len(arguments.collectionAs) ){
@@ -231,9 +233,13 @@ Description :
 				variables._items	= recLen;	
 				// iterate and present
 				for(x=1; x lte recLen; x++){
+					// setup local cvariables
 					variables._counter  = x;
 					variables[ arguments.collectionAs ] = arguments.collection[x];
-					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
+					// include helper only on iteration 1
+					if( x NEQ 1){ includeHelper = false; }
+					// render item composite
+					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args,includeHelper) );
 				}
 				return buffer.toString();
 			}
@@ -243,9 +249,13 @@ Description :
 			<cfset variables._items	= arguments.collection.recordCount>
 			<cfloop query="arguments.collection">
 				<cfscript>
+					// setup local cvariables
 					variables._counter  = arguments.collection.currentRow;
 					variables[ arguments.collectionAs ] = arguments.collection;
-					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
+					// include helper only on iteration 1
+					if( x NEQ 1){ includeHelper = false; }
+					// render item composite
+					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args,includeHelper) );
 				</cfscript>
 			</cfloop>
 			<cfreturn buffer.toString()>		
@@ -257,10 +267,11 @@ Description :
 		<cfargument name="viewpath">
 		<cfargument name="viewHelperPath">
 		<cfargument name="args"/>
+		<cfargument name="includeHelper" default="true">
 		
     	<cfset var cbox_renderedView = "">
 		
-		<cfsavecontent variable="cbox_renderedView"><cfif len(arguments.viewHelperPath)><cfoutput><cfinclude template="#arguments.viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#arguments.viewPath#.cfm"></cfoutput></cfsavecontent>
+		<cfsavecontent variable="cbox_renderedView"><cfif len(arguments.viewHelperPath) AND arguments.includeHelper><cfoutput><cfinclude template="#arguments.viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#arguments.viewPath#.cfm"></cfoutput></cfsavecontent>
 		
     	<cfreturn cbox_renderedView>
     </cffunction>
