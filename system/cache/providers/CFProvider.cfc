@@ -293,7 +293,9 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * check if object in cache with no stats
     */
     any function lookupQuiet(required any objectKey) output=false{
-		return getObjectStore().isKeyInCache( ucase(arguments.objectKey) );
+		// Don't consult the object store like other provides since this
+		// provider uses the CF methods to set/get from cache.
+		return !isNull(cacheGet( arguments.objectKey ));
 	}
 	
 	/**
