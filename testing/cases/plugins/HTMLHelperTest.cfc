@@ -52,8 +52,9 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	
 	function testIMG(){
 		// with htmlbaseURL
-		mockController.$("settingExists",true);
-		plugin.$("getSetting").$args("htmlBaseURL").$results("http://www.coldbox.org");
+		var mockEvent = getMockRequestContext()
+			.$("getSESBaseURL", "http://www.coldbox.org");
+		mockRequestService.$("getContext", mockEvent);
 		
 		img = plugin.img("includes/images/pio.jpg");
 		assertEquals('<img src="http://www.coldbox.org/includes/images/pio.jpg" />', img);
@@ -62,19 +63,9 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals('<img src="http://hello.com/includes/images/pio.jpg" />', img);
 		
 		// no base url
-		mockController.$("settingExists",false);
+		mockEvent.$("getSESBaseURL","");
 		img = plugin.img("includes/images/pio.jpg");
 		assertEquals('<img src="includes/images/pio.jpg" />', img);
-		
-		props = {
-			alt="test",
-			src="includes/images/pio.jpg",
-			title="test",
-			width="400"
-		};
-		
-		img = plugin.img(props);
-		assertEquals('<img alt="test" src="includes/images/pio.jpg" width="400" title="test" />', img);
 	}
 	
 	function testLink(){
@@ -100,15 +91,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	
 	function testUL(){
 		var data = [1,2,[1,2]];
-		var attrs = {
-			class="cool"
-		};
 		
 		str = plugin.ul("1,2");
 		assertEquals( "<ul><li>1</li><li>2</li></ul>", str);
 		
-		str = plugin.ul(data,attrs);
-		assertEquals( '<ul class="cool"><li>1</li><li>2</li><ul class="cool"><li>1</li><li>2</li></ul></ul>', str);
+		str = plugin.ul(values=data,class="cool");
+		assertEquals( '<ul class="cool"><li>1</li><li>2</li><ul><li>1</li><li>2</li></ul></ul>', str);
 	}
 	
 	function testListWithQuery(){
@@ -151,12 +139,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 	
 	function testtag(){
-	
 		str = plugin.tag("code","hello");
 		assertEquals('<code>hello</code>', str);
 		
-		data={class="cool"};
-		str = plugin.tag("code","hello",data);
+		str = plugin.tag(tag="code",content="hello",class="cool");
 		assertEquals('<code class="cool">hello</code>', str);
 	}
 	
@@ -178,21 +164,20 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		data = querySim("id,name
 		1 | luis
 		2 | peter");
-		attrs = {class="test"};
 		
 		str = plugin.table(data=data);
 		assertEquals("<table><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>",
 					 str);
 					 
-		str = plugin.table(data=data,attributes=attrs);
+		str = plugin.table(data=data,class="test");
 		assertEquals('<table class="test"><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>',
 					 str);
 					 
-		str = plugin.table(data=data,attributes=attrs,includes="name");
+		str = plugin.table(data=data,includes="name",class="test");
 		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
 					 str);
 					 
-		str = plugin.table(data=data,attributes=attrs,excludes="id");
+		str = plugin.table(data=data,excludes="id",class="test");
 		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
 					 str);
 	}
@@ -210,21 +195,20 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		{id=1, name="luis"},
 		{id=2, name="peter"}
 		];
-		attrs = {class="test"};
 		
 		str = plugin.table(data=data);
 		assertEquals("<table><thead><tr><th>NAME</th><th>ID</th></tr></thead><tbody><tr><td>luis</td><td>1</td></tr><tr><td>peter</td><td>2</td></tr></tbody></table>",
 					 str);
 					 
-		str = plugin.table(data=data,attributes=attrs);
+		str = plugin.table(data=data,class="test");
 		assertEquals('<table class="test"><thead><tr><th>NAME</th><th>ID</th></tr></thead><tbody><tr><td>luis</td><td>1</td></tr><tr><td>peter</td><td>2</td></tr></tbody></table>',
 					 str);
 					 
-		str = plugin.table(data=data,attributes=attrs,includes="name");
+		str = plugin.table(data=data,includes="name",class="test");
 		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
 					 str);
 					 
-		str = plugin.table(data=data,attributes=attrs,excludes="id");
+		str = plugin.table(data=data,excludes="id",class="test");
 		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
 					 str);
 	}
@@ -252,6 +236,68 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = plugin.autoDiscoveryLink(type="atom",href="/action/rss",title="MY RSS Feed");
 		//debug(str);
 		assertEquals('<link rel="alternate" type="application/atom+xml" title="MY RSS Feed" href="/action/rss"/>' , str);
+	}
+	
+	function testVideo(){
+		str = plugin.video("includes/movie.ogg");
+		//debug(str);
+		assertEquals('<video controls="controls" src="includes/movie.ogg" />', str);
+		
+		str = plugin.video(src="includes/movie.ogg",autoplay=true,width="200",height="200");
+		debug(str);
+		assertEquals('<video controls="controls" autoplay="autoplay" height="200" width="200" src="includes/movie.ogg" />', str);
+		
+		str = plugin.video(["includes/movie.ogg","includes/movie2.mp4"]);
+		//debug(str);
+		assertEquals('<video controls="controls"><source src="includes/movie.ogg"/><source src="includes/movie2.mp4"/></video>', str);
+	}
+	
+	function testAudio(){
+		str = plugin.audio("includes/song.ogg");
+		//debug(str);
+		assertEquals('<audio controls="controls" src="includes/song.ogg" />', str);
+		
+		str = plugin.audio(src="includes/song.ogg",autoplay=true,loop=true);
+		debug(str);
+		assertEquals('<audio controls="controls" autoplay="autoplay" loop="loop" src="includes/song.ogg" />', str);
+		
+		str = plugin.audio(["includes/song.ogg","includes/song.mp4"]);
+		//debug(str);
+		assertEquals('<audio controls="controls"><source src="includes/song.ogg"/><source src="includes/song.mp4"/></audio>', str);
+	}
+	
+	
+	function testCanvas(){
+		str = plugin.canvas("test");
+		debug(str);
+		assertEquals('<canvas id="test"></canvas>', str);		
+	}
+	
+	function testForm(){
+		str = plugin.endForm();
+		assertEquals( "</form>",str);	
+		
+		str = plugin.startForm(action='user.save');
+		//debug(str);
+		assertEquals('<form method="POST" action="index.cfm?event=user.save">', str);	
+	
+		var mockEvent = getMockRequestContext()
+			.$("buildLink", "http://www.coldbox.org/user/save");
+		mockRequestService.$("getContext", mockEvent);
+		str = plugin.startForm(action='user.save');
+		//debug(str);
+		assertEquals('<form method="POST" action="http://www.coldbox.org/user/save">', str);	
+		
+		var mockEvent = getMockRequestContext()
+			.$("buildLink", "https://www.coldbox.org/user/save");
+		mockRequestService.$("getContext", mockEvent);
+		str = plugin.startForm(action='user.save',ssl=true);
+		//debug(str);
+		assertEquals('<form method="POST" action="https://www.coldbox.org/user/save">', str);
+		
+		str = plugin.startForm(action='user.save',method="get",name="userForm");
+		debug(str);
+		assertEquals('<form name="userForm" id="userForm" method="get" action="https://www.coldbox.org/user/save">', str);	
 	}
 	
 </cfscript>
