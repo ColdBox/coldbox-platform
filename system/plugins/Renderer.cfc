@@ -93,7 +93,7 @@ Description :
 			var iData 			= arguments;
 			var explicitModule 	= false;
 			var viewLocations	= "";
-		
+			
 			// If no incoming explicit module call, default the value to the one in the request context for convenience
 			if( NOT len(arguments.module) ){
 				// if no module is execution, this will be empty anyways.
@@ -261,6 +261,7 @@ Description :
     	<cfargument name="view">
 		<cfargument name="viewpath">
 		<cfargument name="viewHelperPath">
+		<cfargument name="args"/>
 		
     	<cfset var cbox_renderedView = "">
 		<!--- Nasty CF Whitespace --->
