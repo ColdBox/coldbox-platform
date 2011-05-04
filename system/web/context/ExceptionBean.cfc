@@ -275,6 +275,39 @@ Modification History:
 		</cfif>
 	</cffunction>
 
+	<!--- ************************************************************* --->	
+	
+	<cffunction name="$toString" access="public" returntype="string" output="false">
+		<cfscript>
+			var buffer = ""; 
+			
+			// Prepare String Buffer
+			buffer = createObject("java","java.lang.StringBuffer").init( getExtraMessage() & chr(13));
+			
+			if ( getType() neq  "" ){
+				buffer.append("CFErrorType=" & getType() & chr(13) );
+			}
+			if ( getDetail() neq  "" ){
+				buffer.append("CFDetails=" & getDetail() & chr(13));
+			}
+			if ( getMessage() neq "" ){
+				buffer.append("CFMessage=" & getMessage() & chr(13));
+			}
+			if ( getStackTrace() neq "" ){
+				buffer.append("CFStackTrace=" & getStackTrace() & chr(13));
+			}
+			if ( getTagContextAsString() neq "" ){
+				buffer.append("CFTagContext=" & getTagContextAsString() & chr(13));
+			}
+			if ( getExtraInfo() neq "" ){
+				buffer.append("CFExtraInfo=" & getExtraInfo() & chr(13));
+			}
+			return buffer.toString();
+		
+		</cfscript>
+	</cffunction>
+	
+					
 	<!--- ************************************************************* --->
 
 </cfcomponent>
