@@ -512,11 +512,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	function testhref(){
 		str = plugin.href(href="actions.save");
 		debug(str);	
-		assertEquals('<a href="actions.save"></a>', str);
+		assertEquals('<a href="index.cfm?event=actions.save"></a>', str);
 		
 		str = plugin.href(href="actions.save",text="Edit");
 		debug(str);	
-		assertEquals('<a href="actions.save">Edit</a>', str);
+		assertEquals('<a href="index.cfm?event=actions.save">Edit</a>', str);
 	}
 </cfscript>
 
