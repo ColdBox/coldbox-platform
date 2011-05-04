@@ -1091,7 +1091,12 @@ component accessors="true"{
 			// remove pointer
 			structDelete(request,"cbox_aop_transaction");
 			// rollback
-			tx.rollback();
+			try{
+				tx.rollback();
+			}
+			catch(any e){
+				// silent rollback as something really went wrong
+			}
 			//throw it
 			rethrow;
 		}
