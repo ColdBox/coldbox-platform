@@ -498,6 +498,26 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals('<select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
 		
 	}
+	
+	function testAnchor(){
+		str = plugin.anchor(name="lui");
+		debug( str );
+		assertEquals('<a name="lui"></a>', str);
+		
+		str = plugin.anchor(name="lui",text="Luis");
+		debug( str );
+		assertEquals('<a name="lui">Luis</a>', str);
+	}
+	
+	function testhref(){
+		str = plugin.href(href="actions.save");
+		debug(str);	
+		assertEquals('<a href="actions.save"></a>', str);
+		
+		str = plugin.href(href="actions.save",text="Edit");
+		debug(str);	
+		assertEquals('<a href="actions.save">Edit</a>', str);
+	}
 </cfscript>
 
 </cfcomponent>
