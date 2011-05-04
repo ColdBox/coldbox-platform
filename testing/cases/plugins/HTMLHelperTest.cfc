@@ -300,6 +300,171 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals('<form name="userForm" id="userForm" method="get" action="https://www.coldbox.org/user/save">', str);	
 	}
 	
+	function testLabel(){
+		str = plugin.label(field="name");
+		assertEquals('<label for="name">Name</label>', str);
+		
+		str = plugin.label(field="name",content="My Name");
+		assertEquals('<label for="name">My Name</label>', str);
+		
+		str = plugin.label(field="name",content="My Name",wrapper="div");
+		//debug(str);
+		assertEquals('<div><label for="name">My Name</label></div>', str);
+	}
+	
+	function testTextArea(){
+		str = plugin.textarea(name="message");
+		assertEquals('<textarea name="message" id="message"></textarea>', str);
+		
+		str = plugin.textarea(name="message",value="Hello");
+		assertEquals('<textarea name="message" id="message">Hello</textarea>', str);
+		
+		str = plugin.textarea(name="message",value="Hello",class="Hola");
+		assertEquals('<textarea class="Hola" name="message" id="message">Hello</textarea>', str);
+		
+		str = plugin.textarea(name="message",value="Hello",class="Hola",label="Message");
+		assertEquals('<label for="Message">Message</label><textarea class="Hola" name="message" id="message">Hello</textarea>', str);
+		
+		str = plugin.textarea(name="message",value="Hello",class="Hola",label="Message",wrapper="div");
+		debug(str);
+		assertEquals('<label for="Message">Message</label><div><textarea class="Hola" name="message" id="message">Hello</textarea></div>', str);
+	}
+	
+	function testPasswordField(){
+		str = plugin.passwordField(name="message");
+		assertEquals('<input name="message" id="message" type="password"/>', str);
+		
+		str = plugin.passwordField(name="message",value="test");
+		assertEquals('<input name="message" value="test" id="message" type="password"/>', str);
+	}
+	
+	function testHiddenField(){
+		str = plugin.hiddenField(name="message");
+		assertEquals('<input name="message" id="message" type="hidden"/>', str);
+		
+		str = plugin.hiddenField(name="message",value="test");
+		assertEquals('<input name="message" value="test" id="message" type="hidden"/>', str);
+	}
+	
+	function testTextField(){
+		str = plugin.textField(name="message");
+		assertEquals('<input name="message" id="message" type="text"/>', str);
+		
+		str = plugin.textField(name="message",value="test");
+		assertEquals('<input name="message" value="test" id="message" type="text"/>', str);
+	}
+	
+	function testButton(){
+		str = plugin.button(name="message");
+		assertEquals('<button name="message" id="message" type="button"></button>', str);
+		
+		str = plugin.button(name="message",value="hello",type="submit");
+		assertEquals('<button name="message" id="message" type="submit">hello</button>', str);
+		
+	}
+	
+	function testFileField(){
+		str = plugin.fileField(name="message");
+		assertEquals('<input name="message" id="message" type="file"/>', str);
+		
+		str = plugin.fileField(name="message",value="test");
+		assertEquals('<input name="message" value="test" id="message" type="file"/>', str);
+	}
+	
+	function testCheckbox(){
+		str = plugin.checkbox(name="message");
+		assertEquals('<input name="message" value="true" id="message" type="checkbox"/>', str);
+		
+		str = plugin.checkbox(name="message",value="test",checked=true);
+		debug(str);
+		assertEquals('<input name="message" value="test" id="message" checked="checked" type="checkbox"/>', str);
+	}
+	
+	function testRadioButton(){
+		str = plugin.radioButton(name="message");
+		assertEquals('<input name="message" value="true" id="message" type="radio"/>', str);
+		
+		str = plugin.radioButton(name="message",value="test",checked=true);
+		debug(str);
+		assertEquals('<input name="message" value="test" id="message" checked="checked" type="radio"/>', str);
+	}
+	
+	function testsubmitButton(){
+		str = plugin.submitButton(name="message");
+		assertEquals('<input name="message" value="Submit" id="message" type="submit"/>', str);
+	
+	}
+	
+	function testresetButton(){
+		str = plugin.resetButton(name="message");
+		assertEquals('<input name="message" value="Reset" id="message" type="reset"/>', str);
+	
+	}
+	
+	function testIMageButton(){
+		str = plugin.imageButton(name="message",src="includes/photo.jpg");
+		assertEquals('<input name="message" id="message" src="includes/photo.jpg" type="image"/>', str);
+	
+	}
+	
+	function testOptions(){
+		mockQueryHelper = getMockBox().createMock("coldbox.system.plugins.QueryHelper");
+		plugin.$("getPlugin", mockQueryHelper);
+		
+		// array
+		str = plugin.options(values=[1,2,3]);
+		//debug( str );
+		assertEquals('<option value="1">1</option><option value="2">2</option><option value="3">3</option>', str);
+		
+		// array of structs
+		str = plugin.options(values=[{value=1,name="1"},{name=2,value=2},{name=3,value=3}]);
+		//debug( str );
+		assertEquals('<option value="1">1</option><option value="2">2</option><option value="3">3</option>', str);
+		
+		// simple list
+		str = plugin.options(values="1,2,3");
+		//debug( str );
+		assertEquals('<option value="1">1</option><option value="2">2</option><option value="3">3</option>', str);
+		
+		// query
+		qList = getMockBox().querySim("name
+		luis
+		joe
+		alexia");
+		str = plugin.options(values=qList,column="name");
+		//debug( str );
+		assertEquals('<option value="luis">luis</option><option value="joe">joe</option><option value="alexia">alexia</option>', str);
+	
+		str = plugin.options(values=qList);
+		//debug( str );
+		assertEquals('<option value="luis">luis</option><option value="joe">joe</option><option value="alexia">alexia</option>', str);
+		
+		// query
+		qList = getMockBox().querySim("name, id
+		luis| 1
+		joe| 2
+		alexia| 3");
+		str = plugin.options(values=qList,column="id",nameColumn="name");
+		//debug( str );
+		assertEquals('<option value="1">luis</option><option value="2">joe</option><option value="3">alexia</option>', str);
+	
+		// ORM entities
+		data = entityLoad("User");
+		str = plugin.options(values=data,column="id",nameColumn="firstName");
+		debug( str );
+		assertTrue( len(str) );
+	}
+	
+	function testSelect(){
+		mockQueryHelper = getMockBox().createMock("coldbox.system.plugins.QueryHelper");
+		plugin.$("getPlugin", mockQueryHelper);
+		
+		// array
+		str = plugin.select(name="users",options=[1,2,3]);
+		debug( str );
+		assertEquals('<select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
+		
+	}
 </cfscript>
 
 </cfcomponent>
