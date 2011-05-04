@@ -296,8 +296,14 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals('<form method="POST" action="https://www.coldbox.org/user/save">', str);
 		
 		str = plugin.startForm(action='user.save',method="get",name="userForm");
-		debug(str);
+		//debug(str);
 		assertEquals('<form name="userForm" id="userForm" method="get" action="https://www.coldbox.org/user/save">', str);	
+		
+		// self-submitting
+		mockEvent.$("getCurrentEvent","user.home").$("buildLink", "https://www.coldbox.org/user/home");
+		str = plugin.startForm();
+		debug(str);
+		assertEquals('<form method="POST" action="https://www.coldbox.org/user/home">', str);	
 	}
 	
 	function testLabel(){
@@ -319,15 +325,18 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = plugin.textarea(name="message",value="Hello");
 		assertEquals('<textarea name="message" id="message">Hello</textarea>', str);
 		
-		str = plugin.textarea(name="message",value="Hello",class="Hola");
-		assertEquals('<textarea class="Hola" name="message" id="message">Hello</textarea>', str);
+		str = plugin.textarea(name="message",value="Hello",label="Message");
+		assertEquals('<label for="Message">Message</label><textarea name="message" id="message">Hello</textarea>', str);
 		
-		str = plugin.textarea(name="message",value="Hello",class="Hola",label="Message");
-		assertEquals('<label for="Message">Message</label><textarea class="Hola" name="message" id="message">Hello</textarea>', str);
-		
-		str = plugin.textarea(name="message",value="Hello",class="Hola",label="Message",wrapper="div");
+		str = plugin.textarea(name="message",value="Hello",label="Message",wrapper="div");
 		debug(str);
-		assertEquals('<label for="Message">Message</label><div><textarea class="Hola" name="message" id="message">Hello</textarea></div>', str);
+		assertEquals('<label for="Message">Message</label><div><textarea name="message" id="message">Hello</textarea></div>', str);
+		
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.textarea(name="lastName",bind=majano);
+		debug(str);
+		assertEquals('<textarea name="lastName" id="lastName">Majano</textarea>', str);
 	}
 	
 	function testPasswordField(){
@@ -344,6 +353,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		
 		str = plugin.hiddenField(name="message",value="test");
 		assertEquals('<input name="message" value="test" id="message" type="hidden"/>', str);
+		
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.hiddenField(name="lastName",bind=majano);
+		debug(str);
+		assertTrue( findNocase('value="Majano"', str) );
 	}
 	
 	function testTextField(){
@@ -352,6 +367,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		
 		str = plugin.textField(name="message",value="test");
 		assertEquals('<input name="message" value="test" id="message" type="text"/>', str);
+		
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.textField(name="lastName",bind=majano);
+		debug(str);
+		assertTrue( findNocase('value="Majano"', str) );
 	}
 	
 	function testButton(){
@@ -377,7 +398,14 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		
 		str = plugin.checkbox(name="message",value="test",checked=true);
 		debug(str);
-		assertEquals('<input name="message" value="test" id="message" checked="checked" type="checkbox"/>', str);
+		assertTrue( findnocase('checked="checked"', str));
+		assertTrue( findnocase('value="Test"', str));
+		
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.checkbox(name="lastName",bind=majano);
+		debug(str);
+		assertTrue( findNocase('value="Majano"', str) );
 	}
 	
 	function testRadioButton(){
@@ -387,6 +415,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = plugin.radioButton(name="message",value="test",checked=true);
 		debug(str);
 		assertEquals('<input name="message" value="test" id="message" checked="checked" type="radio"/>', str);
+		
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.radioButton(name="lastName",bind=majano);
+		debug(str);
+		assertTrue( findNocase('value="Majano"', str) );
 	}
 	
 	function testsubmitButton(){
@@ -403,8 +437,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	
 	function testIMageButton(){
 		str = plugin.imageButton(name="message",src="includes/photo.jpg");
-		assertEquals('<input name="message" id="message" src="includes/photo.jpg" type="image"/>', str);
-	
+		assertTrue( findNocase('src="includes/photo.jpg"', str) );
 	}
 	
 	function testOptions(){
