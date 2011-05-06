@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getPlugin</name>
 <help>get a plugin</help>
-<starttext><![CDATA[getPlugin("$${Plugin Name:ApplicationStorage|BeanFactory|ClientStorage|CookieStorage|Utilities|IOC|i18n|JavaLoader|Logger|MessageBox|MethodInjector|QueryHelper|Renderer|ResourceBundle|SessionStorage|StringBuffer|Timer|Webservices|XMLParser|Zip}")]]></starttext>
+<starttext><![CDATA[getPlugin("$${Plugin Name:ApplicationStorage|BeanFactory|ClientStorage|CookieStorage|Utilities|IOC|i18n|JavaLoader|Logger|MessageBox|QueryHelper|Renderer|ResourceBundle|SessionStorage|StringBuffer|Timer|Webservices|XMLParser|Zip}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>
