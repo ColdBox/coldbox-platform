@@ -176,14 +176,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<MailPassword></MailPassword>
 	</MailServerSettings>
 	-->
-
-	<!-- Bug reporting aspect 
-	<BugTracerReports enabled="false">
-		<MailFrom>myemail@gmail.com</MailFrom>
-		<CustomEmailBugReport>a custom bug report template</CustomEmailBugReport>
-		<BugEmail>myemail@gmail.com</BugEmail> 
-	</BugTracerReports>
-	-->
 	
 	<!-- Web Services 
 	<WebServices>

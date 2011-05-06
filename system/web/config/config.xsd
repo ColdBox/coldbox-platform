@@ -116,43 +116,6 @@
 		</xs:annotation>
 	</xs:element>
 	
-	<xs:element name="BugTracerReports">
-		<xs:annotation>
-			<xs:documentation>This sections is used to declare the bug tracing reports configuration.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element maxOccurs="1" minOccurs="0" name="MailFrom" >
-					<xs:annotation>
-						<xs:documentation>The from email address to send from.</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="CustomEmailBugReport" >
-					<xs:annotation>
-						<xs:documentation>The location of the custom bug report to use.</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="unbounded" minOccurs="0" name="BugEmail">
-					<xs:annotation>
-						<xs:documentation>The email address to send reports.</xs:documentation>
-					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:minLength value="1"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:element>
-			</xs:sequence>
-			<xs:attribute default="false" name="enabled" type="xs:boolean" use="optional">
-				<xs:annotation>
-					<xs:documentation>Use to turn on bugtracer reports.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-		</xs:complexType>
-	</xs:element>
-	
-	
-	
 	<xs:element name="WebServices">
 		<xs:annotation>
 			<xs:documentation>Useful declarations of all web services used in the application.</xs:documentation>

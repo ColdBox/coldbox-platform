@@ -123,9 +123,6 @@ Loads a coldbox xml configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: I18N SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLocalization(oConfig,configStruct);			
 		
-		/* ::::::::::::::::::::::::::::::::::::::::: BUG MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseBugTracers(oConfig,configStruct);			
-		
 		/* ::::::::::::::::::::::::::::::::::::::::: WS SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseWebservices(oConfig,configStruct);			
 
@@ -565,39 +562,6 @@ Loads a coldbox xml configuration file
 				
 				//set i18n
 				configStruct["using_i18N"] = true;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- parseBugTracers --->
-	<cffunction name="parseBugTracers" output="false" access="public" returntype="void" hint="Parse bug emails">
-		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	  type="struct"   required="true" hint="The config struct"/>
-		<cfscript>
-			var configStruct = arguments.config;
-			var bugTracers = arguments.oConfig.getPropertyMixin("bugTracers","variables",structnew());
-			
-			//defaults
-			configStruct.BugEmails = "";
-			configStruct.EnableBugReports = false;
-			configStruct.MailFrom = "";
-			configStruct.CustomEmailBugReport = "";
-			
-			// Mail From
-			if( structKeyExists(bugTracers,"MailFrom") and len(bugTracers.MailFrom) ){
-				configStruct.mailFrom = bugTracers.mailfrom;
-			}
-			// Custom Bug Reports
-			if( structKeyExists(bugTracers,"CustomEmailBugReport") and len(bugTracers.CustomEmailBugReport) ){
-				configStruct.CustomEmailBugReport = bugTracers.CustomEmailBugReport;
-			}
-			// Enabled Bug Reports
-			if( structKeyExists(bugTracers,"enabled") ){
-				configStruct["EnableBugReports"] = bugTracers.enabled;
-			}
-			// Bug Emails
-			if( structKeyExists(bugTracers,"bugEmails") ){
-				configStruct["BugEmails"] = bugTracers.bugEmails;
 			}
 		</cfscript>
 	</cffunction>

@@ -97,9 +97,6 @@ Loads a coldbox xml configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: I18N SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLocalization(configXML,configStruct);			
 		
-		/* ::::::::::::::::::::::::::::::::::::::::: BUG MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseBugTracers(configXML,configStruct);			
-		
 		/* ::::::::::::::::::::::::::::::::::::::::: WS SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseWebservices(configXML,configStruct);			
 
@@ -637,52 +634,6 @@ Loads a coldbox xml configuration file
 				
 				//set i18n
 				configStruct["using_i18N"] = true;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- parseBugTracers --->
-	<cffunction name="parseBugTracers" output="false" access="public" returntype="void" hint="Parse bug emails">
-		<cfargument name="xml" 		type="any" required="true" hint="The xml object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
-		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
-		<cfscript>
-			var configStruct = arguments.config;
-			var BugEmailNodes = XMLSearch(arguments.xml,"//BugTracerReports/BugEmail");
-			var bugNodes = XMLSearch(arguments.xml,"//BugTracerReports");
-			var i=1;
-			var BugEmails = "";
-			
-			if( NOT arguments.isOverride ){
-				configStruct.BugEmails = "";
-				configStruct.EnableBugReports = false;
-				configStruct.MailFrom = "";
-				configStruct.CustomEmailBugReport = "";
-			}
-			
-			if( arrayLen(bugNodes) gt 0 and ArrayLen(bugNodes[1].XMLChildren) gt 0) {
-				// Mail From
-				if( structKeyExists(bugNodes[1],"MailFrom") and len(bugNodes[1].MailFrom.xmlText) ){
-					configStruct.mailFrom = bugNodes[1].mailfrom.xmltext;
-				}
-				// Custom Bug Reports
-				if( structKeyExists(bugNodes[1],"CustomEmailBugReport") and len(bugNodes[1].CustomEmailBugReport.xmlText) ){
-					configStruct.CustomEmailBugReport = bugNodes[1].CustomEmailBugReport.xmltext;
-				}
-				// Enabled Bug Reports
-				if( structKeyExists(bugNodes[1].xmlAttributes,"enabled") ){
-					configStruct["EnableBugReports"] = bugNodes[1].xmlAttributes.enabled;
-				}
-				// Bug Emails
-				if( arrayLen(BugEmailNodes) ){
-					for (i=1; i lte ArrayLen(BugEmailNodes); i=i+1){
-						BugEmails = BugEmails & trim(BugEmailNodes[i].XMLText);
-						if ( i neq ArrayLen(BugEmailNodes) )
-							BugEmails = BugEmails & ",";
-					}
-					//Insert Into Config
-					configStruct.BugEmails = BugEmails;
-				}
 			}
 		</cfscript>
 	</cffunction>

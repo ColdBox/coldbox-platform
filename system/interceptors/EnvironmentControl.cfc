@@ -163,8 +163,6 @@ Description :
 				appLoader.parseModels(environmentXML,configSettings,true);		
 				// i18N
 				appLoader.parseLocalization(environmentXML,configSettings,true);
-				// Bug Tracers
-				appLoader.parseBugTracers(environmentXML,configSettings,true);
 				// Web Services
 				appLoader.parseWebservices(environmentXML,configSettings,true);
 				// Parse Datasources

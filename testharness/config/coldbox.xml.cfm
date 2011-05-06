@@ -107,13 +107,7 @@
 		<MailServer>localhost</MailServer>
 		<MailUsername>test</MailUsername>
 	</MailServerSettings>
-
-	<BugTracerReports enabled="false">
-		<MailFrom>info@coldboxframework.com</MailFrom>
-		<CustomEmailBugReport>includes/EmailBugReport.cfm</CustomEmailBugReport>
-		<BugEmail>info@coldboxframework.com</BugEmail>
-	</BugTracerReports>
-
+	
 	<WebServices >
 		<WebService URL="http://www.test.com/test.cfc?wsdl" name="TestWS"/>
 		<WebService URL="http://www.coldbox.org/distribution/updatews.cfc?wsdl" name="AnotherTestWS"/>

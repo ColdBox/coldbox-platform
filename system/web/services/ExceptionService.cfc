@@ -115,46 +115,6 @@ Modification History:
 		</cfif>
 		<cfreturn cboxBugReport>
 	</cffunction>
-	
-	<!--- Render an Email Bug Report --->
-	<cffunction name="renderEmailBugReport" access="public" returntype="string" hint="Render an Email Bug Report" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="exceptionBean" type="any" required="true">
-		<!--- ************************************************************* --->
-		<cfset var cboxBugReport 	= "">
-		<cfset var exception 		= arguments.exceptionBean>
-		<cfset var event 			= controller.getRequestService().getContext()>
-		<cfset var appLocPrefix					= "/">
-		<cfset var emailBugReportTemplatePath	= "">
-		<cfset var customEmailBugReport			= controller.getSetting("customEmailBugReport")>
-		
-		<!--- test for custom bug report --->
-		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomEmailBugReport") neq "">
-			<!--- App location prefix --->
-			<cfif len(controller.getSetting('AppMapping')) >
-					<cfset appLocPrefix = appLocPrefix & controller.getSetting('AppMapping') & "/">
-			</cfif>
-	
-			<!--- Setup the bugReport template Path for relative location first. --->
-			<cfset emailBugReportTemplatePath = appLocPrefix & reReplace(customEmailBugReport,"^/","")>
-				<cfif NOT fileExists(expandPath(emailBugReportTemplatePath))>
-					<!--- Assume absolute location as not found inside our app --->
-					<cfset emailBugReportTemplatePath = customEmailBugReport>
-					<cfif NOT fileExists(expandPath(emailBugReportTemplatePath))>
-						<cfthrow message="customEmailBugReport cannot be found.  #expandPath(customEmailBugReport)#">
-					</cfif>
-				</cfif>
-		
-			<!--- Place exception in the requset Collection --->
-			<cfset event.setvalue("exceptionBean",Exception)>
-			<!--- Save the Custom Email Bug Report --->
-			<cfsavecontent variable="cboxBugReport"><cfinclude template="#emailBugReportTemplatePath#"></cfsavecontent>
-		<cfelse>
-			<!--- Render the Default Email Bug Report --->
-			<cfsavecontent variable="cboxBugReport"><cfinclude template="/coldbox/system/includes/BugReport.cfm"></cfsavecontent>
-		</cfif>
-		<cfreturn cboxBugReport>		
-	</cffunction>
 		
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

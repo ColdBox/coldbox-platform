@@ -127,14 +127,6 @@
 			unknownTranslation = "**NOT FOUND**"		
 		};
 		
-		//bug tracers
-		bugTracers = {
-			enabled = false,
-			bugEmails = "",
-			mailFrom = "",
-			customEmailBugReport = ""
-		};
-	
 		//webservices
 		webservices = {
 			testWS = "http://www.test.com/test.cfc?wsdl",

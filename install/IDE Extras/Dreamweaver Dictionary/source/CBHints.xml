@@ -341,7 +341,6 @@
 	</menu>
 	<menu pattern="getPlugin(&quot;Logger&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".debug()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".emailBugReport()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".error()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".fatal()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getLogger()" icon="shared/CBHints/images/hintCB.gif" />
@@ -354,7 +353,6 @@
 	</menu>
 	<menu pattern="getPlugin('Logger')" doctypes="ColdFusion,CFC">
 		<menuitem label=".debug()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".emailBugReport()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".error()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".fatal()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getLogger()" icon="shared/CBHints/images/hintCB.gif" />
