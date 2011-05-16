@@ -62,7 +62,9 @@ Description :
 				// original object's metadata
 				metadata = {},
 				// discovered provider methods
-				providerMethods = []
+				providerMethods = [],
+				// AOP aspect
+				aspect = false
 			};
 			
 			// DI definition structure
@@ -208,6 +210,16 @@ Description :
     <cffunction name="setAutowire" access="public" returntype="any" output="false" hint="Set autowire property">
     	<cfargument name="autowire" required="true" colddoc:generic="Boolean">
     	<cfset instance.autowire = arguments.autowire>
+    	<cfreturn this>
+    </cffunction>
+    
+    <!--- isAspect --->
+    <cffunction name="isAspect" output="false" access="public" returntype="any" hint="Flag describing if this mapping is an AOP aspect or not" colddoc:generic="Boolean">
+    	<cfreturn instance.aspect>
+    </cffunction>
+    <cffunction name="setAspect" access="public" returntype="any" output="false" hint="Set aspect property">
+    	<cfargument name="aspect" required="true" colddoc:generic="Boolean">
+    	<cfset instance.aspect = arguments.aspect>
     	<cfreturn this>
     </cffunction>
 	

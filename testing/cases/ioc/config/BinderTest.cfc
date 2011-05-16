@@ -456,5 +456,18 @@
 		assertEquals( "provider", mapping.getType() );
 	}
 	
+	function testMapAspect(){
+		config.mapAspect("Transaction").to("model.Transactional");
+		mapping = config.getMapping("Transaction");	
+		assertEquals( true, mapping.isAspect() );
+		assertEquals( "singleton", mapping.getScope() );
+		assertEquals( true, mapping.isEagerInit() );
+		assertEquals( "model.Transactional", mapping.getPath() );
+	}
+	
+	function testBindAspect(){
+		config.bindAspect();		
+	}
+	
 </cfscript>
 </cfcomponent>

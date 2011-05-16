@@ -123,6 +123,8 @@ Description :
 			instance.scanLocations = createObject("java","java.util.LinkedHashMap").init(5);
 			// Object Mappings
 			instance.mappings = {};
+			// Aspect Bindings
+			instance.aspectBindings = [];
 			// Parent Injector Mapping
 			instance.parentInjector = "";
 			// Binding Properties
@@ -823,6 +825,41 @@ Description :
 	<cffunction name="getListeners" output="false" access="public" returntype="any" hint="Get the configured listeners array" colddoc:generic="Array">
 		<cfreturn instance.listeners>
 	</cffunction>
+	
+<!------------------------------------------- AOP Methods ------------------------------------------>
+
+	<!--- mapAspect --->    
+    <cffunction name="mapAspect" output="false" access="public" returntype="any" hint="Map a new aspect">    
+    	<cfargument name="aspect" type="any" required="true" hint="The name or aliases of the aspect"/>
+    	<cfscript>
+			// map eagerly
+			map(arguments.aspect).asEagerInit().asSingleton();
+			// register the aspect
+			currentMapping.setAspect(true);
+			
+			return this;
+		</cfscript>
+    </cffunction>
+    
+    <!--- bindAspect --->    
+    <cffunction name="bindAspect" output="false" access="public" returntype="any" hint="Bind a aspects to classes and methods">    
+    	<cfargument name="classMatcher" 	type="any" required="true" hint="The class matcher that will be affected with this aspect binding"/>
+    	<cfargument name="methodMatcher" 	type="any" required="true" hint="The method matcher that will be affected with this aspect binding"/>
+    	<cfargument name="aspect" 			type="any" required="true" hint="The name or list of names or array of names of aspects to apply to the classes and methods defined"/>
+    	<cfscript>
+			// cleanup aspect
+			if( isSimpleValue(arguments.aspect) ){ arguments.aspect = listToArray(arguments.aspect); }
+			// register it
+			arrayAppend(instance.aspectBindings, arguments);
+			
+			return this;
+		</cfscript>    	
+    </cffunction>
+    
+    <!--- getAspectBindings --->    
+    <cffunction name="getAspectBindings" output="false" access="public" returntype="any" hint="Get the collection of aspect bindings for this binder" colddoc:generic="array">    
+    	<cfreturn instance.aspectBindings>
+    </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	

@@ -60,7 +60,7 @@
 		args = mapping.getDIMethodArguments();
 		assertEquals( 2, arrayLen(args));
 		
-		
+		assertEquals( false, mapping.isAspect() );
 	}
 	
 	function testProviderMethods(){
