@@ -155,8 +155,8 @@ component accessors="true"{
 							   numeric offset=0,
 					  		   numeric max=0,
 					  		   numeric timeout=0,
-						       boolean asQuery=true,
-						       boolean ignorecase=false){
+						       boolean ignorecase=false,
+						       boolean asQuery=true){
 		var options = {};
 
 		// Setup listing options
@@ -190,6 +190,7 @@ component accessors="true"{
 	/**
 	* Finds and returns the first result for the given query or null if no entity was found.
 	* You can either use the query and params combination or send in an example entity to find.
+	* @example.hint DEPRECATED. Use findByExample() instead, deprecated by 3.5
 	*/
 	any function findIt(string query,any params=structnew(), any example){
 		var options = {maxresults=1};
@@ -202,7 +203,7 @@ component accessors="true"{
 
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
-			return entityLoadByExample( arguments.example, true );
+			return findByExample( arguments.example, true );
 		}
 
 		// Normal Find
@@ -218,36 +219,24 @@ component accessors="true"{
 	
 	/**
 	* Find all the entities for the specified query and params or example
-	* @tested true
+	* @example.hint	DEPRECATED use findByExample() this will be dropped in 3.5
 	*/
 	array function findAll(string query,
 						    any params=structnew(),
 						    numeric offset=0,
 					        numeric max=0,
+					        numeric timeout=0,
+					        boolean ignoreCase=false,
 						    any example){
-		var options = {};
-
-		// Setup find options
-		if( arguments.offset neq 0 ){
-			options.offset = arguments.offset;
-		}
-		if( arguments.max neq 0 ){
-			options.maxresults = arguments.max;
-		}
-
-		// Caching?
-		if( getUseQueryCaching() ){
-			options.cacheName  = getQueryCacheRegion();
-			options.cacheable  = true;
-		}
-
+		
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
 			return findByExample( arguments.example );
 		}
-
-		// Normal Find
-		return ORMExecuteQuery( arguments.query, arguments.params, false, options);
+		
+		// Normal Execute Query
+		arguments.asQuery=false;
+		return executeQuery(argumentCollection=arguments);
 	}
 
 	/**
