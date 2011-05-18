@@ -415,6 +415,9 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 		test = ormservice.findAllWhere("Category",{category="general"});
 		assertEquals( 2, arrayLen(test) );
+		
+		test = ormservice.findAllWhere("Category",{category="general"},"category desc");
+		assertEquals( 2, arrayLen(test) );
 
 		test = ormservice.findAllWhere("User",{firstName="Luis", lastName="Majano"});
 		assertEquals( 1, arrayLen(test) );

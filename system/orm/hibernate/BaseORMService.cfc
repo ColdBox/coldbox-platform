@@ -264,14 +264,14 @@ component accessors="true"{
 	/**
 	* Find all entities according to criteria structure
 	*/
-	array function findAllWhere(required string entityName, required struct criteria){
+	array function findAllWhere(required string entityName, required struct criteria, string sortOrder=""){
 		var options = {};
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
-		return entityLoad( arguments.entityName, arguments.criteria, options);
+		return entityLoad( arguments.entityName, arguments.criteria, arguments.sortOrder, options);
 	}
 
 	/**
