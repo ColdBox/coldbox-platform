@@ -427,18 +427,24 @@ component accessors="true"{
 	* Retrieve all the instances from the passed in entity name using the id argument if specified
 	* The id can be a list of IDs or an array of IDs or none to retrieve all.
     */
-	array function getAll(required string entityName,any id) {
+	array function getAll(required string entityName,any id,string sortOrder="") {
 		var results = [];
-
+		
 		// Return all entity values
 		if( NOT structKeyExists(arguments,"id") ){
-			return entityLoad(arguments.entityName);
+			return entityLoad(arguments.entityName,{},arguments.sortOrder);
 		}
 
 		// type safe conversions
 		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
-		// execute bulk get
-		var query = ORMGetSession().createQuery("FROM #arguments.entityName# where id in (:idlist)");
+		var q = "FROM #arguments.entityName# where id in (:idlist)";
+		// ordering?
+		if( len(arguments.sortOrder) ){
+			q &= " ORDER BY #arguments.sortOrder#";
+		}		
+		// Execute native hibernate query
+		var query = ORMGetSession().createQuery(q);
+		// parameter binding
 		query.setParameterList("idlist",arguments.id);
 		// Caching?
 		if( getUseQueryCaching() ){
