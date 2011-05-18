@@ -365,6 +365,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	function testExecuteQuery(){
 		test = ormservice.executeQuery(query="from Category");
+		debug(test);
 		assertTrue( test.recordcount );
 
 		params = ["general"];
@@ -385,6 +386,17 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		assertEquals( 'Training', test.getCategory() );
 	}
 
+	function testFindByExample(){
+		sample = entityLoad("Category",{category="Training"},true);	
+		test = ormService.findByExample(sample,true);
+		assertEquals( 'Training', test.getCategory() );	
+		
+		sample = entityLoad("Category",{category="Training"},true);	
+		test = ormService.findByExample(sample);
+		//debug(test);
+		assertEquals( 'Training', test[1].getCategory() );	
+	}
+	
 	function testFindAll(){
 
 		test = ormservice.findAll("from Category where category = ?",['Training']);

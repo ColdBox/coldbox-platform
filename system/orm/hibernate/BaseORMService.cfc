@@ -155,7 +155,8 @@ component accessors="true"{
 							   numeric offset=0,
 					  		   numeric max=0,
 					  		   numeric timeout=0,
-						       boolean asQuery=true){
+						       boolean asQuery=true,
+						       boolean ignorecase=false){
 		var options = {};
 
 		// Setup listing options
@@ -168,6 +169,7 @@ component accessors="true"{
 		if( arguments.timeout neq 0 ){
 			options.timeout = arguments.timeout;
 		}
+		options.ignorecase = arguments.ignorecase;
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
@@ -208,6 +210,13 @@ component accessors="true"{
 	}
 
 	/**
+	* Find all/single entities by example
+	*/
+	any function findByExample(any example,boolean unique=false){
+		return entityLoadByExample(arguments.example,arguments.unique);
+	}
+	
+	/**
 	* Find all the entities for the specified query and params or example
 	* @tested true
 	*/
@@ -234,7 +243,7 @@ component accessors="true"{
 
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
-			return entityLoadByExample( arguments.example );
+			return findByExample( arguments.example );
 		}
 
 		// Normal Find
