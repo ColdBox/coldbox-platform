@@ -9,9 +9,16 @@ Description :
 	I am a WireBox listener that provides you with AOP capabilities in your
 	objects.
 	
-	Decoration
+	Listener Properties:
+	- generationPath:path	- The include path used for code generation
+	- dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
+	
+	Decoration Documentation
 	$wbAOPMixed:boolean(false) 	- If an object is already mixed with AOP capabilities
-	$wbAOPMethods:struct		- A collection of proxied structures and their related interceptors 
+	$wbAOPTargets:struct		- A collection of proxied structures and their related interceptors {udfPointer,interceptors}
+	$wbAOPGetJointPointMD:struct - Retrieve jointpoint md
+	$wbAOPInclude 				- Mix in a template
+	$wbAOPRemove				- Remove a jointpoint signature 
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="I am a WireBox listener that provides you with AOP capabilities in your objects">
 	
@@ -20,7 +27,7 @@ Description :
 	<!--- configure --->    
     <cffunction name="configure" output="false" access="public" returntype="any" hint="Constructor">    
     	<cfargument name="injector" 	type="any" required="true" hint="The injector I am linked to"/>
-    	<cfargument name="properties"	type="any" required="true" hint="Listener properties">
+    	<cfargument name="properties"	type="any" required="true" hint="AOP listener properties">
     	<cfscript>
 			// instance data
 			instance = { 
@@ -37,8 +44,9 @@ Description :
 				// system
 				system 	= createObject("java", "java.lang.System"),
 				// uuid helper
-				uuid 	= createobject("java", "java.util.UUID")
-		
+				uuid 	= createobject("java", "java.util.UUID"),
+				// mixer util
+				mixerUtil = createObject("component","coldbox.system.aop.MixerUtil").init()				
 			};
 			
 			// Default Generation Path?
@@ -208,7 +216,7 @@ Description :
 						instance.log.error("Exception mixing in AOP aspect for (#arguments.mapping.getName()#): #e.message# #e.detail#", e);
 					}
 					// throw the exception
-					throwIt("Exception mixing in AOP aspect for (#arguments.mapping.getName()#)",e.message & e.detail & e.stacktrace,"WireBox.aop.Mixer.MixinException");
+					instance.mixerUtil.throwIt("Exception mixing in AOP aspect for (#arguments.mapping.getName()#)",e.message & e.detail & e.stacktrace,"WireBox.aop.Mixer.MixinException");
 				}	
 			}			
     	</cfscript>    
@@ -238,11 +246,11 @@ Description :
 			// Create targets struct for method proxing
 			arguments.target.$wbAOPTargets = {};
 			// Mix in the include command
-			arguments.target.$wbAOPInclude = variables.$wbAOPInclude;
+			arguments.target.$wbAOPInclude = variables.mixerUtil.$wbAOPInclude;
 			// Mix in the remove command
-			arguments.target.$wbAOPRemove = variables.$wbAOPRemove;
+			arguments.target.$wbAOPRemove = variables.mixerUtil.$wbAOPRemove;
 			// Mix in the MD retriever
-			arguments.target.$wbAOPGetJointPointMD = variables.$wbAOPGetJointPointMD;
+			arguments.target.$wbAOPGetJointPointMD = variables.mixerUtil.$wbAOPGetJointPointMD;
 			// Mix in new log object for AOP information and debugging
 			arguments.target.$wbAOPLog = instance.injector.getLogBox().getLogger(arguments.target);
 			// Log it if possible
@@ -252,58 +260,4 @@ Description :
     	</cfscript>    
     </cffunction>    
     
-<!------------------------------------------- AOP UTILITY MIXINS ------------------------------------------>
-    
-    <!--- $wbAOPInclude --->    
-    <cffunction name="$wbAOPInclude" output="false" access="private" returntype="any" hint="Mix in a template on an injected target">    
-    	<cfargument name="templatePath" type="any" required="true" hint="The template to mix in"/>
-    	<cfinclude template="#arguments.templatePath#" >   
-    </cffunction>
-    
-    <!--- $wbAOPRemove --->    
-    <cffunction name="$wbAOPRemove" output="false" access="private" returntype="any" hint="Remove a method from this target mixin">    
-    	<cfargument name="methodName" type="any" required="true" hint="The method to poof away!"/>
-    	<cfscript>
-			structDelete(this,arguments.methodName);
-			structDelete(variables,arguments.methodName);    
-    	</cfscript>    
-    </cffunction>
-    
-    <!--- $wbAOPGetJointPointMD --->    
-    <cffunction name="$wbAOPGetJointPointMD" output="false" access="private" returntype="any" hint="Get a jointpoint's metadata for proxying">    
-    	<cfargument name="methodName" type="any" required="true" hint="The method to target!"/>
-    	<cfscript>
-			return getMetadata(variables[arguments.methodName]);    
-    	</cfscript>    
-    </cffunction>
-    
-<!------------------------------------------- AOP Utility Methods ------------------------------------------>
-	
-	<!--- throw it --->
-	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
-		<cfargument name="message" 	required="true">
-		<cfargument name="detail" 	required="false" default="">
-		<cfargument name="type"  	required="false" default="Framework">
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-	
-	<!--- writeAspect --->    
-    <cffunction name="writeAspect" output="false" access="private" returntype="any" hint="Write an aspect to disk">    
-    	<cfargument name="genPath"	required="True">
-		<cfargument name="code"		required="True">
-    	<cfscript>	    
-			fileWrite(arguments.genPath, arguments.code);
-    	</cfscript>    
-    </cffunction>
-	
-	<!--- writeAspect --->    
-    <cffunction name="removeAspect" output="false" access="private" returntype="any" hint="Remove an aspect from disk">    
-    	<cfargument name="filePath"	required="True">
-		<cfscript>	    
-			if( fileExists(arguments.filePath) ){
-				fileDelete( arguments.filePath );
-			}
-    	</cfscript>    
-	</cffunction>
-
 </cfcomponent>
