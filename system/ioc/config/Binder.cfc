@@ -841,14 +841,21 @@ Description :
 		</cfscript>
     </cffunction>
     
+    <!--- match --->    
+    <cffunction name="match" output="false" access="public" returntype="any" hint="Create a new matcher class for usage in class or method matching">    
+    	<cfscript>
+			return createObject("component","coldbox.system.aop.Matcher").init();	    
+    	</cfscript>    
+    </cffunction>
+    
     <!--- bindAspect --->    
     <cffunction name="bindAspect" output="false" access="public" returntype="any" hint="Bind a aspects to classes and methods">    
-    	<cfargument name="classMatcher" 	type="any" required="true" hint="The class matcher that will be affected with this aspect binding"/>
-    	<cfargument name="methodMatcher" 	type="any" required="true" hint="The method matcher that will be affected with this aspect binding"/>
-    	<cfargument name="aspect" 			type="any" required="true" hint="The name or list of names or array of names of aspects to apply to the classes and methods defined"/>
+    	<cfargument name="classes" 	type="coldbox.system.aop.Matcher" required="true" hint="The class matcher that will be affected with this aspect binding" colddoc:generic="coldbox.system.aop.Matcher"/>
+    	<cfargument name="methods" 	type="coldbox.system.aop.Matcher" required="true" hint="The method matcher that will be affected with this aspect binding" colddoc:generic="coldbox.system.aop.Matcher"/>
+    	<cfargument name="aspects" 	type="any" required="true" hint="The name or list of names or array of names of aspects to apply to the classes and method matchers"/>
     	<cfscript>
 			// cleanup aspect
-			if( isSimpleValue(arguments.aspect) ){ arguments.aspect = listToArray(arguments.aspect); }
+			if( isSimpleValue(arguments.aspects) ){ arguments.aspects = listToArray(arguments.aspects); }
 			// register it
 			arrayAppend(instance.aspectBindings, arguments);
 			

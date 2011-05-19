@@ -466,7 +466,16 @@
 	}
 	
 	function testBindAspect(){
-		config.bindAspect();		
+		config.bindAspect(classes=config.match().any(),methods=config.match().any(),aspects="luis");
+		b = config.getAspectBindings();
+		
+		assertTrue( arrayLen(b) );
+				
+	}
+	
+	function testMatch(){
+		r = config.match();
+		assertTrue( isObject(r) );		
 	}
 	
 </cfscript>
