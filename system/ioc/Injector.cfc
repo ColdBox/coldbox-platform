@@ -68,7 +68,9 @@ Description :
 					"beforeInstanceInspection",		// X before an object is inspected for injection metadata
 					"afterInstanceInspection",		// X after an object has been inspected and metadata is ready to be saved
 					"beforeInjectorShutdown",		// X right before the shutdown procedures start
-					"afterInjectorShutdown"			// X right after the injector is shutdown
+					"afterInjectorShutdown",		// X right after the injector is shutdown
+					"beforeInstanceAutowire",		// X right before an instance is autowired
+					"afterInstanceAutowire"			// X right after an instance is autowired
 				],
 				// LogBox and Class Logger
 				logBox  = "",
@@ -395,6 +397,7 @@ Description :
 			var DIProperties 	= "";
 			var DISetters		= "";
 			var refLocal		= structnew();
+			var iData			= "";
 			
 			// Do we have a mapping? Or is this a-la-carte wiring
 			if( NOT structKeyExists(arguments,"mapping") ){
@@ -436,6 +439,10 @@ Description :
 				 AND
 				 ( (arguments.annotationCheck eq false) OR (arguments.annotationCheck AND thisMap.isAutowire()) ) ){
 				
+				// announce beforeInstanceAutowire
+				iData = {mapping=thisMap,target=arguments.target,targetID=arguments.targetID,injector=this};
+				instance.eventManager.processState("beforeInstanceAutowire",iData);
+				
 				// prepare instance for wiring, done once for persisted objects and CFCs only
 				instance.utility.getMixerUtil().start( arguments.target );
 				
@@ -458,6 +465,9 @@ Description :
 				processProviderMethods( targetObject, thisMap );
 				// Process After DI Complete
 				processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
+				
+				// After Instance Autowire
+				instance.eventManager.processState("afterInstanceAutowire",iData);
 				
 				// Debug Data
 				if( instance.log.canDebug() ){
