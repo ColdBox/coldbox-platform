@@ -91,7 +91,7 @@ Description :
 			var name 	= arguments.metadata.name;
 			var returns = "any";
 			
-			if( structKeyExists(arguments.metadata, "returns") ){ returns = arguments.metadata.returns; }
+			if( structKeyExists(arguments.metadata, "returntype") ){ returns = arguments.metadata.returntype; }
 			
 			// Start with any()
 			if( instance.any ){ return true; }

@@ -36,14 +36,6 @@ Description :
     	</cfscript>    
     </cffunction>
     
-    <!--- $wbAOPGetJointPointMD --->    
-    <cffunction name="$wbAOPGetJointPointMD" output="false" access="public" returntype="any" hint="Get a jointpoint's metadata for proxying">    
-    	<cfargument name="methodName" type="any" required="true" hint="The method to target!"/>
-    	<cfscript>
-			return getMetadata(variables[arguments.methodName]);    
-    	</cfscript>    
-    </cffunction>
-    
 <!------------------------------------------- Utility Methods ------------------------------------------>
 	
 	<!--- throw it --->
