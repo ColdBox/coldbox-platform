@@ -68,6 +68,60 @@ Description :
     	</cfscript>    
     </cffunction>
     
+    <!--- matchMethod --->    
+    <cffunction name="matchMethod" output="false" access="public" returntype="boolean" hint="Matches a method to this matcher according to its criteria">    
+    	<cfargument name="metadata"  type="any" required="true" hint="The UDF metadata to use for matching"/>
+		<cfscript>
+			var results = matchMethodRules(arguments.metadata);
+			
+			// AND matcher set?
+			if( isObject( instance.and ) ){ return (results AND instance.and.matchMethod(arguments.metadata) ); }
+			// OR matcher set?
+			if( isObject( instance.or ) ){ return (results OR instance.or.matchMethod(arguments.metadata) ); }
+			
+			return results;			
+    	</cfscript>    
+    </cffunction>
+    
+     <!--- matchMethodRules --->    
+    <cffunction name="matchMethodRules" output="false" access="private" returntype="boolean" hint="Go through all the rules in this matcher and match">    
+    	<cfargument name="metadata"  type="any" required="true" hint="The UDF metadata to use for matching"/>
+		<cfscript>	 
+			// Some metadata defaults
+			var name 	= arguments.metadata.name;
+			var returns = "any";
+			
+			if( structKeyExists(arguments.metadata, "returns") ){ returns = arguments.metadata.returns; }
+			
+			// Start with any()
+			if( instance.any ){ return true; }
+			// Check explicit methods
+			if( len(instance.methods) AND listFindNoCase( instance.methods, name ) ){
+				return true;
+			}
+			// regex
+			if( len(instance.regex) AND reFindNoCase(instance.regex, name) ){
+				return true;
+			}
+			// returns
+			if( len(instance.returns) AND instance.returns EQ returns ){
+				return true;
+			}
+			// annotation
+			if( len(instance.annotation) AND structKeyExists(arguments.metadata, instance.annotation)){
+				// No annotation value
+				if( NOT structKeyExists(instance,"annotationValue") ){ return true; }
+					
+				// check annotation value
+				if( structKeyExists(instance,"annotationValue") AND arguments.metadata[instance.annotation] EQ instance.annotationValue ){
+					return true;	
+				}
+			}
+			
+			return false;   
+    	</cfscript>    
+    </cffunction>
+    
     <!--- matchRules --->    
     <cffunction name="matchClassRules" output="false" access="private" returntype="boolean" hint="Go through all the rules in this matcher and match">    
     	<cfargument name="target"  type="any" required="true" hint="The target to match against to"/>

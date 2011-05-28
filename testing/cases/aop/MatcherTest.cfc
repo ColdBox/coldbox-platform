@@ -7,10 +7,11 @@
 	}
 	
 	function testMatchClass(){
-		mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping")
+		var mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping")
 			.init('UnitTest')
 			.setPath( getMetadata(this).name )
 			.$("getObjectMetadata", getMetadata(this) );
+		
 		// any
 		matcher.any();
 		assertTrue( matcher.matchClass(this,mockMapping) );
@@ -26,8 +27,8 @@
 		assertTrue( matcher.matchClass(this,mockMapping) );
 		
 		// instanceOf
-		matcher.reset().instanceOf("coldbox.system.testing.BaseTestCase");
-		assertTrue( matcher.matchClass(this,mockMapping) );
+		matcher.reset().instanceOf("mxunit.framework.TestCase");
+		assertTrue( matcher.matchClass( createObject("component","MatcherTest") ,mockMapping) );
 		
 		// annotation
 		matcher.reset().annotatedWith("cool");
@@ -41,7 +42,7 @@
 	}
 	
 	function testMatchClassAndOr(){
-		mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping")
+		var mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping")
 			.init('UnitTest')
 			.setPath( getMetadata(this).name )
 			.$("getObjectMetadata", getMetadata(this) );
@@ -75,6 +76,38 @@
 		orM.annotatedWith("nothing");
 		matcher.reset().mappings('test').orMatch( orM );
 		assertFalse( matcher.matchClass(this,mockMapping) );
+	}
+
+	void function testMatchMethod() cool="true"{
+		var mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping")
+			.init('UnitTest')
+			.setPath( getMetadata(this).name )
+			.$("getObjectMetadata", getMetadata(this) );
+		var fncmd = getMetadata(variables.testMatchMethod) ;
+		
+		// any
+		matcher.any();
+		assertTrue( matcher.matchMethod( fncmd) );
+		
+		// methods
+		matcher.reset().methods("testMatchMethod,test");
+		assertTrue( matcher.matchMethod( fncmd) );
+		matcher.reset().methods("test,Unit");
+		assertFalse( matcher.matchMethod( fncmd) );
+		
+		// regex
+		matcher.reset().regex("^test");
+		assertTrue( matcher.matchMethod( fncmd) );
+
+		// annotation
+		matcher.reset().annotatedWith("cool");
+		assertTrue( matcher.matchMethod( fncmd) );
+		
+		// annotation value
+		matcher.reset().annotatedWith("cool",false);
+		assertfalse( matcher.matchMethod( fncmd) );
+		matcher.reset().annotatedWith("cool",true);
+		assertTrue( matcher.matchMethod( fncmd) );
 	}
 	
 	function testAny(){
