@@ -33,21 +33,14 @@
 		
 		// 2: target NOT mixed and we need dictionary and nothing matched
 		structDelete(this, "$wbAOPMixed");
-		mixer.$("AOPBuilder").$("buildClassMatchDictionary");
+		dictionary = { "unittest" = [] };
+		mixer.$("AOPBuilder").$("buildClassMatchDictionary").$property("classMatchDictionary","instance",dictionary);
 		mixer.afterInstanceAutowire(data);
 		assertTrue( mixer.$never("AOPBuilder") );
-		assertTrue( mixer.$once("buildClassMatchDictionary") );
 		
-		// 3: target NOT mixed and we need dictionary and it matches but no methods
-		dictionary = { "unitTest" = {}};
-		mixer.$("AOPBuilder").$("buildClassMatchDictionary").$property("aspectDictionary","instance",dictionary);
-		mixer.afterInstanceAutowire(data);
-		assertTrue( mixer.$never("AOPBuilder") );
-		assertTrue( mixer.$never("buildClassMatchDictionary") );
-		
-		// 4: target NOT mixed and we need dictionary and it matches with methods
-		dictionary = { "unitTest" = { "save" = [] }};
-		mixer.$("AOPBuilder").$("buildClassMatchDictionary").$property("aspectDictionary","instance",dictionary);
+		// 3: target NOT mixed and we need dictionary and it matches with methods
+		dictionary = { "unitTest" = [{classes="",methods="",aspects="1,2"}] };
+		mixer.$("AOPBuilder").$("buildClassMatchDictionary").$property("classMatchDictionary","instance",dictionary);
 		mixer.afterInstanceAutowire(data);
 		assertTrue( mixer.$once("AOPBuilder") );
 		assertTrue( mixer.$never("buildClassMatchDictionary") );

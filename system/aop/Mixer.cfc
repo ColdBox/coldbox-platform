@@ -151,8 +151,6 @@ Description :
     	<cfargument name="dictionary" 	type="any" required="true" hint="The target aspect dictionary"/>
     	<cfargument name="idCode" 		type="any" required="true" hint="The incoming target identifier"/>
     	
-    	<cfset var aspect  = "">
-    	
     	<!--- Lock --->
     	<cflock name="aop.weaveAdvice.id.#arguments.idCode#" type="exclusive" timeout="30" throwOnTimeout="true">
 		<cfscript>
@@ -323,7 +321,7 @@ Description :
 			arguments.target.$wbAOPLog = instance.injector.getLogBox().getLogger(arguments.target);
 			// Log it if possible
 			if( instance.log.canDebug() ){
-				instance.log.debug("AOP Decoration for Mapping: #arguments.mapping.getName()#");
+				instance.log.debug("AOP Decoration finalized for Mapping: #arguments.mapping.getName()#");
 			}		    
     	</cfscript>    
     </cffunction>    
