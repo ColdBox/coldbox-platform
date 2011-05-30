@@ -37,6 +37,12 @@ Only one instance of a specific ColdBox application exists.
 
 			// Setup the ColdBox Services
 			services.LoaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init(this);
+			
+			// LogBox Default Configuration & Creation
+			instance.logBox = services.loaderService.createDefaultLogBox();
+			instance.log 	= instance.logBox.getLogger(this);
+			
+			// Setup the ColdBox Services
 			services.RequestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init(this);
 			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init(this);
 			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init(this);
@@ -49,14 +55,11 @@ Only one instance of a specific ColdBox application exists.
 			}
 			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this);
 
-			// LogBox Default Configuration & Creation
-			instance.logBox = services.loaderService.createDefaultLogBox();
-			instance.log 	= instance.logBox.getLogger(this);
-			
 			// CacheBox
 			instance.cacheBox 	= "";
 			instance.wireBox	= "";
-		
+			
+			// Announcement we are created.
 			if( instance.log.canInfo() ){
 				instance.log.info("ColdBox Application Controller Created Successfully at #arguments.appRootPath#");
 			}

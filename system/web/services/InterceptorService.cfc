@@ -37,6 +37,12 @@ Description :
 			// Init the Request Buffer
 			instance.requestBuffer = CreateObject("component","coldbox.system.core.util.RequestBuffer").init();
 			
+			// Default Logging
+			instance.log = controller.getLogBox().getLogger(this);
+    		
+    		// Setup Default Configuration
+    		instance.interceptorConfig = structNew();
+			
 			return this;
 		</cfscript>
 	</cffunction>
