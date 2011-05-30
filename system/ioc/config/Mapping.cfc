@@ -475,6 +475,9 @@ Description :
 					md = getComponentMetadata( instance.path );
 				}
 				
+				// Store Metadata
+				instance.metadata = md;
+				
 				// Singleton Processing
 				if( structKeyExists(md,"singleton") ){ instance.scope = arguments.binder.SCOPES.SINGLETON; }
 				// Registered Scope Processing
