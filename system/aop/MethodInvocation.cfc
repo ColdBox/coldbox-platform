@@ -17,6 +17,7 @@ Description :
     	<cfargument name="method" 			type="any" required="true" hint="The method name that was intercepted"/>
 		<cfargument name="args" 			type="any" required="true" hint="The argument collection that was intercepted"/>
 		<cfargument name="target" 			type="any" required="true" hint="The target object reference that was intercepted"/>
+		<cfargument name="targetName"		type="any" required="true" hint="The name of the target wired up"/>
 		<cfargument name="interceptors" 	type="any" required="true" hint="The array of interceptors for this invocation"/>
     	<cfscript>
 			
@@ -28,6 +29,8 @@ Description :
 				args				= arguments.args,
 				// Target intercepted
 				target				= arguments.target,
+				// Target name
+				targetName			= arguments.targetName,
 				// Interceptor array chain
 				interceptors		= arguments.interceptors,
 				// Current index to start execution
@@ -68,6 +71,13 @@ Description :
     <cffunction name="getTarget" output="false" access="public" returntype="any" hint="Get the original target object of this method invocation">    
     	<cfscript>
 			return instance.target;	    
+    	</cfscript>    
+    </cffunction>
+    
+    <!--- getTargetName --->    
+    <cffunction name="getTargetName" output="false" access="public" returntype="any" hint="Get the name of this target">    
+    	<cfscript>
+			return instance.targetName;	    
     	</cfscript>    
     </cffunction>
 

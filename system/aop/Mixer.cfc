@@ -81,8 +81,8 @@ Description :
 			var mappingName 	= "";
 			var idCode			= "";
 			
-			// check if target already mixed, if so just return, nothing else to do
-			if( structKeyExists(target,"$wbAOPMixed") ){ return; }
+			// check if target already mixed, if so just return, nothing else to do or if the  mapping is an aspect
+			if( structKeyExists(target,"$wbAOPMixed") OR mapping.isAspect() ){ return; }
 			
 			// Setup variables
 			mappingName = lcase( mapping.getName() );
@@ -165,9 +165,6 @@ Description :
 			
 			// finalize AOP
 			arguments.target.$wbAOPMixed = true;
-			if( instance.log.canDebug() ){
-				instance.log.debug("AOP weaving finalized for: #arguments.mapping.getName()#");
-			}	
 		</cfscript>
 		</cflock> 
     	  
@@ -184,7 +181,7 @@ Description :
 			var fncLen		= "";
 			var x			= 1;
 			var y			= 1;
-			
+			writeDump(arguments);abort;
 			// check if there are functions, else exit
 			if( NOT structKeyExists(arguments.metadata,"functions") ){
 				return;
@@ -206,6 +203,9 @@ Description :
 					if( arguments.dictionary[y].methods.matchMethod( functions[x] ) ){
 						// Build the the AOP advisor with the function pointcut
 						weaveAdvice(target=arguments.target,mapping=arguments.mapping,jointpoint=functions[x].name,jointPointMD=functions[x],aspects=arguments.dictionary[y].aspects);					
+					}
+					else if ( instance.log.canDebug() ){
+						instance.log.debug("Target: (#mappingName#) Method:(#arguments.jointpoint#) did not match aspect method matcher, skipping.");
 					}
 					
 				}
@@ -251,6 +251,7 @@ Description :
 					var invocation = createObject("component","coldbox.system.aop.MethodInvocation").init(method="#arguments.jointPoint#",
 																										 args=arguments,
 																										 target=this,
+																										 targetName="#mappingName#",
 																										 interceptors=this.$wbAOPTargets["#arguments.jointPoint#"].interceptors);	
 					// execute and return
 					return invocation.proceed();
