@@ -132,9 +132,10 @@ Description :
 				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
 				// Create local event manager
 				configureEventManager();
-				// Register All Custom Listeners
-				registerListeners();
 			}
+			
+			// Register All Custom Listeners
+			registerListeners();
 			
 			// Create our object builder
 			instance.builder = createObject("component","coldbox.system.ioc.Builder").init( this );
@@ -788,7 +789,12 @@ Description :
 				}
 				
 				// Now register listener
-				instance.eventManager.register(thisListener,listeners[x].name);
+				if( NOT isColdBoxLinked() ){ 
+					instance.eventManager.register(thisListener,listeners[x].name);
+				}
+				else{
+					instance.eventManager.registerInterceptor(interceptorObject=thisListener,interceptorName=listeners[x].name);
+				}
 				
 				// debugging
 				if( instance.log.canDebug() ){
