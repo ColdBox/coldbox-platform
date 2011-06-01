@@ -214,7 +214,7 @@ Description :
 			
 			// Discover inheritance? Recursion
 			if( structKeyExists(arguments.metadata,"extends") ){
-				processTargetMethods(arguments.target, arguments.metadata, arguments.metadata.extends, arguments.dictionary);
+				processTargetMethods(arguments.target, arguments.mapping, arguments.metadata.extends, arguments.dictionary);
 			}
     	</cfscript>    
     </cffunction>
