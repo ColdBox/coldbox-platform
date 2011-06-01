@@ -23,7 +23,7 @@
 		interceptors[2].callCounter = 0;
 				
 		// init the invocation
-		invocation.init(method="saveUser",args=args,target=this,interceptors=interceptors);
+		invocation.init(method="saveUser",args=args,target=this,targetName="UnitTest",interceptors=interceptors);
 	}
 	
 	function testInit(){
@@ -43,10 +43,13 @@
 	function testProceed(){
 		// mock the proxied method
 		this.callCounter = 0;
-		this.$wbAOPMethods["saveUser"] = {
+		this.$wbAOPTargets["saveUser"] = {
 			UDFPointer = variables.saveUser,
 			interceptors = interceptors
 		};
+		mixerUtil = createObject("component","coldbox.system.aop.MixerUtil");
+		this.$wbAOPInvokeProxy = mixerUtil.$wbAOPInvokeProxy;
+		
 		// proceed with AOP interception
 		results = invocation.proceed(); 
 		debug( results );

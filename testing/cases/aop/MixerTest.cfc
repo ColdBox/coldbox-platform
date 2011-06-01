@@ -17,7 +17,7 @@
 	
 	function testafterInstanceAutowire(){
 		// mocks
-		mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping")
+		mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init('unitTest')
 			.$("getName","unitTest");
 		// intercept data
 		data = {
@@ -53,11 +53,11 @@
 			.$("getName","unitTest");
 		mixer.decorateAOPTarget(this, mockMapping);
 		
-		assertTrue( structKeyExists(this,"$WBAOPTargets") );
+		assertTrue( structKeyExists(this,"$wbAOPTargets") );
 		assertTrue( structKeyExists(this,"$wbAOPInclude") );
+		assertTrue( structKeyExists(this,"$wbAOPStoreJointPoint") );
+		assertTrue( structKeyExists(this,"$wbAOPInvokeProxy") );
 		assertTrue( structKeyExists(this,"$wbAOPRemove") );
-		assertTrue( structKeyExists(this,"$wbAOPLog") );
-		
 		
 	}
 	

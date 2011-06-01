@@ -127,8 +127,8 @@ Description :
     	<cfargument name="target"  type="any" required="true" hint="The target to match against to"/>
 		<cfargument name="mapping" type="any" required="true" hint="The target mapping to match against to" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
     	<cfscript>	 
-			var path  = arguments.mapping.getPath();
 			var md	  = arguments.mapping.getObjectMetadata();
+			var path  = reReplace(md.name, "(\/|\\)", ".","all");
 			
 			// Start with any()
 			if( instance.any ){ return true; }

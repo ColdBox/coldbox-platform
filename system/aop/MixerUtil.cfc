@@ -21,6 +21,25 @@ Description :
 
 <!------------------------------------------- AOP UTILITY MIXINS ------------------------------------------>
     
+     <!--- $wbAOPStoreJointPoint --->    
+    <cffunction name="$wbAOPStoreJointPoint" output="false" access="public" returntype="any" hint="Store JointPoint information">    
+    	<cfargument name="jointpoint" 	type="any" required="true" hint="The jointpoint to proxy"/>
+		<cfargument name="interceptors" type="any" required="true" hint="The jointpoint interceptors"/>
+		<cfscript>
+			this.$wbAOPTargets[arguments.jointpoint] = {
+				udfPointer 	 = variables[ arguments.jointpoint ],
+				interceptors = arguments.interceptors
+			};
+		</cfscript>
+    </cffunction>
+    
+    <!--- $wbAOPInvokeProxy --->    
+    <cffunction name="$wbAOPInvokeProxy" output="false" access="public" returntype="any" hint="Invoke a mixed in proxy method">    
+    	<cfargument name="method" 	type="any" required="true" hint="The method to proxy execute"/>
+		<cfargument name="args" 	type="any" required="true" hint="The method args to proxy execute"/>
+    	<cfreturn this.$wbAOPTargets[ arguments.method ].udfPointer(argumentCollection=arguments.args)>
+    </cffunction>
+    
     <!--- $wbAOPInclude --->    
     <cffunction name="$wbAOPInclude" output="false" access="public" returntype="any" hint="Mix in a template on an injected target">    
     	<cfargument name="templatePath" type="any" required="true" hint="The template to mix in"/>

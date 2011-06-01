@@ -107,7 +107,7 @@ Description :
 			}
 			
 			// If we get here all interceptors have fired and we need to fire the original proxied method
-			return instance.target.$wbAOPMethods[ instance.method ].UDFPointer(argumentCollection=instance.args);
+			return instance.target.$wbAOPInvokeProxy(method=instance.method,args=instance.args);
 		</cfscript>	
     </cffunction>
 	

@@ -55,9 +55,15 @@ Description :
 			
 			// Register all event listeners here, they are created in the specified order
 			listeners = [
-				// { class="", name="", properties={} }
+				// AOP Listener
+				{class="coldbox.system.aop.Mixer"}
 			]			
 		};
+		
+		// Map some AOP aspects
+		mapAspect("MethodLogger").to("coldbox.system.aop.aspects.MethodLogger");
+		// Bind the aspects
+		bindAspect(classes=match().regex('coldbox\.testharness\.interceptors'),methods=match().any(),aspects="MethodLogger");
 	}	
 </cfscript>
 </cfcomponent>

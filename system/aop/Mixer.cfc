@@ -51,7 +51,7 @@ Description :
 			
 			// Default Generation Path?
 			if( NOT structKeyExists(instance.properties,"generationPath") ){
-				instance.properties.generationPath = expandPath("/coldbox/system/ioc/aop/tmp");
+				instance.properties.generationPath = "/coldbox/system/aop/tmp";
 			}
 			
 			// Class Dictionary Reload
@@ -181,7 +181,7 @@ Description :
 			var fncLen		= "";
 			var x			= 1;
 			var y			= 1;
-			writeDump(arguments);abort;
+			
 			// check if there are functions, else exit
 			if( NOT structKeyExists(arguments.metadata,"functions") ){
 				return;
@@ -205,7 +205,7 @@ Description :
 						weaveAdvice(target=arguments.target,mapping=arguments.mapping,jointpoint=functions[x].name,jointPointMD=functions[x],aspects=arguments.dictionary[y].aspects);					
 					}
 					else if ( instance.log.canDebug() ){
-						instance.log.debug("Target: (#mappingName#) Method:(#arguments.jointpoint#) did not match aspect method matcher, skipping.");
+						instance.log.debug("Target: (#arguments.mapping.getName()#) Method:(#functions[x].name#) did not match aspect method matcher, skipping.");
 					}
 					
 				}
@@ -227,32 +227,34 @@ Description :
 		<cfargument name="jointPointMD"	type="any" required="true" hint="The jointpoint metadata to proxy"/>
 		<cfargument name="aspects" 		type="any" required="true" hint="The aspects to weave into the jointpoint"/>
     	<cfscript>
-			var udfOut 		= createObject("java","java.lang.StringBuffer").init('');
-			var tmpFile 	= instance.properties.generationPath & instance.uuid.randomUUID().toString() & ".cfm";
-			var lb			= "#chr(13)##chr(10)#";
-			var fncMD		= {};
-			var mappingName = arguments.mapping.getName();
+			var udfOut 			= createObject("java","java.lang.StringBuffer").init('');
+			var tmpFile 		= instance.properties.generationPath & "/" & instance.uuid.randomUUID().toString() & ".cfm";
+			var expandedFile 	= expandPath( tmpFile );
+			var lb				= "#chr(13)##chr(10)#";
+			var fncMD			= {
+				name = "", access = "public", output="false", returnType = "any"
+			};
+			var mappingName 	= arguments.mapping.getName();
 			
 			// MD proxy Defaults
 			fncMD.name = arguments.jointPointMD.name;
-			if( NOT structKeyExists(arguments.jointPointMD,"access") ){ fncMD.access = "public"; }
-			if( NOT structKeyExists(arguments.jointPointMD,"output") ){ fncMD.output = false; }
-			if( NOT structKeyExists(arguments.jointPointMD,"returntype") ){ fncMD.returntype = "any"; }
+			if( structKeyExists(arguments.jointPointMD,"access") ){ fncMD.access = arguments.jointPointMD.access; }
+			if( structKeyExists(arguments.jointPointMD,"output") ){ fncMD.output = arguments.jointPointMD.output; }
+			if( structKeyExists(arguments.jointPointMD,"returntype") ){ fncMD.returntype = arguments.jointPointMD.returnType; }
 			
 			// Create Original Method Proxy Signature
 			if( fncMD.access eq "public" ){
-				udfOut.append('<cfset this["#arguments.jointpoint#"] = #arguments.jointpoint#>#lb#');
+				udfOut.append('<cfset this["#arguments.jointpoint#"] = variables["#arguments.jointpoint#"]>#lb#');
 			}
 			udfOut.append('
-			<cfset variables["#arguments.jointpoint#"] = #arguments.jointpoint#>
 			<cffunction name="#arguments.jointpoint#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#" hint="WireBox AOP just rulez!">
 				<cfscript>
 					// create new method invocation for this execution
 					var invocation = createObject("component","coldbox.system.aop.MethodInvocation").init(method="#arguments.jointPoint#",
-																										 args=arguments,
-																										 target=this,
-																										 targetName="#mappingName#",
-																										 interceptors=this.$wbAOPTargets["#arguments.jointPoint#"].interceptors);	
+																										  args=arguments,
+																										  target=this,
+																										  targetName="#mappingName#",
+																										  interceptors=this.$wbAOPTargets["#arguments.jointPoint#"].interceptors);	
 					// execute and return
 					return invocation.proceed();
 				</cfscript>					
@@ -260,27 +262,26 @@ Description :
 			');
 			
 			try{
+				
 				// Write it out to the generation space
-				instance.mixerUtil.writeAspect(tmpFile, udfOUt.toString());
+				instance.mixerUtil.writeAspect( expandedFile, udfOUt.toString() );
 				// Save jointpoint in method targets alongside the interceptors
-				arguments.target.$wbAOPTargets[arguments.jointpoint] = {
-					udfPointer 	 = arguments.target[arguments.jointpoint],
-					interceptors = buildInterceptors( arguments.aspects )
-				};
+				arguments.target.$wbAOPStoreJointPoint(arguments.jointpoint, buildInterceptors( arguments.aspects) );
 				// Remove the old method to proxy it
 				arguments.target.$wbAOPRemove(arguments.jointpoint);
 				// Mix In generated aspect
 				arguments.target.$wbAOPInclude( tmpFile );
 				// Remove Temp Aspect from disk
-				instance.mixerUtil.removeAspect(tmpFile);	
+				instance.mixerUtil.removeAspect( expandedFile );	
 				// debug info
 				if( instance.log.canDebug() ){
 					instance.log.debug("Target (#mappingName#) weaved with new (#arguments.jointpoint#) method and with the following aspects: #arguments.aspects.toString()#");
 				}			
 			}
 			catch(Any e){
+				writeDump(e);abort;
 				// Remove Stub, just in case.
-				instance.mixerUtil.removeAspect( tmpFile );
+				instance.mixerUtil.removeAspect( expandedFile );
 				// log it
 				if( instance.log.canError() ){
 					instance.log.error("Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#", e);
@@ -318,8 +319,12 @@ Description :
 			arguments.target.$wbAOPInclude = instance.mixerUtil.$wbAOPInclude;
 			// Mix in the remove command
 			arguments.target.$wbAOPRemove = instance.mixerUtil.$wbAOPRemove;
-			// Mix in new log object for AOP information and debugging
-			arguments.target.$wbAOPLog = instance.injector.getLogBox().getLogger(arguments.target);
+			// Mix in store point information
+			arguments.target.$wbAOPStoreJointPoint = instance.mixerUtil.$wbAOPStoreJointPoint;
+			// Mix in method proxy execution
+			arguments.target.$wbAOPInvokeProxy = instance.mixerUtil.$wbAOPInvokeProxy;
+			// Mix in Private Invoker
+			arguments.target.$wbAOPRemove = instance.mixerUtil.$wbAOPRemove;
 			// Log it if possible
 			if( instance.log.canDebug() ){
 				instance.log.debug("AOP Decoration finalized for Mapping: #arguments.mapping.getName()#");
