@@ -64,7 +64,9 @@ Description :
 				// discovered provider methods
 				providerMethods = [],
 				// AOP aspect
-				aspect = false
+				aspect = false,
+				// AutoAspectBinding
+				autoAspectBinding = true
 			};
 			
 			// DI definition structure
@@ -221,6 +223,17 @@ Description :
     	<cfargument name="aspect" required="true" colddoc:generic="Boolean">
     	<cfset instance.aspect = arguments.aspect>
     	<cfreturn this>
+    </cffunction>
+    
+    <!--- isAspectAutoBinding --->    
+    <cffunction name="isAspectAutoBinding" output="false" access="public" returntype="any" hint="Is this mapping an auto aspect binding" colddoc:generic="Boolean">    
+    	<cfreturn instance.autoAspectBinding>    
+    </cffunction>
+    <!--- setAspectAutoBinding --->    
+    <cffunction name="setAspectAutoBinding" output="false" access="public" returntype="any" hint="Set the aspect auto binding bit">    
+    	<cfargument name="autoBinding" required="true" colddoc:generic="Boolean">
+    	<cfset instance.autoAspectBinding = arguments.autoBinding>
+    	<cfreturn this>    
     </cffunction>
 	
 	<!--- isAutoInit --->
@@ -539,6 +552,11 @@ Description :
 					processDIMetadata( arguments.binder, md );
 				}
 				
+				// AOP AutoBinding only if both @classMatcher and @methodMatcher exist
+				if( isAspectAutoBinding() AND structKeyExists(md,"classMatcher") AND structKeyExists(md,"methodMatcher") ){
+					processAOPBinding( arguments.binder, md);
+				}
+				
 				// finished processing mark as discovered
 				instance.discovered = true;
 				
@@ -550,6 +568,71 @@ Description :
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
+	
+	<!--- processAOPBinding --->    
+    <cffunction name="processAOPBinding" output="false" access="private" returntype="any" hint="Process the AOP self binding aspects">    
+    	<cfargument name="binder" 		required="true" hint="The binder requesting the processing"/>
+		<cfargument name="metadata" 	required="true" hint="The metadata to process"/>
+		<cfscript>
+			var classes 		= listFirst(arguments.metadata.classMatcher,":");
+			var methods 		= listFirst(arguments.metadata.methodMatcher,":");
+			var classMatcher 	= "";
+			var methodMatcher 	= "";
+			
+			// determine class matching
+			switch(classes){
+				case "any" : { classMatcher = arguments.binder.match().any(); break; }
+				case "annotatedWith" : { 
+					// annotation value?
+					if( listLen(arguments.metadata.classMatcher,":") eq 3 ){
+						classMatcher = arguments.binder.match().annotatedWith( getToken(arguments.metadata.classMatcher,2,":"), getToken(arguments.metadata.classMatcher,3,":") );
+					}
+					// No annotation value
+					else{
+						classMatcher = arguments.binder.match().annotatedWith( getToken(arguments.metadata.classMatcher,2,":") );
+					} 
+					break;
+				}
+				case "mappings" : { classMatcher = arguments.binder.match().mappings( getToken(arguments.metadata.classMatcher,2,":") ); break; }
+				case "instanceOf" : { classMatcher = arguments.binder.match().instanceOf( getToken(arguments.metadata.classMatcher,2,":") ); break; }
+				case "regex" : { classMatcher = arguments.binder.match().regex( getToken(arguments.metadata.classMatcher,2,":") ); break; }
+				default: {
+					// throw, no matching matchers
+					arguments.binder.utility.throwIt(message="Invalid Class Matcher: #classes#",
+													type="Mapping.InvalidAOPClassMatcher",
+													detail="Valid matchers are 'any,annotatedWith:annotation,annotatedWith:annotation:value,mappings:XXX,instanceOf:XXX,regex:XXX'");
+				}
+			}
+			
+			// determine method matching
+			switch(methods){
+				case "any" : { methodMatcher = arguments.binder.match().any(); break; }
+				case "annotatedWith" : { 
+					// annotation value?
+					if( listLen(arguments.metadata.classMatcher,":") eq 3 ){
+						methodMatcher = arguments.binder.match().annotatedWith( getToken(arguments.metadata.methodMatcher,2,":"), getToken(arguments.metadata.methodMatcher,3,":") );
+					}
+					// No annotation value
+					else{
+						methodMatcher = arguments.binder.match().annotatedWith( getToken(arguments.metadata.methodMatcher,2,":") );
+					} 
+					break;
+				}
+				case "methods" : { methodMatcher = arguments.binder.match().methods( getToken(arguments.metadata.methodMatcher,2,":") ); break; }
+				case "instanceOf" : { methodMatcher = arguments.binder.match().instanceOf( getToken(arguments.metadata.methodMatcher,2,":") ); break; }
+				case "regex" : { methodMatcher = arguments.binder.match().regex( getToken(arguments.metadata.methodMatcher,2,":") ); break; }
+				default: {
+					// throw, no matching matchers
+					arguments.binder.utility.throwIt(message="Invalid Method Matcher: #classes#",
+													type="Mapping.InvalidAOPMethodMatcher",
+													detail="Valid matchers are 'any,annotatedWith:annotation,annotatedWith:annotation:value,methods:XXX,instanceOf:XXX,regex:XXX'");
+				}
+			}
+			
+			// Bind the Aspect to this Mapping
+			arguments.binder.bindAspect(classMatcher,methodMatcher,getName());    
+    	</cfscript>    
+    </cffunction>
 	
 	<!--- processDIMetadata --->
 	<cffunction name="processDIMetadata" returntype="void" access="private" output="false" hint="Process methods/properties for dependency injection">

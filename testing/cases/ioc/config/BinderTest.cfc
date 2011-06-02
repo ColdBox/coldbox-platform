@@ -463,6 +463,12 @@
 		assertEquals( "singleton", mapping.getScope() );
 		assertEquals( true, mapping.isEagerInit() );
 		assertEquals( "model.Transactional", mapping.getPath() );
+		assertEquals( true, mapping.isAspectAutoBinding() );
+		
+		config.mapAspect("Transaction",false).to("model.Transactional");
+		mapping = config.getMapping("Transaction");	
+		assertEquals( false, mapping.isAspectAutoBinding() );
+		
 	}
 	
 	function testBindAspect(){
