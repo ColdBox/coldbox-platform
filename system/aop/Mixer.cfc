@@ -177,10 +177,11 @@ Description :
     	<cfargument name="metadata" 	type="any" required="true" hint="The incoming target metadata"/>
     	<cfargument name="dictionary" 	type="any" required="true" hint="The target aspect dictionary"/>
     	<cfscript>	  
-			var functions 	= "";
-			var fncLen		= "";
-			var x			= 1;
-			var y			= 1;
+			var functions 				= "";
+			var fncLen					= "";
+			var x						= 1;
+			var y						= 1;
+			var matchedMethodAspects 	= "";
 			
 			// check if there are functions, else exit
 			if( NOT structKeyExists(arguments.metadata,"functions") ){
@@ -193,21 +194,27 @@ Description :
 			
 			for(x=1; x LTE fncLen; x++){
 				
-				// check if function already proxied, if so, skip
+				// check if function already proxied, if so, skip it
 				if( structKeyExists(arguments.target.$wbAOPTargets, functions[x].name ) ){ continue; }
+				
+				// init matched aspects to weave
+				matchedMethodAspects = [];
 				
 				// function not proxied yet, let's iterate over aspects and see if we can match
 				for(y=1; y LTE arrayLen(arguments.dictionary); y++){
-					
 					// does the jointpoint match against aspect methods
 					if( arguments.dictionary[y].methods.matchMethod( functions[x] ) ){
-						// Build the the AOP advisor with the function pointcut
-						weaveAdvice(target=arguments.target,mapping=arguments.mapping,jointpoint=functions[x].name,jointPointMD=functions[x],aspects=arguments.dictionary[y].aspects);					
-					}
-					else if ( instance.log.canDebug() ){
-						instance.log.debug("Target: (#arguments.mapping.getName()#) Method:(#functions[x].name#) did not match aspect method matcher, skipping.");
-					}
-					
+						matchedMethodAspects.addAll( arguments.dictionary[y].aspects );
+						// Debug Info
+						if ( instance.log.canDebug() ){
+							instance.log.debug("Target: (#arguments.mapping.getName()#) Method:(#functions[x].name#) matches aspects #arguments.dictionary[y].aspects.toString()#");
+						}
+					}				
+				}
+				
+				// Build the the AOP advisor with the function pointcut and matched aspects?
+				if( arrayLen( matchedMethodAspects ) ){
+					weaveAdvice(target=arguments.target,mapping=arguments.mapping,jointpoint=functions[x].name,jointPointMD=functions[x],aspects=matchedMethodAspects);
 				}
 				
 			}
