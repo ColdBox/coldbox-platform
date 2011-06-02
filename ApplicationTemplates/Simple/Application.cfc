@@ -29,5 +29,22 @@ Description :
 	<cfset COLDBOX_CONFIG_FILE   = "">	
 	<!--- COLDBOX APPLICATION KEY OVERRIDE --->
 	<cfset COLDBOX_APP_KEY       = "">
+
+	<!--- on Request Start --->
+	<cffunction name="onRequestStart" returnType="boolean" output="true">
+		<!--- ************************************************************* --->
+		<cfargument name="targetPage" type="string" required="true" />
+		<!--- ************************************************************* --->
+		<!--- Reload Checks --->
+		<cfset reloadChecks()>
+		
+		<!--- Process A ColdBox Request Only --->
+		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
+			<cfset processColdBoxRequest()>
+		</cfif>
+			
+		<!--- WHATEVER YOU WANT BELOW --->
+		<cfreturn true>
+	</cffunction>
 	
 </cfcomponent>

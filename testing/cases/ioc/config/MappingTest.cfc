@@ -60,7 +60,11 @@
 		args = mapping.getDIMethodArguments();
 		assertEquals( 2, arrayLen(args));
 		
+		assertEquals( false, mapping.isAspect() );
 		
+		assertEquals( true, mapping.isAspectAutoBinding() );
+		mapping.setAspectAutoBinding(false);
+		assertEquals( false, mapping.isAspectAutoBinding() );
 	}
 	
 	function testProviderMethods(){

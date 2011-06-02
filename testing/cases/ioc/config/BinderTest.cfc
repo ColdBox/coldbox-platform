@@ -456,5 +456,33 @@
 		assertEquals( "provider", mapping.getType() );
 	}
 	
+	function testMapAspect(){
+		config.mapAspect("Transaction").to("model.Transactional");
+		mapping = config.getMapping("Transaction");	
+		assertEquals( true, mapping.isAspect() );
+		assertEquals( "singleton", mapping.getScope() );
+		assertEquals( true, mapping.isEagerInit() );
+		assertEquals( "model.Transactional", mapping.getPath() );
+		assertEquals( true, mapping.isAspectAutoBinding() );
+		
+		config.mapAspect("Transaction",false).to("model.Transactional");
+		mapping = config.getMapping("Transaction");	
+		assertEquals( false, mapping.isAspectAutoBinding() );
+		
+	}
+	
+	function testBindAspect(){
+		config.bindAspect(classes=config.match().any(),methods=config.match().any(),aspects="luis");
+		b = config.getAspectBindings();
+		
+		assertTrue( arrayLen(b) );
+				
+	}
+	
+	function testMatch(){
+		r = config.match();
+		assertTrue( isObject(r) );		
+	}
+	
 </cfscript>
 </cfcomponent>
