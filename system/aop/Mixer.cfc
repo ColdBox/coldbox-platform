@@ -12,13 +12,7 @@ Description :
 	Listener Properties:
 	- generationPath:path	- The include path used for code generation
 	- dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
-	
-	Decoration Documentation
-	$wbAOPMixed:boolean(false) 	- If an object is already mixed with AOP capabilities
-	$wbAOPTargets:struct		- A collection of proxied structures and their related interceptors {udfPointer,interceptors}
-	$wbAOPGetJointPointMD:struct - Retrieve jointpoint md
-	$wbAOPInclude 				- Mix in a template
-	$wbAOPRemove				- Remove a jointpoint signature 
+	 
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="I am a WireBox listener that provides you with AOP capabilities in your objects">
 	

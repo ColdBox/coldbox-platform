@@ -224,7 +224,7 @@
 			},
 			// Root Logger
 			root = { levelmax="INFO", appenders="*" },
-			debug = ["coldbox.system.aop.aspects"] 
+			debug = ["coldbox.system.aop"] 
 		};
 	}
 	
