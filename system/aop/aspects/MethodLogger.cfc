@@ -27,7 +27,7 @@ Description :
 	
 	<!--- invokeMethod --->    
     <cffunction name="invokeMethod" output="false" access="public" returntype="any" hint="Invoke an AOP method invocation">    
-    	<cfargument name="invocation" type="any" hint="The method invocation object: coldbox.system.ioc.aop.MethodInvocation" colddoc:generic="coldbox.system.ioc.aop.MethodInvocation">
+    	<cfargument name="invocation" type="any" hint="The method invocation object: coldbox.system.aop.MethodInvocation" colddoc:generic="coldbox.system.aop.MethodInvocation">
 		<cfscript>
 			var refLocal = {};
 			var debugString = "target: #arguments.invocation.getTargetName()#,method: #arguments.invocation.getMethod()#,arguments:#serializeJSON(arguments.invocation.getArgs())#";
