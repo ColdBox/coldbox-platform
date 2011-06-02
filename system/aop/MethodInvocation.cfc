@@ -99,10 +99,10 @@ Description :
     <cffunction name="proceed" output="false" access="public" returntype="any" hint="Proceed execution of the method invocation">    
     	<cfscript>
 			// We will now proceed with our interceptor execution chain or regular method pointer call
-			
+			// execute the next interceptor in the chain
+				
 			// Check Current Index against interceptor length
 			if( instance.interceptorIndex LTE instance.interceptorLen ){
-				// execute the next interceptor in the chain
 				return instance.interceptors[ instance.interceptorIndex ].invokeMethod( this.incrementInterceptorIndex() );
 			}
 			
