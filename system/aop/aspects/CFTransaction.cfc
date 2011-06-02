@@ -6,20 +6,19 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	    :	Luis Majano
 Description :
-	A simple interceptor that logs method calls and their results
+	A simple ColdFusion transaction Aspect for WireBox
 ----------------------------------------------------------------------->
-<cfcomponent output="false" implements="coldbox.system.aop.MethodInterceptor" hint="A simple interceptor that logs method calls and their results">
+<cfcomponent implements="coldbox.system.aop.MethodInterceptor" 
+			 hint="A simple ColdFusion transaction Aspect for WireBox" 
+			 output="false"
+			 classMatcher="any" methodMatcher="annotatedWith:transactional">
 	
 	<!--- Dependencies --->
 	<cfproperty name="log" inject="logbox:logger:{this}">
 	
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">
-		<cfargument name="logResults" type="boolean" required="false" default="true" hint="Do we log results or not?"/>
-		<cfscript>	
-			instance = {
-				logResults = arguments.logResults
-			};
+		<cfscript>
 			return this;
 		</cfscript>
 	</cffunction>	
@@ -30,18 +29,46 @@ Description :
 		<cfscript>
 			var refLocal = {};
 			
-			// log incoming call
-			log.debug("target: #arguments.invocation.getTargetName()# method: #arguments.invocation.getMethod()#", arguments.invocation.getArgs());
-			
-			// proceed execution
-			refLocal.results = arguments.invocation.proceed();
-			
-			if( instance.logResults ){
-				log.debug("target-results: #arguments.invocation.getTargetName()#", refLocal.results);
+			// Are we already in a transaction?
+			if( structKeyExists(request,"cbox_aop_transaction") ){
+				// debug?
+				if( log.canDebug() ){ log.debug("Call to '#arguments.invocation.getTargetName()#.#arguments.invocation.getMethod()#()' already transactioned, just executing it"); }
+				// Just execute and return;
+				return arguments.invocation.proceed();
 			}
-			
-			if( structKeyExists(refLocal,"results") ){ return refLocal.results; }
 		</cfscript>
+		
+		<cftry>
+			
+			<cftransaction>
+				<!--- In Transaction --->
+				<cfset request["cbox_aop_transaction"] = true>
+				<!--- Log --->
+				<cfif log.canDebug()>
+					<cfset log.debug("Call to '#arguments.invocation.getTargetName()#.#arguments.invocation.getMethod()#()' is now transactioned and begins execution")>
+				</cfif>
+				<!--- Execute Transactioned method --->
+				<cfset refLocal.results = arguments.invocation.proceed()>
+			</cftransaction>
+			
+			<cfcatch>
+				<!--- remove transaction pointer --->
+				<cfset structDelete(request,"cbox_aop_transaction")>
+				<!--- Log Error --->
+				<cfset log.error("An exception ocurred in the AOPed transactio for target: #arguments.invocation.getTargetName()#, method: #arguments.invocation.getMethod()#: #e.message# #e.detail#",e)>
+				<!--- Rethrow --->
+				<cfrethrow>
+			</cfcatch>
+			
+		</cftry>
+		
+		<!--- remove transaction pointer --->
+		<cfset structDelete(request,"cbox_aop_transaction")>
+		
+		<!--- Return Results --->
+		<cfif structKeyExists(refLocal,"results")>
+			<cfreturn refLocal.results>
+		</cfif>
     </cffunction>
 	
 </cfcomponent>
