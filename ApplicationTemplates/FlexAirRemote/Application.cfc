@@ -37,11 +37,12 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
-		<!--- Reload Checks --->
-		<cfset reloadChecks()>
 		
 		<!--- Process A ColdBox Request Only --->
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
+			<!--- Reload Checks --->
+			<cfset reloadChecks()>
+			<!--- Process Request --->
 			<cfset processColdBoxRequest()>
 		</cfif>
 			
