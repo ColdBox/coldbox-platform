@@ -187,10 +187,16 @@ Description :
 
 	<cffunction name="paramValue" returntype="void" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
 		<cfargument name="name" 	type="any" 		required="true" hint="Name of the variable to param in the request collection: String">
-		<cfargument name="value" 	type="any" 		required="true" hint="The value of the variable to set if not found.">
+		<cfargument name="value" 	type="any" 		required="false" hint="The value of the variable to set if not found.">
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			if ( not valueExists(name=arguments.name,private=arguments.private) ){
+				// Check for the default parameter value; if none, throw an exception
+				if( not structKeyExists(arguments, "value") ){
+					$throw("The variable: #arguments.name# is a required parameter in the request collection (private=#arguments.private#)",
+							"Keys Found: #structKeyList(instance.context)#",
+							"RequestContext.ValueNotFound");
+				}
 				setValue(name=arguments.name,value=arguments.value,private=arguments.private);
 			}
 		</cfscript>
