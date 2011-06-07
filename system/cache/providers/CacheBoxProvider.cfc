@@ -481,9 +481,9 @@ Properties
 		
 		<!--- Async? --->
 		<cfif arguments.async AND NOT instance.utility.inThread()>
-			<cfthread name="#threadName#">
-				<cfset instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex)>
-			</cfthread>		
+			<cfthread name="#threadName#" keySnippet="#arguments.keySnippet#" regex="#arguments.regex#">
+				<cfset instance.elementCleaner.clearByKeySnippet(attributes.keySnippet,attributes.regex)>
+			</cfthread>	
 		<cfelse>
 			<cfset instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex)>	
 		</cfif>

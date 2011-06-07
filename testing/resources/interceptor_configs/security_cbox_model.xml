@@ -19,7 +19,6 @@ xsi:noNamespaceSchemaLocation="http://www.coldbox.org/schema/config_3.0.0.xsd">
 		
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="CustomErrorTemplate"			value="" />
-		<Setting name="CustomEmailBugReport"		value="" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />

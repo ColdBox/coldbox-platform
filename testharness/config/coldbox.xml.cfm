@@ -103,14 +103,11 @@
 	</DebuggerSettings>
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings />
-
-	<BugTracerReports enabled="false">
-		<MailFrom>info@coldboxframework.com</MailFrom>
-		<CustomEmailBugReport>includes/EmailBugReport.cfm</CustomEmailBugReport>
-		<BugEmail>info@coldboxframework.com</BugEmail>
-	</BugTracerReports>
-
+	<MailServerSettings>
+		<MailServer>localhost</MailServer>
+		<MailUsername>test</MailUsername>
+	</MailServerSettings>
+	
 	<WebServices >
 		<WebService URL="http://www.test.com/test.cfc?wsdl" name="TestWS"/>
 		<WebService URL="http://www.coldbox.org/distribution/updatews.cfc?wsdl" name="AnotherTestWS"/>

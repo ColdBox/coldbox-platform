@@ -56,7 +56,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	/**
 	* preUpdate called by hibernate which in turn announces a coldbox interception: ORMPreUpdate
 	*/
-	public void function preUpdate(any entity, Struct oldData){
+	public void function preUpdate(any entity, struct oldData=structNew()){
 		announceInterception("ORMPreUpdate", {entity=arguments.entity, oldData=arguments.oldData});
 	}
 

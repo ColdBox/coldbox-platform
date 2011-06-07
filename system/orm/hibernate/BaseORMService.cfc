@@ -44,6 +44,11 @@ component accessors="true"{
 	*/
 	property name="eventHandling" type="boolean" default="true";
 
+	/**
+	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
+	*/
+	property name="useTransactions" type="boolean" default="true";
+
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
 
 
@@ -55,18 +60,20 @@ component accessors="true"{
 	*/
 	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
 								  boolean useQueryCaching=false,
-								  boolean eventHandling=true){
+								  boolean eventHandling=true,
+								  boolean useTransactions=true){
 		// setup properties
 		setQueryCacheRegion( arguments.queryCacheRegion );
 		setUseQueryCaching( arguments.useQueryCaching );
 		setEventHandling( arguments.eventHandling );
+		setUseTransactions( arguments.useTransactions );
 
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
 
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
-		
+
 		// Restrictions orm.hibernate.criterion.Restrictions lazy loaded
 		restrictions = "";
 
@@ -148,6 +155,7 @@ component accessors="true"{
 							   numeric offset=0,
 					  		   numeric max=0,
 					  		   numeric timeout=0,
+						       boolean ignorecase=false,
 						       boolean asQuery=true){
 		var options = {};
 
@@ -161,6 +169,7 @@ component accessors="true"{
 		if( arguments.timeout neq 0 ){
 			options.timeout = arguments.timeout;
 		}
+		options.ignorecase = arguments.ignorecase;
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
@@ -181,6 +190,7 @@ component accessors="true"{
 	/**
 	* Finds and returns the first result for the given query or null if no entity was found.
 	* You can either use the query and params combination or send in an example entity to find.
+	* @example.hint DEPRECATED. Use findByExample() instead, deprecated by 3.5
 	*/
 	any function findIt(string query,any params=structnew(), any example){
 		var options = {maxresults=1};
@@ -193,7 +203,7 @@ component accessors="true"{
 
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
-			return entityLoadByExample( arguments.example, true );
+			return findByExample( arguments.example, true );
 		}
 
 		// Normal Find
@@ -201,37 +211,32 @@ component accessors="true"{
 	}
 
 	/**
+	* Find all/single entities by example
+	*/
+	any function findByExample(any example,boolean unique=false){
+		return entityLoadByExample(arguments.example,arguments.unique);
+	}
+	
+	/**
 	* Find all the entities for the specified query and params or example
-	* @tested true
+	* @example.hint	DEPRECATED use findByExample() this will be dropped in 3.5
 	*/
 	array function findAll(string query,
 						    any params=structnew(),
 						    numeric offset=0,
 					        numeric max=0,
+					        numeric timeout=0,
+					        boolean ignoreCase=false,
 						    any example){
-		var options = {};
-
-		// Setup find options
-		if( arguments.offset neq 0 ){
-			options.offset = arguments.offset;
-		}
-		if( arguments.max neq 0 ){
-			options.maxresults = arguments.max;
-		}
-
-		// Caching?
-		if( getUseQueryCaching() ){
-			options.cacheName  = getQueryCacheRegion();
-			options.cacheable  = true;
-		}
-
+		
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
-			return entityLoadByExample( arguments.example );
+			return findByExample( arguments.example );
 		}
-
-		// Normal Find
-		return ORMExecuteQuery( arguments.query, arguments.params, false, options);
+		
+		// Normal Execute Query
+		arguments.asQuery=false;
+		return executeQuery(argumentCollection=arguments);
 	}
 
 	/**
@@ -257,14 +262,14 @@ component accessors="true"{
 	/**
 	* Find all entities according to criteria structure
 	*/
-	array function findAllWhere(required string entityName, required struct criteria){
+	array function findAllWhere(required string entityName, required struct criteria, string sortOrder=""){
 		var options = {};
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
-		return entityLoad( arguments.entityName, arguments.criteria, options);
+		return entityLoad( arguments.entityName, arguments.criteria, arguments.sortOrder, options);
 	}
 
 	/**
@@ -400,7 +405,7 @@ component accessors="true"{
 	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
     */
 	any function get(required string entityName,required any id) {
-		
+
 		// check if id exists so entityLoad does not throw error
 		if( (isSimpleValue(arguments.id) and len(arguments.id)) OR NOT isSimpleValue(arguments.id) ){
 			var entity = entityLoadByPK(arguments.entityName, arguments.id);
@@ -420,18 +425,24 @@ component accessors="true"{
 	* Retrieve all the instances from the passed in entity name using the id argument if specified
 	* The id can be a list of IDs or an array of IDs or none to retrieve all.
     */
-	array function getAll(required string entityName,any id) {
+	array function getAll(required string entityName,any id,string sortOrder="") {
 		var results = [];
-
+		
 		// Return all entity values
 		if( NOT structKeyExists(arguments,"id") ){
-			return entityLoad(arguments.entityName);
+			return entityLoad(arguments.entityName,{},arguments.sortOrder);
 		}
 
 		// type safe conversions
 		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
-		// execute bulk get
-		var query = ORMGetSession().createQuery("FROM #arguments.entityName# where id in (:idlist)");
+		var q = "FROM #arguments.entityName# where id in (:idlist)";
+		// ordering?
+		if( len(arguments.sortOrder) ){
+			q &= " ORDER BY #arguments.sortOrder#";
+		}		
+		// Execute native hibernate query
+		var query = ORMGetSession().createQuery(q);
+		// parameter binding
 		query.setParameterList("idlist",arguments.id);
 		// Caching?
 		if( getUseQueryCaching() ){
@@ -442,51 +453,52 @@ component accessors="true"{
 	}
 
 	/**
-    * Delete an entity using hibernate transactions. The entity argument can be a single entity
+    * Delete an entity. The entity argument can be a single entity
 	* or an array of entities. You can optionally flush the session also after committing
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
     */
-	void function delete(required any entity,boolean flush=false){
-		var tx 		= ORMGetSession().beginTransaction();
+	void function delete(required any entity,boolean flush=false,boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$delete, arguments);
+		}
+		return $delete(argumentCollection=arguments);
+	}
+	private void function $delete(required any entity,boolean flush=false){
 		var objects = arrayNew(1);
 		var objLen  = 0;
 
-		try{
-			if( not isArray(arguments.entity) ){
-				arrayAppend(objects, arguments.entity);
-			}
-			else{
-				objects = arguments.entity;
-			}
-
-			objLen = arrayLen(objects);
-			for(var x=1; x lte objLen; x++){
-				entityDelete( objects[x] );
-			}
-
-			tx.commit();
+		if( not isArray(arguments.entity) ){
+			arrayAppend(objects, arguments.entity);
 		}
-		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
+		else{
+			objects = arguments.entity;
 		}
+
+		objLen = arrayLen(objects);
+		for(var x=1; x lte objLen; x++){
+			entityDelete( objects[x] );
+		}
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 	}
 
 	/**
 	* Delete all entries for an entity DLM style and transaction safe. It also returns all the count of deletions
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	numeric function deleteAll(required string entityName,boolean flush=false){
-		var tx 		= ORMGetSession().beginTransaction();
+	numeric function deleteAll(required string entityName,boolean flush=false,boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$deleteAll, arguments);
+		}
+		return $deleteAll(argumentCollection=arguments);
+	}
+	private numeric function $deleteAll(required string entityName,boolean flush=false){
 		var count   = 0;
-		try{
-			count = ORMExecuteQuery("delete from #arguments.entityName#");
-			tx.commit();
-		}
-		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
-		}
+		count = ORMExecuteQuery("delete from #arguments.entityName#");
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 
@@ -496,25 +508,25 @@ component accessors="true"{
 	/**
 	* Delete using an entity name and an incoming id, you can also flush the session if needed. The id parameter can be a single id or an array of IDs to delete
 	* The method returns the count of deleted entities.
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	numeric function deleteByID(required string entityName, required any id, boolean flush=false){
-		var tx 		= ORMGetSession().beginTransaction();
+	numeric function deleteByID(required string entityName, required any id, boolean flush=false, boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$deleteByID, arguments);
+		}
+		return $deleteByID(argumentCollection=arguments);
+	}
+	private numeric function $deleteByID(required string entityName, required any id, boolean flush=false){
 		var count   = 0;
 
 		// type safe conversions
 		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
 
-		try{
-			// delete using lowercase id convention from hibernate for identifier
-			var query = ORMGetSession().createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
-			query.setParameterList("idlist",arguments.id);
-			count = query.executeUpdate();
-			tx.commit();
-		}
-		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
-		}
+		// delete using lowercase id convention from hibernate for identifier
+		var query = ORMGetSession().createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
+		query.setParameterList("idlist",arguments.id);
+		count = query.executeUpdate();
 
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
@@ -525,8 +537,16 @@ component accessors="true"{
 	/**
 	* Delete by using an HQL query and iterating via the results, it is not performing a delete query but
 	* it actually is a select query that should retrieve objects to remove
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false ){
+	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions() ){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$deleteByQuery, arguments);
+		}
+		return $deleteByQuery(argumentCollection=arguments);
+	}
+	private void function $deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false){
 		var objects = arrayNew(1);
 		var options = {};
 
@@ -545,15 +565,25 @@ component accessors="true"{
 			objects = ORMExecuteQuery(arguments.query, false, options);
 		}
 
-		delete( objects, arguments.flush );
+		delete(entity=objects,flush=arguments.flush,transactional=arguments.transactional);
 	}
 
 	/**
 	* Deletes entities by using name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
 	* The rest of the arguments are used in the where class using AND notation and parameterized.
 	* Ex: deleteWhere(entityName="User",age="4",isActive=true);
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	numeric function deleteWhere(required string entityName){
+	numeric function deleteWhere(required string entityName,boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			structDelete(arguments,"transactional");
+			return $transactioned(variables.$deleteWhere, arguments);
+		}
+		structDelete(arguments,"transactional");
+		return $deleteWhere(argumentCollection=arguments);
+	}
+	private numeric function $deleteWhere(required string entityName){
 		var buffer   = createObject("java","java.lang.StringBuffer").init('');
 		var key      = "";
 		var operator = "AND";
@@ -587,56 +617,50 @@ component accessors="true"{
 			}
 		}
 
-		//start transaction DLM deleteion
-		var tx = ORMGetSession().beginTransaction();
+		//start DLM deleteion
 		try{
 			count = ORMExecuteQuery( buffer.toString(), params, true);
-			tx.commit();
 		}
 		catch("java.lang.NullPointerException" e){
-			if(tx.wasCommitted()){ tx.rollback(); }
 			throw(message="A null pointer exception occurred when running the query",
 			  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
 			  type="BaseORMService.MaybeInvalidParamCaseException");
 		}
-		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
+		catch(any e){
+			rethrow;
 		}
-
 		return count;
 	}
 
 	/**
-    * Saves an array of passed entities in specified order and transaction safe
+    * Saves an array of passed entities in specified order
 	* @entities An array of entities to save
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
     */
-	any function saveAll(required entities, forceInsert=false, flush=false){
+	any function saveAll(required entities, forceInsert=false, flush=false,boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$saveAll, arguments);
+		}
+		return $saveAll(argumentCollection=arguments);
+	}
+	private any function $saveAll(required entities, forceInsert=false, flush=false){
 		var count 			=  arrayLen(arguments.entities);
 		var eventHandling 	=  getEventHandling();
-		var tx 				= ORMGetSession().beginTransaction();
 
-		try{
-			// iterate and save
-			for(var x=1; x lte count; x++){
-				// Event Handling? If enabled, call the preSave() interception
-				if( eventHandling ){
-					ORMEventHandler.preSave( arguments.entities[x] );
-				}
-				// Save it
-				entitySave(arguments.entities[x], arguments.forceInsert);
-
-				// Event Handling? If enabled, call the postSave() interception
-				if( eventHandling ){
-					ORMEventHandler.postSave( arguments.entities[x] );
-				}
+		// iterate and save
+		for(var x=1; x lte count; x++){
+			// Event Handling? If enabled, call the preSave() interception
+			if( eventHandling ){
+				ORMEventHandler.preSave( arguments.entities[x] );
 			}
-			// commit it
-			tx.commit();
-		}
-		catch(Any e){
-			if(tx.wasCommitted()){ tx.rollback(); }
-			throw(e);
+			// Save it
+			entitySave(arguments.entities[x], arguments.forceInsert);
+
+			// Event Handling? If enabled, call the postSave() interception
+			if( eventHandling ){
+				ORMEventHandler.postSave( arguments.entities[x] );
+			}
 		}
 
 		// Auto Flush
@@ -646,9 +670,17 @@ component accessors="true"{
 	}
 
 	/**
-    * Save an entity using hibernate transactions. You can optionally flush the session also
+    * Save an entity using hibernate transactions or not. You can optionally flush the session also
     */
-	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=true){
+	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=getUseTransactions()){
+		// using transaction closure, well, semy closures :(
+		if( arguments.transactional ){
+			return $transactioned(variables.$save, arguments);
+		}
+		return $save(argumentCollection=arguments);
+	}
+	any function $save(required any entity, boolean forceInsert=false, boolean flush=false){
+		// Event handling flag
 		var eventHandling = getEventHandling();
 
 		// Event Handling? If enabled, call the preSave() interception
@@ -656,23 +688,8 @@ component accessors="true"{
 			ORMEventHandler.preSave( arguments.entity );
 		}
 
-		// Saved transasction or not.
-		if( arguments.transactional ){
-			var tx = ORMGetSession().beginTransaction();
-			try{
-				entitySave(arguments.entity, arguments.forceInsert);
-
-				tx.commit();
-			}
-			catch(Any e){
-				if(tx.wasCommitted()){ tx.rollback(); }
-				throw(e);
-			}
-		}
-		else{
-			entitySave(arguments.entity, arguments.forceInsert);
-		}
-
+		// save
+		entitySave(arguments.entity, arguments.forceInsert);
 
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
@@ -927,22 +944,24 @@ component accessors="true"{
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
 	* The method returns a coverted array of ID's
 	*/
-	array function convertIDValueToJavaType(required entityName, required id){
+	any function convertIDValueToJavaType(required entityName, required id){
 		var hibernateMD = ormGetSessionFactory().getClassMetaData(arguments.entityName);
 
-		//id conversion to array
-		if( isSimpleValue(arguments.id) ){
-			arguments.id = listToArray(arguments.id);
-		}
+		if(isDefined("hibernateMD") and not hibernateMD.getIdentifierType().isComponentType() ){
+			//id conversion to array
+			if( isSimpleValue(arguments.id) ){
+				arguments.id = listToArray(arguments.id);
+			}
 
-		// Convert to hibernate native types
-		for (var i=1; i lte arrayLen(arguments.id); i=i+1){
-			arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
+			// Convert to hibernate native types
+			for (var i=1; i lte arrayLen(arguments.id); i=i+1){
+				arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
+			}
 		}
 
 		return arguments.id;
 	}
-	
+
 	/**
 	* Get our hibernate org.hibernate.criterion.Restrictions proxy object
 	*/
@@ -952,9 +971,9 @@ component accessors="true"{
 		}
 		return restrictions;
 	}
-	
+
 	/**
-	* Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object that can be retrieved from this service using ''getRestrictions()''.  The Criteria interface allows to create and execute object-oriented queries. It is powerful alternative to the HQL but has own limitations. Criteria Query is used mostly in case of multi criteria search screens, where HQL is not very effective. 
+	* Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object that can be retrieved from this service using ''getRestrictions()''.  The Criteria interface allows to create and execute object-oriented queries. It is powerful alternative to the HQL but has own limitations. Criteria Query is used mostly in case of multi criteria search screens, where HQL is not very effective.
 	*/
 	public any function criteriaQuery(required entityName,
 									  array criteria=ArrayNew(1),
@@ -964,36 +983,36 @@ component accessors="true"{
 					  		 		  numeric timeout=0,
 					  		 		  boolean ignoreCase=false,
 					  		 		  boolean asQuery=true){
-		// create Criteria query object					 
+		// create Criteria query object
 		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
-		
+
 		// Setup listing options
 		if( arguments.offset NEQ 0 ){
 			qry.setFirstResult(arguments.offset);
 		}
 		if(arguments.max GT 0){
 			qry.setMaxResults(arguments.max);
-		}	
+		}
 		if( arguments.timeout NEQ 0 ){
 			qry.setTimeout(arguments.timeout);
 		}
-		
+
 		// Caching
 		if( getUseQueryCaching() ){
 			qry.setCacheRegion(getQueryCacheRegion());
 			qry.setCacheable(true);
 		}
-		
+
 		// Sort Order Case
 		if( Len(Trim(arguments.sortOrder)) ){
 			var sortField = Trim(ListFirst(arguments.sortOrder," "));
 			var sortDir = "ASC";
 			var Order = CreateObject("java","org.hibernate.criterion.Order");
-			
+
 			if(ListLen(arguments.sortOrder," ") GTE 2){
 				sortDir = ListGetAt(arguments.sortOrder,2," ");
 			}
-				
+
 			switch(UCase(sortDir)) {
 				case "DESC":
 					var orderBy = Order.desc(sortField);
@@ -1006,13 +1025,13 @@ component accessors="true"{
 			if(arguments.ignoreCase){
 				orderBy.ignoreCase();
 			}
-			// add order to query	
+			// add order to query
 			qry.addOrder(orderBy);
 		}
-			
+
 		// Get listing
 		var results = qry.list();
-			
+
 		// Is it Null? If yes, return empty array
 		if( isNull(results) ){ results = []; }
 
@@ -1021,9 +1040,9 @@ component accessors="true"{
 			results = EntityToQuery(results);
 		}
 
-		return results;					
+		return results;
 	}
-	
+
 	/**
 	* Get the record count using hibernate projections and criterion for specific queries
 	*/
@@ -1031,22 +1050,63 @@ component accessors="true"{
 		// create a new criteria query object
 		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
 		var projections = CreateObject("java","org.hibernate.criterion.Projections");
-							 
+
 		qry.setProjection( projections.rowCount() );
-		
+
 		return qry.uniqueResult();
 	}
-	
+
 	/**
 	* Create a new hibernate criteria object according to entityname and criterion array objects
 	*/
 	private any function createCriteriaQuery(required entityName, array criteria=ArrayNew(1)){
 		var qry = ORMGetSession().createCriteria( arguments.entityName );
-		
+
 		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
 			qry.add( arguments.criteria[i] );
 		}
-		
+
 		return qry;
+	}
+
+	/**
+	* My hibernate safe transaction closure wrapper
+	* @method the method to closure
+	* @argCollection the arguments to passthrough
+	*/
+	private any function $transactioned(method,argCollection=structnew()){
+		// Are we already in a transaction?
+		if( structKeyExists(request,"cbox_aop_transaction") ){
+			return arguments.method(argumentCollection=arguments.argCollection);
+		}
+
+		// transaction safe call, start one
+		var tx = ORMGetSession().beginTransaction();
+		// mark transaction began
+		request["cbox_aop_transaction"] = true;
+
+		try{
+			// Call method
+			results = arguments.method(argumentCollection=arguments.argCollection);
+			// commit transaction
+			tx.commit();
+		}
+		catch(Any e){
+			// remove pointer
+			structDelete(request,"cbox_aop_transaction");
+			// rollback
+			try{
+				tx.rollback();
+			}
+			catch(any e){
+				// silent rollback as something really went wrong
+			}
+			//throw it
+			rethrow;
+		}
+		// remove pointer, out of transaction now.
+		structDelete(request,"cbox_aop_transaction");
+		// Results? If found, return them.
+		if( NOT isNull(results) ){ return results; }
 	}
 }

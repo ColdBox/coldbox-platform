@@ -18,8 +18,8 @@ Description :
 		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
 		// Available WireBox public types
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
-		// Internal Utility class
-		utility  	= createObject("component","coldbox.system.core.util.Util");
+		// Utility class
+		this.UTILITY  = createObject("component","coldbox.system.core.util.Util");
 		// Temp Mapping positional mover
 		currentMapping = "";
 		// Instance private scope
@@ -30,7 +30,7 @@ Description :
 			logBoxConfig = "coldbox.system.ioc.config.LogBox",
 			// Scope Defaults
 			scopeRegistration = {
-				enabled = false,
+				enabled = true,
 				scope = "application",
 				key = "wireBox"
 			},
@@ -71,7 +71,7 @@ Description :
 			// If sent and a data CFC instance
 			if( structKeyExists(arguments,"config") and isObject(arguments.config) ){
 				// Decorate our data CFC
-				arguments.config.getPropertyMixin = utility.getMixerUtil().getPropertyMixin;
+				arguments.config.getPropertyMixin = this.utility.getMixerUtil().getPropertyMixin;
 				// Execute the configuration
 				arguments.config.configure(this);
 				// Load the raw data DSL
@@ -123,6 +123,8 @@ Description :
 			instance.scanLocations = createObject("java","java.util.LinkedHashMap").init(5);
 			// Object Mappings
 			instance.mappings = {};
+			// Aspect Bindings
+			instance.aspectBindings = [];
 			// Parent Injector Mapping
 			instance.parentInjector = "";
 			// Binding Properties
@@ -229,7 +231,9 @@ Description :
 	
 	<!--- mapDirectory --->
     <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection">
-    	<cfargument name="packagePath" required="true" hint="The instantiation packagePath to map"/>
+    	<cfargument name="packagePath"  required="true" hint="The instantiation packagePath to map"/>
+		<cfargument name="include" 		required="true" default="" hint="An include regex that if matches will only include CFCs that match this case insensitive regex"/>
+		<cfargument name="exclude" 		required="true" default="" hint="An exclude regex that if matches will exclude CFCs that match this case insensitive regex"/>
 		<cfscript>
 			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
 			var qObjects		= "";
@@ -248,8 +252,17 @@ Description :
 		<cfloop query="qObjects">
 			<!--- Remove .cfc and /\ with . notation--->
 			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase(qObjects.name,".cfc","") ,"(/|\\)",".","all")>
-			<!--- Map the Path --->
-			<cfset mapPath( thisTargetPath )>
+			
+			<!--- Include/Exclude --->
+			<cfif ( len(arguments.include) AND reFindNoCase(arguments.include, thisTargetPath) )
+			      OR ( len(arguments.exclude) AND NOT reFindNoCase(arguments.exclude,thisTargetPath) )
+				  OR ( NOT len(arguments.include) AND NOT len(arguments.exclude) )>
+				
+				<!--- Map the Path --->
+				<cfset mapPath( thisTargetPath )>
+			
+			</cfif>
+			
 		</cfloop>
 		
 		<cfreturn this>
@@ -429,7 +442,7 @@ Description :
 				currentMapping = instance.mappings[arguments.alias];
 				return this;
 			}
-			utility.throwit(message="The mapping '#arguments.alias# has not been initialized yet.'",
+			this.utility.throwit(message="The mapping '#arguments.alias# has not been initialized yet.'",
 							detail="Please use the map('#arguments.alias#') first to start working with a mapping",
 							type="Binder.InvalidMappingStateException");
 		</cfscript>
@@ -487,13 +500,23 @@ Description :
 		</cfscript>
     </cffunction>
 	
+	<!--- providerMethod --->
+    <cffunction name="providerMethod" output="false" access="public" returntype="any" hint="Add a new provider method mapping">
+    	<cfargument name="method" 	required="true" hint="The provided method to override or inject as a provider"/>
+		<cfargument name="mapping" 	required="true" hint="The mapping to provide via the selected method"/>
+		<cfscript>
+			currentMapping.addProviderMethod(argumentCollection=arguments);
+			return this;
+		</cfscript>
+    </cffunction>
+	
 	<!--- into --->
     <cffunction name="into" output="false" access="public" returntype="any" hint="Map an object into a specific persistence scope">
     	<cfargument name="scope" required="true" hint="The scope to map to, use a valid WireBox Scope by using binder.SCOPES.* or a custom scope" >
     	<cfscript>
     		// check if invalid scope
 			if( NOT this.SCOPES.isValidScope(arguments.scope) AND NOT structKeyExists(instance.customScopes,arguments.scope) ){
-				utility.throwit(message="Invalid WireBox Scope: '#arguments.scope#'",
+				this.utility.throwit(message="Invalid WireBox Scope: '#arguments.scope#'",
 								detail="Please make sure you are using a valid scope, valid scopes are: #arrayToList(this.SCOPES.getValidScopes())# AND custom scopes: #structKeyList(instance.customScopes)#",
 								type="Binder.InvalidScopeMapping");
 			}
@@ -564,7 +587,7 @@ Description :
 			// Prepare Locations
 			for(x=1; x lte arrayLen(arguments.locations); x++){
 				// Validate it is not registered already
-				if ( NOT structKeyExists(instance.scanLocations, arguments.locations[x]) ){
+				if ( NOT structKeyExists(instance.scanLocations, arguments.locations[x]) AND len(arguments.locations[x]) ){
 					// Process creation path & Absolute Path
 					instance.scanLocations[ arguments.locations[x] ] = expandPath( "/" & replace(arguments.locations[x],".","/","all") & "/" );
 				}
@@ -802,6 +825,50 @@ Description :
 	<cffunction name="getListeners" output="false" access="public" returntype="any" hint="Get the configured listeners array" colddoc:generic="Array">
 		<cfreturn instance.listeners>
 	</cffunction>
+	
+<!------------------------------------------- AOP Methods ------------------------------------------>
+
+	<!--- mapAspect --->    
+    <cffunction name="mapAspect" output="false" access="public" returntype="any" hint="Map a new aspect">    
+    	<cfargument name="aspect" 		type="any"		required="true" hint="The name or aliases of the aspect"/>
+		<cfargument name="autoBinding" 	type="boolean" 	required="true" default="true" hint="Allow autobinding of this aspect or not? Defaults to true"/>
+    	<cfscript>
+			// map eagerly
+			map(arguments.aspect).asEagerInit().asSingleton();
+			
+			// register the aspect
+			currentMapping.setAspect( true ).setAspectAutoBinding( arguments.autoBinding );
+			
+			return this;
+		</cfscript>
+    </cffunction>
+    
+    <!--- match --->    
+    <cffunction name="match" output="false" access="public" returntype="any" hint="Create a new matcher class for usage in class or method matching">    
+    	<cfscript>
+			return createObject("component","coldbox.system.aop.Matcher").init();	    
+    	</cfscript>    
+    </cffunction>
+    
+    <!--- bindAspect --->    
+    <cffunction name="bindAspect" output="false" access="public" returntype="any" hint="Bind a aspects to classes and methods">    
+    	<cfargument name="classes" 	type="coldbox.system.aop.Matcher" required="true" hint="The class matcher that will be affected with this aspect binding" colddoc:generic="coldbox.system.aop.Matcher"/>
+    	<cfargument name="methods" 	type="coldbox.system.aop.Matcher" required="true" hint="The method matcher that will be affected with this aspect binding" colddoc:generic="coldbox.system.aop.Matcher"/>
+    	<cfargument name="aspects" 	type="any" required="true" hint="The name or list of names or array of names of aspects to apply to the classes and method matchers"/>
+    	<cfscript>
+			// cleanup aspect
+			if( isSimpleValue(arguments.aspects) ){ arguments.aspects = listToArray(arguments.aspects); }
+			// register it
+			arrayAppend(instance.aspectBindings, arguments);
+			
+			return this;
+		</cfscript>    	
+    </cffunction>
+    
+    <!--- getAspectBindings --->    
+    <cffunction name="getAspectBindings" output="false" access="public" returntype="any" hint="Get the collection of aspect bindings for this binder" colddoc:generic="array">    
+    	<cfreturn instance.aspectBindings>
+    </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	

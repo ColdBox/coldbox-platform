@@ -122,7 +122,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		r = ormService.getAll('Category');
 		assertTrue( arrayLen(r) );
 
-		r = ormService.getAll('Category',"A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91");
+		r = ormService.getAll('Category',"A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91","category");
 		assertTrue( arraylen( r ) eq 1 );
 		
 		r = ormService.getAll('Category',[1,2]);
@@ -133,6 +133,9 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 		r = ormService.getAll('Category',[testCatID,testCatID]);
 		assertTrue( isObject( r[1] ) );
+		
+		r = ormService.getAll(entityName='Category',sortOrder="category desc");
+		assertTrue( arrayLen(r) );
 
 	}
 
@@ -362,6 +365,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	function testExecuteQuery(){
 		test = ormservice.executeQuery(query="from Category");
+		debug(test);
 		assertTrue( test.recordcount );
 
 		params = ["general"];
@@ -382,6 +386,17 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		assertEquals( 'Training', test.getCategory() );
 	}
 
+	function testFindByExample(){
+		sample = entityLoad("Category",{category="Training"},true);	
+		test = ormService.findByExample(sample,true);
+		assertEquals( 'Training', test.getCategory() );	
+		
+		sample = entityLoad("Category",{category="Training"},true);	
+		test = ormService.findByExample(sample);
+		//debug(test);
+		assertEquals( 'Training', test[1].getCategory() );	
+	}
+	
 	function testFindAll(){
 
 		test = ormservice.findAll("from Category where category = ?",['Training']);
@@ -411,6 +426,9 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	function testFindAllWhere(){
 
 		test = ormservice.findAllWhere("Category",{category="general"});
+		assertEquals( 2, arrayLen(test) );
+		
+		test = ormservice.findAllWhere("Category",{category="general"},"category desc");
 		assertEquals( 2, arrayLen(test) );
 
 		test = ormservice.findAllWhere("User",{firstName="Luis", lastName="Majano"});

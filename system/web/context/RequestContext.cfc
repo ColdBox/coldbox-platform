@@ -84,21 +84,23 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="clearCollection" access="public" returntype="void" output="false" hint="Clears the entire collection">
+	<cffunction name="clearCollection" access="public" returntype="any" output="false" hint="Clears the entire collection">
 		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			if( arguments.private ) { structClear(instance.privateContext); }
 			else { structClear(instance.context); }
+			return this;
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="collectionAppend" access="public" returntype="void" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
+	<cffunction name="collectionAppend" access="public" returntype="any" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
 		<cfargument name="collection" 	type="any"  	required="true" hint="A collection to append">
 		<cfargument name="overwrite"  	type="boolean" 	required="false" default="false" hint="If you need to override data in the collection, set this to true.">
 		<cfargument name="private" 		type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			if( arguments.private ) { structAppend(instance.privateContext,arguments.collection, arguments.overwrite); }
 			else { structAppend(instance.context,arguments.collection, arguments.overwrite); }
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -150,7 +152,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="setValue" access="Public" hint="I Set a value in the request collection" output="false" returntype="void">
+	<cffunction name="setValue" access="Public" hint="I Set a value in the request collection" output="false" returntype="any">
 		<cfargument name="name"  	type="any" 		required="true" hint="The name of the variable to set. String">
 		<cfargument name="value" 	type="any" 		required="true" hint="The value of the variable to set">
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
@@ -159,10 +161,11 @@ Description :
 			if( arguments.private ) { collection = instance.privateContext; }
 
 			collection[arguments.name] = arguments.value;
+			return this;
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="removeValue" access="Public" hint="I remove a value in the request collection" output="false" returntype="void">
+	<cffunction name="removeValue" access="Public" hint="I remove a value in the request collection" output="false" returntype="any">
 		<cfargument name="name"  	type="string" 	required="true" hint="The name of the variable to remove.">
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
@@ -172,6 +175,7 @@ Description :
 			if( valueExists(arguments.name,arguments.private) ){
 				structDelete(collection,arguments.name);
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -185,7 +189,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="paramValue" returntype="void" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
+	<cffunction name="paramValue" returntype="any" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
 		<cfargument name="name" 	type="any" 		required="true" hint="Name of the variable to param in the request collection: String">
 		<cfargument name="value" 	type="any" 		required="true" hint="The value of the variable to set if not found.">
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
@@ -193,6 +197,7 @@ Description :
 			if ( not valueExists(name=arguments.name,private=arguments.private) ){
 				setValue(name=arguments.name,value=arguments.value,private=arguments.private);
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -200,9 +205,9 @@ Description :
 		<cfreturn getValue("currentView","",true)>
 	</cffunction>
 
-	<cffunction name="setView" access="public" returntype="void" hint="I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout"  output="false">
+	<cffunction name="setView" access="public" returntype="any" hint="I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout"  output="false">
 		<!--- ************************************************************* --->
-	    <cfargument name="name"     				required="true"  type="string"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
+	    <cfargument name="view"     				required="false" type="string"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
 		<cfargument name="nolayout" 				required="false" type="boolean" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
 		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
 		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""	hint="The cache timeout">
@@ -214,7 +219,10 @@ Description :
 		    var key 		= "";
 		    var cacheEntry 	= structnew();
 			var cModule		= getCurrentModule();
-
+			
+			// view and name mesh
+			if( structKeyExists(arguments,"name") ){ arguments.view = arguments.name; }
+			
 			// Local Override
 			if( structKeyExists(arguments,"layout") ){
 				setLayout(arguments.layout);
@@ -224,13 +232,13 @@ Description :
 		    else if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false,true) ){
 
 		    	//Verify that the view has a layout in the viewLayouts structure.
-			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.name)) ){
-					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.name)],true);
+			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.view)) ){
+					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.view)],true);
 			    }
 				else{
 					//Check the folders structure
 					for( key in instance.FolderLayouts ){
-						if ( reFindnocase('^#key#', lcase(arguments.name)) ){
+						if ( reFindnocase('^#key#', lcase(arguments.view)) ){
 							setValue("currentLayout",instance.FolderLayouts[key],true);
 							break;
 						}
@@ -259,7 +267,7 @@ Description :
 			//Do we need to cache the view
 			if( arguments.cache ){
 				//prepare the cache keys
-				cacheEntry.view = arguments.name;
+				cacheEntry.view = arguments.view;
 
 				//arg cleanup
 				if ( not isNumeric(arguments.cacheTimeout) )
@@ -278,7 +286,8 @@ Description :
 			}
 
 			//Set the current view to render.
-			instance.privateContext["currentView"] = arguments.name;
+			instance.privateContext["currentView"] = arguments.view;
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -294,7 +303,7 @@ Description :
     	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
 
-	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
+	<cffunction name="setLayout" access="public" returntype="any" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
 		<cfargument name="name"  hint="The name or alias of the layout file to set." type="any" >
 		<cfscript>
 			var layouts = getRegisteredLayouts();
@@ -309,6 +318,7 @@ Description :
 
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -348,16 +358,20 @@ Description :
 		<cfreturn listLast(getCurrentEvent(),".")>
 	</cffunction>
 
-	<cffunction name="overrideEvent" access="Public" hint="I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method."  output="false" returntype="void">
-		<cfargument name="event" hint="The name of the event to override." type="string">
+	<cffunction name="overrideEvent" access="Public" hint="I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method."  output="false" returntype="any">
+		<cfargument name="event" hint="The name of the event to override.">
 		 <cfscript>
 	    setValue(getEventName(),arguments.event);
+		return this;
 	    </cfscript>
 	</cffunction>
 
-	<cffunction name="showDebugPanel" access="public" returntype="void" hint="I can override to show or not the debug panel. Very useful in AJAX debugging" output="false">
+	<cffunction name="showDebugPanel" access="public" returntype="any" hint="I can override to show or not the debug panel. Very useful in AJAX debugging" output="false">
 		<cfargument name="show" type="boolean" required="true">
-		<cfset setValue(name="coldbox_debugpanel",value=arguments.show,private=true)>
+		<cfscript>
+		setValue(name="coldbox_debugpanel",value=arguments.show,private=true);
+		return this;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getDebugPanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request." output="false">
@@ -368,17 +382,22 @@ Description :
 		<cfreturn getValue(name="coldbox_proxyrequest",defaultValue=false,private=true)>
 	</cffunction>
 
-	<cffunction name="setProxyRequest" access="public" returntype="void" hint="Set that this is a proxy request" output="false">
-		<cfset setValue(name="coldbox_proxyrequest",value=true,private=true)>
+	<cffunction name="setProxyRequest" access="public" returntype="any" hint="Set that this is a proxy request" output="false">
+		<cfscript>
+		setValue(name="coldbox_proxyrequest",value=true,private=true);
+		return this;
+		</cfscript>
 	</cffunction>
 
-	<cffunction name="noRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute" output="false">
+	<cffunction name="noRender" access="public" returntype="any" hint="Set the flag that tells the framework not to render, just execute" output="false">
 		<cfargument name="remove" required="false" type="boolean" default="false" hint="If true, it removes the flag, else its set.">
 		<cfscript>
 			if (arguments.remove eq false)
 				setValue(name="coldbox_norender",value=true,private=true);
 			else
 				removeValue(name="coldbox_norender",private=true);
+			
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -454,17 +473,23 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="setEventCacheableEntry" access="public" returntype="void" hint="Set the event cacheable entry" output="false" >
+	<cffunction name="setEventCacheableEntry" access="public" returntype="any" hint="Set the event cacheable entry" output="false" >
 		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
-		<cfset setValue(name="cbox_eventCacheableEntry",value=arguments.mdCacheEntry,private=true)>
+		<cfscript>
+		setValue(name="cbox_eventCacheableEntry",value=arguments.mdCacheEntry,private=true);
+		return this;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
 		<cfreturn getValue(name="cbox_eventCacheableEntry",defaultValue=structnew(),private=true)>
 	</cffunction>
 
-	<cffunction name="removeEventCacheableEntry" access="public" returntype="void" hint="Remove the cacheable entry" output="false" >
-		<cfset removeValue(name='cbox_eventCacheableEntry',private=true)>
+	<cffunction name="removeEventCacheableEntry" access="public" returntype="any" hint="Remove the cacheable entry" output="false" >
+		<cfscript>
+		removeValue(name='cbox_eventCacheableEntry',private=true);
+		return this;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="isViewCacheable" access="public" returntype="boolean" hint="Check wether the incoming view has been flagged for caching" output="false" >
@@ -473,10 +498,11 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="setViewCacheableEntry" access="public" returntype="void" hint="Set the view cacheable entry" output="false" >
+	<cffunction name="setViewCacheableEntry" access="public" returntype="any" hint="Set the view cacheable entry" output="false" >
 		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
 		<cfscript>
 			setValue(name="cbox_viewCacheableEntry",value=arguments.mdCacheEntry,private=true);
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -488,45 +514,60 @@ Description :
 		<cfreturn instance.isSES/>
 	</cffunction>
 
-	<cffunction name="setisSES" access="public" output="false" returntype="void" hint="Set the isSES flag, usualy done by the SES interceptor">
+	<cffunction name="setisSES" access="public" output="false" returntype="any" hint="Set the isSES flag, usualy done by the SES interceptor">
 		<cfargument name="isSES" type="boolean" required="true"/>
-		<cfset instance.isSES = arguments.isSES/>
+		<cfscript>
+		instance.isSES = arguments.isSES;
+		return this;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getSESBaseURL" access="public" output="false" returntype="string" hint="Get the ses base URL for this request">
 		<cfreturn instance.sesBaseURL/>
 	</cffunction>
 
-	<cffunction name="setSESBaseURL" access="public" output="false" returntype="void" hint="Set the ses base URL for this request">
+	<cffunction name="setSESBaseURL" access="public" output="false" returntype="any" hint="Set the ses base URL for this request">
 		<cfargument name="sesBaseURL" type="string" required="true"/>
-		<cfset instance.sesBaseURL = arguments.sesBaseURL/>
+		<cfscript>
+		instance.sesBaseURL = arguments.sesBaseURL;
+		return this;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getRoutedStruct" access="public" output="false" returntype="struct" hint="Get the routed structure of key-value pairs. What the ses interceptor could match.">
 		<cfreturn instance.routedStruct/>
 	</cffunction>
 
-	<cffunction name="setRoutedStruct" access="public" output="false" returntype="void" hint="Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.">
+	<cffunction name="setRoutedStruct" access="public" output="false" returntype="any" hint="Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.">
 		<cfargument name="routedStruct" type="struct" required="true"/>
-		<cfset instance.routedStruct = arguments.routedStruct/>
+		<cfscript>
+		instance.routedStruct = arguments.routedStruct;
+		return this;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getDefaultLayout" access="public" returntype="any" output="false" hint="Get's the default layout of the application: String">
 		<cfreturn instance.defaultLayout>
 	</cffunction>
 
-	<cffunction name="setDefaultLayout" access="public" returntype="void" output="false" hint="Override the default layout for a request">
+	<cffunction name="setDefaultLayout" access="public" returntype="any" output="false" hint="Override the default layout for a request">
 		<cfargument name="DefaultLayout" type="string" required="true">
-		<cfset instance.defaultLayout = arguments.DefaultLayout>
+		<cfscript>
+		instance.defaultLayout = arguments.DefaultLayout;
+		return this;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getDefaultView" access="public" returntype="any" output="false" hint="Get's the default view of the application: String">
 		<cfreturn instance.defaultView>
 	</cffunction>
 
-	<cffunction name="setDefaultView" access="public" returntype="void" output="false" hint="Override the default view for a request">
+	<cffunction name="setDefaultView" access="public" returntype="any" output="false" hint="Override the default view for a request">
 		<cfargument name="DefaultView" type="string" required="true">
-		<cfset instance.defaultView = arguments.DefaultView>
+		<cfscript>
+		instance.defaultView = arguments.DefaultView;
+		return this;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getViewLayouts" access="public" returntype="struct" output="false" hint="Get the registered view layout associations map">
@@ -544,19 +585,23 @@ Description :
 	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the state of this request context">
 		<cfreturn variables.instance>
 	</cffunction>
-	<cffunction name="setMemento" access="public" returntype="void" output="false" hint="Set the state of this request context">
+	<cffunction name="setMemento" access="public" returntype="any" output="false" hint="Set the state of this request context">
 		<cfargument name="memento" type="any" required="true">
-		<cfset variables.instance = arguments.memento>
+		<cfscript>
+		variables.instance = arguments.memento;
+		return this;
+		</cfscript>
 	</cffunction>
 
-	<cffunction name="renderData" access="public" returntype="void" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
+	<cffunction name="renderData" access="public" returntype="any" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
 		<cfargument name="data" 		required="true"  type="any"    hint="The data you would like to marshall and return by the framework">
-		<cfargument name="contentType"  required="true"  type="string" default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
-		<cfargument name="encoding" 	required="false" type="string" default="utf-8" hint="The default character encoding to use"/>
+		<cfargument name="contentType"  required="true"  type="string"  default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
+		<cfargument name="encoding" 	required="false" type="string"  default="utf-8" hint="The default character encoding to use"/>
 		<cfargument name="statusCode"   required="false" type="numeric" default="200" hint="The HTTP status code to send to the browser. Defaults to 200" />
 		<cfargument name="statusText"   required="false" type="string"  default="" hint="Explains the HTTP status code sent to the browser." />
+		<cfargument name="location" 	required="false" type="string"  default="" hint="Optional argument used to set the HTTP Location header"/>
 		<!--- ************************************************************* --->
 		<cfargument name="jsonCase" 		type="string" required="false" default="lower" hint="JSON Only: Whether to use lower case, upper case or no (none) case translations in the JSON transformation. Lower is default"/>
 		<cfargument name="jsonQueryFormat" 	type="string" required="false" default="query" hint="JSON Only: query or array" />
@@ -615,9 +660,14 @@ Description :
 			if( len(trim(arguments.contentType)) ){
 				rd.contentType = arguments.contentType;
 			}
+			
+			// HTTP Location?
+			if( len(arguments.location) ){ setHTTPHeader(name="location",value="arguments.location"); }
 
 			// Save Rendering data privately.
 			setValue(name='cbox_renderdata',value=rd,private=true);
+			
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -649,7 +699,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="setHTTPHeader" output="false" access="public" returntype="void" hint="Set an HTTP Header">
+	<cffunction name="setHTTPHeader" output="false" access="public" returntype="any" hint="Set an HTTP Header">
     	<cfargument name="statusCode" type="string" required="false" hint="A status code"/>
 		<cfargument name="statusText" type="string" required="false" default="" hint="A status text"/>
 		<cfargument name="name" 	  type="string" required="false" hint="The header name"/>
@@ -665,6 +715,8 @@ Description :
 		<cfelse>
 			<cfthrow message="Invalid header arguments" detail="Pass in either a statusCode or name argument" type="RequestContext.InvalidHTTPHeaderParameters">
 		</cfif>
+		
+		<cfreturn this>
 	</cffunction>
 
 	<!--- getHTTPBasicCredentials --->
@@ -702,8 +754,11 @@ Description :
 		<cfreturn instance.isNoExecution>
 	</cffunction>
 
-	<cffunction name="noExecution" output="false" access="public" returntype="void" hint="Set that the request will not execute an incoming event. Most likely simulating a servlet call.">
-   		<cfset instance.isNoExecution = true>
+	<cffunction name="noExecution" output="false" access="public" returntype="any" hint="Set that the request will not execute an incoming event. Most likely simulating a servlet call.">
+   		<cfscript>
+		instance.isNoExecution = true;
+   		return this;
+		</cfscript>
     </cffunction>
 
 	<cffunction name="isAjax" output="false" access="public" returntype="boolean" hint="Determines if in an Ajax call or not by looking at the request headers">

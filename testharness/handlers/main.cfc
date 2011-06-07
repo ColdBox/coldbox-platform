@@ -7,7 +7,6 @@
 		<cfset getColdboxOCM().set("mysiteDSNBean",getDatasource("mysite"),0)>
 		<cfset getPlugin("Logger").logEntry("information","AppStart Fired")>
 	</cffunction>
-
 	
 	<cffunction name="onSessionStart" access="public" output="false" returntype="void">
 		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">

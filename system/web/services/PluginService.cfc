@@ -114,7 +114,7 @@ Modification History:
 			//Interception if application is up and running. We need the interceptors.
 			if ( controller.getColdboxInitiated() ){
 				//Fill-up Intercepted MetaData
-				iData.pluginPath = arguments.plugin;
+				iData.pluginPath = pluginLocation;
 				iData.custom 	 = arguments.custom;	
 				iData.module 	 = arguments.module;		
 				iData.oPlugin    = oPlugin;

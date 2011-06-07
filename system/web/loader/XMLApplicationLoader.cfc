@@ -97,9 +97,6 @@ Loads a coldbox xml configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: I18N SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLocalization(configXML,configStruct);			
 		
-		/* ::::::::::::::::::::::::::::::::::::::::: BUG MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseBugTracers(configXML,configStruct);			
-		
 		/* ::::::::::::::::::::::::::::::::::::::::: WS SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseWebservices(configXML,configStruct);			
 
@@ -574,30 +571,14 @@ Loads a coldbox xml configuration file
 			
 			// Overrides?
 			if (NOT arguments.isOverride){
-				configStruct.MailServer = "";
-				configStruct.MailUsername = "";
-				configStruct.MailPassword = "";
-				configStruct.MailPort = 25;
+				configStruct.mailSettings = structnew();
 			}
 			
 			//Check if empty
 			if ( ArrayLen(MailSettingsNodes) gt 0 and ArrayLen(MailSettingsNodes[1].XMLChildren) gt 0){
-				//Checks
-				if ( structKeyExists(MailSettingsNodes[1], "MailServer") )
-					configStruct.MailServer = trim(MailSettingsNodes[1].MailServer.xmlText);
-				
-				//Mail username
-				if ( structKeyExists(MailSettingsNodes[1], "MailUsername") )
-					configStruct.MailUsername = trim(MailSettingsNodes[1].MailUsername.xmlText);
-				
-				//Mail password
-				if ( structKeyExists(MailSettingsNodes[1], "MailPassword") )
-					configStruct.MailPassword = trim(MailSettingsNodes[1].MailPassword.xmlText);
-				
-				//Mail Port
-				if ( structKeyExists(MailSettingsNodes[1], "MailPort") AND isNumeric(MailSettingsNodes[1].MailPort.xmlText) ){
-					configStruct.MailPort = trim(MailSettingsNodes[1].MailPort.xmlText);
-				}				
+				for(x=1; x lte arrayLen( mailSettingsNodes[1].xmlChildren ); x=x+1){
+					configStruct.mailSettings[ reReplaceNoCase(mailSettingsNodes[1].xmlChildren[x].xmlname,"^Mail","") ] = mailSettingsNodes[1].xmlChildren[x].xmlText;		
+				}	
 			}
 		</cfscript>
 	</cffunction>
@@ -653,52 +634,6 @@ Loads a coldbox xml configuration file
 				
 				//set i18n
 				configStruct["using_i18N"] = true;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- parseBugTracers --->
-	<cffunction name="parseBugTracers" output="false" access="public" returntype="void" hint="Parse bug emails">
-		<cfargument name="xml" 		type="any" required="true" hint="The xml object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
-		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
-		<cfscript>
-			var configStruct = arguments.config;
-			var BugEmailNodes = XMLSearch(arguments.xml,"//BugTracerReports/BugEmail");
-			var bugNodes = XMLSearch(arguments.xml,"//BugTracerReports");
-			var i=1;
-			var BugEmails = "";
-			
-			if( NOT arguments.isOverride ){
-				configStruct.BugEmails = "";
-				configStruct.EnableBugReports = false;
-				configStruct.MailFrom = "";
-				configStruct.CustomEmailBugReport = "";
-			}
-			
-			if( arrayLen(bugNodes) gt 0 and ArrayLen(bugNodes[1].XMLChildren) gt 0) {
-				// Mail From
-				if( structKeyExists(bugNodes[1],"MailFrom") and len(bugNodes[1].MailFrom.xmlText) ){
-					configStruct.mailFrom = bugNodes[1].mailfrom.xmltext;
-				}
-				// Custom Bug Reports
-				if( structKeyExists(bugNodes[1],"CustomEmailBugReport") and len(bugNodes[1].CustomEmailBugReport.xmlText) ){
-					configStruct.CustomEmailBugReport = bugNodes[1].CustomEmailBugReport.xmltext;
-				}
-				// Enabled Bug Reports
-				if( structKeyExists(bugNodes[1].xmlAttributes,"enabled") ){
-					configStruct["EnableBugReports"] = bugNodes[1].xmlAttributes.enabled;
-				}
-				// Bug Emails
-				if( arrayLen(BugEmailNodes) ){
-					for (i=1; i lte ArrayLen(BugEmailNodes); i=i+1){
-						BugEmails = BugEmails & trim(BugEmailNodes[i].XMLText);
-						if ( i neq ArrayLen(BugEmailNodes) )
-							BugEmails = BugEmails & ",";
-					}
-					//Insert Into Config
-					configStruct.BugEmails = BugEmails;
-				}
 			}
 		</cfscript>
 	</cffunction>
