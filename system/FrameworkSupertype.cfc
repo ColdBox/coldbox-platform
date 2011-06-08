@@ -254,8 +254,7 @@ Description :
 		<cfargument name="persist" 			required="false" type="string" default="" hint="What request collection keys to persist in the relocation">
 		<cfargument name="persistStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist.">
 		<cfargument name="addToken"			required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
-		<cfargument name="ssl"				required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
-		<cfscript>
+		<cfargument name="ssl"				required="false" type="boolean" hint="Whether to relocate in SSL or not">		<cfscript>
 			arguments.event = arguments.route;
 			controller.setNextEvent(argumentCollection=arguments);
 		</cfscript>
