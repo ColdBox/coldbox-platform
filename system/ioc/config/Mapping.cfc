@@ -381,11 +381,16 @@ Description :
     	<cfscript>
     		var def = getDIDefinition();
 			var x	= 1;
+			
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DISetters); x++){
 				if( instance.DISetters[x].name eq arguments.name ){ return this;}
 			}
+			// Remove scope for setter injection
+			def.scope = "";
+			// save incoming params
 			structAppend(def, arguments, true);
+			// save new DI setter injection
 			arrayAppend( instance.DISetters, def );
 			return this;
     	</cfscript>
