@@ -219,7 +219,7 @@
 				myConsole     = { class="coldbox.system.logging.appenders.ConsoleAppender" },
 				fileAppender  = { class="coldbox.system.logging.appenders.RollingFileAppender",
 								  properties = {
-								  	filePath="logs", fileName=coldbox.appName, autoExpand=true
+								  	filePath="logs", fileName=coldbox.appName, autoExpand=true, fileMaxSize="100"
 								 }}
 			},
 			// Root Logger

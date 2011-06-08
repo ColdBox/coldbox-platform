@@ -51,7 +51,7 @@ Description :
 					<cffile action="delete" file="#ArchiveToDelete#">
 				</cfif>
 				<!--- Set the name of the archive --->
-				<cfset zipFileName =  getDirectoryFromPath(logFullPath) & fileName & "." & createUUID() & ".zip">
+				<cfset zipFileName =  getDirectoryFromPath(logFullPath) & fileName & "." & dateformat(now(),"yyyymmdd") & "." & timeformat(now(),"HHmmss") & ".zip">
 				<!--- Zip it --->
 				<cfset oZip.AddFiles(zipFileName,logFullPath,"","",false,9,false )>
 			</cflock>
