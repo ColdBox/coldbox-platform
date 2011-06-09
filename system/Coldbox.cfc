@@ -377,7 +377,7 @@ Description :
 				event.setValue(cbController.getSetting("EventName"),cbController.getSetting("MissingTemplateHandler"));
 				
 				//Process it
-				processColdBoxRequest();
+				onRequestStart("index.cfm");
 				
 				// Return processed
 				return true;
