@@ -1041,7 +1041,7 @@ Description: This is the framework's simple bean factory.
 						entry.type 	= instance.dslDefaultType;
 
 						// Check DSL marker if it has a value else use default
-						if( len(md.functions[x].instance.dslMarker) ){
+						if( len(md.functions[x][instance.dslMarker]) ){
 							entry.type = md.functions[x][instance.dslMarker];
 						}
 
