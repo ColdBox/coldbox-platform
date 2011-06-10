@@ -926,7 +926,7 @@ Description :
 			}
 			
 			// Check if data CFC or binder family
-			if( NOT isInstanceOf(arguments.binder, "coldbox.system.ioc.config.Binder") ){
+			if( NOT instance.utility.isInstanceCheck(arguments.binder, "coldbox.system.ioc.config.Binder") ){
 				// simple data cfc, create native binder and decorate data CFC
 				nativeBinder = createObject("component","coldbox.system.ioc.config.Binder").init(injector=this,config=arguments.binder,properties=arguments.properties);
 			}
