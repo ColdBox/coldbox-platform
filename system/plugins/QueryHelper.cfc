@@ -486,6 +486,50 @@ Description :
 		<cfreturn csv>
 	</cffunction>
 
+	<!--- arrayOfStructuresToQuery --->    
+    <cffunction name="arrayOfStructuresToQuery" output="false" access="public" returntype="any" hint="Converts an array of structures to a CF Query Object.">    
+    	<cfscript>	    
+			/**
+			* Converts an array of structures to a CF Query Object.
+			* 6-19-02: Minor revision by Rob Brooks-Bilson (rbils@amkor.com)
+			*
+			* Update to handle empty array passed in. Mod by Nathan Dintenfass. Also no longer using list func.
+			*
+			* @param Array      The array of structures to be converted to a query object. Assumes each array element contains structure with same (Required)
+			* @return Returns a query object.
+			* @author David Crawford (rbils@amkor.comdcrawford@acteksoft.com)
+			* @version 2, March 19, 2003
+			*/
+			var colNames = "";
+			var theQuery = queryNew("");
+			var i=0;
+			var j=0;
+			
+			//if there's nothing in the array, return the empty query
+			if(NOT arrayLen(theArray)){ return theQuery; }
+			
+			//get the column names into an array =
+			colNames = structKeyArray(theArray[1]);
+			
+			//build the query based on the colNames
+			theQuery = queryNew(arrayToList(colNames));
+			
+			//add the right number of rows to the query
+			queryAddRow(theQuery, arrayLen(theArray));
+			
+			//for each element in the array, loop through the columns, populating the query
+			for(i=1; i LTE arrayLen(theArray); i=i+1){
+				for(j=1; j LTE arrayLen(colNames); j=j+1){
+					if (isDate(theArray[i][colNames[j]]) and (theArray[i][colNames[j]]) eq "1900-01-01 00:00:00.0") {
+						theArray[i][colNames[j]] = "";
+					}
+					querySetCell(theQuery, colNames[j], theArray[i][colNames[j]], i);
+				}
+			}
+			return theQuery;
+    	</cfscript>    
+    </cffunction>	
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ********************************************************************* --->
@@ -516,7 +560,6 @@ Description :
         </cfscript>
 		
 	</cffunction>
-	<!--- ********************************************************************* --->
 	
 	<!--- ********************************************************************* --->
 	<!--- Returns unique elements from two list                                 --->
@@ -546,7 +589,6 @@ Description :
         </cfscript>
 		
 	</cffunction>
-	<!--- ********************************************************************* --->
 	
 	<!--- ********************************************************************* --->
     <!---copy value in a row from qryFrom to qryTo without adding additional row--->
@@ -583,7 +625,6 @@ Description :
         </cfscript>
 		 
     </cffunction>
-	<!--- ********************************************************************* --->
 	
 </cfcomponent>
 
