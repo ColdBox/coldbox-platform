@@ -474,6 +474,8 @@ Only one instance of a specific ColdBox application exists.
 			// Setup Main Invoker Args
 			loc.argsMain 			= structnew();
 			loc.argsMain.event		= oRequestContext;
+			loc.argsMain.rc			= oRequestContext.getCollection();
+			loc.argsMain.prc		= oRequestContext.getCollection(private=true);
 			structAppend(loc.argsMain, arguments.eventArguments);
 			
 			// Setup interception data
@@ -579,7 +581,7 @@ Only one instance of a specific ColdBox application exists.
 					}
 					else{
 						// Normal execution
-						loc.results = invoker(oHandler,ehBean.getMethod(), loc.argsMain, arguments.private);
+						loc.results = invoker(oHandler, ehBean.getMethod(), loc.argsMain, arguments.private);
 					}
 				}
 				
