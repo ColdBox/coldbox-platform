@@ -518,6 +518,17 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		debug(str);	
 		assertEquals('<a href="index.cfm?event=actions.save">Edit</a>', str);
 	}
+	
+	
+	function testFieldset(){
+		str = plugin.startFieldset(legend="Luis");
+		debug(str);	
+		assertEquals('<fieldset><legend>Luis</legend>', str);
+		
+		str = plugin.endFieldSet();
+		debug(str);	
+		assertEquals('</fieldset>', str);
+	}
 </cfscript>
 
 </cfcomponent>
