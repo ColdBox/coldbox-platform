@@ -129,15 +129,18 @@ Description :
 			// Prepare caching key
 			viewCacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & arguments.module & ":" & arguments.view & arguments.cacheSuffix;
 			// Is the view already cached? UPDATE THIS BY 3.5 to CACHEBOX lookup
-			if( instance.templateCache.lookup(viewCacheKey) ){
-				// Render it out
-				timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm]");
-				iData.renderedView = instance.templateCache.get(viewCacheKey);
-				instance.debuggerService.timerEnd(timerHash);
-				// Post View Render Interception
-				if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
-				// Return it
-				return iData.renderedView;
+			if (arguments.cache)
+			{
+				if( instance.templateCache.lookup(viewCacheKey) ){
+					// Render it out
+					timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm]");
+					iData.renderedView = instance.templateCache.get(viewCacheKey);
+					instance.debuggerService.timerEnd(timerHash);
+					// Post View Render Interception
+					if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
+					// Return it
+					return iData.renderedView;
+				}
 			}
 			
 			// No caching, just render
