@@ -46,6 +46,9 @@
       	<copy todir="${dir.build}/wirebox/system/ioc">
         	<fileset dir="system/ioc" />
         </copy>
+		<copy todir="${dir.build}/wirebox/system/aop">
+			 <fileset dir="system/aop" />
+		</copy>
 		<copy todir="${dir.build}/wirebox/system/cache">
         	<fileset dir="system/cache" />
         </copy>
