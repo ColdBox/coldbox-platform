@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>renderdata</name>
 <help></help>
-    <starttext><![CDATA[event.renderData("$${Type:PLAIN|JSON|WDDX}", $${data}, "$${contenttype:text/html|text/xml|text|plain|other}" )]]></starttext>
+    <starttext><![CDATA[event.renderData(type="$${Type:PLAIN|JSON|JSONT|WDDX|HTML}",data=$${data})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

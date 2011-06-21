@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>exists</name>
-<help></help>
-<starttext><![CDATA[getPlugin("SessionStorage").exists("$${Variable Name}")]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>

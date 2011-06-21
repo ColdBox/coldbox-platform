@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setNextEvent</name>
 <help>setNextEvent method</help>
-<starttext><![CDATA[setNextEvent("$${event}","$${url params}")]]></starttext>
+<starttext><![CDATA[setNextEvent(event="$${event}",queryString="$${url params}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

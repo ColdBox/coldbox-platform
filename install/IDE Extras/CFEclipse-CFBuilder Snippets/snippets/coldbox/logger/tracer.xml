@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>tracer</name>
-<help></help>
-<starttext><![CDATA[getPlugin("Logger").tracer("$${Message}")]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>

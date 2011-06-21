@@ -3,9 +3,10 @@
 <name>NewEvent</name>
 <help></help>
 <starttext><![CDATA[<!--- $${Event Name} --->
-<cffunction name="$${Event Name}" access="public" returntype="void" output="false" hint="$${Hint}">
-	<cfargument name="Event" type="any" required="yes">
-	<cfset var rc = event.getCollection()>
+<cffunction name="$${Event Name}" output="false" hint="$${Hint}">
+	<cfargument name="event" type="any" required="yes">
+	<cfargument name="rc" type="any" required="yes">
+	<cfargument name="prc" type="any" required="yes">
 	<cfscript>]]></starttext>
 <endtext><![CDATA[	
 

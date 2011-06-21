@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getSetting</name>
 <help>Get a Setting</help>
-<starttext><![CDATA[getSetting("$${Setting Name}", $${Framework Setting:false|true})]]></starttext>
+<starttext><![CDATA[getSetting("$${Setting Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>
