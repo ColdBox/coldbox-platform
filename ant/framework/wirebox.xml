@@ -63,6 +63,9 @@
         </copy>
 		
 		<!-- Copy src to coldbox namespace -->
+		<copy todir="${dir.build}/coldbox/system/aop">
+		 	<fileset dir="system/aop" />
+		</copy>
 		<copy todir="${dir.build}/coldbox/system/ioc">
         	<fileset dir="system/ioc" />
         </copy>
