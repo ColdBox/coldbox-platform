@@ -21,7 +21,7 @@ Description :
 	injector = new coldbox.system.ioc.Injector("config.MyBinder");
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="A WireBox Injector: Builds the graphs of objects that make up your application." output="false" serializable="false">
+<cfcomponent hint="A WireBox Injector: Builds the graphs of objects that make up your application." output="false" serializable="false" implements="coldbox.system.ioc.IInjector">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 		
@@ -68,7 +68,9 @@ Description :
 					"beforeInstanceInspection",		// X before an object is inspected for injection metadata
 					"afterInstanceInspection",		// X after an object has been inspected and metadata is ready to be saved
 					"beforeInjectorShutdown",		// X right before the shutdown procedures start
-					"afterInjectorShutdown"			// X right after the injector is shutdown
+					"afterInjectorShutdown",		// X right after the injector is shutdown
+					"beforeInstanceAutowire",		// X right before an instance is autowired
+					"afterInstanceAutowire"			// X right after an instance is autowired
 				],
 				// LogBox and Class Logger
 				logBox  = "",
@@ -130,9 +132,10 @@ Description :
 				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
 				// Create local event manager
 				configureEventManager();
-				// Register All Custom Listeners
-				registerListeners();
 			}
+			
+			// Register All Custom Listeners
+			registerListeners();
 			
 			// Create our object builder
 			instance.builder = createObject("component","coldbox.system.ioc.Builder").init( this );
@@ -177,6 +180,11 @@ Description :
 			// Notify Listeners
 			instance.eventManager.processState("beforeInjectorShutdown",iData);
 			
+			// Is parent linked
+			if( isObject(instance.parent) ){
+				instance.parent.shutdown();
+			}
+			
 			// standalone cachebox? Yes, then shut it down baby!
 			if( NOT isColdBoxLinked() ){
 				instance.cacheBox.shutdown();
@@ -208,7 +216,7 @@ Description :
 			
 			// Get by DSL?
 			if( structKeyExists(arguments,"dsl") ){
-				return instance.builder.buildSimpleDSL( arguments.dsl );
+				return instance.builder.buildSimpleDSL( arguments.dsl, arguments.name );
 			}
 			
 			// Check if Mapping Exists?
@@ -292,7 +300,7 @@ Description :
 					oModel = instance.builder.buildFeed( thisMap ); break;
 				}
 				case "dsl" : {
-					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL() ); break;
+					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL(), thisMap.getName() ); break;
 				}
 				case "factory" : {
 					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
@@ -390,6 +398,7 @@ Description :
 			var DIProperties 	= "";
 			var DISetters		= "";
 			var refLocal		= structnew();
+			var iData			= "";
 			
 			// Do we have a mapping? Or is this a-la-carte wiring
 			if( NOT structKeyExists(arguments,"mapping") ){
@@ -431,6 +440,10 @@ Description :
 				 AND
 				 ( (arguments.annotationCheck eq false) OR (arguments.annotationCheck AND thisMap.isAutowire()) ) ){
 				
+				// announce beforeInstanceAutowire
+				iData = {mapping=thisMap,target=arguments.target,targetID=arguments.targetID,injector=this};
+				instance.eventManager.processState("beforeInstanceAutowire",iData);
+				
 				// prepare instance for wiring, done once for persisted objects and CFCs only
 				instance.utility.getMixerUtil().start( arguments.target );
 				
@@ -453,6 +466,9 @@ Description :
 				processProviderMethods( targetObject, thisMap );
 				// Process After DI Complete
 				processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
+				
+				// After Instance Autowire
+				instance.eventManager.processState("afterInstanceAutowire",iData);
 				
 				// Debug Data
 				if( instance.log.canDebug() ){
@@ -536,7 +552,7 @@ Description :
 				// else check if dsl is used?
 				else if( structKeyExists(arguments.DIData[x], "dsl") ){
 					// Get DSL dependency by sending entire DI structure to retrieve
-					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x] );
+					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x], arguments.targetID, arguments.targetObject );
 				}
 				// else we have to have a reference ID or a nasty bug has ocurred
 				else{
@@ -773,7 +789,12 @@ Description :
 				}
 				
 				// Now register listener
-				instance.eventManager.register(thisListener,listeners[x].name);
+				if( NOT isColdBoxLinked() ){ 
+					instance.eventManager.register(thisListener,listeners[x].name);
+				}
+				else{
+					instance.eventManager.registerInterceptor(interceptorObject=thisListener,interceptorName=listeners[x].name);
+				}
 				
 				// debugging
 				if( instance.log.canDebug() ){
@@ -905,7 +926,7 @@ Description :
 			}
 			
 			// Check if data CFC or binder family
-			if( NOT isInstanceOf(arguments.binder, "coldbox.system.ioc.config.Binder") ){
+			if( NOT instance.utility.isInstanceCheck(arguments.binder, "coldbox.system.ioc.config.Binder") ){
 				// simple data cfc, create native binder and decorate data CFC
 				nativeBinder = createObject("component","coldbox.system.ioc.config.Binder").init(injector=this,config=arguments.binder,properties=arguments.properties);
 			}

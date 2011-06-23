@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>doQueryAppend</name>
-<help></help>
-<starttext><![CDATA[getPlugin("QueryHelper").doQueryAppend($${query From}, $${query To})]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>

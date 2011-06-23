@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>buildlink</name>
 <help></help>
-<starttext><![CDATA[event.buildLink('$${event or route}')]]></starttext>
+<starttext><![CDATA[event.buildLink(linkto="$${to}",queryString="$${QueryString}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -92,10 +92,16 @@ Properties:
 			<!--- Custom Layout --->
 			<cfif hasCustomLayout()>
 				<cfset entry = getCustomLayout().format(loge)>
+				<!--- check if custom layout has getSubjet() --->
+				<cfif structKeyExists(getCustomLayout(),"getSubject")>
+					<cfset subject = getCustomLayout().getSubject(loge)>
+				</cfif>
 			<cfelse>
 				<cfsavecontent variable="entry">
 				<cfoutput>
 				<p>TimeStamp: #loge.getTimeStamp()#</p>
+				<p>Severity: #loge.getSeverity()#</p>
+				<p>Category: #loge.getCategory()#</p>
 				<hr/>
 				<p>#loge.getMessage()#</p>
 				<hr/>
@@ -106,7 +112,7 @@ Properties:
 			</cfif>
 			
 			<!--- If mail server defined then use mail settings --->
-			<cfif len(getProperty("mailserver"))>
+			<cfif len( getProperty("mailserver") )>
 				<!--- Mail the log --->
 				<cfmail to="#getProperty("to")#"
 						from="#getProperty("from")#"

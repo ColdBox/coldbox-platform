@@ -13,20 +13,18 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cfscript>
-		instance = structnew();
-		// Internal Properties
-		instance.bodyTokens = structnew();
-		instance.mailParams = ArrayNew(1);
-		instance.mailParts = ArrayNew(1);
-		instance.body = "";
-		instance.from = "";
-		instance.to = "";
-	</cfscript>
-
 	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="Mail" hint="Initialize the Mail object">
 		<cfscript>
+			instance = structnew();
+			// Internal Properties
+			instance.bodyTokens = structnew();
+			instance.mailParams = ArrayNew(1);
+			instance.mailParts = ArrayNew(1);
+			instance.body = "";
+			instance.from = "";
+			instance.to = "";
+		
 			return config(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
@@ -210,144 +208,172 @@ Description :
 
 <!------------------------------------------- SETTERS ------------------------------------------->
 
-	<cffunction name="setBody" access="public" output="false" returntype="void" hint="Set Body">
+	<cffunction name="setBody" access="public" output="false" returntype="any" hint="Set Body">
 		<cfargument name="Body" type="string" required="true"/>
 		<cfset instance.Body = arguments.Body/>
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setFrom" access="public" output="false" returntype="void" hint="Sets a new value for the from property">
+	<cffunction name="setFrom" access="public" output="false" returntype="any" hint="Sets a new value for the from property">
 		<cfargument name="newFrom" type="string" required="yes" />
 		<cfset instance.from = arguments.newFrom />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setTo" access="public" output="false" returntype="void" hint="Sets a new value for the to property">
+	<cffunction name="setTo" access="public" output="false" returntype="any" hint="Sets a new value for the to property">
 		<cfargument name="newTo" type="string" required="yes" />
 		<cfset instance.to = arguments.newTo />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setBcc" access="public" output="false" returntype="void" hint="Sets a new value for the bcc property">
+	<cffunction name="setBcc" access="public" output="false" returntype="any" hint="Sets a new value for the bcc property">
 		<cfargument name="newBcc" type="string" required="yes" />
 		<cfset instance.bcc = arguments.newBcc />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setCc" access="public" output="false" returntype="void" hint="Sets a new value for the cc property">
+	<cffunction name="setCc" access="public" output="false" returntype="any" hint="Sets a new value for the cc property">
 		<cfargument name="newCc" type="string" required="yes" />
 		<cfset instance.cc = arguments.newCc />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setCharset" access="public" output="false" returntype="void" hint="Sets a new value for the charset property">
+	<cffunction name="setCharset" access="public" output="false" returntype="any" hint="Sets a new value for the charset property">
 		<cfargument name="newCharset" type="string" required="yes" />
 		<cfset instance.charset = arguments.newCharset />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setDebug" access="public" output="false" returntype="void" hint="Sets a new value for the debug property">
+	<cffunction name="setDebug" access="public" output="false" returntype="any" hint="Sets a new value for the debug property">
 		<cfargument name="newDebug" type="boolean" required="yes" />
 		<cfset instance.debug = arguments.newDebug />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setFailto" access="public" output="false" returntype="void" hint="Sets a new value for the failto property">
+	<cffunction name="setFailto" access="public" output="false" returntype="any" hint="Sets a new value for the failto property">
 		<cfargument name="newFailto" type="string" required="yes" />
 		<cfset instance.failto = arguments.newFailto />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setGroup" access="public" output="false" returntype="void" hint="Sets a new value for the group property">
+	<cffunction name="setGroup" access="public" output="false" returntype="any" hint="Sets a new value for the group property">
 		<cfargument name="newGroup" type="string" required="yes" />
 		<cfset instance.group = arguments.newGroup />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setGroupcasesensitive" access="public" output="false" returntype="void" hint="Sets a new value for the groupcasesensitive property">
+	<cffunction name="setGroupcasesensitive" access="public" output="false" returntype="any" hint="Sets a new value for the groupcasesensitive property">
 		<cfargument name="newGroupcasesensitive" type="boolean" required="yes" />
 		<cfset instance.groupcasesensitive = arguments.newGroupcasesensitive />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setMailerid" access="public" output="false" returntype="void" hint="Sets a new value for the mailerid property">
+	<cffunction name="setMailerid" access="public" output="false" returntype="any" hint="Sets a new value for the mailerid property">
 		<cfargument name="newMailerid" type="string" required="yes" />
 		<cfset instance.mailerid = arguments.newMailerid />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setMaxrows" access="public" output="false" returntype="void" hint="Sets a new value for the maxrows property">
+	<cffunction name="setMaxrows" access="public" output="false" returntype="any" hint="Sets a new value for the maxrows property">
 		<cfargument name="newMaxrows" type="numeric" required="yes" />
 		<cfset instance.maxrows = arguments.newMaxrows />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setMimeattach" access="public" output="false" returntype="void" hint="Sets a new value for the mimeattach property">
+	<cffunction name="setMimeattach" access="public" output="false" returntype="any" hint="Sets a new value for the mimeattach property">
 		<cfargument name="newMimeattach" type="string" required="yes" />
 		<cfset instance.mimeattach = arguments.newMimeattach />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setPassword" access="public" output="false" returntype="void" hint="Sets a new value for the password property">
+	<cffunction name="setPassword" access="public" output="false" returntype="any" hint="Sets a new value for the password property">
 		<cfargument name="newPassword" type="string" required="yes" />
 		<cfset instance.password = arguments.newPassword />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setPort" access="public" output="false" returntype="void" hint="Sets a new value for the port property">
+	<cffunction name="setPort" access="public" output="false" returntype="any" hint="Sets a new value for the port property">
 		<cfargument name="newPort" type="numeric" required="yes" />
 		<cfset instance.port = arguments.newPort />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setPriority" access="public" output="false" returntype="void" hint="Sets a new value for the priority property">
+	<cffunction name="setPriority" access="public" output="false" returntype="any" hint="Sets a new value for the priority property">
 		<cfargument name="newPriority" type="string" required="yes" />
 		<cfset instance.priority = arguments.newPriority />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setQuery" access="public" output="false" returntype="void" hint="Sets a new value for the query property">
+	<cffunction name="setQuery" access="public" output="false" returntype="any" hint="Sets a new value for the query property">
 		<cfargument name="newQuery" type="string" required="yes" />
 		<cfset instance.query = arguments.newQuery />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setReplyto" access="public" output="false" returntype="void" hint="Sets a new value for the replyto property">
+	<cffunction name="setReplyto" access="public" output="false" returntype="any" hint="Sets a new value for the replyto property">
 		<cfargument name="newReplyto" type="string" required="yes" />
 		<cfset instance.replyto = arguments.newReplyto />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setServer" access="public" output="false" returntype="void" hint="Sets a new value for the server property">
+	<cffunction name="setServer" access="public" output="false" returntype="any" hint="Sets a new value for the server property">
 		<cfargument name="newServer" type="string" required="yes" />
 		<cfset instance.server = arguments.newServer />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setSpoolenable" access="public" output="false" returntype="void" hint="Sets a new value for the spoolenable property">
+	<cffunction name="setSpoolenable" access="public" output="false" returntype="any" hint="Sets a new value for the spoolenable property">
 		<cfargument name="newSpoolenable" type="boolean" required="yes" />
 		<cfset instance.spoolenable = arguments.newSpoolenable />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setStartrow" access="public" output="false" returntype="void" hint="Sets a new value for the startrow property">
+	<cffunction name="setStartrow" access="public" output="false" returntype="any" hint="Sets a new value for the startrow property">
 		<cfargument name="newStartrow" type="numeric" required="yes" />
 		<cfset instance.startrow = arguments.newStartrow />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setSubject" access="public" output="false" returntype="void" hint="Sets a new value for the subject property">
+	<cffunction name="setSubject" access="public" output="false" returntype="any" hint="Sets a new value for the subject property">
 		<cfargument name="newSubject" type="string" required="yes" />
 		<cfset instance.subject = arguments.newSubject />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setTimeout" access="public" output="false" returntype="void" hint="Sets a new value for the timeout property">
+	<cffunction name="setTimeout" access="public" output="false" returntype="any" hint="Sets a new value for the timeout property">
 		<cfargument name="newTimeout" type="numeric" required="yes" />
 		<cfset instance.timeout = arguments.newTimeout />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setType" access="public" output="false" returntype="void" hint="Sets a new value for the type property">
+	<cffunction name="setType" access="public" output="false" returntype="any" hint="Sets a new value for the type property">
 		<cfargument name="newType" type="string" required="yes" />
 		<cfset instance.type = arguments.newType />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setUsername" access="public" output="false" returntype="void" hint="Sets a new value for the username property">
+	<cffunction name="setUsername" access="public" output="false" returntype="any" hint="Sets a new value for the username property">
 		<cfargument name="newUsername" type="string" required="yes" />
 		<cfset instance.username = arguments.newUsername />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setUseSSL" access="public" output="false" returntype="void" hint="Sets a new value for the useSSL property">
+	<cffunction name="setUseSSL" access="public" output="false" returntype="any" hint="Sets a new value for the useSSL property">
 		<cfargument name="newUseSSL" type="boolean" required="yes" />
 		<cfset instance.useSSL = arguments.newUseSSL />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setUseTLS" access="public" output="false" returntype="void" hint="Sets a new value for the useTLS property">
+	<cffunction name="setUseTLS" access="public" output="false" returntype="any" hint="Sets a new value for the useTLS property">
 		<cfargument name="newUseTLS" type="boolean" required="yes" />
 		<cfset instance.useTLS = arguments.newUseTLS />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setWraptext" access="public" output="false" returntype="void" hint="Sets a new value for the wraptext property">
+	<cffunction name="setWraptext" access="public" output="false" returntype="any" hint="Sets a new value for the wraptext property">
 		<cfargument name="newWraptext" type="numeric" required="yes" />
 		<cfset instance.wraptext = arguments.newWraptext />
+		<cfreturn this>
 	</cffunction>
 
 	<cffunction name="validate" access="public" returntype="boolean" hint="validates the basic fields of To, From and Body" output="false" >
@@ -366,18 +392,71 @@ Description :
 		</cfscript>
 	</cffunction>
 
-<!------------------------------------------- PUBLIC METHODS ------------------------------------------->
+<!------------------------------------------- PUBLIC HELPER METHODS ------------------------------------------->
 
-	<cffunction name="setBodyTokens" access="public" output="false" returntype="void" hint="Sets a new struct of body tokens that can be used for replacement when the mail is sent. The tokens are replaced in the body content ast @token@ delimmitted.">
+	<!--- setReadReceipt --->
+    <cffunction name="setReadReceipt" output="false" access="public" returntype="any" hint="Set the email address that will receive read receipts. I just place the appropriate mail headers">
+    	<cfargument name="email"/>
+    	<cfscript>
+    		addMailParam(name="Read-Receipt-To",value=arguments.email);
+			addMailParam(name="Disposition-Notification-To",value=arguments.email);
+    		return this;
+		</cfscript>
+    </cffunction>
+	
+	<!--- setSendReceipt --->
+    <cffunction name="setSendReceipt" output="false" access="public" returntype="any" hint="Sets the email that get's notified once the email is delivered by setting the appropriate mail headers">
+    	<cfargument name="email"/>
+    	<cfscript>
+    		addMailParam(name="Return-Receipt-To",value=arguments.email);
+    		return this;
+		</cfscript>
+    </cffunction>
+
+	<!--- setHTML --->
+    <cffunction name="setHTML" output="false" access="public" returntype="any" hint="Sets up a mail part that is HTML using utf8 for you by calling addMailpart()">
+    	<cfargument name="body" hint="The HTML content to set in the mail part"/>
+		<cfset addMailPart(charset='utf8',type='text/html',body=arguments.body)>
+		<cfreturn this>
+    </cffunction>
+
+	<!--- setText --->
+    <cffunction name="setText" output="false" access="public" returntype="any" hint="Sets up a mail part that is TEXT using utf8 for you by calling addMailpart()">
+    	<cfargument name="body" hint="The HTML content to set in the mail part"/>
+		<cfset addMailPart(charset='utf8',type='text/plain',body=arguments.body)>
+		<cfreturn this>
+    </cffunction>
+	
+	<!--- addAttachments --->
+    <cffunction name="addAttachments" output="false" access="public" returntype="any" hint="Add attachment(s) to this payload using a list or array of file locations">
+    	<cfargument name="files" type="any" required="true" hint="A list or array of files to attach to this payload"/>
+		<cfscript>
+			var x =1;
+			
+			if ( isSimpleValue(arguments.files) ){
+				arguments.files = listToArray(arguments.files);
+			}
+			for(x=1; x lte arrayLen(arguments.files); x=x+1){
+				addMailParam(file=arguments.files[x]);
+			}
+			
+			return this;
+		</cfscript>
+    </cffunction>
+	
+	<!--- setBodyTokens --->
+	<cffunction name="setBodyTokens" access="public" output="false" returntype="any" hint="Sets a new struct of body tokens that can be used for replacement when the mail is sent. The tokens are replaced in the body content ast @token@ delimmitted.">
 		<cfargument name="tokenMap" type="struct" required="yes" />
 		<cfset instance.bodyTokens = arguments.tokenMap />
+		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="addMailPart" access="public" returntype="void" output="false" >
-		<cfargument name="charset" 		required="false" type="string" 	hint="Initial value for the charsetproperty." />
-		<cfargument name="type" 		required="false" type="string" 	hint="Initial value for the typeproperty." />
-		<cfargument name="wraptext" 	required="false" type="numeric" hint="Initial value for the wraptextproperty." />
-		<cfargument name="body" 		required="false" type="string" 	hint="Initial value for the bodyproperty." />
+	<!--- addMailPart --->
+	<cffunction name="addMailPart" access="public" returntype="any" output="false" hint="Add a new mail part to this mail payload">
+		<cfargument name="charset" 		required="false" type="string" 	hint="Initial value for the charset property." />
+		<cfargument name="type" 		required="false" type="string" 	hint="Initial value for the type property." />
+		<cfargument name="wraptext" 	required="false" type="numeric" hint="Initial value for the wraptext property." />
+		<cfargument name="body" 		required="false" type="string" 	hint="Initial value for the body property." />
 		<cfscript>
 			// Add new mail part
 			var mailpart = structnew();
@@ -388,16 +467,19 @@ Description :
 			}
 
 			arrayAppend(getMailParts(), mailpart);
+			
+			return this;
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="addMailParam" access="public" returntype="void" output="false" >
-		<cfargument name="contentID" 	required="false" type="string" hint="Initial value for the contentIDproperty." />
-		<cfargument name="disposition" 	required="false" type="string" hint="Initial value for the dispositionproperty." />
-		<cfargument name="file" 		required="false" type="string" hint="Initial value for the fileproperty." />
-		<cfargument name="type" 		required="false" type="string" hint="Initial value for the typeproperty." />
-		<cfargument name="name" 		required="false" type="string" hint="Initial value for the nameproperty." />
-		<cfargument name="value" 		required="false" type="string" hint="Initial value for the valueproperty." />
+	<!--- addMailParam --->
+	<cffunction name="addMailParam" access="public" returntype="any" output="false" hint="Add mail params to this payload">
+		<cfargument name="contentID" 	required="false" type="string" hint="Initial value for the contentID property." />
+		<cfargument name="disposition" 	required="false" type="string" hint="Initial value for the dispositio nproperty." />
+		<cfargument name="file" 		required="false" type="string" hint="Initial value for the file property." />
+		<cfargument name="type" 		required="false" type="string" hint="Initial value for the type property." />
+		<cfargument name="name" 		required="false" type="string" hint="Initial value for the name property." />
+		<cfargument name="value" 		required="false" type="string" hint="Initial value for the value property." />
 		<cfscript>
 			// Add new mail Param
 			var mailparams = structnew();
@@ -408,13 +490,15 @@ Description :
 			}
 
 			arrayAppend(getMailParams(), mailparams);
+			
+			return this;
 		</cfscript>
 	</cffunction>
 
+	<!--- get/set Memento --->
 	<cffunction name="getMemento" access="public" returntype="struct" output="false">
 		<cfreturn instance>
 	</cffunction>
-
 	<cffunction name="setMemento" access="public" returntype="void" output="false">
 		<cfargument name="memento" required="false" type="struct" />
 		<cfset instance = arguments.memento>

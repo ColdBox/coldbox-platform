@@ -120,7 +120,7 @@ Modification History:
 		// IoC Plugin Manager Configuration
 		if ( len(controller.getSetting("IOCFramework")) ){
 			//Create IoC Factory and configure it.
-			controller.getPlugin("IOC");
+			controller.getPlugin("IOC").configure();
 		}
 
 		// Load i18N if application is using it.
@@ -259,8 +259,8 @@ Modification History:
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- createAppLoader --->
-	<cffunction name="createAppLoader" output="false" access="private" returntype="coldbox.system.web.loader.AbstractApplicationLoader" hint="Detect the application loader to use and create it">
-		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
+	<cffunction name="createAppLoader" output="false" access="private" returntype="any" hint="Detect the application loader to use and create it" colddoc:generic="coldbox.system.web.loader.AbstractApplicationLoader">
+		<cfargument name="overrideConfigFile" required="false" type="any" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfscript>
 		var coldBoxSettings = controller.getColdBoxSettings();
 		var appRootPath = controller.getAppRootPath();

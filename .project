@@ -10,4 +10,11 @@
 		<nature>com.adobe.ide.coldfusion.projectNature</nature>
 		<nature>org.cfeclipse.cfml.CFENature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>mxunit</name>
+			<type>2</type>
+			<location>/Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit</location>
+		</link>
+	</linkedResources>
 </projectDescription>

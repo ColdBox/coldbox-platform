@@ -413,6 +413,19 @@
 	
 	function testMapDirectory(){
 		config.mapDirectory("coldbox.testing.testModel");
+		assertTrue( structCount(config.getMappings()) gte 18 );
+		
+		config.reset();
+		
+		config.mapDirectory(packagePath="coldbox.testing.testModel",include="ioc.*");
+		assertTrue( structCount(config.getMappings) gte 10 );
+		
+		config.reset();
+		
+		config.mapDirectory(packagePath="coldbox.testing.testModel",exclude="ioc.*");
+		//debug( config.getMappings() );
+		assertTrue( structCount(config.getMappings()) lte 8 );
+		
 	}
 	
 	function testMapFactoryMethod(){
@@ -441,6 +454,34 @@
 		mapping = config.getMapping("MyProviderObject");	
 		assertEquals( "MyProvider", mapping.getPath() );
 		assertEquals( "provider", mapping.getType() );
+	}
+	
+	function testMapAspect(){
+		config.mapAspect("Transaction").to("model.Transactional");
+		mapping = config.getMapping("Transaction");	
+		assertEquals( true, mapping.isAspect() );
+		assertEquals( "singleton", mapping.getScope() );
+		assertEquals( true, mapping.isEagerInit() );
+		assertEquals( "model.Transactional", mapping.getPath() );
+		assertEquals( true, mapping.isAspectAutoBinding() );
+		
+		config.mapAspect("Transaction",false).to("model.Transactional");
+		mapping = config.getMapping("Transaction");	
+		assertEquals( false, mapping.isAspectAutoBinding() );
+		
+	}
+	
+	function testBindAspect(){
+		config.bindAspect(classes=config.match().any(),methods=config.match().any(),aspects="luis");
+		b = config.getAspectBindings();
+		
+		assertTrue( arrayLen(b) );
+				
+	}
+	
+	function testMatch(){
+		r = config.match();
+		assertTrue( isObject(r) );		
 	}
 	
 </cfscript>

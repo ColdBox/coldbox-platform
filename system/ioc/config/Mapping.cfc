@@ -62,7 +62,11 @@ Description :
 				// original object's metadata
 				metadata = {},
 				// discovered provider methods
-				providerMethods = []
+				providerMethods = [],
+				// AOP aspect
+				aspect = false,
+				// AutoAspectBinding
+				autoAspectBinding = true
 			};
 			
 			// DI definition structure
@@ -210,6 +214,27 @@ Description :
     	<cfset instance.autowire = arguments.autowire>
     	<cfreturn this>
     </cffunction>
+    
+    <!--- isAspect --->
+    <cffunction name="isAspect" output="false" access="public" returntype="any" hint="Flag describing if this mapping is an AOP aspect or not" colddoc:generic="Boolean">
+    	<cfreturn instance.aspect>
+    </cffunction>
+    <cffunction name="setAspect" access="public" returntype="any" output="false" hint="Set aspect property">
+    	<cfargument name="aspect" required="true" colddoc:generic="Boolean">
+    	<cfset instance.aspect = arguments.aspect>
+    	<cfreturn this>
+    </cffunction>
+    
+    <!--- isAspectAutoBinding --->    
+    <cffunction name="isAspectAutoBinding" output="false" access="public" returntype="any" hint="Is this mapping an auto aspect binding" colddoc:generic="Boolean">    
+    	<cfreturn instance.autoAspectBinding>    
+    </cffunction>
+    <!--- setAspectAutoBinding --->    
+    <cffunction name="setAspectAutoBinding" output="false" access="public" returntype="any" hint="Set the aspect auto binding bit">    
+    	<cfargument name="autoBinding" required="true" colddoc:generic="Boolean">
+    	<cfset instance.autoAspectBinding = arguments.autoBinding>
+    	<cfreturn this>    
+    </cffunction>
 	
 	<!--- isAutoInit --->
     <cffunction name="isAutoInit" output="false" access="public" returntype="any" hint="Using auto init of mapping target or not as boolean" colddoc:generic="Boolean">
@@ -356,11 +381,16 @@ Description :
     	<cfscript>
     		var def = getDIDefinition();
 			var x	= 1;
+			
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DISetters); x++){
 				if( instance.DISetters[x].name eq arguments.name ){ return this;}
 			}
+			// Remove scope for setter injection
+			def.scope = "";
+			// save incoming params
 			structAppend(def, arguments, true);
+			// save new DI setter injection
 			arrayAppend( instance.DISetters, def );
 			return this;
     	</cfscript>
@@ -435,9 +465,10 @@ Description :
 		<cfset var md 			= instance.metadata>
 		<cfset var x 			= 1>
 		<cfset var thisAliases 	= "">
-		<cfset var mappings		= "">
+		<cfset var mappings		= arguments.binder.getMappings()>
 		<cfset var iData	 	= "">
 		<cfset var eventManager	= arguments.injector.getEventManager()>
+		<cfset var cacheProperties = {}>
 		
 		<!--- Lock for discovery based on path location, only done once per instance of mapping. --->
 		<cflock name="Mapping.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
@@ -462,33 +493,42 @@ Description :
 					md = getComponentMetadata( instance.path );
 				}
 				
+				// Store Metadata
+				instance.metadata = md;
+				
 				// Singleton Processing
 				if( structKeyExists(md,"singleton") ){ instance.scope = arguments.binder.SCOPES.SINGLETON; }
 				// Registered Scope Processing
 				if( structKeyExists(md,"scope") ){ instance.scope = md.scope; }
 				// CacheBox scope processing if cachebox annotation found, or cache annotation found
-				if( structKeyExists(md,"cacheBox") OR structKeyExists(md,"cache") ){ 
+				if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){ 
 					instance.scope = arguments.binder.SCOPES.CACHEBOX;
 				}
 				
 				// Cachebox Persistence Processing
-				if( instance.scope eq "cachebox" ){
+				if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){
+					// Cache Data instead of md insertion as CF caches md now.
+					cacheProperties = {
+						provider = "default",
+						timeout = "",
+						lastAccessTimeout = ""
+					};
 					// Prepare to default provider if no cachebox annotation found or it is empty
-					if(NOT structKeyExists(md,"cacheBox") OR len(md.cacheBox) EQ 0){
-						md.cacheBox = "default";
+					if( structKeyExists(md,"cacheBox") AND len(md.cacheBox) ){
+						cacheProperties.provider = md.cacheBox;
 					}				
 					// Prepare Timeouts
-					if( NOT structKeyExists(md,"cachetimeout") or not isNumeric(md.cacheTimeout) ){
-						md.cacheTimeout = "";
+					if( structKeyExists(md,"cachetimeout") AND isNumeric(md.cacheTimeout) ){
+						cacheProperties.timeout = md.cacheTimeout;
 					}
-					if( NOT structKeyExists(md,"cacheLastAccessTimeout") or not isNumeric(md.cacheLastAccessTimeout) ){
-						md.cacheLastAccessTimeout = "";
+					if( structKeyExists(md,"cacheLastAccessTimeout") AND isNumeric(md.cacheLastAccessTimeout) ){
+						cacheProperties.lastAccessTimeout = md.cacheLastAccessTimeout;
 					}
 					// setup cachebox properties
 					setCacheProperties(key="wirebox-#instance.name#",
-									   timeout=md.cacheTimeout,
-									   lastAccessTimeout=md.cacheLastAccessTimeout,
-									   provider=md.cachebox);
+									   timeout=cacheProperties.timeout,
+									   lastAccessTimeout=cacheProperties.lastAccessTimeout,
+									   provider=cacheProperties.provider);
 				}
 				
 				// Alias annotations if found, then append them as aliases.
@@ -517,6 +557,11 @@ Description :
 					processDIMetadata( arguments.binder, md );
 				}
 				
+				// AOP AutoBinding only if both @classMatcher and @methodMatcher exist
+				if( isAspectAutoBinding() AND structKeyExists(md,"classMatcher") AND structKeyExists(md,"methodMatcher") ){
+					processAOPBinding( arguments.binder, md);
+				}
+				
 				// finished processing mark as discovered
 				instance.discovered = true;
 				
@@ -528,6 +573,71 @@ Description :
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
+	
+	<!--- processAOPBinding --->    
+    <cffunction name="processAOPBinding" output="false" access="private" returntype="any" hint="Process the AOP self binding aspects">    
+    	<cfargument name="binder" 		required="true" hint="The binder requesting the processing"/>
+		<cfargument name="metadata" 	required="true" hint="The metadata to process"/>
+		<cfscript>
+			var classes 		= listFirst(arguments.metadata.classMatcher,":");
+			var methods 		= listFirst(arguments.metadata.methodMatcher,":");
+			var classMatcher 	= "";
+			var methodMatcher 	= "";
+			
+			// determine class matching
+			switch(classes){
+				case "any" : { classMatcher = arguments.binder.match().any(); break; }
+				case "annotatedWith" : { 
+					// annotation value?
+					if( listLen(arguments.metadata.classMatcher,":") eq 3 ){
+						classMatcher = arguments.binder.match().annotatedWith( getToken(arguments.metadata.classMatcher,2,":"), getToken(arguments.metadata.classMatcher,3,":") );
+					}
+					// No annotation value
+					else{
+						classMatcher = arguments.binder.match().annotatedWith( getToken(arguments.metadata.classMatcher,2,":") );
+					} 
+					break;
+				}
+				case "mappings" : { classMatcher = arguments.binder.match().mappings( getToken(arguments.metadata.classMatcher,2,":") ); break; }
+				case "instanceOf" : { classMatcher = arguments.binder.match().instanceOf( getToken(arguments.metadata.classMatcher,2,":") ); break; }
+				case "regex" : { classMatcher = arguments.binder.match().regex( getToken(arguments.metadata.classMatcher,2,":") ); break; }
+				default: {
+					// throw, no matching matchers
+					arguments.binder.utility.throwIt(message="Invalid Class Matcher: #classes#",
+													type="Mapping.InvalidAOPClassMatcher",
+													detail="Valid matchers are 'any,annotatedWith:annotation,annotatedWith:annotation:value,mappings:XXX,instanceOf:XXX,regex:XXX'");
+				}
+			}
+			
+			// determine method matching
+			switch(methods){
+				case "any" : { methodMatcher = arguments.binder.match().any(); break; }
+				case "annotatedWith" : { 
+					// annotation value?
+					if( listLen(arguments.metadata.classMatcher,":") eq 3 ){
+						methodMatcher = arguments.binder.match().annotatedWith( getToken(arguments.metadata.methodMatcher,2,":"), getToken(arguments.metadata.methodMatcher,3,":") );
+					}
+					// No annotation value
+					else{
+						methodMatcher = arguments.binder.match().annotatedWith( getToken(arguments.metadata.methodMatcher,2,":") );
+					} 
+					break;
+				}
+				case "methods" : { methodMatcher = arguments.binder.match().methods( getToken(arguments.metadata.methodMatcher,2,":") ); break; }
+				case "instanceOf" : { methodMatcher = arguments.binder.match().instanceOf( getToken(arguments.metadata.methodMatcher,2,":") ); break; }
+				case "regex" : { methodMatcher = arguments.binder.match().regex( getToken(arguments.metadata.methodMatcher,2,":") ); break; }
+				default: {
+					// throw, no matching matchers
+					arguments.binder.utility.throwIt(message="Invalid Method Matcher: #classes#",
+													type="Mapping.InvalidAOPMethodMatcher",
+													detail="Valid matchers are 'any,annotatedWith:annotation,annotatedWith:annotation:value,methods:XXX,instanceOf:XXX,regex:XXX'");
+				}
+			}
+			
+			// Bind the Aspect to this Mapping
+			arguments.binder.bindAspect(classMatcher,methodMatcher,getName());    
+    	</cfscript>    
+    </cffunction>
 	
 	<!--- processDIMetadata --->
 	<cffunction name="processDIMetadata" returntype="void" access="private" output="false" hint="Process methods/properties for dependency injection">
@@ -547,16 +657,20 @@ Description :
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
 					// Check if property not discovered or if inject annotation is found
 					if( structKeyExists(md.properties[x],"inject") ){
+						// prepare default params, we do this so we do not alter the md as it is cached by cf
+						params = {
+							scope="variables", inject="model", name=md.properties[x].name
+						};
 						// default injection scope, if not found in object
-						if( NOT structKeyExists(md.properties[x],"scope") ){
-							md.properties[x].scope = "variables";
+						if( structKeyExists(md.properties[x],"scope") ){
+							params.scope = md.properties[x].scope;
 						}
-						// Setup the default injection DSL (model) if it is empty
-						if( len(md.properties[x].inject) EQ 0){
-							md.properties[x].inject = "model";
+						// Get injection if it exists
+						if( len(md.properties[x].inject) ){
+							params.inject = md.properties[x].inject;
 						}
 						// Add to property to mappings
-						addDIProperty(name=md.properties[x].name,dsl=md.properties[x].inject,scope=md.properties[x].scope);
+						addDIProperty(name=params.name,dsl=params.inject,scope=params.scope);
 					}
 
 				}				
@@ -577,18 +691,30 @@ Description :
 					if( md.functions[x].name eq instance.constructor ){
 						// Loop Over Arguments to process them for dependencies
 						for(y=1;y lte arrayLen(md.functions[x].parameters); y++){
+							
+							// prepare params as we do not alter md as cf caches it
+							params = {
+								required = false, inject="model",name=md.functions[x].parameters[y].name
+							};
+							
 							// Check required annotation
-							if( NOT structKeyExists(md.functions[x].parameters[y], "required") ){
-								md.functions[x].parameters[y].required = false;
+							if( structKeyExists(md.functions[x].parameters[y], "required") ){
+								params.required = md.functions[x].parameters[y].required;
 							}
-							// Check injection annotation, if not found, default it
-							if( NOT structKeyExists(md.functions[x].parameters[y],"inject") OR len(md.functions[x].parameters[y].inject) EQ 0 ){
-								md.functions[x].parameters[y].inject = "model";
+							// Check injection annotation, if not found then no injection
+							if( structKeyExists(md.functions[x].parameters[y],"inject") ){
+								
+								// Check if inject has value, else default it to 'model' or 'id' namespace
+								if( len(md.functions[x].parameters[y].inject) ){
+									params.inject = md.functions[x].parameters[y].inject;
+								}
+							
+								// ADD Constructor argument
+								addDIConstructorArgument(name=params.name,
+														 dsl=params.inject,
+														 required=params.required);
 							}
-							// ADD Constructor argument.
-							addDIConstructorArgument(name=md.functions[x].parameters[y].name,
-													 dsl=md.functions[x].parameters[y].inject,
-													 required=md.functions[x].parameters[y].required);
+							
 						}
 						// add constructor to found list, so it is processed only once in recursions
 						arguments.dependencies[md.functions[x].name] = "constructor";
@@ -596,12 +722,16 @@ Description :
 					
 					// Setter discovery, MUST be inject annotation marked to be processed.
 					if( left(md.functions[x].name,3) eq "set" AND structKeyExists(md.functions[x],"inject")){
+						
+						// setup setter params in order to avoid touching the md struct as cf caches it
+						params = {inject="model",name=right(md.functions[x].name, Len(md.functions[x].name)-3)};
+						
 						// Check DSL marker if it has a value else use default of Model
-						if( NOT len(md.functions[x].inject) ){
-							md.functions[x].inject = "model";
+						if( len(md.functions[x].inject) ){
+							params.inject = md.functions[x].inject;
 						}
 						// Add to setter to mappings and recursion lookup
-						addDISetter(name=right(md.functions[x].name, Len(md.functions[x].name)-3),dsl=md.functions[x].inject);
+						addDISetter(name=params.name,dsl=params.inject);
 						arguments.dependencies[md.functions[x].name] = "setter";
 					}
 					

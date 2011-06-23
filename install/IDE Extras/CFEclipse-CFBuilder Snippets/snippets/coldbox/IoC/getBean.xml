@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>getBean</name>
-<help></help>
-<starttext><![CDATA[getPlugin("IOC").getBean("$${Bean Name}")]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>

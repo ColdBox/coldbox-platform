@@ -157,7 +157,9 @@ Description :
 				invalidEvent(arguments.ehBean.getFullEvent(), arguments.ehBean);
 
 				// If we get here, then the invalid event kicked in and exists, else an exception is thrown
-				return getHandler(arguments.ehBean,oRequestContext);
+				// Go retrieve the handler that will handle the invalid event so it can execute.
+				return getHandler( getRegisteredHandler(arguments.ehBean.getFullEvent()), oRequestContext);
+				//return getHandler(arguments.ehBean,oRequestContext);
 
 			}//method check finalized.
 
@@ -242,7 +244,7 @@ Description :
 		var methodReceived 			= "";
 		var handlersList 			= instance.registeredHandlers;
 		var handlersExternalList 	= instance.registeredExternalHandlers;
-		var HandlerBean 			= CreateObject("component","coldbox.system.web.context.EventHandlerBean").init(instance.handlersInvocationPath);
+		var handlerBean 			= CreateObject("component","coldbox.system.web.context.EventHandlerBean").init(instance.handlersInvocationPath);
 		var moduleReceived			= "";
 		var moduleSettings 			= instance.modules;
 
@@ -250,7 +252,7 @@ Description :
 		// Rip the handler and method
 		handlerReceived = listLast(reReplace(arguments.event,"\.[^.]*$",""),":");
 		methodReceived 	= listLast(arguments.event,".");
-
+		
 		// Verify if this is a module call
 		if( find(":", arguments.event) ){
 			moduleReceived = listFirst(arguments.event,":");
@@ -259,7 +261,7 @@ Description :
 				// Verify handler in module handlers
 				handlerIndex = listFindNoCase(moduleSettings[moduleReceived].registeredHandlers,handlerReceived);
 				if( handlerIndex ){
-					return HandlerBean
+					return handlerBean
 						.setInvocationPath(moduleSettings[moduleReceived].handlerInvocationPath)
 						.setHandler(listgetAt(moduleSettings[moduleReceived].registeredHandlers,handlerIndex))
 						.setMethod(methodReceived)
@@ -293,12 +295,13 @@ Description :
 		if( isViewDispatch(arguments.event,handlerBean) ){
 			return handlerBean;
 		}
-
+		
 		// Run invalid event procedures, handler not found
 		invalidEvent(arguments.event,handlerBean);
-
-		// onInvalidEvent detected, so just return the overriden bean
-		return getRegisteredHandler(handlerBean.getHandler() & "." & handlerBean.getMethod());
+		
+		// If we get here, then invalid event handler is active and we need to 
+		// return an event handler bean that matches it
+		return getRegisteredHandler( handlerBean.getFullEvent() );
 		</cfscript>
 	</cffunction>
 	
@@ -365,10 +368,13 @@ Description :
 				// Store Invalid Event in PRC
 				controller.getRequestService().getContext().setValue("invalidevent",arguments.event,true);
 
-				// Override Event
-				arguments.ehBean.setHandler(reReplace(instance.onInvalidEvent,"\.[^.]*$",""));
-				arguments.ehBean.setMethod(listLast(instance.onInvalidEvent,"."));
-
+				// Override Event With On Invalid Event
+				arguments.ehBean.setHandler(reReplace(instance.onInvalidEvent,"\.[^.]*$",""))
+					.setMethod(listLast(instance.onInvalidEvent,"."))
+					.setModule('');
+				// If module found in invalid event, set it for discovery
+				if( find(":",instance.onInvalidEvent) ){ arguments.ehBean.setModule( getToken(instance.onInvalidEvent,1) ); }
+				
 				return;
 			}
 		

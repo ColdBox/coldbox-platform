@@ -10,24 +10,56 @@
 			this.instance.username = "mail";
 		    this.instance.password = "pass" ;
 			this.instance.port = "110";
-			
+			this.instance.protocol = structNew();
+			this.instance.from = "info@coldbox.org";
+						
 			this.mail = this.mail.init(argumentCollection=this.instance);
 			
 		</cfscript>
 	</cffunction>
-
-	<cffunction name="tearDown" returntype="void" access="public">
-		<!--- Any code needed to return your environment to normal goes here --->
-	</cffunction>
 		
 	<!--- Begin specific tests --->
-	
-	<cffunction name="testSetters" access="public" returnType="void">
+	<cffunction name="testExtraValues" access="public" returnType="void">
 		<cfscript>
-			for(key in this.instance){
-				evaluate("this.mail.set#key#( this.instance[key] )");
-			}	
-			assertEquals( this.instance, this.mail.getMemento() );				
+			assertEquals( this.instance.from, this.mail.getValue('from') );
+		</cfscript>	
+	</cffunction>
+	
+	<cffunction name="testWithCustomProtocol" access="public" returnType="void">
+		<cfscript>
+			// Establish the custom protocol we're going to use.
+			this.instance.protocol = {
+				class="coldbox.system.core.mail.protocols.cfmailProtocol",
+				properties = {}
+			};
+			
+			// Init the settings with this protocol.
+			this.mail.init(argumentCollection=this.instance);
+		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testWithUnknownCustomProtocol" access="public" returnType="void" mxunit:expectedException="MailSettingsBean.FailLoadProtocolException">
+		<cfscript>
+			// Establish the custom protocol we're going to use.
+			this.instance.protocol = {
+				class="coldbox.system.core.mail.protocols.someUnknownProtocol",
+				properties = {}
+			};
+			
+			// Init the settings with this protocol.
+			this.mail.init(argumentCollection=this.instance);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testWithCustomProtocolWithoutProperties" access="public" returnType="void">
+		<cfscript>
+			// Establish the custom protocol we're going to use.
+			this.instance.protocol = {
+				class="coldbox.system.core.mail.protocols.cfmailProtocol"
+			};
+			
+			// Init the settings with this protocol.
+			this.mail.init(argumentCollection=this.instance);
 		</cfscript>
 	</cffunction>	
 	

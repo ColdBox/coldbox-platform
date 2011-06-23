@@ -91,10 +91,10 @@ ATTRIBUTES:
 </cfif>
 
 <!--- output header assets --->
-<cfsavecontent variable="reportHeader">
+<cfsavecontent variable="reportHeader"><cfoutput>
 <style type="text/css"><cfinclude template="/coldbox/system/cache/report/skins/#attributes.skin#/cachebox.css"></style>
 <script type="text/javascript"><cfinclude template="/coldbox/system/cache/report/skins/#attributes.skin#/cachebox.js"></script>
-</cfsavecontent>
+</cfoutput></cfsavecontent>
 <cfhtmlhead text="#reportHeader#">
 
 <!--- output rendered report --->

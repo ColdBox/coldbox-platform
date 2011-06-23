@@ -12,7 +12,7 @@ Description :
 <cfcomponent hint="An Inversion Of Control plugin that interfaces with major ColdFusion IoC/DI frameworks"
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 singleton=true>
+			 singleton>
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -38,9 +38,6 @@ Description :
 			instance.beanFactory 	= getPlugin("BeanFactory");
 			instance.IOCFramework 	= getSetting("IOCFramework");
 			
-			// Configure this plugin for operation
-			configure();
-			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -60,7 +57,7 @@ Description :
 			}
 			
 			// build adapter using application chosen properties
-			instance.adapter = buildAdapter(instance.IOCFramework, definitionFile);
+			buildAdapter(instance.IOCFramework, definitionFile);
 			
 			// Do we have a parent to build?
 			if( len(parentFramework) ){
@@ -186,7 +183,6 @@ Description :
 		<cfargument name="definitionFile" 	required="true" hint="The framework definition file to load"/>
 		<cfscript>	
 			var adapterPath = "";
-			var adapter		= "";
 			
 			switch( arguments.framework ){
 				case "coldspring" 	: { adapterPath = "coldbox.system.ioc.adapters.ColdSpringAdapter"; break; }
@@ -199,7 +195,7 @@ Description :
 			
 			// Create Adapter
 			try{
-				adapter = createObject("component",adapterPath).init(validateDefinitionFile(arguments.definitionFile),controller.getConfigSettings(),controller);
+				instance.adapter = createObject("component",adapterPath).init(validateDefinitionFile(arguments.definitionFile),controller.getConfigSettings(),controller);
 				
 				if( log.canDebug() ){
 					log.debug("ioc factory adapter: #adapterPath# built successfully");
@@ -212,10 +208,9 @@ Description :
 			
 			// Create Adapter Factory
 			try{
-				adapter.createFactory();
-				
+				instance.adapter.createFactory();
 				if( log.canDebug() ){
-					log.debug("ioc framework: #getMetadata(adapter.getFactory()).name# loaded successfully and ready for operation.");
+					log.debug("ioc framework: #getMetadata(instance.adapter.getFactory()).name# loaded successfully and ready for operation.");
 				}
 			}
 			catch(Any e){
@@ -226,8 +221,6 @@ Description :
 			if( log.canInfo() ){
 				log.info("IoC factory: #arguments.framework#:#arguments.definitionFile# loaded and configured for operation");
 			}
-			
-			return adapter;
 		</cfscript>
     </cffunction>
 	

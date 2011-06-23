@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>clearMessage</name>
-<help>Clear the MessageBox</help>
-<starttext><![CDATA[getPlugin("MessageBox").clearMessage()]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>

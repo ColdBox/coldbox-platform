@@ -37,6 +37,12 @@ Description :
 			// Init the Request Buffer
 			instance.requestBuffer = CreateObject("component","coldbox.system.core.util.RequestBuffer").init();
 			
+			// Default Logging
+			instance.log = controller.getLogBox().getLogger(this);
+    		
+    		// Setup Default Configuration
+    		instance.interceptorConfig = structNew();
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -306,19 +312,23 @@ Description :
 	<!--- Unregister From a State --->
 	<cffunction name="unregister" access="public" returntype="boolean" hint="Unregister an interceptor from an interception state or all states. If the state does not exists, it returns false" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorName" 	required="false" type="string" hint="The name of the interceptor to search for"/>
-		<cfargument name="state" 			required="false" type="string" default="" hint="The named state to unregister this interceptor from. If not passed, then it will be unregistered from all states.">
+		<cfargument name="interceptorName" 	required="false" hint="The name of the interceptor to search for"/>
+		<cfargument name="state" 			required="false" default="" hint="The named state to unregister this interceptor from. If not passed, then it will be unregistered from all states.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var states = getInterceptionStates();
+			var states 		 = getInterceptionStates();
 			var unregistered = false;
+			var key 		 = "";
+			var keyPrefix    = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX;
 			
 			// Else, unregister from all states
 			for(key in states){
-				if( len(trim(state)) eq 0 OR trim(state) eq key ){
-					structFind(states,key).unregister(getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorName);
+				
+				if( len(trim(arguments.state)) eq 0 OR trim(arguments.state) eq key ){
+					structFind(states,key).unregister(keyPrefix & arguments.interceptorName);
 					unregistered = true;
-				}				
+				}
+								
 			}
 			
 			return unregistered;						

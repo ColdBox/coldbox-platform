@@ -119,7 +119,6 @@
 		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="MTLogger" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="MessageBox" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="MethodInjector" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="Renderer" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="SessionStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="StringBuffer" icon="shared/CBHints/images/hintCB.gif" />
@@ -144,7 +143,6 @@
 		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="MessageBox" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="MethodInjector" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="Renderer" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="SessionStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="StringBuffer" icon="shared/CBHints/images/hintCB.gif" />
@@ -343,7 +341,6 @@
 	</menu>
 	<menu pattern="getPlugin(&quot;Logger&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".debug()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".emailBugReport()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".error()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".fatal()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getLogger()" icon="shared/CBHints/images/hintCB.gif" />
@@ -356,7 +353,6 @@
 	</menu>
 	<menu pattern="getPlugin('Logger')" doctypes="ColdFusion,CFC">
 		<menuitem label=".debug()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".emailBugReport()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".error()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".fatal()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getLogger()" icon="shared/CBHints/images/hintCB.gif" />
@@ -384,24 +380,6 @@
 		<menuitem label=".isEmpty()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".renderIt()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setMessage()" icon="shared/CBHints/images/hintCB.gif" />
-	</menu>
-	<menu pattern="getPlugin(&quot;MethodInjector&quot;)" doctypes="ColdFusion,CFC">
-		<menuitem label=".injectMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".injectPropertyMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".invokerMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".removeMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".removePropertyMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".start()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".stop()" icon="shared/CBHints/images/hintCB.gif" />
-	</menu>
-	<menu pattern="getPlugin('MethodInjector')" doctypes="ColdFusion,CFC">
-		<menuitem label=".injectMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".injectPropertyMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".invokerMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".removeMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".removePropertyMixin()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".start()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".stop()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
 	<menu pattern="getPlugin(&quot;QueryHelper&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".doInnerJoin()" icon="shared/CBHints/images/hintCB.gif" />

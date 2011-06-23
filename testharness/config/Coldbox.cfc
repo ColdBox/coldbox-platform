@@ -127,14 +127,6 @@
 			unknownTranslation = "**NOT FOUND**"		
 		};
 		
-		//bug tracers
-		bugTracers = {
-			enabled = false,
-			bugEmails = "",
-			mailFrom = "",
-			customEmailBugReport = ""
-		};
-	
 		//webservices
 		webservices = {
 			testWS = "http://www.test.com/test.cfc?wsdl",
@@ -200,7 +192,7 @@
 			  },
 			 
 			 // Transactional Hibernation annotations
-			 {class="coldbox.system.orm.hibernate.TransactionAspect"},
+			 // {class="coldbox.system.orm.hibernate.TransactionAspect"},
 			 
 			 //SES
 			 {class="coldbox.system.interceptors.SES",
@@ -227,11 +219,12 @@
 				myConsole     = { class="coldbox.system.logging.appenders.ConsoleAppender" },
 				fileAppender  = { class="coldbox.system.logging.appenders.RollingFileAppender",
 								  properties = {
-								  	filePath="logs", fileName=coldbox.appName, autoExpand=true
+								  	filePath="logs", fileName=coldbox.appName, autoExpand=true, fileMaxSize="100"
 								 }}
 			},
 			// Root Logger
-			root = { levelmax="DEBUG", appenders="*" } 
+			root = { levelmax="INFO", appenders="*" },
+			debug = ["coldbox.system.aop"] 
 		};
 	}
 	

@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>renderView</name>
 <help>Render a View</help>
-<starttext><![CDATA[renderView(view="$${View name (No Extension)}",cache="$${cache:false|true}",cacheTimeout="$${Timeout (minutes)}",cacheLastAccessTimeout="$${Last Access Timeout (minutes)}")]]></starttext>
+<starttext><![CDATA[renderView(view="$${View name (No Extension)}",cache="$${cache:false|true}",cacheTimeout="$${Timeout (minutes)}",cacheLastAccessTimeout="$${Last Access Timeout (minutes)}",cacheSuffix="$${Cache Suffix}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

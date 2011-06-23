@@ -129,9 +129,6 @@ Usage:
 		<!--- ************************************************************* --->
 		<cfargument name="transfer"			  	required="true"		type="any" 		 hint="The transfer.transfer object" />
 		<cfargument name="ColdBoxBeanFactory" 	required="true"		type="any" 		 hint="The coldbox bean factory"/>
-		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="stopRecursion" 		required="false" 	type="string"   default="transfer.com.TransferDecorator" hint="The stop recursion class. Ex: transfer.com.TransferDecorator">
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Add Observer */
@@ -139,9 +136,6 @@ Usage:
 			
 			/* Add Other Dependencies*/
 			setColdboxBeanFactory(arguments.ColdBoxBeanFactory);
-			setuseSetterInjection(arguments.useSetterInjection);
-			setonDICompleteUDF(trim(arguments.onDICompleteUDF));
-			setStopRecursion(trim(arguments.stopRecursion));
 									
 			/* Return instance */
 			return this;
@@ -156,10 +150,7 @@ Usage:
 		<cfargument name="event" type="any" required="Yes" hint="The transfer.com.events.TransferEvent">
 		<!--- ************************************************************* --->
 		<!--- Autowire the decorator --->
-		<cfset getColdBoxBeanFactory().autowire(target=arguments.event.getTransferObject(),
-												useSetterInjection=getUseSetterInjection(),
-												onDICompleteUDF=getonDICompleteUDF(),
-												stopRecursion=getStopRecursion() )>
+		<cfset getColdBoxBeanFactory().autowire(target=arguments.event.getTransferObject())>
 	</cffunction>
 
 <!---------------------------------------- PRIVATE --------------------------------------------------->
@@ -171,32 +162,6 @@ Usage:
 	<cffunction name="setColdBoxBeanFactory" access="private" returntype="void" output="false">
 		<cfargument name="ColdBoxBeanFactory" type="any" required="true">
 		<cfset instance.ColdBoxBeanFactory = arguments.ColdBoxBeanFactory>
-	</cffunction>
-	
-	<!--- Use Setter INjection --->
-	<cffunction name="getuseSetterInjection" access="private" returntype="boolean" output="false">
-		<cfreturn instance.useSetterInjection>
-	</cffunction>
-	<cffunction name="setuseSetterInjection" access="private" returntype="void" output="false">
-		<cfargument name="useSetterInjection" type="boolean" required="true">
-		<cfset instance.useSetterInjection = arguments.useSetterInjection>
-	</cffunction>
-	
-	<!--- onDICompleteUDF --->
-	<cffunction name="getonDICompleteUDF" access="private" returntype="string" output="false">
-		<cfreturn instance.onDICompleteUDF>
-	</cffunction>
-	<cffunction name="setonDICompleteUDF" access="private" returntype="void" output="false">
-		<cfargument name="onDICompleteUDF" type="string" required="true">
-		<cfset instance.onDICompleteUDF = arguments.onDICompleteUDF>
-	</cffunction>
-	<!--- Stop Recursion String --->
-	<cffunction name="getstopRecursion" access="private" output="false" returntype="string" hint="Get stopRecursion">
-		<cfreturn instance.stopRecursion/>
-	</cffunction>	
-	<cffunction name="setstopRecursion" access="private" output="false" returntype="void" hint="Set stopRecursion">
-		<cfargument name="stopRecursion" type="string" required="true"/>
-		<cfset instance.stopRecursion = arguments.stopRecursion/>
 	</cffunction>
 
 </cfcomponent>

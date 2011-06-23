@@ -159,7 +159,7 @@
 		mockInjector.$("getBinder",mockBinder);
 		builder.registerCustomBuilders();
 		
-		test = builder.buildDSLDependency(def);
+		test = builder.buildDSLDependency(def, "UnitTest");
 		assertEquals( "woopee", test.getName() );
 		
 	}
@@ -206,6 +206,22 @@
 		p = builder.getWireBoxDSL(data);
 		assertEquals(mockScope, p);
 		
+		//wirebox:properties
+		data = {name="luis", dsl="wirebox:properties"};
+		props = {prop1='hello',name="luis"};
+		mockBinder = getMockBox().createMock("coldbox.system.ioc.config.Binder")
+			.$("getProperties", props);
+		mockInjector.$("getBinder",mockBinder);
+		p = builder.getWireBoxDSL(data);
+		assertEquals( props, p);
+	
+		//wirebox:property:{}
+		data = {name="luis", dsl="wirebox:property:name"};
+		props = {prop1='hello',name="luis"};
+		mockBinder = getMockBox().createMock("coldbox.system.ioc.config.Binder").setProperties( props );
+		mockInjector.$("getBinder",mockBinder);
+		p = builder.getWireBoxDSL(data);
+		assertEquals( "luis", p);	
 	}
 	
 	function testbuildProviderMixer(){

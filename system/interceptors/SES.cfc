@@ -465,15 +465,20 @@ Description :
 		<cfscript>
 			var routeLen = arrayLen( instance.routes );
 			var x 		 = 1;
+			var toDelete = arrayNew(1);
 			
 			// remove all module routes
     		structDelete(instance.moduleRoutingTable, arguments.module);
 			// remove module routing entry point
 			for(x=1; x lte routeLen; x=x+1){
 				if( instance.routes[x].moduleRouting eq arguments.module ){
-					arrayDeleteAt(instance.routes, x);
-					break;
+					// store position to delete
+					arrayAppend(toDelete, x);
 				}
+			}
+			// Remove positions from routing.
+			for(x=1; x lte arrayLen(toDelete); x=x+1){
+				arrayDeleteAt(instance.routes, toDelete[x]);
 			}
 		</cfscript>
     </cffunction>
@@ -573,6 +578,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="routingString" 	required="true" hint="The routing string">
 		<cfargument name="routeParams" 		required="true" hint="The routed params array">
+		<cfargument name="isModule" 		required="false" default="false" hint="Tells package resolver this is an explicit module package resolving call"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var root 			= instance.handlersPath;
@@ -584,7 +590,7 @@ Description :
 			var routeParamsLen 	= arrayLen(arguments.routeParams);
 			var rString 		= arguments.routingString;
 			var returnString 	= arguments.routingString;
-
+			
 			// Verify if we have a handler on the route params
 			if( findnocase("handler", arrayToList(arguments.routeParams)) ){
 
@@ -605,9 +611,12 @@ Description :
 					thisFolder = listgetAt(rString,x,"/");
 
 					// Check if package exists in convention OR external location
-					if( directoryExists(root & "/" & foundPaths & thisFolder)
-						OR
-					    ( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) )
+					if( NOT isModule AND
+						(
+							directoryExists(root & "/" & foundPaths & thisFolder)
+							OR
+					    	( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) )
+						)
 					    ){
 						// Save Found Paths
 						foundPaths = foundPaths & thisFolder & "/";
@@ -784,7 +793,7 @@ Description :
 				_routes = getModuleRoutes(arguments.module);
 				_routesLength = arrayLen(_routes);
 			}
-
+			
 			//Remove the leading slash
 			if( len(requestString) GT 1 AND left(requestString,1) eq "/" ){
 				requestString = right(requestString,len(requestString)-1);
@@ -812,7 +821,7 @@ Description :
 				}
 
 			}//end finding routes
-
+			
 			// Check if we found a route, else just return empty params struct
 			if( structIsEmpty(foundRoute) ){
 				if( log.canDebug() ){
@@ -836,7 +845,7 @@ Description :
 
 				// Save Found URL
 				arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
-
+				
 				// Try to discover the route via the module routing calls
 				structAppend(params, findRoute(reReplaceNoCase(requestString,foundRoute.regexpattern,""),arguments.event,foundRoute.moduleRouting), true);
 
@@ -845,7 +854,7 @@ Description :
 					return params;
 				}
 			}
-
+			
 			// Save Found Route
 			arguments.event.setValue(name="currentRoute",value=foundRoute.pattern,private=true);
 			// Save Found URL if NOT Found already
@@ -856,7 +865,7 @@ Description :
 			// Do we need to do package resolving
 			if( NOT foundRoute.packageResolverExempt ){
 				// Resolve the packages
-				packagedRequestString = packageResolver(requestString,foundRoute.patternParams);
+				packagedRequestString = packageResolver(requestString,foundRoute.patternParams, len(arguments.module) GT 0);
 				// reset pattern matching, if packages found.
 				if( compare(packagedRequestString,requestString) NEQ 0 ){
 
@@ -1044,6 +1053,10 @@ Description :
 
 			// We are ready to roll. Import config to setup the routes.
 			try{
+				// Try to remove pathInfoProvider, just in case
+				structdelete(variables,"pathInfoProvider");
+				structdelete(this,"pathInfoProvider");
+				// Include configuration
 				$include(configFilePath);
 			}
 			catch(Any e){
