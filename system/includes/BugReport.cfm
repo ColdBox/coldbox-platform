@@ -17,9 +17,10 @@ Description :
 	sessionScopeExists = true; 
 	try { structKeyExists(session ,'x'); } catch (any e) { sessionScopeExists = false; }	
 </cfscript>
-
-
 <cfoutput>
+<!--- Param Form Scope --->
+<cfparam name="form" default="#structnew()#">
+
 <!--- StyleSheets --->
 <style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
 
