@@ -54,6 +54,8 @@ Description :
 		</cfif>
 		<!--- On Request Start via ColdBox --->
 		<cfset application.cbBootstrap.onRequestStart(arguments.targetPage)>
+		
+		<cfreturn true>
 	</cffunction>
 	
 	<!--- on Application End --->
