@@ -167,7 +167,6 @@ Optional Methods
 			viewsLocation 	 = "views",
 			layoutsLocation  = "layouts",
 			modelsLocation 	 = "model",
-			modulesExternalLocation  = "",
 			eventAction 	 = "index"
 		};
 		
