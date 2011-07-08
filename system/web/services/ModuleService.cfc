@@ -324,7 +324,10 @@ I oversee and manage ColdBox modules
 			// postModuleLoad interception
 			iData = {moduleLocation=mConfig.path,moduleName=arguments.moduleName,moduleConfig=mConfig};
 			interceptorService.processState("postModuleLoad",iData);
-
+			
+			// Mark it as loaded as it is now activated
+			mConfig.activated = true;
+			
 			// Log it
 			instance.logger.debug("Module #arguments.moduleName# activated sucessfully.");
 		</cfscript>
