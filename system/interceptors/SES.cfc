@@ -470,15 +470,10 @@ Description :
 			// remove all module routes
     		structDelete(instance.moduleRoutingTable, arguments.module);
 			// remove module routing entry point
-			for(x=1; x lte routeLen; x=x+1){
+			for(x=routeLen; x gte 1; x=x-1){
 				if( instance.routes[x].moduleRouting eq arguments.module ){
-					// store position to delete
-					arrayAppend(toDelete, x);
+					arrayDeleteAt(instance.routes, x);                                                         
 				}
-			}
-			// Remove positions from routing.
-			for(x=1; x lte arrayLen(toDelete); x=x+1){
-				arrayDeleteAt(instance.routes, toDelete[x]);
 			}
 		</cfscript>
     </cffunction>
