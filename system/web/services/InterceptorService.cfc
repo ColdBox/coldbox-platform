@@ -410,4 +410,32 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- Determine SES Interceptor --->
+	<cffunction name="getSESInterceptor" access="public" returntype="any" hint="Return name of SES interceptor." output="false" >
+
+		<cfscript>
+			var thisInterceptor = "";
+			var interceptors = "";
+			var SESInterceptor = "";
+			
+			interceptors = getController().getInterceptorService().getStateContainer('preProcess').getInterceptors();
+	
+			// Determine correct SES interceptor for module loading
+			for( key in interceptors ){
+				thisInterceptor = interceptors.get(key);
+	
+				// Check if this interceptor extends the default system SES interceptor
+				if (getComponentMetaData(thisInterceptor).extends.fullname eq 'coldbox.system.interceptors.SES') {
+					SESInterceptor = ListLast(getComponentMetaData(thisInterceptor).fullname, ".");
+				} else {
+					SESInterceptor = "SES";
+				}
+				
+			}
+			
+			return SESInterceptor;
+			
+		</cfscript>
+	</cffunction>
+
 </cfcomponent>

@@ -252,7 +252,8 @@ I oversee and manage ColdBox modules
 			var beanFactory 		= controller.getPlugin("BeanFactory");
 			var wirebox				= controller.getWireBox();
 			var wireboxEnabled	 	= controller.getSetting("wirebox").enabled;
-			
+			var SESInterceptor = "";
+						
 			// If module not registered, throw exception
 			if(NOT structKeyExists(modules, arguments.moduleName) ){
 				getUtil().throwit(message="Cannot activate module: #arguments.moduleName#",
@@ -310,10 +311,13 @@ I oversee and manage ColdBox modules
 				wirebox.getBinder().loadDataDSL( mConfig.wirebox );
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			// Get name of SES Interceptor
+			SESInterceptor = getController().getInterceptorService().getSESInterceptor();
 			
 			// Register module routing entry point pre-pended to routes
 			if( controller.settingExists('sesBaseURL') AND len(mConfig.entryPoint) AND NOT find(":",mConfig.entryPoint)){
-				interceptorService.getInterceptor("SES",true).addModuleRoutes(pattern=mConfig.entryPoint,module=arguments.moduleName,append=false);
+				interceptorService.getInterceptor(SESInterceptor,true).addModuleRoutes(pattern=mConfig.entryPoint,module=arguments.moduleName,append=false);
 			}
 			
 			// Call on module configuration object onLoad() if found
@@ -373,7 +377,8 @@ I oversee and manage ColdBox modules
 			var iData = {moduleName=arguments.moduleName};
 			var interceptorService = controller.getInterceptorService();
 			var x = 1;
-
+			var SESInterceptor = "";
+			
 			// Check if module is loaded?
 			if( NOT structKeyExists(appConfig.modules,arguments.moduleName) ){ return false; }
 
@@ -396,10 +401,13 @@ I oversee and manage ColdBox modules
 			for(x=1; x lte arrayLen(appConfig.modules[arguments.moduleName].interceptors); x++){
 				interceptorService.unregister(appConfig.modules[arguments.moduleName].interceptors[x].name);
 			}
+
+			// Get name of SES Interceptor
+			SESInterceptor = getController().getInterceptorService().getSESInterceptor();
 			
 			// Remove SES if enabled.
 			if( controller.settingExists('sesBaseURL') ){
-				interceptorService.getInterceptor("SES",true).removeModuleRoutes(arguments.moduleName);
+				interceptorService.getInterceptor(SESInterceptor,true).removeModuleRoutes(arguments.moduleName);
 			}
 			
 			//Remove Model Mapping Location
