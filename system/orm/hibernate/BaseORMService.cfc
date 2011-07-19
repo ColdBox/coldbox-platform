@@ -1063,7 +1063,14 @@ component accessors="true"{
 		var qry = ORMGetSession().createCriteria( arguments.entityName );
 
 		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
-			qry.add( arguments.criteria[i] );
+			if( isSimpleValue( arguments.criteria[i] ) ){
+				// create criteria out of simple values for associations with alias
+				qry.createCriteria( arguments.criteria[i], arguments.criteria[i] );
+			}
+			else{
+				// add criterion
+				qry.add( arguments.criteria[i] );
+			}
 		}
 
 		return qry;
