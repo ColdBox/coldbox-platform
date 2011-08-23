@@ -16,8 +16,10 @@ Description :
     <cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">    
     	<cfargument name="method" 			type="any" required="true" hint="The method name that was intercepted"/>
 		<cfargument name="args" 			type="any" required="true" hint="The argument collection that was intercepted"/>
+		<cfargument name="methodMetadata" 	type="any" required="true" hint="The method metadata that was intercepted"/>
 		<cfargument name="target" 			type="any" required="true" hint="The target object reference that was intercepted"/>
 		<cfargument name="targetName"		type="any" required="true" hint="The name of the target wired up"/>
+		<cfargument name="targetMapping" 	type="any" required="true" hint="The target's mapping object reference" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
 		<cfargument name="interceptors" 	type="any" required="true" hint="The array of interceptors for this invocation"/>
     	<cfscript>
 			
@@ -27,10 +29,14 @@ Description :
 				method  			= arguments.method,
 				// Arguments intercepted
 				args				= arguments.args,
+				// Method metadata
+				methodMetadata		= deserializeJSON( URLDecode( arguments.methodMetadata ) ),
 				// Target intercepted
 				target				= arguments.target,
 				// Target name
 				targetName			= arguments.targetName,
+				// Target Mapping Reference
+				targetMapping		= arguments.targetMapping,
 				// Interceptor array chain
 				interceptors		= arguments.interceptors,
 				// Current index to start execution
@@ -67,6 +73,13 @@ Description :
     	</cfscript>    
     </cffunction>
     
+    <!--- getMethodMetadata --->    
+    <cffunction name="getMethodMetadata" output="false" access="public" returntype="any" hint="Return methods's metadata that was intercepted for this method invocation">    
+    	<cfscript>	   
+			return instance.methodMetadata; 
+    	</cfscript>    
+    </cffunction>
+    
     <!--- getTarget --->    
     <cffunction name="getTarget" output="false" access="public" returntype="any" hint="Get the original target object of this method invocation">    
     	<cfscript>
@@ -80,6 +93,13 @@ Description :
 			return instance.targetName;	    
     	</cfscript>    
     </cffunction>
+    
+    <!--- getTargetMapping --->    
+    <cffunction name="getTargetMapping" output="false" access="public" returntype="any" hint="Get the wirebox mapping of this target">    
+    	<cfscript>
+			return instance.targetMapping;	    
+    	</cfscript>    
+    </cffunction>    
 
 	<!--- getArgs --->    
     <cffunction name="getArgs" output="false" access="public" returntype="any" hint="Get the argument collection of this method invocation" colddoc:generic="struct">    

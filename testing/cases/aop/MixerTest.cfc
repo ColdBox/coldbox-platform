@@ -103,7 +103,7 @@
 			]
 		};
 		dictionary = [
-			{classes="", methods=getMockBox().createEmptyMock("coldbox.system.aop.Matcher").$("matchMethod",true), aspects="Transaction"}
+			{classes="", methods=getMockBox().createEmptyMock("coldbox.system.aop.Matcher").$("matchMethod",true), aspects=["Transaction"]}
 		];
 		
 		makePublic(mixer,"processTargetMethods");
@@ -123,7 +123,7 @@
 		
 		assertEquals( mixer.$callLog().weaveAdvice[1].target, this);
 		assertEquals( mixer.$callLog().weaveAdvice[1].jointpoint, "testMethod");
-		assertEquals( mixer.$callLog().weaveAdvice[1].aspects, "Transaction");
+		assertEquals( mixer.$callLog().weaveAdvice[1].aspects, ["Transaction"]);
 		
 		// proxy methods
 		this.$wbAOPTargets = {};
