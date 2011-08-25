@@ -239,6 +239,8 @@ Modification History:
 			oDecorator = CreateObject("component",instance.decorator).init(oContext,controller);
 			//Set Request Context in storage
 			setContext(oDecorator);
+			// Configure decorator
+			oDecorator.configure();
 			//Return
 			return oDecorator;
 		}
