@@ -28,9 +28,6 @@ Description :
 			// Composite the original context
 			setRequestContext(arguments.oContext);
 			
-			// Configure this decorated request context.
-			configure();
-			
 			return this;
 		</cfscript>		
 	</cffunction>
