@@ -22,16 +22,6 @@
 		<!--Default Storage Scope For Flash URL Persist session or client only-->
 		<Setting name="FlashURLPersistScope" value="session"/>
 		
-		<!-- Default Cache Settings -->
-		<Setting name="CacheObjectDefaultTimeout" value="60"/>
-        <Setting name="CacheObjectDefaultLastAccessTimeout" value="30"/>
-        <Setting name="CacheReapFrequency" value="1"/>
-        <Setting name="CacheMaxObjects" value="100"/>
-        <Setting name="CacheFreeMemoryPercentageThreshold" value="0"/>
-        <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
-        <Setting name="CacheEvictionPolicy" value="LRU"/>
-		<Setting name="CacheEvictCount" value="1"/> 
-        
         <!-- Debugger settings -->
 		<Setting name="EnableDumpVar" value="true"/>
         <Setting name="PersistentRequestProfiler" value="true"/>
