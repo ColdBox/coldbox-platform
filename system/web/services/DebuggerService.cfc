@@ -193,10 +193,8 @@ Description :
 		<cfset var URLBase = event.getsesBaseURL()>
 
 		<!--- Modules Stuff --->
-		<cfif controller.getCFMLEngine().isMT()>
-			<cfset loadedModules = controller.getModuleService().getLoadedModules()>
-			<cfset moduleSettings = controller.getSetting("modules")>
-		</cfif>
+		<cfset loadedModules = controller.getModuleService().getLoadedModules()>
+		<cfset moduleSettings = controller.getSetting("modules")>
 		
 		<!--- URL Base --->
 		<cfif NOT event.isSES()>

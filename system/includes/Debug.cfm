@@ -237,7 +237,7 @@ Description :
 <!--- **************************************************************--->
 <!--- ColdBox Modules --->
 <!--- **************************************************************--->
-	<cfif controller.getCFMLEngine().isMT() AND getDebuggerConfig().getShowModulesPanel()>
+	<cfif getDebuggerConfig().getShowModulesPanel()>
 		<cfinclude template="panels/ModulesPanel.cfm">
 	</cfif>
 <!--- **************************************************************--->

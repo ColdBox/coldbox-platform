@@ -152,8 +152,8 @@ Modification History:
     		var wireboxData = controller.getSetting("WireBox");
 			var oInjector	= "";
 			
-    		// If using cf8 and above then create it with our binder
-			if( controller.getCFMLEngine().isMT() AND wireboxData.enabled ){
+    		// If wirebox enabled?
+			if( wireboxData.enabled ){
 				oInjector = createObject("component","coldbox.system.ioc.Injector").init(wireboxData.binderPath,controller.getConfigSettings(), controller);
 				controller.setWireBox( oInjector );
 			}
