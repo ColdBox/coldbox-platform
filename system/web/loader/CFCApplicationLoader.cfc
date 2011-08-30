@@ -843,21 +843,13 @@ Loads a coldbox cfc configuration file
 			
 			// Default Config Structure
 			arguments.config.wirebox 			= structnew();
-			arguments.config.wirebox.enabled	= false;
+			arguments.config.wirebox.enabled	= true;
 			arguments.config.wirebox.binder		= "";
 			arguments.config.wirebox.binderPath	= "";
 			arguments.config.wirebox.singletonReload = false;
 			
 			// Check if we have defined DSL first in application config
 			wireBoxDSL = arguments.oConfig.getPropertyMixin("wireBox","variables",structnew());
-			
-			// Check if enabled is set else return
-			if( NOT structKeyExists(wireBoxDSL,"enabled") OR NOT wireBoxDSL.enabled ){
-				return;
-			}
-			
-			// Set wirebox enabled
-			arguments.config.wirebox.enabled = true;
 			
 			// Get Binder Paths
 			if( structKeyExists(wireBoxDSL,"binder") ){

@@ -150,13 +150,9 @@ Modification History:
     <cffunction name="createWireBox" output="false" access="public" returntype="void" hint="Create WireBox DI Framework with config settings.">
     	<cfscript>
     		var wireboxData = controller.getSetting("WireBox");
-			var oInjector	= "";
+			var oInjector	= createObject("component","coldbox.system.ioc.Injector").init(wireboxData.binderPath, controller.getConfigSettings(), controller);
 			
-    		// If wirebox enabled?
-			if( wireboxData.enabled ){
-				oInjector = createObject("component","coldbox.system.ioc.Injector").init(wireboxData.binderPath,controller.getConfigSettings(), controller);
-				controller.setWireBox( oInjector );
-			}
+			controller.setWireBox( oInjector );			
     	</cfscript>
     </cffunction>
 	
@@ -253,7 +249,6 @@ Modification History:
 		instance.appLoader = createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init( controller );
 		return instance.appLoader;
 		</cfscript>
-	</cffunction>
-	
+	</cffunction>	
 
 </cfcomponent>
