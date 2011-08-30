@@ -194,14 +194,6 @@ Modification History:
 		</cfscript>
     </cffunction>
 
-	<!--- createCacheContainer --->
-    <cffunction name="createCacheContainer" output="false" access="public" returntype="void" hint="Create the cache container">
-    	<cfscript>
-    		// CacheBox creation
-			controller.setCacheBox( createCacheBox() );
-    	</cfscript>
-    </cffunction>
-
 	<!--- processShutdown --->
     <cffunction name="processShutdown" output="false" access="public" returntype="void" hint="Process the shutdown of the application">
     	<cfscript>
