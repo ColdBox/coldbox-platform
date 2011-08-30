@@ -18,7 +18,9 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="init" returntype="any" access="public" hint="Constructor" output="false" colddoc:generic="coldbox.system.web.Controller">
 		<cfargument name="appRootPath" type="any" required="true" hint="The application root path"/>
 		<cfscript>
-			instance = structnew();
+			// local members scope
+			variables.instance = structnew();
+			// services scope
 			services = createObject("java","java.util.LinkedHashMap").init(7);
 		
 			// CFML Engine Utility
@@ -29,14 +31,14 @@ Only one instance of a specific ColdBox application exists.
 			instance.aspectsInitiated 		= false;
 			instance.appHash				= hash(arguments.appRootPath);
 			instance.appRootPath			= arguments.appRootPath;
+			instance.configSettings 		= structNew();
+			instance.coldboxSettings		= structNew();
 			
-			// Init application Configuration structures
-			instance.configSettings = structNew();
 			// Load up ColdBox Settings
 			createObject("component","coldbox.system.web.loader.FrameworkLoader").init().loadSettings(this);
 
 			// Setup the ColdBox Services
-			services.LoaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init(this);
+			services.loaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init(this);
 			
 			// LogBox Default Configuration & Creation
 			instance.logBox = services.loaderService.createDefaultLogBox();
@@ -48,11 +50,7 @@ Only one instance of a specific ColdBox application exists.
 			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init(this);
 			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init(this);
 			services.ModuleService 		= "";
-			
-			// Nasty cf7, once you die this goes out. Modules are cf8 only and above.
-			if ( instance.CFMLEngine.isMT() ){
-				services.ModuleService = CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
-			}
+			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
 			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this);
 
 			// CacheBox
@@ -126,12 +124,7 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
 		<cfargument name="cacheName" type="any" required="false" default="default" hint="The cache name to retrieve"/>
 		<cfscript>
-			// if cachebox exists, return cachebox cache
-			if( isObject( instance.cacheBox ) ){
-				return instance.cacheBox.getCache( arguments.cacheName );
-			}
-			//else return compat mode for now.
-			return instance.coldboxOCM;
+			return instance.cacheBox.getCache( arguments.cacheName );
 		</cfscript>
 	</cffunction>
 	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
@@ -712,11 +705,9 @@ Only one instance of a specific ColdBox application exists.
     	<cfargument name="url" 			required="true"  hint="The URL to relocate to"/>
 		<cfargument name="addtoken"		required="false" default="false" hint="Add the CF tokens or not" colddoc:generic="boolean">
     	<cfargument name="statusCode" 	required="false" default="0" hint="The status code to use" colddoc:generic="numeric">
-    	<cfif arguments.statusCode eq 0>
-			<cflocation url="#arguments.url#" addtoken="#addtoken#">
-		<cfelse>
-			<cfinclude template="/coldbox/system/includes/cf7_cflocation_compat.cfm">
-		</cfif>
+    	
+    	<!--- Relocate --->
+    	<cflocation url="#arguments.url#" addtoken="#addtoken#" statuscode="#arguments.statusCode#">
     </cffunction>
 
 	<!--- updateSSL --->

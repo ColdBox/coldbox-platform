@@ -70,8 +70,8 @@ Modification History:
 		controller.getPluginService().clearDictionary();
 		controller.getHandlerService().clearDictionaries();
 		
-		// Create the Cache Container
-		createCacheContainer();
+		// Create CacheBox
+		createCacheBox();
 		
 		// Create WireBox Container
 		createWireBox();
@@ -85,9 +85,7 @@ Modification History:
 		controller.setColdboxInitiated(true);
 		
 		// Activate Modules
-		if( isObject(controller.getModuleService()) ){
-			controller.getModuleService().activateAllModules();
-		}
+		controller.getModuleService().activateAllModules();
 		
 		// Execute afterConfigurationLoad
 		controller.getInterceptorService().processState("afterConfigurationLoad");
@@ -163,10 +161,11 @@ Modification History:
     </cffunction>
 	
 	<!--- createCacheBox --->
-    <cffunction name="createCacheBox" output="false" access="public" returntype="coldbox.system.cache.CacheFactory" hint="Create the application's CacheBox instance">
+    <cffunction name="createCacheBox" output="false" access="public" returntype="void" hint="Create the application's CacheBox instance">
     	<cfscript>
     		var config 				= createObject("Component","coldbox.system.cache.config.CacheBoxConfig").init();
 			var cacheBoxSettings 	= controller.getSetting("cacheBox");
+			var cacheBox			= "";
 			
 			// Load by File
 			if( len(cacheBoxSettings.configFile) ){
@@ -189,50 +188,20 @@ Modification History:
 			}
 			
 			// Create CacheBox
-			return createObject("component","coldbox.system.cache.CacheFactory").init(config,controller);
+			cachebox = createObject("component","coldbox.system.cache.CacheFactory").init(config,controller);
+			// Store instance references
+			controller.setCacheBox( cacheBox );
 		</cfscript>
     </cffunction>
 
 	<!--- createCacheContainer --->
     <cffunction name="createCacheContainer" output="false" access="public" returntype="void" hint="Create the cache container">
     	<cfscript>
-    		// Determine compat mode or new cachebox mode or pesky cf7 until 3.1
-			if( controller.getCFMLEngine().isMT() AND NOT controller.getSetting("cacheSettings").compatMode ){
-				// CacheBox creation
-				controller.setCacheBox( createCacheBox() );
-				return;
-			}
-			
-			// else we are on compatmode
-			controller.setColdboxOCM( createCacheManager() );
+    		// CacheBox creation
+			controller.setCacheBox( createCacheBox() );
     	</cfscript>
     </cffunction>
 
-	<!--- createCacheManager --->
-    <cffunction name="createCacheManager" output="false" access="public" returntype="any" hint="Create the compatibility caching engine">
-    	<cfscript>
-		// Create cache Config
-		var cacheConfig = createObject("Component","coldbox.system.cache.archive.config.CacheConfig");
-		var cache = "";
-		
-		// populate configuratio from loaded application
-		cacheConfig.populate(controller.getSetting("cacheSettings"));
-		
-		// Create according cache manager
-   		if ( controller.getCFMLEngine().isMT() ){
-			cache = CreateObject("component","coldbox.system.cache.archive.MTCacheManager").init(controller);
-		}
-		else{
-			cache = CreateObject("component","coldbox.system.cache.archive.CacheManager").init(controller);
-		}
-		
-		// Configure the cache
-		cache.configure(cacheConfig);		
-		
-		return cache;	
-    	</cfscript>
-    </cffunction>
-	
 	<!--- processShutdown --->
     <cffunction name="processShutdown" output="false" access="public" returntype="void" hint="Process the shutdown of the application">
     	<cfscript>
@@ -246,9 +215,8 @@ Modification History:
 				services[key].onShutdown();
 			}
 			// Shutdown any services like cache engine, etc.
-			if( isObject(cacheBox) ){
-				cacheBox.shutdown();
-			}
+			cacheBox.shutdown();
+			
 			// Shutdown WireBox
 			if( isObject(wireBox) ){
 				wireBox.shutdown();
@@ -289,14 +257,8 @@ Modification History:
 			getUtil().throwit(message="Config file not located in conventions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
 		}
 		
-		// If CFC loader, then create it and return it
-		if( listLast(coldboxSettings["ConfigFileLocation"],".")  eq "cfc" ){
-			instance.appLoader = createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init(controller);
-			return instance.appLoader;
-		}
-		
-		// Return XML Loader
-		instance.appLoader = createObject("component","coldbox.system.web.loader.XMLApplicationLoader").init(controller);
+		// Create it and return it
+		instance.appLoader = createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init( controller );
 		return instance.appLoader;
 		</cfscript>
 	</cffunction>

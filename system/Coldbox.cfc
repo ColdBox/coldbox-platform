@@ -233,9 +233,11 @@ Description :
 			</cfif>
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
-			<cfif event.isEventCacheable() AND templateCache.lookupQuiet(event.getEventCacheableEntry())>
-				<cfset renderedContent = templateCache.get(event.getEventCacheableEntry())>
-				<cfoutput>#renderedContent#</cfoutput>
+			<cfif structKeyExists(event.getEventCacheableEntry(), "cachekey")>
+				<cfset refResults.renderedContent = templateCache.get( event.getEventCacheableEntry().cacheKey )>
+			</cfif>
+			<cfif event.isEventCacheable() AND structKeyExists(refResults,"renderedContent")>
+				<cfoutput>#refResults.renderedContent#</cfoutput>
 			<cfelse>
 				
 				<!--- Run Default/Set Event not executing an event --->

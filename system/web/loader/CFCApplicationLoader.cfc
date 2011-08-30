@@ -8,7 +8,7 @@ Author 	 		: Luis Majano
 Date     		: September 23, 2005
 Description		: 
 
-Loads a coldbox xml configuration file
+Loads a coldbox cfc configuration file
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="Loads a coldbox xml configuration file" output="false" extends="coldbox.system.web.loader.AbstractApplicationLoader">
@@ -133,7 +133,7 @@ Loads a coldbox xml configuration file
 		parseLayoutsViews(oConfig,configStruct);			
 		
 		/* :::::::::::::::::::::::::::::::::::::::::  CACHE SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseCacheSettings(oConfig,configStruct);
+		parseCacheBox(oConfig,configStruct);
 					
 		/* ::::::::::::::::::::::::::::::::::::::::: DEBUGGER SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseDebuggerSettings(oConfig,configStruct);			
@@ -687,47 +687,19 @@ Loads a coldbox xml configuration file
 		</cfscript>
 	</cffunction>
 
-	<!--- parseCacheSettings --->
-	<cffunction name="parseCacheSettings" output="false" access="public" returntype="void" hint="Parse Cache Settings for CacheBox operation">
+	<!--- parseCacheBox --->
+	<cffunction name="parseCacheBox" output="false" access="public" returntype="void" hint="Parse Cache Settings for CacheBox operation">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 	  	type="struct"  required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct 		= arguments.config;
 			var fwSettingsStruct 	= getColdboxSettings();
-			var cacheEngine 		= arguments.oConfig.getPropertyMixin("cacheEngine","variables",structnew());
 			
-			// Default, cache compatibility
-			configStruct.cacheSettings  		= structnew();
-			// Mark the Compat Mode
-			configStruct.cacheSettings.compatMode = false;
-					
 			// CacheBox Defaults
 			configStruct.cacheBox				= structnew();
 			configStruct.cacheBox.dsl  			= arguments.oConfig.getPropertyMixin("cacheBox","variables",structnew());
 			configStruct.cacheBox.xml  			= "";
 			configStruct.cacheBox.configFile 	= "";
-			
-			// Test if in compatibility mode, basically using the cacheEngine structure, this loads the cache archive
-			// If cacheBox structure is found, then we use cachebox.
-			// This will be deprecated on 3.1
-			if( NOT structIsEmpty(cacheEngine) ){
-				// Mark the Compat Mode
-				configStruct.cacheSettings.compatMode = true;
-				
-				// Defaults
-				configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
-				configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
-				configStruct.cacheSettings.reapFrequency 				  = fwSettingsStruct.cacheObjectDefaultTimeout;
-				configStruct.cacheSettings.freeMemoryPercentageThreshold  = fwSettingsStruct.cacheFreeMemoryPercentageThreshold;
-				configStruct.cacheSettings.useLastAccessTimeouts 		  = fwSettingsStruct.cacheUseLastAccessTimeouts;
-				configStruct.cacheSettings.evictionPolicy 				  = fwSettingsStruct.cacheEvictionPolicy;
-				configStruct.cacheSettings.evictCount					  = fwSettingsStruct.cacheEvictCount;
-				configStruct.cacheSettings.maxObjects					  = fwSettingsStruct.cacheMaxObjects;	
-				
-				//append cache settings to main app cache structure
-				structAppend(configStruct.cacheSettings, cacheEngine, true);
-				return;
-			}
 			
 			// Check if we have defined DSL first in application config
 			if( NOT structIsEmpty(configStruct.cacheBox.dsl) ){

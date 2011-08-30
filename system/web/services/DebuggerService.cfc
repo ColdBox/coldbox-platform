@@ -227,13 +227,7 @@ Description :
 			}
 			
 			// Caches
-			if( isObject(controller.getCacheBox()) ){
-				cacheNames = controller.getCacheBox().getCacheNames();
-			}
-			else{
-				cacheNames[1] = "default";
-			}
-			
+			cacheNames = controller.getCacheBox().getCacheNames();
 		</cfscript>
 		
 		<!--- Param the monitor frequency if used --->
@@ -258,7 +252,6 @@ Description :
 			var cacheConfig		= "";
 			var cacheStats		= "";
 			var cacheSize		= cacheProvider.getSize();		
-			var isCacheBox		= true;	
 			
 			// JVM Data
 			var JVMRuntime 		= instance.jvmRuntime.getRuntime();
@@ -275,16 +268,8 @@ Description :
 			}
 			
 			// Prepare cache report for cachebox
-			if( isObject(controller.getCacheBox()) ){
-				cacheConfig 	= cacheProvider.getConfiguration();
-				cacheStats  	= cacheProvider.getStats();			
-			}
-			// COMPAT MODE: REMOVE LATER, cf7 and compat
-			else{
-				cacheConfig 	= cacheProvider.getCacheConfig().getMemento();
-				cacheStats  	= cacheProvider.getCacheStats();
-				isCacheBox		= false;				
-			}
+			cacheConfig 	= cacheProvider.getConfiguration();
+			cacheStats  	= cacheProvider.getStats();
     	</cfscript>	
 		
 		<!--- Generate Debugging --->
@@ -305,7 +290,6 @@ Description :
 			var cacheKeysLen	= 0;
 			var cacheMetadata	= "";
 			var cacheMDKeyLookup = structnew();
-			var isCacheBox		= true;
 			
 			// URL Base
 			var event 			= controller.getRequestService().getContext();
@@ -317,26 +301,10 @@ Description :
 			}
 			
 			// Prepare cache report for cachebox
-			if( isObject(controller.getCacheBox()) ){
-				cacheMetadata 		= cacheProvider.getStoreMetadataReport();
-				cacheMDKeyLookup 	= cacheProvider.getStoreMetadataKeyMap();
-				cacheKeys			= cacheProvider.getKeys(); 
-				cacheKeysLen		= arrayLen( cacheKeys );							
-			}
-			// COMPAT MODE: REMOVE LATER, cf7 and compat
-			else{
-				cacheMetadata 	= cacheProvider.getPoolMetadata();
-				cacheKeys		= structKeyArray( cacheMetadata ); 
-				cacheKeysLen	= arrayLen( cacheKeys );
-				// I DETEST CF7
-				cacheMDKeyLookup = structnew();
-				cacheMDKeyLookup["timeout"] = "timeout";
-				cacheMDKeyLookup["lastAccessTimeout"] = "lastAccessTimeout";
-				cacheMDKeyLookup["hits"] = "hits";
-				cacheMDKeyLookup["lastAccesed"] = "lastAccesed";
-				cacheMDKeyLookup["created"] = "created";
-				cacheMDKeyLookup["isExpired"] = "isExpired";								
-			}
+			cacheMetadata 		= cacheProvider.getStoreMetadataReport();
+			cacheMDKeyLookup 	= cacheProvider.getStoreMetadataKeyMap();
+			cacheKeys			= cacheProvider.getKeys(); 
+			cacheKeysLen		= arrayLen( cacheKeys );							
 			
 			// Sort Keys
 			arraySort( cacheKeys ,"textnocase" );

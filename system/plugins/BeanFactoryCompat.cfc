@@ -39,7 +39,6 @@ Description: This is the framework's simple bean factory.
 			instance.ModelsStopRecursion	= getSetting("ModelsStopRecursion");
 			instance.ModelsSetterInjection	= getSetting("ModelsSetterInjection");
 			instance.ModelsDICompleteUDF	= getSetting("ModelsDICompleteUDF");
-			instance.cacheCompatMode		= getSetting("cacheSettings").compatMode;
 
 			// Model Mappings Map
 			instance.modelMappings 	= structnew();
@@ -168,8 +167,7 @@ Description: This is the framework's simple bean factory.
 			var alias			 = arguments.name;
 			var cacheKey		 = "";
 			var refLocal		 = structnew();
-			var cacheCompatMode	 = instance.cacheCompatMode;
-
+			
 			// Are we using dsl or name localization?
 			if( structKeyExists(arguments,"dsl") ){
 				definition.type = arguments.dsl;
@@ -194,18 +192,8 @@ Description: This is the framework's simple bean factory.
 			// Get model
 			refLocal.oModel = instance.cache.get( cacheKey );
 			// Test it, existance is enough for cacheBox
-			if( structKeyExists(refLocal,"oModel") AND NOT cacheCompatMode){
+			if( structKeyExists(refLocal,"oModel") ){
 				return refLocal.oModel;				
-			}
-			// Test it via compat mode (deprecated by 3.1)
-			if( cacheCompatMode AND 
-				(
-					( NOT isSimpleValue(refLocal.oModel) ) 
-					 OR 
-					( refLocal.oModel neq instance.cache.NOT_FOUND )
-				)
-				){
-				return refLocal.oModel;
 			}
 			
 			// Argument Overrides, else grab from existing settings

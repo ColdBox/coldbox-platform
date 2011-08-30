@@ -146,7 +146,7 @@ Modification History:
 			refLocal.oPlugin = instance.cache.get(pluginKey);
 			
 			// Verify it, COMPAT MODE Remove later
-			if( NOT structKeyExists(refLocal,"oPlugin") OR NOT isObject(refLocal.oPlugin) ){
+			if( NOT structKeyExists(refLocal,"oPlugin") ){
 				// Object not found, proceed to create and verify
 				refLocal.oPlugin = new(argumentCollection=arguments);
 				
