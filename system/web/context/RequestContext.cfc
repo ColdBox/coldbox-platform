@@ -295,6 +295,10 @@ Description :
 		<cfreturn getValue("currentLayout","",true)>
 	</cffunction>
 
+	<cffunction name="getCurrentLayoutModule" access="public" hint="Gets the current set layout's module for rendering" returntype="any" output="false">
+		<cfreturn getValue("layoutmodule","",true)>
+	</cffunction>
+	
 	<cffunction name="getCurrentRoute" output="false" access="public" returntype="any" hint="Get the current request's SES route that matched">
     	<cfreturn getValue("currentRoute","",true)>
     </cffunction>
@@ -304,7 +308,8 @@ Description :
     </cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="any" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
-		<cfargument name="name"  hint="The name or alias of the layout file to set." type="any" >
+		<cfargument name="name" 	required="true"  hint="The name or alias of the layout file to set.">
+		<cfargument name="module" 	required="false" default="" hint="Is the layout from a module or not"/>
 		<cfscript>
 			var layouts = getRegisteredLayouts();
 
@@ -318,6 +323,8 @@ Description :
 
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
+			// module layout?
+			instance.privateContext["layoutmodule"] = arguments.module;
 			return this;
 		</cfscript>
 	</cffunction>

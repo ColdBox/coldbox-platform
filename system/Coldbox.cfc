@@ -258,7 +258,7 @@ Description :
 						<cfset renderedContent = refResults.results>
 					<cfelse>
 						<!--- Render Layout/View pair via set variable to eliminate whitespace--->
-						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout()>
+						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout(module=event.getCurrentLayoutModule())>
 					</cfif>
 					
 					<!--- PreRender Data:--->
