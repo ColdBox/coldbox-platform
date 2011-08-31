@@ -34,7 +34,7 @@ Only one instance of a specific ColdBox application exists.
 			instance.configSettings 		= structNew();
 			instance.coldboxSettings		= structNew();
 			
-			// Load up ColdBox Settings
+			// Load up default ColdBox Settings
 			createObject("component","coldbox.system.web.loader.FrameworkLoader").init().loadSettings(this);
 
 			// Setup the ColdBox Services

@@ -41,7 +41,7 @@
     
     <!-- Conventions -->
     <Conventions>
-        <configLocation>config/Coldbox.cfc</configLocation>
+        <configLocation>config.Coldbox</configLocation>
         <handlerLocation>handlers</handlerLocation>
         <pluginsLocation>plugins</pluginsLocation>
         <layoutsLocation>layouts</layoutsLocation>
