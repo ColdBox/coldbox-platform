@@ -38,7 +38,7 @@ Description :
 			instance.requestBuffer = CreateObject("component","coldbox.system.core.util.RequestBuffer").init();
 			
 			// Default Logging
-			instance.log = controller.getLogBox().getLogger(this);
+			instance.log = controller.getLogBox().getLogger( this );
     		
     		// Setup Default Configuration
     		instance.interceptorConfig = structNew();
@@ -52,8 +52,8 @@ Description :
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<cfscript>
-    		// Setup Logging
-    		instance.log = controller.getLogBox().getLogger(this);
+			// Setup Logging
+    		instance.log = controller.getLogBox().getLogger( this );
     		// Setup Configuration
     		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
 			// Check if using the CFC configuration object, if so, then register it
@@ -198,7 +198,7 @@ Description :
 				
 				// Autowire this interceptor only if called after aspect registration
 				if( controller.getAspectsInitiated() ){
-					controller.getPlugin("BeanFactory").autowire(target=oInterceptor,targetID=objectKey);
+					controller.getWireBox.autowire(target=oInterceptor,targetID=objectKey);
 				}			
 			</cfscript>
 		</cflock>
