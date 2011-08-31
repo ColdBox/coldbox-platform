@@ -705,7 +705,7 @@ Only one instance of a specific ColdBox application exists.
     	<cfargument name="statusCode" 	required="false" default="0" hint="The status code to use" colddoc:generic="numeric">
     	
     	<!--- Relocate --->
-    	<cflocation url="#arguments.url#" addtoken="#addtoken#" statuscode="#arguments.statusCode#">
+    	<cflocation attributeCollection=arguments>
     </cffunction>
 
 	<!--- updateSSL --->
