@@ -49,18 +49,12 @@ Only one instance of a specific ColdBox application exists.
 			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init(this);
 			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init(this);
 			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init(this);
-			services.ModuleService 		= "";
 			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
 			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this);
 
 			// CacheBox
 			instance.cacheBox 	= "";
 			instance.wireBox	= "";
-			
-			// Announcement we are created.
-			if( instance.log.canInfo() ){
-				instance.log.info("ColdBox Application Controller Created Successfully at #arguments.appRootPath#");
-			}
 
 			return this;
 		</cfscript>

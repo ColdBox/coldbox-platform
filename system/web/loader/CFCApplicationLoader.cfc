@@ -144,7 +144,7 @@ Loads a coldbox cfc configuration file
 		parseLogBox(oConfig,configStruct,logBoxConfigHash);
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: WIREBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
-		parseWireBox(oConfig,configStruct,logBoxConfigHash);
+		parseWireBox(oConfig,configStruct);
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
@@ -787,7 +787,6 @@ Loads a coldbox cfc configuration file
 	<cffunction name="parseWireBox" output="false" access="public" returntype="void" hint="Parse WireBox">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
-		<cfargument name="configHash"   type="string"  required="true" hint="The initial logBox config hash"/>
 		<cfscript>
 			var wireBoxDSL		  = structnew();
 			

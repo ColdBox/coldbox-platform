@@ -54,9 +54,9 @@ Modification History:
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if( NOT structIsEmpty( controller.getSetting("LogBoxConfig") ) ){
 			// reconfigure LogBox with user configurations
-			controller.getLogBox().configure(controller.getLogBox().getConfig());
+			controller.getLogBox().configure( controller.getLogBox().getConfig() );
 			// Reset the controller main logger
-			controller.setLog(controller.getLogBox().getLogger(controller));
+			controller.setLog( controller.getLogBox().getLogger( controller ) );
 		}
 		
 		//Get Local Logger Now Configured
