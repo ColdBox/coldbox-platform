@@ -197,7 +197,7 @@ Description :
 				
 				// Autowire this interceptor only if called after aspect registration
 				if( controller.getAspectsInitiated() ){
-					controller.getWireBox.autowire(target=oInterceptor,targetID=objectKey);
+					controller.getWireBox().autowire(target=oInterceptor,targetID=objectKey);
 				}			
 			</cfscript>
 		</cflock>
