@@ -37,19 +37,11 @@
         <Setting name="expandedRCPanel" value="false"/>  
         <Setting name="showModulesPanel" value="true"/>
         <Setting name="expandedModulesPanel" value="false"/>  
-       
-        <!-- Model Integration -->
-        <Setting name="ModelsObjectCaching"  value="true" />
-        <Setting name="ModelsSetterInjection"  value="false" />
-        <Setting name="ModelsDebugMode"  value="false" />
-        <Setting name="ModelsStopRecursion"  value="" />
-        <Setting name="ModelsDICompleteUDF"  value="onDIComplete" />
-        <Setting name="ModelsDefinitionFile"  value="config/ModelMappings.cfm" />
     </Settings>
     
     <!-- Conventions -->
     <Conventions>
-        <configLocation>config/coldbox.xml.cfm,config/Coldbox.cfc</configLocation>
+        <configLocation>config/Coldbox.cfc</configLocation>
         <handlerLocation>handlers</handlerLocation>
         <pluginsLocation>plugins</pluginsLocation>
         <layoutsLocation>layouts</layoutsLocation>
