@@ -43,10 +43,10 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
+<!------------------------------------------- Configure ------------------------------------------->
 	
-	<!--- onConfigurationLoad --->
-	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
+	<!--- configure --->
+	<cffunction name="configure" access="public" output="false" returntype="void">
 		<cfscript>
 			// Cache Reference
 			instance.cache = getColdboxOCM();

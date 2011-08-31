@@ -18,15 +18,15 @@ Description :
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);
+			
 			// set the unique cookie name
-			setCookieName("coldbox_debugmode_#controller.getAppHash()#");
+			instance.cookieName = "coldbox_debugmode_#controller.getAppHash()#";
 			// Create persistent profilers
-			setProfilers(arrayNew(1));
+			instance.profilers = arrayNew(1);
 			// Create persistent tracers
-			setTracers(arrayNew(1));
+			instance.tracers = arrayNew(1);
 			// Set a maximum tracers possible
 			instance.maxTracers = 75;
-			
 			// Runtime
 			instance.jvmRuntime = createObject("java", "java.lang.Runtime");
 			
@@ -345,7 +345,7 @@ Description :
 	<!--- Render Profilers --->
 	<cffunction name="renderProfiler" access="public" hint="Renders the execution profilers." output="false" returntype="Any">
 		<cfset var profilerContents = "">
-		<cfset var profilers 		= getProfilers()>
+		<cfset var profilers 		= instance.profilers>
 		<cfset var profilersCount 	= ArrayLen(profilers)>
 		<cfset var x 				= 1>
 		<cfset var refLocal 		= structnew()>
@@ -382,16 +382,16 @@ Description :
 	
 	<!--- Persistent Profilers --->
 	<cffunction name="getProfilers" access="public" output="false" returntype="array" hint="Get Profilers">
-		<cfreturn instance.Profilers/>
+		<cfreturn instance.profilers/>
 	</cffunction>
 	<cffunction name="setProfilers" access="public" output="false" returntype="void" hint="Set Profilers">
 		<cfargument name="Profilers" type="array" required="true"/>
-		<cfset instance.Profilers = arguments.Profilers/>
+		<cfset instance.profilers = arguments.Profilers/>
 	</cffunction>
 	
 	<!--- resetProfilers --->
     <cffunction name="resetProfilers" output="false" access="public" returntype="void" hint="Reset all profilers">
-    	<cfset setProfilers(arrayNew(1))>
+    	<cfset instance.profilers = arrayNew(1)>
     </cffunction>
 	
 	
@@ -413,7 +413,7 @@ Description :
 			if( NOT getDebuggerConfig().getPersistentRequestProfiler() ){ return; }
 			
 			// size check
-			if( ArrayLen(getProfilers()) gte getDebuggerConfig().getmaxPersistentRequestProfilers() ){
+			if( ArrayLen( instance.profilers ) gte getDebuggerConfig().getmaxPersistentRequestProfilers() ){
 				popProfiler();
 			}
 			
@@ -422,24 +422,24 @@ Description :
 			newRecord.ip = cgi.REMOTE_ADDR;
 			newRecord.timers = arguments.profilerRecord;
 			
-			ArrayAppend(getProfilers(),newRecord);
+			ArrayAppend( instance.profilers,newRecord);
 		</cfscript>		
 	</cffunction>
 	
 	<!--- Pop a profiler --->
 	<cffunction name="popProfiler" access="public" returntype="void" hint="Pop a profiler record" output="false" >
 		<cfscript>
-			ArrayDeleteAt(getProfilers(),1);
+			ArrayDeleteAt( instance.profilers,1);
 		</cfscript>
 	</cffunction>
 	
 	<!--- Get Set Tracers --->
 	<cffunction name="getTracers" access="public" output="false" returntype="array" hint="Get Tracers">
-		<cfreturn instance.Tracers/>
+		<cfreturn instance.tracers/>
 	</cffunction>
 	<cffunction name="setTracers" access="public" output="false" returntype="void" hint="Set Tracers">
 		<cfargument name="Tracers" type="array" required="true"/>
-		<cfset instance.Tracers = arguments.Tracers/>
+		<cfset instance.tracers = arguments.Tracers/>
 	</cffunction>
 	
 	<!--- Push a tracer --->
@@ -450,19 +450,19 @@ Description :
 			var tracerEntry = StructNew();
 			
 			// Max Check
-			if( arrayLen(getTracers()) gte instance.maxTracers) { resetTracers(); }
+			if( arrayLen( instance.tracers ) gte instance.maxTracers) { resetTracers(); }
 			
 			// Create Message
 			tracerEntry["message"] = arguments.message;
 			tracerEntry["extraInfo"] = arguments.extraInfo;
 			
-			ArrayAppend(getTracers(),tracerEntry);
+			ArrayAppend( instance.tracers,tracerEntry);
 		</cfscript>
 	</cffunction>
 	
 	<!--- removeTracers --->
     <cffunction name="resetTracers" output="false" access="public" returntype="void" hint="Reset all Tracers">
-    	<cfset setTracers(arrayNew(1))>
+    	<cfset instance.tracers = arrayNew(1)>
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

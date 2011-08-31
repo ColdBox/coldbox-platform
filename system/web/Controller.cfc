@@ -19,7 +19,7 @@ Only one instance of a specific ColdBox application exists.
 		<cfargument name="appRootPath" type="any" required="true" hint="The application root path"/>
 		<cfscript>
 			// local members scope
-			variables.instance = structnew();
+			instance = structnew();
 			// services scope
 			services = createObject("java","java.util.LinkedHashMap").init(7);
 		
@@ -29,13 +29,17 @@ Only one instance of a specific ColdBox application exists.
 			// Set Main Application Properties
 			instance.coldboxInitiated 		= false;
 			instance.aspectsInitiated 		= false;
-			instance.appHash				= hash(arguments.appRootPath);
+			//Fix Application Path to last / standard.
+			if( NOT reFind("(/|\\)$",arguments.appRootPath) ){
+				arguments.appRootPath = appRootPath & "/";
+			}
+			instance.appHash				= hash( arguments.appRootPath );
 			instance.appRootPath			= arguments.appRootPath;
 			instance.configSettings 		= structNew();
 			instance.coldboxSettings		= structNew();
 			
 			// Load up default ColdBox Settings
-			createObject("component","coldbox.system.web.loader.FrameworkLoader").init().loadSettings(this);
+			createObject("component","coldbox.system.web.loader.FrameworkLoader").init().loadSettings( this );
 
 			// Setup the ColdBox Services
 			services.loaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init(this);

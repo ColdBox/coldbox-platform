@@ -173,7 +173,6 @@ Description :
 		<cfset var refResults 		= structnew()>
 		<cfset var debugPanel		= "">
 		<cfset var interceptorService = "">
-		<cfset var debugMode		= false>
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
@@ -182,7 +181,6 @@ Description :
 		
 		<!--- Setup Local Vars --->
 		<cfset interceptorService 	= cbController.getInterceptorService()>
-		<cfset debugMode 		 	= cbController.getDebuggerService().getDebugMode()>
 		<cfset templateCache		= cbController.getColdboxOCM("template")>
 		
 		<cftry>
@@ -193,7 +191,7 @@ Description :
 			<cfset event = cbController.getRequestService().requestCapture()>
 			
 			<!--- Debugging Monitors & Commands Check --->
-			<cfif debugMode>
+			<cfif cbController.getDebuggerService().getDebugMode()>
 				
 				<!--- ColdBox Command Executions --->
 				<cfset coldboxCommands(cbController,event)>
@@ -331,7 +329,7 @@ Description :
 		<cfset request.fwExecTime = getTickCount() - request.fwExecTime>
 		
 		<!--- DebugMode Routines --->
-		<cfif debugMode>
+		<cfif cbController.getDebuggerService().getDebugMode()>
 			<!--- Record Profilers --->
 			<cfset cbController.getDebuggerService().recordProfiler()>
 			<!--- Render DebugPanel --->

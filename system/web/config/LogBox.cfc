@@ -16,18 +16,19 @@ LogBox instance is reconfigured with the user settings, if used at all.
 	* Configure LogBox, that's it!
 	*/
 	function configure(){
-		// Have to do it cf7 style until we kill it in 3.1
-		logBox = structnew();
+		logBox = {};
 		
 		// Define Appenders
-		logBox.appenders = structnew();
-		logBox.appenders.console.class="coldbox.system.logging.appenders.DummyAppender";
+		logBox.appenders = {
+			console = { class="coldbox.system.logging.appenders.DummyAppender" }
+		};
 		
 		// Root Logger
-		logBox.root = structnew();
-		logBox.root.levelmax="OFF";
-		logBox.root.levelMin="OFF";
-		logBox.root.appenders="*";		
+		logBox.root = {
+			levelmax="OFF",
+			levelMin="OFF",
+			appenders="*"
+		};
 	}
 </cfscript>
 </cfcomponent>

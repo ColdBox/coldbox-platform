@@ -22,7 +22,6 @@ Modification History:
 			setController(arguments.controller);
 			
 			// service properties
-			instance.log = "";
 			instance.appLoader = "";
 			
 			return this;
@@ -59,12 +58,9 @@ Modification History:
 			controller.setLog( controller.getLogBox().getLogger( controller ) );
 		}
 		
-		//Get Local Logger Now Configured
-		instance.log = controller.getLogBox().getLogger(this);
-		
-		// Configure the application debugger.
-		debuggerConfig.populate(controller.getSetting("DebuggerSettings"));
-		controller.getDebuggerService().setDebuggerConfig(debuggerConfig);
+		// Configure the application debugger with user settings
+		debuggerConfig.populate( controller.getSetting("DebuggerSettings") );
+		controller.getDebuggerService().setDebuggerConfig( debuggerConfig );
 		
 		// Clear the Cache Dictionaries, just to make sure, we are in reload mode.
 		controller.getPluginService().clearDictionary();
@@ -72,7 +68,8 @@ Modification History:
 		
 		// Create CacheBox
 		createCacheBox();
-		
+		// Configure plugins
+		controller.getPluginService().configure();
 		// Create WireBox Container
 		createWireBox();
 				
@@ -92,11 +89,6 @@ Modification History:
 		
 		// Register Aspects
 		registerAspects();
-		
-		// Execute onAspectsLoad on coldbox internal services
-		for(key in services){
-			services[key].onAspectsLoad();
-		}
 		
 		// Execute afterAspectsLoad
 		controller.getInterceptorService().processState("afterAspectsLoad");
