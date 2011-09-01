@@ -189,11 +189,7 @@
 			  	entityInjection = true
 			  }
 			  },
-			 
-			 // Transactional Hibernation annotations
-			 // {class="coldbox.system.orm.hibernate.TransactionAspect"},
-			 
-			 //SES
+			// ses 
 			 {class="coldbox.system.interceptors.SES",
 			  properties={configFile="config/routes.cfm"}},
 			 
