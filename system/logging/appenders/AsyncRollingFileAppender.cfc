@@ -47,6 +47,9 @@ Properties:
 			
 			instance.fileRotator = createObject("component","coldbox.system.logging.util.FileRotator").init();
 			
+			// strong reference to super scope if not cf9 and below choke on high load and cfthread
+			variables.$super = super;
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -58,7 +61,7 @@ Properties:
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Log the message in the super.
-			super.logMessage(arguments.logEvent);
+			variables.$super.logMessage(arguments.logEvent);
 			
 			// Rotate
 			try{

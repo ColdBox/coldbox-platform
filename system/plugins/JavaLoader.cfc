@@ -173,7 +173,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 	
 	<!--- Get jars from a path as an array --->
 	<cffunction name="queryJars" hint="pulls a query of all the jars in the folder passed" access="public" returntype="array" output="false">
-		<cfargument name="dirPath" type="string" required="true" default="" hint="The directory path to query"/>
+		<cfargument name="dirPath" type="string" required="true" hint="The directory path to query"/>
 		<cfargument name="filter" type="string" required="false" default="*.jar" hint="The directory filter to use"/>
 	
 		<cfset var qJars = 0>
