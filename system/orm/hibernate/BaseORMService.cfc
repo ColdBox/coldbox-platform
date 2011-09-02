@@ -305,14 +305,14 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
     */
-	void function populate(required any target,
+	any function populate(required any target,
 						   required struct memento,
 						   string scope="",
 					 	   boolean trustedSetter=false,
 						   string include="",
 						   string exclude=""){
 
-		beanPopulator.populateFromStruct(argumentCollection=arguments);
+		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
 
 	/**
@@ -323,14 +323,14 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromJSON(required any target,
+	any function populateFromJSON(required any target,
 								   required string JSONString,
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
 								   string exclude=""){
 
-		beanPopulator.populateFromJSON(argumentCollection=arguments);
+		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
 	/**
@@ -342,7 +342,7 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromXML(required any target,
+	any function populateFromXML(required any target,
 								  required string xml,
 								  string root="",
 								  string scope="",
@@ -350,7 +350,7 @@ component accessors="true"{
 								  string include="",
 								  string exclude=""){
 
-		beanPopulator.populateFromXML(argumentCollection=arguments);
+		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
 	/**
@@ -362,7 +362,7 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromQuery(required any target,
+	any function populateFromQuery(required any target,
 								    required any qry,
 								    numeric rowNumber=1,
 								    string scope="",
@@ -370,7 +370,7 @@ component accessors="true"{
 								    string include="",
 								    string exclude=""){
 
-		beanPopulator.populateFromQuery(argumentCollection=arguments);
+		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
 
 
