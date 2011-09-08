@@ -49,7 +49,8 @@ If you are building a mapper, the map must have the above keys in it.
 		<cfscript>
 			// Init supertype
 			super.init(argumentCollection=arguments);
-			
+			// strong reference to super scope if not cf9 and below choke on high load and cfthread
+			variables.$super = super;
 			return this;
 		</cfscript>
 	</cffunction>	
@@ -71,7 +72,7 @@ If you are building a mapper, the map must have the above keys in it.
 		<cfelse>
 			<!--- Thread this puppy --->
 			<cfthread name="#threadName#" logEvent="#arguments.logEvent#">
-				<cfset super.logMessage(attributes.logEvent)>
+				<cfset variables.$super.logMessage(attributes.logEvent)>
 			</cfthread>
 		</cfif>
 

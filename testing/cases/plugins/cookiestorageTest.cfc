@@ -81,17 +81,4 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- testBackwardsCompatWDDX --->
-    <cffunction name="testBackwardsCompatWDDX" output="false" access="public" returntype="any" hint="">
-    	<cfset data = {
-			name="Luis Majano", coolLevel="8"
-		}>
-    	<cfwddx action="cfml2wddx" input="#data#" output="cookie.unitTest">
-    	
-    	<cfset val = plugin.getVar("unitTest")>
-    	
-    	<cfset debug(val)>
-    	<cfset debug(cookie)>
-    </cffunction>		
-	
 </cfcomponent>

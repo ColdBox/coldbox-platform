@@ -347,7 +347,7 @@ Description :
 		<cfelse>
 			<cfset cbox_explicitModule = true>
 		</cfif>
-
+		
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
 			<!--- Check if any length on incoming layout --->

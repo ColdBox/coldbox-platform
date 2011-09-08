@@ -30,7 +30,7 @@ RewriteCond %{REQUEST_URI} ^/(.*(flashservices|flex2gateway|flex-remoting)).*$
 RewriteRule ^(.*)$ - [NC,L]
 
 #Images, css, javascript and docs, add your own extensions if needed.
-RewriteCond %{REQUEST_URI} \.(bmp|gif|jpe?g|png|css|js|txt|pdf|doc|xls|xml|ico)$
+RewriteCond %{REQUEST_URI} \.(bmp|gif|jpe?g|png|css|js|txt|pdf|doc|xls|ico)$
 RewriteRule ^(.*)$ - [NC,L]
 
 #The ColdBox index.cfm/{path_info} rules.

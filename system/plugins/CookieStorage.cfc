@@ -119,7 +119,6 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<cfset var rtnVar 		= "">
-		<cfset var wddxCompat 	= "">
 		
 		<cfif exists(arguments.name)>
 			<!--- Get value --->
@@ -132,17 +131,6 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			
 			<!--- Deserialize it with length --->
 			<cfif rtnVar.length()>
-				
-				<!--- wddx Compat, remove by 3.1 --->
-				<cfif isWDDX( rtnVar )>
-					<!--- Decode It --->
-					<cfwddx action="wddx2cfml" input="#rtnVar#" output="wddxCompat">
-					<!--- Compat it --->
-					<cfset setVar(ucase(arguments.name), wddxCompat)>
-					<!--- Return it --->
-					<cfreturn wddxCompat>
-				</cfif>
-			
 				<cftry>
 					<!--- Try to decode it --->
 				    <cfset rtnVar = instance.json.decode(rtnVar)>

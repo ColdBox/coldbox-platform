@@ -86,7 +86,10 @@ Description :
 		</tr>
 		<tr>
 		  <td align="right" class="fw_errorTablesTitles">Current Layout: </td>
-		  <td ><cfif Event.getCurrentLayout() neq "">#Event.getCurrentLayout()#<cfelse>N/A</cfif></td>
+		  <td >
+		  	<cfif Event.getCurrentLayout() neq "">#Event.getCurrentLayout()#<cfelse>N/A</cfif>
+		  	(Module: #event.getCurrentLayoutModule()#)
+		  </td>
 		</tr>
 		<tr>
 		  <td align="right" class="fw_errorTablesTitles">Current View: </td>

@@ -16,14 +16,20 @@
 			getMockBox().createStub(),
 			getMockBox().createStub()
 		];
+		
 		// mock aspect methods
 		interceptors[1].invokeMethod = variables.invokeMethod;
 		interceptors[1].callCounter = 0;
 		interceptors[2].invokeMethod = variables.invokeMethod2;
 		interceptors[2].callCounter = 0;
+		// mock mapping
+		mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init('UnitTest');
+		//mock md
+		mockMDOriginal = getMetadata(variables.saveUser);
+		mockMD = URLEncodedFormat( serializeJSON( mockMDOriginal ) );
 				
 		// init the invocation
-		invocation.init(method="saveUser",args=args,target=this,targetName="UnitTest",interceptors=interceptors);
+		invocation.init(method="saveUser",args=args,methodMetadata=mockMD,target=this,targetName="UnitTest",targetMapping=mockMapping,interceptors=interceptors);
 	}
 	
 	function testInit(){
@@ -32,6 +38,8 @@
 		assertEquals( "saveUser", invocation.getMethod() );
 		assertEquals( args, invocation.getArgs() );
 		assertEquals( this, invocation.getTarget() );
+		assertEquals( mockMapping, invocation.getTargetMapping() );
+		assertTrue( isStruct( invocation.getMethodMetadata()  ));
 	}
 	
 	function testIncrementInterceptorIndex(){

@@ -95,6 +95,7 @@ Description :
 		</div>
 		<div class="fw_debugContentCell">
 		<cfif Event.getCurrentLayout() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentLayout()#</cfif>
+		(Module: #event.getCurrentLayoutModule()#)
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -236,7 +237,7 @@ Description :
 <!--- **************************************************************--->
 <!--- ColdBox Modules --->
 <!--- **************************************************************--->
-	<cfif controller.getCFMLEngine().isMT() AND getDebuggerConfig().getShowModulesPanel()>
+	<cfif getDebuggerConfig().getShowModulesPanel()>
 		<cfinclude template="panels/ModulesPanel.cfm">
 	</cfif>
 <!--- **************************************************************--->

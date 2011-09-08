@@ -106,6 +106,13 @@ Description :
 		<cfreturn true>
 	</cffunction>
 	
+	<!--- onrequest end --->
+	<cffunction name="onrequestend">
+		<cfif structKeyExists(url,"appstop")>
+			<cfset applicationStop()>
+		</cfif>
+	</cffunction>
+	
 	<!--- on Application End --->
 	<cffunction name="onApplicationEnd" returnType="void"  output="false">
 		<!--- ************************************************************* --->

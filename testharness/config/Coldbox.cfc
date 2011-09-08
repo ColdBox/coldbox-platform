@@ -58,7 +58,6 @@
 			feedReader_useCache = true,
 			feedReader_cacheType = "ram",
 			feedReader_cacheTimeout = 10,
-			coldboxSideBar = true,
 			testingModelPath = "coldbox.testing.testmodel",
 			javaloader_libpath = controller.getAppRootPath() & "model/java"
 		};
@@ -190,11 +189,7 @@
 			  	entityInjection = true
 			  }
 			  },
-			 
-			 // Transactional Hibernation annotations
-			 // {class="coldbox.system.orm.hibernate.TransactionAspect"},
-			 
-			 //SES
+			// ses 
 			 {class="coldbox.system.interceptors.SES",
 			  properties={configFile="config/routes.cfm"}},
 			 

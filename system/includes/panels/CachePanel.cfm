@@ -43,7 +43,7 @@
 					</cfloop>
 				</select>
 			</cfif>
-			<cfif isObject( controller.getCacheBox() )>
+			
 			<!--- Button: CacheBox ExpireAll --->
 			<input type="button" value="CacheBox ExpireAll()" 
 			   name="cboxbutton_cacheBoxExpireAll" id="cboxbutton_cacheBoxExpireAll"
@@ -59,31 +59,29 @@
 			   			  
 			<!--- Loader --->
 			<span class="fw_redText fw_debugContent" id="fw_cachebox_toolbar_loader">Loading...</span>
-			</cfif>			
+				
 		</div>
 			
-		<cfif isObject( controller.getCacheBox() )>
-			<!--- CacheBox Info --->
-			<div class="fw_debugTitleCell">
-			  CacheBox ID
-			</div>
-			<div class="fw_debugContentCell">
-				#controller.getCacheBox().getFactoryID()#
-			</div>
-			<div class="fw_debugTitleCell">
-			  Configured Caches
-			</div>
-			<div class="fw_debugContentCell">
-				#arrayToList(controller.getCacheBox().getCacheNames())#
-			</div>
-			<div class="fw_debugTitleCell">
-			  Scope Registration
-			</div>
-			<div class="fw_debugContentCell">
-				#controller.getCacheBox().getScopeRegistration().toString()#
-			</div>		
-			<hr />
-		</cfif>
+		<!--- CacheBox Info --->
+		<div class="fw_debugTitleCell">
+		  CacheBox ID
+		</div>
+		<div class="fw_debugContentCell">
+			#controller.getCacheBox().getFactoryID()#
+		</div>
+		<div class="fw_debugTitleCell">
+		  Configured Caches
+		</div>
+		<div class="fw_debugContentCell">
+			#arrayToList(controller.getCacheBox().getCacheNames())#
+		</div>
+		<div class="fw_debugTitleCell">
+		  Scope Registration
+		</div>
+		<div class="fw_debugContentCell">
+			#controller.getCacheBox().getScopeRegistration().toString()#
+		</div>		
+		<hr />
 			
 		<!--- Cache Report Switcher --->
 		<h3>Performance Report For 

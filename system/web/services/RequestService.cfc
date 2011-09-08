@@ -110,14 +110,8 @@ Modification History:
 				instance.flashScope.inflateFlash();
 			}
 					
-			// Object Caching Garbage Collector, check if using cachebox first
-			if( isObject( instance.cacheBox ) ){
-				instance.cacheBox.reapAll();
-			}
-			else{
-				// Compat mode, remove this at release
-				instance.cache.reap();
-			}
+			// Object Caching Garbage Collector
+			instance.cacheBox.reapAll();
 			
 			// Debug Mode Checks
 			if ( structKeyExists(rc,"debugMode") AND isBoolean(rc.debugMode) ){
@@ -153,7 +147,7 @@ Modification History:
 	<cffunction name="eventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
 		<cfargument name="context" 	required="true"  type="any" hint="The request context to test for event caching." colddoc:generic="coldbox.system.web.context.RequestContext">
 		<cfscript>
-			var eventCacheKey   = "";
+			var eventCache   	= structnew();
 			var oEventURLFacade = instance.templateCache.getEventURLFacade();
 			var eventDictionary = 0;
 			var currentEvent    = arguments.context.getCurrentEvent();
@@ -172,22 +166,22 @@ Modification History:
 				}
 				
 				// Build the event cache key according to incoming request
-				eventCacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
+				eventCache.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
 															  targetEvent=currentEvent,
 															  targetContext=arguments.context);
 				// Check for Event Cache Purge
 				if ( context.valueExists("fwCache") ){
 					// Clear the key from the cache
-					instance.templateCache.clearKey( eventCacheKey );
+					instance.templateCache.clearKey( eventCache.cacheKey );
 					return;
 				}
 				
 				// Event has been found, flag it so we can render it from cache if it still survives
-				arguments.context.setEventCacheableEntry(eventCacheKey);
+				arguments.context.setEventCacheableEntry( eventCache );
 				
 				// debug logging
 				if( instance.log.canDebug() ){
-					instance.log.debug("Event caching detected for : #eventCacheKey.toString()#");
+					instance.log.debug("Event caching detected for : #eventCache.toString()#");
 				}
 				
 			}//end if using event caching.
@@ -239,6 +233,8 @@ Modification History:
 			oDecorator = CreateObject("component",instance.decorator).init(oContext,controller);
 			//Set Request Context in storage
 			setContext(oDecorator);
+			// Configure decorator
+			oDecorator.configure();
 			//Return
 			return oDecorator;
 		}

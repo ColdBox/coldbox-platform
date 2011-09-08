@@ -1,4 +1,4 @@
 .DS_Store
 testharness/logs/*
 testing/resources/logs/*.log
-settings.xml
+/settings.xml

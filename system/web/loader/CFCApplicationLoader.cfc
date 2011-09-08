@@ -8,7 +8,7 @@ Author 	 		: Luis Majano
 Date     		: September 23, 2005
 Description		: 
 
-Loads a coldbox xml configuration file
+Loads a coldbox cfc configuration file
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="Loads a coldbox xml configuration file" output="false" extends="coldbox.system.web.loader.AbstractApplicationLoader">
@@ -33,14 +33,14 @@ Loads a coldbox xml configuration file
 	
 	<cffunction name="loadConfiguration" access="public" returntype="void" output="false" hint="Parse the application configuration file.">
 		<!--- ************************************************************* --->
-		<cfargument name="overrideAppMapping" required="false" type="any" default="" hint="The direct location of the application in the web server."/>
+		<cfargument name="overrideAppMapping" required="false" default="" hint="The direct location of the application in the web server."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		//Create Config Structure
 		var configStruct		= structNew();
 		var coldboxSettings 	= getColdboxSettings();
 		var appRootPath 		= instance.controller.getAppRootPath();
-		var configCFCLocation 	= getUtil().ripExtension(replacenocase(coldboxSettings["ConfigFileLocation"],appRootPath,""));
+		var configCFCLocation 	= coldboxSettings["ConfigFileLocation"];
 		var configCreatePath 	= "";
 		var oConfig 			= "";
 		var logBoxConfigHash  	= hash(instance.controller.getLogBox().getConfig().getMemento().toString());
@@ -62,10 +62,12 @@ Loads a coldbox xml configuration file
 		}
 		//AppMappingInvocation Path
 		appMappingAsDots = getAppMappingAsDots(configStruct.AppMapping);
-		//Config Create Path
-		if( len(appMappingAsDots) ){
+		
+		// Config Create Path if not overriding and there is an appmapping
+		if( len( appMappingAsDots ) AND NOT coldboxSettings.ConfigFileLocationOverride){
 			configCreatePath = appMappingAsDots & "." & configCFCLocation;
 		}
+		// Config create path if overriding or no app mapping
 		else{
 			configCreatePath = configCFCLocation;
 		}
@@ -102,9 +104,6 @@ Loads a coldbox xml configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: YOUR CONVENTIONS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
 		parseConventions(oConfig,configStruct);
 		
-		/* ::::::::::::::::::::::::::::::::::::::::: MODEL SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
-		parseModels(oConfig,configStruct);
-		
 		/* ::::::::::::::::::::::::::::::::::::::::: MODULE SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseModules(oConfig,configStruct);
 		
@@ -133,7 +132,7 @@ Loads a coldbox xml configuration file
 		parseLayoutsViews(oConfig,configStruct);			
 		
 		/* :::::::::::::::::::::::::::::::::::::::::  CACHE SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseCacheSettings(oConfig,configStruct);
+		parseCacheBox(oConfig,configStruct);
 					
 		/* ::::::::::::::::::::::::::::::::::::::::: DEBUGGER SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseDebuggerSettings(oConfig,configStruct);			
@@ -145,7 +144,7 @@ Loads a coldbox xml configuration file
 		parseLogBox(oConfig,configStruct,logBoxConfigHash);
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: WIREBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
-		parseWireBox(oConfig,configStruct,logBoxConfigHash);
+		parseWireBox(oConfig,configStruct);
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
@@ -314,55 +313,6 @@ Loads a coldbox xml configuration file
 		</cfscript>
 	</cffunction>
 
-	<!--- parseModels --->
-	<cffunction name="parseModels" output="false" access="public" returntype="void" hint="Parse Models">
-		<cfargument name="oConfig"    type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	  type="struct"  required="true" hint="The config struct"/>
-		<cfscript>
-			var configStruct = arguments.config;
-			var fwSettingsStruct = getColdBoxSettings();
-			var models = arguments.oConfig.getPropertyMixin("models","variables",structnew());
-			
-			// Defaults if not overriding
-			configStruct.ModelsExternalLocation = "";
-			configStruct.ModelsObjectCaching 	= fwSettingsStruct["ModelsObjectCaching"];
-			configStruct.ModelsSetterInjection 	= fwSettingsStruct["ModelsSetterInjection"];
-			configStruct.ModelsDICompleteUDF 	= fwSettingsStruct["ModelsDICompleteUDF"];
-			configStruct.ModelsStopRecursion 	= fwSettingsStruct["ModelsStopRecursion"];
-			configStruct.ModelsDefinitionFile 	= fwSettingsStruct["ModelsDefinitionFile"];
-			
-			//Check for Models External Location
-			if ( structKeyExists(models, "ExternalLocation") AND len(models.ExternalLocation)){
-				configStruct["ModelsExternalLocation"] = models.ExternalLocation;
-			}		
-						
-			//Check for Models ObjectCaching
-			if ( structKeyExists(models, "ObjectCaching") AND isBoolean(models.ObjectCaching) ){
-				configStruct["ModelsObjectCaching"] = models.ObjectCaching;
-			}
-			
-			//Check for ModelsSetterInjection
-			if ( structKeyExists(models, "SetterInjection") AND isBoolean(models.SetterInjection) ){
-				configStruct["ModelsSetterInjection"] = models.SetterInjection;
-			}
-			
-			//Check for ModelsDICompleteUDF
-			if ( structKeyExists(models, "DICompleteUDF") AND len(models.DICompleteUDF) ){
-				configStruct["ModelsDICompleteUDF"] =models.DICompleteUDF;
-			}
-			
-			//Check for ModelsStopRecursion
-			if ( structKeyExists(models, "StopRecursion") AND len(models.StopRecursion) ){
-				configStruct["ModelsStopRecursion"] = models.StopRecursion;
-			}
-			
-			//Check for ModelsDefinitionFile
-			if ( structKeyExists(models, "DefinitionFile") AND len(models.DefinitionFile) ){
-				configStruct["ModelsDefinitionFile"] = models.DefinitionFile;
-			}
-		</cfscript>
-	</cffunction>
-	
 	<!--- parseIOC --->
 	<cffunction name="parseIOC" output="false" access="public" returntype="void" hint="Parse IOC Integration">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
@@ -687,47 +637,19 @@ Loads a coldbox xml configuration file
 		</cfscript>
 	</cffunction>
 
-	<!--- parseCacheSettings --->
-	<cffunction name="parseCacheSettings" output="false" access="public" returntype="void" hint="Parse Cache Settings for CacheBox operation">
+	<!--- parseCacheBox --->
+	<cffunction name="parseCacheBox" output="false" access="public" returntype="void" hint="Parse Cache Settings for CacheBox operation">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 	  	type="struct"  required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct 		= arguments.config;
 			var fwSettingsStruct 	= getColdboxSettings();
-			var cacheEngine 		= arguments.oConfig.getPropertyMixin("cacheEngine","variables",structnew());
 			
-			// Default, cache compatibility
-			configStruct.cacheSettings  		= structnew();
-			// Mark the Compat Mode
-			configStruct.cacheSettings.compatMode = false;
-					
 			// CacheBox Defaults
 			configStruct.cacheBox				= structnew();
 			configStruct.cacheBox.dsl  			= arguments.oConfig.getPropertyMixin("cacheBox","variables",structnew());
 			configStruct.cacheBox.xml  			= "";
 			configStruct.cacheBox.configFile 	= "";
-			
-			// Test if in compatibility mode, basically using the cacheEngine structure, this loads the cache archive
-			// If cacheBox structure is found, then we use cachebox.
-			// This will be deprecated on 3.1
-			if( NOT structIsEmpty(cacheEngine) ){
-				// Mark the Compat Mode
-				configStruct.cacheSettings.compatMode = true;
-				
-				// Defaults
-				configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
-				configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
-				configStruct.cacheSettings.reapFrequency 				  = fwSettingsStruct.cacheObjectDefaultTimeout;
-				configStruct.cacheSettings.freeMemoryPercentageThreshold  = fwSettingsStruct.cacheFreeMemoryPercentageThreshold;
-				configStruct.cacheSettings.useLastAccessTimeouts 		  = fwSettingsStruct.cacheUseLastAccessTimeouts;
-				configStruct.cacheSettings.evictionPolicy 				  = fwSettingsStruct.cacheEvictionPolicy;
-				configStruct.cacheSettings.evictCount					  = fwSettingsStruct.cacheEvictCount;
-				configStruct.cacheSettings.maxObjects					  = fwSettingsStruct.cacheMaxObjects;	
-				
-				//append cache settings to main app cache structure
-				structAppend(configStruct.cacheSettings, cacheEngine, true);
-				return;
-			}
 			
 			// Check if we have defined DSL first in application config
 			if( NOT structIsEmpty(configStruct.cacheBox.dsl) ){
@@ -865,27 +787,18 @@ Loads a coldbox xml configuration file
 	<cffunction name="parseWireBox" output="false" access="public" returntype="void" hint="Parse WireBox">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
-		<cfargument name="configHash"   type="string"  required="true" hint="The initial logBox config hash"/>
 		<cfscript>
 			var wireBoxDSL		  = structnew();
 			
 			// Default Config Structure
 			arguments.config.wirebox 			= structnew();
-			arguments.config.wirebox.enabled	= false;
+			arguments.config.wirebox.enabled	= true;
 			arguments.config.wirebox.binder		= "";
 			arguments.config.wirebox.binderPath	= "";
 			arguments.config.wirebox.singletonReload = false;
 			
 			// Check if we have defined DSL first in application config
 			wireBoxDSL = arguments.oConfig.getPropertyMixin("wireBox","variables",structnew());
-			
-			// Check if enabled is set else return
-			if( NOT structKeyExists(wireBoxDSL,"enabled") OR NOT wireBoxDSL.enabled ){
-				return;
-			}
-			
-			// Set wirebox enabled
-			arguments.config.wirebox.enabled = true;
 			
 			// Get Binder Paths
 			if( structKeyExists(wireBoxDSL,"binder") ){
