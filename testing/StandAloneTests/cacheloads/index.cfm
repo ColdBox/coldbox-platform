@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 	stime = getTickCount();
 	if( structKeyExistS(url,"reinit") or NOT structKeyExists(application,"cachemanager") ){
 		mockBox = createObject("component","coldbox.system.testing.MockBox").init();

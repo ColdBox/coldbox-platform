@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseInterceptorTest" interceptor="coldbox.system.interceptors.Deploy">
+﻿<cfcomponent extends="coldbox.system.testing.BaseInterceptorTest" interceptor="coldbox.system.interceptors.Deploy">
 <cfscript>
 
 	function setup(){

@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase"{
+﻿component extends="coldbox.system.testing.BaseTestCase"{
 
 	function setup(){
 		ormservice   = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService");

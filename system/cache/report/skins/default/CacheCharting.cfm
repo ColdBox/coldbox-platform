@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 	if( structKeyExists(server,"railo") ){
 		show3d = false;	
 	}

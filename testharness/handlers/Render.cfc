@@ -1,4 +1,4 @@
-<cfcomponent output="false">
+﻿<cfcomponent output="false">
 <cfscript>
 
 	this.aroundHandler_except = "json,pass,index";

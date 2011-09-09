@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <h1>#rc.feed.Title# - [<a href="#rc.feed.link#">Open</a>]</h1>
 <a href="#rc.feed.image.link#"><img src="#rc.feed.image.url#" title="#rc.feed.image.title#"></a>
 <br />

@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 	<!--- If CacheMonitor render the polling code --->
 	<cfif isMonitor>
 		<cfsetting showdebugoutput="false">

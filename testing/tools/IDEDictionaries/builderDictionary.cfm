@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 out = createObject("java","java.lang.StringBuffer").init('');
 tab = chr(9);
 br  = chr(10);

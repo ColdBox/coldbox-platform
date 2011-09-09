@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <div class="fw_titles"  onClick="fw_toggle('fw_modules')" >
 &nbsp;ColdBox Modules
 </div>

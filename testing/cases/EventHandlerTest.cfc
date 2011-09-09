@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 	function setup(){
 		handler 		= getMockBox().createMock("coldbox.system.EventHandler");

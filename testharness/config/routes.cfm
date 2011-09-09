@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 	setUniqueURLs(false);
 	setBaseURL("http://#cgi.http_host#/#getSetting('AppMapping')#/index.cfm");
 	

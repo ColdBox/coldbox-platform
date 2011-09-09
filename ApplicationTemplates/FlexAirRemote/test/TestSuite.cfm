@@ -1,4 +1,4 @@
-<cfinvoke component="mxunit.runner.DirectoryTestSuite"   
+﻿<cfinvoke component="mxunit.runner.DirectoryTestSuite"   
           method="run"  
           directory="#expandPath('.')#"   
           recurse="true"   

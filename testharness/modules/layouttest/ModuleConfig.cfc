@@ -1,4 +1,4 @@
-/**
+﻿/**
 Module Directives as public properties
 this.title 				= "Title of the module";
 this.author 			= "Author of the module";

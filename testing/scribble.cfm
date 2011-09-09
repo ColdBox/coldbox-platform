@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 cacheClear();
 
 cachePut("Test",createUUID());
