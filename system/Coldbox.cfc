@@ -307,6 +307,9 @@ Description :
 			<!--- Execute postProcess Interception --->
 			<cfset interceptorService.processState("postProcess")>
 			
+			<!--- Save Flash Scope --->
+			<cfset cbController.getRequestService().getFlashScope().saveFlash()>
+			
 			<!--- Trap Application Errors --->
 			<cfcatch type="any">
 				<!--- Get Exception Service --->
