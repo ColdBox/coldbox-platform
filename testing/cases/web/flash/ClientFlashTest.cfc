@@ -4,7 +4,9 @@
 		flash = getMockBox().createMock("coldbox.system.web.flash.ClientFlash");
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
 		converter = getMockBox().createMock(className="coldbox.system.core.conversion.ObjectMarshaller").init();
+		
 		flash.init(mockController);
+		
 		obj = createObject("component","coldbox.system.core.cf.CFMLEngine").init();
 		
 		//test scope
@@ -35,7 +37,8 @@
 	function testgetFlash(){
 		assertEquals( flash.getFlash(), structNew());
 		
-		client[flash.getFlashKey()] = converter.serializeObject(testscope);
+		client[flash.getFlashKey()] = converter.serializeObject( testscope );
+		
 		assertEquals( flash.getFlash(), testScope);
 	}
 </cfscript>

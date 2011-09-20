@@ -23,16 +23,14 @@ method which will most likely be called by the saveFlash() method in order to pe
 <cfcomponent output="false" hint="An abstract flash scope that can be used to build ColdBox Flash scopes">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
-	
-	<cfscript>
-		instance = structnew();
-	</cfscript>
 
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="AbstractFlashScope" hint="Constructor">
     	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
     	<cfscript>
-    		instance.controller = arguments.controller;
+			instance = {
+    			controller = arguments.controller
+    		};
 			return this;
     	</cfscript>
     </cffunction>

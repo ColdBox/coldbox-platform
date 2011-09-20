@@ -13,10 +13,6 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 	
-	<cfscript>
-		instance = structnew();
-	</cfscript>
-
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">
     	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
