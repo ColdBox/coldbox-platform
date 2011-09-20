@@ -216,7 +216,7 @@ component accessors="true"{
 	any function findByExample(any example,boolean unique=false){
 		return entityLoadByExample(arguments.example,arguments.unique);
 	}
-	
+
 	/**
 	* Find all the entities for the specified query and params or example
 	* @example.hint	DEPRECATED use findByExample() this will be dropped in 3.5
@@ -228,12 +228,12 @@ component accessors="true"{
 					        numeric timeout=0,
 					        boolean ignoreCase=false,
 						    any example){
-		
+
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
 			return findByExample( arguments.example );
 		}
-		
+
 		// Normal Execute Query
 		arguments.asQuery=false;
 		return executeQuery(argumentCollection=arguments);
@@ -427,7 +427,7 @@ component accessors="true"{
     */
 	array function getAll(required string entityName,any id,string sortOrder="") {
 		var results = [];
-		
+
 		// Return all entity values
 		if( NOT structKeyExists(arguments,"id") ){
 			return entityLoad(arguments.entityName,{},arguments.sortOrder);
@@ -439,7 +439,7 @@ component accessors="true"{
 		// ordering?
 		if( len(arguments.sortOrder) ){
 			q &= " ORDER BY #arguments.sortOrder#";
-		}		
+		}
 		// Execute native hibernate query
 		var query = ORMGetSession().createQuery(q);
 		// parameter binding
@@ -953,6 +953,13 @@ component accessors="true"{
  		if( structKeyExists(md, "entityname") ){ return md.entityname; }
  		return listLast( md.name, ".");
  	}
+
+	/**
+	* Returns the entity name from a given entity
+	*/
+	private string function getEntityName(required entity) {
+		return ORMGetSession().getEntityName(entity);
+	}
 
 	/**
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
