@@ -359,8 +359,13 @@
 	function testList(){
 		criteria = {category="general"};
 		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
-
 		assertTrue( test.recordcount );
+	
+		// as array
+		ormservice.setDefaultAsQuery( false );
+		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
+		assertTrue( arrayLen( test ) );
+			
 	}
 
 	function testExecuteQuery(){
@@ -490,14 +495,14 @@
 		assertEquals( 'categories', test );
 	}
 	
-	function testGetEntityName(){
+	function testgetEntityGivenName(){
 		// loaded entity
 		test = entityLoad("User",{firstName="Luis"},true);
-		r = ormservice.getEntityName( test );
+		r = ormservice.getEntityGivenName( test );
 		//debug( r );
 		assertEquals( "User", r );
 		
-		r = ormservice.getEntityName( entityNew("User") );
+		r = ormservice.getEntityGivenName( entityNew("User") );
 		//debug( r );
 		assertEquals( "User", r );		
 	}

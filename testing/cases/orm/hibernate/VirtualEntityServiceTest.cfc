@@ -35,22 +35,15 @@
 	function testGetAll(){
 		r = ormService.getAll();
 		assertTrue( arrayLen(r) );
-
-		r = ormService.getAll('1,2');
-		assertTrue( isSimpleValue( r[1] ) );
-		assertTrue( isSimpleValue( r[2] ) );
-
+		
 		r = ormService.getAll([1,2]);
-		assertTrue( isSimpleValue( r[1] ) );
-		assertTrue( isSimpleValue( r[2] ) );
+		assertFalse( arrayLen(r) );
 
 		r = ormService.getAll(testUserID);
 		assertTrue( isObject( r[1] ) );
 
 		r = ormService.getAll([testUserID,testUserID]);
 		assertTrue( isObject( r[1] ) );
-		assertTrue( isObject( r[2] ) );
-
 	}
 
 	function testDeleteByID(){
@@ -147,33 +140,4 @@
 		assertEquals( 'users', test );
 	}
 	
-	function testEmptyValidation(){
-			//mocks
-			mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
-			mockEventHandler.$("postNew");
-			ormService.$property("ORMEventHandler","variables",mockEventHandler);
-			
-			user = ormservice.new();
-			user.setFirstName('');
-			user.setLastName('unitTest');
-			user.setUsername('unitTest');
-			user.setPassword('unitTest');
-			result = ormservice.validate(user);
-			assertEquals("Please provide firstname", result[1].getMessage());
-	}
-	
-	function testValidationSuccess(){
-			//mocks
-			mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
-			mockEventHandler.$("postNew");
-			ormService.$property("ORMEventHandler","variables",mockEventHandler);
-			
-			user = ormservice.new();
-			user.setFirstName('unitTest');
-			user.setLastName('unitTest');
-			user.setUsername('unitTest');
-			user.setPassword('unitTest');
-			result = ormservice.validate(user);
-			assertTrue(ArrayIsEmpty(result));
-	}
 }

@@ -48,6 +48,11 @@ component accessors="true"{
 	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
 	*/
 	property name="useTransactions" type="boolean" default="true";
+	
+	/**
+	* The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
+	*/
+	property name="defaultAsQuery" type="boolean" default="true";
 
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
 
@@ -61,12 +66,14 @@ component accessors="true"{
 	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
 								  boolean useQueryCaching=false,
 								  boolean eventHandling=true,
-								  boolean useTransactions=true){
+								  boolean useTransactions=true,
+								  boolean defaultAsQuery=true){
 		// setup properties
 		setQueryCacheRegion( arguments.queryCacheRegion );
 		setUseQueryCaching( arguments.useQueryCaching );
 		setEventHandling( arguments.eventHandling );
 		setUseTransactions( arguments.useTransactions );
+		setDefaultAsQuery( arguments.defaultAsQuery );
 
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
@@ -74,8 +81,8 @@ component accessors="true"{
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
 
-		// Restrictions orm.hibernate.criterion.Restrictions lazy loaded
-		restrictions = "";
+		// Restrictions orm.hibernate.criterion.Restrictions
+		restrictions = createObject("component","coldbox.system.orm.hibernate.criterion.Restrictions").init();
 
 		return this;
 	}
@@ -107,7 +114,7 @@ component accessors="true"{
 					  numeric max=0,
 					  numeric timeout=0,
 					  boolean ignoreCase=false,
-					  boolean asQuery=true){
+					  boolean asQuery=getDefaultAsQuery()){
 		var options = {};
 
 		// Setup listing options
@@ -156,7 +163,7 @@ component accessors="true"{
 					  		   numeric max=0,
 					  		   numeric timeout=0,
 						       boolean ignorecase=false,
-						       boolean asQuery=true){
+						       boolean asQuery=getDefaultAsQuery()){
 		var options = {};
 
 		// Setup listing options
@@ -927,25 +934,25 @@ component accessors="true"{
 	}
 
 	/**
-	* Returns the Property Names of the entity
+	* Returns the Property Names of the entity via hibernate metadata
 	*/
 	array function getPropertyNames(required string entityName){
 		return ormGetSessionFactory().getClassMetaData(arguments.entityName).getPropertyNames();
 	}
 
 	/**
-	* Returns the table name of the of the entity
+	* Returns the table name that the current entity string belongs to via hibernate metadata
 	*/
 	string function getTableName(required string entityName){
 		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
 	}
 	
 	/**
- 	* Returns the entity name from a given entity
+ 	* Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
 	*/
-	function getEntityName(required entity) {
+	function getEntityGivenName(required entity) {
 		if( sessionContains( arguments.entity ) ){
- 			return ORMGetSession().getEntityName(entity);
+ 			return ORMGetSession().getEntityName( entity );
  		}
  		
  		// else long approach
@@ -980,9 +987,6 @@ component accessors="true"{
 	* Get our hibernate org.hibernate.criterion.Restrictions proxy object
 	*/
 	public any function getRestrictions(){
-		if( NOT isObject(restrictions) ){
-			restrictions = createObject("component","coldbox.system.orm.hibernate.criterion.Restrictions").init();
-		}
 		return restrictions;
 	}
 
@@ -996,7 +1000,7 @@ component accessors="true"{
 					  				  numeric max=0,
 					  		 		  numeric timeout=0,
 					  		 		  boolean ignoreCase=false,
-					  		 		  boolean asQuery=true){
+					  		 		  boolean asQuery=getDefaultAsQuery()){
 		// create Criteria query object
 		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
 
