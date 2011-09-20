@@ -43,7 +43,7 @@ Description :
 				instance.flashKey = "cbox_flash_" & hash(cookie.cfid & cookie.cftoken);
 			}
 			else{
-				getUtil().dumpit(message="Cannot find a jsessionid, or cfid/cftoken in the cookie scope. Please verify",type="ColdboxCacheFlash.CFIDException");
+				getUtil().throwit(message="Cannot find a jsessionid, or cfid/cftoken in the cookie scope. Please verify",type="ColdboxCacheFlash.CFIDException");
 			}
 			
 			return this;
