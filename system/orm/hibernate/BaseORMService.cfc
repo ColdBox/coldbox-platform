@@ -939,6 +939,20 @@ component accessors="true"{
 	string function getTableName(required string entityName){
 		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
 	}
+	
+	/**
+ 	* Returns the entity name from a given entity
+	*/
+	function getEntityName(required entity) {
+		if( sessionContains( arguments.entity ) ){
+ 			return ORMGetSession().getEntityName(entity);
+ 		}
+ 		
+ 		// else long approach
+ 		var md = getMetadata( arguments.entity );
+ 		if( structKeyExists(md, "entityname") ){ return md.entityname; }
+ 		return listLast( md.name, ".");
+ 	}
 
 	/**
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type

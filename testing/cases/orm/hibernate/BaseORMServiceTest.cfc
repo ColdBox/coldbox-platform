@@ -489,4 +489,16 @@
 		test=CategoryService.getTableName();
 		assertEquals( 'categories', test );
 	}
+	
+	function testGetEntityName(){
+		// loaded entity
+		test = entityLoad("User",{firstName="Luis"},true);
+		r = ormservice.getEntityName( test );
+		//debug( r );
+		assertEquals( "User", r );
+		
+		r = ormservice.getEntityName( entityNew("User") );
+		//debug( r );
+		assertEquals( "User", r );		
+	}
 }
