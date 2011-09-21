@@ -449,7 +449,6 @@
 			assertEquals( rd.contenttype, "application/json");
 			assertEquals( rd.type, "json");
 			assertEquals( rd.jsonQueryFormat, "query");
-			assertEquals( rd.jsonCase, "lower");
 			assertEquals( rd.statusCode, "200");
 			assertEquals( rd.statusText, "");
 			
@@ -457,7 +456,12 @@
 			event.renderData(type='JSON',data="[1,2,3,4]",jsonQueryFormat="array",jsonCase="upper");		
 			rd = event.getRenderData();
 			assertEquals( rd.jsonQueryFormat, "array");
-			assertEquals( rd.jsonCase, "upper");
+			
+			//JSONP
+			event.renderData(type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
+			rd = event.getRenderData();
+			assertEquals( rd.type, "jsonp");
+			assertEquals( rd.jsonCallback, 'testCallback');
 			
 			// Test WDDX 
 			event.renderData(type="WDDX",data=arrayNew(1));
