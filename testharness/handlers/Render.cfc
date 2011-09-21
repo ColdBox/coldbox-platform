@@ -25,11 +25,16 @@
 		event.renderdata(type="html",data="<h1>Hello HTML</h1>");
 	}
 	
-	function json(event){
+	function jsondata(event){
 		var data = {
 			name="luis",age="33", cool=true
 		};
-		event.renderdata(type="json",data=data,jsonCase="upper",jsonAsText=true);
+		event.renderdata(type="json",data=data,jsonAsText=true);
+	}
+	
+	function convention(event){
+		convention = getModel("RenderConvention").config("Luis majano",34,true);
+		event.renderData(data=convention,type="plain");
 	}
 	
 	function text(event){
@@ -48,18 +53,8 @@
 		event.renderdata(type="xml",data=q);
 	}
 	
-	function pass(event,name,cool){
+	function pass(event,name="",cool=""){
 		return "Hello #arguments.name#, you are cool=#arguments.cool#!";
-	}
-	
-	function aroundHandler(event,targetAction,eventArguments){
-		log.info("calling around handler with:#arguments.toString()#");
-		
-		// Call original target
-		arguments.targetAction(event);
-		
-		// hijack it
-		event.renderdata(type="html",data="<h1>Hello Around HTML</h1>");
 	}
 	
 	function aroundJSON(event,targetAction,eventArguments){
