@@ -652,12 +652,6 @@ Description :
 				case "JSON" : case "JSONP" : {
 					rd.contenttype = 'application/json';
 					if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
-					
-					// JSONP test for callback
-					if( rd.type eq "JSONP" and len(rd.jsonCallBack) eq 0){
-						$throw("Invalid/Missing JSONP Callback argument 'jsonCallback'","The JSONP data type requires the 'jsonCallback' argument to be passed","RequestContext.InvalidJSONPCallbackException");
-					}
-					
 					break;
 				}
 				case "JSONT" :{
