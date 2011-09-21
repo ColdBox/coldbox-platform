@@ -60,6 +60,15 @@ Description:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
+	<!--- clean --->
+	<cffunction name="clean" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay, myspace, slashdot, custom">
+		<!--- ************************************************************* --->
+		<cfargument name="HTMLData"		 type="string"  required="true" hint="The html text to sanitize">
+		<cfargument name="policyFile"	 type="string"  required="false" default="ebay" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot, tinymce, custom">
+		<cfargument name="resultsObject" type="boolean" required="false" default="false" hint="Return the cleaned HTML or the results object. By default it is the cleaned HTML"/>
+		<cfreturn HTMLSanitizer(argumentCollection=arguments)>
+	</cffunction>
+	
 	<!--- HTMLSanitizer --->
 	<cffunction name="HTMLSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay, myspace, slashdot, custom">
 		<!--- ************************************************************* --->
