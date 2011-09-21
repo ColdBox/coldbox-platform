@@ -80,7 +80,7 @@ Optional Methods
 			//Application Aspects
 			handlerCaching 			= false,
 			eventCaching			= false,
-			proxyReturnCollection 	= false,
+			proxyReturnCollection 	= false
 		};
 		
 		// custom settings
