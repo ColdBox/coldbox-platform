@@ -602,7 +602,7 @@ Description :
 
 	<cffunction name="renderData" access="public" returntype="any" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
+		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
 		<cfargument name="data" 		required="true"  type="any"    hint="The data you would like to marshall and return by the framework">
 		<cfargument name="contentType"  required="true"  type="string"  default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
 		<cfargument name="encoding" 	required="false" type="string"  default="utf-8" hint="The default character encoding to use"/>
@@ -623,8 +623,8 @@ Description :
 			var rd = structnew();
 
 			// Validate rendering type
-			if( not reFindnocase("^(JSON|JSONT|WDDX|XML|PLAIN|HTML|TEXT)$",arguments.type) ){
-				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
+			if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT)$",arguments.type) ){
+				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
 			}
 
 			// Default Values for incoming variables
@@ -652,6 +652,20 @@ Description :
 				case "JSON" : {
 					rd.contenttype = 'application/json';
 					if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
+					break;
+				}
+				case "JSONP" : {
+					rd.contenttype = 'application/json';
+					rd.type = "JSON";
+					if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
+
+					if( valueExists('callback') ) {
+						rd.jsonCallback = getValue('callback');
+					}
+					else
+					{
+						$throw("Invalid/Missing JSONP Callback","The JSONP data type requires a 'callback' property to be present in the request context.","RequestContext.InvalidJSONPCallbackException");
+					}
 					break;
 				}
 				case "JSONT" :{
