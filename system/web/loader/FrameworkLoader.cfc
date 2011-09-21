@@ -53,7 +53,7 @@ Loads all the default ColdBox settings into an application controller
 			for(key in configCFC){
 				settingsStruct[ key ] = configCFC[ key ];
 			}
-			
+						
 			// Store loaded settings
 			arguments.controller.setColdBoxSettings( settingsStruct );
 		</cfscript>

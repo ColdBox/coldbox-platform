@@ -80,8 +80,7 @@ Optional Methods
 			//Application Aspects
 			handlerCaching 			= true,
 			eventCaching			= true,
-			proxyReturnCollection 	= false,
-			flashURLPersistScope	= "session"	
+			proxyReturnCollection 	= false
 		};
 	
 		// custom settings

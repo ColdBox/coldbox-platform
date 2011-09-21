@@ -146,6 +146,9 @@ Loads a coldbox cfc configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: WIREBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseWireBox(oConfig,configStruct);
 		
+		/* ::::::::::::::::::::::::::::::::::::::::: Flash Scope Configuration :::::::::::::::::::::::::::::::::::::::::::: */
+		parseFlashScope(oConfig,configStruct);	
+		
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
 		
@@ -256,10 +259,6 @@ Loads a coldbox cfc configuration file
 			//Check for External Handlers Location
 			if ( not structKeyExists(configStruct, "HandlersExternalLocation") or len(configStruct["HandlersExternalLocation"]) eq 0 )
 				configStruct["HandlersExternalLocation"] = "";
-			// Flash URL Persist Scope Override
-			if( not structKeyExists(configStruct,"FlashURLPersistScope") ){
-				configStruct["FlashURLPersistScope"] = fwSettingsStruct["FlashURLPersistScope"];
-			}
 			
 			//Check for Missing Template Handler
 			if ( not StructKeyExists(configStruct, "MissingTemplateHandler") )
@@ -816,6 +815,27 @@ Loads a coldbox cfc configuration file
 			if( structKeyExists(wireBoxDSL,"singletonReload") ){ 
 				arguments.config.wirebox.singletonReload = wireBoxDSL.singletonReload;
 			}			
+		</cfscript>
+	</cffunction>
+	
+	<!--- parseFlashScope --->
+	<cffunction name="parseFlashScope" output="false" access="public" returntype="void" hint="Parse Flash Scope">
+		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
+		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfscript>
+			var flashScopeDSL	  	= structnew();
+			var fwSettingsStruct 	= getColdboxSettings();
+			
+			// Default Config Structure
+			arguments.config.flash 	= fwSettingsStruct.flash;
+			
+			// Check if we have defined DSL first in application config
+			flashScopeDSL = arguments.oConfig.getPropertyMixin("flash","variables",structnew());
+			
+			// check if empty or not, if not, then append and override
+			if( NOT structIsEmpty( flashScopeDSL ) ){
+				structAppend( arguments.config.flash, flashScopeDSL, true);
+			}				
 		</cfscript>
 	</cffunction>
 	

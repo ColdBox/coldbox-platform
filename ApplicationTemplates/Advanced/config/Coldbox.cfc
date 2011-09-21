@@ -81,9 +81,8 @@ Optional Methods
 			handlerCaching 			= false,
 			eventCaching			= false,
 			proxyReturnCollection 	= false,
-			flashURLPersistScope	= "session"	
 		};
-	
+		
 		// custom settings
 		settings = {
 			
@@ -151,6 +150,17 @@ Optional Methods
 		
 		
 		/*
+		
+		// flash scope configuration
+		flash = {
+			scope = "session,client,cluster,ColdboxCache,or full path",
+			properties = {}, // constructor properties for the flash scope implementation
+			inflateToRC = true, // automatically inflate flash data into the RC scope
+			inflateToPRC = false, // automatically inflate flash data into the PRC scope
+			autoPurge = true, // automatically purge flash data for you
+			autoSave = true // automatically save flash scopes at end of a request and on relocations.
+		};
+		
 		//Register Layouts
 		layouts = [
 			{ name = "login",

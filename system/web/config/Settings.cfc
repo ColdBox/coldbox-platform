@@ -22,7 +22,16 @@ ColdBox Default Configuration
 	
 	// Operation Defaults
 	this.eventName 				= "event";
-	this.flashURLPersistScope 	= "session";
+	
+	// flash scope defaults
+	this.flash = {
+		scope = "session",
+		properties = {},
+		inflateToRC = true,
+		inflateToPRC = false,
+		autoPurge = true,
+		autoSave = true
+	};
 	
 	// Debugger Defaults
 	this.enableDumpVar = "true";

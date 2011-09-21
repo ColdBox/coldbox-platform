@@ -34,11 +34,11 @@ Modification History:
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
 			// Let's determine the flash type and create our flash ram object
-			var flashType = controller.getSetting("FlashURLPersistScope");
-			var flashPath = flashType;
+			var flashData = controller.getSetting("flash");
+			var flashPath = "";
 			
 			// Shorthand Flash Types
-			switch(flashType){
+			switch(flashData.scope){
 				case "session" : {
 					flashpath = "coldbox.system.web.flash.SessionFlash";
 					break;
@@ -59,10 +59,13 @@ Modification History:
 					flashpath = "coldbox.system.web.flash.MockFlash";
 					break;
 				}
+				default : { 
+					flashPath = flashData.scope;
+				}
 			}
 			
 			// Create Flash RAM object
-			instance.flashScope = createObject("component",flashPath).init(controller);
+			instance.flashScope = createObject("component",flashPath).init(controller, flashData);
 			
 			// Request Context Decorator?
 			if ( controller.settingExists("RequestContextDecorator") and len(controller.getSetting("RequestContextDecorator")) ){
