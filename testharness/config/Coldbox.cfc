@@ -45,8 +45,7 @@
 			//Application Aspects
 			handlerCaching 			= false,
 			eventCaching			= true,
-			proxyReturnCollection 	= false,
-			flashURLPersistScope	= "session"	
+			proxyReturnCollection 	= false	
 		};
 	
 		// custom settings

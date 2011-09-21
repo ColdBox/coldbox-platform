@@ -427,8 +427,10 @@ Only one instance of a specific ColdBox application exists.
 			}
 
 			// Save Flash RAM
-			services.requestService.getFlashScope().saveFlash();
-
+			if( instance.configSettings.flash.autoSave ){
+				services.requestService.getFlashScope().saveFlash();
+			}
+			
 			// Send Relocation
 			sendRelocation(URL=relocationURL,addToken=arguments.addToken,statusCode=arguments.statusCode);
 		</cfscript>

@@ -308,7 +308,9 @@ Description :
 			<cfset interceptorService.processState("postProcess")>
 			
 			<!--- Save Flash Scope --->
-			<cfset cbController.getRequestService().getFlashScope().saveFlash()>
+			<cfif cbController.getSetting("flash").autoSave>
+				<cfset cbController.getRequestService().getFlashScope().saveFlash()>
+			</cfif>
 			
 			<!--- Trap Application Errors --->
 			<cfcatch type="any">

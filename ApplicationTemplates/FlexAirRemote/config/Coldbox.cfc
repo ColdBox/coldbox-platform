@@ -78,8 +78,7 @@ function configure(){
 		//Application Aspects
 		handlerCaching 			= false,
 		eventCaching			= false,
-		proxyReturnCollection 	= false,
-		flashURLPersistScope	= "session"
+		proxyReturnCollection 	= false
 	};
 	
 	// environment settings, create a detectEnvironment() method to detect it yourself.

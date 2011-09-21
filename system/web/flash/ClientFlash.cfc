@@ -15,9 +15,10 @@ Description :
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="ClientFlash" hint="Constructor">
-    	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
+    	<cfargument name="controller" 	type="any" required="true" hint="The ColdBox Controller" colddoc:generic="coldbox.system.web.Controller"/>
+		<cfargument name="defaults" 	type="any" required="false" default="#structNew()#" hint="Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]" colddoc:generic="struct"/>
     	<cfscript>
-    		super.init(arguments.controller);
+    		super.init(argumentCollection=arguments);
 			
 			// Marshaller
 			instance.converter = createObject("component","coldbox.system.core.conversion.ObjectMarshaller").init();
