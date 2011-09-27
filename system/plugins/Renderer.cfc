@@ -35,9 +35,8 @@ Description :
 			
 			// Template Cache & Caching Maps
 			instance.templateCache 				= controller.getColdboxOCM("template");
-			instance.layoutsRefMap				= controller.getSetting("layoutsRefMap");
-			instance.viewsRefMap				= controller.getSetting("viewsRefMap");
 			instance.renderedHelpers			= {};
+			instance.lockName					= "rendering.#controller.getAppHash()#";
 			
 			// Discovery caching is tied to handlers for discovery.
 			instance.isDiscoveryCaching			= controller.getSetting("handlerCaching");
@@ -178,36 +177,50 @@ Description :
     	<cfargument name="view">
     	<cfargument name="module">
     	<cfargument name="explicitModule">
+    	
     	<cfscript>
     		var locationKey 	= arguments.view & arguments.module & arguments.explicitModule;
 			var locationUDF 	= variables.locateView;
 			var dPath			= "";
-			
-			// Return Cached Entry if it exists
-			if( NOT structkeyExists(instance.viewsRefMap,locationKey) OR NOT instance.isDiscoveryCaching){
-				
-				// Change the location algorithm if in module mode
-				if( len(arguments.module)  ){ locationUDF = variables.locateModuleView; }
-				
-				// Locate the view to render according to discovery algorithm
-				instance.viewsRefMap[locationKey] = structnew();
-				instance.viewsRefMap[locationKey].viewPath = locationUDF(arguments.view,arguments.module,arguments.explicitModule);
-				instance.viewsRefMap[locationKey].viewHelperPath = "";
-				
-				// Check for view helper convention
-				dPath = getDirectoryFromPath( instance.viewsRefMap[locationKey].viewPath );
-				if( fileExists(expandPath( instance.viewsRefMap[locationKey].viewPath & "Helper.cfm")) ){
-					instance.viewsRefMap[locationKey].viewHelperPath = instance.viewsRefMap[locationKey].viewPath & "Helper.cfm";
-				}
-				// Check for directory helper convention
-				else if( fileExists( expandPath( dPath & listLast(dPath,"/") & "Helper.cfm" ) ) ){
-					instance.viewsRefMap[locationKey].viewHelperPath = dPath & listLast(dPath,"/") & "Helper.cfm";
-				}
-			
-			}
-			
-			return instance.viewsRefMap[locationKey];
+			var refMap			= "";
 		</cfscript>
+		
+		<!--- Check cached paths first --->
+		<cflock name="#locationKey#.#instance.lockName#" type="readonly" timeout="15" throwontimeout="true">
+			<cfif structkeyExists( controller.getSetting("viewsRefMap") ,locationKey) AND instance.isDiscoveryCaching>
+				<cfreturn structFind( controller.getSetting("viewsRefMap"), locationKey)>
+			</cfif>
+		</cflock>
+		
+		<cfscript>
+			// module change mode
+			if( len(arguments.module) ){ locationUDF = variables.locateModuleView; }
+			
+			// Locate the view to render according to discovery algorithm and create cache map
+			refMap = {
+				viewPath = locationUDF(arguments.view,arguments.module,arguments.explicitModule),
+				viewHelperPath = ""
+			};
+			
+			// Check for view helper convention
+			dPath = getDirectoryFromPath( refMap.viewPath );
+			if( fileExists(expandPath( refMap.viewPath & "Helper.cfm")) ){
+				refMap.viewHelperPath = refMap.viewPath & "Helper.cfm";
+			}
+			// Check for directory helper convention
+			else if( fileExists( expandPath( dPath & listLast(dPath,"/") & "Helper.cfm" ) ) ){
+				refMap.viewHelperPath = dPath & listLast(dPath,"/") & "Helper.cfm";
+			}			
+		</cfscript>		
+			
+		<!--- Lock and create view entry --->
+		<cfif NOT structkeyExists( controller.getSetting("viewsRefMap") ,locationKey) >
+			<cflock name="#locationKey#.#instance.lockName#" type="exclusive" timeout="15" throwontimeout="true">						
+				<cfset structInsert( controller.getSetting("viewsRefMap"), locationKey, refMap, true)>
+			</cflock>		
+		</cfif>
+		
+		<cfreturn refMap>		
     </cffunction>
 	
 	<!--- renderViewComposite --->
@@ -335,6 +348,7 @@ Description :
 		<cfset var cbox_locateUDF 			= variables.locateLayout>
 		<cfset var cbox_explicitModule  	= false>
 		<cfset var cbox_layoutLocationKey 	= "">
+		<cfset var cbox_layoutLocation		= "">
 		
 		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
 		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
@@ -370,18 +384,24 @@ Description :
 		<cfif len(cbox_currentLayout) eq 0>
 			<cfset cbox_RederedLayout = renderView()>
 		<cfelse>
+			<!--- Layout location key --->
+			<cfset cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule> 
 			
-			<cfscript>
-			//Layout location key
-			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
-			// Return Cached Entry if it exists
-			if( NOT structkeyExists(instance.layoutsRefMap,"cbox_layoutLocationKey") OR NOT instance.isDiscoveryCaching){
-				instance.layoutsRefMap[cbox_layoutLocationKey] = cbox_locateUDF(cbox_currentLayout,arguments.module,cbox_explicitModule);
-			}
-			</cfscript>
-				
+			<!--- Check cached paths first --->
+			<cfif structkeyExists( controller.getSetting("layoutsRefMap") ,cbox_layoutLocationKey) AND instance.isDiscoveryCaching>
+				<cflock name="#cbox_layoutLocationKey#.#instance.lockName#" type="readonly" timeout="15" throwontimeout="true">
+					<cfset cbox_layoutLocation = structFind( controller.getSetting("layoutsRefMap"), cbox_layoutLocationKey)>
+				</cflock>
+			<cfelse>
+				<!--- Not found, cache it --->
+				<cflock name="#cbox_layoutLocationKey#.#instance.lockname#" type="exclusive" timeout="15" throwontimeout="true">
+					<cfset cbox_layoutLocation = cbox_locateUDF(cbox_currentLayout,arguments.module,cbox_explicitModule)>
+					<cfset structInsert( controller.getSetting("layoutsRefMap"), cbox_layoutLocationKey, cbox_layoutLocation, true)>
+				</cflock>
+			</cfif>
+			
 			<!--- RenderLayout --->
-			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#instance.layoutsRefMap[cbox_layoutLocationKey]#"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_layoutLocation#"></cfoutput></cfsavecontent>
 		</cfif>
 
 		<!--- Stop Timer --->
