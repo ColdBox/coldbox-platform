@@ -31,9 +31,15 @@ method which will most likely be called by the saveFlash() method in order to pe
     	<cfscript>
 			instance = {
     			controller = arguments.controller,
-    			defaults   = arguments.defaults,
-    			properties = arguments.defaults.properties
+    			defaults   = arguments.defaults
     		};
+    		// check for properties
+    		if( structKeyExists(arguments.defaults, "properties") ){
+    			instance.properties = arguments.defaults.properties;
+    		}
+    		else{
+    			instance.properties = {};
+    		}
 			return this;
     	</cfscript>
     </cffunction>
