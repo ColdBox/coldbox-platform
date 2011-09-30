@@ -33,6 +33,12 @@ method which will most likely be called by the saveFlash() method in order to pe
     			controller = arguments.controller,
     			defaults   = arguments.defaults
     		};
+    		
+    		// Defaults checks, just in case
+    		if( NOT structKeyExists(instance.defaults,"inflateToRC") ){ instance.defaults.inflateToRC = true; }
+    		if( NOT structKeyExists(instance.defaults,"inflateToPRC") ){ instance.defaults.inflateToPRC = false; }
+    		if( NOT structKeyExists(instance.defaults,"autoPurge") ){ instance.defaults.autoPurge = true; }    		
+    		
     		// check for properties
     		if( structKeyExists(arguments.defaults, "properties") ){
     			instance.properties = arguments.defaults.properties;
