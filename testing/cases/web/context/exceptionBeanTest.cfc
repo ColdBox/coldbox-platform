@@ -36,9 +36,18 @@
 			this.e.init(this.instance.exceptionStruct, this.instance.extraMessage, this.instance.extraInfo, this.instance.errorType);
 		</cfscript>
 	</cffunction>
-
-	<cffunction name="tearDown" returntype="void" access="public">
-		<!--- Any code needed to return your environment to normal goes here --->
+	
+	<cffunction name="test$ToString">
+		<cfscript>
+			r = this.e.$toString();
+			assertTrue( len(r) );
+			
+			// complex extra
+			this.e.init(this.instance.exceptionStruct, this.instance.extraMessage, {name="luis",age="10",when=now()}, this.instance.errorType);
+			r = this.e.$toString();
+			assertTrue( len(r) );
+			debug( r );
+		</cfscript>
 	</cffunction>
 	
 	<!--- Begin specific tests --->
