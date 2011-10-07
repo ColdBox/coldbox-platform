@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -101,7 +101,7 @@ Description :
 
 			// Find a route to dispatch
 			aRoute = findRoute(action=cleanedPaths["pathInfo"],event=arguments.event);
-
+			
 			// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 			for( key in aRoute ){
 				// Reserved Keys Check, only translate NON reserved keys
@@ -470,15 +470,10 @@ Description :
 			// remove all module routes
     		structDelete(instance.moduleRoutingTable, arguments.module);
 			// remove module routing entry point
-			for(x=1; x lte routeLen; x=x+1){
+			for(x=routeLen; x gte 1; x=x-1){
 				if( instance.routes[x].moduleRouting eq arguments.module ){
-					// store position to delete
-					arrayAppend(toDelete, x);
+					arrayDeleteAt(instance.routes, x);                                                         
 				}
-			}
-			// Remove positions from routing.
-			for(x=1; x lte arrayLen(toDelete); x=x+1){
-				arrayDeleteAt(instance.routes, toDelete[x]);
 			}
 		</cfscript>
     </cffunction>
@@ -542,13 +537,13 @@ Description :
     </cffunction>
 
 	<!--- setmoduleRoutingTable --->
-	<cffunction name="setModuleRoutingTable" output="false" access="private" returntype="void" hint="Set the module routing table">
+	<cffunction name="setModuleRoutingTable" output="false" access="public" returntype="void" hint="Set the module routing table">
 		<cfargument name="routes" required="true" colddoc:generic="struct"/>
 		<cfset instance.moduleRoutingTable = arguments.routes>
 	</cffunction>
 
 	<!--- Set Routes --->
-	<cffunction name="setRoutes" access="private" output="false" returntype="void" hint="Internal override of the routes array">
+	<cffunction name="setRoutes" access="public" output="false" returntype="void" hint="Internal override of the routes array">
 		<cfargument name="routes" required="true" colddoc:generic="array"/>
 		<cfset instance.routes = arguments.routes/>
 	</cffunction>

@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables">
   <thead>
   	<tr>

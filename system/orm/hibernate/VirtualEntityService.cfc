@@ -24,6 +24,7 @@ UserService function init(){
     setQueryCacheRegion( 'ORMService.defaultCache' );
     setUseQueryCaching( false );
 	setEventHandling( false );
+	setDefaultAsQuery( true );
     return this;
 }
 
@@ -50,7 +51,8 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 										string queryCacheRegion, 
 										boolean useQueryCaching,
 										boolean eventHandling,
-										boolean useTransactions){
+										boolean useTransactions,
+										boolean defaultAsQuery){
 
 		// init parent
 		super.init(argumentCollection=arguments);
@@ -71,7 +73,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 					  numeric max=0,
 					  numeric timeout=0,
 					  boolean ignoreCase=false,
-					  boolean asQuery=true){
+					  boolean asQuery=getDefaultAsQuery()){
 
 		arguments.entityName = this.getEntityName();
 		var results = super.list(argumentCollection=arguments);
@@ -137,7 +139,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	}
 
 	string function getKey(){
-		return super.getKey(this.getEntityName());
+		return super.getKey( this.getEntityName() );
 	}
 
 	array function getPropertyNames(){
@@ -154,7 +156,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 					  				  numeric max=0,
 					  		 		  numeric timeout=0,
 					  		 		  boolean ignoreCase=false,
-					  		 		  boolean asQuery=true){
+					  		 		  boolean asQuery=getDefaultAsQuery()){
 		arguments.entityName = this.getEntityName();
 		return super.criteriaQuery(argumentCollection=arguments);
 	}

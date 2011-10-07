@@ -1,13 +1,11 @@
-<cfoutput>		   
+﻿<cfoutput>		   
 <!--- Id & Name --->
-<cfif isObject( controller.getCacheBox() ) >
-	<div class="fw_debugTitleCell">
-	  Cache Name
-	</div>
-	<div class="fw_debugContentCell">
-	 #cacheProvider.getName()# [class=#getMetadata(cacheProvider).name#]
-	</div>
-</cfif>
+<div class="fw_debugTitleCell">
+  Cache Name
+</div>
+<div class="fw_debugContentCell">
+ #cacheProvider.getName()# [class=#getMetadata(cacheProvider).name#]
+</div>
 
 <!--- Performance --->
 <div class="fw_debugTitleCell">
@@ -76,7 +74,7 @@
 </div>
 
 <!--- Check if reporting enabled --->
-<cfif isCacheBox and NOT cacheProvider.isReportingEnabled()><cfexit></cfif>
+<cfif NOT cacheProvider.isReportingEnabled()><cfexit></cfif>
 
 <!--- Content Report --->
 <h3>Cache Content Report</h3>

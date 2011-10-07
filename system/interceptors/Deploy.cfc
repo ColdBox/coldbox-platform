@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -68,7 +68,7 @@ any kind of cleanup code or anything you like:
 			}
 			
 			// Try to locate the path
-			instance.tagFilepath = locateFilePath(reReplace(getProperty('tagFile'),"^/",""));
+			instance.tagFilepath = locateFilePath( getProperty('tagFile') );
 			
 			// Validate it
 			if( len(instance.tagFilepath) eq 0 ){

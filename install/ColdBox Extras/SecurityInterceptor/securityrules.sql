@@ -1,4 +1,4 @@
---Primary key, can be anything you want.
+﻿--Primary key, can be anything you want.
 	
 CREATE TABLE securityrules
 (

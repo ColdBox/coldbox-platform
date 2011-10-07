@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
 		props = {dsn='coolblog',table='logs',autocreate='true'};

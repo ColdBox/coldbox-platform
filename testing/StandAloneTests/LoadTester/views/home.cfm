@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <h2><img src="includes/images/coldbox.png" align="absmiddle" style="padding-right:10px"> #Event.getValue("welcomeMessage")#</h2>
 
 <div id="infobox">

@@ -1,4 +1,4 @@
-<cfsilent>
+﻿<cfsilent>
 <!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
@@ -17,9 +17,10 @@ Description :
 	sessionScopeExists = true; 
 	try { structKeyExists(session ,'x'); } catch (any e) { sessionScopeExists = false; }	
 </cfscript>
-
-
 <cfoutput>
+<!--- Param Form Scope --->
+<cfparam name="form" default="#structnew()#">
+
 <!--- StyleSheets --->
 <style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
 
@@ -85,7 +86,10 @@ Description :
 		</tr>
 		<tr>
 		  <td align="right" class="fw_errorTablesTitles">Current Layout: </td>
-		  <td ><cfif Event.getCurrentLayout() neq "">#Event.getCurrentLayout()#<cfelse>N/A</cfif></td>
+		  <td >
+		  	<cfif Event.getCurrentLayout() neq "">#Event.getCurrentLayout()#<cfelse>N/A</cfif>
+		  	(Module: #event.getCurrentLayoutModule()#)
+		  </td>
 		</tr>
 		<tr>
 		  <td align="right" class="fw_errorTablesTitles">Current View: </td>

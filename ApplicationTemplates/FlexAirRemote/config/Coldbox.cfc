@@ -1,4 +1,4 @@
-<cfcomponent output="false" hint="My App Configuration">
+﻿<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
 structures to create for configuration
@@ -78,8 +78,7 @@ function configure(){
 		//Application Aspects
 		handlerCaching 			= false,
 		eventCaching			= false,
-		proxyReturnCollection 	= false,
-		flashURLPersistScope	= "session"
+		proxyReturnCollection 	= false
 	};
 	
 	// environment settings, create a detectEnvironment() method to detect it yourself.

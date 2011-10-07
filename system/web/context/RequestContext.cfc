@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -295,6 +295,10 @@ Description :
 		<cfreturn getValue("currentLayout","",true)>
 	</cffunction>
 
+	<cffunction name="getCurrentLayoutModule" access="public" hint="Gets the current set layout's module for rendering" returntype="any" output="false">
+		<cfreturn getValue("layoutmodule","",true)>
+	</cffunction>
+	
 	<cffunction name="getCurrentRoute" output="false" access="public" returntype="any" hint="Get the current request's SES route that matched">
     	<cfreturn getValue("currentRoute","",true)>
     </cffunction>
@@ -304,7 +308,8 @@ Description :
     </cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="any" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
-		<cfargument name="name"  hint="The name or alias of the layout file to set." type="any" >
+		<cfargument name="name" 	required="true"  hint="The name or alias of the layout file to set.">
+		<cfargument name="module" 	required="false" default="" hint="Is the layout from a module or not"/>
 		<cfscript>
 			var layouts = getRegisteredLayouts();
 
@@ -318,6 +323,8 @@ Description :
 
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
+			// module layout?
+			instance.privateContext["layoutmodule"] = arguments.module;
 			return this;
 		</cfscript>
 	</cffunction>
@@ -595,7 +602,7 @@ Description :
 
 	<cffunction name="renderData" access="public" returntype="any" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
+		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
 		<cfargument name="data" 		required="true"  type="any"    hint="The data you would like to marshall and return by the framework">
 		<cfargument name="contentType"  required="true"  type="string"  default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
 		<cfargument name="encoding" 	required="false" type="string"  default="utf-8" hint="The default character encoding to use"/>
@@ -603,8 +610,8 @@ Description :
 		<cfargument name="statusText"   required="false" type="string"  default="" hint="Explains the HTTP status code sent to the browser." />
 		<cfargument name="location" 	required="false" type="string"  default="" hint="Optional argument used to set the HTTP Location header"/>
 		<!--- ************************************************************* --->
-		<cfargument name="jsonCase" 		type="string" required="false" default="lower" hint="JSON Only: Whether to use lower case, upper case or no (none) case translations in the JSON transformation. Lower is default"/>
-		<cfargument name="jsonQueryFormat" 	type="string" required="false" default="query" hint="JSON Only: query or array" />
+		<cfargument name="jsonCallback" 	type="string"  required="false" default="" hint="Only needed when using JSONP, this is the callback to add to the JSON packet"/>
+		<cfargument name="jsonQueryFormat" 	type="string"  required="false" default="query" hint="JSON Only: query or array format for encoding. The default is CF query standard" />
 		<cfargument name="jsonAsText" 		type="boolean" required="false" default="false" hint="If set to false, defaults content mime-type to application/json, else will change encoding to plain/text"/>
 		<!--- ************************************************************* --->
 		<cfargument name="xmlColumnList"    type="string"   required="false" default="" hint="XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query">
@@ -616,8 +623,8 @@ Description :
 			var rd = structnew();
 
 			// Validate rendering type
-			if( not reFindnocase("^(JSON|JSONT|WDDX|XML|PLAIN|HTML|TEXT)$",arguments.type) ){
-				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
+			if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT)$",arguments.type) ){
+				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
 			}
 
 			// Default Values for incoming variables
@@ -637,12 +644,12 @@ Description :
 			rd.xmlRootName = arguments.xmlRootName;
 
 			// JSON Properties
-			rd.jsonCase = arguments.jsonCase;
-			rd.jsonQueryFormat = arguments.jsonQueryFormat;
+			rd.jsonQueryFormat 	= arguments.jsonQueryFormat;
+			rd.jsonCallBack 	= arguments.jsonCallBack;
 
 			// Automatic Content Types by marshalling type
 			switch( rd.type ){
-				case "JSON" : {
+				case "JSON" : case "JSONP" : {
 					rd.contenttype = 'application/json';
 					if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
 					break;

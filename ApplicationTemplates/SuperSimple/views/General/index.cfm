@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <h2>#rc.welcomeMessage#</h2>
 
 <div id="infobox">

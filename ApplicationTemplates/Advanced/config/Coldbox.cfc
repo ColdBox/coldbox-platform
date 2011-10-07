@@ -1,4 +1,4 @@
-<cfcomponent output="false" hint="My App Configuration">
+﻿<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
 structures/arrays to create for configuration
@@ -80,10 +80,9 @@ Optional Methods
 			//Application Aspects
 			handlerCaching 			= false,
 			eventCaching			= false,
-			proxyReturnCollection 	= false,
-			flashURLPersistScope	= "session"	
+			proxyReturnCollection 	= false
 		};
-	
+		
 		// custom settings
 		settings = {
 			
@@ -151,6 +150,17 @@ Optional Methods
 		
 		
 		/*
+		
+		// flash scope configuration
+		flash = {
+			scope = "session,client,cluster,ColdboxCache,or full path",
+			properties = {}, // constructor properties for the flash scope implementation
+			inflateToRC = true, // automatically inflate flash data into the RC scope
+			inflateToPRC = false, // automatically inflate flash data into the PRC scope
+			autoPurge = true, // automatically purge flash data for you
+			autoSave = true // automatically save flash scopes at end of a request and on relocations.
+		};
+		
 		//Register Layouts
 		layouts = [
 			{ name = "login",
@@ -167,7 +177,6 @@ Optional Methods
 			viewsLocation 	 = "views",
 			layoutsLocation  = "layouts",
 			modelsLocation 	 = "model",
-			modulesExternalLocation  = "",
 			eventAction 	 = "index"
 		};
 		

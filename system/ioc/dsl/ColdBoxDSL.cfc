@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -211,6 +211,7 @@ Description :
 			var thisTypeLen = listLen(arguments.definition.dsl,":");
 			var cacheKey 	= "";
 			var cache		= instance.cacheBox.getCache('default');
+			var refLocal	= {};
 			
 			// DSL stages
 			switch(thisTypeLen){
@@ -220,9 +221,10 @@ Description :
 				case 2: { cacheKey = getToken(arguments.definition.dsl,2,":"); break;}
 			}
 
-			// Verify that dependency exists in the Cache container: Change this later once cache compat is removed
-			if( cache.lookup(cacheKey) ){
-				return cache.get(cacheKey);
+			// Verify that dependency exists in the Cache container
+			refLocal.target = cache.get( cacheKey );
+			if( structKeyExists(refLocal, "target") ){
+				return refLocal.target;
 			}
 			else if( instance.log.canDebug() ){
 				instance.log.debug("getOCMDSL() cannot find cache Key: #cacheKey# using definition: #arguments.definition.toString()#");

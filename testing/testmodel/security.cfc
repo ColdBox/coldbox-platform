@@ -1,4 +1,4 @@
-<cfcomponent output="false" cache="true" cachetimeout="5" cacheLastAccessTimeout="1"> 
+﻿<cfcomponent output="false" cache="true" cachetimeout="5" cacheLastAccessTimeout="1"> 
 
 <!--- Some Autowire stuff --->
 <cfproperty name="myMailSettings" type="ioc">

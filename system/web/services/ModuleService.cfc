@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
@@ -251,7 +251,6 @@ I oversee and manage ColdBox modules
 			var interceptorService  = controller.getInterceptorService();
 			var beanFactory 		= controller.getPlugin("BeanFactory");
 			var wirebox				= controller.getWireBox();
-			var wireboxEnabled	 	= controller.getSetting("wirebox").enabled;
 			
 			// If module not registered, throw exception
 			if(NOT structKeyExists(modules, arguments.moduleName) ){
@@ -287,29 +286,12 @@ I oversee and manage ColdBox modules
 					     			 targetID=mConfig.interceptors[y].class);		
 			}
 			
-			//////////////// COMPAT MODE WIREBOX + BEANFACTORY REMOVE BY 3.1 FOR WIREBOX ///////////////////////
-			
-			// Register Model path if it exists as a scan location.
+			// Register Model path if it exists as a scan location in wirebox
 			if( directoryExists( mconfig.modelsPhysicalPath ) ){
-				beanFactory.appendExternalLocations( mConfig.modelsInvocationPath );
+				wirebox.getBinder().scanLocations( mConfig.modelsInvocationPath );
 			}
-			// Mapping or DSL Registration	
-			if( NOT wireboxEnabled ){
-				// Register Model Mappings Now
-				for(key in mConfig.modelMappings){
-					// Default alias check
-					if( NOT structKeyExists(mConfig.modelMappings[key], "alias") ){
-						mConfig.modelMappings[key].alias = "";
-					}
-					// Register mapping
-					beanFactory.addModelMapping(alias = listAppend(key,mConfig.modelMappings[key].alias),
-												path  = mConfig.modelMappings[key].path);
-				}
-			}
-			else{
-				wirebox.getBinder().loadDataDSL( mConfig.wirebox );
-			}
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// Mapping DSL Registration	
+			wirebox.getBinder().loadDataDSL( mConfig.wirebox );
 			
 			// Register module routing entry point pre-pended to routes
 			if( controller.settingExists('sesBaseURL') AND len(mConfig.entryPoint) AND NOT find(":",mConfig.entryPoint)){
@@ -324,7 +306,10 @@ I oversee and manage ColdBox modules
 			// postModuleLoad interception
 			iData = {moduleLocation=mConfig.path,moduleName=arguments.moduleName,moduleConfig=mConfig};
 			interceptorService.processState("postModuleLoad",iData);
-
+			
+			// Mark it as loaded as it is now activated
+			mConfig.activated = true;
+			
 			// Log it
 			instance.logger.debug("Module #arguments.moduleName# activated sucessfully.");
 		</cfscript>
@@ -453,11 +438,8 @@ I oversee and manage ColdBox modules
 			oConfig.injectPropertyMixin("moduleMapping",mConfig.mapping);
 			oConfig.injectPropertyMixin("modulePath",mConfig.path);
 			oConfig.injectPropertyMixin("log",controller.getLogBox().getLogger(oConfig));
-			// COMPAT MODE: REMOVE BY 3.1
-			if( appSettings.wirebox.enabled ){
-				oConfig.injectPropertyMixin("binder",controller.getWireBox().getBinder());
-			}
-
+			oConfig.injectPropertyMixin("binder",controller.getWireBox().getBinder());
+			
 			//Configure the module
 			oConfig.configure();
 
@@ -515,15 +497,8 @@ I oversee and manage ColdBox modules
 			
 			//Get SES Routes
 			mConfig.routes = oConfig.getPropertyMixin("routes","variables",arrayNew(1));
-
-			// COMPAT MODE: REMOVE BY 3.1
-			if( appSettings.wirebox.enabled ){
-				mConfig.wirebox = oConfig.getPropertyMixin("wirebox","variables",structnew());
-			}
-			else{
-				// Get Model Mappings
-				mConfig.modelMappings = oConfig.getPropertyMixin("modelMappings","variables",structnew());
-			}
+			// Wirebox Mappings
+			mConfig.wirebox = oConfig.getPropertyMixin("wirebox","variables",structnew());
 			
 			// Get and Append Module conventions
 			structAppend(mConfig.conventions,oConfig.getPropertyMixin("conventions","variables",structnew()),true);

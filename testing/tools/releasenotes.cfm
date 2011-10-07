@@ -1,4 +1,4 @@
-<cfsavecontent variable="ticket">
+﻿<cfsavecontent variable="ticket">
 1180
  
 cf store does not use createTimeSpan to create minute timespans for puts

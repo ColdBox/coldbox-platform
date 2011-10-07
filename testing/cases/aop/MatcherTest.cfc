@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" cool="true">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" cool="true">
 <cfscript>
 	
 	function setup(){

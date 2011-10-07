@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase"{
+﻿component extends="coldbox.system.testing.BaseTestCase"{
 
 	function setup(){
 		ormservice   = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService");
@@ -359,8 +359,13 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	function testList(){
 		criteria = {category="general"};
 		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
-
 		assertTrue( test.recordcount );
+	
+		// as array
+		ormservice.setDefaultAsQuery( false );
+		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
+		assertTrue( arrayLen( test ) );
+			
 	}
 
 	function testExecuteQuery(){
@@ -488,5 +493,17 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 		test=CategoryService.getTableName();
 		assertEquals( 'categories', test );
+	}
+	
+	function testgetEntityGivenName(){
+		// loaded entity
+		test = entityLoad("User",{firstName="Luis"},true);
+		r = ormservice.getEntityGivenName( test );
+		//debug( r );
+		assertEquals( "User", r );
+		
+		r = ormservice.getEntityGivenName( entityNew("User") );
+		//debug( r );
+		assertEquals( "User", r );		
 	}
 }

@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
 		xmlFile = expandPath("/coldbox/testing/cases/cache/config/samples/Sample.CacheBox.xml");

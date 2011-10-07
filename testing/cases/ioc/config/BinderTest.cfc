@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
 		dataConfigPath = "coldbox.testing.cases.ioc.config.samples.SampleWireBox";

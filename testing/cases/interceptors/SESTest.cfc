@@ -1,4 +1,4 @@
-<cfcomponent name="configBeanTest" extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent name="configBeanTest" extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	
 

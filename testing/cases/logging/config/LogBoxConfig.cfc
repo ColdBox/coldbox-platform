@@ -1,4 +1,4 @@
-<cfcomponent output="false" hint="A LogBox Configuration Data Object">
+﻿<cfcomponent output="false" hint="A LogBox Configuration Data Object">
 <cfscript>
 	/**
 	* Configure LogBox, that's it!

@@ -1,4 +1,4 @@
-/**
+﻿/**
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -48,6 +48,11 @@ component accessors="true"{
 	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
 	*/
 	property name="useTransactions" type="boolean" default="true";
+	
+	/**
+	* The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
+	*/
+	property name="defaultAsQuery" type="boolean" default="true";
 
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
 
@@ -61,12 +66,14 @@ component accessors="true"{
 	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
 								  boolean useQueryCaching=false,
 								  boolean eventHandling=true,
-								  boolean useTransactions=true){
+								  boolean useTransactions=true,
+								  boolean defaultAsQuery=true){
 		// setup properties
 		setQueryCacheRegion( arguments.queryCacheRegion );
 		setUseQueryCaching( arguments.useQueryCaching );
 		setEventHandling( arguments.eventHandling );
 		setUseTransactions( arguments.useTransactions );
+		setDefaultAsQuery( arguments.defaultAsQuery );
 
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
@@ -74,8 +81,8 @@ component accessors="true"{
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
 
-		// Restrictions orm.hibernate.criterion.Restrictions lazy loaded
-		restrictions = "";
+		// Restrictions orm.hibernate.criterion.Restrictions
+		restrictions = createObject("component","coldbox.system.orm.hibernate.criterion.Restrictions").init();
 
 		return this;
 	}
@@ -107,7 +114,7 @@ component accessors="true"{
 					  numeric max=0,
 					  numeric timeout=0,
 					  boolean ignoreCase=false,
-					  boolean asQuery=true){
+					  boolean asQuery=getDefaultAsQuery()){
 		var options = {};
 
 		// Setup listing options
@@ -156,7 +163,7 @@ component accessors="true"{
 					  		   numeric max=0,
 					  		   numeric timeout=0,
 						       boolean ignorecase=false,
-						       boolean asQuery=true){
+						       boolean asQuery=getDefaultAsQuery()){
 		var options = {};
 
 		// Setup listing options
@@ -305,14 +312,14 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
     */
-	void function populate(required any target,
+	any function populate(required any target,
 						   required struct memento,
 						   string scope="",
 					 	   boolean trustedSetter=false,
 						   string include="",
 						   string exclude=""){
 
-		beanPopulator.populateFromStruct(argumentCollection=arguments);
+		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
 
 	/**
@@ -323,14 +330,14 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromJSON(required any target,
+	any function populateFromJSON(required any target,
 								   required string JSONString,
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
 								   string exclude=""){
 
-		beanPopulator.populateFromJSON(argumentCollection=arguments);
+		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
 	/**
@@ -342,7 +349,7 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromXML(required any target,
+	any function populateFromXML(required any target,
 								  required string xml,
 								  string root="",
 								  string scope="",
@@ -350,7 +357,7 @@ component accessors="true"{
 								  string include="",
 								  string exclude=""){
 
-		beanPopulator.populateFromXML(argumentCollection=arguments);
+		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
 	/**
@@ -362,7 +369,7 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromQuery(required any target,
+	any function populateFromQuery(required any target,
 								    required any qry,
 								    numeric rowNumber=1,
 								    string scope="",
@@ -370,7 +377,7 @@ component accessors="true"{
 								    string include="",
 								    string exclude=""){
 
-		beanPopulator.populateFromQuery(argumentCollection=arguments);
+		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
 
 
@@ -927,18 +934,32 @@ component accessors="true"{
 	}
 
 	/**
-	* Returns the Property Names of the entity
+	* Returns the Property Names of the entity via hibernate metadata
 	*/
 	array function getPropertyNames(required string entityName){
 		return ormGetSessionFactory().getClassMetaData(arguments.entityName).getPropertyNames();
 	}
 
 	/**
-	* Returns the table name of the of the entity
+	* Returns the table name that the current entity string belongs to via hibernate metadata
 	*/
 	string function getTableName(required string entityName){
 		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
 	}
+	
+	/**
+ 	* Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
+	*/
+	function getEntityGivenName(required entity) {
+		if( sessionContains( arguments.entity ) ){
+ 			return ORMGetSession().getEntityName( entity );
+ 		}
+ 		
+ 		// else long approach
+ 		var md = getMetadata( arguments.entity );
+ 		if( structKeyExists(md, "entityname") ){ return md.entityname; }
+ 		return listLast( md.name, ".");
+ 	}
 
 	/**
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
@@ -966,9 +987,6 @@ component accessors="true"{
 	* Get our hibernate org.hibernate.criterion.Restrictions proxy object
 	*/
 	public any function getRestrictions(){
-		if( NOT isObject(restrictions) ){
-			restrictions = createObject("component","coldbox.system.orm.hibernate.criterion.Restrictions").init();
-		}
 		return restrictions;
 	}
 
@@ -982,7 +1000,7 @@ component accessors="true"{
 					  				  numeric max=0,
 					  		 		  numeric timeout=0,
 					  		 		  boolean ignoreCase=false,
-					  		 		  boolean asQuery=true){
+					  		 		  boolean asQuery=getDefaultAsQuery()){
 		// create Criteria query object
 		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
 
@@ -1063,7 +1081,14 @@ component accessors="true"{
 		var qry = ORMGetSession().createCriteria( arguments.entityName );
 
 		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
-			qry.add( arguments.criteria[i] );
+			if( isSimpleValue( arguments.criteria[i] ) ){
+				// create criteria out of simple values for associations with alias
+				qry.createCriteria( arguments.criteria[i], arguments.criteria[i] );
+			}
+			else{
+				// add criterion
+				qry.add( arguments.criteria[i] );
+			}
 		}
 
 		return qry;

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <beans default-autowire="byName" default-lazy-init="true">    
     
 	<bean id="StringBuffer" class="java.lang.StringBuffer" type="java" singleton="false" />

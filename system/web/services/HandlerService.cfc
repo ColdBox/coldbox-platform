@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -112,7 +112,7 @@ Description :
 				refLocal.oEventHandler = instance.cache.get(cacheKey);
 
 				// Verify if not found, then create it and cache it
-				if( NOT structKeyExists(refLocal, "oEventHandler") OR NOT isObject(refLocal.oEventHandler) ){
+				if( NOT structKeyExists(refLocal, "oEventHandler") ){
 					// Create a new handler
 					oEventHandler = newHandler(arguments.ehBean.getRunnable());
 					// Save its metadata For event Caching and Aspects

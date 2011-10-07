@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -173,7 +173,6 @@ Description :
 		<cfset var refResults 		= structnew()>
 		<cfset var debugPanel		= "">
 		<cfset var interceptorService = "">
-		<cfset var debugMode		= false>
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
@@ -182,7 +181,6 @@ Description :
 		
 		<!--- Setup Local Vars --->
 		<cfset interceptorService 	= cbController.getInterceptorService()>
-		<cfset debugMode 		 	= cbController.getDebuggerService().getDebugMode()>
 		<cfset templateCache		= cbController.getColdboxOCM("template")>
 		
 		<cftry>
@@ -193,7 +191,7 @@ Description :
 			<cfset event = cbController.getRequestService().requestCapture()>
 			
 			<!--- Debugging Monitors & Commands Check --->
-			<cfif debugMode>
+			<cfif cbController.getDebuggerService().getDebugMode()>
 				
 				<!--- ColdBox Command Executions --->
 				<cfset coldboxCommands(cbController,event)>
@@ -233,9 +231,11 @@ Description :
 			</cfif>
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
-			<cfif event.isEventCacheable() AND templateCache.lookupQuiet(event.getEventCacheableEntry())>
-				<cfset renderedContent = templateCache.get(event.getEventCacheableEntry())>
-				<cfoutput>#renderedContent#</cfoutput>
+			<cfif structKeyExists(event.getEventCacheableEntry(), "cachekey")>
+				<cfset refResults.renderedContent = templateCache.get( event.getEventCacheableEntry().cacheKey )>
+			</cfif>
+			<cfif event.isEventCacheable() AND structKeyExists(refResults,"renderedContent")>
+				<cfoutput>#refResults.renderedContent#</cfoutput>
 			<cfelse>
 				
 				<!--- Run Default/Set Event not executing an event --->
@@ -258,7 +258,7 @@ Description :
 						<cfset renderedContent = refResults.results>
 					<cfelse>
 						<!--- Render Layout/View pair via set variable to eliminate whitespace--->
-						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout()>
+						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout(module=event.getCurrentLayoutModule())>
 					</cfif>
 					
 					<!--- PreRender Data:--->
@@ -307,6 +307,11 @@ Description :
 			<!--- Execute postProcess Interception --->
 			<cfset interceptorService.processState("postProcess")>
 			
+			<!--- Save Flash Scope --->
+			<cfif cbController.getSetting("flash").autoSave>
+				<cfset cbController.getRequestService().getFlashScope().saveFlash()>
+			</cfif>
+			
 			<!--- Trap Application Errors --->
 			<cfcatch type="any">
 				<!--- Get Exception Service --->
@@ -329,7 +334,7 @@ Description :
 		<cfset request.fwExecTime = getTickCount() - request.fwExecTime>
 		
 		<!--- DebugMode Routines --->
-		<cfif debugMode>
+		<cfif cbController.getDebuggerService().getDebugMode()>
 			<!--- Record Profilers --->
 			<cfset cbController.getDebuggerService().recordProfiler()>
 			<!--- Render DebugPanel --->

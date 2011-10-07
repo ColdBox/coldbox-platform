@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.BeanPopulator">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.BeanPopulator">
 
 	<cffunction name="setup">
 		<cfset super.setup()>

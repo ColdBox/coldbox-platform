@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <h2>ColdBox Factory Tests</h2>
 <table >
 	<tr>

@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 	// Allow unique URL or combination of URLs, we recommend both enabled
 	setUniqueURLS(false);
 	// Auto reload configuration, true in dev makes sense to reload the routes on every request

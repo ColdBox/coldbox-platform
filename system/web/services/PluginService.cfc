@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -43,10 +43,10 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
+<!------------------------------------------- Configure ------------------------------------------->
 	
-	<!--- onConfigurationLoad --->
-	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
+	<!--- configure --->
+	<cffunction name="configure" access="public" output="false" returntype="void">
 		<cfscript>
 			// Cache Reference
 			instance.cache = getColdboxOCM();
@@ -145,8 +145,8 @@ Modification History:
 			// Lookup plugin in Cache
 			refLocal.oPlugin = instance.cache.get(pluginKey);
 			
-			// Verify it, COMPAT MODE Remove later
-			if( NOT structKeyExists(refLocal,"oPlugin") OR NOT isObject(refLocal.oPlugin) ){
+			// Verify it
+			if( NOT structKeyExists(refLocal,"oPlugin") ){
 				// Object not found, proceed to create and verify
 				refLocal.oPlugin = new(argumentCollection=arguments);
 				
