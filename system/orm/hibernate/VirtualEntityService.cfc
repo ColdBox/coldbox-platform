@@ -164,4 +164,10 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	numeric function criteriaCount(array criteria=ArrayNew(1)){
 		return super.criteriaCount(this.getEntityName(), arguments.criteria);
 	}
+	
+	any function newCriteria(boolean useQueryCaching=false, string queryCacheRegion=""){
+		
+		arguments.entityName = this.getEntityName();
+		return super.newCriteria(argumentCollection=arguments);
+	}
 }

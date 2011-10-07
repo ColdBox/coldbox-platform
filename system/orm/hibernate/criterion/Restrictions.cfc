@@ -175,14 +175,22 @@ component singleton{
 		return conjunction;
 	}
 	
-	// Return the conjuction of two expressions
-	any function $and(required any criterion, required any otherCriterion){
-		return restrictions.and(arguments.criterion, arguments.otherCriterion);
+	// Return the conjuction of N expressions as arguments
+	any function $and(){
+		var expressions = [];
+		for(var key in arguments){
+			arrayAppend(expressions, arguments[key]);
+		}
+		return this.conjunction(expressions);
 	}
 	
-	// Return the disjunction of two expressions
-	any function $or(required any criterion, required any otherCriterion){
-		return restrictions.or(arguments.criterion, arguments.otherCriterion);
+	// Return the disjunction of N expressions as arguments
+	any function $or(){
+		var expressions = [];
+		for(var key in arguments){
+			arrayAppend(expressions, arguments[key]);
+		}
+		return this.disjunction(expressions);
 	}
 	
 	// Group expressions together in a single disjunction (A or B or C...)

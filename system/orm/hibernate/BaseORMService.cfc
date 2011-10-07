@@ -1073,6 +1073,20 @@ component accessors="true"{
 
 		return qry.uniqueResult();
 	}
+	
+	/**
+	* Get a brand new criteria builder object
+	* @entityName The name of the entity to bind this criteria query to
+	* @useQueryCaching Activate query caching for the list operations
+	* @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
+	* @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	*/
+	any function newCriteria(required string entityName,
+							 boolean useQueryCaching=false,
+							 string queryCacheRegion=""){
+		
+		return new CriteriaBuilder(argumentCollection=arguments);
+	}
 
 	/**
 	* Create a new hibernate criteria object according to entityname and criterion array objects
