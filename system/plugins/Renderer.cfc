@@ -81,8 +81,10 @@ Description :
 		<cfargument name="cacheSuffix" 				required="false" type="any"  default=""     	hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<cfargument name="module" 					required="false" type="any"  default=""      	hint="Explicitly render a view from this module by passing the module name"/>
 		<cfargument name="args"   					required="false" type="any"  default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
-		<cfargument name="collection" 				required="false" type="any"  hint="A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)"/>
+		<cfargument name="collection" 				required="false" type="any"  hint="A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)" colddoc:generic="collection"/>
 		<cfargument name="collectionAs" 			required="false" type="any"	 default=""  	    hint="The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention"/>
+		<cfargument name="collectionStartRow" 		required="false" type="any"	 default="1"  	    hint="The start row to limit the collection rendering with" colddoc:generic="numeric"/>
+		<cfargument name="collectionMaxRows" 		required="false" type="any"	 default="0"  	    hint="The max rows to iterate over the collection rendering with" colddoc:generic="numeric"/>
 		<cfargument name="prepostExempt" 			required="false" type="any"	 default="false" 	hint="If true, pre/post view interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -151,7 +153,7 @@ Description :
 			timerHash = instance.debuggerService.timerStart("rendering View [#arguments.view#.cfm]");
 			if( structKeyExists(arguments,"collection") ){
 				// render collection in next context
-				iData.renderedView = getPlugin("Renderer").renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs);
+				iData.renderedView = getPlugin("Renderer").renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows);
 			}
 			else{
 				// render simple composite view
@@ -231,6 +233,8 @@ Description :
 		<cfargument name="args"/>
 		<cfargument name="collection">
 		<cfargument name="collectionAs">
+		<cfargument name="collectionStartRow" default="1"/>
+		<cfargument name="collectionMaxRows"  default="0"/>
 		
 		<cfscript>
 			var buffer 	= createObject("java","java.lang.StringBuffer").init();
@@ -245,9 +249,12 @@ Description :
 			// Array Rendering
 			if( isArray(arguments.collection) ){ 
 				recLen = arrayLen(arguments.collection); 
+				// is max rows passed?
+				if( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE recLen){ recLen = arguments.collectionMaxRows; }
+				// Create local marker
 				variables._items	= recLen;	
 				// iterate and present
-				for(x=1; x lte recLen; x++){
+				for(x=arguments.collectionStartRow; x lte recLen; x++){
 					// setup local cvariables
 					variables._counter  = x;
 					variables[ arguments.collectionAs ] = arguments.collection[x];
@@ -260,7 +267,11 @@ Description :
 		
 			<!--- Query Rendering --->
 			<cfset variables._items	= arguments.collection.recordCount>
-			<cfloop query="arguments.collection">
+			<!--- Max Rows --->
+			<cfif arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount>
+				<cfset variables._items	= arguments.collectionMaxRows>
+			</cfif>
+			<cfloop query="arguments.collection" startrow="#arguments.collectionStartRow#" endrow="#(arguments.collectionStartRow+variables._items)-1#">
 				<cfscript>
 					// setup local cvariables
 					variables._counter  = arguments.collection.currentRow;
