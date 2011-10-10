@@ -48,7 +48,6 @@ function configure(){
 		debugPassword			= "",
 		reinitPassword			= "",
 		handlersIndexAutoReload = true,
-		configAutoReload		= false,
 		
 		//Implicit Events
 		defaultEvent			= "general.index",

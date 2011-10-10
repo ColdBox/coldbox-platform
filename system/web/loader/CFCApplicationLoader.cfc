@@ -234,9 +234,6 @@ Loads a coldbox cfc configuration file
 			//Check for HandlersIndexAutoReload, default = false
 			if ( not structkeyExists(configStruct, "HandlersIndexAutoReload") or not isBoolean(configStruct.HandlersIndexAutoReload) )
 				configStruct["HandlersIndexAutoReload"] = false;
-			//Check for ConfigAutoReload
-			if ( not structKeyExists(configStruct, "ConfigAutoReload") or not isBoolean(configStruct.ConfigAutoReload) )
-				configStruct["ConfigAutoReload"] = false;
 			//Check for ExceptionHandler if found
 			if ( not structkeyExists(configStruct, "ExceptionHandler") )
 				configStruct["ExceptionHandler"] = "";

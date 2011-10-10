@@ -111,19 +111,6 @@ Description :
 				<cfset cbController = application[appKey]>
 			</cflock>
 			
-			<!--- AutoReload Tests --->
-			<cfif cbController.getSetting("ConfigAutoReload")>
-				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
-					<cfif cbController.getSetting("ConfigAutoReload")>
-						<cfset cbController.getLoaderService().loadApplication(COLDBOX_CONFIG_FILE)>
-						<cfif ( len(cbController.getSetting("ApplicationStartHandler")) )>
-							<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
-						</cfif>
-					</cfif>
-				</cflock>
-				<cfreturn>
-			</cfif>
-			
 			<!--- WireBox Singleton AutoReload --->
 			<cfif cbController.getSetting("Wirebox").singletonReload>
 				<cfset cbController.getWireBox().clearSingletons()>
