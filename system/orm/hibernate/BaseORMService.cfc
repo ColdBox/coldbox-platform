@@ -1120,32 +1120,31 @@ component accessors="true"{
 		}
 
 		// transaction safe call, start one
-		var tx = ORMGetSession().beginTransaction();
 		// mark transaction began
 		request["cbox_aop_transaction"] = true;
-
-		try{
-			// Call method
-			results = arguments.method(argumentCollection=arguments.argCollection);
-			// commit transaction
-			tx.commit();
-		}
-		catch(Any e){
-			// remove pointer
-			structDelete(request,"cbox_aop_transaction");
-			// rollback
+		transaction{
+			
 			try{
-				tx.rollback();
+				// Call method
+				results = arguments.method(argumentCollection=arguments.argCollection);
+				// commit transaction
+				transactionCommit();
 			}
-			catch(any e){
-				// silent rollback as something really went wrong
+			catch(Any e){
+				// remove pointer
+				structDelete(request,"cbox_aop_transaction");
+				// RollBack Transaction
+				transactionRollback();
+				//throw it
+				rethrow;
 			}
-			//throw it
-			rethrow;
+			
 		}
+			
 		// remove pointer, out of transaction now.
 		structDelete(request,"cbox_aop_transaction");
 		// Results? If found, return them.
 		if( NOT isNull(results) ){ return results; }
+			
 	}
 }
