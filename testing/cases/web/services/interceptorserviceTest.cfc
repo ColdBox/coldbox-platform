@@ -1,34 +1,48 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-
-Author 	    :	Luis Majano
-Date        :	September 3, 2007
-Description :
-	plugin service test cases.
-
-Modification History:
-01/18/2007 - Created
------------------------------------------------------------------------>
-<cfcomponent name="interceptorserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.services.InterceptorService">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
 		super.setup();
+		// Create Mock Objects
+		mockbox = getMockBox();
+		mockController 	 	= mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
+		mockRequestContext 	= getMockRequestContext();
+		mockRequestService 	= mockBox.createEmptyMock("coldbox.system.web.services.RequestService").$("getContext", mockRequestContext);
+		mockLogBox	 	 	= mockBox.createEmptyMock("coldbox.system.logging.LogBox");
+		mockLogger	 	 	= mockBox.createEmptyMock("coldbox.system.logging.Logger");
+		mockFlash		 	= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
+		mockCacheBox   	 	= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
+		mockWireBox		 	= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
 		
-		this.iservice = getController().getInterceptorService();
+		// Mock Plugin Dependencies
+		mockController.$("getLogBox",variables.mockLogBox)
+			.$("getCacheBox",variables.mockCacheBox)
+			.$("getWireBox",variables.mockWireBox)
+			.$("getRequestService",variables.mockRequestService);
+		mockRequestService.$("getFlashScope",variables.mockFlash);
+		mockLogBox.$("getLogger",variables.mockLogger);
+		
+		iService = model.init(mockController);
+		
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testonConfigurationLoad" output="false">
+		<cfscript>
+			mockController.$("getSetting").$args("InterceptorConfig").$results( {} )
+				.$("getSetting").$args("coldboxConfig").$results( mockBox.createStub() );
+			iService.$("registerInterceptor").$("registerInterceptors");
+			iService.onConfigurationLoad();
+			
+			assertTrue( iService.$once("registerInterceptor") );
+			assertTrue( iService.$once("registerInterceptors") );
+		</cfscript>
+	</cffunction>
+	
+	
 	<cffunction name="testgetrequestBuffer" output="false">
 		<cfscript>
-			AssertTrue( isObject(this.iService.getRequestBuffer()));
+			AssertTrue( isObject(iService.getRequestBuffer()));
 		</cfscript>
 	</cffunction>
 	
@@ -36,7 +50,7 @@ Modification History:
 		<cfscript>
 		
 		//test registration again
-		AssertTrue( listLen(this.iservice.getInterceptionPoints()) gt 0 );
+		AssertTrue( listLen(iService.getInterceptionPoints()) gt 0 );
 		
 		</cfscript>
 	</cffunction>
@@ -44,11 +58,11 @@ Modification History:
 	<cffunction name="testgetStateContainer" access="public" returntype="void" output="false">
 		<cfscript>
 		
-		state = this.iservice.getStateContainer('nothing');
+		state = iService.getStateContainer('nothing');
 		
 		AssertFalse( isObject(state) );
 		
-		state = this.iservice.getStateContainer('preProcess');
+		state = iService.getStateContainer('preProcess');
 		
 		AssertTrue( isObject(state) );
 				
@@ -58,9 +72,9 @@ Modification History:
 	<cffunction name="testUnregister" access="public" returntype="void" output="false">
 		<cfscript>
 		
-		state = this.iservice.getStateContainer('preProcess');
+		state = iService.getStateContainer('preProcess');
 		
-		this.iservice.unregister('coldbox.system.interceptors.SES','preProcess');
+		iService.unregister('coldbox.system.interceptors.SES','preProcess');
 		
 		interceptor = state.getInterceptor('SES');
 		
@@ -75,13 +89,13 @@ Modification History:
 		var states = "";
 		
 		//test registration again
-		makePublic(this.iservice,"createInterceptionStates","_createInterceptionStates");
-		this.iservice._createInterceptionStates();
-		AssertTrue( structIsEmpty(this.iservice.getInterceptionStates()));
+		makePublic(iService,"createInterceptionStates","_createInterceptionStates");
+		iService._createInterceptionStates();
+		AssertTrue( structIsEmpty(iService.getInterceptionStates()));
 		
 		/* Register */
-		this.iservice.registerInterceptors();
-		states = this.iservice.getinterceptionStates();
+		iService.registerInterceptors();
+		states = iService.getinterceptionStates();
 		
 		AssertFalse( structIsEmpty(states) );
 		</cfscript>
@@ -89,14 +103,14 @@ Modification History:
 	
 	<cffunction name="testAppendInterceptionPoints" access="public" returntype="void" output="false">
 		<cfscript>
-		var points = this.iservice.getINterceptionPoints();
+		var points = iService.getINterceptionPoints();
 		
-		this.iservice.appendInterceptionPoints('unitTest');
+		iService.appendInterceptionPoints('unitTest');
 		
-		AssertTrue( listLen(this.iservice.getINterceptionPoints()), listLen(points)+1);
+		AssertTrue( listLen(iService.getINterceptionPoints()), listLen(points)+1);
 		
-		this.iservice.appendInterceptionPoints('unitTest');
-		AssertTrue( listLen(this.iservice.getINterceptionPoints()), listLen(points)+1);
+		iService.appendInterceptionPoints('unitTest');
+		AssertTrue( listLen(iService.getINterceptionPoints()), listLen(points)+1);
 		
 		</cfscript>
 	</cffunction>
@@ -104,7 +118,7 @@ Modification History:
 	<cffunction name="testSimpleProcessInterception" access="public" returntype="void" output="false">
 		<cfscript>
 		
-		this.iservice.processState("preProcess");
+		iService.processState("preProcess");
 		
 		</cfscript>
 	</cffunction>
@@ -116,11 +130,11 @@ Modification History:
 		md.test = "UNIT TESTING";
 		md.today = now();
 		
-		this.iservice.processState("preProcess",md);
+		iService.processState("preProcess",md);
 		
-		this.iservice.getRequestBuffer().append('luis');
+		iService.getRequestBuffer().append('luis');
 		
-		this.iservice.processState("preProcess",md);
+		iService.processState("preProcess",md);
 		</cfscript>
 	</cffunction>
 	
@@ -131,9 +145,9 @@ Modification History:
 		md.test = "UNIT TESTING";
 		md.today = now();
 			
-		this.iservice.getRequestBuffer().append('luis');
+		iService.getRequestBuffer().append('luis');
 		
-		this.iservice.processState("preProcess",md);
+		iService.processState("preProcess",md);
 		
 		
 		</cfscript>
@@ -144,7 +158,7 @@ Modification History:
 		var md = structnew();
 		
 		try{
-			this.iservice.processState("nada loco",md);
+			iService.processState("nada loco",md);
 		}
 		catch("Framework.InterceptorService.InvalidInterceptionState" e){
 			AssertTrue(true);
@@ -157,10 +171,10 @@ Modification History:
 	
 	<cffunction name="testManualRegistration" access="public" returntype="void" output="false">
 		<cfscript>
-			this.iservice.appendInterceptionPoints('unitTest');
-			this.iservice.registerInterceptor(interceptorClass='coldbox.testing.testinterceptors.mock');
+			iService.appendInterceptionPoints('unitTest');
+			iService.registerInterceptor(interceptorClass='coldbox.testing.testinterceptors.mock');
 			
-			AssertTrue( isObject(this.iservice.getStateContainer('unittest')) );
+			AssertTrue( isObject(iService.getStateContainer('unittest')) );
 			
 		</cfscript>
 	</cffunction>
@@ -169,10 +183,10 @@ Modification History:
 		<cfscript>
 			var obj = CreateObject("component","coldbox.testing.testinterceptors.mock");
 			
-			this.iservice.appendInterceptionPoints('unitTest');
-			this.iservice.registerInterceptor(interceptorObject=obj);
+			iService.appendInterceptionPoints('unitTest');
+			iService.registerInterceptor(interceptorObject=obj);
 			
-			AssertTrue( isObject(this.iservice.getStateContainer('unittest')) );
+			AssertTrue( isObject(iService.getStateContainer('unittest')) );
 			
 		</cfscript>
 	</cffunction>
@@ -181,14 +195,11 @@ Modification History:
 		<cfscript>
 			var obj = CreateObject("component","coldbox.testing.testinterceptors.mock");
 			
-			this.iservice.registerInterceptor(interceptorObject=obj,customPoints='unitTest');
+			iService.registerInterceptor(interceptorObject=obj,customPoints='unitTest');
 			
-			AssertTrue( isObject(this.iservice.getStateContainer('unittest')) );
+			AssertTrue( isObject(iService.getStateContainer('unittest')) );
 			
 		</cfscript>
 	</cffunction>
-	
-	
-	
 	
 </cfcomponent>

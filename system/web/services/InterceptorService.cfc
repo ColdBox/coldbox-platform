@@ -51,15 +51,13 @@ Description :
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<cfscript>
-			// Setup Logging
+			// Reconfigure Logging
     		instance.log = controller.getLogBox().getLogger( this );
     		// Setup Configuration
     		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
-			// Check if using the CFC configuration object, if so, then register it
-			if( controller.settingExists('coldboxConfig') ){
-				registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'),interceptorName="coldboxConfig");
-			}
-    		// Register The Interceptors
+			// Register CFC Configuration Object
+			registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'),interceptorName="coldboxConfig");
+			// Register The Interceptors
 			registerInterceptors();
     	</cfscript>
     </cffunction>
