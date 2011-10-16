@@ -129,7 +129,7 @@ Description :
 		
 		// Process Output Buffer: looks weird, but we are outputting stuff
 		</cfscript>
-		</cfsilent><cfif instance.requestBuffer.isBufferInScope()><cfset writeOutput(instance.requestBuffer.getString())><cfset instance.requestBuffer.clear()></cfif><cfreturn this>
+		</cfsilent><cfif instance.requestBuffer.isBufferInScope()><cfset writeOutput(instance.requestBuffer.getString())><cfset instance.requestBuffer.clear()></cfif>
 	</cffunction>
 	
 	<!--- Register an Interceptor --->
