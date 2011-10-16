@@ -442,6 +442,11 @@ I oversee and manage ColdBox modules
 			
 			//Configure the module
 			oConfig.configure();
+			
+			// Get parent environment settings and if same convention of 'environment'() found, execute it.
+			if( structKeyExists( oConfig, appSettings.environment ) ){
+				evaluate("oConfig.#appSettings.environment#()");
+			}
 
 			//Get Public Module Properties
 			mConfig.title 				= oConfig.title;
