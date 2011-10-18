@@ -46,7 +46,7 @@ Description :
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
 		
-		<cfif NOT structKeyExists(server,"railo") AND structKeyExists(URL,"reinit")>
+		<cfif structKeyExists(URL,"reinit")>
 			<cfset ORMReload()>
 		</cfif>
 		

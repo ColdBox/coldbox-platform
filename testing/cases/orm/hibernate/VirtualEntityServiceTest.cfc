@@ -131,7 +131,7 @@
 	function testGetPropertyNames(){
 
 		test = ormservice.getPropertyNames(entityName="User");
-		assertEquals( 5, arrayLen(test) );
+		assertEquals( 6, arrayLen(test) );
 	}
 
 	function testGetTableName(){
@@ -140,4 +140,9 @@
 		assertEquals( 'users', test );
 	}
 	
+	function testNewCriteria(){
+		c = ormservice.newCriteria();
+		assertEquals( "User", c.getEntityName() );
+		
+	}
 }

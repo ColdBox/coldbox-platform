@@ -20,7 +20,7 @@
 		<td align="left">
 		  	<a href="javascript:fw_openwindow('#URLBase#?debugpanel=cacheviewer&cbox_cacheName=#arguments.cacheName#&key=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" 
 			   title="#thisKey#">
-		  	#left(thisKey,40)#<cfif len(thisKey) gt 40>...</cfif>
+		  	#thisKey#
 			</a>
 		</td>
 		<!--- Hits --->

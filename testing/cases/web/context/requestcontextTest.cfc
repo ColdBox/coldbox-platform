@@ -561,5 +561,17 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testNoLayout" access="public"  returntype="void" output="false">
+		<cfscript>
+			var event = getRequestContext();
+			
+			event.noLayout().setView("test");
+			
+			//debug( event.getCollection(private=true) );
+			assertEquals( true, event.getValue("layoutOverride",false,true) );
+			
+		</cfscript>
+	</cffunction>
+	
 	
 </cfcomponent>

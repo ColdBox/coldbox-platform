@@ -1073,6 +1073,20 @@ component accessors="true"{
 
 		return qry.uniqueResult();
 	}
+	
+	/**
+	* Get a brand new criteria builder object
+	* @entityName The name of the entity to bind this criteria query to
+	* @useQueryCaching Activate query caching for the list operations
+	* @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
+	* @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	*/
+	any function newCriteria(required string entityName,
+							 boolean useQueryCaching=false,
+							 string queryCacheRegion=""){
+		
+		return new CriteriaBuilder(argumentCollection=arguments);
+	}
 
 	/**
 	* Create a new hibernate criteria object according to entityname and criterion array objects
@@ -1106,32 +1120,31 @@ component accessors="true"{
 		}
 
 		// transaction safe call, start one
-		var tx = ORMGetSession().beginTransaction();
 		// mark transaction began
 		request["cbox_aop_transaction"] = true;
-
-		try{
-			// Call method
-			results = arguments.method(argumentCollection=arguments.argCollection);
-			// commit transaction
-			tx.commit();
-		}
-		catch(Any e){
-			// remove pointer
-			structDelete(request,"cbox_aop_transaction");
-			// rollback
+		transaction{
+			
 			try{
-				tx.rollback();
+				// Call method
+				results = arguments.method(argumentCollection=arguments.argCollection);
+				// commit transaction
+				transactionCommit();
 			}
-			catch(any e){
-				// silent rollback as something really went wrong
+			catch(Any e){
+				// remove pointer
+				structDelete(request,"cbox_aop_transaction");
+				// RollBack Transaction
+				transactionRollback();
+				//throw it
+				rethrow;
 			}
-			//throw it
-			rethrow;
+			
 		}
+			
 		// remove pointer, out of transaction now.
 		structDelete(request,"cbox_aop_transaction");
 		// Results? If found, return them.
 		if( NOT isNull(results) ){ return results; }
+			
 	}
 }

@@ -306,21 +306,28 @@ Description :
 	<cffunction name="getCurrentRoutedURL" output="false" access="public" returntype="any" hint="Get the current routed URL that matched the SES route">
     	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
+ 
+    <cffunction name="noLayout" output="false" access="public" returntype="any" hint="Mark this request to not use a layout for rendering">    
+    	<cfscript>	
+			// remove layout if any
+			structDelete(instance.privateContext,"currentLayout");
+			// set layout overwritten flag.
+			instance.privateContext["layoutoverride"] = true;
+			return this;
+    	</cfscript>    
+    </cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="any" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
 		<cfargument name="name" 	required="true"  hint="The name or alias of the layout file to set.">
 		<cfargument name="module" 	required="false" default="" hint="Is the layout from a module or not"/>
 		<cfscript>
-			var layouts = getRegisteredLayouts();
-
+			var layouts = instance.registeredLayouts;
 			// Set direct layout first.
 			instance.privateContext["currentLayout"] = trim(arguments.name) & ".cfm";
-
 			// Do an Alias Check and override if found.
 			if( structKeyExists(layouts,arguments.name) ){
 				instance.privateContext["currentLayout"] = layouts[arguments.name];
 			}
-
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
 			// module layout?

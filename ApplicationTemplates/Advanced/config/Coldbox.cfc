@@ -50,7 +50,6 @@ Optional Methods
 			debugPassword			= "",
 			reinitPassword			= "",
 			handlersIndexAutoReload = true,
-			configAutoReload		= false,
 			
 			//Implicit Events
 			defaultEvent			= "General.index",

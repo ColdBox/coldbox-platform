@@ -456,7 +456,7 @@
 		assertEquals( 3, arrayLen(test) );
 
 		test = ormservice.getPropertyNames(entityName="User");
-		assertEquals( 5, arrayLen(test) );
+		assertEquals( 6, arrayLen(test) );
 	}
 
 	function testGetTableName(){
@@ -505,5 +505,10 @@
 		r = ormservice.getEntityGivenName( entityNew("User") );
 		//debug( r );
 		assertEquals( "User", r );		
+	}
+	
+	function testNewCriteria(){
+		c = ormservice.newCriteria("User");
+		
 	}
 }
