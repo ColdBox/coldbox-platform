@@ -201,8 +201,12 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="getCurrentView" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="string" output="false">
+	<cffunction name="getCurrentView" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="any" output="false">
 		<cfreturn getValue("currentView","",true)>
+	</cffunction>
+	
+	<cffunction name="getCurrentViewModule" access="public" hint="Gets the current set views's module for rendering" returntype="any" output="false">
+		<cfreturn getValue("viewModule","",true)>
 	</cffunction>
 
 	<cffunction name="setView" access="public" returntype="any" hint="I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout"  output="false">
@@ -214,6 +218,7 @@ Description :
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" hint="The last access timeout">
 		<cfargument name="cacheSuffix" 				required="false" type="string"  default="" hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<cfargument name="layout" 					required="false" type="string"  hint="You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.">
+		<cfargument name="module" 					required="false" type="string"  default="" hint="Is the view from a module or not"/>
 		<!--- ************************************************************* --->
 	    <cfscript>
 		    var key 		= "";
@@ -223,6 +228,9 @@ Description :
 			// view and name mesh
 			if( structKeyExists(arguments,"name") ){ arguments.view = arguments.name; }
 			
+			// stash the view module
+ 			instance.privateContext["viewModule"] = arguments.module;
+
 			// Local Override
 			if( structKeyExists(arguments,"layout") ){
 				setLayout(arguments.layout);
