@@ -97,8 +97,16 @@ Description :
 			
 			// If no incoming explicit module call, default the value to the one in the request context for convenience
 			if( NOT len(arguments.module) ){
+
+				// check for an explicit view module
+				arguments.module = event.getCurrentViewModule();
+
+				// if module is still empty check the event pattern
 				// if no module is execution, this will be empty anyways.
-				arguments.module = event.getCurrentModule();
+				if( NOT len(arguments.module) ){ 
+					arguments.module = event.getCurrentModule();
+				}
+				
 			}
 			else{
 				explicitModule = true;
@@ -148,7 +156,7 @@ Description :
 			
 			// Discover and cache view/helper locations
 			viewLocations = discoverViewPaths(arguments.view,arguments.module,explicitModule);
-			
+
 			// Render View Composite or View Collection
 			timerHash = instance.debuggerService.timerStart("rendering View [#arguments.view#.cfm]");
 			if( structKeyExists(arguments,"collection") ){
@@ -203,7 +211,7 @@ Description :
 				viewPath = locationUDF(arguments.view,arguments.module,arguments.explicitModule),
 				viewHelperPath = ""
 			};
-			
+
 			// Check for view helper convention
 			dPath = getDirectoryFromPath( refMap.viewPath );
 			if( fileExists(expandPath( refMap.viewPath & "Helper.cfm")) ){
@@ -348,11 +356,12 @@ Description :
 
 	<!--- Render the layout --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
-		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering"/>
-		<cfargument name="view"   type="any" 	required="false" default="" hint="The view to render within this layout explicitly"/>
-		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
-		<cfargument name="args"   type="any" 	required="false" default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
-		
+		<cfargument name="layout" 		type="any" 	required="false" hint="The explicit layout to use in rendering"/>
+		<cfargument name="view"   		type="any" 	required="false" default="" hint="The view to render within this layout explicitly"/>
+		<cfargument name="module" 		type="any"  required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
+		<cfargument name="args"   		type="any" 	required="false" default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
+		<cfargument name="viewModule"   type="any" 	required="false" default="" hint="Explicitly render a view from this module"/>
+				
 		<cfset var cbox_currentLayout 		= implicitViewChecks()>
 		<cfset var cbox_RederedLayout 		= "">
 		<cfset var cbox_timerhash 			= "">
@@ -393,7 +402,7 @@ Description :
 
 		<!--- If Layout is blank, then just delegate to the view --->
 		<cfif len(cbox_currentLayout) eq 0>
-			<cfset cbox_RederedLayout = renderView()>
+			<cfset cbox_RederedLayout = renderView( module = arguments.viewModule )>
 		<cfelse>
 			<!--- Layout location key --->
 			<cfset cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule> 
@@ -540,7 +549,7 @@ Description :
 			}
 				
 			// Declare Locations
-			moduleName     = event.getCurrentModule();
+			moduleName     = arguments.module;
 			parentModuleViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
 			parentCommonViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#arguments.view#";
 			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/#instance.modulesConfig[moduleName].conventions.viewsLocation#/#arguments.view#";
