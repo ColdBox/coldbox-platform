@@ -173,7 +173,7 @@ Description :
 										 cacheKeySuffix=oEventHandler.EVENT_CACHE_SUFFIX);
 
 				// get dictionary entry for operations, it is now guaranteed
-				eventDictionaryEntry = getEventCacheDictionary().getKey(ehBean.getFullEvent());
+				eventDictionaryEntry = instance.eventCacheDictionary[ ehBean.getFullEvent() ];
 
 				// Do we need to cache this event's output after it executes??
 				if ( eventDictionaryEntry.cacheable ){
@@ -450,7 +450,7 @@ Description :
 		<cfargument name="targetEvent" required="true" type="any" hint="The target event">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var entry = getEventCacheDictionary().getKey(arguments.targetEvent);
+			var entry = instance.eventCacheDictionary[ arguments.targetEvent ];
 
 			if( isSimpleValue(entry) ){
 				return getNewMDEntry();
@@ -526,11 +526,11 @@ Description :
 		<cfset var metadata = 0>
 		<cfset var mdEntry  = 0>
 
-		<cfif not getEventCacheDictionary().keyExists(arguments.cacheKey)>
+		<cfif NOT structKeyExists( instance.eventCacheDictionary, arguments.cacheKey)>
 			<cflock name="handlerservice.eventcachingmd.#arguments.cacheKey#" type="exclusive" throwontimeout="true" timeout="10">
 			<cfscript>
 			// Determine if we have md for the event to execute in the md dictionary, else set it
-			if ( not getEventCacheDictionary().keyExists(arguments.cacheKey) ){
+			if ( NOT structKeyExists( instance.eventCacheDictionary, arguments.cacheKey) ){
 				// Get Method metadata
 				metadata = getmetadata(arguments.eventUDF);
 				// Get New Default MD Entry
@@ -558,7 +558,7 @@ Description :
 				mdEntry.suffix = arguments.cacheKeySuffix;
 
 				// Save md Entry in dictionary
-				getEventCacheDictionary().setKey(cacheKey,mdEntry);
+				instance.eventCacheDictionary[ cacheKey ] = mdEntry;
 			}//end of md cache dictionary.
 			</cfscript>
 			</cflock>
