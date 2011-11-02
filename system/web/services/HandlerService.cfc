@@ -21,10 +21,9 @@ Description :
 			// Setup The Controller.
 			setController(arguments.controller);
 			// Setup the Event Handler Cache Dictionary
-			setHandlerCacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('Handlersmetadata'));
+			instance.handlerCacheDictionary = {};
 			// Setup the Event Cache Dictionary
-			setEventCacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('EventCache'));
-
+			instance.eventCacheDictionary = {};
 			return this;
 		</cfscript>
 	</cffunction>
@@ -118,7 +117,7 @@ Description :
 					// Save its metadata For event Caching and Aspects
 					saveHandlermetadata(oEventHandler,cacheKey);
 					// Get dictionary entry for operations, it is now guaranteed
-					handlerDictionaryEntry = getHandlerCacheDictionary().getKey(cacheKey);
+					handlerDictionaryEntry = instance.handlerCacheDictionary[ cacheKey ];
 					// Do we Cache this handler
 					if ( handlerDictionaryEntry.cacheable ){
 						instance.cache.set(cacheKey,oEventHandler,handlerDictionaryEntry.timeout,handlerDictionaryEntry.lastAccessTimeout);
@@ -429,29 +428,21 @@ Description :
 	<!--- Clear All Dictioanries --->
 	<cffunction name="clearDictionaries" access="public" returntype="void" hint="Clear the internal cache dictionaries" output="false" >
 		<cfscript>
-			getHandlerCacheDictionary().clearAll();
-			getEventCacheDictionary().clearAll();
+			instance.handlerCacheDictionary = {};
+			instance.eventCacheDictionary 	= {};
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
 	<!--- Handler Cache Dictionary --->
-	<cffunction name="getHandlerCacheDictionary" access="public" returntype="coldbox.system.core.collections.BaseDictionary" output="false">
-		<cfreturn instance.HandlerCacheDictionary>
-	</cffunction>
-	<cffunction name="setHandlerCacheDictionary" access="public" returntype="void" output="false">
-		<cfargument name="HandlerCacheDictionary" type="coldbox.system.core.collections.BaseDictionary" required="true">
-		<cfset instance.HandlerCacheDictionary = arguments.HandlerCacheDictionary>
+	<cffunction name="getHandlerCacheDictionary" access="public" returntype="struct" output="false">
+		<cfreturn instance.handlerCacheDictionary>
 	</cffunction>
 
 	<!--- Event Cache Dictionary --->
-	<cffunction name="getEventCacheDictionary" access="public" returntype="coldbox.system.core.collections.BaseDictionary" output="false">
-		<cfreturn instance.EventCacheDictionary>
-	</cffunction>
-	<cffunction name="setEventCacheDictionary" access="public" returntype="void" output="false">
-		<cfargument name="EventCacheDictionary" type="coldbox.system.core.collections.BaseDictionary" required="true">
-		<cfset instance.EventCacheDictionary = arguments.EventCacheDictionary>
+	<cffunction name="getEventCacheDictionary" access="public" returntype="struct" output="false">
+		<cfreturn instance.eventCacheDictionary>
 	</cffunction>
 
 	<cffunction name="getEventMetadataEntry" access="public" returntype="any" hint="Get an event string's metadata entry: struct" output="false" >
@@ -585,12 +576,12 @@ Description :
 		<cfset var mdEntry  = 0>
 
 		<!--- Check if md already in our data dictionary --->
-		<cfif NOT getHandlerCacheDictionary().keyExists(arguments.cacheKey) OR arguments.force>
+		<cfif NOT structKeyExists( instance.handlerCacheDictionary, arguments.cacheKey ) OR arguments.force>
 			<cfset metadata = getmetadata(arguments.targetHandler)>
 			<cflock name="handlerservice.handlermd.#metadata.name#" type="exclusive" throwontimeout="true" timeout="10">
 			<cfscript>
 			// Determine if we have md and cacheable, else set it
-			if ( NOT getHandlerCacheDictionary().keyExists(arguments.cacheKey) OR arguments.force){
+			if ( NOT structKeyExists( instance.handlerCacheDictionary, arguments.cacheKey ) OR arguments.force){
 
 				// Get Default MD Entry
 				mdEntry = getNewMDEntry();
@@ -622,7 +613,7 @@ Description :
 				// Persistence, event caching and more. Then we can use that easily for next requests.
 
 				// Set Entry in dictionary
-				getHandlerCacheDictionary().setKey(arguments.cacheKey,mdEntry);
+				instance.handlerCacheDictionary[ arguments.cacheKey ] = mdEntry;
 			}
 			</cfscript>
 			</cflock>
