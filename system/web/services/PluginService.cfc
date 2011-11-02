@@ -37,7 +37,7 @@ Modification History:
 			setExtensionsPhysicalPath( expandPath("/" & replace(getExtensionsPath(),".","/","all") & "/") );
 			
 			// Prepare MD dictionary
-			setCacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('PluginMetadata'));
+			instance.cacheDictionary = {};
 			
 			return this;
 		</cfscript>
@@ -93,8 +93,8 @@ Modification History:
 			oPlugin = createObject("component",pluginLocation);
 			
 			// Determine if we have md and cacheable, else store object metadata for efficiency
-			if ( not instance.cacheDictionary.keyExists(pluginKey) ){
-				storeMetadata(pluginKey,getMetadata(oPlugin));
+			if ( NOT structKeyExists( instance.cacheDictionary, pluginKey) ){
+				storeMetadata(pluginKey,getMetadata( oPlugin ));
 			}
 			
 			// Is it plugin family or not? If not, then decorate it
@@ -151,7 +151,7 @@ Modification History:
 				refLocal.oPlugin = new(argumentCollection=arguments);
 				
 				// Get plugin metadata Entry
-				pluginDictionaryEntry = instance.cacheDictionary.getKey(pluginKey);
+				pluginDictionaryEntry = instance.cacheDictionary[ pluginKey ];
 				
 				// Do we Cache the plugin?
 				if ( pluginDictionaryEntry.cacheable ){
@@ -226,7 +226,7 @@ Modification History:
 	
 	<!--- Clear the metadata dictionary --->
 	<cffunction name="clearDictionary" access="public" returntype="void" hint="Clear the cache dictionary" output="false" >
-		<cfset getCacheDictionary().clearAll()>
+		<cfset instance.cacheDictionary = {}>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -267,7 +267,7 @@ Modification History:
 			}
 			
 			// Set Entry in dictionary
-			instance.cacheDictionary.setKey(arguments.pluginKey,mdEntry);		
+			instance.cacheDictionary[ arguments.pluginKey ] = mdEntry;		
 			
 			return mdEntry;
     	</cfscript>
@@ -285,12 +285,6 @@ Modification History:
 			
 			return mdEntry;
 		</cfscript>
-	</cffunction>
-	
-	<!--- Set the internal plugin cache dictionary. --->
-	<cffunction name="setCacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
-		<cfargument name="cacheDictionary" type="any" required="true"/>
-		<cfset instance.cacheDictionary = arguments.cacheDictionary/>
 	</cffunction>
 	
 	<!--- Locate a Plugin Instantiation Path --->
