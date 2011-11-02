@@ -450,14 +450,11 @@ Description :
 		<cfargument name="targetEvent" required="true" type="any" hint="The target event">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var entry = instance.eventCacheDictionary[ arguments.targetEvent ];
-
-			if( isSimpleValue(entry) ){
+			if( NOT structKeyExists(instance.eventCacheDictionary, arguments.targetEvent) ){
 				return getNewMDEntry();
 			}
-			else{
-				return entry;
-			}
+			
+			return instance.eventCacheDictionary[ arguments.targetEvent ];
 		</cfscript>
 	</cffunction>
 
