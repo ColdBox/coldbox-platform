@@ -21,7 +21,6 @@ Modification History:
 	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<cfscript>
-			instance = {};
 			// Register Controller
 			variables.controller = arguments.controller;
 			// Register LogBox

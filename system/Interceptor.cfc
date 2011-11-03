@@ -20,7 +20,6 @@ Description :
 		<cfargument name="controller" required="true"  hint="The ColdBox controller reference: coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller">
 		<cfargument name="properties" required="true"  hint="The Interceptor properties" colddoc:generic="struct">
 		<cfscript>
-			instance = {};
 			// Register Controller
 			variables.controller = arguments.controller;
 			// Register LogBox

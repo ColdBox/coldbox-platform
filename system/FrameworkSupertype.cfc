@@ -15,8 +15,11 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent hint="This is the layer supertype cfc for all ColdBox related objects." output="false" serializable="false">
 
+	<!--- init instance for all --->
+	<cfset instance	= {}>
+
 <!------------------------------------------- PUBLIC METHODS ------------------------------------------->
-		
+
 	<!--- Get Memento --->
 	<cffunction name="getMemento" access="public" hint="Get the memento of this object" returntype="any" output="false">
 		<cfreturn instance>
