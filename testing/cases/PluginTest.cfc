@@ -7,10 +7,14 @@
 		flashScope 		= getMockBox().createMock(className="coldbox.system.web.flash.MockFlash");
 		mockLogBox 		= getMockBox().createMock(className="coldbox.system.logging.LogBox");
 		mockLogger 		= getMockBox().createMock(className="coldbox.system.logging.Logger");
+		mockCacheBox    = getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
+		mockWireBox     = getMockBox().createEmptyMock("coldbox.system.ioc.Injector");
 		
+		mockController.$("getLogBox",mockLogBox)
+			.$("getRequestService",mockRS)
+			.$("getCacheBox", mockCacheBox)
+			.$("getWireBox", mockWireBox);
 		
-		mockController.$("getLogBox",mockLogBox);
-		mockController.$("getRequestService",mockRS);
 		mockRS.$("getFlashScope",flashScope);
 		mockLogBox.$("getLogger",mockLogger);
 		
