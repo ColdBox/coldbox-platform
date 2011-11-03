@@ -51,10 +51,8 @@ Description :
 			// Set the HTML Helper Plugin Scope
 			html	= getPlugin("HTMLHelper");
 
-			// Inject UDF For Views/Layouts via UDFLibraryFile setting
-			if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
-				includeUDF(controller.getSetting("UDFLibraryFile"));
-			}
+			// Load global UDF Libraries into target
+			loadGlobalUDFLibraries();		
 			
 			return this;
 		</cfscript>

@@ -114,7 +114,7 @@ Description :
 		<cfargument name="dsl"					required="false" type="any"  hint="The dsl string to use to retrieve the domain object"/>
 		<cfargument name="executeInit"			required="false" type="any" default="true" hint="Whether to execute the init() constructor or not.  Defaults to execute, Boolean" colddoc:generic="Boolean"/>
 		<cfargument name="initArguments" 		required="false" hint="The constructor structure of arguments to passthrough when initializing the instance. Only available for WireBox integration" colddoc:generic="struct"/>
-		<cfreturn controller.getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
+		<cfreturn controller.getWireBox().getModel(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Populate a model object from the request Collection --->
@@ -124,7 +124,7 @@ Description :
 		<cfargument name="trustedSetter"  	required="false" type="any"  default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean" colddoc:generic="Boolean"/>
 		<cfargument name="include"  		required="false" type="any"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="any"  default="" hint="A list of keys to exclude in the population">
-		<cfreturn controller.getPlugin("BeanFactory").populateModel(argumentCollection=arguments)>
+		<cfreturn controller.getWireBox().populateModel(argumentCollection=arguments)>
 	</cffunction>
 
 	<!--- View Rendering Facades --->
@@ -352,29 +352,31 @@ Description :
 	<cffunction name="addAsset" output="false" access="public" returntype="any" hint="Add a js/css asset(s) to the html head section. You can also pass in a list of assets.">
 		<cfargument name="asset" type="any" required="true" hint="The asset to load, only js or css files. This can also be a comma delimmited list."/>
 		<cfscript>
-			return getPlugin("HTMLHelper").addAsset(argumentCollection=arguments);
+			return controller.getPlugin("HTMLHelper").addAsset(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 	
 	<!--- Include UDF --->
-	<cffunction name="includeUDF" access="public" hint="Injects a UDF Library (*.cfc or *.udf) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally." output="false" returntype="void">
+	<cffunction name="includeUDF" access="public" hint="Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally." output="false" returntype="void">
 		<cfargument name="udflibrary" required="true" type="any" hint="The UDF library to inject.">
 		<cfscript>
-			var UDFFullPath = ExpandPath(arguments.udflibrary);
-			var UDFRelativePath = ExpandPath("/" & variables.controller.getSetting("AppMapping") & "/" & arguments.udflibrary);
+			var appMapping		= controller.getSetting("AppMapping");
+			var UDFFullPath 	= ExpandPath( arguments.udflibrary );
+			var UDFRelativePath = ExpandPath("/" & appMapping & "/" & arguments.udflibrary);
 
-			/* Relative Checks First */
-			if( fileExists(UDFRelativePath) ){
-				$include("/#getController().getSetting("AppMapping")#/#arguments.udflibrary#");
+			// Relative Checks First
+			if( fileExists( UDFRelativePath ) ){
+				$include( UDFRelativePath );
 			}
+			// checks if no .cfc or .cfm where sent
 			else if( fileExists(UDFRelativePath & ".cfc") ){
-				$include("/#getController().getSetting("AppMapping")#/#arguments.udflibrary#.cfc");
+				$include( UDFRelativePath & ".cfc" );
 			}
 			else if( fileExists(UDFRelativePath & ".cfm") ){
-				$include("/#getController().getSetting("AppMapping")#/#arguments.udflibrary#.cfm");
+				$include( UDFRelativePath & ".cfm" );
 			}
-			/* Absolute Checks */
-			else if( fileExists(UDFFullPath) ){
+			// Absolute Checks
+			else if( fileExists( UDFFullPath ) ){
 				$include("#udflibrary#");
 			}
 			else if( fileExists(UDFFullPath & ".cfc") ){
@@ -390,6 +392,22 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- loadGlobalUDFLibraries --->    
+    <cffunction name="loadGlobalUDFLibraries" output="false" access="public" returntype="any" hint="Load the global UDF libraries defined in the UDFLibraryFile Setting">    
+    	<cfscript>	   
+			// Inject global helpers
+			var udfs	= controller.getSetting("UDFLibraryFile");
+			var udfLen 	= arrayLen( udfs );
+			var x		= 1;
+			
+			for(x=1; x lte udfLen; x++){
+				includeUDF( udfs[x] );
+			} 
+			
+			return this;
+    	</cfscript>    
+    </cffunction>
 	
 	<!--- CFLOCATION Facade --->
 	<cffunction name="relocate" access="public" hint="This method will be deprecated, please use setNextEvent() instead." returntype="void" output="false">
