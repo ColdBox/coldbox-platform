@@ -110,14 +110,10 @@ Description :
 	
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
-		<cfargument name="name" 				required="false" type="any" default="" hint="The name of the model to retrieve">
-		<cfargument name="useSetterInjection" 	required="false" type="any" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean" colddoc:generic="Boolean">
-		<cfargument name="onDICompleteUDF" 		required="false" type="any"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="stopRecursion"		required="false" type="any"  hint="A comma-delimmited list of stoprecursion classpaths.">
-		<cfargument name="dsl"					required="false" type="any"  hint="The dsl string to use to retrieve the domain object"/>
-		<cfargument name="executeInit"			required="false" type="any" default="true" hint="Whether to execute the init() constructor or not.  Defaults to execute, Boolean" colddoc:generic="Boolean"/>
-		<cfargument name="initArguments" 		required="false" hint="The constructor structure of arguments to passthrough when initializing the instance. Only available for WireBox integration" colddoc:generic="struct"/>
-		<cfreturn controller.getWireBox().getModel(argumentCollection=arguments)>
+		<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfreturn controller.getWireBox().getInstance(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Populate a model object from the request Collection --->
@@ -127,7 +123,7 @@ Description :
 		<cfargument name="trustedSetter"  	required="false" type="any"  default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean" colddoc:generic="Boolean"/>
 		<cfargument name="include"  		required="false" type="any"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="any"  default="" hint="A list of keys to exclude in the population">
-		<cfreturn controller.getWireBox().populateModel(argumentCollection=arguments)>
+		<cfreturn controller.getPlugin("BeanFactory").populateModel(argumentCollection=arguments)>
 	</cffunction>
 
 	<!--- View Rendering Facades --->
@@ -366,17 +362,17 @@ Description :
 			var appMapping		= controller.getSetting("AppMapping");
 			var UDFFullPath 	= ExpandPath( arguments.udflibrary );
 			var UDFRelativePath = ExpandPath("/" & appMapping & "/" & arguments.udflibrary);
-
+			
 			// Relative Checks First
 			if( fileExists( UDFRelativePath ) ){
-				$include( UDFRelativePath );
+				$include( "/" & appMapping & "/" & arguments.udflibrary );
 			}
 			// checks if no .cfc or .cfm where sent
 			else if( fileExists(UDFRelativePath & ".cfc") ){
-				$include( UDFRelativePath & ".cfc" );
+				$include( "/" & appMapping & "/" & arguments.udflibrary & ".cfc" );
 			}
 			else if( fileExists(UDFRelativePath & ".cfm") ){
-				$include( UDFRelativePath & ".cfm" );
+				$include( "/" & appMapping & "/" & arguments.udflibrary & ".cfm" );
 			}
 			// Absolute Checks
 			else if( fileExists( UDFFullPath ) ){
