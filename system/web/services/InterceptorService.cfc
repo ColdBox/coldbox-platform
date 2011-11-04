@@ -298,6 +298,8 @@ Description :
 					arrayAppend( instance.interceptionPoints, arguments.customPoints[x] );
 				}				
 			}	
+			
+			return instance.interceptionPoints;
 		</cfscript>
 	</cffunction>
 	
@@ -377,7 +379,7 @@ Description :
 					// Verify the @interceptionPoint annotation
 					if( structKeyExists(arguments.metadata.functions[x],"interceptionPoint") ){
 						// Register the point by convention and annotation
-						appendInterceptionPoints( arguments.metadata.functions[x].name );
+						currentList = arrayToList( appendInterceptionPoints( arguments.metadata.functions[x].name ) );
 					}
 					
 					// verify its a plugin point by comparing it to the local defined interception points
