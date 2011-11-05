@@ -31,8 +31,14 @@ function cachebox_getBase(baseURL){
 		return baseURL + "&";
 	return baseURL + "?";
 }
-function cachebox_pollmonitor(panel, frequency, urlBase){
-	window.location=cachebox_getBase(urlBase) + 'debugpanel='+panel+'&frequency='+frequency;
+function cachebox_pollmonitor(panel, frequency, urlBase,newWindow){
+	var newLocation = cachebox_getBase(urlBase) + 'debugpanel=' + panel + '&frequency=' + frequency + '&cbox_cacheMonitor=true';
+	if (newWindow == 'undefined') {
+		window.location = newLocation;
+	}
+	else{
+		cachebox_openwindow(newLocation,'cachemonitor',850,750,'status=1,toolbar=0,location=0,resizable=1,scrollbars=1');
+	}
 }
 function cachebox_cboxCommand( commandURL, verb ){
 	if( verb == null ){
@@ -43,7 +49,16 @@ function cachebox_cboxCommand( commandURL, verb ){
 	request.send();
 	return request.responseText;
 }
-//CacheBox Panel JS
+function cachebox_cacheExpireItem(URLBase, cacheKey, cacheName){
+	// Button
+	var btn = document.getElementById('cboxbutton_expireentry_'+cacheKey);
+	btn.disabled = true;
+	btn.value = "Wait";
+	// Execute Command
+	cachebox_cboxCommand( cachebox_getBase(URLBase) + "cbox_command=expirecacheentry&cbox_cacheentry=" + cacheKey + "&cbox_cacheName="+cacheName);
+	// ReFill the content report
+	cachebox_cacheContentReport(URLBase,cacheName);
+}
 function cachebox_cacheClearItem(URLBase, cacheKey, cacheName){
 	// Button
 	var btn = document.getElementById('cboxbutton_removeentry_'+cacheKey);
