@@ -63,12 +63,11 @@ Modification History:
 		controller.getDebuggerService().setDebuggerConfig( debuggerConfig );
 		
 		// Clear the Cache Dictionaries, just to make sure, we are in reload mode.
-		controller.getPluginService().clearDictionary();
 		controller.getHandlerService().clearDictionaries();
 		
 		// Create CacheBox
 		createCacheBox();
-		// Configure plugins
+		// Configure plugins for operation from the configuration file
 		controller.getPluginService().configure();
 		// Create WireBox Container
 		createWireBox();

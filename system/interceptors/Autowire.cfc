@@ -81,27 +81,7 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
-	
-	<!--- After Handler Creation --->
-	<cffunction name="afterHandlerCreation" access="public" returntype="void" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
-		<!--- ************************************************************* --->
-		<cfset processAutowire(arguments.interceptData.oHandler,arguments.interceptData.handlerPath)>		
-	</cffunction>
-		
-	<!--- After Plugin Creation --->
-	<cffunction name="afterPluginCreation" access="public" returntype="void" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
-		<!--- ************************************************************* --->
-		<cfif( NOT findnocase("coldbox.system.plugins",arguments.interceptData.pluginPath) )>
-			<cfset processAutowire(arguments.interceptData.oPlugin,arguments.interceptData.pluginPath)>
-		</cfif>		
-	</cffunction>
-	
+
 	<!--- After EntityNew --->
 	<cffunction name="ORMPostNew" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->

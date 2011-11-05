@@ -180,24 +180,9 @@ Description :
     	<cfreturn "mock-">
     </cffunction>
 
-	<!--- getHandlerCacheKeyPrefix --->
-    <cffunction name="getHandlerCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the handler cache key prefix">
-    	<cfreturn "mock-">
-    </cffunction>
-
 	<!--- getInterceptorCacheKeyPrefix --->
     <cffunction name="getInterceptorCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the interceptor cache key prefix">
     	<cfreturn "mock-">
-    </cffunction>
-
-	<!--- getPluginCacheKeyPrefix --->
-    <cffunction name="getPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the plugin cache key prefix">
-    	<cfreturn "mock-">
-    </cffunction>
-
-	<!--- getCustomPluginCacheKeyPrefix --->
-    <cffunction name="getCustomPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the custom plugin cache key prefix">
-   		<cfreturn "mock-">
     </cffunction>
 
 	<!--- getColdbox --->
@@ -216,11 +201,6 @@ Description :
     	<cfreturn instance.eventURLFacade>
     </cffunction>
 
-	<!--- getItemTypes --->
-	<cffunction name="getItemTypes" access="public" output="false" returntype="any" hint="Get the item types counts of the cache. These are calculated according to the prefixes set.">
-		<cfreturn createObject("component","coldbox.system.cache.util.ItemTypeCount")>
-	</cffunction>
-	
 	<!--- Clear By Key Snippet --->
 	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
 		<cfargument name="keySnippet"  	type="any" required="true"  hint="the cache key snippet to use">

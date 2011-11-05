@@ -65,6 +65,8 @@
 		assertEquals( true, mapping.isAspectAutoBinding() );
 		mapping.setAspectAutoBinding(false);
 		assertEquals( false, mapping.isAspectAutoBinding() );
+		
+		assertEquals( '', mapping.getVirtualInheritance() );
 	}
 	
 	function testProviderMethods(){

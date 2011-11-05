@@ -484,5 +484,13 @@
 		assertTrue( isObject(r) );		
 	}
 	
+	function testVirtualInheritance(){
+		config.mapAspect("MyPlugin").to("plugin.path").virtualInheritance("coldbox.system.Plugin");
+		mapping = config.getMapping("MyPlugin");	
+		b = mapping.getvirtualInheritance();
+		
+		assertEquals("coldbox.system.Plugin", b );
+				
+	}
 </cfscript>
 </cfcomponent>

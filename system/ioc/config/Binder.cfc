@@ -292,7 +292,6 @@ Description :
 			// Set aliases, scopes and types
 			instance.mappings[ name ]
 				.setAlias( arguments.alias )
-				.setScope( this.SCOPES.NOSCOPE )
 				.setType( this.TYPES.CFC );
 			
 			// Loop and create alias references
@@ -414,6 +413,15 @@ Description :
     <cffunction name="noInit" output="false" access="public" returntype="any" hint="If you call this method on an object mapping, the object's constructor will not be called. By default all constructors are called.">
     	<cfscript>
     		currentMapping.setAutoInit( false );
+			return this;
+    	</cfscript>
+    </cffunction>
+    
+    <!--- virtualInheritance --->
+    <cffunction name="virtualInheritance" output="false" access="public" returntype="any" hint="Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping">
+		<cfargument name="mapping" required="true" hint="The mapping name of CFC to create the virtual inheritance from."/>
+    	<cfscript>
+    		currentMapping.setVirtualInheritance( mapping );
 			return this;
     	</cfscript>
     </cffunction>

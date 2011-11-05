@@ -245,7 +245,7 @@ Description :
 			mapping = instance.binder.getMapping( arguments.name );
 			
 			// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
-			if( NOT mapping.isDiscovered() AND mapping.isAutowire() ){ 
+			if( NOT mapping.isDiscovered() ){ 
 				// process inspection of instance
 				mapping.process(binder=instance.binder,injector=this);
 			}
@@ -325,18 +325,18 @@ Description :
     </cffunction>
 	
 	<!--- registerNewInstance --->
-    <cffunction name="registerNewInstance" output="false" access="private" returntype="void" hint="Register a new requested mapping object instance">
+    <cffunction name="registerNewInstance" output="false" access="public" returntype="any" hint="Register a new requested mapping object instance thread safely and returns the binder configured for this instance">
     	<cfargument name="name" 		required="true" hint="The name of the mapping to register"/>
 		<cfargument name="instancePath" required="true" hint="The path of the mapping to register">
     	
     	<!--- Register new instance mapping --->
     	<cflock name="Injector.RegisterNewInstance.#hash(arguments.instancePath)#" type="exclusive" timeout="20" throwontimeout="true">
     		<!--- double lock for concurrency --->
-    		<cfif NOT instance.binder.mappingExists(arguments.name)>
-    			<cfset instance.binder.map(arguments.name).to(arguments.instancePath)>
+    		<cfif NOT instance.binder.mappingExists( arguments.name )>
+    			<cfset instance.binder.map( arguments.name ).to( arguments.instancePath )>
     		</cfif>
 		</cflock>
-		
+		<cfreturn instance.binder.with( arguments.name )>
     </cffunction>
 		
 	<!--- containsInstance --->

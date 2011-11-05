@@ -32,7 +32,7 @@ Description :
 		<cfset var cacheProperties  = arguments.mapping.getCacheProperties()>
 		<cfset var refLocal			= {}>
 		<cfset var cacheProvider	= instance.cacheBox.getCache( cacheProperties.provider )>
-		<cfset var cacheKey			= "wirebox:#cacheProperties.key#">
+		<cfset var cacheKey			= "#cacheProperties.key#">
 		
 		<!--- Get From Cache --->
 		<cfset refLocal.target = cacheProvider.get( cacheKey )>
