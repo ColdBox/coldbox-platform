@@ -66,7 +66,9 @@ Description :
 				// AOP aspect
 				aspect = false,
 				// AutoAspectBinding
-				autoAspectBinding = true
+				autoAspectBinding = true,
+				// Virtual Inhertiance
+				virtualInheritance = ""
 			};
 			
 			// DI definition structure
@@ -135,12 +137,25 @@ Description :
     	</cfscript>
     </cffunction>
 	
+	<!--- Virtual Inheritance --->
+	<cffunction name="getVirtualInheritance" access="public" returntype="any" output="false" hint="Get the virtual inheritance mapping">
+    	<cfreturn instance.virtualInheritance>
+    </cffunction>
+    <cffunction name="setVirtualInheritance" access="public" returntype="any" output="false" hint="Set the virtual inheritance mapping">
+    	<cfargument name="mapping" required="true">
+    	<cfset instance.virtualInheritance = arguments.mapping>
+    	<cfreturn this>
+    </cffunction>
+    <cffunction name="isVirtualInheritance" access="public" returntype="boolean" output="false" hint="Checks if the mapping needs virtual inheritace or not">
+    	<cfreturn len( instance.virtualInheritance ) GT 0>
+    </cffunction>
+        
 	<!--- Name --->
 	<cffunction name="getName" access="public" returntype="any" output="false" hint="Get the mapping name">
     	<cfreturn instance.name>
     </cffunction>
     <cffunction name="setName" access="public" returntype="any" output="false" hint="Name the mapping">
-    	<cfargument name="name" type="string" required="true">
+    	<cfargument name="name" required="true">
     	<cfset instance.name = arguments.name>
     	<cfreturn this>
     </cffunction>

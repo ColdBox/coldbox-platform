@@ -417,6 +417,15 @@ Description :
 			return this;
     	</cfscript>
     </cffunction>
+    
+    <!--- virtualInheritance --->
+    <cffunction name="virtualInheritance" output="false" access="public" returntype="any" hint="Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping">
+		<cfargument name="mapping" required="true" hint="The mapping name of CFC to create the virtual inheritance from."/>
+    	<cfscript>
+    		currentMapping.setVirtualInheritance( mapping );
+			return this;
+    	</cfscript>
+    </cffunction>
 
 	<!--- asEagerInit --->
     <cffunction name="asEagerInit" output="false" access="public" returntype="any" hint="If this method is called, the mapped object will be created once the injector starts up. Basically, not lazy loaded">
