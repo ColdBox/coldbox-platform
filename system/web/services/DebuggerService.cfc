@@ -246,7 +246,6 @@ Description :
 			
 			// Cache info
 			var cacheProvider 	= controller.getColdboxOCM( arguments.cacheName );
-			var itemTypes		= cacheProvider.getItemTypes();
 			var cacheConfig		= "";
 			var cacheStats		= "";
 			var cacheSize		= cacheProvider.getSize();		

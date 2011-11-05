@@ -81,16 +81,7 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
-	
-	<!--- After Handler Creation --->
-	<cffunction name="afterHandlerCreation" access="public" returntype="void" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
-		<!--- ************************************************************* --->
-		<cfset processAutowire(arguments.interceptData.oHandler,arguments.interceptData.handlerPath)>		
-	</cffunction>
-	
+
 	<!--- After EntityNew --->
 	<cffunction name="ORMPostNew" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->

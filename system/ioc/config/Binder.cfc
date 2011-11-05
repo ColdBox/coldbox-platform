@@ -292,7 +292,6 @@ Description :
 			// Set aliases, scopes and types
 			instance.mappings[ name ]
 				.setAlias( arguments.alias )
-				.setScope( this.SCOPES.NOSCOPE )
 				.setType( this.TYPES.CFC );
 			
 			// Loop and create alias references

@@ -33,9 +33,12 @@ Description :
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<cfscript>
+			// local logger
 			instance.log = getController().getLogBox().getLogger(this);
+    		
     		// execute the handler registrations after configurations loaded
 			registerHandlers();
+			
 			// Configuration data and dependencies
 			instance.registeredHandlers			= controller.getSetting("RegisteredHandlers");
 			instance.registeredExternalHandlers = controller.getSetting("RegisteredExternalHandlers");
@@ -50,6 +53,13 @@ Description :
 			instance.templateCache				= getColdboxOCM("template");
 			instance.modules					= controller.getSetting("modules");
 			instance.interceptorService			= controller.getInterceptorService();
+			
+			// store wirebox reference
+			wirebox = controller.getWirebox();
+			// Check if base plugin mapped, else map it
+			if( NOT wirebox.getBinder().mappingExists("coldbox.system.EventHandler") ){
+				wirebox.getBinder().map("coldbox.system.EventHandler").to("coldbox.system.EventHandler").initWith(controller=controller).noAutowire();
+			}
     	</cfscript>
     </cffunction>
 
@@ -59,22 +69,23 @@ Description :
 	<cffunction name="newHandler" access="public" returntype="any" hint="Create a New Handler Instance" output="false" >
 		<cfargument name="invocationPath" type="any" required="true" hint="The handler invocation path"/>
 		<cfscript>
-			//Create Handler
-			var oHandler 	= CreateObject("component", invocationPath );
-			var iData 		= structnew();
+			var oHandler 	= "";
+			var iData 		= {};
+			var binder		= "";
 
-			// Check family if it is handler inheritance or simple CFC?
-			if( NOT isFamilyType("handler",oHandler) ){
-				convertToColdBox( "handler", oHandler );
-				// Init super
-				oHandler.$super.init( controller );
-				// Check if doing cbInit()
-				if( structKeyExists(oHandler, "$cbInit") ){ oHandler.$cbInit( controller ); }
+			// Check if handler mapped?
+			if( NOT wirebox.getBinder().mappingExists( invocationPath ) ){
+				// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
+				binder = wirebox.registerNewInstance(name=invocationPath,instancePath=invocationPath)
+					.virtualInheritance("coldbox.system.EventHandler")
+					.initWith(controller=controller)
+					.inCacheBox(key="handlers-#invocationPath#");
+				// Are we caching or not handlers?
+				if ( NOT instance.handlerCaching ){ binder.into( binder.scopes.NOSCOPE ); }
 			}
-
-			// init the handler for usage
-			oHandler.init( controller );
-
+			// retrieve, build and wire from wirebox
+			oHandler = wirebox.getInstance( invocationPath );		
+			
 			// Fill-up Intercepted metadata
 			iData.handlerPath 	= invocationPath;
 			iData.oHandler 		= oHandler;
@@ -96,44 +107,13 @@ Description :
 		<cfscript>
 			var oEventHandler = "";
 			var oRequestContext = arguments.requestContext;
-			var cacheKey = instance.cache.HANDLER_CACHEKEY_PREFIX & arguments.ehBean.getRunnable();
-			var eventCacheKey = "";
 			var eventCachingData = structnew();
 			var oEventURLFacade = instance.templateCache.getEventURLFacade();
-			var handlerDictionaryEntry = "";
 			var eventDictionaryEntry = "";
-			var refLocal = structnew();
-
-			/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS CACHING :::::::::::::::::::::::::::::::::::::::::::: */
-			// Are we caching handlers?
-			if ( instance.handlerCaching ){
-				// Lookup handler in Cache
-				refLocal.oEventHandler = instance.cache.get(cacheKey);
-
-				// Verify if not found, then create it and cache it
-				if( NOT structKeyExists(refLocal, "oEventHandler") ){
-					// Create a new handler
-					oEventHandler = newHandler(arguments.ehBean.getRunnable());
-					// Save its metadata For event Caching and Aspects
-					saveHandlermetadata(oEventHandler,cacheKey);
-					// Get dictionary entry for operations, it is now guaranteed
-					handlerDictionaryEntry = instance.handlerCacheDictionary[ cacheKey ];
-					// Do we Cache this handler
-					if ( handlerDictionaryEntry.cacheable ){
-						instance.cache.set(cacheKey,oEventHandler,handlerDictionaryEntry.timeout,handlerDictionaryEntry.lastAccessTimeout);
-					}
-				}//end of caching strategy
-				else{
-					oEventHandler = refLocal.oEventHandler;
-				}
-			}
-			else{
-				// Create Runnable Object
-				oEventHandler = newHandler(arguments.ehBean.getRunnable());
-				// Save its metadata For event Caching and Aspects to work
-				saveHandlermetadata(oEventHandler,cacheKey,true);
-			}
-
+			
+			// Create Runnable Object
+			oEventHandler = newHandler( arguments.ehBean.getRunnable() );
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 
 			// Does requested method/action of execution exist in handler?
@@ -142,7 +122,7 @@ Description :
 				// Check if the handler has an onMissingAction() method, virtual Events
 				if( oEventHandler._actionExists("onMissingAction") ){
 					// Override the method of execution
-					arguments.ehBean.setMissingAction(arguments.ehBean.getMethod());
+					arguments.ehBean.setMissingAction( arguments.ehBean.getMethod() );
 					// Let's go execute our missing action
 					return oEventHandler;
 				}
@@ -187,7 +167,7 @@ Description :
 
 
 					// Event is cacheable and we need to flag it so the Renderer caches it
-					oRequestContext.setEventCacheableEntry(eventCachingData);
+					oRequestContext.setEventCacheableEntry( eventCachingData );
 
 				}//end if md says that this event is cacheable
 
@@ -385,7 +365,6 @@ Description :
 		</cfscript>
 	</cffunction>
 
-
 	<!--- Handler Registration System --->
 	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
 		<cfscript>
@@ -428,17 +407,11 @@ Description :
 	<!--- Clear All Dictioanries --->
 	<cffunction name="clearDictionaries" access="public" returntype="void" hint="Clear the internal cache dictionaries" output="false" >
 		<cfscript>
-			instance.handlerCacheDictionary = {};
-			instance.eventCacheDictionary 	= {};
+			instance.eventCacheDictionary = {};
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
-
-	<!--- Handler Cache Dictionary --->
-	<cffunction name="getHandlerCacheDictionary" access="public" returntype="struct" output="false">
-		<cfreturn instance.handlerCacheDictionary>
-	</cffunction>
 
 	<!--- Event Cache Dictionary --->
 	<cffunction name="getEventCacheDictionary" access="public" returntype="struct" output="false">
@@ -557,61 +530,6 @@ Description :
 				// Save md Entry in dictionary
 				instance.eventCacheDictionary[ cacheKey ] = mdEntry;
 			}//end of md cache dictionary.
-			</cfscript>
-			</cflock>
-		</cfif>
-	</cffunction>
-
-	<!--- Save Handler metadata --->
-	<cffunction name="saveHandlerMetadata" access="private" returntype="void" hint="Save a handler's persistence metadata in the dictionary" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="targetHandler" type="any" 	required="true" hint="The handler target" />
-		<cfargument name="cacheKey"      type="any" 	required="true" hint="The handler cache key" />
-		<cfargument name="force" 		 type="boolean" required="true" default="false" hint="Force the md lookup. Most likely used when controller caching is off"/>
-		<!--- ************************************************************* --->
-		<cfset var metadata = 0>
-		<cfset var mdEntry  = 0>
-
-		<!--- Check if md already in our data dictionary --->
-		<cfif NOT structKeyExists( instance.handlerCacheDictionary, arguments.cacheKey ) OR arguments.force>
-			<cfset metadata = getmetadata(arguments.targetHandler)>
-			<cflock name="handlerservice.handlermd.#metadata.name#" type="exclusive" throwontimeout="true" timeout="10">
-			<cfscript>
-			// Determine if we have md and cacheable, else set it
-			if ( NOT structKeyExists( instance.handlerCacheDictionary, arguments.cacheKey ) OR arguments.force){
-
-				// Get Default MD Entry
-				mdEntry = getNewMDEntry();
-
-				// By Default, handlers with no cache flag are set to true
-				if ( NOT structKeyExists(metadata,"cache") or NOT isBoolean(metadata["cache"]) ){
-					metadata.cache = true;
-				}
-
-				// Cache Entries for timeout and last access timeout
-				if ( metadata.cache ){
-					mdEntry.cacheable = true;
-					if ( structKeyExists(metadata,"cachetimeout") ){
-						mdEntry.timeout = metadata["cachetimeout"];
-					}
-					if ( structKeyExists(metadata, "cacheLastAccessTimeout") ){
-						mdEntry.lastAccessTimeout = metadata["cacheLastAccessTimeout"];
-					}
-				} // end we cached.
-
-				// Test for singleton parameters
-				if( structKeyExists(metadata,"singleton") ){
-					mdEntry.cacheable = true;
-					mdEntry.timeout   = 0;
-				}
-
-
-				//TODO: Add function md entries here too. Maybe create a handlerMD object that can store
-				// Persistence, event caching and more. Then we can use that easily for next requests.
-
-				// Set Entry in dictionary
-				instance.handlerCacheDictionary[ arguments.cacheKey ] = mdEntry;
-			}
 			</cfscript>
 			</cflock>
 		</cfif>

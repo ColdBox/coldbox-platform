@@ -245,7 +245,7 @@ Description :
 			mapping = instance.binder.getMapping( arguments.name );
 			
 			// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
-			if( NOT mapping.isDiscovered() AND mapping.isAutowire() ){ 
+			if( NOT mapping.isDiscovered() ){ 
 				// process inspection of instance
 				mapping.process(binder=instance.binder,injector=this);
 			}

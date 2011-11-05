@@ -71,7 +71,7 @@ Modification History:
 			wirebox = controller.getWirebox();
 			// Check if base plugin mapped, else map it
 			if( NOT wirebox.getBinder().mappingExists("coldbox.system.Plugin") ){
-				wirebox.getBinder().map("coldbox.system.Plugin").to("coldbox.system.Plugin").initWith(controller=controller);
+				wirebox.getBinder().map("coldbox.system.Plugin").to("coldbox.system.Plugin").initWith(controller=controller).noAutowire();
 			}
 		</cfscript>
     </cffunction>
