@@ -12,8 +12,7 @@ Modification History:
 			 hint="This is the Timer plugin. It is used to time executions. Facade for request variable"
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true"
-			 cachetimeout="5">
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

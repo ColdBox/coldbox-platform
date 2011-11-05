@@ -21,7 +21,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 <cfcomponent hint="Loads External Java Classes, while providing access to ColdFusion classes"
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 singleton="true">
+			 singleton>
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

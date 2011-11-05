@@ -19,7 +19,7 @@ Modifications:
 			 hint="JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects."
 			 extends="coldbox.system.core.conversion.JSON"
 			 output="false"
-			 singleton>
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

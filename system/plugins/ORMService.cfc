@@ -12,7 +12,7 @@ This makes it a nice ORMService plugin
 
 ----------------------------------------------------------------------->
 */
-component extends="coldbox.system.orm.hibernate.BaseORMService" singleton="true"{
+component extends="coldbox.system.orm.hibernate.BaseORMService" singleton{
 
 	/**
 	* Constructor
