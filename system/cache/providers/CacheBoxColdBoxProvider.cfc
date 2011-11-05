@@ -21,8 +21,6 @@ Description :
 			this.EVENT_CACHEKEY_PREFIX 			= "cbox_event-";
 			this.HANDLER_CACHEKEY_PREFIX 		= "cbox_handler-";
 			this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cbox_interceptor-";
-			this.PLUGIN_CACHEKEY_PREFIX 		= "cbox_plugin-";
-			this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cbox_customplugin-";
 			
 			// URL Facade Utility
 			instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
@@ -56,16 +54,6 @@ Description :
     	<cfreturn this.INTERCEPTOR_CACHEKEY_PREFIX>
     </cffunction>
 
-	<!--- getPluginCacheKeyPrefix --->
-    <cffunction name="getPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the plugin cache key prefix">
-    	<cfreturn this.PLUGIN_CACHEKEY_PREFIX>
-    </cffunction>
-
-	<!--- getCustomPluginCacheKeyPrefix --->
-    <cffunction name="getCustomPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the custom plugin cache key prefix">
-    	<cfreturn this.CUSTOMPLUGIN_CACHEKEY_PREFIX>
-    </cffunction>
-
 	<!--- getColdbox --->
     <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller">
     	<cfreturn instance.coldbox>
@@ -96,11 +84,7 @@ Description :
 		//Count objects
 		for (x=1; x lte itemLen; x++){
 			
-			if ( findnocase( getPluginCacheKeyPrefix() , itemList[x]) )
-				itemTypes.plugins++;
-			else if ( findnocase( getCustomPluginCacheKeyPrefix() , itemList[x]) )
-				itemTypes.customPlugins++;
-			else if ( findnocase( getHandlerCacheKeyPrefix() , itemList[x]) )
+			if ( findnocase( getHandlerCacheKeyPrefix() , itemList[x]) )
 				itemTypes.handlers++;
 			else if ( findnocase( getInterceptorCacheKeyPrefix() , itemList[x]) )
 				itemTypes.interceptors++;

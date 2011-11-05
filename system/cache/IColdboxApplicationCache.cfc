@@ -27,14 +27,6 @@ Description :
     <cffunction name="getInterceptorCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the interceptor cache key prefix">
     </cffunction>
 
-	<!--- getPluginCacheKeyPrefix --->
-    <cffunction name="getPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the plugin cache key prefix">
-    </cffunction>
-
-	<!--- getCustomPluginCacheKeyPrefix --->
-    <cffunction name="getCustomPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the custom plugin cache key prefix">
-    </cffunction>
-
 	<!--- getColdbox --->
     <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller">
     </cffunction>
