@@ -68,7 +68,9 @@ Description :
 				// AutoAspectBinding
 				autoAspectBinding = true,
 				// Virtual Inhertiance
-				virtualInheritance = ""
+				virtualInheritance = "",
+				// Extra Attributes
+				extraAttributes = {}
 			};
 			
 			// DI definition structure
@@ -157,6 +159,16 @@ Description :
     <cffunction name="setName" access="public" returntype="any" output="false" hint="Name the mapping">
     	<cfargument name="name" required="true">
     	<cfset instance.name = arguments.name>
+    	<cfreturn this>
+    </cffunction>
+    
+    <!--- ExtraAttributes --->
+	<cffunction name="getExtraAttributes" access="public" returntype="any" output="false" hint="Get the mapping's extra attributes">
+    	<cfreturn instance.extraAttributes>
+    </cffunction>
+    <cffunction name="setExtraAttributes" access="public" returntype="any" output="false" hint="Set the mapping's extra attributes">
+    	<cfargument name="data" required="true">
+    	<cfset instance.extraAttributes = arguments.data>
     	<cfreturn this>
     </cffunction>
 	

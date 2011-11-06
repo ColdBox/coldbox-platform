@@ -180,7 +180,7 @@
 	function testEagerInit(){
 		config.mapPath("Test");
 		mapping = config.getMapping("Test");
-		assertEquals( false, mapping.isEagerInit() );
+		assertEquals( '', mapping.isEagerInit() );
 		
 		config.mapPath("Test").asEagerInit();
 		mapping = config.getMapping("Test");
@@ -190,7 +190,7 @@
 	function testNoAutowire(){
 		config.mapPath("Test");
 		mapping = config.getMapping("Test");
-		assertEquals( true, mapping.isAutowire() );
+		assertEquals( '', mapping.isAutowire() );
 		
 		config.mapPath("Test").noAutowire();
 		mapping = config.getMapping("Test");
@@ -490,6 +490,16 @@
 		b = mapping.getvirtualInheritance();
 		
 		assertEquals("coldbox.system.Plugin", b );
+				
+	}
+	
+	function testExtraAttributes(){
+		var data = {plugin=true,path="hello.path"};
+		config.mapAspect("MyPlugin").to("plugin.path").virtualInheritance("coldbox.system.Plugin").extraAttributes(data);
+		mapping = config.getMapping("MyPlugin");	
+		b = mapping.getExtraAttributes();
+		
+		assertEquals( data, b);
 				
 	}
 </cfscript>

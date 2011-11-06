@@ -540,6 +540,15 @@ Description :
 		</cfscript>
     </cffunction>
 
+	<!--- extraAttributes --->
+    <cffunction name="extraAttributes" output="false" access="public" returntype="any" hint="Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.">
+    	<cfargument name="data" type="struct" required="true" hint="The data structure to store with the maping"/>
+		<cfscript>
+			currentMapping.setExtraAttributes( arguments.data );
+			return this;
+		</cfscript>
+    </cffunction>
+    
 <!------------------------------------------- STOP RECURSIONS ------------------------------------------>
 
 	<!--- getStopRecursions --->

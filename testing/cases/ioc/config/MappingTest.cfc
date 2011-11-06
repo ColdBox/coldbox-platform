@@ -40,7 +40,7 @@
 		assertEquals( data.type, mapping.getTYpe() );
 		assertEquals( data.path, mapping.getPath() );
 		assertEquals( "init", mapping.getConstructor() );
-		assertEquals( true, mapping.isAutowire() );
+		assertEquals( '', mapping.isAutowire() );
 		assertEquals( true, mapping.isAutoInit() );
 		assertEquals( true, mapping.isEagerInit() );
 		assertEquals( data.scope, mapping.getScope() );
