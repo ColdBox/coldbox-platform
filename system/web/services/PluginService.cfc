@@ -45,8 +45,9 @@ Modification History:
 	<!--- configure --->
 	<cffunction name="configure" access="public" output="false" returntype="void">
 		<cfscript>
-			// Cache Reference
-			instance.cache = getColdboxOCM();
+			// Local References
+			instance.cache 				= getColdboxOCM();
+			instance.interceptorService	= controller.getInterceptorService();
 			
 			// Set the custom plugin paths
 			instance.customPluginsPath 			= controller.getSetting("MyPluginsInvocationPath");
@@ -73,8 +74,34 @@ Modification History:
 			if( NOT wirebox.getBinder().mappingExists("coldbox.system.Plugin") ){
 				wirebox.getBinder().map("coldbox.system.Plugin").to("coldbox.system.Plugin").initWith(controller=controller).noAutowire();
 			}
+			// register ourselves to listen for autowirings
+			instance.interceptorService.registerInterceptionPoint("PluginService","afterInstanceAutowire",this);
 		</cfscript>
     </cffunction>
+    
+<!------------------------------------------- EVENTS ------------------------------------------>
+
+	<!--- afterInstanceAutowire --->
+    <cffunction name="afterInstanceAutowire" output="false" access="public" returntype="void" hint="Called by wirebox once instances are autowired">
+		<cfargument name="event" />
+		<cfargument name="interceptData" />
+    	<cfscript>
+			var attribs = interceptData.mapping.getExtraAttributes();
+			var iData 	= {};
+			
+			// listen to plugins only
+			if( controller.getColdboxInitiated() AND structKeyExists(attribs, "isPlugin") ){
+				//Fill-up Intercepted MetaData
+				iData.pluginPath = attribs.pluginPath;
+				iData.custom 	 = attribs.custom;	
+				iData.module 	 = attribs.module;		
+				iData.oPlugin    = interceptData.target;
+				
+				//Fire Interception
+				instance.interceptorService.processState("afterPluginCreation",iData);
+			}
+		</cfscript>
+    </cffunction>	
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
@@ -88,9 +115,9 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oPlugin 			= 0;
-			var iData 				= structnew();
 			var pluginLocation 		= "";
 			var pluginLocationKey 	= arguments.plugin & arguments.custom & arguments.module;
+			var attribs				= "";
 					
 			// Locate Plugin, lazy loaded and cached
 			if( NOT structKeyExists(instance.refLocationMap, pluginLocationKey) ){
@@ -100,24 +127,18 @@ Modification History:
 			
 			// Check if plugin mapped?
 			if( NOT wirebox.getBinder().mappingExists( pluginLocation ) ){
+				attribs = {
+					pluginPath 	= pluginLocation,
+					custom 	 	= arguments.custom,
+					module 		= arguments.module,
+					isPlugin	= true
+				};
 				// feed this plugin to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
 				wirebox.registerNewInstance(name=pluginLocation,instancePath=pluginLocation)
-					.virtualInheritance("coldbox.system.Plugin").initWith(controller=controller);
+					.virtualInheritance("coldbox.system.Plugin").initWith(controller=controller).extraAttributes( attribs );
 			}
 			// retrieve, build and wire from wirebox
 			oPlugin = wirebox.getInstance( pluginLocation );			
-			
-			//Interception if application is up and running. We need the interceptors.
-			if ( controller.getColdboxInitiated() ){
-				//Fill-up Intercepted MetaData
-				iData.pluginPath = pluginLocation;
-				iData.custom 	 = arguments.custom;	
-				iData.module 	 = arguments.module;		
-				iData.oPlugin    = oPlugin;
-				
-				//Fire Interception
-				controller.getInterceptorService().processState("afterPluginCreation",iData);
-			}
 			
 			//Return plugin
 			return oPlugin;

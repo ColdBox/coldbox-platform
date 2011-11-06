@@ -63,6 +63,29 @@ Description :
     	</cfscript>
     </cffunction>
 
+    
+<!------------------------------------------- EVENTS ------------------------------------------>
+
+	<!--- afterInstanceAutowire --->
+    <cffunction name="afterInstanceAutowire" output="false" access="public" returntype="void" hint="Called by wirebox once instances are autowired">
+		<cfargument name="event" />
+		<cfargument name="interceptData" />
+    	<cfscript>
+			var attribs = interceptData.mapping.getExtraAttributes();
+			var iData 	= {};
+			
+			// listen to plugins only
+			if( structKeyExists(attribs, "isHandler") ){
+				// Fill-up Intercepted metadata
+				iData.handlerPath 	= invocationPath;
+				iData.oHandler 		= interceptData.target;
+	
+				// Fire Interception
+				instance.interceptorService.processState("afterHandlerCreation",iData);
+			}
+		</cfscript>
+    </cffunction>	
+    
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Get a new handler Instance --->
@@ -70,29 +93,28 @@ Description :
 		<cfargument name="invocationPath" type="any" required="true" hint="The handler invocation path"/>
 		<cfscript>
 			var oHandler 	= "";
-			var iData 		= {};
 			var binder		= "";
-
+			var attribs		= "";
+			
 			// Check if handler mapped?
 			if( NOT wirebox.getBinder().mappingExists( invocationPath ) ){
+				// extra attributes
+				attribs = {
+					handlerPath = invocationPath,
+					isHandler	= true
+				};
 				// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
 				binder = wirebox.registerNewInstance(name=invocationPath,instancePath=invocationPath)
 					.virtualInheritance("coldbox.system.EventHandler")
 					.initWith(controller=controller)
-					.inCacheBox(key="handlers-#invocationPath#");
+					.inCacheBox(key="handlers-#invocationPath#")
+					.extraAttributes( attribs );
 				// Are we caching or not handlers?
 				if ( NOT instance.handlerCaching ){ binder.into( binder.scopes.NOSCOPE ); }
 			}
 			// retrieve, build and wire from wirebox
 			oHandler = wirebox.getInstance( invocationPath );		
 			
-			// Fill-up Intercepted metadata
-			iData.handlerPath 	= invocationPath;
-			iData.oHandler 		= oHandler;
-
-			// Fire Interception
-			instance.interceptorService.processState("afterHandlerCreation",iData);
-
 			//return handler
 			return oHandler;
 		</cfscript>
