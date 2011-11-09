@@ -292,7 +292,6 @@ Description :
 			// Set aliases, scopes and types
 			instance.mappings[ name ]
 				.setAlias( arguments.alias )
-				.setScope( this.SCOPES.NOSCOPE )
 				.setType( this.TYPES.CFC );
 			
 			// Loop and create alias references
@@ -417,6 +416,15 @@ Description :
 			return this;
     	</cfscript>
     </cffunction>
+    
+    <!--- virtualInheritance --->
+    <cffunction name="virtualInheritance" output="false" access="public" returntype="any" hint="Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping">
+		<cfargument name="mapping" required="true" hint="The mapping name of CFC to create the virtual inheritance from."/>
+    	<cfscript>
+    		currentMapping.setVirtualInheritance( mapping );
+			return this;
+    	</cfscript>
+    </cffunction>
 
 	<!--- asEagerInit --->
     <cffunction name="asEagerInit" output="false" access="public" returntype="any" hint="If this method is called, the mapped object will be created once the injector starts up. Basically, not lazy loaded">
@@ -532,6 +540,15 @@ Description :
 		</cfscript>
     </cffunction>
 
+	<!--- extraAttributes --->
+    <cffunction name="extraAttributes" output="false" access="public" returntype="any" hint="Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.">
+    	<cfargument name="data" type="struct" required="true" hint="The data structure to store with the maping"/>
+		<cfscript>
+			currentMapping.setExtraAttributes( arguments.data );
+			return this;
+		</cfscript>
+    </cffunction>
+    
 <!------------------------------------------- STOP RECURSIONS ------------------------------------------>
 
 	<!--- getStopRecursions --->

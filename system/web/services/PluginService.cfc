@@ -28,16 +28,13 @@ Modification History:
 			instance.CORE_EXTENSIONS_PATH = "coldbox.system.extensions.plugins";
 			
 			// Custom Convention Locations
-			setCustomPluginsPath('');
-			setCustomPluginsPhysicalPath('');
-			setCustomPluginsExternalPath('');
+			instance.customPluginsPath 			= '';
+			instance.customPluginsPhysicalPath 	= '';
+			instance.customPluginsExternalPath 	= '';
 			
 			// Prepare Extension Points using default values
-			setExtensionsPath( instance.CORE_EXTENSIONS_PATH );
-			setExtensionsPhysicalPath( expandPath("/" & replace(getExtensionsPath(),".","/","all") & "/") );
-			
-			// Prepare MD dictionary
-			setCacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('PluginMetadata'));
+			instance.extensionsPath = instance.CORE_EXTENSIONS_PATH;
+			instance.extensionsPhysicalPath = expandPath("/" & replace(instance.extensionsPath,".","/","all") & "/");
 			
 			return this;
 		</cfscript>
@@ -48,23 +45,63 @@ Modification History:
 	<!--- configure --->
 	<cffunction name="configure" access="public" output="false" returntype="void">
 		<cfscript>
-			// Cache Reference
-			instance.cache = getColdboxOCM();
+			// Local References
+			instance.cache 				= getColdboxOCM();
+			instance.interceptorService	= controller.getInterceptorService();
+			
 			// Set the custom plugin paths
-			setCustomPluginsPath(controller.getSetting("MyPluginsInvocationPath"));
-			setCustomPluginsPhysicalPath(controller.getSetting("MyPluginsPath"));
-			setCustomPluginsExternalPath(controller.getSetting('PluginsExternalLocation'));
+			instance.customPluginsPath 			= controller.getSetting("MyPluginsInvocationPath");
+			instance.customPluginsPhysicalPath 	= controller.getSetting("MyPluginsPath");
+			instance.customPluginsExternalPath 	= controller.getSetting('PluginsExternalLocation');
 			
 			// Override the coldbox plugin extensions if defined in the configuration
 			if( len(controller.getSetting("ColdBoxExtensionsLocation")) ){
-				setExtensionsPath(controller.getSetting("ColdBoxExtensionsLocation") & ".plugins");
-				setExtensionsPhysicalPath(expandPath("/" & replace(getExtensionsPath(),".","/","all") & "/"));
+				instance.extensionsPath = controller.getSetting("ColdBoxExtensionsLocation") & ".plugins";
+				instance.extensionsPhysicalPath = expandPath("/" & replace(instance.extensionsPath,".","/","all") & "/");
 			}		
 			
-			// refLocation map
+			// refLocation map for location caching
 			instance.refLocationMap = structnew();	
 		</cfscript>
 	</cffunction>
+	
+	<!--- onConfigurationLoad --->
+    <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
+    	<cfscript>
+			// store wirebox reference
+			wirebox = controller.getWirebox();
+			// Check if base plugin mapped, else map it
+			if( NOT wirebox.getBinder().mappingExists("coldbox.system.Plugin") ){
+				wirebox.getBinder().map("coldbox.system.Plugin").to("coldbox.system.Plugin").initWith(controller=controller).noAutowire();
+			}
+			// register ourselves to listen for autowirings
+			instance.interceptorService.registerInterceptionPoint("PluginService","afterInstanceAutowire",this);
+		</cfscript>
+    </cffunction>
+    
+<!------------------------------------------- EVENTS ------------------------------------------>
+
+	<!--- afterInstanceAutowire --->
+    <cffunction name="afterInstanceAutowire" output="false" access="public" returntype="void" hint="Called by wirebox once instances are autowired">
+		<cfargument name="event" />
+		<cfargument name="interceptData" />
+    	<cfscript>
+			var attribs = interceptData.mapping.getExtraAttributes();
+			var iData 	= {};
+			
+			// listen to plugins only
+			if( controller.getColdboxInitiated() AND structKeyExists(attribs, "isPlugin") ){
+				//Fill-up Intercepted MetaData
+				iData.pluginPath = attribs.pluginPath;
+				iData.custom 	 = attribs.custom;	
+				iData.module 	 = attribs.module;		
+				iData.oPlugin    = interceptData.target;
+				
+				//Fire Interception
+				instance.interceptorService.processState("afterPluginCreation",iData);
+			}
+		</cfscript>
+    </cffunction>	
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
@@ -78,50 +115,30 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oPlugin 			= 0;
-			var iData 				= structnew();
-			var pluginKey 			= getPluginCacheKey(argumentCollection=arguments);
 			var pluginLocation 		= "";
 			var pluginLocationKey 	= arguments.plugin & arguments.custom & arguments.module;
-			
+			var attribs				= "";
+					
 			// Locate Plugin, lazy loaded and cached
 			if( NOT structKeyExists(instance.refLocationMap, pluginLocationKey) ){
 				instance.refLocationMap[pluginLocationKey] = locatePluginPath(argumentCollection=arguments);
 			}
 			pluginLocation = instance.refLocationMap[pluginLocationKey];
 			
-			// Create Plugin
-			oPlugin = createObject("component",pluginLocation);
-			
-			// Determine if we have md and cacheable, else store object metadata for efficiency
-			if ( not instance.cacheDictionary.keyExists(pluginKey) ){
-				storeMetadata(pluginKey,getMetadata(oPlugin));
+			// Check if plugin mapped?
+			if( NOT wirebox.getBinder().mappingExists( pluginLocation ) ){
+				attribs = {
+					pluginPath 	= pluginLocation,
+					custom 	 	= arguments.custom,
+					module 		= arguments.module,
+					isPlugin	= true
+				};
+				// feed this plugin to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
+				wirebox.registerNewInstance(name=pluginLocation,instancePath=pluginLocation)
+					.virtualInheritance("coldbox.system.Plugin").initWith(controller=controller).extraAttributes( attribs );
 			}
-			
-			// Is it plugin family or not? If not, then decorate it
-			if( NOT isFamilyType("plugin",oPlugin) ){
-				convertToColdBox( "plugin", oPlugin );
-				// Init super
-				oPlugin.$super.init( controller );
-				// Check if doing cbInit()
-				if( structKeyExists(oPlugin, "$cbInit") ){ oPlugin.$cbInit( controller ); }
-			}
-				
-			// init It if it exists
-			if( structKeyExists(oPlugin,"init") and arguments.init ){
-				oPlugin.init( controller );
-			}						
-			
-			//Interception if application is up and running. We need the interceptors.
-			if ( controller.getColdboxInitiated() ){
-				//Fill-up Intercepted MetaData
-				iData.pluginPath = pluginLocation;
-				iData.custom 	 = arguments.custom;	
-				iData.module 	 = arguments.module;		
-				iData.oPlugin    = oPlugin;
-				
-				//Fire Interception
-				controller.getInterceptorService().processState("afterPluginCreation",iData);
-			}
+			// retrieve, build and wire from wirebox
+			oPlugin = wirebox.getInstance( pluginLocation );			
 			
 			//Return plugin
 			return oPlugin;
@@ -137,30 +154,7 @@ Modification History:
 		<cfargument name="init"   type="any" required="false" default="true" hint="Auto init() the plugin upon construction. Boolean"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var pluginKey 				= getPluginCacheKey(argumentCollection=arguments);
-			var pluginDictionaryEntry 	= "";
-			var refLocal				= structnew();
-			var oPlugin					= "";
-			
-			// Lookup plugin in Cache
-			refLocal.oPlugin = instance.cache.get(pluginKey);
-			
-			// Verify it
-			if( NOT structKeyExists(refLocal,"oPlugin") ){
-				// Object not found, proceed to create and verify
-				refLocal.oPlugin = new(argumentCollection=arguments);
-				
-				// Get plugin metadata Entry
-				pluginDictionaryEntry = instance.cacheDictionary.getKey(pluginKey);
-				
-				// Do we Cache the plugin?
-				if ( pluginDictionaryEntry.cacheable ){
-					instance.cache.set(pluginKey,refLocal.oPlugin,pluginDictionaryEntry.timeout,pluginDictionaryEntry.lastAccessTimeout);
-				}				
-			}
-			//end else if instance not in cache.
-			
-			return	refLocal.oPlugin;
+			return new(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 	
@@ -218,80 +212,8 @@ Modification History:
 	<cffunction name="getExtensionsPhysicalPath" access="public" output="false" returntype="any" hint="Get the physical path where extension plugins exist.">
 		<cfreturn instance.extensionsPhysicalPath/>
 	</cffunction>
-	
-	<!--- Plugin Cache Metadata Dictionary --->
-	<cffunction name="getCacheDictionary" access="public" output="false" returntype="any" hint="Get the plugin cache dictionary structure">
-		<cfreturn instance.cacheDictionary/>
-	</cffunction>
-	
-	<!--- Clear the metadata dictionary --->
-	<cffunction name="clearDictionary" access="public" returntype="void" hint="Clear the cache dictionary" output="false" >
-		<cfset getCacheDictionary().clearAll()>
-	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
-	<!--- storeMetadata --->
-    <cffunction name="storeMetadata" output="false" access="private" returntype="any" hint="Store a plugin's metadata introspection, return the md struct">
-    	<cfargument name="pluginKey" type="any" 	required="true" hint="The plugin cache key"/>
-    	<cfargument name="pluginMD"  type="any" 	required="true" hint="The plugin's metadata"/>
-    	<cfscript>
-    		var metadata = arguments.pluginMD;
-			var mdEntry = getNewMDEntry(); 
-			
-			// Test for caching parameters
-			if ( structKeyExists(metadata, "cache") and isBoolean(metadata["cache"]) and metadata["cache"] ){
-				
-				mdEntry.cacheable = true;
-				
-				// Timeout
-				if ( structKeyExists(metadata,"cachetimeout") ){
-					mdEntry.timeout = metadata["cachetimeout"];
-				}
-				
-				// Idle Timeout
-				if ( structKeyExists(metadata,"cachelastaccesstimeout") ){
-					mdEntry.lastAccessTimeout = metadata["cachelastaccesstimeout"];
-				}			
-			}
-			
-			// Test for singleton annotation
-			if( structKeyExists(metadata,"singleton") ){
-				mdEntry.cacheable = true;
-				mdEntry.timeout = 0;
-			}
-			
-			// Init annotation
-			if( structKeyExists(metadata,"autoInit") and isBoolean(metadata.autoInit) ){
-				mdEntry.init = metadata.autoInit;
-			}
-			
-			// Set Entry in dictionary
-			instance.cacheDictionary.setKey(arguments.pluginKey,mdEntry);		
-			
-			return mdEntry;
-    	</cfscript>
-    </cffunction>
-	
-	<!--- Get a new MD cache entry structure --->
-	<cffunction name="getNewMDEntry" access="private" returntype="any" hint="Get a new metadata entry structure for plugins" output="false" >
-		<cfscript>
-			var mdEntry = structNew();
-			
-			mdEntry.cacheable = false;
-			mdEntry.timeout = "";
-			mdEntry.lastAccessTimeout = "";
-			mdEntry.init = true;
-			
-			return mdEntry;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Set the internal plugin cache dictionary. --->
-	<cffunction name="setCacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
-		<cfargument name="cacheDictionary" type="any" required="true"/>
-		<cfset instance.cacheDictionary = arguments.cacheDictionary/>
-	</cffunction>
 	
 	<!--- Locate a Plugin Instantiation Path --->
 	<cffunction name="locatePluginPath" access="private" returntype="any" hint="Locate a full plugin instantiation path from the requested plugin name" output="false" >
@@ -332,13 +254,13 @@ Modification History:
 				}
 				
 				// Check for Convention First, pluginsExternalLocation was already setup with conventions
-				if ( fileExists(getCustomPluginsPhysicalPath() & "/" & pluginFilePath ) ){
-					return "#getCustomPluginsPath()#.#arguments.plugin#";
+				if ( fileExists( instance.customPluginsPhysicalPath & "/" & pluginFilePath ) ){
+					return "#instance.customPluginsPath#.#arguments.plugin#";
 				}
 				
 				// External Locations Search
-				if( len( trim( getCustomPluginsExternalPath() ) ) ){
-					return getCustomPluginsExternalPath() & "." & arguments.plugin;
+				if( len( trim( instance.customPluginsExternalPath ) ) ){
+					return instance.customPluginsExternalPath & "." & arguments.plugin;
 				}
 				// If not, just return the plugin location
 				return arguments.plugin;
@@ -346,11 +268,11 @@ Modification History:
 			}//end if custom plugin
 			
 			// Check coldbox extensions
-			pluginFilePath = getExtensionsPhysicalPath() & replace(arguments.plugin,".","/","all") & ".cfc";
+			pluginFilePath = instance.extensionsPhysicalPath & replace(arguments.plugin,".","/","all") & ".cfc";
 			
 			// Check Extensions locations First
-			if( fileExists(pluginFilePath) ){
-				return getExtensionsPath() & "." & arguments.plugin;
+			if( fileExists( pluginFilePath ) ){
+				return instance.extensionsPath & "." & arguments.plugin;
 			}
 						
 			// else return the core coldbox path
@@ -358,26 +280,4 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-	<!--- getPluginCacheKey --->
-	<cffunction name="getPluginCacheKey" output="false" access="private" returntype="any" hint="Get the plugin Cache Key">
-		<cfargument name="plugin" type="any"    required="true"  hint="The name (classpath) of the plugin to create">
-		<cfargument name="custom" type="any" 	required="true"  hint="Custom plugin or coldbox plugin. Boolean">
-		<cfargument name="module" type="any" 	required="false" default="" hint="The module to retrieve the plugin from"/>
-		<cfscript>
-			var pluginKey = instance.cache.PLUGIN_CACHEKEY_PREFIX & arguments.plugin;
-			
-			// A module Plugin
-			if( len(arguments.module) ){
-				return instance.cache.CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.module & ":" & arguments.plugin;
-			}
-			
-			// Differentiate a Custom PluginKey
-			if ( arguments.custom ){
-				return instance.cache.CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.plugin;
-			}
-			
-			return pluginKey;
-		</cfscript>
-	</cffunction>
-	
 </cfcomponent>

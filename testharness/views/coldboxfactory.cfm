@@ -34,11 +34,6 @@
 	</tr>
 	
 	<tr>
-		<td><strong>Cache Manager:</strong></td>
-		<td><cfdump var="#rc.testModel.getCacheManager().getItemTypes()#"></td>
-	</tr>
-	
-	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
 	

@@ -13,7 +13,7 @@ Description:
 <cfcomponent hint="OWASP AntiSamy Project that provides XSS cleanup operations to ColdBox applications"
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 singleton="true">
+			 singleton>
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	

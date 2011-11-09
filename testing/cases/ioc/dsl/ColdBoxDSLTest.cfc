@@ -142,18 +142,18 @@
 		
 		//ocm only
 		def = {name="key", dsl="ocm"};
-		mockCache.$("lookup", true).$("get",this);
+		mockCache.$("get",this);
 		e = builder.getOCMDSL(def);
 		assertEquals( this, e);
 		
 		//ocm only
-		mockCache.$("lookup", false).$("get",this);
-		e = builder.getOCMDSL(def);
-		assertTrue( mockCache.$never("get") );
+		mockCache.$("get", javaCast("null",""));
+		results.e = builder.getOCMDSL(def);
+		assertFalse( structKeyExists(results,"e")  );
 		
 		// ocm:MyKey
 		def = {name="key", dsl="ocm:myKey"};
-		mockCache.$("lookup", true).$("get",this);
+		mockCache.$("get",this);
 		e = builder.getOCMDSL(def);
 		assertEquals( this, e);
 		assertEquals( "myKey", mockCache.$callLog().get[1][1] );

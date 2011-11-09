@@ -129,7 +129,11 @@ Description :
 		
 		// Process Output Buffer: looks weird, but we are outputting stuff
 		</cfscript>
-		</cfsilent><cfif instance.requestBuffer.isBufferInScope()><cfset writeOutput(instance.requestBuffer.getString())><cfset instance.requestBuffer.clear()></cfif>
+		</cfsilent><!---
+		---><cfif instance.requestBuffer.isBufferInScope()><!---
+			---><cfset writeOutput(instance.requestBuffer.getString())><!---
+			---><cfset instance.requestBuffer.clear()><!---
+		---></cfif>
 	</cffunction>
 	
 	<!--- Register an Interceptor --->
@@ -294,6 +298,8 @@ Description :
 					arrayAppend( instance.interceptionPoints, arguments.customPoints[x] );
 				}				
 			}	
+			
+			return instance.interceptionPoints;
 		</cfscript>
 	</cffunction>
 	
@@ -351,6 +357,36 @@ Description :
 			return unregistered;						
 		</cfscript>
 	</cffunction>
+	
+	<!--- Register an Interception Point --->
+	<cffunction name="registerInterceptionPoint" access="public" returntype="any" hint="Register an Interception point into a new or created interception state." output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="interceptorKey" 	required="true" type="any" hint="The interceptor key to use for lookups in the state.">
+		<cfargument name="state" 			required="true" type="any" hint="The state to create">
+		<cfargument name="oInterceptor" 	required="true" type="any" hint="The interceptor to register">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var oInterceptorState = "";
+			
+			// Verify if state doesn't exist, create it
+			if ( NOT structKeyExists( instance.interceptionStates, arguments.state ) ){
+				oInterceptorState = CreateObject("component","coldbox.system.web.context.InterceptorState").init( arguments.state );
+				structInsert( instance.interceptionStates , arguments.state, oInterceptorState );
+			}
+			else{
+				// Get the State we need to register in
+				oInterceptorState = structFind( instance.interceptionStates, arguments.state );
+			}
+			
+			// Verify if the interceptor is already in the state
+			if( NOT oInterceptorState.exists( arguments.interceptorKey ) ){
+				//Register it
+				oInterceptorState.register( arguments.interceptorKey, arguments.oInterceptor );	
+			}	
+			
+			return this;
+		</cfscript>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
@@ -373,7 +409,7 @@ Description :
 					// Verify the @interceptionPoint annotation
 					if( structKeyExists(arguments.metadata.functions[x],"interceptionPoint") ){
 						// Register the point by convention and annotation
-						appendInterceptionPoints( arguments.metadata.functions[x].name );
+						currentList = arrayToList( appendInterceptionPoints( arguments.metadata.functions[x].name ) );
 					}
 					
 					// verify its a plugin point by comparing it to the local defined interception points
@@ -398,34 +434,6 @@ Description :
 			//return the interception points found
 			return pointsFound;
 		</cfscript>	
-	</cffunction>
-	
-	<!--- Register an Interception Point --->
-	<cffunction name="registerInterceptionPoint" access="private" returntype="void" hint="Register an Interception point into a new or created interception state." output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="interceptorKey" 	required="true" type="any" hint="The interceptor key in the cache.">
-		<cfargument name="state" 			required="true" type="any" hint="The state to create">
-		<cfargument name="oInterceptor" 	required="true" type="any" hint="The interceptor to register">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var oInterceptorState = "";
-			
-			// Verify if state doesn't exist, create it
-			if ( NOT structKeyExists( instance.interceptionStates, arguments.state ) ){
-				oInterceptorState = CreateObject("component","coldbox.system.web.context.InterceptorState").init( arguments.state );
-				structInsert( instance.interceptionStates , arguments.state, oInterceptorState );
-			}
-			else{
-				// Get the State we need to register in
-				oInterceptorState = structFind( instance.interceptionStates, arguments.state );
-			}
-			
-			// Verify if the interceptor is already in the state
-			if( NOT oInterceptorState.exists( arguments.interceptorKey ) ){
-				//Register it
-				oInterceptorState.register( arguments.interceptorKey, arguments.oInterceptor );	
-			}	
-		</cfscript>
 	</cffunction>
 
 </cfcomponent>

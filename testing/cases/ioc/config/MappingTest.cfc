@@ -40,7 +40,7 @@
 		assertEquals( data.type, mapping.getTYpe() );
 		assertEquals( data.path, mapping.getPath() );
 		assertEquals( "init", mapping.getConstructor() );
-		assertEquals( true, mapping.isAutowire() );
+		assertEquals( '', mapping.isAutowire() );
 		assertEquals( true, mapping.isAutoInit() );
 		assertEquals( true, mapping.isEagerInit() );
 		assertEquals( data.scope, mapping.getScope() );
@@ -65,6 +65,8 @@
 		assertEquals( true, mapping.isAspectAutoBinding() );
 		mapping.setAspectAutoBinding(false);
 		assertEquals( false, mapping.isAspectAutoBinding() );
+		
+		assertEquals( '', mapping.getVirtualInheritance() );
 	}
 	
 	function testProviderMethods(){

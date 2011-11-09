@@ -1,5 +1,4 @@
-﻿<cfsilent>
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -11,7 +10,6 @@ Date     :	September 25, 2005
 Description :
 	This is the BugReport template that gets emailed to the administrators
 ----------------------------------------------------------------------->
-</cfsilent>
 <cfscript>
 	// Detect Session Scope
 	sessionScopeExists = true; 

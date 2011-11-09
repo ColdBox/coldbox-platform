@@ -228,6 +228,11 @@ Loads a coldbox cfc configuration file
 			//Check For UDFLibraryFile
 			if ( not StructKeyExists(configStruct, "UDFLibraryFile") )
 				configStruct["UDFLibraryFile"] = "";
+			// inflate if needed to array
+			if( isSimpleValue( configStruct["UDFLibraryFile"] ) ){
+				configStruct["UDFLibraryFile"] = listToArray( configStruct["UDFLibraryFile"] );
+			}
+				
 			//Check For CustomErrorTemplate
 			if ( not StructKeyExists(configStruct, "CustomErrorTemplate") )
 				configStruct["CustomErrorTemplate"] = "";

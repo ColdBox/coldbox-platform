@@ -173,14 +173,7 @@
 		
 		//Register interceptors as an array, we need order
 		interceptors = [
-			//Deploy
-			{name="Deploy", 
-			 class="coldbox.system.interceptors.Deploy",
-			 properties = {
-			 	tagFile = "config/_deploy.tag",
-			 	deployCommandObject = "coldbox.testharness.model.DeployCleanup",
-			 	deployCommandModel = "DeployCommand"}},
-			 
+			
 			 //Autowire
 			 {class="coldbox.system.interceptors.Autowire",
 			  properties = {
