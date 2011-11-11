@@ -22,17 +22,6 @@ Description :
 			
 			// Prepare Autowire Settings
 			
-			// DI Complete Method
-			if(not propertyExists("completeDIMethodName")){
-				setProperty("completeDIMethodName",'onDIComplete');
-			}
-			
-			// enableSetterInjection
-			if(NOT propertyExists("enableSetterInjection") OR
-			   NOT isBoolean(getProperty('enableSetterInjection')) ){
-				setProperty("enableSetterInjection",'false');
-			}		
-			
 			// Annotation Check
 			if( NOT propertyExists("annotationCheck") or NOT isBoolean(getProperty("annotationCheck")) ){
 				setProperty("annotationCheck",false);
