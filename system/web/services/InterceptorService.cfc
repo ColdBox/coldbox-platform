@@ -186,7 +186,7 @@ Description :
 				if( structKeyExists(arguments,"interceptorClass") ){
 					// Create the Interceptor Class
 					try{
-						oInterceptor = createInterceptor(arguments.interceptorClass, arguments.interceptorProperties);
+						oInterceptor = createInterceptor(arguments.interceptorClass, arguments.interceptorProperties, objectName);
 					}
 					catch(Any e){
 						instance.log.error("Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",e.tagContext);
@@ -221,18 +221,19 @@ Description :
 	<!--- createInterceptor --->
     <cffunction name="createInterceptor" output="false" access="private" returntype="any" hint="Create an interceptor object">
     	<cfargument name="interceptorClass" 		required="true" hint="The class path to instantiate"/>
-		<cfargument name="interceptorName" 	 		required="true" hint="The unique name of the interceptor"/>
 		<cfargument name="interceptorProperties" 	required="false" default="#structnew()#" hint="The properties" colddoc:generic="struct"/>
+		<cfargument name="interceptorName" 	 		required="true" hint="The unique name of the interceptor"/>
 		<cfscript>
 			var oInterceptor = "";
+			
 			// Check if interceptor mapped?
-			if( NOT wirebox.getBinder().mappingExists( interceptorClass ) ){
+			if( NOT wirebox.getBinder().mappingExists( interceptorName ) ){
 				// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
 				wirebox.registerNewInstance(name=interceptorName,instancePath=interceptorClass)
 					.asSingleton().virtualInheritance("coldbox.system.Interceptor").initWith(controller=controller,properties=interceptorProperties);
 			}
 			// retrieve, build and wire from wirebox
-			oInterceptor = wirebox.getInstance( interceptorClass );	
+			oInterceptor = wirebox.getInstance( interceptorName );	
 			// check for virtual $super, if it does, pass new properties
 			if( structKeyExists(oInterceptor,"$super") ){
 				oInterceptor.$super.setProperties(interceptorProperties);
