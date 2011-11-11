@@ -19,7 +19,6 @@ Description :
 			// Prefixes
 			this.VIEW_CACHEKEY_PREFIX 			= "cbox_view-";
 			this.EVENT_CACHEKEY_PREFIX 			= "cbox_event-";
-			this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cbox_interceptor-";
 			
 			// URL Facade Utility
 			instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
@@ -41,11 +40,6 @@ Description :
 	<!--- getEventCacheKeyPrefix --->
     <cffunction name="getEventCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the event cache key prefix">
     	<cfreturn this.EVENT_CACHEKEY_PREFIX>
-    </cffunction>
-
-	<!--- getInterceptorCacheKeyPrefix --->
-    <cffunction name="getInterceptorCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the interceptor cache key prefix">
-    	<cfreturn this.INTERCEPTOR_CACHEKEY_PREFIX>
     </cffunction>
 
 	<!--- getColdbox --->
