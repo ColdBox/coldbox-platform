@@ -7,9 +7,8 @@ structures/arrays to create for configuration
 - settings (struct)
 - conventions (struct)
 - environments (struct)
-- ioc (struct)
-- models (struct) DEPRECATED use Wirebox instead
 - wirebox (struct)
+- ioc (struct)
 - debugger (struct)
 - mailSettings (struct)
 - i18n (struct)
@@ -22,6 +21,8 @@ structures/arrays to create for configuration
 - interceptors (array of structs)
 - modules (struct)
 - logBox (struct)
+- flash (struct)
+- orm (struct)
 
 Available objects in variable scope
 - controller
@@ -149,6 +150,13 @@ Optional Methods
 		
 		
 		/*
+		
+		// ORM services, injection, etc
+		orm = {
+			entityInjection = true, // enable/disable entity dependency injection via the ColdBox ORM Event Handler
+			entityInclude	= "", // A list of entity names to ONLY include for injections
+			entityExclude	= "" // A list of entity names to exclude from injections
+		};
 		
 		// flash scope configuration
 		flash = {
