@@ -62,6 +62,12 @@ Description :
     		instance.log = controller.getLogBox().getLogger( this );
     		// Setup Configuration
     		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
+    		// store wirebox reference
+			wirebox = controller.getWirebox();
+			// Check if base interceptor mapped, else map it
+			if( NOT wirebox.getBinder().mappingExists("coldbox.system.Interceptor") ){
+				wirebox.getBinder().map("coldbox.system.Interceptor").to("coldbox.system.Interceptor").initWith(controller=controller,properties={}).noAutowire();
+			}
 			// Register CFC Configuration Object
 			registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'),interceptorName="coldboxConfig");
 			// Register The Interceptors
@@ -223,21 +229,24 @@ Description :
 	
 	<!--- createInterceptor --->
     <cffunction name="createInterceptor" output="false" access="private" returntype="any" hint="Create an interceptor object">
-    	<cfargument name="interceptorClass" 	 required="true" hint="The class Path to instantiate"/>
+    	<cfargument name="interceptorClass" 	 required="true" hint="The class path to instantiate"/>
 		<cfargument name="interceptorProperties" required="false" default="#structnew()#" hint="The properties" colddoc:generic="struct"/>
 		<cfscript>
-    		var oInterceptor 	= createObject("component", arguments.interceptorClass );
-			var baseInterceptor = "";
-			var key 			= "";
-			
-			// Check family if it is interceptor inheritance or simple CFC?
-			if( NOT isFamilyType("interceptor",oInterceptor) ){
-				convertToColdBox( "interceptor", oInterceptor );
-				// Init super
-				oInterceptor.$super.init( controller, arguments.interceptorProperties);
+			var oInterceptor = "";
+			// Check if interceptor mapped?
+			if( NOT wirebox.getBinder().mappingExists( interceptorClass ) ){
+				// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
+				wirebox.registerNewInstance(name=interceptorClass,instancePath=interceptorClass)
+					.asSingleton().virtualInheritance("coldbox.system.Interceptor").initWith(controller=controller,properties=interceptorProperties);
+			}
+			// retrieve, build and wire from wirebox
+			oInterceptor = wirebox.getInstance( interceptorClass );	
+			// check for virtual $super, if it does, pass new properties
+			if( structKeyExists(oInterceptor,"$super") ){
+				oInterceptor.$super.setProperties(interceptorProperties);
 			}
 			
-			return	oInterceptor.init(controller,arguments.interceptorProperties);
+			return oInterceptor;
 		</cfscript>
     </cffunction>
 	
