@@ -186,7 +186,7 @@ Description :
 				if( structKeyExists(arguments,"interceptorClass") ){
 					// Create the Interceptor Class
 					try{
-						oInterceptor = createInterceptor(arguments.interceptorClass, arguments.interceptorProperties, objectName);
+						oInterceptor = createInterceptor(interceptorClass,objectName,interceptorProperties);
 					}
 					catch(Any e){
 						instance.log.error("Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",e.tagContext);
@@ -221,8 +221,8 @@ Description :
 	<!--- createInterceptor --->
     <cffunction name="createInterceptor" output="false" access="private" returntype="any" hint="Create an interceptor object">
     	<cfargument name="interceptorClass" 		required="true" hint="The class path to instantiate"/>
-		<cfargument name="interceptorProperties" 	required="false" default="#structnew()#" hint="The properties" colddoc:generic="struct"/>
 		<cfargument name="interceptorName" 	 		required="true" hint="The unique name of the interceptor"/>
+		<cfargument name="interceptorProperties" 	required="false" default="#structnew()#" hint="The properties" colddoc:generic="struct"/>
 		<cfscript>
 			var oInterceptor = "";
 			
