@@ -476,6 +476,7 @@ Description :
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this setter method will receive"/>
 		<cfargument name="value" 	required="false" hint="The value to pass into the setter method."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value. Only used if using dsl or ref arguments"/>
+		<cfargument name="argName" 	required="false" hint="The name of the argument to use, if not passed, we default it to the setter name"/>
     	<cfscript>
     		currentMapping.addDISetter(argumentCollection=arguments);
     		return this;

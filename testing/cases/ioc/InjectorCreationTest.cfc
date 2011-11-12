@@ -5,12 +5,17 @@
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector").init("coldbox.testing.cases.ioc.config.samples.InjectorCreationTestsBinder");
 		// mock logger
-		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug");
+		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error");
 		injector.$property("log","instance",mockLogger);
 		// mock event manager
 		getMockBox().prepareMock( injector.getEventManager() );
 	}
-	
+
+	function testSetters(){
+		r = injector.getInstance("CategoryService");
+		debug( r );
+	}
+
 	function testLocateInstance(){
 		// Locate by package scan
 		r = injector.locateInstance("ioc.category.CategoryBean");

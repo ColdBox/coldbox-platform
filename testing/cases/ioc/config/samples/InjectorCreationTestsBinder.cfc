@@ -46,11 +46,15 @@ Description :
 		// map simple constructor arg
 		map("categoryDAO").to("#myPath#.ioc.category.CategoryDAO")
 			.asSingleton().noAutowire().initArg(name="dsn",value="MyDSN");
+		mapPath("#myPath#.ioc.product.ProductDAO").asSingleton();
+		mapPath("#myPath#.ioc.product.ProductService")
+			.noAutowire().initArg(name="ProductDAO",ref="ProductDAO");
 		// map using all 3 injection types
 		mapPath("#myPath#.ioc.category.CategoryService")
-			.noAutowire().initArg(name="categoryDA",ref="categoryDAO")
+			.noAutowire().initArg(name="categoryDAO",ref="categoryDAO")
 			.property(name="productService",ref="productService")
-			.setter(name="jsonProperty",ref="jsonProperty")
+			.setter(name="jsonProperty",ref="jsonProperty",argName="MyJsonProperty")
+			.setter(name="jsonProperty2",ref="jsonProperty")
 			.into(this.SCOPES.SINGLETON);
 		// map by convention
 		map("CategoryBean").to("#myPath#.ioc.category.CategoryBean");
