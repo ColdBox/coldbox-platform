@@ -49,7 +49,6 @@ Description :
 			instance.eventCaching				= controller.getSetting("EventCaching");
 			instance.handlersInvocationPath		= controller.getSetting("HandlersInvocationPath");
 			instance.handlersExternalLocation	= controller.getSetting("HandlersExternalLocation");
-			instance.cache						= getColdboxOCM();
 			instance.templateCache				= getColdboxOCM("template");
 			instance.modules					= controller.getSetting("modules");
 			instance.interceptorService			= controller.getInterceptorService();
