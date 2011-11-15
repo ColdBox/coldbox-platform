@@ -5,4 +5,7 @@
 	property name="description" notnull="true";
 	property name="modifydate" insert="false" update="false" ormtype="timestamp"; 
 
+	function init(){
+		this.created = now();
+	}
 }

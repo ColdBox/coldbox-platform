@@ -22,17 +22,6 @@ Description :
 			
 			// Prepare Autowire Settings
 			
-			// DI Complete Method
-			if(not propertyExists("completeDIMethodName")){
-				setProperty("completeDIMethodName",'onDIComplete');
-			}
-			
-			// enableSetterInjection
-			if(NOT propertyExists("enableSetterInjection") OR
-			   NOT isBoolean(getProperty('enableSetterInjection')) ){
-				setProperty("enableSetterInjection",'false');
-			}		
-			
 			// Annotation Check
 			if( NOT propertyExists("annotationCheck") or NOT isBoolean(getProperty("annotationCheck")) ){
 				setProperty("annotationCheck",false);
@@ -58,29 +47,6 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
-
-	<!--- After Aspects Load --->
-	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="any" hint="interceptData of intercepted info.">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var interceptorConfig = getSetting("InterceptorConfig");
-			var x 				  = 1;
-			
-			// Loop over the Interceptor Array, to begin autowiring
-			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
-				// Exclude yourself
-				if( not findnocase("coldbox.system.interceptors.Autowire",interceptorConfig.interceptors[x].class) ){
-					// No locking necessary here, since the after aspects load is executed in thread safe conditions
-					// Autowire it
-					processAutowire(getInterceptor(interceptorConfig.interceptors[x].name,true),interceptorConfig.interceptors[x].class);
-				}
-				
-			}
-		</cfscript>
-	</cffunction>
 
 	<!--- After EntityNew --->
 	<cffunction name="ORMPostNew" access="public" returntype="void" output="false" >
@@ -110,9 +76,7 @@ Description :
 			try{
 				// Process Autowire
 				beanFactory.autowire(target=arguments.target,
-									 useSetterInjection=getProperty('enableSetterInjection'),
 									 annotationCheck=getProperty("annotationCheck"),
-								     onDICompleteUDF=getProperty('completeDIMethodName'),
 								     targetID=arguments.targetID);
 			}
 			catch(Any e){

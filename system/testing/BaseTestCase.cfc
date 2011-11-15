@@ -258,6 +258,7 @@ id , name , mail
 	<!--- Reset the persistence --->
 	<cffunction name="reset" access="private" returntype="void" hint="Reset the persistence of the unit test coldbox app, basically removes the controller from application scope" output="false" >
 		<cfset structDelete(application,getColdboxAppKey())>
+		<cfset structClear(request)>
 	</cffunction>
 	
 	<!--- get/Set Coldbox App Key --->

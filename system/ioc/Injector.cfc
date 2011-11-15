@@ -568,7 +568,8 @@ Description :
 					injectTarget(target=targetObject,
 							     propertyName=arguments.DIData[x].name,
 							     propertyObject=refLocal.dependency,
-							     scope=refLocal.scope);
+							     scope=refLocal.scope,
+							     argName=arguments.DIData[x].argName);
 					
 					// some debugging goodness
 					if( instance.log.canDebug() ){
@@ -588,9 +589,10 @@ Description :
 		<cfargument name="propertyName"  	required="true" hint="The name of the property to inject"/>
 		<cfargument name="propertyObject" 	required="true" hint="The object to inject" />
 		<cfargument name="scope" 			required="true" hint="The scope to inject a property into, if any else empty means it is a setter call">
+		<cfargument name="argName" 			required="true" hint="The name of the argument to send if setter injection"/>
 		
 		<cfset var argCollection = structnew()>
-		<cfset argCollection[arguments.propertyName] = arguments.propertyObject>
+		<cfset argCollection[ arguments.argName ] = arguments.propertyObject>
 		
 		<!--- Property or Setter --->
 		<cfif len(arguments.scope) eq 0>

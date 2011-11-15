@@ -39,13 +39,9 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention." output="false" >
-		<cfargument name="name" 				required="false" type="any" default="" hint="The name of the model to retrieve">
-		<cfargument name="useSetterInjection" 	required="false" type="any" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean" colddoc:generic="Boolean">
-		<cfargument name="onDICompleteUDF" 		required="false" type="any"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="stopRecursion"		required="false" type="any"  hint="A comma-delimmited list of stoprecursion classpaths.">
-		<cfargument name="dsl"					required="false" type="any"  hint="The dsl string to use to retrieve the domain object"/>
-		<cfargument name="executeInit"			required="false" type="any" default="true" hint="Whether to execute the init() constructor or not.  Defaults to execute, Boolean" colddoc:generic="Boolean"/>
-		<cfargument name="initArguments" 		required="false" hint="The constructor structure of arguments to passthrough when initializing the instance. Only available for WireBox integration" colddoc:generic="struct"/>
+		<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
 			return wirebox.getInstance(argumentCollection=arguments);
 		</cfscript>
@@ -222,12 +218,10 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 	<!--- Autowire --->
 	<cffunction name="autowire" access="public" returntype="void" output="false" hint="Autowire an object using the ColdBox DSL">
 		<!--- ************************************************************* --->
-		<cfargument name="target" 				required="true" 	type="any" 	hint="The object to autowire">
-		<cfargument name="useSetterInjection" 	required="false" 	type="any" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean Value" colddoc:generic="Boolean">
-		<cfargument name="annotationCheck" 		required="false" 	type="any"  default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire automatically. Boolean Value" colddoc:generic="Boolean">
-		<cfargument name="onDICompleteUDF" 		required="false" 	type="any"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete" colddoc:generic="string">
-		<cfargument name="stopRecursion" 		required="false" 	type="any"  default="" hint="The stop recursion class. Ex: transfer.com.TransferDecorator. By default all ColdBox base classes are included." colddoc:generic="string">
-		<cfargument name="targetID"				required="false"	type="any"	default="" hint="A unique resource target identifier used for wiring the sent in target. If not sent, then this will become getMetadata(target).name and use resources." colddoc:generic="string">
+		<cfargument name="target" 				required="true" 	hint="The target object to wire up"/>
+		<cfargument name="mapping" 				required="false" 	hint="The object mapping with all the necessary wiring metadata. Usually passed by scopes and not a-la-carte autowires" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
+		<cfargument name="targetID" 			required="false" 	default="" hint="A unique identifier for this target to wire up. Usually a class path or file path should do. If none is passed we will get the id from the passed target via introspection but it will slow down the wiring"/>
+    	<cfargument name="annotationCheck" 		required="false" 	default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire anything automatically." colddoc:generic="Boolean">
 		<!--- ************************************************************* --->
 		<cfscript>
 			wirebox.autowire(argumentCollection=arguments);

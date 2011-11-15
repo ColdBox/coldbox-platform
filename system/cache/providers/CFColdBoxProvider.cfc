@@ -18,7 +18,6 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 		// Prefixes
 		this.VIEW_CACHEKEY_PREFIX 			= "cf_view-";
 		this.EVENT_CACHEKEY_PREFIX 			= "cf_event-";
-		this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cf_interceptor-";
 		
 		// URL Facade Utility
 		instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
@@ -29,7 +28,6 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	// Cache Key prefixes
 	any function getViewCacheKeyPrefix() output=false{ return this.VIEW_CACHEKEY_PREFIX; }
 	any function getEventCacheKeyPrefix() output=false{ return this.EVENT_CACHEKEY_PREFIX; }
-	any function getInterceptorCacheKeyPrefix() output=false{ return this.INTERCEPTOR_CACHEKEY_PREFIX; }
 	
 	// set the coldbox controller
 	void function setColdbox(required any coldbox) output=false{

@@ -23,8 +23,13 @@
 	</cffunction>
 	
 	<cffunction name="setjsonProperty" access="public" output="false" returntype="void" hint="Set jsonProperty">
-		<cfargument name="jsonProperty" type="string" required="true"/>
-		<cfset variables.jsonProperty = arguments.jsonProperty/>
+		<cfargument name="myJsonProperty" type="string" required="true"/>
+		<cfset variables.jsonProperty = arguments.myJsonProperty/>
+	</cffunction>
+	
+	<cffunction name="setjsonProperty2" access="public" output="false" returntype="void" hint="Set jsonProperty">
+		<cfargument name="jsonProperty2" type="string" required="true"/>
+		<cfset variables.jsonProperty = arguments.jsonProperty2/>
 	</cffunction>
 
 </cfcomponent>

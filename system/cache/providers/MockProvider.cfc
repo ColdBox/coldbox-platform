@@ -180,11 +180,6 @@ Description :
     	<cfreturn "mock-">
     </cffunction>
 
-	<!--- getInterceptorCacheKeyPrefix --->
-    <cffunction name="getInterceptorCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the interceptor cache key prefix">
-    	<cfreturn "mock-">
-    </cffunction>
-
 	<!--- getColdbox --->
     <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference">
    		<cfreturn instance.coldbox>

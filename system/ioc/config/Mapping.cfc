@@ -74,7 +74,7 @@ Description :
 			};
 			
 			// DI definition structure
-			DIDefinition = {name="",value="",dsl="",scope="variables",javaCast="",ref="",required=false};
+			DIDefinition = {name="",value="",dsl="",scope="variables",javaCast="",ref="",required=false,argName=""};
 			
 			return this;
 		</cfscript>
@@ -405,6 +405,7 @@ Description :
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	required="false" hint="The value of the setter argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfargument name="argName" 	required="false" hint="The name of the argument to use, if not passed, we default it to the setter name"/>
     	<cfscript>
     		var def = getDIDefinition();
 			var x	= 1;
@@ -415,6 +416,10 @@ Description :
 			}
 			// Remove scope for setter injection
 			def.scope = "";
+			// Verify argument name, if not default it to setter name
+			if( NOT structKeyExists(arguments,"argName") OR len(arguments.argName) EQ 0 ){
+				arguments.argName = arguments.name;
+			}
 			// save incoming params
 			structAppend(def, arguments, true);
 			// save new DI setter injection
