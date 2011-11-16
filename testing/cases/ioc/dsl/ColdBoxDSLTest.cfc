@@ -232,6 +232,16 @@
 		mockColdBox.$("getSetting").$args("mySetting").$results("UnitTest");
 		c = builder.getColdBoxDSL(def);
 		assertEquals("unitTest", c);
+		// setting@module
+		def = {name="mySetting", dsl="coldbox:setting:mySetting@myModule"};
+		modSettings = { 
+			myModule={ 
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals("unitTest", c);
 		
 		// fwsetting
 		def = {name="mySetting", dsl="coldbox:fwSetting"};
