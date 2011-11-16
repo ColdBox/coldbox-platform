@@ -166,6 +166,24 @@ Description :
 							// normal custom plugin
 							return instance.coldbox.getSetting(thisLocationKey); 
 						}
+						case "modulesettings"		: { 
+							moduleSettings = instance.coldbox.getSetting("modules");
+							if( structKeyExists(moduleSettings, thisLocationKey ) ){
+								return moduleSettings[ thisLocationKey ].settings;
+							}
+							else if( instance.log.canDebug() ){
+								instance.log.debug("The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
+							}
+						}
+						case "moduleconfig"		: { 
+							moduleSettings = instance.coldbox.getSetting("modules");
+							if( structKeyExists(moduleSettings, thisLocationKey ) ){
+								return moduleSettings[ thisLocationKey ];
+							}
+							else if( instance.log.canDebug() ){
+								instance.log.debug("The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
+							}
+						}
 						case "fwSetting" 			: { return instance.coldbox.getSetting(thisLocationKey,true); }
 						case "plugin" 				: { return instance.coldbox.getPlugin(thisLocationKey);}
 						case "myplugin" 			: {

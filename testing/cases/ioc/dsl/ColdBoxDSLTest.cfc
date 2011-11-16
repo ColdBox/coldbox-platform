@@ -243,6 +243,30 @@
 		c = builder.getColdBoxDSL(def);
 		assertEquals("unitTest", c);
 		
+		// modulesettings
+		def = {name="mySetting", dsl="coldbox:moduleSettings:myModule"};
+		modSettings = { 
+			myModule={ 
+				moduleMapping = "/modules/MyModule",
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals( modSettings.myModule.settings , c);
+		
+		// moduleConfig
+		def = {name="mySetting", dsl="coldbox:moduleConfig:myModule"};
+		modSettings = { 
+			myModule={ 
+				moduleMapping = "/modules/MyModule",
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals( modSettings.myModule , c);
+		
 		// fwsetting
 		def = {name="mySetting", dsl="coldbox:fwSetting"};
 		mockColdBox.$("getSetting").$args("mySetting",true).$results("UnitTest");
