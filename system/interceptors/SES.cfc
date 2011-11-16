@@ -668,6 +668,11 @@ Description :
 				}
 			}//end if handler found
 			
+			// Module Cleanup
+			if( isModule ){
+				return replaceNoCase(returnString, arguments.module & ":", "");	
+			}
+			
 			return returnString;
 		</cfscript>
 	</cffunction>
@@ -891,7 +896,6 @@ Description :
 					if( log.canDebug() ){
 						log.debug("SES Package Resolved: #packagedRequestString#");
 					}
-
 					// Return found Route recursively.
 					return findRoute(action=packagedRequestString,event=arguments.event);
 				}
