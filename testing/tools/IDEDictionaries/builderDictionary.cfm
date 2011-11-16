@@ -58,7 +58,8 @@ scopes = {
 	log = "coldbox.system.logging.Logger",
 	logbox = "coldbox.system.logging.LogBox",
 	binder = "coldbox.system.ioc.config.Binder",
-	wirebox = "coldbox.system.ioc.Injector"
+	wirebox = "coldbox.system.ioc.Injector",
+	cachebox = "coldbox.system.cache.CacheFactory"
 };
 for( key in scopes ){
 	
