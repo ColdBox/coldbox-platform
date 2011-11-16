@@ -614,6 +614,17 @@ Description :
 					}
 				}
 				
+				// Pre-Pend if already a module explicit call and switch the root
+				// Module has already been resolved
+				if( isModule ){
+					// Setup the module entry point
+					newEvent = arguments.module & ":";
+					// Change Physical Path to module now, module detected
+					root = instance.modules[ arguments.module ].handlerPhysicalPath;
+					// Pre Pend The module to the path, so it can wipe it cleanly later.
+					returnString = arguments.module & "/" & returnString;
+				}	
+					
 				// Now Find Packaging in our stripped rString
 				for(x=1; x lte listLen(rString,"/"); x=x+1){
 
@@ -621,21 +632,19 @@ Description :
 					thisFolder = listgetAt(rString,x,"/");
 					
 					// Check if package exists in convention OR external location
-					if( NOT isModule AND
-						(
-							directoryExists(root & "/" & foundPaths & thisFolder)
-							OR
-					    	( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) )
-						)
-					    ){
+					if( directoryExists(root & "/" & foundPaths & thisFolder)
+						OR
+					    ( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) )
+					){
 						// Save Found Paths
 						foundPaths = foundPaths & thisFolder & "/";
+						
 						// Save new Event
 						if(len(newEvent) eq 0){
 							newEvent = thisFolder & ".";
 						}
 						else{
-							newEvent = newEvent & thisFolder & ".";
+							newEvent &= thisFolder & ".";
 						}
 					}//end if folder found
 					// Module check second, if the module is in the URL
@@ -658,7 +667,7 @@ Description :
 					returnString = replacenocase(returnString, replace( replace(newEvent,":","/","all") ,".","/","all"), newEvent);
 				}
 			}//end if handler found
-
+			
 			return returnString;
 		</cfscript>
 	</cffunction>
