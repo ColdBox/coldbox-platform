@@ -56,7 +56,7 @@ Description :
 
 			//Import Configuration
 			importConfiguration();
-			
+
 			// Save the base URL in the application settings
 			setSetting('sesBaseURL', getBaseURL() );
 			setSetting('htmlBaseURL', replacenocase(getBaseURL(),"index.cfm",""));
@@ -101,7 +101,7 @@ Description :
 
 			// Find a route to dispatch
 			aRoute = findRoute(action=cleanedPaths["pathInfo"],event=arguments.event);
-			
+
 			// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 			for( key in aRoute ){
 				// Reserved Keys Check, only translate NON reserved keys
@@ -360,7 +360,7 @@ Description :
 			thisRoute.regexPattern = thisRoute.regexPattern & thisRegex & "/";
 
 		} // end looping of pattern optionals
-		
+
 		// Add it to the routing map table
 		if( len(arguments.module) ){
 			// Append or PrePend
@@ -458,7 +458,7 @@ Description :
 	<cffunction name="getModulesRoutingTable" output="false" access="public" returntype="any" hint="Get the entire modules routing table" colddoc:generic="struct">
 		<cfreturn instance.moduleRoutingTable>
 	</cffunction>
-	
+
 	<!--- removeModuleRoutes --->
     <cffunction name="removeModuleRoutes" output="false" access="public" returntype="void" hint="Remove a module's routing table and registration points">
     	<cfargument name="module" required="true" default="" hint="The name of the module to remove"/>
@@ -466,13 +466,13 @@ Description :
 			var routeLen = arrayLen( instance.routes );
 			var x 		 = 1;
 			var toDelete = arrayNew(1);
-			
+
 			// remove all module routes
     		structDelete(instance.moduleRoutingTable, arguments.module);
 			// remove module routing entry point
 			for(x=routeLen; x gte 1; x=x-1){
 				if( instance.routes[x].moduleRouting eq arguments.module ){
-					arrayDeleteAt(instance.routes, x);                                                         
+					arrayDeleteAt(instance.routes, x);
 				}
 			}
 		</cfscript>
@@ -585,7 +585,7 @@ Description :
 			var routeParamsLen 	= arrayLen(arguments.routeParams);
 			var rString 		= arguments.routingString;
 			var returnString 	= arguments.routingString;
-			
+
 			// Verify if we have a handler on the route params
 			if( findnocase("handler", arrayToList(arguments.routeParams)) ){
 
@@ -788,7 +788,7 @@ Description :
 				_routes = getModuleRoutes(arguments.module);
 				_routesLength = arrayLen(_routes);
 			}
-			
+
 			//Remove the leading slash
 			if( len(requestString) GT 1 AND left(requestString,1) eq "/" ){
 				requestString = right(requestString,len(requestString)-1);
@@ -816,7 +816,7 @@ Description :
 				}
 
 			}//end finding routes
-			
+
 			// Check if we found a route, else just return empty params struct
 			if( structIsEmpty(foundRoute) ){
 				if( log.canDebug() ){
@@ -840,7 +840,7 @@ Description :
 
 				// Save Found URL
 				arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
-				
+
 				// Try to discover the route via the module routing calls
 				structAppend(params, findRoute(reReplaceNoCase(requestString,foundRoute.regexpattern,""),arguments.event,foundRoute.moduleRouting), true);
 
@@ -849,7 +849,7 @@ Description :
 					return params;
 				}
 			}
-			
+
 			// Save Found Route
 			arguments.event.setValue(name="currentRoute",value=foundRoute.pattern,private=true);
 			// Save Found URL if NOT Found already
@@ -965,9 +965,6 @@ Description :
 
 			// Clean up the path_info from index.cfm and nested pathing
 			items["pathInfo"] = trim(reReplacenocase(items["pathInfo"],"[/\\]index\.cfm",""));
-			if( len(items["scriptName"]) ){
-				items["pathInfo"] = replaceNocase(items["pathInfo"],items["scriptName"],'');
-			}
 
 			// clean 1 or > / in front of route in some cases, scope = one by default
 			items["pathInfo"] = reReplaceNoCase(items["pathInfo"], "^/+", "/");
