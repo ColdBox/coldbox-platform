@@ -25,10 +25,13 @@ Description :
 			// STATIC Valid Extensions
 			instance.VALID_EXTENSIONS 			= "json,jsont,xml,html,htm,rss";
 
-			// Routes Array
-			instance.routes = ArrayNew(1);
+			// Routes Routing Table
+			instance.routes = arrayNew(1);
 			// Module Routing Table
 			instance.moduleRoutingTable = structnew();
+			
+			/************************************** SES PROPERTIES *********************************************/
+			
 			// Loose matching flag for regex matches
 			instance.looseMatching = false;
 			// Flag to enable unique or not URLs
@@ -44,14 +47,13 @@ Description :
 			// Initialize the valid extensions to detect
 			instance.validExtensions = instance.VALID_EXTENSIONS;
 
-			// Setting Dependencies
+			/************************************** DEPENDENCIES *********************************************/
+			
 			instance.handlersPath 					= getSetting("HandlersPath");
 			instance.handlersExternalLocationPath 	= getSetting("HandlersExternalLocationPath");
 			instance.modules						= getSetting("Modules");
 			instance.eventName						= getSetting("EventName");
 			instance.defaultEvent					= getSetting("DefaultEvent");
-
-			// Dependencies
 			instance.requestService					= getController().getRequestService();
 
 			//Import Configuration
@@ -162,7 +164,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- addModuleRoutes --->
-	<cffunction name="addModuleRoutes" output="false" access="public" returntype="void" hint="Add modules routes in the specified position">
+	<cffunction name="addModuleRoutes" output="false" access="public" returntype="any" hint="Add modules routes in the specified position, and returns itself">
 		<cfargument name="pattern" type="string"  required="true"  hint="The pattern to match against the URL." />
 		<cfargument name="module"  type="string"  required="true"  hint="The module to load routes for"/>
 		<cfargument name="append"  type="boolean" required="false" default="true" hint="Whether the module entry point route should be appended or pre-pended to the array. By default we append to the end of the array"/>
@@ -193,11 +195,13 @@ Description :
 				args.module = arguments.module;
 				addRoute(argumentCollection=args);
 			}
+			
+			return this;
 		</cfscript>
 	</cffunction>
 
 	<!--- Add a new Route --->
-	<cffunction name="addRoute" access="public" returntype="void" hint="Adds a route to dispatch" output="false">
+	<cffunction name="addRoute" access="public" returntype="any" output="false" hint="Adds a route to dispatch and returns itself.">
 		<!--- ************************************************************* --->
 		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
 		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
@@ -254,7 +258,7 @@ Description :
 		// Check if we have optional args by looking for a ?
 		if( findnocase("?",thisRoute.pattern) AND NOT findNoCase("regex:",thisRoute.pattern) ){
 			processRouteOptionals(thisRoute);
-			return;
+			return this;
 		}
 
 		// Process json constraints?
@@ -372,6 +376,8 @@ Description :
 			if( arguments.append ){	ArrayAppend(getRoutes(), thisRoute); }
 			else{ arrayPrePend(getRoutes(), thisRoute); }
 		}
+		
+		return this;
 		</cfscript>
 	</cffunction>
 
@@ -379,24 +385,27 @@ Description :
 	<cffunction name="getAutoReload" access="public" returntype="any" output="false" hint="Set to auto reload the rules in each request" colddoc:generic="boolean">
 		<cfreturn instance.autoReload>
 	</cffunction>
-	<cffunction name="setAutoReload" access="public" returntype="void" output="false" hint="Get the auto reload flag.">
+	<cffunction name="setAutoReload" access="public" returntype="any" output="false" hint="Set the auto reload flag and return itself">
 		<cfargument name="autoReload" required="true" colddoc:generic="boolean">
 		<cfset instance.autoReload = arguments.autoReload>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Getter/Setter for uniqueURLs --->
-	<cffunction name="setUniqueURLs" access="public" output="false" returntype="void" hint="Set the uniqueURLs property">
+	<cffunction name="setUniqueURLs" access="public" output="false" returntype="any" hint="Set the uniqueURLs property and return itself">
 		<cfargument name="uniqueURLs" required="true" colddoc:generic="boolean"/>
 		<cfset instance.uniqueURLs = arguments.uniqueURLs />
+		<cfreturn this>
 	</cffunction>
 	<cffunction name="getUniqueURLs" access="public" output="false" returntype="any" hint="Get uniqueURLs" colddoc:generic="boolean">
 		<cfreturn instance.uniqueURLs/>
 	</cffunction>
 
 	<!--- Setter/Getter for Base URL --->
-	<cffunction name="setBaseURL" access="public" output="false" returntype="void" hint="Set the base URL for the application.">
+	<cffunction name="setBaseURL" access="public" output="false" returntype="any" hint="Set the base URL for the application and return itself">
 		<cfargument name="baseURL" type="string" required="true" />
 		<cfset instance.baseURL = arguments.baseURL />
+		<cfreturn this>
 	</cffunction>
 	<cffunction name="getBaseURL" access="public" output="false" returntype="string" hint="Get BaseURL">
 		<cfreturn instance.BaseURL/>
@@ -406,44 +415,47 @@ Description :
 	<cffunction name="getLooseMatching" access="public" returntype="any" output="false" hint="Get the current loose matching property" colddoc:generic="boolean">
     	<cfreturn instance.looseMatching>
     </cffunction>
-    <cffunction name="setLooseMatching" access="public" returntype="void" output="false" hint="Set the loose matching property of the interceptor">
+    <cffunction name="setLooseMatching" access="public" returntype="any" output="false" hint="Set the loose matching property of the interceptor and return itself">
     	<cfargument name="looseMatching" required="true" colddoc:generic="boolean">
     	<cfset instance.looseMatching = arguments.looseMatching>
+		<cfreturn this>
     </cffunction>
 
 	<!--- get/set Extension Detection --->
 	<cffunction name="getExtensionDetection" access="public" returntype="any" output="false" hint="Get the flag if extension detection is enabled" colddoc:generic="boolean">
     	<cfreturn instance.extensionDetection>
     </cffunction>
-    <cffunction name="setExtensionDetection" access="public" returntype="void" output="false" hint="Call it to activate/deactivate automatic extension detection">
+    <cffunction name="setExtensionDetection" access="public" returntype="any" output="false" hint="Call it to activate/deactivate automatic extension detection and return itself">
     	<cfargument name="extensionDetection" required="true" colddoc:generic="boolean">
     	<cfset instance.extensionDetection = arguments.extensionDetection>
+		<cfreturn this>
     </cffunction>
 
 	<!--- get/set on Invalid Extension --->
 	<cffunction name="getThrowOnInvalidExtension" access="public" returntype="any" output="false" hint="Get if we are throwing or not on invalid extension detection" colddoc:generic="boolean">
     	<cfreturn instance.throwOnInvalidExtension>
     </cffunction>
-    <cffunction name="setThrowOnInvalidExtension" access="public" returntype="void" output="false" hint="Configure the interceptor to throw an exception or not when invalid extensions are detected">
+    <cffunction name="setThrowOnInvalidExtension" access="public" returntype="any" output="false" hint="Configure the interceptor to throw an exception or not when invalid extensions are detected and return itself">
     	<cfargument name="throwOnInvalidExtension" required="true" colddoc:generic="boolean">
     	<cfset instance.throwOnInvalidExtension = arguments.throwOnInvalidExtension>
+		<cfreturn this>
     </cffunction>
 
-	<!--- setValidExtensions --->
-    <cffunction name="setValidExtensions" output="false" access="public" returntype="void" hint="Setup the list of valid extensions to detect automatically for you.: e.g.: json,xml,rss">
+	<!--- get/setValidExtensions --->
+    <cffunction name="setValidExtensions" output="false" access="public" returntype="any" hint="Setup the list of valid extensions to detect automatically for you.: e.g.: json,xml,rss. Return itself">
     	<cfargument name="validExtensions" required="true" hint="A list of valid extensions to allow in a request"/>
     	<cfset instance.validExtensions = arguments.validExtensions>
+		<cfreturn this>
     </cffunction>
-
-	<!--- getValidExtensions --->
-    <cffunction name="getValidExtensions" output="false" access="public" returntype="any" hint="Get the list of valid extensions this interceptor allows">
+	<cffunction name="getValidExtensions" output="false" access="public" returntype="any" hint="Get the list of valid extensions this interceptor allows">
     	<cfreturn instance.validExtensions>
     </cffunction>
 
 	<!--- Getter/Setter Enabled --->
-	<cffunction name="setEnabled" access="public" output="false" returntype="void" hint="Set whether the interceptor is enabled or not.">
+	<cffunction name="setEnabled" access="public" output="false" returntype="any" hint="Set whether the interceptor is enabled or not and return itself">
 		<cfargument name="enabled" required="true" colddoc:generic="boolean"/>
 		<cfset instance.enabled = arguments.enabled />
+		<cfreturn this>
 	</cffunction>
 	<cffunction name="getEnabled" access="public" output="false" returntype="any" hint="Get enabled" colddoc:generic="boolean">
 		<cfreturn instance.enabled/>
@@ -460,7 +472,7 @@ Description :
 	</cffunction>
 	
 	<!--- removeModuleRoutes --->
-    <cffunction name="removeModuleRoutes" output="false" access="public" returntype="void" hint="Remove a module's routing table and registration points">
+    <cffunction name="removeModuleRoutes" output="false" access="public" returntype="any" hint="Remove a module's routing table and registration points and return itself">
     	<cfargument name="module" required="true" default="" hint="The name of the module to remove"/>
 		<cfscript>
 			var routeLen = arrayLen( instance.routes );
@@ -475,6 +487,8 @@ Description :
 					arrayDeleteAt(instance.routes, x);                                                         
 				}
 			}
+			
+			return this;
 		</cfscript>
     </cffunction>
 
@@ -573,7 +587,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="routingString" 	required="true" hint="The routing string">
 		<cfargument name="routeParams" 		required="true" hint="The routed params array">
-		<cfargument name="isModule" 		required="false" default="false" hint="Tells package resolver this is an explicit module package resolving call"/>
+		<cfargument name="module"	 		required="false" default="" hint="Tells package resolver this is an explicit module package resolving call"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var root 			= instance.handlersPath;
@@ -585,6 +599,7 @@ Description :
 			var routeParamsLen 	= arrayLen(arguments.routeParams);
 			var rString 		= arguments.routingString;
 			var returnString 	= arguments.routingString;
+			var isModule		= len(arguments.module) GT 0;
 			
 			// Verify if we have a handler on the route params
 			if( findnocase("handler", arrayToList(arguments.routeParams)) ){
@@ -598,13 +613,13 @@ Description :
 						break;
 					}
 				}
-
+				
 				// Now Find Packaging in our stripped rString
 				for(x=1; x lte listLen(rString,"/"); x=x+1){
 
 					// Get Folder from first part of string
 					thisFolder = listgetAt(rString,x,"/");
-
+					
 					// Check if package exists in convention OR external location
 					if( NOT isModule AND
 						(
@@ -623,7 +638,7 @@ Description :
 							newEvent = newEvent & thisFolder & ".";
 						}
 					}//end if folder found
-					// Module check second
+					// Module check second, if the module is in the URL
 					else if( structKeyExists(instance.modules, thisFolder) ){
 						// Setup the module entry point
 						newEvent = thisFolder & ":";
@@ -829,10 +844,10 @@ Description :
 			if( foundRoute.ssl AND NOT event.isSSL()){
 				setNextEvent(uri=cgi.script_name & cgi.path_info,ssl=true,statusCode=302,queryString=cgi.query_string);
 			}
-
+			
 			// Check if the match is a module Routing entry point or not?
 			if( len( foundRoute.moduleRouting ) ){
-
+				
 				// Try to Populate the params from the module pattern if any
 				for(x=1; x lte arrayLen(foundRoute.patternParams); x=x+1){
 					params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);
@@ -843,7 +858,7 @@ Description :
 				
 				// Try to discover the route via the module routing calls
 				structAppend(params, findRoute(reReplaceNoCase(requestString,foundRoute.regexpattern,""),arguments.event,foundRoute.moduleRouting), true);
-
+				
 				// Return if parameters found.
 				if( NOT structIsEmpty(params) ){
 					return params;
@@ -860,10 +875,9 @@ Description :
 			// Do we need to do package resolving
 			if( NOT foundRoute.packageResolverExempt ){
 				// Resolve the packages
-				packagedRequestString = packageResolver(requestString,foundRoute.patternParams, len(arguments.module) GT 0);
+				packagedRequestString = packageResolver(requestString,foundRoute.patternParams,arguments.module);
 				// reset pattern matching, if packages found.
 				if( compare(packagedRequestString,requestString) NEQ 0 ){
-
 					// Log package resolved
 					if( log.canDebug() ){
 						log.debug("SES Package Resolved: #packagedRequestString#");
@@ -873,12 +887,12 @@ Description :
 					return findRoute(action=packagedRequestString,event=arguments.event);
 				}
 			}
-
+			
 			// Populate the params, with variables found in the request string
 			for(x=1; x lte arrayLen(foundRoute.patternParams); x=x+1){
 				params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);
 			}
-
+			
 			// Process Convention Name-Value Pairs
 			if( foundRoute.valuePairTranslation ){
 				findConventionNameValuePairs(requestString,match,params);
@@ -965,10 +979,7 @@ Description :
 
 			// Clean up the path_info from index.cfm and nested pathing
 			items["pathInfo"] = trim(reReplacenocase(items["pathInfo"],"[/\\]index\.cfm",""));
-			if( len(items["scriptName"]) ){
-				items["pathInfo"] = replaceNocase(items["pathInfo"],items["scriptName"],'');
-			}
-
+			
 			// clean 1 or > / in front of route in some cases, scope = one by default
 			items["pathInfo"] = reReplaceNoCase(items["pathInfo"], "^/+", "/");
 
