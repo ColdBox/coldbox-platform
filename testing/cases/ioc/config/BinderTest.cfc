@@ -502,5 +502,26 @@
 		assertEquals( data, b);
 				
 	}
+	
+	function testMixins(){
+		config.map("MyObject").to("path.obj").mixins("/includes/helpers/AppHelper.cfm");
+		mapping = config.getMapping("MyObject");	
+		b = mapping.getMixins();
+		
+		assertEquals( ["/includes/helpers/AppHelper.cfm"], b);
+		
+		config.map("MyObject").to("path.obj").mixins("/includes/helpers/AppHelper.cfm,/includes/helpers/AppHelper2.cfm");
+		mapping = config.getMapping("MyObject");	
+		b = mapping.getMixins();
+		
+		assertEquals( ["/includes/helpers/AppHelper.cfm","/includes/helpers/AppHelper2.cfm"], b);
+		
+		config.map("MyObject").to("path.obj").mixins( ["/includes/helpers/AppHelper.cfm","/includes/helpers/AppHelper2.cfm"] );
+		mapping = config.getMapping("MyObject");	
+		b = mapping.getMixins();
+		
+		assertEquals( ["/includes/helpers/AppHelper.cfm","/includes/helpers/AppHelper2.cfm"], b);
+				
+	}
 </cfscript>
 </cfcomponent>

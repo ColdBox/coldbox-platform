@@ -80,6 +80,11 @@ Description :
 		
 		map("calendar2")
         	.toJava("java.util.GregorianCalendar");
+        	
+        // Mixins Beans
+        map("MixinTest")
+        	.to("#myPath#.ioc.Simple")
+        	.mixins( ["/coldbox/testing/testmodel/ioc/mixins/mixin1.cfm", "/coldbox/testing/testmodel/ioc/mixins/mixin2.cfm" ] );
 				  
 	}	
 </cfscript>

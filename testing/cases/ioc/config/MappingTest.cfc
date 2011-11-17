@@ -70,6 +70,8 @@
 		assertEquals( false, mapping.isAspectAutoBinding() );
 		
 		assertEquals( '', mapping.getVirtualInheritance() );
+		
+		assertEquals( [], mapping.getMixins() );
 	}
 	
 	function testProviderMethods(){

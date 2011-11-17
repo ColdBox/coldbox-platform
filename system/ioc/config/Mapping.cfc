@@ -70,7 +70,9 @@ Description :
 				// Virtual Inhertiance
 				virtualInheritance = "",
 				// Extra Attributes
-				extraAttributes = {}
+				extraAttributes = {},
+				// Mixins
+				mixins = []
 			};
 			
 			// DI definition structure
@@ -159,6 +161,16 @@ Description :
     <cffunction name="setName" access="public" returntype="any" output="false" hint="Name the mapping">
     	<cfargument name="name" required="true">
     	<cfset instance.name = arguments.name>
+    	<cfreturn this>
+    </cffunction>
+    
+    <!--- Mixins --->
+	<cffunction name="getMixins" access="public" returntype="any" output="false" hint="Get the mixins array list">
+    	<cfreturn instance.mixins>
+    </cffunction>
+    <cffunction name="setMixins" access="public" returntype="any" output="false" hint="Set the mixins array list">
+    	<cfargument name="mixins" required="true">
+    	<cfset instance.mixins = arguments.mixins>
     	<cfreturn this>
     </cffunction>
     
@@ -589,6 +601,13 @@ Description :
 					else{
 						// defaults to lazy loading
 						instance.eagerInit = false;
+					}
+				}
+				
+				// mixins annotation only if not overriden
+				if( NOT arrayLen(instance.mixins) ){
+					if( structKeyExists(md,"mixins") ){
+						instance.mixins = listToArray( md.mixins );
 					}
 				}
 								

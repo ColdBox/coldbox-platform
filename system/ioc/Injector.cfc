@@ -464,6 +464,8 @@ Description :
 				processInjection( targetObject, thisMap.getDISetters(), arguments.targetID );
 				// Process Provider Methods
 				processProviderMethods( targetObject, thisMap );
+				// Process Mixins
+				processMixins( targetObject, thisMap );
 				// Process After DI Complete
 				processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
 				
@@ -478,6 +480,24 @@ Description :
 	</cfscript>
     </cffunction>
 	
+	<!--- processMixins --->
+    <cffunction name="processMixins" output="false" access="private" returntype="void" hint="Process mixins on the selected target">
+    	<cfargument name="targetObject" 	required="true"  	hint="The target object to do some goodness on">
+		<cfargument name="mapping" 			required="true"  	hint="The target mapping">
+		<cfscript>
+			var mixin 	= createObject("component","coldbox.system.ioc.config.Mixin").$init( arguments.mapping.getMixins() );
+			var key		= "";
+			
+			// iterate and mixin baby!
+			for(key in mixin){
+				if( key NEQ "$init" ){
+					// add the provided method to the providers structure.
+					arguments.targetObject.injectMixin(name=key,UDF=mixin[ key ]);
+				}
+			}
+		</cfscript>
+    </cffunction>
+    
 	<!--- processProviderMethods --->
     <cffunction name="processProviderMethods" output="false" access="private" returntype="void" hint="Process provider methods on the selected target">
     	<cfargument name="targetObject" 	required="true"  	hint="The target object to do some goodness on">
