@@ -90,7 +90,7 @@ Modification History:
 			var iData 	= {};
 			
 			// listen to plugins only
-			if( controller.getColdboxInitiated() AND structKeyExists(attribs, "isPlugin") ){
+			if( structKeyExists(attribs, "isPlugin") ){
 				//Fill-up Intercepted MetaData
 				iData.pluginPath = attribs.pluginPath;
 				iData.custom 	 = attribs.custom;	

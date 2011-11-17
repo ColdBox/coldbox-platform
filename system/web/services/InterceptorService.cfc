@@ -115,11 +115,6 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var timerHash = 0><cfsilent>
 		<cfscript>
-		// Is ColdBox Inited and ready to serve requests?
-		if ( NOT controller.getColdboxInitiated() ){ 
-			return this;
-		}
-		
 		// Validate Incoming State
 		if ( instance.interceptorConfig.throwOnInvalidStates AND NOT listFindNoCase(arrayToList( instance.interceptionPoints ), arguments.state)){
 			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","Valid states are #instance.interceptionPoints.toString()#","InterceptorService.InvalidInterceptionState");
