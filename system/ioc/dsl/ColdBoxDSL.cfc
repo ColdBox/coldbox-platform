@@ -113,6 +113,7 @@ Description :
 			var thisTypeLen 		= listLen(thisType,":");
 			var thisLocationType 	= "";
 			var thisLocationKey 	= "";
+			var moduleSettings		= "";
 			
 			// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
 			if(	thisTypeLen eq 2 
@@ -151,7 +152,38 @@ Description :
 					thisLocationType = getToken(thisType,2,":");
 					thisLocationKey  = getToken(thisType,3,":");
 					switch(thisLocationType){
-						case "setting" 				: { return instance.coldbox.getSetting(thisLocationKey); }
+						case "setting" 				: { 
+							// module setting?
+							if( find("@",thisLocationKey) ){
+								moduleSettings = instance.coldbox.getSetting("modules");
+								if( structKeyExists(moduleSettings, listlast(thisLocationKey,"@") ) ){
+									return moduleSettings[ listlast(thisLocationKey,"@") ].settings[ listFirst(thisLocationKey,"@") ];
+								}
+								else if( instance.log.canDebug() ){
+									instance.log.debug("The module requested: #listlast(thisLocationKey,"@")# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
+								}
+							}
+							// normal custom plugin
+							return instance.coldbox.getSetting(thisLocationKey); 
+						}
+						case "modulesettings"		: { 
+							moduleSettings = instance.coldbox.getSetting("modules");
+							if( structKeyExists(moduleSettings, thisLocationKey ) ){
+								return moduleSettings[ thisLocationKey ].settings;
+							}
+							else if( instance.log.canDebug() ){
+								instance.log.debug("The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
+							}
+						}
+						case "moduleconfig"		: { 
+							moduleSettings = instance.coldbox.getSetting("modules");
+							if( structKeyExists(moduleSettings, thisLocationKey ) ){
+								return moduleSettings[ thisLocationKey ];
+							}
+							else if( instance.log.canDebug() ){
+								instance.log.debug("The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
+							}
+						}
 						case "fwSetting" 			: { return instance.coldbox.getSetting(thisLocationKey,true); }
 						case "plugin" 				: { return instance.coldbox.getPlugin(thisLocationKey);}
 						case "myplugin" 			: {

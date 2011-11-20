@@ -10,6 +10,12 @@
 		// mock event manager
 		getMockBox().prepareMock( injector.getEventManager() );
 	}
+	
+	function testMixins(){
+		r = injector.getInstance("MixinTest");
+		assertEquals( "lui", r.echo("lui") );
+		assertEquals( "lui", r.echo2("lui") );
+	}
 
 	function testSetters(){
 		r = injector.getInstance("CategoryService");

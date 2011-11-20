@@ -550,6 +550,16 @@ Description :
 		</cfscript>
     </cffunction>
     
+    <!--- mixins --->    
+    <cffunction name="mixins" output="false" access="public" returntype="any" hint="Adds one, a list or an array of UDF templates to mixin to a CFC">    
+    	<cfargument name="mixins" type="any" required="true" default="" hint="The udf include location(s) to mixin at runtime"/>
+    	<cfscript>	
+			if( isSimpleValue( arguments.mixins ) ){ arguments.mixins = listToArray( arguments.mixins ); }    
+			currentMapping.setMixins( arguments.mixins );
+			return this;
+    	</cfscript>    
+    </cffunction>
+    
 <!------------------------------------------- STOP RECURSIONS ------------------------------------------>
 
 	<!--- getStopRecursions --->
