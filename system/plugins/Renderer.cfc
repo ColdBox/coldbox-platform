@@ -608,7 +608,7 @@ Description :
 				}
 				else{
 					// Implicit views
-					if( settingExists("caseSensitiveImplicitViews") and getSetting("caseSensitiveImplicitViews") ){
+					if( getSetting(name="caseSensitiveImplicitViews",defaultValue=false) ){
 						event.setView( replace(cEvent,".","/","all") );
 					}
 					else{

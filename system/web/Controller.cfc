@@ -266,6 +266,7 @@ Only one instance of a specific ColdBox application exists.
 		<!--- ************************************************************* --->
 		<cfargument name="name" 	    type="any"   	hint="Name of the setting key to retrieve"  >
 		<cfargument name="FWSetting"  	type="any" 	 	required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
+		<cfargument name="defaultValue"	type="any" 		required="false" hint="Default value to return if not found.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var target = instance.configSettings;
@@ -274,6 +275,11 @@ Only one instance of a specific ColdBox application exists.
 
 			if ( settingExists(arguments.name,arguments.FWSetting) ){
 				return target[arguments.name];
+			}
+			
+			// Default value
+			if( structKeyExists(arguments, "defaultValue") ){
+				return arguments.defaultValue;
 			}
 
 			getUtil().throwit(message="The setting #arguments.name# does not exist.",

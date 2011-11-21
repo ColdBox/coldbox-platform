@@ -203,8 +203,9 @@ Description :
 		<cfreturn controller.getSettingStructure(argumentCollection=arguments)>
 	</cffunction>
 	<cffunction name="getSetting" 	hint="Facade" access="public" returntype="any"      output="false">
-		<cfargument name="name" 	    type="any"   required="true">
-		<cfargument name="FWSetting"  	type="boolean" 	required="false"  default="false">
+		<cfargument name="name" 	    type="any"  	required="true">
+		<cfargument name="FWSetting"  	type="boolean" 	required="false" default="false">
+		<cfargument name="defaultValue"	type="any" 		required="false" hint="Default value to return if not found.">
 		<cfreturn controller.getSetting(argumentCollection=arguments)>
 	</cffunction>
 	<cffunction name="settingExists" 		hint="Facade" access="public" returntype="boolean"  output="false">
