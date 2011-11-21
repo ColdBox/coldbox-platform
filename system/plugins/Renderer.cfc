@@ -359,14 +359,15 @@ Description :
 		<cfargument name="module" 		type="any"  required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
 		<cfargument name="args"   		type="any" 	required="false" default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<cfargument name="viewModule"   type="any" 	required="false" default="" hint="Explicitly render a view from this module"/>
-				
+		<cfargument name="prepostExempt" type="any"	required="false" default="false" 	hint="If true, pre/post layout interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
+			
 		<cfset var cbox_currentLayout 		= implicitViewChecks()>
-		<cfset var cbox_RederedLayout 		= "">
 		<cfset var cbox_timerhash 			= "">
 		<cfset var cbox_locateUDF 			= variables.locateLayout>
 		<cfset var cbox_explicitModule  	= false>
 		<cfset var cbox_layoutLocationKey 	= "">
 		<cfset var cbox_layoutLocation		= "">
+		<cfset var iData					= arguments>
 		
 		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
 		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
@@ -390,6 +391,11 @@ Description :
 			</cfif>
 		</cfif>
 		
+		<!--- Announce preLayoutRender interception --->
+		<cfif NOT arguments.prepostExempt>
+			<cfset announceInterception("preLayoutRender", iData)>
+		</cfif>			
+		
 		<!--- Choose location algorithm if in module mode --->
 		<cfif len(arguments.module)>
 			<cfset cbox_locateUDF = variables.locateModuleLayout>
@@ -400,7 +406,7 @@ Description :
 
 		<!--- If Layout is blank, then just delegate to the view --->
 		<cfif len(cbox_currentLayout) eq 0>
-			<cfset cbox_RederedLayout = renderView( module = arguments.viewModule )>
+			<cfset iData.renderedLayout = renderView( module = arguments.viewModule )>
 		<cfelse>
 			<!--- Layout location key --->
 			<cfset cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule> 
@@ -419,14 +425,19 @@ Description :
 			</cfif>
 			
 			<!--- RenderLayout --->
-			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_layoutLocation#"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="iData.renderedLayout"><cfoutput><cfinclude template="#cbox_layoutLocation#"></cfoutput></cfsavecontent>
 		</cfif>
 
 		<!--- Stop Timer --->
 		<cfset instance.debuggerService.timerEnd(cbox_timerhash)>
-
+		
+		<!--- Post Layout Render Interception point --->
+		<cfif NOT arguments.prepostExempt>
+			<cfset announceInterception("postLayoutRender", iData)>
+		</cfif>
+		
 		<!--- Return Rendered Layout --->
-		<cfreturn cbox_RederedLayout>
+		<cfreturn iData.renderedLayout>
 	</cffunction>
 
 	<!--- locateLayout --->
