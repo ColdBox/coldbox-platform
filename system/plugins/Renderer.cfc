@@ -608,7 +608,12 @@ Description :
 				}
 				else{
 					// Implicit views
-					event.setView( lcase(replace(cEvent,".","/","all")) );
+					if( settingExists("caseSensitiveImplicitViews") and getSetting("caseSensitiveImplicitViews") ){
+						event.setView( replace(cEvent,".","/","all") );
+					}
+					else{
+						event.setView( lcase(replace(cEvent,".","/","all")) );
+					}
 				}
 				
 				// reset layout according to newly set views;
