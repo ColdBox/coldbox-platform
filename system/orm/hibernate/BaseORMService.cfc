@@ -163,7 +163,8 @@ component accessors="true"{
 					  		   numeric max=0,
 					  		   numeric timeout=0,
 						       boolean ignorecase=false,
-						       boolean asQuery=getDefaultAsQuery()){
+						       boolean asQuery=getDefaultAsQuery(),
+						       boolean unique=false){
 		var options = {};
 
 		// Setup listing options
@@ -184,7 +185,7 @@ component accessors="true"{
 		}
 
 		// Get listing
-		var results = ORMExecuteQuery( arguments.query, arguments.params, false, options );
+		var results = ORMExecuteQuery( arguments.query, arguments.params, arguments.unique, options );
 
 		// Objects or Query?
 		if( arguments.asQuery ){
