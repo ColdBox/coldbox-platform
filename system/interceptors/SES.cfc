@@ -982,23 +982,27 @@ Description :
 
 			// Get path_info & script name
 			items["pathInfo"] 	= getCGIElement('path_info',arguments.event);
-			items["scriptName"] = trim(reReplacenocase(getCGIElement('script_name',arguments.event),"[/\\]index\.cfm",""));
+			items["scriptName"] = trim( reReplacenocase(getCGIElement('script_name',arguments.event),"[/\\]index\.cfm","") );
 
 			// Clean ContextRoots
-			if( len(getContextRoot()) ){
+			if( len( getContextRoot() ) ){
 				items["pathInfo"] 	= replacenocase(items["pathInfo"],getContextRoot(),"");
 				items["scriptName"] = replacenocase(items["scriptName"],getContextRoot(),"");
 			}
-
-			// Clean up the path_info from index.cfm and nested pathing
+			
+			// Clean up the path_info from index.cfm
 			items["pathInfo"] = trim(reReplacenocase(items["pathInfo"],"[/\\]index\.cfm",""));
+			// Clean the scriptname from the pathinfo inccase this is a nested application
+			if( len( items["scriptName"] ) ){
+				items["pathInfo"] = replaceNocase(items["pathInfo"],items["scriptName"],'');
+			}
 			
 			// clean 1 or > / in front of route in some cases, scope = one by default
 			items["pathInfo"] = reReplaceNoCase(items["pathInfo"], "^/+", "/");
 
 			// fix URL vars after ?
 			items["pathInfo"] = fixIISURLVars(items["pathInfo"],arguments.rc);
-
+			
 			return items;
 		</cfscript>
 	</cffunction>
