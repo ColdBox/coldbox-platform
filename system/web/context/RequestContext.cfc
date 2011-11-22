@@ -172,9 +172,8 @@ Description :
 			var collection = instance.context;
 			if( arguments.private ){ collection = instance.privateContext; }
 
-			if( valueExists(arguments.name,arguments.private) ){
-				structDelete(collection,arguments.name);
-			}
+			structDelete(collection,arguments.name);
+			
 			return this;
 		</cfscript>
 	</cffunction>

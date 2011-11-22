@@ -94,6 +94,7 @@ Modification History:
 			var context 	= getContext();
 			var rc			= context.getCollection();
 			var prc 		= context.getCollection(private=true);
+			var fwCache		= false;
 			
 			// Capture FORM/URL
 			if( isDefined("FORM") ){ structAppend(rc, FORM); }
@@ -102,8 +103,12 @@ Modification History:
 			// Execute onRequestCapture interceptionPoint
 			instance.interceptorService.processState("onRequestCapture");
 			
+			// Remove FW reserved commands just in case before collection snapshot
+			fwCache = structKeyExists(rc,"fwCache");
+			structDelete(rc, "fwCache");
+			
 			// Take snapshot of incoming collection
-			prc["cbox_incomingContextHash"] = hash(rc.toString());
+			prc["cbox_incomingContextHash"] = hash( rc.toString() );
 			
 			// Do we have flash elements to inflate?
 			if( instance.flashScope.flashExists() ){
@@ -140,7 +145,7 @@ Modification History:
 			instance.handlerService.defaultEventCheck(context);
 			
 			// Are we using event caching?
-			eventCachingTest(context);
+			eventCachingTest(context, fwCache);
 			
 			return context;
 		</cfscript>
@@ -149,6 +154,7 @@ Modification History:
 	<!--- Event caching test --->
 	<cffunction name="eventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
 		<cfargument name="context" 	required="true"  type="any" hint="The request context to test for event caching." colddoc:generic="coldbox.system.web.context.RequestContext">
+		<cfargument name="fwCache"  required="false" type="any" default="false" hint="If the fwCache command was detected" colddoc:generic="boolean"/>
 		<cfscript>
 			var eventCache   	= structnew();
 			var oEventURLFacade = instance.templateCache.getEventURLFacade();
@@ -173,7 +179,7 @@ Modification History:
 															  targetEvent=currentEvent,
 															  targetContext=arguments.context);
 				// Check for Event Cache Purge
-				if ( context.valueExists("fwCache") ){
+				if ( arguments.fwCache ){
 					// Clear the key from the cache
 					instance.templateCache.clearKey( eventCache.cacheKey );
 					return;
