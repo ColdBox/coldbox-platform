@@ -21,6 +21,8 @@ Description :
 		<cfscript>
 			// with closure
 			instance.withClosure = {};
+			// module closure
+			instance.withModule	= "";
 			
 			// STATIC Reserved Keys as needed for cleanups
 			instance.RESERVED_KEYS 			  	= "handler,action,view,viewNoLayout,module,moduleRouting";
@@ -196,9 +198,21 @@ Description :
 
 			// Iterate through module routes and process them
 			for(x=1; x lte ArrayLen(mConfig[arguments.module].routes); x=x+1){
-				args = mConfig[arguments.module].routes[x];
-				args.module = arguments.module;
-				addRoute(argumentCollection=args);
+				// Verify if simple value, then treat it as an include
+				if( isSimpleValue( mConfig[arguments.module].routes[x] ) ){
+					// prepare module pivot
+					instance.withModule = arguments.module;
+					// Include it via conventions using declared route
+					includeRoutes(location=mConfig[arguments.module].mapping & "/" & mConfig[arguments.module].routes[x]);
+					// Remove pivot
+					instance.withModule = "";
+				}
+				// else, normal routing
+				else{	
+					args = mConfig[arguments.module].routes[x];
+					args.module = arguments.module;
+					addRoute(argumentCollection=args);
+				}
 			}
 			
 			return this;
@@ -345,6 +359,9 @@ Description :
 		if( NOT structIsEmpty( instance.withClosure ) ){
 			processWith( arguments );
 		}
+		
+		// module closure
+		if( len( instance.withModule ) ){ arguments.module = instance.withModule; }
 
 		// Process all incoming arguments into the route to store
 		for(arg in arguments){
@@ -1038,10 +1055,10 @@ Description :
 				contextRouting = { action=reReplaceNoCase(requestString,foundRoute.regexpattern,""), event=arguments.event };
 				// add module or namespace
 				if( len( foundRoute.moduleRouting ) ){
-					contextRouting.module = arguments.module;
+					contextRouting.module = foundRoute.moduleRouting;
 				}
 				else{
-					contextRouting.namespace = arguments.namespace;
+					contextRouting.namespace = foundRoute.namespaceRouting;
 				}
 				
 				// Try to Populate the params from the module pattern if any

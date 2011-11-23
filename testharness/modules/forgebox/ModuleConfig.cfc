@@ -60,7 +60,7 @@ Optional Methods
 	this.author 			= "Luis Majano";
 	this.webURL 			= "http://www.coldbox.org";
 	this.description 		= "A module that interacts with forgebox";
-	this.version			= "1.2";
+	this.version			= "1.3";
 	this.viewParentLookup 	= true;
 	this.layoutParentLookup = true;
 	this.entryPoint			= "forgebox";
@@ -69,7 +69,6 @@ Optional Methods
 	* Configure the ForgeBox Module
 	*/
 	function configure(){
-
 		settings = {
 			version = this.version
 		};
@@ -79,12 +78,9 @@ Optional Methods
 			defaultLayout = "forgebox.main.cfm"
 		};
 	
-		// SES Routes ORDER MATTERS
+		// SES Routes
 		routes = [
-			{pattern="/", handler="manager",action="index", orderby="POPULAR"},
-			{pattern="/install/results/:entrySlug", handler="manager", action="installResults"},
-			{pattern="/install", handler="manager", action="install"},
-			{pattern="/manager/:orderby/:typeSlug?", handler="manager",action="index"}
+			"config/routes.cfm"
 		];
 
 		// WireBox Binder configuration
@@ -95,9 +91,10 @@ Optional Methods
 	* Called when the module is activated and application has loaded
 	*/
 	function onLoad(){
-		if( controller.settingExists("sesBaseURL") ){
-			this.entryPoint = "forgebox:manager";
-		}
+		// change entry point if SES loaded	
+		if( NOT controller.settingExists("sesBaseURL") ){
+			controller.getSetting("modules").forgebox.entryPoint = "forgebox:manager.index";
+		}		
 	}
 </cfscript>
 </cfcomponent>
