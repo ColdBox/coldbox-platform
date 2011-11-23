@@ -12,11 +12,11 @@ ColdBox Default Configuration
 <cfscript>
 	
 	// Release Metadata
-	this.codename 		= "ColdBox";
+	this.codename 		= "ColdBox SEEK";
 	this.author			= "Ortus Solutions";
 	this.authorEmail 	= "coldbox@ortussolutions.com";
 	this.authorWebsite	= "http://www.ortussolutions.com";
-	this.suffix			= "BETA NEAR-JAMES 4:8";
+	this.suffix			= "BETA - Jeremiah 29:13";
 	this.version		= "3.5.0";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 	
