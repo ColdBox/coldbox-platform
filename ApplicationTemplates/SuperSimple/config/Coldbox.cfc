@@ -46,10 +46,7 @@ function configure(){
 	};		
 		
 	//Register interceptors as an array, we need order
-	interceptors = [
-		 //Autowire
-		 {class="coldbox.system.interceptors.Autowire"}
-	];	
+	interceptors = [];	
 }
 	
 </cfscript>

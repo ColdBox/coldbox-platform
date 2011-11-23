@@ -173,29 +173,35 @@
 		
 		//Register interceptors as an array, we need order
 		interceptors = [
-			
-			 //Autowire
-			 {class="coldbox.system.interceptors.Autowire",
-			  properties = {
-			  	entityInjection = true
-			  }
-			  },
 			// ses 
-			 {class="coldbox.system.interceptors.SES",
+			{class="coldbox.system.interceptors.SES",
 			  properties={configFile="config/routes.cfm"}},
 			 
-			 //Observers
-			 {class="#variables.appMapping#.interceptors.errorObserver"},
+			//Observers
+			{class="#variables.appMapping#.interceptors.errorObserver"},
 				 
-			 //security
-			 {class="coldbox.system.interceptors.Security",
-			  properties={
-			  	rulesSource = "xml",
+			//security
+			{class="coldbox.system.interceptors.Security",
+			 properties={
+			 	rulesSource = "xml",
 			  	rulesFile = "config/security.xml.cfm"}},
 			  
-			  //Execution tracer
-			  {class="#variables.appMapping#.interceptors.executionTracer"}
+			//Execution tracer
+			{class="#variables.appMapping#.interceptors.executionTracer"}
 		];
+		
+		// ORM
+		orm = {
+			// entity injection
+			injection = {
+				// enable it
+				enabled = true,
+				// the include list for injection
+				include = "",
+				// the exclude list for injection
+				exclude = ""
+			}
+		};
 		
 		//LogBox DSL
 		logBox = {

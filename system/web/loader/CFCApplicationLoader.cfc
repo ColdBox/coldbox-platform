@@ -149,6 +149,9 @@ Loads a coldbox cfc configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: Flash Scope Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseFlashScope(oConfig,configStruct);	
 		
+		/* ::::::::::::::::::::::::::::::::::::::::: ORM Configuration :::::::::::::::::::::::::::::::::::::::::::: */
+		parseORM(oConfig,configStruct);	
+		
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
 		
@@ -820,8 +823,32 @@ Loads a coldbox cfc configuration file
 		</cfscript>
 	</cffunction>
 	
+	<!--- parseORM --->
+	<cffunction name="parseORM" output="false" access="public" returntype="void" hint="Parse Flash Scope">
+		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
+		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfscript>
+			var ormDSL	  			= structnew();
+			
+			// Default Config Structure
+			arguments.config.orm = {
+				injection = {
+					enabled = false, include = "", exclude = ""
+				}
+			};
+			
+			// Check if we have defined DSL first in application config
+			ormDSL = arguments.oConfig.getPropertyMixin("orm","variables",structnew());
+			
+			// injection
+			if( structKeyExists(ormDSL,"injection") ){
+				structAppend( arguments.config.orm.injection, ormDSL.injection, true);
+			}			
+		</cfscript>
+	</cffunction>
+	
 	<!--- parseFlashScope --->
-	<cffunction name="parseFlashScope" output="false" access="public" returntype="void" hint="Parse Flash Scope">
+	<cffunction name="parseFlashScope" output="false" access="public" returntype="void" hint="Parse ORM settings">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
 		<cfscript>

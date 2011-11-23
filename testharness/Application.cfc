@@ -93,7 +93,6 @@ Description :
 		
 		<!--- Reload Checks --->
 		<cfset application.cbBootstrap.reloadChecks()>
-		
 		<cfset request.fwLoadTIme = getTickCount() - start>
 		
 		<!--- Process A ColdBox Request Only --->
