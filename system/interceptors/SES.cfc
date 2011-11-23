@@ -288,6 +288,30 @@ Description :
     	</cfscript>    
     </cffunction>
     
+    <!--- includeRoutes --->    
+    <cffunction name="includeRoutes" output="false" access="public" returntype="any" hint="Includes a routes configuration file as an added import and returns itself after import">    
+    	<cfargument name="location" type="any" required="true" hint="The include location of the routes configuration template. Do not add '.cfm'"/>
+    	<cfscript>
+			// verify .cfm or not
+			if( listLast(arguments.location,".") NEQ "cfm" ){
+				arguments.location &= ".cfm";
+			}
+			
+			// We are ready to roll
+			try{
+				// Try to remove pathInfoProvider, just in case
+				structdelete(variables,"pathInfoProvider");
+				structdelete(this,"pathInfoProvider");
+				// Import configuration
+				$include( arguments.location );
+			}
+			catch(Any e){
+				$throw("Error importing routes configuration file: #e.message# #e.detail#",e.tagContext.toString(),"SES.IncludeRoutingConfig");
+			}
+			return this;			   
+    	</cfscript>    
+    </cffunction>
+    
    	<!--- Add a new Route --->
 	<cffunction name="addRoute" access="public" returntype="any" output="false" hint="Adds a route to dispatch and returns itself.">
 		<!--- ************************************************************* --->
@@ -1231,26 +1255,17 @@ Description :
 					$throw(message="Error locating routes file: #configFilePath#",type="SES.ConfigFileNotFound");
 				}
 			}
-
-			// We are ready to roll. Import config to setup the routes.
-			try{
-				// Try to remove pathInfoProvider, just in case
-				structdelete(variables,"pathInfoProvider");
-				structdelete(this,"pathInfoProvider");
-				// Include configuration
-				$include(configFilePath);
-			}
-			catch(Any e){
-				$throw("Error including config file: #e.message# #e.detail#",e.tagContext.toString(),"SES.executingConfigException");
-			}
+			
+			// Include configuration
+			includeRoutes( configFilePath );
 
 			// Validate the base URL
-			if ( len(getBaseURL()) eq 0 ){
+			if ( len( getBaseURL() ) eq 0 ){
 				$throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
 			}
 		</cfscript>
 	</cffunction>
-
+	
 	<!--- getUtil --->
 	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" colddoc:generic="coldbox.system.core.util.Util">
 		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
