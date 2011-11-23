@@ -103,8 +103,6 @@ function configure(){
 	
 	//Register interceptors as an array, we need order
 	interceptors = [
-		 //Autowire
-		 {class="coldbox.system.interceptors.Autowire"},
 		 //SES
 		 {class="coldbox.system.interceptors.SES"}
 	];

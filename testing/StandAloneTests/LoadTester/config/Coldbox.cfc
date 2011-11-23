@@ -137,10 +137,6 @@ Optional Methods
 		
 		//Register interceptors as an array, we need order
 		interceptors = [
-			//Autowire
-			{class="coldbox.system.interceptors.Autowire",
-			 properties={}
-			},
 			//SES
 			{class="coldbox.system.interceptors.SES",
 			 properties={}

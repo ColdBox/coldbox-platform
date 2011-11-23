@@ -138,10 +138,6 @@ Optional Methods
 		
 		//Register interceptors as an array, we need order
 		interceptors = [
-			//Autowire
-			{class="coldbox.system.interceptors.Autowire",
-			 properties={}
-			},
 			//SES
 			{class="coldbox.system.interceptors.SES",
 			 properties={}
@@ -153,9 +149,15 @@ Optional Methods
 		
 		// ORM services, injection, etc
 		orm = {
-			entityInjection = true, // enable/disable entity dependency injection via the ColdBox ORM Event Handler
-			entityInclude	= "", // A list of entity names to ONLY include for injections
-			entityExclude	= "" // A list of entity names to exclude from injections
+			// entity injection
+			injection = {
+				// enable it
+				enabled = true,
+				// the include list for injection
+				include = "",
+				// the exclude list for injection
+				exclude = ""
+			}
 		};
 		
 		// flash scope configuration

@@ -138,10 +138,20 @@ function configure(){
 	};
 	
 	//Register interceptors as an array, we need order
-	interceptors = [
-		 //Autowire
-		 {class="coldbox.system.interceptors.Autowire"}
-	];
+	interceptors = [];
+	
+	// ORM services, injection, etc
+	orm = {
+		// entity injection
+		injection = {
+			// enable it
+			enabled = true,
+			// the include list for injection
+			include = "",
+			// the exclude list for injection
+			exclude = ""
+		}
+	};
 	
 }
 	

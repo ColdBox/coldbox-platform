@@ -292,7 +292,7 @@ I oversee and manage ColdBox modules
 			}
 			// Mapping DSL Registration	
 			wirebox.getBinder().loadDataDSL( mConfig.wirebox );
-			
+						
 			// Register module routing entry point pre-pended to routes
 			if( controller.settingExists('sesBaseURL') AND len(mConfig.entryPoint) AND NOT find(":",mConfig.entryPoint)){
 				interceptorService.getInterceptor("SES",true).addModuleRoutes(pattern=mConfig.entryPoint,module=arguments.moduleName,append=false);

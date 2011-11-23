@@ -18,9 +18,6 @@
 		setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/index.cfm");
 	}
 
-	// Module Routing Added
-	addModuleRoutes(pattern="/forgebox",module="forgebox");
-
 	// Your Application Routes
 	addRoute(pattern=":handler/:action?");
 
