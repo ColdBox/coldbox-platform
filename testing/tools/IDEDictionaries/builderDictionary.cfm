@@ -96,7 +96,7 @@ out.append('
 	</cfscopes>
 </dictionary>');
 
-fileWrite(expandPath('./coldbox.builder.xml'), out.toString());
+fileWrite(expandPath('/coldbox/install/IDE Extras/CFBuilder Dictionary/coldbox.builder.xml'), out.toString());
 </cfscript>
 
 <textarea rows="30" cols="160">

@@ -10,7 +10,12 @@
 		
     	<!--- Include the mixins --->
     	<cfloop from="1" to="#mixinLen#" index="x">
-			<cfinclude template="#mixins[x]#" >
+			<!---verify .cfm or not--->
+			<cfif listLast(mixins[x],".") NEQ "cfm" >
+				<cfinclude template="#trim(mixins[x])#.cfm" >
+			<cfelse>
+				<cfinclude template="#trim(mixins[x])#" >
+			</cfif>
 		</cfloop>
 		
 		<!--- Expose them --->

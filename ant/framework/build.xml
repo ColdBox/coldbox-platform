@@ -17,7 +17,8 @@
 	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
 	<property name="dir.wallpapers"		value="${dir.userlocation}/Documents/MyDocs/OrtusSolutions/Products/ColdBox/workbench/wallpapers/" />
 	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/coldbox.cfm?version=" />
-	
+	<property name="dictionaries.http"	value="http://cf9cboxdev.jfetmac/coldbox/testing/tools/IDEDictionaries/" />
+		
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<property name="build.label" 		value="coldbox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
@@ -114,6 +115,12 @@
 		<!-- Execute ColdDoc -->
 		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Execute CFBuilder & CFEclipse Dictionaries -->
+		<get dest="${dir.build}/cfbuilder.html" src="${dictionaries.http}/builderDictionary.cfm" verbose="true"/>
+		<delete file="${dir.build}/cfbuilder.html" />
+		<get dest="${dir.build}/cfeclipse.html" src="${dictionaries.http}/cfeclipseDictionary.cfm" verbose="true"/>
+		<delete file="${dir.build}/cfeclipse.html" />
 			
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
