@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <h2><img src="includes/images/coldbox.png" class="middle" style="padding-right:10px" alt="ColdBox" /> #rc.welcomeMessage#</h2>
 
 <div id="infobox">

@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.testing.cases.logging.appenders.DBAppenderTest">
+﻿<cfcomponent extends="coldbox.testing.cases.logging.appenders.DBAppenderTest">
 <cfscript>
 	function setup(){
 		props = {dsn='coolblog',table='logs',autocreate='true'};

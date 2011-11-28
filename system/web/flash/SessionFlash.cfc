@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -16,15 +16,12 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 	
-	<cfscript>
-		instance = structnew();
-	</cfscript>
-
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="SessionFlash" hint="Constructor">
-    	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
+    	<cfargument name="controller" 	type="any" required="true" hint="The ColdBox Controller" colddoc:generic="coldbox.system.web.Controller"/>
+		<cfargument name="defaults" 	type="any" required="false" default="#structNew()#" hint="Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]" colddoc:generic="struct"/>
     	<cfscript>
-    		super.init(arguments.controller);
+    		super.init(argumentCollection=arguments);
 			
 			instance.flashKey = "cbox_flash_scope";
 			

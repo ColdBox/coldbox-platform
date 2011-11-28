@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -18,7 +18,9 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="init" returntype="any" access="public" hint="Constructor" output="false" colddoc:generic="coldbox.system.web.Controller">
 		<cfargument name="appRootPath" type="any" required="true" hint="The application root path"/>
 		<cfscript>
+			// local members scope
 			instance = structnew();
+			// services scope
 			services = createObject("java","java.util.LinkedHashMap").init(7);
 		
 			// CFML Engine Utility
@@ -27,16 +29,20 @@ Only one instance of a specific ColdBox application exists.
 			// Set Main Application Properties
 			instance.coldboxInitiated 		= false;
 			instance.aspectsInitiated 		= false;
-			instance.appHash				= hash(arguments.appRootPath);
+			//Fix Application Path to last / standard.
+			if( NOT reFind("(/|\\)$",arguments.appRootPath) ){
+				arguments.appRootPath = appRootPath & "/";
+			}
+			instance.appHash				= hash( arguments.appRootPath );
 			instance.appRootPath			= arguments.appRootPath;
+			instance.configSettings 		= structNew();
+			instance.coldboxSettings		= structNew();
 			
-			// Init application Configuration structures
-			instance.configSettings = structNew();
-			// Load up ColdBox Settings
-			createObject("component","coldbox.system.web.loader.FrameworkLoader").init().loadSettings(this);
+			// Load up default ColdBox Settings
+			createObject("component","coldbox.system.web.loader.FrameworkLoader").init().loadSettings( this );
 
 			// Setup the ColdBox Services
-			services.LoaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init(this);
+			services.loaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init(this);
 			
 			// LogBox Default Configuration & Creation
 			instance.logBox = services.loaderService.createDefaultLogBox();
@@ -47,22 +53,12 @@ Only one instance of a specific ColdBox application exists.
 			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init(this);
 			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init(this);
 			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init(this);
-			services.ModuleService 		= "";
-			
-			// Nasty cf7, once you die this goes out. Modules are cf8 only and above.
-			if ( instance.CFMLEngine.isMT() ){
-				services.ModuleService = CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
-			}
+			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
 			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this);
 
 			// CacheBox
 			instance.cacheBox 	= "";
 			instance.wireBox	= "";
-			
-			// Announcement we are created.
-			if( instance.log.canInfo() ){
-				instance.log.info("ColdBox Application Controller Created Successfully at #arguments.appRootPath#");
-			}
 
 			return this;
 		</cfscript>
@@ -126,12 +122,7 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
 		<cfargument name="cacheName" type="any" required="false" default="default" hint="The cache name to retrieve"/>
 		<cfscript>
-			// if cachebox exists, return cachebox cache
-			if( isObject( instance.cacheBox ) ){
-				return instance.cacheBox.getCache( arguments.cacheName );
-			}
-			//else return compat mode for now.
-			return instance.coldboxOCM;
+			return instance.cacheBox.getCache( arguments.cacheName );
 		</cfscript>
 	</cffunction>
 	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
@@ -275,6 +266,7 @@ Only one instance of a specific ColdBox application exists.
 		<!--- ************************************************************* --->
 		<cfargument name="name" 	    type="any"   	hint="Name of the setting key to retrieve"  >
 		<cfargument name="FWSetting"  	type="any" 	 	required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
+		<cfargument name="defaultValue"	type="any" 		required="false" hint="Default value to return if not found.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var target = instance.configSettings;
@@ -283,6 +275,11 @@ Only one instance of a specific ColdBox application exists.
 
 			if ( settingExists(arguments.name,arguments.FWSetting) ){
 				return target[arguments.name];
+			}
+			
+			// Default value
+			if( structKeyExists(arguments, "defaultValue") ){
+				return arguments.defaultValue;
 			}
 
 			getUtil().throwit(message="The setting #arguments.name# does not exist.",
@@ -436,8 +433,10 @@ Only one instance of a specific ColdBox application exists.
 			}
 
 			// Save Flash RAM
-			services.requestService.getFlashScope().saveFlash();
-
+			if( instance.configSettings.flash.autoSave ){
+				services.requestService.getFlashScope().saveFlash();
+			}
+			
 			// Send Relocation
 			sendRelocation(URL=relocationURL,addToken=arguments.addToken,statusCode=arguments.statusCode);
 		</cfscript>
@@ -712,10 +711,12 @@ Only one instance of a specific ColdBox application exists.
     	<cfargument name="url" 			required="true"  hint="The URL to relocate to"/>
 		<cfargument name="addtoken"		required="false" default="false" hint="Add the CF tokens or not" colddoc:generic="boolean">
     	<cfargument name="statusCode" 	required="false" default="0" hint="The status code to use" colddoc:generic="numeric">
-    	<cfif arguments.statusCode eq 0>
-			<cflocation url="#arguments.url#" addtoken="#addtoken#">
+    	
+    	<!--- Relocate --->
+		<cfif arguments.statusCode neq 0>
+    		<cflocation url="#arguments.url#" addtoken="#addtoken#" statuscode="#arguments.statusCode#">
 		<cfelse>
-			<cfinclude template="/coldbox/system/includes/cf7_cflocation_compat.cfm">
+			<cflocation url="#arguments.url#" addtoken="#addtoken#">
 		</cfif>
     </cffunction>
 

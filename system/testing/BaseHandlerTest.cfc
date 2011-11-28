@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -27,7 +27,8 @@ Description :
 			}
 			// Check for UDF Library File
 			if( structKeyExists(md, "UDFLibraryFile") ){
-				UDFLibrary = md.UDFLibraryFile;
+				// inflate it, since it can't be an array in metadata
+				UDFLibrary = listToArray( md.UDFLibraryFile );
 			}
 			
 			// Create handler with Mocking capabilities

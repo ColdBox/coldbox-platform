@@ -1,4 +1,4 @@
-<!--- Import Report Tags --->
+﻿<!--- Import Report Tags --->
 <cfimport prefix="cachebox" taglib="/coldbox/system/cache/report">
 
 <!--- Create CacheBox --->

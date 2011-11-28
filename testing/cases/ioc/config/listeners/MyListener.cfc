@@ -1,4 +1,4 @@
-<cfcomponent output="false">
+﻿<cfcomponent output="false">
 
 	<!--- configure --->
     <cffunction name="configure" output="false" access="public">

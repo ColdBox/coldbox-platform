@@ -1,4 +1,4 @@
-<cfcomponent name="testGateway" output="false">
+﻿<cfcomponent name="testGateway" output="false">
 
 	<cfscript>
 		instance = structnew();

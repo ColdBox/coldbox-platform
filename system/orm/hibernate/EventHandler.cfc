@@ -1,4 +1,4 @@
-/**
+﻿/**
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -22,7 +22,9 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
 	*/
 	public void function postNew(any entity,any entityName){
-		announceInterception("ORMPostNew",{entity = arguments.entity, entityName=arguments.entityName});
+		var args = {entity = arguments.entity, entityName=arguments.entityName};
+		processEntityInjection(args.entityName, args.entity);
+		announceInterception("ORMPostNew",args);
 	}
 
 	/**
@@ -36,7 +38,9 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	* postLoad called by hibernate which in turn announces a coldbox interception: ORMPostLoad
 	*/
 	public void function postLoad(any entity){
-		announceInterception("ORMPostLoad",{entity=arguments.entity,entityName=ORMGetSession().getEntityName( arguments.entity )});
+		var args = { entity=arguments.entity, entityName=ORMGetSession().getEntityName( arguments.entity ) };
+		processEntityInjection(args.entityName, args.entity);
+		announceInterception("ORMPostLoad",args);
 	}
 
 	/**
@@ -93,5 +97,30 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	*/
 	public void function postSave(any entity){
 		announceInterception("ORMPostSave", {entity=arguments.entity});
+	}
+	
+	/**
+	* process entity injection
+	*/
+	private function processEntityInjection(required entityName,required entity){
+		var ormSettings		= getController().getSetting("orm").injection;
+		var injectorInclude = ormSettings.include;
+		var injectorExclude = ormSettings.exclude;
+		
+		// Enabled?
+		if( NOT ormSettings.enabled ){
+			return;
+		}
+		
+		// Include,Exclude?
+		if( (len(injectorInclude) AND listContainsNoCase(injectorInclude,entityName))
+		    OR
+			(len(injectorExclude) AND NOT listContainsNoCase(injectorExclude,entityName))
+			OR 
+			(NOT len(injectorInclude) AND NOT len(injectorExclude) ) ){
+			
+			// Process DI
+			getWireBox().autowire(target=entity,targetID="ORMEntity-#entityName#");
+		}	
 	}
 }

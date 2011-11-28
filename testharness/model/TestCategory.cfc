@@ -1,4 +1,4 @@
-component persistent="true" table="categories"{
+﻿component persistent="true" table="categories"{
 
 	property name="id" column="category_id" fieldType="id" generator="uuid";
 	property name="category" notnull="true";

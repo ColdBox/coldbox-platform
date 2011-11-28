@@ -1,4 +1,4 @@
-/**
+﻿/**
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -48,6 +48,11 @@ component accessors="true"{
 	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
 	*/
 	property name="useTransactions" type="boolean" default="true";
+	
+	/**
+	* The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
+	*/
+	property name="defaultAsQuery" type="boolean" default="true";
 
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
 
@@ -61,12 +66,14 @@ component accessors="true"{
 	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
 								  boolean useQueryCaching=false,
 								  boolean eventHandling=true,
-								  boolean useTransactions=true){
+								  boolean useTransactions=true,
+								  boolean defaultAsQuery=true){
 		// setup properties
 		setQueryCacheRegion( arguments.queryCacheRegion );
 		setUseQueryCaching( arguments.useQueryCaching );
 		setEventHandling( arguments.eventHandling );
 		setUseTransactions( arguments.useTransactions );
+		setDefaultAsQuery( arguments.defaultAsQuery );
 
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
@@ -74,8 +81,8 @@ component accessors="true"{
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
 
-		// Restrictions orm.hibernate.criterion.Restrictions lazy loaded
-		restrictions = "";
+		// Restrictions orm.hibernate.criterion.Restrictions
+		restrictions = createObject("component","coldbox.system.orm.hibernate.criterion.Restrictions").init();
 
 		return this;
 	}
@@ -107,7 +114,7 @@ component accessors="true"{
 					  numeric max=0,
 					  numeric timeout=0,
 					  boolean ignoreCase=false,
-					  boolean asQuery=true){
+					  boolean asQuery=getDefaultAsQuery()){
 		var options = {};
 
 		// Setup listing options
@@ -156,7 +163,8 @@ component accessors="true"{
 					  		   numeric max=0,
 					  		   numeric timeout=0,
 						       boolean ignorecase=false,
-						       boolean asQuery=true){
+						       boolean asQuery=getDefaultAsQuery(),
+						       boolean unique=false){
 		var options = {};
 
 		// Setup listing options
@@ -177,7 +185,7 @@ component accessors="true"{
 		}
 
 		// Get listing
-		var results = ORMExecuteQuery( arguments.query, arguments.params, false, options );
+		var results = ORMExecuteQuery( arguments.query, arguments.params, arguments.unique, options );
 
 		// Objects or Query?
 		if( arguments.asQuery ){
@@ -305,14 +313,14 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
     */
-	void function populate(required any target,
+	any function populate(required any target,
 						   required struct memento,
 						   string scope="",
 					 	   boolean trustedSetter=false,
 						   string include="",
 						   string exclude=""){
 
-		beanPopulator.populateFromStruct(argumentCollection=arguments);
+		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
 
 	/**
@@ -323,14 +331,14 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromJSON(required any target,
+	any function populateFromJSON(required any target,
 								   required string JSONString,
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
 								   string exclude=""){
 
-		beanPopulator.populateFromJSON(argumentCollection=arguments);
+		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
 	/**
@@ -342,7 +350,7 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromXML(required any target,
+	any function populateFromXML(required any target,
 								  required string xml,
 								  string root="",
 								  string scope="",
@@ -350,7 +358,7 @@ component accessors="true"{
 								  string include="",
 								  string exclude=""){
 
-		beanPopulator.populateFromXML(argumentCollection=arguments);
+		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
 	/**
@@ -362,7 +370,7 @@ component accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	void function populateFromQuery(required any target,
+	any function populateFromQuery(required any target,
 								    required any qry,
 								    numeric rowNumber=1,
 								    string scope="",
@@ -370,7 +378,7 @@ component accessors="true"{
 								    string include="",
 								    string exclude=""){
 
-		beanPopulator.populateFromQuery(argumentCollection=arguments);
+		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
 
 
@@ -927,18 +935,32 @@ component accessors="true"{
 	}
 
 	/**
-	* Returns the Property Names of the entity
+	* Returns the Property Names of the entity via hibernate metadata
 	*/
 	array function getPropertyNames(required string entityName){
 		return ormGetSessionFactory().getClassMetaData(arguments.entityName).getPropertyNames();
 	}
 
 	/**
-	* Returns the table name of the of the entity
+	* Returns the table name that the current entity string belongs to via hibernate metadata
 	*/
 	string function getTableName(required string entityName){
 		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
 	}
+	
+	/**
+ 	* Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
+	*/
+	function getEntityGivenName(required entity) {
+		if( sessionContains( arguments.entity ) ){
+ 			return ORMGetSession().getEntityName( entity );
+ 		}
+ 		
+ 		// else long approach
+ 		var md = getMetadata( arguments.entity );
+ 		if( structKeyExists(md, "entityname") ){ return md.entityname; }
+ 		return listLast( md.name, ".");
+ 	}
 
 	/**
 	* Returns the entity name from a given entity
@@ -973,9 +995,6 @@ component accessors="true"{
 	* Get our hibernate org.hibernate.criterion.Restrictions proxy object
 	*/
 	public any function getRestrictions(){
-		if( NOT isObject(restrictions) ){
-			restrictions = createObject("component","coldbox.system.orm.hibernate.criterion.Restrictions").init();
-		}
 		return restrictions;
 	}
 
@@ -989,7 +1008,7 @@ component accessors="true"{
 					  				  numeric max=0,
 					  		 		  numeric timeout=0,
 					  		 		  boolean ignoreCase=false,
-					  		 		  boolean asQuery=true){
+					  		 		  boolean asQuery=getDefaultAsQuery()){
 		// create Criteria query object
 		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
 
@@ -1062,6 +1081,20 @@ component accessors="true"{
 
 		return qry.uniqueResult();
 	}
+	
+	/**
+	* Get a brand new criteria builder object
+	* @entityName The name of the entity to bind this criteria query to
+	* @useQueryCaching Activate query caching for the list operations
+	* @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
+	* @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	*/
+	any function newCriteria(required string entityName,
+							 boolean useQueryCaching=false,
+							 string queryCacheRegion=""){
+		
+		return new CriteriaBuilder(argumentCollection=arguments);
+	}
 
 	/**
 	* Create a new hibernate criteria object according to entityname and criterion array objects
@@ -1070,7 +1103,14 @@ component accessors="true"{
 		var qry = ORMGetSession().createCriteria( arguments.entityName );
 
 		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
-			qry.add( arguments.criteria[i] );
+			if( isSimpleValue( arguments.criteria[i] ) ){
+				// create criteria out of simple values for associations with alias
+				qry.createCriteria( arguments.criteria[i], arguments.criteria[i] );
+			}
+			else{
+				// add criterion
+				qry.add( arguments.criteria[i] );
+			}
 		}
 
 		return qry;
@@ -1088,32 +1128,31 @@ component accessors="true"{
 		}
 
 		// transaction safe call, start one
-		var tx = ORMGetSession().beginTransaction();
 		// mark transaction began
 		request["cbox_aop_transaction"] = true;
-
-		try{
-			// Call method
-			results = arguments.method(argumentCollection=arguments.argCollection);
-			// commit transaction
-			tx.commit();
-		}
-		catch(Any e){
-			// remove pointer
-			structDelete(request,"cbox_aop_transaction");
-			// rollback
+		transaction{
+			
 			try{
-				tx.rollback();
+				// Call method
+				results = arguments.method(argumentCollection=arguments.argCollection);
+				// commit transaction
+				transactionCommit();
 			}
-			catch(any e){
-				// silent rollback as something really went wrong
+			catch(Any e){
+				// remove pointer
+				structDelete(request,"cbox_aop_transaction");
+				// RollBack Transaction
+				transactionRollback();
+				//throw it
+				rethrow;
 			}
-			//throw it
-			rethrow;
+			
 		}
+			
 		// remove pointer, out of transaction now.
 		structDelete(request,"cbox_aop_transaction");
 		// Results? If found, return them.
 		if( NOT isNull(results) ){ return results; }
+			
 	}
 }

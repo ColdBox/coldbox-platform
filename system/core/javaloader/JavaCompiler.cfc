@@ -1,4 +1,4 @@
-<cfcomponent hint="Compiles Java source dirs to an array of .jar files." output="false">
+﻿<cfcomponent hint="Compiles Java source dirs to an array of .jar files." output="false">
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 

@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -46,7 +46,7 @@ Description :
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
 		
-		<cfif NOT structKeyExists(server,"railo") AND structKeyExists(URL,"reinit")>
+		<cfif structKeyExists(URL,"reinit")>
 			<cfset ORMReload()>
 		</cfif>
 		

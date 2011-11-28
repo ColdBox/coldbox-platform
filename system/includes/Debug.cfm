@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly=true>
+﻿<cfsetting enablecfoutputonly=true>
 <!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
@@ -95,6 +95,7 @@ Description :
 		</div>
 		<div class="fw_debugContentCell">
 		<cfif Event.getCurrentLayout() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentLayout()#</cfif>
+		(Module: #event.getCurrentLayoutModule()#)
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -213,7 +214,9 @@ Description :
 <!--- CACHE PANEL --->
 <!--- **************************************************************--->
 	<cfif getDebuggerConfig().getShowCachePanel()>
-		#controller.getDebuggerService().renderCachePanel(monitor=false)#
+		<!---#controller.getDebuggerService().renderCachePanel(monitor=false)#--->
+		<cfimport prefix="cachebox" taglib="/coldbox/system/cache/report">
+		<cachebox:monitor cacheFactory="#controller.getCacheBox()#" expandedPanel="#getDebuggerConfig().getExpandedCachePanel()#"/>
 	</cfif>
 <!--- **************************************************************--->
 <!--- DUMP VAR --->
@@ -236,7 +239,7 @@ Description :
 <!--- **************************************************************--->
 <!--- ColdBox Modules --->
 <!--- **************************************************************--->
-	<cfif controller.getCFMLEngine().isMT() AND getDebuggerConfig().getShowModulesPanel()>
+	<cfif getDebuggerConfig().getShowModulesPanel()>
 		<cfinclude template="panels/ModulesPanel.cfm">
 	</cfif>
 <!--- **************************************************************--->

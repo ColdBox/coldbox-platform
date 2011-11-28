@@ -1,4 +1,4 @@
-<cfcomponent output="false" hint="My App Configuration">
+﻿<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
 structures/arrays to create for configuration
@@ -7,9 +7,8 @@ structures/arrays to create for configuration
 - settings (struct)
 - conventions (struct)
 - environments (struct)
-- ioc (struct)
-- models (struct) DEPRECATED use Wirebox instead
 - wirebox (struct)
+- ioc (struct)
 - debugger (struct)
 - mailSettings (struct)
 - i18n (struct)
@@ -22,6 +21,8 @@ structures/arrays to create for configuration
 - interceptors (array of structs)
 - modules (struct)
 - logBox (struct)
+- flash (struct)
+- orm (struct)
 
 Available objects in variable scope
 - controller
@@ -50,7 +51,6 @@ Optional Methods
 			debugPassword			= "",
 			reinitPassword			= "",
 			handlersIndexAutoReload = true,
-			configAutoReload		= false,
 			
 			//Implicit Events
 			defaultEvent			= "General.index",
@@ -80,10 +80,9 @@ Optional Methods
 			//Application Aspects
 			handlerCaching 			= false,
 			eventCaching			= false,
-			proxyReturnCollection 	= false,
-			flashURLPersistScope	= "session"	
+			proxyReturnCollection 	= false
 		};
-	
+		
 		// custom settings
 		settings = {
 			
@@ -139,10 +138,6 @@ Optional Methods
 		
 		//Register interceptors as an array, we need order
 		interceptors = [
-			//Autowire
-			{class="coldbox.system.interceptors.Autowire",
-			 properties={}
-			},
 			//SES
 			{class="coldbox.system.interceptors.SES",
 			 properties={}
@@ -151,6 +146,30 @@ Optional Methods
 		
 		
 		/*
+		
+		// ORM services, injection, etc
+		orm = {
+			// entity injection
+			injection = {
+				// enable it
+				enabled = true,
+				// the include list for injection
+				include = "",
+				// the exclude list for injection
+				exclude = ""
+			}
+		};
+		
+		// flash scope configuration
+		flash = {
+			scope = "session,client,cluster,ColdboxCache,or full path",
+			properties = {}, // constructor properties for the flash scope implementation
+			inflateToRC = true, // automatically inflate flash data into the RC scope
+			inflateToPRC = false, // automatically inflate flash data into the PRC scope
+			autoPurge = true, // automatically purge flash data for you
+			autoSave = true // automatically save flash scopes at end of a request and on relocations.
+		};
+		
 		//Register Layouts
 		layouts = [
 			{ name = "login",
@@ -167,7 +186,6 @@ Optional Methods
 			viewsLocation 	 = "views",
 			layoutsLocation  = "layouts",
 			modelsLocation 	 = "model",
-			modulesExternalLocation  = "",
 			eventAction 	 = "index"
 		};
 		

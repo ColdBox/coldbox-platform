@@ -1,4 +1,4 @@
-<cfset exceptionBean = event.getValue("ExceptionBean") />
+﻿<cfset exceptionBean = event.getValue("ExceptionBean") />
 
 <h3>An Unhandled Exception Occurred</h3>
 

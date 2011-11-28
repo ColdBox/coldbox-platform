@@ -1,4 +1,4 @@
-<cfcomponent name="main" 
+﻿<cfcomponent name="main" 
 			 hint="main" 
 			 output="false">
 

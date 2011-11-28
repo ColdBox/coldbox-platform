@@ -1,4 +1,4 @@
-<cfcomponent output="false" hint="My App Configuration">
+﻿<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 // Configure ColdBox Application
 function configure(){
@@ -13,7 +13,6 @@ function configure(){
 		debugPassword			= "",
 		reinitPassword			= "",
 		handlersIndexAutoReload = true,
-		configAutoReload		= false,
 		
 		//Implicit Events
 		defaultEvent			= "general.index",
@@ -47,10 +46,7 @@ function configure(){
 	};		
 		
 	//Register interceptors as an array, we need order
-	interceptors = [
-		 //Autowire
-		 {class="coldbox.system.interceptors.Autowire"}
-	];	
+	interceptors = [];	
 }
 	
 </cfscript>
