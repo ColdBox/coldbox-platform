@@ -108,6 +108,15 @@ Description :
     	</cfscript>    
     </cffunction>
     
+    <!--- setArgs --->
+	<cffunction name="setArgs" output="false" access="public" returntype="any" hint="Set the argument collection of this method invocation, override orginal">
+		<cfargument name="args" type="any" required="true" hint="The argument collection that you want to now use"/>
+		<cfscript>
+			instance.args = arguments.args;
+			return this;
+		</cfscript>
+	</cffunction>
+
     <!--- getInterceptors --->    
     <cffunction name="getInterceptors" output="false" access="public" returntype="any" hint="Get the array of aspect interceptors for this method invocation" colddoc:generic="array">    
     	<cfscript>
