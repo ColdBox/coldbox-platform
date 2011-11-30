@@ -473,30 +473,33 @@ Loads a coldbox cfc configuration file
 		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
 		<cfargument name="config" 	  type="struct"   required="true" hint="The config struct"/>
 		<cfscript>
-			var configStruct = arguments.config;
-			var DefaultLocale = "";
-			var i18n = arguments.oConfig.getPropertyMixin("i18N","variables",structnew());
+			var configStruct	= arguments.config;
+			var i18n 			= arguments.oConfig.getPropertyMixin("i18N","variables",structnew());
 			
 			
 			//Defaults
-			configStruct.DefaultResourceBundle = "";
-			configStruct.DefaultLocale = "";
-			configStruct.LocaleStorage = "";
-			configStruct.UnknownTranslation = "";
+			configStruct.defaultResourceBundle = "";
+			configStruct.defaultLocale = "";
+			configStruct.localeStorage = "";
+			configStruct.unknownTranslation = "";
 			configStruct["using_i18N"] = false;
 			
 			//Check if empty
 			if ( NOT structIsEmpty(i18n) ){
 				
 				//Check for DefaultResourceBundle
-				if ( structKeyExists(i18n, "DefaultResourceBundle") AND len(i18n.DefaultResourceBundle) ){
-					configStruct["DefaultResourceBundle"] = i18n.DefaultResourceBundle;
+				if ( structKeyExists(i18n, "DefaultResourceBundle") AND len(i18n.defaultResourceBundle) ){
+					configStruct["DefaultResourceBundle"] = i18n.defaultResourceBundle;
 				}
 				
-				//Check for DefaultResourceBundle
+				//Check for DefaultLocale
 				if ( structKeyExists(i18n, "DefaultLocale") AND len(i18n.DefaultLocale) ){
-					defaultLocale = i18n.DefaultLocale;
-					configStruct["DefaultLocale"] = lcase(listFirst(DefaultLocale,"_")) & "_" & ucase(listLast(DefaultLocale,"_"));
+					if( find("_", i18n.defaultLocale) ){
+						configStruct["DefaultLocale"] = lcase(listFirst(i18n.defaultLocale,"_")) & "_" & ucase(listLast(i18n.defaultLocale,"_"));
+					}
+					else{
+						configStruct["DefaultLocale"] = i18n.defaultLocale;
+					}
 				}
 				
 				//Check for LocaleStorage

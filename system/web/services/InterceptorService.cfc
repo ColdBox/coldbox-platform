@@ -66,7 +66,7 @@ Description :
 			wirebox = controller.getWirebox();
 			// Check if base interceptor mapped, else map it
 			if( NOT wirebox.getBinder().mappingExists("coldbox.system.Interceptor") ){
-				wirebox.getBinder().map("coldbox.system.Interceptor").to("coldbox.system.Interceptor").initWith(controller=controller,properties={}).noAutowire();
+				wirebox.getBinder().map("coldbox.system.Interceptor").to("coldbox.system.Interceptor").initWith(controller=controller,properties=structNew()).noAutowire();
 			}
 			// Register CFC Configuration Object
 			registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'),interceptorName="coldboxConfig");
