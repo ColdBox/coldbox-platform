@@ -74,8 +74,11 @@ Description :
 			  	<th width="13%" align="center" >Timestamp</th>
 				<th width="10%" align="center" >Execution Time</th>
 				<th >Framework Method</th>
+				<!--- Show RC Snapshots if active --->
+				<cfif instance.debuggerConfig.getShowRCSnapshots()>
 				<th width="75" align="center" >RC Snapshot</th>
 				<th width="75" align="center" >PRC Snapshot</th>
+				</cfif>
 			  </tr>
 				  <cfloop query="refLocal.thisProfiler.timers">
 					  <cfif findnocase("rendering", method)>
@@ -89,18 +92,23 @@ Description :
 					  <cfelse>
 					  	<cfset color = "fw_greenText">
 					  </cfif>
-					  <tr <cfif currentrow mod 2 eq 0>class="even"</cfif>>
+					<tr <cfif currentrow mod 2 eq 0>class="even"</cfif>>
 					  	<td align="center" >#TimeFormat(timestamp,"hh:MM:SS.l tt")#</td>
 						<td align="center" >#Time# ms</td>
 						<td ><span class="#color#">#Method#</span></td>
-						<td align="center" >
+						<!--- Show RC Snapshots if active --->
+						<cfif instance.debuggerConfig.getShowRCSnapshots()>
+				 		<td align="center" >
 							<cfif len(rc)><a href="javascript:fw_poprc('fw_poprc_#id#')">View</a><cfelse>...</cfif>
 						</td>
 						<td align="center" >
 							<cfif len(prc)><a href="javascript:fw_poprc('fw_popprc_#id#')">View</a><cfelse>...</cfif>
 						</td>
-					  </tr>
-					 <tr id="fw_poprc_#id#" class="hideRC">
+						</cfif>
+					 </tr>
+					<!--- Show RC Snapshots if active --->
+					<cfif instance.debuggerConfig.getShowRCSnapshots()>
+					<tr id="fw_poprc_#id#" class="hideRC">
 					  	<td colspan="5" style="padding:5px;" wrap="true">
 						  	<div style="overflow:auto;width:98%; height:150px;padding:5px">
 							  #replacenocase(rc,",",chr(10) & chr(13),"all")#
@@ -114,6 +122,7 @@ Description :
 						</div>
 					   </td>
 		  		    </tr>
+					</cfif>
 				  </cfloop>
 			</table>
 			</div>

@@ -152,8 +152,11 @@ Description :
 		  	<th width="13%" align="center" >Timestamp</th>
 			<th width="10%" align="center" >Execution Time</th>
 			<th >Framework Method</th>
+			<!--- Show RC Snapshots if active --->
+			<cfif instance.debuggerConfig.getShowRCSnapshots()>
 			<th width="75" align="center" >RC Snapshot</th>
 			<th width="75" align="center" >PRC Snapshot</th>
+			</cfif>
 		  </tr>
 		 
 		  <cfif debugTimers.recordCount>
@@ -173,14 +176,19 @@ Description :
 				  	<td align="center" >#TimeFormat(debugTimers.timestamp,"hh:MM:SS.l tt")#</td>
 					<td align="center" >#debugTimers.Time# ms</td>
 					<td ><span class="#color#">#debugTimers.Method#</span></td>
+					<!--- Show RC Snapshots if active --->
+					<cfif instance.debuggerConfig.getShowRCSnapshots()>
 					<td align="center" >
 						<cfif len(debugTimers.rc)><a href="javascript:fw_poprc('fw_poprc_#debugTimers.id#')">View</a><cfelse>...</cfif>
 					</td>
 					<td align="center" >
 						<cfif len(debugTimers.prc)><a href="javascript:fw_poprc('fw_popprc_#debugTimers.id#')">View</a><cfelse>...</cfif>
 					</td>
+					</cfif>
 				  </tr>
-				 <tr id="fw_poprc_#debugTimers.id#" class="hideRC">
+				  <!--- Show RC Snapshots if active --->
+				  <cfif instance.debuggerConfig.getShowRCSnapshots()>
+				  <tr id="fw_poprc_#debugTimers.id#" class="hideRC">
 				  	<td colspan="5" style="padding:5px;" wrap="true">
 					  	<div style="overflow:auto;width:98%; height:150px;padding:5px">
 						  #replacenocase(debugTimers.rc,",",chr(10) & chr(13),"all")#
@@ -194,6 +202,7 @@ Description :
 						</div>
 					</td>
 		  		  </tr>
+				  </cfif>
 			  </cfloop>
 		  <cfelse>
 		  	<tr>
