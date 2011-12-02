@@ -111,7 +111,7 @@ Description :
 				QuerySetCell(qTimers, "Timestamp", now());
 				
 				// RC Snapshot
-				if ( not findnocase("rendering",timerInfo.label) ){
+				if ( NOT findnocase("rendering",timerInfo.label) AND instance.DebuggerConfig.getShowRCSnapshots() ){
 					// Save collection
 					QuerySetCell(qTimers, "RC", htmlEditFormat(left(context.getCollection().toString(),5000)) );
 					QuerySetCell(qTimers, "PRC", htmlEditFormat(left(context.getCollection(private=true).toString(),5000)) );

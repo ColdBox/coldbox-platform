@@ -8,7 +8,7 @@ Author     :	Luis Majano
 Description :
 ColdBox Default Configuration
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="ColdBox Default Configuration">
+<cfcomponent output=false hint="ColdBox Default Configuration">
 <cfscript>
 	
 	// Release Metadata
@@ -21,7 +21,7 @@ ColdBox Default Configuration
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 	
 	// Operation Defaults
-	this.eventName 				= "event";
+	this.eventName 	= "event";
 	
 	// flash scope defaults
 	this.flash = {
@@ -34,20 +34,23 @@ ColdBox Default Configuration
 	};
 	
 	// Debugger Defaults
-	this.enableDumpVar = "true";
-    this.persistentRequestProfiler = "true";
-    this.maxPersistentRequestProfilers = "10";
-    this.maxRCPanelQueryRows = "50";
-    this.showTracerPanel = "true";
-    this.expandedTracerPanel = "true";
-    this.showInfoPanel = "true";
-    this.expandedInfoPanel = "true";
-    this.showCachePanel = "true";
-    this.expandedCachePanel = "false";
-    this.showRCPanel = "true";
-    this.expandedRCPanel = "false";  
-    this.showModulesPanel = "true";
-    this.expandedModulesPanel = "false";  
+	this.debuggerSettings = {
+		enableDumpVar = true,
+	    persistentRequestProfiler = true,
+	    maxPersistentRequestProfilers = 10,
+	    maxRCPanelQueryRows = 50,
+	    showTracerPanel = true,
+	    expandedTracerPanel = true,
+	    showInfoPanel = true,
+	    expandedInfoPanel = true,
+	    showCachePanel = true,
+	    expandedCachePanel = false,
+	    showRCPanel = true,
+	    expandedRCPanel = false,  
+	    showModulesPanel = true,
+	    expandedModulesPanel = false,  
+	    showRCSnapshots = false
+    };
     
     // Conventions
     this.handlersConvention	= "handlers";

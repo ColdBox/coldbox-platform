@@ -688,21 +688,8 @@ Loads a coldbox cfc configuration file
 			var debugger = arguments.oConfig.getPropertyMixin("debugger","variables",structnew());
 			
 			// defaults
-			configStruct.debuggerSettings = structnew();
-			configStruct.debuggerSettings.enableDumpVar 				= fwSettings.enableDumpVar;
-			configStruct.debuggerSettings.persistentRequestProfiler 	= fwSettings.PersistentRequestProfiler;
-			configStruct.debuggerSettings.maxPersistentRequestProfilers = fwSettings.maxPersistentRequestProfilers;
-			configStruct.debuggerSettings.maxRCPanelQueryRows			= fwSettings.maxRCPanelQueryRows;
-			configStruct.debuggerSettings.showTracerPanel 				= fwSettings.showTracerPanel;
-			configStruct.debuggerSettings.expandedTracerPanel 			= fwSettings.expandedTracerPanel;
-			configStruct.debuggerSettings.showInfoPanel 				= fwSettings.showInfoPanel;
-			configStruct.debuggerSettings.expandedInfoPanel 			= fwSettings.expandedInfoPanel;
-			configStruct.debuggerSettings.showCachePanel 				= fwSettings.showCachePanel;
-			configStruct.debuggerSettings.expandedCachePanel 			= fwSettings.expandedCachePanel;
-			configStruct.debuggerSettings.showRCPanel 					= fwSettings.showRCPanel;
-			configStruct.debuggerSettings.expandedRCPanel				= fwSettings.expandedRCPanel;
-			configStruct.debuggerSettings.showModulesPanel 				= fwSettings.showModulesPanel;
-			configStruct.debuggerSettings.expandedModulesPanel			= fwSettings.expandedModulesPanel;
+			configStruct.debuggerSettings = {};
+			structAppend(configStruct.debuggerSettings, fwSettings.debuggerSettings, true);
 			
 			//append settings
 			structAppend(configStruct.debuggerSettings, debugger, true);

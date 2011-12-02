@@ -169,6 +169,15 @@ Description :
 		<cfreturn this>
 	</cffunction>
 	
+	<!--- Show RC Snapshots --->
+	<cffunction name="getShowRCSnapshots" access="public" returntype="boolean" output="false">    
+    	<cfreturn instance.showRCSnapshots>    
+    </cffunction>    
+    <cffunction name="setShowRCSnapshots" access="public" returntype="void" output="false">    
+    	<cfargument name="showRCSnapshots" type="boolean" required="true">    
+    	<cfset instance.showRCSnapshots = arguments.showRCSnapshots>    
+    </cffunction>
+	
 	<!--- Populate from struct --->
 	<cffunction name="populate" access="public" returntype="any" hint="Populate with a memento" output="false">
 		<!--- ************************************************************* --->
