@@ -32,6 +32,16 @@ component singleton{
 		return restrictions.eq(arguments.property, arguments.propertyValue);
 	}
 	
+	// Where a property is true
+	any function isTrue(required string property){
+		return restrictions.eq(arguments.property, javaCast("boolean",true) );
+	}
+	
+	// Where a property is false
+	any function isFalse(required string property){
+		return restrictions.eq(arguments.property, javaCast("boolean",false) );
+	}
+	
 	// Where one property must equal another
 	any function eqProperty(required string property, required string otherProperty){
 		return restrictions.eqProperty(arguments.property, arguments.otherProperty);
