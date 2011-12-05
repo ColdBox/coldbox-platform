@@ -128,9 +128,7 @@ Description :
 		// Process The State if it exists, else just exit out
 		if( structKeyExists(instance.interceptionStates, arguments.state) ){
 			// Execute Interception
-			timerHash = controller.getDebuggerService().timerStart("interception [#arguments.state#]");
 			structFind( instance.interceptionStates, arguments.state).process(controller.getRequestService().getContext(),arguments.interceptData);
-			controller.getDebuggerService().timerEnd(timerHash);
 		}
 		
 		// Process Output Buffer: looks weird, but we are outputting stuff
