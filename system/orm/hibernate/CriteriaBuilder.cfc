@@ -53,7 +53,13 @@ component accessors="true"{
 	// Constructor
 	CriteriaBuilder function init(required string entityName,
 								  boolean useQueryCaching=false,
-								  string queryCacheRegion=""){		
+								  string queryCacheRegion=""){	
+								  	  
+		// Determine datasource for given entityName
+		var datasource = ORMGetSessionFactory().getProperties()["coldfusion.datasource"]; //DEFAULT
+		var md = getMetaData(EntityNew(arguments.entityName));
+		if( StructKeyExists(md,"DATASOURCE") ) datasource = md.DATASOURCE;	  
+									
 		// restrictions linkage
 		this.restrictions = new criterion.Restrictions();
 		// projections linkage
@@ -62,7 +68,7 @@ component accessors="true"{
 		// local criterion values
 		setCriterias( [] );
 		// hibernate criteria query setup
-		setNativeCriteria( ORMGetSession().createCriteria( arguments.entityName ) );
+		setNativeCriteria( ORMGetSession(datasource).createCriteria( arguments.entityName ) );
 		// set entity name
 		setEntityName( arguments.entityName );
 		
