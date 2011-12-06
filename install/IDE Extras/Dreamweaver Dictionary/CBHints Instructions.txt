@@ -1,4 +1,4 @@
-Dreamweaver Code Hints for the greatest MVC Framework - ColdBox.
+﻿Dreamweaver Code Hints for the greatest MVC Framework - ColdBox.
 CBHints provided By Aaron Roberson & Massimo Foti from http://www.massimocorner.com/
 
 CBHints HISTORY:

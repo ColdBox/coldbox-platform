@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <h2>ColdBox Factory Tests</h2>
 <table >
 	<tr>
@@ -31,11 +31,6 @@
 	
 	<tr>
 		<td colspan="2"><hr></td>
-	</tr>
-	
-	<tr>
-		<td><strong>Cache Manager:</strong></td>
-		<td><cfdump var="#rc.testModel.getCacheManager().getItemTypes()#"></td>
 	</tr>
 	
 	<tr>

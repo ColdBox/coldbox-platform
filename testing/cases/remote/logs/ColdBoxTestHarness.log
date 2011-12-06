@@ -1,4 +1,4 @@
-"Severity","Appender","Date","Time","Category","Message"
+﻿"Severity","Appender","Date","Time","Category","Message"
 "DEBUG","FILEAPPENDER","12/05/2010","01:05:36","coldbox.system.cache.providers.CacheBoxColdBoxProvider","Starting up CacheBox Cache: default with configuration: {FREEMEMORYPERCENTAGETHRESHOLD={0},OBJECTDEFAULTTIMEOUT={120},MAXOBJECTS={300},USELASTACCESSTIMEOUTS={true},PROVIDER={coldbox.system.cache.providers.CacheBoxColdBoxProvider},COLDBOXENABLED={true},OBJECTDEFAULTLASTACCESSTIMEOUT={30},EVICTCOUNT={1},OBJECTSTORE={ConcurrentStore},EVICTIONPOLICY={LRU},REAPFREQUENCY={2}}"
 "DEBUG","FILEAPPENDER","12/05/2010","01:05:36","coldbox.system.cache.policies.LRU","Policy coldbox.system.cache.policies.LRU constructed for cache: default"
 "INFO","FILEAPPENDER","12/05/2010","01:05:36","coldbox.system.cache.providers.CacheBoxColdBoxProvider","CacheBox Cache: default has been initialized successfully for operation"

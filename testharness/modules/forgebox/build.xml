@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <project name="forgebox-build" basedir="." default="do.archive">
 	
 	<!-- dynamic values for build -->

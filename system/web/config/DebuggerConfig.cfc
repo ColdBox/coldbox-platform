@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -168,6 +168,15 @@ Description :
 		<cfset instance.showModulesPanel = arguments.showModulesPanel>
 		<cfreturn this>
 	</cffunction>
+	
+	<!--- Show RC Snapshots --->
+	<cffunction name="getShowRCSnapshots" access="public" returntype="boolean" output="false">    
+    	<cfreturn instance.showRCSnapshots>    
+    </cffunction>    
+    <cffunction name="setShowRCSnapshots" access="public" returntype="void" output="false">    
+    	<cfargument name="showRCSnapshots" type="boolean" required="true">    
+    	<cfset instance.showRCSnapshots = arguments.showRCSnapshots>    
+    </cffunction>
 	
 	<!--- Populate from struct --->
 	<cffunction name="populate" access="public" returntype="any" hint="Populate with a memento" output="false">

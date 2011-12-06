@@ -1,4 +1,4 @@
-<div style="border:2px solid #53231d; padding:5px; background-color: #FFFFF0">
+﻿<div style="border:2px solid #53231d; padding:5px; background-color: #FFFFF0">
 <cfoutput>
 <cfset mysiteDSNBean = getColdBoxOCM().get("mysiteDSNBean")>
 <h2>Datasource: #mysiteDSNBean.getname()#</h2>

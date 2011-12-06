@@ -1,4 +1,4 @@
-<cfcomponent name="testModel" output="false" singleton="true">
+﻿<cfcomponent name="testModel" output="false" singleton="true">
 
 	<cffunction name="init" access="public" returntype="testModel" hint="" output="false" >
 		<cfscript>

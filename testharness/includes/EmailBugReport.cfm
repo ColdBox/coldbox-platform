@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <style>
 .errorTables{
 	font-size: 13px;

@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase" {
+﻿component extends="coldbox.system.testing.BaseTestCase" {
 
 	public void function setup(){
 		maxValidator = new coldbox.system.orm.hibernate.hyrule.rules.maxValidator();

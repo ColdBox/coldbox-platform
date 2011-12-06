@@ -1,4 +1,4 @@
-<cfcomponent output="false" hint="My App Configuration">
+﻿<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 	
 	// Configure ColdBox Application
@@ -15,7 +15,6 @@
 			debugPassword			= "",
 			reinitPassword			= "",
 			handlersIndexAutoReload = true,
-			configAutoReload		= false,
 			
 			//Implicit Events
 			defaultEvent			= "ehGeneral.dspHello",
@@ -45,8 +44,7 @@
 			//Application Aspects
 			handlerCaching 			= false,
 			eventCaching			= true,
-			proxyReturnCollection 	= false,
-			flashURLPersistScope	= "session"	
+			proxyReturnCollection 	= false	
 		};
 	
 		// custom settings
@@ -58,7 +56,6 @@
 			feedReader_useCache = true,
 			feedReader_cacheType = "ram",
 			feedReader_cacheTimeout = 10,
-			coldboxSideBar = true,
 			testingModelPath = "coldbox.testing.testmodel",
 			javaloader_libpath = controller.getAppRootPath() & "model/java"
 		};
@@ -176,40 +173,35 @@
 		
 		//Register interceptors as an array, we need order
 		interceptors = [
-			//Deploy
-			{name="Deploy", 
-			 class="coldbox.system.interceptors.Deploy",
-			 properties = {
-			 	tagFile = "config/_deploy.tag",
-			 	deployCommandObject = "coldbox.testharness.model.DeployCleanup",
-			 	deployCommandModel = "DeployCommand"}},
-			 
-			 //Autowire
-			 {class="coldbox.system.interceptors.Autowire",
-			  properties = {
-			  	entityInjection = true
-			  }
-			  },
-			 
-			 // Transactional Hibernation annotations
-			 // {class="coldbox.system.orm.hibernate.TransactionAspect"},
-			 
-			 //SES
-			 {class="coldbox.system.interceptors.SES",
+			// ses 
+			{class="coldbox.system.interceptors.SES",
 			  properties={configFile="config/routes.cfm"}},
 			 
-			 //Observers
-			 {class="#variables.appMapping#.interceptors.errorObserver"},
+			//Observers
+			{class="#variables.appMapping#.interceptors.errorObserver"},
 				 
-			 //security
-			 {class="coldbox.system.interceptors.Security",
-			  properties={
-			  	rulesSource = "xml",
+			//security
+			{class="coldbox.system.interceptors.Security",
+			 properties={
+			 	rulesSource = "xml",
 			  	rulesFile = "config/security.xml.cfm"}},
 			  
-			  //Execution tracer
-			  {class="#variables.appMapping#.interceptors.executionTracer"}
+			//Execution tracer
+			{class="#variables.appMapping#.interceptors.executionTracer"}
 		];
+		
+		// ORM
+		orm = {
+			// entity injection
+			injection = {
+				// enable it
+				enabled = true,
+				// the include list for injection
+				include = "",
+				// the exclude list for injection
+				exclude = ""
+			}
+		};
 		
 		//LogBox DSL
 		logBox = {

@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -11,7 +11,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		var mockEvent = getMockRequestContext();
 		mockRequestService.$("getContext", mockEvent);
 		
-		plugin.$("$htmlhead");
+		plugin.$("$htmlhead").$("settingExists",false);
 		plugin.addAsset('test.js,luis.js');
 		
 		debug( plugin.$callLog().$htmlhead);
@@ -20,21 +20,33 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals('<script src="test.js" type="text/javascript"></script><script src="luis.js" type="text/javascript"></script>' , plugin.$callLog().$htmlhead[1][1] );
 		plugin.addAsset('test.js');
 		assertEquals(1, arrayLen(plugin.$callLog().$htmlHead) );
+		
+		// global settings
+		plugin.$("settingExists",true).$("getSetting","/includes/js/");
+		r = plugin.addAsset('test1.js,luis1.js',false);
+		assertEquals('<script src="/includes/js/test1.js" type="text/javascript"></script><script src="/includes/js/luis1.js" type="text/javascript"></script>' , r );
+		
 	}
 	
 	function testaddAssetCSS(){
 		var mockEvent = getMockRequestContext();
 		mockRequestService.$("getContext", mockEvent);
 		
-		plugin.$("$htmlhead");
+		plugin.$("$htmlhead").$("settingExists",false);
 		plugin.addAsset('test.css,luis.css');
 		
-		debug( plugin.$callLog().$htmlhead);
+		//debug( plugin.$callLog().$htmlhead);
 		
 		// test duplicate call
 		assertEquals('<link href="test.css" type="text/css" rel="stylesheet" /><link href="luis.css" type="text/css" rel="stylesheet" />' , plugin.$callLog().$htmlhead[1][1] );
 		plugin.addAsset('test.css');
 		assertEquals(1, arrayLen(plugin.$callLog().$htmlHead) );
+		
+		// global settings
+		plugin.$("settingExists",true).$("getSetting","/includes/css/");
+		r = plugin.addAsset('test1.css,luis1.css',false);
+		debug( r );
+		assertEquals('<link href="/includes/css/test1.css" type="text/css" rel="stylesheet" /><link href="/includes/css/luis1.css" type="text/css" rel="stylesheet" />' , r );
 	}
 	
 	function testbr(){

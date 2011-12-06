@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -36,11 +36,11 @@ Description :
 				// Mapped constructor
 				constructor = "init",
 				// Discovery and wiring flag
-				autoWire = true,
+				autoWire = "",
 				// Auto init or not
 				autoInit = true,
 				// Lazy load the mapping or not
-				eagerInit = false,
+				eagerInit = "",
 				// The storage or visibility scope of the mapping
 				scope = "",
 				// A construction dsl
@@ -66,11 +66,17 @@ Description :
 				// AOP aspect
 				aspect = false,
 				// AutoAspectBinding
-				autoAspectBinding = true
+				autoAspectBinding = true,
+				// Virtual Inhertiance
+				virtualInheritance = "",
+				// Extra Attributes
+				extraAttributes = {},
+				// Mixins
+				mixins = []
 			};
 			
 			// DI definition structure
-			DIDefinition = {name="",value="",dsl="",scope="variables",javaCast="",ref="",required=false};
+			DIDefinition = {name="",value="",dsl="",scope="variables",javaCast="",ref="",required=false,argName=""};
 			
 			return this;
 		</cfscript>
@@ -135,13 +141,46 @@ Description :
     	</cfscript>
     </cffunction>
 	
+	<!--- Virtual Inheritance --->
+	<cffunction name="getVirtualInheritance" access="public" returntype="any" output="false" hint="Get the virtual inheritance mapping">
+    	<cfreturn instance.virtualInheritance>
+    </cffunction>
+    <cffunction name="setVirtualInheritance" access="public" returntype="any" output="false" hint="Set the virtual inheritance mapping">
+    	<cfargument name="mapping" required="true">
+    	<cfset instance.virtualInheritance = arguments.mapping>
+    	<cfreturn this>
+    </cffunction>
+    <cffunction name="isVirtualInheritance" access="public" returntype="boolean" output="false" hint="Checks if the mapping needs virtual inheritace or not">
+    	<cfreturn len( instance.virtualInheritance ) GT 0>
+    </cffunction>
+        
 	<!--- Name --->
 	<cffunction name="getName" access="public" returntype="any" output="false" hint="Get the mapping name">
     	<cfreturn instance.name>
     </cffunction>
     <cffunction name="setName" access="public" returntype="any" output="false" hint="Name the mapping">
-    	<cfargument name="name" type="string" required="true">
+    	<cfargument name="name" required="true">
     	<cfset instance.name = arguments.name>
+    	<cfreturn this>
+    </cffunction>
+    
+    <!--- Mixins --->
+	<cffunction name="getMixins" access="public" returntype="any" output="false" hint="Get the mixins array list">
+    	<cfreturn instance.mixins>
+    </cffunction>
+    <cffunction name="setMixins" access="public" returntype="any" output="false" hint="Set the mixins array list">
+    	<cfargument name="mixins" required="true">
+    	<cfset instance.mixins = arguments.mixins>
+    	<cfreturn this>
+    </cffunction>
+    
+    <!--- ExtraAttributes --->
+	<cffunction name="getExtraAttributes" access="public" returntype="any" output="false" hint="Get the mapping's extra attributes">
+    	<cfreturn instance.extraAttributes>
+    </cffunction>
+    <cffunction name="setExtraAttributes" access="public" returntype="any" output="false" hint="Set the mapping's extra attributes">
+    	<cfargument name="data" required="true">
+    	<cfset instance.extraAttributes = arguments.data>
     	<cfreturn this>
     </cffunction>
 	
@@ -378,6 +417,7 @@ Description :
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	required="false" hint="The value of the setter argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfargument name="argName" 	required="false" hint="The name of the argument to use, if not passed, we default it to the setter name"/>
     	<cfscript>
     		var def = getDIDefinition();
 			var x	= 1;
@@ -388,6 +428,10 @@ Description :
 			}
 			// Remove scope for setter injection
 			def.scope = "";
+			// Verify argument name, if not default it to setter name
+			if( NOT structKeyExists(arguments,"argName") OR len(arguments.argName) EQ 0 ){
+				arguments.argName = arguments.name;
+			}
 			// save incoming params
 			structAppend(def, arguments, true);
 			// save new DI setter injection
@@ -474,14 +518,15 @@ Description :
 		<cflock name="Mapping.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
 		<cfscript>	
 	    	if( NOT instance.discovered ){
-				
 				// announce inspection
 				iData = {mapping=this,binder=arguments.binder,injector=arguments.binder.getInjector()};
 				eventManager.processState("beforeInstanceInspection",iData);
 				
 				// Processing only done for CFC's,rest just mark and return
 				if( instance.type neq arguments.binder.TYPES.CFC ){
-					instance.discovered = true;
+					if( NOT len(instance.scope) ){ instance.scope = "noscope"; }
+					if( NOT len(instance.autowire) ){ instance.autowire = true; }
+					if( NOT len(instance.eagerInit) ){ instance.eagerInit = false; }
 					return;
 				}
 	    		
@@ -495,41 +540,48 @@ Description :
 				
 				// Store Metadata
 				instance.metadata = md;
-				
-				// Singleton Processing
-				if( structKeyExists(md,"singleton") ){ instance.scope = arguments.binder.SCOPES.SINGLETON; }
-				// Registered Scope Processing
-				if( structKeyExists(md,"scope") ){ instance.scope = md.scope; }
-				// CacheBox scope processing if cachebox annotation found, or cache annotation found
-				if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){ 
-					instance.scope = arguments.binder.SCOPES.CACHEBOX;
-				}
-				
-				// Cachebox Persistence Processing
-				if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){
-					// Cache Data instead of md insertion as CF caches md now.
-					cacheProperties = {
-						provider = "default",
-						timeout = "",
-						lastAccessTimeout = ""
-					};
-					// Prepare to default provider if no cachebox annotation found or it is empty
-					if( structKeyExists(md,"cacheBox") AND len(md.cacheBox) ){
-						cacheProperties.provider = md.cacheBox;
-					}				
-					// Prepare Timeouts
-					if( structKeyExists(md,"cachetimeout") AND isNumeric(md.cacheTimeout) ){
-						cacheProperties.timeout = md.cacheTimeout;
+				 
+				// Process persistence if not set already by configuration as it takes precedence
+				if( NOT len(instance.scope) ){
+					// Singleton Processing
+					if( structKeyExists(md,"singleton") ){ instance.scope = arguments.binder.SCOPES.SINGLETON; }
+					// Registered Scope Processing
+					if( structKeyExists(md,"scope") ){ instance.scope = md.scope; }
+					// CacheBox scope processing if cachebox annotation found, or cache annotation found
+					if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){ 
+						instance.scope = arguments.binder.SCOPES.CACHEBOX;
 					}
-					if( structKeyExists(md,"cacheLastAccessTimeout") AND isNumeric(md.cacheLastAccessTimeout) ){
-						cacheProperties.lastAccessTimeout = md.cacheLastAccessTimeout;
+					
+					// Cachebox Persistence Processing
+					if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){
+						// Cache Data instead of md insertion as CF caches md now.
+						cacheProperties = {
+							provider = "default",
+							timeout = "",
+							lastAccessTimeout = ""
+						};
+						// Prepare to default provider if no cachebox annotation found or it is empty
+						if( structKeyExists(md,"cacheBox") AND len(md.cacheBox) ){
+							cacheProperties.provider = md.cacheBox;
+						}				
+						// Prepare Timeouts
+						if( structKeyExists(md,"cachetimeout") AND isNumeric(md.cacheTimeout) ){
+							cacheProperties.timeout = md.cacheTimeout;
+						}
+						if( structKeyExists(md,"cacheLastAccessTimeout") AND isNumeric(md.cacheLastAccessTimeout) ){
+							cacheProperties.lastAccessTimeout = md.cacheLastAccessTimeout;
+						}
+						// setup cachebox properties
+						setCacheProperties(key="wirebox-#instance.name#",
+										   timeout=cacheProperties.timeout,
+										   lastAccessTimeout=cacheProperties.lastAccessTimeout,
+										   provider=cacheProperties.provider);
 					}
-					// setup cachebox properties
-					setCacheProperties(key="wirebox-#instance.name#",
-									   timeout=cacheProperties.timeout,
-									   lastAccessTimeout=cacheProperties.lastAccessTimeout,
-									   provider=cacheProperties.provider);
-				}
+					
+					// check if scope found? If so, then set it to no scope.
+					if( NOT len(instance.scope) ){ instance.scope = "noscope"; }
+					
+				} // end of persistence checks
 				
 				// Alias annotations if found, then append them as aliases.
 				if( structKeyExists(md, "alias") ){
@@ -542,17 +594,37 @@ Description :
 				}
 				
 				// eagerInit annotation
-				if( structKeyExists(md,"eagerInit") ){
-					instance.eagerInit = true;
-				}
-								
-				// Check if autowire annotation found or autowire already set
-				if( structKeyExists(md,"autowire") and isBoolean(md.autowire) ){
-					instance.autoWire = md.autowire;
+				if( NOT len(instance.eagerInit) ){
+					if( structKeyExists(md,"eagerInit") ){
+						instance.eagerInit = true;
+					}
+					else{
+						// defaults to lazy loading
+						instance.eagerInit = false;
+					}
 				}
 				
+				// mixins annotation only if not overriden
+				if( NOT arrayLen(instance.mixins) ){
+					if( structKeyExists(md,"mixins") ){
+						instance.mixins = listToArray( md.mixins );
+					}
+				}
+								
+				// check if the autowire NOT set, so we can discover it.
+				if( NOT len(instance.autowire) ){
+					// Check if autowire annotation found or autowire already set
+					if( structKeyExists(md,"autowire") and isBoolean(md.autowire) ){
+						instance.autoWire = md.autowire;
+					}
+					else{
+						// default to true
+						instance.autoWire = true;
+					}
+				}
+								
 				// Only process if autowiring
-				if( instance.autoWire){
+				if( instance.autoWire ){
 					// Process Methods, Constructors and Properties only if non autowire annotation check found on component.
 					processDIMetadata( arguments.binder, md );
 				}

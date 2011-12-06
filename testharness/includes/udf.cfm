@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 function titleCase(str) {
 	return uCase(left(str,1)) & right(str,len(str)-1);
 }

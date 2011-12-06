@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -60,7 +60,7 @@ id , name , mail
 			if( structKeyExists(md,"appMapping") ){
 				instance.appMapping = md.appMapping;
 			}
-			// Config.xml mapping
+			// Configuration File mapping
 			if( structKeyExists(md,"configMapping") ){
 				instance.configMapping = md.configMapping;
 			}
@@ -99,14 +99,13 @@ id , name , mail
 					appRootPath = appRootPath & "/";
 				}
 				
-				// Config.xml by convention if not set before setup() call.
+				// Setup Coldbox configuration by convention
 				if(NOT len(instance.configMapping) ){
-					// check CFC First for convention testing.
-					if( fileExists(appRootPath & "config/Coldbox.cfc") ){
-						instance.configMapping = appRootPath & "config/Coldbox.cfc";
+					if( len(instance.appMapping) ){
+						instance.configMapping = instance.appMapping & ".config.Coldbox";
 					}
 					else{
-						instance.configMapping = appRootPath & "config/coldbox.xml.cfm";
+						instance.configMapping = "config.Coldbox";
 					}
 				}
 				
@@ -259,6 +258,7 @@ id , name , mail
 	<!--- Reset the persistence --->
 	<cffunction name="reset" access="private" returntype="void" hint="Reset the persistence of the unit test coldbox app, basically removes the controller from application scope" output="false" >
 		<cfset structDelete(application,getColdboxAppKey())>
+		<cfset structClear(request)>
 	</cffunction>
 	
 	<!--- get/Set Coldbox App Key --->
