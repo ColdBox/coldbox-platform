@@ -283,7 +283,6 @@ Description :
 				}			
 			}
 			catch(Any e){
-				writeDump(e);abort;
 				// Remove Stub, just in case.
 				instance.mixerUtil.removeAspect( expandedFile );
 				// log it

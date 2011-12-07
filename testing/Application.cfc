@@ -25,20 +25,18 @@ Description :
 	<cfset this.mappings["/testmodel"] = expandPath("/coldbox/testing/testmodel")>
 	<cfset this.mappings["/testing"] = expandPath("/coldbox/testing")>
 	
-	<cfif NOT structKeyExists(server,"railo")>
-		<cfset this.datasource = "coolblog">
-		<cfset this.ormEnabled = "true">
+	<cfset this.datasource = "coolblog">
+	<cfset this.ormEnabled = "true">
 	
-		<cfset this.ormSettings = {
-			dialect = "MySQLwithInnoDB",
-			eventHandling=true,
-			logSQL = true,
-			eventhandling = true,
-			secondarycacheenabled = true,
-			cacheProvider = "ehcache",
-			flushAtRequestEnd = false
-		}>
-	</cfif>
+	<cfset this.ormSettings = {
+		dialect = "MySQLwithInnoDB",
+		eventHandling=true,
+		logSQL = true,
+		eventhandling = true,
+		secondarycacheenabled = true,
+		cacheProvider = "ehcache",
+		flushAtRequestEnd = false
+	}>
 	
 	<!--- on Request Start --->
 	<cffunction name="onRequestStart" returnType="boolean" output="true">
