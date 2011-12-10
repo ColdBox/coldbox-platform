@@ -27,7 +27,8 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 	/**
 	* The AOP around advice for hibernate transactions
 	*/
-	any function invokeMethod(invocation, string datasource=ORMGetSessionFactory().getProperties()["coldfusion.datasource"]) output=false{
+	any function invokeMethod(invocation, string datasource=application.getApplicationSettings().datasource) output=false{
+		var orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 		
 		// Are we already in a transaction?
 		if( structKeyExists(request,"cbox_aop_transaction") ){
@@ -38,7 +39,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 		}
 		
 		// Else, transaction safe call
-		var tx = ORMGetSession(arguments.datasource).beginTransaction();
+		var tx = orm.getSession(arguments.datasource).beginTransaction();
 		try{
 			
 			// mark transaction began

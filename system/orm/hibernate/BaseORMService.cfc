@@ -27,6 +27,8 @@ TODO:
 - Add find methods by criteria with projections
 ----------------------------------------------------------------------->
 */
+import coldbox.system.orm.hibernate.util.*;
+
 component accessors="true"{
 
 	/**
@@ -77,6 +79,9 @@ component accessors="true"{
 
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
+		
+		// Create the ORM Utility component
+		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
@@ -400,7 +405,7 @@ component accessors="true"{
 		}
 
 		for( var x=1; x lte arrayLen(objects); x++){
-			$ORMGetSession(objects[x]).refresh( objects[x] );
+			orm.getSession(orm.getEntityDatasource(objects[x])).refresh( objects[x] );
 		}
 	}
 
@@ -409,7 +414,7 @@ component accessors="true"{
 	*/
 	boolean function exists(required entityName, required any id) {
 		var  options = {};
-		options.datasource = getEntityDatasource(arguments.entityName);
+		options.datasource = orm.getEntityDatasource(arguments.entityName);
 		
 		// Do it DLM style
 		var count = ORMExecuteQuery("select count(id) from #arguments.entityName# where id = ?",[arguments.id],true,options);
@@ -456,7 +461,7 @@ component accessors="true"{
 			q &= " ORDER BY #arguments.sortOrder#";
 		}		
 		// Execute native hibernate query
-		var query = $ORMGetSession(arguments.entityName).createQuery(q);
+		var query = orm.getSession(orm.getEntityDatasource(arguments.entityName)).createQuery(q);
 		// parameter binding
 		query.setParameterList("idlist",arguments.id);
 		// Caching?
@@ -496,7 +501,7 @@ component accessors="true"{
 		}
 
 		// Auto Flush
-		if( arguments.flush ){ ORMFlushAll(); }
+		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entity)); }
 	}
 
 	/**
@@ -512,13 +517,13 @@ component accessors="true"{
 	}
 	private numeric function $deleteAll(required string entityName,boolean flush=false){
 		var options = {};
-		options.datasource = getEntityDatasource(arguments.entityName);
+		options.datasource = orm.getEntityDatasource(arguments.entityName);
 		
 		var count   = 0;
 		count = ORMExecuteQuery("delete from #arguments.entityName#",false,options);
 
 		// Auto Flush
-		if( arguments.flush ){ ORMFlushAll(); }
+		if( arguments.flush ){ orm.flush(options.datasource); }
 
 		return count;
 	}
@@ -542,12 +547,13 @@ component accessors="true"{
 		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
 
 		// delete using lowercase id convention from hibernate for identifier
-		var query = $ORMGetSession(arguments.entityName).createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
+		var datasource = orm.getEntityDatasource(arguments.entityName);
+		var query = orm.getSession(datasource).createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
 		query.setParameterList("idlist",arguments.id);
 		count = query.executeUpdate();
 
 		// Auto Flush
-		if( arguments.flush ){ ORMFlushAll(); }
+		if( arguments.flush ){ orm.flush(datasource); }
 
 		return count;
 	}
@@ -613,7 +619,7 @@ component accessors="true"{
 		var count	  = 0;
 		var options   = {};
 		
-		options.datasource = getEntityDatasource(arguments.entityName);
+		options.datasource = orm.getEntityDatasource(arguments.entityName);
 
 		buffer.append('delete from #arguments.entityName#');
 
@@ -688,7 +694,7 @@ component accessors="true"{
 		}
 
 		// Auto Flush
-		if( arguments.flush ){ ORMFlushAll(); }
+		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entities[x])); }
 
 		return true;
 	}
@@ -716,7 +722,7 @@ component accessors="true"{
 		entitySave(arguments.entity, arguments.forceInsert);
 
 		// Auto Flush
-		if( arguments.flush ){ ORMFlushAll(); }
+		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entity)); }
 
 		// Event Handling? If enabled, call the postSave() interception
 		if( eventHandling ){
@@ -737,7 +743,7 @@ component accessors="true"{
 		var operator = "AND";
 		var options = {};
 		
-		options.datasource = getEntityDatasource(arguments.entityName);
+		options.datasource = orm.getEntityDatasource(arguments.entityName);
 
 		// Caching?
 		if( getUseQueryCaching() ){
@@ -776,7 +782,7 @@ component accessors="true"{
 		var idx	  = 1;
 		var options = {};
 		
-		options.datasource = getEntityDatasource(arguments.entityName);
+		options.datasource = orm.getEntityDatasource(arguments.entityName);
 
 		buffer.append('select count(*) from #arguments.entityName#');
 
@@ -802,6 +808,7 @@ component accessors="true"{
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
+		
 		// execute query as unique for the count
 		try{
 			return ORMExecuteQuery( buffer.toString(), params, true, options);
@@ -850,7 +857,7 @@ component accessors="true"{
 		}
 
 		for( var x=1; x lte arrayLen(objects); x++){
-			$ORMGetSession(objects[x]).evict( objects[x] );
+			orm.getSession(orm.getEntityDatasource(objects[x])).evict( objects[x] );
 		}
 
 	}
@@ -859,13 +866,7 @@ component accessors="true"{
     * Evict all queries in the default cache or the cache region passed
     */
 	void function evictQueries(string cacheName, string datasource){
-		if( structKeyExists(arguments,"cacheName") AND structKeyExists(arguments,"datasource") ) {
-			ORMEvictQueries(arguments.cacheName, arguments.datasource);
-		} else if( structKeyExists(arguments,"cacheName") ) {
-			ORMEvictQueries(arguments.cacheName);
-		} else {
-			ORMEvictQueries();
-		}
+		orm.evictQueries(argumentCollection=arguments);
 	}
 
 	/**
@@ -891,23 +892,22 @@ component accessors="true"{
 	* Clear the session removes all the entities that are loaded or created in the session.
 	* This clears the first level cache and removes the objects that are not yet saved to the database.
 	*/
-	void function clear(string datasource=ORMGetSessionFactory().getProperties()["coldfusion.datasource"]){
-		
-		ORMClearSession(arguments.datasource);
+	void function clear(string datasource=application.getApplicationSettings().datasource){
+		orm.clearSession(arguments.datasource);
 	}
 
 	/**
 	* Checks if the session contains dirty objects that are awaiting persistence
 	*/
-	boolean function isSessionDirty(string datasource=ORMGetSessionFactory().getProperties()["coldfusion.datasource"]){
-		return ORMGetSession(arguments.datasource).isDirty();
+	boolean function isSessionDirty(string datasource=application.getApplicationSettings().datasource){
+		return orm.getSession(arguments.datasource).isDirty();
 	}
 
 	/**
 	* Checks if the current session contains the passed in entity
 	*/
 	boolean function sessionContains(required any entity){
-		var ormSession = $ORMGetSession(arguments.entity);
+		var ormSession = orm.getSession(orm.getEntityDatasource(arguments.entity));
 		// weird CFML thing
 		return ormSession.contains(arguments.entity);
 	}
@@ -915,8 +915,8 @@ component accessors="true"{
 	/**
 	* Information about the first-level (session) cache for the current session
 	*/
-	struct function getSessionStatistics(string datasource=ORMGetSessionFactory().getProperties()["coldfusion.datasource"]){
-		var stats   = ormGetSession(arguments.datasource).getStatistics();
+	struct function getSessionStatistics(string datasource=application.getApplicationSettings().datasource){
+		var stats   = orm.getSession(arguments.datasource).getStatistics();
 		var results = {
 			collectionCount = stats.getCollectionCount(),
 			collectionKeys  = stats.getCollectionKeys().toString(),
@@ -942,7 +942,7 @@ component accessors="true"{
 	* If the key is a simple pk then it will return a string, if it is a composite key then it returns an array
 	*/
 	any function getKey(required string entityName){
-		var hibernateMD =  $ormGetSessionFactory(arguments.entityName).getClassMetaData(arguments.entityName);
+		var hibernateMD =  orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetaData(arguments.entityName);
 
 		// Is this a simple key?
 		if( hibernateMD.hasIdentifierProperty() ){
@@ -962,14 +962,14 @@ component accessors="true"{
 	* Returns the Property Names of the entity via hibernate metadata
 	*/
 	array function getPropertyNames(required string entityName){
-		return $ormGetSessionFactory(arguments.entityName).getClassMetaData(arguments.entityName).getPropertyNames();
+		return orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetaData(arguments.entityName).getPropertyNames();
 	}
 
 	/**
 	* Returns the table name that the current entity string belongs to via hibernate metadata
 	*/
 	string function getTableName(required string entityName){
-		return $ormGetSessionFactory(arguments.entityName).getClassMetadata(arguments.entityName).getTableName();
+		return orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetadata(arguments.entityName).getTableName();
 	}
 	
 	/**
@@ -977,7 +977,7 @@ component accessors="true"{
 	*/
 	function getEntityGivenName(required entity) {
 		if( sessionContains( arguments.entity ) ){
- 			return $ORMGetSession(arguments.entity).getEntityName( entity );
+ 			return orm.getSession(orm.getEntityDatasource(arguments.entity)).getEntityName( entity );
  		}
  		
  		// else long approach
@@ -985,29 +985,13 @@ component accessors="true"{
  		if( structKeyExists(md, "entityname") ){ return md.entityname; }
  		return listLast( md.name, ".");
  	}
- 	
- 	/**
- 	* Returns the datasource for a given entity
- 	* @entity The entity reference. Can be passed as an object or as the entity name.
- 	*/
- 	function getEntityDatasource(required entity) {
- 		// DEFAULT datasource
- 		var datasource = ORMGetSessionFactory().getProperties()["coldfusion.datasource"];
- 		
- 		if(!IsObject(arguments.entity)) arguments.entity= new(arguments.entity);
- 		
- 		var md = getMetaData(arguments.entity);
- 		if( StructKeyExists(md,"DATASOURCE") ) datasource = md.DATASOURCE;
- 		
- 		return datasource;
- 	}
 
 	/**
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
 	* The method returns a coverted array of ID's
 	*/
 	any function convertIDValueToJavaType(required entityName, required id){
-		var hibernateMD = $ormGetSessionFactory(arguments.entityName).getClassMetaData(arguments.entityName);
+		var hibernateMD = orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetaData(arguments.entityName);
 
 		if(isDefined("hibernateMD") and not hibernateMD.getIdentifierType().isComponentType() ){
 			//id conversion to array
@@ -1133,7 +1117,7 @@ component accessors="true"{
 	* Create a new hibernate criteria object according to entityname and criterion array objects
 	*/
 	private any function createCriteriaQuery(required entityName, array criteria=ArrayNew(1)){
-		var qry = $ORMGetSession(arguments.entityName).createCriteria( arguments.entityName );
+		var qry = orm.getSession(orm.getEntityDatasource(arguments.entityName)).createCriteria( arguments.entityName );
 
 		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
 			if( isSimpleValue( arguments.criteria[i] ) ){
@@ -1187,19 +1171,5 @@ component accessors="true"{
 		// Results? If found, return them.
 		if( NOT isNull(results) ){ return results; }
 			
-	}
-	
-	/**
-	* Utility method to return the correct session based upon the datasource of the entity. Necessary to support multiple datasource applications.
-	*/
-	private any function $ORMGetSession(required entity) {
-		return ORMGetSession(getEntityDatasource(arguments.entity));
-	}
-	
-	/**
-	* Utility method to return the correct session factory based upon the datasource of the entity. Necessary to support multiple datasource applications.
-	*/
-	private any function $ORMGetSessionFactory(required entity) {
-		return ORMGetSessionFactory(getEntityDatasource(arguments.entity));
 	}
 }

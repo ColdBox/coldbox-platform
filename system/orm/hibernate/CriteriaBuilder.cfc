@@ -56,7 +56,8 @@ component accessors="true"{
 								  string queryCacheRegion=""){	
 								  	  
 		// Determine datasource for given entityName
-		var datasource = ORMGetSessionFactory().getProperties()["coldfusion.datasource"]; //DEFAULT
+		var orm = getORMUtil();
+		var datasource = application.getApplicationSettings().datasource; //DEFAULT
 		var md = getMetaData(EntityNew(arguments.entityName));
 		if( StructKeyExists(md,"DATASOURCE") ) datasource = md.DATASOURCE;	  
 									
@@ -68,7 +69,7 @@ component accessors="true"{
 		// local criterion values
 		setCriterias( [] );
 		// hibernate criteria query setup
-		setNativeCriteria( ORMGetSession(datasource).createCriteria( arguments.entityName ) );
+		setNativeCriteria( orm.getSession(datasource).createCriteria( arguments.entityName ) );
 		// set entity name
 		setEntityName( arguments.entityName );
 		
@@ -387,6 +388,13 @@ component accessors="true"{
 			// add it to our ordering
 			order(sortField,sortDir,arguments.ignoreCase);
 		}
+	}
+	
+	/**
+	* Get ORM Util
+	*/
+	private function getORMUtil() {
+		return new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 	}
 	
 }

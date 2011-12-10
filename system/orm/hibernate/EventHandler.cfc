@@ -38,11 +38,12 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	* postLoad called by hibernate which in turn announces a coldbox interception: ORMPostLoad
 	*/
 	public void function postLoad(any entity){
-		var datasource = ORMGetSessionFactory().getProperties()["coldfusion.datasource"]; //DEFAULT
+		var orm = getORMUtil();
+		var datasource = application.getApplicationSettings().datasource; //DEFAULT
 		var md = getMetaData(arguments.entity);
 		if( StructKeyExists(md,"DATASOURCE") ) datasource = md.DATASOURCE;
 		
-		var args = { entity=arguments.entity, entityName=ORMGetSession(datasource).getEntityName( arguments.entity ) };
+		var args = { entity=arguments.entity, entityName=orm.getSession(datasource).getEntityName( arguments.entity ) };
 		processEntityInjection(args.entityName, args.entity);
 		announceInterception("ORMPostLoad",args);
 	}
@@ -126,5 +127,12 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 			// Process DI
 			getWireBox().autowire(target=entity,targetID="ORMEntity-#entityName#");
 		}	
+	}
+	
+	/**
+	* Get ORM Util
+	*/
+	private function getORMUtil() {
+		return new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 	}
 }
