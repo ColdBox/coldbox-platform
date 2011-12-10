@@ -13,6 +13,7 @@ Description :
 	<!--- invokeMethod --->    
     <cffunction name="invokeMethod" output="false" access="public" returntype="any" hint="Invoke an AOP method invocation">    
     	<cfargument name="invocation" type="any" hint="The method invocation object: coldbox.system.aop.MethodInvocation" colddoc:generic="coldbox.system.aop.MethodInvocation">
+    	<cfargument name="datasource" type="string" >
     </cffunction>
 	
 </cfinterface>
