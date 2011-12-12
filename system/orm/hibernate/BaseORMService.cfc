@@ -281,8 +281,7 @@ component accessors="true"{
 	}
 
 	/**
-    * Get a new entity object by entity name and you can pass in any named parameter and the method will try to set them for you.
-    * You can pass in the properties structre also to bind the entity
+    * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
     */
 	any function new(required string entityName,struct properties=structnew()){
 		var entity   = entityNew(arguments.entityName);
@@ -293,10 +292,7 @@ component accessors="true"{
 		if( NOT structIsEmpty(arguments.properties) ){
 			populate( entity, arguments.properties );
 		}
-		else{
-			populate(target=entity,memento=arguments,exclude="entityName,properties");
-		}
-
+		
 		// Event Handling? If enabled, call the postNew() interception
 		if( getEventHandling() ){
 			ORMEventHandler.postNew( entity, arguments.entityName );
