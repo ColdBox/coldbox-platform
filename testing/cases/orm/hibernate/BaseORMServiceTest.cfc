@@ -67,7 +67,7 @@
 		ormservice.new("User");
 
 		// Test with arguments.
-		user = ormService.new(entityName="User",firstName="luis",lastName="majano");
+		user = ormService.new(entityName="User",properties={firstName="luis",lastName="majano"});
 		debug(user);
 		assertEquals( "luis", user.getFirstName() );
 		assertEquals( "majano", user.getLastName() );
@@ -117,6 +117,12 @@
 
 		user = ormService.get("User",'');
 		assertTrue( isNull( user.getID() ) );
+		
+		// ReturnNew = false
+		user = ormService.get(entityName="User",id=4,returnNew=false);
+		assertTrue( isNull( user ) );
+		user = ormService.get(entityName="User",id=0,returnNew=false);
+		assertTrue( isNull( user ) );
 	}
 	function testGetAll(){
 		r = ormService.getAll('Category');

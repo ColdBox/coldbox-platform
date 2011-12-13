@@ -407,8 +407,10 @@ component accessors="true"{
 
 	/**
 	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
+	* @entityName the name of the entity to retrieve
+	* @id An optional primary key to use to retrieve the entity, if the id is 0 or empty
     */
-	any function get(required string entityName,required any id) {
+	any function get(required string entityName,required any id,boolean returnNew=true) {
 
 		// check if id exists so entityLoad does not throw error
 		if( (isSimpleValue(arguments.id) and len(arguments.id)) OR NOT isSimpleValue(arguments.id) ){
@@ -418,10 +420,15 @@ component accessors="true"{
 				return entity;
 			}
 		}
-
-		// Check if ID=0 or empty to do convenience new entity
-		if( isSimpleValue(arguments.id) and ( arguments.id eq 0  OR len(arguments.id) eq 0 ) ){
-			return new(arguments.entityName);
+		
+		// Check for return new?
+		if( arguments.returnNew ){
+		
+			// Check if ID=0 or empty to do convenience new entity
+			if( isSimpleValue(arguments.id) and ( arguments.id eq 0  OR len(arguments.id) eq 0 ) ){
+				return new(arguments.entityName);
+			}
+			
 		}
 	}
 
