@@ -92,7 +92,7 @@ Description :
 				msg.message = arguments.message;
 				
 				// Do we have a message array to flatten?
-				if( structKeyExists(arguments,"messageArray") ){
+				if( structKeyExists(arguments,"messageArray") AND arrayLen(arguments.messageArray) ){
 					msg.message = flattenMessageArray(arguments.messageArray);
 				}
 				
