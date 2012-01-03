@@ -100,7 +100,7 @@ Description :
 					
 					<!--- Reload ColdBox --->
 					<cfset loadColdBox()>
-					<cfset structClear(request)>
+					<cfset structDelete(request,"cb_requestContext")>
 				</cfif>
 			</cflock>
 			<cfreturn>
