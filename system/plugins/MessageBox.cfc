@@ -18,6 +18,8 @@ Description :
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
+	
+	<cfproperty name="JSON" inject="coldbox:plugin:JSON">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -30,13 +32,14 @@ Description :
 			
 			// Plugin Properties
 			setpluginName("Messagebox");
-			setpluginVersion("2.0");
+			setpluginVersion("2.1");
 			setpluginDescription("This is a visual plugin that creates message boxes.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
 			// static constant save key
 			instance.flashKey = "coldbox_plugin_messagebox";
+			instance.flashDataKey = "coldbox_plugin_messagebox_data";
 
 			return this;
 		</cfscript>
@@ -60,7 +63,7 @@ Description :
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
 		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
 		<!--- ************************************************************* --->
-		<cfset arguments.type="information">
+		<cfset arguments.type="info">
 		<cfset setMessage(argumentCollection=arguments)> 
 	</cffunction>
 	
@@ -118,7 +121,7 @@ Description :
 			// Do we have a message?
 			if( isEmpty() ){
 				// Set default message
-				setMessage('information',arguments.message);
+				setMessage('info',arguments.message);
 			}
 			else{
 				// Get Current Message
@@ -143,7 +146,7 @@ Description :
 			// Do we have a message?
 			if( isEmpty() ){
 				// Set default message
-				setMessage(type='information',messageArray=arguments.messageArray);
+				setMessage(type='info',messageArray=arguments.messageArray);
 			}
 			else{
 				// Get Current Message
@@ -156,6 +159,30 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Prepend A message --->			
+	<cffunction name="prependArray" access="public" returntype="void" hint="Prepend an array of messages to the MessageBox. If there is no message, then it sets the type to information." output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="messageArray"  	required="true"  type="Array" hint="The array of messages to append. You must send that.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var currentMessage = "";
+			var newMessage = "";
+			
+			// Do we have a message?
+			if( isEmpty() ){
+				// Set default message
+				setMessage(type='info',messageArray=arguments.messageArray);
+			}
+			else{
+				// Get Current Message
+				currentMessage = getMessage();
+				// Append
+				ArrayAppend(arguments.messageArray,currentMessage.message);
+				// Set it back
+				setMessage(type=currentMessage.type,messageArray=arguments.messageArray);				
+			}
+		</cfscript>
+	</cffunction>
 
 	<!--- Get a Message --->
 	<cffunction name="getMessage" access="public" hint="Returns a structure of the message if it exists, else a blank structure." returntype="any" output="false">
@@ -191,6 +218,55 @@ Description :
 				return true;
 			}
 			return false;
+		</cfscript>
+	</cffunction>
+	
+	<!--- A cool method to add key - value pairs to the messageBox usefull for form validation --->
+	<cffunction name="putData" access="public" returntype="void" hint="Add data that can be used for arbitrary stuff"> 
+		<cfargument name="theData" type="array" required="true">
+		<cfscript>
+			// Flash it
+			flash.put(name=instance.flashDataKey,value=theData,inflateToRC=false,saveNow=true,autoPurge=false);
+		</cfscript>		
+	</cffunction>
+	
+	<cffunction name="addData" access="public" returntype="void" hint="Add data that can be used for arbitrary stuff"> 
+		<cfargument name="key" type="string" required="true">
+		<cfargument name="value" type="string" required="true">
+		<cfscript>
+			var data = arrayNew(1);
+			// Check flash
+			if( flash.exists(instance.flashDataKey) ){
+				data = flash.get(instance.flashDataKey);
+			}
+			arrayAppend(data, {key = arguments.key, value = arguments.value});
+			// Flash it
+			flash.put(name=instance.flashDataKey,value=data,inflateToRC=false,saveNow=true,autoPurge=false);
+		</cfscript>		
+	</cffunction>
+	
+	<cffunction name="getData" access="public" returntype="array" hint="Add data that can be used for arbitrary stuff">
+		<cfargument name="clearData" type="boolean" required="false" default="true" hint="Flag to clear the data structure or not after rendering. Default is true.">
+		<cfscript>
+			var data = arrayNew(1);
+			// Check flash
+			if( flash.exists(instance.flashDataKey) ){
+				data = flash.get(instance.flashDataKey);
+			}
+		</cfscript>
+		
+		<!--- Test to clear data structure from flash? --->
+		<cfif arguments.clearData>
+			<cfset flash.remove(name=instance.flashDataKey,saveNow=true)>
+		</cfif>
+
+		<cfreturn data>
+	</cffunction>
+	
+	<cffunction name="getDataJSON" access="public" returntype="string" hint="Get the data as JSON">
+		<cfargument name="clearData" type="boolean" required="false" default="true" hint="Flag to clear the data structure or not after rendering. Default is true.">
+		<cfscript>
+			return JSON.encode(getData(clearData));
 		</cfscript>
 	</cffunction>
 
