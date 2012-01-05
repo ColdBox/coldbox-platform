@@ -1,4 +1,4 @@
-﻿component persistent="true" table="categories" cachename="categories" cacheuse="read-write"{
+﻿component persistent="true" table="categories" cachename="categories" cacheuse="read-write" datasource="coolblog" {
 
 	property name="catid" column="category_id" fieldType="id" generator="uuid";
 	property name="category" notnull="true";
