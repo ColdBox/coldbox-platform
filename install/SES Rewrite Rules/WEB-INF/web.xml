@@ -1,4 +1,4 @@
-<web-app xmlns="http://caucho.com/ns/resin">
+﻿<web-app xmlns="http://caucho.com/ns/resin">
 
 <rewrite-dispatch>
   <dispatch regexp="\.(jsp|cfm|cfc|php|gif|css|jpg|png|txt|ico|js|doc|pdf|xls|swf|mov|avi|mpg|mp3|mpeg)"/>

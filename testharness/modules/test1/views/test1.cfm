@@ -1,1 +1,1 @@
-<cfoutput>A cool module view at #now()#</cfoutput>
+﻿<cfoutput>A cool module view at #now()#</cfoutput>

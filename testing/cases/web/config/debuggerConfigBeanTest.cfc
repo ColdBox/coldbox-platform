@@ -1,4 +1,4 @@
-<cfcomponent name="DebuggerConfigTest" extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent name="DebuggerConfigTest" extends="coldbox.system.testing.BaseTestCase">
 
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>

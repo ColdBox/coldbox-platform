@@ -1,26 +1,28 @@
-<cfcomponent output="false" hint="My App Configuration">
+﻿<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
 structures to create for configuration
 
-- coldbox
-- settings
-- conventions
-- environments
-- ioc
-- models DEPRECATED use wirebox instead
-- wirebox
-- debugger
-- mailSettings
-- i18n
-- webservices
-- datasources
-- layoutSettings
-- layouts
-- cacheEngine
-- interceptorSettings
-- interceptors
-- modules
+- coldbox (struct)
+- settings (struct)
+- conventions (struct)
+- environments (struct)
+- wirebox (struct)
+- ioc (struct)
+- debugger (struct)
+- mailSettings (struct)
+- i18n (struct)
+- webservices (struct)
+- datasources (struct)
+- layoutSettings (struct)
+- layouts (array of structs)
+- cacheBox (struct)
+- interceptorSettings (struct)
+- interceptors (array of structs)
+- modules (struct)
+- logBox (struct)
+- flash (struct)
+- orm (struct)
 
 Available objects in variable scope
 - controller
@@ -48,7 +50,6 @@ function configure(){
 		debugPassword			= "",
 		reinitPassword			= "",
 		handlersIndexAutoReload = true,
-		configAutoReload		= false,
 		
 		//Implicit Events
 		defaultEvent			= "general.index",
@@ -102,8 +103,6 @@ function configure(){
 	
 	//Register interceptors as an array, we need order
 	interceptors = [
-		 //Autowire
-		 {class="coldbox.system.interceptors.Autowire"},
 		 //SES
 		 {class="coldbox.system.interceptors.SES"}
 	];

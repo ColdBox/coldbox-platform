@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 out = createObject("java","java.lang.StringBuffer").init('');
 tab = chr(9);
 br  = chr(10);
@@ -61,7 +61,8 @@ scopes = {
 	log = "coldbox.system.logging.Logger",
 	logbox = "coldbox.system.logging.LogBox",
 	binder = "coldbox.system.ioc.config.Binder",
-	wirebox = "coldbox.system.ioc.Injector"
+	wirebox = "coldbox.system.ioc.Injector",
+	cachebox = "coldbox.system.cache.CacheFactory"
 };
 for( key in scopes ){
 	
@@ -93,7 +94,7 @@ out.append('
 	</scopes>
 </dictionary>');
 
-fileWrite(expandPath('./coldbox.xml'), out.toString());
+fileWrite(expandPath('/coldbox/install/IDE Extras/CFEclipse Dictionary/coldbox.xml'), out.toString());
 </cfscript>
 
 <textarea rows="30" cols="160">

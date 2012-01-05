@@ -1,5 +1,4 @@
-/**
-<!-----------------------------------------------------------------------
+﻿/**
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -28,7 +27,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 	/**
 	* The AOP around advice for hibernate transactions
 	*/
-	any function invokeMethod(invocation) output=false{
+	function invokeMethod(required invocation) output=false{
 		
 		// Are we already in a transaction?
 		if( structKeyExists(request,"cbox_aop_transaction") ){

@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	
 	function setup(){
@@ -142,18 +142,18 @@
 		
 		//ocm only
 		def = {name="key", dsl="ocm"};
-		mockCache.$("lookup", true).$("get",this);
+		mockCache.$("get",this);
 		e = builder.getOCMDSL(def);
 		assertEquals( this, e);
 		
 		//ocm only
-		mockCache.$("lookup", false).$("get",this);
-		e = builder.getOCMDSL(def);
-		assertTrue( mockCache.$never("get") );
+		mockCache.$("get", javaCast("null",""));
+		results.e = builder.getOCMDSL(def);
+		assertFalse( structKeyExists(results,"e")  );
 		
 		// ocm:MyKey
 		def = {name="key", dsl="ocm:myKey"};
-		mockCache.$("lookup", true).$("get",this);
+		mockCache.$("get",this);
 		e = builder.getOCMDSL(def);
 		assertEquals( this, e);
 		assertEquals( "myKey", mockCache.$callLog().get[1][1] );
@@ -232,6 +232,40 @@
 		mockColdBox.$("getSetting").$args("mySetting").$results("UnitTest");
 		c = builder.getColdBoxDSL(def);
 		assertEquals("unitTest", c);
+		// setting@module
+		def = {name="mySetting", dsl="coldbox:setting:mySetting@myModule"};
+		modSettings = { 
+			myModule={ 
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals("unitTest", c);
+		
+		// modulesettings
+		def = {name="mySetting", dsl="coldbox:moduleSettings:myModule"};
+		modSettings = { 
+			myModule={ 
+				moduleMapping = "/modules/MyModule",
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals( modSettings.myModule.settings , c);
+		
+		// moduleConfig
+		def = {name="mySetting", dsl="coldbox:moduleConfig:myModule"};
+		modSettings = { 
+			myModule={ 
+				moduleMapping = "/modules/MyModule",
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals( modSettings.myModule , c);
 		
 		// fwsetting
 		def = {name="mySetting", dsl="coldbox:fwSetting"};

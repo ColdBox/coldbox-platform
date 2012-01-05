@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <snippet filetemplate="false" extension="">
 <name>One2Many</name>
 <help>One To Many relationship</help>

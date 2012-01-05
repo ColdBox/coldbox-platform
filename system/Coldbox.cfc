@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -100,6 +100,7 @@ Description :
 					
 					<!--- Reload ColdBox --->
 					<cfset loadColdBox()>
+					<cfset structDelete(request,"cb_requestContext")>
 				</cfif>
 			</cflock>
 			<cfreturn>
@@ -110,19 +111,6 @@ Description :
 			<cflock type="readonly" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
 				<cfset cbController = application[appKey]>
 			</cflock>
-			
-			<!--- AutoReload Tests --->
-			<cfif cbController.getSetting("ConfigAutoReload")>
-				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
-					<cfif cbController.getSetting("ConfigAutoReload")>
-						<cfset cbController.getLoaderService().loadApplication(COLDBOX_CONFIG_FILE)>
-						<cfif ( len(cbController.getSetting("ApplicationStartHandler")) )>
-							<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
-						</cfif>
-					</cfif>
-				</cflock>
-				<cfreturn>
-			</cfif>
 			
 			<!--- WireBox Singleton AutoReload --->
 			<cfif cbController.getSetting("Wirebox").singletonReload>
@@ -173,7 +161,6 @@ Description :
 		<cfset var refResults 		= structnew()>
 		<cfset var debugPanel		= "">
 		<cfset var interceptorService = "">
-		<cfset var debugMode		= false>
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
@@ -182,7 +169,6 @@ Description :
 		
 		<!--- Setup Local Vars --->
 		<cfset interceptorService 	= cbController.getInterceptorService()>
-		<cfset debugMode 		 	= cbController.getDebuggerService().getDebugMode()>
 		<cfset templateCache		= cbController.getColdboxOCM("template")>
 		
 		<cftry>
@@ -193,7 +179,7 @@ Description :
 			<cfset event = cbController.getRequestService().requestCapture()>
 			
 			<!--- Debugging Monitors & Commands Check --->
-			<cfif debugMode>
+			<cfif cbController.getDebuggerService().getDebugMode()>
 				
 				<!--- ColdBox Command Executions --->
 				<cfset coldboxCommands(cbController,event)>
@@ -201,20 +187,12 @@ Description :
 				<!--- Debug Panel rendering --->
 				<cfset debugPanel = event.getValue("debugPanel","")>
 				<cfswitch expression="#debugPanel#">
-					<cfcase value="cache">
-						<cfoutput>#cbController.getDebuggerService().renderCachePanel(monitor=true)#</cfoutput>
-					</cfcase>
-					<cfcase value="cacheReport">
-						<cfoutput>#cbController.getDebuggerService().renderCacheReport(cacheName=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
-					</cfcase>
-					<cfcase value="cacheContentReport">
-						<cfoutput>#cbController.getDebuggerService().renderCacheContentReport(cacheName=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
-					</cfcase>
-					<cfcase value="cacheViewer">
-						<cfoutput>#cbController.getDebuggerService().renderCacheDumper(cacheName=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
-					</cfcase>	
 					<cfcase value="profiler">
 						<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
+					</cfcase>
+					<cfcase value="cache,cacheReport,cacheContentReport,cacheViewer">
+						<cfimport prefix="cachebox" taglib="/coldbox/system/cache/report">
+						<cachebox:monitor cacheFactory="#cbController.getCacheBox()#" />
 					</cfcase>			
 				</cfswitch>
 				<!--- Stop Processing, we are rendering a debugger panel --->
@@ -233,9 +211,11 @@ Description :
 			</cfif>
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
-			<cfif event.isEventCacheable() AND templateCache.lookupQuiet(event.getEventCacheableEntry())>
-				<cfset renderedContent = templateCache.get(event.getEventCacheableEntry())>
-				<cfoutput>#renderedContent#</cfoutput>
+			<cfif structKeyExists(event.getEventCacheableEntry(), "cachekey")>
+				<cfset refResults.renderedContent = templateCache.get( event.getEventCacheableEntry().cacheKey )>
+			</cfif>
+			<cfif event.isEventCacheable() AND structKeyExists(refResults,"renderedContent")>
+				<cfoutput>#refResults.renderedContent#</cfoutput>
 			<cfelse>
 				
 				<!--- Run Default/Set Event not executing an event --->
@@ -258,7 +238,7 @@ Description :
 						<cfset renderedContent = refResults.results>
 					<cfelse>
 						<!--- Render Layout/View pair via set variable to eliminate whitespace--->
-						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout()>
+						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout(module=event.getCurrentLayoutModule(),viewModule=event.getCurrentViewModule())>
 					</cfif>
 					
 					<!--- PreRender Data:--->
@@ -307,6 +287,11 @@ Description :
 			<!--- Execute postProcess Interception --->
 			<cfset interceptorService.processState("postProcess")>
 			
+			<!--- Save Flash Scope --->
+			<cfif cbController.getSetting("flash").autoSave>
+				<cfset cbController.getRequestService().getFlashScope().saveFlash()>
+			</cfif>
+			
 			<!--- Trap Application Errors --->
 			<cfcatch type="any">
 				<!--- Get Exception Service --->
@@ -329,7 +314,7 @@ Description :
 		<cfset request.fwExecTime = getTickCount() - request.fwExecTime>
 		
 		<!--- DebugMode Routines --->
-		<cfif debugMode>
+		<cfif cbController.getDebuggerService().getDebugMode()>
 			<!--- Record Profilers --->
 			<cfset cbController.getDebuggerService().recordProfiler()>
 			<!--- Render DebugPanel --->
@@ -567,31 +552,19 @@ Description :
 		<cfargument name="cbController" type="any" required="true" hint="The cb Controller"/>
 		<cfargument name="event" 		type="any" required="true" hint="The event context object"/>
 		<cfscript>
-			var command 	= event.getTrimValue("cbox_command","");
-			var cacheName 	= event.getTrimValue("cbox_cacheName","default");
+			var command = event.getTrimValue("cbox_command","");
 			
 			// Verify command
 			if( NOT len(command) ){ return; }
 			
 			// Commands
 			switch(command){
-				// Cache Commands
-				case "expirecache"    		: { cbController.getColdboxOCM(cacheName).expireAll(); break; }
-				case "reapcache"  	  		: { cbController.getColdboxOCM(cacheName).reap(); break;}
-				case "delcacheentry"  		: { cbController.getColdboxOCM(cacheName).clear(event.getValue('cbox_cacheentry',""));break;}
-				case "expirecacheentry"  	: { cbController.getColdboxOCM(cacheName).expireObject(event.getValue('cbox_cacheentry',""));break;}
-				case "clearallevents" 		: { cbController.getColdboxOCM(cacheName).clearAllEvents();break;}
-				case "clearallviews"  		: { cbController.getColdboxOCM(cacheName).clearAllViews();break;}
-				case "cacheBoxReapAll"		: { cbController.getCacheBox().reapAll();break;}
-				case "cacheBoxExpireAll"	: { cbController.getCacheBox().expireAll();break;}
-				case "gc"			 		: { createObject("java", "java.lang.Runtime").getRuntime().gc(); break;}
-				
 				// Module Commands
 				case "reloadModules"  : { cbController.getModuleService().reloadAll(); break;}
 				case "unloadModules"  : { cbController.getModuleService().unloadAll(); break;}
 				case "reloadModule"   : { cbController.getModuleService().reload(event.getValue("module","")); break;}
 				case "unloadModule"   : { cbController.getModuleService().unload(event.getValue("module","")); break;}
-				default: break;
+				default: return;
 			}
 		</cfscript>
 		<!--- Relocate to correct URL --->

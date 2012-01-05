@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -25,20 +25,18 @@ Description :
 	<cfset this.mappings["/testmodel"] = expandPath("/coldbox/testing/testmodel")>
 	<cfset this.mappings["/testing"] = expandPath("/coldbox/testing")>
 	
-	<cfif NOT structKeyExists(server,"railo")>
-		<cfset this.datasource = "coolblog">
-		<cfset this.ormEnabled = "true">
+	<cfset this.datasource = "coolblog">
+	<cfset this.ormEnabled = "true">
 	
-		<cfset this.ormSettings = {
-			dialect = "MySQLwithInnoDB",
-			eventHandling=true,
-			logSQL = true,
-			eventhandling = true,
-			secondarycacheenabled = true,
-			cacheProvider = "ehcache",
-			flushAtRequestEnd = false
-		}>
-	</cfif>
+	<cfset this.ormSettings = {
+		dialect = "MySQLwithInnoDB",
+		eventHandling=true,
+		logSQL = true,
+		eventhandling = true,
+		secondarycacheenabled = true,
+		cacheProvider = "ehcache",
+		flushAtRequestEnd = false
+	}>
 	
 	<!--- on Request Start --->
 	<cffunction name="onRequestStart" returnType="boolean" output="true">
@@ -46,7 +44,7 @@ Description :
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
 		
-		<cfif NOT structKeyExists(server,"railo") AND structKeyExists(URL,"reinit")>
+		<cfif structKeyExists(URL,"reinit")>
 			<cfset ORMReload()>
 		</cfif>
 		

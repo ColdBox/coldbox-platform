@@ -1,4 +1,4 @@
-This interceptor provides security to an application. It is very flexible
+﻿This interceptor provides security to an application. It is very flexible
 and customizable. It bases off on the ability to secure events by creating
 rules. This interceptor will then try to match a rule to the incoming event
 and the user's credentials on roles and/or permissions. 

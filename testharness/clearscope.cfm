@@ -1,4 +1,4 @@
-<cfparam name="type" default="all">
+﻿<cfparam name="type" default="all">
 
 
 <cfswitch expression="#type#">

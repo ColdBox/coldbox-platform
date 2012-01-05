@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
@@ -31,7 +31,6 @@ Settings:
 		};
 	</cfscript>
 
-
 	<cffunction name="init" access="public" returnType="ForgeBox" output="false" hint="Constructor">
 		<cfargument name="controller" type="any"/>
 		<cfscript>
@@ -46,6 +45,9 @@ Settings:
 			
 			// Setup Properties
 			instance.APIURL = "http://www.coldbox.org/index.cfm/api/forgebox";
+			
+			// JSON compatibility to forgebox api 1.0
+			instance.oJSON = createObject("component","JSON").init();
 			
 			return this;
 		</cfscript>
@@ -183,7 +185,7 @@ Settings:
 			if( len(HTTPResults.errorDetail) ){ results.error = true; }
 			
 			// Try to inflate JSON
-			results.response = getPlugin("JSON").decode(results.rawResponse);
+			results.response = instance.oJSON.decode(results.rawResponse);
 			
 			return results;
 		</cfscript>	

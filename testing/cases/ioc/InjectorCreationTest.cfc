@@ -1,16 +1,27 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	
 	function setup(){
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector").init("coldbox.testing.cases.ioc.config.samples.InjectorCreationTestsBinder");
 		// mock logger
-		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug");
+		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error");
 		injector.$property("log","instance",mockLogger);
 		// mock event manager
 		getMockBox().prepareMock( injector.getEventManager() );
 	}
 	
+	function testMixins(){
+		r = injector.getInstance("MixinTest");
+		assertEquals( "lui", r.echo("lui") );
+		assertEquals( "lui", r.echo2("lui") );
+	}
+
+	function testSetters(){
+		r = injector.getInstance("CategoryService");
+		debug( r );
+	}
+
 	function testLocateInstance(){
 		// Locate by package scan
 		r = injector.locateInstance("ioc.category.CategoryBean");

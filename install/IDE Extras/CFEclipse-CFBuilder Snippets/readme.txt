@@ -1,4 +1,4 @@
-ColdBox Eclipse Snippets
+﻿ColdBox Eclipse Snippets
 
 Just place the ColdBox snippets folder under your snippets directory of your CFEclipse or CF Builder installation.
 

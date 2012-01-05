@@ -1,4 +1,4 @@
-This folder contains several rewrite engine rules for your convenience.
+﻿This folder contains several rewrite engine rules for your convenience.
 
 1) .htaccess 
 	Is an apache mod_rewrite standard. Can also be used to be imported into other rewrite engines

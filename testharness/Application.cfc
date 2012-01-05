@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -32,15 +32,15 @@ Description :
 	<cfset COLDBOX_APP_KEY = "">
 	
 	<cfset this.mappings["/coldbox"] = expandPath('../') />
-	<cfset this.mappings["/testing"] = expandpath("/coldbox/testing")>
+	<cfset this.mappings["/testmodel"] = expandpath("../testing/testmodel")>
 	
 	<cfset this.datasource = "coolblog">
 	
-	<cfif NOT structKeyExists(server,"railo")>
+	<!---<cfif NOT structKeyExists(server,"railo")>--->
 		<cfset this.ormEnabled = "true">
 		<cfset this.ormSettings = {
 			dialect = "MySQLwithInnoDB",
-			cfclocation = ["/coldbox","/testing"],
+			cfclocation = ["/coldbox","/testmodel"],
 			skipCFCWithError = true,
 			eventHandling=true,
 			logSQL = true,
@@ -50,7 +50,7 @@ Description :
 			cacheProvider = "ehcache",
 			flushAtRequestEnd = false
 		}>
-	</cfif>
+	<!---</cfif>--->
 	
 	<!--- on Application Start --->
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
@@ -93,7 +93,6 @@ Description :
 		
 		<!--- Reload Checks --->
 		<cfset application.cbBootstrap.reloadChecks()>
-		
 		<cfset request.fwLoadTIme = getTickCount() - start>
 		
 		<!--- Process A ColdBox Request Only --->
@@ -104,6 +103,13 @@ Description :
 		<!--- WHATEVER YOU WANT BELOW --->
 		<cfsetting enablecfoutputonly="no">
 		<cfreturn true>
+	</cffunction>
+	
+	<!--- onrequest end --->
+	<cffunction name="onrequestend">
+		<cfif structKeyExists(url,"appstop")>
+			<cfset applicationStop()>
+		</cfif>
 	</cffunction>
 	
 	<!--- on Application End --->

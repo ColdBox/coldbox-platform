@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <!--- Install Location --->
 <div id="installDiv">
 	<form name="installForm" id="installForm" method="post" action="#event.buildlink('forgebox.install')#" onsubmit="startInstall()">
