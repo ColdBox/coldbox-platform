@@ -176,13 +176,13 @@ component singleton{
 	
 	// Group expressions together in a single conjunction (A and B and C...) and return the conjunction
 	any function conjunction(required array restrictionValues){
-		var conjunction = restrictions.conjunction();
+		var cj = restrictions.conjunction();
 		
 		for(var i=1; i LTE ArrayLen(arguments.restrictionValues); i++){
-			conjunction.add( arguments.restrictionValues[i] );
+			cj.add( arguments.restrictionValues[i] );
 		}
 		
-		return conjunction;
+		return cj;
 	}
 	
 	// Return the conjuction of N expressions as arguments
@@ -205,13 +205,13 @@ component singleton{
 	
 	// Group expressions together in a single disjunction (A or B or C...)
 	any function disjunction(required array restrictionValues){
-		var disjunction = restrictions.disjunction();
+		var dj = restrictions.disjunction();
 		
 		for(var i=1; i LTE ArrayLen(arguments.restrictionValues); i++){
-			disjunction.add( arguments.restrictionValues[i] );
+			dj.add( arguments.restrictionValues[i] );
 		}
 		
-		return disjunction;
+		return dj;
 	}
 	
 	// Return the negation of an expression
