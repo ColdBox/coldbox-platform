@@ -44,7 +44,14 @@ component implements="coldbox.system.orm.hibernate.util.IORMUtil"{
  	* @entity The entity reference. Can be passed as an object or as the entity name.
  	*/
  	public string function getEntityDatasource(required entity) {
- 		return application.getApplicationSettings().datasource;
+ 		return getDefaultDatasource();
  	}
+ 	
+ 	/**
+	* Get the default application datasource
+	*/
+ 	public string function getDefaultDatasource(){
+ 		return application.getApplicationSettings().datasource;
+ 	};
 
 }

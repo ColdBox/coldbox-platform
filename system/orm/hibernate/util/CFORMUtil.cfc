@@ -62,7 +62,7 @@ component implements="coldbox.system.orm.hibernate.util.IORMUtil"{
  	*/
  	public string function getEntityDatasource(required entity) {
  		// DEFAULT datasource
- 		var datasource = application.getApplicationSettings().datasource;
+ 		var datasource = getDefaultDatasource();
  		
  		if(!IsObject(arguments.entity)) arguments.entity= EntityNew(arguments.entity);
  		
@@ -71,5 +71,12 @@ component implements="coldbox.system.orm.hibernate.util.IORMUtil"{
  		
  		return datasource;
  	}
+ 	
+ 	/**
+	* Get the default application datasource
+	*/
+ 	public string function getDefaultDatasource(){
+ 		return application.getApplicationSettings().datasource;
+ 	};
 
 }

@@ -39,4 +39,8 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		d = ormutil.getEntityDatasource( entityNew('Category') );
 		assertEquals('coolblog', d);
 	}
+	
+	function testGetDefaultDatasource(){
+		assertEquals('coolblog', ormutil.getDefaultDatasource() );
+	}
 }

@@ -21,4 +21,5 @@ interface {
 	public void 	function closeSession(string datasource);
 	public void 	function evictQueries(string cachename, string datasource);
 	public string	function getEntityDatasource(required entity);
+	public string	function getDefaultDatasource();
 }

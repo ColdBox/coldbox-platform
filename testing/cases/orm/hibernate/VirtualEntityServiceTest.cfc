@@ -20,7 +20,7 @@
 		user = ormservice.new();
 		assertFalse( isNull(user) );
 		
-		user = ormService.new(firstName="Luis",lastName="UnitTest");
+		user = ormService.new(properties={firstName="Luis",lastName="UnitTest"});
 		assertEquals( "Luis", user.getFirstName() );
 	}
 

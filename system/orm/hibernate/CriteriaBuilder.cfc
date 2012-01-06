@@ -53,28 +53,33 @@ component accessors="true"{
 	// Constructor
 	CriteriaBuilder function init(required string entityName,
 								  boolean useQueryCaching=false,
-								  string queryCacheRegion=""){		
+								  string queryCacheRegion=""){	
+								  	  
+		// Determine datasource for given entityName
+		var orm			= getORMUtil();
+		var datasource 	= orm.getEntityDatasource( arguments.entityName );	  
+									
 		// restrictions linkage
 		this.restrictions = new criterion.Restrictions();
-		// projections linkage
+		// java projections linkage
 		this.projections = CreateObject("java","org.hibernate.criterion.Projections");
 		
 		// local criterion values
 		setCriterias( [] );
 		// hibernate criteria query setup
-		setNativeCriteria( ORMGetSession().createCriteria( arguments.entityName ) );
+		setNativeCriteria( orm.getSession( datasource ).createCriteria( arguments.entityName ) );
 		// set entity name
 		setEntityName( arguments.entityName );
 		
 		// Setup pseudo-static join types and transformer types:
-		this.ALIAS_TO_ENTITY_MAP = nativeCriteria.ALIAS_TO_ENTITY_MAP;
-		this.DISTINCT_ROOT_ENTITY = nativeCriteria.DISTINCT_ROOT_ENTITY;
-		this.FULL_JOIN = nativeCriteria.FULL_JOIN;
-		this.INNER_JOIN = nativeCriteria.INNER_JOIN;
-		this.LEFT_JOIN = nativeCriteria.LEFT_JOIN;
-		this.PROJECTION = nativeCriteria.PROJECTION;
-		this.ROOT_ALIAS = nativeCriteria.ROOT_ALIAS;
-		this.ROOT_ENTITY = nativeCriteria.ROOT_ENTITY;
+		this.ALIAS_TO_ENTITY_MAP 	= nativeCriteria.ALIAS_TO_ENTITY_MAP;
+		this.DISTINCT_ROOT_ENTITY 	= nativeCriteria.DISTINCT_ROOT_ENTITY;
+		this.FULL_JOIN 				= nativeCriteria.FULL_JOIN;
+		this.INNER_JOIN 			= nativeCriteria.INNER_JOIN;
+		this.LEFT_JOIN 				= nativeCriteria.LEFT_JOIN;
+		this.PROJECTION 			= nativeCriteria.PROJECTION;
+		this.ROOT_ALIAS 			= nativeCriteria.ROOT_ALIAS;
+		this.ROOT_ENTITY 			= nativeCriteria.ROOT_ENTITY;
 		
 		// caching?
 		setUseQueryCaching( arguments.useQueryCaching );
@@ -381,6 +386,13 @@ component accessors="true"{
 			// add it to our ordering
 			order(sortField,sortDir,arguments.ignoreCase);
 		}
+	}
+	
+	/**
+	* Get ORM Util
+	*/
+	private function getORMUtil() {
+		return new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 	}
 	
 }
