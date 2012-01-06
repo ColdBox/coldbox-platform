@@ -131,10 +131,11 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			validateConfiguration();
 
 			// Merge configurations			
-			var thisCacheName = getConfiguration().cacheName;
+			var thisCacheName = config.cacheName;
 			if ( thisCacheName == "object") {
 				props = cacheGetProperties();
-			} else {
+			} 
+			else {
 				
 				// this force CF to create the user defined cache if it doesn't exist
 				get("___invalid___");
