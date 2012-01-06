@@ -8,7 +8,7 @@
 	
 	function setup(){
 		super.setup();
-		hTransaction = model;
+		hTransaction = model.init();
 		
 		// mocks
 		mockMapping = getMockBox().createEmptyMock("coldbox.system.ioc.config.Mapping");
