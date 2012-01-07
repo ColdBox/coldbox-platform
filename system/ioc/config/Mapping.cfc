@@ -561,7 +561,6 @@ Description :
 				if( instance.scope EQ arguments.binder.SCOPES.CACHEBOX ){
 					// Check if we already have a key, maybe added via configuration
 					if( NOT len( instance.cache.key ) ){
-						writeDump(instance.cache);abort;
 						instance.cache.key = "wirebox-#instance.name#";
 					}
 					// Check the default provider now to see if set by configuration
