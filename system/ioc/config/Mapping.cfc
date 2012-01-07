@@ -46,7 +46,7 @@ Description :
 				// A construction dsl
 				dsl = "",
 				// Caching parameters
-				cache = {provider="default", key="", timeout="", lastAccessTimeout=""},
+				cache = {provider="", key="", timeout="", lastAccessTimeout=""},
 				// Explicit Constructor arguments
 				DIConstructorArgs = [],
 				// Explicit Properties
@@ -552,36 +552,42 @@ Description :
 						instance.scope = arguments.binder.SCOPES.CACHEBOX;
 					}
 					
-					// Cachebox Persistence Processing
-					if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){
-						// Cache Data instead of md insertion as CF caches md now.
-						cacheProperties = {
-							provider = "default",
-							timeout = "",
-							lastAccessTimeout = ""
-						};
-						// Prepare to default provider if no cachebox annotation found or it is empty
-						if( structKeyExists(md,"cacheBox") AND len(md.cacheBox) ){
-							cacheProperties.provider = md.cacheBox;
-						}				
-						// Prepare Timeouts
-						if( structKeyExists(md,"cachetimeout") AND isNumeric(md.cacheTimeout) ){
-							cacheProperties.timeout = md.cacheTimeout;
-						}
-						if( structKeyExists(md,"cacheLastAccessTimeout") AND isNumeric(md.cacheLastAccessTimeout) ){
-							cacheProperties.lastAccessTimeout = md.cacheLastAccessTimeout;
-						}
-						// setup cachebox properties
-						setCacheProperties(key="wirebox-#instance.name#",
-										   timeout=cacheProperties.timeout,
-										   lastAccessTimeout=cacheProperties.lastAccessTimeout,
-										   provider=cacheProperties.provider);
-					}
-					
 					// check if scope found? If so, then set it to no scope.
 					if( NOT len(instance.scope) ){ instance.scope = "noscope"; }
 					
 				} // end of persistence checks
+				
+				// Cachebox Persistence Processing
+				if( instance.scope EQ arguments.binder.SCOPES.CACHEBOX ){
+					// Check if we already have a key, maybe added via configuration
+					if( NOT len( instance.cache.key ) ){
+						writeDump(instance.cache);abort;
+						instance.cache.key = "wirebox-#instance.name#";
+					}
+					// Check the default provider now to see if set by configuration
+					if( NOT len( instance.cache.provider) ){
+						// default it first
+						instance.cache.provider = "default";
+						// Now check the annotations for the provider
+						if( structKeyExists(md,"cacheBox") AND len(md.cacheBox) ){
+							instance.cache.provider = md.cacheBox;
+						}								
+					}
+					// Check if timeouts set by configuration or discovery
+					if( NOT len( instance.cache.timeout ) ){
+						// Discovery by annocations
+						if( structKeyExists(md,"cachetimeout") AND isNumeric(md.cacheTimeout) ){
+							instance.cache.timeout = md.cacheTimeout;
+						}
+					}
+					// Check if lastAccessTimeout set by configuration or discovery
+					if( NOT len( instance.cache.lastAccessTimeout ) ){
+						// Discovery by annocations
+						if( structKeyExists(md,"cacheLastAccessTimeout") AND isNumeric(md.cacheLastAccessTimeout) ){
+							instance.cache.lastAccessTimeout = md.cacheLastAccessTimeout;
+						}
+					}
+				}
 				
 				// Alias annotations if found, then append them as aliases.
 				if( structKeyExists(md, "alias") ){
