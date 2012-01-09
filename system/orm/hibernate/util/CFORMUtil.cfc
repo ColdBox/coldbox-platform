@@ -76,7 +76,13 @@ component implements="coldbox.system.orm.hibernate.util.IORMUtil"{
 	* Get the default application datasource
 	*/
  	public string function getDefaultDatasource(){
- 		return application.getApplicationSettings().datasource;
+ 		var settings = application.getApplicationSettings();
+ 		// check orm settings first
+ 		if( structKeyExists( settings,"ormsettings") AND structKeyExists(settings.ormsettings,"datasource")){
+ 			return settings.ormsettings.datasource;
+ 		}
+ 		// else default to app datasource
+ 		return settings.datasource;
  	};
 
 }
