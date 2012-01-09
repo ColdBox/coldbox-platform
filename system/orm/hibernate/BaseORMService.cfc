@@ -839,9 +839,9 @@ component accessors="true"{
 		// Single Entity
 		else{
 			if( structKeyExists(arguments,"id") )
-				ORMEvictEntity(arguments.entityName,arguments.id);
+				evictEntity( this.get(arguments.entityName,arguments.id) );
 			else
-				ORMEvictEntity(arguments.entityName);
+				evictEntity( this.new(arguments.entityName) );
 		}
 	}
 
