@@ -505,9 +505,9 @@ Loads a coldbox cfc configuration file
 				//Check for LocaleStorage
 				if ( structKeyExists(i18n, "LocaleStorage") AND len(i18n.LocaleStorage) ){
 					configStruct["LocaleStorage"] = i18n.LocaleStorage;
-					if( NOT reFindNoCase("^(session|cookie|client)$",configStruct["LocaleStorage"]) ){
+					if( NOT reFindNoCase("^(session|cookie|client|request)$",configStruct["LocaleStorage"]) ){
 						getUtil().throwit(message="Invalid local storage scope: #configStruct["localeStorage"]#",
-							   			  detail="Valid scopes are session,client, cookie",
+							   			  detail="Valid scopes are session,client, cookie, or request",
 							   			  type="CFCApplicationLoader.InvalidLocaleStorage");
 					}
 				}
