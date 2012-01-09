@@ -390,7 +390,7 @@ component accessors="true"{
 	/**
     * Refresh the state of an entity or array of entities from the database
     */
-	void function refresh(required any entity){
+	any function refresh(required any entity){
 		var objects = arrayNew(1);
 
 		if( not isArray(arguments.entity) ){
@@ -403,6 +403,7 @@ component accessors="true"{
 		for( var x=1; x lte arrayLen(objects); x++){
 			orm.getSession(orm.getEntityDatasource(objects[x])).refresh( objects[x] );
 		}
+		return this;
 	}
 
 	/**
@@ -480,14 +481,15 @@ component accessors="true"{
 	* or an array of entities. You can optionally flush the session also after committing
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
     */
-	void function delete(required any entity,boolean flush=false,boolean transactional=getUseTransactions()){
+	any function delete(required any entity,boolean flush=false,boolean transactional=getUseTransactions()){
 		// using transaction closure, well, semy closures :(
 		if( arguments.transactional ){
 			return $transactioned(variables.$delete, arguments);
 		}
-		return $delete(argumentCollection=arguments);
+		$delete(argumentCollection=arguments);
+		return this;
 	}
-	private void function $delete(required any entity,boolean flush=false){
+	private any function $delete(required any entity,boolean flush=false){
 		var objects = arrayNew(1);
 		var objLen  = 0;
 
@@ -505,6 +507,7 @@ component accessors="true"{
 
 		// Auto Flush
 		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entity)); }
+		return this;
 	}
 
 	/**
@@ -566,14 +569,15 @@ component accessors="true"{
 	* it actually is a select query that should retrieve objects to remove
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
 	*/
-	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions(), string datasource="" ){
+	any function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions(), string datasource="" ){
 		// using transaction closure, well, semy closures :(
 		if( arguments.transactional ){
 			return $transactioned(variables.$deleteByQuery, arguments);
 		}
-		return $deleteByQuery(argumentCollection=arguments);
+		$deleteByQuery(argumentCollection=arguments);
+		return this;
 	}
-	private void function $deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, string datasource=""){
+	private any function $deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, string datasource=""){
 		var objects = arrayNew(1);
 		var options = {};
 
@@ -596,6 +600,7 @@ component accessors="true"{
 		}
 
 		delete(entity=objects,flush=arguments.flush,transactional=arguments.transactional);
+		return this;
 	}
 
 	/**
@@ -827,7 +832,7 @@ component accessors="true"{
     * Evict an entity from session, the id can be a string or structure for the primary key
 	* You can also pass in a collection name to evict from the collection
     */
-	void function evict(required string entityName,string collectionName, any id){
+	any function evict(required string entityName,string collectionName, any id){
 
 		//Collection?
 		if( structKeyExists(arguments,"collectionName") ){
@@ -843,13 +848,15 @@ component accessors="true"{
 			else
 				evictEntity( this.new(arguments.entityName) );
 		}
+		
+		return this;
 	}
 
 	/**
     * Evict entity objects from session.
 	* @entities The argument can be one persistence entity or an array of entities
     */
-	void function evictEntity(required any entities){
+	any function evictEntity(required any entities){
 		var objects = arrayNew(1);
 
 		if( not isArray(arguments.entities) ){
@@ -863,19 +870,21 @@ component accessors="true"{
 			orm.getSession(orm.getEntityDatasource(objects[x])).evict( objects[x] );
 		}
 
+		return this;
 	}
 
 	/**
     * Evict all queries in the default cache or the cache region passed
     */
-	void function evictQueries(string cacheName, string datasource){
+	any function evictQueries(string cacheName, string datasource){
 		orm.evictQueries(argumentCollection=arguments);
+		return this;
 	}
 
 	/**
     * Merge an entity or array of entities back into the session
     */
-	void function merge(required any entity){
+	any function merge(required any entity){
 		var objects = arrayNew(1);
 
 		if( not isArray(arguments.entities) ){
@@ -888,15 +897,17 @@ component accessors="true"{
 		for( var x=1; x lte arrayLen(objects); x++){
 			entityMerge( objects[x] );
 		}
-
+		
+		return this;
 	}
 
 	/**
 	* Clear the session removes all the entities that are loaded or created in the session.
 	* This clears the first level cache and removes the objects that are not yet saved to the database.
 	*/
-	void function clear(string datasource=application.getApplicationSettings().datasource){
+	any function clear(string datasource=application.getApplicationSettings().datasource){
 		orm.clearSession(arguments.datasource);
+		return this;
 	}
 
 	/**
@@ -937,7 +948,7 @@ component accessors="true"{
 	any function onMissingMethod(String missingMethodName,Struct missingMethodArguments){
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
-
+		
 	}
 
 	/**
