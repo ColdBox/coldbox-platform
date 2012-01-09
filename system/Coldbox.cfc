@@ -114,20 +114,22 @@ Description :
 			
 			<!--- WireBox Singleton AutoReload --->
 			<cfif cbController.getSetting("Wirebox").singletonReload>
-				<cfset cbController.getWireBox().clearSingletons()>
+				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
+					<cfset cbController.getWireBox().clearSingletons()>
+				</cflock>
 			</cfif>
 			
 			<!--- Modules Auto Reload --->
 			<cfif cbController.getSetting("ModulesAutoReload")>
-				<cfset cbController.getModuleService().reloadAll()>
+				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
+					<cfset cbController.getModuleService().reloadAll()>
+				</cflock>
 			</cfif>
 			
 			<!--- Handler's Index Auto Reload --->
 			<cfif cbController.getSetting("HandlersIndexAutoReload")>
 				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
-					<cfif cbController.getSetting("HandlersIndexAutoReload")>
-						<cfset cbController.getHandlerService().registerHandlers()>
-					</cfif>
+					<cfset cbController.getHandlerService().registerHandlers()>
 				</cflock>
 			</cfif>
 			
