@@ -16,7 +16,7 @@ Description :
 <cfcomponent output="false">
 
 	<!--- APPLICATION CFC PROPERTIES --->
-	<cfset this.name = "ColdBox Test Suite_" & hash(getCurrentTemplatePath())> 
+	<cfset this.name = "ColdBoxTestHarness" & hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
 	<cfset this.setClientCookies = true>
 	<cfset this.clientManagement = true>

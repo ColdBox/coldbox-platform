@@ -21,23 +21,23 @@ For the latest usage, please visit the wiki.
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
+	<cffunction name="configure" access="public" returntype="void" hint="This is the configuration method" output="false">
 		<cfscript>
 			// setup status bit
 			instance.initialized = false;
 			
-			// Start processing properties
+			// Use Regex property: Defaults to TRUE
 			if( not propertyExists('useRegex') or not isBoolean(getproperty('useRegex')) ){
 				setProperty('useRegex',true);
 			}
 			// Rule Source Checks
 			if( not propertyExists('rulesSource') ){
-				$throw(message="The rulesSource property has not been set.",type="interceptors.Security.settingUndefinedException");
+				$throw(message="The rulesSource property has not been set.",type="interceptors.Security.SettingUndefinedException");
 			}
 			if( not reFindnocase("^(xml|db|ioc|ocm|model)$",getProperty('rulesSource')) ){
 				$throw(message="The rules source you set is invalid: #getProperty('rulesSource')#.",
 					  detail="The valid sources are xml,db,ioc, model and ocm.",
-					  type="interceptors.Security.settingUndefinedException");
+					  type="interceptors.Security.SettingUndefinedException");
 			}
 			// Query Checks
 			if( not propertyExists("queryChecks") or not isBoolean(getProperty("queryChecks")) ){
@@ -60,10 +60,10 @@ For the latest usage, please visit the wiki.
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
 	<!--- After Aspects Load --->
-	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false" >
+	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
+		<cfargument name="event" 		 required="true" hint="The event object.">
+		<cfargument name="interceptData" required="true" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oValidator = "";
@@ -98,9 +98,9 @@ For the latest usage, please visit the wiki.
 				try{
 					oValidator = CreateObject("component",getProperty('validator'));
 					if( structKeyExists(oValidator, "init") ){
-						oValidator = oValidator.init(controller);
+						oValidator = oValidator.init( controller );
 					}
-					setValidator(oValidator);
+					instance.validator = oValidator;
 				}
 				catch(Any e){
 					$throw("Error creating validator",e.message & e.detail, "Security.validatorCreationException");
@@ -109,7 +109,7 @@ For the latest usage, please visit the wiki.
 			// See if using validator from ioc
 			else if( propertyExists('validatorIOC') ){
 				try{
-					setValidator( getPlugin("IOC").getBean(getProperty('validatorIOC')) );
+					instance.validator = getPlugin("IOC").getBean(getProperty('validatorIOC'));
 				}
 				catch(Any e){
 					$throw("Error creating validatorIOC",e.message & e.detail, "Security.validatorCreationException");
@@ -118,7 +118,7 @@ For the latest usage, please visit the wiki.
 			// See if using validator from Model Integration
 			else if( propertyExists('validatorModel') ){
 				try{
-					setValidator( getModel(getProperty('validatorModel') ) );
+					instance.validator = getModel(getProperty('validatorModel') );
 				}
 				catch(Any e){
 					$throw("Error creating validatorModel: #getProperty('validatorModel')#",e.message & e.detail & e.tagContext.toString(), "interceptors.Security.validatorCreationException");
@@ -166,35 +166,46 @@ For the latest usage, please visit the wiki.
 	<!--- Process Rules --->
 	<cffunction name="processRules" access="public" returntype="void" hint="Process security rules. This method is called from an interception point" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
-		<cfargument name="currentEvent"  required="true" type="string" hint="The event to check">
+		<cfargument name="event" 		 required="true" hint="The event object.">
+		<cfargument name="interceptData" required="true" hint="interceptData of intercepted info.">
+		<cfargument name="currentEvent"  required="true" hint="The possible event syntax to check">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var x 		 = 1;
-			var rules 	 = getProperty('rules');
-			var rulesLen = arrayLen(rules);
-			var rc 		 = event.getCollection();
-			var ssl		 = false;
+			var x 		 	= 1;
+			var rules 		= getProperty('rules');
+			var rulesLen 	= arrayLen(rules);
+			var rc 		 	= event.getCollection();
+			var ssl		 	= false;
+			var matchType   = "event";
+			var matchTarget = "";
 			
 			// Loop through Rules
 			for(x=1; x lte rulesLen; x=x+1){
-				// is current event in this whitelist pattern? then continue to next rule
-				if( isEventInPattern(currentEvent,rules[x].whitelist) ){
+				
+				// Determine match type and if event or url, the valid types
+				if( structKeyExists(rules[x],"match") AND reFindnocase("^(event|url)$", rules[x].match) ){
+					matchType = rules[x].match;
+				}
+				// According to type get the matchTarget
+				if( matchType eq "event" ){ matchTarget = arguments.currentEvent; }
+				else{ matchTarget = arguments.event.getCurrentRoutedURL(); }
+
+				// is current matchTarget in this whitelist pattern? then continue to next rule
+				if( isInPattern(matchTarget,rules[x].whitelist) ){
 					if( log.canDebug() ){
-						log.debug("#currentEvent# found in whitelist: #rules[x].whitelist#");
+						log.debug("'#matchTarget#' found in whitelist: #rules[x].whitelist#");
 					}
 					continue;
 				}
 				
-				// is currentEvent in the secure list and is user in role
-				if( isEventInPattern(currentEvent,rules[x].securelist) ){
+				// is match in the secure list and is user in role
+				if( isInPattern(matchTarget,rules[x].securelist) ){
 					// Verify if user is logged in and in a secure state	
 					if( _isUserInValidState(rules[x]) eq false ){
 						
 						// Log if Necessary
 						if( log.canDebug() ){
-							log.debug("User did not validate security for secured event=#currentEvent#. Rule: #rules[x].toString()#");
+							log.debug("User did not validate security for secured match target=#matchTarget#. Rule: #rules[x].toString()#");
 						}
 						
 						//Redirect
@@ -224,36 +235,41 @@ For the latest usage, please visit the wiki.
 					}//end user in roles
 					else{
 						if( log.canDebug() ){
-							log.debug("Secure event=#currentEvent# matched and user validated for rule: #rules[x].toString()#.");
+							log.debug("Secure target=#matchTarget# matched and user validated for rule: #rules[x].toString()#.");
 						}
 						break;
 					}
 				}//end if current event did not match a secure event.
 				else{
 					if( log.canDebug() ){
-						log.debug("#currentEvent# Did not match this rule: #rules[x].toString()#");
+						log.debug("Incoming '#matchTarget#' did not match this rule: #rules[x].toString()#");
 					}
 				}							
 			}//end of rules checks
 		</cfscript>
 	</cffunction>
 	
+	<!--- Get the current user validator if any --->
+	<cffunction name="getValidator" access="public" returntype="any" output="false" hint="Get the current user validator, if any.">    
+    	<cfreturn instance.validator>    
+    </cffunction>
+	
 	<!--- Register a validator --->
 	<cffunction name="registerValidator" access="public" returntype="void" hint="Register a validator object with this interceptor" output="false" >
 		<cfargument name="validatorObject" required="true" type="any" hint="The validator object to register">
 		<cfscript>
 			if( structKeyExists(arguments.validatorObject,"userValidator") ){
-				setValidator(arguments.validatorObject);
+				instance.validator = arguments.validatorObject;
 			}
 			else{
-				$throw(message="Validator object does not have a 'userValidator' method ",type="Security.validatorException");
+				$throw(message="Validator object does not have a 'userValidator' method, I can only register objects with this interface method.",type="Security.validatorException");
 			}
 		</cfscript>
 	</cffunction>	
 	
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
 	
-	<!--- isEventInPattern --->
+	<!--- _isUserInValidState --->
 	<cffunction name="_isUserInValidState" access="private" returntype="boolean" output="false" hint="Verifies that the user is in any role">
 		<!--- ************************************************************* --->
 		<cfargument name="rule" required="true" type="struct" hint="The rule we are validating.">
@@ -263,7 +279,7 @@ For the latest usage, please visit the wiki.
 		<!--- Verify if using validator --->
 		<cfif isValidatorUsed()>
 			<!--- Validate via Validator --->
-			<cfreturn getValidator().userValidator(arguments.rule,getPlugin("MessageBox"),controller)>
+			<cfreturn instance.validator.userValidator(arguments.rule,getPlugin("MessageBox"),controller)>
 		</cfif>
 		
 		<!--- Loop Over CF Roles --->
@@ -275,11 +291,11 @@ For the latest usage, please visit the wiki.
 		<cfreturn false>
 	</cffunction>
 	
-	<!--- isEventInPattern --->
-	<cffunction name="isEventInPattern" access="private" returntype="boolean" output="false" hint="Verifies that the current event is in a given pattern list">
+	<!--- isInPattern --->
+	<cffunction name="isInPattern" access="private" returntype="boolean" output="false" hint="Verifies that the current event is in a given pattern list">
 		<!--- ************************************************************* --->
-		<cfargument name="currentEvent" 	required="true" type="string" hint="The current event.">
-		<cfargument name="patternList" 		required="true" type="string" hint="The list to test.">
+		<cfargument name="currentEvent" 	required="true" hint="The current event.">
+		<cfargument name="patternList" 		required="true" hint="The list pattern to test.">
 		<!--- ************************************************************* --->
 		<cfset var pattern = "">
 		<!--- Loop Over Patterns --->
@@ -428,7 +444,7 @@ For the latest usage, please visit the wiki.
 		<!--- ************************************************************* --->
 		<cfargument name="qRules" type="query" required="true" hint="The query to check">
 		<!--- ************************************************************* --->
-		<cfset var validColumns = "whitelist,securelist,roles,permissions,redirect,useSSL">
+		<cfset var validColumns = "whitelist,securelist,roles,permissions,redirect,useSSL,match">
 		<cfset var col = "">
 		
 		<!--- Verify only if used --->
@@ -471,7 +487,7 @@ For the latest usage, please visit the wiki.
 	</cffunction>
 	
 	<!--- rules sources check --->
-	<cffunction name="RulesSourceChecks" access="private" returntype="void" output="false" hint="Validate the rules source property" >
+	<cffunction name="rulesSourceChecks" access="private" returntype="void" output="false" hint="Validate the rules source property" >
 		<cfscript>
 			switch( getProperty('rulesSource') ){
 				
@@ -531,16 +547,7 @@ For the latest usage, please visit the wiki.
 			}//end of switch statement			
 		</cfscript>
 	</cffunction>
-	
-	<!--- Get/Set Validator --->
-	<cffunction name="getValidator" access="private" output="false" returntype="any" hint="Get validator">
-		<cfreturn instance.validator/>
-	</cffunction>	
-	<cffunction name="setValidator" access="private" output="false" returntype="void" hint="Set validator">
-		<cfargument name="validator" type="any" required="true"/>
-		<cfset instance.validator = arguments.validator/>
-	</cffunction>
-	
+		
 	<!--- Check if using validator --->
 	<cffunction name="isValidatorUsed" access="private" returntype="boolean" hint="Check to see if using the validator" output="false" >
 		<cfreturn structKeyExists(instance, "validator")>
