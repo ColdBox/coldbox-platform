@@ -582,21 +582,9 @@ Description :
     <cffunction name="getScopeRegistration" output="false" access="public" returntype="any" hint="Get the scope registration information" colddoc:generic="struct">
     	<cfreturn instance.config.getScopeRegistration()>
     </cffunction>
-
-<!----------------------------------------- PRIVATE ------------------------------------->	
-
-	<!--- doScopeRegistration --->
-    <cffunction name="doScopeRegistration" output="false" access="private" returntype="void" hint="Register this cachefactory on a user specified scope">
-    	<cfscript>
-    		var scopeInfo 		= instance.config.getScopeRegistration();
-			var scopeStorage	= createObject("component","coldbox.system.core.collections.ScopeStorage").init();
-			// register factory with scope
-			scopeStorage.put(scopeInfo.key, this, scopeInfo.scope);
-		</cfscript>
-    </cffunction>
-	
-	<!--- createCache --->
-    <cffunction name="createCache" output="false" access="private" returntype="any" hint="Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
+    
+    <!--- createCache --->
+    <cffunction name="createCache" output="false" access="public" returntype="any" hint="Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
     	<cfargument name="name" 		required="true" hint="The name of the cache to add"/>
 		<cfargument name="provider" 	required="true" hint="The provider class path of the cache to add"/>
 		<cfargument name="properties" 	required="false" default="#structNew()#" hint="The properties of the cache to configure with" colddoc:generic="struct"/>
@@ -611,6 +599,18 @@ Description :
 			registerCache( oCache );
 			
 			return oCache;
+		</cfscript>
+    </cffunction>
+
+<!----------------------------------------- PRIVATE ------------------------------------->	
+
+	<!--- doScopeRegistration --->
+    <cffunction name="doScopeRegistration" output="false" access="private" returntype="void" hint="Register this cachefactory on a user specified scope">
+    	<cfscript>
+    		var scopeInfo 		= instance.config.getScopeRegistration();
+			var scopeStorage	= createObject("component","coldbox.system.core.collections.ScopeStorage").init();
+			// register factory with scope
+			scopeStorage.put(scopeInfo.key, this, scopeInfo.scope);
 		</cfscript>
     </cffunction>
 	
