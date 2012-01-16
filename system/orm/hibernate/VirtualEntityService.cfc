@@ -103,8 +103,8 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.findWhere(this.getEntityName(), arguments.criteria);
 	}
 
-	array function findAllWhere(required struct criteria){
-		return super.findAllWhere(this.getEntityName(), arguments.criteria);
+	array function findAllWhere(required struct criteria, string sortOrder=""){
+		return super.findAllWhere(this.getEntityName(), arguments.criteria, arguments.sortOrder);
 	}
 
 	any function new(){
