@@ -181,7 +181,7 @@ Modification History:
 				// Check for Event Cache Purge
 				if ( arguments.fwCache ){
 					// Clear the key from the cache
-					instance.templateCache.clearKey( eventCache.cacheKey );
+					instance.templateCache.clear( eventCache.cacheKey );
 					return;
 				}
 				
