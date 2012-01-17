@@ -60,7 +60,7 @@ Description :
 
 	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
-		<cfargument name="async" type="any" hint="Run command asynchronously or not"/>
+		<cfargument name="async" type="any" default="false" hint="Run command asynchronously or not"/>
 		
 		<cfset var threadName = "clearAllEvents_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
 		
@@ -104,7 +104,7 @@ Description :
 
 	<!--- Clear All The Views from the Cache. --->
 	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
-		<cfargument name="async" type="any" hint="Run command asynchronously or not"/>
+		<cfargument name="async" type="any" default="false" hint="Run command asynchronously or not"/>
 		
 		<cfset var threadName = "clearAllViews_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
 		
