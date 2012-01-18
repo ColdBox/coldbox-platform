@@ -38,16 +38,13 @@ Settings:
 			super.init(arguments.controller);
 			
 			setPluginName("ForgeBox API REST Wrapper");
-			setPluginVersion("1.0");
+			setPluginVersion("2.0");
 			setPluginDescription("A REST wrapper to the ForgeBox API service");
 			setPluginAuthor("Luis Majano");
 			setPluginAuthorURL("http://www.luismajano.com");
 			
 			// Setup Properties
 			instance.APIURL = "http://www.coldbox.org/index.cfm/api/forgebox";
-			
-			// JSON compatibility to forgebox api 1.0
-			instance.oJSON = createObject("component","JSON").init();
 			
 			return this;
 		</cfscript>
@@ -185,7 +182,7 @@ Settings:
 			if( len(HTTPResults.errorDetail) ){ results.error = true; }
 			
 			// Try to inflate JSON
-			results.response = instance.oJSON.decode(results.rawResponse);
+			results.response = deserializeJSON(results.rawResponse,false);
 			
 			return results;
 		</cfscript>	

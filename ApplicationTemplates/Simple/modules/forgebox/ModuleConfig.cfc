@@ -60,7 +60,7 @@ Optional Methods
 	this.author 			= "Luis Majano";
 	this.webURL 			= "http://www.coldbox.org";
 	this.description 		= "A module that interacts with forgebox";
-	this.version			= "1.3";
+	this.version			= "2.0";
 	this.viewParentLookup 	= true;
 	this.layoutParentLookup = true;
 	this.entryPoint			= "forgebox";
