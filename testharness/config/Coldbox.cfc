@@ -11,7 +11,7 @@
 			eventName 				= "event",
 			
 			//Development Settings
-			debugMode				= false,
+			debugMode				= true,
 			debugPassword			= "",
 			reinitPassword			= "",
 			handlersIndexAutoReload = true,
@@ -104,7 +104,7 @@
 			expandedInfoPanel = true,
 			showCachePanel = true,
 			expandedCachePanel = true,
-			showRCPanel = true,
+			showRCPanel = false,
 			expandedRCPanel = true
 		};
 		

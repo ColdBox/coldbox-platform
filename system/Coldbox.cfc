@@ -216,10 +216,9 @@ Description :
 			<cfif structKeyExists(event.getEventCacheableEntry(), "cachekey")>
 				<cfset refResults.renderedContent = templateCache.get( event.getEventCacheableEntry().cacheKey )>
 			</cfif>
-			<cfif event.isEventCacheable() AND structKeyExists(refResults,"renderedContent")>
+			<cfif structKeyExists(refResults,"renderedContent")>
 				<cfoutput>#refResults.renderedContent#</cfoutput>
 			<cfelse>
-				
 				<!--- Run Default/Set Event not executing an event --->
 				<cfif NOT event.isNoExecution()>
 					<cfset refResults.results = cbController.runEvent(default=true)>
@@ -247,17 +246,20 @@ Description :
 					<cfset interceptorData.renderedContent = renderedContent>
 					<!--- Execute preRender Interception --->
 					<cfset interceptorService.processState("preRender",interceptorData)>
-					<!--- Replace back Content --->
+					<!--- Replace back Content From Interception --->
 					<cfset renderedContent = interceptorData.renderedContent>
 					
 					<!--- Check if caching the event, this is a cacheable event? --->
-					<cfif event.isEventCacheable()>
-						<cfset eventCacheEntry = event.getEventCacheableEntry()>
+					<cfset eventCacheEntry = event.getEventCacheableEntry()>
+					<cfif structKeyExists(eventCacheEntry,"cacheKey") AND
+						  structKeyExists(eventCacheEntry,"timeout") AND
+						  structKeyExists(eventCacheEntry,"lastAccessTimeout") >
+						
 						<!--- Cache the content of the event --->
 						<cfset templateCache.set(eventCacheEntry.cacheKey,
-																		  renderedContent,
-																   		  eventCacheEntry.timeout,
-																		  eventCacheEntry.lastAccessTimeout)>
+												 renderedContent,
+												 eventCacheEntry.timeout,
+												 eventCacheEntry.lastAccessTimeout)>
 					</cfif>
 					
 					<!--- Render Content Type if using Render Data --->

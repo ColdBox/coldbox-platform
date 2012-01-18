@@ -75,9 +75,16 @@ Description :
 		<cfsetting enablecfoutputonly="yes">
 		<cfsetting showdebugoutput="true">
 		
+		
+		<!---<cfset structDelete(application,"cbBootStrap")>
+		<cfset structDelete(application,"cbController")>
+		<cfset structDelete(application,"wirebox")>
+		<cfdump var="#application#"><cfabort>--->
+		
 		<cfif structKeyExists(url,"fwreinit")>
 			<cfset structDelete(application,"cbBootStrap")>
 			<cfset structDelete(application,"cbController")>
+			<cfset structDelete(application,"wirebox")>
 		</cfif>
 		<cfif structKeyExists(URL,"ormreinit")>
 			<cfset ORMReload()>
