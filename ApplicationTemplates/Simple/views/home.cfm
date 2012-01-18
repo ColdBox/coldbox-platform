@@ -60,7 +60,7 @@
             </p>   
 			 <ol>
                     <li>
-                        <b>/config/coldbox.xml.cfm</b>: Your application configuration file
+                        <b>/config/ColdBox.cfc</b>: Your application configuration file
                     </li>
                     <li>
                         <b>/config/environments.xml.cfm</b>: Your per-tier settings
