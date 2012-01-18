@@ -12,21 +12,25 @@ setTimeout("location.reload(true);",#url.frequency*1000#);
 
 	<!--- ToolBar --->
 	<div style="margin-bottom:5px;">
-	
-		<!--- Refresh Monitor --->
-		<strong>Refresh Monitor: </strong>
-		<select id="frequency" style="font-size:10px" onChange="cachebox_pollmonitor('cache',this.value,'#URLBase#')" title="Refresh Frequency">
-			<option value="0">No Polling</option>
-			<cfloop from="5" to="30" index="i" step="5">
-			<option value="#i#" <cfif url.frequency eq i>selected='selected'</cfif>>#i# sec</option>
-			</cfloop>
-		</select>
 		
-		<cfif NOT url.cbox_cacheMonitor>
-			<!--- Button: Open Cache Monitor --->
-			<input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" 
-				   title="Open the cache monitor in a new window." 
-				   onClick="cachebox_pollmonitor('cache',0,'#URLBase#',true)">
+		<!--- Show Monitor or Not --->
+		<cfif attributes.enableMonitor>
+		
+			<!--- Refresh Monitor --->
+			<strong>Refresh Monitor: </strong>
+			<select id="frequency" style="font-size:10px" onChange="cachebox_pollmonitor('cache',this.value,'#URLBase#')" title="Refresh Frequency">
+				<option value="0">No Polling</option>
+				<cfloop from="5" to="30" index="i" step="5">
+				<option value="#i#" <cfif url.frequency eq i>selected='selected'</cfif>>#i# sec</option>
+				</cfloop>
+			</select>
+			
+			<cfif NOT url.cbox_cacheMonitor>
+				<!--- Button: Open Cache Monitor --->
+				<input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" 
+					   title="Open the cache monitor in a new window." 
+					   onClick="cachebox_pollmonitor('cache',0,'#URLBase#',true)">
+			</cfif>
 		</cfif>
 				
 		<!--- Button: CacheBox ExpireAll --->

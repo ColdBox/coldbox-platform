@@ -28,6 +28,8 @@ ATTRIBUTES:
 <cfparam name="attributes.baseURL" 			type="string" default="#cgi.script_name#">
 <!--- Skin To Use --->
 <cfparam name="attributes.skin"				type="string" default="default">
+<!--- Enable Monitor --->
+<cfparam name="attributes.enableMonitor"	type="boolean" default="true">
 <!--- Expanded Panel or Not --->
 <cfparam name="attributes.expandedPanel"	type="boolean" default="true">
 
