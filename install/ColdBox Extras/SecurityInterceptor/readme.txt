@@ -45,7 +45,7 @@ Interceptor Properties:
 
  - useRegex : boolean [default=true] Whether to use regex on event matching
  - useRoutes : boolean [default=false] Whether to redirec to events or routes
- - rulesSource : string [xml|db|ioc|ocm] Where to get the rules from.
+ - rulesSource : string [xml|db|ioc|ocm|model] Where to get the rules from.
  - debugMode : boolean [default=false] If on, then it logs actions via the logger plugin.
  - validator : string [default=""] If set, it must be a valid instantiation path to a security validator object.
 

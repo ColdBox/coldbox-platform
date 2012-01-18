@@ -214,10 +214,16 @@ Description :
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
 			<cfif structKeyExists(event.getEventCacheableEntry(), "cachekey")>
-				<cfset refResults.renderedContent = templateCache.get( event.getEventCacheableEntry().cacheKey )>
+				<cfset refResults.eventCaching = templateCache.get( event.getEventCacheableEntry().cacheKey )>
 			</cfif>
-			<cfif structKeyExists(refResults,"renderedContent")>
-				<cfoutput>#refResults.renderedContent#</cfoutput>
+			<cfif structKeyExists(refResults,"eventCaching")>
+				<!--- Is this a renderdata type? --->
+				<cfif refResults.eventCaching.renderData>
+					<cfset renderDataSetup(argumentCollection=refResults.eventCaching)>
+					<cfset event.showDebugPanel(false)>
+				</cfif>
+				<!--- Render Content --->
+				<cfoutput>#refResults.eventCaching.renderedContent#</cfoutput>				
 			<cfelse>
 				<!--- Run Default/Set Event not executing an event --->
 				<cfif NOT event.isNoExecution()>
@@ -255,21 +261,42 @@ Description :
 						  structKeyExists(eventCacheEntry,"timeout") AND
 						  structKeyExists(eventCacheEntry,"lastAccessTimeout") >
 						
-						<!--- Cache the content of the event --->
-						<cfset templateCache.set(eventCacheEntry.cacheKey,
-												 renderedContent,
-												 eventCacheEntry.timeout,
-												 eventCacheEntry.lastAccessTimeout)>
+						<cflock name="#instance.appHash#.caching.#eventCacheEntry.cacheKey#" type="exclusive" timeout="10" throwontimeout="true">
+							<!--- Double lock for concurrency --->
+							<cfif NOT templateCache.lookup( eventCacheEntry.cacheKey )>
+								
+								<!--- Prepare event caching entry --->
+								<cfset refResults.eventCachingEntry = {
+									renderedContent = renderedContent,
+									renderData		= false,
+									contentType 	= "",
+									encoding		= "",
+									statusCode		= "",
+									statusText		= ""
+								}>
+								
+								<!--- Render Data Caching Metadata --->
+								<cfif isStruct(renderData) and not structisEmpty(renderData)>
+									<cfset refResults.eventCachingEntry.renderData 	= true>
+									<cfset refResults.eventCachingEntry.contentType = renderData.contentType>
+									<cfset refResults.eventCachingEntry.encoding	= renderData.encoding>
+									<cfset refResults.eventCachingEntry.statusCode 	= renderData.statusCode>
+									<cfset refResults.eventCachingEntry.statusText	= renderData.statusText>
+								</cfif>
+								
+								<!--- Cache the content of the event --->
+								<cfset templateCache.set(eventCacheEntry.cacheKey,
+														 refResults.eventCachingEntry,
+														 eventCacheEntry.timeout,
+														 eventCacheEntry.lastAccessTimeout)>
+							</cfif>
+						</cflock>
+						
 					</cfif>
 					
 					<!--- Render Content Type if using Render Data --->
 					<cfif isStruct(renderData) and not structisEmpty(renderData)>
-						<!--- Status Codes --->
-						<cfheader statuscode="#renderData.statusCode#" statustext="#renderData.statusText#" >
-						<!--- Render the Data Content Type --->
-						<cfcontent type="#renderData.contentType#; charset=#renderData.encoding#" reset="true">
-						<!--- Remove panels --->
-						<cfsetting showdebugoutput="false">
+						<cfset renderDataSetup(argumentCollection=renderData)>
 						<cfset event.showDebugPanel(false)>
 					</cfif>
 					
@@ -344,6 +371,22 @@ Description :
 			
 		<!--- WHATEVER YOU WANT BELOW --->
 		<cfreturn true>
+	</cffunction>
+	
+	<!--- renderData --->    
+    <cffunction name="renderDataSetup" output="false" access="private" returntype="void" hint="Render data items">    
+		<cfargument name="statusCode" 	type="any" required="true"/>
+		<cfargument name="statusText"	type="any" required="true"/>
+		<cfargument name="contentType" 	type="any" required="true"/>
+		<cfargument name="encoding" 	type="any" required="true"/>
+		
+		<!--- Status Codes --->
+		<cfheader statuscode="#arguments.statusCode#" statustext="#arguments.statusText#" >
+		<!--- Render the Data Content Type --->
+		<cfcontent type="#arguments.contentType#; charset=#arguments.encoding#" reset="true">
+		<!--- Remove panels --->
+		<cfsetting showdebugoutput="false">
+		
 	</cffunction>
 	
 	<!--- OnMissing Template --->
