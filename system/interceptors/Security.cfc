@@ -59,20 +59,10 @@ For the latest usage, please visit the wiki.
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
-	<!--- After Aspects Load --->
-	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" hint="The event object.">
-		<cfargument name="interceptData" required="true" hint="interceptData of intercepted info.">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var oValidator = "";
-			
-			// if no preEvent, then unregister yourself.
-			if( NOT getProperty("preEVentSecurity") ){
-				unregister("preEvent");
-			}
-			
+	<!--- loadRules --->    
+    <cffunction name="loadRules" output="false" access="public" returntype="any" hint="Method to detect the rule source and reload the security rules in the interceptor">    
+    	<cflock name="security.loadrules.#controller.getAppHash()#" type="exclusive" timeout="10" throwontimeout="true"> 
+    	<cfscript>	
 			// Load Rules
 			switch( getProperty('rulesSource') ){
 				case "xml" : { 
@@ -91,7 +81,27 @@ For the latest usage, please visit the wiki.
 					loadModelRules();
 					break;
 				}
-			}//end of switch
+			}//end of switch    
+    	</cfscript>  
+		</cflock>  
+    </cffunction>
+
+	<!--- After Aspects Load --->
+	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="event" 		 required="true" hint="The event object.">
+		<cfargument name="interceptData" required="true" hint="interceptData of intercepted info.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var oValidator = "";
+			
+			// if no preEvent, then unregister yourself.
+			if( NOT getProperty("preEVentSecurity") ){
+				unregister("preEvent");
+			}
+			
+			// Load Rules
+			loadRules();
 			
 			// See if using validator 
 			if( propertyExists('validator') ){
