@@ -905,7 +905,7 @@ component accessors="true"{
 	* Clear the session removes all the entities that are loaded or created in the session.
 	* This clears the first level cache and removes the objects that are not yet saved to the database.
 	*/
-	any function clear(string datasource=application.getApplicationSettings().datasource){
+	any function clear(string datasource=orm.getDefaultDatasource()){
 		orm.clearSession(arguments.datasource);
 		return this;
 	}
@@ -913,7 +913,7 @@ component accessors="true"{
 	/**
 	* Checks if the session contains dirty objects that are awaiting persistence
 	*/
-	boolean function isSessionDirty(string datasource=application.getApplicationSettings().datasource){
+	boolean function isSessionDirty(string datasource=orm.getDefaultDatasource()){
 		return orm.getSession(arguments.datasource).isDirty();
 	}
 
@@ -929,7 +929,7 @@ component accessors="true"{
 	/**
 	* Information about the first-level (session) cache for the current session
 	*/
-	struct function getSessionStatistics(string datasource=application.getApplicationSettings().datasource){
+	struct function getSessionStatistics(string datasource=orm.getDefaultDatasource()){
 		var stats   = orm.getSession(arguments.datasource).getStatistics();
 		var results = {
 			collectionCount = stats.getCollectionCount(),
