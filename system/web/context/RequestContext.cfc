@@ -203,6 +203,10 @@ Description :
 	<cffunction name="getCurrentView" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="any" output="false">
 		<cfreturn getValue("currentView","",true)>
 	</cffunction>
+
+	<cffunction name="getCurrentViewArgs" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="any" output="false">
+		<cfreturn getValue("currentViewArgs", structNew(), true)>
+	</cffunction>
 	
 	<cffunction name="getCurrentViewModule" access="public" hint="Gets the current set views's module for rendering" returntype="any" output="false">
 		<cfreturn getValue("viewModule","",true)>
@@ -218,6 +222,7 @@ Description :
 		<cfargument name="cacheSuffix" 				required="false" type="string"  default="" hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<cfargument name="layout" 					required="false" type="string"  hint="You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.">
 		<cfargument name="module" 					required="false" type="string"  default="" hint="Is the view from a module or not"/>
+		<cfargument name="args" 					required="false" type="struct"  default="#structNew()#" hint="An optional set of arguments that will be available when the view is rendered"/>
 		<!--- ************************************************************* --->
 	    <cfscript>
 		    var key 		= "";
@@ -294,6 +299,9 @@ Description :
 
 			//Set the current view to render.
 			instance.privateContext["currentView"] = arguments.view;
+			
+			// Record the optional arguments
+			setValue("currentViewArgs", arguments.args, true);
 			return this;
 		</cfscript>
 	</cffunction>
