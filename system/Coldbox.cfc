@@ -223,7 +223,8 @@ Description :
 					<cfset event.showDebugPanel(false)>
 				</cfif>
 				<!--- Render Content --->
-				<cfoutput>#refResults.eventCaching.renderedContent#</cfoutput>				
+				<cfoutput>#refResults.eventCaching.renderedContent#</cfoutput>
+				<cfheader statuscode="203" statustext="Non-Authoritative Information" />				
 			<cfelse>
 				<!--- Run Default/Set Event not executing an event --->
 				<cfif NOT event.isNoExecution()>
