@@ -396,7 +396,7 @@ Description :
 					args.levelMax = trim(thisAppender.XMLAttributes.levelMax);
 					// Numeric Check
 					if( NOT isNumeric(args.levelMax) ){
-						args.levelMin = this.logLevels.lookupAsInt(args.levelMax);
+						args.levelMax = this.logLevels.lookupAsInt(args.levelMax);
 					}
 				}
 				
