@@ -309,7 +309,7 @@ component accessors="true"{
 	any function withProjections(string avg,string count,string countDistinct,any distinct, string groupProperty,boolean id,string max,string min,string property,boolean rowCount,string sum){
 		// create our projection list
 		var projectionList = this.PROJECTIONS.projectionList();
-		var excludes = "id,rowCount";
+		var excludes = "id,rowCount,distinct";
 		
 		// iterate and add dynamically if the incoming argument exists, man, so much easier if we had closures.
 		for(var pType in arguments){
@@ -326,6 +326,12 @@ component accessors="true"{
 		// rowCount
 		if( structKeyExists(arguments,"rowCount") ){
 			projectionList.add( this.PROJECTIONS.rowCount() );
+		}
+		
+		// distinct
+		if( structKeyExists(arguments,"distinct") ){
+			addProjection(arguments.distinct,"property",projectionList);
+			projectionList = this.PROJECTIONS.distinct(projectionList);
 		}
 		
 		nativeCriteria.setProjection( projectionList );
