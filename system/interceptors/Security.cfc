@@ -480,6 +480,11 @@ For the latest usage, please visit the wiki.
 			var rtnArray = ArrayNew(1);
 			var columns = arguments.qRules.columnlist;
 			
+			// check for columns
+			if( NOT listLen(columns) ){
+				return rtnArray;
+			}
+
 			// Loop over Rules
 			for(x=1; x lte qRules.recordcount; x=x+1){
 				node = structnew();
