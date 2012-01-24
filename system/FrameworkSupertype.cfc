@@ -134,7 +134,7 @@ Description :
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any" hint="The last access timeout">
 		<cfargument name="cacheSuffix" 				required="false" type="any" hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<cfargument name="module" 					required="false" type="any" hint="Explicitly render a layout from this module"/>
-		<cfargument name="args"   					required="false" type="any" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
+		<cfargument name="args"   					required="false" type="struct" default="#structNew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<cfargument name="collection" 				required="false" type="any" hint="A collection to use by this Renderer to render the view as many times as the items in the collection"/>
 		<cfargument name="collectionAs" 			required="false" type="any"	hint="The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention"/>
 		<cfreturn controller.getPlugin("Renderer").renderView(argumentCollection=arguments)>
@@ -145,7 +145,7 @@ Description :
 		<cfargument name="cacheTimeout" 			required="false" type="any"  hint="The cache timeout">
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  hint="The last access timeout">
 		<cfargument name="cacheSuffix" 				required="false" type="any"  hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
-		<cfargument name="args"   					required="false" type="any"  hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
+		<cfargument name="args"   					required="false" type="struct" default="#structNew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<cfreturn controller.getPlugin("Renderer").renderExternalView(argumentCollection=arguments)>
 	</cffunction>
 	
@@ -154,7 +154,7 @@ Description :
 		<cfargument name="layout" required="false" type="any" hint="The explicit layout to use in rendering."/>
 		<cfargument name="view"   required="false" type="any" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
 		<cfargument name="module" required="false" type="any" hint="Explicitly render a layout from this module"/>
-		<cfargument name="args"   required="false" type="any" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
+		<cfargument name="args"   required="false" type="struct" default="#structNew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<cfreturn controller.getPlugin("Renderer").renderLayout(argumentCollection=arguments)>
 	</cffunction>
 
