@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -110,10 +110,13 @@ Description :
 				explicitModule = true;
 			}
 			
-			// Rendering an explicit Renderer view/layout combo?
-			if( len(instance.explicitView) ){ arguments.view = instance.explicitView; }
-			// Rendering an explicit view or do we need to get the view from the context?
-			if( NOT len(arguments.view) ){ arguments.view = event.getCurrentView();	}
+			// Rendering an explicit view or do we need to get the view from the context or explicit context?
+			if( NOT len(arguments.view) ){ 
+				// Rendering an explicit Renderer view/layout combo?
+				if( len(instance.explicitView) ){ arguments.view = instance.explicitView; }
+				// Render the view in the context
+				else{ arguments.view = event.getCurrentView(); }	
+			}
 			
 			// Do we have a view To render? Else throw exception
 			if( NOT len(arguments.view) ){
