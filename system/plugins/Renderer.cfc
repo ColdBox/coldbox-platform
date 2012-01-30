@@ -113,7 +113,11 @@ Description :
 			// Rendering an explicit view or do we need to get the view from the context or explicit context?
 			if( NOT len(arguments.view) ){ 
 				// Rendering an explicit Renderer view/layout combo?
-				if( len(instance.explicitView) ){ arguments.view = instance.explicitView; }
+				if( len(instance.explicitView) ){ 
+					arguments.view = instance.explicitView;
+					// clear the explicit view now that it has been used
+					setExplicitView("");
+				}
 				// Render the view in the context
 				else{ arguments.view = event.getCurrentView(); }	
 			}
