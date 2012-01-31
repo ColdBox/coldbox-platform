@@ -193,8 +193,8 @@ Description :
 						<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
 					</cfcase>
 					<cfcase value="cache,cacheReport,cacheContentReport,cacheViewer">
-						<cfimport prefix="cachebox" taglib="/coldbox/system/cache/report">
-						<cachebox:monitor cacheFactory="#cbController.getCacheBox()#" />
+						<cfmodule template="/coldbox/system/cache/report/monitor.cfm" 
+								  cacheFactory="#cbController.getCacheBox()#">
 					</cfcase>			
 				</cfswitch>
 				<!--- Stop Processing, we are rendering a debugger panel --->

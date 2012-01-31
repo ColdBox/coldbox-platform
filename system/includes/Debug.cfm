@@ -223,9 +223,9 @@ Description :
 <!--- CACHE PANEL --->
 <!--- **************************************************************--->
 	<cfif getDebuggerConfig().getShowCachePanel()>
-		<!---#controller.getDebuggerService().renderCachePanel(monitor=false)#--->
-		<cfimport prefix="cachebox" taglib="/coldbox/system/cache/report">
-		<cachebox:monitor cacheFactory="#controller.getCacheBox()#" expandedPanel="#getDebuggerConfig().getExpandedCachePanel()#"/>
+		<cfmodule template="/coldbox/system/cache/report/monitor.cfm" 
+				  cacheFactory="#controller.getCacheBox()#" 
+				  expandedPanel="#getDebuggerConfig().getExpandedCachePanel()#">
 	</cfif>
 <!--- **************************************************************--->
 <!--- DUMP VAR --->
