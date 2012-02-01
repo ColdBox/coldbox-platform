@@ -273,9 +273,21 @@ component accessors="true"{
 	}
 	
 	/**
-	* Get the record count using hibernate projections for the given criterias
+	* Get the record count using hibernate projections for the given criterias or by passing in criterias
+	* @criterias.hint If you pass the optional criterias array, it will create a new criteria query for those criterias and project it.
 	*/
-	numeric function count(){
+	numeric function count(array criterias){
+		
+		// do a new criteria query as the user wants to use a pre-defined set for counting, usually meaning
+		// the developer will do a list with ordering afterwards.
+		if( structKeyExists(arguments,"criterias") ){
+			var c = new CriteriaBuilder(getEntityName(), getUseQueryCaching(), getQueryCacheRegion() );
+			c.setCriterias( arguments.criterias );
+			c.setProjection( this.projections.rowCount() );
+			return c.uniqueResult();
+		}
+		
+		// else project on the local criterias
 		nativeCriteria.setProjection( this.projections.rowCount() );
 		return nativeCriteria.uniqueResult();
 	}
