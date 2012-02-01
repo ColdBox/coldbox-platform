@@ -665,8 +665,15 @@ Description :
 		<cfargument name="lastAccessTimeout" 	required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
 		<cfargument name="provider" 			required="false" default="default" hint="Uses the 'default' cache provider by default"/>
 		<cfscript>
-			// if key not passed, use the same mapping name
-			if( NOT len(arguments.key) ){ arguments.key = currentMapping.getName(); }
+			// if key not passed, build a mapping name
+			if( NOT len(arguments.key) ){ 
+				if( len( currentMapping.getPath() ) ){
+					arguments.key = "wirebox-#currentMapping.getPath()#";					
+				}
+				else{
+					arguments.key = "wirebox-#currentMapping.getName()#";	
+				}
+			}
 			
 			// store the mapping info.
 			currentMapping.setScope( this.SCOPES.CACHEBOX ).setCacheProperties(argumentCollection=arguments);
