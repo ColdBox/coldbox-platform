@@ -275,7 +275,7 @@ component accessors="true"{
 	/**
 	* Get the record count using hibernate projections for the given criterias
 	*/
-	numeric function count(required entityName, array criteria=ArrayNew(1)){
+	numeric function count(){
 		nativeCriteria.setProjection( this.projections.rowCount() );
 		return nativeCriteria.uniqueResult();
 	}

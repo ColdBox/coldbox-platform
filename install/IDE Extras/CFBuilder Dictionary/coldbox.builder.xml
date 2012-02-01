@@ -257,7 +257,7 @@
 			<parameter name="module" required="false" type="any">
 				<help><![CDATA[ Explicitly render a layout from this module ]]></help>
 			</parameter>
-			<parameter name="args" required="false" type="any">
+			<parameter name="args" required="false" type="struct">
 				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
 			</parameter>
 			</function>
@@ -281,7 +281,7 @@
 			<parameter name="module" required="false" type="any">
 				<help><![CDATA[ Explicitly render a layout from this module ]]></help>
 			</parameter>
-			<parameter name="args" required="false" type="any">
+			<parameter name="args" required="false" type="struct">
 				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
 			</parameter>
 			<parameter name="collection" required="false" type="any">
@@ -518,7 +518,7 @@
 			<parameter name="cacheSuffix" required="false" type="any">
 				<help><![CDATA[ Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching. ]]></help>
 			</parameter>
-			<parameter name="args" required="false" type="any">
+			<parameter name="args" required="false" type="struct">
 				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
 			</parameter>
 			</function>
@@ -999,7 +999,7 @@
 	<scopevar name="setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
 			<help><![CDATA[Set an HTTP Header]]></help>
 		</scopevar>
-	<scopevar name="setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[layout],[module])">
+	<scopevar name="setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[layout],[module],[args])">
 			<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
 		</scopevar>
 	<scopevar name="getViewCacheableEntry()">
@@ -1091,6 +1091,9 @@
 		</scopevar>
 	<scopevar name="isEventCacheable()">
 			<help><![CDATA[Check wether the incoming event has been flagged for caching. Boolean]]></help>
+		</scopevar>
+	<scopevar name="getCurrentViewArgs()">
+			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
 		</scopevar>
 	<scopevar name="removeEventCacheableEntry()">
 			<help><![CDATA[Remove the cacheable entry]]></help>
