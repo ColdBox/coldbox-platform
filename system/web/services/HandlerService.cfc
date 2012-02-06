@@ -492,7 +492,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- wireboxSetup --->    
-    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for plugin classes is online">    
+    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for handler classes is online">    
     	<cfscript>	    
 			// Check if handler mapped?
 			if( NOT controller.getWireBox().getBinder().mappingExists( instance.HANDLER_BASE_CLASS ) ){

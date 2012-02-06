@@ -49,6 +49,9 @@ Description :
     		// Setup Default Configuration
     		instance.interceptorConfig = {};
 			
+			// Interceptor base class
+			instance.INTERCEPTOR_BASE_CLASS = "coldbox.system.Interceptor";
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -62,12 +65,6 @@ Description :
     		instance.log = controller.getLogBox().getLogger( this );
     		// Setup Configuration
     		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
-    		// store wirebox reference
-			wirebox = controller.getWirebox();
-			// Check if base interceptor mapped, else map it
-			if( NOT wirebox.getBinder().mappingExists("coldbox.system.Interceptor") ){
-				wirebox.getBinder().map("coldbox.system.Interceptor").to("coldbox.system.Interceptor").initWith(controller=controller,properties=structNew()).noAutowire();
-			}
 			// Register CFC Configuration Object
 			registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'),interceptorName="coldboxConfig");
 			// Register The Interceptors
@@ -225,13 +222,15 @@ Description :
 			var oInterceptor = "";
 			
 			// Check if interceptor mapped?
-			if( NOT wirebox.getBinder().mappingExists( interceptorName ) ){
+			if( NOT controller.getWireBox().getBinder().mappingExists( interceptorName ) ){
+				// wirebox lazy load checks
+				wireboxSetup();
 				// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				wirebox.registerNewInstance(name=interceptorName,instancePath=interceptorClass)
+				controller.getWireBox().registerNewInstance(name=interceptorName,instancePath=interceptorClass)
 					.asSingleton().virtualInheritance("coldbox.system.Interceptor").initWith(controller=controller,properties=interceptorProperties);
 			}
 			// retrieve, build and wire from wirebox
-			oInterceptor = wirebox.getInstance( interceptorName );	
+			oInterceptor = controller.getWireBox().getInstance( interceptorName );	
 			// check for virtual $super, if it does, pass new properties
 			if( structKeyExists(oInterceptor,"$super") ){
 				oInterceptor.$super.setProperties(interceptorProperties);
@@ -378,6 +377,19 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<!--- wireboxSetup --->    
+    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for interceptor classes is online">    
+    	<cfscript>	    
+			// Check if handler mapped?
+			if( NOT controller.getWireBox().getBinder().mappingExists( instance.INTERCEPTOR_BASE_CLASS ) ){
+				// feed the base class
+				binder = controller.getWireBox().registerNewInstance(name=instance.INTERCEPTOR_BASE_CLASS,instancePath=instance.INTERCEPTOR_BASE_CLASS)
+					.initWith(controller=controller,properties=structNew())
+					.noAutowire();
+			}
+    	</cfscript>    
+    </cffunction>
 	
 	<!--- Get an interceptors interception points via metadata --->
 	<cffunction name="parseMetadata" returntype="struct" access="private" output="false" hint="I get a components valid interception points">
