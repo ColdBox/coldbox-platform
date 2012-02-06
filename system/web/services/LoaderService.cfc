@@ -141,9 +141,7 @@ Modification History:
     <cffunction name="createWireBox" output="false" access="public" returntype="void" hint="Create WireBox DI Framework with config settings.">
     	<cfscript>
     		var wireboxData = controller.getSetting("WireBox");
-			var oInjector	= createObject("component","coldbox.system.ioc.Injector").init(wireboxData.binderPath, controller.getConfigSettings(), controller);
-			
-			controller.setWireBox( oInjector );			
+			controller.getWireBox().init(wireboxData.binderPath, controller.getConfigSettings(), controller);			
     	</cfscript>
     </cffunction>
 	
@@ -175,9 +173,7 @@ Modification History:
 			}
 			
 			// Create CacheBox
-			cachebox = createObject("component","coldbox.system.cache.CacheFactory").init(config,controller);
-			// Store instance references
-			controller.setCacheBox( cacheBox );
+			controller.getCacheBox().init(config,controller);
 		</cfscript>
     </cffunction>
 

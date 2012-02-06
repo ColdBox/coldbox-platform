@@ -56,9 +56,10 @@ Only one instance of a specific ColdBox application exists.
 			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
 			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this);
 
-			// CacheBox
-			instance.cacheBox 	= "";
-			instance.wireBox	= "";
+			// CacheBox Instance
+			instance.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
+			// WireBox Instance
+			instance.wireBox	= createObject("component","coldbox.system.ioc.Injector");
 
 			return this;
 		</cfscript>

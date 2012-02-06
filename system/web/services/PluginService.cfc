@@ -64,21 +64,7 @@ Modification History:
 			instance.refLocationMap = structnew();	
 		</cfscript>
 	</cffunction>
-	
-	<!--- onConfigurationLoad --->
-    <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
-    	<cfscript>
-			// store wirebox reference
-			wirebox = controller.getWirebox();
-			// Check if base plugin mapped, else map it
-			if( NOT wirebox.getBinder().mappingExists("coldbox.system.Plugin") ){
-				wirebox.getBinder().map("coldbox.system.Plugin").to("coldbox.system.Plugin").initWith(controller=controller).noAutowire();
-			}
-			// register ourselves to listen for autowirings
-			instance.interceptorService.registerInterceptionPoint("PluginService","afterInstanceAutowire",this);
-		</cfscript>
-    </cffunction>
-    
+	    
 <!------------------------------------------- EVENTS ------------------------------------------>
 
 	<!--- afterInstanceAutowire --->
@@ -105,6 +91,21 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
+	<!--- wireboxSetup --->    
+    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for plugin classes is online">    
+    	<cfscript>	    
+			var baseClass = "coldbox.system.Plugin";
+			// Check if handler mapped?
+			if( NOT controller.getWireBox().getBinder().mappingExists( baseClass ) ){
+				// feed the base class
+				binder = controller.getWireBox().registerNewInstance(name=baseClass,instancePath=baseClass)
+					.initWith(controller=controller);
+				// register ourselves to listen for autowirings
+				instance.interceptorService.registerInterceptionPoint("PluginService","afterInstanceAutowire",this);
+			}
+    	</cfscript>    
+    </cffunction>
+	
 	<!--- Get a new plugin Instance --->
 	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance whether it is core or custom" output="false" >
 		<!--- ************************************************************* --->
@@ -126,7 +127,11 @@ Modification History:
 			pluginLocation = instance.refLocationMap[pluginLocationKey];
 			
 			// Check if plugin mapped?
-			if( NOT wirebox.getBinder().mappingExists( pluginLocation ) ){
+			if( NOT controller.getWireBox().getBinder().mappingExists( pluginLocation ) ){
+				// lazy load checks for wirebox plugin base classes
+				wireboxSetup();
+					
+				// build plugin attributes
 				attribs = {
 					pluginPath 	= pluginLocation,
 					custom 	 	= arguments.custom,
@@ -134,11 +139,11 @@ Modification History:
 					isPlugin	= true
 				};
 				// feed this plugin to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				wirebox.registerNewInstance(name=pluginLocation,instancePath=pluginLocation)
+				controller.getWireBox().registerNewInstance(name=pluginLocation,instancePath=pluginLocation)
 					.virtualInheritance("coldbox.system.Plugin").initWith(controller=controller).extraAttributes( attribs );
 			}
 			// retrieve, build and wire from wirebox
-			oPlugin = wirebox.getInstance( pluginLocation );			
+			oPlugin = controller.getWireBox().getInstance( pluginLocation );			
 			
 			//Return plugin
 			return oPlugin;
