@@ -34,7 +34,7 @@ RewriteCond %{REQUEST_URI} \.(bmp|gif|jpe?g|png|css|js|txt|pdf|doc|xls|ico)$
 RewriteRule ^(.*)$ - [NC,L]
 
 #The ColdBox index.cfm/{path_info} rules.
-RewriteRule ^$ index.cfm [QSA]
+RewriteRule ^$ index.cfm [QSA,NS]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.cfm/%{REQUEST_URI} [QSA,L]
+RewriteRule ^(.*)$ index.cfm/%{REQUEST_URI} [QSA,L,NS]
