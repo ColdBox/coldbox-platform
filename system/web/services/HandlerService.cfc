@@ -20,10 +20,14 @@ Description :
 		<cfscript>
 			// Setup The Controller.
 			setController(arguments.controller);
+			
 			// Setup the Event Handler Cache Dictionary
 			instance.handlerCacheDictionary = {};
 			// Setup the Event Cache Dictionary
 			instance.eventCacheDictionary = {};
+			// Plugin base class
+			instance.HANDLER_BASE_CLASS = "coldbox.system.EventHandler";
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -52,13 +56,6 @@ Description :
 			instance.templateCache				= getColdboxOCM("template");
 			instance.modules					= controller.getSetting("modules");
 			instance.interceptorService			= controller.getInterceptorService();
-			
-			// store wirebox reference
-			wirebox = controller.getWirebox();
-			// Check if base plugin mapped, else map it
-			if( NOT wirebox.getBinder().mappingExists("coldbox.system.EventHandler") ){
-				wirebox.getBinder().map("coldbox.system.EventHandler").to("coldbox.system.EventHandler").initWith(controller=controller).noAutowire();
-			}
     	</cfscript>
     </cffunction>
 
@@ -73,10 +70,10 @@ Description :
 			var attribs = interceptData.mapping.getExtraAttributes();
 			var iData 	= {};
 			
-			// listen to plugins only
+			// listen to handlers only
 			if( structKeyExists(attribs, "isHandler") ){
 				// Fill-up Intercepted metadata
-				iData.handlerPath 	= invocationPath;
+				iData.handlerPath 	= attribs.handlerPath;
 				iData.oHandler 		= interceptData.target;
 	
 				// Fire Interception
@@ -96,14 +93,16 @@ Description :
 			var attribs		= "";
 			
 			// Check if handler mapped?
-			if( NOT wirebox.getBinder().mappingExists( invocationPath ) ){
+			if( NOT controller.getWireBox().getBinder().mappingExists( invocationPath ) ){
+				// lazy load checks for wirebox
+				wireboxSetup();
 				// extra attributes
 				attribs = {
 					handlerPath = invocationPath,
 					isHandler	= true
 				};
 				// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				binder = wirebox.registerNewInstance(name=invocationPath,instancePath=invocationPath)
+				binder = controller.getWireBox().registerNewInstance(name=invocationPath,instancePath=invocationPath)
 					.virtualInheritance("coldbox.system.EventHandler")
 					.initWith(controller=controller)
 					.inCacheBox(key="handlers-#invocationPath#")
@@ -112,7 +111,7 @@ Description :
 				if ( NOT instance.handlerCaching ){ binder.into( binder.scopes.NOSCOPE ); }
 			}
 			// retrieve, build and wire from wirebox
-			oHandler = wirebox.getInstance( invocationPath );		
+			oHandler = controller.getWireBox().getInstance( invocationPath );		
 			
 			//return handler
 			return oHandler;
@@ -491,6 +490,20 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<!--- wireboxSetup --->    
+    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for plugin classes is online">    
+    	<cfscript>	    
+			// Check if handler mapped?
+			if( NOT controller.getWireBox().getBinder().mappingExists( instance.HANDLER_BASE_CLASS ) ){
+				// feed the base class
+				binder = controller.getWireBox().registerNewInstance(name=instance.HANDLER_BASE_CLASS,instancePath=instance.HANDLER_BASE_CLASS)
+					.initWith(controller=controller);
+				// register ourselves to listen for autowirings
+				instance.interceptorService.registerInterceptionPoint("HandlerService","afterInstanceAutowire",this);
+			}
+    	</cfscript>    
+    </cffunction>
 
 	<!--- Get a new MD cache entry structure --->
 	<cffunction name="getNewMDEntry" access="public" returntype="any" hint="Get a new metadata entry structure" output="false" >

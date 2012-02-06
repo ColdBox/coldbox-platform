@@ -62,6 +62,9 @@ Modification History:
 			
 			// refLocation map for location caching
 			instance.refLocationMap = structnew();	
+			
+			// Plugin base class
+			instance.PLUGIN_BASE_CLASS = "coldbox.system.Plugin";
 		</cfscript>
 	</cffunction>
 	    
@@ -91,21 +94,6 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
-	<!--- wireboxSetup --->    
-    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for plugin classes is online">    
-    	<cfscript>	    
-			var baseClass = "coldbox.system.Plugin";
-			// Check if handler mapped?
-			if( NOT controller.getWireBox().getBinder().mappingExists( baseClass ) ){
-				// feed the base class
-				binder = controller.getWireBox().registerNewInstance(name=baseClass,instancePath=baseClass)
-					.initWith(controller=controller);
-				// register ourselves to listen for autowirings
-				instance.interceptorService.registerInterceptionPoint("PluginService","afterInstanceAutowire",this);
-			}
-    	</cfscript>    
-    </cffunction>
-	
 	<!--- Get a new plugin Instance --->
 	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance whether it is core or custom" output="false" >
 		<!--- ************************************************************* --->
@@ -128,9 +116,8 @@ Modification History:
 			
 			// Check if plugin mapped?
 			if( NOT controller.getWireBox().getBinder().mappingExists( pluginLocation ) ){
-				// lazy load checks for wirebox plugin base classes
+				// lazy load checks for wirebox
 				wireboxSetup();
-					
 				// build plugin attributes
 				attribs = {
 					pluginPath 	= pluginLocation,
@@ -220,6 +207,20 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
+	<!--- wireboxSetup --->    
+    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for plugin classes is online">    
+    	<cfscript>	    
+			// Check if handler mapped?
+			if( NOT controller.getWireBox().getBinder().mappingExists( instance.PLUGIN_BASE_CLASS ) ){
+				// feed the base class
+				binder = controller.getWireBox().registerNewInstance(name=instance.PLUGIN_BASE_CLASS,instancePath=instance.PLUGIN_BASE_CLASS)
+					.initWith(controller=controller);
+				// register ourselves to listen for autowirings
+				instance.interceptorService.registerInterceptionPoint("PluginService","afterInstanceAutowire",this);
+			}
+    	</cfscript>    
+    </cffunction>
+    
 	<!--- Locate a Plugin Instantiation Path --->
 	<cffunction name="locatePluginPath" access="private" returntype="any" hint="Locate a full plugin instantiation path from the requested plugin name" output="false" >
 		<!--- ************************************************************* --->
