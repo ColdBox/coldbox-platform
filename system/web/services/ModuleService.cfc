@@ -106,16 +106,18 @@ I oversee and manage ColdBox modules
 
 	<!--- registerAndActivateModule --->
     <cffunction name="registerAndActivateModule" output="false" access="public" returntype="void" hint="Register and activate a new module">
-    	<cfargument name="moduleName" 	type="string" required="true" hint="The name of the module to load. It must exist in our module registry and be valid. Else we ignore it by logging a warning and returning false."/>
+    	<cfargument name="moduleName" 		type="string" required="true" hint="The name of the module to load."/>
+		<cfargument name="invocationPath" 	type="string" required="false" default="" hint="The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry location, if not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right"/>
 		<cfscript>
-			registerModule(arguments.moduleName);
+			registerModule(arguments.moduleName,arguments.invocationPath);
 			activateModule(arguments.moduleName);
 		</cfscript>
     </cffunction>
-	
+    	
 	<!--- registerModule --->
 	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and config object">
-		<cfargument name="moduleName" 	type="string" required="true" hint="The name of the module to load. It must exist in our module registry and be valid. Else we ignore it by logging a warning and returning false."/>
+		<cfargument name="moduleName" 		type="string" required="true" hint="The name of the module to load."/>
+		<cfargument name="invocationPath" 	type="string" required="false" default="" hint="The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry location, if not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right"/>
 		<cfscript>
 			var modulesLocation 		= "";
 			var modulesPath 			= "";
@@ -127,7 +129,22 @@ I oversee and manage ColdBox modules
 			var modulesConfiguration	= controller.getSetting("modules");
 			var appSettings 			= controller.getConfigSettings();
 			
-			// Check if passed module name is invalid, throw exception
+			// Check if incoming invocation path is sent
+			if( len(arguments.invocationPath) ){
+				// Check if passed module name is already registered
+				if( structKeyExists(instance.moduleRegistry, arguments.moduleName) ){
+					getUtil().throwit(message="The module #arguments.moduleName# has already been loaded",
+									  type="ModuleService.DuplicateModuleFound");
+				}
+				// register new incoming location
+				instance.moduleRegistry[ arguments.moduleName ] = { 
+					locationPath 	= "/" & replace( arguments.invocationPath,".","/","all"),
+					physicalPath 	= expandPath( "/" & replace( arguments.invocationPath,".","/","all") ),
+					invocationPath 	= arguments.invocationPath
+				};
+			}
+			
+			// Check if passed module name is not loaded into the registry
 			if( NOT structKeyExists(instance.moduleRegistry, arguments.moduleName) ){
 				getUtil().throwit(message="The module #arguments.moduleName# is not valid",
 								  detail="Valid module names are: #structKeyList(instance.moduleRegistry)#",
@@ -212,7 +229,6 @@ I oversee and manage ColdBox modules
 			structAppend(appSettings.datasources, mConfig.datasources, true);
 			// Register Webservice aliases
 			structAppend(appSettings.webservices, mConfig.webservices, true);
-			
 			// Log registration
 			instance.logger.debug("Module #arguments.moduleName# registered successfully.");
 			</cfscript>
