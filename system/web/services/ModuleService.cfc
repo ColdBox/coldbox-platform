@@ -55,6 +55,11 @@ I oversee and manage ColdBox modules
     <cffunction name="getModuleRegistry" output="false" access="public" returntype="struct" hint="Get the discovered module's registry structure">
     	<cfreturn instance.moduleRegistry>
     </cffunction>
+    
+    <!--- getModuleConfigCache  --->
+    <cffunction name="getModuleConfigCache" access="public" returntype="struct" output="false" hint="Return the loaded module's configuration objects">    
+    	<cfreturn instance.mConfigCache>    
+    </cffunction>
 	
 	<!--- rebuildRegistry --->
     <cffunction name="rebuildModuleRegistry" output="false" access="public" returntype="any" hint="Rescan the module locations directories and re-register all located modules, this method does NOT register or activate any modules, it just reloads the found registry">
