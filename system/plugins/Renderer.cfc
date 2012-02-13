@@ -208,14 +208,25 @@ Description :
 		</cflock>
 		
 		<cfscript>
-			// module change mode
-			if( len(arguments.module) ){ locationUDF = variables.locateModuleView; }
+			if (left(arguments.view, 1) EQ "/") {
+
+				refMap = {
+					viewPath = arguments.view,
+					viewHelperPath = ""
+				};	
 			
-			// Locate the view to render according to discovery algorithm and create cache map
-			refMap = {
-				viewPath = locationUDF(arguments.view,arguments.module,arguments.explicitModule),
-				viewHelperPath = ""
-			};
+			} else { // view discovery based on relative path
+				
+				// module change mode
+				if( len(arguments.module) ){ locationUDF = variables.locateModuleView; }
+				
+				// Locate the view to render according to discovery algorithm and create cache map
+				refMap = {
+					viewPath = locationUDF(arguments.view,arguments.module,arguments.explicitModule),
+					viewHelperPath = ""
+				};
+			
+			}
 
 			// Check for view helper convention
 			dPath = getDirectoryFromPath( refMap.viewPath );
@@ -324,6 +335,7 @@ Description :
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey = "">
 		<cfset var cbox_cacheEntry = "">
+		<cfset var viewLocations = "" />
 		
 		<!--- Setup the cache key --->
 		<cfset cbox_cacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix>
@@ -339,8 +351,9 @@ Description :
 
 		<cfset cbox_timerHash = instance.debuggerService.timerStart("rendering External View [#arguments.view#.cfm]")>
 			<cftry>
-				<!--- Render the View --->
-				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
+				<cfset viewLocations = discoverViewPaths( arguments.view,"",false) />
+				<!--- Render External View --->
+				<cfset cbox_RenderedView = renderViewComposite(view, viewLocations.viewPath, viewLocations.viewHelperPath, args) />
 				<!--- Catches --->
 				<cfcatch type="missinginclude">
 					<cfthrow type="Renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
@@ -375,7 +388,8 @@ Description :
 		<cfset var cbox_layoutLocationKey 	= "">
 		<cfset var cbox_layoutLocation		= "">
 		<cfset var iData					= arguments>
-		
+		<cfset var viewLocations = "" />
+				
 		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
 		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
 			<cfreturn getPlugin("Renderer").setExplicitView(arguments.view).renderLayout(argumentCollection=arguments)>
@@ -431,8 +445,9 @@ Description :
 				</cflock>
 			</cfif>
 			
+			<cfset viewLocations = discoverViewPaths( reverse ( listRest( reverse( cbox_layoutLocation ), ".")),arguments.module,cbox_explicitModule) />
 			<!--- RenderLayout --->
-			<cfsavecontent variable="iData.renderedLayout"><cfoutput><cfinclude template="#cbox_layoutLocation#"></cfoutput></cfsavecontent>
+			<cfset iData.renderedLayout = renderViewComposite(cbox_currentLayout, viewLocations.viewPath, viewLocations.viewHelperPath, args) />
 		</cfif>
 
 		<!--- Stop Timer --->
