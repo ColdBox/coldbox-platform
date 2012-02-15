@@ -316,7 +316,7 @@
 		config.mapPath("Test").inCacheBox(timeout=30);
 		mapping = config.getMapping("Test");
 		cp = mapping.getCacheProperties();
-		assertEquals("Test", cp.key );
+		assertEquals("wirebox-Test", cp.key );
 		assertEquals(30, cp.timeout );
 		assertEquals('default', cp.provider );
 		
