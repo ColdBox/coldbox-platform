@@ -545,7 +545,6 @@ Properties
 		<cfreturn instance.objectStore.getSize()>
 	</cffunction>
 
-
 	<!--- reap --->
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache, clear out everything that is dead.">
 		<cfset var threadName = "CacheBoxProvider.reap_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
@@ -577,12 +576,16 @@ Properties
 			var thisKey 		= "";
 			var thisMD 			= "";
 			var config 			= getConfiguration();
+			var sTime			= getTickCount();
 		</cfscript>
 		
 		<!--- Lock Reaping, so only one can be ran even if called manually, for concurrency protection --->
 		<cflock type="exclusive" name="CacheBoxProvider.reap.#instance.cacheID#" timeout="#instance.lockTimeout#">
 		<cfscript>
-				
+			
+			// log it
+			instance.logger.info("Starting to reap CacheBoxProvider: #getName()#, id: #instance.cacheID#");
+			
 			// Run Storage reaping first, before our local algorithm
 			instance.objectStore.reap();
 			
@@ -643,6 +646,9 @@ Properties
 			
 			//Reaping about to start, set new reaping date.
 			getStats().setLastReapDatetime( now() );	
+			
+			// log it
+			instance.logger.info("Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #instance.cacheID#");
 		</cfscript>
 		</cflock>
 	</cffunction>
