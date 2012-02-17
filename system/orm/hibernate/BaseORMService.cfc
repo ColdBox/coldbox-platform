@@ -195,7 +195,13 @@ component accessors="true"{
 
 		// Get listing
 		var results = ORMExecuteQuery( arguments.query, arguments.params, arguments.unique, options );
-
+		
+		// Null Checks
+		if( isNull(results) ){
+			if( arguments.asQuery ){ return queryNew(""); }
+			return [];
+		}
+		
 		// Objects or Query?
 		if( arguments.asQuery ){
 			results = entityToQuery(results);
