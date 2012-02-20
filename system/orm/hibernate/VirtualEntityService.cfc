@@ -108,7 +108,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.findAllWhere(this.getEntityName(), arguments.criteria, arguments.sortOrder);
 	}
 
-	any function new(){
+	any function new(struct properties=structnew()){
 		arguments.entityName = this.getEntityName();
 		return super.new(argumentCollection=arguments);
 	}
@@ -118,12 +118,12 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.exists(argumentCollection=arguments);
 	}
 
-	any function get(required any id) {
+	any function get(required any id,boolean returnNew=true) {
 		arguments.entityName = this.getEntityName();
 		return super.get(argumentCollection=arguments);
 	}
 
-	array function getAll(any id) {
+	array function getAll(any id,string sortOrder="") {
 		arguments.entityName = this.getEntityName();
 		return super.getAll(argumentCollection=arguments);
 	}
@@ -143,7 +143,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.deleteByQuery(argumentCollection=arguments);
 	}
 
-	numeric function deleteWhere(){
+	numeric function deleteWhere(boolean transactional=getUseTransactions()){
 		arguments.entityName = this.getEntityName();
 		return super.deleteWhere(argumentCollection=arguments);
 	}
@@ -163,17 +163,16 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		super.evict(argumentCollection=arguments);
 	}
 	
-	void function clear(){
-		arguments.datasource = this.getDatasource();
+	void function clear(string datasource=this.getDatasource()){
 		return super.clear(argumentCollection=arguments);
 	}
 	
-	boolean function isSessionDirty(){
+	boolean function isSessionDirty(string datasource=this.getDatasource()){
 		arguments.datasource = this.getDatasource();
 		return super.isSessionDirty(argumentCollection=arguments);
 	}
 	
-	struct function getSessionStatistics(){
+	struct function getSessionStatistics(string datasource=this.getDatasource()){
 		arguments.datasource = this.getDatasource();
 		return super.getSessionStatistics(argumentCollection=arguments);
 	}
