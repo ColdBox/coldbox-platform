@@ -2,7 +2,7 @@
 
 	function setup(){
 		ormreload();
-		activeUser = entityNew("ActiveUser");
+		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
 		
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
@@ -140,7 +140,7 @@
 	
 	function testNewCriteria(){
 		c = activeUser.newCriteria();
-		assertEquals( "User", c.getEntityName() );
+		assertEquals( "ActiveUser", c.getEntityName() );
 		
 	}
 }
