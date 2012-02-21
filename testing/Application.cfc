@@ -44,9 +44,9 @@ Description :
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
 		
-		<cfif structKeyExists(URL,"reinit")>
-			<cfset ORMReload()>
-		</cfif>
+		<!---<cfif structKeyExists(URL,"reinit")>--->
+		<cfset ORMReload()>
+		<!---</cfif>--->
 		
 		<cfreturn true>
 	</cffunction>
