@@ -1,7 +1,6 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase"{
 
 	function setup(){
-		ormreload();
 		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
 		
 		// Test ID's
