@@ -57,7 +57,8 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 										boolean useQueryCaching,
 										boolean eventHandling,
 										boolean useTransactions,
-										boolean defaultAsQuery){
+										boolean defaultAsQuery,
+										string datasource){
 
 		// init parent
 		super.init(argumentCollection=arguments);
@@ -66,7 +67,13 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		setEntityName( arguments.entityName );
 		
 		// Set the datasource of the local entity to be used in this virtual entity service
-		setDatasource( orm.getEntityDatasource( arguments.entityName ) );
+		// Only if not passed
+		if( !StructKeyExists(arguments, "datasource") ){
+			setDatasource( orm.getEntityDatasource( arguments.entityName ) );
+		}
+		else{
+			setDatasource( arguments.datasource );
+		}
 		
 		return this;
 	}
