@@ -527,6 +527,10 @@ Description :
 					if( NOT len(instance.scope) ){ instance.scope = "noscope"; }
 					if( NOT len(instance.autowire) ){ instance.autowire = true; }
 					if( NOT len(instance.eagerInit) ){ instance.eagerInit = false; }
+					// finished processing mark as discovered
+					instance.discovered = true;
+					// announce it
+					eventManager.processState("afterInstanceInspection",iData);
 					return;
 				}
 	    		
