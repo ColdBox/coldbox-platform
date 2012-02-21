@@ -9,3 +9,6 @@
 4) Railo (Resin)
 	Copy WEB-INF/web.xml into your web-site folder (WEB-INF) 
     [Tested with Apache2 mod_rewrite]  	
+5) Tuckey Rewrite Filter
+	Copy WEB-INF/urlrewrite.xml into the same web folder
+	Install the tuckey rewrite filter.
