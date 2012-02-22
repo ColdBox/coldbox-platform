@@ -301,7 +301,7 @@ TODO: update dsl consistency, so it is faster.
 		<cfscript>
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
-			var coldboxDSLRegex		= "^(ioc|ocm|webservice|javaloader|entityService|coldbox|cachebox)$";
+			var coldboxDSLRegex		= "^(ioc|ocm|webservice|javaloader|coldbox|cachebox)$";
 			
 			// coldbox context check
 			if( refindNoCase(coldboxDSLRegex,DSLNamespace) AND NOT instance.injector.isColdBoxLinked() ){
@@ -316,7 +316,7 @@ TODO: update dsl consistency, so it is faster.
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch(DSLNamespace){
 				// ColdBox Context DSL
-				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "entityService" :case "coldbox" : { 
+				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "coldbox" : { 
 					refLocal.dependency = instance.coldboxDSL.process(argumentCollection=arguments); break; 
 				} 
 				// CacheBox Context DSL
@@ -329,6 +329,8 @@ TODO: update dsl consistency, so it is faster.
 				case "provider"			 : { refLocal.dependency = getProviderDSL(argumentCollection=arguments); break; }
 				// wirebox injection DSL always available
 				case "wirebox"			 : { refLocal.dependency = getWireBoxDSL(argumentCollection=arguments); break;}
+				// wirebox entity services
+				case "entityService"	 : { refLocal.dependency = getEntityServiceDSL(argumentCollection=arguments); break;}
 				
 				// No internal DSL's found, then check custom DSL's
 				default : {
@@ -361,6 +363,23 @@ TODO: update dsl consistency, so it is faster.
 	</cffunction>
 
 <!------------------------------------------- DSL BUILDER METHODS ------------------------------------------>
+
+	<!--- getEntityServiceDSL --->
+	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfscript>
+			var entityName  = getToken(arguments.definition.dsl,2,":");
+
+			// Do we have an entity name? If we do create virtual entity service
+			if( len(entityName) ){
+				return createObject("component","coldbox.system.orm.hibernate.VirtualEntityService").init( entityName );
+			}
+
+			// else Return Base ORM Service
+			return createObject("component","coldbox.system.orm.hibernate.BaseORMService").init();
+		</cfscript>
+	</cffunction>
 
 	<!--- getWireBoxDSL --->
 	<cffunction name="getWireBoxDSL" access="private" returntype="any" hint="Get dependencies using the wirebox dependency DSL" output="false" >

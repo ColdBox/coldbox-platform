@@ -38,7 +38,6 @@ Description :
 				case "ocm" 				: { return getOCMDSL(argumentCollection=arguments);}
 				case "webservice" 		: { return getWebserviceDSL(argumentCollection=arguments);}
 				case "javaloader" 		: { return getJavaLoaderDSL(argumentCollection=arguments);}
-				case "entityService" 	: { return getEntityServiceDSL(argumentCollection=arguments);} 
 				case "coldbox" 			: { return getColdboxDSL(argumentCollection=arguments); }
 			}
 		</cfscript>    	
@@ -83,23 +82,6 @@ Description :
 
 			// Get Dependency, if not found, exception is thrown
 			return instance.coldbox.getPlugin("JavaLoader").create( className );
-		</cfscript>
-	</cffunction>
-	
-	<!--- getEntityServiceDSL --->
-	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var entityName  = getToken(arguments.definition.dsl,2,":");
-
-			// Do we have an entity name? If we do create virtual entity service
-			if( len(entityName) ){
-				return createObject("component","coldbox.system.orm.hibernate.VirtualEntityService").init( entityName );
-			}
-
-			// else Return Base ORM Service
-			return createObject("component","coldbox.system.orm.hibernate.BaseORMService").init();
 		</cfscript>
 	</cffunction>
 	
