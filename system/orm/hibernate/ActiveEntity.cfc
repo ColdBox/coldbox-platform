@@ -13,11 +13,11 @@ It just allows you to operate on entity and related entity objects much much mor
 
 ----------------------------------------------------------------------->
 Available Annotations:
--active:queryCaching=boolean (false)
--active:queryCacheRegion=string 
--active:eventHandling=boolean (true)
--active:useTransactions=boolean (true)
--active:asQuery=boolean(true)
+-active_queryCaching=boolean (false)
+-active_queryCacheRegion=string 
+-active_eventHandling=boolean (true)
+-active_useTransactions=boolean (true)
+-active_asQuery=boolean(true)
 */
 component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors="true"{
 	
@@ -37,24 +37,24 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 			args.entityName = listLast( md.name, "." );
 		}
 		// query caching
-		if( structKeyExists(md,"active:queryCaching") ){
-			args.useQueryCaching = md["active:queryCaching"]; 
+		if( structKeyExists(md,"active_queryCaching") ){
+			args.useQueryCaching = md["active_queryCaching"]; 
 		}
 		// queryCacheRegion
-		if( structKeyExists(md,"active:queryCaching") ){
-			args.queryCacheRegion = md["active:queryCacheRegion"]; 
+		if( structKeyExists(md,"active_queryCaching") ){
+			args.queryCacheRegion = md["active_queryCacheRegion"]; 
 		}
 		// eventHandling
-		if( structKeyExists(md,"active:eventHandling") ){
-			args.eventHandling = md["active:eventHandling"]; 
+		if( structKeyExists(md,"active_eventHandling") ){
+			args.eventHandling = md["active_eventHandling"]; 
 		}
 		// useTransactions
-		if( structKeyExists(md,"active:useTransactions") ){
-			args.useTransactions = md["active:useTransactions"]; 
+		if( structKeyExists(md,"active_useTransactions") ){
+			args.useTransactions = md["active_useTransactions"]; 
 		}
 		// defaultAsQuery
-		if( structKeyExists(md,"active:defaultAsQuery") ){
-			args.defaultAsQuery = md["active:defaultAsQuery"]; 
+		if( structKeyExists(md,"active_defaultAsQuery") ){
+			args.defaultAsQuery = md["active_defaultAsQuery"]; 
 		}
 		// datasource
 		args.datasource = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil().getEntityDatasource( this );
