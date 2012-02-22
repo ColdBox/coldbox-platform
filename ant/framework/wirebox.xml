@@ -74,7 +74,7 @@
 		<copy todir="${dir.build}/coldbox/system/aop">
 		 	<fileset dir="system/aop" />
 		</copy>
-		<copy todir="${dir.build}/wirebox/system/orm/hibernate">
+		<copy todir="${dir.build}/coldbox/system/orm/hibernate">
 			<fileset dir="system/orm/hibernate">
 			 	<exclude name="EventHandler.cfc" />
 			 </fileset>
