@@ -173,7 +173,7 @@ Description :
 			if( arguments.private ){ collection = instance.privateContext; }
 
 			structDelete(collection,arguments.name);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -207,7 +207,7 @@ Description :
 	<cffunction name="getCurrentViewArgs" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="any" output="false">
 		<cfreturn getValue("currentViewArgs", structNew(), true)>
 	</cffunction>
-	
+
 	<cffunction name="getCurrentViewModule" access="public" hint="Gets the current set views's module for rendering" returntype="any" output="false">
 		<cfreturn getValue("viewModule","",true)>
 	</cffunction>
@@ -228,10 +228,10 @@ Description :
 		    var key 		= "";
 		    var cacheEntry 	= structnew();
 			var cModule		= getCurrentModule();
-			
+
 			// view and name mesh
 			if( structKeyExists(arguments,"name") ){ arguments.view = arguments.name; }
-			
+
 			// stash the view module
  			instance.privateContext["viewModule"] = arguments.module;
 
@@ -299,7 +299,7 @@ Description :
 
 			//Set the current view to render.
 			instance.privateContext["currentView"] = arguments.view;
-			
+
 			// Record the optional arguments
 			setValue("currentViewArgs", arguments.args, true);
 			return this;
@@ -313,7 +313,7 @@ Description :
 	<cffunction name="getCurrentLayoutModule" access="public" hint="Gets the current set layout's module for rendering" returntype="any" output="false">
 		<cfreturn getValue("layoutmodule","",true)>
 	</cffunction>
-	
+
 	<cffunction name="getCurrentRoute" output="false" access="public" returntype="any" hint="Get the current request's SES route that matched">
     	<cfreturn getValue("currentRoute","",true)>
     </cffunction>
@@ -321,15 +321,15 @@ Description :
 	<cffunction name="getCurrentRoutedURL" output="false" access="public" returntype="any" hint="Get the current routed URL that matched the SES route">
     	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
- 
-    <cffunction name="noLayout" output="false" access="public" returntype="any" hint="Mark this request to not use a layout for rendering">    
-    	<cfscript>	
+
+    <cffunction name="noLayout" output="false" access="public" returntype="any" hint="Mark this request to not use a layout for rendering">
+    	<cfscript>
 			// remove layout if any
 			structDelete(instance.privateContext,"currentLayout");
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
 			return this;
-    	</cfscript>    
+    	</cfscript>
     </cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="any" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
@@ -352,9 +352,16 @@ Description :
 	</cffunction>
 
 	<cffunction name="getModuleRoot" output="false" access="public" returntype="any" hint="Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.">
+		<cfargument name="module" required="false" default="" hint="Optional name of the module you want the root for, defaults to the current module">
 		<cfscript>
-			if( len(getCurrentModule()) ){
-				return instance.modules[getCurrentModule()].mapping;
+			var theModule = "";
+			if (structKeyExists(arguments,"module") and len(arguments.module)) {
+				theModule = arguments.module;
+			} else {
+				theModule = getCurrentModule();
+			}
+			if( len(theModule) ){
+				return instance.modules[theModule].mapping;
 			}
 			return "";
 		</cfscript>
@@ -425,7 +432,7 @@ Description :
 				setValue(name="coldbox_norender",value=true,private=true);
 			else
 				removeValue(name="coldbox_norender",private=true);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -689,13 +696,13 @@ Description :
 			if( len(trim(arguments.contentType)) ){
 				rd.contentType = arguments.contentType;
 			}
-			
+
 			// HTTP Location?
 			if( len(arguments.location) ){ setHTTPHeader(name="location",value="arguments.location"); }
 
 			// Save Rendering data privately.
 			setValue(name='cbox_renderdata',value=rd,private=true);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -744,7 +751,7 @@ Description :
 		<cfelse>
 			<cfthrow message="Invalid header arguments" detail="Pass in either a statusCode or name argument" type="RequestContext.InvalidHTTPHeaderParameters">
 		</cfif>
-		
+
 		<cfreturn this>
 	</cffunction>
 
@@ -753,21 +760,21 @@ Description :
     	<cfscript>
     		var results 	= structnew();
 			var authHeader 	= "";
-			
+
 			// defaults
 			results.username = "";
 			results.password = "";
-			
+
 			// set credentials
 			authHeader = getHTTPHeader("Authorization","");
-			
+
 			// continue if it exists
 			if( len(authHeader) ){
 				authHeader = charsetEncode( binaryDecode( listLast(authHeader," "),"Base64"), "utf-8");
 				results.username = listFirst( authHeader, ":");
 				results.password = listLast( authHeader, ":");
 			}
-			
+
 			return results;
     	</cfscript>
     </cffunction>
