@@ -43,10 +43,6 @@
 		builder.process(def);
 		assertTrue( builder.$once("getJavaLoaderDSL") );
 		
-		def = {dsl="entityservice"};
-		builder.process(def);
-		assertTrue( builder.$once("getEntityServiceDSL") );
-		
 		def = {dsl="coldbox"};
 		builder.process(def);
 		assertTrue( builder.$once("getColdboxDSL") );
@@ -92,18 +88,6 @@
 		assertTrue( mockJavaLoader.$once("create") );
 		assertEquals( "java.lang.StringBuffer", mockJavaLoader.$callLog().create[1][1] );	
 	}
-	
-	function testGetEntityServiceDSL(){
-		makePublic(builder, "getEntityServiceDSL");
-		def = {dsl="entityService"};
-		e = builder.getentityServiceDSL(def);
-		assertTrue( isInstanceOf(e, "coldbox.system.orm.hibernate.BaseORMService") );	
-		
-		def = {dsl="entityService:User"};
-		e = builder.getentityServiceDSL(def);
-		assertTrue( isInstanceOf(e, "coldbox.system.orm.hibernate.VirtualEntityService") );	
-	}
-	
 		
 	function testgetIOCDSl(){
 		mockFactory = getMockBox().createStub();
@@ -192,6 +176,12 @@
 		def = {name="configBean", dsl="coldbox:requestService"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( this, c);
+		
+		mockFlash = getMockBox().createEmptyMock("coldbox.system.web.flash.SessionFlash");
+		mockColdbox.$("getrequestService", getMockBox().createStub().$("getFlashScope", mockFlash) );
+		def = {name="flash", dsl="coldbox:flash"};
+		c = builder.getColdBoxDSL(def);
+		assertEquals( mockFlash, c);
 		
 		mockColdbox.$("getDebuggerService",this);
 		def = {name="configBean", dsl="coldbox:debuggerService"};
