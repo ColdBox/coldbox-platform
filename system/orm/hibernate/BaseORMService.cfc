@@ -10,10 +10,6 @@ This is a helper ORM service that will help you abstract some complexities
 when dealing with CF's ORM via Hibernate.  You can use this service in its
 concrete form or you can inherit from it and extend it.
 
-Events:
-This service can also be enabled to produce events via ColdBox Interceptors. However, the application
-must be a Coldbox application if enabled.
-
 TODO:
 - Add dynamic findBy methods
 - Add dynamic countBy methods
@@ -56,15 +52,8 @@ component accessors="true"{
 	*/
 	property name="defaultAsQuery" type="boolean" default="true";
 
-/* ----------------------------------- DEPENDENCIES ------------------------------ */
-
-
-
-/* ----------------------------------- CONSTRUCTOR ------------------------------ */
-
-	/**
-	* Constructor
-	*/
+	/************************************** CONSTRUCTOR *********************************************/
+	
 	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
 								  boolean useQueryCaching=false,
 								  boolean eventHandling=true,
@@ -78,7 +67,12 @@ component accessors="true"{
 		setDefaultAsQuery( arguments.defaultAsQuery );
 
 		// Create the service ORM Event Handler composition
-		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
+		if( directoryExists( expandPath("/wirebox") ) ){
+			ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
+		}
+		else{
+			ORMEventHandler = new coldbox.system.orm.hibernate.WBEventHandler();
+		}
 		
 		// Create the ORM Utility component
 		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
@@ -92,8 +86,7 @@ component accessors="true"{
 		return this;
 	}
 
-/* ----------------------------------- PUBLIC ------------------------------ */
-
+	/************************************** PUBLIC *********************************************/
 
 	/**
 	* Create a virtual abstract service for a specfic entity.

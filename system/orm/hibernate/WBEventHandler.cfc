@@ -9,14 +9,14 @@ This class can be used directly or inherited from for more granular control of O
 This bridges Hibernate to WireBox so you can wire up ORM entities in your application. Please also
 note that there is no way to intercept new() or entityNew() or createObject() calls done via 
 ColdFusion and there is no preNew interception point exposed by ColdFusion.  So if you want ORM
-entity injection enabled for new entities, you will have to send them manually into wirebox for wiring.
+entity injection enabled for new entities, you will have to send them manually into wirebox for wiring like so:
 
 wirebox.autowire( entity );
 
 All loaded entities will be wired for you during the postLoad() ORM event handler.
 
-This event handler will also announce wirebox events according to hibernate events, so you can
-create WireBox listeners and perform certain actions on entities:
+This event handler will also announce WireBox events according to hibernate events, so you can
+create WireBox listeners and perform certain actions on entities.  The announced events are:
 
 - ORMPreLoad
 - ORMPostLoad
@@ -29,31 +29,66 @@ create WireBox listeners and perform certain actions on entities:
 - ORMPreSave
 - ORMPostSave
 
-This class requires that wirebox be in application scope in a key called 'wirebox'. You can
-override this key by using an annotation called 'wirebox:scopeKey' in your own implementation.
+This class requires that WireBox be in application scope in a key called 'wirebox'. You can
+override this key by using a private variable in your own implementation.
 
 To use:
 1) In your Application.cfc orm settings point it directly to this file
    this.ormsettings.eventHandling = true;
-   this.ormsettings.eventHandler  = "wirebox.system.ioc.orm.EventHandler";
+   this.ormsettings.eventHandler  = "wirebox.system.orm.hibernate.WBEventHandler";
    
-2) Create a CFC that inherits from "wirebox.system.ioc.orm.EventHandler" and place it somewhere in your app.
+2) Create a CFC that inherits from "wirebox.system.orm.hibernate.WBEventHandler" and place it somewhere in your app.
    Add the orm settings in your Application.cfc
    this.ormsettings.eventHandling = true;
    this.ormsettings.eventHandler  = "model.EventHandler";
-    
+
+If you do the latter, you can use some extra functionality by using the following private variables.
+
+// The scope key wirebox is located in application scope
+scopeKey = "wirebox";
+
+// Include list of ORM entities to include in the injection, if blank it includes all, which is the default
+injectorInclude = "";
+
+// Exclude list of ORM entities to exclude in the injection, if blank it includes none, which is the default
+injectorExclude = "";
+
 */
 component implements="CFIDE.orm.IEventHandler"{
-
+	
 	/**
-	* preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
+	* The scope key to use
+	*/
+	scopeKey = "wirebox";
+	
+	/**
+	* Include list of ORM entities to include in the injection, if blank it includes all, which is the default
+	*/
+	injectorInclude = "";
+	
+	/**
+	* Exclude list of ORM entities to exclude in the injection, if blank it includes none, which is the default
+	*/
+	injectorExclude = "";
+	
+	/**
+	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
+	*/
+	public void function postNew(any entity,any entityName){
+		var args = {entity = arguments.entity, entityName=arguments.entityName};
+		processEntityInjection(args.entityName, args.entity);
+		announceInterception("ORMPostNew",args);
+	}
+	
+	/**
+	* preLoad called by hibernate which in turn announces a WireBox interception: ORMPreLoad
 	*/
 	public void function preLoad(any entity){
 		announceInterception("ORMPreLoad",{entity = arguments.entity});
 	}
 
 	/**
-	* postLoad called by hibernate which in turn announces a coldbox interception: ORMPostLoad
+	* postLoad called by hibernate which in turn announces a WireBox interception: ORMPostLoad
 	*/
 	public void function postLoad(any entity){
 		var orm 		= getORMUtil();
@@ -65,73 +100,82 @@ component implements="CFIDE.orm.IEventHandler"{
 	}
 
 	/**
-	* postDelete called by hibernate which in turn announces a coldbox interception: ORMPostDelete
+	* postDelete called by hibernate which in turn announces a WireBox interception: ORMPostDelete
 	*/
 	public void function postDelete(any entity){
 		announceInterception("ORMPostDelete", {entity=arguments.entity});
 	}
 
 	/**
-	* preDelete called by hibernate which in turn announces a coldbox interception: ORMPreDelete
+	* preDelete called by hibernate which in turn announces a WireBox interception: ORMPreDelete
 	*/
 	public void function preDelete(any entity) {
 		announceInterception("ORMPreDelete", {entity=arguments.entity});
 	}
 
 	/**
-	* preUpdate called by hibernate which in turn announces a coldbox interception: ORMPreUpdate
+	* preUpdate called by hibernate which in turn announces a WireBox interception: ORMPreUpdate
 	*/
 	public void function preUpdate(any entity, struct oldData=structNew()){
 		announceInterception("ORMPreUpdate", {entity=arguments.entity, oldData=arguments.oldData});
 	}
 
 	/**
-	* postUpdate called by hibernate which in turn announces a coldbox interception: ORMPostUpdate
+	* postUpdate called by hibernate which in turn announces a WireBox interception: ORMPostUpdate
 	*/
 	public void function postUpdate(any entity){
 		announceInterception("ORMPostUpdate", {entity=arguments.entity});
 	}
 
 	/**
-	* preInsert called by hibernate which in turn announces a coldbox interception: ORMPreInsert
+	* preInsert called by hibernate which in turn announces a WireBox interception: ORMPreInsert
 	*/
 	public void function preInsert(any entity){
 		announceInterception("ORMPreInsert", {entity=arguments.entity});
 	}
 
 	/**
-	* postInsert called by hibernate which in turn announces a coldbox interception: ORMPostInsert
+	* postInsert called by hibernate which in turn announces a WireBox interception: ORMPostInsert
 	*/
 	public void function postInsert(any entity){
 		announceInterception("ORMPostInsert", {entity=arguments.entity});
 	}
 
 	/**
-	* preSave called by ColdBox Base service before save() calls
+	* preSave called by WireBox Base service before save() calls
 	*/
 	public void function preSave(any entity){
 		announceInterception("ORMPreSave", {entity=arguments.entity});
 	}
 
 	/**
-	* postSave called by ColdBox Base service after transaction commit or rollback via the save() method
+	* postSave called by WireBox Base service after transaction commit or rollback via the save() method
 	*/
 	public void function postSave(any entity){
 		announceInterception("ORMPostSave", {entity=arguments.entity});
 	}
 	
+	/************************************** PRIVATE *********************************************/
+	
 	/**
-	* process entity injection
+	* Process a wirebox event
+	*/
+	private function announceInterception(required string state, data=structNew()){
+		// announce event
+		getWireBox().getEventManager().processState( arguments.state, arguments.data );
+	}
+	
+	/**
+	* Get a reference to WireBox
+	*/
+	private function getWireBox(){
+		return application[ scopeKey ];
+	}
+	
+	/**
+	* Process entity injection
 	*/
 	private function processEntityInjection(required entityName,required entity){
-		var ormSettings		= getController().getSetting("orm").injection;
-		var injectorInclude = ormSettings.include;
-		var injectorExclude = ormSettings.exclude;
-		
-		// Enabled?
-		if( NOT ormSettings.enabled ){
-			return;
-		}
 		
 		// Include,Exclude?
 		if( (len(injectorInclude) AND listContainsNoCase(injectorInclude,entityName))

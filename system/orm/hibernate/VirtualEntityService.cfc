@@ -28,7 +28,6 @@ UserService function init(){
     return this;
 }
 
------------------------------------------------------------------------>
 */
 component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"{
 
@@ -42,16 +41,8 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	*/
 	property name="datasource" type="string";
 
+	/************************************** CONSTRUCTOR *********************************************/
 
-/* ----------------------------------- DEPENDENCIES ------------------------------ */
-
-
-
-/* ----------------------------------- CONSTRUCTOR ------------------------------ */
-
-	/**
-	* Constructor
-	*/
 	VirtualEntityService function init(required string entityname, 
 										string queryCacheRegion, 
 										boolean useQueryCaching,
@@ -78,8 +69,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return this;
 	}
 
-
-/* ----------------------------------- PUBLIC ------------------------------ */
+	/************************************** PUBLIC *********************************************/
 
 	any function executeQuery(required string query,
 							   any params=structnew(),

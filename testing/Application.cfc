@@ -30,13 +30,14 @@ Description :
 	
 	<cfset this.ormSettings = {
 		dialect = "MySQLwithInnoDB",
-		eventHandling=true,
 		logSQL = true,
 		eventhandling = true,
+		
 		secondarycacheenabled = true,
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false
 	}>
+	<!--- <cfset this.ormsettings.eventhandler = "testmodel.EventHandler"> --->
 	
 	<!--- on Request Start --->
 	<cffunction name="onRequestStart" returnType="boolean" output="true">
