@@ -133,7 +133,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 			// Clear Flash Storage
 			clearFlash();
 			
-			returnn this;
+			return this;
 		</cfscript>
 	</cffunction>
 
