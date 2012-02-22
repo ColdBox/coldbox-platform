@@ -10,57 +10,37 @@ and make it follow more of an Active Record pattern, but not really :)
 
 It just allows you to operate on entity and related entity objects much much more easily.
 
-
------------------------------------------------------------------------>
-Available Annotations:
--active_queryCaching=boolean (false)
--active_queryCacheRegion=string 
--active_eventHandling=boolean (true)
--active_useTransactions=boolean (true)
--active_asQuery=boolean(true)
 */
 component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors="true"{
 	
 	/**
 	* Active Entity Constructor, if you override it, make sure you call super.init()
+	* @queryCacheRegion.hint The query cache region to use if not we will use one for you
+	* @useQueryCaching.hint Enable query caching for this entity or not, defaults to false
+	* @eventHandling.hint Enable event handling for new() and save() operations, defaults to true
+	* @useTransactions.hint Enable transactions for all major operations, defaults to true
+	* @defaultAsQuery.hint What should be the default return type query or arrays for list opertions, defaults to true
 	*/
-	function init(){
+	function init(string queryCacheRegion, boolean useQueryCaching,	boolean eventHandling, boolean useTransactions,	boolean defaultAsQuery){
 		var md 		= getMetadata( this );
-		var args 	= {};
 		
 		// find entity name on md?
 		if( structKeyExists(md,"entityName") ){
-			args.entityName = md.entityName;
+			arguments.entityName = md.entityName;
 		}
 		// else default to entity CFC name
 		else{
-			args.entityName = listLast( md.name, "." );
+			arguments.entityName = listLast( md.name, "." );
 		}
-		// query caching
-		if( structKeyExists(md,"active_queryCaching") ){
-			args.useQueryCaching = md["active_queryCaching"]; 
-		}
-		// queryCacheRegion
-		if( structKeyExists(md,"active_queryCaching") ){
-			args.queryCacheRegion = md["active_queryCacheRegion"]; 
-		}
-		// eventHandling
-		if( structKeyExists(md,"active_eventHandling") ){
-			args.eventHandling = md["active_eventHandling"]; 
-		}
-		// useTransactions
-		if( structKeyExists(md,"active_useTransactions") ){
-			args.useTransactions = md["active_useTransactions"]; 
-		}
-		// defaultAsQuery
-		if( structKeyExists(md,"active_defaultAsQuery") ){
-			args.defaultAsQuery = md["active_defaultAsQuery"]; 
+		// query cache region just in case
+		if( !structKeyExists(arguments,"queryCacheRegion") ){
+			arguments.queryCacheRegion = "#arguments.entityName#.activeEntityCache";
 		}
 		// datasource
-		args.datasource = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil().getEntityDatasource( this );
+		arguments.datasource = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil().getEntityDatasource( this );
 		
 		// init the super class with our own arguments
-		super.init(argumentCollection=args);
+		super.init(argumentCollection=arguments);
 		
 		return this;
 	}

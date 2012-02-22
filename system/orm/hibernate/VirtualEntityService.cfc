@@ -21,7 +21,7 @@ component extends="VirtualEntityService"
 UserService function init(){
     // setup properties
     setEntityName('User');
-    setQueryCacheRegion( 'ORMService.defaultCache' );
+    setQueryCacheRegion( "#arguments.entityName#.defaultVSCache" );
     setUseQueryCaching( false );
 	setEventHandling( false );
 	setDefaultAsQuery( true );
@@ -50,6 +50,10 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 										boolean useTransactions,
 										boolean defaultAsQuery,
 										string datasource){
+		// create cache region
+		if( !structKeyExists(arguments,"queryCacheRegion") ){
+			arguments.queryCacheRegion = "#arguments.entityName#.defaultVSCache";
+		}
 
 		// init parent
 		super.init(argumentCollection=arguments);
