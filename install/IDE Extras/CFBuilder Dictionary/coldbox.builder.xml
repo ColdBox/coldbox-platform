@@ -1134,7 +1134,7 @@
 	<scopevar name="getValue(name,[defaultValue],[private])">
 			<help><![CDATA[I Get a value from the public or private request collection.]]></help>
 		</scopevar>
-	<scopevar name="getModuleRoot()">
+	<scopevar name="getModuleRoot([module])">
 			<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.]]></help>
 		</scopevar>
 	<scopevar name="setMemento(memento)">

@@ -38,7 +38,7 @@ Description :
 	</cffunction>
 
 	<!--- saveFlash --->
-	<cffunction name="saveFlash" output="false" access="public" returntype="void" hint="Save the flash storage in preparing to go to the next request">
+	<cffunction name="saveFlash" output="false" access="public" returntype="any" hint="Save the flash storage in preparing to go to the next request">
 		<!--- Init The Storage if not Created --->
 		<cfif NOT flashExists()>
     		<cfset instance.mockFlash = structNew()>	
@@ -46,6 +46,8 @@ Description :
 		
 		<!--- Now Save the Storage --->
 		<cfset instance.mockFlash = getScope()>
+		
+		<cfreturn this>
 	</cffunction>
 
 	<!--- flashExists --->
@@ -67,8 +69,9 @@ Description :
 	</cffunction>
 	
 	<!--- removeFlash --->
-    <cffunction name="removeFlash" output="false" access="public" returntype="void" hint="Remove the entire flash storage">
+    <cffunction name="removeFlash" output="false" access="public" returntype="any" hint="Remove the entire flash storage">
     	<cfset structDelete(instance, "mockFlash")>
+		<cfreturn this>
     </cffunction>
 
 </cfcomponent>

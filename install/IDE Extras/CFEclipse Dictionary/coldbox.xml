@@ -1126,7 +1126,7 @@
 	<scope value="event.getValue(name,[defaultValue],[private])">
 			<help><![CDATA[I Get a value from the public or private request collection.]]></help>
 		</scope>
-	<scope value="event.getModuleRoot()">
+	<scope value="event.getModuleRoot([module])">
 			<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.]]></help>
 		</scope>
 	<scope value="event.setMemento(memento)">

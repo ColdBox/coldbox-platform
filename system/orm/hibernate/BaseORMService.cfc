@@ -438,7 +438,7 @@ component accessors="true"{
 		
 			// Check if ID=0 or empty to do convenience new entity
 			if( isSimpleValue(arguments.id) and ( arguments.id eq 0  OR len(arguments.id) eq 0 ) ){
-				return new(arguments.entityName);
+				return new(entityName=arguments.entityName);
 			}
 			
 		}
