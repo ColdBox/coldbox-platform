@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -18,15 +18,15 @@ Description :
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);
+			
 			// set the unique cookie name
-			setCookieName("coldbox_debugmode_#controller.getAppHash()#");
+			instance.cookieName = "coldbox_debugmode_#controller.getAppHash()#";
 			// Create persistent profilers
-			setProfilers(arrayNew(1));
+			instance.profilers = arrayNew(1);
 			// Create persistent tracers
-			setTracers(arrayNew(1));
+			instance.tracers = arrayNew(1);
 			// Set a maximum tracers possible
 			instance.maxTracers = 75;
-			
 			// Runtime
 			instance.jvmRuntime = createObject("java", "java.lang.Runtime");
 			
@@ -111,7 +111,7 @@ Description :
 				QuerySetCell(qTimers, "Timestamp", now());
 				
 				// RC Snapshot
-				if ( not findnocase("rendering",timerInfo.label) ){
+				if ( NOT findnocase("rendering",timerInfo.label) AND instance.DebuggerConfig.getShowRCSnapshots() ){
 					// Save collection
 					QuerySetCell(qTimers, "RC", htmlEditFormat(left(context.getCollection().toString(),5000)) );
 					QuerySetCell(qTimers, "PRC", htmlEditFormat(left(context.getCollection(private=true).toString(),5000)) );
@@ -193,10 +193,8 @@ Description :
 		<cfset var URLBase = event.getsesBaseURL()>
 
 		<!--- Modules Stuff --->
-		<cfif controller.getCFMLEngine().isMT()>
-			<cfset loadedModules = controller.getModuleService().getLoadedModules()>
-			<cfset moduleSettings = controller.getSetting("modules")>
-		</cfif>
+		<cfset loadedModules = controller.getModuleService().getLoadedModules()>
+		<cfset moduleSettings = controller.getSetting("modules")>
 		
 		<!--- URL Base --->
 		<cfif NOT event.isSES()>
@@ -208,178 +206,11 @@ Description :
 		
 		<cfreturn renderedDebugging>
 	</cffunction>
-
-	<!--- Render the cache panel --->
-	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="any">
-		<cfargument name="monitor" type="boolean" required="false" default="false" hint="monitor or panel"/>
-		<cfscript>
-			var event 			= controller.getRequestService().getContext();
-			var content			= "";
-			var cacheNames		= arrayNew(1);
-			// CacheType Rendering
-			var isMonitor		= arguments.monitor;
-			// URL Base
-			var URLBase			= event.getSESBaseURL();
-			
-			// Command URL Base if not using SES
-			if( NOT event.isSES() ){
-				URLBase = listlast(cgi.script_name,"/");
-			}
-			
-			// Caches
-			if( isObject(controller.getCacheBox()) ){
-				cacheNames = controller.getCacheBox().getCacheNames();
-			}
-			else{
-				cacheNames[1] = "default";
-			}
-			
-		</cfscript>
-		
-		<!--- Param the monitor frequency if used --->
-		<cfparam name="url.frequency" default="0" type="numeric" min="0">
-		
-		<!--- Generate Debugging --->
-		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
-		
-		<cfreturn content>
-	</cffunction>
-	
-	<!--- renderCacheReport --->
-    <cffunction name="renderCacheReport" output="false" access="public" returntype="any" hint="Render a cache report for a specific cache">
-    	<cfargument name="cacheName" type="any" required="true" default="default" hint="The cache name"/>
-    	<cfscript>
-    		var content 		= "";
-			var event 			= controller.getRequestService().getContext();
-			
-			// Cache info
-			var cacheProvider 	= controller.getColdboxOCM( arguments.cacheName );
-			var itemTypes		= cacheProvider.getItemTypes();
-			var cacheConfig		= "";
-			var cacheStats		= "";
-			var cacheSize		= cacheProvider.getSize();		
-			var isCacheBox		= true;	
-			
-			// JVM Data
-			var JVMRuntime 		= instance.jvmRuntime.getRuntime();
-			var JVMFreeMemory 	= JVMRuntime.freeMemory()/1024;
-			var JVMTotalMemory 	= JVMRuntime.totalMemory()/1024;
-			var JVMMaxMemory 	= JVMRuntime.maxMemory()/1024; 
-				
-			// URL Base
-			var URLBase			= event.getSESBaseURL();
-			
-			// Command URL Base if not using SES
-			if( NOT event.isSES() ){
-				URLBase = listlast(cgi.script_name,"/");
-			}
-			
-			// Prepare cache report for cachebox
-			if( isObject(controller.getCacheBox()) ){
-				cacheConfig 	= cacheProvider.getConfiguration();
-				cacheStats  	= cacheProvider.getStats();			
-			}
-			// COMPAT MODE: REMOVE LATER, cf7 and compat
-			else{
-				cacheConfig 	= cacheProvider.getCacheConfig().getMemento();
-				cacheStats  	= cacheProvider.getCacheStats();
-				isCacheBox		= false;				
-			}
-    	</cfscript>	
-		
-		<!--- Generate Debugging --->
-		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/includes/panels/CacheReport.cfm"></cfsavecontent>
-		
-		<cfreturn content>
-	</cffunction>
-
-	<!--- renderCacheContentReport --->
-    <cffunction name="renderCacheContentReport" output="false" access="public" returntype="any" hint="Render a cache's content report">
-    	<cfargument name="cacheName" type="any" required="true" default="default" hint="The cache name"/>
-		<cfscript>
-    		var thisKey			= "";
-			var x				= "";
-			var content			= "";
-			var cacheProvider 	= controller.getColdboxOCM( arguments.cacheName );
-			var cacheKeys		= "";
-			var cacheKeysLen	= 0;
-			var cacheMetadata	= "";
-			var cacheMDKeyLookup = structnew();
-			var isCacheBox		= true;
-			
-			// URL Base
-			var event 			= controller.getRequestService().getContext();
-			var URLBase			= event.getSESBaseURL();
-			
-			// Command URL Base if not using SES
-			if( NOT event.isSES() ){
-				URLBase = listlast(cgi.script_name,"/");
-			}
-			
-			// Prepare cache report for cachebox
-			if( isObject(controller.getCacheBox()) ){
-				cacheMetadata 		= cacheProvider.getStoreMetadataReport();
-				cacheMDKeyLookup 	= cacheProvider.getStoreMetadataKeyMap();
-				cacheKeys			= cacheProvider.getKeys(); 
-				cacheKeysLen		= arrayLen( cacheKeys );							
-			}
-			// COMPAT MODE: REMOVE LATER, cf7 and compat
-			else{
-				cacheMetadata 	= cacheProvider.getPoolMetadata();
-				cacheKeys		= structKeyArray( cacheMetadata ); 
-				cacheKeysLen	= arrayLen( cacheKeys );
-				// I DETEST CF7
-				cacheMDKeyLookup = structnew();
-				cacheMDKeyLookup["timeout"] = "timeout";
-				cacheMDKeyLookup["lastAccessTimeout"] = "lastAccessTimeout";
-				cacheMDKeyLookup["hits"] = "hits";
-				cacheMDKeyLookup["lastAccesed"] = "lastAccesed";
-				cacheMDKeyLookup["created"] = "created";
-				cacheMDKeyLookup["isExpired"] = "isExpired";								
-			}
-			
-			// Sort Keys
-			arraySort( cacheKeys ,"textnocase" );
-    	</cfscript>
-		
-		<!--- Render content out --->
-		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/includes/panels/CacheContentReport.cfm"></cfsavecontent>
-				
-		<cfreturn content>		
-    </cffunction>
-	
-	<!--- Render Cache Dumpver --->
-	<cffunction name="renderCacheDumper" access="public" hint="Renders the caching key value dumper." output="false" returntype="Any">
-		<cfargument name="cacheName" type="any" required="true" default="default" hint="The cache name"/>
-		<cfset var event 			= controller.getRequestService().getContext()>
-		<cfset var cachekey 		= URLDecode(event.getTrimValue('key',''))>
-		<cfset var cacheValue 		= "">
-		<cfset var dumperContents 	= "NOT_FOUND">
-		<cfset var cache 			= controller.getColdboxOCM( arguments.cacheName )>
-		
-		<!--- check key --->
-		<cfif NOT len(cacheKey) OR NOT cache.lookup( cacheKey )>
-			<cfreturn dumperContents>
-		</cfif>
-		
-		<!--- Get Data --->
-		<cfset cacheValue = cache.get( cacheKey )>
-		
-		<!--- Dump it out --->
-		<cfif isSimpleValue(cacheValue)>
-			<cfsavecontent variable="dumperContents"><cfoutput><strong>#cachekey#</strong> = #cacheValue#</cfoutput></cfsavecontent>
-		<cfelse>
-			<cfsavecontent variable="dumperContents"><cfdump var="#cacheValue#" label="#cachekey#" top="1"></cfsavecontent>
-		</cfif>
-		
-		<!--- Return it --->
-		<cfreturn dumperContents>
-	</cffunction>
 	
 	<!--- Render Profilers --->
 	<cffunction name="renderProfiler" access="public" hint="Renders the execution profilers." output="false" returntype="Any">
 		<cfset var profilerContents = "">
-		<cfset var profilers 		= getProfilers()>
+		<cfset var profilers 		= instance.profilers>
 		<cfset var profilersCount 	= ArrayLen(profilers)>
 		<cfset var x 				= 1>
 		<cfset var refLocal 		= structnew()>
@@ -416,18 +247,17 @@ Description :
 	
 	<!--- Persistent Profilers --->
 	<cffunction name="getProfilers" access="public" output="false" returntype="array" hint="Get Profilers">
-		<cfreturn instance.Profilers/>
+		<cfreturn instance.profilers/>
 	</cffunction>
 	<cffunction name="setProfilers" access="public" output="false" returntype="void" hint="Set Profilers">
 		<cfargument name="Profilers" type="array" required="true"/>
-		<cfset instance.Profilers = arguments.Profilers/>
+		<cfset instance.profilers = arguments.Profilers/>
 	</cffunction>
 	
 	<!--- resetProfilers --->
     <cffunction name="resetProfilers" output="false" access="public" returntype="void" hint="Reset all profilers">
-    	<cfset setProfilers(arrayNew(1))>
+    	<cfset instance.profilers = arrayNew(1)>
     </cffunction>
-	
 	
 	<!--- recordProfiler --->
     <cffunction name="recordProfiler" output="false" access="public" returntype="void" hint="This method will try to push a profiler record">
@@ -447,7 +277,7 @@ Description :
 			if( NOT getDebuggerConfig().getPersistentRequestProfiler() ){ return; }
 			
 			// size check
-			if( ArrayLen(getProfilers()) gte getDebuggerConfig().getmaxPersistentRequestProfilers() ){
+			if( ArrayLen( instance.profilers ) gte getDebuggerConfig().getmaxPersistentRequestProfilers() ){
 				popProfiler();
 			}
 			
@@ -456,24 +286,24 @@ Description :
 			newRecord.ip = cgi.REMOTE_ADDR;
 			newRecord.timers = arguments.profilerRecord;
 			
-			ArrayAppend(getProfilers(),newRecord);
+			ArrayAppend( instance.profilers,newRecord);
 		</cfscript>		
 	</cffunction>
 	
 	<!--- Pop a profiler --->
 	<cffunction name="popProfiler" access="public" returntype="void" hint="Pop a profiler record" output="false" >
 		<cfscript>
-			ArrayDeleteAt(getProfilers(),1);
+			ArrayDeleteAt( instance.profilers,1);
 		</cfscript>
 	</cffunction>
 	
 	<!--- Get Set Tracers --->
 	<cffunction name="getTracers" access="public" output="false" returntype="array" hint="Get Tracers">
-		<cfreturn instance.Tracers/>
+		<cfreturn instance.tracers/>
 	</cffunction>
 	<cffunction name="setTracers" access="public" output="false" returntype="void" hint="Set Tracers">
 		<cfargument name="Tracers" type="array" required="true"/>
-		<cfset instance.Tracers = arguments.Tracers/>
+		<cfset instance.tracers = arguments.Tracers/>
 	</cffunction>
 	
 	<!--- Push a tracer --->
@@ -484,19 +314,19 @@ Description :
 			var tracerEntry = StructNew();
 			
 			// Max Check
-			if( arrayLen(getTracers()) gte instance.maxTracers) { resetTracers(); }
+			if( arrayLen( instance.tracers ) gte instance.maxTracers) { resetTracers(); }
 			
 			// Create Message
 			tracerEntry["message"] = arguments.message;
 			tracerEntry["extraInfo"] = arguments.extraInfo;
 			
-			ArrayAppend(getTracers(),tracerEntry);
+			ArrayAppend( instance.tracers,tracerEntry);
 		</cfscript>
 	</cffunction>
 	
 	<!--- removeTracers --->
     <cffunction name="resetTracers" output="false" access="public" returntype="void" hint="Reset all Tracers">
-    	<cfset setTracers(arrayNew(1))>
+    	<cfset instance.tracers = arrayNew(1)>
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -25,7 +25,7 @@ Description :
 	
 	<!--- invokeMethod --->    
     <cffunction name="invokeMethod" output="false" access="public" returntype="any" hint="Invoke an AOP method invocation">    
-    	<cfargument name="invocation" type="any" hint="The method invocation object: coldbox.system.aop.MethodInvocation" colddoc:generic="coldbox.system.aop.MethodInvocation">
+    	<cfargument name="invocation" required="true" hint="The method invocation object: coldbox.system.aop.MethodInvocation" colddoc:generic="coldbox.system.aop.MethodInvocation">
 		<cfscript>
 			var refLocal = {};
 			

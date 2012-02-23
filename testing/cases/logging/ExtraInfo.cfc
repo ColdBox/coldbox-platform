@@ -1,4 +1,4 @@
-<cfcomponent>
+﻿<cfcomponent>
 
 	<!--- getData --->
     <cffunction name="getData" output="false" access="public" returntype="any" hint="">

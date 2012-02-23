@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 /* 
 New Component annotations
 

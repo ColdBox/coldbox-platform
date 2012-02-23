@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 	// Allow unique URL or combination of URLs, we recommend both enabled
 	setUniqueURLS(false);
 	// Auto reload configuration, true in dev makes sense to reload the routes on every request
@@ -17,9 +17,6 @@
 	else{
 		setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/index.cfm");
 	}
-	
-	// Add Module Routing Here
-	addModuleRoutes(pattern="/forgebox",module="forgebox");
 	
 	// Your Application Routes
 	addRoute(pattern=":handler/:action?");

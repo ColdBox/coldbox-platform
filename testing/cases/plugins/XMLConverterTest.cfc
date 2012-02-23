@@ -1,4 +1,4 @@
-<cfcomponent extends="BasePluginTest">
+﻿<cfcomponent extends="BasePluginTest">
 <cfscript>
 
 	function setup(){

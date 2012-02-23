@@ -35,9 +35,8 @@ Description :
 			
 			// Template Cache & Caching Maps
 			instance.templateCache 				= controller.getColdboxOCM("template");
-			instance.layoutsRefMap				= controller.getSetting("layoutsRefMap");
-			instance.viewsRefMap				= controller.getSetting("viewsRefMap");
 			instance.renderedHelpers			= {};
+			instance.lockName					= "rendering.#controller.getAppHash()#";
 			
 			// Discovery caching is tied to handlers for discovery.
 			instance.isDiscoveryCaching			= controller.getSetting("handlerCaching");
@@ -52,10 +51,8 @@ Description :
 			// Set the HTML Helper Plugin Scope
 			html	= getPlugin("HTMLHelper");
 
-			// Inject UDF For Views/Layouts via UDFLibraryFile setting
-			if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
-				includeUDF(controller.getSetting("UDFLibraryFile"));
-			}
+			// Load global UDF Libraries into target
+			loadGlobalUDFLibraries();		
 			
 			return this;
 		</cfscript>
@@ -81,9 +78,11 @@ Description :
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  default="" 		hint="The last access timeout for the view contents">
 		<cfargument name="cacheSuffix" 				required="false" type="any"  default=""     	hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<cfargument name="module" 					required="false" type="any"  default=""      	hint="Explicitly render a view from this module by passing the module name"/>
-		<cfargument name="args"   					required="false" type="any"  default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
-		<cfargument name="collection" 				required="false" type="any"  hint="A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)"/>
+		<cfargument name="args"   					required="false" type="any"  default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
+		<cfargument name="collection" 				required="false" type="any"  hint="A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)" colddoc:generic="collection"/>
 		<cfargument name="collectionAs" 			required="false" type="any"	 default=""  	    hint="The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention"/>
+		<cfargument name="collectionStartRow" 		required="false" type="any"	 default="1"  	    hint="The start row to limit the collection rendering with" colddoc:generic="numeric"/>
+		<cfargument name="collectionMaxRows" 		required="false" type="any"	 default="0"  	    hint="The max rows to iterate over the collection rendering with" colddoc:generic="numeric"/>
 		<cfargument name="prepostExempt" 			required="false" type="any"	 default="false" 	hint="If true, pre/post view interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -96,17 +95,32 @@ Description :
 			
 			// If no incoming explicit module call, default the value to the one in the request context for convenience
 			if( NOT len(arguments.module) ){
+
+				// check for an explicit view module
+				arguments.module = event.getCurrentViewModule();
+
+				// if module is still empty check the event pattern
 				// if no module is execution, this will be empty anyways.
-				arguments.module = event.getCurrentModule();
+				if( NOT len(arguments.module) ){ 
+					arguments.module = event.getCurrentModule();
+				}
+				
 			}
 			else{
 				explicitModule = true;
 			}
 			
-			// Rendering an explicit Renderer view/layout combo?
-			if( len(instance.explicitView) ){ arguments.view = instance.explicitView; }
-			// Rendering an explicit view or do we need to get the view from the context?
-			if( NOT len(arguments.view) ){ arguments.view = event.getCurrentView();	}
+			// Rendering an explicit view or do we need to get the view from the context or explicit context?
+			if( NOT len(arguments.view) ){ 
+				// Rendering an explicit Renderer view/layout combo?
+				if( len(instance.explicitView) ){ 
+					arguments.view = instance.explicitView;
+					// clear the explicit view now that it has been used
+					setExplicitView("");
+				}
+				// Render the view in the context
+				else{ arguments.view = event.getCurrentView(); }	
+			}
 			
 			// Do we have a view To render? Else throw exception
 			if( NOT len(arguments.view) ){
@@ -147,12 +161,12 @@ Description :
 			
 			// Discover and cache view/helper locations
 			viewLocations = discoverViewPaths(arguments.view,arguments.module,explicitModule);
-			
+
 			// Render View Composite or View Collection
 			timerHash = instance.debuggerService.timerStart("rendering View [#arguments.view#.cfm]");
 			if( structKeyExists(arguments,"collection") ){
 				// render collection in next context
-				iData.renderedView = getPlugin("Renderer").renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs);
+				iData.renderedView = getPlugin("Renderer").renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows);
 			}
 			else{
 				// render simple composite view
@@ -178,36 +192,61 @@ Description :
     	<cfargument name="view">
     	<cfargument name="module">
     	<cfargument name="explicitModule">
+    	
     	<cfscript>
     		var locationKey 	= arguments.view & arguments.module & arguments.explicitModule;
 			var locationUDF 	= variables.locateView;
 			var dPath			= "";
+			var refMap			= "";
+		</cfscript>
+		
+		<!--- Check cached paths first --->
+		<cflock name="#locationKey#.#instance.lockName#" type="readonly" timeout="15" throwontimeout="true">
+			<cfif structkeyExists( controller.getSetting("viewsRefMap") ,locationKey) AND instance.isDiscoveryCaching>
+				<cfreturn structFind( controller.getSetting("viewsRefMap"), locationKey)>
+			</cfif>
+		</cflock>
+		
+		<cfscript>
+			if (left(arguments.view, 1) EQ "/") {
+
+				refMap = {
+					viewPath = arguments.view,
+					viewHelperPath = ""
+				};	
 			
-			// Return Cached Entry if it exists
-			if( NOT structkeyExists(instance.viewsRefMap,locationKey) OR NOT instance.isDiscoveryCaching){
+			} else { // view discovery based on relative path
 				
-				// Change the location algorithm if in module mode
-				if( len(arguments.module)  ){ locationUDF = variables.locateModuleView; }
+				// module change mode
+				if( len(arguments.module) ){ locationUDF = variables.locateModuleView; }
 				
-				// Locate the view to render according to discovery algorithm
-				instance.viewsRefMap[locationKey] = structnew();
-				instance.viewsRefMap[locationKey].viewPath = locationUDF(arguments.view,arguments.module,arguments.explicitModule);
-				instance.viewsRefMap[locationKey].viewHelperPath = "";
-				
-				// Check for view helper convention
-				dPath = getDirectoryFromPath( instance.viewsRefMap[locationKey].viewPath );
-				if( fileExists(expandPath( instance.viewsRefMap[locationKey].viewPath & "Helper.cfm")) ){
-					instance.viewsRefMap[locationKey].viewHelperPath = instance.viewsRefMap[locationKey].viewPath & "Helper.cfm";
-				}
-				// Check for directory helper convention
-				else if( fileExists( expandPath( dPath & listLast(dPath,"/") & "Helper.cfm" ) ) ){
-					instance.viewsRefMap[locationKey].viewHelperPath = dPath & listLast(dPath,"/") & "Helper.cfm";
-				}
+				// Locate the view to render according to discovery algorithm and create cache map
+				refMap = {
+					viewPath = locationUDF(arguments.view,arguments.module,arguments.explicitModule),
+					viewHelperPath = ""
+				};
 			
 			}
+
+			// Check for view helper convention
+			dPath = getDirectoryFromPath( refMap.viewPath );
+			if( fileExists(expandPath( refMap.viewPath & "Helper.cfm")) ){
+				refMap.viewHelperPath = refMap.viewPath & "Helper.cfm";
+			}
+			// Check for directory helper convention
+			else if( fileExists( expandPath( dPath & listLast(dPath,"/") & "Helper.cfm" ) ) ){
+				refMap.viewHelperPath = dPath & listLast(dPath,"/") & "Helper.cfm";
+			}			
+		</cfscript>		
 			
-			return instance.viewsRefMap[locationKey];
-		</cfscript>
+		<!--- Lock and create view entry --->
+		<cfif NOT structkeyExists( controller.getSetting("viewsRefMap") ,locationKey) >
+			<cflock name="#locationKey#.#instance.lockName#" type="exclusive" timeout="15" throwontimeout="true">						
+				<cfset structInsert( controller.getSetting("viewsRefMap"), locationKey, refMap, true)>
+			</cflock>		
+		</cfif>
+		
+		<cfreturn refMap>		
     </cffunction>
 	
 	<!--- renderViewComposite --->
@@ -218,6 +257,8 @@ Description :
 		<cfargument name="args"/>
 		<cfargument name="collection">
 		<cfargument name="collectionAs">
+		<cfargument name="collectionStartRow" default="1"/>
+		<cfargument name="collectionMaxRows"  default="0"/>
 		
 		<cfscript>
 			var buffer 	= createObject("java","java.lang.StringBuffer").init();
@@ -232,9 +273,12 @@ Description :
 			// Array Rendering
 			if( isArray(arguments.collection) ){ 
 				recLen = arrayLen(arguments.collection); 
+				// is max rows passed?
+				if( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE recLen){ recLen = arguments.collectionMaxRows; }
+				// Create local marker
 				variables._items	= recLen;	
 				// iterate and present
-				for(x=1; x lte recLen; x++){
+				for(x=arguments.collectionStartRow; x lte recLen; x++){
 					// setup local cvariables
 					variables._counter  = x;
 					variables[ arguments.collectionAs ] = arguments.collection[x];
@@ -247,7 +291,11 @@ Description :
 		
 			<!--- Query Rendering --->
 			<cfset variables._items	= arguments.collection.recordCount>
-			<cfloop query="arguments.collection">
+			<!--- Max Rows --->
+			<cfif arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount>
+				<cfset variables._items	= arguments.collectionMaxRows>
+			</cfif>
+			<cfloop query="arguments.collection" startrow="#arguments.collectionStartRow#" endrow="#(arguments.collectionStartRow+variables._items)-1#">
 				<cfscript>
 					// setup local cvariables
 					variables._counter  = arguments.collection.currentRow;
@@ -281,12 +329,13 @@ Description :
 		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout">
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
 		<cfargument name="cacheSuffix" 				required="false" type="string"  default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
-		<cfargument name="args"   					required="false" type="any"  	default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
+		<cfargument name="args"   					required="false" type="any"  	default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView = "">
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey = "">
 		<cfset var cbox_cacheEntry = "">
+		<cfset var viewLocations = "" />
 		
 		<!--- Setup the cache key --->
 		<cfset cbox_cacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix>
@@ -302,8 +351,9 @@ Description :
 
 		<cfset cbox_timerHash = instance.debuggerService.timerStart("rendering External View [#arguments.view#.cfm]")>
 			<cftry>
-				<!--- Render the View --->
-				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
+				<cfset viewLocations = discoverViewPaths( arguments.view,"",false) />
+				<!--- Render External View --->
+				<cfset cbox_RenderedView = renderViewComposite(view, viewLocations.viewPath, viewLocations.viewHelperPath, args) />
 				<!--- Catches --->
 				<cfcatch type="missinginclude">
 					<cfthrow type="Renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
@@ -324,18 +374,22 @@ Description :
 
 	<!--- Render the layout --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
-		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering"/>
-		<cfargument name="view"   type="any" 	required="false" default="" hint="The view to render within this layout explicitly"/>
-		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
-		<cfargument name="args"   type="any" 	required="false" default="#structnew()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
-		
+		<cfargument name="layout" 		type="any" 	required="false" hint="The explicit layout to use in rendering"/>
+		<cfargument name="view"   		type="any" 	required="false" default="" hint="The view to render within this layout explicitly"/>
+		<cfargument name="module" 		type="any"  required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
+		<cfargument name="args"   		type="any" 	required="false" default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
+		<cfargument name="viewModule"   type="any" 	required="false" default="" hint="Explicitly render a view from this module"/>
+		<cfargument name="prepostExempt" type="any"	required="false" default="false" 	hint="If true, pre/post layout interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
+			
 		<cfset var cbox_currentLayout 		= implicitViewChecks()>
-		<cfset var cbox_RederedLayout 		= "">
 		<cfset var cbox_timerhash 			= "">
 		<cfset var cbox_locateUDF 			= variables.locateLayout>
 		<cfset var cbox_explicitModule  	= false>
 		<cfset var cbox_layoutLocationKey 	= "">
-		
+		<cfset var cbox_layoutLocation		= "">
+		<cfset var iData					= arguments>
+		<cfset var viewLocations = "" />
+				
 		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
 		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
 			<cfreturn getPlugin("Renderer").setExplicitView(arguments.view).renderLayout(argumentCollection=arguments)>
@@ -347,7 +401,7 @@ Description :
 		<cfelse>
 			<cfset cbox_explicitModule = true>
 		</cfif>
-
+		
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
 			<!--- Check if any length on incoming layout --->
@@ -357,6 +411,11 @@ Description :
 				<cfset cbox_currentLayout = "">
 			</cfif>
 		</cfif>
+		
+		<!--- Announce preLayoutRender interception --->
+		<cfif NOT arguments.prepostExempt>
+			<cfset announceInterception("preLayoutRender", iData)>
+		</cfif>			
 		
 		<!--- Choose location algorithm if in module mode --->
 		<cfif len(arguments.module)>
@@ -368,27 +427,39 @@ Description :
 
 		<!--- If Layout is blank, then just delegate to the view --->
 		<cfif len(cbox_currentLayout) eq 0>
-			<cfset cbox_RederedLayout = renderView()>
+			<cfset iData.renderedLayout = renderView( module = arguments.viewModule )>
 		<cfelse>
+			<!--- Layout location key --->
+			<cfset cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule> 
 			
-			<cfscript>
-			//Layout location key
-			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
-			// Return Cached Entry if it exists
-			if( NOT structkeyExists(instance.layoutsRefMap,"cbox_layoutLocationKey") OR NOT instance.isDiscoveryCaching){
-				instance.layoutsRefMap[cbox_layoutLocationKey] = cbox_locateUDF(cbox_currentLayout,arguments.module,cbox_explicitModule);
-			}
-			</cfscript>
-				
+			<!--- Check cached paths first --->
+			<cfif structkeyExists( controller.getSetting("layoutsRefMap") ,cbox_layoutLocationKey) AND instance.isDiscoveryCaching>
+				<cflock name="#cbox_layoutLocationKey#.#instance.lockName#" type="readonly" timeout="15" throwontimeout="true">
+					<cfset cbox_layoutLocation = structFind( controller.getSetting("layoutsRefMap"), cbox_layoutLocationKey)>
+				</cflock>
+			<cfelse>
+				<!--- Not found, cache it --->
+				<cflock name="#cbox_layoutLocationKey#.#instance.lockname#" type="exclusive" timeout="15" throwontimeout="true">
+					<cfset cbox_layoutLocation = cbox_locateUDF(cbox_currentLayout,arguments.module,cbox_explicitModule)>
+					<cfset structInsert( controller.getSetting("layoutsRefMap"), cbox_layoutLocationKey, cbox_layoutLocation, true)>
+				</cflock>
+			</cfif>
+			
+			<cfset viewLocations = discoverViewPaths( reverse ( listRest( reverse( cbox_layoutLocation ), ".")),arguments.module,cbox_explicitModule) />
 			<!--- RenderLayout --->
-			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#instance.layoutsRefMap[cbox_layoutLocationKey]#"></cfoutput></cfsavecontent>
+			<cfset iData.renderedLayout = renderViewComposite(cbox_currentLayout, viewLocations.viewPath, viewLocations.viewHelperPath, args) />
 		</cfif>
 
 		<!--- Stop Timer --->
 		<cfset instance.debuggerService.timerEnd(cbox_timerhash)>
-
+		
+		<!--- Post Layout Render Interception point --->
+		<cfif NOT arguments.prepostExempt>
+			<cfset announceInterception("postLayoutRender", iData)>
+		</cfif>
+		
 		<!--- Return Rendered Layout --->
-		<cfreturn cbox_RederedLayout>
+		<cfreturn iData.renderedLayout>
 	</cffunction>
 
 	<!--- locateLayout --->
@@ -509,7 +580,7 @@ Description :
 			}
 				
 			// Declare Locations
-			moduleName     = event.getCurrentModule();
+			moduleName     = arguments.module;
 			parentModuleViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
 			parentCommonViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#arguments.view#";
 			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/#instance.modulesConfig[moduleName].conventions.viewsLocation#/#arguments.view#";
@@ -570,7 +641,12 @@ Description :
 				}
 				else{
 					// Implicit views
-					event.setView( lcase(replace(cEvent,".","/","all")) );
+					if( getSetting(name="caseSensitiveImplicitViews",defaultValue=false) ){
+						event.setView( replace(cEvent,".","/","all") );
+					}
+					else{
+						event.setView( lcase(replace(cEvent,".","/","all")) );
+					}
 				}
 				
 				// reset layout according to newly set views;

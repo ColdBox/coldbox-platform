@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	
 	function setup(){
@@ -42,10 +42,6 @@
 		def = {dsl="javaloader"};
 		builder.process(def);
 		assertTrue( builder.$once("getJavaLoaderDSL") );
-		
-		def = {dsl="entityservice"};
-		builder.process(def);
-		assertTrue( builder.$once("getEntityServiceDSL") );
 		
 		def = {dsl="coldbox"};
 		builder.process(def);
@@ -92,18 +88,6 @@
 		assertTrue( mockJavaLoader.$once("create") );
 		assertEquals( "java.lang.StringBuffer", mockJavaLoader.$callLog().create[1][1] );	
 	}
-	
-	function testGetEntityServiceDSL(){
-		makePublic(builder, "getEntityServiceDSL");
-		def = {dsl="entityService"};
-		e = builder.getentityServiceDSL(def);
-		assertTrue( isInstanceOf(e, "coldbox.system.orm.hibernate.BaseORMService") );	
-		
-		def = {dsl="entityService:User"};
-		e = builder.getentityServiceDSL(def);
-		assertTrue( isInstanceOf(e, "coldbox.system.orm.hibernate.VirtualEntityService") );	
-	}
-	
 		
 	function testgetIOCDSl(){
 		mockFactory = getMockBox().createStub();
@@ -142,18 +126,18 @@
 		
 		//ocm only
 		def = {name="key", dsl="ocm"};
-		mockCache.$("lookup", true).$("get",this);
+		mockCache.$("get",this);
 		e = builder.getOCMDSL(def);
 		assertEquals( this, e);
 		
 		//ocm only
-		mockCache.$("lookup", false).$("get",this);
-		e = builder.getOCMDSL(def);
-		assertTrue( mockCache.$never("get") );
+		mockCache.$("get", javaCast("null",""));
+		results.e = builder.getOCMDSL(def);
+		assertFalse( structKeyExists(results,"e")  );
 		
 		// ocm:MyKey
 		def = {name="key", dsl="ocm:myKey"};
-		mockCache.$("lookup", true).$("get",this);
+		mockCache.$("get",this);
 		e = builder.getOCMDSL(def);
 		assertEquals( this, e);
 		assertEquals( "myKey", mockCache.$callLog().get[1][1] );
@@ -192,6 +176,12 @@
 		def = {name="configBean", dsl="coldbox:requestService"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( this, c);
+		
+		mockFlash = getMockBox().createEmptyMock("coldbox.system.web.flash.SessionFlash");
+		mockColdbox.$("getrequestService", getMockBox().createStub().$("getFlashScope", mockFlash) );
+		def = {name="flash", dsl="coldbox:flash"};
+		c = builder.getColdBoxDSL(def);
+		assertEquals( mockFlash, c);
 		
 		mockColdbox.$("getDebuggerService",this);
 		def = {name="configBean", dsl="coldbox:debuggerService"};
@@ -232,6 +222,40 @@
 		mockColdBox.$("getSetting").$args("mySetting").$results("UnitTest");
 		c = builder.getColdBoxDSL(def);
 		assertEquals("unitTest", c);
+		// setting@module
+		def = {name="mySetting", dsl="coldbox:setting:mySetting@myModule"};
+		modSettings = { 
+			myModule={ 
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals("unitTest", c);
+		
+		// modulesettings
+		def = {name="mySetting", dsl="coldbox:moduleSettings:myModule"};
+		modSettings = { 
+			myModule={ 
+				moduleMapping = "/modules/MyModule",
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals( modSettings.myModule.settings , c);
+		
+		// moduleConfig
+		def = {name="mySetting", dsl="coldbox:moduleConfig:myModule"};
+		modSettings = { 
+			myModule={ 
+				moduleMapping = "/modules/MyModule",
+				settings={ mySetting="unitTest" }
+			} 
+		};
+		mockColdBox.$("getSetting").$args("modules").$results( modSettings );
+		c = builder.getColdBoxDSL(def);
+		assertEquals( modSettings.myModule , c);
 		
 		// fwsetting
 		def = {name="mySetting", dsl="coldbox:fwSetting"};

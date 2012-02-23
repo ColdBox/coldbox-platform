@@ -1,4 +1,4 @@
-<cfcomponent name="BeanConfig" extends="lightwire.BaseConfigObject" hint="A LightWire configuration bean.">
+﻿<cfcomponent name="BeanConfig" extends="lightwire.BaseConfigObject" hint="A LightWire configuration bean.">
 
 <cffunction name="init" output="false" returntype="any" hint="I initialize the config bean.">
 	<cfscript>

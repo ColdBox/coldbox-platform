@@ -7,8 +7,8 @@
 	<functions>
 <!-- Functions for: coldbox.system.Interceptor -->
 	<function creator="8" name="setProperty" returns="void">
-			<help><![CDATA[ Set a property (Context: Interceptor) ]]></help>
-		<parameter name="property" required="true" type="string">
+			<help><![CDATA[ Set an interceptor property (Context: Interceptor) ]]></help>
+		<parameter name="property" required="true" type="any">
 				<help><![CDATA[ The property name to set. ]]></help>
 			</parameter>
 			<parameter name="value" required="true" type="any">
@@ -16,15 +16,15 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getProperty" returns="any">
-			<help><![CDATA[ Get a property, throws exception if not found. (Context: Interceptor) ]]></help>
-		<parameter name="property" required="true" type="string">
+			<help><![CDATA[ Get an interceptor property, throws exception if not found. (Context: Interceptor) ]]></help>
+		<parameter name="property" required="true" type="any">
 				<help><![CDATA[ The key of the property to return. ]]></help>
 			</parameter>
 			</function>
-	<function creator="8" name="getproperties" returns="struct">
-			<help><![CDATA[ Get properties (Context: Interceptor) ]]></help>
+	<function creator="8" name="getProperties" returns="struct">
+			<help><![CDATA[ Get the entire properties structure (Context: Interceptor) ]]></help>
 		</function>
-	<function creator="8" name="getInterceptorService" returns="coldbox.system.web.services.interceptorService">
+	<function creator="8" name="getInterceptorService" returns="any">
 			<help><![CDATA[  (Context: Interceptor) ]]></help>
 		</function>
 	<function creator="8" name="Configure" returns="void">
@@ -32,7 +32,7 @@
 		</function>
 	<function creator="8" name="appendToBuffer" returns="void">
 			<help><![CDATA[ Append to the interceptor buffer. (Context: Interceptor) ]]></help>
-		<parameter name="str" required="true" type="string">
+		<parameter name="str" required="true" type="any">
 				<help><![CDATA[ The string to append ]]></help>
 			</parameter>
 			</function>
@@ -40,23 +40,23 @@
 			<help><![CDATA[ Clear the interceptor buffer (Context: Interceptor) ]]></help>
 		</function>
 	<function creator="8" name="propertyExists" returns="boolean">
-			<help><![CDATA[ Checks wether a given property exists or not. (Context: Interceptor) ]]></help>
-		<parameter name="property" required="true" type="string">
+			<help><![CDATA[ Checks wether a given interceptor property exists or not. (Context: Interceptor) ]]></help>
+		<parameter name="property" required="true" type="any">
 				<help><![CDATA[ The property name ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getBufferObject" returns="any">
 			<help><![CDATA[ Get the request buffer object: coldbox.system.core.util.RequestBuffer (Context: Interceptor) ]]></help>
 		</function>
-	<function creator="8" name="setproperties" returns="void">
-			<help><![CDATA[ Set properties (Context: Interceptor) ]]></help>
+	<function creator="8" name="setProperties" returns="void">
+			<help><![CDATA[ Set the entire properties structure (Context: Interceptor) ]]></help>
 		<parameter name="properties" required="true" type="struct">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="unregister" returns="boolean">
 			<help><![CDATA[ Unregister this interceptor from a passed state. If the state does not exists, it returns false (Context: Interceptor) ]]></help>
-		<parameter name="state" required="true" type="string">
+		<parameter name="state" required="true" type="any">
 				<help><![CDATA[ The named state to unregister this interceptor from ]]></help>
 			</parameter>
 			</function>
@@ -65,7 +65,7 @@
 		<parameter name="controller" required="true" type="any">
 				<help><![CDATA[ The ColdBox controller reference: coldbox.system.web.Controller ]]></help>
 			</parameter>
-			<parameter name="properties" required="true" type="struct">
+			<parameter name="properties" required="true" type="any">
 				<help><![CDATA[ The Interceptor properties ]]></help>
 			</parameter>
 			</function>
@@ -81,20 +81,20 @@
 		</function>
 	<function creator="8" name="setPluginVersion" returns="string">
 			<help><![CDATA[ Set the instance's pluginVersion (Context: Plugin) ]]></help>
-		<parameter name="pluginVersion" required="true" type="string">
+		<parameter name="pluginVersion" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="setPluginDescription" returns="string">
 			<help><![CDATA[ Set the instance's pluginDescription (Context: Plugin) ]]></help>
-		<parameter name="pluginDescription" required="true" type="string">
+		<parameter name="pluginDescription" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getPluginName" returns="string">
 			<help><![CDATA[ Get the instance's pluginName (Context: Plugin) ]]></help>
 		</function>
-	<function creator="8" name="getRequestContext" returns="coldbox.system.web.context.RequestContext">
+	<function creator="8" name="getRequestContext" returns="any">
 			<help><![CDATA[ Retrieve the request context object (Context: Plugin) ]]></help>
 		</function>
 	<function creator="8" name="getpluginAuthor" returns="string">
@@ -105,11 +105,11 @@
 		</function>
 	<function creator="8" name="setPluginName" returns="string">
 			<help><![CDATA[ Set the instance's pluginName (Context: Plugin) ]]></help>
-		<parameter name="pluginName" required="true" type="string">
+		<parameter name="pluginName" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
-	<function creator="8" name="getRequestCollection" returns="struct">
+	<function creator="8" name="getRequestCollection" returns="any">
 			<help><![CDATA[ Get a reference to the request collection (Context: Plugin) ]]></help>
 		<parameter name="private" required="false" type="boolean">
 				<help><![CDATA[ Get the request collection or private request collection ]]></help>
@@ -117,13 +117,13 @@
 			</function>
 	<function creator="8" name="setpluginAuthor" returns="void">
 			<help><![CDATA[ Set the instance's pluginAuthor (Context: Plugin) ]]></help>
-		<parameter name="pluginAuthor" required="true" type="string">
+		<parameter name="pluginAuthor" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="setpluginAuthorURL" returns="void">
 			<help><![CDATA[ Set the instance's pluginAuthorURL (Context: Plugin) ]]></help>
-		<parameter name="pluginAuthorURL" required="true" type="string">
+		<parameter name="pluginAuthorURL" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
@@ -139,10 +139,10 @@
 <!-- Functions for: coldbox.system.EventHandler -->
 	<function creator="8" name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
-		<parameter name="method" required="true" type="string">
+		<parameter name="method" required="true" type="any">
 				<help><![CDATA[ Name of the method to execute ]]></help>
 			</parameter>
-			<parameter name="argCollection" required="false" type="struct">
+			<parameter name="argCollection" required="false" type="any">
 				<help><![CDATA[ Can be called with an argument collection struct ]]></help>
 			</parameter>
 			</function>
@@ -159,6 +159,9 @@
 			</parameter>
 			</function>
 <!-- Functions for: coldbox.system.FrameworkSupertype -->
+	<function creator="8" name="loadGlobalUDFLibraries" returns="any">
+			<help><![CDATA[ Load the global UDF libraries defined in the UDFLibraryFile Setting (Context: FrameworkSupertype) ]]></help>
+		</function>
 	<function creator="8" name="$rethrow" returns="void">
 			<help><![CDATA[ Rethrow facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="throwObject" required="true" type="any">
@@ -210,6 +213,9 @@
 				<help><![CDATA[ Flag to load the resource bundle for the specified locale (If not already loaded) or just change the framework's locale. Boolean ]]></help>
 			</parameter>
 			</function>
+	<function creator="8" name="getNewMail" returns="any">
+			<help><![CDATA[ Get a new mail payload object ready for sending email through our mail service.  This function's arguments match the cfmail tag, so send whatever you like (Context: FrameworkSupertype) ]]></help>
+		</function>
 	<function creator="8" name="getDatasource" returns="any">
 			<help><![CDATA[ I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct (Context: FrameworkSupertype) ]]></help>
 		<parameter name="alias" required="false" type="any">
@@ -218,6 +224,9 @@
 			</function>
 	<function creator="8" name="getController" returns="any">
 			<help><![CDATA[ Get controller: coldbox.system.web.Controller (Context: FrameworkSupertype) ]]></help>
+		</function>
+	<function creator="8" name="getMailService" returns="any">
+			<help><![CDATA[ Get a reference to our Mail Service plugin (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function creator="8" name="$dump" returns="void">
 			<help><![CDATA[ Facade for cfmx dump (Context: FrameworkSupertype) ]]></help>
@@ -231,29 +240,17 @@
 	<function creator="8" name="getModel" returns="any">
 			<help><![CDATA[ Create or retrieve model objects by convention (Context: FrameworkSupertype) ]]></help>
 		<parameter name="name" required="false" type="any">
-				<help><![CDATA[ The name of the model to retrieve ]]></help>
-			</parameter>
-			<parameter name="useSetterInjection" required="false" type="any">
-				<help><![CDATA[ Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean ]]></help>
-			</parameter>
-			<parameter name="onDICompleteUDF" required="false" type="any">
-				<help><![CDATA[ After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete ]]></help>
-			</parameter>
-			<parameter name="stopRecursion" required="false" type="any">
-				<help><![CDATA[ A comma-delimmited list of stoprecursion classpaths. ]]></help>
+				<help><![CDATA[ The mapping name or CFC instance path to try to build up ]]></help>
 			</parameter>
 			<parameter name="dsl" required="false" type="any">
-				<help><![CDATA[ The dsl string to use to retrieve the domain object ]]></help>
-			</parameter>
-			<parameter name="executeInit" required="false" type="any">
-				<help><![CDATA[ Whether to execute the init() constructor or not.  Defaults to execute, Boolean ]]></help>
+				<help><![CDATA[ The dsl string to use to retrieve the instance model object, mutually exclusive with 'name' ]]></help>
 			</parameter>
 			<parameter name="initArguments" required="false" type="any">
-				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance. Only available for WireBox integration ]]></help>
+				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="renderLayout" returns="any">
-			<help><![CDATA[ Renders the current layout + view Combinations if declared. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Renders a layout with view combinations (Context: FrameworkSupertype) ]]></help>
 		<parameter name="layout" required="false" type="any">
 				<help><![CDATA[ The explicit layout to use in rendering. ]]></help>
 			</parameter>
@@ -263,9 +260,12 @@
 			<parameter name="module" required="false" type="any">
 				<help><![CDATA[ Explicitly render a layout from this module ]]></help>
 			</parameter>
+			<parameter name="args" required="false" type="struct">
+				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
+			</parameter>
 			</function>
 	<function creator="8" name="renderView" returns="Any">
-			<help><![CDATA[ Facade to plugin's render view. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Renders all kinds of views (Context: FrameworkSupertype) ]]></help>
 		<parameter name="view" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -283,6 +283,15 @@
 			</parameter>
 			<parameter name="module" required="false" type="any">
 				<help><![CDATA[ Explicitly render a layout from this module ]]></help>
+			</parameter>
+			<parameter name="args" required="false" type="struct">
+				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
+			</parameter>
+			<parameter name="collection" required="false" type="any">
+				<help><![CDATA[ A collection to use by this Renderer to render the view as many times as the items in the collection ]]></help>
+			</parameter>
+			<parameter name="collectionAs" required="false" type="any">
+				<help><![CDATA[ The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="locateFilePath" returns="string">
@@ -304,6 +313,9 @@
 			</parameter>
 			<parameter name="FWSetting" required="false" type="boolean">
 				<help><![CDATA[  ]]></help>
+			</parameter>
+			<parameter name="defaultValue" required="false" type="any">
+				<help><![CDATA[ Default value to return if not found. ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getDebugMode" returns="boolean">
@@ -415,7 +427,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="includeUDF" returns="void">
-			<help><![CDATA[ Injects a UDF Library (*.cfc or *.udf) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="udflibrary" required="true" type="any">
 				<help><![CDATA[ The UDF library to inject. ]]></help>
 			</parameter>
@@ -493,7 +505,7 @@
 			<help><![CDATA[ Get the user's currently set locale or default locale (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function creator="8" name="renderExternalView" returns="Any">
-			<help><![CDATA[ Facade to plugins' render external view. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Renders external views (Context: FrameworkSupertype) ]]></help>
 		<parameter name="view" required="true" type="any">
 				<help><![CDATA[ The full path to the view. This can be an expanded path or relative. Include extension. ]]></help>
 			</parameter>
@@ -508,6 +520,9 @@
 			</parameter>
 			<parameter name="cacheSuffix" required="false" type="any">
 				<help><![CDATA[ Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching. ]]></help>
+			</parameter>
+			<parameter name="args" required="false" type="struct">
+				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getMyPlugin" returns="any">
@@ -604,7 +619,13 @@
 	<scope value="logbox.getCurrentLoggers()">
 			<help><![CDATA[Get the list of currently instantiated loggers.]]></help>
 		</scope>
-	<scope value="flash.init(controller)">
+	<scope value="flash.getProperty(property)">
+			<help><![CDATA[Get a flash scope property, throws exception if not found.]]></help>
+		</scope>
+	<scope value="flash.propertyExists(property)">
+			<help><![CDATA[Checks wether a given flash scope property exists or not.]]></help>
+		</scope>
+	<scope value="flash.init(controller,[defaults])">
 			<help><![CDATA[Constructor]]></help>
 		</scope>
 	<scope value="flash.keep([keys])">
@@ -612,6 +633,9 @@
 		</scope>
 	<scope value="flash.statusMarks([keys],keep)">
 			<help><![CDATA[Change the status marks of the temp scope entries]]></help>
+		</scope>
+	<scope value="flash.getDefaults()">
+			<help><![CDATA[Get flash scope default data packet]]></help>
 		</scope>
 	<scope value="flash.removeFlash()">
 			<help><![CDATA[Remove the entire flash storage]]></help>
@@ -621,6 +645,9 @@
 		</scope>
 	<scope value="flash.getController()">
 			<help><![CDATA[Get the controller reference]]></help>
+		</scope>
+	<scope value="flash.setProperty(property,value)">
+			<help><![CDATA[Set a flash scope property]]></help>
 		</scope>
 	<scope value="flash.clear()">
 			<help><![CDATA[Clear the temp flash scope and remove all data]]></help>
@@ -642,6 +669,9 @@
 		</scope>
 	<scope value="flash.remove(name,[saveNow])">
 			<help><![CDATA[Remove an object from flash scope]]></help>
+		</scope>
+	<scope value="flash.setProperties(properties)">
+			<help><![CDATA[Set flash scope properties]]></help>
 		</scope>
 	<scope value="flash.persistRC([include],[exclude],[saveNow])">
 			<help><![CDATA[Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed.]]></help>
@@ -667,11 +697,17 @@
 	<scope value="flash.size()">
 			<help><![CDATA[Get the size of the items in flash scope]]></help>
 		</scope>
+	<scope value="flash.getProperties()">
+			<help><![CDATA[Get flash scope properties]]></help>
+		</scope>
 	<scope value="flash.get(name,[default])">
 			<help><![CDATA[Get an object from flash scope]]></help>
 		</scope>
 	<scope value="flash.discard([keys])">
 			<help><![CDATA[Mark for discard all or a single flash temp variable for another relocation. You can also remove them if you like.]]></help>
+		</scope>
+	<scope value="binder.mapAspect(aspect,autoBinding)">
+			<help><![CDATA[Map a new aspect]]></help>
 		</scope>
 	<scope value="binder.toWebservice(path)">
 			<help><![CDATA[Map to a webservice destination class path.]]></help>
@@ -682,8 +718,17 @@
 	<scope value="binder.mapDSL(namespace,path)">
 			<help><![CDATA[Register a new custom dsl namespace]]></help>
 		</scope>
+	<scope value="binder.getAspectBindings()">
+			<help><![CDATA[Get the collection of aspect bindings for this binder]]></help>
+		</scope>
 	<scope value="binder.with(alias)">
 			<help><![CDATA[Used to set the current working mapping name in place for the maping DSL. An exception is thrown if the mapping does not exist yet.]]></help>
+		</scope>
+	<scope value="binder.mixins(mixins)">
+			<help><![CDATA[Adds one, a list or an array of UDF templates to mixin to a CFC]]></help>
+		</scope>
+	<scope value="binder.providerMethod(method,mapping)">
+			<help><![CDATA[Add a new provider method mapping]]></help>
 		</scope>
 	<scope value="binder.onDIComplete(methods)">
 			<help><![CDATA[The methods to execute once DI completes on the mapping]]></help>
@@ -700,22 +745,28 @@
 	<scope value="binder.loadDataDSL([rawDSL])">
 			<help><![CDATA[Load a data configuration CFC data DSL]]></help>
 		</scope>
+	<scope value="binder.match()">
+			<help><![CDATA[Create a new matcher class for usage in class or method matching]]></help>
+		</scope>
 	<scope value="binder.getCurrentMapping()">
 			<help><![CDATA[Get the current set mapping (UTILITY method)]]></help>
 		</scope>
 	<scope value="binder.cacheBox([configFile],[cacheFactory],[enabled],[classNamespace])">
 			<help><![CDATA[Integrate with CacheBox]]></help>
 		</scope>
-	<scope value="binder.mapDirectory(packagePath)">
+	<scope value="binder.mapDirectory(packagePath,include,exclude)">
 			<help><![CDATA[Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection]]></help>
 		</scope>
 	<scope value="binder.mapScope(annotation,path)">
 			<help><![CDATA[Register a new WireBox custom scope]]></help>
 		</scope>
+	<scope value="binder.extraAttributes(data)">
+			<help><![CDATA[Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.]]></help>
+		</scope>
 	<scope value="binder.getScanLocations()">
 			<help><![CDATA[Get the linked map of package scan locations for CFCs]]></help>
 		</scope>
-	<scope value="binder.setter(name,[ref],[dsl],[value],[javaCast])">
+	<scope value="binder.setter(name,[ref],[dsl],[value],[javaCast],[argName])">
 			<help><![CDATA[Map a setter function to a mapping]]></help>
 		</scope>
 	<scope value="binder.getProperties()">
@@ -738,6 +789,9 @@
 		</scope>
 	<scope value="binder.getAppMapping()">
 			<help><![CDATA[Get the ColdBox app mapping variable if context linked]]></help>
+		</scope>
+	<scope value="binder.toProvider(provider)">
+			<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider]]></help>
 		</scope>
 	<scope value="binder.getCustomScopes()">
 			<help><![CDATA[Get the registered custom scopes]]></help>
@@ -856,8 +910,14 @@
 	<scope value="binder.propertyExists(name)">
 			<help><![CDATA[Checks if a property exists]]></help>
 		</scope>
+	<scope value="binder.bindAspect(classes,methods,aspects)">
+			<help><![CDATA[Bind a aspects to classes and methods]]></help>
+		</scope>
 	<scope value="binder.logBoxConfig(config)">
 			<help><![CDATA[Set the logBox Configuration to use]]></help>
+		</scope>
+	<scope value="binder.virtualInheritance(mapping)">
+			<help><![CDATA[Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping]]></help>
 		</scope>
 	<scope value="event.getViewLayouts()">
 			<help><![CDATA[Get the registered view layout associations map]]></help>
@@ -901,10 +961,10 @@
 	<scope value="event.setisSES(isSES)">
 			<help><![CDATA[Set the isSES flag, usualy done by the SES interceptor]]></help>
 		</scope>
-	<scope value="event.renderData(type,data,contentType,[encoding],[statusCode],[statusText],[jsonCase],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName])">
+	<scope value="event.renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName])">
 			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
 		</scope>
-	<scope value="event.setLayout([name])">
+	<scope value="event.setLayout(name,[module])">
 			<help><![CDATA[I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout]]></help>
 		</scope>
 	<scope value="event.getDebugPanelFlag()">
@@ -931,7 +991,7 @@
 	<scope value="event.setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
 			<help><![CDATA[Set an HTTP Header]]></help>
 		</scope>
-	<scope value="event.setView(name,[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[layout])">
+	<scope value="event.setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[layout],[module],[args])">
 			<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
 		</scope>
 	<scope value="event.getViewCacheableEntry()">
@@ -955,6 +1015,12 @@
 	<scope value="event.overrideEvent([event])">
 			<help><![CDATA[I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.]]></help>
 		</scope>
+	<scope value="event.getCurrentViewModule()">
+			<help><![CDATA[Gets the current set views's module for rendering]]></help>
+		</scope>
+	<scope value="event.noLayout()">
+			<help><![CDATA[Mark this request to not use a layout for rendering]]></help>
+		</scope>
 	<scope value="event.getMemento()">
 			<help><![CDATA[Get the state of this request context]]></help>
 		</scope>
@@ -966,6 +1032,9 @@
 		</scope>
 	<scope value="event.showDebugPanel(show)">
 			<help><![CDATA[I can override to show or not the debug panel. Very useful in AJAX debugging]]></help>
+		</scope>
+	<scope value="event.getCurrentLayoutModule()">
+			<help><![CDATA[Gets the current set layout's module for rendering]]></help>
 		</scope>
 	<scope value="event.getCurrentView()">
 			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
@@ -1006,11 +1075,17 @@
 	<scope value="event.getRenderData()">
 			<help><![CDATA[Get the renderData structure.]]></help>
 		</scope>
+	<scope value="event.getHTTPBasicCredentials()">
+			<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
+		</scope>
 	<scope value="event.isProxyRequest()">
 			<help><![CDATA[Is this a coldbox proxy request]]></help>
 		</scope>
 	<scope value="event.isEventCacheable()">
 			<help><![CDATA[Check wether the incoming event has been flagged for caching. Boolean]]></help>
+		</scope>
+	<scope value="event.getCurrentViewArgs()">
+			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
 		</scope>
 	<scope value="event.removeEventCacheableEntry()">
 			<help><![CDATA[Remove the cacheable entry]]></help>
@@ -1051,7 +1126,7 @@
 	<scope value="event.getValue(name,[defaultValue],[private])">
 			<help><![CDATA[I Get a value from the public or private request collection.]]></help>
 		</scope>
-	<scope value="event.getModuleRoot()">
+	<scope value="event.getModuleRoot([module])">
 			<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.]]></help>
 		</scope>
 	<scope value="event.setMemento(memento)">
@@ -1066,13 +1141,16 @@
 	<scope value="wirebox.isCacheBoxLinked()">
 			<help><![CDATA[Checks if CacheBox is linked]]></help>
 		</scope>
+	<scope value="wirebox.shutdown()">
+			<help><![CDATA[Shutdown the injector gracefully by calling the shutdown events internally.]]></help>
+		</scope>
 	<scope value="wirebox.getVersion()">
 			<help><![CDATA[Get the Injector's version string.]]></help>
 		</scope>
 	<scope value="wirebox.getScopes()">
 			<help><![CDATA[Get all the registered scopes structure in this injector]]></help>
 		</scope>
-	<scope value="wirebox.injectTarget(target,propertyName,propertyObject,scope)">
+	<scope value="wirebox.injectTarget(target,propertyName,propertyObject,scope,argName)">
 			<help><![CDATA[Inject a model object with dependencies via setters or property injections]]></help>
 		</scope>
 	<scope value="wirebox.registerScopes()">
@@ -1106,19 +1184,22 @@
 			<help><![CDATA[Get the instance of ColdBox linked in this Injector. Empty if using standalone version]]></help>
 		</scope>
 	<scope value="wirebox.registerNewInstance(name,instancePath)">
-			<help><![CDATA[Register a new requested mapping object instance]]></help>
-		</scope>
-	<scope value="wirebox.buildInstance(mapping,[initArguments])">
-			<help><![CDATA[Build an instance, this is called from registered scopes only as they provide locking and transactions]]></help>
+			<help><![CDATA[Register a new requested mapping object instance thread safely and returns the binder configured for this instance]]></help>
 		</scope>
 	<scope value="wirebox.doScopeRegistration()">
 			<help><![CDATA[Register this injector on a user specified scope]]></help>
+		</scope>
+	<scope value="wirebox.buildInstance(mapping,[initArguments])">
+			<help><![CDATA[Build an instance, this is called from registered scopes only as they provide locking and transactions]]></help>
 		</scope>
 	<scope value="wirebox.buildBinder(binder,properties)">
 			<help><![CDATA[Load a configuration binder object according to passed in type]]></help>
 		</scope>
 	<scope value="wirebox.clearSingletons()">
 			<help><![CDATA[Clear the singleton cache]]></help>
+		</scope>
+	<scope value="wirebox.getScopeStorage()">
+			<help><![CDATA[Get the scope storage utility]]></help>
 		</scope>
 	<scope value="wirebox.getBinder()">
 			<help><![CDATA[Get the Injector's configuration binder object]]></help>
@@ -1144,8 +1225,14 @@
 	<scope value="wirebox.configure(binder,properties)">
 			<help><![CDATA[Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.]]></help>
 		</scope>
+	<scope value="wirebox.processMixins(targetObject,mapping)">
+			<help><![CDATA[Process mixins on the selected target]]></help>
+		</scope>
 	<scope value="wirebox.removeFromScope()">
 			<help><![CDATA[Remove the Injector from scope registration if enabled, else does nothing]]></help>
+		</scope>
+	<scope value="wirebox.locateScopedSelf()">
+			<help><![CDATA[Return a self reference using the scoped registration, mostly used by providers or scope widening objects]]></help>
 		</scope>
 	<scope value="wirebox.isColdBoxLinked()">
 			<help><![CDATA[Checks if Coldbox application context is linked]]></help>
@@ -1255,6 +1342,105 @@
 	<scope value="log.canError()">
 			<help><![CDATA[Can log error messages]]></help>
 		</scope>
+	<scope value="cachebox.init([config],[coldbox],[factoryID])">
+			<help><![CDATA[Constructor]]></help>
+		</scope>
+	<scope value="cachebox.removeCache(name)">
+			<help><![CDATA[Try to remove a named cache from this factory, returns Boolean if successfull or not]]></help>
+		</scope>
+	<scope value="cachebox.replaceCache(cache,decoratedCache)">
+			<help><![CDATA[Replace a registered named cache with a new decorated cache of the same name.]]></help>
+		</scope>
+	<scope value="cachebox.removeFromScope()">
+			<help><![CDATA[Remove the cache factory from scope registration if enabled, else does nothing]]></help>
+		</scope>
+	<scope value="cachebox.shutdownCache(name)">
+			<help><![CDATA[Send a shutdown command to a specific cache provider to bring down gracefully. It also removes it from the cache factory]]></help>
+		</scope>
+	<scope value="cachebox.getScopeRegistration()">
+			<help><![CDATA[Get the scope registration information]]></help>
+		</scope>
+	<scope value="cachebox.registerListeners()">
+			<help><![CDATA[Register all the configured listeners in the configuration file]]></help>
+		</scope>
+	<scope value="cachebox.expireAll()">
+			<help><![CDATA[Expires all the elements in all the registered caches without de-registrations]]></help>
+		</scope>
+	<scope value="cachebox.getUtil()">
+			<help><![CDATA[Create and return a util object]]></help>
+		</scope>
+	<scope value="cachebox.clearAll()">
+			<help><![CDATA[Clears all the elements in all the registered caches without de-registrations]]></help>
+		</scope>
+	<scope value="cachebox.getFactoryID()">
+			<help><![CDATA[Get the unique ID of this cache factory]]></help>
+		</scope>
+	<scope value="cachebox.createCache(name,provider,[properties])">
+			<help><![CDATA[Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.ICacheProvider]]></help>
+		</scope>
+	<scope value="cachebox.getVersion()">
+			<help><![CDATA[Get the CacheBox version string.]]></help>
+		</scope>
+	<scope value="cachebox.doScopeRegistration()">
+			<help><![CDATA[Register this cachefactory on a user specified scope]]></help>
+		</scope>
+	<scope value="cachebox.removeAll()">
+			<help><![CDATA[Remove all the registered caches in this factory, this triggers individual cache shutdowns]]></help>
+		</scope>
+	<scope value="cachebox.isColdBoxLinked()">
+			<help><![CDATA[Checks if Coldbox application controller is linked]]></help>
+		</scope>
+	<scope value="cachebox.getConfig()">
+			<help><![CDATA[Get this LogBox's configuration object.]]></help>
+		</scope>
+	<scope value="cachebox.configure(config)">
+			<help><![CDATA[Configure the cache factory for operation, called by the init(). You can also re-configure CacheBox programmatically.]]></help>
+		</scope>
+	<scope value="cachebox.getLogBox()">
+			<help><![CDATA[Get the instance of LogBox configured for this cache factory]]></help>
+		</scope>
+	<scope value="cachebox.addDefaultCache(name)">
+			<help><![CDATA[Add a default named cache to our registry, create it, config it, register it and return it of type: coldbox.system.cache.ICacheProvider]]></help>
+		</scope>
+	<scope value="cachebox.configureEventManager()">
+			<help><![CDATA[Configure a standalone version of a ColdBox Event Manager]]></help>
+		</scope>
+	<scope value="cachebox.shutdown()">
+			<help><![CDATA[Recursively sends shutdown commands to al registered caches and cleans up in preparation for shutdown]]></help>
+		</scope>
+	<scope value="cachebox.getEventManager()">
+			<help><![CDATA[Get the cache factory's event manager]]></help>
+		</scope>
+	<scope value="cachebox.reapAll()">
+			<help><![CDATA[A nice way to call reap on all registered caches]]></help>
+		</scope>
+	<scope value="cachebox.cacheExists(name)">
+			<help><![CDATA[Check if the passed in named cache is already registered in this factory or not]]></help>
+		</scope>
+	<scope value="cachebox.getCache(name)">
+			<help><![CDATA[Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception. Type: coldbox.system.cache.ICacheProvider]]></help>
+		</scope>
+	<scope value="cachebox.getCaches()">
+			<help><![CDATA[Get a reference to all the registered caches in the cache factory as a structure]]></help>
+		</scope>
+	<scope value="cachebox.getCacheNames()">
+			<help><![CDATA[Get the array of caches registered with this factory]]></help>
+		</scope>
+	<scope value="cachebox.addCache(cache)">
+			<help><![CDATA[Register a new instantiated cache with this cache factory]]></help>
+		</scope>
+	<scope value="cachebox.configureLogBox()">
+			<help><![CDATA[Configure a standalone version of logBox for logging]]></help>
+		</scope>
+	<scope value="cachebox.registerCache(cache)">
+			<help><![CDATA[Register a cache instance internaly]]></help>
+		</scope>
+	<scope value="cachebox.getDefaultCache()">
+			<help><![CDATA[Get the default cache provider of type coldbox.system.cache.ICacheProvider]]></help>
+		</scope>
+	<scope value="cachebox.getColdbox()">
+			<help><![CDATA[Get the instance of ColdBox linked in this cache factory. Empty if using standalone version]]></help>
+		</scope>
 	<scope value="controller.setLoaderService(loaderService)">
 			<help><![CDATA[Set LoaderService]]></help>
 		</scope>
@@ -1306,7 +1492,7 @@
 	<scope value="controller.getUtil()">
 			<help><![CDATA[Create and return a util object]]></help>
 		</scope>
-	<scope value="controller.getSetting([name],[FWSetting])">
+	<scope value="controller.getSetting([name],[FWSetting],[defaultValue])">
 			<help><![CDATA[I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct.]]></help>
 		</scope>
 	<scope value="controller.setLogBox(logBox)">
@@ -1371,12 +1557,6 @@
 		</scope>
 	<scope value="controller.getHandlerService()">
 			<help><![CDATA[Get HandlerService: coldbox.system.web.services.HandlerService]]></help>
-		</scope>
-	<scope value="controller.getAppStartHandlerFired()">
-			<help><![CDATA[Get AppStartHandlerFired]]></help>
-		</scope>
-	<scope value="controller.setAppStartHandlerFired(appStartHandlerFired)">
-			<help><![CDATA[Set AppStartHandlerFired]]></help>
 		</scope>
 	<scope value="controller.setAspectsInitiated(aspectsInitiated)">
 			<help><![CDATA[Set AspectsInitiated]]></help>

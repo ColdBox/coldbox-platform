@@ -1,10 +1,10 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.ColdboxCacheFlash");
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
-		mockCache = getMockBox().createMock(className="coldbox.system.cache.CacheManager",clearMethods=true);
-		mockController.$("getColdboxOCM",mockCache);
+		mockCache = getMockBox().createMock(className="coldbox.system.cache.providers.CacheBoxProvider",clearMethods=true);
+		mockController.$("getColdboxOCM",mockCache).$("settingExists",false);
 		
 		flash.init(mockController);
 		obj = createObject("component","coldbox.system.core.cf.CFMLEngine").init();

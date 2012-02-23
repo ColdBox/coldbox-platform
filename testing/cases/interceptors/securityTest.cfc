@@ -1,94 +1,70 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-
-Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="securityTest" extends="coldbox.system.testing.BaseTestCase" output="false">
-
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-		var mypath = getDirectoryFromPath(getMetaData(this).path);
+<cfcomponent extends="coldbox.system.testing.BaseInterceptorTest" interceptor="coldbox.system.interceptors.Security">
+<cfscript>
 		
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_xml.xml");
-		
-		//Call the super setup method to setup the app.
+	function setup(){
+		// setup properties
 		super.setup();
+		security = interceptor;	
+	}
+
+	function testConfigure(){
+		props = {
+			useRegex = true,
+			rulesSource = "xml"
+		};
+		security.setProperties( props );
+		security.$("rulesSourceChecks");
+		security.configure();
 		
-		/* Place in app for testing */
-		application.cbController = getController();
-		</cfscript>
-	</cffunction>
+		assertEquals( false, security.getProperty("rulesLoaded") );
+		assertEquals( [], security.getProperty("rules") );
+	}
 	
-	<cffunction name="teardown" returntype="void" access="public" output="false">
-		<cfscript>
-		structdelete(application,"cbcontroller");
-		</cfscript>
-	</cffunction>
+	function testAfterAspectsLoad(){
+		// pre event security check
+		security.$("unregister",true).setProperty("preEventSecurity",false);
+		security.setProperty("rulesSource","");
+		security.afterAspectsLoad( getMockRequestContext(), {} );
+		assertTrue( security.$once("unregister") );
+		
+		// load xml
+		security.$("loadXMLRules").setProperty("rulesSource","xml");
+		security.afterAspectsLoad( getMockRequestContext(), {} );
+		assertTrue( security.$once("loadXMLRules") );
+		
+		// load db
+		security.$("loadDBRules").setProperty("rulesSource","db");
+		security.afterAspectsLoad( getMockRequestContext(), {} );
+		assertTrue( security.$once("loadDBRules") );
+		
+		// load ioc
+		security.$("loadIOCRules").setProperty("rulesSource","ioc");
+		security.afterAspectsLoad( getMockRequestContext(), {} );
+		assertTrue( security.$once("loadIOCRules") );
+		
+		// load model
+		security.$("loadModelRules").setProperty("rulesSource","model");
+		security.afterAspectsLoad( getMockRequestContext(), {} );
+		assertTrue( security.$once("loadModelRules") );
+	}
 	
-	<cffunction name="testDefaultLoad" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var event = "";
-			var im = structnew();
-			
-			//First Test : white list on rule 1
-			url.event = 'user.login';
-			setupRequest();			
-			//Now intercept
-			announceinterception('preProcess');
-			//get Context
-			event = getRequestContext();
-			//Assert Relocation, first test should be blank.
-			assertEquals( "", event.getValue("setnextevent",""), "Whitelist event." );
-			
-			event.clearCollection();
-			//Test 2: user.profile, not logged in, so secure it
-			url.event = 'user.profile';
-			setupRequest();			
-			//Now intercept
-			announceinterception('preProcess');
-			//get Context
-			event = getRequestContext();
-			//Assert Relocation, first test should be blank.
-			assertTrue( len(event.getValue("setnextevent","")), "Secured event. #event.getValue("setnextevent","")#" );
-			
-			//Pre Event Security
-			event.clearCollection();
-			//Test 2: user.profile, not logged in, so secure it
-			url.event = 'user.profile';
-			setupRequest();			
-			im.processedEvent = "user.profile";
-			//Now intercept
-			announceinterception('preEvent',im);
-			//get Context
-			event = getRequestContext();
-			//Assert Relocation, first test should be blank.
-			assertTrue( len(event.getValue("setnextevent","")), "Secured event. #event.getValue("setnextevent","")#" );
-			
-		</cfscript>
-		<cfreturn>
-	</cffunction>	
+	function testRegisterValidator(){
+		var validator = CreateObject("component","coldbox.testing.testmodel.security");
+		
+		/* Register */
+		security.registerValidator( validator );
+		assertEquals( validator, security.getValidator() );
+	}
+
+</cfscript>
 	
 	<cffunction name="testLoggedInUser" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var mypath = getDirectoryFromPath(getMetaData(this).path);
-			
-			//Setup ColdBox Mappings For this Test
-			setAppMapping("/coldbox/testharness");
-			setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_xml.xml");
-			
-			//resetup
-			getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
-		</cfscript>
 		<!--- Login a user --->
 		<cflogout>
 		<cflogin>
@@ -97,134 +73,15 @@ Description :
 		
 		<cfscript>
 		url.event = 'admin.user.list';
-		setupRequest();			
-		//Now intercept
-		announceinterception('preProcess');
-		//get Context
-		event = getRequestContext();
+		mockContext = getMockRequestContext();
+		//security.preProcess( mockContext, {} );
+		
 		//Assert Relocation, first test should be blank.
-		assertEquals( "", event.getValue("setnextevent",""), "User is in role, no redirection." );
+		assertEquals( "", mockContext.getValue("setnextevent",""), "User is in role, no redirection." );
 		</cfscript>
 		<!--- logout again. --->
 		<cflogout>
 		<cfreturn>
-	</cffunction>
-	
-	<cffunction name="testDBLoad" access="public" returntype="void" output="false">
-		<cfscript>
-		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		
-		
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_db.xml");
-		
-		//resetup
-		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
-	
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testModelLoad" access="public" returntype="void" output="false">
-		<cfscript>
-		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		
-		
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_model.xml");
-		
-		//resetup
-		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
-				
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testIOCLoad" access="public" returntype="void" output="false">
-		<cfscript>
-		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		
-		
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ioc.xml");
-		
-		//resetup
-		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
-				
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testOCMLoad" access="public" returntype="void" output="false">
-		<cfscript>
-		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		
-		
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ocm.xml");
-		
-		//resetup
-		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
-		
-		/* Place rules on OCM */
-		getController().getColdboxOCM().set('qSecurityRules', getRules(),0);
-		
-		//intercept
-		announceInterception('preProcess');
-				
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testRegisterValidator" access="public" returntype="void" output="false">
-		<cfscript>
-		var validator = CreateObject("component","applications.coldbox.testing.testmodel.security");
-		var event = getRequestContext();
-		AssertTrue(isObject(validator));
-		
-		/* Register */
-		getInterceptor('coldbox.system.interceptors.Security').registerValidator(validator);
-		
-		/* Test */
-		event.setValue('event','admin.list');
-		getInterceptor('coldbox.system.interceptors.Security').preProcess(event,structnew());
-				
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testCreatedValidator" access="public" returntype="void" output="false">
-		<cfscript>
-		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		
-		var event = getRequestContext();
-		
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ioc.xml");
-		
-		//resetup
-		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
-		
-		/* Test */
-		event.setValue('event','admin.list');
-		getInterceptor('coldbox.system.interceptors.Security').preProcess(event,structnew());
-		</cfscript>
-	</cffunction>
-	
-	
-	<cffunction name="getInterceptor" returntype="any" access="private" output="false">
-		<cfargument name="interceptor">
-		<cfscript>
-			var cacheKey = getController().getInterceptorService().INTERCEPTOR_CACHEKEY_PREFIX;
-			
-			cachekey = cachekey & arguments.interceptor;
-			
-			if( getController().getColdBoxOCM().lookup(cacheKey) ){
-				return getController().getColdBoxOCM().get(cachekey);
-			}
-			else
-				$throw("Invalid interceptor");
-		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getRules" access="private" returntype="query" hint="" output="false" >

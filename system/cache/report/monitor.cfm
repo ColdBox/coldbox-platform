@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true">
+﻿<cfsetting enablecfoutputonly="true">
 <!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
@@ -28,6 +28,10 @@ ATTRIBUTES:
 <cfparam name="attributes.baseURL" 			type="string" default="#cgi.script_name#">
 <!--- Skin To Use --->
 <cfparam name="attributes.skin"				type="string" default="default">
+<!--- Enable Monitor --->
+<cfparam name="attributes.enableMonitor"	type="boolean" default="true">
+<!--- Expanded Panel or Not --->
+<cfparam name="attributes.expandedPanel"	type="boolean" default="true">
 
 <!--- Validate CacheBox --->
 <cfif NOT isObject(attributes.cacheFactory)>
@@ -44,10 +48,11 @@ ATTRIBUTES:
 																								   caller)>
 
 <!--- Monitor's Default URL Arguments --->
-<cfparam name="url.debugPanel" 		default="cache">
-<cfparam name="url.cbox_command" 	default="">
-<cfparam name="url.cbox_cacheName" 	default="default">
-<cfparam name="url.cbox_cacheEntry" default="">
+<cfparam name="url.debugPanel" 			default="cache">
+<cfparam name="url.cbox_command" 		default="">
+<cfparam name="url.cbox_cacheName" 		default="default">
+<cfparam name="url.cbox_cacheEntry" 	default="">
+<cfparam name="url.cbox_cacheMonitor" 	default="false">
 
 <!--- Process incoming commands --->
 <cfif reportHandler.processCommands(command=url.cbox_command,

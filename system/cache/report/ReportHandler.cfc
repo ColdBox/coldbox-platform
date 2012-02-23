@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -44,13 +44,13 @@ Description :
 		<cfargument name="cacheName" 	type="string" 	required="false" default="default" hint="The cache name"/>
 		<cfargument name="cacheEntry" 	type="string" 	required="false" default="" hint="The cache entry to act upon"/>
 		<cfscript>
-    		
-			// Commands
+    		// Commands
 			switch(arguments.command){
 				// Cache Commands
 				case "expirecache"    		: { cacheBox.getCache(arguments.cacheName).expireAll(); break; }
 				case "reapcache"  	  		: { cacheBox.getCache(arguments.cacheName).reap(); break;}
 				case "delcacheentry"  		: { cacheBox.getCache(arguments.cacheName).clear( arguments.cacheEntry );break;}
+				case "expirecacheentry"  	: { cacheBox.getCache(arguments.cacheName).expireObject( arguments.cacheEntry );break;}
 				case "clearallevents" 		: { cacheBox.getCache(arguments.cacheName).clearAllEvents();break;}
 				case "clearallviews"  		: { cacheBox.getCache(arguments.cacheName).clearAllViews();break;}
 				case "cacheBoxReapAll"		: { cacheBox.reapAll();break;}

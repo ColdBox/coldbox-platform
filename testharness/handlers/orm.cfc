@@ -1,4 +1,4 @@
-component {
+﻿component {
 
 	property name="service" inject="entityService:TestCategory";
 	

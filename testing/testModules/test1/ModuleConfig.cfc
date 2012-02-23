@@ -1,4 +1,4 @@
-<cfcomponent output="false" hint="My Module Configuration">
+﻿<cfcomponent output="false" hint="My Module Configuration">
 <cfscript>
 /**
 Module Directives as public properties

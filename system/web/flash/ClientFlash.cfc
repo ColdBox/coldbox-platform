@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -13,15 +13,12 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 	
-	<cfscript>
-		instance = structnew();
-	</cfscript>
-
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="ClientFlash" hint="Constructor">
-    	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
+    	<cfargument name="controller" 	type="any" required="true" hint="The ColdBox Controller" colddoc:generic="coldbox.system.web.Controller"/>
+		<cfargument name="defaults" 	type="any" required="false" default="#structNew()#" hint="Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]" colddoc:generic="struct"/>
     	<cfscript>
-    		super.init(arguments.controller);
+    		super.init(argumentCollection=arguments);
 			
 			// Marshaller
 			instance.converter = createObject("component","coldbox.system.core.conversion.ObjectMarshaller").init();
@@ -39,8 +36,9 @@ Description :
 	</cffunction>
 
 	<!--- saveFlash --->
-	<cffunction name="saveFlash" output="false" access="public" returntype="void" hint="Save the flash storage in preparing to go to the next request">
+	<cffunction name="saveFlash" output="false" access="public" returntype="any" hint="Save the flash storage in preparing to go to the next request">
 		<cfset client[getFlashKey()] = instance.converter.serializeObject( getScope() )>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- flashExists --->
@@ -64,8 +62,9 @@ Description :
 	</cffunction>
 	
 	<!--- removeFlash --->
-    <cffunction name="removeFlash" output="false" access="public" returntype="void" hint="Remove the entire flash storage">
+    <cffunction name="removeFlash" output="false" access="public" returntype="any" hint="Remove the entire flash storage">
     	<cfset structDelete(client,getFlashKey())>
+		<cfreturn this>
     </cffunction>
 
 </cfcomponent>

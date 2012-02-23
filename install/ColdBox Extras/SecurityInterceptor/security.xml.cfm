@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 Declare as many rule elements as you want, order is important 
 Remember that the securelist can contain a list of regular
@@ -18,6 +18,7 @@ that can be found in an event.
     <rule>
         <whitelist>user\.login,user\.logout,^main.*</whitelist>
         <securelist>^user\..*, ^admin</securelist>
+		<match>event</match>
         <roles>admin</roles>
 		<permissions></permissions>
         <redirect>user.login</redirect>

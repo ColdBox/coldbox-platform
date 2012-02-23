@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	
 	function setup(){
@@ -15,6 +15,17 @@
 			.$("getCacheBox",mockCacheBox );
 		
 		builder = getMockBox().createMock("coldbox.system.ioc.Builder").init( mockInjector );
+	}
+	
+	function testGetEntityServiceDSL(){
+		makePublic(builder, "getEntityServiceDSL");
+		def = {dsl="entityService"};
+		e = builder.getentityServiceDSL(def);
+		assertTrue( isInstanceOf(e, "coldbox.system.orm.hibernate.BaseORMService") );	
+		
+		def = {dsl="entityService:User"};
+		e = builder.getentityServiceDSL(def);
+		assertTrue( isInstanceOf(e, "coldbox.system.orm.hibernate.VirtualEntityService") );	
 	}
 	
 	function testbuildJavaClass(){

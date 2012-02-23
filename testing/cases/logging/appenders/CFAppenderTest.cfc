@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
 		cf = getMockBox().createMock(className="coldbox.system.logging.appenders.CFAppender");

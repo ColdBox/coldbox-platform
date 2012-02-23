@@ -1,4 +1,4 @@
-<cfcomponent output="false" extends="mxunit.framework.TestCase">
+﻿<cfcomponent output="false" extends="mxunit.framework.TestCase">
 <cfscript>
 
 	function setup(){

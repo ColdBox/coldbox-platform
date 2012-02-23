@@ -1,4 +1,4 @@
-RewriteEngine on
+﻿RewriteEngine on
 #RepeatLimit 0
 
 #SQL Injection Protection --Read More www.cybercrime.gov
@@ -30,11 +30,11 @@ RewriteCond %{REQUEST_URI} ^/(.*(flashservices|flex2gateway|flex-remoting)).*$
 RewriteRule ^(.*)$ - [NC,L]
 
 #Images, css, javascript and docs, add your own extensions if needed.
-RewriteCond %{REQUEST_URI} \.(bmp|gif|jpe?g|png|css|js|txt|pdf|doc|xls|xml|ico)$
+RewriteCond %{REQUEST_URI} \.(bmp|gif|jpe?g|png|css|js|txt|pdf|doc|xls|ico)$
 RewriteRule ^(.*)$ - [NC,L]
 
 #The ColdBox index.cfm/{path_info} rules.
-RewriteRule ^$ index.cfm [QSA]
+RewriteRule ^$ index.cfm [QSA,NS]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.cfm/%{REQUEST_URI} [QSA,L]
+RewriteRule ^(.*)$ index.cfm/%{REQUEST_URI} [QSA,L,NS]

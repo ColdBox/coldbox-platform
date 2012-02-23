@@ -1,4 +1,4 @@
-<cfcomponent hint="a default handler" output="false">
+﻿<cfcomponent hint="a default handler" output="false">
 			 
 	<!--- reap --->
 	<cffunction name="reap" access="public" returntype="void" output="false" hint="">

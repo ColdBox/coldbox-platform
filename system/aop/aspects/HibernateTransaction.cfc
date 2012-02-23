@@ -1,5 +1,4 @@
 /**
-<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -12,6 +11,9 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	aspect for WireBox that registers itself using the two annotations below
 @classMatcher any
 @methodMatcher annotatedWith:transactional
+
+The transactional annotation can have a value if you are using multi-datasources with ORM.
+The value of the transactional annotation denotes the dsn.
 **/
 component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 	
@@ -22,13 +24,14 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 	* Constructor
 	*/
 	function init(){
+		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 		return this;		
 	}
 	
 	/**
 	* The AOP around advice for hibernate transactions
 	*/
-	any function invokeMethod(invocation) output=false{
+	any function invokeMethod(required invocation) output=false{
 		
 		// Are we already in a transaction?
 		if( structKeyExists(request,"cbox_aop_transaction") ){
@@ -38,8 +41,16 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 			return arguments.invocation.proceed();
 		}
 		
+		// Determine default datasource
+		var datasource = orm.getDefaultDatasource();
+		// Check if the method transactional annotation has a value or not, which should be the datasource
+		var methodMD = arguments.invocation.getMethodMetadata();
+		if( structKeyExists(methodMD, "transactional") and len(methodMD.transactional) ){
+			datasource = methodMD.transactional;
+		}
+		
 		// Else, transaction safe call
-		var tx = ORMGetSession().beginTransaction();
+		var tx = orm.getSession( datasource ).beginTransaction();
 		try{
 			
 			// mark transaction began

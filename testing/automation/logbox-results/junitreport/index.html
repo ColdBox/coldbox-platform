@@ -1,0 +1,445 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns:lxslt="http://xml.apache.org/xslt" xmlns:stringutils="xalan://org.apache.tools.ant.util.StringUtils">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Unit Test Results</title>
+<style type="text/css">
+      body {
+        font:normal 68% verdana,arial,helvetica;
+        color:#000000;
+      }
+      table tr td, table tr th {
+          font-size: 68%;
+      }
+      table.details tr th{
+        font-weight: bold;
+        text-align:left;
+        background:#a6caf0;
+      }
+      table.details tr td{
+        background:#eeeee0;
+      }
+
+      p {
+        line-height:1.5em;
+        margin-top:0.5em; margin-bottom:1.0em;
+      }
+      h1 {
+        margin: 0px 0px 5px; font: 165% verdana,arial,helvetica
+      }
+      h2 {
+        margin-top: 1em; margin-bottom: 0.5em; font: bold 125% verdana,arial,helvetica
+      }
+      h3 {
+        margin-bottom: 0.5em; font: bold 115% verdana,arial,helvetica
+      }
+      h4 {
+        margin-bottom: 0.5em; font: bold 100% verdana,arial,helvetica
+      }
+      h5 {
+        margin-bottom: 0.5em; font: bold 100% verdana,arial,helvetica
+      }
+      h6 {
+        margin-bottom: 0.5em; font: bold 100% verdana,arial,helvetica
+      }
+      .Error {
+        font-weight:bold; color:red;
+      }
+      .Failure {
+        font-weight:bold; color:purple;
+      }
+      .Properties {
+        text-align:right;
+      }
+      </style>
+<script type="text/javascript" language="JavaScript">
+        var TestCases = new Array();
+        var cur;
+        
+    cur = TestCases['mxunit.testresults'] = new Array();
+    
+        cur['__MXUNITINHERITANCETREE__'] = '';
+    
+        cur['ADDITIONALINFORMATION'] = 'Mac OS X';
+    
+        cur['APPLICATIONNAME'] = 'ColdBoxTestHarness7E5AB4FDCE4644EE59BB414A40285567';
+    
+        cur['APPSERVER'] = 'JRun4';
+    
+        cur['ARCH'] = 'x86_64';
+    
+        cur['AUTH_PASSWORD'] = '';
+    
+        cur['AUTH_TYPE'] = '';
+    
+        cur['AUTH_USER'] = '';
+    
+        cur['BUILDNUMBER'] = '';
+    
+        cur['CACHEBOX'] = 'Complex Data Type...Not Displaying';
+    
+        cur['CERT_COOKIE'] = '';
+    
+        cur['CERT_FLAGS'] = '';
+    
+        cur['CERT_ISSUER'] = '';
+    
+        cur['CERT_KEYSIZE'] = '';
+    
+        cur['CERT_SECRETKEYSIZE'] = '';
+    
+        cur['CERT_SERIALNUMBER'] = '';
+    
+        cur['CERT_SERVER_ISSUER'] = '';
+    
+        cur['CERT_SERVER_SUBJECT'] = '';
+    
+        cur['CERT_SUBJECT'] = '';
+    
+        cur['CF_TEMPLATE_PATH'] = '/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['CFDUMPINITED'] = 'false';
+    
+        cur['CFID'] = '22241';
+    
+        cur['CFTOKEN'] = 'ea9d63aee6ef9dbf-1EF02DBB-B782-DE7E-59B101395CCAF7FB';
+    
+        cur['CONTENT_LENGTH'] = '';
+    
+        cur['CONTENT_TYPE'] = '';
+    
+        cur['CONTEXT_PATH'] = '';
+    
+        cur['EXPIRATION'] = '{ts \'2012-02-15 00:05:25\'}';
+    
+        cur['GATEWAY_INTERFACE'] = 'CGI/1.1';
+    
+        cur['HTTP_ACCEPT'] = '';
+    
+        cur['HTTP_ACCEPT_ENCODING'] = '';
+    
+        cur['HTTP_ACCEPT_LANGUAGE'] = '';
+    
+        cur['HTTP_CONNECTION'] = '';
+    
+        cur['HTTP_COOKIE'] = '';
+    
+        cur['HTTP_HOST'] = 'cf9cboxdev.jfetmac';
+    
+        cur['HTTP_REFERER'] = '';
+    
+        cur['HTTP_USER_AGENT'] = 'Jakarta Commons-HttpClient/3.1';
+    
+        cur['HTTPS'] = '';
+    
+        cur['HTTPS_KEYSIZE'] = '';
+    
+        cur['HTTPS_SECRETKEYSIZE'] = '';
+    
+        cur['HTTPS_SERVER_ISSUER'] = '';
+    
+        cur['HTTPS_SERVER_SUBJECT'] = '';
+    
+        cur['INSTALLKIT'] = 'Native UNIX';
+    
+        cur['MXUNIT_SUMMARY'] = '51,1,0,6943';
+    
+        cur['MYSCOPELOGGER'] = 'Complex Data Type...Not Displaying';
+    
+        cur['NAME'] = 'Mac OS X';
+    
+        cur['PATH_INFO'] = '';
+    
+        cur['PATH_TRANSLATED'] = '/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['PRODUCTLEVEL'] = 'Developer';
+    
+        cur['PRODUCTNAME'] = 'ColdFusion Server';
+    
+        cur['PRODUCTVERSION'] = '9,0,1,274733';
+    
+        cur['QUERY_STRING'] = 'method=run&type=dir&value=/coldbox/testing/cases/logging&recurse=true&excludes=null&packageName=mxunit.testresults&componentPath=coldbox.testing.cases.logging';
+    
+        cur['REMOTE_ADDR'] = '127.0.0.1';
+    
+        cur['REMOTE_HOST'] = '127.0.0.1';
+    
+        cur['REMOTE_USER'] = '';
+    
+        cur['REQUEST_METHOD'] = 'GET';
+    
+        cur['ROOTDIR'] = '/Applications/ColdFusion9';
+    
+        cur['SCRIPT_NAME'] = '/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['SERVER_NAME'] = 'cf9cboxdev.jfetmac';
+    
+        cur['SERVER_PORT'] = '80';
+    
+        cur['SERVER_PORT_SECURE'] = '0';
+    
+        cur['SERVER_PROTOCOL'] = 'HTTP/1.1';
+    
+        cur['SERVER_SOFTWARE'] = 'Apache/2.2.21 (Unix) mod_ssl/2.2.21 OpenSSL/0.9.8r DAV/2 PHP/5.3.8 with Suhosin-Patch Resin/3.1.2 JRun/4.0';
+    
+        cur['SERVICETAGATTRIBUTES'] = 'Complex Data Type...Not Displaying';
+    
+        cur['SUPPORTEDLOCALES'] = 'Chinese (China),Chinese (Hong Kong),Chinese (Taiwan),Dutch (Belgian),Dutch (Standard),English (Australian),English (Canadian),English (New Zealand),English (UK),English (US),French (Belgian),French (Canadian),French (Standard),French (Swiss),German (Austrian),German (Standard),German (Swiss),Italian (Standard),Italian (Swiss),Japanese,Korean,Norwegian (Bokmal),Norwegian (Nynorsk),Portuguese (Brazilian),Portuguese (Standard),Spanish (Mexican),Spanish (Modern),Spanish (Standard),Swedish,ar,ar_AE,ar_BH,ar_DZ,ar_EG,ar_IQ,ar_JO,ar_KW,ar_LB,ar_LY,ar_MA,ar_OM,ar_QA,ar_SA,ar_SD,ar_SY,ar_TN,ar_YE,be,be_BY,bg,bg_BG,ca,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_IE,en_IN,en_MT,en_NZ,en_PH,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_CR,es_DO,es_EC,es_ES,es_GT,es_HN,es_MX,es_NI,es_PA,es_PE,es_PR,es_PY,es_SV,es_US,es_UY,es_VE,et,et_EE,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,ga,ga_IE,hi_IN,hr,hr_HR,hu,hu_HU,in,in_ID,is,is_IS,it,it_CH,it_IT,iw,iw_IL,ja,ja_JP,ja_JP_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,mk,mk_MK,ms,ms_MY,mt,mt_MT,nl,nl_BE,nl_NL,no,no_NO,no_NO_NY,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_RU,sk,sk_SK,sl,sl_SI,sq,sq_AL,sr,sr_BA,sr_CS,sr_ME,sr_RS,sv,sv_SE,th,th_TH,th_TH_TH,tr,tr_TR,uk,uk_UA,vi,vi_VN,zh,zh_CN,zh_HK,zh_SG,zh_TW';
+    
+        cur['VERSION'] = '10.7.3';
+    
+        cur['WEB_SERVER_API'] = '';
+    
+        cur['WIREBOX'] = 'Complex Data Type...Not Displaying';
+    </script><script type="text/javascript" language="JavaScript">
+        function displayProperties (name) {
+          var win = window.open('','JUnitSystemProperties','scrollbars=1,resizable=1');
+          var doc = win.document;
+          doc.open();
+          doc.write("<html><head><title>Properties of " + name + "</title>");
+          doc.write("<style>")
+          doc.write("body {font:normal 68% verdana,arial,helvetica; color:#000000; }");
+          doc.write("table tr td, table tr th { font-size: 68%; }");
+          doc.write("table.properties { border-collapse:collapse; border-left:solid 1 #cccccc; border-top:solid 1 #cccccc; padding:5px; }");
+          doc.write("table.properties th { text-align:left; border-right:solid 1 #cccccc; border-bottom:solid 1 #cccccc; background-color:#eeeeee; }");
+          doc.write("table.properties td { font:normal; text-align:left; border-right:solid 1 #cccccc; border-bottom:solid 1 #cccccc; background-color:#fffffff; }");
+          doc.write("h3 { margin-bottom: 0.5em; font: bold 115% verdana,arial,helvetica }");
+          doc.write("</style>");
+          doc.write("</head><body>");
+          doc.write("<h3>Properties of " + name + "</h3>");
+          doc.write("<div align=\"right\"><a href=\"javascript:window.close();\">Close</a></div>");
+          doc.write("<table class='properties'>");
+          doc.write("<tr><th>Name</th><th>Value</th></tr>");
+          for (prop in TestCases[name]) {
+            doc.write("<tr><th>" + prop + "</th><td>" + TestCases[name][prop] + "</td></tr>");
+          }
+          doc.write("</table>");
+          doc.write("</body></html>");
+          doc.close();
+          win.focus();
+        }
+      
+      </script>
+</head>
+<body>
+<a name="top"></a>
+<h1>Unit Test Results</h1>
+<table width="100%">
+<tr>
+<td align="left"></td><td align="right">Designed for use with <a href="http://www.junit.org">JUnit</a> and <a href="http://ant.apache.org/ant">Ant</a>.</td>
+</tr>
+</table>
+<hr size="1">
+<h2>Summary</h2>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Tests</th><th>Failures</th><th>Errors</th><th>Success rate</th><th>Time</th>
+</tr>
+<tr valign="top" class="Error">
+<td>51</td><td>0</td><td>1</td><td>98.04%</td><td>6.943</td>
+</tr>
+</table>
+<table border="0" width="95%">
+<tr>
+<td style="text-align: justify;">
+        Note: <i>failures</i> are anticipated and checked for with assertions while <i>errors</i> are unanticipated.
+        </td>
+</tr>
+</table>
+<hr size="1" width="95%" align="left">
+<h2>Packages</h2>
+        Note: package statistics are not computed recursively, they only sum up all of its testsuites numbers.
+        <table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th><th>Tests</th><th>Errors</th><th>Failures</th><th nowrap>Time(s)</th><th nowrap>Time Stamp</th><th>Host</th>
+</tr>
+<tr valign="top" class="Error">
+<td><a href="#mxunit">mxunit</a></td><td>51</td><td>1</td><td>0</td><td>6.943</td><td>02/15/12 2:18:12 PM</td><td>127.0.0.1</td>
+</tr>
+</table>
+<hr size="1" width="95%" align="left">
+<a name="mxunit"></a>
+<h3>Package mxunit</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th><th>Tests</th><th>Errors</th><th>Failures</th><th nowrap>Time(s)</th><th nowrap>Time Stamp</th><th>Host</th>
+</tr>
+<tr valign="top" class="Error">
+<td><a href="#testresults">testresults</a></td><td>51</td><td>1</td><td>0</td><td>6.943</td><td>02/15/12 2:18:12 PM</td><td>127.0.0.1</td>
+</tr>
+</table>
+<a href="#top">Back to top</a>
+<p></p>
+<p></p>
+<hr size="1" width="95%" align="left">
+<a name="testresults"></a>
+<h3>TestCase testresults</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th><th>Status</th><th width="80%">Type</th><th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testcanLog</td><td>Success</td><td></td><td>0.003</td>
+</tr>
+<tr valign="top" class="">
+<td>testIsInited</td><td>Success</td><td></td><td>0.002</td>
+</tr>
+<tr valign="top" class="">
+<td>testLocateCategoryParentLogger</td><td>Success</td><td></td><td>0.020</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetCurrentLoggers</td><td>Success</td><td></td><td>0.005</td>
+</tr>
+<tr valign="top" class="">
+<td>testgetLogger</td><td>Success</td><td></td><td>0.026</td>
+</tr>
+<tr valign="top" class="">
+<td>testgetRootLogger</td><td>Success</td><td></td><td>0.008</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetCurrentAppenders</td><td>Success</td><td></td><td>0.005</td>
+</tr>
+<tr valign="top" class="">
+<td>test1</td><td>Success</td><td></td><td>0.011</td>
+</tr>
+<tr valign="top" class="">
+<td>testLoader2</td><td>Success</td><td></td><td>0.110</td>
+</tr>
+<tr valign="top" class="">
+<td>testLoader</td><td>Success</td><td></td><td>0.018</td>
+</tr>
+<tr valign="top" class="">
+<td>testExtraInfoCFC</td><td>Success</td><td></td><td>0.014</td>
+</tr>
+<tr valign="top" class="">
+<td>testExtraInfoComplex</td><td>Success</td><td></td><td>0.003</td>
+</tr>
+<tr valign="top" class="">
+<td>testextraInfoSimple</td><td>Success</td><td></td><td>0.002</td>
+</tr>
+<tr valign="top" class="">
+<td>testExtraInfoConventionString</td><td>Success</td><td></td><td>0.012</td>
+</tr>
+<tr valign="top" class="">
+<td>testCanMethods</td><td>Success</td><td></td><td>0.018</td>
+</tr>
+<tr valign="top" class="">
+<td>testAppenderMethods</td><td>Success</td><td></td><td>0.008</td>
+</tr>
+<tr valign="top" class="">
+<td>testAppenderLoggingLevels</td><td>Success</td><td></td><td>0.152</td>
+</tr>
+<tr valign="top" class="">
+<td>testisLevelValid</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testLookupAsInt</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessageWithColumnMap</td><td>Success</td><td></td><td>0.179</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.007</td>
+</tr>
+<tr valign="top" class="">
+<td>testEnsureTable</td><td>Success</td><td></td><td>1.884</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.098</td>
+</tr>
+<tr valign="top" class="">
+<td>testOnRegistration</td><td>Success</td><td></td><td>0.006</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>2.698</td>
+</tr>
+<tr valign="top" class="">
+<td>testOnRegistration</td><td>Success</td><td></td><td>0.005</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.089</td>
+</tr>
+<tr valign="top" class="">
+<td>testMockLayout</td><td>Success</td><td></td><td>0.015</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.034</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessageWithColumnMap</td><td>Success</td><td></td><td>0.014</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.010</td>
+</tr>
+<tr valign="top" class="">
+<td>testEnsureTable</td><td>Success</td><td></td><td>0.031</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.463</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.010</td>
+</tr>
+<tr valign="top" class="">
+<td>testOnRegistration</td><td>Success</td><td></td><td>0.003</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.098</td>
+</tr>
+<tr valign="top" class="">
+<td>testOnRegistration</td><td>Success</td><td></td><td>0.004</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.074</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.086</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogMessage</td><td>Success</td><td></td><td>0.103</td>
+</tr>
+<tr valign="top" class="Error">
+<td>testLogMessage</td><td>Error</td><td>Application<code>
+<br>
+<br>Could not find the ColdFusion component or interface coldbox.system.logging.appenders.TwitterAppender. at /Users/lmajano/Sites/cboxdev/core/coldbox/system/testing/MockBox.cfc:91 at /Users/lmajano/Sites/cboxdev/core/coldbox/testing/cases/logging/appenders/TwitterAppenderTest.cfc:5 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestDecorator.cfc:26 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:97 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:52 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuite.cfc:131 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/DirectoryTestSuite.cfc:37 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/HttpAntRunner.cfc:28</code></td><td>0.010</td>
+</tr>
+<tr valign="top" class="">
+<td>testGoodXSD</td><td>Success</td><td></td><td>0.040</td>
+</tr>
+<tr valign="top" class="">
+<td>testBadXSD</td><td>Success</td><td></td><td>0.023</td>
+</tr>
+<tr valign="top" class="">
+<td>testValidateCategories</td><td>Success</td><td></td><td>0.021</td>
+</tr>
+<tr valign="top" class="">
+<td>testAddAppender</td><td>Success</td><td></td><td>0.024</td>
+</tr>
+<tr valign="top" class="">
+<td>testConventionMethods</td><td>Success</td><td></td><td>0.004</td>
+</tr>
+<tr valign="top" class="">
+<td>testAddCategory</td><td>Success</td><td></td><td>0.005</td>
+</tr>
+<tr valign="top" class="">
+<td>testRootAppenders</td><td>Success</td><td></td><td>0.002</td>
+</tr>
+<tr valign="top" class="">
+<td>testRoot</td><td>Success</td><td></td><td>0.004</td>
+</tr>
+<tr valign="top" class="">
+<td>testInlineXML</td><td>Success</td><td></td><td>0.032</td>
+</tr>
+<tr valign="top" class="">
+<td>testCreations</td><td>Success</td><td></td><td>0.057</td>
+</tr>
+</table>
+<div class="Properties">
+<a href="javascript:displayProperties('mxunit.testresults');">
+                    Properties &raquo;
+                </a>
+</div>
+<p></p>
+<a href="#top">Back to top</a>
+</body>
+</html>

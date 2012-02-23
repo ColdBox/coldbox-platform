@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites>
+  <testsuite errors="1" failures="0" hostname="127.0.0.1" id="0" name="testresults" package="mxunit" tests="51" time="6.943" timestamp="02/15/12 2:18:12 PM">
+    <properties>
+      <property name="SUPPORTEDLOCALES" value="Chinese (China),Chinese (Hong Kong),Chinese (Taiwan),Dutch (Belgian),Dutch (Standard),English (Australian),English (Canadian),English (New Zealand),English (UK),English (US),French (Belgian),French (Canadian),French (Standard),French (Swiss),German (Austrian),German (Standard),German (Swiss),Italian (Standard),Italian (Swiss),Japanese,Korean,Norwegian (Bokmal),Norwegian (Nynorsk),Portuguese (Brazilian),Portuguese (Standard),Spanish (Mexican),Spanish (Modern),Spanish (Standard),Swedish,ar,ar_AE,ar_BH,ar_DZ,ar_EG,ar_IQ,ar_JO,ar_KW,ar_LB,ar_LY,ar_MA,ar_OM,ar_QA,ar_SA,ar_SD,ar_SY,ar_TN,ar_YE,be,be_BY,bg,bg_BG,ca,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_IE,en_IN,en_MT,en_NZ,en_PH,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_CR,es_DO,es_EC,es_ES,es_GT,es_HN,es_MX,es_NI,es_PA,es_PE,es_PR,es_PY,es_SV,es_US,es_UY,es_VE,et,et_EE,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,ga,ga_IE,hi_IN,hr,hr_HR,hu,hu_HU,in,in_ID,is,is_IS,it,it_CH,it_IT,iw,iw_IL,ja,ja_JP,ja_JP_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,mk,mk_MK,ms,ms_MY,mt,mt_MT,nl,nl_BE,nl_NL,no,no_NO,no_NO_NY,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_RU,sk,sk_SK,sl,sl_SI,sq,sq_AL,sr,sr_BA,sr_CS,sr_ME,sr_RS,sv,sv_SE,th,th_TH,th_TH_TH,tr,tr_TR,uk,uk_UA,vi,vi_VN,zh,zh_CN,zh_HK,zh_SG,zh_TW" />
+      <property name="SERVICETAGATTRIBUTES" value="Complex Data Type...Not Displaying" />
+      <property name="PRODUCTLEVEL" value="Developer" />
+      <property name="EXPIRATION" value="{ts &apos;2012-02-15 00:05:25&apos;}" />
+      <property name="INSTALLKIT" value="Native UNIX" />
+      <property name="ROOTDIR" value="/Applications/ColdFusion9" />
+      <property name="PRODUCTVERSION" value="9,0,1,274733" />
+      <property name="APPSERVER" value="JRun4" />
+      <property name="PRODUCTNAME" value="ColdFusion Server" />
+      <property name="ARCH" value="x86_64" />
+      <property name="VERSION" value="10.7.3" />
+      <property name="NAME" value="Mac OS X" />
+      <property name="BUILDNUMBER" value="" />
+      <property name="ADDITIONALINFORMATION" value="Mac OS X" />
+      <property name="HTTP_USER_AGENT" value="Jakarta Commons-HttpClient/3.1" />
+      <property name="WEB_SERVER_API" value="" />
+      <property name="PATH_TRANSLATED" value="/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="CONTENT_TYPE" value="" />
+      <property name="HTTP_ACCEPT_LANGUAGE" value="" />
+      <property name="HTTP_REFERER" value="" />
+      <property name="HTTP_ACCEPT" value="" />
+      <property name="CERT_SERVER_ISSUER" value="" />
+      <property name="CERT_SERVER_SUBJECT" value="" />
+      <property name="HTTP_ACCEPT_ENCODING" value="" />
+      <property name="SERVER_SOFTWARE" value="Apache/2.2.21 (Unix) mod_ssl/2.2.21 OpenSSL/0.9.8r DAV/2 PHP/5.3.8 with Suhosin-Patch Resin/3.1.2 JRun/4.0" />
+      <property name="SERVER_NAME" value="cf9cboxdev.jfetmac" />
+      <property name="CF_TEMPLATE_PATH" value="/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="CERT_FLAGS" value="" />
+      <property name="HTTPS_SERVER_ISSUER" value="" />
+      <property name="CONTEXT_PATH" value="" />
+      <property name="HTTP_COOKIE" value="" />
+      <property name="SERVER_PROTOCOL" value="HTTP/1.1" />
+      <property name="CERT_SECRETKEYSIZE" value="" />
+      <property name="REQUEST_METHOD" value="GET" />
+      <property name="HTTPS_SECRETKEYSIZE" value="" />
+      <property name="AUTH_PASSWORD" value="" />
+      <property name="HTTPS" value="" />
+      <property name="CERT_SERIALNUMBER" value="" />
+      <property name="CERT_SUBJECT" value="" />
+      <property name="SERVER_PORT" value="80" />
+      <property name="CERT_KEYSIZE" value="" />
+      <property name="SCRIPT_NAME" value="/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="REMOTE_ADDR" value="127.0.0.1" />
+      <property name="SERVER_PORT_SECURE" value="0" />
+      <property name="REMOTE_HOST" value="127.0.0.1" />
+      <property name="HTTPS_KEYSIZE" value="" />
+      <property name="HTTP_HOST" value="cf9cboxdev.jfetmac" />
+      <property name="HTTP_CONNECTION" value="" />
+      <property name="AUTH_USER" value="" />
+      <property name="REMOTE_USER" value="" />
+      <property name="PATH_INFO" value="" />
+      <property name="QUERY_STRING" value="method=run&amp;type=dir&amp;value=/coldbox/testing/cases/logging&amp;recurse=true&amp;excludes=null&amp;packageName=mxunit.testresults&amp;componentPath=coldbox.testing.cases.logging" />
+      <property name="CERT_ISSUER" value="" />
+      <property name="CERT_COOKIE" value="" />
+      <property name="HTTPS_SERVER_SUBJECT" value="" />
+      <property name="GATEWAY_INTERFACE" value="CGI/1.1" />
+      <property name="AUTH_TYPE" value="" />
+      <property name="CONTENT_LENGTH" value="" />
+      <property name="CFID" value="22241" />
+      <property name="CFTOKEN" value="ea9d63aee6ef9dbf-1EF02DBB-B782-DE7E-59B101395CCAF7FB" />
+      <property name="MXUNIT_SUMMARY" value="51,1,0,6943" />
+      <property name="CFDUMPINITED" value="false" />
+      <property name="MYSCOPELOGGER" value="Complex Data Type...Not Displaying" />
+      <property name="__MXUNITINHERITANCETREE__" value="" />
+      <property name="APPLICATIONNAME" value="ColdBoxTestHarness7E5AB4FDCE4644EE59BB414A40285567" />
+      <property name="WIREBOX" value="Complex Data Type...Not Displaying" />
+      <property name="CACHEBOX" value="Complex Data Type...Not Displaying" />
+    </properties>
+    <testcase classname="coldbox.testing.cases.logging.AbstractAppenderTest" name="testcanLog" time="0.003" />
+    <testcase classname="coldbox.testing.cases.logging.AbstractAppenderTest" name="testIsInited" time="0.002" />
+    <testcase classname="coldbox.testing.cases.logging.LogBoxTest" name="testLocateCategoryParentLogger" time="0.02" />
+    <testcase classname="coldbox.testing.cases.logging.LogBoxTest" name="testGetCurrentLoggers" time="0.005" />
+    <testcase classname="coldbox.testing.cases.logging.LogBoxTest" name="testgetLogger" time="0.026" />
+    <testcase classname="coldbox.testing.cases.logging.LogBoxTest" name="testgetRootLogger" time="0.008" />
+    <testcase classname="coldbox.testing.cases.logging.LogBoxTest" name="testGetCurrentAppenders" time="0.005" />
+    <testcase classname="coldbox.testing.cases.logging.LogBoxVariousTest" name="test1" time="0.011" />
+    <testcase classname="coldbox.testing.cases.logging.LogBoxWithDataCFCTest" name="testLoader2" time="0.11" />
+    <testcase classname="coldbox.testing.cases.logging.LogBoxWithDataCFCTest" name="testLoader" time="0.018" />
+    <testcase classname="coldbox.testing.cases.logging.LogEventTest" name="testExtraInfoCFC" time="0.014" />
+    <testcase classname="coldbox.testing.cases.logging.LogEventTest" name="testExtraInfoComplex" time="0.003" />
+    <testcase classname="coldbox.testing.cases.logging.LogEventTest" name="testextraInfoSimple" time="0.002" />
+    <testcase classname="coldbox.testing.cases.logging.LogEventTest" name="testExtraInfoConventionString" time="0.012" />
+    <testcase classname="coldbox.testing.cases.logging.LoggerTest" name="testCanMethods" time="0.018" />
+    <testcase classname="coldbox.testing.cases.logging.LoggerTest" name="testAppenderMethods" time="0.008" />
+    <testcase classname="coldbox.testing.cases.logging.LoggerTest" name="testAppenderLoggingLevels" time="0.152" />
+    <testcase classname="coldbox.testing.cases.logging.LogLevelsTest" name="testisLevelValid" time="0.001" />
+    <testcase classname="coldbox.testing.cases.logging.LogLevelsTest" name="testLookupAsInt" time="0.001" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.AsyncDBAppenderTest" name="testLogMessageWithColumnMap" time="0.179" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.AsyncDBAppenderTest" name="testLogMessage" time="0.007" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.AsyncDBAppenderTest" name="testEnsureTable" time="1.884" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.AsyncFileAppenderTest" name="testLogMessage" time="0.098" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.AsyncFileAppenderTest" name="testOnRegistration" time="0.006" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.AsyncRollingFileAppenderTest" name="testLogMessage" time="2.698" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.AsyncRollingFileAppenderTest" name="testOnRegistration" time="0.005" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.CFAppenderTest" name="testLogMessage" time="0.089" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.ConsoleAppenderTest" name="testMockLayout" time="0.015" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.ConsoleAppenderTest" name="testLogMessage" time="0.034" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.DBAppenderTest" name="testLogMessageWithColumnMap" time="0.014" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.DBAppenderTest" name="testLogMessage" time="0.01" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.DBAppenderTest" name="testEnsureTable" time="0.031" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.EmailAppenderTest" name="testLogMessage" time="0.463" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.FileAppenderTest" name="testLogMessage" time="0.01" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.FileAppenderTest" name="testOnRegistration" time="0.003" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.RollingFileAppenderTest" name="testLogMessage" time="0.098" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.RollingFileAppenderTest" name="testOnRegistration" time="0.004" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.ScopeAppenderTest" name="testLogMessage" time="0.074" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.SocketAppenderTest" name="testLogMessage" time="0.086" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.TracerAppenderTest" name="testLogMessage" time="0.103" />
+    <testcase classname="coldbox.testing.cases.logging.appenders.TwitterAppenderTest" name="testLogMessage" time="0.01">
+      <error message="Application"><![CDATA[Could not find the ColdFusion component or interface coldbox.system.logging.appenders.TwitterAppender. at /Users/lmajano/Sites/cboxdev/core/coldbox/system/testing/MockBox.cfc:91 at /Users/lmajano/Sites/cboxdev/core/coldbox/testing/cases/logging/appenders/TwitterAppenderTest.cfc:5 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestDecorator.cfc:26 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:97 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:52 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuite.cfc:131 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/DirectoryTestSuite.cfc:37 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/HttpAntRunner.cfc:28]]></error>
+    </testcase>
+    <testcase classname="coldbox.testing.cases.logging.config.ConfigXSDTest" name="testGoodXSD" time="0.04" />
+    <testcase classname="coldbox.testing.cases.logging.config.ConfigXSDTest" name="testBadXSD" time="0.023" />
+    <testcase classname="coldbox.testing.cases.logging.config.LogBoxConfigTest" name="testValidateCategories" time="0.021" />
+    <testcase classname="coldbox.testing.cases.logging.config.LogBoxConfigTest" name="testAddAppender" time="0.024" />
+    <testcase classname="coldbox.testing.cases.logging.config.LogBoxConfigTest" name="testConventionMethods" time="0.004" />
+    <testcase classname="coldbox.testing.cases.logging.config.LogBoxConfigTest" name="testAddCategory" time="0.005" />
+    <testcase classname="coldbox.testing.cases.logging.config.LogBoxConfigTest" name="testRootAppenders" time="0.002" />
+    <testcase classname="coldbox.testing.cases.logging.config.LogBoxConfigTest" name="testRoot" time="0.004" />
+    <testcase classname="coldbox.testing.cases.logging.config.LogBoxConfigXMLTest" name="testInlineXML" time="0.032" />
+    <testcase classname="coldbox.testing.cases.logging.config.LogBoxConfigXMLTest" name="testCreations" time="0.057" />
+  </testsuite>
+</testsuites>

@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("UnitTest");
@@ -26,7 +26,7 @@
 			],
 			DISetters = [
 				{name="Joke",value="You!"},
-				{name="service", ref="MyService"}
+				{name="service", ref="MyService", argName="MyService"}
 			],
 			DIMethodArgs = [
 				{name="Joke",value="You!"},
@@ -40,7 +40,7 @@
 		assertEquals( data.type, mapping.getTYpe() );
 		assertEquals( data.path, mapping.getPath() );
 		assertEquals( "init", mapping.getConstructor() );
-		assertEquals( true, mapping.isAutowire() );
+		assertEquals( '', mapping.isAutowire() );
 		assertEquals( true, mapping.isAutoInit() );
 		assertEquals( true, mapping.isEagerInit() );
 		assertEquals( data.scope, mapping.getScope() );
@@ -56,6 +56,9 @@
 		
 		setters = mapping.getDISetters();
 		assertEquals( 2, arrayLen(setters));
+		assertEquals("Joke", setters[1].argName );
+		assertEquals("MyService", setters[2].argName );
+		
 		
 		args = mapping.getDIMethodArguments();
 		assertEquals( 2, arrayLen(args));
@@ -65,6 +68,10 @@
 		assertEquals( true, mapping.isAspectAutoBinding() );
 		mapping.setAspectAutoBinding(false);
 		assertEquals( false, mapping.isAspectAutoBinding() );
+		
+		assertEquals( '', mapping.getVirtualInheritance() );
+		
+		assertEquals( [], mapping.getMixins() );
 	}
 	
 	function testProviderMethods(){
