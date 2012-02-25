@@ -41,6 +41,11 @@ interface{
 	any function getRejectedValue();
 	
 	/**
+	* Get the error representation
+	*/
+	struct function getMemento();
+	
+	/**
 	* Configure method, which can do setters for all required error params
 	* @message.hint The required error message
 	* @field.hint The required field that case the exception

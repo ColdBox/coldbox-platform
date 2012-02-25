@@ -20,6 +20,12 @@ interface{
 	boolean function hasErrors(string field);
 	
 	/**
+	* Clear All errors
+	*/
+	IValidationResult function clearErrors();
+	
+	
+	/**
 	* Get how many errors you have
 	* @field.hint The field to count on (optional)
 	*/
@@ -35,16 +41,16 @@ interface{
 	* Get an error object for a specific field that failed. Throws exception if the field does not exist
 	* @field.hint The field to return error objects on
 	*/
-	IValidationError function getFieldErrors(required string field);
+	IValidationError[] function getFieldErrors(required string field);
 	
 	/**
 	* Get a collection of metadata about the validation results
 	*/
-	struct function getData();
+	struct function getResultMetadata();
 	
 	/**
 	* Set a collection of metadata into the results object
 	*/
-	IValidationResult function setData(required struct data);
+	IValidationResult function setResultMetadata(required struct data);
 	
 }
