@@ -14,14 +14,22 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	ValidationResult function init(){
 		errors 			= [];
 		resultMetadata 	= {};
+		errorTemplate   = new coldbox.system.validation.result.ValidationError();
 		return this;
+	}
+
+	/**
+	* Get a new error object
+	*/
+	coldbox.system.validation.result.IValidationError function newError(struct properties){
+		return duplicate( errorTemplate ).configure(argumentCollection=arguments);
 	}
 
 	/**
 	* Add errors into the result object
 	* @error.hint The validation error to add into the results object
 	*/
-	IValidationResult function addError(required IValidationError error){
+	coldbox.system.validation.result.IValidationResult function addError(required coldbox.system.validation.result.IValidationError error){
 		arrayAppend( errors, arguments.error );
 		return this;
 	}
@@ -60,7 +68,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Get an error object for a specific field that failed. Throws exception if the field does not exist
 	* @field.hint The field to return error objects on
 	*/
-	IValidationError[] function getFieldErrors(required string field){
+	coldbox.system.validation.result.IValidationError[] function getFieldErrors(required string field){
 		var r = [];
 		for( var thisError in errors ){
 			if( thisError.getField() eq arguments.field ){ arrayAppend(r, thisError); }
@@ -71,7 +79,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	/**
 	* Clear All errors
 	*/
-	IValidationResult function clearErrors(){
+	coldbox.system.validation.result.IValidationResult function clearErrors(){
 		arrayClear( errors );
 		return this;
 	}
@@ -86,7 +94,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	/**
 	* Set a collection of metadata into the results object
 	*/
-	IValidationResult function setResultMetadata(required struct data){
+	coldbox.system.validation.result.IValidationResult function setResultMetadata(required struct data){
 		variables.resultMetadata = arguments.data;
 		return this;	
 	}

@@ -19,7 +19,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set the error message
 	* @message.hint The error message
 	*/
-	IValidationError function setMessage(required string message){
+	coldbox.system.validation.result.ValidationError function setMessage(required string message){
 		variables.message = arguments.message;
 		return this;
 	}
@@ -28,7 +28,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set the field
 	* @message.hint The error message
 	*/
-	IValidationError function setField(required string field){
+	coldbox.system.validation.result.ValidationError function setField(required string field){
 		variables.field = arguments.field;
 		return this;	
 	}
@@ -37,7 +37,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set the rejected value
 	* @value.hint The rejected value
 	*/
-	IValidationError function setRejectedValue(required any value){
+	coldbox.system.validation.result.IValidationError function setRejectedValue(required any value){
 		variables.rejectedValue = arguments.value;
 		return this;
 	}
@@ -81,7 +81,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* @field.hint The required field that case the exception
 	* @rejectedValue.hint The optional rejected value
 	*/
-	IValidationError function configure(required string message, required string field, string rejectedValue){
+	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue){
 		for(var key in arguments){
 			if( structKeyExists(arguments,key) ){ variables[key] = arguments[ key ]; }
 		}

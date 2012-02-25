@@ -8,8 +8,17 @@ The ColdBox validator interface, all inspired by awesome Hyrule Validation Frame
 interface{
 
 	/**
-	* Will check if an incoming piece validates
+	* Will check if an incoming value validates
+	* @validationResult.hint The result object of the validation
+	* @target.hint The target object to validate on
+	* @field.hint The field on the target object to validate on
+	* @targetValue.hint The target value to validate
 	*/
-	boolean function isValid();
+	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue);
+	
+	/**
+	* Get the name of the validator
+	*/
+	string function getName();
 	
 }

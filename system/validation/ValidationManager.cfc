@@ -8,36 +8,38 @@ The ColdBox Validation Manager, all inspired by awesome Hyrule Validation Framew
 
 When using constraints you can use {} values for replacements:
 - {now} = today
-- {property-name} = A property value
-- {udf-name} = Call a UDF provider
+- {property:name} = A property value
+- {udf:name} = Call a UDF provider
 
 Constraint Definition Sample:
-
-propertyName = {
-	// required or not
-	blank : boolean [false],
-	// type constraint
-	type  : (ssn,email,url,alpha,boolean,date,usdate,eurodate,numeric,GUID,UUID,integer,[string],telephone,zipcode,ipaddress,creditcard,binary,component,query,struct),
-	// size or length of the value (struct,string,array,query)
-	size  : numeric or range, eg: 10 or 6,8
-	// range is a range of values the property value should exist in
-	range : eg: 1,10 or 5,-5
-	// regex validation
-	regex : valid regex
-	// same as another property or value
-	sameAs : value
-	// same as but with no case
-	sameAsNoCase : value
-	// value in list
-	inList : list
-	// discrete math modifiers
-	discrete : (gt,gte,lt,lte):value
-	// UDF to use for validation
-	udf : function
-	// Custom validator, must implement 
-	validator : path or wirebox id: 'mypath.MyValidator' or 'id:MyValidator'
-	
+constraints = {
+	fieldName = {
+		// required or not
+		required : boolean [false],
+		// type constraint
+		type  : (ssn,email,url,alpha,boolean,date,usdate,eurodate,numeric,GUID,UUID,integer,[string],telephone,zipcode,ipaddress,creditcard,binary,component,query,struct,json,xml),
+		// size or length of the value (struct,string,array,query)
+		size  : numeric or range, eg: 10 or 6..8
+		// range is a range of values the property value should exist in
+		range : eg: 1..10 or 5..-5
+		// regex validation
+		regex : valid regex
+		// same as another property or value
+		sameAs : value
+		// same as but with no case
+		sameAsNoCase : value
+		// value in list
+		inList : list
+		// discrete math modifiers
+		discrete : (gt,gte,lt,lte):value
+		// UDF to use for validation
+		udf : function
+		// Custom validator, must implement 
+		validator : path or wirebox id: 'mypath.MyValidator' or 'id:MyValidator'
+	}
 };
+
+vResults = validateModel(target=model);
 
 */
 component accessors="true" serialize="false" singleton{
@@ -75,12 +77,30 @@ component accessors="true" serialize="false" singleton{
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
 	*/
-	IValidationResult function validate(required any target, string fields, any constraints){
+	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields="*", any constraints){
 		// discover and determine constraints definition for an incoming target.
-		var thisConstraints = determineConstraintsDefinition(arguments.target, arguments.constraints);
-		
-
-		
+		var allConstraints = determineConstraintsDefinition(arguments.target, arguments.constraints);
+		// create new result object
+		var results = new coldbox.system.validation.result.ValidationResult();
+		// iterate over constraints defined
+		for(var thisField in allConstraints ){
+			// verify we can validate the field described in the constraint
+			if( arguments.fields == "*" || listFindNoCase(arguments.fields, thisField) ) {
+				// process the validation rules on the target field using the constraint validation data
+				processRules(results=results,rules=allConstraints[thisField],target=arguments.target,field=thisField);
+			}
+		}
+	}
+	
+	/**
+	* Process validation rules on a target object and field
+	*/
+	coldbox.system.validation.result.IValidationResult function processRules(required IValidationResult result, required struct rules, required any target, required any field){
+		// process the incoming rules
+		for( var key in arguments.rules ){
+			// had to use nasty evaluate until adobe cf get's their act together on invoke.
+			getValidator( key ).validate(result=result,target=arguments.target,field=arguments.field,targetValue=evaluate("arguments.target.get#arguments.field#()") );
+		}
 	}
 	
 	/**
@@ -104,7 +124,7 @@ component accessors="true" serialize="false" singleton{
 	* Retrieve the shared constraints
 	* @constraints.hint Filter by name or not
 	*/
-	ValidationManager function setSharedConstraints(struct constraints){
+	coldbox.system.validation.ValidationManager function setSharedConstraints(struct constraints){
 		variables.sharedConstraints = arguments.constraints;
 		return this;
 	}
@@ -113,7 +133,7 @@ component accessors="true" serialize="false" singleton{
 	* This method is called by ColdBox when the application loads so you can load or process shared constraints
 	* @constraints.hint A structure of validation constraints { key (shared name) = { constraints} }
 	*/
-	IValidationManager function loadSharedConstraints(required struct constraints){
+	coldbox.system.validation.ValidationManager function loadSharedConstraints(required struct constraints){
 		
 	}
 	
@@ -142,6 +162,14 @@ component accessors="true" serialize="false" singleton{
 		
 		// now back to the fun stuff.
 		return thisConstraints;
+	}
+	
+	private struct function discoverConstraints(required any target){
+		if( structKeyExists(arguments.target,"constraints") ){
+			var c = arguments.target.constraints;
+			return processConstraints( c );
+		}
+		return {};
 	}
 	
 }

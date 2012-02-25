@@ -13,13 +13,13 @@ interface{
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
 	*/
-	IValidationResult function validate(required any target, string fields, any constraints);
+	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields, any constraints);
 	
 	/**
 	* This method is called by ColdBox when the application loads so you can load or process shared constraints
 	* @constraints.hint A structure of validation constraints { key (shared name) = { constraints} }
 	*/
-	IValidationManager function loadSharedConstraints(required struct constraints);
+	coldbox.system.validation.IValidationManager function loadSharedConstraints(required struct constraints);
 	
 	/**
 	* Retrieve the shared constraints
@@ -37,12 +37,12 @@ interface{
 	* Retrieve the shared constraints
 	* @constraints.hint Filter by name or not
 	*/
-	IValidationManager function setSharedConstraints(struct constraints);
+	coldbox.system.validation.IValidationManager function setSharedConstraints(struct constraints);
 	
 	/**
 	* Store a shared constraint
 	* @name.hint Filter by name or not
 	* @constraint.hint The constraint to store.
 	*/
-	IValidationManager function addSharedConstraint(required string name, required struct constraint);
+	coldbox.system.validation.IValidationManager function addSharedConstraint(required string name, required struct constraint);
 }

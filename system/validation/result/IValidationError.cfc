@@ -11,19 +11,19 @@ interface{
 	* Set the error message
 	* @message.hint The error message
 	*/
-	IValidationError function setMessage(required string message);
+	coldbox.system.validation.result.IValidationError function setMessage(required string message);
 	 
 	/**
 	* Set the field
 	* @message.hint The error message
 	*/
-	IValidationError function setField(required string field);
+	coldbox.system.validation.result.IValidationError function setField(required string field);
 	
 	/**
 	* Set the rejected value
 	* @value.hint The rejected value
 	*/
-	IValidationError function setRejectedValue(required any value);
+	coldbox.system.validation.result.IValidationError function setRejectedValue(required any value);
 	
 	/**
 	* Get the error message
@@ -51,6 +51,6 @@ interface{
 	* @field.hint The required field that case the exception
 	* @rejectedValue.hint The optional rejected value
 	*/
-	IValidationError function configure(required string message, required string field, string rejectedValue);
+	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue);
 	
 }

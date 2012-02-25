@@ -11,7 +11,7 @@ interface{
 	* Add errors into the result object
 	* @error.hint The validation error to add into the results object
 	*/
-	IValidationResult function addError(required IValidationError error);
+	coldbox.system.validation.result.IValidationResult function addError(required coldbox.system.validation.result.IValidationError error);
 	
 	/**
 	* Determine if the results had error or not
@@ -22,7 +22,7 @@ interface{
 	/**
 	* Clear All errors
 	*/
-	IValidationResult function clearErrors();
+	coldbox.system.validation.result.IValidationResult function clearErrors();
 	
 	
 	/**
@@ -41,7 +41,7 @@ interface{
 	* Get an error object for a specific field that failed. Throws exception if the field does not exist
 	* @field.hint The field to return error objects on
 	*/
-	IValidationError[] function getFieldErrors(required string field);
+	coldbox.system.validation.result.IValidationError[] function getFieldErrors(required string field);
 	
 	/**
 	* Get a collection of metadata about the validation results
@@ -51,6 +51,6 @@ interface{
 	/**
 	* Set a collection of metadata into the results object
 	*/
-	IValidationResult function setResultMetadata(required struct data);
+	coldbox.system.validation.result.IValidationResult function setResultMetadata(required struct data);
 	
 }
