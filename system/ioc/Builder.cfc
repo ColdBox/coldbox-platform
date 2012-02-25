@@ -505,6 +505,7 @@ TODO: update dsl consistency, so it is faster.
 			var familyPath 		= "";
 			var key 	   		= "";
 			var constructorArgs = "";
+			var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS";
 			
 			// Mix it up baby
 			instance.utility.getMixerUtil().start( arguments.target );
@@ -520,7 +521,7 @@ TODO: update dsl consistency, so it is faster.
 			// Mix in methods
 			for(key in baseObject){
 				// If target has overriden method, then don't override it with mixin, simulated inheritance
-				if( NOT structKeyExists(arguments.target, key) ){
+				if( NOT structKeyExists(arguments.target, key) AND NOT listFindNoCase(excludedProperties, key) ){
 					arguments.target.injectMixin( key, baseObject[key] );
 				}
 			}
