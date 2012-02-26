@@ -31,6 +31,7 @@ Description :
 			instance.adobe.json 		= true;
 			instance.adobe.ramResource	= true;
 			instance.adobe.onmm			= true;
+			instance.adobe.validation	= true;
 			instance.adobe.instanceCheck = true;
 			
 			instance.railo = structnew();
@@ -38,6 +39,7 @@ Description :
 			instance.railo.json 		= true;
 			instance.railo.ramResource 	= true;
 			instance.railo.onmm 		= true;
+			instance.railo.validation	= true;
 			instance.railo.instanceCheck = true;
 			
 			instance.bluedragon 			= structnew();
@@ -45,6 +47,7 @@ Description :
 			instance.bluedragon.json 		= true;
 			instance.bluedragon.ramResource = false;
 			instance.bluedragon.onmm 		= true;
+			instance.bluedragon.validation		= false;
 			instance.bluedragon.instanceCheck = true;
 			
 			return this;
@@ -103,6 +106,24 @@ Description :
 				 (engine eq this.BLUEDRAGON and version gte 7) or
 				 (engine eq this.RAILO) ){
 				return (true AND featureCheck("onmm",engine));
+			}
+			else{
+				return false;
+			}
+		</cfscript>
+	</cffunction>
+	
+	
+	<!--- Test if we can use our validation managers --->
+	<cffunction name="isValidationSupported" access="public" returntype="boolean" hint="Checks if the engine supports our validation engine capable." output="false" >
+		<cfscript>
+			var version = getVersion();
+			var engine = getEngine();
+			
+			if ( (engine eq this.ADOBE and version gte 9) or
+				 (engine eq this.BLUEDRAGON and version gte 7) or
+				 (engine eq this.RAILO) ){
+				return (true AND featureCheck("validation",engine));
 			}
 			else{
 				return false;

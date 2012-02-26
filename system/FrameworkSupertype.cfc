@@ -116,6 +116,19 @@ Description :
 		<cfreturn controller.getWireBox().getInstance(argumentCollection=arguments)>
 	</cffunction>
 	
+	<!--- validateModel --->    
+    <cffunction name="validateModel" output="false" access="public" returntype="coldbox.system.validation.result.IValidationResults" hint="Validate a target object">    
+    	<cfargument name="target" 		type="any" 		required="true" hint="The target object to validate"/>
+		<cfargument name="fields" 		type="string" 	required="false" default="*" hint="Validate on all or one or a list of fields (properties) on the target, by default we validate all fields declared in its constraints"/>
+		<cfargument name="constraints" 	type="any" 		required="false" hint="The shared constraint name to use, or an actual constraints structure"/>
+    	<cfreturn controller.getValidationManager().validate(argumentCollection=arguments)>    
+    </cffunction>
+    
+    <!--- Retrieve the applications Validation Manager --->
+   <cffunction name="getValidationManager" access="public" returntype="coldbox.system.validation.IValidationManager" output="false" hint="Retrieve the application's configured Validation Manager">    
+    	<cfreturn controller.getValidationManager()>    
+    </cffunction>    
+	
 	<!--- Populate a model object from the request Collection --->
 	<cffunction name="populateModel" access="public" output="false" returntype="Any" hint="Populate a named or instantiated model (java/cfc) from the request collection items">
 		<cfargument name="model" 			required="true"  type="any" 	hint="The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method">

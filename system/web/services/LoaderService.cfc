@@ -100,6 +100,14 @@ Modification History:
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
 		var javaLoader = "";
+		var validationManager = "";
+		var validationData = controller.getSetting("validation");
+		
+		if( controller.getCFMLEngine().isValidationSupported() OR validationData.manager NEQ "coldbox.system.validation.ValidationManager"){
+			// Validation Manager
+			validationManager = controller.getWireBox().getInstance( validationData.manager );
+			controller.setValidationManager( validationManager.setSharedConstraints( validationData.sharedConstraints ) );
+		}
 		
 		// Init JavaLoader with paths if set as settings.
 		if( controller.settingExists("javaloader_libpath") ){

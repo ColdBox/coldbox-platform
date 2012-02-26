@@ -55,7 +55,10 @@ Only one instance of a specific ColdBox application exists.
 			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init(this);
 			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
 			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this);
-
+			
+			// Validation Manager
+			instance.validationManager = "";
+			
 			// CacheBox Instance
 			instance.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
 			// WireBox Instance
@@ -71,6 +74,15 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.cf.CFMLEngine)" coldoc:generic="coldbox.system.core.cf.CFMLEngine">
 		<cfreturn instance.CFMLEngine>
 	</cffunction>
+	
+	<!--- Get Set Validation Manager --->
+	<cffunction name="getValidationManager" access="public" returntype="coldbox.system.validation.IValidationManager" output="false" hint="Retrieve the application's configured Validation Manager">    
+    	<cfreturn instance.validationManager>    
+    </cffunction>    
+    <cffunction name="setValidationManager" access="public" returntype="void" output="false" hint="Set or override the application's validation manager">    
+    	<cfargument name="validationManager" type="coldbox.system.validation.IValidationManager" required="true">    
+    	<cfset instance.validationManager = arguments.validationManager>    
+    </cffunction>
 	
 	<!--- getSetCacheBox --->
 	<cffunction name="getCacheBox" access="public" returntype="any" output="false" hint="Get the application's CacheBox instance as coldbox.system.cache.CacheFactory" colddoc:generic="coldbox.system.cache.CacheFactory">

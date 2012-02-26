@@ -123,10 +123,10 @@
 	}
 	
 	function testToWebservice(){
-		config.map("Test").toWebservice("http://www.coldbox.org/paths.cfc?wsdl");
+		config.map("Test").toWebservice("http://coldbox.jfetmac/distribution/test.cfc?wsdl");
 		mapping = config.getMapping("Test");
 		assertEquals( this.TYPES.WEBSERVICE, mapping.getType() );
-		assertEquals( "http://www.coldbox.org/paths.cfc?wsdl", mapping.getPath() );
+		assertEquals( "http://coldbox.jfetmac/distribution/test.cfc?wsdl", mapping.getPath() );
 	}
 	
 	function testToRSS(){
