@@ -28,7 +28,7 @@ component accessors="true" singleton{
 			return true;
 		}
 		
-		var args = {message="The '#arguments.field#' value is not in the constraint list: #arguments.validationData#",field=arguments.field};
+		var args = {message="The '#arguments.field#' value is not in the constraint list: #arguments.validationData#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 		validationResult.addError( validationResult.newError(argumentCollection=args) );
 		return false;
 	}

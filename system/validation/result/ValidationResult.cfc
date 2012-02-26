@@ -55,14 +55,6 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	}
 	
 	/**
-	* Set the validation locale
-	*/
-	coldbox.system.validation.result.ValidationResult function setLocale(required string locale){
-		variables.locale = arguments.locale;
-		return this;
-	}
-	
-	/**
 	* Get the locale
 	*/
 	string function getLocale(){
@@ -96,6 +88,24 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* @error.hint The validation error to add into the results object
 	*/
 	coldbox.system.validation.result.IValidationResult function addError(required coldbox.system.validation.result.IValidationError error){
+		
+		// Validate localization?
+		if( hasLocale() ){
+			// get i18n message, if it exists
+			var message = rb.getResource(resource="#targetName#.#error.getField()#.#error.getValidationType()#",default="",locale=getLocale());
+			// Override with localized message
+			if( len(message) ){ 
+				// process replacements
+				message = replacenocase(message,"{rejectedValue}", error.getRejectedValue(), "all");
+				message = replacenocase(message,"{field}", error.getField(), "all");
+				message = replacenocase(message,"{validationType}", error.getValidationType(), "all");
+				message = replacenocase(message,"{validationData}", error.getValidationData(), "all");
+				message = replacenocase(message,"{targetName}", getTargetName(), "all");
+				// override message
+				arguments.error.setMessage( message ); 
+			}
+		}
+		// append error
 		arrayAppend( errors, arguments.error );
 		return this;
 	}

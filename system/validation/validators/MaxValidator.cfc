@@ -29,7 +29,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 			return true;
 		}
 		
-		var args = {message="The '#arguments.field#' value is not less than #arguments.validationData#",field=arguments.field};
+		var args = {message="The '#arguments.field#' value is not less than #arguments.validationData#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 		validationResult.addError( validationResult.newError(argumentCollection=args) );
 		return false;
 	}

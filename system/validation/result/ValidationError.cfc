@@ -13,8 +13,26 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 		field 			= "";
 		rejectedValue 	= "";
 		validationType 	= "";
+		validationData  = "";
 		return this;
 	}
+	
+	/**
+	* Set the validator data
+	* @data.hint The data of the validator
+	*/
+	coldbox.system.validation.result.IValidationError function setValidationData(required any data){
+		validationData = arguments.data;
+		return this;
+	}
+	
+	/**
+	* Get the error validation data
+	*/
+	string function getValidationData(){
+		return validationData;
+	}
+	
 
 	/**
 	* Set the error message
@@ -87,7 +105,8 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 		return {
 			message = message,
 			field = field,
-			rejectedValue = rejectedValue
+			rejectedValue = rejectedValue,
+			validationType = validationType
 		};
 	}
 
@@ -99,7 +118,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* @rejectedValue.hint The optional rejected value
 	* @validationType.hint The name of the rejected validator
 	*/
-	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue, string validationType){
+	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue, string validationType, string validationData){
 		for(var key in arguments){
 			if( structKeyExists(arguments,key) ){ variables[key] = arguments[ key ]; }
 		}

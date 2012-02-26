@@ -32,7 +32,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 			
 		// null checks
 		if( isNull(arguments.targetValue) ){
-			var args = {message="The '#arguments.field#' value is null",field=arguments.field};
+			var args = {message="The '#arguments.field#' value is null",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 			validationResult.addError( validationResult.newError(argumentCollection=args) );
 			return false;
 		}
@@ -42,7 +42,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 			return true;
 		}
 		
-		var args = {message="The '#arguments.field#' value is required",field=arguments.field};
+		var args = {message="The '#arguments.field#' value is required",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 		validationResult.addError( validationResult.newError(argumentCollection=args) );
 		return false;
 	}

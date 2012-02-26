@@ -11,6 +11,18 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		model.init();
 	}
 	
+	function testLocale(){
+		assertFalse( model.hasLocale() );
+		model.setLocale( 'en_US' );
+		assertTrue( model.hasLocale() );
+		assertEquals( 'en_US', model.getLocale() );
+	}
+	
+	function testTargetName(){
+		model.setTargetName( 'User' );
+		assertEquals( 'User', model.getTargetName() );
+	}
+	
 	function testResultsMetadata(){
 		assertTrue( structIsEmpty(model.getResultMetadata()) );
 		mock = {
@@ -22,11 +34,23 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 	
 	function testAddError(){
 		mockError = getMockBox().createMock("coldbox.system.validation.result.ValidationError").init();
-		mockError.configure("unit test","test");
+		mockError.configure("unit test","test","45","inList","1,2,3");
 		assertTrue( arrayLen(model.getErrors()) eq 0 );
 		
 		model.addError( mockError );
 		assertTrue( arrayLen(model.getErrors()) eq 1 );
+		
+		// with i18n
+		mockError = getMockBox().createMock("coldbox.system.validation.result.ValidationError").init();
+		mockError.configure("unit test","test","45","inList","1,2,3");
+		model.setLocale("en_US");
+		mockRB = getMockBox().createEmptyMock("coldbox.system.plugins.ResourceBundle").$("getResource").$results("Your stuff doesn't work {field} {validationType} {validationData}");
+		model.setRB( mockRB );
+		
+		model.addError( mockError );
+		debug( mockError.getmemento() );
+		assertEquals( "Your stuff doesn't work test inList 1,2,3", mockError.getMessage() );
+		
 	}
 	
 	function testHasErrors(){
