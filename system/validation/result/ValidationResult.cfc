@@ -61,7 +61,12 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 			errorTarget = getFieldErrors( arguments.field );
 		}
 		
-		return errorTarget;
+		var e = [];
+		for( var thisKey in errorTarget ){
+			arrayAppend( e, thisKey.getMessage() );
+		}
+		
+		return e;
 	}
 	
 	/**
