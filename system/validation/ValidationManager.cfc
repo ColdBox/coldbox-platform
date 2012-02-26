@@ -82,18 +82,22 @@ component accessors="true" serialize="false" implements="coldbox.system.validati
 	* @target.hint The target object to validate
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
+	* @locale.hint An optional locale to use for i18n messages
 	*/
-	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields="*", any constraints){
+	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields="*", any constraints, string locale=""){
 		// discover and determine constraints definition for an incoming target.
 		var allConstraints = determineConstraintsDefinition(arguments.target, arguments.constraints);
+		
 		// create new result object
-		var results = new coldbox.system.validation.result.ValidationResult();
+		var initArgs = { locale=arguments.locale, targetName = listLast( getMetadata(arguments.target).name, ".") };
+		var results = wirebox.getInstance(name="coldbox.system.validation.result.ValidationResult",initArguments=initArgs);
+		
 		// iterate over constraints defined
 		for(var thisField in allConstraints ){
 			// verify we can validate the field described in the constraint
 			if( arguments.fields == "*" || listFindNoCase(arguments.fields, thisField) ) {
 				// process the validation rules on the target field using the constraint validation data
-				processRules(results=results,rules=allConstraints[thisField],target=arguments.target,field=thisField);
+				processRules(results=results,rules=allConstraints[thisField],target=arguments.target,field=thisField,locale=arguments.locale);
 			}
 		}
 		

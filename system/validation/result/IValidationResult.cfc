@@ -14,6 +14,32 @@ interface{
 	coldbox.system.validation.result.IValidationResult function addError(required coldbox.system.validation.result.IValidationError error);
 	
 	/**
+	* Set the validation target object name
+	*/
+	coldbox.system.validation.result.ValidationResult function setTargetName(required string name);
+	
+	/**
+	* Get the name of the target object that got validated
+	*/
+	string function getTargetName();
+	
+	/**
+	* Get the locale
+	*/
+	string function getLocale();
+	
+	/**
+	* has locale information
+	*/
+	boolean function hasLocale();
+	
+	/**
+	* Set the validation locale
+	*/
+	coldbox.system.validation.result.ValidationResult function setLocale(required string locale);
+	
+	
+	/**
 	* Determine if the results had error or not
 	* @field.hint The field to count on (optional)
 	*/

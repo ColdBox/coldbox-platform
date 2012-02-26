@@ -9,9 +9,10 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	
 	// constructor
 	ValidationError function init(){
-		message = "";
-		field = "";
-		rejectedValue = "";
+		message 		= "";
+		field 			= "";
+		rejectedValue 	= "";
+		validationType 	= "";
 		return this;
 	}
 
@@ -40,6 +41,22 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	coldbox.system.validation.result.IValidationError function setRejectedValue(required any value){
 		variables.rejectedValue = arguments.value;
 		return this;
+	}
+	
+	/**
+	* Set the validator type name that rejected
+	* @validationType.hint The name of the rejected validator
+	*/
+	coldbox.system.validation.result.IValidationError function setValidationType(required any validationType){
+		variables.validationType = arguments.validationType;
+		return this;
+	}
+	
+	/**
+	* Get the error validation type
+	*/
+	string function getValidationType(){
+		return validationType;
 	}
 	
 	/**
@@ -80,8 +97,9 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* @message.hint The required error message
 	* @field.hint The required field that case the exception
 	* @rejectedValue.hint The optional rejected value
+	* @validationType.hint The name of the rejected validator
 	*/
-	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue){
+	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue, string validationType){
 		for(var key in arguments){
 			if( structKeyExists(arguments,key) ){ variables[key] = arguments[ key ]; }
 		}

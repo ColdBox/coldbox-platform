@@ -7,17 +7,83 @@ The ColdBox validation results
 */
 component accessors="true" implements="coldbox.system.validation.result.IValidationResult"{
 
-	// errors property
+	/**
+	* A collection of error objects represented in this result object
+	*/
 	property name="errors"			type="array";
+	
+	/**
+	* Extra metadata you can store in the results object
+	*/
 	property name="resultMetadata"	type="struct";
+	
+	/**
+	* The locale this result validation is using
+	*/
+	property name="locale"			type="string";
+	
+	/**
+	* The name of the target object
+	*/
+	property name="targetName"		type="string";
+	
+	// DI
+	property name="rb"	inject="coldbox:plugin:ResourceBundle";
 
-	ValidationResult function init(){
-		errors 			= [];
-		resultMetadata 	= {};
-		errorTemplate   = new coldbox.system.validation.result.ValidationError();
+	ValidationResult function init(string locale="",string targetName=""){
+		errors 					= [];
+		resultMetadata 			= {};
+		variables.locale		= arguments.locale;
+		variables.targetName 	= arguments.targetName;
+		errorTemplate   		= new coldbox.system.validation.result.ValidationError();
 		return this;
 	}
+	
+	/**
+	* Set the validation target object name
+	*/
+	coldbox.system.validation.result.ValidationResult function setTargetName(required string name){
+		targetName = arguments.name;
+		return this;
+	}
+	
+	/**
+	* Get the name of the target object that got validated
+	*/
+	string function getTargetName(){
+		return targetName;
+	}
+	
+	/**
+	* Set the validation locale
+	*/
+	coldbox.system.validation.result.ValidationResult function setLocale(required string locale){
+		variables.locale = arguments.locale;
+		return this;
+	}
+	
+	/**
+	* Get the locale
+	*/
+	string function getLocale(){
+		return locale;
+	}
+	
+	/**
+	* has locale information
+	*/
+	boolean function hasLocale(){
+		return ( len(locale) GT 0 );
+	}
 
+	/**
+	* Set the validation locale
+	*/
+	coldbox.system.validation.result.ValidationResult function setLocale(required string locale){
+		variables.locale = arguments.locale;
+		return this;
+	}
+	
 	/**
 	* Get a new error object
 	*/

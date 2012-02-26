@@ -26,6 +26,17 @@ interface{
 	coldbox.system.validation.result.IValidationError function setRejectedValue(required any value);
 	
 	/**
+	* Set the validator type name that rejected
+	* @validationType.hint The name of the rejected validator
+	*/
+	coldbox.system.validation.result.IValidationError function setValidationType(required any validationType);
+	
+	/**
+	* Get the error validation type
+	*/
+	string function getValidationType();
+	
+	/**
 	* Get the error message
 	*/
 	string function getMessage();
@@ -50,7 +61,8 @@ interface{
 	* @message.hint The required error message
 	* @field.hint The required field that case the exception
 	* @rejectedValue.hint The optional rejected value
+	* @validationType.hint The name of the rejected validator
 	*/
-	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue);
+	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue, string validationType);
 	
 }

@@ -12,8 +12,9 @@ interface{
 	* @target.hint The target object to validate
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
+	* @locale.hint An optional locale to use for i18n messages
 	*/
-	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields, any constraints);
+	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields, any constraints, string locale="");
 	
 	/**
 	* Retrieve the shared constraints
