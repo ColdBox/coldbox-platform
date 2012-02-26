@@ -5,12 +5,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 The ColdBox validator interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
 */
-component accessors="true" implements="coldbox.system.validation.validators.IValidator" singleton{
+component accessors="true" singleton{
 
 	property name="name";
 	
-	RequiredValidator function init(){
-		name = "Required";	
+	InListValidator function init(){
+		name = "InList";	
 		return this;
 	}
 
@@ -23,26 +23,12 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 	* @validationData.hint The validation data the validator was created with
 	*/
 	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
-		// check
-		if( !isBoolean(arguments.validationData) ){
-			throw(message="The Required validator data needs to be boolean and you sent in: #arguments.validationData#",type="RequiredValidator.InvalidValidationData");
-		}
-		// return true if not required, nothing needed to check
-		if( !arguments.validationData ){ return true; }
-			
-		// null checks
-		if( isNull(arguments.targetValue) ){
-			var args = {message="The '#arguments.field#' value is null",field=arguments.field};
-			validationResult.addError( validationResult.newError(argumentCollection=args) );
-			return false;
-		}
 		
-		// Simple Tests
-		if( isSimpleValue(arguments.targetValue) AND len(trim( arguments.targetValue )) ){
+		if( listFindNoCase(arguments.validationData, arguments.targetValue)){
 			return true;
 		}
 		
-		var args = {message="The '#arguments.field#' value is required",field=arguments.field};
+		var args = {message="The '#arguments.field#' value is not in the constraint list: #arguments.validationData#",field=arguments.field};
 		validationResult.addError( validationResult.newError(argumentCollection=args) );
 		return false;
 	}

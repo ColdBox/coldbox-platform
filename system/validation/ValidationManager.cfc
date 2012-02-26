@@ -13,7 +13,7 @@ When using constraints you can use {} values for replacements:
 
 Constraint Definition Sample:
 constraints = {
-	fieldName = {
+	propertyName = {
 		// required or not
 		required : boolean [false],
 		// type constraint
@@ -23,17 +23,19 @@ constraints = {
 		// range is a range of values the property value should exist in
 		range : eg: 1..10 or 5..-5
 		// regex validation
-		regex : valid regex
-		// same as another property or value
-		sameAs : value
+		regex : valid no case regex
+		// same as another property
+		sameAs : propertyName
 		// same as but with no case
-		sameAsNoCase : value
+		sameAsNoCase : propertyName
 		// value in list
 		inList : list
 		// discrete math modifiers
-		discrete : (gt,gte,lt,lte):value
-		// UDF to use for validation
-		udf : function
+		discrete : (gt,gte,lt,lte,eq,neq):value
+		// UDF to use for validation, must return boolean accept the incoming value and target object, validate(value,target):boolean
+		udf : function,
+		// Validation method to use in the targt object must return boolean accept the incoming value and target object, validate(value,target):boolean
+		method : methodName
 		// Custom validator, must implement 
 		validator : path or wirebox id: 'mypath.MyValidator' or 'id:MyValidator'
 	}
@@ -67,6 +69,8 @@ component accessors="true" serialize="false" singleton{
 		sharedConstraints = {};
 		// loaded object constraints
 		objectConstraints = {};
+		// valid validators
+		validValidators = "required,type,size,range,regex,sameAs,sameAsNoCase,inList,discrete,udf,method,validator";
 		
 		return this;
 	}
@@ -90,16 +94,51 @@ component accessors="true" serialize="false" singleton{
 				processRules(results=results,rules=allConstraints[thisField],target=arguments.target,field=thisField);
 			}
 		}
+		
+		return results;
 	}
 	
 	/**
 	* Process validation rules on a target object and field
 	*/
-	coldbox.system.validation.result.IValidationResult function processRules(required IValidationResult result, required struct rules, required any target, required any field){
+	ValidationManager function processRules(required coldbox.system.validation.result.IValidationResult result, required struct rules, required any target, required any field){
 		// process the incoming rules
 		for( var key in arguments.rules ){
 			// had to use nasty evaluate until adobe cf get's their act together on invoke.
-			getValidator( key ).validate(result=result,target=arguments.target,field=arguments.field,targetValue=evaluate("arguments.target.get#arguments.field#()") );
+			getValidator(validatorType=key, validationData=arguments.rules[key])
+				.validate(result=result,
+						  target=arguments.target,
+						  field=arguments.field,
+						  targetValue=evaluate("arguments.target.get#arguments.field#()"),
+						  validationData=arguments.rules[key]);
+		}
+		return this;
+	}
+	
+	/**
+	* Create validators according to types and validation data
+	*/
+	coldbox.system.validation.validators.IValidator function getValidator(required string validatorType, required string validationData){
+	
+		switch( arguments.validatorType ){
+			case "required" 	: { return wirebox.getInstance("coldbox.system.validation.validators.RequiredValidator"); }
+			case "type" 		: { return wirebox.getInstance("coldbox.system.validation.validators.TypeValidator"); }
+			case "size" 		: { return wirebox.getInstance("coldbox.system.validation.validators.SizeValidator"); }
+			case "range" 		: { return wirebox.getInstance("coldbox.system.validation.validators.RangeValidator"); }
+			case "regex" 		: { return wirebox.getInstance("coldbox.system.validation.validators.RegexValidator"); }
+			case "sameAs" 		: { return wirebox.getInstance("coldbox.system.validation.validators.SameAsValidator"); }
+			case "sameAsNoCase" : { return wirebox.getInstance("coldbox.system.validation.validators.SameAsNoCaseValidator"); }
+			case "inList" 		: { return wirebox.getInstance("coldbox.system.validation.validators.InListValidator"); }
+			case "discrete" 	: { return wirebox.getInstance("coldbox.system.validation.validators.DiscreteValidator"); }
+			case "udf" 			: { return wirebox.getInstance("coldbox.system.validation.validators.UDFValidator"); }
+			case "method" 		: { return wirebox.getInstance("coldbox.system.validation.validators.MethodValidator"); }
+			case "validator"	: { 
+				if( find(":", arguments.validationData) ){ return wirebox.getInstance( getToken( arguments.validationData, 2, ":" ) ); }
+				return wirebox.getInstance( arguments.validationData );
+			}
+			default : {
+				throw(message="The validator you requested #arguments.validatorType# is not a valid validator",type="ValidationManager.InvalidValidatorType");
+			}
 		}
 	}
 	

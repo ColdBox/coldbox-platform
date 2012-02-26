@@ -11,6 +11,22 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		model.init();
 	}
 	
+	function testProcessRules(){
+		results = getMockBox().createMock("coldbox.system.validation.result.ValidationResult").init();
+		
+		mockValidator = getMockBox().createMock("coldbox.testing.cases.validation.resources.MockValidator").$("validate",true);
+		model.$("getValidator", mockValidator);
+		mockRules = {
+			required = true,
+			sameAs = "joe"
+		};
+		getMockBox().prepareMock(this).$("getName","luis");
+		
+		model.processRules(results, mockRules, this,"name");
+		AssertEquals( true, model.$times(2,"getValidator") );
+		
+	}
+	
 	function testGetConstraints(){
 		assertTrue( structIsEmpty( model.getSharedConstraints() ) );
 		data = { 'test' = {} };
@@ -18,4 +34,7 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		debug( model.getSharedConstraints() );
 		assertTrue( structIsEmpty( model.getSharedConstraints('test') ) );
 	}
+	
+	
+	
 }

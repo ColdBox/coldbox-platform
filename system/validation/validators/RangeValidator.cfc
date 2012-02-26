@@ -5,11 +5,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 The ColdBox validator interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
 */
-component accessors="true"{
+component accessors="true" implements="coldbox.system.validation.validators.IValidator" singleton{
 
 	property name="name";
 	
-	SizeValidator function init(){
+	RangeValidator function init(){
 		name = "Range";	
 		return this;
 	}
