@@ -38,6 +38,10 @@ constraints = {
 		method : methodName
 		// Custom validator, must implement 
 		validator : path or wirebox id: 'mypath.MyValidator' or 'id:MyValidator'
+		// min value
+		min : value
+		// max value
+		max : value
 	}
 };
 

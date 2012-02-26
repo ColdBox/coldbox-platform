@@ -126,6 +126,7 @@ Description :
 						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }
 						case "cacheManager"			: { return instance.coldbox.getColdboxOCM(); }
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
+						case "validationManager"	: { return instance.coldbox.getValidationManager(); }
 					} // end of services
 					
 					break;
