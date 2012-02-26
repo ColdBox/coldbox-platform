@@ -16,12 +16,6 @@ interface{
 	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields, any constraints);
 	
 	/**
-	* This method is called by ColdBox when the application loads so you can load or process shared constraints
-	* @constraints.hint A structure of validation constraints { key (shared name) = { constraints} }
-	*/
-	coldbox.system.validation.IValidationManager function loadSharedConstraints(required struct constraints);
-	
-	/**
 	* Retrieve the shared constraints
 	* @name.hint Filter by name or not
 	*/
@@ -34,7 +28,7 @@ interface{
 	boolean function sharedConstraintsExists(required string name);
 	
 	/**
-	* Retrieve the shared constraints
+	* Set the shared constraints into the validation manager, usually these are described in the ColdBox configuraiton file
 	* @constraints.hint Filter by name or not
 	*/
 	coldbox.system.validation.IValidationManager function setSharedConstraints(struct constraints);

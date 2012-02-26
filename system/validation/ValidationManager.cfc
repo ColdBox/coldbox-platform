@@ -44,7 +44,7 @@ constraints = {
 vResults = validateModel(target=model);
 
 */
-component accessors="true" serialize="false" singleton{
+component accessors="true" serialize="false" implements="coldbox.system.validation.IValidationManager" singleton{
 
 	/**
 	* DI
@@ -67,8 +67,6 @@ component accessors="true" serialize="false" singleton{
 		
 		// shared constraints
 		sharedConstraints = {};
-		// loaded object constraints
-		objectConstraints = {};
 		// valid validators
 		validValidators = "required,type,size,range,regex,sameAs,sameAsNoCase,inList,discrete,udf,method,validator";
 		
@@ -143,7 +141,7 @@ component accessors="true" serialize="false" singleton{
 	}
 	
 	/**
-	* Retrieve the shared constraints
+	* Retrieve the shared constraints, all of them or by name
 	* @name.hint Filter by name or not
 	*/
 	struct function getSharedConstraints(string name){
@@ -160,7 +158,7 @@ component accessors="true" serialize="false" singleton{
 	
 	
 	/**
-	* Retrieve the shared constraints
+	* Set the entire shared constraints structure
 	* @constraints.hint Filter by name or not
 	*/
 	coldbox.system.validation.ValidationManager function setSharedConstraints(struct constraints){
@@ -169,15 +167,19 @@ component accessors="true" serialize="false" singleton{
 	}
 	
 	/**
-	* This method is called by ColdBox when the application loads so you can load or process shared constraints
-	* @constraints.hint A structure of validation constraints { key (shared name) = { constraints} }
+	* Store a shared constraint
+	* @name.hint Filter by name or not
+	* @constraint.hint The constraint to store.
 	*/
-	coldbox.system.validation.ValidationManager function loadSharedConstraints(required struct constraints){
-		
+	coldbox.system.validation.IValidationManager function addSharedConstraint(required string name, required struct constraint){
+		sharedConstraints[ arguments.name ] = arguments.constraints;
 	}
 	
 	/************************************** private *********************************************/
 	
+	/**
+	* Determine from where to take the constraints from
+	*/
 	private struct function determineConstraintsDefinition(required any target, required any constraints){
 		var thisConstraints = {};
 		
@@ -190,11 +192,11 @@ component accessors="true" serialize="false" singleton{
 						  detail="Valid constraints are: #structKeyList(sharedConstraints)#",
 						  type="ValidationManager.InvalidSharedConstraint");
 				}
-				// retrieve the shared constraint
-				thisConstraints = getSharedConstraints( arguments.constraints ); 
+				// retrieve the shared constraint and return, they are already processed.
+				return getSharedConstraints( arguments.constraints ); 
 			}
-			// else it is a struct just assign it
-			else{ thisConstraints = arguments.constraints; }
+			// Else we have direct constraints passed
+			thisConstraints = arguments.constraints;
 		}
 		// discover constraints from target object
 		else{ thisConstraints = discoverConstraints( arguments.target ); }
@@ -203,10 +205,12 @@ component accessors="true" serialize="false" singleton{
 		return thisConstraints;
 	}
 	
+	/**
+	* Get the constraints structure from target objects, if none, it returns an empty structure
+	*/
 	private struct function discoverConstraints(required any target){
 		if( structKeyExists(arguments.target,"constraints") ){
-			var c = arguments.target.constraints;
-			return processConstraints( c );
+			return arguments.target.constraints;
 		}
 		return {};
 	}
