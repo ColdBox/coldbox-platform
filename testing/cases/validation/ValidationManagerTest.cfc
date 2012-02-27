@@ -8,7 +8,8 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 
 	function setup(){
 		super.setup();
-		model.init();
+		mockRB = getMockBox().createEmptyMock("coldbox.system.plugins.ResourceBundle");
+		model.init( mockWireBox, mockRB );
 	}
 	
 	function testProcessRules(){
@@ -35,6 +36,20 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		assertTrue( structIsEmpty( model.getSharedConstraints('test') ) );
 	}
 	
-	
+	function testGenericForm(){
+		
+		mockData = { name="luis", age="33" };
+		mockConstraints = { 
+			name = {required=true}, age = {required=true, max="35"}
+		};
+		
+		r = model.validate(target=mockData,constraints=mockConstraints);
+		assertEquals( false, r.hasErrors() );
+			
+		mockData = { name="luis", age="55" };
+		r = model.validate(target=mockData,constraints=mockConstraints);
+		assertEquals( true, r.hasErrors() );
+		debug( r.getAllErrors() );
+	}
 	
 }

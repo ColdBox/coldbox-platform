@@ -51,9 +51,14 @@ vResults = validateModel(target=model);
 component accessors="true" serialize="false" implements="coldbox.system.validation.IValidationManager" singleton{
 
 	/**
-	* DI
+	* Object Factory 
 	*/
-	property name="wirebox" inject="wirebox";
+	property name="wirebox";
+	
+	/**
+	* resource bundle
+	*/
+	property name="resourceBundle";
 	
 	/**
 	* Shared constraints
@@ -66,30 +71,50 @@ component accessors="true" serialize="false" implements="coldbox.system.validati
 	property name="objectConstraints" type="struct";
 	
 
-	// constructor
-	ValidationManager function init(){
+	/**
+	* Constructor
+	* @wirebox.hint The object factory
+	* @wirebox.inject wirebox
+	* @resourceBundle.hint A resource bundle object
+	* @resourceBundle.inject coldbox:plugin:ResourceBundle
+	*/
+	ValidationManager function init(required any wirebox, any resourceBundle){
 		
 		// shared constraints
 		sharedConstraints = {};
 		// valid validators
 		validValidators = "required,type,size,range,regex,sameAs,sameAsNoCase,inList,discrete,udf,method,validator";
+		// store wirebox
+		variables.wirebox = arguments.wirebox;
+		// store resource bundle
+		variables.resourceBundle = arguments.resourceBundle;
 		
 		return this;
 	}
 	
 	/**
 	* Validate an object
-	* @target.hint The target object to validate
+	* @target.hint The target object to validate or a structure like a form or collection. If it is a collection, we will build a generic object for you so we can validate the structure of name-value pairs.
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
 	* @locale.hint An optional locale to use for i18n messages
 	*/
 	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields="*", any constraints, string locale=""){
+		
+		// Do we have a real object or a structure?
+		if( !isObject( arguments.target ) ){
+			arguments.target = new coldbox.system.validation.GenericObject( arguments.target );
+		}
+			
 		// discover and determine constraints definition for an incoming target.
 		var allConstraints = determineConstraintsDefinition(arguments.target, arguments.constraints);
 		
 		// create new result object
-		var initArgs = { locale=arguments.locale, targetName = listLast( getMetadata(arguments.target).name, ".") };
+		var initArgs = { 
+			locale=arguments.locale, 
+			targetName = listLast( getMetadata(arguments.target).name, "."),
+			resourceBundle = resourceBundle 
+		};
 		var results = wirebox.getInstance(name="coldbox.system.validation.result.ValidationResult",initArguments=initArgs);
 		
 		// iterate over constraints defined
@@ -107,12 +132,12 @@ component accessors="true" serialize="false" implements="coldbox.system.validati
 	/**
 	* Process validation rules on a target object and field
 	*/
-	ValidationManager function processRules(required coldbox.system.validation.result.IValidationResult result, required struct rules, required any target, required any field){
+	ValidationManager function processRules(required coldbox.system.validation.result.IValidationResult results, required struct rules, required any target, required any field){
 		// process the incoming rules
 		for( var key in arguments.rules ){
 			// had to use nasty evaluate until adobe cf get's their act together on invoke.
 			getValidator(validatorType=key, validationData=arguments.rules[key])
-				.validate(result=result,
+				.validate(validationResult=results,
 						  target=arguments.target,
 						  field=arguments.field,
 						  targetValue=evaluate("arguments.target.get#arguments.field#()"),

@@ -27,15 +27,13 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	*/
 	property name="targetName"		type="string";
 	
-	// DI
-	property name="rb"	inject="coldbox:plugin:ResourceBundle";
-
-	ValidationResult function init(string locale="",string targetName=""){
+	ValidationResult function init(string locale="",string targetName="", any resourceBundle=""){
 		errors 					= [];
 		resultMetadata 			= {};
 		variables.locale		= arguments.locale;
 		variables.targetName 	= arguments.targetName;
 		errorTemplate   		= new coldbox.system.validation.result.ValidationError();
+		rb						= arguments.resourceBundle;
 		return this;
 	}
 	
