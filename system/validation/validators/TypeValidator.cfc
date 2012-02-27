@@ -57,7 +57,8 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		
 		if( !r ){
 			var args = {message="The '#arguments.field#' has an invalid type, expected type is #arguments.validationData#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
-			validationResult.addError( validationResult.newError(argumentCollection=args) );
+			var error = validationResult.newError(argumentCollection=args).setErrorMetadata({type=arguments.validationData});
+			validationResult.addError( error );
 		}
 		
 		return r;

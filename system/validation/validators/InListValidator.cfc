@@ -29,7 +29,8 @@ component accessors="true" singleton{
 		}
 		
 		var args = {message="The '#arguments.field#' value is not in the constraint list: #arguments.validationData#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
-		validationResult.addError( validationResult.newError(argumentCollection=args) );
+		var error = validationResult.newError(argumentCollection=args).setErrorMetadata({inlist=arguments.validationData});
+		validationResult.addError( error );
 		return false;
 	}
 	

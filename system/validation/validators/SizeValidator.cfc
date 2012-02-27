@@ -57,7 +57,8 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		}
 		
 		var args = {message="The '#arguments.field#' values is not in the required size range (#arguments.validationData#)",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
-		validationResult.addError( validationResult.newError(argumentCollection=args) );
+		var error = validationResult.newError(argumentCollection=args).setErrorMetadata({size=arguments.validationData, min=min, max=max});
+		validationResult.addError( error );
 		return false;
 	}
 	

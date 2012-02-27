@@ -30,7 +30,8 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		}
 		
 		var args = {message="The '#arguments.field#' value is not greater than #arguments.validationData#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
-		validationResult.addError( validationResult.newError(argumentCollection=args) );
+		var error = validationResult.newError(argumentCollection=args).setErrorMetadata({min=arguments.validationData});
+		validationResult.addError( error );
 		return false;
 	}
 	

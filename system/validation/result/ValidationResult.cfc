@@ -27,13 +27,18 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	*/
 	property name="targetName"		type="string";
 	
+	/**
+	* The resource bundle object
+	*/
+	property name="resourceBundle";
+	
 	ValidationResult function init(string locale="",string targetName="", any resourceBundle=""){
 		errors 					= [];
 		resultMetadata 			= {};
 		variables.locale		= arguments.locale;
 		variables.targetName 	= arguments.targetName;
 		errorTemplate   		= new coldbox.system.validation.result.ValidationError();
-		rb						= arguments.resourceBundle;
+		resourceBundle						= arguments.resourceBundle;
 		return this;
 	}
 	
@@ -90,15 +95,30 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 		// Validate localization?
 		if( hasLocale() ){
 			// get i18n message, if it exists
-			var message = rb.getResource(resource="#targetName#.#error.getField()#.#error.getValidationType()#",default="",locale=getLocale());
+			var message = resourceBundle.getResource(resource="#targetName#.#error.getField()#.#error.getValidationType()#",default="",locale=getLocale());
 			// Override with localized message
 			if( len(message) ){ 
-				// process replacements
+				// process global replacements
+				
+				// The rejected value
 				message = replacenocase(message,"{rejectedValue}", error.getRejectedValue(), "all");
+				// The property or field value
 				message = replacenocase(message,"{field}", error.getField(), "all");
+				// Hyrule Compatibility for property
+				message = replacenocase(message,"{property}", error.getField(), "all");
+				// The validation type
 				message = replacenocase(message,"{validationType}", error.getValidationType(), "all");
+				// The validation data
 				message = replacenocase(message,"{validationData}", error.getValidationData(), "all");
+				// The target name of the object
 				message = replacenocase(message,"{targetName}", getTargetName(), "all");
+				
+				// process result metadata replacements
+				var errorData = error.getErrorMetadata();
+				for( var key in errorData ){
+					message = replacenocase(message,"{#key#}", errorData[key], "all");
+				}
+				
 				// override message
 				arguments.error.setMessage( message ); 
 			}

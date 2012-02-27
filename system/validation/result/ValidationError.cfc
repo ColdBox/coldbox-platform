@@ -14,7 +14,24 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 		rejectedValue 	= "";
 		validationType 	= "";
 		validationData  = "";
+		errorMetadata	= {};
 		return this;
+	}
+	
+	/**
+	* Set error metadata that can be used in i18n message replacements or in views
+	* @data.hint The name-value pairs of data to store in this error.
+	*/
+	coldbox.system.validation.result.IValidationError function setErrorMetadata(required any data){
+		errorMetadata = arguments.data;
+		return this;
+	}
+	
+	/**
+	* Get the error metadata
+	*/
+	struct function getErrorMetadata(){
+		return errorMetadata;
 	}
 	
 	/**

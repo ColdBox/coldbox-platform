@@ -15,7 +15,7 @@ Constraint Definition Sample:
 constraints = {
 	propertyName = {
 		// required or not
-		required : boolean [false],
+		required : boolean [false]
 		// type constraint
 		type  : (ssn,email,url,alpha,boolean,date,usdate,eurodate,numeric,GUID,UUID,integer,[string],telephone,zipcode,ipaddress,creditcard,binary,component,query,struct,json,xml),
 		// size or length of the value (struct,string,array,query)

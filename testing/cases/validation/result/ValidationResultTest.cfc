@@ -45,7 +45,7 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		mockError.configure("unit test","test","45","inList","1,2,3");
 		model.setLocale("en_US");
 		mockRB = getMockBox().createEmptyMock("coldbox.system.plugins.ResourceBundle").$("getResource").$results("Your stuff doesn't work {field} {validationType} {validationData}");
-		model.setRB( mockRB );
+		model.setResourceBundle( mockRB );
 		
 		model.addError( mockError );
 		debug( mockError.getmemento() );
