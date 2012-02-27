@@ -118,7 +118,7 @@ Description :
 	
 	<!--- validateModel --->    
     <cffunction name="validateModel" output="false" access="public" returntype="coldbox.system.validation.result.IValidationResults" hint="Validate a target object">    
-    	<cfargument name="target" 		type="any" 		required="true" hint="The target object to validate"/>
+    	<cfargument name="target" 		type="any" 		required="true" hint="The target object to validate or a structure of name-value paris to validate."/>
 		<cfargument name="fields" 		type="string" 	required="false" default="*" hint="Validate on all or one or a list of fields (properties) on the target, by default we validate all fields declared in its constraints"/>
 		<cfargument name="constraints" 	type="any" 		required="false" hint="The shared constraint name to use, or an actual constraints structure"/>
     	<cfargument name="locale"		type="string" 	required="false" default="" hint="The locale to validate in"/>
