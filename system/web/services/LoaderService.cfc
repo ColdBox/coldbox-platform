@@ -99,14 +99,14 @@ Modification History:
 	<!--- Register the Aspects --->
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
-		var javaLoader = "";
-		var validationManager = "";
-		var validationData = controller.getSetting("validation");
+		var javaLoader 			= "";
+		var validationManager 	= "";
+		var validationData 		= controller.getSetting("validation");
 		
-		if( controller.getCFMLEngine().isValidationSupported() OR validationData.manager NEQ "coldbox.system.validation.ValidationManager"){
-			// Validation Manager
+		// if engine allows it, load shared constraints to validation engine
+		if( controller.getCFMLEngine().isValidationSupported() ){
 			validationManager = controller.getWireBox().getInstance( validationData.manager );
-			controller.setValidationManager( validationManager.setSharedConstraints( validationData.sharedConstraints ) );
+			validationManager.setSharedConstraints( validationData.sharedConstraints );
 		}
 		
 		// Init JavaLoader with paths if set as settings.
