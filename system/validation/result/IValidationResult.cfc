@@ -5,18 +5,19 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 The ColdBox validation results interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
 */
+import coldbox.system.validation.result.*;
 interface{
 
 	/**
 	* Add errors into the result object
 	* @error.hint The validation error to add into the results object
 	*/
-	coldbox.system.validation.result.IValidationResult function addError(required coldbox.system.validation.result.IValidationError error);
+	IValidationResult function addError(required IValidationError error);
 	
 	/**
 	* Set the validation target object name
 	*/
-	coldbox.system.validation.result.ValidationResult function setTargetName(required string name);
+	IValidationResult function setTargetName(required string name);
 	
 	/**
 	* Get the name of the target object that got validated
@@ -36,7 +37,7 @@ interface{
 	/**
 	* Set the validation locale
 	*/
-	coldbox.system.validation.result.ValidationResult function setLocale(required string locale);
+	IValidationResult function setLocale(required string locale);
 	
 	
 	/**
@@ -48,7 +49,7 @@ interface{
 	/**
 	* Clear All errors
 	*/
-	coldbox.system.validation.result.IValidationResult function clearErrors();
+	IValidationResult function clearErrors();
 	
 	
 	/**
@@ -67,7 +68,7 @@ interface{
 	* Get an error object for a specific field that failed. Throws exception if the field does not exist
 	* @field.hint The field to return error objects on
 	*/
-	coldbox.system.validation.result.IValidationError[] function getFieldErrors(required string field);
+	IValidationError[] function getFieldErrors(required string field);
 	
 	/**
 	* Get a collection of metadata about the validation results
@@ -77,6 +78,6 @@ interface{
 	/**
 	* Set a collection of metadata into the results object
 	*/
-	coldbox.system.validation.result.IValidationResult function setResultMetadata(required struct data);
+	IValidationResult function setResultMetadata(required struct data);
 	
 }

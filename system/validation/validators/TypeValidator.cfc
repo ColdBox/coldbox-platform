@@ -28,6 +28,10 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		if( !reFindNoCase( "^(#replace(validTypes,",","|","all")#)$", arguments.validationData ) ){
 			throw(message="The Required validator data is invalid: #arguments.validationData#",type="TypeValidator.InvalidValidationData");
 		}
+		
+		// return true if not data to check
+		if( isSimpleValue(arguments.targetValue) AND NOT len(arguments.targetValue) ){ return true; }
+		
 		var r = false;
 		
 		switch( arguments.validationData ){

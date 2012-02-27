@@ -5,7 +5,8 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 The ColdBox validation results 
 */
-component accessors="true" implements="coldbox.system.validation.result.IValidationResult"{
+import coldbox.system.validation.result.*;
+component accessors="true" implements="IValidationResult"{
 
 	/**
 	* A collection of error objects represented in this result object
@@ -37,15 +38,16 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 		resultMetadata 			= {};
 		variables.locale		= arguments.locale;
 		variables.targetName 	= arguments.targetName;
-		errorTemplate   		= new coldbox.system.validation.result.ValidationError();
-		resourceBundle						= arguments.resourceBundle;
+		errorTemplate   		= new ValidationError();
+		resourceBundle			= arguments.resourceBundle;
+		
 		return this;
 	}
 	
 	/**
 	* Set the validation target object name
 	*/
-	coldbox.system.validation.result.ValidationResult function setTargetName(required string name){
+	IValidationResult function setTargetName(required string name){
 		targetName = arguments.name;
 		return this;
 	}
@@ -74,7 +76,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	/**
 	* Set the validation locale
 	*/
-	coldbox.system.validation.result.ValidationResult function setLocale(required string locale){
+	IValidationResult function setLocale(required string locale){
 		variables.locale = arguments.locale;
 		return this;
 	}
@@ -82,7 +84,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	/**
 	* Get a new error object
 	*/
-	coldbox.system.validation.result.IValidationError function newError(struct properties){
+	IValidationError function newError(struct properties){
 		return duplicate( errorTemplate ).configure(argumentCollection=arguments);
 	}
 
@@ -90,7 +92,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Add errors into the result object
 	* @error.hint The validation error to add into the results object
 	*/
-	coldbox.system.validation.result.IValidationResult function addError(required coldbox.system.validation.result.IValidationError error){
+	IValidationResult function addError(required IValidationError error){
 		
 		// Validate localization?
 		if( hasLocale() ){
@@ -167,7 +169,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Get an error object for a specific field that failed. Throws exception if the field does not exist
 	* @field.hint The field to return error objects on
 	*/
-	coldbox.system.validation.result.IValidationError[] function getFieldErrors(required string field){
+	IValidationError[] function getFieldErrors(required string field){
 		var r = [];
 		for( var thisError in errors ){
 			if( thisError.getField() eq arguments.field ){ arrayAppend(r, thisError); }
@@ -178,7 +180,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	/**
 	* Clear All errors
 	*/
-	coldbox.system.validation.result.IValidationResult function clearErrors(){
+	IValidationResult function clearErrors(){
 		arrayClear( errors );
 		return this;
 	}
@@ -193,7 +195,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	/**
 	* Set a collection of metadata into the results object
 	*/
-	coldbox.system.validation.result.IValidationResult function setResultMetadata(required struct data){
+	IValidationResult function setResultMetadata(required struct data){
 		variables.resultMetadata = arguments.data;
 		return this;	
 	}

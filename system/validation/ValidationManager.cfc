@@ -48,7 +48,9 @@ constraints = {
 vResults = validateModel(target=model);
 
 */
-component accessors="true" serialize="false" implements="coldbox.system.validation.IValidationManager" singleton{
+import coldbox.system.validation.*;
+import coldbox.system.validation.result.*;
+component accessors="true" serialize="false" implements="IValidationManager" singleton{
 
 	/**
 	* Object Factory 
@@ -99,7 +101,7 @@ component accessors="true" serialize="false" implements="coldbox.system.validati
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
 	* @locale.hint An optional locale to use for i18n messages
 	*/
-	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields="*", any constraints="", string locale=""){
+	IValidationResult function validate(required any target, string fields="*", any constraints="", string locale=""){
 		
 		// Do we have a real object or a structure?
 		if( !isObject( arguments.target ) ){
@@ -196,7 +198,7 @@ component accessors="true" serialize="false" implements="coldbox.system.validati
 	* Set the entire shared constraints structure
 	* @constraints.hint Filter by name or not
 	*/
-	coldbox.system.validation.ValidationManager function setSharedConstraints(struct constraints){
+	IValidationManager function setSharedConstraints(struct constraints){
 		variables.sharedConstraints = arguments.constraints;
 		return this;
 	}
@@ -206,7 +208,7 @@ component accessors="true" serialize="false" implements="coldbox.system.validati
 	* @name.hint Filter by name or not
 	* @constraint.hint The constraint to store.
 	*/
-	coldbox.system.validation.IValidationManager function addSharedConstraint(required string name, required struct constraint){
+	IValidationManager function addSharedConstraint(required string name, required struct constraint){
 		sharedConstraints[ arguments.name ] = arguments.constraints;
 	}
 	

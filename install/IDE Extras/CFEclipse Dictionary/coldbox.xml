@@ -136,7 +136,7 @@
 	<function creator="8" name="getpluginAuthorURL" returns="string">
 			<help><![CDATA[ Get the instance's pluginAuthorURL (Context: Plugin) ]]></help>
 		</function>
-<!-- Functions for: coldbox.system.EventHandler -->
+<!-- Functions for: EventHandler -->
 	<function creator="8" name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
@@ -348,6 +348,9 @@
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
+	<function creator="8" name="getValidationManager" returns="coldbox.system.validation.IValidationManager">
+			<help><![CDATA[ Retrieve the application's configured Validation Manager (Context: FrameworkSupertype) ]]></help>
+		</function>
 	<function creator="8" name="getSettingStructure" returns="struct">
 			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="FWSetting" required="false" type="boolean">
@@ -448,6 +451,21 @@
 			</parameter>
 			<parameter name="exclude" required="false" type="any">
 				<help><![CDATA[ A list of keys to exclude in the population ]]></help>
+			</parameter>
+			</function>
+	<function creator="8" name="validateModel" returns="coldbox.system.validation.result.IValidationResults">
+			<help><![CDATA[ Validate a target object (Context: FrameworkSupertype) ]]></help>
+		<parameter name="target" required="true" type="any">
+				<help><![CDATA[ The target object to validate or a structure of name-value paris to validate. ]]></help>
+			</parameter>
+			<parameter name="fields" required="false" type="string">
+				<help><![CDATA[ Validate on all or one or a list of fields (properties) on the target, by default we validate all fields declared in its constraints ]]></help>
+			</parameter>
+			<parameter name="constraints" required="false" type="any">
+				<help><![CDATA[ The shared constraint name to use, or an actual constraints structure ]]></help>
+			</parameter>
+			<parameter name="locale" required="false" type="string">
+				<help><![CDATA[ The locale to validate in ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getResource" returns="any">

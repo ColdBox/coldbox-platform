@@ -5,7 +5,8 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 The ColdBox validation error, all inspired by awesome Hyrule Validation Framework by Dan Vega
 */
-component accessors="true" implements="coldbox.system.validation.result.IValidationError"{
+import coldbox.system.validation.result.*;
+component accessors="true" implements="IValidationError"{
 	
 	// constructor
 	ValidationError function init(){
@@ -22,7 +23,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set error metadata that can be used in i18n message replacements or in views
 	* @data.hint The name-value pairs of data to store in this error.
 	*/
-	coldbox.system.validation.result.IValidationError function setErrorMetadata(required any data){
+	IValidationError function setErrorMetadata(required any data){
 		errorMetadata = arguments.data;
 		return this;
 	}
@@ -38,7 +39,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set the validator data
 	* @data.hint The data of the validator
 	*/
-	coldbox.system.validation.result.IValidationError function setValidationData(required any data){
+	IValidationError function setValidationData(required any data){
 		validationData = arguments.data;
 		return this;
 	}
@@ -55,7 +56,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set the error message
 	* @message.hint The error message
 	*/
-	coldbox.system.validation.result.ValidationError function setMessage(required string message){
+	IValidationError function setMessage(required string message){
 		variables.message = arguments.message;
 		return this;
 	}
@@ -64,7 +65,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set the field
 	* @message.hint The error message
 	*/
-	coldbox.system.validation.result.ValidationError function setField(required string field){
+	IValidationError function setField(required string field){
 		variables.field = arguments.field;
 		return this;	
 	}
@@ -73,7 +74,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set the rejected value
 	* @value.hint The rejected value
 	*/
-	coldbox.system.validation.result.IValidationError function setRejectedValue(required any value){
+	IValidationError function setRejectedValue(required any value){
 		variables.rejectedValue = arguments.value;
 		return this;
 	}
@@ -82,7 +83,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* Set the validator type name that rejected
 	* @validationType.hint The name of the rejected validator
 	*/
-	coldbox.system.validation.result.IValidationError function setValidationType(required any validationType){
+	IValidationError function setValidationType(required any validationType){
 		variables.validationType = arguments.validationType;
 		return this;
 	}
@@ -135,7 +136,7 @@ component accessors="true" implements="coldbox.system.validation.result.IValidat
 	* @rejectedValue.hint The optional rejected value
 	* @validationType.hint The name of the rejected validator
 	*/
-	coldbox.system.validation.result.IValidationError function configure(required string message, required string field, string rejectedValue, string validationType, string validationData){
+	IValidationError function configure(required string message, required string field, string rejectedValue, string validationType, string validationData){
 		for(var key in arguments){
 			if( structKeyExists(arguments,key) ){ variables[key] = arguments[ key ]; }
 		}
