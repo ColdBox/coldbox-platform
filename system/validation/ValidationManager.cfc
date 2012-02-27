@@ -99,7 +99,7 @@ component accessors="true" serialize="false" implements="coldbox.system.validati
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
 	* @locale.hint An optional locale to use for i18n messages
 	*/
-	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields="*", any constraints, string locale=""){
+	coldbox.system.validation.result.IValidationResult function validate(required any target, string fields="*", any constraints="", string locale=""){
 		
 		// Do we have a real object or a structure?
 		if( !isObject( arguments.target ) ){
@@ -215,29 +215,25 @@ component accessors="true" serialize="false" implements="coldbox.system.validati
 	/**
 	* Determine from where to take the constraints from
 	*/
-	private struct function determineConstraintsDefinition(required any target, required any constraints){
+	private struct function determineConstraintsDefinition(required any target, any constraints=""){
 		var thisConstraints = {};
 		
-		// Discover contraints, check passed constraints first
-		if( structKeyExists(arguments,"constraints") ){ 
-			// simple value means shared lookup
-			if( isSimpleValue(arguments.constraints) ){ 
-				if( !sharedConstraintsExists(arguments.constraints) ){
-					throw(message="The shared constraint you requested (#arguments.constraints#) does not exist",
-						  detail="Valid constraints are: #structKeyList(sharedConstraints)#",
-						  type="ValidationManager.InvalidSharedConstraint");
-				}
-				// retrieve the shared constraint and return, they are already processed.
-				return getSharedConstraints( arguments.constraints ); 
-			}
-			// Else we have direct constraints passed
-			thisConstraints = arguments.constraints;
-		}
-		// discover constraints from target object
-		else{ thisConstraints = discoverConstraints( arguments.target ); }
+		// if structure, just return it back
+		if( isStruct( arguments.constraints ) ){ return arguments.constraints; }
 		
-		// now back to the fun stuff.
-		return thisConstraints;
+		// simple value means shared lookup
+		if( isSimpleValue(arguments.constraints) AND len( arguments.constraints ) ){ 
+			if( !sharedConstraintsExists(arguments.constraints) ){
+				throw(message="The shared constraint you requested (#arguments.constraints#) does not exist",
+					  detail="Valid constraints are: #structKeyList(sharedConstraints)#",
+					  type="ValidationManager.InvalidSharedConstraint");
+			}
+			// retrieve the shared constraint and return, they are already processed.
+			return getSharedConstraints( arguments.constraints ); 
+		}
+		
+		// discover constraints from target object
+		return discoverConstraints( arguments.target );
 	}
 	
 	/**
