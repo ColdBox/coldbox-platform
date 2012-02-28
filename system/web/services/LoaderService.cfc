@@ -107,6 +107,8 @@ Modification History:
 		if( controller.getCFMLEngine().isValidationSupported() ){
 			validationManager = controller.getWireBox().getInstance( validationData.manager );
 			validationManager.setSharedConstraints( validationData.sharedConstraints );
+			// map the manager as well
+			controller.getWireBox().getBinder().map("WireBoxValidationManager").toValue( validationData.manager );
 		}
 		
 		// Init JavaLoader with paths if set as settings.

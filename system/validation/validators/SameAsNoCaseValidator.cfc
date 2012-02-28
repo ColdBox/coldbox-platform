@@ -27,7 +27,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		// get secondary value from property
 		var compareValue = evaluate("arguments.target.get#arguments.validationData#()");
 		
-		if( compareNoCase(arguments.targetValue, compareValue) EQ 0 ){
+		if( !isNull(arguments.targetValue) AND compareNoCase(arguments.targetValue, compareValue) EQ 0 ){
 			return true;
 		}
 		

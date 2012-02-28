@@ -80,7 +80,7 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 	* @resourceBundle.hint A resource bundle object
 	* @resourceBundle.inject coldbox:plugin:ResourceBundle
 	*/
-	ValidationManager function init(required any wirebox, any resourceBundle){
+	ValidationManager function init(required any wirebox, any resourceBundle=""){
 		
 		// shared constraints
 		sharedConstraints = {};

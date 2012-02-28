@@ -35,13 +35,13 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		}
 		
 		// simple size evaluations?
-		if( isSimpleValue(targetValue)){
+		if( !isNull(arguments.targetValue) AND isSimpleValue(targetValue)){
 			if( len(trim(targetValue)) >= min AND ( !len(max) OR len(trim(targetValue)) <= max ) ) {
 				return true;
 			}
 		} 
 		// complex objects
-		else {
+		else if( !isNull(arguments.targetValue) ){
 			// Arrays
 			if( isArray(targetValue) AND ( arrayLen(targetValue) >= min AND ( !len(max) OR arrayLen(targetvalue) <= max ) ) ){
 				return true;

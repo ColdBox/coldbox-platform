@@ -25,7 +25,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
 		
 		// Simple Tests
-		if( arguments.targetValue <= arguments.validationData ){
+		if( !isNull(arguments.targetValue) AND arguments.targetValue <= arguments.validationData ){
 			return true;
 		}
 		

@@ -37,18 +37,20 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		}
 		
 		var r = false;
-		switch( operation ){
-			case "eq" 		: { r = ( arguments.targetValue eq operationValue ); break; }
-			case "neq"		: { r = ( arguments.targetValue neq operationValue ); break; }
-			case "lt"		: { r = ( arguments.targetValue lt operationValue ); break; }
-			case "lte"		: { r = ( arguments.targetValue lte operationValue ); break; }
-			case "gt"		: { r = ( arguments.targetValue gt operationValue ); break; }
-			case "gte"		: { r = ( arguments.targetValue gte operationValue ); break; }
-			
+		if( !isNull(arguments.targetValue) ){
+			switch( operation ){
+				case "eq" 		: { r = ( arguments.targetValue eq operationValue ); break; }
+				case "neq"		: { r = ( arguments.targetValue neq operationValue ); break; }
+				case "lt"		: { r = ( arguments.targetValue lt operationValue ); break; }
+				case "lte"		: { r = ( arguments.targetValue lte operationValue ); break; }
+				case "gt"		: { r = ( arguments.targetValue gt operationValue ); break; }
+				case "gte"		: { r = ( arguments.targetValue gte operationValue ); break; }
+				
+			}
 		}
 		
 		if( !r ){
-			var args  = {message="The '#arguments.field#' value #arguments.targetValue# is #operation# than #operationValue#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
+			var args  = {message="The '#arguments.field#' value is #operation# than #operationValue#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 			var error = validationResult.newError(argumentCollection=args).setErrorMetadata({operation=operation, operationValue=operationValue});
 			validationResult.addError( error );
 		}

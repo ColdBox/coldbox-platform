@@ -450,7 +450,7 @@
 				<help><![CDATA[ A list of keys to exclude in the population ]]></help>
 			</parameter>
 			</function>
-	<function name="validateModel" returns="coldbox.system.validation.result.IValidationResults">
+	<function name="validateModel" returns="coldbox.system.validation.result.IValidationResult">
 			<help><![CDATA[ Validate a target object (Context: FrameworkSupertype) ]]></help>
 		<parameter name="target" required="true" type="any">
 				<help><![CDATA[ The target object to validate or a structure of name-value paris to validate. ]]></help>

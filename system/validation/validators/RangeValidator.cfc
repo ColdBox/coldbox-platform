@@ -35,7 +35,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		}
 		
 		// simple value range evaluations?
-		if( targetValue >= min AND ( !len(max) OR targetValue <= max ) ) {
+		if( !isNull(arguments.targetValue) AND targetValue >= min AND ( !len(max) OR targetValue <= max ) ) {
 			return true;
 		}
 		

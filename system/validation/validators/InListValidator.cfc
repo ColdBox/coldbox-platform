@@ -24,7 +24,7 @@ component accessors="true" singleton{
 	*/
 	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
 		
-		if( listFindNoCase(arguments.validationData, arguments.targetValue)){
+		if( !isNull(arguments.targetValue) AND listFindNoCase(arguments.validationData, arguments.targetValue)){
 			return true;
 		}
 		

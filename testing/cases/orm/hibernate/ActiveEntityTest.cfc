@@ -8,6 +8,28 @@
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 	}
 	
+	function testIsValid(){
+		mockWireBox = getMockBox().createMock("coldbox.system.ioc.Injector").init();
+		mockWireBox.getBinder().map("WireBoxValidationManager").toValue("coldbox.system.validation.ValidationManager");
+		mockWireBox.getBinder().map("coldbox.system.validation.ValidationManager").toValue( new coldbox.system.validation.ValidationManager( mockWireBox ) );
+		
+		activeUser.setWireBox( mockWireBox );
+		r = activeUser.isValid();
+		assertFalse( r );
+		
+		activeUser.setFirstName("Luis");
+		activeUser.setLastName("Majano");
+		activeUser.setUsername("LuisMajano");
+		activeUser.setPassword("LuisMajano");
+		r = activeUser.isValid();
+		assertTrue( r );
+	}
+	
+	function testValidationResults(){
+		r = activeUser.getValidationResults();
+		assertTrue( isInstanceOf(r, "coldbox.system.validation.result.IValidationResult") );
+	}
+	
 	function testNew(){
 		//mocks
 		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
