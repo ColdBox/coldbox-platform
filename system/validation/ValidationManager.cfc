@@ -102,10 +102,18 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 	* @locale.hint An optional locale to use for i18n messages
 	*/
 	IValidationResult function validate(required any target, string fields="*", any constraints="", string locale=""){
+		var targetName = "";
 		
 		// Do we have a real object or a structure?
 		if( !isObject( arguments.target ) ){
 			arguments.target = new coldbox.system.validation.GenericObject( arguments.target );
+			if( isSimpleValue(arguments.constraints) and len(arguments.constraints) )
+				targetName = arguments.constraints;
+			else
+				targetName = "GenericForm";
+		}
+		else{
+			targetName = listLast( getMetadata(arguments.target).name, ".");
 		}
 			
 		// discover and determine constraints definition for an incoming target.
@@ -114,7 +122,7 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 		// create new result object
 		var initArgs = { 
 			locale=arguments.locale, 
-			targetName = listLast( getMetadata(arguments.target).name, "."),
+			targetName = targetName,
 			resourceBundle = resourceBundle 
 		};
 		var results = wirebox.getInstance(name="coldbox.system.validation.result.ValidationResult",initArguments=initArgs);
