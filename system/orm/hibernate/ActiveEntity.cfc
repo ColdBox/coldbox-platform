@@ -72,7 +72,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		}
 		
 		// Get validation manager
-		var validationManager = wirebox.getInstance( wirebox.getInstance("WireBoxValidationManager") );
+		var validationManager = wirebox.getInstance( "WireBoxValidationManager" );
 		// validate constraints
 		var thisConstraints = "";
 		if( structKeyExists(this,"constraints") ){ thisConstraints = this.constraints; }

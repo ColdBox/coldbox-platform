@@ -10,8 +10,7 @@
 	
 	function testIsValid(){
 		mockWireBox = getMockBox().createMock("coldbox.system.ioc.Injector").init();
-		mockWireBox.getBinder().map("WireBoxValidationManager").toValue("coldbox.system.validation.ValidationManager");
-		mockWireBox.getBinder().map("coldbox.system.validation.ValidationManager").toValue( new coldbox.system.validation.ValidationManager( mockWireBox ) );
+		mockWireBox.getBinder().map("WireBoxValidationManager").toValue( new coldbox.system.validation.ValidationManager( mockWireBox ) );
 		
 		activeUser.setWireBox( mockWireBox );
 		r = activeUser.isValid();

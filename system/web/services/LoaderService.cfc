@@ -108,7 +108,8 @@ Modification History:
 			validationManager = controller.getWireBox().getInstance( validationData.manager );
 			validationManager.setSharedConstraints( validationData.sharedConstraints );
 			// map the manager as well
-			controller.getWireBox().getBinder().map("WireBoxValidationManager").toValue( validationData.manager );
+			controller.getWireBox().getBinder().map("WireBoxValidationManagerPath").toValue( validationData.manager );
+			controller.getWireBox().getBinder().map("WireBoxValidationManager").toValue( validationManager );
 		}
 		
 		// Init JavaLoader with paths if set as settings.
