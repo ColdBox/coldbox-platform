@@ -648,12 +648,13 @@ Description :
 		<cfargument name="xmlListDelimiter" type="string"   required="false" default="," hint="XML Only: The delimiter in the list. Comma by default">
 		<cfargument name="xmlRootName"      type="string"   required="false" default="" hint="XML Only: The name of the initial root element of the XML packet">
 		<!--- ************************************************************* --->
+		<cfargument name="pdfArgs"      type="struct"   required="false" default="#structNew()#" hint="All the PDF arguments to pass along to the CFDocument tag.">
 		<cfscript>
 			var rd = structnew();
 
 			// Validate rendering type
 			if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type) ){
-				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
+				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF","RequestContext.InvalidRenderTypeException");
 			}
 
 			// Default Values for incoming variables
@@ -676,6 +677,9 @@ Description :
 			// JSON Properties
 			rd.jsonQueryFormat 	= arguments.jsonQueryFormat;
 			rd.jsonCallBack 	= arguments.jsonCallBack;
+
+			// PDF properties
+			rd.pdfArgs = arguments.pdfArgs;
 
 			// Automatic Content Types by marshalling type
 			switch( rd.type ){
