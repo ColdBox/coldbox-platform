@@ -136,7 +136,7 @@
 	<function creator="8" name="getpluginAuthorURL" returns="string">
 			<help><![CDATA[ Get the instance's pluginAuthorURL (Context: Plugin) ]]></help>
 		</function>
-<!-- Functions for: EventHandler -->
+<!-- Functions for: coldbox.system.EventHandler -->
 	<function creator="8" name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
@@ -979,7 +979,7 @@
 	<scope value="event.setisSES(isSES)">
 			<help><![CDATA[Set the isSES flag, usualy done by the SES interceptor]]></help>
 		</scope>
-	<scope value="event.renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName])">
+	<scope value="event.renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs])">
 			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
 		</scope>
 	<scope value="event.setLayout(name,[module])">
