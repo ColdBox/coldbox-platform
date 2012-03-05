@@ -239,7 +239,11 @@ Description :
 					
 					<!--- Check for Marshalling and data render --->
 					<cfset renderData = event.getRenderData()>
-					<cfif isStruct(renderData) and not structisEmpty(renderData)>
+					
+					<!--- Allow PDFs --->
+					<cfif isStruct(renderData) AND structKeyExists(renderData,'type') AND renderData.type EQ "pdf">
+						<cfset renderedContent = renderData.data>
+					<cfelseif isStruct(renderData) and not structisEmpty(renderData)>
 						<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=renderData)>
 					<!--- Check for Event Handler return results --->
 					<cfelseif structKeyExists(refResults,"results")>
@@ -273,7 +277,8 @@ Description :
 									contentType 	= "",
 									encoding		= "",
 									statusCode		= "",
-									statusText		= ""
+									statusText		= "",
+									isBinary		= false
 								}>
 								
 								<!--- Render Data Caching Metadata --->
@@ -283,6 +288,7 @@ Description :
 									<cfset refResults.eventCachingEntry.encoding	= renderData.encoding>
 									<cfset refResults.eventCachingEntry.statusCode 	= renderData.statusCode>
 									<cfset refResults.eventCachingEntry.statusText	= renderData.statusText>
+									<cfset refResults.eventCachingEntry.isBinary	= renderData.isBinary>
 								</cfif>
 								
 								<!--- Cache the content of the event --->
@@ -292,7 +298,6 @@ Description :
 														 eventCacheEntry.lastAccessTimeout)>
 							</cfif>
 						</cflock>
-						
 					</cfif>
 					
 					<!--- Render Content Type if using Render Data --->
@@ -302,7 +307,11 @@ Description :
 					</cfif>
 					
 					<!--- Render the Content --->
-					<cfoutput>#renderedContent#</cfoutput>
+					<cfif isStruct(renderData) AND structKeyExists(renderData,'isBinary') AND renderData.isBinary AND structKeyExists(renderData,'contentType')>
+						<cfcontent type="#renderData.contentType#" variable="#renderedContent#" />
+					<cfelse> 
+						<cfoutput>#renderedContent#</cfoutput>
+					</cfif>
 						
 					<!--- Execute postRender Interception --->
 					<cfset interceptorService.processState("postRender")>

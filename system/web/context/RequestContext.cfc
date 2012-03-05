@@ -652,7 +652,7 @@ Description :
 			var rd = structnew();
 
 			// Validate rendering type
-			if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT)$",arguments.type) ){
+			if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type) ){
 				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
 			}
 
@@ -661,6 +661,7 @@ Description :
 			rd.data = arguments.data;
 			rd.encoding = arguments.encoding;
 			rd.contentType = "text/html";
+			rd.isBinary = false;
 
 			// HTTP status
 			rd.statusCode = arguments.statusCode;
@@ -690,6 +691,11 @@ Description :
 				}
 				case "XML" : case "WDDX" : { rd.contentType = "text/xml"; break; }
 				case "TEXT" : { rd.contentType = "text/plain"; break; }
+				case "PDF" : {
+					rd.contentType = "application/pdf";
+					rd.isBinary = true;
+					break;
+				}
 			}
 
 			// If contenttype passed, then override it?
