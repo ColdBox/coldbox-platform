@@ -6,7 +6,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	 		: Luis Majano
 Date     		: September 23, 2005
-Description		: 
+Description		:
 
 Loads a coldbox cfc configuration file
 
@@ -14,7 +14,7 @@ Loads a coldbox cfc configuration file
 <cfcomponent hint="Loads a coldbox xml configuration file" output="false" extends="coldbox.system.web.loader.AbstractApplicationLoader">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
-	
+
 	<cfscript>
 		instance = structnew();
 	</cfscript>
@@ -24,13 +24,13 @@ Loads a coldbox cfc configuration file
 		<cfargument name="controller" 			type="any" 		required="true" default="" hint="The coldbox application to load the settings into"/>
 		<cfscript>
 			super.init(arguments.controller);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------>
-	
+
 	<cffunction name="loadConfiguration" access="public" returntype="void" output="false" hint="Parse the application configuration file.">
 		<!--- ************************************************************* --->
 		<cfargument name="overrideAppMapping" required="false" default="" hint="The direct location of the application in the web server."/>
@@ -45,7 +45,7 @@ Loads a coldbox cfc configuration file
 		var oConfig 			= "";
 		var logBoxConfigHash  	= hash(instance.controller.getLogBox().getConfig().getMemento().toString());
 		var appMappingAsDots	= "";
-		
+
 		//Is incoming app mapping set, or do we auto-calculate
 		if( NOT len(arguments.overrideAppMapping) ){
 			//AutoCalculate
@@ -54,7 +54,7 @@ Loads a coldbox cfc configuration file
 		else{
 			configStruct.appMapping = arguments.overrideAppMapping;
 		}
-		
+
 		//Default Locations for ROOT based apps, which is the default
 		//Parse out the first / to create the invocation Path
 		if ( left(configStruct["AppMapping"],1) eq "/" ){
@@ -62,7 +62,7 @@ Loads a coldbox cfc configuration file
 		}
 		//AppMappingInvocation Path
 		appMappingAsDots = getAppMappingAsDots(configStruct.AppMapping);
-		
+
 		// Config Create Path if not overriding and there is an appmapping
 		if( len( appMappingAsDots ) AND NOT coldboxSettings.ConfigFileLocationOverride){
 			configCreatePath = appMappingAsDots & "." & configCFCLocation;
@@ -71,99 +71,99 @@ Loads a coldbox cfc configuration file
 		else{
 			configCreatePath = configCFCLocation;
 		}
-		
+
 		//Create config Object
 		oConfig = createObject("component", configCreatePath);
-		
+
 		//Decorate It
 		oConfig.injectPropertyMixin = getUtil().getMixerUtil().injectPropertyMixin;
 		oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
-		
+
 		//MixIn Variables
 		oConfig.injectPropertyMixin("controller",instance.controller);
 		oConfig.injectPropertyMixin("logBoxConfig",instance.controller.getLogBox().getConfig());
 		oConfig.injectPropertyMixin("appMapping",configStruct.appMapping);
-		
+
 		//Configure it
 		oConfig.configure();
-		
+
 		//Environment detection
 		detectEnvironment(oConfig,configStruct);
-		 
+
 		/* ::::::::::::::::::::::::::::::::::::::::: APP LOCATION CALCULATIONS :::::::::::::::::::::::::::::::::::::::::::: */
-		
+
 		// load default application paths
 		loadApplicationPaths(configStruct,arguments.overrideAppMapping);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: GET COLDBOX SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseColdboxSettings(oConfig,configStruct,arguments.overrideAppMapping);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: YOUR SETTINGS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
-		parseYourSettings(oConfig,configStruct);	
-		
+		parseYourSettings(oConfig,configStruct);
+
 		/* ::::::::::::::::::::::::::::::::::::::::: YOUR CONVENTIONS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
 		parseConventions(oConfig,configStruct);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: MODULE SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseModules(oConfig,configStruct);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: IOC SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseIOC(oConfig,configStruct);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLER-MODELS-PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseInvocationPaths(oConfig,configStruct);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL LAYOUTS/VIEWS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */
 		parseExternalLocations(oConfig,configStruct);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseMailSettings(oConfig,configStruct);	
-		
+		parseMailSettings(oConfig,configStruct);
+
 		/* ::::::::::::::::::::::::::::::::::::::::: I18N SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseLocalization(oConfig,configStruct);			
-		
+		parseLocalization(oConfig,configStruct);
+
 		/* ::::::::::::::::::::::::::::::::::::::::: WS SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseWebservices(oConfig,configStruct);			
+		parseWebservices(oConfig,configStruct);
 
 		/* ::::::::::::::::::::::::::::::::::::::::: DATASOURCES SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseDatasources(oConfig,configStruct);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: LAYOUT VIEW FOLDER SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseLayoutsViews(oConfig,configStruct);			
-		
+		parseLayoutsViews(oConfig,configStruct);
+
 		/* :::::::::::::::::::::::::::::::::::::::::  CACHE SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseCacheBox(oConfig,configStruct);
-					
+
 		/* ::::::::::::::::::::::::::::::::::::::::: DEBUGGER SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseDebuggerSettings(oConfig,configStruct);			
-					
+		parseDebuggerSettings(oConfig,configStruct);
+
 		/* ::::::::::::::::::::::::::::::::::::::::: INTERCEPTOR SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseInterceptors(oConfig,configStruct);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: LOGBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLogBox(oConfig,configStruct,logBoxConfigHash);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: WIREBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseWireBox(oConfig,configStruct);
-		
+
 		/* ::::::::::::::::::::::::::::::::::::::::: Flash Scope Configuration :::::::::::::::::::::::::::::::::::::::::::: */
-		parseFlashScope(oConfig,configStruct);	
-		
+		parseFlashScope(oConfig,configStruct);
+
 		/* ::::::::::::::::::::::::::::::::::::::::: ORM Configuration :::::::::::::::::::::::::::::::::::::::::::: */
-		parseORM(oConfig,configStruct);	
-		
+		parseORM(oConfig,configStruct);
+
 		/* ::::::::::::::::::::::::::::::::::::::::: VALIDATION Configuration :::::::::::::::::::::::::::::::::::::::::::: */
-		parseValidation(oConfig,configStruct);	
-		
+		parseValidation(oConfig,configStruct);
+
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
-		
+
 		//finish by loading configuration
 		configStruct.coldboxConfig = oConfig;
 		instance.controller.setConfigSettings(configStruct);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseColdboxSettings --->
 	<cffunction name="parseColdboxSettings" output="false" access="public" returntype="void" hint="Parse ColdBox Settings">
 		<cfargument name="oConfig" 				type="any" 		required="true" hint="The config object"/>
@@ -173,21 +173,21 @@ Loads a coldbox cfc configuration file
 			var configStruct = arguments.config;
 			var fwSettingsStruct = getColdboxSettings();
 			var coldboxSettings = arguments.oConfig.getPropertyMixin("coldbox","variables",structnew());
-			
+
 			// check if settings are available
 			if( structIsEmpty(coldboxSettings) ){
 				getUtil().throwit(message="ColdBox settings empty, cannot continue",type="CFCApplicationLoader.ColdBoxSettingsEmpty");
 			}
-			
+
 			// collection append
 			structAppend(configStruct,coldboxSettings,true);
-			
+
 			// Common Structures
 			configStruct.layoutsRefMap 	= structnew();
 			configStruct.viewsRefMap	= structnew();
-			
+
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
-			
+
 			//Check for AppName or throw
 			if ( not StructKeyExists(configStruct, "AppName") )
 				getUtil().throwit("There was no 'AppName' setting defined. This is required by the framework.","","XMLApplicationLoader.ConfigXMLParsingException");
@@ -221,16 +221,19 @@ Loads a coldbox cfc configuration file
 			//Check For DebugMode in settings
 			if ( not structKeyExists(configStruct, "DebugMode") or not isBoolean(configStruct.DebugMode) )
 				configStruct["DebugMode"] = "false";
-			
+			//Check for Implicit Views
+			if ( not StructKeyExists(configStruct, "ImplicitViews") OR not isBoolean(configStruct.implicitViews) )
+				configStruct["ImplicitViews"] = true;
+
 			//Check for DebugPassword in settings, else leave blank.
 			if ( not structKeyExists(configStruct, "DebugPassword") ){ configStruct["DebugPassword"] = ""; }
 			else if( len(configStruct["DebugPassword"]) ){ configStruct["DebugPassword"] = hash(configStruct["DebugPassword"]); }
-			
+
 			//Check for ReinitPassword
 			if ( not structKeyExists(configStruct, "ReinitPassword") ){ configStruct["ReinitPassword"] = ""; }
 			else if( len(configStruct["ReinitPassword"]) ){ configStruct["ReinitPassword"] = hash(configStruct["ReinitPassword"]); }
-			
-			
+
+
 			//Check For UDFLibraryFile
 			if ( not StructKeyExists(configStruct, "UDFLibraryFile") )
 				configStruct["UDFLibraryFile"] = "";
@@ -238,7 +241,7 @@ Loads a coldbox cfc configuration file
 			if( isSimpleValue( configStruct["UDFLibraryFile"] ) ){
 				configStruct["UDFLibraryFile"] = listToArray( configStruct["UDFLibraryFile"] );
 			}
-				
+
 			//Check For CustomErrorTemplate
 			if ( not StructKeyExists(configStruct, "CustomErrorTemplate") )
 				configStruct["CustomErrorTemplate"] = "";
@@ -267,16 +270,16 @@ Loads a coldbox cfc configuration file
 			//Check for External Handlers Location
 			if ( not structKeyExists(configStruct, "HandlersExternalLocation") or len(configStruct["HandlersExternalLocation"]) eq 0 )
 				configStruct["HandlersExternalLocation"] = "";
-			
+
 			//Check for Missing Template Handler
 			if ( not StructKeyExists(configStruct, "MissingTemplateHandler") )
 				configStruct["MissingTemplateHandler"] = "";
-				
+
 			// Check for ColdBox Extensions Location
 			if( not structKeyExists(configStruct, "ColdBoxExtensionsLocation") OR not len(configStruct.ColdBoxExtensionsLocation) ){
 				configStruct["ColdBoxExtensionsLocation"] = "";
 			}
-			
+
 			//Modules Configuration
 			if( not structKeyExists(configStruct,"ModulesExternalLocation") ){
 				configStruct.ModulesExternalLocation = arrayNew(1);
@@ -286,7 +289,7 @@ Loads a coldbox cfc configuration file
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseYourSettings --->
 	<cffunction name="parseYourSettings" output="false" access="public" returntype="void" hint="Parse Your Settings">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
@@ -294,12 +297,12 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct = arguments.config;
 			var settings = arguments.oConfig.getPropertyMixin("settings","variables",structnew());
-			
+
 			//append it
 			structAppend(configStruct,settings,true);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseConventions --->
 	<cffunction name="parseConventions" output="false" access="public" returntype="void" hint="Parse Conventions">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
@@ -308,7 +311,7 @@ Loads a coldbox cfc configuration file
 			var configStruct = arguments.config;
 			var fwSettingsStruct = getColdboxSettings();
 			var conventions = arguments.oConfig.getPropertyMixin("conventions","variables",structnew());
-			
+
 			// Override conventions on a per found basis.
 			if( structKeyExists(conventions,"handlersLocation") ){ fwSettingsStruct["handlersConvention"] = trim(conventions.handlersLocation); }
 			if( structKeyExists(conventions,"pluginsLocation") ){ fwSettingsStruct["pluginsConvention"] = trim(conventions.pluginsLocation); }
@@ -328,7 +331,7 @@ Loads a coldbox cfc configuration file
 			var configStruct = arguments.config;
 			var fwSettingsStruct = getColdBoxSettings();
 			var ioc = arguments.oConfig.getPropertyMixin("ioc","variables",structnew());
-			
+
 			//defaults
 			configStruct.IOCFramework = "";
 			configStruct.IOCFrameworkReload = false;
@@ -336,29 +339,29 @@ Loads a coldbox cfc configuration file
 			configStruct.IOCObjectCaching = false;
 			configStruct.IOCParentFactory = "";
 			configStruct.IOCParentFactoryDefinitionFile = "";
-			
+
 			//Check for IOC Framework
 			if ( structKeyExists(ioc, "framework") ){
 				configStruct["IOCFramework"] = ioc.framework;
 				configStruct["IOCDefinitionFile"] = ioc.definitionFile;
-				
+
 				if( structKeyExists(ioc,"reload") ){
 					configStruct["IOCFrameworkReload"] = ioc.reload;
 				}
 				if( structKeyExists(ioc,"objectCaching") ){
 					configStruct["IOCObjectCaching"] = ioc.objectCaching;
 				}
-				
+
 			}
-			
+
 			// Parent Factory
 			if ( structKeyExists(ioc, "ParentFactory") ){
 				configStruct["IOCParentFactoryDefinitionFile"] = ioc.parentFactory.definitionFile;
 				configStruct["IOCParentFactory"] = ioc.parentFactory.framework;
-			}	
+			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseInvocationPaths --->
 	<cffunction name="parseInvocationPaths" output="false" access="public" returntype="void" hint="Parse Invocation paths">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
@@ -367,7 +370,7 @@ Loads a coldbox cfc configuration file
 			var configStruct = arguments.config;
 			var fwSettingsStruct = getColdBoxSettings();
 			var appMappingAsDots = "";
-			
+
 			// Handler Registration
 			configStruct["HandlersInvocationPath"] = reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all");
 			configStruct["HandlersPath"] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.handlersConvention;
@@ -377,7 +380,7 @@ Loads a coldbox cfc configuration file
 			// Models Registration
 			configStruct["ModelsInvocationPath"] = reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all");
 			configStruct["ModelsPath"] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModelsConvention;
-			
+
 			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
 			if( len(configStruct["AppMapping"]) ){
 				appMappingAsDots = reReplace(configStruct["AppMapping"],"(/|\\)",".","all");
@@ -394,14 +397,14 @@ Loads a coldbox cfc configuration file
 				configStruct["ModelsPath"] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.ModelsConvention#";
 				configStruct["ModelsPath"] = expandPath(configStruct["ModelsPath"]);
 			}
-			
+
 			//Set the Handlers External Configuration Paths
 			configStruct["HandlersExternalLocationPath"] = "";
 			if( len(configStruct["HandlersExternalLocation"]) ){
 				//Expand the external location to get a registration path
 				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
 			}
-			
+
 			//Configure the modules locations for the conventions not the external ones.
 			if( len(configStruct.AppMapping) ){
 				configStruct.ModulesLocation 		= "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
@@ -422,17 +425,17 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct = arguments.config;
 			var fwSettingsStruct = getColdBoxSettings();
-			
-			// ViewsExternalLocation Setup 
+
+			// ViewsExternalLocation Setup
 			if( structKeyExists(configStruct,"ViewsExternalLocation") and len(configStruct["ViewsExternalLocation"]) ){
-				// Verify the locations, do relative to the app mapping first 
+				// Verify the locations, do relative to the app mapping first
 				if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct["ViewsExternalLocation"]) ){
 					configStruct["ViewsExternalLocation"] = "/" & configStruct["AppMapping"] & "/" & configStruct["ViewsExternalLocation"];
 				}
 				else if( not directoryExists(expandPath(configStruct["ViewsExternalLocation"])) ){
 					getUtil().throwIt("ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException");
 				}
-				// Cleanup 
+				// Cleanup
 				if ( right(configStruct["ViewsExternalLocation"],1) eq "/" ){
 					 configStruct["ViewsExternalLocation"] = left(configStruct["ViewsExternalLocation"],len(configStruct["ViewsExternalLocation"])-1);
 				}
@@ -440,7 +443,7 @@ Loads a coldbox cfc configuration file
 			else{
 				configStruct["ViewsExternalLocation"] = "";
 			}
-			
+
 			// LayoutsExternalLocation Setup
 			if( structKeyExists(configStruct,"LayoutsExternalLocation") and configStruct["LayoutsExternalLocation"] neq "" ){
 				// Verify the locations, do relative to the app mapping first
@@ -478,23 +481,23 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct	= arguments.config;
 			var i18n 			= arguments.oConfig.getPropertyMixin("i18N","variables",structnew());
-			
-			
+
+
 			//Defaults
 			configStruct.defaultResourceBundle = "";
 			configStruct.defaultLocale = "";
 			configStruct.localeStorage = "";
 			configStruct.unknownTranslation = "";
 			configStruct["using_i18N"] = false;
-			
+
 			//Check if empty
 			if ( NOT structIsEmpty(i18n) ){
-				
+
 				//Check for DefaultResourceBundle
 				if ( structKeyExists(i18n, "DefaultResourceBundle") AND len(i18n.defaultResourceBundle) ){
 					configStruct["DefaultResourceBundle"] = i18n.defaultResourceBundle;
 				}
-				
+
 				//Check for DefaultLocale
 				if ( structKeyExists(i18n, "DefaultLocale") AND len(i18n.DefaultLocale) ){
 					if( find("_", i18n.defaultLocale) ){
@@ -504,7 +507,7 @@ Loads a coldbox cfc configuration file
 						configStruct["DefaultLocale"] = i18n.defaultLocale;
 					}
 				}
-				
+
 				//Check for LocaleStorage
 				if ( structKeyExists(i18n, "LocaleStorage") AND len(i18n.LocaleStorage) ){
 					configStruct["LocaleStorage"] = i18n.LocaleStorage;
@@ -514,12 +517,12 @@ Loads a coldbox cfc configuration file
 							   			  type="CFCApplicationLoader.InvalidLocaleStorage");
 					}
 				}
-				
+
 				//Check for UnknownTranslation
 				if ( structKeyExists(i18n, "UnknownTranslation") AND len(i18n.UnknownTranslation) ){
 					configStruct["UnknownTranslation"] = i18n.UnknownTranslation;
 				}
-				
+
 				//set i18n
 				configStruct["using_i18N"] = true;
 			}
@@ -534,10 +537,10 @@ Loads a coldbox cfc configuration file
 			var configStruct = arguments.config;
 			var key=1;
 			var webservices = arguments.oConfig.getPropertyMixin("webservices","variables",structnew());
-			
+
 			// Defaults
 			configStruct.webservices = structnew();
-			
+
 			for(key in webservices){
 				configStruct.webservices[key] = webservices[key];
 			}
@@ -552,13 +555,13 @@ Loads a coldbox cfc configuration file
 			var configStruct = arguments.config;
 			var datasources = arguments.oConfig.getPropertyMixin("datasources","variables",structnew());
 			var key = "";
-			
+
 			// Defaults
 			configStruct.datasources = structnew();
-			
+
 			//loop over datasources
 			for( key in datasources ){
-				
+
 				if( NOT structKeyExists(datasources[key],"name") ){
 					getUtil().throwit("This datasource #key# entry's name cannot be blank","","CFCApplicationLoader.DatasourceException");
 				}
@@ -593,17 +596,17 @@ Loads a coldbox cfc configuration file
 			var x 					= 1;
 			var thisLayout			= "";
 			var layoutsArray 		= arrayNew(1);
-			
+
 			// defaults
 			configStruct.defaultLayout 		= "";
 			configStruct.defaultView 		= "";
 			configStruct.registeredLayouts  = structnew();
-			
+
 			// Register layout settings
 			structAppend(configStruct,layoutSettings);
-			
+
 			// registered layouts
-			if( isStruct(layouts) ){ 
+			if( isStruct(layouts) ){
 				// process structure into array
 				for(key in layouts){
 					thisLayout = layouts[key];
@@ -614,14 +617,14 @@ Loads a coldbox cfc configuration file
 			else{
 				layoutsArray = layouts;
 			}
-			
+
 			// Process layouts
 			for(x=1; x lte ArrayLen(layoutsArray); x=x+1){
 				thisLayout = layoutsArray[x];
-				
+
 				// register file with alias
 				configStruct.registeredLayouts[thisLayout.name] = thisLayout.file;
-				
+
 				// register views
 				if( structKeyExists(thisLayout,"views") ){
 					for(i=1; i lte listLen(thislayout.views); i=i+1){
@@ -630,7 +633,7 @@ Loads a coldbox cfc configuration file
 						}
 					}
 				}
-				
+
 				// register folders
 				if( structKeyExists(thisLayout,"folders") ){
 					for(i=1; i lte listLen(thisLayout.folders); i=i+1){
@@ -638,9 +641,9 @@ Loads a coldbox cfc configuration file
 							LayoutFolderStruct[lcase( listGetAt(thisLayout.folders,i) )] = thisLayout.file;
 						}
 					}
-				}			
+				}
 			}
-			
+
 			// Register extra layout/view/folder combos
 			configStruct.ViewLayouts   = LayoutViewStruct;
 			configStruct.FolderLayouts = LayoutFolderStruct;
@@ -654,21 +657,21 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct 		= arguments.config;
 			var fwSettingsStruct 	= getColdboxSettings();
-			
+
 			// CacheBox Defaults
 			configStruct.cacheBox				= structnew();
 			configStruct.cacheBox.dsl  			= arguments.oConfig.getPropertyMixin("cacheBox","variables",structnew());
 			configStruct.cacheBox.xml  			= "";
 			configStruct.cacheBox.configFile 	= "";
-			
+
 			// Check if we have defined DSL first in application config
 			if( NOT structIsEmpty(configStruct.cacheBox.dsl) ){
-				
+
 				// Do we have a configFile key for external loading?
 				if( structKeyExists(configStruct.cacheBox.dsl,"configFile") ){
 					configStruct.cacheBox.configFile = configStruct.cacheBox.dsl.configFile;
 				}
-			
+
 			}
 			// Check if LogBoxConfig.cfc exists in the config conventions
 			else if( fileExists( instance.controller.getAppRootPath() & "config/CacheBox.cfc") ){
@@ -679,7 +682,7 @@ Loads a coldbox cfc configuration file
 				configStruct.cacheBox.configFile = "coldbox.system.web.config.CacheBox";
 			}
 		</cfscript>
-	</cffunction>	
+	</cffunction>
 
 	<!--- parsedebuggerSettings --->
 	<cffunction name="parseDebuggerSettings" output="false" access="public" returntype="void" hint="Parse Debugger Settings">
@@ -689,16 +692,16 @@ Loads a coldbox cfc configuration file
 			var configStruct = arguments.config;
 			var fwSettings = getColdBoxSettings();
 			var debugger = arguments.oConfig.getPropertyMixin("debugger","variables",structnew());
-			
+
 			// defaults
 			configStruct.debuggerSettings = {};
 			structAppend(configStruct.debuggerSettings, fwSettings.debuggerSettings, true);
-			
+
 			//append settings
 			structAppend(configStruct.debuggerSettings, debugger, true);
 		</cfscript>
-	</cffunction>		
-	
+	</cffunction>
+
 	<!--- parseInterceptors --->
 	<cffunction name="parseInterceptors" output="false" access="public" returntype="void" hint="Parse Interceptors">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
@@ -708,13 +711,13 @@ Loads a coldbox cfc configuration file
 			var x = 1;
 			var interceptorSettings = arguments.oConfig.getPropertyMixin("interceptorSettings","variables",structnew());
 			var interceptors = arguments.oConfig.getPropertyMixin("interceptors","variables",arrayNew(1));
-			
+
 			//defaults
 			configStruct.interceptorConfig = structnew();
 			configStruct.interceptorConfig.interceptors = arrayNew(1);
 			configStruct.interceptorConfig.throwOnInvalidStates = false;
-			configStruct.interceptorConfig.customInterceptionPoints = "";				
-			
+			configStruct.interceptorConfig.customInterceptionPoints = "";
+
 			//Append settings
 			structAppend(configStruct.interceptorConfig,interceptorSettings,true);
 
@@ -728,13 +731,13 @@ Loads a coldbox cfc configuration file
 				if( NOT structKeyExists(interceptors[x],"properties") ){
 					interceptors[x].properties = structnew();
 				}
-				
+
 				//Register it
 				arrayAppend(configStruct.interceptorConfig.interceptors, interceptors[x]);
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseLogBox --->
 	<cffunction name="parseLogBox" output="false" access="public" returntype="void" hint="Parse LogBox">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
@@ -745,16 +748,16 @@ Loads a coldbox cfc configuration file
 			var newConfigHash 	  = hash(logBoxConfig.getMemento().toString());
 			var logBoxDSL		  = structnew();
 			var key				  = "";
-		
+
 			// Default Config Structure
 			arguments.config["LogBoxConfig"] = structnew();
-			
+
 			// Check if we have defined DSL first in application config
 			logBoxDSL = arguments.oConfig.getPropertyMixin("logBox","variables",structnew());
 			if( NOT structIsEmpty(logBoxDSL) ){
 				// Reset Configuration we have declared a configuration DSL
 				logBoxConfig.reset();
-				
+
 				// Do we have a configFile key?
 				if( structKeyExists(logBoxDSL,"configFile") ){
 					// Load by file
@@ -765,9 +768,9 @@ Loads a coldbox cfc configuration file
 					// Load the Data Configuration DSL
 					logBoxConfig.loadDataDSL( logBoxDSL );
 				}
-				
+
 				// Store for reconfiguration
-				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();				
+				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();
 			}
 			// Check if LogBoxConfig.cfc exists in the config conventions and load it.
 			else if( fileExists( instance.controller.getAppRootPath() & "config/LogBox.cfc") ){
@@ -779,27 +782,27 @@ Loads a coldbox cfc configuration file
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseWireBox --->
 	<cffunction name="parseWireBox" output="false" access="public" returntype="void" hint="Parse WireBox">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
 		<cfscript>
 			var wireBoxDSL		  = structnew();
-			
+
 			// Default Config Structure
 			arguments.config.wirebox 			= structnew();
 			arguments.config.wirebox.enabled	= true;
 			arguments.config.wirebox.binder		= "";
 			arguments.config.wirebox.binderPath	= "";
 			arguments.config.wirebox.singletonReload = false;
-			
+
 			// Check if we have defined DSL first in application config
 			wireBoxDSL = arguments.oConfig.getPropertyMixin("wireBox","variables",structnew());
-			
+
 			// Get Binder Paths
 			if( structKeyExists(wireBoxDSL,"binder") ){
-				arguments.config.wirebox.binderPath = wireBoxDSL.binder;				
+				arguments.config.wirebox.binderPath = wireBoxDSL.binder;
 			}
 			// Check if WireBox.cfc exists in the config conventions, if so create binder
 			else if( fileExists( instance.controller.getAppRootPath() & "config/WireBox.cfc") ){
@@ -807,45 +810,45 @@ Loads a coldbox cfc configuration file
 				if( len(arguments.config.appMapping) ){
 					arguments.config.wirebox.binderPath = arguments.config.appMapping & ".#arguments.config.wirebox.binderPath#";
 				}
-			} 
-			
+			}
+
 			// Singleton reload
-			if( structKeyExists(wireBoxDSL,"singletonReload") ){ 
+			if( structKeyExists(wireBoxDSL,"singletonReload") ){
 				arguments.config.wirebox.singletonReload = wireBoxDSL.singletonReload;
-			}			
+			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseORM --->
 	<cffunction name="parseORM" output="false" access="public" returntype="void" hint="Parse ORM Scope">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
 		<cfscript>
 			var ormDSL	  			= structnew();
-			
+
 			// Default Config Structure
 			arguments.config.orm = {
 				injection = {
 					enabled = false, include = "", exclude = ""
 				}
 			};
-			
+
 			// Check if we have defined DSL first in application config
 			ormDSL = arguments.oConfig.getPropertyMixin("orm","variables",structnew());
-			
+
 			// injection
 			if( structKeyExists(ormDSL,"injection") ){
 				structAppend( arguments.config.orm.injection, ormDSL.injection, true);
-			}			
+			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseValidation --->
 	<cffunction name="parseValidation" output="false" access="public" returntype="void" hint="Parse Validation Scope">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
 		<cfscript>
-			
+
 			/**
 			Sample:
 			validation = {
@@ -855,33 +858,33 @@ Loads a coldbox cfc configuration file
 						field = { constraints here }
 					}
 				}
-				
+
 			}
 			*/
-			
+
 			var validationDSL = structnew();
-			
+
 			// Default Config Structure
 			arguments.config.validation = {
 				manager = "coldbox.system.validation.ValidationManager",
 				sharedConstraints = {}
 			};
-			
+
 			// Check if we have defined DSL first in application config
 			validationDSL = arguments.oConfig.getPropertyMixin("validation","variables",structnew());
-			
+
 			// manager
 			if( structKeyExists(validationDSL,"manager") ){
 				structAppend( arguments.config.validation.manager, validationDSL.manager, true);
-			}	
+			}
 			// shared constraints
 			if( structKeyExists(validationDSL,"sharedConstraints") ){
 				structAppend( arguments.config.validation.sharedConstraints, validationDSL.sharedConstraints, true);
-			}		
+			}
 		</cfscript>
 	</cffunction>
-	
-	
+
+
 	<!--- parseFlashScope --->
 	<cffunction name="parseFlashScope" output="false" access="public" returntype="void" hint="Parse ORM settings">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
@@ -889,20 +892,20 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var flashScopeDSL	  	= structnew();
 			var fwSettingsStruct 	= getColdboxSettings();
-			
+
 			// Default Config Structure
 			arguments.config.flash 	= fwSettingsStruct.flash;
-			
+
 			// Check if we have defined DSL first in application config
 			flashScopeDSL = arguments.oConfig.getPropertyMixin("flash","variables",structnew());
-			
+
 			// check if empty or not, if not, then append and override
 			if( NOT structIsEmpty( flashScopeDSL ) ){
 				structAppend( arguments.config.flash, flashScopeDSL, true);
-			}				
+			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- parseModules --->
 	<cffunction name="parseModules" output="false" access="public" returntype="void" hint="Parse Module Settings">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
@@ -910,22 +913,22 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct  = arguments.config;
 			var modules 	  = arguments.oConfig.getPropertyMixin("modules","variables",structnew());
-			
+
 			// Defaults
 			configStruct.ModulesAutoReload  = false;
 			configStruct.ModulesInclude		= arrayNew(1);
 			configStruct.ModulesExclude		= arrayNew(1);
 			configStruct.Modules 			= structNew();
-			
+
 			if( structKeyExists(modules,"autoReload") ){ configStruct.modulesAutoReload = modules.autoReload; }
 			if( structKeyExists(modules,"include") ){ configStruct.modulesInclude = modules.include; }
-			if( structKeyExists(modules,"exclude") ){ configStruct.modulesExclude = modules.exclude; }	
-			
+			if( structKeyExists(modules,"exclude") ){ configStruct.modulesExclude = modules.exclude; }
+
 		</cfscript>
-	</cffunction>	
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
+
 	<cffunction name="detectEnvironment" access="private" returntype="void" hint="Detect the running environment and return the name" output="false" >
 		<cfargument name="oConfig" 		type="any" 	    required="true" hint="The config object"/>
 		<cfargument name="config" 		type="struct" 	required="true" hint="The config struct"/>
@@ -934,10 +937,10 @@ Loads a coldbox cfc configuration file
 			var configStruct = arguments.config;
 			var key = "";
 			var i = 1;
-			
+
 			// Set default to production
 			configStruct.environment = "production";
-			
+
 			// is detection is custom
 			if( structKeyExists(arguments.oConfig,"detectEnvironment") ){
 				//detect custom environment
@@ -952,10 +955,10 @@ Loads a coldbox cfc configuration file
 							// set new environment
 							configStruct.environment = key;
 						}
-					}			
+					}
 				}
 			}
-			
+
 			// call environment method if exists
 			if( structKeyExists(arguments.oConfig,configStruct.environment) ){
 				invoker(arguments.oConfig,configStruct.environment);
@@ -971,7 +974,7 @@ Loads a coldbox cfc configuration file
 		<!--- ************************************************************* --->
 		<cfinvoke component="#arguments.oConfig#" method="#arguments.method#" />
 	</cffunction>
-	
-	
+
+
 
 </cfcomponent>

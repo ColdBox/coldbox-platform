@@ -20,14 +20,14 @@ Description :
 		<cfscript>
 			// Setup The Controller.
 			setController(arguments.controller);
-			
+
 			// Setup the Event Handler Cache Dictionary
 			instance.handlerCacheDictionary = {};
 			// Setup the Event Cache Dictionary
 			instance.eventCacheDictionary = {};
 			// Plugin base class
 			instance.HANDLER_BASE_CLASS = "coldbox.system.EventHandler";
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -39,10 +39,10 @@ Description :
     	<cfscript>
 			// local logger
 			instance.log = getController().getLogBox().getLogger(this);
-    		
+
     		// execute the handler registrations after configurations loaded
 			registerHandlers();
-			
+
 			// Configuration data and dependencies
 			instance.registeredHandlers			= controller.getSetting("RegisteredHandlers");
 			instance.registeredExternalHandlers = controller.getSetting("RegisteredExternalHandlers");
@@ -59,7 +59,7 @@ Description :
     	</cfscript>
     </cffunction>
 
-    
+
 <!------------------------------------------- EVENTS ------------------------------------------>
 
 	<!--- afterInstanceAutowire --->
@@ -69,19 +69,19 @@ Description :
     	<cfscript>
 			var attribs = interceptData.mapping.getExtraAttributes();
 			var iData 	= {};
-			
+
 			// listen to handlers only
 			if( structKeyExists(attribs, "isHandler") ){
 				// Fill-up Intercepted metadata
 				iData.handlerPath 	= attribs.handlerPath;
 				iData.oHandler 		= interceptData.target;
-	
+
 				// Fire Interception
 				instance.interceptorService.processState("afterHandlerCreation",iData);
 			}
 		</cfscript>
-    </cffunction>	
-    
+    </cffunction>
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Get a new handler Instance --->
@@ -91,7 +91,7 @@ Description :
 			var oHandler 	= "";
 			var binder		= "";
 			var attribs		= "";
-			
+
 			// Check if handler mapped?
 			if( NOT controller.getWireBox().getBinder().mappingExists( invocationPath ) ){
 				// lazy load checks for wirebox
@@ -111,8 +111,8 @@ Description :
 				if ( NOT instance.handlerCaching ){ binder.into( binder.scopes.NOSCOPE ); }
 			}
 			// retrieve, build and wire from wirebox
-			oHandler = controller.getWireBox().getInstance( invocationPath );		
-			
+			oHandler = controller.getWireBox().getInstance( invocationPath );
+
 			//return handler
 			return oHandler;
 		</cfscript>
@@ -130,10 +130,10 @@ Description :
 			var eventCachingData = structnew();
 			var oEventURLFacade = instance.templateCache.getEventURLFacade();
 			var eventDictionaryEntry = "";
-			
+
 			// Create Runnable Object
 			oEventHandler = newHandler( arguments.ehBean.getRunnable() );
-			
+
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 
 			// Does requested method/action of execution exist in handler?
@@ -146,9 +146,9 @@ Description :
 					// Let's go execute our missing action
 					return oEventHandler;
 				}
-				
+
 				// Test for Implicit View Dispatch
-				if( isViewDispatch(arguments.ehBean.getFullEvent(),arguments.ehBean) ){
+				if( controller.getSetting(name="ImplicitViews") AND isViewDispatch(arguments.ehBean.getFullEvent(),arguments.ehBean) ){
 					return oEventHandler;
 				}
 
@@ -251,7 +251,7 @@ Description :
 		// Rip the handler and method
 		handlerReceived = listLast(reReplace(arguments.event,"\.[^.]*$",""),":");
 		methodReceived 	= listLast(arguments.event,".");
-		
+
 		// Verify if this is a module call
 		if( find(":", arguments.event) ){
 			moduleReceived = listFirst(arguments.event,":");
@@ -289,21 +289,21 @@ Description :
 					.setMethod(MethodReceived);
 			}
 		} //end else
-		
+
 		// Do View Dispatch Check Procedures
 		if( isViewDispatch(arguments.event,handlerBean) ){
 			return handlerBean;
 		}
-		
+
 		// Run invalid event procedures, handler not found
 		invalidEvent(arguments.event,handlerBean);
-		
-		// If we get here, then invalid event handler is active and we need to 
+
+		// If we get here, then invalid event handler is active and we need to
 		// return an event handler bean that matches it
 		return getRegisteredHandler( handlerBean.getFullEvent() );
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- isViewDispatch --->
     <cffunction name="isViewDispatch" output="false" access="public" returntype="any" hint="Check if the incoming event has a matching implicit view dispatch available">
     	<cfargument name="event"  type="any"	required="true" hint="The event string"/>
@@ -314,25 +314,25 @@ Description :
 			var renderer 		= controller.getPlugin("Renderer");
 			var targetView		= "";
 			var targetModule	= getToken(arguments.event,1,":");
-			
-			// Cleanup of . to / for lookups 
+
+			// Cleanup of . to / for lookups
 			cEvent = lcase(replace(cEvent,".","/","all"));
-			
+
 			// module?
 			if( find(":", arguments.event) and structKeyExists(instance.modules, targetModule ) ){
 				targetView = renderer.locateModuleView(cEvent,targetModule);
-			}	
+			}
 			else{
 				targetView = renderer.locateView(cEvent);
 			}
-			
+
 			// Validate Target View
 			if( fileExists( expandPath(targetView & ".cfm") ) ){
 				arguments.ehBean.setViewDispatch(true);
 				return true;
 			}
-			
-			return false;			
+
+			return false;
 		</cfscript>
     </cffunction>
 
@@ -348,12 +348,12 @@ Description :
 			iData.ehBean 		= arguments.ehBean;
 			iData.override 		= false;
 			instance.interceptorService.processState("onInvalidEvent",iData);
-			
+
 			//If the override was changed by the interceptors then they updated the ehBean of execution
 			if( iData.override ){
 				return;
 			}
-			
+
 			// If onInvalidEvent is registered, use it
 			if ( len(trim(instance.onInvalidEvent)) ){
 
@@ -373,13 +373,13 @@ Description :
 					.setModule('');
 				// If module found in invalid event, set it for discovery
 				if( find(":",instance.onInvalidEvent) ){ arguments.ehBean.setModule( getToken(instance.onInvalidEvent,1) ); }
-				
+
 				return;
 			}
-		
+
 			// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
 			controller.getPlugin("Logger").error("Invalid Event detected: #arguments.event#. Path info: #cgi.path_info# , query string: #cgi.query_string#");
-		
+
 			// Throw Exception
 			getUtil().throwit(message="The event: #arguments.event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
 		</cfscript>
@@ -446,7 +446,7 @@ Description :
 			if( NOT structKeyExists(instance.eventCacheDictionary, arguments.targetEvent) ){
 				return getNewMDEntry();
 			}
-			
+
 			return instance.eventCacheDictionary[ arguments.targetEvent ];
 		</cfscript>
 	</cffunction>
@@ -490,10 +490,10 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
-	<!--- wireboxSetup --->    
-    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for handler classes is online">    
-    	<cfscript>	    
+
+	<!--- wireboxSetup --->
+    <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for handler classes is online">
+    	<cfscript>
 			// Check if handler mapped?
 			if( NOT controller.getWireBox().getBinder().mappingExists( instance.HANDLER_BASE_CLASS ) ){
 				// feed the base class
@@ -502,7 +502,7 @@ Description :
 				// register ourselves to listen for autowirings
 				instance.interceptorService.registerInterceptionPoint("HandlerService","afterInstanceAutowire",this);
 			}
-    	</cfscript>    
+    	</cfscript>
     </cffunction>
 
 	<!--- Get a new MD cache entry structure --->
