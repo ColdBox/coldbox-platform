@@ -20,12 +20,12 @@ These methods are only active if WireBox entity injection is available.
 
 */
 component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors="true"{
-	
+
 	/**
 	* WireBox entity injector, only injected if ORM entity injection is available.
 	*/
 	property name="wirebox" inject="wirebox" persistent="false";
-	
+
 	/**
 	* Active Entity Constructor, if you override it, make sure you call super.init()
 	* @queryCacheRegion.hint The query cache region to use if not we will use one for you
@@ -36,7 +36,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	*/
 	function init(string queryCacheRegion, boolean useQueryCaching,	boolean eventHandling, boolean useTransactions,	boolean defaultAsQuery){
 		var md 		= getMetadata( this );
-		
+
 		// find entity name on md?
 		if( structKeyExists(md,"entityName") ){
 			arguments.entityName = md.entityName;
@@ -51,13 +51,106 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		}
 		// datasource
 		arguments.datasource = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil().getEntityDatasource( this );
-		
+
 		// init the super class with our own arguments
 		super.init(argumentCollection=arguments);
-		
+
 		return this;
 	}
-	
+
+	/**
+    * Save an entity using hibernate transactions or not. You can optionally flush the session also
+    * @entity.hint You can optionally pass in an entity, else this active entity is saved
+    * @forceInsert.hint Force insert on the save
+    * @flush.hint Flush the session or not, default is false
+    * @transactional.hint Use transactions or not, it defaults to true
+    */
+	any function save(any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=getUseTransactions()){
+		if( !structKeyExists(arguments,"entity") ){
+			arguments.entity = this;
+		}
+
+		return super.save(argumentCollection=arguments);
+	}
+
+	/**
+    * Delete an entity. The entity argument can be a single entity
+	* or an array of entities. You can optionally flush the session also after committing
+	* Transactions are used if useTransactions bit is set or the transactional argument is passed
+    * @entity.hint You can optionally pass in an entity, else this active entity is saved
+    * @flush.hint Flush the session or not, default is false
+    * @transactional.hint Use transactions or not, it defaults to true
+    */
+	any function delete(any entity, boolean flush=false,boolean transactional=getUseTransactions()){
+		if( !structKeyExists(arguments,"entity") ){
+			arguments.entity = this;
+		}
+		return super.delete(argumentCollection=arguments);
+	}
+
+	/**
+    * Refresh the state of the entity
+    * @entity.hint The argument can be one persistence entity or an array of entities
+    */
+	any function refresh(any entity){
+		var objects = arrayNew(1);
+
+		if( structKeyExists(arguments,"entity") ){
+			if( isArray(arguments.entity) ){
+				objects = arguments.entity;
+			}
+			else{
+				arrayAppend(objects, arguments.entity);
+			}
+		}
+
+		arrayAppend(objects, this);
+
+		return super.refresh(objects);
+	}
+
+	/**
+    * Merge an entity or array of entities back into the session
+    * @entity.hint The argument can be one persistence entity or an array of entities
+    */
+	any function merge(any entity){
+		var objects = arrayNew(1);
+
+		if( structKeyExists(arguments,"entity") ){
+			if( isArray(arguments.entity) ){
+				objects = arguments.entity;
+			}
+			else{
+				arrayAppend(objects, arguments.entity);
+			}
+		}
+
+		arrayAppend(objects, this);
+
+		return super.merge(objects);
+	}
+
+	/**
+    * Evict entity objects from session, if no arguments, then the entity evicts itself
+	* @entity.hint The argument can be one persistence entity or an array of entities
+    */
+	any function evict(any entity){
+		var objects = arrayNew(1);
+
+		if( structKeyExists(arguments,"entity") ){
+			if( isArray(arguments.entity) ){
+				objects = arguments.entity;
+			}
+			else{
+				arrayAppend(objects, arguments.entity);
+			}
+		}
+
+		arrayAppend(objects, this);
+
+		return super.evictEntity(objects);
+	}
+
 	/**
 	* Validate the ActiveEntity with the coded constraints -> this.constraints, or passed in shared or implicit constraints
 	* The entity must have been populated with data before the validation
@@ -70,7 +163,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		if( !structKeyExists(variables,"wirebox") OR !isObject(variables.wirebox) ){
 			throw(message="WireBox reference does not exist in this entity",detail="WireBox entity injection must be enabled in order to use the validation features",type="ActiveEntity.ORMEntityInjectionMissing");
 		}
-		
+
 		// Get validation manager
 		var validationManager = wirebox.getInstance( "WireBoxValidationManager" );
 		// validate constraints
@@ -79,13 +172,13 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		// argument override
 		if( !isSimpleValue(arguments.constraints) OR len(arguments.constraints) ){
 			thisConstraints = arguments.constraints;
-		}		
+		}
 		// validate and save results in private scope
 		validationResults = validationManager.validate(this, arguments.fields, thisConstraints, arguments.locale);
 		// return it
 		return ( !validationResults.hasErrors() );
 	}
-	
+
 	/**
 	* Get the validation results object.  This will be an empty validation object if isValid() has not being called yet.
 	*/
@@ -95,5 +188,5 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		}
 		return new coldbox.system.validation.result.ValidationResult();
 	}
-	
+
 }

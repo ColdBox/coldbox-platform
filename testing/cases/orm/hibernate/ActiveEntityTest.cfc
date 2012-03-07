@@ -2,20 +2,20 @@
 
 	function setup(){
 		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
-		
+
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 	}
-	
+
 	function testIsValid(){
 		mockWireBox = getMockBox().createMock("coldbox.system.ioc.Injector").init();
 		mockWireBox.getBinder().map("WireBoxValidationManager").toValue( new coldbox.system.validation.ValidationManager( mockWireBox ) );
-		
+
 		activeUser.setWireBox( mockWireBox );
 		r = activeUser.isValid();
 		assertFalse( r );
-		
+
 		activeUser.setFirstName("Luis");
 		activeUser.setLastName("Majano");
 		activeUser.setUsername("LuisMajano");
@@ -23,21 +23,21 @@
 		r = activeUser.isValid();
 		assertTrue( r );
 	}
-	
+
 	function testValidationResults(){
 		r = activeUser.getValidationResults();
 		assertTrue( isInstanceOf(r, "coldbox.system.validation.result.IValidationResult") );
 	}
-	
+
 	function testNew(){
 		//mocks
 		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
 		mockEventHandler.$("postNew");
 		activeUser.$property("ORMEventHandler","variables",mockEventHandler);
-		
+
 		user = activeUser.new();
 		assertFalse( isNull(user) );
-		
+
 		user = activeUser.new(properties={firstName="Luis",lastName="UnitTest"});
 		assertEquals( "Luis", user.getFirstName() );
 	}
@@ -49,11 +49,11 @@
 		user = activeUser.get(testUserID);
 		assertEquals( testUserID, user.getID());
 	}
-	
+
 	function testGetAll(){
 		r = activeUser.getAll();
 		assertTrue( arrayLen(r) );
-		
+
 		r = activeUser.getAll([1,2]);
 		assertFalse( arrayLen(r) );
 
@@ -64,8 +64,59 @@
 		assertTrue( isObject( r[1] ) );
 	}
 
+	function testSave(){
+
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("preSave");
+		mockEventHandler.$("postSave");
+
+		user = getMockBox().prepareMock( entityNew("ActiveUser") );
+		user.$property("ORMEventHandler","variables",mockEventHandler);
+		user.setFirstName('unitTest');
+		user.setLastName('unitTest');
+		user.setUsername('unitTest');
+		user.setPassword('unitTest');
+
+		try{
+			user.save();
+			assertTrue( len(user.getID()) );
+			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
+			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			var q = new Query(datasource="coolblog");
+			q.execute(sql="delete from users where firstName = 'unitTest'");
+		}
+	}
+
+	function testDelete(){
+		user = entityNew("ActiveUser");
+		user.setFirstName('unitTest');
+		user.setLastName('unitTest');
+		user.setUsername('unitTest');
+		user.setPassword('unitTest');
+		entitySave(user);ORMFlush();
+
+		try{
+			user.delete();
+			test = entityLoad("ActiveUser",{firstName="unittest"}, true);
+			assertTrue( isNull(test) );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			q = new Query(datasource="coolblog");
+			q.execute(sql="delete from users where firstName = 'unitTest'");
+		}
+	}
+
 	function testDeleteByID(){
-		user = entityNew("User");
+		user = entityNew("ActiveUser");
 		user.setFirstName('unitTest');
 		user.setLastName('unitTest');
 		user.setUsername('unitTest');
@@ -74,7 +125,7 @@
 
 		try{
 			activeUser.deleteByID( user.getID() );
-			test = entityLoad("User",{firstName="unittest"}, true);
+			test = entityLoad("ActiveUser",{firstName="unittest"}, true);
 			assertTrue( isNull(test) );
 		}
 		catch(any e){
@@ -88,12 +139,12 @@
 
 	function testDeleteWhere(){
 		for(var x=1; x lte 3; x++){
-			user = entityNew("User");
+			user = entityNew("ActiveUser");
 			user.setFirstName('unitTest#x#');
 			user.setLastName('unitTest');
 			user.setUsername('unitTest');
 			user.setPassword('unitTest');
-			entitySave(user); 
+			entitySave(user);
 		}
 		ORMFlush();
 		q = new Query(datasource="coolblog");
@@ -157,10 +208,10 @@
 		test = activeUser.getTableName();
 		assertEquals( 'users', test );
 	}
-	
+
 	function testNewCriteria(){
 		c = activeUser.newCriteria();
 		assertEquals( "ActiveUser", c.getEntityName() );
-		
+
 	}
 }
