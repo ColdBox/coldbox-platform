@@ -152,6 +152,78 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	}
 
 	/**
+    * Simple map to property population for entities
+	* @memento.hint	The map/struct to populate the entity with
+	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include.hint A list of keys to include in the population ONLY
+	* @exclude.hint A list of keys to exclude from the population
+    */
+	any function populate(required struct memento,
+						  string scope="",
+					 	  boolean trustedSetter=false,
+						  string include="",
+						  string exclude=""){
+		arguments.target = this;
+		return beanPopulator.populateFromStruct(argumentCollection=arguments);
+	}
+
+	/**
+	* Populate from JSON, for argument definitions look at the populate method
+	* @JSONString.hint	The JSON packet to use for population
+	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include.hint A list of keys to include in the population ONLY
+	* @exclude.hint A list of keys to exclude from the population
+	*/
+	any function populateFromJSON(required string JSONString,
+								  string scope="",
+								  boolean trustedSetter=false,
+								  string include="",
+								  string exclude=""){
+		arguments.target = this;
+		return beanPopulator.populateFromJSON(argumentCollection=arguments);
+	}
+
+	/**
+	* Populate from XML, for argument definitions look at the populate method. <br/>
+	* @root.hint The XML root element to start from
+	* @xml.hint	The XML string or packet or XML object to populate from
+	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include.hint A list of keys to include in the population ONLY
+	* @exclude.hint A list of keys to exclude from the population
+	*/
+	any function populateFromXML(required string xml,
+								 string root="",
+								 string scope="",
+								 boolean trustedSetter=false,
+								 string include="",
+								 string exclude=""){
+		arguments.target = this;
+		return beanPopulator.populateFromXML(argumentCollection=arguments);
+	}
+
+	/**
+	* Populate from Query, for argument definitions look at the populate method. <br/>
+	* @qry.hint The query to use for population
+	* @rowNumber.hint	The row number to use for population
+	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include.hint A list of keys to include in the population ONLY
+	* @exclude.hint A list of keys to exclude from the population
+	*/
+	any function populateFromQuery(required any qry,
+								   numeric rowNumber=1,
+								   string scope="",
+								   boolean trustedSetter=false,
+								   string include="",
+								   string exclude=""){
+		arguments.target = this;
+		return beanPopulator.populateFromQuery(argumentCollection=arguments);
+	}
+
+	/**
 	* Validate the ActiveEntity with the coded constraints -> this.constraints, or passed in shared or implicit constraints
 	* The entity must have been populated with data before the validation
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
