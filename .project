@@ -5,6 +5,19 @@
 	<projects>
 	</projects>
 	<buildSpec>
+		<buildCommand>
+			<name>com.rockstarapps.html.refactoring.WebOptimizer</name>
+			<arguments>
+				<dictionary>
+					<key>rockstarapps-build-file</key>
+					<value>.rockstarapps</value>
+				</dictionary>
+				<dictionary>
+					<key>rockstarapps-build-version</key>
+					<value>1.5</value>
+				</dictionary>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>com.adobe.ide.coldfusion.projectNature</nature>

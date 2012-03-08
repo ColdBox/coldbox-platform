@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -19,22 +19,6 @@ Description :
     <cffunction name="getEventCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the event cache key prefix">
     </cffunction>
 
-	<!--- getHandlerCacheKeyPrefix --->
-    <cffunction name="getHandlerCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the handler cache key prefix">
-    </cffunction>
-
-	<!--- getInterceptorCacheKeyPrefix --->
-    <cffunction name="getInterceptorCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the interceptor cache key prefix">
-    </cffunction>
-
-	<!--- getPluginCacheKeyPrefix --->
-    <cffunction name="getPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the plugin cache key prefix">
-    </cffunction>
-
-	<!--- getCustomPluginCacheKeyPrefix --->
-    <cffunction name="getCustomPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the custom plugin cache key prefix">
-    </cffunction>
-
 	<!--- getColdbox --->
     <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller">
     </cffunction>
@@ -48,10 +32,6 @@ Description :
     <cffunction name="getEventURLFacade" output="false" access="public" returntype="any" hint="Get the event caching URL facade utility" colddoc:generic="coldbox.system.cache.util.EventURLFacade">
     </cffunction>
 
-	<!--- getItemTypes --->
-	<cffunction name="getItemTypes" access="public" output="false" returntype="any" hint="Get the item types counts of the cache. These are calculated according to the prefixes set." colddoc:generic="coldbox.system.cache.util.ItemTypeCount">
-	</cffunction>
-	
 	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
 		<cfargument name="async" type="any" hint="Run command asynchronously or not" colddoc:generic="boolean"/>

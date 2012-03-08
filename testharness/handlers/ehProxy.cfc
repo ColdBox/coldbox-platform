@@ -1,4 +1,4 @@
-<cfcomponent name="ehProxy" output="false">
+﻿<cfcomponent name="ehProxy" output="false">
 
 	<!--- ************************************************************* --->
 

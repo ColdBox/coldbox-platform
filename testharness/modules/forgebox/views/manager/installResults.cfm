@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <!--- Left Panel --->
 <div id="installLog">
 

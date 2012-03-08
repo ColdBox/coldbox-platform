@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -22,7 +22,6 @@ Modification History:
 			setController(arguments.controller);
 			
 			// service properties
-			instance.log = "";
 			instance.appLoader = "";
 			
 			return this;
@@ -43,36 +42,33 @@ Modification History:
 		<cfargument name="overrideAppMapping" required="false" default="" hint="The direct location of the application in the web server."/>
 		<!--- ************************************************************* --->
 		<cfscript>
-		var debuggerConfig = createObject("Component","coldbox.system.web.config.DebuggerConfig").init();
+		var debuggerConfig 	= createObject("Component","coldbox.system.web.config.DebuggerConfig").init();
 		var coldBoxSettings = controller.getColdBoxSettings();
-		var key = "";
-		var services = controller.getServices();
+		var key 			= "";
+		var services 		= controller.getServices();
 		
 		// Load application configuration file
-		createAppLoader(arguments.overrideConfigFile).loadConfiguration(arguments.overrideAppMapping);
+		createAppLoader( arguments.overrideConfigFile ).loadConfiguration( arguments.overrideAppMapping );
 		
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if( NOT structIsEmpty( controller.getSetting("LogBoxConfig") ) ){
 			// reconfigure LogBox with user configurations
-			controller.getLogBox().configure(controller.getLogBox().getConfig());
+			controller.getLogBox().configure( controller.getLogBox().getConfig() );
 			// Reset the controller main logger
-			controller.setLog(controller.getLogBox().getLogger(controller));
+			controller.setLog( controller.getLogBox().getLogger( controller ) );
 		}
 		
-		//Get Local Logger Now Configured
-		instance.log = controller.getLogBox().getLogger(this);
-		
-		// Configure the application debugger.
-		debuggerConfig.populate(controller.getSetting("DebuggerSettings"));
-		controller.getDebuggerService().setDebuggerConfig(debuggerConfig);
+		// Configure the application debugger with user settings
+		debuggerConfig.populate( controller.getSetting("DebuggerSettings") );
+		controller.getDebuggerService().setDebuggerConfig( debuggerConfig );
 		
 		// Clear the Cache Dictionaries, just to make sure, we are in reload mode.
-		controller.getPluginService().clearDictionary();
 		controller.getHandlerService().clearDictionaries();
 		
-		// Create the Cache Container
-		createCacheContainer();
-		
+		// Create CacheBox
+		createCacheBox();
+		// Configure plugins for operation from the configuration file
+		controller.getPluginService().configure();
 		// Create WireBox Container
 		createWireBox();
 				
@@ -85,20 +81,13 @@ Modification History:
 		controller.setColdboxInitiated(true);
 		
 		// Activate Modules
-		if( isObject(controller.getModuleService()) ){
-			controller.getModuleService().activateAllModules();
-		}
+		controller.getModuleService().activateAllModules();
 		
 		// Execute afterConfigurationLoad
 		controller.getInterceptorService().processState("afterConfigurationLoad");
 		
 		// Register Aspects
 		registerAspects();
-		
-		// Execute onAspectsLoad on coldbox internal services
-		for(key in services){
-			services[key].onAspectsLoad();
-		}
 		
 		// Execute afterAspectsLoad
 		controller.getInterceptorService().processState("afterAspectsLoad");
@@ -110,7 +99,18 @@ Modification History:
 	<!--- Register the Aspects --->
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
-		var javaLoader = "";
+		var javaLoader 			= "";
+		var validationManager 	= "";
+		var validationData 		= controller.getSetting("validation");
+		
+		// if engine allows it, load shared constraints to validation engine
+		if( controller.getCFMLEngine().isValidationSupported() ){
+			validationManager = controller.getWireBox().getInstance( validationData.manager );
+			validationManager.setSharedConstraints( validationData.sharedConstraints );
+			// map the manager as well
+			controller.getWireBox().getBinder().map("WireBoxValidationManagerPath").toValue( validationData.manager );
+			controller.getWireBox().getBinder().map("WireBoxValidationManager").toValue( validationManager );
+		}
 		
 		// Init JavaLoader with paths if set as settings.
 		if( controller.settingExists("javaloader_libpath") ){
@@ -152,21 +152,16 @@ Modification History:
     <cffunction name="createWireBox" output="false" access="public" returntype="void" hint="Create WireBox DI Framework with config settings.">
     	<cfscript>
     		var wireboxData = controller.getSetting("WireBox");
-			var oInjector	= "";
-			
-    		// If using cf8 and above then create it with our binder
-			if( controller.getCFMLEngine().isMT() AND wireboxData.enabled ){
-				oInjector = createObject("component","coldbox.system.ioc.Injector").init(wireboxData.binderPath,controller.getConfigSettings(), controller);
-				controller.setWireBox( oInjector );
-			}
+			controller.getWireBox().init(wireboxData.binderPath, controller.getConfigSettings(), controller);			
     	</cfscript>
     </cffunction>
 	
 	<!--- createCacheBox --->
-    <cffunction name="createCacheBox" output="false" access="public" returntype="coldbox.system.cache.CacheFactory" hint="Create the application's CacheBox instance">
+    <cffunction name="createCacheBox" output="false" access="public" returntype="void" hint="Create the application's CacheBox instance">
     	<cfscript>
     		var config 				= createObject("Component","coldbox.system.cache.config.CacheBoxConfig").init();
 			var cacheBoxSettings 	= controller.getSetting("cacheBox");
+			var cacheBox			= "";
 			
 			// Load by File
 			if( len(cacheBoxSettings.configFile) ){
@@ -189,50 +184,10 @@ Modification History:
 			}
 			
 			// Create CacheBox
-			return createObject("component","coldbox.system.cache.CacheFactory").init(config,controller);
+			controller.getCacheBox().init(config,controller);
 		</cfscript>
     </cffunction>
 
-	<!--- createCacheContainer --->
-    <cffunction name="createCacheContainer" output="false" access="public" returntype="void" hint="Create the cache container">
-    	<cfscript>
-    		// Determine compat mode or new cachebox mode or pesky cf7 until 3.1
-			if( controller.getCFMLEngine().isMT() AND NOT controller.getSetting("cacheSettings").compatMode ){
-				// CacheBox creation
-				controller.setCacheBox( createCacheBox() );
-				return;
-			}
-			
-			// else we are on compatmode
-			controller.setColdboxOCM( createCacheManager() );
-    	</cfscript>
-    </cffunction>
-
-	<!--- createCacheManager --->
-    <cffunction name="createCacheManager" output="false" access="public" returntype="any" hint="Create the compatibility caching engine">
-    	<cfscript>
-		// Create cache Config
-		var cacheConfig = createObject("Component","coldbox.system.cache.archive.config.CacheConfig");
-		var cache = "";
-		
-		// populate configuratio from loaded application
-		cacheConfig.populate(controller.getSetting("cacheSettings"));
-		
-		// Create according cache manager
-   		if ( controller.getCFMLEngine().isMT() ){
-			cache = CreateObject("component","coldbox.system.cache.archive.MTCacheManager").init(controller);
-		}
-		else{
-			cache = CreateObject("component","coldbox.system.cache.archive.CacheManager").init(controller);
-		}
-		
-		// Configure the cache
-		cache.configure(cacheConfig);		
-		
-		return cache;	
-    	</cfscript>
-    </cffunction>
-	
 	<!--- processShutdown --->
     <cffunction name="processShutdown" output="false" access="public" returntype="void" hint="Process the shutdown of the application">
     	<cfscript>
@@ -246,9 +201,8 @@ Modification History:
 				services[key].onShutdown();
 			}
 			// Shutdown any services like cache engine, etc.
-			if( isObject(cacheBox) ){
-				cacheBox.shutdown();
-			}
+			cacheBox.shutdown();
+			
 			// Shutdown WireBox
 			if( isObject(wireBox) ){
 				wireBox.shutdown();
@@ -259,47 +213,37 @@ Modification History:
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- createAppLoader --->
-	<cffunction name="createAppLoader" output="false" access="private" returntype="any" hint="Detect the application loader to use and create it" colddoc:generic="coldbox.system.web.loader.AbstractApplicationLoader">
-		<cfargument name="overrideConfigFile" required="false" type="any" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
+	<cffunction name="createAppLoader" output="false" access="private" returntype="any" hint="Setups the variable for ColdBox loading" colddoc:generic="coldbox.system.web.loader.AbstractApplicationLoader">
+		<cfargument name="overrideConfigFile" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfscript>
-		var coldBoxSettings = controller.getColdBoxSettings();
-		var appRootPath = controller.getAppRootPath();
-		var configFileLocations = coldboxSettings.configConvention;
-		var x = 1;
+		var coldBoxSettings 	= controller.getColdBoxSettings();
+		var appRootPath 		= controller.getAppRootPath();
+		var configFileLocation 	= coldboxSettings.configConvention;
 		
-		// OVerriding Marker
+		// Overriding Marker defaults to false
 		coldboxSettings["ConfigFileLocationOverride"] = false;
 		
-		// Loop over conventions and load found config file
-		for(x=1; x lte listLen(configFileLocations); x=x+1){
-			// Verify File Exists
-			if( fileExists(appRootPath & listGetAt(configFileLocations,x) ) ){
-				coldboxSettings["ConfigFileLocation"] = appRootPath & listGetAt(configFileLocations,x);				
-			}			
+		// verify coldbox.cfc exists in convention: /app/config/Coldbox.cfc
+		if( fileExists( appRootPath & replace(configFileLocation,".","/","all") & ".cfc" ) ){
+			coldboxSettings["ConfigFileLocation"] = configFileLocation;		
 		}
 		
 		// Overriding the config file location? Maybe unit testing?
-		if( len(arguments.overrideConfigFile) ){
-			coldboxSettings["ConfigFileLocation"] 			= getUtil().getAbsolutePath(arguments.overrideConfigFile);
+		if( len( arguments.overrideConfigFile ) ){
+			coldboxSettings["ConfigFileLocation"] 			= arguments.overrideConfigFile;
 			coldboxSettings["ConfigFileLocationOverride"] 	= true;
 		}
 		
 		// If no config file location throw exception
-		if( not len(coldboxSettings["ConfigFileLocation"]) ){
+		if( NOT len( coldboxSettings["ConfigFileLocation"] ) ){
 			getUtil().throwit(message="Config file not located in conventions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
 		}
 		
-		// If CFC loader, then create it and return it
-		if( listLast(coldboxSettings["ConfigFileLocation"],".")  eq "cfc" ){
-			instance.appLoader = createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init(controller);
-			return instance.appLoader;
-		}
+		// Create it and return it now that config file location is set in the location settings
+		instance.appLoader = createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init( controller );
 		
-		// Return XML Loader
-		instance.appLoader = createObject("component","coldbox.system.web.loader.XMLApplicationLoader").init(controller);
 		return instance.appLoader;
 		</cfscript>
-	</cffunction>
-	
+	</cffunction>	
 
 </cfcomponent>

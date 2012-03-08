@@ -1,1 +1,1 @@
-This is another test for folder layout enhancements.
+﻿This is another test for folder layout enhancements.

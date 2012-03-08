@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -78,9 +78,20 @@ TODO: update dsl consistency, so it is faster.
     	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<cfscript>
-			var thisMap = arguments.mapping;
-			var oModel 	= createObject("component", thisMap.getPath() );
+			var thisMap 		= arguments.mapping;
+			var oModel 			= createObject("component", thisMap.getPath() );
 			var constructorArgs = "";
+			var viMapping		= "";
+			
+			// Do we have virtual inheritance?
+			if( arguments.mapping.isVirtualInheritance() ){
+				// retrieve the VI mapping.
+				viMapping = instance.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
+				// Does it match the family already?
+				if( NOT isInstanceOf(oModel, viMapping.getPath() ) ){
+					toVirtualInheritance( viMapping, oModel );
+				}
+			}
 		</cfscript>
 		
 		<!--- Constructor initialization? --->
@@ -290,7 +301,7 @@ TODO: update dsl consistency, so it is faster.
 		<cfscript>
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
-			var coldboxDSLRegex		= "^(ioc|ocm|webservice|javaloader|entityService|coldbox|cachebox)$";
+			var coldboxDSLRegex		= "^(ioc|ocm|webservice|javaloader|coldbox|cachebox)$";
 			
 			// coldbox context check
 			if( refindNoCase(coldboxDSLRegex,DSLNamespace) AND NOT instance.injector.isColdBoxLinked() ){
@@ -305,7 +316,7 @@ TODO: update dsl consistency, so it is faster.
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch(DSLNamespace){
 				// ColdBox Context DSL
-				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "entityService" :case "coldbox" : { 
+				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "coldbox" : { 
 					refLocal.dependency = instance.coldboxDSL.process(argumentCollection=arguments); break; 
 				} 
 				// CacheBox Context DSL
@@ -318,6 +329,8 @@ TODO: update dsl consistency, so it is faster.
 				case "provider"			 : { refLocal.dependency = getProviderDSL(argumentCollection=arguments); break; }
 				// wirebox injection DSL always available
 				case "wirebox"			 : { refLocal.dependency = getWireBoxDSL(argumentCollection=arguments); break;}
+				// wirebox entity services
+				case "entityService"	 : { refLocal.dependency = getEntityServiceDSL(argumentCollection=arguments); break;}
 				
 				// No internal DSL's found, then check custom DSL's
 				default : {
@@ -350,6 +363,23 @@ TODO: update dsl consistency, so it is faster.
 	</cffunction>
 
 <!------------------------------------------- DSL BUILDER METHODS ------------------------------------------>
+
+	<!--- getEntityServiceDSL --->
+	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfscript>
+			var entityName  = getToken(arguments.definition.dsl,2,":");
+
+			// Do we have an entity name? If we do create virtual entity service
+			if( len(entityName) ){
+				return createObject("component","coldbox.system.orm.hibernate.VirtualEntityService").init( entityName );
+			}
+
+			// else Return Base ORM Service
+			return createObject("component","coldbox.system.orm.hibernate.BaseORMService").init();
+		</cfscript>
+	</cffunction>
 
 	<!--- getWireBoxDSL --->
 	<cffunction name="getWireBoxDSL" access="private" returntype="any" hint="Get dependencies using the wirebox dependency DSL" output="false" >
@@ -465,5 +495,47 @@ TODO: update dsl consistency, so it is faster.
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- toVirtualInheritance --->
+    <cffunction name="toVirtualInheritance" output="false" access="public" returntype="void" hint="Do our virtual inheritance magic">
+    	<cfargument name="mapping" 	required="true" hint="The mapping to convert to"/>
+		<cfargument name="target" 	required="true" hint="The target object"/>
+		<cfscript>
+			var baseObject 		= "";
+			var familyPath 		= "";
+			var key 	   		= "";
+			var constructorArgs = "";
+			var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS";
+			
+			// Mix it up baby
+			instance.utility.getMixerUtil().start( arguments.target );
+			
+			// Create base family object
+			baseObject = instance.injector.getInstance( arguments.mapping.getName() );
+			
+			// Check if init already exists in target and base?
+			if( structKeyExists(arguments.target, "init") AND structKeyExists(baseObject,"init") ){
+				arguments.target.$superInit = baseObject.init;
+			}	
+			
+			// Mix in methods
+			for(key in baseObject){
+				// If target has overriden method, then don't override it with mixin, simulated inheritance
+				if( NOT structKeyExists(arguments.target, key) AND NOT listFindNoCase(excludedProperties, key) ){
+					arguments.target.injectMixin( key, baseObject[key] );
+				}
+			}
+			
+			// Mix in virtual super class
+			arguments.target.$super = baseObject;
+			// Verify if we need to init the virtualized object
+			if( structKeyExists(arguments.target, "$superInit") ){ 
+				// get super constructor arguments.
+				constructorArgs = buildArgumentCollection( arguments.mapping, arguments.mapping.getDIConstructorArguments(), baseObject );
+				// Init the virtualized inheritance
+				arguments.target.$superInit(argumentCollection=constructorArgs); 
+			}
+		</cfscript>
+    </cffunction>
 		
 </cfcomponent>

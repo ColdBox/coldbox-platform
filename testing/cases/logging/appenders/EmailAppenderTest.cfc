@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
 		props={to="info@coldboxframework.com,lmajano@gmail.com",from="info@coldboxframework.com",subject="Email Appender Test"};

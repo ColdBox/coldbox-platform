@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -26,7 +26,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset event.setValue("mySession", createUUID())>
+		<!---<cfset event.setValue("mySession", createUUID())>--->
 	</cffunction>
 	
 	<cffunction name="preProcess" access="public" returntype="void" output="false" eventPattern="^DONT">

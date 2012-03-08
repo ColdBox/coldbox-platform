@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites>
+  <testsuite errors="2" failures="1" hostname="127.0.0.1" id="0" name="testresults" package="mxunit" tests="106" time="13.963" timestamp="02/23/12 11:43:04 AM">
+    <properties>
+      <property name="INSTALLKIT" value="Native UNIX" />
+      <property name="EXPIRATION" value="{ts &apos;2012-02-23 10:57:56&apos;}" />
+      <property name="SERVICETAGATTRIBUTES" value="Complex Data Type...Not Displaying" />
+      <property name="SUPPORTEDLOCALES" value="Chinese (China),Chinese (Hong Kong),Chinese (Taiwan),Dutch (Belgian),Dutch (Standard),English (Australian),English (Canadian),English (New Zealand),English (UK),English (US),French (Belgian),French (Canadian),French (Standard),French (Swiss),German (Austrian),German (Standard),German (Swiss),Italian (Standard),Italian (Swiss),Japanese,Korean,Norwegian (Bokmal),Norwegian (Nynorsk),Portuguese (Brazilian),Portuguese (Standard),Spanish (Mexican),Spanish (Modern),Spanish (Standard),Swedish,ar,ar_AE,ar_BH,ar_DZ,ar_EG,ar_IQ,ar_JO,ar_KW,ar_LB,ar_LY,ar_MA,ar_OM,ar_QA,ar_SA,ar_SD,ar_SY,ar_TN,ar_YE,be,be_BY,bg,bg_BG,ca,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_IE,en_IN,en_MT,en_NZ,en_PH,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_CR,es_DO,es_EC,es_ES,es_GT,es_HN,es_MX,es_NI,es_PA,es_PE,es_PR,es_PY,es_SV,es_US,es_UY,es_VE,et,et_EE,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,ga,ga_IE,hi_IN,hr,hr_HR,hu,hu_HU,in,in_ID,is,is_IS,it,it_CH,it_IT,iw,iw_IL,ja,ja_JP,ja_JP_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,mk,mk_MK,ms,ms_MY,mt,mt_MT,nl,nl_BE,nl_NL,no,no_NO,no_NO_NY,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_RU,sk,sk_SK,sl,sl_SI,sq,sq_AL,sr,sr_BA,sr_CS,sr_ME,sr_RS,sv,sv_SE,th,th_TH,th_TH_TH,tr,tr_TR,uk,uk_UA,vi,vi_VN,zh,zh_CN,zh_HK,zh_SG,zh_TW" />
+      <property name="PRODUCTLEVEL" value="Developer" />
+      <property name="ROOTDIR" value="/Applications/ColdFusion9" />
+      <property name="PRODUCTNAME" value="ColdFusion Server" />
+      <property name="APPSERVER" value="JRun4" />
+      <property name="PRODUCTVERSION" value="9,0,1,274733" />
+      <property name="ADDITIONALINFORMATION" value="Mac OS X" />
+      <property name="NAME" value="Mac OS X" />
+      <property name="ARCH" value="x86_64" />
+      <property name="BUILDNUMBER" value="" />
+      <property name="VERSION" value="10.7.3" />
+      <property name="HTTP_USER_AGENT" value="Jakarta Commons-HttpClient/3.1" />
+      <property name="WEB_SERVER_API" value="" />
+      <property name="PATH_TRANSLATED" value="/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="CONTENT_TYPE" value="" />
+      <property name="HTTP_ACCEPT_LANGUAGE" value="" />
+      <property name="HTTP_REFERER" value="" />
+      <property name="HTTP_ACCEPT" value="" />
+      <property name="CERT_SERVER_ISSUER" value="" />
+      <property name="CERT_SERVER_SUBJECT" value="" />
+      <property name="HTTP_ACCEPT_ENCODING" value="" />
+      <property name="SERVER_SOFTWARE" value="Apache/2.2.21 (Unix) mod_ssl/2.2.21 OpenSSL/0.9.8r DAV/2 PHP/5.3.8 with Suhosin-Patch Resin/3.1.2 JRun/4.0" />
+      <property name="SERVER_NAME" value="cf9cboxdev.jfetmac" />
+      <property name="CF_TEMPLATE_PATH" value="/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="CERT_FLAGS" value="" />
+      <property name="HTTPS_SERVER_ISSUER" value="" />
+      <property name="CONTEXT_PATH" value="" />
+      <property name="HTTP_COOKIE" value="" />
+      <property name="SERVER_PROTOCOL" value="HTTP/1.1" />
+      <property name="CERT_SECRETKEYSIZE" value="" />
+      <property name="REQUEST_METHOD" value="GET" />
+      <property name="HTTPS_SECRETKEYSIZE" value="" />
+      <property name="AUTH_PASSWORD" value="" />
+      <property name="HTTPS" value="" />
+      <property name="CERT_SERIALNUMBER" value="" />
+      <property name="CERT_SUBJECT" value="" />
+      <property name="SERVER_PORT" value="80" />
+      <property name="CERT_KEYSIZE" value="" />
+      <property name="SCRIPT_NAME" value="/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="REMOTE_ADDR" value="127.0.0.1" />
+      <property name="SERVER_PORT_SECURE" value="0" />
+      <property name="REMOTE_HOST" value="127.0.0.1" />
+      <property name="HTTPS_KEYSIZE" value="" />
+      <property name="HTTP_HOST" value="cf9cboxdev.jfetmac" />
+      <property name="HTTP_CONNECTION" value="" />
+      <property name="AUTH_USER" value="" />
+      <property name="REMOTE_USER" value="" />
+      <property name="PATH_INFO" value="" />
+      <property name="QUERY_STRING" value="method=run&amp;type=dir&amp;value=/coldbox/testing/cases/ioc&amp;recurse=true&amp;excludes=null&amp;packageName=mxunit.testresults&amp;componentPath=coldbox.testing.cases.ioc" />
+      <property name="CERT_ISSUER" value="" />
+      <property name="CERT_COOKIE" value="" />
+      <property name="HTTPS_SERVER_SUBJECT" value="" />
+      <property name="GATEWAY_INTERFACE" value="CGI/1.1" />
+      <property name="AUTH_TYPE" value="" />
+      <property name="CONTENT_LENGTH" value="" />
+      <property name="CFID" value="23190" />
+      <property name="CFTOKEN" value="8371fee15a40b7a1-B115070C-C6A8-0000-6E3C82379765774E" />
+      <property name="COLDBOX_DEBUGMODE_F1571C73C8FCE5B05D9F2AD827E6A7CE" value="true" />
+      <property name="MXUNIT_SUMMARY" value="106,2,1,13963" />
+      <property name="CB_REQUESTCONTEXT" value="Complex Data Type...Not Displaying" />
+      <property name="__MXUNITINHERITANCETREE__" value="" />
+      <property name="APPLICATIONNAME" value="ColdBoxTestHarness7E5AB4FDCE4644EE59BB414A40285567" />
+      <property name="WIREBOX" value="Complex Data Type...Not Displaying" />
+      <property name="CACHEBOX" value="Complex Data Type...Not Displaying" />
+    </properties>
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testbuildWebservice" time="0.412">
+      <error message="Application"><![CDATA[Unable to read WSDL from URL: http://www.coldbox.org/distribution/updatews.cfc?wsdl. at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/Builder.cfc:267 at /Users/lmajano/Sites/cboxdev/core/coldbox/testing/cases/ioc/BuilderTest.cfc:47 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestCase.cfc:113 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/decorators/DataProviderDecorator.cfc:31 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:99 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:52 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuite.cfc:131 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/DirectoryTestSuite.cfc:37 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/HttpAntRunner.cfc:28]]></error>
+    </testcase>
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testgetProviderDSL" time="0.41" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testBuildFactoryBean" time="0.375" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testbuildfeed" time="0.371" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testbuildcfc" time="0.292" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testbuildProviderMixer" time="0.315" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testBuildCFCException" time="0.258" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testBuildCFCWithArguments" time="0.331" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testGetEntityServiceDSL" time="0.274" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testgetWireBoxDSL" time="0.546" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testregisterCustomBuilders" time="0.306" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testbuildDSLDependencyCustom" time="0.292" />
+    <testcase classname="coldbox.testing.cases.ioc.BuilderTest" name="testbuildJavaClass" time="0.21" />
+    <testcase classname="coldbox.testing.cases.ioc.coldboxfactoryTest" name="testFactoryCreations" time="0.525" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testDSL" time="0.154" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testbuildInstance" time="0.224" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testLocateInstance" time="0.156" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testTImeZone" time="0.194" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testFactoryBeans" time="0.081" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testMixins" time="0.085" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testJava" time="0.138" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testWebService" time="0.223">
+      <error message="Application"><![CDATA[Unable to read WSDL from URL: http://www.coldbox.org/distribution/updatews.cfc?wsdl. at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/Builder.cfc:267 at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/Injector.cfc:294 at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/scopes/NoScope.cfc:31 at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/Injector.cfc:262 at /Users/lmajano/Sites/cboxdev/core/coldbox/testing/cases/ioc/InjectorCreationTest.cfc:115 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestCase.cfc:113 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/decorators/DataProviderDecorator.cfc:31 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:99 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:52 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuite.cfc:131 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/DirectoryTestSuite.cfc:37 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/HttpAntRunner.cfc:28]]></error>
+    </testcase>
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testConstant" time="0.103" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testSetters" time="0.126" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorCreationTest" name="testProviderMethods" time="0.089" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testConfigureCacheBox" time="0.055" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testParenInjector" time="0.012" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testConfigureEventManager" time="0.02" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testGetScopeRegistration" time="0.016" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testdoScopeRegistration" time="0.058" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testConfigureLogBox" time="0.05" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testColdBox" time="0.011" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="removeFromScope" time="0.032" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testgetVersion" time="0.012" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testGetObjectPopulator" time="0.012" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testGetInjectorID" time="0.012" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testGetBinder" time="0.01" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testRegisterListeners" time="0.071" />
+    <testcase classname="coldbox.testing.cases.ioc.InjectorTest" name="testbuildBinder" time="0.045" />
+    <testcase classname="coldbox.testing.cases.ioc.ProviderTest" name="testGetNoScope" time="0.018" />
+    <testcase classname="coldbox.testing.cases.ioc.ProviderTest" name="testGet" time="0.12" />
+    <testcase classname="coldbox.testing.cases.ioc.ProviderTest" name="testProxyMethods" time="0.094" />
+    <testcase classname="coldbox.testing.cases.ioc.adapters.ColdSpringAdapterTest" name="creationTest" time="0.013" />
+    <testcase classname="coldbox.testing.cases.ioc.adapters.LightWireAdapterTest" name="creationTest" time="0.008" />
+    <testcase classname="coldbox.testing.cases.ioc.adapters.LightWireAdapterTest" name="creationXMLTest" time="0.007" />
+    <testcase classname="coldbox.testing.cases.ioc.adapters.WireBoxAdapterTest" name="creationTest" time="0.028" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testBindAspect" time="0.169" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testInitWith" time="0.041" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testCacheBoxIntegration" time="0.046" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testExtraAttributes" time="0.047" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testBinderStandalone" time="0.036" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testRemoveScanLocations" time="0.04" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testScanLocations" time="0.035" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testStopRecursions" time="0.046" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testDSLs" time="0.047" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testProperty" time="0.035" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testInto" time="0.081" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testSetConstructor" time="0.041" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testListenerMethods" time="0.04" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testLogBoxConfig" time="0.039" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testToWebservice" time="0.035" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testToJava" time="0.042" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testNoInit" time="0.04" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testLoadDataDSL" time="0.037" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testToDSL" time="0.088" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testOnDIComplete" time="0.078" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testToProvider" time="0.04" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testTo" time="0.083" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testMap" time="0.038" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testMapDirectory" time="0.045">
+      <failure message="mxunit test failure"><![CDATA[mxunit test failure at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/Assert.cfc:147 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/Assert.cfc:366 at /Users/lmajano/Sites/cboxdev/core/coldbox/testing/cases/ioc/config/BinderTest.cfc:427 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestCase.cfc:113 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/decorators/DataProviderDecorator.cfc:31 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:99 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:52 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuite.cfc:131 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/DirectoryTestSuite.cfc:37 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/HttpAntRunner.cfc:28]]></failure>
+    </testcase>
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testMixins" time="0.036" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testVirtualInheritance" time="0.042" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testBinderWithConfigInstance" time="0.038" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testWith" time="0.051" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testNoAutowire" time="0.065" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testToRSS" time="0.037" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testMapFactoryMethod" time="0.037" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testMapAspect" time="0.035" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testProperties" time="0.034" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testEagerInit" time="0.036" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testToValue" time="0.035" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testScopes" time="0.034" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testInitArg" time="0.035" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testParentInjector" time="0.107" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testSetter" time="0.039" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testAsSingleton" time="0.035" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testMappings" time="0.068" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testScopeRegistration" time="0.043" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testMapPath" time="0.079" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testBinderWithConfigPath" time="0.038" />
+    <testcase classname="coldbox.testing.cases.ioc.config.BinderTest" name="testMatch" time="0.037" />
+    <testcase classname="coldbox.testing.cases.ioc.config.DefaultBinderTest" name="testConfigure" time="0.003" />
+    <testcase classname="coldbox.testing.cases.ioc.config.MappingTest" name="testInit" time="0.001" />
+    <testcase classname="coldbox.testing.cases.ioc.config.MappingTest" name="testProviderMethods" time="0.001" />
+    <testcase classname="coldbox.testing.cases.ioc.config.MappingTest" name="testProcessMemento" time="0.002" />
+    <testcase classname="coldbox.testing.cases.ioc.config.listeners.InjectorListenersTest" name="testRegisterListeners" time="0.021" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.CacheBoxDSLTest" name="testProcess" time="1.16" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.ColdBoxDSLTest" name="testGetJavaLoaderDSL" time="0.226" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.ColdBoxDSLTest" name="testgetColdboxDSLStage1AndStage2" time="0.73" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.ColdBoxDSLTest" name="testgetIOCDSl" time="0.364" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.ColdBoxDSLTest" name="testProcess" time="0.29" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.ColdBoxDSLTest" name="testGetDatasource" time="0.158" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.ColdBoxDSLTest" name="testGetOCMDSL" time="0.34" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.ColdBoxDSLTest" name="testgetColdboxDSLStage3" time="0.554" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.ColdBoxDSLTest" name="testGetWebserviceDSL" time="0.234" />
+    <testcase classname="coldbox.testing.cases.ioc.dsl.LogBoxDSLTest" name="testProcess" time="0.233" />
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="127.0.0.1" id="1" name="testresults" package="mxunit" tests="22" time="1.74" timestamp="02/23/12 11:43:06 AM">
+    <properties>
+      <property name="INSTALLKIT" value="Native UNIX" />
+      <property name="EXPIRATION" value="{ts &apos;2012-02-23 10:57:56&apos;}" />
+      <property name="SERVICETAGATTRIBUTES" value="Complex Data Type...Not Displaying" />
+      <property name="SUPPORTEDLOCALES" value="Chinese (China),Chinese (Hong Kong),Chinese (Taiwan),Dutch (Belgian),Dutch (Standard),English (Australian),English (Canadian),English (New Zealand),English (UK),English (US),French (Belgian),French (Canadian),French (Standard),French (Swiss),German (Austrian),German (Standard),German (Swiss),Italian (Standard),Italian (Swiss),Japanese,Korean,Norwegian (Bokmal),Norwegian (Nynorsk),Portuguese (Brazilian),Portuguese (Standard),Spanish (Mexican),Spanish (Modern),Spanish (Standard),Swedish,ar,ar_AE,ar_BH,ar_DZ,ar_EG,ar_IQ,ar_JO,ar_KW,ar_LB,ar_LY,ar_MA,ar_OM,ar_QA,ar_SA,ar_SD,ar_SY,ar_TN,ar_YE,be,be_BY,bg,bg_BG,ca,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_IE,en_IN,en_MT,en_NZ,en_PH,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_CR,es_DO,es_EC,es_ES,es_GT,es_HN,es_MX,es_NI,es_PA,es_PE,es_PR,es_PY,es_SV,es_US,es_UY,es_VE,et,et_EE,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,ga,ga_IE,hi_IN,hr,hr_HR,hu,hu_HU,in,in_ID,is,is_IS,it,it_CH,it_IT,iw,iw_IL,ja,ja_JP,ja_JP_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,mk,mk_MK,ms,ms_MY,mt,mt_MT,nl,nl_BE,nl_NL,no,no_NO,no_NO_NY,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_RU,sk,sk_SK,sl,sl_SI,sq,sq_AL,sr,sr_BA,sr_CS,sr_ME,sr_RS,sv,sv_SE,th,th_TH,th_TH_TH,tr,tr_TR,uk,uk_UA,vi,vi_VN,zh,zh_CN,zh_HK,zh_SG,zh_TW" />
+      <property name="PRODUCTLEVEL" value="Developer" />
+      <property name="ROOTDIR" value="/Applications/ColdFusion9" />
+      <property name="PRODUCTNAME" value="ColdFusion Server" />
+      <property name="APPSERVER" value="JRun4" />
+      <property name="PRODUCTVERSION" value="9,0,1,274733" />
+      <property name="ADDITIONALINFORMATION" value="Mac OS X" />
+      <property name="NAME" value="Mac OS X" />
+      <property name="ARCH" value="x86_64" />
+      <property name="BUILDNUMBER" value="" />
+      <property name="VERSION" value="10.7.3" />
+      <property name="HTTP_USER_AGENT" value="Jakarta Commons-HttpClient/3.1" />
+      <property name="WEB_SERVER_API" value="" />
+      <property name="PATH_TRANSLATED" value="/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="CONTENT_TYPE" value="" />
+      <property name="HTTP_ACCEPT_LANGUAGE" value="" />
+      <property name="HTTP_REFERER" value="" />
+      <property name="HTTP_ACCEPT" value="" />
+      <property name="CERT_SERVER_ISSUER" value="" />
+      <property name="CERT_SERVER_SUBJECT" value="" />
+      <property name="HTTP_ACCEPT_ENCODING" value="" />
+      <property name="SERVER_SOFTWARE" value="Apache/2.2.21 (Unix) mod_ssl/2.2.21 OpenSSL/0.9.8r DAV/2 PHP/5.3.8 with Suhosin-Patch Resin/3.1.2 JRun/4.0" />
+      <property name="SERVER_NAME" value="cf9cboxdev.jfetmac" />
+      <property name="CF_TEMPLATE_PATH" value="/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="CERT_FLAGS" value="" />
+      <property name="HTTPS_SERVER_ISSUER" value="" />
+      <property name="CONTEXT_PATH" value="" />
+      <property name="HTTP_COOKIE" value="$Version=0; CFID=23190; $Path=/, $Version=0; CFTOKEN=8371fee15a40b7a1-B115070C-C6A8-0000-6E3C82379765774E; $Path=/, $Version=0; JSESSIONID=8430d0b03ef9bd465d0c2471339505b5e575; $Path=/, $Version=0; COLDBOX_DEBUGMODE_F1571C73C8FCE5B05D9F2AD827E6A7CE=true; $Path=/, $Version=0; MXUNIT_SUMMARY=106%2C2%2C1%2C13963; $Path=/" />
+      <property name="SERVER_PROTOCOL" value="HTTP/1.1" />
+      <property name="CERT_SECRETKEYSIZE" value="" />
+      <property name="REQUEST_METHOD" value="GET" />
+      <property name="HTTPS_SECRETKEYSIZE" value="" />
+      <property name="AUTH_PASSWORD" value="" />
+      <property name="HTTPS" value="" />
+      <property name="CERT_SERIALNUMBER" value="" />
+      <property name="CERT_SUBJECT" value="" />
+      <property name="SERVER_PORT" value="80" />
+      <property name="CERT_KEYSIZE" value="" />
+      <property name="SCRIPT_NAME" value="/coldbox/testing/resources/HttpAntRunner.cfc" />
+      <property name="REMOTE_ADDR" value="127.0.0.1" />
+      <property name="SERVER_PORT_SECURE" value="0" />
+      <property name="REMOTE_HOST" value="127.0.0.1" />
+      <property name="HTTPS_KEYSIZE" value="" />
+      <property name="HTTP_HOST" value="cf9cboxdev.jfetmac" />
+      <property name="HTTP_CONNECTION" value="" />
+      <property name="AUTH_USER" value="" />
+      <property name="REMOTE_USER" value="" />
+      <property name="PATH_INFO" value="" />
+      <property name="QUERY_STRING" value="method=run&amp;type=dir&amp;value=/coldbox/testing/cases/aop&amp;recurse=true&amp;excludes=null&amp;packageName=mxunit.testresults&amp;componentPath=coldbox.testing.cases.aop" />
+      <property name="CERT_ISSUER" value="" />
+      <property name="CERT_COOKIE" value="" />
+      <property name="HTTPS_SERVER_SUBJECT" value="" />
+      <property name="GATEWAY_INTERFACE" value="CGI/1.1" />
+      <property name="AUTH_TYPE" value="" />
+      <property name="CONTENT_LENGTH" value="" />
+      <property name="CFID" value="23190" />
+      <property name="CFTOKEN" value="8371fee15a40b7a1-B115070C-C6A8-0000-6E3C82379765774E" />
+      <property name="JSESSIONID" value="8430d0b03ef9bd465d0c2471339505b5e575" />
+      <property name="COLDBOX_DEBUGMODE_F1571C73C8FCE5B05D9F2AD827E6A7CE" value="true" />
+      <property name="MXUNIT_SUMMARY" value="22,0,0,1740" />
+      <property name="__MXUNITINHERITANCETREE__" value="" />
+      <property name="APPLICATIONNAME" value="ColdBoxTestHarness7E5AB4FDCE4644EE59BB414A40285567" />
+      <property name="WIREBOX" value="Complex Data Type...Not Displaying" />
+      <property name="CACHEBOX" value="Complex Data Type...Not Displaying" />
+    </properties>
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testRegex" time="0.002" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testInstanceOf" time="0.001" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testMappings" time="0.001" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testAnnotatedWith" time="0.001" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testMatchClassAndOr" time="0.029" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testReturns" time="0.002" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testMatchMethod" time="0.049" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testMatchClass" time="0.023" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testAny" time="0.001" />
+    <testcase classname="coldbox.testing.cases.aop.MatcherTest" name="testMethods" time="0.001" />
+    <testcase classname="coldbox.testing.cases.aop.MethodInvocationTest" name="testIncrementInterceptorIndex" time="0.059" />
+    <testcase classname="coldbox.testing.cases.aop.MethodInvocationTest" name="testInit" time="0.06" />
+    <testcase classname="coldbox.testing.cases.aop.MethodInvocationTest" name="testProceed" time="0.006" />
+    <testcase classname="coldbox.testing.cases.aop.MixerTest" name="testAOPBuilder" time="0.191" />
+    <testcase classname="coldbox.testing.cases.aop.MixerTest" name="testBuildInterceptors" time="0.278" />
+    <testcase classname="coldbox.testing.cases.aop.MixerTest" name="testprocessTargetMethods" time="0.26" />
+    <testcase classname="coldbox.testing.cases.aop.MixerTest" name="testdecorateAOPTarget" time="0.162" />
+    <testcase classname="coldbox.testing.cases.aop.MixerTest" name="testafterInstanceAutowire" time="0.185" />
+    <testcase classname="coldbox.testing.cases.aop.MixerTest" name="testBuildClassMatchDictionary" time="0.193" />
+    <testcase classname="coldbox.testing.cases.aop.aspects.HibernateTransactionTest" name="testInvokeMethodInTransaction" time="0.061" />
+    <testcase classname="coldbox.testing.cases.aop.aspects.HibernateTransactionTest" name="testInvokeMethodNotInTransaction" time="0.092" />
+    <testcase classname="coldbox.testing.cases.aop.aspects.HibernateTransactionTest" name="testInvokeMethodNotInTransactionDiffDatasource" time="0.048" />
+  </testsuite>
+</testsuites>

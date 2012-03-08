@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 	function setup(){
 		handler 		= getMockBox().createMock("coldbox.system.EventHandler");
@@ -6,8 +6,9 @@
 		flashScope 		= getMockBox().createEmptyMock("coldbox.system.web.flash.MockFlash");
 		mockRS 			= getMockBox().createEmptyMock("coldbox.system.web.services.RequestService")
 			.$("getFlashScope",flashScope);
-		mockLogBox 		= getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
 		mockLogger 		= getMockBox().createEmptyMock("coldbox.system.logging.Logger");
+		mockLogBox 		= getMockBox().createEmptyMock("coldbox.system.logging.LogBox")
+			.$("getLogger",mockLogger);
 		mockCacheBox    = getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
 		mockWireBox     = getMockBox().createEmptyMock("coldbox.system.ioc.Injector");
 		
@@ -15,11 +16,17 @@
 			.$("getRequestService",mockRS)
 			.$("getCacheBox", mockCacheBox)
 			.$("getWireBox", mockWireBox);
-		mockLogBox.$("getLogger",mockLogger);
-		mockController.$("getSetting","/coldbox/testing/resources/mixins.cfm");
+		mockController.$("getSetting").$args("UDFLibraryFile").$results( ["/coldbox/testing/resources/mixins.cfm","/coldbox/testing/resources/mixins2"] )
+			.$("getSetting").$args("AppMapping").$results( "/coldbox/testing" );
 		
-		handler.init(mockController);
+		handler.init( mockController );
 	}	
+	
+	function testMixins(){
+		assertTrue( structKeyExists(handler, "mixinTest") );
+		assertTrue( structKeyExists(handler, "repeatThis") );
+		assertTrue( structKeyExists(handler, "add") );
+	}
 	
 	function testgetMailSettings(){
 		s = handler.getMailSettings();

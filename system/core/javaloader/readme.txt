@@ -1,4 +1,4 @@
-JavaLoader v1.0
+﻿JavaLoader v1.0
 Author: Mark Mandel
 Date: 10 September 2010
 

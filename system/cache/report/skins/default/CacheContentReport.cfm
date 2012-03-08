@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <table border="0" cellpadding="0" cellspacing="1" class="cachebox_debugTables">
   <thead>
   	<tr>
@@ -20,7 +20,7 @@
 		<td align="left">
 		  	<a href="javascript:cachebox_openwindow('#URLBase#?debugpanel=cacheviewer&cbox_cacheName=#arguments.cacheName#&cbox_cacheEntry=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" 
 			   title="#thisKey#">
-		  	#left(thisKey,40)#<cfif len(thisKey) gt 40>...</cfif>
+		  	#thisKey#
 			</a>
 		</td>
 		<!--- Hits --->
@@ -43,7 +43,12 @@
 		</td>
 		<!--- Commands --->
 	 	<td align="center">
-			<input type="button" value="DEL" 
+			<input type="button" value="Expire" 
+				   name="cboxbutton_expireentry_#urlEncodedFormat(thisKey)#" id="cboxbutton_expireentry_#urlEncodedFormat(thisKey)#"
+			  	   style="font-size:10px" 
+				   title="Expire this entry from the cache" 
+				   onclick="cachebox_cacheExpireItem('#URLBase#','#urlEncodedFormat(thisKey)#','#arguments.cacheName#')">
+			<input type="button" value="Delete" 
 				   name="cboxbutton_removeentry_#urlEncodedFormat(thisKey)#" id="cboxbutton_removeentry_#urlEncodedFormat(thisKey)#"
 			  	   style="font-size:10px" 
 				   title="Remove this entry from the cache." 

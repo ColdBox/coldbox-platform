@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -48,7 +48,7 @@ Description :
 				// Scope Storages
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(),
 				// Version
-				version  = "1.1.1",	 
+				version  = "1.3.0",	 
 				// The Configuration Binder object
 				binder   = "",
 				// ColdBox Application Link
@@ -245,7 +245,7 @@ Description :
 			mapping = instance.binder.getMapping( arguments.name );
 			
 			// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
-			if( NOT mapping.isDiscovered() AND mapping.isAutowire() ){ 
+			if( NOT mapping.isDiscovered() ){ 
 				// process inspection of instance
 				mapping.process(binder=instance.binder,injector=this);
 			}
@@ -325,18 +325,18 @@ Description :
     </cffunction>
 	
 	<!--- registerNewInstance --->
-    <cffunction name="registerNewInstance" output="false" access="private" returntype="void" hint="Register a new requested mapping object instance">
+    <cffunction name="registerNewInstance" output="false" access="public" returntype="any" hint="Register a new requested mapping object instance thread safely and returns the binder configured for this instance">
     	<cfargument name="name" 		required="true" hint="The name of the mapping to register"/>
 		<cfargument name="instancePath" required="true" hint="The path of the mapping to register">
     	
     	<!--- Register new instance mapping --->
     	<cflock name="Injector.RegisterNewInstance.#hash(arguments.instancePath)#" type="exclusive" timeout="20" throwontimeout="true">
     		<!--- double lock for concurrency --->
-    		<cfif NOT instance.binder.mappingExists(arguments.name)>
-    			<cfset instance.binder.map(arguments.name).to(arguments.instancePath)>
+    		<cfif NOT instance.binder.mappingExists( arguments.name )>
+    			<cfset instance.binder.map( arguments.name ).to( arguments.instancePath )>
     		</cfif>
 		</cflock>
-		
+		<cfreturn instance.binder.with( arguments.name )>
     </cffunction>
 		
 	<!--- containsInstance --->
@@ -464,6 +464,8 @@ Description :
 				processInjection( targetObject, thisMap.getDISetters(), arguments.targetID );
 				// Process Provider Methods
 				processProviderMethods( targetObject, thisMap );
+				// Process Mixins
+				processMixins( targetObject, thisMap );
 				// Process After DI Complete
 				processAfterCompleteDI( targetObject, thisMap.getOnDIComplete() );
 				
@@ -478,6 +480,24 @@ Description :
 	</cfscript>
     </cffunction>
 	
+	<!--- processMixins --->
+    <cffunction name="processMixins" output="false" access="private" returntype="void" hint="Process mixins on the selected target">
+    	<cfargument name="targetObject" 	required="true"  	hint="The target object to do some goodness on">
+		<cfargument name="mapping" 			required="true"  	hint="The target mapping">
+		<cfscript>
+			var mixin 	= createObject("component","coldbox.system.ioc.config.Mixin").$init( arguments.mapping.getMixins() );
+			var key		= "";
+			
+			// iterate and mixin baby!
+			for(key in mixin){
+				if( key NEQ "$init" ){
+					// add the provided method to the providers structure.
+					arguments.targetObject.injectMixin(name=key,UDF=mixin[ key ]);
+				}
+			}
+		</cfscript>
+    </cffunction>
+    
 	<!--- processProviderMethods --->
     <cffunction name="processProviderMethods" output="false" access="private" returntype="void" hint="Process provider methods on the selected target">
     	<cfargument name="targetObject" 	required="true"  	hint="The target object to do some goodness on">
@@ -568,7 +588,8 @@ Description :
 					injectTarget(target=targetObject,
 							     propertyName=arguments.DIData[x].name,
 							     propertyObject=refLocal.dependency,
-							     scope=refLocal.scope);
+							     scope=refLocal.scope,
+							     argName=arguments.DIData[x].argName);
 					
 					// some debugging goodness
 					if( instance.log.canDebug() ){
@@ -588,9 +609,10 @@ Description :
 		<cfargument name="propertyName"  	required="true" hint="The name of the property to inject"/>
 		<cfargument name="propertyObject" 	required="true" hint="The object to inject" />
 		<cfargument name="scope" 			required="true" hint="The scope to inject a property into, if any else empty means it is a setter call">
+		<cfargument name="argName" 			required="true" hint="The name of the argument to send if setter injection"/>
 		
 		<cfset var argCollection = structnew()>
-		<cfset argCollection[arguments.propertyName] = arguments.propertyObject>
+		<cfset argCollection[ arguments.argName ] = arguments.propertyObject>
 		
 		<!--- Property or Setter --->
 		<cfif len(arguments.scope) eq 0>

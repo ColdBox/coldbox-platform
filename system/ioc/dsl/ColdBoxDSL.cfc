@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -38,7 +38,6 @@ Description :
 				case "ocm" 				: { return getOCMDSL(argumentCollection=arguments);}
 				case "webservice" 		: { return getWebserviceDSL(argumentCollection=arguments);}
 				case "javaloader" 		: { return getJavaLoaderDSL(argumentCollection=arguments);}
-				case "entityService" 	: { return getEntityServiceDSL(argumentCollection=arguments);} 
 				case "coldbox" 			: { return getColdboxDSL(argumentCollection=arguments); }
 			}
 		</cfscript>    	
@@ -86,23 +85,6 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- getEntityServiceDSL --->
-	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var entityName  = getToken(arguments.definition.dsl,2,":");
-
-			// Do we have an entity name? If we do create virtual entity service
-			if( len(entityName) ){
-				return createObject("component","coldbox.system.orm.hibernate.VirtualEntityService").init( entityName );
-			}
-
-			// else Return Base ORM Service
-			return createObject("component","coldbox.system.orm.hibernate.BaseORMService").init();
-		</cfscript>
-	</cffunction>
-	
 	<!--- getColdboxDSL --->
 	<cffunction name="getColdboxDSL" access="private" returntype="any" hint="Get dependencies using the coldbox dependency DSL" output="false" >
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
@@ -113,6 +95,7 @@ Description :
 			var thisTypeLen 		= listLen(thisType,":");
 			var thisLocationType 	= "";
 			var thisLocationKey 	= "";
+			var moduleSettings		= "";
 			
 			// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
 			if(	thisTypeLen eq 2 
@@ -131,6 +114,7 @@ Description :
 				case 2: {
 					thisLocationKey = getToken(thisType,2,":");
 					switch( thisLocationKey ){
+						case "flash"		 		: { return instance.coldbox.getRequestService().getFlashScope(); }
 						case "fwconfigbean" 		: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getColdboxSettings() ); }
 						case "configbean" 			: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getConfigSettings() ); }
 						case "mailsettingsbean"		: { return createObject("component","coldbox.system.core.mail.MailSettingsBean").init(argumentCollection=instance.coldbox.getSetting("mailSettings"));	}
@@ -142,6 +126,7 @@ Description :
 						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }
 						case "cacheManager"			: { return instance.coldbox.getColdboxOCM(); }
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
+						case "validationManager"	: { return instance.injector.getInstance( controller.getSetting("validation").manager ); }
 					} // end of services
 					
 					break;
@@ -151,7 +136,38 @@ Description :
 					thisLocationType = getToken(thisType,2,":");
 					thisLocationKey  = getToken(thisType,3,":");
 					switch(thisLocationType){
-						case "setting" 				: { return instance.coldbox.getSetting(thisLocationKey); }
+						case "setting" 				: { 
+							// module setting?
+							if( find("@",thisLocationKey) ){
+								moduleSettings = instance.coldbox.getSetting("modules");
+								if( structKeyExists(moduleSettings, listlast(thisLocationKey,"@") ) ){
+									return moduleSettings[ listlast(thisLocationKey,"@") ].settings[ listFirst(thisLocationKey,"@") ];
+								}
+								else if( instance.log.canDebug() ){
+									instance.log.debug("The module requested: #listlast(thisLocationKey,"@")# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
+								}
+							}
+							// normal custom plugin
+							return instance.coldbox.getSetting(thisLocationKey); 
+						}
+						case "modulesettings"		: { 
+							moduleSettings = instance.coldbox.getSetting("modules");
+							if( structKeyExists(moduleSettings, thisLocationKey ) ){
+								return moduleSettings[ thisLocationKey ].settings;
+							}
+							else if( instance.log.canDebug() ){
+								instance.log.debug("The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
+							}
+						}
+						case "moduleconfig"		: { 
+							moduleSettings = instance.coldbox.getSetting("modules");
+							if( structKeyExists(moduleSettings, thisLocationKey ) ){
+								return moduleSettings[ thisLocationKey ];
+							}
+							else if( instance.log.canDebug() ){
+								instance.log.debug("The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
+							}
+						}
 						case "fwSetting" 			: { return instance.coldbox.getSetting(thisLocationKey,true); }
 						case "plugin" 				: { return instance.coldbox.getPlugin(thisLocationKey);}
 						case "myplugin" 			: {
@@ -211,6 +227,7 @@ Description :
 			var thisTypeLen = listLen(arguments.definition.dsl,":");
 			var cacheKey 	= "";
 			var cache		= instance.cacheBox.getCache('default');
+			var refLocal	= {};
 			
 			// DSL stages
 			switch(thisTypeLen){
@@ -220,9 +237,10 @@ Description :
 				case 2: { cacheKey = getToken(arguments.definition.dsl,2,":"); break;}
 			}
 
-			// Verify that dependency exists in the Cache container: Change this later once cache compat is removed
-			if( cache.lookup(cacheKey) ){
-				return cache.get(cacheKey);
+			// Verify that dependency exists in the Cache container
+			refLocal.target = cache.get( cacheKey );
+			if( structKeyExists(refLocal, "target") ){
+				return refLocal.target;
 			}
 			else if( instance.log.canDebug() ){
 				instance.log.debug("getOCMDSL() cannot find cache Key: #cacheKey# using definition: #arguments.definition.toString()#");

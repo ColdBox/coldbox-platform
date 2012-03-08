@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -236,6 +236,7 @@ Description :
 				name = "", access = "public", output="false", returnType = "any"
 			};
 			var mappingName 	= arguments.mapping.getName();
+			var mdJSON			= urlEncodedFormat( serializeJSON( arguments.jointPointMD ) );
 			
 			// MD proxy Defaults
 			fncMD.name = arguments.jointPointMD.name;
@@ -253,8 +254,10 @@ Description :
 					// create new method invocation for this execution
 					var invocation = createObject("component","coldbox.system.aop.MethodInvocation").init(method="#arguments.jointPoint#",
 																										  args=arguments,
+																										  methodMetadata="#mdJSON#",
 																										  target=this,
 																										  targetName="#mappingName#",
+																										  targetMapping=this.$wbAOPTargetMapping,
 																										  interceptors=this.$wbAOPTargets["#arguments.jointPoint#"].interceptors);	
 					// execute and return
 					return invocation.proceed();
@@ -280,7 +283,6 @@ Description :
 				}			
 			}
 			catch(Any e){
-				writeDump(e);abort;
 				// Remove Stub, just in case.
 				instance.mixerUtil.removeAspect( expandedFile );
 				// log it
@@ -324,8 +326,8 @@ Description :
 			arguments.target.$wbAOPStoreJointPoint = instance.mixerUtil.$wbAOPStoreJointPoint;
 			// Mix in method proxy execution
 			arguments.target.$wbAOPInvokeProxy = instance.mixerUtil.$wbAOPInvokeProxy;
-			// Mix in Private Invoker
-			arguments.target.$wbAOPRemove = instance.mixerUtil.$wbAOPRemove;
+			// Mix in target mapping for quick references
+			arguments.target.$wbAOPTargetMapping = arguments.mapping;
 			// Log it if possible
 			if( instance.log.canDebug() ){
 				instance.log.debug("AOP Decoration finalized for Mapping: #arguments.mapping.getName()#");

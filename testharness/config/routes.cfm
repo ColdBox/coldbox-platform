@@ -1,4 +1,4 @@
-<cfscript>
+﻿<cfscript>
 	setUniqueURLs(false);
 	setBaseURL("http://#cgi.http_host#/#getSetting('AppMapping')#/index.cfm");
 	
@@ -29,10 +29,20 @@
 	addModuleRoutes(pattern="/moduleLookup",module="moduleLookup");
 	addModuleRoutes(pattern="/parentLookup",module="parentLookup");
 	
+	// Register namespaces
+	addNamespace(pattern="/luis",namespace="luis");
 	
-	addRoute(pattern="/test/:id-numeric{2}/:num-numeric/:name/:month{3}?",handler="ehGeneral",action="dspHello");
-	addRoute(pattern="test/:id/:name{4}?",handler="ehGeneral",action="dspHello");
+	// Sample namespace
+	with(namespace="luis")
+		.addRoute(pattern="contactus",view="simpleView")
+		.addRoute(pattern="contactus2",view="simpleView",viewnoLayout=true)
+	.endWith();
 	
+	// Test Simple With
+	with(pattern="/test",handler="ehGeneral",action="dspHello")
+		.addRoute(pattern="/:id-numeric{2}/:num-numeric/:name/:month{3}?")
+		.addRoute(pattern="/:id/:name{4}?")
+	.endWith();
 	
 	// Constraints Implicitly
 	//addRoute(pattern="/const/:test",view="simpleView",constraints={test='(ATest)'});

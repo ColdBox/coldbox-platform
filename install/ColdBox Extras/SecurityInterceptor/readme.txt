@@ -1,4 +1,4 @@
-This interceptor provides security to an application. It is very flexible
+﻿This interceptor provides security to an application. It is very flexible
 and customizable. It bases off on the ability to secure events by creating
 rules. This interceptor will then try to match a rule to the incoming event
 and the user's credentials on roles and/or permissions. 
@@ -45,7 +45,7 @@ Interceptor Properties:
 
  - useRegex : boolean [default=true] Whether to use regex on event matching
  - useRoutes : boolean [default=false] Whether to redirec to events or routes
- - rulesSource : string [xml|db|ioc|ocm] Where to get the rules from.
+ - rulesSource : string [xml|db|ioc|ocm|model] Where to get the rules from.
  - debugMode : boolean [default=false] If on, then it logs actions via the logger plugin.
  - validator : string [default=""] If set, it must be a valid instantiation path to a security validator object.
 

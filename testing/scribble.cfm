@@ -1,13 +1,7 @@
-<cfscript>
-cacheClear();
-
-cachePut("Test",createUUID());
-
-writeDump(cacheGet("Test"));
-writeDump(cacheCount());
-
-writeDump(cacheGetAllIds());
-
-writeDump( cacheGetMetadata("Test") );
-
+﻿<cfscript>
+	validationData = "1..3";
+	min = listFirst( validationData,'..');
+	max = listLast( validationData,'..');
+		
+	writeDump(variables);
 </cfscript>

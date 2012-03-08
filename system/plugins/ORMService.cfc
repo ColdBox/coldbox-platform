@@ -1,4 +1,4 @@
-/**
+﻿/**
 <!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
@@ -12,7 +12,7 @@ This makes it a nice ORMService plugin
 
 ----------------------------------------------------------------------->
 */
-component extends="coldbox.system.orm.hibernate.BaseORMService" singleton="true"{
+component extends="coldbox.system.orm.hibernate.BaseORMService" singleton{
 
 	/**
 	* Constructor

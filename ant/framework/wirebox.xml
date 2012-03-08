@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
      Wirebox Build                                                                
      ====================================================================== -->
@@ -49,6 +49,11 @@
 		<copy todir="${dir.build}/wirebox/system/aop">
 			 <fileset dir="system/aop" />
 		</copy>
+		<copy todir="${dir.build}/wirebox/system/orm/hibernate">
+			 <fileset dir="system/orm/hibernate">
+			 	<exclude name="EventHandler.cfc" />
+			 </fileset>
+		</copy>
 		<copy todir="${dir.build}/wirebox/system/cache">
         	<fileset dir="system/cache" />
         </copy>
@@ -68,6 +73,11 @@
 		<!-- Copy src to coldbox namespace -->
 		<copy todir="${dir.build}/coldbox/system/aop">
 		 	<fileset dir="system/aop" />
+		</copy>
+		<copy todir="${dir.build}/coldbox/system/orm/hibernate">
+			<fileset dir="system/orm/hibernate">
+			 	<exclude name="EventHandler.cfc" />
+			 </fileset>
 		</copy>
 		<copy todir="${dir.build}/coldbox/system/ioc">
         	<fileset dir="system/ioc" />

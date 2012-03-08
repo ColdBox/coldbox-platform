@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project name="cachebox.test-automation" default="main" basedir="../../">
+	
+	<!-- Server Properties -->
+	<property name="server.url" 		value="cf9cboxdev.jfetmac" />
+	<property name="server.port" 		value="80" />
+	<!-- MX Unit Locations -->	
+	<property name="mxunit.jar" 		value="../mxunit/ant/lib/mxunit-ant.jar" />
+	<property name="mxunit.xsl" 		value="../mxunit/ant/xsl" />
+	<property name="mxunit.runner"		value="/coldbox/testing/resources/HttpAntRunner.cfc"/>
+	<!-- Reporting Output Directories -->
+	<property name="report.dir"  		value="testing/automation/cachebox-results" />
+	<property name="output.dir"  		value="../automation/cachebox-results/" />
+	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
+	<!--Actual locations of what to test -->
+	<property name="test.path"			value="/coldbox/testing/cases/cache" />
+	<property name="test.cfcpath"		value="coldbox.testing.cases.cache" />
+		
+	<target name="main" depends="init,runtests,junitreport" description="Main target for running the tests." />
+	
+	<target name="init" description="Init">
+		<mkdir dir="${report.dir}" /> 
+	</target>
+	
+	<target name="runtests" description="Run our tests">  
+		<!-- Load the MXUnit Ant Tas -->
+		<taskdef name="mxunittask" classname="org.mxunit.ant.MXUnitAntTask"  classpath="${mxunit.jar}" />  
+		<!-- Run Tets -->
+		<mxunittask server="${server.url}" port="${server.port}"   
+			        defaultrunner="${mxunit.runner}"
+	                outputdir="${output.dir}"   
+	                verbose="true">  
+			<!-- Directory To Test -->
+			<directory path="${test.path}" 
+					   componentPath="${test.cfcpath}"
+					   recurse="true"/>
+		</mxunittask>  
+	</target>  
+	
+	<target name="junitreport" description="Create a report for the rest result">  
+		<!-- Create the fancy junit report folder -->
+		<mkdir dir="${junitreport.dir}"/>
+		<!-- Create fancy junit reports -->
+		<junitreport todir="${junitreport.dir}">  
+			<fileset dir="${report.dir}">  
+				<include name="*.xml"/>  
+			</fileset>  
+			<report format="noframes" todir="${junitreport.dir}" styledir="${mxunit.xsl}"/>  
+		</junitreport>  
+		<!-- create a nice welcome page -->
+		<move file="${junitreport.dir}/junit-noframes.html" tofile="${junitreport.dir}/index.html" />
+	</target>
+  
+</project>

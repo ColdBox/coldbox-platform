@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
 		dataConfigPath = "coldbox.testing.cases.ioc.config.samples.SampleWireBox";
@@ -123,10 +123,10 @@
 	}
 	
 	function testToWebservice(){
-		config.map("Test").toWebservice("http://www.coldbox.org/paths.cfc?wsdl");
+		config.map("Test").toWebservice("http://coldbox.jfetmac/distribution/test.cfc?wsdl");
 		mapping = config.getMapping("Test");
 		assertEquals( this.TYPES.WEBSERVICE, mapping.getType() );
-		assertEquals( "http://www.coldbox.org/paths.cfc?wsdl", mapping.getPath() );
+		assertEquals( "http://coldbox.jfetmac/distribution/test.cfc?wsdl", mapping.getPath() );
 	}
 	
 	function testToRSS(){
@@ -180,7 +180,7 @@
 	function testEagerInit(){
 		config.mapPath("Test");
 		mapping = config.getMapping("Test");
-		assertEquals( false, mapping.isEagerInit() );
+		assertEquals( '', mapping.isEagerInit() );
 		
 		config.mapPath("Test").asEagerInit();
 		mapping = config.getMapping("Test");
@@ -190,7 +190,7 @@
 	function testNoAutowire(){
 		config.mapPath("Test");
 		mapping = config.getMapping("Test");
-		assertEquals( true, mapping.isAutowire() );
+		assertEquals( '', mapping.isAutowire() );
 		
 		config.mapPath("Test").noAutowire();
 		mapping = config.getMapping("Test");
@@ -316,7 +316,7 @@
 		config.mapPath("Test").inCacheBox(timeout=30);
 		mapping = config.getMapping("Test");
 		cp = mapping.getCacheProperties();
-		assertEquals("Test", cp.key );
+		assertEquals("wirebox-Test", cp.key );
 		assertEquals(30, cp.timeout );
 		assertEquals('default', cp.provider );
 		
@@ -484,5 +484,44 @@
 		assertTrue( isObject(r) );		
 	}
 	
+	function testVirtualInheritance(){
+		config.mapAspect("MyPlugin").to("plugin.path").virtualInheritance("coldbox.system.Plugin");
+		mapping = config.getMapping("MyPlugin");	
+		b = mapping.getvirtualInheritance();
+		
+		assertEquals("coldbox.system.Plugin", b );
+				
+	}
+	
+	function testExtraAttributes(){
+		var data = {plugin=true,path="hello.path"};
+		config.mapAspect("MyPlugin").to("plugin.path").virtualInheritance("coldbox.system.Plugin").extraAttributes(data);
+		mapping = config.getMapping("MyPlugin");	
+		b = mapping.getExtraAttributes();
+		
+		assertEquals( data, b);
+				
+	}
+	
+	function testMixins(){
+		config.map("MyObject").to("path.obj").mixins("/includes/helpers/AppHelper.cfm");
+		mapping = config.getMapping("MyObject");	
+		b = mapping.getMixins();
+		
+		assertEquals( ["/includes/helpers/AppHelper.cfm"], b);
+		
+		config.map("MyObject").to("path.obj").mixins("/includes/helpers/AppHelper.cfm,/includes/helpers/AppHelper2.cfm");
+		mapping = config.getMapping("MyObject");	
+		b = mapping.getMixins();
+		
+		assertEquals( ["/includes/helpers/AppHelper.cfm","/includes/helpers/AppHelper2.cfm"], b);
+		
+		config.map("MyObject").to("path.obj").mixins( ["/includes/helpers/AppHelper.cfm","/includes/helpers/AppHelper2.cfm"] );
+		mapping = config.getMapping("MyObject");	
+		b = mapping.getMixins();
+		
+		assertEquals( ["/includes/helpers/AppHelper.cfm","/includes/helpers/AppHelper2.cfm"], b);
+				
+	}
 </cfscript>
 </cfcomponent>

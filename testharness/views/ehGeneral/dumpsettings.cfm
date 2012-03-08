@@ -1,1 +1,1 @@
-<cfdump var="#getController().getConfigSettings()#">
+﻿<cfdump var="#getController().getConfigSettings()#">

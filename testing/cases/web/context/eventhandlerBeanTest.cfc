@@ -1,4 +1,4 @@
-<cfcomponent name="eventhandlerBeanTest" extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent name="eventhandlerBeanTest" extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup and teardown --->
 	

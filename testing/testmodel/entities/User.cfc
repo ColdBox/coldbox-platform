@@ -17,7 +17,11 @@
 	property name="password";
 	property name="lastLogin" ormtype="date";
 	
+	// M20 -> Role
+	property name="role" cfc="Role" fieldtype="many-to-one" fkcolumn="FKRoleID" lazy="true" notnull="false";
+	
 	// DI Test
 	property name="testDI" inject="model:testService" persistent="false";
+	property name="controller" inject="coldbox" persistent="false";
 
 }
