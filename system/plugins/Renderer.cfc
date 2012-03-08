@@ -83,6 +83,7 @@ Description :
 		<cfargument name="collectionAs" 			required="false" type="any"	 default=""  	    hint="The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention"/>
 		<cfargument name="collectionStartRow" 		required="false" type="any"	 default="1"  	    hint="The start row to limit the collection rendering with" colddoc:generic="numeric"/>
 		<cfargument name="collectionMaxRows" 		required="false" type="any"	 default="0"  	    hint="The max rows to iterate over the collection rendering with" colddoc:generic="numeric"/>
+		<cfargument name="collectionDelim" 		required="false" type="any"	 default=""  	    hint="A string to delimit the collection renderings by"/>
 		<cfargument name="prepostExempt" 			required="false" type="any"	 default="false" 	hint="If true, pre/post view interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -166,7 +167,7 @@ Description :
 			timerHash = instance.debuggerService.timerStart("rendering View [#arguments.view#.cfm]");
 			if( structKeyExists(arguments,"collection") ){
 				// render collection in next context
-				iData.renderedView = getPlugin("Renderer").renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows);
+				iData.renderedView = getPlugin("Renderer").renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows, arguments.collectionDelim);
 			}
 			else{
 				// render simple composite view
@@ -259,7 +260,8 @@ Description :
 		<cfargument name="collectionAs">
 		<cfargument name="collectionStartRow" default="1"/>
 		<cfargument name="collectionMaxRows"  default="0"/>
-
+		<cfargument name="collectionDelim"  default=""/>
+		
 		<cfscript>
 			var buffer 	= createObject("java","java.lang.StringBuffer").init();
 			var x 		= 1;
@@ -282,6 +284,10 @@ Description :
 					// setup local cvariables
 					variables._counter  = x;
 					variables[ arguments.collectionAs ] = arguments.collection[x];
+					// prepend the delim
+					if ( x NEQ 1 ) {
+						buffer.append( arguments.collectionDelim );
+					}					
 					// render item composite
 					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
 				}
@@ -300,6 +306,10 @@ Description :
 					// setup local cvariables
 					variables._counter  = arguments.collection.currentRow;
 					variables[ arguments.collectionAs ] = arguments.collection;
+					// prepend the delim
+					if ( variables._counter NEQ 1 ) {
+						buffer.append( arguments.collectionDelim );
+					}							
 					// render item composite
 					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
 				</cfscript>
