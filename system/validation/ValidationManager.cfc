@@ -128,7 +128,8 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 		var results = wirebox.getInstance(name="coldbox.system.validation.result.ValidationResult",initArguments=initArgs);
 		
 		// iterate over constraints defined
-		for(var thisField in allConstraints ){
+		var thisField = "";
+		for( thisField in allConstraints ){
 			// verify we can validate the field described in the constraint
 			if( arguments.fields == "*" || listFindNoCase(arguments.fields, thisField) ) {
 				// process the validation rules on the target field using the constraint validation data
@@ -144,7 +145,8 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 	*/
 	ValidationManager function processRules(required coldbox.system.validation.result.IValidationResult results, required struct rules, required any target, required any field){
 		// process the incoming rules
-		for( var key in arguments.rules ){
+		var key = "";
+		for( key in arguments.rules ){
 			// had to use nasty evaluate until adobe cf get's their act together on invoke.
 			getValidator(validatorType=key, validationData=arguments.rules[key])
 				.validate(validationResult=results,
