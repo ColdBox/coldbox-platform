@@ -192,7 +192,11 @@ component accessors="true"{
 		// Null Checks
 		if( isNull(results) ){
 			if( arguments.asQuery ){ return queryNew(""); }
-			return [];
+			if (arguments.unique) {
+				return;
+			} else {
+				return [];
+			}
 		}
 		
 		// Objects or Query?
