@@ -133,7 +133,7 @@
 	<function name="getpluginAuthorURL" returns="string">
 			<help><![CDATA[ Get the instance's pluginAuthorURL (Context: Plugin) ]]></help>
 		</function>
-<!-- Functions for: EventHandler -->
+<!-- Functions for: coldbox.system.EventHandler -->
 	<function name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
