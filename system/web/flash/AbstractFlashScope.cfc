@@ -16,7 +16,7 @@ In order to build scopes you must implement the following methods:
 - flashExists() A method that tells ColdBox if the storage exists and if it has content to inflate
 - getFlash() A method that returns the flash storage
 
-All these methds can use any of the concrete methods below. The most important one is the getScope() 
+All these methds can use any of the concrete methods below. The most important one is the getScope()
 method which will most likely be called by the saveFlash() method in order to persist the flashed map.
 
 ----------------------------------------------------------------------->
@@ -33,12 +33,12 @@ method which will most likely be called by the saveFlash() method in order to pe
     			controller = arguments.controller,
     			defaults   = arguments.defaults
     		};
-    		
+
     		// Defaults checks, just in case
     		if( NOT structKeyExists(instance.defaults,"inflateToRC") ){ instance.defaults.inflateToRC = true; }
     		if( NOT structKeyExists(instance.defaults,"inflateToPRC") ){ instance.defaults.inflateToPRC = false; }
-    		if( NOT structKeyExists(instance.defaults,"autoPurge") ){ instance.defaults.autoPurge = true; }    		
-    		
+    		if( NOT structKeyExists(instance.defaults,"autoPurge") ){ instance.defaults.autoPurge = true; }
+
     		// check for properties
     		if( structKeyExists(arguments.defaults, "properties") ){
     			instance.properties = arguments.defaults.properties;
@@ -49,7 +49,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 			return this;
     	</cfscript>
     </cffunction>
-	
+
 <!------------------------------------------- OVERRIDE THESE METHODS ------------------------------------------>
 
 	<!--- saveFlash --->
@@ -63,7 +63,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 	<!--- getFlash --->
 	<cffunction name="getFlash" output="false" access="public" returntype="struct" hint="Get the flash storage structure to inflate it.">
 	</cffunction>
-	
+
 	<!--- removeFlash --->
     <cffunction name="removeFlash" output="false" access="public" returntype="any" hint="Remove the entire flash storage">
     </cffunction>
@@ -73,20 +73,24 @@ method which will most likely be called by the saveFlash() method in order to pe
 	<!--- clearFlash --->
 	<cffunction name="clearFlash" output="false" access="public" returntype="any" hint="Clear the flash storage">
 		<cfscript>
-			var key 	= "";
-			var scope 	= "";
-			
+			var x			= 1;
+			var scope 		= "";
+			var scopeKeys	= [];
+			var scopeKeysLen = 0;
+
 			// Check if flash exists
 			if( flashExists() ){
+				// Get pointer to flash scope
 				scope = getFlash();
-				
-				// loop over contents and clear flash items that are marked for autopurging.	
-				for(key in scope){
-					if( scope[key].autoPurge ){
-						structDelete(scope, key);
+				scopeKeys = listToArray( structKeyList( scope ) );
+				scopeKeysLen = arrayLen( scopeKeys );
+				// iterate over keys and purge
+				for(x=1; x lte scopeKeysLen; x++){
+					// check if purging and remove
+					if( structKeyExists(scope, scopeKeys[x]) AND scope[ scopeKeys[x] ].autoPurge ){
+						structDelete(scope, scopeKeys[x]);
 					}
 				}
-				
 				// Destroy if empty
 				if( structIsEmpty(scope) ){
 					removeFlash();
@@ -95,44 +99,49 @@ method which will most likely be called by the saveFlash() method in order to pe
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- inflateToRC --->
 	<cffunction name="inflateFlash" output="false" access="public" returntype="any" hint="Inflate the flash storage into the request collection and request temp storage">
 		<cfscript>
-			var event 	= getController().getRequestService().getContext();
-			var flash 	= getFlash();
-			var key	 	= "";
-			var keep 	= false;
-			
+			var event 		= getController().getRequestService().getContext();
+			var keep 		= false;
+			var flash 		= getFlash();
+			var x			= 1;
+			var scopeKeys	= listToArray( structKeyList( flash ) );
+			var scopeKeysLen = arrayLen( scopeKeys );
+			var thisKey		= "";
+
 			// Inflate only kept flash variables, other ones are marked for discard.
-			for(key in flash){
-				if( flash[key].keep ){
+			for(x=1; x lte scopeKeysLen; x++){
+				// check if key exists and inflating
+				if( structKeyExists(flash, scopeKeys[x] ) AND flash[ scopeKeys[x] ].keep ){
+					thisKey = flash[ scopeKeys[x] ];
 					// Inflate into RC?
-					if( flash[key].inflateToRC ){
-						event.setValue(name=key,value=flash[key].content);
+					if( thisKey.inflateToRC ){
+						event.setValue(name=scopeKeys[x],value=thisKey.content);
 					}
 					// Inflate into PRC?
-					if( flash[key].inflateToPRC ){
-						event.setValue(name=key,value=flash[key].content,private=true);
+					if( thisKey.inflateToPRC ){
+						event.setValue(name=scopeKeys[x],value=thisKey.content,private=true);
 					}
-					
+
 					// Keep = true if autoPurge is false, because we need to keep it around.
-					if( NOT flash[key].autoPurge ){ keep = true; }
+					if( NOT thisKey.autoPurge ){ keep = true; }
 					else{ keep = false; }
-					
+
 					// Save and mark for cleaning
-					put(name=key,
-						value=flash[key].content,
+					put(name=scopeKeys[x],
+						value=thisKey.content,
 						keep=keep,
-						autoPurge=flash[key].autoPurge,
-						inflateToRC=flash[key].inflateToRC,
-						inflateToPRC=flash[key].inflateToPRC);
+						autoPurge=thisKey.autoPurge,
+						inflateToRC=thisKey.inflateToRC,
+						inflateToPRC=thisKey.inflateToPRC);
 				}
 			}
-			
+
 			// Clear Flash Storage
 			clearFlash();
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -143,22 +152,22 @@ method which will most likely be called by the saveFlash() method in order to pe
 			if( NOT structKeyExists(request,"cbox_flash_temp_storage") ){
 				request["cbox_flash_temp_storage"] = structnew();
 			}
-			
+
 			return request["cbox_flash_temp_storage"];
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getKeys --->
     <cffunction name="getKeys" output="false" access="public" returntype="string" hint="Get a list of all the objects in the temp flash scope">
     	<cfreturn structKeyList(getScope())>
-	</cffunction>	
+	</cffunction>
 
 	<!--- clear --->
     <cffunction name="clear" output="false" access="public" returntype="any" hint="Clear the temp flash scope and remove all data">
 		<cfset structClear(getScope())>
 		<cfreturn this>
     </cffunction>
-	
+
 	<!--- keep --->
     <cffunction name="keep" output="false" access="public" returntype="any" hint="Keep all or a single flash temp variable alive for another relocation.">
     	<cfargument name="keys" type="string" required="false" default="" hint="The keys in the flash ram that you want to mark to be kept until the next relocation"/>
@@ -166,14 +175,14 @@ method which will most likely be called by the saveFlash() method in order to pe
 		<cfset saveFlash()>
 		<cfreturn this>
     </cffunction>
-	
+
 	<!--- discard --->
     <cffunction name="discard" output="false" access="public" returntype="any" hint="Mark for discard all or a single flash temp variable for another relocation. You can also remove them if you like.">
     	<cfargument name="keys" type="string" required="false" default="" hint="The keys in the flash ram that you want to be discarded until the next relocation"/>
 		<cfset statusMarks(arguments.keys,false)>
 		<cfreturn this>
     </cffunction>
-	
+
 	<!--- put --->
     <cffunction name="put" output="false" access="public" returntype="any" hint="Put an object in temp flash scope">
     	<cfargument name="name"  		type="string" 	required="true"  hint="The name of the value"/>
@@ -186,24 +195,24 @@ method which will most likely be called by the saveFlash() method in order to pe
 		<cfscript>
 			var scope = getScope();
 			var entry = structnew();
-			
+
 			// Create Flash Entry
 			entry.content 		= arguments.value;
 			entry.keep 			= arguments.keep;
 			entry.inflateToRC 	= arguments.inflateToRC;
 			entry.inflateToPRC 	= arguments.inflateToPRC;
 			entry.autoPurge		= arguments.autoPurge;
-			
+
 			// Save entry in temp storage
 			scope[arguments.name] = entry;
-			
+
 			// Save to storage
 			if( arguments.saveNow ){ saveFlash(); }
-			
+
 			return this;
 		</cfscript>
     </cffunction>
-	
+
 	<!--- putAll --->
     <cffunction name="putAll" output="false" access="public" returntype="any" hint="Put a map of name-value pairs into the flash scope">
     	<cfargument name="map" 			type="struct"   required="true" hint="The map of data to flash"/>
@@ -214,7 +223,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 		<cfargument name="autoPurge" 	type="boolean"  required="false" default="#instance.defaults.autoPurge#" hint="Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge."/>
 		<cfscript>
 			var key = "";
-			
+
 			// Save all keys in map
 			for( key in arguments.map ){
 				// Store value and key to pass
@@ -223,14 +232,14 @@ method which will most likely be called by the saveFlash() method in order to pe
 				// place in put
 				put(argumentCollection=arguments);
 			}
-			
+
 			// Save to Storage
 			if( arguments.saveNow ){ saveFlash(); }
-			
+
 			return this;
 		</cfscript>
     </cffunction>
-	
+
 	<!--- remove --->
     <cffunction name="remove" output="false" access="public" returntype="any" hint="Remove an object from flash scope">
     	<cfargument name="name"  type="string" required="true" hint="The name of the value"/>
@@ -241,7 +250,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 			return this;
 		</cfscript>
     </cffunction>
-	
+
 	<!--- exists --->
     <cffunction name="exists" output="false" access="public" returntype="boolean" hint="Check if an object exists in flash scope">
     	<cfargument name="name"  type="string" required="true" hint="The name of the value"/>
@@ -252,31 +261,31 @@ method which will most likely be called by the saveFlash() method in order to pe
     <cffunction name="size" output="false" access="public" returntype="numeric" hint="Get the size of the items in flash scope">
 		<cfreturn structCount(getScope())>
     </cffunction>
-	
+
 	<!--- isEmpty --->
     <cffunction name="isEmpty" output="false" access="public" returntype="boolean" hint="Check if the flash scope is empty or not">
 		<cfreturn structIsEmpty(getScope())>
     </cffunction>
-	
+
 	<!--- get --->
     <cffunction name="get" output="false" access="public" returntype="any" hint="Get an object from flash scope">
     	<cfargument name="name"    type="string" required="true" hint="The name of the value"/>
   		<cfargument name="default" type="any"    required="false" hint="The default value if the scope does not have the object"/>
 		<cfscript>
 			var scope = getScope();
-			
+
 			if( exists(arguments.name) ){
 				return scope[arguments.name].content;
 			}
-			
+
 			if( structKeyExists(arguments,"default") ){
 				return arguments.default;
 			}
-			
-		</cfscript>		
+
+		</cfscript>
 		<cfthrow message="#arguments.name# not found in flash scope. Valid keys are #getKeys()#." type="#getMetadata(this).name#.KeyNotFoundException">
 	</cffunction>
-	
+
 	<!--- persist --->
 	<cffunction name="persistRC" output="false" access="public" returntype="any" hint="Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed.">
 		<cfargument name="include" type="string"  required="false" default="" hint="MUTEX: A list of request collection keys you want to persist"/>
@@ -288,11 +297,11 @@ method which will most likely be called by the saveFlash() method in order to pe
 			var x=1;
 			var thisKey = "";
 			var somethingToSave = false;
-			
+
 			// Cleanup
 			arguments.include = replace(arguments.include, " ", "", "all");
 			arguments.exclude = replace(arguments.exclude, " ", "", "all");
-			
+
 			// Exclude?
 			if( len(trim(arguments.exclude)) ){
 				for(thisKey in rc){
@@ -303,7 +312,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 					}
 				}
 			}
-			
+
 			// Include?
 			if( len(trim(arguments.include)) ){
 				for(x=1; x lte listLen(arguments.include); x=x+1){
@@ -314,38 +323,38 @@ method which will most likely be called by the saveFlash() method in order to pe
 						somethingToSave = true;
 					}
 				}
-			}	
-			
+			}
+
 			// Save Now?
-			if( arguments.saveNow AND somethingToSave ){ saveFlash(); }	
-			
-			return this;	
+			if( arguments.saveNow AND somethingToSave ){ saveFlash(); }
+
+			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getter for the flash data defaults structure --->
 	<cffunction name="getDefaults" access="public" output="false" returntype="struct" hint="Get flash scope default data packet">
 		<cfreturn instance.defaults/>
 	</cffunction>
-	
+
 	<!--- getter for the properties structure --->
 	<cffunction name="getProperties" access="public" output="false" returntype="struct" hint="Get flash scope properties">
 		<cfreturn instance.properties/>
 	</cffunction>
-	
+
 	<!--- setter for the properties structure --->
 	<cffunction name="setProperties" access="public" output="false" returntype="any" hint="Set flash scope properties">
 		<cfargument name="properties" type="any" required="true" colddoc:generic="struct"/>
 		<cfset instance.properties = arguments.properties/>
 		<cfreturn this>
 	</cffunction>
-	
+
 	<!--- get a property --->
 	<cffunction name="getProperty" access="public" returntype="any" hint="Get a flash scope property, throws exception if not found." output="false" >
 		<cfargument name="property" required="true" type="any" hint="The key of the property to return.">
 		<cfreturn instance.properties[arguments.property]>
 	</cffunction>
-	
+
 	<!--- set a property --->
 	<cffunction name="setProperty" access="public" returntype="any" hint="Set a flash scope property" output="false" >
 		<cfargument name="property" required="true" type="any" 	hint="The property name to set.">
@@ -353,13 +362,13 @@ method which will most likely be called by the saveFlash() method in order to pe
 		<cfset instance.properties[arguments.property] = arguments.value>
 		<cfreturn this>
 	</cffunction>
-	
+
 	<!--- check for a property --->
 	<cffunction name="propertyExists" access="public" returntype="boolean" hint="Checks wether a given flash scope property exists or not." output="false" >
 		<cfargument name="property" required="true" type="any" hint="The property name">
-		<cfreturn structKeyExists(instance.properties,arguments.property)>		
+		<cfreturn structKeyExists(instance.properties,arguments.property)>
 	</cffunction>
-		
+
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
 	<!--- statusMarks --->
@@ -370,20 +379,20 @@ method which will most likely be called by the saveFlash() method in order to pe
 			var scope = getScope();
 			var targetKeys = structKeyList(scope);
 			var x=1;
-			
+
 			// keys passed in?
 			if( len(trim(arguments.keys)) ){
 				targetKeys = keys;
 			}
-			
+
 			// Keep them if they exist
 			for(x=1; x lte listLen(targetKeys); x=x+1){
 				if( structKeyExists(scope,listGetAt(targetKeys,x)) ){
 					scope[listGetAt(targetKeys,x)].keep = arguments.keep;
 				}
-			}		
-			
-			return this;	
+			}
+
+			return this;
 		</cfscript>
     </cffunction>
 
@@ -391,7 +400,7 @@ method which will most likely be called by the saveFlash() method in order to pe
     <cffunction name="getController" output="false" access="private" returntype="coldbox.system.web.Controller" hint="Get the controller reference">
     	<cfreturn instance.controller>
     </cffunction>
-	
+
 	<!--- getUtil --->
 	<cffunction name="getUtil" output="false" access="private" returntype="coldbox.system.core.util.Util" hint="Get the coldbox utility class">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")>
