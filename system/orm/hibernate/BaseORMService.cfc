@@ -46,14 +46,14 @@ component accessors="true"{
 	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
 	*/
 	property name="useTransactions" type="boolean" default="true";
-	
+
 	/**
 	* The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
 	*/
 	property name="defaultAsQuery" type="boolean" default="true";
 
 	/************************************** CONSTRUCTOR *********************************************/
-	
+
 	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
 								  boolean useQueryCaching=false,
 								  boolean eventHandling=true,
@@ -68,12 +68,12 @@ component accessors="true"{
 
 		// Create the service ORM Event Handler composition
 		if( directoryExists( expandPath("/wirebox") ) ){
-			ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
-		}
-		else{
 			ORMEventHandler = new coldbox.system.orm.hibernate.WBEventHandler();
 		}
-		
+		else{
+			ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
+		}
+
 		// Create the ORM Utility component
 		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 
@@ -188,7 +188,7 @@ component accessors="true"{
 
 		// Get listing
 		var results = ORMExecuteQuery( arguments.query, arguments.params, arguments.unique, options );
-		
+
 		// Null Checks
 		if( isNull(results) ){
 			if( arguments.asQuery ){ return queryNew(""); }
@@ -198,7 +198,7 @@ component accessors="true"{
 				return [];
 			}
 		}
-		
+
 		// Objects or Query?
 		if( arguments.asQuery ){
 			results = entityToQuery(results);
@@ -236,7 +236,7 @@ component accessors="true"{
 	any function findByExample(any example,boolean unique=false){
 		return entityLoadByExample(arguments.example,arguments.unique);
 	}
-	
+
 	/**
 	* Find all the entities for the specified query and params or example
 	* @example.hint	DEPRECATED use findByExample() this will be dropped in 3.5
@@ -248,12 +248,12 @@ component accessors="true"{
 					        numeric timeout=0,
 					        boolean ignoreCase=false,
 						    any example){
-		
+
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
 			return findByExample( arguments.example );
 		}
-		
+
 		// Normal Execute Query
 		arguments.asQuery=false;
 		return executeQuery(argumentCollection=arguments);
@@ -304,7 +304,7 @@ component accessors="true"{
 		if( NOT structIsEmpty(arguments.properties) ){
 			populate( entity, arguments.properties );
 		}
-		
+
 		// Event Handling? If enabled, call the postNew() interception
 		if( getEventHandling() ){
 			ORMEventHandler.postNew( entity, arguments.entityName );
@@ -415,7 +415,7 @@ component accessors="true"{
 	boolean function exists(required entityName, required any id) {
 		var  options = {};
 		options.datasource = orm.getEntityDatasource(arguments.entityName);
-		
+
 		// Do it DLM style
 		var count = ORMExecuteQuery("select count(id) from #arguments.entityName# where id = ?",[arguments.id],true,options);
 		return (count gt 0);
@@ -436,15 +436,15 @@ component accessors="true"{
 				return entity;
 			}
 		}
-		
+
 		// Check for return new?
 		if( arguments.returnNew ){
-		
+
 			// Check if ID=0 or empty to do convenience new entity
 			if( isSimpleValue(arguments.id) and ( arguments.id eq 0  OR len(arguments.id) eq 0 ) ){
 				return new(entityName=arguments.entityName);
 			}
-			
+
 		}
 	}
 
@@ -454,7 +454,7 @@ component accessors="true"{
     */
 	array function getAll(required string entityName,any id,string sortOrder="") {
 		var results = [];
-		
+
 		// Return all entity values
 		if( NOT structKeyExists(arguments,"id") ){
 			return entityLoad(arguments.entityName,{},arguments.sortOrder);
@@ -466,7 +466,7 @@ component accessors="true"{
 		// ordering?
 		if( len(arguments.sortOrder) ){
 			q &= " ORDER BY #arguments.sortOrder#";
-		}		
+		}
 		// Execute native hibernate query
 		var query = orm.getSession(orm.getEntityDatasource(arguments.entityName)).createQuery(q);
 		// parameter binding
@@ -527,7 +527,7 @@ component accessors="true"{
 	private numeric function $deleteAll(required string entityName,boolean flush=false){
 		var options = {};
 		options.datasource = orm.getEntityDatasource(arguments.entityName);
-		
+
 		var count   = 0;
 		count = ORMExecuteQuery("delete from #arguments.entityName#",false,options);
 
@@ -629,7 +629,7 @@ component accessors="true"{
 		var idx	  	  = 1;
 		var count	  = 0;
 		var options   = {};
-		
+
 		options.datasource = orm.getEntityDatasource(arguments.entityName);
 
 		buffer.append('delete from #arguments.entityName#');
@@ -753,7 +753,7 @@ component accessors="true"{
 		var key      = "";
 		var operator = "AND";
 		var options = {};
-		
+
 		options.datasource = orm.getEntityDatasource(arguments.entityName);
 
 		// Caching?
@@ -792,7 +792,7 @@ component accessors="true"{
 		var params	  = {};
 		var idx	  = 1;
 		var options = {};
-		
+
 		options.datasource = orm.getEntityDatasource(arguments.entityName);
 
 		buffer.append('select count(*) from #arguments.entityName#');
@@ -819,7 +819,7 @@ component accessors="true"{
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
-		
+
 		// execute query as unique for the count
 		try{
 			return ORMExecuteQuery( buffer.toString(), params, true, options);
@@ -851,7 +851,7 @@ component accessors="true"{
 			else
 				evictEntity( this.new(arguments.entityName) );
 		}
-		
+
 		return this;
 	}
 
@@ -900,7 +900,7 @@ component accessors="true"{
 		for( var x=1; x lte arrayLen(objects); x++){
 			entityMerge( objects[x] );
 		}
-		
+
 		return this;
 	}
 
@@ -951,7 +951,7 @@ component accessors="true"{
 	any function onMissingMethod(String missingMethodName,Struct missingMethodArguments){
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
-		
+
 	}
 
 	/**
@@ -988,7 +988,7 @@ component accessors="true"{
 	string function getTableName(required string entityName){
 		return orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetadata(arguments.entityName).getTableName();
 	}
-	
+
 	/**
  	* Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
 	*/
@@ -996,7 +996,7 @@ component accessors="true"{
 		if( sessionContains( arguments.entity ) ){
  			return orm.getSession(orm.getEntityDatasource(arguments.entity)).getEntityName( entity );
  		}
- 		
+
  		// else long approach
  		var md = getMetadata( arguments.entity );
  		if( structKeyExists(md, "entityname") ){ return md.entityname; }
@@ -1118,7 +1118,7 @@ component accessors="true"{
 
 		return qry.uniqueResult();
 	}
-	
+
 	/**
 	* Get a brand new criteria builder object
 	* @entityName The name of the entity to bind this criteria query to
@@ -1129,7 +1129,7 @@ component accessors="true"{
 	any function newCriteria(required string entityName,
 							 boolean useQueryCaching=false,
 							 string queryCacheRegion=""){
-		
+
 		return new CriteriaBuilder(argumentCollection=arguments);
 	}
 
@@ -1168,7 +1168,7 @@ component accessors="true"{
 		// mark transaction began
 		request["cbox_aop_transaction"] = true;
 		transaction{
-			
+
 			try{
 				// Call method
 				results = arguments.method(argumentCollection=arguments.argCollection);
@@ -1183,13 +1183,13 @@ component accessors="true"{
 				//throw it
 				rethrow;
 			}
-			
+
 		}
-			
+
 		// remove pointer, out of transaction now.
 		structDelete(request,"cbox_aop_transaction");
 		// Results? If found, return them.
 		if( NOT isNull(results) ){ return results; }
-			
+
 	}
 }
