@@ -10,19 +10,19 @@ ColdBox Default Configuration
 ----------------------------------------------------------------------->
 <cfcomponent output=false hint="ColdBox Default Configuration">
 <cfscript>
-	
+
 	// Release Metadata
 	this.codename 		= "ColdBox SEEK";
 	this.author			= "Ortus Solutions";
 	this.authorEmail 	= "coldbox@ortussolutions.com";
 	this.authorWebsite	= "http://www.ortussolutions.com";
-	this.suffix			= "RC1 - Jeremiah 29:13";
+	this.suffix			= "Jeremiah 29:13";
 	this.version		= "3.5.0";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
-	
+
 	// Operation Defaults
 	this.eventName 	= "event";
-	
+
 	// flash scope defaults
 	this.flash = {
 		scope = "session",
@@ -32,7 +32,7 @@ ColdBox Default Configuration
 		autoPurge = true,
 		autoSave = true
 	};
-	
+
 	// Debugger Defaults
 	this.debuggerSettings = {
 		enableDumpVar = true,
@@ -46,12 +46,12 @@ ColdBox Default Configuration
 	    showCachePanel = true,
 	    expandedCachePanel = false,
 	    showRCPanel = true,
-	    expandedRCPanel = false,  
+	    expandedRCPanel = false,
 	    showModulesPanel = true,
-	    expandedModulesPanel = false,  
+	    expandedModulesPanel = false,
 	    showRCSnapshots = false
     };
-    
+
     // Conventions
     this.handlersConvention	= "handlers";
 	this.pluginsConvention	= "plugins";
@@ -61,6 +61,6 @@ ColdBox Default Configuration
 	this.modelsConvention	= "model";
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
-		
+
 </cfscript>
 </cfcomponent>
