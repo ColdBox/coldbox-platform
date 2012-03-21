@@ -11,19 +11,19 @@ Description		:
 Loads a coldbox cfc configuration file
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="Loads a coldbox xml configuration file" output="false" extends="coldbox.system.web.loader.AbstractApplicationLoader">
+<cfcomponent hint="Loads a coldbox configuration file" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
-
-	<cfscript>
-		instance = structnew();
-	</cfscript>
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="any" hint="constructor">
 		<cfargument name="controller" 			type="any" 		required="true" default="" hint="The coldbox application to load the settings into"/>
 		<cfscript>
-			super.init(arguments.controller);
+			// setup local variables
+			instance.controller = arguments.controller;
+			instance.util 		= createObject("component","coldbox.system.core.util.Util");
+			// Coldbox Settings
+			instance.coldboxSettings = arguments.controller.getColdBoxSettings();
 
 			return this;
 		</cfscript>
@@ -38,7 +38,7 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 		//Create Config Structure
 		var configStruct		= structNew();
-		var coldboxSettings 	= getColdboxSettings();
+		var coldboxSettings 	= instance.coldboxSettings;
 		var appRootPath 		= instance.controller.getAppRootPath();
 		var configCFCLocation 	= coldboxSettings["ConfigFileLocation"];
 		var configCreatePath 	= "";
@@ -61,7 +61,7 @@ Loads a coldbox cfc configuration file
 			configStruct["AppMapping"] = removeChars(configStruct["AppMapping"],1,1);
 		}
 		//AppMappingInvocation Path
-		appMappingAsDots = getAppMappingAsDots(configStruct.AppMapping);
+		appMappingAsDots = getAppMappingAsDots(configStruct.appMapping);
 
 		// Config Create Path if not overriding and there is an appmapping
 		if( len( appMappingAsDots ) AND NOT coldboxSettings.ConfigFileLocationOverride){
@@ -76,8 +76,8 @@ Loads a coldbox cfc configuration file
 		oConfig = createObject("component", configCreatePath);
 
 		//Decorate It
-		oConfig.injectPropertyMixin = getUtil().getMixerUtil().injectPropertyMixin;
-		oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
+		oConfig.injectPropertyMixin = instance.util.getMixerUtil().injectPropertyMixin;
+		oConfig.getPropertyMixin 	= instance.util.getMixerUtil().getPropertyMixin;
 
 		//MixIn Variables
 		oConfig.injectPropertyMixin("controller",instance.controller);
@@ -90,10 +90,14 @@ Loads a coldbox cfc configuration file
 		//Environment detection
 		detectEnvironment(oConfig,configStruct);
 
-		/* ::::::::::::::::::::::::::::::::::::::::: APP LOCATION CALCULATIONS :::::::::::::::::::::::::::::::::::::::::::: */
+		/* ::::::::::::::::::::::::::::::::::::::::: APP LOCATION OVERRIDES :::::::::::::::::::::::::::::::::::::::::::: */
 
-		// load default application paths
-		loadApplicationPaths(configStruct,arguments.overrideAppMapping);
+		// Setup Default Application Path from main controller
+		configStruct.applicationPath = instance.controller.getAppRootPath();
+		// Check for Override of AppMapping
+		if( len(trim(arguments.overrideAppMapping)) ){
+			configStruct.applicationPath = expandPath(arguments.overrideAppMapping) & "/";
+		}
 
 		/* ::::::::::::::::::::::::::::::::::::::::: GET COLDBOX SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseColdboxSettings(oConfig,configStruct,arguments.overrideAppMapping);
@@ -156,7 +160,7 @@ Loads a coldbox cfc configuration file
 		parseValidation(oConfig,configStruct);
 
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
-		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
+		configStruct.configTimeStamp = instance.util.fileLastModified(coldboxSettings["ConfigFileLocation"]);
 
 		//finish by loading configuration
 		configStruct.coldboxConfig = oConfig;
@@ -164,19 +168,52 @@ Loads a coldbox cfc configuration file
 		</cfscript>
 	</cffunction>
 
+	<!--- calculateAppMapping --->
+    <cffunction name="calculateAppMapping" output="false" access="public" returntype="void" hint="Calculate the AppMapping">
+    	<cfargument name="configStruct" 	type="any" required="true" hint="The config struct"/>
+		<cfscript>
+			// Get the web path from CGI.
+			var	webPath = replacenocase(cgi.script_name,getFileFromPath(cgi.script_name),"");
+			// Cleanup the template path
+			var localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
+			// Verify Path Location
+			var pathLocation = findnocase(webPath, localPath);
+
+			if ( pathLocation ){
+				arguments.configStruct.appMapping = mid(localPath,pathLocation,len(webPath));
+			}
+			else{
+				arguments.configStruct.appMapping = webPath;
+			}
+
+			//Clean last /
+			if ( right(arguments.configStruct.AppMapping,1) eq "/" ){
+				if ( len(arguments.configStruct.AppMapping) -1 gt 0)
+					arguments.configStruct.AppMapping = left(arguments.configStruct.AppMapping,len(arguments.configStruct.AppMapping)-1);
+				else
+					arguments.configStruct.AppMapping = "";
+			}
+
+			//Clean j2ee context
+			if( len(getContextRoot()) ){
+				arguments.configStruct.AppMapping = replacenocase(arguments.configStruct.AppMapping,getContextRoot(),"");
+			}
+    	</cfscript>
+    </cffunction>
+
 	<!--- parseColdboxSettings --->
 	<cffunction name="parseColdboxSettings" output="false" access="public" returntype="void" hint="Parse ColdBox Settings">
 		<cfargument name="oConfig" 				type="any" 		required="true" hint="The config object"/>
-		<cfargument name="config" 				type="struct" 	required="true" hint="The config struct"/>
-		<cfargument name="overrideAppMapping" required="false" type="string" default="" hint="The direct location of the application in the web server."/>
+		<cfargument name="config" 				type="any" 	required="true" hint="The config struct"/>
+		<cfargument name="overrideAppMapping" required="false" type="any" default="" hint="The direct location of the application in the web server."/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var fwSettingsStruct = getColdboxSettings();
+			var fwSettingsStruct = instance.coldboxSettings;
 			var coldboxSettings = arguments.oConfig.getPropertyMixin("coldbox","variables",structnew());
 
 			// check if settings are available
 			if( structIsEmpty(coldboxSettings) ){
-				getUtil().throwit(message="ColdBox settings empty, cannot continue",type="CFCApplicationLoader.ColdBoxSettingsEmpty");
+				instance.util.throwit(message="ColdBox settings empty, cannot continue",type="CFCApplicationLoader.ColdBoxSettingsEmpty");
 			}
 
 			// collection append
@@ -190,10 +227,10 @@ Loads a coldbox cfc configuration file
 
 			//Check for AppName or throw
 			if ( not StructKeyExists(configStruct, "AppName") )
-				getUtil().throwit("There was no 'AppName' setting defined. This is required by the framework.","","XMLApplicationLoader.ConfigXMLParsingException");
+				instance.util.throwit("There was no 'AppName' setting defined. This is required by the framework.","","MissingSetting");
 			//Check for Default Event
 			if ( not StructKeyExists(configStruct, "DefaultEvent") )
-				getUtil().throwit("There was no 'DefaultEvent' setting defined. This is required by the framework.","","XMLApplicationLoader.ConfigXMLParsingException");
+				configStruct["DefaultEvent"] = fwSettingsStruct["DefaultEvent"];
 			//Check for Event Name
 			if ( not StructKeyExists(configStruct, "EventName") )
 				configStruct["EventName"] = fwSettingsStruct["EventName"] ;
@@ -293,7 +330,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseYourSettings --->
 	<cffunction name="parseYourSettings" output="false" access="public" returntype="void" hint="Parse Your Settings">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
 			var settings = arguments.oConfig.getPropertyMixin("settings","variables",structnew());
@@ -306,10 +343,10 @@ Loads a coldbox cfc configuration file
 	<!--- parseConventions --->
 	<cffunction name="parseConventions" output="false" access="public" returntype="void" hint="Parse Conventions">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var fwSettingsStruct = getColdboxSettings();
+			var fwSettingsStruct = instance.coldboxSettings;
 			var conventions = arguments.oConfig.getPropertyMixin("conventions","variables",structnew());
 
 			// Override conventions on a per found basis.
@@ -326,10 +363,10 @@ Loads a coldbox cfc configuration file
 	<!--- parseIOC --->
 	<cffunction name="parseIOC" output="false" access="public" returntype="void" hint="Parse IOC Integration">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	  type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 	  type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var fwSettingsStruct = getColdBoxSettings();
+			var fwSettingsStruct = instance.coldboxSettings;
 			var ioc = arguments.oConfig.getPropertyMixin("ioc","variables",structnew());
 
 			//defaults
@@ -365,10 +402,10 @@ Loads a coldbox cfc configuration file
 	<!--- parseInvocationPaths --->
 	<cffunction name="parseInvocationPaths" output="false" access="public" returntype="void" hint="Parse Invocation paths">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var fwSettingsStruct = getColdBoxSettings();
+			var fwSettingsStruct = instance.coldboxSettings;
 			var appMappingAsDots = "";
 
 			// Handler Registration
@@ -421,10 +458,10 @@ Loads a coldbox cfc configuration file
 	<!--- parseExternalLocations --->
 	<cffunction name="parseExternalLocations" output="false" access="public" returntype="void" hint="Parse External locations">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var fwSettingsStruct = getColdBoxSettings();
+			var fwSettingsStruct = instance.coldboxSettings;
 
 			// ViewsExternalLocation Setup
 			if( structKeyExists(configStruct,"ViewsExternalLocation") and len(configStruct["ViewsExternalLocation"]) ){
@@ -433,7 +470,7 @@ Loads a coldbox cfc configuration file
 					configStruct["ViewsExternalLocation"] = "/" & configStruct["AppMapping"] & "/" & configStruct["ViewsExternalLocation"];
 				}
 				else if( not directoryExists(expandPath(configStruct["ViewsExternalLocation"])) ){
-					getUtil().throwIt("ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException");
+					instance.util.throwIt("ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException");
 				}
 				// Cleanup
 				if ( right(configStruct["ViewsExternalLocation"],1) eq "/" ){
@@ -451,7 +488,7 @@ Loads a coldbox cfc configuration file
 					configStruct["LayoutsExternalLocation"] = "/" & configStruct["AppMapping"] & "/" & configStruct["LayoutsExternalLocation"];
 				}
 				else if( not directoryExists(expandPath(configStruct["LayoutsExternalLocation"])) ){
-					getUtil().throwIt("LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException");
+					instance.util.throwIt("LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException");
 				}
 				// Cleanup
 				if ( right(configStruct["LayoutsExternalLocation"],1) eq "/" ){
@@ -467,7 +504,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseLocalization --->
 	<cffunction name="parseMailSettings" output="false" access="public" returntype="void" hint="Parse Mail Settings">
 		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	  type="struct"   required="true" hint="The config struct"/>
+		<cfargument name="config" 	  type="any"   required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
 			configStruct.mailSettings = arguments.oConfig.getPropertyMixin("mailSettings","variables",structnew());
@@ -477,7 +514,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseLocalization --->
 	<cffunction name="parseLocalization" output="false" access="public" returntype="void" hint="Parse localization">
 		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	  type="struct"   required="true" hint="The config struct"/>
+		<cfargument name="config" 	  type="any"   required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct	= arguments.config;
 			var i18n 			= arguments.oConfig.getPropertyMixin("i18N","variables",structnew());
@@ -512,7 +549,7 @@ Loads a coldbox cfc configuration file
 				if ( structKeyExists(i18n, "LocaleStorage") AND len(i18n.LocaleStorage) ){
 					configStruct["LocaleStorage"] = i18n.LocaleStorage;
 					if( NOT reFindNoCase("^(session|cookie|client|request)$",configStruct["LocaleStorage"]) ){
-						getUtil().throwit(message="Invalid local storage scope: #configStruct["localeStorage"]#",
+						instance.util.throwit(message="Invalid local storage scope: #configStruct["localeStorage"]#",
 							   			  detail="Valid scopes are session,client, cookie, or request",
 							   			  type="CFCApplicationLoader.InvalidLocaleStorage");
 					}
@@ -532,7 +569,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseWebservices --->
 	<cffunction name="parseWebservices" output="false" access="public" returntype="void" hint="Parse webservices">
 		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
 			var key=1;
@@ -550,7 +587,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseDatasources --->
 	<cffunction name="parseDatasources" output="false" access="public" returntype="void" hint="Parse Datsources">
 		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
 			var datasources = arguments.oConfig.getPropertyMixin("datasources","variables",structnew());
@@ -563,7 +600,7 @@ Loads a coldbox cfc configuration file
 			for( key in datasources ){
 
 				if( NOT structKeyExists(datasources[key],"name") ){
-					getUtil().throwit("This datasource #key# entry's name cannot be blank","","CFCApplicationLoader.DatasourceException");
+					instance.util.throwit("This datasource #key# entry's name cannot be blank","","CFCApplicationLoader.DatasourceException");
 				}
 				// defaults
 				if( NOT structKeyExists(datasources[key],"username") ){
@@ -584,7 +621,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseLayoutsViews --->
 	<cffunction name="parseLayoutsViews" output="false" access="public" returntype="void" hint="Parse Layouts And Views">
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct 		= arguments.config;
 			var	LayoutViewStruct 	= CreateObject("java","java.util.LinkedHashMap").init();
@@ -653,10 +690,10 @@ Loads a coldbox cfc configuration file
 	<!--- parseCacheBox --->
 	<cffunction name="parseCacheBox" output="false" access="public" returntype="void" hint="Parse Cache Settings for CacheBox operation">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 	  	type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 	  	type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct 		= arguments.config;
-			var fwSettingsStruct 	= getColdboxSettings();
+			var fwSettingsStruct 	= instance.coldboxSettings;
 
 			// CacheBox Defaults
 			configStruct.cacheBox				= structnew();
@@ -687,10 +724,10 @@ Loads a coldbox cfc configuration file
 	<!--- parsedebuggerSettings --->
 	<cffunction name="parseDebuggerSettings" output="false" access="public" returntype="void" hint="Parse Debugger Settings">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var fwSettings = getColdBoxSettings();
+			var fwSettings = instance.coldboxSettings;
 			var debugger = arguments.oConfig.getPropertyMixin("debugger","variables",structnew());
 
 			// defaults
@@ -705,7 +742,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseInterceptors --->
 	<cffunction name="parseInterceptors" output="false" access="public" returntype="void" hint="Parse Interceptors">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
 			var x = 1;
@@ -741,8 +778,8 @@ Loads a coldbox cfc configuration file
 	<!--- parseLogBox --->
 	<cffunction name="parseLogBox" output="false" access="public" returntype="void" hint="Parse LogBox">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
-		<cfargument name="configHash"   type="string"  required="true" hint="The initial logBox config hash"/>
+		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
+		<cfargument name="configHash"   type="any"  required="true" hint="The initial logBox config hash"/>
 		<cfscript>
 			var logBoxConfig 	  = instance.controller.getLogBox().getConfig();
 			var newConfigHash 	  = hash(logBoxConfig.getMemento().toString());
@@ -786,7 +823,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseWireBox --->
 	<cffunction name="parseWireBox" output="false" access="public" returntype="void" hint="Parse WireBox">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var wireBoxDSL		  = structnew();
 
@@ -822,7 +859,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseORM --->
 	<cffunction name="parseORM" output="false" access="public" returntype="void" hint="Parse ORM Scope">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var ormDSL	  			= structnew();
 
@@ -846,7 +883,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseValidation --->
 	<cffunction name="parseValidation" output="false" access="public" returntype="void" hint="Parse Validation Scope">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 
 			/**
@@ -888,10 +925,10 @@ Loads a coldbox cfc configuration file
 	<!--- parseFlashScope --->
 	<cffunction name="parseFlashScope" output="false" access="public" returntype="void" hint="Parse ORM settings">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var flashScopeDSL	  	= structnew();
-			var fwSettingsStruct 	= getColdboxSettings();
+			var fwSettingsStruct 	= instance.coldboxSettings;
 
 			// Default Config Structure
 			arguments.config.flash 	= fwSettingsStruct.flash;
@@ -909,7 +946,7 @@ Loads a coldbox cfc configuration file
 	<!--- parseModules --->
 	<cffunction name="parseModules" output="false" access="public" returntype="void" hint="Parse Module Settings">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 	  	type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="config" 	  	type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct  = arguments.config;
 			var modules 	  = arguments.oConfig.getPropertyMixin("modules","variables",structnew());
@@ -931,7 +968,7 @@ Loads a coldbox cfc configuration file
 
 	<cffunction name="detectEnvironment" access="private" returntype="void" hint="Detect the running environment and return the name" output="false" >
 		<cfargument name="oConfig" 		type="any" 	    required="true" hint="The config object"/>
-		<cfargument name="config" 		type="struct" 	required="true" hint="The config struct"/>
+		<cfargument name="config" 		type="any" 	required="true" hint="The config struct"/>
 		<cfscript>
 			var environments = arguments.oConfig.getPropertyMixin("environments","variables",structnew());
 			var configStruct = arguments.config;
@@ -970,11 +1007,75 @@ Loads a coldbox cfc configuration file
 	<cffunction name="invoker" access="private" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="method" 		type="string"  required="true" hint="Name of the method to call">
+		<cfargument name="method" 		type="any"  required="true" hint="Name of the method to call">
 		<!--- ************************************************************* --->
 		<cfinvoke component="#arguments.oConfig#" method="#arguments.method#" />
 	</cffunction>
 
+	<!--- loadLogBoxByConvention --->
+    <cffunction name="loadLogBoxByConvention" output="false" access="private" returntype="void" hint="Load logBox by convention">
+    	<cfargument name="logBoxConfig" type="any" required="true"/>
+    	<cfargument name="config" 		type="any" required="true"/>
+		<cfscript>
+    		var appRootPath 	  = instance.controller.getAppRootPath();
+			var appMappingAsDots  = "";
+			var configCreatePath  = "config.LogBox";
 
+			// Reset Configuration we have declared a configuration DSL
+			arguments.logBoxConfig.reset();
+			//AppMappingInvocation Path
+			appMappingAsDots = getAppMappingAsDots(arguments.config.appMapping);
+			//Config Create Path
+			if( len(appMappingAsDots) ){
+				configCreatePath = appMappingAsDots & "." & configCreatePath;
+			}
+			arguments.logBoxConfig.init(CFCConfigPath=configCreatePath).validate();
+			arguments.config["LogBoxConfig"] = arguments.logBoxConfig.getMemento();
+		</cfscript>
+    </cffunction>
+
+	<!--- loadLogBoxByFile --->
+    <cffunction name="loadLogBoxByFile" output="false" access="private" returntype="void" hint="Load logBox by file">
+    	<cfargument name="logBoxConfig" type="any" 		required="true"/>
+    	<cfargument name="filePath" 	type="any" 		required="true"/>
+		<cfscript>
+    		// Load according xml?
+			if( listFindNoCase("cfm,xml", listLast(arguments.filePath,".")) ){
+				arguments.logBoxConfig.init(XMLConfig=arguments.filePath).validate();
+			}
+			// Load according to CFC Path
+			else{
+				arguments.logBoxConfig.init(CFCConfigPath=arguments.filePath).validate();
+			}
+		</cfscript>
+    </cffunction>
+
+	<!--- loadCacheBoxByConvention --->
+    <cffunction name="loadCacheBoxByConvention" output="false" access="private" returntype="any" hint="Basically get the right config file to load in place">
+    	<cfargument name="config" type="any" required="true"/>
+		<cfscript>
+    		var appRootPath 	  = instance.controller.getAppRootPath();
+			var appMappingAsDots  = "";
+			var configCreatePath  = "config.CacheBox";
+
+			//AppMappingInvocation Path
+			appMappingAsDots = getAppMappingAsDots(arguments.config.appMapping);
+
+			//Config Create Path
+			if( len(appMappingAsDots) ){
+				configCreatePath = appMappingAsDots & "." & configCreatePath;
+			}
+
+			return configCreatePath;
+		</cfscript>
+    </cffunction>
+
+    <!--- getAppMappingAsDots --->
+    <cffunction name="getAppMappingAsDots" output="false" access="private" returntype="any" hint="Get the App Mapping as Dots">
+    	<cfargument name="appMapping" type="any" required="true" />
+		<cfscript>
+			return reReplace(arguments.appMapping,"(/|\\)",".","all");
+		</cfscript>
+    </cffunction>
 
 </cfcomponent>
