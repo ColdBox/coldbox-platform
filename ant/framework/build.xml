@@ -128,6 +128,7 @@
 		<!-- Cleanup for StandAlone Build -->
 		<delete dir="${dir.build}/ApplicationTemplates"/>
 		<delete dir="${dir.build}/install" />
+		<delete file="${dir.build}/ColdBoxDocs-${coldbox.version}.zip" />
 		<copy todir="${dir.build}">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />		
