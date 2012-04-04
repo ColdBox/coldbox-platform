@@ -1,3 +1,3 @@
-<cfcomponent output="true" extends="mxunit.runner.HttpAntRunner">
+<cfcomponent output="false" extends="mxunit.runner.HttpAntRunner">
 
 </cfcomponent>
