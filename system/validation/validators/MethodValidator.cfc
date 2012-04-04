@@ -5,12 +5,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 The ColdBox validator interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
 */
-component accessors="true"{
+component accessors="true" implements="coldbox.system.validation.validators.IValidator" singleton{
 
 	property name="name";
-	
+
 	MethodValidator function init(){
-		name = "Method";	
+		name = "Method";
 		return this;
 	}
 
@@ -23,22 +23,22 @@ component accessors="true"{
 	* @validationData.hint The validation data the validator was created with
 	*/
 	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
-		
-		
+
+
 		if( evaluate("arguments.target.#arguments.validationData#( arguments.targetValue, arguments.target )")  ){
 			return true;
 		}
-		
+
 		var args = {message="The '#arguments.field#' value does validate",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 		validationResult.addError( validationResult.newError(argumentCollection=args) );
 		return false;
 	}
-	
+
 	/**
 	* Get the name of the validator
 	*/
 	string function getName(){
 		return name;
 	}
-	
+
 }

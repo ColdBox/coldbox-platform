@@ -12,7 +12,7 @@
     	     section of the codlboxframework.com site. 
     </description>
 	
-	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
+	<property name="ftp.server"  		value="ftp.coldbox.org" />
 	<property name="ftp.remotedir" 		value="/httpdocs/downloads" />
 	<property name="src.cfdictionary"   value="../../install/IDE Extras/CFBuilder Dictionary" />
 	<property name="src.dictionary"     value="../../install/IDE Extras/CFEclipse Dictionary" />
