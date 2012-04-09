@@ -188,7 +188,8 @@ component singleton{
 	// Return the conjuction of N expressions as arguments
 	any function $and(){
 		var expressions = [];
-		for(var key in arguments){
+		var key = ""
+		for(key in arguments){
 			arrayAppend(expressions, arguments[key]);
 		}
 		return this.conjunction(expressions);
@@ -197,7 +198,8 @@ component singleton{
 	// Return the disjunction of N expressions as arguments
 	any function $or(){
 		var expressions = [];
-		for(var key in arguments){
+		var key = "";
+		for(key in arguments){
 			arrayAppend(expressions, arguments[key]);
 		}
 		return this.disjunction(expressions);
