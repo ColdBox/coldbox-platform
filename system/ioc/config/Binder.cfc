@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -292,7 +292,6 @@ Description :
 			// Set aliases, scopes and types
 			instance.mappings[ name ]
 				.setAlias( arguments.alias )
-				.setScope( this.SCOPES.NOSCOPE )
 				.setType( this.TYPES.CFC );
 			
 			// Loop and create alias references
@@ -417,6 +416,15 @@ Description :
 			return this;
     	</cfscript>
     </cffunction>
+    
+    <!--- virtualInheritance --->
+    <cffunction name="virtualInheritance" output="false" access="public" returntype="any" hint="Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping">
+		<cfargument name="mapping" required="true" hint="The mapping name of CFC to create the virtual inheritance from."/>
+    	<cfscript>
+    		currentMapping.setVirtualInheritance( mapping );
+			return this;
+    	</cfscript>
+    </cffunction>
 
 	<!--- asEagerInit --->
     <cffunction name="asEagerInit" output="false" access="public" returntype="any" hint="If this method is called, the mapped object will be created once the injector starts up. Basically, not lazy loaded">
@@ -468,6 +476,7 @@ Description :
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this setter method will receive"/>
 		<cfargument name="value" 	required="false" hint="The value to pass into the setter method."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value. Only used if using dsl or ref arguments"/>
+		<cfargument name="argName" 	required="false" hint="The name of the argument to use, if not passed, we default it to the setter name"/>
     	<cfscript>
     		currentMapping.addDISetter(argumentCollection=arguments);
     		return this;
@@ -532,6 +541,25 @@ Description :
 		</cfscript>
     </cffunction>
 
+	<!--- extraAttributes --->
+    <cffunction name="extraAttributes" output="false" access="public" returntype="any" hint="Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.">
+    	<cfargument name="data" type="struct" required="true" hint="The data structure to store with the maping"/>
+		<cfscript>
+			currentMapping.setExtraAttributes( arguments.data );
+			return this;
+		</cfscript>
+    </cffunction>
+    
+    <!--- mixins --->    
+    <cffunction name="mixins" output="false" access="public" returntype="any" hint="Adds one, a list or an array of UDF templates to mixin to a CFC">    
+    	<cfargument name="mixins" type="any" required="true" default="" hint="The udf include location(s) to mixin at runtime"/>
+    	<cfscript>	
+			if( isSimpleValue( arguments.mixins ) ){ arguments.mixins = listToArray( arguments.mixins ); }    
+			currentMapping.setMixins( arguments.mixins );
+			return this;
+    	</cfscript>    
+    </cffunction>
+    
 <!------------------------------------------- STOP RECURSIONS ------------------------------------------>
 
 	<!--- getStopRecursions --->
@@ -637,8 +665,15 @@ Description :
 		<cfargument name="lastAccessTimeout" 	required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
 		<cfargument name="provider" 			required="false" default="default" hint="Uses the 'default' cache provider by default"/>
 		<cfscript>
-			// if key not passed, use the same mapping name
-			if( NOT len(arguments.key) ){ arguments.key = currentMapping.getName(); }
+			// if key not passed, build a mapping name
+			if( NOT len(arguments.key) ){ 
+				if( len( currentMapping.getPath() ) ){
+					arguments.key = "wirebox-#currentMapping.getPath()#";					
+				}
+				else{
+					arguments.key = "wirebox-#currentMapping.getName()#";	
+				}
+			}
 			
 			// store the mapping info.
 			currentMapping.setScope( this.SCOPES.CACHEBOX ).setCacheProperties(argumentCollection=arguments);

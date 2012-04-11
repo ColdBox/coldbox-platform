@@ -1,4 +1,4 @@
-<cfcomponent name="interceptorStateTest" extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent name="interceptorStateTest" extends="coldbox.system.testing.BaseTestCase">
 	<!--- setup and teardown --->
 	
 	<cffunction name="setUp" returntype="void" access="public">

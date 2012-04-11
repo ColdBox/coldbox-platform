@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -15,22 +15,24 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 	
-	<cfscript>
-		instance = structnew();
-	</cfscript>
-
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="ColdboxCacheFlash" hint="Constructor">
-    	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
+    	<cfargument name="controller" 	type="any" required="true" hint="The ColdBox Controller" colddoc:generic="coldbox.system.web.Controller"/>
+		<cfargument name="defaults" 	type="any" required="false" default="#structNew()#" hint="Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]" colddoc:generic="struct"/>
     	<cfscript>
     		var cacheName = "default";
 			
-    		super.init(arguments.controller);
+			super.init(argumentCollection=arguments);
 			
-			// get the cacheName from the custom settings
+    		// get the cacheName from the custom settings: left for compatibility
 			if( arguments.controller.settingExists("flashRAM_cacheName") ){
 				cacheName = arguments.controller.getSetting("flashRAM_cacheName");
 			}
+			// check via properties
+			if( propertyExists("cacheName") ){
+				cacheName = getProperty("cacheName");
+			}			
+			
 			// Setup the cache
 			instance.cache = arguments.controller.getColdboxOCM(cacheName);
 			
@@ -43,7 +45,7 @@ Description :
 				instance.flashKey = "cbox_flash_" & hash(cookie.cfid & cookie.cftoken);
 			}
 			else{
-				getUtil().dumpit(message="Cannot find a jsessionid, or cfid/cftoken in the cookie scope. Please verify",type="ColdboxCacheFlash.CFIDException");
+				getUtil().throwit(message="Cannot find a jsessionid, or cfid/cftoken in the cookie scope. Please verify",type="ColdboxCacheFlash.CFIDException");
 			}
 			
 			return this;
@@ -58,9 +60,10 @@ Description :
 	</cffunction>
 
 	<!--- saveFlash --->
-	<cffunction name="saveFlash" output="false" access="public" returntype="void" hint="Save the flash storage in preparing to go to the next request">
+	<cffunction name="saveFlash" output="false" access="public" returntype="any" hint="Save the flash storage in preparing to go to the next request">
 		<!--- Now Save the Storage --->
 		<cfset instance.cache.set(getFlashKey(),getScope(),2)>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- flashExists --->
@@ -79,8 +82,9 @@ Description :
 	</cffunction>
 	
 	<!--- removeFlash --->
-    <cffunction name="removeFlash" output="false" access="public" returntype="void" hint="Remove the entire flash storage">
+    <cffunction name="removeFlash" output="false" access="public" returntype="any" hint="Remove the entire flash storage">
     	<cfset instance.cache.clear(getFlashKey())>
+		<cfreturn this>
     </cffunction>
 
 </cfcomponent>

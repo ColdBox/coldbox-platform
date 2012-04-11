@@ -1,27 +1,37 @@
-<cfoutput>
+﻿<cfoutput>
 <cfparam name="url.frequency" default="0">
 <cfif url.frequency neq 0>
 <script type="text/javascript">
 setTimeout("location.reload(true);",#url.frequency*1000#);
 </script>
 </cfif>
-
 <!--- CacheBox Panel Accordion --->
-<div class="cachebox_titles" onClick="cachebox_toggle('cachebox_cache')">&nbsp;CacheBox Report Monitor</div>
+<div class="cachebox_titles" onClick="cachebox_toggle('cachebox_cache')">&nbsp;CacheBox Monitor</div>
 <!--- Panel Content --->
-<div class="cachebox_debugContentView" id="cachebox_cache">
+<div class="cachebox_debugContent<cfif attributes.expandedPanel OR url.cbox_cacheMonitor>View</cfif>" id="cachebox_cache">
 
 	<!--- ToolBar --->
 	<div style="margin-bottom:5px;">
-	
-		<!--- Refresh Monitor --->
-		<strong>Refresh Monitor: </strong>
-		<select id="frequency" style="font-size:10px" onChange="cachebox_pollmonitor('cache',this.value,'#URLBase#')" title="Refresh Frequency">
-			<option value="0">No Polling</option>
-			<cfloop from="5" to="30" index="i" step="5">
-			<option value="#i#" <cfif url.frequency eq i>selected='selected'</cfif>>#i# sec</option>
-			</cfloop>
-		</select>
+		
+		<!--- Show Monitor or Not --->
+		<cfif attributes.enableMonitor>
+		
+			<!--- Refresh Monitor --->
+			<strong>Refresh Monitor: </strong>
+			<select id="frequency" style="font-size:10px" onChange="cachebox_pollmonitor('cache',this.value,'#URLBase#')" title="Refresh Frequency">
+				<option value="0">No Polling</option>
+				<cfloop from="5" to="30" index="i" step="5">
+				<option value="#i#" <cfif url.frequency eq i>selected='selected'</cfif>>#i# sec</option>
+				</cfloop>
+			</select>
+			
+			<cfif NOT url.cbox_cacheMonitor>
+				<!--- Button: Open Cache Monitor --->
+				<input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" 
+					   title="Open the cache monitor in a new window." 
+					   onClick="cachebox_pollmonitor('cache',0,'#URLBase#',true)">
+			</cfif>
+		</cfif>
 				
 		<!--- Button: CacheBox ExpireAll --->
 		<input type="button" value="CacheBox ExpireAll()" 

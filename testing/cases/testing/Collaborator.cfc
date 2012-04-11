@@ -1,4 +1,4 @@
-<cfcomponent output="false">
+﻿<cfcomponent output="false">
 
 	<cffunction name="getDataFromDB" access="public" returntype="query" hint="A nice query from the db" output="false" >
 		<cfset var q = 0>

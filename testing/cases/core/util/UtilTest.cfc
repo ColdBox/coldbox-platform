@@ -1,4 +1,4 @@
-<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
 		util = CreateObject("component","coldbox.system.core.util.Util");

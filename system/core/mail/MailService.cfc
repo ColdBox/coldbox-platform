@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -68,6 +68,23 @@ Description :
 			}
 			if( NOT mail.propertyExists("port") AND len(mailSettings.getPort()) ){
 				mail.setPort( mailSettings.getPort() );
+			}
+			
+			// set default mail attributes if the MailSettings bean has values
+			if( NOT len(mail.getTo()) AND len(mailSettings.getValue("to","")) ){
+				mail.setTo( mailSettings.getValue("to") );
+			}
+			if( NOT len(mail.getFrom()) AND len(mailSettings.getValue("from","")) ){
+				mail.setFrom( mailSettings.getValue("from") );
+			}
+			if( ( NOT mail.propertyExists("bcc") OR NOT len(mail.getBcc()) ) AND len(mailSettings.getValue("bcc","")) ){
+				mail.setBcc( mailSettings.getValue("bcc") );
+			}
+			if( ( NOT mail.propertyExists("replyto") OR NOT len(mail.getReplyTo()) ) AND len(mailSettings.getValue("replyto","")) ){
+				mail.setReplyTo( mailSettings.getValue("replyto") );
+			}
+			if( ( NOT mail.propertyExists("type") OR NOT len(mail.getType()) ) AND len(mailSettings.getValue("type","")) ){
+				mail.setType( mailSettings.getValue("type") );
 			}
 			
 			return mail;

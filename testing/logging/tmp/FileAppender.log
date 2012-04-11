@@ -1,0 +1,2 @@
+"Severity","Appender","Date","Time","Category","Message"
+"DEBUG","FileAppender","02/15/2012","14:18:11","ROOT","Hello man"

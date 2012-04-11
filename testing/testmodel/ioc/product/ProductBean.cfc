@@ -1,4 +1,4 @@
-<cfcomponent name="Product">
+﻿<cfcomponent name="Product">
 
 	<cffunction name="init" output="false" returntype="any">
 		<cfargument name="ProductDAO" type="any" required="true" inject="model">

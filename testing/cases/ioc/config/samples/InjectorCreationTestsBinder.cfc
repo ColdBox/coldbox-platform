@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -36,7 +36,7 @@ Description :
 		// map to constant value, no need for scope
 		map("jsonProperty").toValue("[{name:'luis'},{name:'Jose'}]");
 		// map to ws
-		map("coldboxWS").toWebservice("http://www.coldbox.org/distribution/updatews.cfc?wsdl");
+		map("coldboxWS").toWebservice("http://coldbox.jfetmac/distribution/test.cfc?wsdl");
 		// map to rss feed
 		map("googleNews")
 			.toRSS("http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&output=rss")
@@ -46,11 +46,15 @@ Description :
 		// map simple constructor arg
 		map("categoryDAO").to("#myPath#.ioc.category.CategoryDAO")
 			.asSingleton().noAutowire().initArg(name="dsn",value="MyDSN");
+		mapPath("#myPath#.ioc.product.ProductDAO").asSingleton();
+		mapPath("#myPath#.ioc.product.ProductService")
+			.noAutowire().initArg(name="ProductDAO",ref="ProductDAO");
 		// map using all 3 injection types
 		mapPath("#myPath#.ioc.category.CategoryService")
-			.noAutowire().initArg(name="categoryDA",ref="categoryDAO")
+			.noAutowire().initArg(name="categoryDAO",ref="categoryDAO")
 			.property(name="productService",ref="productService")
-			.setter(name="jsonProperty",ref="jsonProperty")
+			.setter(name="jsonProperty",ref="jsonProperty",argName="MyJsonProperty")
+			.setter(name="jsonProperty2",ref="jsonProperty")
 			.into(this.SCOPES.SINGLETON);
 		// map by convention
 		map("CategoryBean").to("#myPath#.ioc.category.CategoryBean");
@@ -76,6 +80,11 @@ Description :
 		
 		map("calendar2")
         	.toJava("java.util.GregorianCalendar");
+        	
+        // Mixins Beans
+        map("MixinTest")
+        	.to("#myPath#.ioc.Simple")
+        	.mixins( ["/coldbox/testing/testmodel/ioc/mixins/mixin1.cfm", "/coldbox/testing/testmodel/ioc/mixins/mixin2.cfm" ] );
 				  
 	}	
 </cfscript>

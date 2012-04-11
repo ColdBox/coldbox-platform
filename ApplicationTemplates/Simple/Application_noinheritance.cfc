@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -54,6 +54,7 @@ Description :
 		</cfif>
 		<!--- On Request Start via ColdBox --->
 		<cfset application.cbBootstrap.onRequestStart(arguments.targetPage)>
+		<cfreturn true>
 	</cffunction>
 	
 	<!--- on Application End --->

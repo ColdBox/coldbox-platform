@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -40,14 +40,18 @@ Description :
 		<cfargument name="CFC" required="true" hint="The cfc to mixin">
 		<cfset var udf = 0>
 		
+		<cfif NOT structKeyExists(arguments.CFC, "$mixed")>
 		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
+			<cfif NOT structKeyExists(arguments.CFC, "$mixed")>
 			<cfscript>
 				for( udf in instance.mixins ){
 					arguments.CFC[udf] = instance.mixins[udf];
 				}
 				arguments.CFC.$mixed = true;
 			</cfscript>
+			</cfif>
 		</cflock>		
+		</cfif>
 	</cffunction>
 	
 	<!--- Stop the injection, do cleanup --->

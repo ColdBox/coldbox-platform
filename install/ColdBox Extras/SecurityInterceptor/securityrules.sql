@@ -1,4 +1,4 @@
---Primary key, can be anything you want.
+﻿--Primary key, can be anything you want.
 	
 CREATE TABLE securityrules
 (
@@ -9,6 +9,7 @@ CREATE TABLE securityrules
 	permissions VARCHAR(255),
 	redirect VARCHAR(255),
 	useSSL bit NOT NULL DEFAULT 0
+	'match' varchar(10) DEFAULT 'event'
 	PRIMARY KEY (securityrule_id),
 	UNIQUE (securityrule_id)
 ) 

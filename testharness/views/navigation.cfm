@@ -1,4 +1,4 @@
-<cfoutput>
+﻿<cfoutput>
 <p><a href="#getSetting("sesbaseURL")#">#getresource("homebutton")#</a></p>
 
 <p><a href="#event.buildLink('ehGeneral.dumpsettings')#" target="_blank">Dump Settings</a></p>

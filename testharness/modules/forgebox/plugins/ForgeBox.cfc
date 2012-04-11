@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
@@ -31,7 +31,6 @@ Settings:
 		};
 	</cfscript>
 
-
 	<cffunction name="init" access="public" returnType="ForgeBox" output="false" hint="Constructor">
 		<cfargument name="controller" type="any"/>
 		<cfscript>
@@ -39,7 +38,7 @@ Settings:
 			super.init(arguments.controller);
 			
 			setPluginName("ForgeBox API REST Wrapper");
-			setPluginVersion("1.0");
+			setPluginVersion("2.0");
 			setPluginDescription("A REST wrapper to the ForgeBox API service");
 			setPluginAuthor("Luis Majano");
 			setPluginAuthorURL("http://www.luismajano.com");
@@ -183,7 +182,7 @@ Settings:
 			if( len(HTTPResults.errorDetail) ){ results.error = true; }
 			
 			// Try to inflate JSON
-			results.response = getPlugin("JSON").decode(results.rawResponse);
+			results.response = deserializeJSON(results.rawResponse,false);
 			
 			return results;
 		</cfscript>	

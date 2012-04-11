@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -62,8 +62,8 @@ Description :
     </cffunction>
 	
 	<!--- clear --->
-    <cffunction name="clear" output="false" access="public" returntype="void" hint="Clear the singletons scope">
-    	<cfset instance.singletons.clear()>
+    <cffunction name="clear" output="false" access="public" returntype="void" hint="Clear the singletons scope and re-create it">
+		<cfset instance.singletons = createObject("java","java.util.concurrent.ConcurrentHashMap").init()>
     </cffunction>
 	
 	<!--- getSingletons --->

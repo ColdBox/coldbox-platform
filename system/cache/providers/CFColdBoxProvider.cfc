@@ -1,4 +1,4 @@
-/**
+﻿/**
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -18,11 +18,6 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 		// Prefixes
 		this.VIEW_CACHEKEY_PREFIX 			= "cf_view-";
 		this.EVENT_CACHEKEY_PREFIX 			= "cf_event-";
-		this.HANDLER_CACHEKEY_PREFIX 		= "cf_handler-";
-		this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cf_interceptor-";
-		this.PLUGIN_CACHEKEY_PREFIX 		= "cf_plugin-";
-		this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cf_customplugin-";
-		
 		
 		// URL Facade Utility
 		instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
@@ -33,10 +28,6 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	// Cache Key prefixes
 	any function getViewCacheKeyPrefix() output=false{ return this.VIEW_CACHEKEY_PREFIX; }
 	any function getEventCacheKeyPrefix() output=false{ return this.EVENT_CACHEKEY_PREFIX; }
-	any function getHandlerCacheKeyPrefix() output=false{ return this.HANDLER_CACHEKEY_PREFIX; }
-	any function getInterceptorCacheKeyPrefix() output=false{ return this.INTERCEPTOR_CACHEKEY_PREFIX; }
-	any function getPluginCacheKeyPrefix() output=false{ return this.PLUGIN_CACHEKEY_PREFIX; }
-	any function getCustomPluginCacheKeyPrefix() output=false{ return this.CUSTOMPLUGIN_CACHEKEY_PREFIX; }
 	
 	// set the coldbox controller
 	void function setColdbox(required any coldbox) output=false{
@@ -48,38 +39,6 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	
 	// Get Event URL Facade Tool
 	any function getEventURLFacade() output=false{ return instance.eventURLFacade; }
-	
-	// Get Item Type Counts
-	any function getItemTypes() output=false{
-		var x 			= 1;
-		var itemList 	= getKeys();
-		var itemTypes	= new coldbox.system.cache.util.ItemTypeCount();
-		var itemLen		= arrayLen(itemList);
-		
-		//Sort the listing.
-		arraySort(itemList, "textnocase");
-
-		//Count objects
-		for (x=1; x lte itemLen; x++){
-			
-			if ( findnocase( getPluginCacheKeyPrefix() , itemList[x]) )
-				itemTypes.plugins++;
-			else if ( findnocase( getCustomPluginCacheKeyPrefix() , itemList[x]) )
-				itemTypes.customPlugins++;
-			else if ( findnocase( getHandlerCacheKeyPrefix() , itemList[x]) )
-				itemTypes.handlers++;
-			else if ( findnocase( getInterceptorCacheKeyPrefix() , itemList[x]) )
-				itemTypes.interceptors++;
-			else if ( findnocase( getEventCacheKeyPrefix() , itemList[x]) )
-				itemTypes.events++;
-			else if ( findnocase( getViewCacheKeyPrefix() , itemList[x]) )
-				itemTypes.views++;
-			else
-				itemTypes.other++;
-		}
-		
-		return itemTypes;
-	}
 	
 	/**
 	* Clear all events

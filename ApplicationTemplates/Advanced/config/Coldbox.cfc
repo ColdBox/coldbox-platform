@@ -1,4 +1,4 @@
-<cfcomponent output="false" hint="My App Configuration">
+﻿<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
 structures/arrays to create for configuration
@@ -7,9 +7,8 @@ structures/arrays to create for configuration
 - settings (struct)
 - conventions (struct)
 - environments (struct)
-- ioc (struct)
-- models (struct) DEPRECATED use Wirebox instead
 - wirebox (struct)
+- ioc (struct)
 - debugger (struct)
 - mailSettings (struct)
 - i18n (struct)
@@ -22,6 +21,9 @@ structures/arrays to create for configuration
 - interceptors (array of structs)
 - modules (struct)
 - logBox (struct)
+- flash (struct)
+- orm (struct)
+- validation (struct)
 
 Available objects in variable scope
 - controller
@@ -35,23 +37,22 @@ Optional Methods
 - {environment}() : The name of the environment found and called by the framework.
 
 */
-	
+
 	// Configure ColdBox Application
 	function configure(){
-	
+
 		// coldbox directives
 		coldbox = {
 			//Application Setup
 			appName 				= "Your app name here",
 			eventName 				= "event",
-			
+
 			//Development Settings
 			debugMode				= true,
 			debugPassword			= "",
 			reinitPassword			= "",
 			handlersIndexAutoReload = true,
-			configAutoReload		= false,
-			
+
 			//Implicit Events
 			defaultEvent			= "General.index",
 			requestStartHandler		= "Main.onRequestStart",
@@ -61,7 +62,7 @@ Optional Methods
 			sessionStartHandler 	= "",
 			sessionEndHandler		= "",
 			missingTemplateHandler	= "",
-			
+
 			//Extension Points
 			UDFLibraryFile 				= "includes/helpers/ApplicationHelper.cfm",
 			coldboxExtensionsLocation 	= "",
@@ -71,31 +72,30 @@ Optional Methods
 			layoutsExternalLocation 	= "",
 			handlersExternalLocation  	= "",
 			requestContextDecorator 	= "",
-			
+
 			//Error/Exception Handling
 			exceptionHandler		= "",
 			onInvalidEvent			= "",
 			customErrorTemplate		= "",
-				
+
 			//Application Aspects
 			handlerCaching 			= false,
 			eventCaching			= false,
-			proxyReturnCollection 	= false,
-			flashURLPersistScope	= "session"	
+			proxyReturnCollection 	= false
 		};
-	
+
 		// custom settings
 		settings = {
-			
+
 		};
-		
+
 		// environment settings, create a detectEnvironment() method to detect it yourself.
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the cgi.http_host.
 		environments = {
 			//development = "^cf8.,^railo."
 		};
-		
+
 		// Module Directives
 		modules = {
 			//Turn to false in production
@@ -103,9 +103,9 @@ Optional Methods
 			// An array of modules names to load, empty means all of them
 			include = [],
 			// An array of modules names to NOT load, empty means none
-			exclude = [] 
+			exclude = []
 		};
-		
+
 		//LogBox DSL
 		logBox = {
 			// Define Appenders
@@ -115,42 +115,72 @@ Optional Methods
 			// Root Logger
 			root = { levelmax="INFO", appenders="*" },
 			// Implicit Level Categories
-			info = [ "coldbox.system" ] 
+			info = [ "coldbox.system" ]
 		};
-		
+
 		//Layout Settings
 		layoutSettings = {
 			defaultLayout = "Layout.Main.cfm",
 			defaultView   = ""
 		};
-		
+
 		//WireBox Integration
-		wireBox = { 
+		wireBox = {
 			enabled = true,
-			//binder="config.WireBox", 
-			singletonReload=true 
+			//binder="config.WireBox",
+			singletonReload=true
 		};
-		
+
 		//Interceptor Settings
 		interceptorSettings = {
 			throwOnInvalidStates = false,
 			customInterceptionPoints = ""
 		};
-		
+
 		//Register interceptors as an array, we need order
 		interceptors = [
-			//Autowire
-			{class="coldbox.system.interceptors.Autowire",
-			 properties={}
-			},
 			//SES
 			{class="coldbox.system.interceptors.SES",
 			 properties={}
 			}
 		];
-		
-		
+
+		// Object & Form Validation
+		validation = {
+			// manager = "class path" or none at all to use ColdBox as the validation manager
+			// The shared constraints for your application.
+			sharedConstraints = {
+				// EX
+				// myForm = { name={required=true}, age={type="numeric",min="18"} }
+			}
+		};
+
+
 		/*
+
+		// ORM services, injection, etc
+		orm = {
+			// entity injection
+			injection = {
+				// enable it
+				enabled = true,
+				// the include list for injection
+				include = "",
+				// the exclude list for injection
+				exclude = ""
+			}
+		};
+
+		// flash scope configuration
+		flash = {
+			scope = "session,client,cluster,ColdboxCache,or full path",
+			properties = {}, // constructor properties for the flash scope implementation
+			inflateToRC = true, // automatically inflate flash data into the RC scope
+			inflateToPRC = false, // automatically inflate flash data into the PRC scope
+			autoPurge = true, // automatically purge flash data for you
+			autoSave = true // automatically save flash scopes at end of a request and on relocations.
+		};
+
 		//Register Layouts
 		layouts = [
 			{ name = "login",
@@ -159,7 +189,7 @@ Optional Methods
 			  folders = "tags,pdf/single"
 			}
 		];
-		
+
 		//Conventions
 		conventions = {
 			handlersLocation = "handlers",
@@ -167,10 +197,9 @@ Optional Methods
 			viewsLocation 	 = "views",
 			layoutsLocation  = "layouts",
 			modelsLocation 	 = "model",
-			modulesExternalLocation  = "",
 			eventAction 	 = "index"
 		};
-		
+
 		//IOC Integration
 		ioc = {
 			framework 		= "lightwire",
@@ -182,13 +211,14 @@ Optional Methods
 				definitionFile = "config/parent.xml.cfm"
 			}
 		};
-		
+
 		//Debugger Settings
 		debugger = {
 			enableDumpVar = false,
 			persistentRequestProfilers = true,
 			maxPersistentRequestProfilers = 10,
 			maxRCPanelQueryRows = 50,
+			showRCSnapshots = false,
 			//Panels
 			showTracerPanel = true,
 			expandedTracerPanel = true,
@@ -201,7 +231,7 @@ Optional Methods
 			showModulesPanel = true,
 			expandedModulesPanel = false
 		};
-		
+
 		//Mailsettings
 		mailSettings = {
 			server = "",
@@ -209,21 +239,21 @@ Optional Methods
 			password = "",
 			port = 25
 		};
-		
+
 		//i18n & Localization
 		i18n = {
 			defaultResourceBundle = "includes/i18n/main",
 			defaultLocale = "en_US",
 			localeStorage = "session",
-			unknownTranslation = "**NOT FOUND**"		
+			unknownTranslation = "**NOT FOUND**"
 		};
-		
+
 		//webservices
 		webservices = {
 			testWS = "http://www.test.com/test.cfc?wsdl",
-			AnotherTestWS = "http://www.coldbox.org/distribution/updatews.cfc?wsdl"	
+			AnotherTestWS = "http://www.coldbox.org/distribution/updatews.cfc?wsdl"
 		};
-		
+
 		//Datasources
 		datasources = {
 			mysite   = {name="mySite", dbType="mysql", username="root", password="pass"},
@@ -232,6 +262,6 @@ Optional Methods
 		*/
 
 	}
-	
+
 </cfscript>
 </cfcomponent>

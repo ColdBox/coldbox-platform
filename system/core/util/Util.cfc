@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -39,7 +39,7 @@ Description :
 	<cffunction name="fileLastModified" access="public" returntype="string" output="false" hint="Get the last modified date of a file">
 		<cfargument name="filename" required="true">
 		<cfscript>
-		var objFile =  createObject("java","java.io.File").init(javaCast("string",arguments.filename));
+		var objFile =  createObject("java","java.io.File").init(javaCast("string", getAbsolutePath( arguments.filename ) ));
 		// Calculate adjustments fot timezone and daylightsavindtime
 		var offset = ((getTimeZoneInfo().utcHourOffset)+1)*-3600;
 		// Date is returned as number of seconds since 1-1-1970

@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -172,9 +172,8 @@ Description :
 			var collection = instance.context;
 			if( arguments.private ){ collection = instance.privateContext; }
 
-			if( valueExists(arguments.name,arguments.private) ){
-				structDelete(collection,arguments.name);
-			}
+			structDelete(collection,arguments.name);
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -201,8 +200,16 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="getCurrentView" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="string" output="false">
+	<cffunction name="getCurrentView" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="any" output="false">
 		<cfreturn getValue("currentView","",true)>
+	</cffunction>
+
+	<cffunction name="getCurrentViewArgs" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="any" output="false">
+		<cfreturn getValue("currentViewArgs", structNew(), true)>
+	</cffunction>
+
+	<cffunction name="getCurrentViewModule" access="public" hint="Gets the current set views's module for rendering" returntype="any" output="false">
+		<cfreturn getValue("viewModule","",true)>
 	</cffunction>
 
 	<cffunction name="setView" access="public" returntype="any" hint="I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout"  output="false">
@@ -214,15 +221,20 @@ Description :
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" hint="The last access timeout">
 		<cfargument name="cacheSuffix" 				required="false" type="string"  default="" hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<cfargument name="layout" 					required="false" type="string"  hint="You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.">
+		<cfargument name="module" 					required="false" type="string"  default="" hint="Is the view from a module or not"/>
+		<cfargument name="args" 					required="false" type="struct"  default="#structNew()#" hint="An optional set of arguments that will be available when the view is rendered"/>
 		<!--- ************************************************************* --->
 	    <cfscript>
 		    var key 		= "";
 		    var cacheEntry 	= structnew();
 			var cModule		= getCurrentModule();
-			
+
 			// view and name mesh
 			if( structKeyExists(arguments,"name") ){ arguments.view = arguments.name; }
-			
+
+			// stash the view module
+ 			instance.privateContext["viewModule"] = arguments.module;
+
 			// Local Override
 			if( structKeyExists(arguments,"layout") ){
 				setLayout(arguments.layout);
@@ -287,12 +299,19 @@ Description :
 
 			//Set the current view to render.
 			instance.privateContext["currentView"] = arguments.view;
+
+			// Record the optional arguments
+			setValue("currentViewArgs", arguments.args, true);
 			return this;
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout for rendering" returntype="any" output="false">
 		<cfreturn getValue("currentLayout","",true)>
+	</cffunction>
+
+	<cffunction name="getCurrentLayoutModule" access="public" hint="Gets the current set layout's module for rendering" returntype="any" output="false">
+		<cfreturn getValue("layoutmodule","",true)>
 	</cffunction>
 
 	<cffunction name="getCurrentRoute" output="false" access="public" returntype="any" hint="Get the current request's SES route that matched">
@@ -303,29 +322,46 @@ Description :
     	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
 
-	<cffunction name="setLayout" access="public" returntype="any" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
-		<cfargument name="name"  hint="The name or alias of the layout file to set." type="any" >
-		<cfscript>
-			var layouts = getRegisteredLayouts();
+    <cffunction name="noLayout" output="false" access="public" returntype="any" hint="Mark this request to not use a layout for rendering">
+    	<cfscript>
+			// remove layout if any
+			structDelete(instance.privateContext,"currentLayout");
+			// set layout overwritten flag.
+			instance.privateContext["layoutoverride"] = true;
+			return this;
+    	</cfscript>
+    </cffunction>
 
+	<cffunction name="setLayout" access="public" returntype="any" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout"  output="false">
+		<cfargument name="name" 	required="true"  hint="The name or alias of the layout file to set.">
+		<cfargument name="module" 	required="false" default="" hint="Is the layout from a module or not"/>
+		<cfscript>
+			var layouts = instance.registeredLayouts;
 			// Set direct layout first.
 			instance.privateContext["currentLayout"] = trim(arguments.name) & ".cfm";
-
 			// Do an Alias Check and override if found.
 			if( structKeyExists(layouts,arguments.name) ){
 				instance.privateContext["currentLayout"] = layouts[arguments.name];
 			}
-
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
+			// module layout?
+			instance.privateContext["layoutmodule"] = arguments.module;
 			return this;
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="getModuleRoot" output="false" access="public" returntype="any" hint="Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.">
+		<cfargument name="module" required="false" default="" hint="Optional name of the module you want the root for, defaults to the current module">
 		<cfscript>
-			if( len(getCurrentModule()) ){
-				return instance.modules[getCurrentModule()].mapping;
+			var theModule = "";
+			if (structKeyExists(arguments,"module") and len(arguments.module)) {
+				theModule = arguments.module;
+			} else {
+				theModule = getCurrentModule();
+			}
+			if( len(theModule) ){
+				return instance.modules[theModule].mapping;
 			}
 			return "";
 		</cfscript>
@@ -396,7 +432,7 @@ Description :
 				setValue(name="coldbox_norender",value=true,private=true);
 			else
 				removeValue(name="coldbox_norender",private=true);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -595,7 +631,7 @@ Description :
 
 	<cffunction name="renderData" access="public" returntype="any" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
+		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
 		<cfargument name="data" 		required="true"  type="any"    hint="The data you would like to marshall and return by the framework">
 		<cfargument name="contentType"  required="true"  type="string"  default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
 		<cfargument name="encoding" 	required="false" type="string"  default="utf-8" hint="The default character encoding to use"/>
@@ -603,8 +639,8 @@ Description :
 		<cfargument name="statusText"   required="false" type="string"  default="" hint="Explains the HTTP status code sent to the browser." />
 		<cfargument name="location" 	required="false" type="string"  default="" hint="Optional argument used to set the HTTP Location header"/>
 		<!--- ************************************************************* --->
-		<cfargument name="jsonCase" 		type="string" required="false" default="lower" hint="JSON Only: Whether to use lower case, upper case or no (none) case translations in the JSON transformation. Lower is default"/>
-		<cfargument name="jsonQueryFormat" 	type="string" required="false" default="query" hint="JSON Only: query or array" />
+		<cfargument name="jsonCallback" 	type="string"  required="false" default="" hint="Only needed when using JSONP, this is the callback to add to the JSON packet"/>
+		<cfargument name="jsonQueryFormat" 	type="string"  required="false" default="query" hint="JSON Only: query or array format for encoding. The default is CF query standard" />
 		<cfargument name="jsonAsText" 		type="boolean" required="false" default="false" hint="If set to false, defaults content mime-type to application/json, else will change encoding to plain/text"/>
 		<!--- ************************************************************* --->
 		<cfargument name="xmlColumnList"    type="string"   required="false" default="" hint="XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query">
@@ -612,12 +648,13 @@ Description :
 		<cfargument name="xmlListDelimiter" type="string"   required="false" default="," hint="XML Only: The delimiter in the list. Comma by default">
 		<cfargument name="xmlRootName"      type="string"   required="false" default="" hint="XML Only: The name of the initial root element of the XML packet">
 		<!--- ************************************************************* --->
+		<cfargument name="pdfArgs"      type="struct"   required="false" default="#structNew()#" hint="All the PDF arguments to pass along to the CFDocument tag.">
 		<cfscript>
 			var rd = structnew();
 
 			// Validate rendering type
-			if( not reFindnocase("^(JSON|JSONT|WDDX|XML|PLAIN|HTML|TEXT)$",arguments.type) ){
-				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
+			if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type) ){
+				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF","RequestContext.InvalidRenderTypeException");
 			}
 
 			// Default Values for incoming variables
@@ -625,6 +662,7 @@ Description :
 			rd.data = arguments.data;
 			rd.encoding = arguments.encoding;
 			rd.contentType = "text/html";
+			rd.isBinary = false;
 
 			// HTTP status
 			rd.statusCode = arguments.statusCode;
@@ -637,12 +675,15 @@ Description :
 			rd.xmlRootName = arguments.xmlRootName;
 
 			// JSON Properties
-			rd.jsonCase = arguments.jsonCase;
-			rd.jsonQueryFormat = arguments.jsonQueryFormat;
+			rd.jsonQueryFormat 	= arguments.jsonQueryFormat;
+			rd.jsonCallBack 	= arguments.jsonCallBack;
+
+			// PDF properties
+			rd.pdfArgs = arguments.pdfArgs;
 
 			// Automatic Content Types by marshalling type
 			switch( rd.type ){
-				case "JSON" : {
+				case "JSON" : case "JSONP" : {
 					rd.contenttype = 'application/json';
 					if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
 					break;
@@ -654,19 +695,24 @@ Description :
 				}
 				case "XML" : case "WDDX" : { rd.contentType = "text/xml"; break; }
 				case "TEXT" : { rd.contentType = "text/plain"; break; }
+				case "PDF" : {
+					rd.contentType = "application/pdf";
+					rd.isBinary = true;
+					break;
+				}
 			}
 
 			// If contenttype passed, then override it?
 			if( len(trim(arguments.contentType)) ){
 				rd.contentType = arguments.contentType;
 			}
-			
+
 			// HTTP Location?
 			if( len(arguments.location) ){ setHTTPHeader(name="location",value="arguments.location"); }
 
 			// Save Rendering data privately.
 			setValue(name='cbox_renderdata',value=rd,private=true);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -715,7 +761,7 @@ Description :
 		<cfelse>
 			<cfthrow message="Invalid header arguments" detail="Pass in either a statusCode or name argument" type="RequestContext.InvalidHTTPHeaderParameters">
 		</cfif>
-		
+
 		<cfreturn this>
 	</cffunction>
 
@@ -724,21 +770,21 @@ Description :
     	<cfscript>
     		var results 	= structnew();
 			var authHeader 	= "";
-			
+
 			// defaults
 			results.username = "";
 			results.password = "";
-			
+
 			// set credentials
 			authHeader = getHTTPHeader("Authorization","");
-			
+
 			// continue if it exists
 			if( len(authHeader) ){
 				authHeader = charsetEncode( binaryDecode( listLast(authHeader," "),"Base64"), "utf-8");
 				results.username = listFirst( authHeader, ":");
 				results.password = listLast( authHeader, ":");
 			}
-			
+
 			return results;
     	</cfscript>
     </cffunction>

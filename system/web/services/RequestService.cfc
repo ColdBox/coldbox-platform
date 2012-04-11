@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -34,11 +34,11 @@ Modification History:
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
 			// Let's determine the flash type and create our flash ram object
-			var flashType = controller.getSetting("FlashURLPersistScope");
-			var flashPath = flashType;
+			var flashData = controller.getSetting("flash");
+			var flashPath = "";
 			
 			// Shorthand Flash Types
-			switch(flashType){
+			switch(flashData.scope){
 				case "session" : {
 					flashpath = "coldbox.system.web.flash.SessionFlash";
 					break;
@@ -59,10 +59,13 @@ Modification History:
 					flashpath = "coldbox.system.web.flash.MockFlash";
 					break;
 				}
+				default : { 
+					flashPath = flashData.scope;
+				}
 			}
 			
 			// Create Flash RAM object
-			instance.flashScope = createObject("component",flashPath).init(controller);
+			instance.flashScope = createObject("component",flashPath).init(controller, flashData);
 			
 			// Request Context Decorator?
 			if ( controller.settingExists("RequestContextDecorator") and len(controller.getSetting("RequestContextDecorator")) ){
@@ -91,6 +94,7 @@ Modification History:
 			var context 	= getContext();
 			var rc			= context.getCollection();
 			var prc 		= context.getCollection(private=true);
+			var fwCache		= false;
 			
 			// Capture FORM/URL
 			if( isDefined("FORM") ){ structAppend(rc, FORM); }
@@ -99,8 +103,12 @@ Modification History:
 			// Execute onRequestCapture interceptionPoint
 			instance.interceptorService.processState("onRequestCapture");
 			
+			// Remove FW reserved commands just in case before collection snapshot
+			fwCache = structKeyExists(rc,"fwCache");
+			structDelete(rc, "fwCache");
+			
 			// Take snapshot of incoming collection
-			prc["cbox_incomingContextHash"] = hash(rc.toString());
+			prc["cbox_incomingContextHash"] = hash( rc.toString() );
 			
 			// Do we have flash elements to inflate?
 			if( instance.flashScope.flashExists() ){
@@ -110,14 +118,8 @@ Modification History:
 				instance.flashScope.inflateFlash();
 			}
 					
-			// Object Caching Garbage Collector, check if using cachebox first
-			if( isObject( instance.cacheBox ) ){
-				instance.cacheBox.reapAll();
-			}
-			else{
-				// Compat mode, remove this at release
-				instance.cache.reap();
-			}
+			// Object Caching Garbage Collector
+			instance.cacheBox.reapAll();
 			
 			// Debug Mode Checks
 			if ( structKeyExists(rc,"debugMode") AND isBoolean(rc.debugMode) ){
@@ -143,7 +145,7 @@ Modification History:
 			instance.handlerService.defaultEventCheck(context);
 			
 			// Are we using event caching?
-			eventCachingTest(context);
+			eventCachingTest(context, fwCache);
 			
 			return context;
 		</cfscript>
@@ -152,8 +154,9 @@ Modification History:
 	<!--- Event caching test --->
 	<cffunction name="eventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
 		<cfargument name="context" 	required="true"  type="any" hint="The request context to test for event caching." colddoc:generic="coldbox.system.web.context.RequestContext">
+		<cfargument name="fwCache"  required="false" type="any" default="false" hint="If the fwCache command was detected" colddoc:generic="boolean"/>
 		<cfscript>
-			var eventCacheKey   = "";
+			var eventCache   	= structnew();
 			var oEventURLFacade = instance.templateCache.getEventURLFacade();
 			var eventDictionary = 0;
 			var currentEvent    = arguments.context.getCurrentEvent();
@@ -172,22 +175,22 @@ Modification History:
 				}
 				
 				// Build the event cache key according to incoming request
-				eventCacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
+				eventCache.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
 															  targetEvent=currentEvent,
 															  targetContext=arguments.context);
 				// Check for Event Cache Purge
-				if ( context.valueExists("fwCache") ){
+				if ( arguments.fwCache ){
 					// Clear the key from the cache
-					instance.templateCache.clearKey( eventCacheKey );
+					instance.templateCache.clear( eventCache.cacheKey );
 					return;
 				}
 				
 				// Event has been found, flag it so we can render it from cache if it still survives
-				arguments.context.setEventCacheableEntry(eventCacheKey);
+				arguments.context.setEventCacheableEntry( eventCache );
 				
 				// debug logging
 				if( instance.log.canDebug() ){
-					instance.log.debug("Event caching detected for : #eventCacheKey.toString()#");
+					instance.log.debug("Event caching detected for : #eventCache.toString()#");
 				}
 				
 			}//end if using event caching.
@@ -239,6 +242,8 @@ Modification History:
 			oDecorator = CreateObject("component",instance.decorator).init(oContext,controller);
 			//Set Request Context in storage
 			setContext(oDecorator);
+			// Configure decorator
+			oDecorator.configure();
 			//Return
 			return oDecorator;
 		}

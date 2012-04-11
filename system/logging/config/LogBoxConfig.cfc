@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -396,7 +396,7 @@ Description :
 					args.levelMax = trim(thisAppender.XMLAttributes.levelMax);
 					// Numeric Check
 					if( NOT isNumeric(args.levelMax) ){
-						args.levelMin = this.logLevels.lookupAsInt(args.levelMax);
+						args.levelMax = this.logLevels.lookupAsInt(args.levelMax);
 					}
 				}
 				

@@ -1,0 +1,832 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns:lxslt="http://xml.apache.org/xslt" xmlns:stringutils="xalan://org.apache.tools.ant.util.StringUtils">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Unit Test Results</title>
+<style type="text/css">
+      body {
+        font:normal 68% verdana,arial,helvetica;
+        color:#000000;
+      }
+      table tr td, table tr th {
+          font-size: 68%;
+      }
+      table.details tr th{
+        font-weight: bold;
+        text-align:left;
+        background:#a6caf0;
+      }
+      table.details tr td{
+        background:#eeeee0;
+      }
+
+      p {
+        line-height:1.5em;
+        margin-top:0.5em; margin-bottom:1.0em;
+      }
+      h1 {
+        margin: 0px 0px 5px; font: 165% verdana,arial,helvetica
+      }
+      h2 {
+        margin-top: 1em; margin-bottom: 0.5em; font: bold 125% verdana,arial,helvetica
+      }
+      h3 {
+        margin-bottom: 0.5em; font: bold 115% verdana,arial,helvetica
+      }
+      h4 {
+        margin-bottom: 0.5em; font: bold 100% verdana,arial,helvetica
+      }
+      h5 {
+        margin-bottom: 0.5em; font: bold 100% verdana,arial,helvetica
+      }
+      h6 {
+        margin-bottom: 0.5em; font: bold 100% verdana,arial,helvetica
+      }
+      .Error {
+        font-weight:bold; color:red;
+      }
+      .Failure {
+        font-weight:bold; color:purple;
+      }
+      .Properties {
+        text-align:right;
+      }
+      </style>
+<script type="text/javascript" language="JavaScript">
+        var TestCases = new Array();
+        var cur;
+        
+    cur = TestCases['mxunit.testresults'] = new Array();
+    
+        cur['__MXUNITINHERITANCETREE__'] = '';
+    
+        cur['ADDITIONALINFORMATION'] = 'Mac OS X';
+    
+        cur['APPLICATIONNAME'] = 'ColdBoxTestHarness7E5AB4FDCE4644EE59BB414A40285567';
+    
+        cur['APPSERVER'] = 'JRun4';
+    
+        cur['ARCH'] = 'x86_64';
+    
+        cur['AUTH_PASSWORD'] = '';
+    
+        cur['AUTH_TYPE'] = '';
+    
+        cur['AUTH_USER'] = '';
+    
+        cur['BUILDNUMBER'] = '';
+    
+        cur['CACHEBOX'] = 'Complex Data Type...Not Displaying';
+    
+        cur['CB_REQUESTCONTEXT'] = 'Complex Data Type...Not Displaying';
+    
+        cur['CERT_COOKIE'] = '';
+    
+        cur['CERT_FLAGS'] = '';
+    
+        cur['CERT_ISSUER'] = '';
+    
+        cur['CERT_KEYSIZE'] = '';
+    
+        cur['CERT_SECRETKEYSIZE'] = '';
+    
+        cur['CERT_SERIALNUMBER'] = '';
+    
+        cur['CERT_SERVER_ISSUER'] = '';
+    
+        cur['CERT_SERVER_SUBJECT'] = '';
+    
+        cur['CERT_SUBJECT'] = '';
+    
+        cur['CF_TEMPLATE_PATH'] = '/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['CFID'] = '23190';
+    
+        cur['CFTOKEN'] = '8371fee15a40b7a1-B115070C-C6A8-0000-6E3C82379765774E';
+    
+        cur['COLDBOX_DEBUGMODE_F1571C73C8FCE5B05D9F2AD827E6A7CE'] = 'true';
+    
+        cur['CONTENT_LENGTH'] = '';
+    
+        cur['CONTENT_TYPE'] = '';
+    
+        cur['CONTEXT_PATH'] = '';
+    
+        cur['EXPIRATION'] = '{ts \'2012-02-23 10:57:56\'}';
+    
+        cur['GATEWAY_INTERFACE'] = 'CGI/1.1';
+    
+        cur['HTTP_ACCEPT'] = '';
+    
+        cur['HTTP_ACCEPT_ENCODING'] = '';
+    
+        cur['HTTP_ACCEPT_LANGUAGE'] = '';
+    
+        cur['HTTP_CONNECTION'] = '';
+    
+        cur['HTTP_COOKIE'] = '';
+    
+        cur['HTTP_HOST'] = 'cf9cboxdev.jfetmac';
+    
+        cur['HTTP_REFERER'] = '';
+    
+        cur['HTTP_USER_AGENT'] = 'Jakarta Commons-HttpClient/3.1';
+    
+        cur['HTTPS'] = '';
+    
+        cur['HTTPS_KEYSIZE'] = '';
+    
+        cur['HTTPS_SECRETKEYSIZE'] = '';
+    
+        cur['HTTPS_SERVER_ISSUER'] = '';
+    
+        cur['HTTPS_SERVER_SUBJECT'] = '';
+    
+        cur['INSTALLKIT'] = 'Native UNIX';
+    
+        cur['MXUNIT_SUMMARY'] = '106,2,1,13963';
+    
+        cur['NAME'] = 'Mac OS X';
+    
+        cur['PATH_INFO'] = '';
+    
+        cur['PATH_TRANSLATED'] = '/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['PRODUCTLEVEL'] = 'Developer';
+    
+        cur['PRODUCTNAME'] = 'ColdFusion Server';
+    
+        cur['PRODUCTVERSION'] = '9,0,1,274733';
+    
+        cur['QUERY_STRING'] = 'method=run&type=dir&value=/coldbox/testing/cases/ioc&recurse=true&excludes=null&packageName=mxunit.testresults&componentPath=coldbox.testing.cases.ioc';
+    
+        cur['REMOTE_ADDR'] = '127.0.0.1';
+    
+        cur['REMOTE_HOST'] = '127.0.0.1';
+    
+        cur['REMOTE_USER'] = '';
+    
+        cur['REQUEST_METHOD'] = 'GET';
+    
+        cur['ROOTDIR'] = '/Applications/ColdFusion9';
+    
+        cur['SCRIPT_NAME'] = '/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['SERVER_NAME'] = 'cf9cboxdev.jfetmac';
+    
+        cur['SERVER_PORT'] = '80';
+    
+        cur['SERVER_PORT_SECURE'] = '0';
+    
+        cur['SERVER_PROTOCOL'] = 'HTTP/1.1';
+    
+        cur['SERVER_SOFTWARE'] = 'Apache/2.2.21 (Unix) mod_ssl/2.2.21 OpenSSL/0.9.8r DAV/2 PHP/5.3.8 with Suhosin-Patch Resin/3.1.2 JRun/4.0';
+    
+        cur['SERVICETAGATTRIBUTES'] = 'Complex Data Type...Not Displaying';
+    
+        cur['SUPPORTEDLOCALES'] = 'Chinese (China),Chinese (Hong Kong),Chinese (Taiwan),Dutch (Belgian),Dutch (Standard),English (Australian),English (Canadian),English (New Zealand),English (UK),English (US),French (Belgian),French (Canadian),French (Standard),French (Swiss),German (Austrian),German (Standard),German (Swiss),Italian (Standard),Italian (Swiss),Japanese,Korean,Norwegian (Bokmal),Norwegian (Nynorsk),Portuguese (Brazilian),Portuguese (Standard),Spanish (Mexican),Spanish (Modern),Spanish (Standard),Swedish,ar,ar_AE,ar_BH,ar_DZ,ar_EG,ar_IQ,ar_JO,ar_KW,ar_LB,ar_LY,ar_MA,ar_OM,ar_QA,ar_SA,ar_SD,ar_SY,ar_TN,ar_YE,be,be_BY,bg,bg_BG,ca,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_IE,en_IN,en_MT,en_NZ,en_PH,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_CR,es_DO,es_EC,es_ES,es_GT,es_HN,es_MX,es_NI,es_PA,es_PE,es_PR,es_PY,es_SV,es_US,es_UY,es_VE,et,et_EE,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,ga,ga_IE,hi_IN,hr,hr_HR,hu,hu_HU,in,in_ID,is,is_IS,it,it_CH,it_IT,iw,iw_IL,ja,ja_JP,ja_JP_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,mk,mk_MK,ms,ms_MY,mt,mt_MT,nl,nl_BE,nl_NL,no,no_NO,no_NO_NY,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_RU,sk,sk_SK,sl,sl_SI,sq,sq_AL,sr,sr_BA,sr_CS,sr_ME,sr_RS,sv,sv_SE,th,th_TH,th_TH_TH,tr,tr_TR,uk,uk_UA,vi,vi_VN,zh,zh_CN,zh_HK,zh_SG,zh_TW';
+    
+        cur['VERSION'] = '10.7.3';
+    
+        cur['WEB_SERVER_API'] = '';
+    
+        cur['WIREBOX'] = 'Complex Data Type...Not Displaying';
+    
+    cur = TestCases['mxunit.testresults'] = new Array();
+    
+        cur['__MXUNITINHERITANCETREE__'] = '';
+    
+        cur['ADDITIONALINFORMATION'] = 'Mac OS X';
+    
+        cur['APPLICATIONNAME'] = 'ColdBoxTestHarness7E5AB4FDCE4644EE59BB414A40285567';
+    
+        cur['APPSERVER'] = 'JRun4';
+    
+        cur['ARCH'] = 'x86_64';
+    
+        cur['AUTH_PASSWORD'] = '';
+    
+        cur['AUTH_TYPE'] = '';
+    
+        cur['AUTH_USER'] = '';
+    
+        cur['BUILDNUMBER'] = '';
+    
+        cur['CACHEBOX'] = 'Complex Data Type...Not Displaying';
+    
+        cur['CERT_COOKIE'] = '';
+    
+        cur['CERT_FLAGS'] = '';
+    
+        cur['CERT_ISSUER'] = '';
+    
+        cur['CERT_KEYSIZE'] = '';
+    
+        cur['CERT_SECRETKEYSIZE'] = '';
+    
+        cur['CERT_SERIALNUMBER'] = '';
+    
+        cur['CERT_SERVER_ISSUER'] = '';
+    
+        cur['CERT_SERVER_SUBJECT'] = '';
+    
+        cur['CERT_SUBJECT'] = '';
+    
+        cur['CF_TEMPLATE_PATH'] = '/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['CFID'] = '23190';
+    
+        cur['CFTOKEN'] = '8371fee15a40b7a1-B115070C-C6A8-0000-6E3C82379765774E';
+    
+        cur['COLDBOX_DEBUGMODE_F1571C73C8FCE5B05D9F2AD827E6A7CE'] = 'true';
+    
+        cur['CONTENT_LENGTH'] = '';
+    
+        cur['CONTENT_TYPE'] = '';
+    
+        cur['CONTEXT_PATH'] = '';
+    
+        cur['EXPIRATION'] = '{ts \'2012-02-23 10:57:56\'}';
+    
+        cur['GATEWAY_INTERFACE'] = 'CGI/1.1';
+    
+        cur['HTTP_ACCEPT'] = '';
+    
+        cur['HTTP_ACCEPT_ENCODING'] = '';
+    
+        cur['HTTP_ACCEPT_LANGUAGE'] = '';
+    
+        cur['HTTP_CONNECTION'] = '';
+    
+        cur['HTTP_COOKIE'] = '$Version=0; CFID=23190; $Path=/, $Version=0; CFTOKEN=8371fee15a40b7a1-B115070C-C6A8-0000-6E3C82379765774E; $Path=/, $Version=0; JSESSIONID=8430d0b03ef9bd465d0c2471339505b5e575; $Path=/, $Version=0; COLDBOX_DEBUGMODE_F1571C73C8FCE5B05D9F2AD827E6A7CE=true; $Path=/, $Version=0; MXUNIT_SUMMARY=106%2C2%2C1%2C13963; $Path=/';
+    
+        cur['HTTP_HOST'] = 'cf9cboxdev.jfetmac';
+    
+        cur['HTTP_REFERER'] = '';
+    
+        cur['HTTP_USER_AGENT'] = 'Jakarta Commons-HttpClient/3.1';
+    
+        cur['HTTPS'] = '';
+    
+        cur['HTTPS_KEYSIZE'] = '';
+    
+        cur['HTTPS_SECRETKEYSIZE'] = '';
+    
+        cur['HTTPS_SERVER_ISSUER'] = '';
+    
+        cur['HTTPS_SERVER_SUBJECT'] = '';
+    
+        cur['INSTALLKIT'] = 'Native UNIX';
+    
+        cur['JSESSIONID'] = '8430d0b03ef9bd465d0c2471339505b5e575';
+    
+        cur['MXUNIT_SUMMARY'] = '22,0,0,1740';
+    
+        cur['NAME'] = 'Mac OS X';
+    
+        cur['PATH_INFO'] = '';
+    
+        cur['PATH_TRANSLATED'] = '/Users/lmajano/Sites/cboxdev/core/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['PRODUCTLEVEL'] = 'Developer';
+    
+        cur['PRODUCTNAME'] = 'ColdFusion Server';
+    
+        cur['PRODUCTVERSION'] = '9,0,1,274733';
+    
+        cur['QUERY_STRING'] = 'method=run&type=dir&value=/coldbox/testing/cases/aop&recurse=true&excludes=null&packageName=mxunit.testresults&componentPath=coldbox.testing.cases.aop';
+    
+        cur['REMOTE_ADDR'] = '127.0.0.1';
+    
+        cur['REMOTE_HOST'] = '127.0.0.1';
+    
+        cur['REMOTE_USER'] = '';
+    
+        cur['REQUEST_METHOD'] = 'GET';
+    
+        cur['ROOTDIR'] = '/Applications/ColdFusion9';
+    
+        cur['SCRIPT_NAME'] = '/coldbox/testing/resources/HttpAntRunner.cfc';
+    
+        cur['SERVER_NAME'] = 'cf9cboxdev.jfetmac';
+    
+        cur['SERVER_PORT'] = '80';
+    
+        cur['SERVER_PORT_SECURE'] = '0';
+    
+        cur['SERVER_PROTOCOL'] = 'HTTP/1.1';
+    
+        cur['SERVER_SOFTWARE'] = 'Apache/2.2.21 (Unix) mod_ssl/2.2.21 OpenSSL/0.9.8r DAV/2 PHP/5.3.8 with Suhosin-Patch Resin/3.1.2 JRun/4.0';
+    
+        cur['SERVICETAGATTRIBUTES'] = 'Complex Data Type...Not Displaying';
+    
+        cur['SUPPORTEDLOCALES'] = 'Chinese (China),Chinese (Hong Kong),Chinese (Taiwan),Dutch (Belgian),Dutch (Standard),English (Australian),English (Canadian),English (New Zealand),English (UK),English (US),French (Belgian),French (Canadian),French (Standard),French (Swiss),German (Austrian),German (Standard),German (Swiss),Italian (Standard),Italian (Swiss),Japanese,Korean,Norwegian (Bokmal),Norwegian (Nynorsk),Portuguese (Brazilian),Portuguese (Standard),Spanish (Mexican),Spanish (Modern),Spanish (Standard),Swedish,ar,ar_AE,ar_BH,ar_DZ,ar_EG,ar_IQ,ar_JO,ar_KW,ar_LB,ar_LY,ar_MA,ar_OM,ar_QA,ar_SA,ar_SD,ar_SY,ar_TN,ar_YE,be,be_BY,bg,bg_BG,ca,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_IE,en_IN,en_MT,en_NZ,en_PH,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_CR,es_DO,es_EC,es_ES,es_GT,es_HN,es_MX,es_NI,es_PA,es_PE,es_PR,es_PY,es_SV,es_US,es_UY,es_VE,et,et_EE,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,ga,ga_IE,hi_IN,hr,hr_HR,hu,hu_HU,in,in_ID,is,is_IS,it,it_CH,it_IT,iw,iw_IL,ja,ja_JP,ja_JP_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,mk,mk_MK,ms,ms_MY,mt,mt_MT,nl,nl_BE,nl_NL,no,no_NO,no_NO_NY,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_RU,sk,sk_SK,sl,sl_SI,sq,sq_AL,sr,sr_BA,sr_CS,sr_ME,sr_RS,sv,sv_SE,th,th_TH,th_TH_TH,tr,tr_TR,uk,uk_UA,vi,vi_VN,zh,zh_CN,zh_HK,zh_SG,zh_TW';
+    
+        cur['VERSION'] = '10.7.3';
+    
+        cur['WEB_SERVER_API'] = '';
+    
+        cur['WIREBOX'] = 'Complex Data Type...Not Displaying';
+    </script><script type="text/javascript" language="JavaScript">
+        function displayProperties (name) {
+          var win = window.open('','JUnitSystemProperties','scrollbars=1,resizable=1');
+          var doc = win.document;
+          doc.open();
+          doc.write("<html><head><title>Properties of " + name + "</title>");
+          doc.write("<style>")
+          doc.write("body {font:normal 68% verdana,arial,helvetica; color:#000000; }");
+          doc.write("table tr td, table tr th { font-size: 68%; }");
+          doc.write("table.properties { border-collapse:collapse; border-left:solid 1 #cccccc; border-top:solid 1 #cccccc; padding:5px; }");
+          doc.write("table.properties th { text-align:left; border-right:solid 1 #cccccc; border-bottom:solid 1 #cccccc; background-color:#eeeeee; }");
+          doc.write("table.properties td { font:normal; text-align:left; border-right:solid 1 #cccccc; border-bottom:solid 1 #cccccc; background-color:#fffffff; }");
+          doc.write("h3 { margin-bottom: 0.5em; font: bold 115% verdana,arial,helvetica }");
+          doc.write("</style>");
+          doc.write("</head><body>");
+          doc.write("<h3>Properties of " + name + "</h3>");
+          doc.write("<div align=\"right\"><a href=\"javascript:window.close();\">Close</a></div>");
+          doc.write("<table class='properties'>");
+          doc.write("<tr><th>Name</th><th>Value</th></tr>");
+          for (prop in TestCases[name]) {
+            doc.write("<tr><th>" + prop + "</th><td>" + TestCases[name][prop] + "</td></tr>");
+          }
+          doc.write("</table>");
+          doc.write("</body></html>");
+          doc.close();
+          win.focus();
+        }
+      
+      </script>
+</head>
+<body>
+<a name="top"></a>
+<h1>Unit Test Results</h1>
+<table width="100%">
+<tr>
+<td align="left"></td><td align="right">Designed for use with <a href="http://www.junit.org">JUnit</a> and <a href="http://ant.apache.org/ant">Ant</a>.</td>
+</tr>
+</table>
+<hr size="1">
+<h2>Summary</h2>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Tests</th><th>Failures</th><th>Errors</th><th>Success rate</th><th>Time</th>
+</tr>
+<tr valign="top" class="Failure">
+<td>128</td><td>1</td><td>2</td><td>97.66%</td><td>15.703</td>
+</tr>
+</table>
+<table border="0" width="95%">
+<tr>
+<td style="text-align: justify;">
+        Note: <i>failures</i> are anticipated and checked for with assertions while <i>errors</i> are unanticipated.
+        </td>
+</tr>
+</table>
+<hr size="1" width="95%" align="left">
+<h2>Packages</h2>
+        Note: package statistics are not computed recursively, they only sum up all of its testsuites numbers.
+        <table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th><th>Tests</th><th>Errors</th><th>Failures</th><th nowrap>Time(s)</th><th nowrap>Time Stamp</th><th>Host</th>
+</tr>
+<tr valign="top" class="Failure">
+<td><a href="#mxunit">mxunit</a></td><td>128</td><td>2</td><td>1</td><td>15.703</td><td>02/23/12 11:43:04 AM</td><td>127.0.0.1</td>
+</tr>
+</table>
+<hr size="1" width="95%" align="left">
+<a name="mxunit"></a>
+<h3>Package mxunit</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th width="80%">Name</th><th>Tests</th><th>Errors</th><th>Failures</th><th nowrap>Time(s)</th><th nowrap>Time Stamp</th><th>Host</th>
+</tr>
+<tr valign="top" class="Failure">
+<td><a href="#testresults">testresults</a></td><td>106</td><td>2</td><td>1</td><td>13.963</td><td>02/23/12 11:43:04 AM</td><td>127.0.0.1</td>
+</tr>
+<tr valign="top" class="">
+<td><a href="#testresults">testresults</a></td><td>22</td><td>0</td><td>0</td><td>1.740</td><td>02/23/12 11:43:06 AM</td><td>127.0.0.1</td>
+</tr>
+</table>
+<a href="#top">Back to top</a>
+<p></p>
+<p></p>
+<hr size="1" width="95%" align="left">
+<a name="testresults"></a>
+<h3>TestCase testresults</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th><th>Status</th><th width="80%">Type</th><th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="Error">
+<td>testbuildWebservice</td><td>Error</td><td>Application<code>
+<br>
+<br>Unable to read WSDL from URL: http://www.coldbox.org/distribution/updatews.cfc?wsdl. at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/Builder.cfc:267 at /Users/lmajano/Sites/cboxdev/core/coldbox/testing/cases/ioc/BuilderTest.cfc:47 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestCase.cfc:113 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/decorators/DataProviderDecorator.cfc:31 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:99 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:52 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuite.cfc:131 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/DirectoryTestSuite.cfc:37 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/HttpAntRunner.cfc:28</code></td><td>0.412</td>
+</tr>
+<tr valign="top" class="">
+<td>testgetProviderDSL</td><td>Success</td><td></td><td>0.410</td>
+</tr>
+<tr valign="top" class="">
+<td>testBuildFactoryBean</td><td>Success</td><td></td><td>0.375</td>
+</tr>
+<tr valign="top" class="">
+<td>testbuildfeed</td><td>Success</td><td></td><td>0.371</td>
+</tr>
+<tr valign="top" class="">
+<td>testbuildcfc</td><td>Success</td><td></td><td>0.292</td>
+</tr>
+<tr valign="top" class="">
+<td>testbuildProviderMixer</td><td>Success</td><td></td><td>0.315</td>
+</tr>
+<tr valign="top" class="">
+<td>testBuildCFCException</td><td>Success</td><td></td><td>0.258</td>
+</tr>
+<tr valign="top" class="">
+<td>testBuildCFCWithArguments</td><td>Success</td><td></td><td>0.331</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetEntityServiceDSL</td><td>Success</td><td></td><td>0.274</td>
+</tr>
+<tr valign="top" class="">
+<td>testgetWireBoxDSL</td><td>Success</td><td></td><td>0.546</td>
+</tr>
+<tr valign="top" class="">
+<td>testregisterCustomBuilders</td><td>Success</td><td></td><td>0.306</td>
+</tr>
+<tr valign="top" class="">
+<td>testbuildDSLDependencyCustom</td><td>Success</td><td></td><td>0.292</td>
+</tr>
+<tr valign="top" class="">
+<td>testbuildJavaClass</td><td>Success</td><td></td><td>0.210</td>
+</tr>
+<tr valign="top" class="">
+<td>testFactoryCreations</td><td>Success</td><td></td><td>0.525</td>
+</tr>
+<tr valign="top" class="">
+<td>testDSL</td><td>Success</td><td></td><td>0.154</td>
+</tr>
+<tr valign="top" class="">
+<td>testbuildInstance</td><td>Success</td><td></td><td>0.224</td>
+</tr>
+<tr valign="top" class="">
+<td>testLocateInstance</td><td>Success</td><td></td><td>0.156</td>
+</tr>
+<tr valign="top" class="">
+<td>testTImeZone</td><td>Success</td><td></td><td>0.194</td>
+</tr>
+<tr valign="top" class="">
+<td>testFactoryBeans</td><td>Success</td><td></td><td>0.081</td>
+</tr>
+<tr valign="top" class="">
+<td>testMixins</td><td>Success</td><td></td><td>0.085</td>
+</tr>
+<tr valign="top" class="">
+<td>testJava</td><td>Success</td><td></td><td>0.138</td>
+</tr>
+<tr valign="top" class="Error">
+<td>testWebService</td><td>Error</td><td>Application<code>
+<br>
+<br>Unable to read WSDL from URL: http://www.coldbox.org/distribution/updatews.cfc?wsdl. at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/Builder.cfc:267 at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/Injector.cfc:294 at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/scopes/NoScope.cfc:31 at /Users/lmajano/Sites/cboxdev/core/coldbox/system/ioc/Injector.cfc:262 at /Users/lmajano/Sites/cboxdev/core/coldbox/testing/cases/ioc/InjectorCreationTest.cfc:115 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestCase.cfc:113 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/decorators/DataProviderDecorator.cfc:31 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:99 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:52 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuite.cfc:131 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/DirectoryTestSuite.cfc:37 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/HttpAntRunner.cfc:28</code></td><td>0.223</td>
+</tr>
+<tr valign="top" class="">
+<td>testConstant</td><td>Success</td><td></td><td>0.103</td>
+</tr>
+<tr valign="top" class="">
+<td>testSetters</td><td>Success</td><td></td><td>0.126</td>
+</tr>
+<tr valign="top" class="">
+<td>testProviderMethods</td><td>Success</td><td></td><td>0.089</td>
+</tr>
+<tr valign="top" class="">
+<td>testConfigureCacheBox</td><td>Success</td><td></td><td>0.055</td>
+</tr>
+<tr valign="top" class="">
+<td>testParenInjector</td><td>Success</td><td></td><td>0.012</td>
+</tr>
+<tr valign="top" class="">
+<td>testConfigureEventManager</td><td>Success</td><td></td><td>0.020</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetScopeRegistration</td><td>Success</td><td></td><td>0.016</td>
+</tr>
+<tr valign="top" class="">
+<td>testdoScopeRegistration</td><td>Success</td><td></td><td>0.058</td>
+</tr>
+<tr valign="top" class="">
+<td>testConfigureLogBox</td><td>Success</td><td></td><td>0.050</td>
+</tr>
+<tr valign="top" class="">
+<td>testColdBox</td><td>Success</td><td></td><td>0.011</td>
+</tr>
+<tr valign="top" class="">
+<td>removeFromScope</td><td>Success</td><td></td><td>0.032</td>
+</tr>
+<tr valign="top" class="">
+<td>testgetVersion</td><td>Success</td><td></td><td>0.012</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetObjectPopulator</td><td>Success</td><td></td><td>0.012</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetInjectorID</td><td>Success</td><td></td><td>0.012</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetBinder</td><td>Success</td><td></td><td>0.010</td>
+</tr>
+<tr valign="top" class="">
+<td>testRegisterListeners</td><td>Success</td><td></td><td>0.071</td>
+</tr>
+<tr valign="top" class="">
+<td>testbuildBinder</td><td>Success</td><td></td><td>0.045</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetNoScope</td><td>Success</td><td></td><td>0.018</td>
+</tr>
+<tr valign="top" class="">
+<td>testGet</td><td>Success</td><td></td><td>0.120</td>
+</tr>
+<tr valign="top" class="">
+<td>testProxyMethods</td><td>Success</td><td></td><td>0.094</td>
+</tr>
+<tr valign="top" class="">
+<td>creationTest</td><td>Success</td><td></td><td>0.013</td>
+</tr>
+<tr valign="top" class="">
+<td>creationTest</td><td>Success</td><td></td><td>0.008</td>
+</tr>
+<tr valign="top" class="">
+<td>creationXMLTest</td><td>Success</td><td></td><td>0.007</td>
+</tr>
+<tr valign="top" class="">
+<td>creationTest</td><td>Success</td><td></td><td>0.028</td>
+</tr>
+<tr valign="top" class="">
+<td>testBindAspect</td><td>Success</td><td></td><td>0.169</td>
+</tr>
+<tr valign="top" class="">
+<td>testInitWith</td><td>Success</td><td></td><td>0.041</td>
+</tr>
+<tr valign="top" class="">
+<td>testCacheBoxIntegration</td><td>Success</td><td></td><td>0.046</td>
+</tr>
+<tr valign="top" class="">
+<td>testExtraAttributes</td><td>Success</td><td></td><td>0.047</td>
+</tr>
+<tr valign="top" class="">
+<td>testBinderStandalone</td><td>Success</td><td></td><td>0.036</td>
+</tr>
+<tr valign="top" class="">
+<td>testRemoveScanLocations</td><td>Success</td><td></td><td>0.040</td>
+</tr>
+<tr valign="top" class="">
+<td>testScanLocations</td><td>Success</td><td></td><td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td>testStopRecursions</td><td>Success</td><td></td><td>0.046</td>
+</tr>
+<tr valign="top" class="">
+<td>testDSLs</td><td>Success</td><td></td><td>0.047</td>
+</tr>
+<tr valign="top" class="">
+<td>testProperty</td><td>Success</td><td></td><td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td>testInto</td><td>Success</td><td></td><td>0.081</td>
+</tr>
+<tr valign="top" class="">
+<td>testSetConstructor</td><td>Success</td><td></td><td>0.041</td>
+</tr>
+<tr valign="top" class="">
+<td>testListenerMethods</td><td>Success</td><td></td><td>0.040</td>
+</tr>
+<tr valign="top" class="">
+<td>testLogBoxConfig</td><td>Success</td><td></td><td>0.039</td>
+</tr>
+<tr valign="top" class="">
+<td>testToWebservice</td><td>Success</td><td></td><td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td>testToJava</td><td>Success</td><td></td><td>0.042</td>
+</tr>
+<tr valign="top" class="">
+<td>testNoInit</td><td>Success</td><td></td><td>0.040</td>
+</tr>
+<tr valign="top" class="">
+<td>testLoadDataDSL</td><td>Success</td><td></td><td>0.037</td>
+</tr>
+<tr valign="top" class="">
+<td>testToDSL</td><td>Success</td><td></td><td>0.088</td>
+</tr>
+<tr valign="top" class="">
+<td>testOnDIComplete</td><td>Success</td><td></td><td>0.078</td>
+</tr>
+<tr valign="top" class="">
+<td>testToProvider</td><td>Success</td><td></td><td>0.040</td>
+</tr>
+<tr valign="top" class="">
+<td>testTo</td><td>Success</td><td></td><td>0.083</td>
+</tr>
+<tr valign="top" class="">
+<td>testMap</td><td>Success</td><td></td><td>0.038</td>
+</tr>
+<tr valign="top" class="Error">
+<td>testMapDirectory</td><td>Failure</td><td>mxunit test failure<code>
+<br>
+<br>mxunit test failure at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/Assert.cfc:147 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/Assert.cfc:366 at /Users/lmajano/Sites/cboxdev/core/coldbox/testing/cases/ioc/config/BinderTest.cfc:427 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestCase.cfc:113 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/decorators/DataProviderDecorator.cfc:31 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:99 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuiteRunner.cfc:52 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/framework/TestSuite.cfc:131 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/DirectoryTestSuite.cfc:37 at /Users/lmajano/Sites/MyDevelopment/Frameworks/mxunit/runner/HttpAntRunner.cfc:28</code></td><td>0.045</td>
+</tr>
+<tr valign="top" class="">
+<td>testMixins</td><td>Success</td><td></td><td>0.036</td>
+</tr>
+<tr valign="top" class="">
+<td>testVirtualInheritance</td><td>Success</td><td></td><td>0.042</td>
+</tr>
+<tr valign="top" class="">
+<td>testBinderWithConfigInstance</td><td>Success</td><td></td><td>0.038</td>
+</tr>
+<tr valign="top" class="">
+<td>testWith</td><td>Success</td><td></td><td>0.051</td>
+</tr>
+<tr valign="top" class="">
+<td>testNoAutowire</td><td>Success</td><td></td><td>0.065</td>
+</tr>
+<tr valign="top" class="">
+<td>testToRSS</td><td>Success</td><td></td><td>0.037</td>
+</tr>
+<tr valign="top" class="">
+<td>testMapFactoryMethod</td><td>Success</td><td></td><td>0.037</td>
+</tr>
+<tr valign="top" class="">
+<td>testMapAspect</td><td>Success</td><td></td><td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td>testProperties</td><td>Success</td><td></td><td>0.034</td>
+</tr>
+<tr valign="top" class="">
+<td>testEagerInit</td><td>Success</td><td></td><td>0.036</td>
+</tr>
+<tr valign="top" class="">
+<td>testToValue</td><td>Success</td><td></td><td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td>testScopes</td><td>Success</td><td></td><td>0.034</td>
+</tr>
+<tr valign="top" class="">
+<td>testInitArg</td><td>Success</td><td></td><td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td>testParentInjector</td><td>Success</td><td></td><td>0.107</td>
+</tr>
+<tr valign="top" class="">
+<td>testSetter</td><td>Success</td><td></td><td>0.039</td>
+</tr>
+<tr valign="top" class="">
+<td>testAsSingleton</td><td>Success</td><td></td><td>0.035</td>
+</tr>
+<tr valign="top" class="">
+<td>testMappings</td><td>Success</td><td></td><td>0.068</td>
+</tr>
+<tr valign="top" class="">
+<td>testScopeRegistration</td><td>Success</td><td></td><td>0.043</td>
+</tr>
+<tr valign="top" class="">
+<td>testMapPath</td><td>Success</td><td></td><td>0.079</td>
+</tr>
+<tr valign="top" class="">
+<td>testBinderWithConfigPath</td><td>Success</td><td></td><td>0.038</td>
+</tr>
+<tr valign="top" class="">
+<td>testMatch</td><td>Success</td><td></td><td>0.037</td>
+</tr>
+<tr valign="top" class="">
+<td>testConfigure</td><td>Success</td><td></td><td>0.003</td>
+</tr>
+<tr valign="top" class="">
+<td>testInit</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testProviderMethods</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testProcessMemento</td><td>Success</td><td></td><td>0.002</td>
+</tr>
+<tr valign="top" class="">
+<td>testRegisterListeners</td><td>Success</td><td></td><td>0.021</td>
+</tr>
+<tr valign="top" class="">
+<td>testProcess</td><td>Success</td><td></td><td>1.160</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetJavaLoaderDSL</td><td>Success</td><td></td><td>0.226</td>
+</tr>
+<tr valign="top" class="">
+<td>testgetColdboxDSLStage1AndStage2</td><td>Success</td><td></td><td>0.730</td>
+</tr>
+<tr valign="top" class="">
+<td>testgetIOCDSl</td><td>Success</td><td></td><td>0.364</td>
+</tr>
+<tr valign="top" class="">
+<td>testProcess</td><td>Success</td><td></td><td>0.290</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetDatasource</td><td>Success</td><td></td><td>0.158</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetOCMDSL</td><td>Success</td><td></td><td>0.340</td>
+</tr>
+<tr valign="top" class="">
+<td>testgetColdboxDSLStage3</td><td>Success</td><td></td><td>0.554</td>
+</tr>
+<tr valign="top" class="">
+<td>testGetWebserviceDSL</td><td>Success</td><td></td><td>0.234</td>
+</tr>
+<tr valign="top" class="">
+<td>testProcess</td><td>Success</td><td></td><td>0.233</td>
+</tr>
+</table>
+<div class="Properties">
+<a href="javascript:displayProperties('mxunit.testresults');">
+                    Properties &raquo;
+                </a>
+</div>
+<p></p>
+<a href="#top">Back to top</a><a name="testresults"></a>
+<h3>TestCase testresults</h3>
+<table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
+<tr valign="top">
+<th>Name</th><th>Status</th><th width="80%">Type</th><th nowrap>Time(s)</th>
+</tr>
+<tr valign="top" class="">
+<td>testRegex</td><td>Success</td><td></td><td>0.002</td>
+</tr>
+<tr valign="top" class="">
+<td>testInstanceOf</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testMappings</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testAnnotatedWith</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testMatchClassAndOr</td><td>Success</td><td></td><td>0.029</td>
+</tr>
+<tr valign="top" class="">
+<td>testReturns</td><td>Success</td><td></td><td>0.002</td>
+</tr>
+<tr valign="top" class="">
+<td>testMatchMethod</td><td>Success</td><td></td><td>0.049</td>
+</tr>
+<tr valign="top" class="">
+<td>testMatchClass</td><td>Success</td><td></td><td>0.023</td>
+</tr>
+<tr valign="top" class="">
+<td>testAny</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testMethods</td><td>Success</td><td></td><td>0.001</td>
+</tr>
+<tr valign="top" class="">
+<td>testIncrementInterceptorIndex</td><td>Success</td><td></td><td>0.059</td>
+</tr>
+<tr valign="top" class="">
+<td>testInit</td><td>Success</td><td></td><td>0.060</td>
+</tr>
+<tr valign="top" class="">
+<td>testProceed</td><td>Success</td><td></td><td>0.006</td>
+</tr>
+<tr valign="top" class="">
+<td>testAOPBuilder</td><td>Success</td><td></td><td>0.191</td>
+</tr>
+<tr valign="top" class="">
+<td>testBuildInterceptors</td><td>Success</td><td></td><td>0.278</td>
+</tr>
+<tr valign="top" class="">
+<td>testprocessTargetMethods</td><td>Success</td><td></td><td>0.260</td>
+</tr>
+<tr valign="top" class="">
+<td>testdecorateAOPTarget</td><td>Success</td><td></td><td>0.162</td>
+</tr>
+<tr valign="top" class="">
+<td>testafterInstanceAutowire</td><td>Success</td><td></td><td>0.185</td>
+</tr>
+<tr valign="top" class="">
+<td>testBuildClassMatchDictionary</td><td>Success</td><td></td><td>0.193</td>
+</tr>
+<tr valign="top" class="">
+<td>testInvokeMethodInTransaction</td><td>Success</td><td></td><td>0.061</td>
+</tr>
+<tr valign="top" class="">
+<td>testInvokeMethodNotInTransaction</td><td>Success</td><td></td><td>0.092</td>
+</tr>
+<tr valign="top" class="">
+<td>testInvokeMethodNotInTransactionDiffDatasource</td><td>Success</td><td></td><td>0.048</td>
+</tr>
+</table>
+<div class="Properties">
+<a href="javascript:displayProperties('mxunit.testresults');">
+                    Properties &raquo;
+                </a>
+</div>
+<p></p>
+<a href="#top">Back to top</a>
+</body>
+</html>

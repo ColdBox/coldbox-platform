@@ -1,4 +1,4 @@
-CREATE TABLE cachebox (
+﻿CREATE TABLE cachebox (
 	id VARCHAR(100) NOT NULL,
 	objectKey VARCHAR(255) NOT NULL,
 	objectValue text NOT NULL,

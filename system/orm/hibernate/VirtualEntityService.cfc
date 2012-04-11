@@ -21,13 +21,13 @@ component extends="VirtualEntityService"
 UserService function init(){
     // setup properties
     setEntityName('User');
-    setQueryCacheRegion( 'ORMService.defaultCache' );
+    setQueryCacheRegion( "#arguments.entityName#.defaultVSCache" );
     setUseQueryCaching( false );
 	setEventHandling( false );
+	setDefaultAsQuery( true );
     return this;
 }
 
------------------------------------------------------------------------>
 */
 component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"{
 
@@ -35,35 +35,58 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	* The entityName property for this "version" of the Virtual Service
 	*/
 	property name="entityName" type="string";
-
-
-/* ----------------------------------- DEPENDENCIES ------------------------------ */
-
-
-
-/* ----------------------------------- CONSTRUCTOR ------------------------------ */
-
+	
 	/**
-	* Constructor
+	* The datasource property for this "version" of the Virtual Service
 	*/
+	property name="datasource" type="string";
+
+	/************************************** CONSTRUCTOR *********************************************/
+
 	VirtualEntityService function init(required string entityname, 
 										string queryCacheRegion, 
 										boolean useQueryCaching,
 										boolean eventHandling,
-										boolean useTransactions){
+										boolean useTransactions,
+										boolean defaultAsQuery,
+										string datasource){
+		// create cache region
+		if( !structKeyExists(arguments,"queryCacheRegion") ){
+			arguments.queryCacheRegion = "#arguments.entityName#.defaultVSCache";
+		}
 
 		// init parent
 		super.init(argumentCollection=arguments);
 		
 		// Set the local entity to be used in this virtual entity service
-		setEntityName(arguments.entityName);
+		setEntityName( arguments.entityName );
+		
+		// Set the datasource of the local entity to be used in this virtual entity service
+		// Only if not passed
+		if( !StructKeyExists(arguments, "datasource") ){
+			setDatasource( orm.getEntityDatasource( arguments.entityName ) );
+		}
+		else{
+			setDatasource( arguments.datasource );
+		}
 		
 		return this;
 	}
 
+	/************************************** PUBLIC *********************************************/
 
-/* ----------------------------------- PUBLIC ------------------------------ */
-
+	any function executeQuery(required string query,
+							   any params=structnew(),
+							   numeric offset=0,
+					  		   numeric max=0,
+					  		   numeric timeout=0,
+						       boolean ignorecase=false,
+						       boolean asQuery=getDefaultAsQuery(),
+						       boolean unique=false){
+						       	   
+		arguments.datasource = this.getDatasource();
+		return super.executeQuery(argumentCollection=arguments);				       	   
+	}
 
 	any function list(struct criteria=structnew(),
 					  string sortOrder="",
@@ -71,7 +94,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 					  numeric max=0,
 					  numeric timeout=0,
 					  boolean ignoreCase=false,
-					  boolean asQuery=true){
+					  boolean asQuery=getDefaultAsQuery()){
 
 		arguments.entityName = this.getEntityName();
 		var results = super.list(argumentCollection=arguments);
@@ -82,11 +105,11 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.findWhere(this.getEntityName(), arguments.criteria);
 	}
 
-	array function findAllWhere(required struct criteria){
-		return super.findAllWhere(this.getEntityName(), arguments.criteria);
+	array function findAllWhere(required struct criteria, string sortOrder=""){
+		return super.findAllWhere(this.getEntityName(), arguments.criteria, arguments.sortOrder);
 	}
 
-	any function new(){
+	any function new(struct properties=structnew()){
 		arguments.entityName = this.getEntityName();
 		return super.new(argumentCollection=arguments);
 	}
@@ -96,12 +119,12 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.exists(argumentCollection=arguments);
 	}
 
-	any function get(required any id) {
+	any function get(required any id,boolean returnNew=true) {
 		arguments.entityName = this.getEntityName();
 		return super.get(argumentCollection=arguments);
 	}
 
-	array function getAll(any id) {
+	array function getAll(any id,string sortOrder="") {
 		arguments.entityName = this.getEntityName();
 		return super.getAll(argumentCollection=arguments);
 	}
@@ -115,8 +138,13 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		arguments.entityName = this.getEntityName();
 		return super.deleteByID(argumentCollection=arguments);
 	}
+	
+	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions() ){
+		arguments.datasource = this.getDatasource();
+		return super.deleteByQuery(argumentCollection=arguments);
+	}
 
-	numeric function deleteWhere(){
+	numeric function deleteWhere(boolean transactional=getUseTransactions()){
 		arguments.entityName = this.getEntityName();
 		return super.deleteWhere(argumentCollection=arguments);
 	}
@@ -135,9 +163,23 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		arguments.entityName = this.getEntityName();
 		super.evict(argumentCollection=arguments);
 	}
+	
+	void function clear(string datasource=this.getDatasource()){
+		return super.clear(argumentCollection=arguments);
+	}
+	
+	boolean function isSessionDirty(string datasource=this.getDatasource()){
+		arguments.datasource = this.getDatasource();
+		return super.isSessionDirty(argumentCollection=arguments);
+	}
+	
+	struct function getSessionStatistics(string datasource=this.getDatasource()){
+		arguments.datasource = this.getDatasource();
+		return super.getSessionStatistics(argumentCollection=arguments);
+	}
 
 	string function getKey(){
-		return super.getKey(this.getEntityName());
+		return super.getKey( this.getEntityName() );
 	}
 
 	array function getPropertyNames(){
@@ -154,12 +196,18 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 					  				  numeric max=0,
 					  		 		  numeric timeout=0,
 					  		 		  boolean ignoreCase=false,
-					  		 		  boolean asQuery=true){
+					  		 		  boolean asQuery=getDefaultAsQuery()){
 		arguments.entityName = this.getEntityName();
 		return super.criteriaQuery(argumentCollection=arguments);
 	}
 	
 	numeric function criteriaCount(array criteria=ArrayNew(1)){
 		return super.criteriaCount(this.getEntityName(), arguments.criteria);
+	}
+	
+	any function newCriteria(boolean useQueryCaching=false, string queryCacheRegion=""){
+		
+		arguments.entityName = this.getEntityName();
+		return super.newCriteria(argumentCollection=arguments);
 	}
 }

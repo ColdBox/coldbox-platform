@@ -1,4 +1,4 @@
-<!-----------------------------------------------------------------------
+﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -19,10 +19,6 @@ Description :
 			// Prefixes
 			this.VIEW_CACHEKEY_PREFIX 			= "cbox_view-";
 			this.EVENT_CACHEKEY_PREFIX 			= "cbox_event-";
-			this.HANDLER_CACHEKEY_PREFIX 		= "cbox_handler-";
-			this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cbox_interceptor-";
-			this.PLUGIN_CACHEKEY_PREFIX 		= "cbox_plugin-";
-			this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cbox_customplugin-";
 			
 			// URL Facade Utility
 			instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
@@ -46,26 +42,6 @@ Description :
     	<cfreturn this.EVENT_CACHEKEY_PREFIX>
     </cffunction>
 
-	<!--- getHandlerCacheKeyPrefix --->
-    <cffunction name="getHandlerCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the handler cache key prefix">
-    	<cfreturn this.HANDLER_CACHEKEY_PREFIX>
-    </cffunction>
-
-	<!--- getInterceptorCacheKeyPrefix --->
-    <cffunction name="getInterceptorCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the interceptor cache key prefix">
-    	<cfreturn this.INTERCEPTOR_CACHEKEY_PREFIX>
-    </cffunction>
-
-	<!--- getPluginCacheKeyPrefix --->
-    <cffunction name="getPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the plugin cache key prefix">
-    	<cfreturn this.PLUGIN_CACHEKEY_PREFIX>
-    </cffunction>
-
-	<!--- getCustomPluginCacheKeyPrefix --->
-    <cffunction name="getCustomPluginCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the custom plugin cache key prefix">
-    	<cfreturn this.CUSTOMPLUGIN_CACHEKEY_PREFIX>
-    </cffunction>
-
 	<!--- getColdbox --->
     <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller">
     	<cfreturn instance.coldbox>
@@ -82,43 +58,9 @@ Description :
     	<cfreturn instance.eventURLFacade>
     </cffunction>
 
-	<!--- getItemTypes --->
-	<cffunction name="getItemTypes" access="public" output="false" returntype="any" hint="Get the item types counts of the cache. These are calculated according to the prefixes set.">
-		<cfscript>
-		var x 			= 1;
-		var itemList 	= getKeys();
-		var itemTypes	= createObject("component","coldbox.system.cache.util.ItemTypeCount");
-		var itemLen		= arrayLen(itemList);
-		
-		//Sort the listing.
-		arraySort(itemList, "textnocase");
-
-		//Count objects
-		for (x=1; x lte itemLen; x++){
-			
-			if ( findnocase( getPluginCacheKeyPrefix() , itemList[x]) )
-				itemTypes.plugins++;
-			else if ( findnocase( getCustomPluginCacheKeyPrefix() , itemList[x]) )
-				itemTypes.customPlugins++;
-			else if ( findnocase( getHandlerCacheKeyPrefix() , itemList[x]) )
-				itemTypes.handlers++;
-			else if ( findnocase( getInterceptorCacheKeyPrefix() , itemList[x]) )
-				itemTypes.interceptors++;
-			else if ( findnocase( getEventCacheKeyPrefix() , itemList[x]) )
-				itemTypes.events++;
-			else if ( findnocase( getViewCacheKeyPrefix() , itemList[x]) )
-				itemTypes.views++;
-			else
-				itemTypes.other++;
-		}
-		
-		return itemTypes;
-		</cfscript>
-	</cffunction>
-	
 	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
-		<cfargument name="async" type="any" hint="Run command asynchronously or not"/>
+		<cfargument name="async" type="any" default="false" hint="Run command asynchronously or not"/>
 		
 		<cfset var threadName = "clearAllEvents_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
 		
@@ -162,7 +104,7 @@ Description :
 
 	<!--- Clear All The Views from the Cache. --->
 	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
-		<cfargument name="async" type="any" hint="Run command asynchronously or not"/>
+		<cfargument name="async" type="any" default="false" hint="Run command asynchronously or not"/>
 		
 		<cfset var threadName = "clearAllViews_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
 		
