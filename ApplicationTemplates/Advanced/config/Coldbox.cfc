@@ -124,13 +124,6 @@ Optional Methods
 			defaultView   = ""
 		};
 
-		//WireBox Integration
-		wireBox = {
-			enabled = true,
-			//binder="config.WireBox",
-			singletonReload=true
-		};
-
 		//Interceptor Settings
 		interceptorSettings = {
 			throwOnInvalidStates = false,

@@ -94,13 +94,6 @@ function configure(){
 	
 	};
 	
-	//WireBox Integration
-	wireBox = { 
-		enabled = true,
-		//binder="config.WireBox", 
-		singletonReload=true 
-	};
-	
 	// Module Directives
 	modules = {
 		//Turn to false in production
