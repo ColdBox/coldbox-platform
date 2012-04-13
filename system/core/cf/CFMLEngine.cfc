@@ -121,6 +121,7 @@ Description :
 			var engine = getEngine();
 
 			if ( (engine eq this.ADOBE and version gte 9 and getToken(server.coldfusion.productversion,3,",") gte 1) or
+				 (engine eq this.ADOBE and version gte 10) or
 				 (engine eq this.BLUEDRAGON and version gte 7) or
 				 (engine eq this.RAILO) ){
 				return (true AND featureCheck("validation",engine));
