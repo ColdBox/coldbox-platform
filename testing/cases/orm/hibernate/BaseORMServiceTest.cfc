@@ -117,7 +117,7 @@
 
 		user = ormService.get("User",'');
 		assertTrue( isNull( user.getID() ) );
-		
+
 		// ReturnNew = false
 		user = ormService.get(entityName="User",id=4,returnNew=false);
 		assertTrue( isNull( user ) );
@@ -130,7 +130,7 @@
 
 		r = ormService.getAll('Category',"A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91","category");
 		assertTrue( arraylen( r ) eq 1 );
-		
+
 		r = ormService.getAll('Category',[1,2]);
 		assertFalse( arraylen( r ) );
 
@@ -139,7 +139,7 @@
 
 		r = ormService.getAll('Category',[testCatID,testCatID]);
 		assertTrue( isObject( r[1] ) );
-		
+
 		r = ormService.getAll(entityName='Category',sortOrder="category desc");
 		assertTrue( arrayLen(r) );
 
@@ -155,6 +155,28 @@
 			test = entityLoad("Category",{category="unittest"}, true);
 			//debug(test);
 			ormservice.delete( test );
+			test = entityLoad("Category",{category="unittest"}, true);
+			assertTrue( isNull(test) );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			q = new Query(datasource="coolblog");
+			q.execute(sql="delete from categories where category = 'unitTest'");
+		}
+	}
+
+	function testDeleteWithFlush(){
+		cat = entityNew("Category");
+		cat.setCategory('unitTest');
+		cat.setDescription('unitTest');
+		entitySave(cat);ORMFlush();
+
+		try{
+			test = entityLoad("Category",{category="unittest"}, true);
+			//debug(test);
+			ormservice.delete(entity=test,flush=true);
 			test = entityLoad("Category",{category="unittest"}, true);
 			assertTrue( isNull(test) );
 		}
@@ -262,7 +284,7 @@
 			q.execute(sql="delete from categories where category = 'unitTest'");
 		}
 	}
-	
+
 	function testSaveNoTransaction(){
 
 		//mocks
@@ -282,13 +304,13 @@
 			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
 			var q = new Query(datasource="coolblog");
 			var result = q.execute(sql="select * from categories where category = 'unitTest'").getResult();
-			assertTrue( result.recordcount eq 0 ); 
+			assertTrue( result.recordcount eq 0 );
 		}
 		catch(any e){
 			fail(e.detail & e.message);
 		}
 	}
-	
+
 	function testSaveAll(){
 
 		//mocks
@@ -299,13 +321,44 @@
 		cat = entityNew("Category");
 		cat.setCategory('unitTest');
 		cat.setDescription('unitTest at #now()#');
-		
+
 		cat2 = entityNew("Category");
 		cat2.setCategory("unitTest");
 		cat2.setDescription('unitTest at #now()#');
 
 		try{
 			ormservice.saveAll( [cat,cat2] );
+			assertTrue( len(cat.getCatID()) );
+			assertTrue( len(cat2.getCatID()) );
+			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
+			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			var q = new Query(datasource="coolblog");
+			q.execute(sql="delete from categories where category = 'unitTest'");
+		}
+	}
+
+	function testSaveAllWithFlush(){
+
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("preSave").$("postSave");
+		ormService.$property("ORMEventHandler","variables",mockEventHandler);
+
+		cat = entityNew("Category");
+		cat.setCategory('unitTest');
+		cat.setDescription('unitTest at #now()#');
+
+		cat2 = entityNew("Category");
+		cat2.setCategory("unitTest");
+		cat2.setDescription('unitTest at #now()#');
+
+		try{
+			ormservice.saveAll(entities=[cat,cat2], flush=true);
 			assertTrue( len(cat.getCatID()) );
 			assertTrue( len(cat2.getCatID()) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
@@ -366,12 +419,12 @@
 		criteria = {category="general"};
 		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
 		assertTrue( test.recordcount );
-	
+
 		// as array
 		ormservice.setDefaultAsQuery( false );
 		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
 		assertTrue( arrayLen( test ) );
-			
+
 	}
 
 	function testExecuteQuery(){
@@ -398,16 +451,16 @@
 	}
 
 	function testFindByExample(){
-		sample = entityLoad("Category",{category="Training"},true);	
+		sample = entityLoad("Category",{category="Training"},true);
 		test = ormService.findByExample(sample,true);
-		assertEquals( 'Training', test.getCategory() );	
-		
-		sample = entityLoad("Category",{category="Training"},true);	
+		assertEquals( 'Training', test.getCategory() );
+
+		sample = entityLoad("Category",{category="Training"},true);
 		test = ormService.findByExample(sample);
 		//debug(test);
-		assertEquals( 'Training', test[1].getCategory() );	
+		assertEquals( 'Training', test[1].getCategory() );
 	}
-	
+
 	function testFindAll(){
 
 		test = ormservice.findAll("from Category where category = ?",['Training']);
@@ -438,7 +491,7 @@
 
 		test = ormservice.findAllWhere("Category",{category="general"});
 		assertEquals( 2, arrayLen(test) );
-		
+
 		test = ormservice.findAllWhere("Category",{category="general"},"category desc");
 		assertEquals( 2, arrayLen(test) );
 
@@ -500,21 +553,21 @@
 		test=CategoryService.getTableName();
 		assertEquals( 'categories', test );
 	}
-	
+
 	function testgetEntityGivenName(){
 		// loaded entity
 		test = entityLoad("User",{firstName="Luis"},true);
 		r = ormservice.getEntityGivenName( test );
 		//debug( r );
 		assertEquals( "User", r );
-		
+
 		r = ormservice.getEntityGivenName( entityNew("User") );
 		//debug( r );
-		assertEquals( "User", r );		
+		assertEquals( "User", r );
 	}
-	
+
 	function testNewCriteria(){
 		c = ormservice.newCriteria("User");
-		
+
 	}
 }

@@ -505,11 +505,12 @@ component accessors="true"{
 
 		objLen = arrayLen(objects);
 		for(var x=1; x lte objLen; x++){
+			// Delete?
 			entityDelete( objects[x] );
+			// Flush?
+			if( arguments.flush ){ orm.flush( orm.getEntityDatasource( objects[x] ) ); }
 		}
 
-		// Auto Flush
-		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entity)); }
 		return this;
 	}
 
@@ -697,15 +698,13 @@ component accessors="true"{
 			}
 			// Save it
 			entitySave(arguments.entities[x], arguments.forceInsert);
-
 			// Event Handling? If enabled, call the postSave() interception
 			if( eventHandling ){
 				ORMEventHandler.postSave( arguments.entities[x] );
 			}
+			// Auto Flush
+			if( arguments.flush ){ orm.flush( orm.getEntityDatasource( arguments.entities[x] ) ); }
 		}
-
-		// Auto Flush
-		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entities[x])); }
 
 		return true;
 	}
