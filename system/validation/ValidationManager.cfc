@@ -50,7 +50,7 @@ vResults = validateModel(target=model);
 */
 import coldbox.system.validation.*;
 import coldbox.system.validation.result.*;
-component accessors="true" serialize="false" implements="IValidationManager" singleton{
+component accessors="true" serialize="false" implements="IValidationManager"{
 
 	/**
 	* Object Factory
@@ -79,11 +79,12 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 	* @wirebox.inject wirebox
 	* @resourceBundle.hint A resource bundle object
 	* @resourceBundle.inject coldbox:plugin:ResourceBundle
+	* @sharedConstraints.hint A structure of shared constraints
 	*/
-	ValidationManager function init(required any wirebox, any resourceBundle=""){
+	ValidationManager function init(required any wirebox, any resourceBundle="", struct sharedConstraints=structNew()){
 
 		// shared constraints
-		sharedConstraints = {};
+		sharedConstraints = arguments.sharedConstraints;
 		// valid validators
 		validValidators = "required,type,size,range,regex,sameAs,sameAsNoCase,inList,discrete,udf,method,validator";
 		// store wirebox
