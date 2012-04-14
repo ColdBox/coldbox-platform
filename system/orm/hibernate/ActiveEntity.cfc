@@ -163,8 +163,8 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  string scope="",
 					 	  boolean trustedSetter=false,
 						  string include="",
-						  string exclude=""){
-		arguments.target = this;
+						  string exclude="",
+						  any target=this){
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
 
@@ -180,8 +180,8 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 								  string scope="",
 								  boolean trustedSetter=false,
 								  string include="",
-								  string exclude=""){
-		arguments.target = this;
+								  string exclude="",
+								  any target=this){
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
@@ -199,8 +199,8 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 								 string scope="",
 								 boolean trustedSetter=false,
 								 string include="",
-								 string exclude=""){
-		arguments.target = this;
+								 string exclude="",
+								 any target=this){
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
@@ -218,8 +218,8 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
-								   string exclude=""){
-		arguments.target = this;
+								   string exclude="",
+								   any target=this){
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
 

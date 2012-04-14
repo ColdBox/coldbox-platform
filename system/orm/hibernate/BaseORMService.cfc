@@ -302,7 +302,7 @@ component accessors="true"{
 
 		// Properties exists?
 		if( NOT structIsEmpty(arguments.properties) ){
-			populate( entity, arguments.properties );
+			populate(target=entity,memento=arguments.properties );
 		}
 
 		// Event Handling? If enabled, call the postNew() interception
