@@ -159,12 +159,12 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
     */
-	any function populate(required struct memento,
+	any function populate(any target=this,
+						  required struct memento,
 						  string scope="",
 					 	  boolean trustedSetter=false,
 						  string include="",
-						  string exclude="",
-						  any target=this){
+						  string exclude=""){
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
 
@@ -176,12 +176,12 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromJSON(required string JSONString,
+	any function populateFromJSON(any target=this,
+								  required string JSONString,
 								  string scope="",
 								  boolean trustedSetter=false,
 								  string include="",
-								  string exclude="",
-								  any target=this){
+								  string exclude=""){
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
@@ -194,13 +194,13 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromXML(required string xml,
+	any function populateFromXML(any target=this,
+								 required string xml,
 								 string root="",
 								 string scope="",
 								 boolean trustedSetter=false,
 								 string include="",
-								 string exclude="",
-								 any target=this){
+								 string exclude=""){
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
@@ -213,13 +213,13 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromQuery(required any qry,
+	any function populateFromQuery(any target=this,
+								   required any qry,
 								   numeric rowNumber=1,
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
-								   string exclude="",
-								   any target=this){
+								   string exclude=""){
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
 
