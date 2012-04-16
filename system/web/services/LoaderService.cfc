@@ -61,37 +61,30 @@ Modification History:
 		// Configure the application debugger with user settings
 		debuggerConfig.populate( controller.getSetting("DebuggerSettings") );
 		controller.getDebuggerService().setDebuggerConfig( debuggerConfig );
-
 		// Clear the Cache Dictionaries, just to make sure, we are in reload mode.
 		controller.getHandlerService().clearDictionaries();
-
+		// Configure interceptors for operation from the configuration file
+		controller.getInterceptorService().configure();
 		// Create CacheBox
 		createCacheBox();
-		// Configure plugins for operation from the configuration file
+		// Configure plugins for operation from the configuration file, we need caching enabled first
 		controller.getPluginService().configure();
 		// Create WireBox Container
 		createWireBox();
-
 		// Execute onConfigurationLoad for coldbox internal services()
 		for(key in services){
 			services[key].onConfigurationLoad();
 		}
-
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		controller.setColdboxInitiated(true);
-
 		// Activate Modules
 		controller.getModuleService().activateAllModules();
-
 		// Execute afterConfigurationLoad
 		controller.getInterceptorService().processState("afterConfigurationLoad");
-
 		// Register Aspects
 		registerAspects();
-
 		// Execute afterAspectsLoad
 		controller.getInterceptorService().processState("afterAspectsLoad");
-
 		// We are now done, rock and roll!!
 		</cfscript>
 	</cffunction>

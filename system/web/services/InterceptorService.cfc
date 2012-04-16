@@ -56,22 +56,27 @@ Description :
 		</cfscript>
 	</cffunction>
 
-<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
+<!------------------------------------------- Configure ------------------------------------------->
 
-	<!--- onConfigurationLoad --->
-    <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
-    	<cfscript>
-			// Reconfigure Logging
+	<!--- configure --->
+	<cffunction name="configure" access="public" output="false" returntype="void">
+		<cfscript>
+			// Reconfigure Logging With Application Configuration Data
     		instance.log = controller.getLogBox().getLogger( this );
     		// Setup Configuration
     		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
 			// Register CFC Configuration Object
 			registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'),interceptorName="coldboxConfig");
-			// Register The Interceptors
-			registerInterceptors();
-    	</cfscript>
-    </cffunction>
+		</cfscript>
+	</cffunction>
 
+	<!--- onConfigurationLoad --->
+	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
+		<cfscript>
+			// Register All Application Interceptors
+			registerInterceptors();
+		</cfscript>
+	</cffunction>
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Register All the interceptors --->
@@ -112,10 +117,11 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var timerHash = 0><cfsilent>
 		<cfscript>
-		// Is ColdBox Inited and ready to serve requests?
+		/** Is ColdBox Inited and ready to serve requests?
 		if ( NOT controller.getColdboxInitiated() ){
 			return this;
 		}
+		**/
 
 		// Validate Incoming State
 		if ( instance.interceptorConfig.throwOnInvalidStates AND NOT listFindNoCase(arrayToList( instance.interceptionPoints ), arguments.state)){
