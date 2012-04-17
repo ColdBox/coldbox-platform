@@ -500,15 +500,17 @@ Only one instance of a specific ColdBox application exists.
 			}
 
 			// Setup Invoker args
-			loc.args 				= structnew();
-			loc.args.event 			= oRequestContext;
+			loc.args 			= structnew();
+			loc.args.event 		= oRequestContext;
+			loc.args.rc			= oRequestContext.getCollection();
+			loc.args.prc		= oRequestContext.getCollection(private=true);
 			loc.args.eventArguments = arguments.eventArguments;
 
 			// Setup Main Invoker Args
 			loc.argsMain 			= structnew();
 			loc.argsMain.event		= oRequestContext;
-			loc.argsMain.rc			= oRequestContext.getCollection();
-			loc.argsMain.prc		= oRequestContext.getCollection(private=true);
+			loc.argsMain.rc			= loc.args.rc;
+			loc.argsMain.prc		= loc.args.prc;
 			structAppend(loc.argsMain, arguments.eventArguments);
 
 			// Setup interception data
@@ -554,7 +556,7 @@ Only one instance of a specific ColdBox application exists.
 					if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [preHandler] for #arguments.event#");
 
-						oHandler.preHandler(oRequestContext,ehBean.getMethod(),arguments.eventArguments);
+						oHandler.preHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
 
 						services.debuggerService.timerEnd(loc.tHash);
 					}
@@ -585,7 +587,7 @@ Only one instance of a specific ColdBox application exists.
 
 				// Invoke onMissingAction event
 				if( ehBean.isMissingAction() ){
-					loc.results	= oHandler.onMissingAction(oRequestContext,ehBean.getMissingAction(),arguments.eventArguments);
+					loc.results	= oHandler.onMissingAction(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,missingAction=ehBean.getMissingAction(),eventArguments=arguments.eventArguments);
 				}
 				// Invoke main event
 				else{
@@ -594,7 +596,7 @@ Only one instance of a specific ColdBox application exists.
 					if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [aroundHandler] for #arguments.event#");
 
-						loc.results = oHandler.aroundHandler(oRequestContext, oHandler[ehBean.getMethod()], arguments.eventArguments);
+						loc.results = oHandler.aroundHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,targetAction=oHandler[ehBean.getMethod()],eventArguments=arguments.eventArguments);
 
 						services.debuggerService.timerEnd(loc.tHash);
 					}
@@ -605,7 +607,7 @@ Only one instance of a specific ColdBox application exists.
 						// Add target Action to loc.args
 						loc.args.targetAction  	= oHandler[ehBean.getMethod()];
 
-						loc.results = invoker(oHandler,"around#ehBean.getMethod()#",loc.args);
+						loc.results = invoker(event=oHandler,rc=loc.args.rc,prc=loc.args.prc,action="around#ehBean.getMethod()#",eventArguments=loc.args);
 
 						// Cleanup: Remove target action from loc.args for post events
 						structDelete(loc.args, "targetAction");
@@ -646,7 +648,7 @@ Only one instance of a specific ColdBox application exists.
 			<cfcatch>
 				<!--- Check if onError exists? --->
 				<cfif oHandler._actionExists("onError")>
-					<cfset loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),cfcatch,arguments.eventArguments)>
+					<cfset loc.results = oHandler.onError(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,faultAction=ehBean.getmethod(),exception=cfcatch,eventArguments=arguments.eventArguments)>
 				<cfelse>
 					<!--- rethrow not supported in cfscript <cfthrow object="e"> doesn't work properly as we lose context --->
 					<cfrethrow>
