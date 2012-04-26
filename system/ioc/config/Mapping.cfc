@@ -90,54 +90,77 @@ Description :
 	<!--- processMemento --->
     <cffunction name="processMemento" output="false" access="public" returntype="any" hint="Process a mapping memento">
     	<cfargument name="memento" required="true" hint="The data memento to process" colddoc:generic="struct"/>
+			<cfargument name="excludes" required="false" hint="List of instance's memento keys to not process" default="" />
     	<cfscript>
-    		var x = 1;
-			var key = "";
-			
-			// append incoming memento data
-    		for(key in arguments.memento){
-				
-				switch(key){
-					//process cache properties
-					case "cache" : {
-						setCacheProperties(argumentCollection=arguments.memento.cache ); break;
+				var x = 1;
+				var key = "";
+
+
+				// if excludes is passed as an array, convert to list
+				if(isArray(arguments.excludes)){
+					arguments.excludes = arrayToList(arguments.excludes);
+				}
+
+				// append incoming memento data
+				for(key in arguments.memento){
+
+					// if current key is in excludes list, skip and continue to next loop
+					if(listFindNoCase(arguments.excludes, key)){
+						continue;
 					}
-					//process constructor args
-					case "DIConstructorArgs" : {
-						for(x=1; x lte arrayLen(arguments.memento.DIConstructorArgs); x++){
-							addDIConstructorArgument(argumentCollection=arguments.memento.DIConstructorArgs[x] );
+
+					switch(key){
+
+						//process cache properties
+						case "cache" :
+						{
+							setCacheProperties(argumentCollection=arguments.memento.cache );
+							break;
 						}
-						break; 
-					}	
-					//process properties
-					case "DIProperties" : {
-						for(x=1; x lte arrayLen(arguments.memento.DIProperties); x++){
-							addDIProperty(argumentCollection=arguments.memento.DIProperties[x] );
-						} 
-						break; 
-					}	
-					//process DISetters
-					case "DISetters" : {
+
+						//process constructor args
+						case "DIConstructorArgs" :
+						{
+							for(x=1; x lte arrayLen(arguments.memento.DIConstructorArgs); x++){
+								addDIConstructorArgument(argumentCollection=arguments.memento.DIConstructorArgs[x] );
+							}
+							break;
+						}
+
+						//process properties
+						case "DIProperties" :
+						{
+							for(x=1; x lte arrayLen(arguments.memento.DIProperties); x++){
+								addDIProperty(argumentCollection=arguments.memento.DIProperties[x] );
+							}
+							break;
+						}
+
+						//process DISetters
+						case "DISetters" : {
 						for(x=1; x lte arrayLen(arguments.memento.DISetters); x++){
-							addDISetter(argumentCollection=arguments.memento.DISetters[x] );
-						} 
-						break; 
-					}	
-					//process DIMethodArgs
-					case "DIMethodArgs" : {
-						for(x=1; x lte arrayLen(arguments.memento.DIMethodArgs); x++){
-							addDIMethodArgument(argumentCollection=arguments.memento.DIMethodArgs[x] );
-						} 
-						break; 
-					}	
-					
-					default:{
-						instance[key] = arguments.memento[key];
-					}
-				}// end switch
-				
-			}
-			return this;
+						addDISetter(argumentCollection=arguments.memento.DISetters[x] );
+						}
+						break;
+						}
+
+						//process DIMethodArgs
+						case "DIMethodArgs" :
+						{
+							for(x=1; x lte arrayLen(arguments.memento.DIMethodArgs); x++){
+								addDIMethodArgument(argumentCollection=arguments.memento.DIMethodArgs[x] );
+							}
+							break;
+						}
+
+						default:{
+							instance[key] = arguments.memento[key];
+						}
+					}// end switch
+
+
+				}
+				return this;
     	</cfscript>
     </cffunction>
 	
