@@ -1,12 +1,15 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	
 	function setup(){
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector");
-		
+				
 		// init injector
 		injector.init();
+		
+		util = getMockBox().createMock("coldbox.system.core.util.util").$("getInheritedMetaData").$results({path="path.to.object"});
+		injector.$property("instance.utility","variables",util);
 	}
 		
 	function testbuildBinder(){
@@ -150,7 +153,7 @@
 		assertTrue( isObject(injector.getParent() ));
 	}
 	
-	function removeFromScope(){
+	function testremoveFromScope(){
 		scopeReg = {enabled= true, key = "wirebox",scope="application"};
 		binder = injector.getBinder();
 		getMockBox().prepareMock( binder ).$("getScopeRegistration", scopeReg);
@@ -158,6 +161,16 @@
 		
 		injector.removeFromScope();
 		assertFalse( structKeyExists( application, "wirebox") );
+	}
+	
+	function testAutowireCallsGetInheritedMetaDataForTargetID(){
+		injector.autowire( target=getMockBox().createStub() );
+		assertTrue( util.$once("getInheritedMetaData") );
+	}
+	
+	function testAutowireCallsGetInheritedMetaDataForMD(){
+		injector.autowire( target=getMockBox().createStub() , targetID = "myTargetID");
+		assertTrue( util.$once("getInheritedMetaData") );
 	}
 	
 	

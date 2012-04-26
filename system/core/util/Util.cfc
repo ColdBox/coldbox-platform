@@ -289,4 +289,86 @@ Description :
 		</cfscript>
     </cffunction>
 
+	<!--- getInheritedMetaData --->
+	<cffunction name="getInheritedMetaData" output="false" hint="Returns a single-level metadata struct that includes all items inhereited from extending classes.">
+			<cfargument name="component" type="any" required="true" hint="A component instance, or the path to one">
+			<cfargument name="stopRecursions" default="#arraynew(1)#" hint="An array of classes to stop recursion">
+			<cfargument name="md" default="#structNew()#" hint="A structure containing a copy of the metadata for this level of recursion.">
+			<cfset var local = {}>
+			
+			<!--- First time through, get metaData of component.  --->
+			<cfif structIsEmpty(md)>
+				<cfif isObject(component)>
+					<cfset md = getMetaData(component)>
+				<cfelse>
+					<cfset md = getComponentMetaData(component)>
+				</cfif>
+			</cfif>
+			
+			<!--- If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into. --->
+			<cfif structKeyExists(md,"extends") AND stopClassRecursion(md.extends.name,arguments.stopRecursions) EQ FALSE>
+				<cfset local.parent = getInheritedMetaData(component,stopRecursions,md.extends)>
+			<!--- If we're at the end of the line, it's time to start working backwards so start with an empty struct to hold our condensesd metadata. --->
+			<cfelse>
+				<cfset local.parent = {}>
+				<cfset local.parent.inheritancetrail = []>
+			</cfif>
+		
+			<!--- Override ourselves into parent --->
+			<cfloop collection="#md#" item="local.key">
+				<!--- Functions and properties are an array of structs keyed on name, so I can treat them the same --->
+				<cfif listFind("FUNCTIONS,PROPERTIES",local.key)>
+					<cfif not structKeyExists(local.parent,local.key)>
+							<cfset local.parent[local.key] = []>
+					</cfif>
+					<!--- For each function/property in me... --->
+					<cfloop array="#md[local.key]#" index="local.item">
+						<cfset local.parentItemCounter = 0>
+						<cfset local.foundInParent = false>
+						<!--- ...Look for an item of the same name in my parent... --->
+						<cfloop array="#local.parent[local.key]#" index="local.parentItem">
+							<cfset local.parentItemCounter++>
+							<!--- ...And override it --->
+							<cfif compareNoCase(local.item.name,local.parentItem.name) eq 0>
+								<cfset local.parent[local.key][local.parentItemCounter] = local.item>
+								<cfset local.foundInParent = true>
+								<cfbreak>
+							</cfif>
+						</cfloop>
+						<!--- ...Or add it --->
+						<cfif not local.foundInParent>
+							<cfset arrayAppend(local.parent[local.key],local.item)>
+						</cfif>
+					</cfloop>
+				<!--- For everything else (component-level annotations), just override them directly into the parent --->
+				<cfelseif NOT listFind("EXTENDS,IMPLEMENTS",local.key)>
+					<cfset local.parent[local.key] = md[local.key]>
+				</cfif>
+			</cfloop>
+			<cfset arrayPrePend(local.parent.inheritanceTrail,local.parent.name)>
+			<cfreturn local.parent>
+				
+	</cffunction>
+
+	<!--- stopClassRecursion --->
+	<cffunction name="stopClassRecursion" access="private" returntype="any" hint="Should we stop recursion or not due to class name found: Boolean" output="false" colddoc:generic="Boolean">
+		<cfargument name="classname" 	required="true" hint="The class name to check">
+		<cfargument name="stopRecursions"	required="true" hint="An array of classes to stop processing at"/>
+		<cfscript>
+			var x 				= 1;
+			var stopLen			= arrayLen(arguments.stopRecursions);
+
+			// Try to find a match
+			for(x=1;x lte stopLen; x=x+1){
+				if( CompareNoCase( arguments.stopRecursions[x], arguments.classname) eq 0){
+					return true;
+				}
+			}
+
+			return false;
+		</cfscript>
+	</cffunction>
+	
+
+
 </cfcomponent>
