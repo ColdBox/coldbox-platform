@@ -133,7 +133,7 @@
 	<function name="getpluginAuthorURL" returns="string">
 			<help><![CDATA[ Get the instance's pluginAuthorURL (Context: Plugin) ]]></help>
 		</function>
-<!-- Functions for: coldbox.system.EventHandler -->
+<!-- Functions for: EventHandler -->
 	<function name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
@@ -1500,6 +1500,9 @@
 	<scopevar name="getExceptionService()">
 			<help><![CDATA[Get ExceptionService: coldbox.system.web.services.ExceptionService]]></help>
 		</scopevar>
+	<scopevar name="setValidationManager(validationManager)">
+			<help><![CDATA[Store the validation manager for the application]]></help>
+		</scopevar>
 	<scopevar name="getWireBox()">
 			<help><![CDATA[Get the application's LogBox instance]]></help>
 		</scopevar>
@@ -1562,6 +1565,9 @@
 		</scopevar>
 	<scopevar name="getAppHash()">
 			<help><![CDATA[Get AppHash]]></help>
+		</scopevar>
+	<scopevar name="getValidationManager()">
+			<help><![CDATA[Get the validation manager for the application]]></help>
 		</scopevar>
 	<scopevar name="setColdboxOCM(coldboxOCM)">
 			<help><![CDATA[Set ColdboxOCM]]></help>
