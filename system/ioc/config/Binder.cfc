@@ -312,6 +312,16 @@ Description :
     	</cfscript>
     </cffunction>
 	
+	<!--- parent --->
+	<cffunction name="parent" output="false" access="public" returntype="any" hint="this method lets you use an abstract or parent mapping as a template for other like objects">
+		<cfargument name="alias" required="true" hint="The parent class to copy dependencies and definitions from"/>
+		<cfscript>
+			// copy parent class's memento instance, exclude alias, name and path
+			getCurrentMapping().processMemento( getMapping( arguments.alias ).getMemento(), "alias,name,path" );
+			return this;
+		</cfscript>
+	</cffunction>	
+	
 	<!--- toFactoryMethod --->
     <cffunction name="toFactoryMethod" output="false" access="public" returntype="any" hint="Map to a factory and its executing method.">
     	<cfargument name="factory" 	required="true" hint="The mapping factory reference name"/>
