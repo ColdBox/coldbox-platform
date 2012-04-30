@@ -1,1 +1,3 @@
-﻿<h2>I am an external view</h2>
+﻿<cfoutput>
+<h2>I am an external view rendered at #now()#</h2>
+</cfoutput>
