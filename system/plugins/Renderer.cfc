@@ -143,14 +143,14 @@ Description :
 			}
 			// Prepare caching key
 			viewCacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & arguments.module & ":" & arguments.view & arguments.cacheSuffix;
-			// Is the view already cached? UPDATE THIS BY 3.5 to CACHEBOX lookup
-			if (arguments.cache)
-			{
-				if( instance.templateCache.lookup(viewCacheKey) ){
-					// Render it out
-					timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm]");
-					iData.renderedView = instance.templateCache.get(viewCacheKey);
-					instance.debuggerService.timerEnd(timerHash);
+			// Are we caching?
+			if (arguments.cache){
+				// Try to get from cache
+				timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm]");
+				iData.renderedView = instance.templateCache.get( viewCacheKey );
+				// Verify it existed
+				if( structKeyExists(iData, "renderedView") ){
+					instance.debuggerService.timerEnd( timerHash );
 					// Post View Render Interception
 					if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
 					// Return it
@@ -159,7 +159,6 @@ Description :
 			}
 
 			// No caching, just render
-
 			// Discover and cache view/helper locations
 			viewLocations = discoverViewPaths(arguments.view,arguments.module,explicitModule);
 
@@ -261,7 +260,7 @@ Description :
 		<cfargument name="collectionStartRow" default="1"/>
 		<cfargument name="collectionMaxRows"  default="0"/>
 		<cfargument name="collectionDelim"  default=""/>
-		
+
 		<cfscript>
 			var buffer 	= createObject("java","java.lang.StringBuffer").init();
 			var x 		= 1;
@@ -287,7 +286,7 @@ Description :
 					// prepend the delim
 					if ( x NEQ arguments.collectionStartRow ) {
 						buffer.append( arguments.collectionDelim );
-					}					
+					}
 					// render item composite
 					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
 				}
@@ -309,7 +308,7 @@ Description :
 					// prepend the delim
 					if ( variables._counter NEQ 1 ) {
 						buffer.append( arguments.collectionDelim );
-					}							
+					}
 					// render item composite
 					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
 				</cfscript>
@@ -341,45 +340,35 @@ Description :
 		<cfargument name="cacheSuffix" 				required="false" type="string"  default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<cfargument name="args"   					required="false" type="any"  	default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<!--- ************************************************************* --->
-		<cfset var cbox_RenderedView = "">
-		<!--- Cache Entries --->
-		<cfset var cbox_cacheKey = "">
-		<cfset var cbox_cacheEntry = "">
-		<cfset var viewLocations = "" />
+		<cfscript>
+			var cbox_renderedView = "";
+			// Cache Entries
+			var cbox_cacheKey 	= "";
+			var cbox_cacheEntry = "";
+			var viewLocations 	= "";
 
-		<!--- Setup the cache key --->
-		<cfset cbox_cacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix>
-
-		<!--- Do we have a cached view?? --->
-		<cfif instance.templateCache.lookup(cbox_cacheKey)>
-			<!--- Render The View --->
-			<cfset cbox_timerHash = instance.debuggerService.timerStart("rendering Cached External View [#arguments.view#.cfm]")>
-				<cfset cbox_RenderedView = instance.templateCache.get(cbox_cacheKey)>
-			<cfset instance.debuggerService.timerEnd(cbox_timerHash)>
-			<cfreturn cbox_RenderedView>
-		</cfif>
-
-		<cfset cbox_timerHash = instance.debuggerService.timerStart("rendering External View [#arguments.view#.cfm]")>
-			<cftry>
-				<cfset viewLocations = discoverViewPaths( arguments.view,"",false) />
-				<!--- Render External View --->
-				<cfset cbox_RenderedView = renderViewComposite(view, viewLocations.viewPath, viewLocations.viewHelperPath, args) />
-				<!--- Catches --->
-				<cfcatch type="missinginclude">
-					<cfthrow type="Renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
-				</cfcatch>
-				<cfcatch type="any">
-					<cfrethrow />
-				</cfcatch>
-			</cftry>
-		<cfset instance.debuggerService.timerEnd(cbox_timerHash)>
-
-		<!--- Are we caching explicitly --->
-		<cfif arguments.cache>
-			<cfset instance.templateCache.set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
-		</cfif>
-
-		<cfreturn cbox_RenderedView>
+			// Setup the cache key
+			cbox_cacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
+			// Try to get from cache
+			cbox_timerHash 		= instance.debuggerService.timerStart("rendering Cached External View [#arguments.view#.cfm]");
+			cbox_renderedView 	= instance.templateCache.get(cbox_cacheKey);
+			if( isDefined("cbox_renderedView") ){
+				instance.debuggerService.timerEnd( cbox_timerHash );
+				return cbox_renderedView;
+			}
+			// Not in cache, render it
+			cbox_timerHash = instance.debuggerService.timerStart("rendering External View [#arguments.view#.cfm]");
+			// Get view locations
+			viewLocations = discoverViewPaths( arguments.view,"",false);
+			// Render External View
+			cbox_renderedView = renderViewComposite(view, viewLocations.viewPath, viewLocations.viewHelperPath, args);
+ 			instance.debuggerService.timerEnd(cbox_timerHash);
+ 			// Are we caching it
+ 			if( arguments.cache ){
+ 				instance.templateCache.set(cbox_cacheKey,cbox_renderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout);
+ 			}
+ 			return cbox_renderedView;
+		</cfscript>
 	</cffunction>
 
 	<!--- Render the layout --->
