@@ -139,7 +139,7 @@
 		// all 4 properties (alpha, bravo, charlie and delta) exists
 		concreteProperties = config.getMapping("concreteService").getDIProperties();
 		foundProperties = [];
-		for(i = 1; i <= arrayLen(concreteProperties); i++){
+		for(i = 1; i lte arrayLen(concreteProperties); i++){
 			arrayAppend(foundProperties, concreteProperties[i].name);
 		}
 		assertEquals(4, arrayLen(concreteProperties) );
@@ -466,7 +466,7 @@
 
 		config.mapDirectory(packagePath="coldbox.testing.testModel",exclude="ioc.*");
 		//debug( config.getMappings() );
-		assertTrue( structCount(config.getMappings()) lte 8 );
+		assertTrue( structCount(config.getMappings()) gt 5 );
 
 	}
 

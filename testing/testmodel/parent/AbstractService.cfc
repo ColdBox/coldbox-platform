@@ -1,24 +1,14 @@
-component displayname="AbstractService" hint="AbstractService - Abstract Bean Class" output="false" accessors="true"
-{
+<cfcomponent displayname="AbstractService" hint="AbstractService - Abstract Bean Class" output="false" accessors="true">
 
-	property name="someAlphaDAO" type="any";
-	property name="someBravoDAO" type="any";
+	<cfproperty name="someAlphaDAO" type="any">
+	<cfproperty name="someBravoDAO" type="any">
 
-	/**
-	 * @hint constructor method
-	 * @output false
-	 */
-	public AbstractService function init()
-	{
+	<cfscript>
+
+	function init(){
 		return this;
 	}
 
-	/***************************************************
-	 *                public method(s)                 *
-	 ***************************************************/
+	</cfscript>
 
-	/***************************************************
-	 *                 private method(s)               *
-	 ***************************************************/
-
-}
+</cfcomponent>
