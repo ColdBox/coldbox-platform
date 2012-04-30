@@ -1,24 +1,13 @@
-component displayname="ConcreteService" extends="AbstractService" hint="ConcreteService - Value Object Bean Class" output="false" accessors="true"
-{
+<cfcomponent displayname="ConcreteService" extends="AbstractService" hint="ConcreteService - Value Object Bean Class" output="false" accessors="true">
 
-	property name="someCharlieDAO" type="any";
-	property name="someDeltaDAO" type="any";
+	<cfproperty name="someCharlieDAO" 	type="any">
+	<cfproperty name="someDeltaDAO" 	type="any">
 
-	/**
-	 * @hint constructor method
-	 * @output false
-	 */
-	public ConcreteService function init()
-	{
+	<cfscript>
+
+	function init(){
 		return this;
 	}
+	</cfscript>
 
-	/***************************************************
-	 *                public method(s)                 *
-	 ***************************************************/
-
-	/***************************************************
-	 *                 private method(s)               *
-	 ***************************************************/
-
-}
+</cfcomponent>
