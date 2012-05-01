@@ -632,7 +632,7 @@ Description :
     <!---------------------------------------------------------------------------------------------->
     <cffunction name="rotateQuery" output="false" access="public" returntype="Query" hint="Rotates query swapping rows for cols and cols for rows, first col becomes new col names">
 		<cfargument name="originalQuery" 			type="query" 	required="true" hint="The query to rotate"/>
-		<cfset var qMetaData = getmetadata(qry)>
+		<cfset var qMetaData = getmetadata(originalQuery)>
 		<cfset var colums = "" />
 		<cfset var columsType = "" />
 		<cfset var i = "" />
@@ -642,17 +642,17 @@ Description :
 		<cfset var tempz = "" />
 		<cfset var temp = "" />
 
-		<cfloop from="1" to="#qry.RecordCount#" index="i">
-			<cfset colums = colums & "#slugifyCol(qry[qMetaData[1].name][i])#," />
+		<cfloop from="1" to="#originalQuery.RecordCount#" index="i">
+			<cfset colums = colums & "#slugifyCol(originalQuery[qMetaData[1].name][i])#," />
 			<cfset columsType = columsType & "VarChar," />
 		</cfloop>
 
 		<cfset rotatedQuery = QueryNew(colums, columsType) />
 		<cfset newRow = QueryAddRow(rotatedQuery, arrayLen(qMetaData))>
 		<cfloop from="2" to="#arrayLen(qMetaData)#" index="j">
-			<cfloop from="1" to="#qry.recordcount#" index="i">
-				<cfset tempz = "qry.#qMetaData[j].Name#[i]" />
-				<cfset temp = QuerySetCell(rotatedQuery, "#slugifyCol(qry[qMetaData[1].name][i])#", evaluate(tempz), j)>
+			<cfloop from="1" to="#originalQuery.recordcount#" index="i">
+				<cfset tempz = "originalQuery.#qMetaData[j].Name#[i]" />
+				<cfset temp = QuerySetCell(rotatedQuery, "#slugifyCol(originalQuery[qMetaData[1].name][i])#", evaluate(tempz), j)>
 			</cfloop>
 		</cfloop>
 		<cfreturn rotatedQuery />
@@ -676,6 +676,8 @@ Description :
 
 			// is there a max length restriction
 			if ( arguments.maxlength ) {slug = left ( slug, arguments.maxlength );}
+
+			if ( isNumeric(slug) ) {slug = "col_" & slug;}
 
 			return slug;
 		</cfscript>
