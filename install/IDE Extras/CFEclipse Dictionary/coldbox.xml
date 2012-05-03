@@ -136,7 +136,7 @@
 	<function creator="8" name="getpluginAuthorURL" returns="string">
 			<help><![CDATA[ Get the instance's pluginAuthorURL (Context: Plugin) ]]></help>
 		</function>
-<!-- Functions for: EventHandler -->
+<!-- Functions for: coldbox.system.EventHandler -->
 	<function creator="8" name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
@@ -724,179 +724,26 @@
 	<scope value="flash.discard([keys])">
 			<help><![CDATA[Mark for discard all or a single flash temp variable for another relocation. You can also remove them if you like.]]></help>
 		</scope>
-	<scope value="binder.mapAspect(aspect,autoBinding)">
-			<help><![CDATA[Map a new aspect]]></help>
-		</scope>
-	<scope value="binder.toWebservice(path)">
-			<help><![CDATA[Map to a webservice destination class path.]]></help>
-		</scope>
-	<scope value="binder.map(alias)">
-			<help><![CDATA[Create a mapping to an object]]></help>
-		</scope>
-	<scope value="binder.mapDSL(namespace,path)">
-			<help><![CDATA[Register a new custom dsl namespace]]></help>
-		</scope>
-	<scope value="binder.getAspectBindings()">
-			<help><![CDATA[Get the collection of aspect bindings for this binder]]></help>
-		</scope>
-	<scope value="binder.with(alias)">
-			<help><![CDATA[Used to set the current working mapping name in place for the maping DSL. An exception is thrown if the mapping does not exist yet.]]></help>
-		</scope>
-	<scope value="binder.mixins(mixins)">
-			<help><![CDATA[Adds one, a list or an array of UDF templates to mixin to a CFC]]></help>
-		</scope>
-	<scope value="binder.providerMethod(method,mapping)">
-			<help><![CDATA[Add a new provider method mapping]]></help>
-		</scope>
-	<scope value="binder.onDIComplete(methods)">
-			<help><![CDATA[The methods to execute once DI completes on the mapping]]></help>
-		</scope>
-	<scope value="binder.setProperty(name,value)">
-			<help><![CDATA[Create a new binding property]]></help>
-		</scope>
-	<scope value="binder.getParentInjector()">
-			<help><![CDATA[Get the parent injector reference this binder is linked to]]></help>
-		</scope>
-	<scope value="binder.init(injector,[config],[properties])">
-			<help><![CDATA[Constructor: You can pass a data CFC instance, data CFC path or nothing at all for purely programmatic configuration]]></help>
-		</scope>
-	<scope value="binder.loadDataDSL([rawDSL])">
-			<help><![CDATA[Load a data configuration CFC data DSL]]></help>
-		</scope>
-	<scope value="binder.match()">
-			<help><![CDATA[Create a new matcher class for usage in class or method matching]]></help>
-		</scope>
-	<scope value="binder.getCurrentMapping()">
-			<help><![CDATA[Get the current set mapping (UTILITY method)]]></help>
-		</scope>
-	<scope value="binder.cacheBox([configFile],[cacheFactory],[enabled],[classNamespace])">
-			<help><![CDATA[Integrate with CacheBox]]></help>
-		</scope>
-	<scope value="binder.mapDirectory(packagePath,include,exclude)">
-			<help><![CDATA[Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection]]></help>
-		</scope>
-	<scope value="binder.mapScope(annotation,path)">
-			<help><![CDATA[Register a new WireBox custom scope]]></help>
-		</scope>
-	<scope value="binder.extraAttributes(data)">
-			<help><![CDATA[Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.]]></help>
+	<scope value="binder.getProperties()">
+			<help><![CDATA[Get the binded properties structure]]></help>
 		</scope>
 	<scope value="binder.getScanLocations()">
 			<help><![CDATA[Get the linked map of package scan locations for CFCs]]></help>
 		</scope>
-	<scope value="binder.setter(name,[ref],[dsl],[value],[javaCast],[argName])">
-			<help><![CDATA[Map a setter function to a mapping]]></help>
-		</scope>
-	<scope value="binder.getProperties()">
-			<help><![CDATA[Get the binded properties structure]]></help>
-		</scope>
-	<scope value="binder.getScopeRegistration()">
-			<help><![CDATA[Get the scope registration details structure]]></help>
-		</scope>
-	<scope value="binder.processMappings()">
-			<help><![CDATA[Process all registered mappings, called by injector when ready to start serving requests]]></help>
-		</scope>
-	<scope value="binder.getColdBox()">
-			<help><![CDATA[Get the bounded ColdBox context for this binder, if any]]></help>
-		</scope>
-	<scope value="binder.getInjector()">
-			<help><![CDATA[Get the bounded injector for this binder]]></help>
-		</scope>
-	<scope value="binder.getMemento()">
-			<help><![CDATA[Get the instance data structure]]></help>
-		</scope>
-	<scope value="binder.getAppMapping()">
-			<help><![CDATA[Get the ColdBox app mapping variable if context linked]]></help>
-		</scope>
-	<scope value="binder.toProvider(provider)">
-			<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider]]></help>
-		</scope>
 	<scope value="binder.getCustomScopes()">
 			<help><![CDATA[Get the registered custom scopes]]></help>
-		</scope>
-	<scope value="binder.mappingExists(name)">
-			<help><![CDATA[Check if an object mapping exists]]></help>
-		</scope>
-	<scope value="binder.getStopRecursions()">
-			<help><![CDATA[Get all the stop recursion classes array]]></help>
-		</scope>
-	<scope value="binder.parentInjector(injector)">
-			<help><![CDATA[Link a parent injector to this configuration binder]]></help>
-		</scope>
-	<scope value="binder.toFactoryMethod(factory,method)">
-			<help><![CDATA[Map to a factory and its executing method.]]></help>
-		</scope>
-	<scope value="binder.getMappings()">
-			<help><![CDATA[Get all the registered object mappings structure]]></help>
-		</scope>
-	<scope value="binder.scanLocations(locations)">
-			<help><![CDATA[Register one or more package scan locations for CFC lookups]]></help>
 		</scope>
 	<scope value="binder.getLogBoxConfig()">
 			<help><![CDATA[Get the logBox Configuration file to use]]></help>
 		</scope>
-	<scope value="binder.inCacheBox([key],[timeout],[lastAccessTimeout],[provider])">
-			<help><![CDATA[Map an object into CacheBox]]></help>
+	<scope value="binder.parent(alias)">
+			<help><![CDATA[this method lets you use an abstract or parent mapping as a template for other like objects]]></help>
 		</scope>
-	<scope value="binder.asEagerInit()">
-			<help><![CDATA[If this method is called, the mapped object will be created once the injector starts up. Basically, not lazy loaded]]></help>
+	<scope value="binder.getParentInjector()">
+			<help><![CDATA[Get the parent injector reference this binder is linked to]]></help>
 		</scope>
-	<scope value="binder.noAutowire()">
-			<help><![CDATA[If you call this method on an object mapping, the object will NOT be inspected for injection/wiring metadata, it will use ONLY whatever you define in the mapping.]]></help>
-		</scope>
-	<scope value="binder.scopeRegistration([enabled],[scope],[key])">
-			<help><![CDATA[Use to define injector scope registration]]></help>
-		</scope>
-	<scope value="binder.toDSL(dsl)">
-			<help><![CDATA[Map to a dsl that will be used to create the mapped object]]></help>
-		</scope>
-	<scope value="binder.initWith()">
-			<help><![CDATA[Positional or named value arguments to use when initializing the mapping. (CFC-only)]]></help>
-		</scope>
-	<scope value="binder.into(scope)">
-			<help><![CDATA[Map an object into a specific persistence scope]]></help>
-		</scope>
-	<scope value="binder.removeScanLocations(locations)">
-			<help><![CDATA[Try to remove all the scan locations passed in]]></help>
-		</scope>
-	<scope value="binder.asSingleton()">
-			<help><![CDATA[Map as a singleton, shortcut to using 'in( this.SCOPES.SINGLETON )']]></help>
-		</scope>
-	<scope value="binder.getMapping(name)">
-			<help><![CDATA[Get a specific object mapping: coldbox.system.ioc.config.Mapping]]></help>
-		</scope>
-	<scope value="binder.getCacheBoxConfig()">
-			<help><![CDATA[Get the CacheBox Configuration Integration structure]]></help>
-		</scope>
-	<scope value="binder.to(path)">
-			<help><![CDATA[Map to a destination CFC class path.]]></help>
-		</scope>
-	<scope value="binder.getDefaults()">
-			<help><![CDATA[Get the default WireBox settings structure]]></help>
-		</scope>
-	<scope value="binder.setProperties(properties)">
-			<help><![CDATA[Set the binded properties structure]]></help>
-		</scope>
-	<scope value="binder.getCustomDSL()">
-			<help><![CDATA[Get the custom dsl namespace registration structure]]></help>
-		</scope>
-	<scope value="binder.constructor(constructor)">
-			<help><![CDATA[You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.]]></help>
-		</scope>
-	<scope value="binder.property(name,[ref],[dsl],[value],[javaCast],[scope])">
-			<help><![CDATA[Map a cfproperty to a mapping]]></help>
-		</scope>
-	<scope value="binder.methodArg([name],[ref],[dsl],[value],[javaCast])">
-			<help><![CDATA[Map a method argument to a factory method]]></help>
-		</scope>
-	<scope value="binder.toJava(path)">
-			<help><![CDATA[Map to a java destination class path.]]></help>
-		</scope>
-	<scope value="binder.toValue(value)">
-			<help><![CDATA[Map to a constant value]]></help>
-		</scope>
-	<scope value="binder.listener(class,[properties],[name])">
-			<help><![CDATA[Add a new listener configuration.]]></help>
+	<scope value="binder.getMappings()">
+			<help><![CDATA[Get all the registered object mappings structure]]></help>
 		</scope>
 	<scope value="binder.configure()">
 			<help><![CDATA[The main configuration method that must be overriden by a specific WireBox Binder configuration object]]></help>
@@ -904,38 +751,194 @@
 	<scope value="binder.reset()">
 			<help><![CDATA[Reset the configuration back to the original binder defaults]]></help>
 		</scope>
-	<scope value="binder.noInit()">
-			<help><![CDATA[If you call this method on an object mapping, the object's constructor will not be called. By default all constructors are called.]]></help>
+	<scope value="binder.mapScope(annotation,path)">
+			<help><![CDATA[Register a new WireBox custom scope]]></help>
 		</scope>
-	<scope value="binder.stopRecursions(classes)">
-			<help><![CDATA[Configure the stop recursion classes]]></help>
+	<scope value="binder.getStopRecursions()">
+			<help><![CDATA[Get all the stop recursion classes array]]></help>
 		</scope>
-	<scope value="binder.initArg([name],[ref],[dsl],[value],[javaCast])">
-			<help><![CDATA[Map a constructor argument to a mapping]]></help>
+	<scope value="binder.asEagerInit()">
+			<help><![CDATA[If this method is called, the mapped object will be created once the injector starts up. Basically, not lazy loaded]]></help>
 		</scope>
-	<scope value="binder.getProperty(name,[default])">
-			<help><![CDATA[Get a binded property. If not found it will try to return the default value passed, else it returns an exception]]></help>
+	<scope value="binder.mixins(mixins)">
+			<help><![CDATA[Adds one, a list or an array of UDF templates to mixin to a CFC]]></help>
 		</scope>
-	<scope value="binder.mapPath(path)">
-			<help><![CDATA[Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.]]></help>
+	<scope value="binder.property(name,[ref],[dsl],[value],[javaCast],[scope])">
+			<help><![CDATA[Map a cfproperty to a mapping]]></help>
 		</scope>
-	<scope value="binder.getListeners()">
-			<help><![CDATA[Get the configured listeners array]]></help>
+	<scope value="binder.scopeRegistration([enabled],[scope],[key])">
+			<help><![CDATA[Use to define injector scope registration]]></help>
 		</scope>
-	<scope value="binder.toRSS(path)">
-			<help><![CDATA[Map to a rss destination class path.]]></help>
+	<scope value="binder.constructor(constructor)">
+			<help><![CDATA[You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.]]></help>
 		</scope>
-	<scope value="binder.propertyExists(name)">
-			<help><![CDATA[Checks if a property exists]]></help>
+	<scope value="binder.init(injector,[config],[properties])">
+			<help><![CDATA[Constructor: You can pass a data CFC instance, data CFC path or nothing at all for purely programmatic configuration]]></help>
 		</scope>
-	<scope value="binder.bindAspect(classes,methods,aspects)">
-			<help><![CDATA[Bind a aspects to classes and methods]]></help>
+	<scope value="binder.getMapping(name)">
+			<help><![CDATA[Get a specific object mapping: coldbox.system.ioc.config.Mapping]]></help>
+		</scope>
+	<scope value="binder.getCustomDSL()">
+			<help><![CDATA[Get the custom dsl namespace registration structure]]></help>
+		</scope>
+	<scope value="binder.inCacheBox([key],[timeout],[lastAccessTimeout],[provider])">
+			<help><![CDATA[Map an object into CacheBox]]></help>
+		</scope>
+	<scope value="binder.toDSL(dsl)">
+			<help><![CDATA[Map to a dsl that will be used to create the mapped object]]></help>
 		</scope>
 	<scope value="binder.logBoxConfig(config)">
 			<help><![CDATA[Set the logBox Configuration to use]]></help>
 		</scope>
+	<scope value="binder.match()">
+			<help><![CDATA[Create a new matcher class for usage in class or method matching]]></help>
+		</scope>
+	<scope value="binder.processMappings()">
+			<help><![CDATA[Process all registered mappings, called by injector when ready to start serving requests]]></help>
+		</scope>
+	<scope value="binder.mapAspect(aspect,autoBinding)">
+			<help><![CDATA[Map a new aspect]]></help>
+		</scope>
+	<scope value="binder.toValue(value)">
+			<help><![CDATA[Map to a constant value]]></help>
+		</scope>
+	<scope value="binder.asSingleton()">
+			<help><![CDATA[Map as a singleton, shortcut to using 'in( this.SCOPES.SINGLETON )']]></help>
+		</scope>
+	<scope value="binder.listener(class,[properties],[name])">
+			<help><![CDATA[Add a new listener configuration.]]></help>
+		</scope>
+	<scope value="binder.getAppMapping()">
+			<help><![CDATA[Get the ColdBox app mapping variable if context linked]]></help>
+		</scope>
+	<scope value="binder.removeScanLocations(locations)">
+			<help><![CDATA[Try to remove all the scan locations passed in]]></help>
+		</scope>
+	<scope value="binder.mapPath(path)">
+			<help><![CDATA[Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.]]></help>
+		</scope>
+	<scope value="binder.into(scope)">
+			<help><![CDATA[Map an object into a specific persistence scope]]></help>
+		</scope>
+	<scope value="binder.getInjector()">
+			<help><![CDATA[Get the bounded injector for this binder]]></help>
+		</scope>
+	<scope value="binder.noInit()">
+			<help><![CDATA[If you call this method on an object mapping, the object's constructor will not be called. By default all constructors are called.]]></help>
+		</scope>
+	<scope value="binder.toProvider(provider)">
+			<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider]]></help>
+		</scope>
+	<scope value="binder.providerMethod(method,mapping)">
+			<help><![CDATA[Add a new provider method mapping]]></help>
+		</scope>
+	<scope value="binder.scanLocations(locations)">
+			<help><![CDATA[Register one or more package scan locations for CFC lookups]]></help>
+		</scope>
+	<scope value="binder.toFactoryMethod(factory,method)">
+			<help><![CDATA[Map to a factory and its executing method.]]></help>
+		</scope>
+	<scope value="binder.getScopeRegistration()">
+			<help><![CDATA[Get the scope registration details structure]]></help>
+		</scope>
+	<scope value="binder.bindAspect(classes,methods,aspects)">
+			<help><![CDATA[Bind a aspects to classes and methods]]></help>
+		</scope>
+	<scope value="binder.getColdBox()">
+			<help><![CDATA[Get the bounded ColdBox context for this binder, if any]]></help>
+		</scope>
+	<scope value="binder.map(alias)">
+			<help><![CDATA[Create a mapping to an object]]></help>
+		</scope>
+	<scope value="binder.mappingExists(name)">
+			<help><![CDATA[Check if an object mapping exists]]></help>
+		</scope>
+	<scope value="binder.getCacheBoxConfig()">
+			<help><![CDATA[Get the CacheBox Configuration Integration structure]]></help>
+		</scope>
+	<scope value="binder.initWith()">
+			<help><![CDATA[Positional or named value arguments to use when initializing the mapping. (CFC-only)]]></help>
+		</scope>
+	<scope value="binder.toWebservice(path)">
+			<help><![CDATA[Map to a webservice destination class path.]]></help>
+		</scope>
+	<scope value="binder.setProperty(name,value)">
+			<help><![CDATA[Create a new binding property]]></help>
+		</scope>
+	<scope value="binder.parentInjector(injector)">
+			<help><![CDATA[Link a parent injector to this configuration binder]]></help>
+		</scope>
+	<scope value="binder.getDefaults()">
+			<help><![CDATA[Get the default WireBox settings structure]]></help>
+		</scope>
+	<scope value="binder.toRSS(path)">
+			<help><![CDATA[Map to a rss destination class path.]]></help>
+		</scope>
+	<scope value="binder.methodArg([name],[ref],[dsl],[value],[javaCast])">
+			<help><![CDATA[Map a method argument to a factory method]]></help>
+		</scope>
+	<scope value="binder.getListeners()">
+			<help><![CDATA[Get the configured listeners array]]></help>
+		</scope>
+	<scope value="binder.toJava(path)">
+			<help><![CDATA[Map to a java destination class path.]]></help>
+		</scope>
+	<scope value="binder.mapDSL(namespace,path)">
+			<help><![CDATA[Register a new custom dsl namespace]]></help>
+		</scope>
+	<scope value="binder.mapDirectory(packagePath,include,exclude)">
+			<help><![CDATA[Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection]]></help>
+		</scope>
+	<scope value="binder.initArg([name],[ref],[dsl],[value],[javaCast])">
+			<help><![CDATA[Map a constructor argument to a mapping]]></help>
+		</scope>
+	<scope value="binder.setter(name,[ref],[dsl],[value],[javaCast],[argName])">
+			<help><![CDATA[Map a setter function to a mapping]]></help>
+		</scope>
+	<scope value="binder.onDIComplete(methods)">
+			<help><![CDATA[The methods to execute once DI completes on the mapping]]></help>
+		</scope>
+	<scope value="binder.stopRecursions(classes)">
+			<help><![CDATA[Configure the stop recursion classes]]></help>
+		</scope>
+	<scope value="binder.extraAttributes(data)">
+			<help><![CDATA[Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.]]></help>
+		</scope>
+	<scope value="binder.propertyExists(name)">
+			<help><![CDATA[Checks if a property exists]]></help>
+		</scope>
+	<scope value="binder.loadDataDSL([rawDSL])">
+			<help><![CDATA[Load a data configuration CFC data DSL]]></help>
+		</scope>
+	<scope value="binder.setProperties(properties)">
+			<help><![CDATA[Set the binded properties structure]]></help>
+		</scope>
+	<scope value="binder.getMemento()">
+			<help><![CDATA[Get the instance data structure]]></help>
+		</scope>
+	<scope value="binder.getCurrentMapping()">
+			<help><![CDATA[Get the current set mapping (UTILITY method)]]></help>
+		</scope>
+	<scope value="binder.to(path)">
+			<help><![CDATA[Map to a destination CFC class path.]]></help>
+		</scope>
 	<scope value="binder.virtualInheritance(mapping)">
 			<help><![CDATA[Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping]]></help>
+		</scope>
+	<scope value="binder.noAutowire()">
+			<help><![CDATA[If you call this method on an object mapping, the object will NOT be inspected for injection/wiring metadata, it will use ONLY whatever you define in the mapping.]]></help>
+		</scope>
+	<scope value="binder.with(alias)">
+			<help><![CDATA[Used to set the current working mapping name in place for the maping DSL. An exception is thrown if the mapping does not exist yet.]]></help>
+		</scope>
+	<scope value="binder.getProperty(name,[default])">
+			<help><![CDATA[Get a binded property. If not found it will try to return the default value passed, else it returns an exception]]></help>
+		</scope>
+	<scope value="binder.cacheBox([configFile],[cacheFactory],[enabled],[classNamespace])">
+			<help><![CDATA[Integrate with CacheBox]]></help>
+		</scope>
+	<scope value="binder.getAspectBindings()">
+			<help><![CDATA[Get the collection of aspect bindings for this binder]]></help>
 		</scope>
 	<scope value="event.getViewLayouts()">
 			<help><![CDATA[Get the registered view layout associations map]]></help>
