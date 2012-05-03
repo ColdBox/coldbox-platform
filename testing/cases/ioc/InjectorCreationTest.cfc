@@ -150,5 +150,16 @@
 
 	}
 
+	function testScopes(){
+		r = injector.getInstance("RequestCategoryBean");
+		assertEquals( request["wirebox:RequestCategoryBean"], r );
+		r = injector.getInstance("SessionCategoryBean");
+		assertEquals( session["wirebox:SessionCategoryBean"], r );
+		r = injector.getInstance("ApplicationCategoryBean");
+		assertEquals( Application["wirebox:ApplicationCategoryBean"], r );
+		r = injector.getInstance("ServerCategoryBean");
+		assertEquals( server["wirebox:ServerCategoryBean"], r );
+	}
+
 </cfscript>
 </cfcomponent>

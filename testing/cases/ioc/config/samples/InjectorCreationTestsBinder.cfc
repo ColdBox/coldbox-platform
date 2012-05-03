@@ -59,6 +59,11 @@ Description :
 		// map by convention
 		map("CategoryBean").to("#myPath#.ioc.category.CategoryBean");
 		map("categoryCoolService").to("#myPath#.ioc.category.CategoryService").asSingleton();
+		// Scopes
+		map("RequestCategoryBean").to("#myPath#.ioc.category.CategoryBean").into( this.SCOPES.REQUEST );
+		map("SessionCategoryBean").to("#myPath#.ioc.category.CategoryBean").into( this.SCOPES.SESSION );
+		map("ApplicationCategoryBean").to("#myPath#.ioc.category.CategoryBean").into( this.SCOPES.APPLICATION );
+		map("ServerCategoryBean").to("#myPath#.ioc.category.CategoryBean").into( this.SCOPES.SERVER );
 		// provider stuff
 		map("providerTest").to("#myPath#.ioc.ProviderTest");
 		map("pizza").to("#myPath#.ioc.Simple").into(this.SCOPES.SESSION);
