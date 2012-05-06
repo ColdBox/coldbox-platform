@@ -636,7 +636,7 @@ Only one instance of a specific ColdBox application exists.
 					// Execute postHandler()?
 					if( oHandler._actionExists("postHandler") AND validateAction(ehBean.getMethod(),oHandler.POSTHANDLER_ONLY,oHandler.POSTHANDLER_EXCEPT) ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [postHandler] for #arguments.event#");
-						oHandler.postHandler(oRequestContext,ehBean.getMethod(),arguments.eventArguments);
+						oHandler.postHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
 						services.debuggerService.timerEnd(loc.tHash);
 					}
 
