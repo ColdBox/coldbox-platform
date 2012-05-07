@@ -66,9 +66,9 @@ component accessors="true" implements="IValidationResult"{
 	}
 
 	/**
-	* Get the locale
+	* Get the validation locale
 	*/
-	string function getLocale(){
+	string function getValidationLocale(){
 		return locale;
 	}
 
@@ -107,7 +107,7 @@ component accessors="true" implements="IValidationResult"{
 		// Validate localization?
 		else if( hasLocale() ){
 			// get i18n message, if it exists
-			var message = resourceBundle.getResource(resource="#targetName#.#error.getField()#.#error.getValidationType()#",default="",locale=getLocale());
+			var message = resourceBundle.getResource(resource="#targetName#.#error.getField()#.#error.getValidationType()#",default="",locale=getValidationLocale());
 			// Override with localized message
 			if( len(message) ){
 				// process global replacements
