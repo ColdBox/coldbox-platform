@@ -326,7 +326,8 @@ component accessors="true"{
 						   string scope="",
 					 	   boolean trustedSetter=false,
 						   string include="",
-						   string exclude=""){
+						   string exclude="",
+						   boolean ignoreEmpty=false){
 
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
@@ -344,7 +345,8 @@ component accessors="true"{
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
-								   string exclude=""){
+								   string exclude="",
+						   		   boolean ignoreEmpty=false){
 
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
@@ -364,7 +366,8 @@ component accessors="true"{
 								  string scope="",
 								  boolean trustedSetter=false,
 								  string include="",
-								  string exclude=""){
+								  string exclude="",
+						   		  boolean ignoreEmpty=false){
 
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
@@ -384,7 +387,8 @@ component accessors="true"{
 								    string scope="",
 								    boolean trustedSetter=false,
 								    string include="",
-								    string exclude=""){
+								    string exclude="",
+						   			boolean ignoreEmpty=false){
 
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}

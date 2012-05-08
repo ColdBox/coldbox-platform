@@ -164,7 +164,8 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  string scope="",
 					 	  boolean trustedSetter=false,
 						  string include="",
-						  string exclude=""){
+						  string exclude="",
+						  boolean ignoreEmpty=false){
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
 
@@ -181,7 +182,8 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 								  string scope="",
 								  boolean trustedSetter=false,
 								  string include="",
-								  string exclude=""){
+								  string exclude="",
+						   	 	  boolean ignoreEmpty=false){
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
@@ -200,7 +202,8 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 								 string scope="",
 								 boolean trustedSetter=false,
 								 string include="",
-								 string exclude=""){
+								 string exclude="",
+						   	     boolean ignoreEmpty=false){
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
@@ -219,7 +222,8 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
-								   string exclude=""){
+								   string exclude="",
+						  		   boolean ignoreEmpty=false){
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
 
