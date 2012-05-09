@@ -139,6 +139,8 @@ Description :
 		<cfargument name="exclude"  		required="false" type="any" 	default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<cfscript>
+			// Get memento
+			arguments.memento = controller.getRequestService().getContext().getCollection();
 			// Do we have a model or name
 			if( isSimpleValue(arguments.model) ){
 				arguments.target = getModel(model);
