@@ -592,16 +592,8 @@ Only one instance of a specific ColdBox application exists.
 				// Invoke main event
 				else{
 
-					// Around Handler Advice Check?
-					if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
-						loc.tHash = services.debuggerService.timerStart("invoking runEvent [aroundHandler] for #arguments.event#");
-
-						loc.results = oHandler.aroundHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,targetAction=oHandler[ehBean.getMethod()],eventArguments=arguments.eventArguments);
-
-						services.debuggerService.timerEnd(loc.tHash);
-					}
 					// Around {Action} Advice Check?
-					else if( oHandler._actionExists("around#ehBean.getMethod()#") ){
+					if( oHandler._actionExists("around#ehBean.getMethod()#") ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [around#ehBean.getMethod()#] for #arguments.event#");
 
 						// Add target Action to loc.args
@@ -611,6 +603,14 @@ Only one instance of a specific ColdBox application exists.
 
 						// Cleanup: Remove target action from loc.args for post events
 						structDelete(loc.args, "targetAction");
+
+						services.debuggerService.timerEnd(loc.tHash);
+					}
+					// Around Handler Advice Check?
+					else if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
+						loc.tHash = services.debuggerService.timerStart("invoking runEvent [aroundHandler] for #arguments.event#");
+
+						loc.results = oHandler.aroundHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,targetAction=oHandler[ehBean.getMethod()],eventArguments=arguments.eventArguments);
 
 						services.debuggerService.timerEnd(loc.tHash);
 					}
@@ -636,7 +636,7 @@ Only one instance of a specific ColdBox application exists.
 					// Execute postHandler()?
 					if( oHandler._actionExists("postHandler") AND validateAction(ehBean.getMethod(),oHandler.POSTHANDLER_ONLY,oHandler.POSTHANDLER_EXCEPT) ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [postHandler] for #arguments.event#");
-						oHandler.postHandler(oRequestContext,ehBean.getMethod(),arguments.eventArguments);
+						oHandler.postHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
 						services.debuggerService.timerEnd(loc.tHash);
 					}
 

@@ -53,42 +53,42 @@ By 3.5 remove all direct get/set and leave get/setValue() instead
 			var key = 0;
 
 			instance 			= structnew();
-			
+
 			// init _protocol
 			variables._protocol	= "";
-			
+
 			// populate mail setting keys
 			for(key in arguments){
 				if( structKeyExists(arguments,key) ){
 					instance[key] = arguments[key];
 				}
 			}
-			
+
 			// Register the protocol to be used
 			registerProtocol(argumentcollection=instance.protocol);
-			
+
 			// Return an instance of the class.
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<!--- getValue --->
     <cffunction name="getValue" output="false" access="public" returntype="any" hint="Get a value of a setting">
     	<cfargument name="setting" type="any" required="true" hint="The name of the setting to retrieve"/>
 		<cfargument name="default" type="any" required="false" hint="The default value to return">
 		<cfscript>
 			if( structKeyExists(instance, arguments.setting) ){ return instance[arguments.setting];}
-			if( structKeyExists(arguments,"default") ){ return instance.default; }
+			if( structKeyExists(arguments,"default") ){ return arguments.default; }
 		</cfscript>
-		
-		<cfthrow type="MailSettingsBean.InvalidValue" 
+
+		<cfthrow type="MailSettingsBean.InvalidValue"
 				 message="The setting you requested #arguments.setting# does not exist"
 				 detail="Valid settings are #structKeyList(instance)#">
-				 
+
     </cffunction>
-	
+
 	<!--- setValue --->
     <cffunction name="setValue" output="false" access="public" returntype="any" hint="Set a new setting value and return yourself">
     	<cfargument name="setting"	type="any" required="true" hint="The name of the setting "/>
@@ -98,7 +98,7 @@ By 3.5 remove all direct get/set and leave get/setValue() instead
 			return this;
 		</cfscript>
     </cffunction>
-	
+
 	<!--- registerProtocol --->
 	<cffunction name="registerProtocol" access="public" returntype="void" hint="I register a protocol with the settings.">
 		<cfargument name="class" 		required="false" default="coldbox.system.core.mail.protocols.CFMailProtocol" hint="The instantiation path of the mail protocol object"/>
@@ -109,7 +109,7 @@ By 3.5 remove all direct get/set and leave get/setValue() instead
 				<cfthrow type="MailSettingsBean.FailLoadProtocolException"
 					     message="Unable to successfully load the supplied mail protocol: #arguments.toString()#"
 						 detail="#cfcatch.message# #cfcatch.detail# #cfcatch.stacktrace#">
-			</cfcatch>			
+			</cfcatch>
 		</cftry>
 	</cffunction>
 
@@ -130,8 +130,8 @@ By 3.5 remove all direct get/set and leave get/setValue() instead
 	</cffunction>
 	<cffunction name="getprotocol" access="public" return="struct" output="false" hint="Get protocolsettings">
 		<cfreturn instance.protocol >
-	</cffunction>	
-	
+	</cffunction>
+
 	<!--- get the protocol --->
 	<cffunction name="getTransit" access="public" return="any" output="false" hint="Get the protocol implementation object">
 		<cfreturn variables._protocol >
@@ -148,7 +148,7 @@ By 3.5 remove all direct get/set and leave get/setValue() instead
 	<cffunction name="getServer" access="public" return="string" output="false" hint="Get server DEPRECATED">
 		<cfreturn instance.server >
 	</cffunction>
-	
+
 	<!--- get/set port --->
 	<cffunction name="setPort" access="public" return="any" output="false" hint="Set port DEPRECATED">
 		<cfargument name="port" >
@@ -158,7 +158,7 @@ By 3.5 remove all direct get/set and leave get/setValue() instead
 	<cffunction name="getPort" access="public" return="string" output="false" hint="Get port DEPRECATED">
 		<cfreturn instance.port >
 	</cffunction>
-	
+
 	<!--- get/set username --->
 	<cffunction name="setUsername" access="public" return="any" output="false" hint="Set Username DEPRECATED">
 	  <cfargument name="username" >

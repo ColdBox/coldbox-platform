@@ -1,7 +1,6 @@
 ﻿<cfscript>
-	validationData = "1..3";
-	min = listFirst( validationData,'..');
-	max = listLast( validationData,'..');
-		
-	writeDump(variables);
+ f = createObject("java","java.lang.ThreadLocal").init();
+ f.set("test");
+
+ writeDump( f.get() );
 </cfscript>

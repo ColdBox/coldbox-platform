@@ -627,5 +627,61 @@ Description :
 
     </cffunction>
 
+	<!--- ************************************************************************************** --->
+    <!--- Rotates query swapping rows for cols and cols for rows, first col becomes new col names --->
+    <!---------------------------------------------------------------------------------------------->
+    <cffunction name="rotateQuery" output="false" access="public" returntype="Query" hint="Rotates query swapping rows for cols and cols for rows, first col becomes new col names">
+		<cfargument name="originalQuery" 			type="query" 	required="true" hint="The query to rotate"/>
+		<cfset var qMetaData = getmetadata(originalQuery)>
+		<cfset var colums = "" />
+		<cfset var columsType = "" />
+		<cfset var i = "" />
+		<cfset var j = "" />
+		<cfset var rotatedQuery = "" />
+		<cfset var newRow = "" />
+		<cfset var tempz = "" />
+		<cfset var temp = "" />
+
+		<cfloop from="1" to="#originalQuery.RecordCount#" index="i">
+			<cfset colums = colums & "#slugifyCol(originalQuery[qMetaData[1].name][i])#," />
+			<cfset columsType = columsType & "VarChar," />
+		</cfloop>
+
+		<cfset rotatedQuery = QueryNew(colums, columsType) />
+		<cfset newRow = QueryAddRow(rotatedQuery, arrayLen(qMetaData))>
+		<cfloop from="2" to="#arrayLen(qMetaData)#" index="j">
+			<cfloop from="1" to="#originalQuery.recordcount#" index="i">
+				<cfset tempz = "originalQuery.#qMetaData[j].Name#[i]" />
+				<cfset temp = QuerySetCell(rotatedQuery, "#slugifyCol(originalQuery[qMetaData[1].name][i])#", evaluate(tempz), j)>
+			</cfloop>
+		</cfloop>
+		<cfreturn rotatedQuery />
+	</cffunction>
+
+
+	<!--- ************************************************** --->
+    <!--- Create a query column name safe slug from a string --->
+    <!---------------------------------------------------------->
+	<cffunction name="slugifyCol" output="false" access="public" returntype="string" hint="Create a query column name safe slug from a string">
+		<cfargument name="str" 			type="string" 	required="true" hint="The string to slugify"/>
+		<cfargument name="maxLength" 	type="numeric" 	required="false" default="0" hint="The maximum number of characters for the slug"/>
+		<cfargument name="allow" type="string" required="false" default="" hint="a regex safe list of additional characters to allow"/>
+		<cfscript>
+			// Cleanup and slugify the string
+			var slug = lcase(trim(arguments.str));
+
+			slug = reReplace(slug,"[^a-z0-9-\s#arguments.allow#]","","all");
+			slug = trim ( reReplace(slug,"[\s-]+", " ", "all") );
+			slug = reReplace(slug,"\s", "_", "all");
+
+			// is there a max length restriction
+			if ( arguments.maxlength ) {slug = left ( slug, arguments.maxlength );}
+
+			if ( isNumeric(slug) ) {slug = "col_" & slug;}
+
+			return slug;
+		</cfscript>
+	</cffunction>
+
 </cfcomponent>
 

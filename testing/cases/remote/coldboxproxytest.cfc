@@ -10,136 +10,155 @@ Description :
 	Request service Test
 ----------------------------------------------------------------------->
 <cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
+	<cfscript>
+		function setup(){
+			// load virtual aplication.
+			super.setup();
+			proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
+		}
 
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-		//Call the super setup method to setup the app.
-		super.setup();
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testNoEvent" access="public" returntype="void" output="false">
-		<cfscript>
-		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
-		var results = "";
-		
-		//Test With default ProxyReturnCollection = false
-		try{
+		function testRemotingUtil(){
+			makePublic(proxy, "getRemotingUtil");
+			util = proxy.getRemotingUtil();
+			assertTrue( isObject(util) );
+		}
+
+		function testNoEvent(){
+			//Test With default ProxyReturnCollection = false
+			expectException("ColdBoxProxy.NoEventDetected");
 			results = proxy.process();
-			Fail("Proxy did not throw");
 		}
-		catch(Any e){
-			AssertTrue(true);
-		}
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testProxyNoCollection" access="public" returntype="void" output="false">
-		<cfscript>
-		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
-		var results = "";
-		
-		//Test With default ProxyReturnCollection = false
-		results = proxy.process(event='ehProxy.getIntroArrays');
-		AssertTrue( isArray(results), "Getting Array");
-		
-		//test other process
-		results = proxy.process(event='ehProxy.getIntroStructure');
-		AssertTrue( isStruct(results), "Getting Structure");
-		
-		</cfscript>
-	</cffunction>
 
-	<cffunction name="testProxyWithCollection" access="public" returntype="void" output="false">
-		<cfscript>
-		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
-		var results = "";
-		
-		//Set return setting
-		application.cbController.setSetting("ProxyReturnCollection",true);
-		
-		//Test With default ProxyReturnCollection = false
-		results = proxy.process(event='ehProxy.getIntroArraysCollection');
-		AssertTrue( isStruct(results), "Collection Test");
-		AssertTrue( isArray(results.myArray), "Getting Array From Collection");
-		
-		application.cbController.setSetting("ProxyReturnCollection",false);
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testProxyInterceptions" access="public" returntype="void" output="false">
-		<cfscript>
-		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
-		var results = "";
-		
-		//Announce interception
-		makePublic(proxy,"announceInterception");
-		results = proxy.announceInterception(state='onLog');
-		AssertTrue(results,"onLog intercepted");
-		
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testProxyPrivateMethods" access="public" returntype="void" output="false">
-		<cfscript>
-		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
-		var local = structnew();
-		
-		/* GetPlugin */
-		makePublic(proxy, "getPlugin");
-		local.plugin = proxy.getPlugin("Logger");
-		local.plugin = proxy.getPlugin("date",true);
-		local.plugin = proxy.getPlugin(plugin="ModPlugin",module="test1");
-		
-		
-		/* Get IOCFactory */
-		makePublic(proxy, "getIoCFactory");
-		local.obj = proxy.getIoCFactory();
-		
-		/* Get Bean */
-		makePublic(proxy, "getBean");
-		local.obj = proxy.getBean(beanName="testModel");
-		
-		/* Get ColdBoxOCM */
-		makePublic(proxy, "getColdBoxOCM");
-		local.obj = proxy.getColdBoxOCM();
-		
-		/* Get Model Object */
-		makePublic(proxy, "getModel");
-		local.obj = proxy.getModel(name="testModel");
-		
-		makePublic(proxy,"getLogBox");
-		makePublic(proxy,"getRootLogger");
-		makePublic(proxy,"getLogger");
-		
-		assertEquals(getController().getLogBox(), proxy.getLogBox());
-		assertEquals(getController().getLogBox().getRootLogger(), proxy.getRootLogger());
-		assertEquals(getController().getLogBox().getLogger('unittest'), proxy.getLogger('unittest'));
-	
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testProxyApplicationLoading" access="public" returntype="void" output="false">
-		<cfscript>
-		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
-		var local = structnew();
-		
-		createObject("component","coldbox.system.core.dynamic.MixerUtil").init().start(proxy);
-		
-		local.load = structnew();
-		local.load.appMapping = "/coldbox/testharness";
-		local.load.configLocation = expandPath(local.load.appMapping) & "/config/Coldbox.cfc";
-		local.load.reloadApp = true;
-		proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
-		
-		local.load = structnew();
-		local.load.appMapping = "/coldbox/testharness";
-		local.load.reloadApp = true;
-		
-		proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
-		
-		
-		</cfscript>
-	</cffunction>
-	
+		function testProxyNoCollection(){
+			var results = "";
+
+			//Test With default ProxyReturnCollection = false
+			results = proxy.process(event='ehProxy.getIntroArrays');
+			AssertTrue( isArray(results), "Getting Array");
+
+			//test other process
+			results = proxy.process(event='ehProxy.getIntroStructure');
+			AssertTrue( isStruct(results), "Getting Structure");
+		}
+
+		function testProxyWithCollection(){
+			var results = "";
+
+			//Set return setting
+			application.cbController.setSetting("ProxyReturnCollection",true);
+
+			//Test With default ProxyReturnCollection = false
+			results = proxy.process(event='ehProxy.getIntroArraysCollection');
+			AssertTrue( isStruct(results), "Collection Test");
+			AssertTrue( isArray(results.myArray), "Getting Array From Collection");
+
+			application.cbController.setSetting("ProxyReturnCollection",false);
+		}
+
+		function testProxyInterceptions(){
+			var results = "";
+
+			//Announce interception
+			makePublic(proxy,"announceInterception");
+			results = proxy.announceInterception(state='onLog');
+			AssertTrue(results,"onLog intercepted");
+		}
+
+		function testTracer(){
+			getController().getDebuggerService().resetTracers();
+			makePublic(proxy, "tracer");
+			proxy.tracer("ProxyTest",{});
+			//debug( getController().getDebuggerService().getDebugMode() );
+			assertTrue( arrayLen(getController().getDebuggerService().getTracers()) );
+		}
+
+		function testVerifyColdBox(){
+			makePublic( proxy, "verifyColdBox" );
+			assertTrue( proxy.verifyColdBox() );
+			structDelete(application, "cbController");
+			expectException("ColdBoxProxy.ControllerIllegalState");
+			proxy.verifyColdBox();
+		}
+
+		function testGetCacheBox(){
+			makePublic(proxy,"getCacheBox");
+			assertTrue( isObject( proxy.getCacheBox() ) );
+		}
+
+		function testGetWireBox(){
+			makePublic(proxy,"getWireBox");
+			assertTrue( isObject( proxy.getWireBox() ) );
+		}
+
+		function testGetInstance(){
+			makePublic(proxy,"getModel");
+			makePublic(proxy,"getInstance");
+			assertTrue( isObject( proxy.getInstance("testModel") ) );
+			assertTrue( isObject( proxy.getModel("testModel") ) );
+		}
+
+		function testIOCMethods(){
+			var local = structnew();
+
+			mockObject  = getMockBox().createStub();
+			mockFactory = getMockBox().createEmptyMock("coldbox.system.ioc.adapters.ColdSpringAdapter");
+			ioc = getMockBox().prepareMock( getController().getPlugin("IOC") )
+				.$("getBean", mockObject)
+				.$("getIoCFactory", mockFactory);
+
+			/* Get IOCFactory */
+			makePublic(proxy, "getIoCFactory");
+			local.obj = proxy.getIoCFactory();
+
+			/* Get Bean */
+			makePublic(proxy, "getBean");
+			local.obj = proxy.getBean(beanName="testModel");
+		}
+
+		function testProxyAppLoading(){
+			var local = structnew();
+
+			createObject("component","coldbox.system.core.dynamic.MixerUtil").init().start(proxy);
+
+			local.load = structnew();
+			local.load.appMapping = "/coldbox/testharness";
+			local.load.configLocation = "coldbox.testharness.config.Coldbox";
+			local.load.reloadApp = true;
+			proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
+
+			local.load = structnew();
+			local.load.appMapping = "/coldbox/testharness";
+			local.load.reloadApp = true;
+
+			proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
+		}
+
+		function testLogBox(){
+			makePublic(proxy,"getLogBox");
+			makePublic(proxy,"getRootLogger");
+			makePublic(proxy,"getLogger");
+			assertEquals(getController().getLogBox(), proxy.getLogBox());
+			assertEquals(getController().getLogBox().getRootLogger(), proxy.getRootLogger());
+			assertEquals(getController().getLogBox().getLogger('unittest'), proxy.getLogger('unittest'));
+		}
+
+		function testGetPlugin(){
+			makePublic(proxy,"getPlugin");
+			assertTrue( isObject( proxy.getPlugin("Renderer") ) );
+			assertTrue( isObject( proxy.getPlugin("date", true) ) );
+			assertTrue( isObject( proxy.getPlugin(plugin="ModPlugin",module="test1") ) );
+		}
+
+		function testGetInterceptor(){
+			makePublic(proxy,"getInterceptor");
+			assertTrue( isObject( proxy.getInterceptor("SES") ) );
+		}
+
+		function testGetColdBoxOCM(){
+			makePublic(proxy,"getColdBoxOCM");
+			assertTrue( isObject( proxy.getColdBoxOCM() ) );
+			assertTrue( isObject( proxy.getColdBoxOCM("template") ) );
+
+		}
+	</cfscript>
 </cfcomponent>

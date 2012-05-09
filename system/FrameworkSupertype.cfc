@@ -133,11 +133,24 @@ Description :
 	<!--- Populate a model object from the request Collection --->
 	<cffunction name="populateModel" access="public" output="false" returntype="Any" hint="Populate a named or instantiated model (java/cfc) from the request collection items">
 		<cfargument name="model" 			required="true"  type="any" 	hint="The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method">
-		<cfargument name="scope" 			required="false" type="any"  default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
-		<cfargument name="trustedSetter"  	required="false" type="any"  default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean" colddoc:generic="Boolean"/>
-		<cfargument name="include"  		required="false" type="any"  default="" hint="A list of keys to include in the population">
-		<cfargument name="exclude"  		required="false" type="any"  default="" hint="A list of keys to exclude in the population">
-		<cfreturn controller.getPlugin("BeanFactory").populateModel(argumentCollection=arguments)>
+		<cfargument name="scope" 			required="false" type="any"  	default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
+		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean" colddoc:generic="Boolean"/>
+		<cfargument name="include"  		required="false" type="any"  	default="" hint="A list of keys to include in the population">
+		<cfargument name="exclude"  		required="false" type="any" 	default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfscript>
+			// Get memento
+			arguments.memento = controller.getRequestService().getContext().getCollection();
+			// Do we have a model or name
+			if( isSimpleValue(arguments.model) ){
+				arguments.target = getModel(model);
+			}
+			else{
+				arguments.target = arguments.model;
+			}
+			// populate
+			return controller.getWireBox().getObjectPopulator().populateFromStruct(argumentCollection=arguments);
+		</cfscript>
 	</cffunction>
 
 	<!--- View Rendering Facades --->
