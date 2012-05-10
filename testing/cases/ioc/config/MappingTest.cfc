@@ -14,6 +14,7 @@
 			type="CFC",
 			path="my.model.Funky",
 			eagerInit = true,
+			threadSafe = true,
 			scope="singleton",
 			cache={key="data", timeout="30"},
 			DIConstructorArgs = [
@@ -36,6 +37,7 @@
 
 		mapping.processMemento(data);
 
+		assertEquals( data.threadSafe, mapping.getThreadSafe() );
 		assertEquals( data.alias, mapping.getAlias() );
 		assertEquals( data.type, mapping.getTYpe() );
 		assertEquals( data.path, mapping.getPath() );
