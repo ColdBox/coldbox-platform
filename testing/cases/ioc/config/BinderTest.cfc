@@ -565,5 +565,15 @@
 		assertEquals( ["/includes/helpers/AppHelper.cfm","/includes/helpers/AppHelper2.cfm"], b);
 
 	}
+
+	function testThreadSafety(){
+		config.map("MyObject").asSingleton().threadSafe();
+		mapping = config.getMapping("MyObject");
+		assertTrue( mapping.getThreadSafe() );
+
+		config.map("NotThreadSafe").asSingleton();
+		mapping = config.getMapping("NotThreadSafe");
+		assertfalse( mapping.getThreadSafe() );
+	}
 </cfscript>
 </cfcomponent>

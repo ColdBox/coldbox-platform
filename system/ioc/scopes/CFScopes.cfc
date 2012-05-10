@@ -46,15 +46,27 @@ Description :
 					if( instance.log.canDebug() ){
 						instance.log.debug("Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beggining construction.");
 					}
-					// construct it and store it, to satisfy circular dependencies
+					// construct the instance
 					target = instance.injector.buildInstance( arguments.mapping, arguments.initArguments );
-					instance.scopeStorage.put(cacheKey, target, CFScope);
+
+					// If not in wiring thread safety, store in scope to satisfy circular dependencies
+					if( NOT arguments.mapping.getThreadSafe() ){
+						instance.scopeStorage.put(cacheKey, target, CFScope);
+					}
+
 					// wire it
 					instance.injector.autowire(target=target,mapping=arguments.mapping);
+
+					// If thread safe, then now store it in the scope, as all dependencies are now safely wired
+					if( arguments.mapping.getThreadSafe() ){
+						instance.scopeStorage.put(cacheKey, target, CFScope);
+					}
+
 					// log it
 					if( instance.log.canDebug() ){
-						instance.log.debug("Object: (#arguments.mapping.getName()#) constructed and stored in CFScope (#CFScope#).");
+						instance.log.debug("Object: (#arguments.mapping.getName()#) constructed and stored in CFScope (#CFScope#), threadSafe=#arguments.mapping.getThreadSafe()#.");
 					}
+
 					return target;
 				}
 			</cfscript>
