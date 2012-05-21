@@ -31,7 +31,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			setpluginName("Cookie Storage");
 			setpluginVersion("2.0");
 			setpluginDescription("A permanent data storage plugin.");
-			setpluginAuthor("Sana Ullah");
+			setpluginAuthor("Sana Ullah & Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
 			// set CFML engine encryption CF, BD, Railo
@@ -61,9 +61,6 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 				setEncryptionEncoding(getSetting('CookieStorage_encryption_encoding'));
 			}
 			
-			// JSON utility
-			instance.json = getPlugin("JSON");
-			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -85,29 +82,28 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		<cfset var args		= StructNew()>
 		
 		<!--- JSON storage --->
-		<cfset tmpVar = instance.json.encode(arguments.value)>
+		<cfset tmpVar = serializeJSON( arguments.value )>
 		
 		<!--- Encryption? --->
 		<cfif getEncryption()>
-			<cfset tmpVar = encryptIt(tmpVar)>		
+			<cfset tmpVar = encryptIt( tmpVar )>		
 		</cfif>
 		
 		<!--- Store cookie with expiration info --->
-		<cfset args["name"]		= uCase(arguments.name) />
+		<cfset args["name"]		= uCase( arguments.name ) />
 		<cfset args["value"]	= tmpVar />
 		<cfset args["secure"]	= arguments.secure />
-		
 		<cfif arguments.expires GT 0>
 			<cfset args["expires"] = arguments.expires />
 		</cfif>	
 		
 		<!--- Store cookie with expiration info --->
-		<cfif len(arguments.path) GT 0 and not len(arguments.domain) GT 0>
+		<cfif len( arguments.path ) GT 0 and not len( arguments.domain ) GT 0>
 			<cfthrow type="CookieStorage.MissingDomainArgument" message="If you specify path, you must also specify domain.">
-		<cfelseif len(arguments.path) GT 0 and len(arguments.domain) GT 0>
+		<cfelseif len( arguments.path ) GT 0 and len( arguments.domain ) GT 0>
 			<cfset args["path"]		= arguments.path />
 			<cfset args["domain"]	= arguments.domain />
-		<cfelseif len(arguments.domain)>
+		<cfelseif len( arguments.domain )>
 			<cfset args["domain"]	= arguments.domain />
 		</cfif>
 		
@@ -116,48 +112,37 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 
 	<!--- getVar --->
 	<cffunction name="getVar" access="public" returntype="any" hint="Get a new permanent variable. If the cookie does not exist. The method returns blank or use the default value argument" output="false">
-		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
-		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
-		<cfset var rtnVar 		= "">
+		<cfargument  name="name" 		required="true" 	hint="The variable name to retrieve.">
+		<cfargument  name="default"  	required="false"  	hint="The default value to set. If not used, a blank is returned.">
+		<cfset var rtnVar = "">
 		
 		<cfif exists(arguments.name)>
 			<!--- Get value --->
-			<cfset rtnVar = cookie[uCase(arguments.name)]>
+			<cfset rtnVar = cookie[ uCase( arguments.name ) ]>
 			
 			<!--- Decrypt? --->
-			<cfif getEncryption() and rtnVar.length()>
-				<cfset rtnVar = decryptIt(rtnVar)>
+			<cfif getEncryption() and len( rtnVar )>
+				<cfset rtnVar = decryptIt( rtnVar )>
 			</cfif>
 			
-			<!--- Deserialize it with length --->
-			<cfif rtnVar.length()>
-				<cftry>
-					<!--- Try to decode it --->
-				    <cfset rtnVar = instance.json.decode(rtnVar)>
-			    	<cfcatch>
-			    		<!--- If JSON error then it is a simple value --->
-				        <cfif cfcatch.message eq "Invalid JSON">
-				        	<cfset setVar(ucase(arguments.name), rtnVar)>
-				       		<cfreturn rtnVar>
-				        <cfelse>
-				        	<cfrethrow>
-				        </cfif>
-			    	</cfcatch> 
-				</cftry>
+			<!--- JSON Deserialize? --->
+			<cfif isJSON( rtnVar )>
+				<cfset rtnVar = deserializeJSON( rtnVar )>
 			</cfif>
-		<cfelse>
+			<!--- Return it --->
+			<cfreturn rtnVar>			
+		<cfelseif structKeyExists(arguments, "default")>
 			<!--- Return the default value --->
 			<cfset rtnVar = arguments.default>
+		<cfelse>
+			<cfthrow type="CookieStorage.InvalidKey" message="The key you requested: #arguments.name# does not exist">
 		</cfif>
-		
-		<!--- Return Var --->
-		<cfreturn rtnVar>
 	</cffunction>
 
 	<!--- exists --->
 	<cffunction name="exists" access="public" returntype="boolean" hint="Checks wether the permanent variable exists in the storage" output="false">
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
-		<cfreturn structKeyExists(cookie,uCase(arguments.name))>
+		<cfreturn structKeyExists(cookie, uCase( arguments.name ) )>
 	</cffunction>
 
 	<!--- deleteVar --->
