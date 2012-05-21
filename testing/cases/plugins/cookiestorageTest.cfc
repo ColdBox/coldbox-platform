@@ -17,9 +17,7 @@ Description :
 		
 		//mocks
 		mockController.$("getCFMLEngine", getMockBox().createEmptyMock("coldbox.system.core.cf.CFMLEngine").$("getEngine","ADOBE"));
-		plugin.$("settingExists",false)
-			.$("getPlugin").$args("JSON").$results( getMockBox().createMock("coldbox.system.plugins.JSON") );
-		plugin.init(mockController);
+		plugin.$("settingExists",false).init( mockController );
 		</cfscript>
 	</cffunction>
 	
@@ -44,6 +42,9 @@ Description :
 			plugin.setVar("tester", complex );
 			AssertTrue( plugin.exists("tester") ,"Test Complex set & Exists");
 			debug(cookie);
+			r = plugin.getVar("tester");
+			assertTrue( isStruct( r ) );
+			assertEquals( complex.id, r.id );
 			
 			plugin.deleteVar("tester");
 			AssertFalse( plugin.getVar("tester").length() ,"Remove & Exists for complex");
