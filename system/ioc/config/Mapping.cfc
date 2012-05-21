@@ -681,6 +681,12 @@ Description :
 					}
 				}
 
+				// look for parent metadata on the instance referring to an abstract parent (by alias) to copy
+				// dependencies and definitions from
+				if( structKeyExists(md, "parent") and len(trim(md.parent))){
+					arguments.binder.parent(alias:md.parent);
+				}
+
 				// Only process if autowiring
 				if( instance.autoWire ){
 					// Process Methods, Constructors and Properties only if non autowire annotation check found on component.
