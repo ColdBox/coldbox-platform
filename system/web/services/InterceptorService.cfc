@@ -233,7 +233,10 @@ Description :
 				wireboxSetup();
 				// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
 				controller.getWireBox().registerNewInstance(name="interceptor-" & interceptorName,instancePath=interceptorClass)
-					.asSingleton().virtualInheritance("coldbox.system.Interceptor").initWith(controller=controller,properties=interceptorProperties);
+					.asSingleton()
+					.threadSafe()
+					.virtualInheritance("coldbox.system.Interceptor")
+					.initWith(controller=controller,properties=interceptorProperties);
 			}
 			// retrieve, build and wire from wirebox
 			oInterceptor = controller.getWireBox().getInstance( "interceptor-" & interceptorName );
