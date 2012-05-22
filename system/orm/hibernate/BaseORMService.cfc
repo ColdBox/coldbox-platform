@@ -850,9 +850,9 @@ component accessors="true"{
 		// Single Entity
 		else{
 			if( structKeyExists(arguments,"id") )
-				evictEntity( this.get(arguments.entityName,arguments.id) );
+				evictEntity( this.get(entityName=arguments.entityName,id=arguments.id) );
 			else
-				evictEntity( this.new(arguments.entityName) );
+				evictEntity( this.new(entityName=arguments.entityName) );
 		}
 
 		return this;
