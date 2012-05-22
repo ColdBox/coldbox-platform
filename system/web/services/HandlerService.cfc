@@ -105,6 +105,7 @@ Description :
 				binder = controller.getWireBox().registerNewInstance(name=invocationPath,instancePath=invocationPath)
 					.virtualInheritance("coldbox.system.EventHandler")
 					.initWith(controller=controller)
+					.threadSafe()
 					.inCacheBox(key="handlers-#invocationPath#")
 					.extraAttributes( attribs );
 				// Are we caching or not handlers?
