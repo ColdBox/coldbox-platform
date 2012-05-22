@@ -42,6 +42,10 @@ Description :
 			<!--- Lock it --->
 			<cflock name="WireBox.CacheBoxScope.#arguments.mapping.getName()#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
+				// Double get just in case of race conditions
+				refLocal.target = cacheProvider.get( cacheKey );
+				if( structKeyExists(refLocal, "target") ){ return refLocal.target; }
+				
 				// some nice debug info.
 				if( instance.log.canDebug() ){
 					instance.log.debug("Object: (#cacheProperties.toString()#) not found in cacheBox, beginning construction.");
