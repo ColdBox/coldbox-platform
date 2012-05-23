@@ -233,8 +233,9 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
 	* @locale.hint An optional locale to use for i18n messages
+	* @excludeFields.hint An optional list of fields to exclude from the validation.
 	*/
-	boolean function isValid(string fields="*", any constraints="", string locale=""){
+	boolean function isValid(string fields="*", any constraints="", string locale="", string excludeFields=""){
 		// validate wirebox
 		if( !structKeyExists(variables,"wirebox") OR !isObject(variables.wirebox) ){
 			throw(message="WireBox reference does not exist in this entity",detail="WireBox entity injection must be enabled in order to use the validation features",type="ActiveEntity.ORMEntityInjectionMissing");
@@ -249,8 +250,10 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		if( !isSimpleValue(arguments.constraints) OR len(arguments.constraints) ){
 			thisConstraints = arguments.constraints;
 		}
+
 		// validate and save results in private scope
-		validationResults = validationManager.validate(this, arguments.fields, thisConstraints, arguments.locale);
+		validationResults = validationManager.validate(target=this, fields=arguments.fields, constraints=thisConstraints, locale=arguments.locale, excludeFields=arguments.excludeFields);
+
 		// return it
 		return ( !validationResults.hasErrors() );
 	}

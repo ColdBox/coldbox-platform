@@ -440,7 +440,7 @@
 			<parameter name="scope" required="false" type="any">
 				<help><![CDATA[ Use scope injection instead of setters population. Ex: scope=variables.instance. ]]></help>
 			</parameter>
-			<parameter name="trustedSetter" required="false" type="any">
+			<parameter name="trustedSetter" required="false" type="boolean">
 				<help><![CDATA[ If set to true, the setter method will be called even if it does not exist in the bean ]]></help>
 			</parameter>
 			<parameter name="include" required="false" type="any">
@@ -448,6 +448,9 @@
 			</parameter>
 			<parameter name="exclude" required="false" type="any">
 				<help><![CDATA[ A list of keys to exclude in the population ]]></help>
+			</parameter>
+			<parameter name="ignoreEmpty" required="false" type="boolean">
+				<help><![CDATA[ Ignore empty values on populations, great for ORM population ]]></help>
 			</parameter>
 			</function>
 	<function name="validateModel" returns="coldbox.system.validation.result.IValidationResult">
@@ -786,6 +789,9 @@
 	<scopevar name="getCustomDSL()">
 			<help><![CDATA[Get the custom dsl namespace registration structure]]></help>
 		</scopevar>
+	<scopevar name="notThreadSafe()">
+			<help><![CDATA[This is the default wiring of objects that allow circular dependencies.  By default all object's constructors are the only thread safe areas]]></help>
+		</scopevar>
 	<scopevar name="inCacheBox([key],[timeout],[lastAccessTimeout],[provider])">
 			<help><![CDATA[Map an object into CacheBox]]></help>
 		</scopevar>
@@ -914,6 +920,9 @@
 		</scopevar>
 	<scopevar name="loadDataDSL([rawDSL])">
 			<help><![CDATA[Load a data configuration CFC data DSL]]></help>
+		</scopevar>
+	<scopevar name="threadSafe()">
+			<help><![CDATA[Tells persistence scopes to build, wire, and do onDIComplete() on objects in an isolated lock. This will disallow circular references unless object providers are used.  By default all object's constructors are the only thread safe areas]]></help>
 		</scopevar>
 	<scopevar name="setProperties(properties)">
 			<help><![CDATA[Set the binded properties structure]]></help>
