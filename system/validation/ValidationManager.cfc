@@ -182,6 +182,7 @@ component accessors="true" serialize="false" implements="IValidationManager"{
 			case "max" 			: { return wirebox.getInstance("coldbox.system.validation.validators.MaxValidator"); }
 			case "udf" 			: { return wirebox.getInstance("coldbox.system.validation.validators.UDFValidator"); }
 			case "method" 		: { return wirebox.getInstance("coldbox.system.validation.validators.MethodValidator"); }
+			case "unique" 		: { return wirebox.getInstance("coldbox.system.validation.validators.UniqueValidator"); }
 			case "validator"	: {
 				if( find(":", arguments.validationData) ){ return wirebox.getInstance( getToken( arguments.validationData, 2, ":" ) ); }
 				return wirebox.getInstance( arguments.validationData );
