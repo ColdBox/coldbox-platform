@@ -2,3 +2,4 @@
 testharness/logs/*
 testing/resources/logs/*.log
 /settings.xml
+.project

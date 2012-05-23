@@ -3,14 +3,14 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-The ColdBox validator interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
+This validator checks if a field has value and not null
 */
 component accessors="true" implements="coldbox.system.validation.validators.IValidator" singleton{
 
 	property name="name";
-	
+
 	RequiredValidator function init(){
-		name = "Required";	
+		name = "Required";
 		return this;
 	}
 
@@ -29,29 +29,29 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		}
 		// return true if not required, nothing needed to check
 		if( !arguments.validationData ){ return true; }
-			
+
 		// null checks
 		if( isNull(arguments.targetValue) ){
 			var args = {message="The '#arguments.field#' value is null",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 			validationResult.addError( validationResult.newError(argumentCollection=args) );
 			return false;
 		}
-		
+
 		// Simple Tests
 		if( isSimpleValue(arguments.targetValue) AND len(trim( arguments.targetValue )) ){
 			return true;
 		}
-		
+
 		var args = {message="The '#arguments.field#' value is required",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 		validationResult.addError( validationResult.newError(argumentCollection=args) );
 		return false;
 	}
-	
+
 	/**
 	* Get the name of the validator
 	*/
 	string function getName(){
 		return name;
 	}
-	
+
 }

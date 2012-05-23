@@ -3,14 +3,14 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-The ColdBox validator interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
+This validator validates if a field is the same as another field with no case sensitivity
 */
 component accessors="true" implements="coldbox.system.validation.validators.IValidator" singleton{
 
 	property name="name";
-	
+
 	SameAsNoCaseValidator function init(){
-		name = "SameAsNoCase";	
+		name = "SameAsNoCase";
 		return this;
 	}
 
@@ -23,25 +23,25 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 	* @validationData.hint The validation data the validator was created with
 	*/
 	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
-		
+
 		// get secondary value from property
 		var compareValue = evaluate("arguments.target.get#arguments.validationData#()");
-		
+
 		if( !isNull(arguments.targetValue) AND compareNoCase(arguments.targetValue, compareValue) EQ 0 ){
 			return true;
 		}
-		
+
 		var args = {message="The '#arguments.field#' value is not the same as #compareValue.toString()#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 		var error = validationResult.newError(argumentCollection=args).setErrorMetadata({sameas=arguments.validationData});
 		validationResult.addError( error );
 		return false;
 	}
-	
+
 	/**
 	* Get the name of the validator
 	*/
 	string function getName(){
 		return name;
 	}
-	
+
 }
