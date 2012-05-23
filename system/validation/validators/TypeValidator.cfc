@@ -3,14 +3,14 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-The ColdBox validator interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
+This validator verifies field type
 */
 component accessors="true" implements="coldbox.system.validation.validators.IValidator" singleton{
 
 	property name="name";
-	
+
 	TypeValidator function init(){
-		name = "Type";	
+		name = "Type";
 		validTypes = "ssn,email,url,alpha,boolean,date,usdate,eurodate,numeric,GUID,UUID,integer,string,telephone,zipcode,ipaddress,creditcard,binary,component,query,struct,json,xml";
 		return this;
 	}
@@ -28,12 +28,12 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		if( !reFindNoCase( "^(#replace(validTypes,",","|","all")#)$", arguments.validationData ) ){
 			throw(message="The Required validator data is invalid: #arguments.validationData#",type="TypeValidator.InvalidValidationData");
 		}
-		
+
 		// return true if not data to check, type needs a data element to be checked.
 		if( isNull(arguments.targetValue) OR ( isSimpleValue(arguments.targetValue) AND NOT len(arguments.targetValue) ) ){ return true; }
-		
+
 		var r = false;
-		
+
 		switch( arguments.validationData ){
 			case "ssn" 			: { r = isValid("ssn",arguments.targetValue); break; }
 			case "email"		: { r = isValid("email",arguments.targetValue); break; }
@@ -58,21 +58,21 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 			case "json"			: { r = isJSON(arguments.targetValue); break; }
 			case "xml"			: { r = isXML(arguments.targetValue); break; }
 		}
-		
+
 		if( !r ){
 			var args = {message="The '#arguments.field#' has an invalid type, expected type is #arguments.validationData#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 			var error = validationResult.newError(argumentCollection=args).setErrorMetadata({type=arguments.validationData});
 			validationResult.addError( error );
 		}
-		
+
 		return r;
 	}
-	
+
 	/**
 	* Get the name of the validator
 	*/
 	string function getName(){
 		return name;
 	}
-	
+
 }

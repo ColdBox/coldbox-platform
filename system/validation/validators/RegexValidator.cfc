@@ -3,14 +3,14 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-The ColdBox validator interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
+This validator validates against a user defined regular expression
 */
 component accessors="true" implements="coldbox.system.validation.validators.IValidator" singleton{
 
 	property name="name";
-	
+
 	RegexValidator function init(){
-		name = "Regex";	
+		name = "Regex";
 		return this;
 	}
 
@@ -23,23 +23,23 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 	* @validationData.hint The validation data the validator was created with
 	*/
 	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
-		
-		
+
+
 		if( !isNull(arguments.targetValue) AND isValid("regex", arguments.targetValue, arguments.validationData) ){
 			return true;
 		}
-		
+
 		var args = {message="The '#arguments.field#' value does not match the regular expression: #arguments.validationData#",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 		var error = validationResult.newError(argumentCollection=args).setErrorMetadata({regex=arguments.validationData});
 		validationResult.addError( error );
 		return false;
 	}
-	
+
 	/**
 	* Get the name of the validator
 	*/
 	string function getName(){
 		return name;
 	}
-	
+
 }

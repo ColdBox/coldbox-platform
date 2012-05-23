@@ -3,7 +3,7 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-The ColdBox validator interface, all inspired by awesome Hyrule Validation Framework by Dan Vega
+This validator validates against a unique method
 */
 component accessors="true" implements="coldbox.system.validation.validators.IValidator" singleton{
 
