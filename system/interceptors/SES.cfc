@@ -81,7 +81,7 @@ Description :
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
 	<!--- Pre execution process --->
-	<cffunction name="preProcess" access="public" returntype="void" hint="This is the route dispatch" output="false" >
+	<cffunction name="onRequestCapture" access="public" returntype="void" hint="This is the route dispatch" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" 		 required="true" hint="The event object.">
 		<cfargument name="interceptData" required="true" hint="interceptData of intercepted info.">
@@ -92,7 +92,7 @@ Description :
 			var key 		 = "";
 			var routedStruct = structnew();
 			var rc 			 = arguments.event.getCollection();
-			var cleanedPaths = getCleanedPaths(rc,arguments.Event);
+			var cleanedPaths = getCleanedPaths( rc, arguments.event );
 			var HTTPMethod	 = arguments.event.getHTTPMethod();
 
 			// Check if disabled or in proxy mode, if it is, then exit out.
@@ -102,7 +102,7 @@ Description :
 			if( instance.autoReload ){ configure(); }
 
 			// Set that we are in ses mode
-			arguments.event.setIsSES(true);
+			arguments.event.setIsSES( true );
 
 			// Check for invalid URLs if in strict mode via unique URLs
 			if( instance.uniqueURLs ){
@@ -111,7 +111,7 @@ Description :
 
 			// Extension detection if enabled, so we can do cool extension formats
 			if( instance.extensionDetection ){
-				cleanedPaths["pathInfo"] = detectExtension(cleanedPaths["pathInfo"],arguments.event);
+				cleanedPaths["pathInfo"] = detectExtension( cleanedPaths["pathInfo"], arguments.event );
 			}
 
 			// Find a route to dispatch
@@ -162,15 +162,12 @@ Description :
 			// See if View is Dispatched
 			if( structKeyExists(aRoute,"view") ){
 				// Dispatch the View
-				arguments.event.setView(name=aRoute.view,noLayout=aRoute.viewNoLayout);
-				arguments.event.noExecution();
+				arguments.event.setView(name=aRoute.view, noLayout=aRoute.viewNoLayout)
+					.noExecution();
 			}
 
 			// Save the Routed Variables so event caching can verify them
-			arguments.event.setRoutedStruct(routedStruct);
-
-			// Execute Cache Test now that routing has been done. We override, because events are determined until now.
-			instance.requestService.eventCachingTest(context=arguments.event);
+			arguments.event.setRoutedStruct( routedStruct );
 		</cfscript>
 	</cffunction>
 
