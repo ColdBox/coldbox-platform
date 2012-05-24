@@ -68,8 +68,13 @@ Description :
 			importConfiguration();
 
 			// Save the base URL in the application settings
-			setSetting('sesBaseURL', getBaseURL() );
-			setSetting('htmlBaseURL', replacenocase(getBaseURL(),"index.cfm",""));
+			setSetting('sesBaseURL', instance.baseURL );
+			setSetting('htmlBaseURL', replacenocase( instance.baseURL, "index.cfm", "") );
+
+			// Configure Context, Just in case
+			controller.getRequestService().getContext()
+				.setIsSES( true )
+				.setSESBaseURL( instance.baseURL );
 		</cfscript>
 	</cffunction>
 
@@ -553,7 +558,7 @@ Description :
 		<cfreturn this>
 	</cffunction>
 	<cffunction name="getBaseURL" access="public" output="false" returntype="string" hint="Get BaseURL">
-		<cfreturn instance.BaseURL/>
+		<cfreturn instance.baseURL/>
 	</cffunction>
 
 	<!--- Get/set Loose Matching --->
