@@ -470,6 +470,9 @@
 			<parameter name="locale" required="false" type="string">
 				<help><![CDATA[ The locale to validate in ]]></help>
 			</parameter>
+			<parameter name="excludeFields" required="false" type="string">
+				<help><![CDATA[ The fields to exclude in the validation ]]></help>
+			</parameter>
 			</function>
 	<function creator="8" name="getResource" returns="any">
 			<help><![CDATA[ Facade to i18n.getResource. Returns a string. (Context: FrameworkSupertype) ]]></help>
