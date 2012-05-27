@@ -218,7 +218,6 @@ Description :
 				return beanInstance;
 			}
 			catch(Any e){
-				writedump(e);abort;
 				if (isObject(arguments.memento[key]) OR isCustomFunction(arguments.memento[key])){
 					arguments.keyTypeAsString = getMetaData(arguments.memento[key]).name;
 				}
