@@ -599,7 +599,7 @@ Only one instance of a specific ColdBox application exists.
 						// Add target Action to loc.args
 						loc.args.targetAction  	= oHandler[ehBean.getMethod()];
 
-						loc.results = invoker(event=oHandler,rc=loc.args.rc,prc=loc.args.prc,action="around#ehBean.getMethod()#",eventArguments=loc.args);
+						loc.results = invoker(oHandler, "around#ehBean.getMethod()#", loc.args);
 
 						// Cleanup: Remove target action from loc.args for post events
 						structDelete(loc.args, "targetAction");
