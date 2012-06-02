@@ -18,7 +18,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			 hint="Cookie Storage plugin. It provides the user with a mechanism for permanent data storage using the cookie scope."
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true">
+			 singleton="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

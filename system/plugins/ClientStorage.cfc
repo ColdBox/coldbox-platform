@@ -25,7 +25,7 @@ clearStorage():void
 			 hint="Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX."
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true">
+			 singleton="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -35,17 +35,17 @@ clearStorage():void
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);
-			
+
 			/* Plugin Properties */
 			setpluginName("Client Storage");
 			setpluginVersion("1.0");
 			setpluginDescription("A permanent data storage plugin.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
-			
+
 			/* Return Instance */
 			return this;
-		</cfscript>			
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -76,7 +76,7 @@ clearStorage():void
 		<!--- ************************************************************* --->
 		<cfset var wddxVar = "">
 		<cfset var rtnVar = "">
-		
+
 		<cfif exists(arguments.name)>
 			<cfset rtnVar = client[arguments.name]>
 			<cfif isWDDX(rtnVar)>
@@ -105,12 +105,12 @@ clearStorage():void
 		<!--- ************************************************************* --->
 		<cfreturn structdelete(client, arguments.name, true)>
 	</cffunction>
-	
+
 	<!--- Clear All From Storage --->
 	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox client storage" output="false">
 		<cfset structClear(client)>
 	</cffunction>
-	
+
 	<!--- Get Storage --->
 	<cffunction name="getStorage" access="public" returntype="struct" hint="Get the entire storage scope structure" output="false" >
 		<cfreturn client>

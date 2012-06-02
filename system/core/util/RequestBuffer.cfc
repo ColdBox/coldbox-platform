@@ -13,16 +13,13 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 
-	<cfscript>
-		instance = structnew();
-	</cfscript>
-	
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="RequestBuffer" hint="Constructor">
 		<cfscript>
+			instance = structnew();
 			/* Setup properties */
 			instance.bufferKey = "_cbox_request_buffer";
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -36,7 +33,7 @@ Description :
 			oBuffer.delete(0,oBuffer.length());
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- append --->
 	<cffunction name="append" output="false" access="public" returntype="void" hint="Append to the buffer.">
 		<cfargument name="str" type="string" required="true" hint="The string to append"/>
@@ -47,21 +44,21 @@ Description :
 	<cffunction name="length" output="false" access="public" returntype="numeric" hint="Returns the length (character count)">
 		<cfreturn getBufferObject().length()>
 	</cffunction>
-	
+
 	<!--- getString --->
 	<cffunction name="getString" output="false" access="public" returntype="any" hint="Get the string representation of the buffer">
 		<cfreturn getBufferObject().toString()>
 	</cffunction>
-	
+
 	<!--- isBufferInScope --->
 	<cffunction name="isBufferInScope" output="false" access="public" returntype="boolean" hint="Checks if the buffer has been created or not">
 		<cfreturn structKeyExists(request, instance.bufferKey)>
 	</cffunction>
-	
+
 	<!--- getBufferObject --->
 	<cffunction name="getBufferObject" output="false" access="public" returntype="any" hint="Get the raw buffer object">
 		<cfset var oBuffer = 0>
-		
+
 		<!--- Double Lock --->
 		<cfif not isBufferInScope()>
 			<cflock name="#instance.bufferkey#" type="exclusive" timeout="10" throwontimeout="true">
@@ -73,11 +70,11 @@ Description :
 				</cfif>
 			</cflock>
 		</cfif>
-		
+
 		<!--- Return Buffer --->
 		<cfreturn request[instance.bufferKey]>
 	</cffunction>
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
 
