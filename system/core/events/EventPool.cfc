@@ -12,20 +12,19 @@ Description :
 <cfcomponent hint="This object models an event pool that fires by convetion on its configured name." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cfscript>
-		variables.instance = structnew();
-	</cfscript>
-	
+
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="EventPool">
 	    <cfargument name="state" type="string" required="true" hint="The event pool state name to model">
 	    <cfscript>
 			var LinkedHashMap = CreateObject("java","java.util.LinkedHashMap").init(3);
-			var Collections   = createObject("java", "java.util.Collections"); 
-			
+			var Collections   = createObject("java", "java.util.Collections");
+
+			instance = structnew();
+
 			// Create the event pool, start with 3 instead of 16 to save space
 			setPool( Collections.synchronizedMap(LinkedHashMap) );
 			setState( arguments.state );
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -40,7 +39,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset getPool().put(lcase(arguments.key), arguments.target)>
 	</cffunction>
-	
+
 	<!--- Remove a target object from the pool state --->
 	<cffunction name="unregister" access="public" returntype="boolean" hint="Unregister an object from this event pool" output="false" >
 		<!--- ************************************************************* --->
@@ -53,8 +52,8 @@ Description :
 			}
 			return false;
 		</cfscript>
-	</cffunction>	
-	
+	</cffunction>
+
 	<!--- exists --->
 	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Checks if the passed key is registered with this event pool">
 		<!--- ************************************************************* --->
@@ -62,7 +61,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfreturn structKeyExists(getPool(), lcase(arguments.key))>
 	</cffunction>
-	
+
 	<!--- Get Object --->
 	<cffunction name="getObject" access="public" returntype="any" hint="Get an object from this event pool. Else return a blank structure if not found" output="false" >
 		<!--- ************************************************************* --->
@@ -70,15 +69,15 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var pool = getPool();
-			
+
 			if( exists(arguments.key) ){
 				return pool[ lcase(arguments.key) ];
 			}
-			
+
 			return structnew();
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Process the Pool --->
 	<cffunction name="process" access="public" returntype="void" hint="Process this event pool according to it's name." output="false" >
 		<!--- ************************************************************* --->
@@ -88,35 +87,35 @@ Description :
 		var key = "";
 		var stopChain = "";
 		var pool = getPool();
-		
+
 		// Loop and execute each target object as registered in order
 		for( key in pool ){
 			// Invoke the execution point
 			stopChain = invoker( pool[key], arguments.interceptData );
-			
+
 			// Check for results
 			if( stopChain ){ break; }
-		}		
+		}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getter setter state --->
 	<cffunction name="getState" access="public" output="false" returntype="any" hint="Get the event pool's state name">
 		<cfreturn instance.state/>
-	</cffunction>	
+	</cffunction>
 	<cffunction name="setState" access="public" output="false" returntype="void" hint="Set the event pool's state name">
 		<!--- ************************************************************* --->
 		<cfargument name="state" type="any" required="true"/>
 		<!--- ************************************************************* --->
 		<cfset instance.state = arguments.state/>
 	</cffunction>
-	
+
 	<!--- getter setter Pool --->
 	<cffunction name="getPool" access="public" output="false" returntype="any" hint="Get the Pool linked hash map">
 		<cfreturn instance.pool/>
-	</cffunction>	
-	
-	
+	</cffunction>
+
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- setPool --->
@@ -134,19 +133,18 @@ Description :
 		<cfargument name="interceptData"  required="true" type="any" 		hint="A metadata structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfset var refLocal = structnew()>
-		
+
 		<!--- Invoke the target --->
 		<cfinvoke component="#arguments.target#" method="#getState()#" returnvariable="refLocal.results">
 			<cfinvokeargument name="interceptData" 	value="#arguments.interceptData#">
 		</cfinvoke>
-		
+
 		<!--- Check if we have results --->
 		<cfif structKeyExists(refLocal,"results") and isBoolean(refLocal.results)>
 			<cfreturn refLocal.results>
 		<cfelse>
 			<cfreturn false>
-		</cfif>			
+		</cfif>
 	</cffunction>
-	
+
 </cfcomponent>
-	

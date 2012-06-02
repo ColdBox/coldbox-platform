@@ -65,11 +65,12 @@ Modification History:
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- configure --->
 	<cffunction name="configure" output="false" access="public" returntype="Zip" hint="Configure for operation">
 		<cfscript>
 			//This plugin's properties
+			instance = structnew();
 			instance.ioFile      = CreateObject("java","java.io.File");
 			instance.ioInput     = CreateObject("java","java.io.FileInputStream");
 			instance.ioOutput    = CreateObject("java","java.io.FileOutputStream");
@@ -81,14 +82,14 @@ Modification History:
 			instance.gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
 			instance.gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
 			instance.objDate     = CreateObject("java","java.util.Date");
-	
+
 			/* Set Localized Variables */
 			instance.os = Server.OS.Name;
 			instance.slash = createObject("java","java.lang.System").getProperty("file.separator");
-	
+
 			//LM. To fix Overflow.
 			instance.filename = "";
-			
+
 			return this;
 		</cfscript>
 	</cffunction>

@@ -25,7 +25,7 @@ clearStorage():void
 			 hint="Application Storage plugin. It provides the user with a mechanism for permanent data storage using the application scope."
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true">
+			 singleton="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -36,21 +36,21 @@ clearStorage():void
 		<cfscript>
 			/* Init Plugin */
 			super.Init(arguments.controller);
-			
+
 			/* Plugin Properties */
 			setpluginName("Application Storage Plugin");
 			setpluginVersion("2.0");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			setpluginDescription("A permanent data storage plugin using the application scope.");
-			
+
 			/* Lock Name */
 			instance.lockName = getController().getAppHash() & "_APPLICATION_STORAGE";
 			instance.lockTimeout = 20;
-			
+
 			/* Create Storage */
 			createStorage();
-		
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -76,7 +76,7 @@ clearStorage():void
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
 		<cfset var storage = getStorage()>
-		
+
 		<cflock name="#instance.lockName#" type="readonly" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				if ( structKeyExists( storage, arguments.name) )
@@ -94,11 +94,11 @@ clearStorage():void
 		<!--- ************************************************************* --->
 		<cfset var results = false>
 		<cfset var storage = getStorage()>
-		
+
 		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset results = structdelete(storage, arguments.name, true)>
 		</cflock>
-		
+
 		<cfreturn results>
 	</cffunction>
 
@@ -113,22 +113,22 @@ clearStorage():void
 	<!--- Clear All From Storage --->
 	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox application storage" output="false">
 		<cfset var storage = getStorage()>
-		
+
 		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset structClear(storage)>
 		</cflock>
 	</cffunction>
-	
+
 	<!--- Get Storage --->
 	<cffunction name="getStorage" access="public" returntype="struct" hint="Get the entire storage scope structure" output="false" >
 		<cfscript>
 			/* Verify Storage Exists */
 			createStorage();
-			/* Return Storage */			
+			/* Return Storage */
 			return application.cbStorage;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- remove Storage --->
 	<cffunction name="removeStorage" access="public" returntype="void" hint="remove the entire storage from scope" output="false" >
 		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
@@ -137,7 +137,7 @@ clearStorage():void
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
+
 	<!--- Create Storage --->
 	<cffunction name="createStorage" access="private" returntype="void" hint="Create the app storage scope. Thread Safe" output="false" >
 		<cfif not structKeyExists(application, "cbStorage")>

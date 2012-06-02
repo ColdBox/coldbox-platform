@@ -17,7 +17,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>
-		variables.instance = structnew();
+		instance = structnew();
 		instance.name = "";
 		instance.alias = "";
 		instance.dbtype = "";
