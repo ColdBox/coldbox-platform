@@ -226,23 +226,25 @@ Description :
 		<cfargument name="interceptorProperties" 	required="false" default="#structnew()#" hint="The properties" colddoc:generic="struct"/>
 		<cfscript>
 			var oInterceptor = "";
+			var wirebox = controller.getWireBox();
 
 			// Check if interceptor mapped?
-			if( NOT controller.getWireBox().getBinder().mappingExists( "interceptor-" & interceptorName ) ){
+			if( NOT wirebox.getBinder().mappingExists( "interceptor-" & interceptorName ) ){
 				// wirebox lazy load checks
 				wireboxSetup();
 				// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				controller.getWireBox().registerNewInstance(name="interceptor-" & interceptorName,instancePath=interceptorClass)
-					.asSingleton()
-					.threadSafe()
-					.virtualInheritance("coldbox.system.Interceptor")
-					.initWith(controller=controller,properties=interceptorProperties);
+				wirebox.registerNewInstance(name="interceptor-" & interceptorName, instancePath=interceptorClass)
+					.setScope( wirebox.getBinder().SCOPES.SINGLETON )
+					.setThreadSafe( true )
+					.setVirtualInheritance( "coldbox.system.Interceptor" )
+					.addDIConstructorArgument(name="controller", value=controller)
+					.addDIConstructorArgument(name="properties", value=interceptorProperties);
 			}
 			// retrieve, build and wire from wirebox
-			oInterceptor = controller.getWireBox().getInstance( "interceptor-" & interceptorName );
+			oInterceptor = wirebox.getInstance( "interceptor-" & interceptorName );
 			// check for virtual $super, if it does, pass new properties
-			if( structKeyExists(oInterceptor,"$super") ){
-				oInterceptor.$super.setProperties(interceptorProperties);
+			if( structKeyExists(oInterceptor, "$super") ){
+				oInterceptor.$super.setProperties( interceptorProperties );
 			}
 
 			return oInterceptor;
@@ -390,12 +392,15 @@ Description :
 	<!--- wireboxSetup --->
     <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for interceptor classes is online">
     	<cfscript>
+			var wirebox = controller.getWireBox();
+			
 			// Check if handler mapped?
-			if( NOT controller.getWireBox().getBinder().mappingExists( instance.INTERCEPTOR_BASE_CLASS ) ){
+			if( NOT wirebox.getBinder().mappingExists( instance.INTERCEPTOR_BASE_CLASS ) ){
 				// feed the base class
-				binder = controller.getWireBox().registerNewInstance(name=instance.INTERCEPTOR_BASE_CLASS,instancePath=instance.INTERCEPTOR_BASE_CLASS)
-					.initWith(controller=controller,properties=structNew())
-					.noAutowire();
+				wirebox.registerNewInstance(name=instance.INTERCEPTOR_BASE_CLASS, instancePath=instance.INTERCEPTOR_BASE_CLASS)
+					.addDIConstructorArgument(name="controller", value=controller)
+					.addDIConstructorArgument(name="properties", value=structNew())
+					.setAutowire( false );
 			}
     	</cfscript>
     </cffunction>

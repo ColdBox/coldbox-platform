@@ -193,9 +193,10 @@ Description :
     <cffunction name="getThreadSafe" access="public" returntype="boolean" output="false" hint="Get the thread safety for wiring bit">
     	<cfreturn instance.threadSafe>
     </cffunction>
-    <cffunction name="setThreadSafe" access="public" returntype="void" output="false" hint="Set the thread safety for wiring bit">
+    <cffunction name="setThreadSafe" access="public" returntype="any" output="false" hint="Set the thread safety for wiring bit">
     	<cfargument name="threadSafe" type="boolean" required="true">
     	<cfset instance.threadSafe = arguments.threadSafe>
+		<cfreturn this>
     </cffunction>
 
     <!--- Mixins --->

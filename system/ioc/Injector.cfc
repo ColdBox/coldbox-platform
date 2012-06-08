@@ -325,18 +325,28 @@ Description :
     </cffunction>
 
 	<!--- registerNewInstance --->
-    <cffunction name="registerNewInstance" output="false" access="public" returntype="any" hint="Register a new requested mapping object instance thread safely and returns the binder configured for this instance">
+    <cffunction name="registerNewInstance" output="false" access="public" returntype="any" hint="Register a new requested mapping object instance thread safely and returns the mapping configured for this instance">
     	<cfargument name="name" 		required="true" hint="The name of the mapping to register"/>
 		<cfargument name="instancePath" required="true" hint="The path of the mapping to register">
-
+	
+		<cfset var mapping = "">
+		
     	<!--- Register new instance mapping --->
     	<cflock name="Injector.RegisterNewInstance.#hash(arguments.instancePath)#" type="exclusive" timeout="20" throwontimeout="true">
-    		<!--- double lock for concurrency --->
-    		<cfif NOT instance.binder.mappingExists( arguments.name )>
-    			<cfset instance.binder.map( arguments.name ).to( arguments.instancePath )>
-    		</cfif>
+    		<cfscript>
+				if( NOT instance.binder.mappingExists( arguments.name ) ){
+					// register the mapping
+					instance.binder.map( arguments.name );
+					// retreive it and work on it
+					mapping = instance.binder.getMapping( arguments.name );
+					// set the path
+					mapping.setPath( arguments.instancePath );
+					// return it
+					return mapping;
+				}
+			</cfscript>
 		</cflock>
-		<cfreturn instance.binder.with( arguments.name )>
+		<cfreturn instance.binder.getMapping( arguments.name )>
     </cffunction>
 
 	<!--- containsInstance --->
