@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="CacheBox" >
+		<xs:annotation><xs:documentation>This is how you configure the ColdBox Caching Library: CacheBox</xs:documentation></xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<!-- Used on ColdBox Apps only
+				<xs:element minOccurs="0" maxOccurs="1" name="ConfigFile" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The location of the external file location, if declared.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				 -->
+				<xs:element minOccurs="0" maxOccurs="1" name="LogBoxConfig" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The location of the logBox configuration file to use, if any</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="1" name="ScopeRegistration">
+					<xs:annotation>
+						<xs:documentation>The scope registration for the CacheBox factory.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="enabled" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Enable scope registration or not. By default this setting is false</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="key" type="xs:string" use="optional" default="cachebox">
+							<xs:annotation>
+								<xs:documentation>The key to use in the scope registration. By default this setting defaults to 'cachebox'</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="scope" use="optional">
+							<xs:annotation>
+								<xs:documentation>The ColdFusion scope to register the factory in.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="server"/>
+									<xs:enumeration value="application"/>
+									<xs:enumeration value="cluster"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element minOccurs="1" maxOccurs="1" name="DefaultConfiguration">
+					<xs:annotation>
+						<xs:documentation>The mandatory default cache configuration options.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="objectDefaultTimeout" type="xs:integer" use="optional">
+							<xs:annotation>
+								<xs:documentation>The default object timeout in minutes</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="objectDefaultLastAccessTimeout" type="xs:integer" use="optional">
+							<xs:annotation>
+								<xs:documentation>The default idle object timeout in minutes</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="useLastAccessTimeouts" type="xs:boolean" use="optional" default="true">
+							<xs:annotation>
+								<xs:documentation>Activate idle timeout expirations</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="reapFrequency" type="xs:integer" use="optional">
+							<xs:annotation>
+								<xs:documentation>The frequency in minutes in which the cache engine will flush old elements out</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="freeMemoryPercentageThreshold" type="xs:integer" use="optional">
+							<xs:annotation>
+								<xs:documentation>The percentage of free memory needed for the cache engine to cache, else elements evicted util free memory is available. 0 = off</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="evictionPolicy" use="optional" type="xs:string" default="LRU">
+							<xs:annotation>
+								<xs:documentation>The eviction policy to use for evicting items from the cache. You can use the name of the policy in the coldbox.system.cache.policies directory or your own valid class path.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="evictCount" type="xs:integer" use="optional">
+							<xs:annotation>
+								<xs:documentation>The number of objects to evict from cache when the eviction policy runs. We default to 1, but you can get more aggressive</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="maxObjects" type="xs:integer" use="optional">
+							<xs:annotation>
+								<xs:documentation>The maximum number of objects the cache should hold until evictions start ocurring</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="objectStore" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>The object store this cache box engine should use found in the coldbox.system.cache.store or your own class path notation</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="coldboxEnabled" type="xs:boolean" use="optional">
+							<xs:annotation>
+								<xs:documentation>Enable ColdBox application caching</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="Cache">
+					<xs:annotation>
+						<xs:documentation>A cachebox provider configuration.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element minOccurs="0" maxOccurs="unbounded" name="Properties">
+								<xs:annotation>
+									<xs:documentation>All the cache custom properties.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="name" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>The unique cacheprovider name</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="provider" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>The full classpath of the cachebox provider object to use for this cache</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>	
+</xs:schema>
