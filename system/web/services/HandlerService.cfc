@@ -91,9 +91,11 @@ Description :
 			var oHandler 	= "";
 			var binder		= "";
 			var attribs		= "";
+			var wirebox		= controller.getWireBox();
+			var mapping		= "";
 
 			// Check if handler mapped?
-			if( NOT controller.getWireBox().getBinder().mappingExists( invocationPath ) ){
+			if( NOT wirebox.getBinder().mappingExists( invocationPath ) ){
 				// lazy load checks for wirebox
 				wireboxSetup();
 				// extra attributes
@@ -102,17 +104,20 @@ Description :
 					isHandler	= true
 				};
 				// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				binder = controller.getWireBox().registerNewInstance(name=invocationPath,instancePath=invocationPath)
-					.virtualInheritance("coldbox.system.EventHandler")
-					.initWith(controller=controller)
-					.threadSafe()
-					.inCacheBox(key="handlers-#invocationPath#")
-					.extraAttributes( attribs );
+				mapping = wirebox.registerNewInstance(name=invocationPath, instancePath=invocationPath)
+					.setVirtualInheritance( "coldbox.system.EventHandler" )
+					.addDIConstructorArgument(name="controller", value=controller)
+					.setThreadSafe( true )
+					.setScope( wirebox.getBinder().SCOPES.CACHEBOX )
+					.setCacheProperties(key="handlers-#invocationPath#")
+					.setExtraAttributes( attribs );
 				// Are we caching or not handlers?
-				if ( NOT instance.handlerCaching ){ binder.into( binder.scopes.NOSCOPE ); }
+				if ( NOT instance.handlerCaching ){ 
+					mapping.setScope( wirebox.getBinder().SCOPES.NOSCOPE ); 
+				}
 			}
 			// retrieve, build and wire from wirebox
-			oHandler = controller.getWireBox().getInstance( invocationPath );
+			oHandler = wirebox.getInstance( invocationPath );
 
 			//return handler
 			return oHandler;
@@ -495,11 +500,12 @@ Description :
 	<!--- wireboxSetup --->
     <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for handler classes is online">
     	<cfscript>
+			var wirebox = controller.getWireBox();
 			// Check if handler mapped?
-			if( NOT controller.getWireBox().getBinder().mappingExists( instance.HANDLER_BASE_CLASS ) ){
+			if( NOT wirebox.getBinder().mappingExists( instance.HANDLER_BASE_CLASS ) ){
 				// feed the base class
-				binder = controller.getWireBox().registerNewInstance(name=instance.HANDLER_BASE_CLASS,instancePath=instance.HANDLER_BASE_CLASS)
-					.initWith(controller=controller);
+				wirebox.registerNewInstance(name=instance.HANDLER_BASE_CLASS,instancePath=instance.HANDLER_BASE_CLASS)
+					.addDIConstructorArgument(name="controller", value=controller);
 				// register ourselves to listen for autowirings
 				instance.interceptorService.registerInterceptionPoint("HandlerService","afterInstanceAutowire",this);
 			}

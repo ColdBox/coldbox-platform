@@ -107,6 +107,7 @@ Modification History:
 			var pluginLocation 		= "";
 			var pluginLocationKey 	= arguments.plugin & arguments.custom & arguments.module;
 			var attribs				= "";
+			var wirebox				= controller.getWireBox();
 					
 			// Locate Plugin, lazy loaded and cached
 			if( NOT structKeyExists(instance.refLocationMap, pluginLocationKey) ){
@@ -115,7 +116,7 @@ Modification History:
 			pluginLocation = instance.refLocationMap[pluginLocationKey];
 			
 			// Check if plugin mapped?
-			if( NOT controller.getWireBox().getBinder().mappingExists( pluginLocation ) ){
+			if( NOT wirebox.getBinder().mappingExists( pluginLocation ) ){
 				// lazy load checks for wirebox
 				wireboxSetup();
 				// build plugin attributes
@@ -126,11 +127,14 @@ Modification History:
 					isPlugin	= true
 				};
 				// feed this plugin to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				controller.getWireBox().registerNewInstance(name=pluginLocation,instancePath=pluginLocation)
-					.virtualInheritance("coldbox.system.Plugin").initWith(controller=controller).extraAttributes( attribs );
+				wirebox.registerNewInstance(name=pluginLocation,instancePath=pluginLocation)
+					.setVirtualInheritance( "coldbox.system.Plugin" )
+					.addDIConstructorArgument(name="controller", value=controller)
+					.setExtraAttributes( attribs );
 			}
+			
 			// retrieve, build and wire from wirebox
-			oPlugin = controller.getWireBox().getInstance( pluginLocation );			
+			oPlugin = wirebox.getInstance( pluginLocation );			
 			
 			//Return plugin
 			return oPlugin;
@@ -210,11 +214,12 @@ Modification History:
 	<!--- wireboxSetup --->    
     <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for plugin classes is online">    
     	<cfscript>	    
+			var wirebox = controller.getWireBox();
 			// Check if handler mapped?
-			if( NOT controller.getWireBox().getBinder().mappingExists( instance.PLUGIN_BASE_CLASS ) ){
+			if( NOT wirebox.getBinder().mappingExists( instance.PLUGIN_BASE_CLASS ) ){
 				// feed the base class
-				binder = controller.getWireBox().registerNewInstance(name=instance.PLUGIN_BASE_CLASS,instancePath=instance.PLUGIN_BASE_CLASS)
-					.initWith(controller=controller);
+				wirebox.registerNewInstance(name=instance.PLUGIN_BASE_CLASS,instancePath=instance.PLUGIN_BASE_CLASS)
+					.addDIConstructorArgument(name="controller", value=controller);
 				// register ourselves to listen for autowirings
 				instance.interceptorService.registerInterceptionPoint("PluginService","afterInstanceAutowire",this);
 			}
