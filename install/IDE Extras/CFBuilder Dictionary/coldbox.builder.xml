@@ -1228,7 +1228,7 @@
 			<help><![CDATA[Get the instance of ColdBox linked in this Injector. Empty if using standalone version]]></help>
 		</scopevar>
 	<scopevar name="registerNewInstance(name,instancePath)">
-			<help><![CDATA[Register a new requested mapping object instance thread safely and returns the binder configured for this instance]]></help>
+			<help><![CDATA[Register a new requested mapping object instance thread safely and returns the mapping configured for this instance]]></help>
 		</scopevar>
 	<scopevar name="doScopeRegistration()">
 			<help><![CDATA[Register this injector on a user specified scope]]></help>
