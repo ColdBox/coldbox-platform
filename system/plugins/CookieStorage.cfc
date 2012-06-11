@@ -113,7 +113,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 	<!--- getVar --->
 	<cffunction name="getVar" access="public" returntype="any" hint="Get a new permanent variable. If the cookie does not exist. The method returns blank or use the default value argument" output="false">
 		<cfargument  name="name" 		required="true" 	hint="The variable name to retrieve.">
-		<cfargument  name="default"  	required="false"  	hint="The default value to set. If not used, a blank is returned.">
+		<cfargument  name="default"  	required="false"	default="" hint="The default value to set. If not used, a blank is returned.">
 		<cfset var rtnVar = "">
 
 		<cfif exists(arguments.name)>
