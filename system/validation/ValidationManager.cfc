@@ -53,39 +53,30 @@ import coldbox.system.validation.result.*;
 component accessors="true" serialize="false" implements="IValidationManager"{
 
 	/**
-	* Object Factory
+	* WireBox Object Factory
 	*/
-	property name="wirebox";
+	property name="wirebox" inject="wirebox";
 
 	/**
-	* resource bundle
+	* A resource bundle plugin for i18n capabilities
 	*/
-	property name="resourceBundle";
+	property name="resourceBundle" inject="coldbox:plugin:ResourceBundle";
 
 	/**
-	* Shared constraints
+	* Shared constraints that can be loaded into the validation manager
 	*/
 	property name="sharedConstraints" type="struct";
 
 	/**
 	* Constructor
-	* @wirebox.hint The object factory
-	* @wirebox.inject wirebox
-	* @resourceBundle.hint A resource bundle object
-	* @resourceBundle.inject coldbox:plugin:ResourceBundle
 	* @sharedConstraints.hint A structure of shared constraints
 	*/
-	ValidationManager function init(required any wirebox, any resourceBundle="", struct sharedConstraints=structNew()){
+	ValidationManager function init(struct sharedConstraints=structNew()){
 
-		// valid validators
+		// valid validator registrations
 		validValidators = "required,type,size,range,regex,sameAs,sameAsNoCase,inList,discrete,udf,method,validator";
-		// shared constraints
+		// store shared constraints if passed
 		variables.sharedConstraints = arguments.sharedConstraints;
-		// store wirebox
-		variables.wirebox = arguments.wirebox;
-		// store resource bundle
-		variables.resourceBundle = arguments.resourceBundle;
-
 		return this;
 	}
 

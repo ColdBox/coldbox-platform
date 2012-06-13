@@ -9,7 +9,9 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 	function setup(){
 		super.setup();
 		mockRB = getMockBox().createEmptyMock("coldbox.system.plugins.ResourceBundle");
-		model.init( mockWireBox, mockRB );
+		model.init();
+		model.setWireBox( mockWireBox );
+		model.setResourceBundle( mockRB );
 	}
 
 	function testProcessRules(){
