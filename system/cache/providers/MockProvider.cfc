@@ -54,7 +54,7 @@ Description :
 		<cfscript>	
 			var keyMap = {
 				timeout = "timeout", hits = "hits", lastAccessTimeout = "lastAccessTimeout",
-				created = "created", lastAccesed = "lastAccesed", isExpire="isExpired"
+				created = "created", LastAccessed = "LastAccessed", isExpire="isExpired"
 			};
 			return keymap;
 		</cfscript>

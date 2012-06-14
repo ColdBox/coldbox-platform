@@ -204,7 +204,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	any function getStoreMetadataKeyMap() output="false"{
 		var keyMap = {
 				timeout = "timespan", hits = "hitcount", lastAccessTimeout = "idleTime",
-				created = "createdtime", lastAccesed = "lasthit"
+				created = "createdtime", LastAccessed = "lasthit"
 			};
 		return keymap;
 	}

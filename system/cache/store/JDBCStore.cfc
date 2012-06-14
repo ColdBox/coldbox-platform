@@ -33,12 +33,12 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			// Store Fields
-			var fields = "hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple";
+			var fields = "objectKey,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple";
 			var config = arguments.cacheProvider.getConfiguration();
 
 			// Prepare instance
 			instance = {
-				storeID 		= createObject('java','java.lang.System').identityHashCode(this),
+				storeID 		= createObject('java','java.lang.System').identityHashCode( this ),
 				cacheProvider   = arguments.cacheProvider,
 				converter 		= createObject("component","coldbox.system.core.conversion.ObjectMarshaller").init()
 			};
@@ -69,7 +69,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 			}
 
 			// Indexer
-			instance.indexer = createObject("component","coldbox.system.cache.store.indexers.JDBCMetadataIndexer").init(fields,config,this);
+			instance.indexer = createObject("component","coldbox.system.cache.store.indexers.JDBCMetadataIndexer").init(fields, config, this);
 
 			return this;
 		</cfscript>
@@ -112,17 +112,17 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
 		SELECT objectKey
 		  FROM #instance.table#
-		ORDER BY objectKey asc
+		ORDER BY objectKey ASC
 		</cfquery>
 
-		<cfreturn listToArray( valueList(q.objectKey) )>
+		<cfreturn listToArray( valueList( q.objectKey ) )>
 	</cffunction>
 
 	<!--- lookupQuery --->
     <cffunction name="lookupQuery" output="false" access="private" returntype="any" hint="Get the lookup query">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 
-		<cfset var normalizedID 	= getNormalizedID(arguments.objectKey)>
+		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
 		<cfset var q 				= "">
 
 		<!--- db lookup --->
@@ -140,7 +140,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
-			var q = lookupQuery(arguments.objectKey);
+			var q = lookupQuery( arguments.objectKey );
 
 			// Check if object in pool
 			if( q.recordCount AND NOT q.isExpired){
@@ -157,10 +157,10 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 
 		<cfset var q 			= "">
 		<cfset var qStats		= "">
-		<cfset var normalizedID = getNormalizedID(arguments.objectKey)>
+		<cfset var normalizedID = getNormalizedID( arguments.objectKey )>
 		<cfset var refLocal = {}>
-
-		<cftransaction isolation="serializable">
+		
+		<cftransaction>
 			<!--- select entry --->
 			<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
 			SELECT *
@@ -169,12 +169,14 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 			</cfquery>
 
 			<!--- Update Stats If Found --->
-			<cfquery name="qStats" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-			UPDATE #instance.table#
-			   SET lastAccessed = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-				    hits  = hits + 1
-			  WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-			</cfquery>
+			<cfif q.recordcount>
+				<cfquery name="qStats" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
+				UPDATE #instance.table#
+				   SET lastAccessed = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
+					    hits  = hits + 1
+				  WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
+				</cfquery>
+			</cfif>
 		</cftransaction>
 
 		<!--- Object Check --->
@@ -198,7 +200,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 
 		<cfset var q 				= "">
-		<cfset var normalizedID 	= getNormalizedID(arguments.objectKey)>
+		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
 
 		<!--- select entry --->
 		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
@@ -227,7 +229,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
 
 		<cfset var q 				= "">
-		<cfset var normalizedID 	= getNormalizedID(arguments.objectKey)>
+		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
 
 		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
 		UPDATE #instance.table#
@@ -241,7 +243,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
     <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not, returns false if object not found">
     	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
 
-		<cfset var normalizedID 	= getNormalizedID(arguments.objectKey)>
+		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
 		<cfset var q 				= "">
 
 		<!--- db lookup --->
@@ -269,19 +271,19 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 		<cfargument name="extras" 				type="any" default="#structnew()#" hint="A map of extra name-value pairs"/>
 		<!--- ************************************************************* --->
 		<cfset var q 				= "">
-		<cfset var normalizedID 	= getNormalizedID(arguments.objectKey)>
+		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
 		<cfset var isSimple			= true>
 
 		<!--- Test if simple --->
 		<cfif NOT isSimpleValue(arguments.object) >
 			<!---serialize it--->
-			<cfset arguments.object = instance.converter.serializeObject(arguments.object)>
+			<cfset arguments.object = instance.converter.serializeObject( arguments.object )>
 			<cfset isSimple = false>
 		</cfif>
 
 		<!--- Check if already in DB or not --->
-		<cftransaction isolation="serializable">
-			<cfif NOT lookupQuery(arguments.objectKey).recordcount>
+		<cftransaction>
+			<cfif NOT lookupQuery( arguments.objectKey ).recordcount>
 				<!--- store it --->
 				<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
 				INSERT INTO #instance.table# (id,objectKey,objectValue,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple)
@@ -324,11 +326,11 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool">
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
 
-		<cfset var normalizedID = getNormalizedID(arguments.objectKey)>
+		<cfset var normalizedID = getNormalizedID( arguments.objectKey )>
 		<cfset var q = "">
 
 		<!--- check if it exists --->
-		<cfif NOT lookupQuery(arguments.objectKey).recordcount>
+		<cfif NOT lookupQuery( arguments.objectKey ).recordcount>
 			<cfreturn false>
 		</cfif>
 
@@ -344,7 +346,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 
 	<!--- Get the size of the pool --->
 	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the cache's size in items">
-		<cfset var q 				= "">
+		<cfset var q = "">
 
 		<!--- db lookup --->
 		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
@@ -359,7 +361,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
     <cffunction name="getNormalizedID" output="false" access="public" returntype="any" hint="Get the cached normalized id">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
-			return hash(arguments.objectKey & instance.storeID);
+			return hash( arguments.objectKey );
 		</cfscript>
     </cffunction>
 
