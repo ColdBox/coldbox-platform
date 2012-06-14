@@ -17,7 +17,7 @@ Description :
 		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			// Store Fields
-			var fields = "hits,timeout,lastAccessTimeout,created,lastAccesed,isExpired,isSimple";
+			var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired,isSimple";
 			var config = arguments.cacheProvider.getConfiguration();
 
 			// Prepare instance

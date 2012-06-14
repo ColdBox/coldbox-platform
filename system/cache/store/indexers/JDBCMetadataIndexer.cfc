@@ -21,8 +21,18 @@ Description :
 		<cfargument name="fields" 	required="true" hint="The list or array of fields to bind this index on"/>
 		<cfargument name="config" 	required="true" hint="JDBC Configuration structure"/>
 		<cfargument name="store" 	required="true" hint="The associated storage"/>
+		
+		<cfset var DBData = "">
+		<cfdbinfo type="version" datasource="#arguments.config.dsn#" name="DBData">
+		
 		<cfscript>
 			super.init(arguments.fields);
+			
+			// store db sql compatibility type
+			instance.sqlType = "MySQL";
+			if( findNoCase("Microsoft SQL", DBData.database_productName) ){
+				instance.sqlType = "MSSQL";
+			} 
 			
 			// store jdbc configuration
 			instance.config = arguments.config;
@@ -71,6 +81,34 @@ Description :
 		
 		<cfreturn (q.recordcount EQ 1)>
 	</cffunction>
+	
+	<!--- getPoolMetadata --->
+    <cffunction name="getPoolMetadata" output="false" access="public" returntype="any" hint="Get the entire pool reference">
+    	<cfset var q = "">
+		<cfset var x = "">
+		<cfset var md = structnew()>
+		
+		<!--- select entry --->
+		<cfquery name="q" datasource="#instance.config.dsn#" username="#instance.config.dsnUsername#" password="#instance.config.dsnPassword#">
+		SELECT <cfif instance.sqlType eq "MSSQL">TOP 100 </cfif>#instance.fields#
+		  FROM #instance.config.table#
+		ORDER BY objectKey
+		<cfif instance.sqlType eq "MySQL">LIMIT 100 </cfif>
+		</cfquery>
+		
+		<cfloop from="1" to="#q.recordcount#" index="x" >
+			<cfset md[ q.objectKey[x] ] = {
+				hits = q.hits[x],
+				timeout = q.timeout[x],
+				lastAccessTimeout = q.lastAccessTimeout[x],
+				created = q.created[x],
+				LastAccessed = q.lastAccessed[x],
+				isExpired = q.isExpired[x]
+			}>
+		</cfloop>
+		
+		<cfreturn md>
+    </cffunction>
 	
 	<!--- getObjectMetadata --->
 	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false" hint="Get a metadata entry for a specific entry. Exception if key not found">

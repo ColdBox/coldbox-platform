@@ -17,7 +17,7 @@ Description :
 		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			// Store Fields
-			var fields = "hits,timeout,lastAccessTimeout,created,lastAccesed,isExpired,isSimple";
+			var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired,isSimple";
 			var config = arguments.cacheProvider.getConfiguration();
 			
 			// Prepare instance
@@ -127,7 +127,7 @@ Description :
 			if( lookup(arguments.objectKey) ){
 				// Record Metadata Access
 				instance.indexer.setObjectMetadataProperty(arguments.objectKey,"hits", instance.indexer.getObjectMetadataProperty(arguments.objectKey,"hits")+1);
-				instance.indexer.setObjectMetadataProperty(arguments.objectKey,"lastAccesed", now());
+				instance.indexer.setObjectMetadataProperty(arguments.objectKey,"LastAccessed", now());
 				
 				return getQuiet( arguments.objectKey );
 			}
@@ -198,7 +198,7 @@ Description :
 			timeout = arguments.timeout,
 			lastAccessTimeout = arguments.LastAccessTimeout,
 			created = now(),
-			lastAccesed = now(),		
+			LastAccessed = now(),		
 			isExpired = false,
 			isSimple = true
 		}>

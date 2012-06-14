@@ -631,7 +631,7 @@ Properties
 					
 					//Check for last accessed timeouts. If object has not been accessed in the default span
 					if ( config.useLastAccessTimeouts AND 
-					     dateDiff("n", thisMD.lastAccesed, now() ) gte thisMD.LastAccessTimeout ){
+					     dateDiff("n", thisMD.LastAccessed, now() ) gte thisMD.LastAccessTimeout ){
 						
 						// Clear the object from cache
 						if( clear( thisKey ) ){
@@ -644,7 +644,7 @@ Properties
 				
 			}//end looping over keys
 			
-			//Reaping about to start, set new reaping date.
+			//Reaping about to end, set new reaping date.
 			getStats().setLastReapDatetime( now() );	
 			
 			// log it
@@ -728,7 +728,7 @@ Properties
 		<cfscript>	
 			var keyMap = {
 				timeout = "timeout", hits = "hits", lastAccessTimeout = "lastAccessTimeout",
-				created = "created", lastAccesed = "lastAccesed", isExpired="isExpired"
+				created = "created", LastAccessed = "LastAccessed", isExpired="isExpired"
 			};
 			return keymap;
 		</cfscript>

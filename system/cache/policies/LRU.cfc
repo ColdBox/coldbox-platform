@@ -39,7 +39,7 @@ Description :
 			
 			// Get searchable index
 			try{
-				index = getAssociatedCache().getObjectStore().getIndexer().getSortedKeys("LastAccesed","numeric","asc");
+				index = getAssociatedCache().getObjectStore().getIndexer().getSortedKeys("LastAccessed","numeric","asc");
 				// process evictions
 				processEvictions( index );
 			}
