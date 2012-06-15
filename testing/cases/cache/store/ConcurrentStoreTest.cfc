@@ -100,7 +100,7 @@ Description :
 		assertEquals( false, store.getIndexer().getObjectMetadataProperty(key,"isExpired") );
 		assertEquals( '', store.getIndexer().getObjectMetadataProperty(key,"LastAccessTimeout") );
 		AssertTrue( isDate(store.getIndexer().getObjectMetadataProperty(key,'Created')) );
-		AssertTrue( isDate(store.getIndexer().getObjectMetadataProperty(key,'LastAccesed')) );
+		AssertTrue( isDate(store.getIndexer().getObjectMetadataProperty(key,'lastAccessed')) );
 		
 		store.clear( key );
 		AssertFalse(store.lookup(key) );
