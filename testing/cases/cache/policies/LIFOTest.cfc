@@ -49,8 +49,8 @@ Description :
 	<cffunction name="testPolicy" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
 			lifo.execute();	
-			assertEquals( 2 , arrayLen(mockCM.$callLog().expireObject) );			
-			assertEquals( "obj1", mockCM.$callLog().expireObject[1][1] );
+			assertEquals( 2 , arrayLen(mockCM.$callLog().clear) );			
+			assertEquals( "obj1", mockCM.$callLog().clear[1][1] );
 		</cfscript>
 	</cffunction>
 	

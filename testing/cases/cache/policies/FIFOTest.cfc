@@ -14,16 +14,16 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		super.setup();
-		
+
 		config = {
 			evictCount = 2
 		};
-		
+
 		pool = {};
 		pool['obj1'] = structnew();
 		pool['obj2'] = structnew();
 		pool['obj3'] = structnew();
-		
+
 		pool['obj1'].Created = now();
 		pool['obj1'].Timeout = 5;
 		pool['obj1'].isExpired = false;
@@ -33,25 +33,25 @@ Description :
 		pool['obj3'].Created = dateAdd("n",-6,now());
 		pool['obj3'].Timeout = 10;
 		pool['obj3'].isExpired = false;
-		
+
 		mockCM.$("getConfiguration",config);
 		mockIndexer.$("getPoolMetadata", pool).$("objectExists",true);
 		keys = structSort(pool,"numeric","asc","Created");
-		
+
 		mockIndexer.$("getSortedKeys", keys);
 		mockIndexer.$("getObjectMetadata").$results(pool.obj2,pool.obj3,pool.obj1);
-		
+
 		fifo = getMockBox().createMock("coldbox.system.cache.policies.FIFO").init(mockCM);
-		
+
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="testPolicy" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			fifo.execute();	
-			assertEquals( 2 , arrayLen(mockCM.$callLog().expireObject) );			
-			assertEquals( "obj2", mockCM.$callLog().expireObject[1][1] );
+			fifo.execute();
+			assertEquals( 2 , arrayLen(mockCM.$callLog().clear) );
+			assertEquals( "obj2", mockCM.$callLog().clear[1][1] );
 		</cfscript>
 	</cffunction>
-	
+
 </cfcomponent>

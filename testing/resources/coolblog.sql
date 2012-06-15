@@ -7,7 +7,7 @@
 #
 # Host: Localhost (MySQL 5.5.15)
 # Database: coolblog
-# Generation Time: 2012-05-23 21:21:09 +0000
+# Generation Time: 2012-06-15 01:33:33 +0000
 # ************************************************************
 
 
@@ -93,6 +93,37 @@ VALUES
 	(1,'http://blog.coldbox.org/feeds/rss.cfm','http://blog.coldbox.org/','','ColdBox Platform','The official ColdBox Blog','2011-04-08 15:19:13','2011-04-08 15:19:13',b'1',NULL,NULL,NULL);
 
 /*!40000 ALTER TABLE `blogs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table cacheBox
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `cacheBox`;
+
+CREATE TABLE `cacheBox` (
+  `id` varchar(100) NOT NULL,
+  `objectKey` varchar(255) NOT NULL,
+  `objectValue` longtext NOT NULL,
+  `hits` int(11) NOT NULL DEFAULT '1',
+  `timeout` int(11) NOT NULL,
+  `lastAccessTimeout` int(11) NOT NULL,
+  `created` datetime NOT NULL,
+  `lastAccessed` datetime NOT NULL,
+  `isExpired` tinyint(4) NOT NULL DEFAULT '1',
+  `isSimple` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `cacheBox` WRITE;
+/*!40000 ALTER TABLE `cacheBox` DISABLE KEYS */;
+
+INSERT INTO `cacheBox` (`id`, `objectKey`, `objectValue`, `hits`, `timeout`, `lastAccessTimeout`, `created`, `lastAccessed`, `isExpired`, `isSimple`)
+VALUES
+	('098F6BCD4621D373CADE4E832627B4F6','test','rO0ABXNyACdjb2xkZnVzaW9uLnJ1bnRpbWUuVGVtcGxhdGVQcm94eVdyYXBwZXKipp4aug9WeQwAAHhwc3IAEWphdmEudXRpbC5IYXNoTWFwBQfawcMWYNEDAAJGAApsb2FkRmFjdG9ySQAJdGhyZXNob2xkeHA/QAAAAAAADHcIAAAAEAAAAAB4c3EAfgACP0AAAAAAAAx3CAAAABAAAAABdAAISU5TVEFOQ0VzcgAgY29sZGZ1c2lvbi5ydW50aW1lLlN0cnVjdFdyYXBwZXJxaV03VrVEMQIAAUwAA21hcHQAD0xqYXZhL3V0aWwvTWFwO3hwc3EAfgACP0AAAAAAAAx3CAAAABAAAAAEdAAFRk5BTUV0AAB0AAhJTklUREFURXNyACVjb2xkZnVzaW9uLnJ1bnRpbWUuT2xlRGF0ZVRpbWVXcmFwcGVyatCSbHnJ+1ICAAFKAAR0aW1leHAAAAE37cWic3QABUVNQUlMcQB+AAt0AAVMTkFNRXEAfgALeHh0ACJjb2xkYm94LnRlc3RpbmcudGVzdG1vZGVsLmZvcm1CZWFudwEAeA==',2,20,0,'2012-06-14 18:33:01','2012-06-14 18:33:01',0,0),
+	('DF658A103F07DC012AB905014C32D4C7','myKey','hello',1,0,0,'2012-06-14 18:33:01','2012-06-14 18:33:01',1,1);
+
+/*!40000 ALTER TABLE `cacheBox` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
