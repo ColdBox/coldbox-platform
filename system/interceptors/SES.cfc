@@ -244,13 +244,13 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="pattern" 				 type="string" 	required="false" hint="The pattern to match against the URL." />
 		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
-		<cfargument name="action"  				 type="any" 	required="false" hint="The action in a handler to execute if a pattern is matched.  This can also be a structure or JSON structured based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}">
+		<cfargument name="action"  				 type="any" 	required="false" hint="The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}">
 		<cfargument name="packageResolverExempt" type="boolean" required="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern">
 		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
 		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
 		<cfargument name="viewNoLayout"  		 type="boolean" required="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
 		<cfargument name="valuePairTranslation"  type="boolean" required="false" hint="Activate convention name value pair translations or not. Turned on by default">
-		<cfargument name="constraints" 			 type="any"  	required="false" hint="A structure or JSON structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
+		<cfargument name="constraints" 			 type="any"  	required="false" hint="A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
 		<cfargument name="module" 				 type="string"  required="false" hint="The module to add this route to"/>
 		<cfargument name="moduleRouting" 		 type="string"  required="false" hint="Called internally by addModuleRoutes to add a module routing route."/>
 		<cfargument name="namespace" 			 type="string"  required="false" hint="The namespace to add this route to"/>
@@ -333,13 +333,13 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
 		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
-		<cfargument name="action"  				 type="any" 	required="false" hint="The action in a handler to execute if a pattern is matched.  This can also be a structure or JSON structured based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}">
+		<cfargument name="action"  				 type="any" 	required="false" hint="The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}">
 		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern">
 		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
 		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
 		<cfargument name="viewNoLayout"  		 type="boolean" required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
 		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations or not. Turned on by default">
-		<cfargument name="constraints" 			 type="any"  	required="false" default="" hint="A structure or JSON structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
+		<cfargument name="constraints" 			 type="any"  	required="false" default="" hint="A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
 		<cfargument name="module" 				 type="string"  required="false" default="" hint="The module to add this route to"/>
 		<cfargument name="moduleRouting" 		 type="string"  required="false" default="" hint="Called internally by addModuleRoutes to add a module routing route."/>
 		<cfargument name="namespace" 			 type="string"  required="false" default="" hint="The namespace to add this route to"/>
@@ -354,7 +354,6 @@ Description :
 		var arg = 0;
 		var x = 1;
 		var thisRegex = 0;
-		var oJSON = getPlugin("JSON");
 		var patternType = "";
 
 		// process a with closure if not empty
@@ -368,17 +367,6 @@ Description :
 		// Process all incoming arguments into the route to store
 		for(arg in arguments){
 			if( structKeyExists(arguments,arg) ){ thisRoute[arg] = arguments[arg]; }
-		}
-
-		// Process actions as a JSON structure?
-		if( structKeyExists(arguments,"action") AND isSimpleValue(arguments.action) AND oJSON.isValidJSON( arguments.action ) ){
-			try{
-				// Inflate action to structure
-				thisRoute.action = oJSON.decode( arguments.action );
-			}
-			catch(Any e){
-				$throw("Invalid JSON action","The action #arguments.action# is not valid JSON","SES.InvalidJSONAction");
-			}
 		}
 
 		// Cleanup Route: Add trailing / to make it easier to parse
@@ -400,18 +388,9 @@ Description :
 
 		// Process json constraints?
 		thisRoute.constraints = structnew();
-		// Check if implicit struct first, else try to do JSON conversion.
+		// Check if implicit struct
 		if( isStruct(arguments.constraints) ){
 			thisRoute.constraints = arguments.constraints;
-		}
-		else if( oJSON.isValidJson( arguments.constraints ) ){
-			try{
-				// Inflate constratints to structure
-				thisRoute.constraints = oJSON.decode(arguments.constraints);
-			}
-			catch(Any e){
-				$throw("Invalid JSON constraints","The constraints #arguments.constraints# is not valid JSON","SES.InvalidJSONConstraint");
-			}
 		}
 
 		// Init the matching variables
