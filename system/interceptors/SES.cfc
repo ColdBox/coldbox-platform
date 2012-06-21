@@ -1027,7 +1027,7 @@ Description :
 
 			// SSL Checks
 			if( foundRoute.ssl AND NOT event.isSSL() ){
-				setNextEvent(uri=cgi.script_name & cgi.path_info,ssl=true,statusCode=302,queryString=cgi.query_string);
+				setNextEvent(URL=event.getSESBaseURL() & reReplace(cgi.path_info, "^\/", ""), ssl=true, statusCode=302, queryString=cgi.query_string);
 			}
 
 			// Check if the match is a module Routing entry point or a namespace entry point or not?
