@@ -397,6 +397,10 @@ Only one instance of a specific ColdBox application exists.
 				// FULL URL relocations
 				case "URL" : {
 					relocationURL = arguments.URL;
+					// Check SSL?
+					if( structKeyExists(arguments, "ssl") ){
+						relocationURL = updateSSL(relocationURL,arguments.ssl);
+					}
 					// Query String?
 					if( len(trim(arguments.queryString)) ){ relocationURL = relocationURL & "?#arguments.queryString#"; }
 					break;
