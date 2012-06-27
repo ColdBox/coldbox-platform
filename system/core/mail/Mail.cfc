@@ -24,7 +24,7 @@ Description :
 			instance.body = "";
 			instance.from = "";
 			instance.to = "";
-		
+
 			return config(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
@@ -73,6 +73,11 @@ Description :
 				if( structKeyExists(arguments,key) ){
 					instance[key] = arguments[key];
 				}
+			}
+
+			// server exception
+			if( NOT len( arguments.server ) ){
+				structDelete( instance, "server" );
 			}
 
 			return this;
@@ -403,7 +408,7 @@ Description :
     		return this;
 		</cfscript>
     </cffunction>
-	
+
 	<!--- setSendReceipt --->
     <cffunction name="setSendReceipt" output="false" access="public" returntype="any" hint="Sets the email that get's notified once the email is delivered by setting the appropriate mail headers">
     	<cfargument name="email"/>
@@ -426,24 +431,24 @@ Description :
 		<cfset addMailPart(charset='utf8',type='text/plain',body=arguments.body)>
 		<cfreturn this>
     </cffunction>
-	
+
 	<!--- addAttachments --->
     <cffunction name="addAttachments" output="false" access="public" returntype="any" hint="Add attachment(s) to this payload using a list or array of file locations">
     	<cfargument name="files" type="any" required="true" hint="A list or array of files to attach to this payload"/>
 		<cfscript>
 			var x =1;
-			
+
 			if ( isSimpleValue(arguments.files) ){
 				arguments.files = listToArray(arguments.files);
 			}
 			for(x=1; x lte arrayLen(arguments.files); x=x+1){
 				addMailParam(file=arguments.files[x]);
 			}
-			
+
 			return this;
 		</cfscript>
     </cffunction>
-	
+
 	<!--- setBodyTokens --->
 	<cffunction name="setBodyTokens" access="public" output="false" returntype="any" hint="Sets a new struct of body tokens that can be used for replacement when the mail is sent. The tokens are replaced in the body content ast @token@ delimmitted.">
 		<cfargument name="tokenMap" type="struct" required="yes" />
@@ -467,7 +472,7 @@ Description :
 			}
 
 			arrayAppend(getMailParts(), mailpart);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -490,7 +495,7 @@ Description :
 			}
 
 			arrayAppend(getMailParams(), mailparams);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
