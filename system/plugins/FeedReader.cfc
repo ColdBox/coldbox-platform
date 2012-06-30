@@ -11,20 +11,20 @@ Version     :	2
 Description :
 	A feed reader plug-in with file caching capabilities. This reader supports
 	and has been tested with all major revisions of RDF, RSS and Atom feeds.
-	
+
 	Feed dates such as those in ISO8601 and RFC882 formats are converted to
 	usable ColdFusion dates. So you don't have to parse anything more, just
 	format them.
-	
+
 	To use this plug-in you should set the following settings in your application
 	(coldbox.xml.cfm), unless you are happy with the defaults.
-	
+
 Quick and Dirty Feed Dump:
 	This is not a recommended ColdBox good design practise but it will give you a
 	quick result while learning how to use this plug-in. In an eventhandler file
 	create a new event, maybe call it 'feeddump'. Then add the code, change the
 	URL and run the event.
-	
+
 	<cfset var rc = event.getCollection()>
 	<cfset rc.webfeed = getPlugin("FeedReader").retrieveFeed("http://www.example.com/feeds/rss")>
 	<cfdump var="#rc.webfeed#">
@@ -61,7 +61,7 @@ Quick and Dirty Feed Dump:
 			}
 
 			// Setup caching variables if enabled
-			if( getUseCache() ){	
+			if( getUseCache() ){
 
 				// RAM caching used by default
 				if( not settingExists('FeedReader_cacheType') or not reFindNoCase("^(ram|file)$",getSetting('FeedReader_cacheType')) ){
@@ -95,7 +95,7 @@ Quick and Dirty Feed Dump:
 					/* RAM cache */
 					setCachePrefix('rssreader-');
 				}
-				
+
 				/* Cache timeout */
 				if( not settingExists('FeedReader_cacheTimeout') ){
 					setCacheTimeout(30);
@@ -131,7 +131,7 @@ Quick and Dirty Feed Dump:
 		<cfif getCacheType() eq "ram">
 			<cfset getColdboxOCM().clearByKeySnippet(getCachePrefix)>
 		<cfelse>
-			<!--- Lock, retrieve files and remove --->		
+			<!--- Lock, retrieve files and remove --->
 			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 				<cfset qFiles = readCacheDir()>
 				<!--- Recursively delete --->
@@ -158,7 +158,7 @@ Quick and Dirty Feed Dump:
 		<cfargument name="feedURL" type="string" required="yes" hint="The url to check if its in the cache">
 		<!--- ******************************************************************************** --->
 		<cfset var results = false>
-		
+
 		<cfif getCacheType() eq "ram">
 			<cfreturn getColdboxOCM().lookup(URLToCacheKey(arguments.feedURL))>
 		<cfelse>
@@ -170,7 +170,7 @@ Quick and Dirty Feed Dump:
 				</cfif>
 			</cflock>
 		</cfif>
-		
+
 		<cfreturn results>
 	</cffunction>
 
@@ -188,7 +188,7 @@ Quick and Dirty Feed Dump:
 			<!--- Secure cache read --->
 			<cflock name="#getLockName()#" type="readonly" timeout="30" throwontimeout="true">
 				<!--- Check if feed is in cache --->
-				<cfset qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL))>			
+				<cfset qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL))>
 			</cflock>
 			<!--- Exists check --->
 			<cfif qFile.recordcount eq 0>
@@ -196,8 +196,8 @@ Quick and Dirty Feed Dump:
 			</cfif>
 			<!--- Timeout check --->
 			<cfif DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout()>
-				<cfset results = true>					
-			</cfif>	
+				<cfset results = true>
+			</cfif>
 		</cfif>
 
 		<cfreturn results>
@@ -236,7 +236,7 @@ Quick and Dirty Feed Dump:
 		<cfelse>
 			<!--- Cache file --->
 			<cfset cacheFile = getCacheLocation() & "/" & URLToCacheKey(arguments.feedURL)>
-			<!--- Lock, get files and remove --->		
+			<!--- Lock, get files and remove --->
 			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 				<!--- Is feed cached check --->
 				<cfif isFeedCached(arguments.feedURL)>
@@ -273,7 +273,7 @@ Quick and Dirty Feed Dump:
 						<cfset objectIn = CreateObject("java","java.io.ObjectInputStream").init(fileIn)>
 						<cfset results = objectIn.readObject()>
 						<cfset objectIn.close()>
-					</cfif>	
+					</cfif>
 				</cfif>
 			</cflock>
 		</cfif>
@@ -357,7 +357,7 @@ Quick and Dirty Feed Dump:
 		<cfset var i = 0>
 		<cfset var j = 0>
 		<cfset var feedCombArr = arrayNew(1)>
-		<cfset var url = "">
+		<cfset var sURL = "">
 		<cfset var xmlDoc = "">
 
 		<!--- Check for return type --->
@@ -369,12 +369,12 @@ Quick and Dirty Feed Dump:
 		<cfset arguments.feedURL = ReplaceNoCase(arguments.feedURL,"feed://","http://")>
 
 		<!--- Download feeds and (if required) combine the data into a master feed --->
-		<cfloop list="#arguments.feedURL#" delimiters="," index="url">
+		<cfloop list="#arguments.feedURL#" delimiters="," index="sURL">
 			<cfscript>
 				// increase i value for array number
 				i=i+1;
 				// download feed
-				xmlDoc = downloadFeed(url);
+				xmlDoc = downloadFeed(sURL);
 				/* parse feed when there are multiple urls to process */
 				if(ListLen(arguments.feedURL) gt 1) {
 					// process the downloaded feed
@@ -452,7 +452,7 @@ Quick and Dirty Feed Dump:
 					feed.opensearch = StructNew();
 					feed.rating = "";
 					feed.rights.copyright = "";
-					feed.rights.creativecommonds = "";	
+					feed.rights.creativecommonds = "";
 					feed.specs.generator = "Multiple feeds combined";
 					feed.specs.url = "";
 				}
@@ -497,14 +497,14 @@ Quick and Dirty Feed Dump:
 			else if( structKeyExists(xmlDoc,"version") or structKeyExists(xmlDoc,"rss") ) { feed.specs.type = "RSS"; }
 			else if( structKeyExists(xmlDoc,"feed") ) { feed.specs.type = "Atom"; }
 			// get feed namespaces (including feed extensions) and feed numeric version
-			if( structKeyExists(xmlDoc.xmlRoot,"xmlAttributes") ) { 
+			if( structKeyExists(xmlDoc.xmlRoot,"xmlAttributes") ) {
 				feed.specs.namespace = xmlDoc.xmlRoot.xmlAttributes;
-				if( structKeyExists(xmlDoc.xmlRoot.xmlAttributes,"xmlns") ) { 
+				if( structKeyExists(xmlDoc.xmlRoot.xmlAttributes,"xmlns") ) {
 					if( feed.specs.type is "RDF" and left(xmlDoc.xmlRoot.xmlAttributes.xmlns,20) is 'http://purl.org/rss/' ) {
 						feed.specs.version = listGetAt(xmlDoc.xmlRoot.xmlAttributes.xmlns,4,'/');
 					}
 				}
-				if( structKeyExists(xmlDoc.xmlRoot.xmlAttributes,"version") ) { 
+				if( structKeyExists(xmlDoc.xmlRoot.xmlAttributes,"version") ) {
 					feed.specs.version = xmlDoc.xmlRoot.xmlAttributes.version;
 				}
 				else if( structKeyExists(xmlDoc.xmlRoot.xmlAttributes,"xmlns") and xmlDoc.xmlRoot.xmlAttributes.xmlns contains "http://www.w3.org/2005/Atom" ) {
@@ -605,7 +605,7 @@ Quick and Dirty Feed Dump:
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"category")){
 					for(x=1; x lte arrayLen(xmlDoc.xmlRoot.channel.category); x=x+1){
 						loop = xmlDoc.xmlRoot.channel.category[x];
-						if( len(loop.xmlText) ) { 
+						if( len(loop.xmlText) ) {
 							feed.category[x] = StructNew();
 							feed.category[x].tag = loop.xmlText;
 							if(StructKeyExists(loop.xmlAttributes,'domain')) feed.category[x].domain = loop.xmlAttributes.domain;
@@ -624,7 +624,7 @@ Quick and Dirty Feed Dump:
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:category")){
 					for(x=1; x lte arrayLen(xmlDoc.xmlRoot.channel["itunes:category"]); x=x+1){
 						loop = xmlDoc.xmlRoot.channel["itunes:category"][x];
-						if( len(loop.xmlAttributes.text) ) { 
+						if( len(loop.xmlAttributes.text) ) {
 							feed.category[x] = StructNew();
 							feed.category[x].tag = loop.XMLAttributes.text;
 							feed.category[x].domain = "itunes category";
@@ -650,7 +650,7 @@ Quick and Dirty Feed Dump:
 				if( extras.isDateISO8601(feed.DateUpdated) ) feed.DateUpdated = oUtilities.parseISO8601(feed.DateUpdated);
 				else feed.DateUpdated = oUtilities.parseRFC822(feed.DateUpdated);
 				// Dubline Core date as dateupdated
-				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:date") and not len(feed.dateupdated) ) { 
+				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:date") and not len(feed.dateupdated) ) {
 					if( extras.isDateISO8601(feed.dateupdated) ) { feed.dateupdated = oUtilities.parseISO8601(xmlDoc.xmlRoot.channel["dc:date"].xmlText); }
 					else { feed.dateupdated = oUtilities.parseRFC822(xmlDoc.xmlRoot.channel["dc:date"].xmlText); }
 				}
@@ -671,7 +671,7 @@ Quick and Dirty Feed Dump:
 					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"link")) feed.Image.Link = xmlDoc.xmlRoot.channel.image.link.xmlText;
 					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"title")) feed.Image.Title = xmlDoc.xmlRoot.channel.image.title.xmlText;
 					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"url")) feed.Image.Url = xmlDoc.xmlRoot.channel.image.url.xmlText;
-					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"width")) feed.Image.Width = xmlDoc.xmlRoot.channel.image.width.xmlText;				
+					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"width")) feed.Image.Width = xmlDoc.xmlRoot.channel.image.width.xmlText;
 				}
 				// Apple iTunes image
 				try {	if( not len(feed.image.url) and StructKeyExists(xmlDoc.xmlRoot.channel["itunes:image"].xmlAttributes,'href') ) feed.image.url = xmlDoc.xmlRoot.channel["itunes:image"].xmlAttributes.href;	} catch(Any ex) {}
@@ -693,7 +693,7 @@ Quick and Dirty Feed Dump:
 						if( StructKeyExists(loop,'xmlAttributes') and StructKeyExists(loop.xmlAttributes,'rel') and len(loop.xmlAttributes.rel) ) {
 							// OpenSearch autodiscovery
 							if(
-								 StructKeyExists(xmlDoc.xmlRoot.channel,"opensearch:Query") 
+								 StructKeyExists(xmlDoc.xmlRoot.channel,"opensearch:Query")
 								 and loop.xmlAttributes.rel is "search"
 								 and StructKeyExists(loop.xmlAttributes,'type')
 								 and loop.xmlAttributes.type is "application/opensearchdescription+xml"
@@ -724,12 +724,12 @@ Quick and Dirty Feed Dump:
 					if( structKeyExists(xmlDoc.xmlRoot.author,"name") ) feed.author.name = extras.normalizeAtomTextConstruct(xmlDoc.xmlRoot.author.name);
 					if( structKeyExists(xmlDoc.xmlRoot.author,"uri") ) feed.author.url = extras.normalizeAtomTextConstruct(xmlDoc.xmlRoot.author.uri);
 					if( structKeyExists(xmlDoc.xmlRoot.author,"email") ) feed.author.email = extras.normalizeAtomTextConstruct(xmlDoc.xmlRoot.author.email);
-				}	
+				}
 				/* Category */
 				if(StructKeyExists(xmlDoc.xmlRoot,"category")){
 					for(x=1; x lte arrayLen(xmlDoc.xmlRoot.category); x=x+1){
 						loop = xmlDoc.xmlRoot.category[x];
-						if( StructKeyExists(loop.xmlAttributes,'term') and len(loop.xmlAttributes.term) ) { 
+						if( StructKeyExists(loop.xmlAttributes,'term') and len(loop.xmlAttributes.term) ) {
 							feed.category[x] = StructNew();
 							feed.category[x].tag = loop.XMLAttributes.term;
 							if(StructKeyExists(loop.xmlAttributes,'scheme')) feed.category[x].domain = loop.xmlAttributes.scheme;
@@ -740,11 +740,11 @@ Quick and Dirty Feed Dump:
 				feed.datebuilt = oUtilities.parseISO8601(extras.findCreatedDate(xmlDoc.xmlRoot));
 				feed.dateupdated = oUtilities.parseISO8601(extras.findUpdatedDate(xmlDoc.xmlRoot));
 				/* Description */
-				if(StructKeyExists(xmlDoc.xmlRoot,"info")) 
+				if(StructKeyExists(xmlDoc.xmlRoot,"info"))
 					feed.Description = extras.normalizeAtomTextConstruct(xmlDoc.xmlRoot.info);
-				else if(StructKeyExists(xmlDoc.xmlRoot,"subtitle")) 
+				else if(StructKeyExists(xmlDoc.xmlRoot,"subtitle"))
 					feed.Description = extras.normalizeAtomTextConstruct(xmlDoc.xmlRoot.subtitle);
-				else if(StructKeyExists(xmlDoc.xmlRoot,"tagline")) 
+				else if(StructKeyExists(xmlDoc.xmlRoot,"tagline"))
 					feed.Description = extras.normalizeAtomTextConstruct(xmlDoc.xmlRoot.tagline);
 				/* Image */
 				if(StructKeyExists(xmlDoc.xmlRoot,"icon")) feed.image.icon = extras.normalizeAtomTextConstruct(xmlDoc.xmlRoot.icon);
@@ -771,7 +771,7 @@ Quick and Dirty Feed Dump:
 			//end if atom
 			//shared extensions
 			/* OpenSearch 1.0 & 1.1 */
-			if( not ArrayLen(StructFindKey(feed.specs.namespace,'xmlns:opensearch')) ) feed.opensearch = StructNew();	
+			if( not ArrayLen(StructFindKey(feed.specs.namespace,'xmlns:opensearch')) ) feed.opensearch = StructNew();
 			else {
 				if(feed.specs.type is "Atom") xmlrootkey = 'xmlDoc.xmlRoot';
 				else xmlrootkey = 'xmlDoc.xmlRoot.channel';
@@ -841,18 +841,18 @@ Quick and Dirty Feed Dump:
 			return ua;
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="downloadFeed" access="package" output="false" returntype="string" hint="">
 		<cfargument name="feedURL" 	type="string" required="yes" hint="The url to retrieve the feed from.">
 		<cfset var feedResult = structNew()>
 		<cfset var xmlDoc = "">
 		<!--- Retrieve feed --->
-		<cfhttp method="get" url="#arguments.feedURL#" 
+		<cfhttp method="get" url="#arguments.feedURL#"
 			charset="utf-8"
-				resolveurl="yes" 
-				redirect="yes" 
-				timeout="#gethttpTimeout()#" 
-				result="feedResult" 
+				resolveurl="yes"
+				redirect="yes"
+				timeout="#gethttpTimeout()#"
+				result="feedResult"
 				useragent="#createUserAgent()#">
 			<!--- HTTP compression algorithm decompress --->
 			<cfhttpparam type="Header" name="Accept-Encoding" value="deflate;q=0">
@@ -875,7 +875,7 @@ Quick and Dirty Feed Dump:
 					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS, RDF or Atom feed. Please verify that the feed is correct and valid"
 					 detail="The XML document belonging to (#arguments.feedURL#) : #htmlEditFormat(toString(xmlDoc))#">
 		</cfif>
-		
+
 		<!--- Return downloaded feed as a structure --->
 		<cfreturn xmlDoc/>
 	</cffunction>
@@ -908,7 +908,7 @@ Quick and Dirty Feed Dump:
 		<cfargument name="cacheLocation" type="string" required="true">
 		<cfset instance.cacheLocation = arguments.cacheLocation>
 	</cffunction>
-	
+
 	<!--- The http timeout --->
 	<cffunction name="gethttpTimeout" access="public" returntype="numeric" output="false" hint="The http timeout in seconds">
 		<cfreturn instance.httpTimeout>
