@@ -15,7 +15,7 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		assertFalse( model.hasLocale() );
 		model.setLocale( 'en_US' );
 		assertTrue( model.hasLocale() );
-		assertEquals( 'en_US', model.getLocale() );
+		assertEquals( 'en_US', model.getValidationLocale() );
 	}
 
 	function testTargetName(){

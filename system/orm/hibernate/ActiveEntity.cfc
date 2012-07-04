@@ -159,12 +159,13 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
     */
-	any function populate(required struct memento,
+	any function populate(any target=this,
+						  required struct memento,
 						  string scope="",
 					 	  boolean trustedSetter=false,
 						  string include="",
-						  string exclude=""){
-		arguments.target = this;
+						  string exclude="",
+						  boolean ignoreEmpty=false){
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
 
@@ -176,12 +177,13 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromJSON(required string JSONString,
+	any function populateFromJSON(any target=this,
+								  required string JSONString,
 								  string scope="",
 								  boolean trustedSetter=false,
 								  string include="",
-								  string exclude=""){
-		arguments.target = this;
+								  string exclude="",
+						   	 	  boolean ignoreEmpty=false){
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
@@ -194,13 +196,14 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromXML(required string xml,
+	any function populateFromXML(any target=this,
+								 required string xml,
 								 string root="",
 								 string scope="",
 								 boolean trustedSetter=false,
 								 string include="",
-								 string exclude=""){
-		arguments.target = this;
+								 string exclude="",
+						   	     boolean ignoreEmpty=false){
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
@@ -213,13 +216,14 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromQuery(required any qry,
+	any function populateFromQuery(any target=this,
+								   required any qry,
 								   numeric rowNumber=1,
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
-								   string exclude=""){
-		arguments.target = this;
+								   string exclude="",
+						  		   boolean ignoreEmpty=false){
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
 
@@ -229,15 +233,16 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
 	* @locale.hint An optional locale to use for i18n messages
+	* @excludeFields.hint An optional list of fields to exclude from the validation.
 	*/
-	boolean function isValid(string fields="*", any constraints="", string locale=""){
+	boolean function isValid(string fields="*", any constraints="", string locale="", string excludeFields=""){
 		// validate wirebox
 		if( !structKeyExists(variables,"wirebox") OR !isObject(variables.wirebox) ){
 			throw(message="WireBox reference does not exist in this entity",detail="WireBox entity injection must be enabled in order to use the validation features",type="ActiveEntity.ORMEntityInjectionMissing");
 		}
 
 		// Get validation manager
-		var validationManager = wirebox.getInstance( "WireBoxValidationManager" );
+		var validationManager = wirebox.getInstance("WireBoxValidationManager");
 		// validate constraints
 		var thisConstraints = "";
 		if( structKeyExists(this,"constraints") ){ thisConstraints = this.constraints; }
@@ -245,8 +250,10 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		if( !isSimpleValue(arguments.constraints) OR len(arguments.constraints) ){
 			thisConstraints = arguments.constraints;
 		}
+
 		// validate and save results in private scope
-		validationResults = validationManager.validate(this, arguments.fields, thisConstraints, arguments.locale);
+		validationResults = validationManager.validate(target=this, fields=arguments.fields, constraints=thisConstraints, locale=arguments.locale, excludeFields=arguments.excludeFields);
+
 		// return it
 		return ( !validationResults.hasErrors() );
 	}

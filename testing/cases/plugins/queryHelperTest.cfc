@@ -9,17 +9,17 @@ Date        :	March 30 2008
 Description :
 	QueryHelper plugin test
 ----------------------------------------------------------------------->
-<cfcomponent name="QueryHelperTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent name="QueryHelperTest" extends="coldbox.system.testing.BasePluginTest" output="false" plugin="coldbox.system.plugins.QueryHelper">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
+		/*setAppMapping("/coldbox/testharness");
+		setConfigMapping(ExpandPath(instance.AppMapping & "/config/Coldbox.cfc"));*/
 		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
-		
+
 		<cfscript>
 			variables.q1 = queryNew('idt,fname,lname,phone,location');
 			variables.q2 = queryNew('idt,fname,lname,phone,location');
@@ -34,7 +34,7 @@ Description :
 			<cfset querySetCell(q1, 'phone', 'phone-q1-954-555-5555-#i#')>
 			<cfset querySetCell(q1, 'location', 'location-q1-#chr(65 + i)#')>
 		</cfloop>
-		
+
 		<cfloop from="11" to="20" index="i">
 			<cfset queryAddRow(q2,1) />
 			<cfset querySetCell(q2, 'idt', '#i#')>
@@ -43,7 +43,7 @@ Description :
 			<cfset querySetCell(q2, 'phone', 'phone-q2-954-555-5555-#i#')>
 			<cfset querySetCell(q2, 'location', 'location-q2-#chr(75 + i)#')>
 		</cfloop>
-		
+
 		<cfloop from="6" to="15" index="i">
 			<cfset queryAddRow(q3,1) />
 			<cfset querySetCell(q3, 'idt', '#i#')>
@@ -53,41 +53,45 @@ Description :
 			<cfset querySetCell(q3, 'city', 'location-q3-#chr(65 + i)#')>
 		</cfloop>
 	</cffunction>
-	
+
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("QueryHelper");
-			
+			var plugin = plugin;
+
 			AssertTrue( isObject(plugin) );
 		</cfscript>
-	</cffunction>	
-	
+	</cffunction>
+
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("QueryHelper");
+			var plugin = plugin;
 			var jsonText = "{name:'luis',number:'23423'}";
 			var local = structnew();
-			
+
 			assertTrue(isQuery(plugin.filterQuery(variables.q1, 'idt', '9', 'cf_sql_integer')), "Returned value is not query");
-			
+
 			assertTrue(isQuery(plugin.sortQuery(variables.q1, 'fname', 'DESC')), "Returned value is not query");
-			
+
 			assertTrue(isArray(plugin.getColumnArray(variables.q1, 'fname')), "Returned value is not Array");
-			
+
 			assertTrue(isValid('numeric',plugin.getCountDistinct(variables.q1, 'fname')), "Returned value is not number");
-			
+
 			assertTrue(isValid('numeric',plugin.getRowNumber(variables.q1, '8', 'idt')), "Returned value is not number");
-			
+
 			assertTrue(isValid('numeric',plugin.getRowNumber(variables.q3, '15', 'idt')), "Returned value is not number");
-			
+
 			assertTrue(isQuery(plugin.doInnerJoin(q1,q3,"idt","idt")), "Returned value is not query");
-			
+
 			assertTrue(isQuery(plugin.doLeftOuterJoin(q1,q3,"idt","idt")), "Returned value is not query");
-			
+
 			assertTrue(isQuery(plugin.doQueryAppend(q3,q1)), "Returned value is not query");
+
+			assertTrue(isQuery(plugin.rotateQuery(q1)), "Returned value is not query");
+
+			assertEquals(plugin.slugifyCol("Test Col Slug"),"test_col_slug", "Slugs did not match");
 		</cfscript>
 	</cffunction>
-	
+
 </cfcomponent>

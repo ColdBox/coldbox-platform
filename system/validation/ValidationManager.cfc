@@ -50,7 +50,7 @@ vResults = validateModel(target=model);
 */
 import coldbox.system.validation.*;
 import coldbox.system.validation.result.*;
-component accessors="true" serialize="false" implements="IValidationManager" singleton{
+component accessors="true" serialize="false" implements="IValidationManager"{
 
 	/**
 	* Object Factory
@@ -68,24 +68,19 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 	property name="sharedConstraints" type="struct";
 
 	/**
-	* Lazy loaded object constraints
-	*/
-	property name="objectConstraints" type="struct";
-
-
-	/**
 	* Constructor
 	* @wirebox.hint The object factory
 	* @wirebox.inject wirebox
 	* @resourceBundle.hint A resource bundle object
 	* @resourceBundle.inject coldbox:plugin:ResourceBundle
+	* @sharedConstraints.hint A structure of shared constraints
 	*/
-	ValidationManager function init(required any wirebox, any resourceBundle=""){
+	ValidationManager function init(required any wirebox, any resourceBundle="", struct sharedConstraints=structNew()){
 
-		// shared constraints
-		sharedConstraints = {};
 		// valid validators
 		validValidators = "required,type,size,range,regex,sameAs,sameAsNoCase,inList,discrete,udf,method,validator";
+		// shared constraints
+		variables.sharedConstraints = arguments.sharedConstraints;
 		// store wirebox
 		variables.wirebox = arguments.wirebox;
 		// store resource bundle
@@ -100,24 +95,25 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
 	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
 	* @locale.hint An optional locale to use for i18n messages
+	* @excludeFields.hint An optional list of fields to exclude from the validation.
 	*/
-	IValidationResult function validate(required any target, string fields="*", any constraints="", string locale=""){
+	IValidationResult function validate(required any target, string fields="*", any constraints="", string locale="", string excludeFields=""){
 		var targetName = "";
 
 		// Do we have a real object or a structure?
 		if( !isObject( arguments.target ) ){
 			arguments.target = new coldbox.system.validation.GenericObject( arguments.target );
-			if( isSimpleValue(arguments.constraints) and len(arguments.constraints) )
+			if( isSimpleValue( arguments.constraints ) and len( arguments.constraints ) )
 				targetName = arguments.constraints;
 			else
 				targetName = "GenericForm";
 		}
 		else{
-			targetName = listLast( getMetadata(arguments.target).name, ".");
+			targetName = listLast( getMetadata( arguments.target ).name, ".");
 		}
 
 		// discover and determine constraints definition for an incoming target.
-		var allConstraints = determineConstraintsDefinition(arguments.target, arguments.constraints);
+		var allConstraints = determineConstraintsDefinition( arguments.target, arguments.constraints );
 
 		// create new result object
 		var initArgs = {
@@ -126,15 +122,19 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 			resourceBundle 	= resourceBundle,
 			constraints 	= allConstraints
 		};
-		var results = wirebox.getInstance(name="coldbox.system.validation.result.ValidationResult",initArguments=initArgs);
+		var results = wirebox.getInstance(name="coldbox.system.validation.result.ValidationResult", initArguments=initArgs);
 
 		// iterate over constraints defined
 		var thisField = "";
 		for( thisField in allConstraints ){
+			// exclusions passed and field is in the excluded list just continue
+			if( len( arguments.excludeFields ) and listFindNoCase( arguments.excludeFields, thisField ) ){
+				continue;
+			}
 			// verify we can validate the field described in the constraint
 			if( arguments.fields == "*" || listFindNoCase(arguments.fields, thisField) ) {
 				// process the validation rules on the target field using the constraint validation data
-				processRules(results=results,rules=allConstraints[thisField],target=arguments.target,field=thisField,locale=arguments.locale);
+				processRules(results=results, rules=allConstraints[thisField], target=arguments.target, field=thisField, locale=arguments.locale);
 			}
 		}
 
@@ -182,6 +182,7 @@ component accessors="true" serialize="false" implements="IValidationManager" sin
 			case "max" 			: { return wirebox.getInstance("coldbox.system.validation.validators.MaxValidator"); }
 			case "udf" 			: { return wirebox.getInstance("coldbox.system.validation.validators.UDFValidator"); }
 			case "method" 		: { return wirebox.getInstance("coldbox.system.validation.validators.MethodValidator"); }
+			case "unique" 		: { return wirebox.getInstance("coldbox.system.validation.validators.UniqueValidator"); }
 			case "validator"	: {
 				if( find(":", arguments.validationData) ){ return wirebox.getInstance( getToken( arguments.validationData, 2, ":" ) ); }
 				return wirebox.getInstance( arguments.validationData );

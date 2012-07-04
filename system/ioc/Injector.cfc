@@ -48,7 +48,7 @@ Description :
 				// Scope Storages
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(),
 				// Version
-				version  = "1.3.1",
+				version  = "1.4.0",
 				// The Configuration Binder object
 				binder   = "",
 				// ColdBox Application Link
@@ -765,10 +765,10 @@ Description :
 				instance.scopes["CACHEBOX"] = createObject("component","coldbox.system.ioc.scopes.CacheBox").init( this );
 			}
 			// CF Scopes and references
-			instance.scopes["REQUEST"] 	= createObject("component","coldbox.system.ioc.scopes.CFScopes").init( this );
-			instance.scopes["SESSION"] 		= instance.scopes["REQUEST"];
-			instance.scopes["SERVER"] 		= instance.scopes["REQUEST"];
-			instance.scopes["APPLICATION"] 	= instance.scopes["REQUEST"];
+			instance.scopes["REQUEST"] 		= createObject("component","coldbox.system.ioc.scopes.RequestScope").init( this );
+			instance.scopes["SESSION"] 		= createObject("component","coldbox.system.ioc.scopes.CFScopes").init( this );
+			instance.scopes["SERVER"] 		= instance.scopes["SESSION"];
+			instance.scopes["APPLICATION"] 	= instance.scopes["SESSION"];
 
 			// Debugging
 			if( instance.log.canDebug() ){

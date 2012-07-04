@@ -22,7 +22,7 @@ Only one instance of a specific ColdBox application exists.
 			instance = structnew();
 			// services scope
 			services = createObject("java","java.util.LinkedHashMap").init(7);
-		
+
 			// CFML Engine Utility
 			instance.CFMLEngine = CreateObject("component","coldbox.system.core.cf.CFMLEngine").init();
 
@@ -37,17 +37,17 @@ Only one instance of a specific ColdBox application exists.
 			instance.appRootPath			= arguments.appRootPath;
 			instance.configSettings 		= structNew();
 			instance.coldboxSettings		= structNew();
-			
+
 			// Load up default ColdBox Settings
 			createObject("component","coldbox.system.web.loader.FrameworkLoader").init().loadSettings( this );
 
 			// Setup the ColdBox Services
 			services.loaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init(this);
-			
+
 			// LogBox Default Configuration & Creation
 			instance.logBox = services.loaderService.createDefaultLogBox();
 			instance.log 	= instance.logBox.getLogger(this);
-			
+
 			// Setup the ColdBox Services
 			services.RequestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init(this);
 			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init(this);
@@ -55,11 +55,13 @@ Only one instance of a specific ColdBox application exists.
 			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init(this);
 			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
 			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this);
-			
+
 			// CacheBox Instance
 			instance.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
 			// WireBox Instance
 			instance.wireBox	= createObject("component","coldbox.system.ioc.Injector");
+			// Validation Manager
+			instance.validationManager = "";
 
 			return this;
 		</cfscript>
@@ -71,38 +73,52 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.cf.CFMLEngine)" coldoc:generic="coldbox.system.core.cf.CFMLEngine">
 		<cfreturn instance.CFMLEngine>
 	</cffunction>
-	
+
+	<!--- Get Set Validation Manager --->
+	<cffunction name="getValidationManager" access="public" returntype="any" output="false" hint="Get the validation manager for the application">
+    	<cfreturn instance.validationManager>
+    </cffunction>
+    <cffunction name="setValidationManager" access="public" returntype="any" output="false" hint="Store the validation manager for the application">
+    	<cfargument name="validationManager" type="any" required="true">
+    	<cfset instance.validationManager = arguments.validationManager>
+		<cfreturn this>
+    </cffunction>
+
 	<!--- getSetCacheBox --->
 	<cffunction name="getCacheBox" access="public" returntype="any" output="false" hint="Get the application's CacheBox instance as coldbox.system.cache.CacheFactory" colddoc:generic="coldbox.system.cache.CacheFactory">
     	<cfreturn instance.cacheBox>
     </cffunction>
-    <cffunction name="setCacheBox" access="public" returntype="void" output="false" hint="Set the application's CacheBox instance">
+    <cffunction name="setCacheBox" access="public" returntype="any" output="false" hint="Set the application's CacheBox instance">
     	<cfargument name="cacheBox" required="true" hint="As coldbox.system.cache.CacheFactory" colddoc:generic="coldbox.system.cache.CacheFactory">
     	<cfset instance.cacheBox = arguments.cacheBox>
+		<cfreturn this>
     </cffunction>
-    
+
 	<!--- getLogBox --->
 	<cffunction name="getLogBox" output="false" access="public" returntype="any" hint="Get the application's LogBox instance" colddoc:generic="coldbox.system.logging.LogBox">
 		<cfreturn instance.logBox>
 	</cffunction>
-	<cffunction name="setLogBox" output="false" access="public" returntype="void" hint="Set the logBox instance">
+	<cffunction name="setLogBox" output="false" access="public" returntype="any" hint="Set the logBox instance">
 		<cfargument name="logBox" required="true" hint="The logBox instance" colddoc:generic="coldbox.system.logging.LogBox"/>
 		<cfset instance.logBox = arguments.logBox>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- getwireBox --->
 	<cffunction name="getWireBox" output="false" access="public" returntype="any" hint="Get the application's LogBox instance" colddoc:generic="coldbox.system.logging.LogBox">
 		<cfreturn instance.wireBox>
 	</cffunction>
-	<cffunction name="setWireBox" output="false" access="public" returntype="void" hint="Set the WireBox instance">
+	<cffunction name="setWireBox" output="false" access="public" returntype="any" hint="Set the WireBox instance">
 		<cfargument name="wireBox" required="true" hint="The WireBox instance" colddoc:generic="coldbox.system.ioc.Injector"/>
 		<cfset instance.wireBox = arguments.wireBox>
+		<cfreturn this>
 	</cffunction>
-		
+
 	<!--- setLog --->
-	<cffunction name="setLog" output="false" access="public" returnType="void" hint="Set the class logger object">
+	<cffunction name="setLog" output="false" access="public" returnType="any" hint="Set the class logger object">
 		<cfargument name="logger" required="true">
 		<cfset instance.log = arguments.logger>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- getServices --->
@@ -114,9 +130,10 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getAppRootPath" access="public" returntype="any" output="false" hint="Get this application's physical path">
 		<cfreturn instance.appRootPath>
 	</cffunction>
-	<cffunction name="setAppRootPath" access="public" returntype="void" output="false" hint="Set this application's physical path.">
+	<cffunction name="setAppRootPath" access="public" returntype="any" output="false" hint="Set this application's physical path.">
 		<cfargument name="appRootPath" required="true">
 		<cfset instance.appRootPath = arguments.appRootPath>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- ColdBox Cache Manager --->
@@ -126,27 +143,30 @@ Only one instance of a specific ColdBox application exists.
 			return instance.cacheBox.getCache( arguments.cacheName );
 		</cfscript>
 	</cffunction>
-	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
+	<cffunction name="setColdboxOCM" access="public" output="false" returntype="any" hint="Set ColdboxOCM">
 		<cfargument name="coldboxOCM" type="any" required="true" hint="coldbox.system.cache.CacheManager"/>
 		<cfset instance.coldboxOCM = arguments.coldboxOCM/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Loader Service --->
 	<cffunction name="getLoaderService" access="public" output="false" returntype="any" hint="Get LoaderService: coldbox.system.web.services.LoaderService">
 		<cfreturn services.loaderService/>
 	</cffunction>
-	<cffunction name="setLoaderService" access="public" output="false" returntype="void" hint="Set LoaderService">
+	<cffunction name="setLoaderService" access="public" output="false" returntype="any" hint="Set LoaderService">
 		<cfargument name="loaderService" type="any" required="true"/>
 		<cfset services.loaderService = arguments.loaderService/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Module Service --->
 	<cffunction name="getModuleService" access="public" returntype="any" output="false" hint="Get ModuleService: coldbox.system.web.services.ModuleService">
 		<cfreturn services.moduleService>
 	</cffunction>
-	<cffunction name="setModuleService" access="public" returntype="void" output="false" hint="Set ModuleService">
+	<cffunction name="setModuleService" access="public" returntype="any" output="false" hint="Set ModuleService">
 		<cfargument name="moduleService" type="any" required="true">
 		<cfset services.moduleService = arguments.moduleService>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Exception Service --->
@@ -158,88 +178,98 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService: coldbox.system.web.services.RequestService">
 		<cfreturn services.requestService/>
 	</cffunction>
-	<cffunction name="setRequestService" access="public" output="false" returntype="void" hint="Set RequestService">
+	<cffunction name="setRequestService" access="public" output="false" returntype="any" hint="Set RequestService">
 		<cfargument name="requestService" type="any" required="true"/>
 		<cfset services.requestService = arguments.requestService/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Debugger Service --->
 	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService: coldbox.system.web.services.DebuggerService">
 		<cfreturn services.debuggerService/>
 	</cffunction>
-	<cffunction name="setDebuggerService" access="public" output="false" returntype="void" hint="Set DebuggerService">
+	<cffunction name="setDebuggerService" access="public" output="false" returntype="any" hint="Set DebuggerService">
 		<cfargument name="debuggerService" type="any" required="true"/>
 		<cfset services.debuggerService = arguments.debuggerService/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Plugin Service --->
 	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService: coldbox.system.web.services.PluginService">
 		<cfreturn services.pluginService/>
 	</cffunction>
-	<cffunction name="setPluginService" access="public" output="false" returntype="void" hint="Set PluginService">
+	<cffunction name="setPluginService" access="public" output="false" returntype="any" hint="Set PluginService">
 		<cfargument name="pluginService" type="Any" required="true"/>
 		<cfset services.pluginService = arguments.pluginService/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Interceptor Service --->
 	<cffunction name="getInterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.web.services.InterceptorService">
 		<cfreturn services.interceptorService/>
 	</cffunction>
-	<cffunction name="setInterceptorService" access="public" output="false" returntype="void" hint="Set interceptorService">
+	<cffunction name="setInterceptorService" access="public" output="false" returntype="any" hint="Set interceptorService">
 		<cfargument name="interceptorService" type="any" required="true"/>
 		<cfset services.interceptorService = arguments.interceptorService/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Handler Service --->
 	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService: coldbox.system.web.services.HandlerService">
 		<cfreturn services.handlerService/>
 	</cffunction>
-	<cffunction name="setHandlerService" access="public" output="false" returntype="void" hint="Set HandlerService">
+	<cffunction name="setHandlerService" access="public" output="false" returntype="any" hint="Set HandlerService">
 		<cfargument name="handlerService" type="any" required="true"/>
 		<cfset services.handlerService = arguments.handlerService/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Getter & Setter Internal Configuration Structures --->
 	<cffunction name="getConfigSettings" access="public" returntype="any" output="false" hint="I retrieve the Config Settings Structure by Reference" colddoc:generic="struct">
 		<cfreturn instance.configSettings>
 	</cffunction>
-	<cffunction name="setConfigSettings" access="public" output="false" returntype="void" hint="Set ConfigSettings">
+	<cffunction name="setConfigSettings" access="public" output="false" returntype="any" hint="Set ConfigSettings">
 		<cfargument name="configSettings" required="true" colddoc:generic="struct"/>
 		<cfset instance.configSettings = arguments.configSettings/>
+		<cfreturn this>
 	</cffunction>
 	<cffunction name="getColdboxSettings" access="public" returntype="any" output="false" hint="I retrieve the ColdBox Settings Structure by Reference" colddoc:generic="struct">
 		<cfreturn instance.coldboxSettings>
 	</cffunction>
-	<cffunction name="setColdboxSettings" access="public" output="false" returntype="void" hint="Set ColdboxSettings">
+	<cffunction name="setColdboxSettings" access="public" output="false" returntype="any" hint="Set ColdboxSettings">
 		<cfargument name="coldboxSettings" required="true" colddoc:generic="struct"/>
 		<cfset instance.coldboxSettings = arguments.coldboxSettings/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- ColdBox Initiation Flag --->
 	<cffunction name="getColdboxInitiated" access="public" output="false" returntype="any" hint="Get ColdboxInitiated: Boolean">
 		<cfreturn instance.coldboxInitiated/>
 	</cffunction>
-	<cffunction name="setColdboxInitiated" access="public" output="false" returntype="void" hint="Set ColdboxInitiated">
+	<cffunction name="setColdboxInitiated" access="public" output="false" returntype="any" hint="Set ColdboxInitiated">
 		<cfargument name="coldboxInitiated" required="true"/>
 		<cfset instance.coldboxInitiated = arguments.coldboxInitiated/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Aspects Initiated Flag --->
 	<cffunction name="getAspectsInitiated" access="public" output="false" returntype="any" hint="Get AspectsInitiated" colddoc:generic="boolean">
 		<cfreturn instance.aspectsInitiated/>
 	</cffunction>
-	<cffunction name="setAspectsInitiated" access="public" output="false" returntype="void" hint="Set AspectsInitiated">
+	<cffunction name="setAspectsInitiated" access="public" output="false" returntype="any" hint="Set AspectsInitiated">
 		<cfargument name="aspectsInitiated" required="true"/>
 		<cfset instance.aspectsInitiated = arguments.aspectsInitiated/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- App hash --->
 	<cffunction name="getAppHash" access="public" output="false" returntype="any" hint="Get AppHash">
 		<cfreturn instance.appHash/>
 	</cffunction>
-	<cffunction name="setAppHash" access="public" output="false" returntype="void" hint="Set AppHash">
+	<cffunction name="setAppHash" access="public" output="false" returntype="any" hint="Set AppHash">
 		<cfargument name="appHash" required="true"/>
 		<cfset instance.appHash = arguments.appHash/>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Config Structures Accessors/Mutators --->
@@ -277,7 +307,7 @@ Only one instance of a specific ColdBox application exists.
 			if ( settingExists(arguments.name,arguments.FWSetting) ){
 				return target[arguments.name];
 			}
-			
+
 			// Default value
 			if( structKeyExists(arguments, "defaultValue") ){
 				return arguments.defaultValue;
@@ -300,13 +330,14 @@ Only one instance of a specific ColdBox application exists.
 		return structKeyExists(instance.configSettings, arguments.name);
 		</cfscript>
 	</cffunction>
-	<cffunction name="setSetting" access="public" returntype="void" hint="I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct" output="false">
+	<cffunction name="setSetting" access="public" returntype="any" hint="I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="name"  type="any"   hint="The name of the setting" >
 		<cfargument name="value" type="any"   hint="The value of the setting (Can be simple or complex)">
 		<!--- ************************************************************* --->
 		<cfscript>
 		instance.configSettings['#arguments.name#'] = arguments.value;
+		return this;
 		</cfscript>
 	</cffunction>
 
@@ -328,7 +359,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Set Next Event --->
-	<cffunction name="setNextEvent" access="public" returntype="void" hint="I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI"  output="false">
+	<cffunction name="setNextEvent" access="public" returntype="any" hint="I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"  				required="false" type="string"  default="#getSetting("DefaultEvent")#" hint="The name of the event to run, if not passed, then it will use the default event found in your configuration file.">
 		<cfargument name="queryString"  		required="false" type="string"  default="" hint="The query string to append, if needed. If in SES mode it will be translated to convention name value pairs">
@@ -404,7 +435,7 @@ Only one instance of a specific ColdBox application exists.
 					if( structKeyExists(arguments, "ssl") ){
 						relocationURL = updateSSL(relocationURL,arguments.ssl);
 					}
-					
+
 					// Finalize the URL
 					relocationURL = relocationURL & routeString;
 
@@ -437,18 +468,20 @@ Only one instance of a specific ColdBox application exists.
 			if( instance.configSettings.flash.autoSave ){
 				services.requestService.getFlashScope().saveFlash();
 			}
-			
+
 			// Send Relocation
 			sendRelocation(URL=relocationURL,addToken=arguments.addToken,statusCode=arguments.statusCode);
+
+			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"         	type="any" 	required="false" default="" 	 hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string">
 		<cfargument name="prepostExempt" 	type="any" 	required="false" default="false" hint="If true, pre/post handlers will not be fired. Boolean" colddoc:generic="boolean">
-		<cfargument name="private" 		 	type="any" 	required="false" default="false" hint="Execute a private event or not, default is false. Boolean" colddoc:generic="boolean"> 
+		<cfargument name="private" 		 	type="any" 	required="false" default="false" hint="Execute a private event or not, default is false. Boolean" colddoc:generic="boolean">
 		<cfargument name="default" 		 	type="any" 	required="false" default="false" hint="The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY. Boolean" colddoc:generic="boolean">
 		<cfargument name="eventArguments" 	type="any"  required="false" default="#structNew()#" hint="A collection of arguments to passthrough to the calling event handler method. Struct" colddoc:generic="struct"/>
 		<!--- ************************************************************* --->
@@ -460,34 +493,36 @@ Only one instance of a specific ColdBox application exists.
 			var oHandler 			= "";
 			var iData				= structnew();
 			var loc					= structnew();
-			
+
 			// Check if event empty, if empty then use default event
 			if(NOT len(trim(arguments.event)) ){
 				arguments.event = oRequestContext.getCurrentEvent();
 			}
 
 			// Setup Invoker args
-			loc.args 				= structnew();
-			loc.args.event 			= oRequestContext;
+			loc.args 			= structnew();
+			loc.args.event 		= oRequestContext;
+			loc.args.rc			= oRequestContext.getCollection();
+			loc.args.prc		= oRequestContext.getCollection(private=true);
 			loc.args.eventArguments = arguments.eventArguments;
-			
+
 			// Setup Main Invoker Args
 			loc.argsMain 			= structnew();
 			loc.argsMain.event		= oRequestContext;
-			loc.argsMain.rc			= oRequestContext.getCollection();
-			loc.argsMain.prc		= oRequestContext.getCollection(private=true);
+			loc.argsMain.rc			= loc.args.rc;
+			loc.argsMain.prc		= loc.args.prc;
 			structAppend(loc.argsMain, arguments.eventArguments);
-			
+
 			// Setup interception data
 			iData.processedEvent 	= arguments.event;
 			iData.eventArguments	= arguments.eventArguments;
 
 			// Validate the incoming event and get a handler bean to continue execution
 			ehBean = services.handlerService.getRegisteredHandler(arguments.event);
-			
+
 			// Validate this is not a view dispatch, else return for rendering
 			if( ehBean.getViewDispatch() ){	return;	}
-			
+
 			// Is this a private event execution?
 			ehBean.setIsPrivate(arguments.private);
 			// Now get the correct handler to execute
@@ -495,15 +530,15 @@ Only one instance of a specific ColdBox application exists.
 			// Validate again this is not a view dispatch as the handler might exist but not the action
 			if( ehBean.getViewDispatch() ){	return;	}
 		</cfscript>
-		
+
 		<!--- break cfscript here because we need to <cfrethrow> at the end --->
-		<cftry>		
+		<cftry>
 			<cfscript>
 				// Determine if it is An allowed HTTP method to execute, else throw error
 				if( NOT structIsEmpty(oHandler.allowedMethods) AND
 					structKeyExists(oHandler.allowedMethods,ehBean.getMethod()) AND
 					NOT listFindNoCase(oHandler.allowedMethods[ehBean.getMethod()],oRequestContext.getHTTPMethod()) ){
-					
+
 					// Throw Exceptions
 					getUtil().throwInvalidHTTP(className="Controller",
 											   detail="The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
@@ -520,18 +555,18 @@ Only one instance of a specific ColdBox application exists.
 					// Execute Pre Handler if it exists and valid?
 					if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [preHandler] for #arguments.event#");
-						
-						oHandler.preHandler(oRequestContext,ehBean.getMethod(),arguments.eventArguments);
-						
+
+						oHandler.preHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
+
 						services.debuggerService.timerEnd(loc.tHash);
 					}
 
 					// Execute pre{Action}? if it exists and valid?
 					if( oHandler._actionExists("pre#ehBean.getMethod()#") ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [pre#ehBean.getMethod()#] for #arguments.event#");
-						
+
 						invoker(oHandler,"pre#ehBean.getMethod()#",loc.args);
-						
+
 						services.debuggerService.timerEnd(loc.tHash);
 					}
 				}
@@ -552,31 +587,31 @@ Only one instance of a specific ColdBox application exists.
 
 				// Invoke onMissingAction event
 				if( ehBean.isMissingAction() ){
-					loc.results	= oHandler.onMissingAction(oRequestContext,ehBean.getMissingAction(),arguments.eventArguments);
+					loc.results	= oHandler.onMissingAction(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,missingAction=ehBean.getMissingAction(),eventArguments=arguments.eventArguments);
 				}
 				// Invoke main event
 				else{
-					
-					// Around Handler Advice Check?
-					if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
-						loc.tHash = services.debuggerService.timerStart("invoking runEvent [aroundHandler] for #arguments.event#");
-						
-						loc.results = oHandler.aroundHandler(oRequestContext, oHandler[ehBean.getMethod()], arguments.eventArguments);
-						
-						services.debuggerService.timerEnd(loc.tHash);
-					}
+
 					// Around {Action} Advice Check?
-					else if( oHandler._actionExists("around#ehBean.getMethod()#") ){
+					if( oHandler._actionExists("around#ehBean.getMethod()#") ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [around#ehBean.getMethod()#] for #arguments.event#");
-						
+
 						// Add target Action to loc.args
 						loc.args.targetAction  	= oHandler[ehBean.getMethod()];
-						
-						loc.results = invoker(oHandler,"around#ehBean.getMethod()#",loc.args);
-						
+
+						loc.results = invoker(oHandler, "around#ehBean.getMethod()#", loc.args);
+
 						// Cleanup: Remove target action from loc.args for post events
 						structDelete(loc.args, "targetAction");
-						
+
+						services.debuggerService.timerEnd(loc.tHash);
+					}
+					// Around Handler Advice Check?
+					else if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
+						loc.tHash = services.debuggerService.timerStart("invoking runEvent [aroundHandler] for #arguments.event#");
+
+						loc.results = oHandler.aroundHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,targetAction=oHandler[ehBean.getMethod()],eventArguments=arguments.eventArguments);
+
 						services.debuggerService.timerEnd(loc.tHash);
 					}
 					else{
@@ -584,13 +619,13 @@ Only one instance of a specific ColdBox application exists.
 						loc.results = invoker(oHandler, ehBean.getMethod(), loc.argsMain, arguments.private);
 					}
 				}
-				
+
 				// finalize execution timer of main event
 				services.debuggerService.timerEnd(loc.tHash);
 
 				// POST ACTIONS
 				if( NOT arguments.prePostExempt ){
-					
+
 					// Execute post{Action}?
 					if( oHandler._actionExists("post#ehBean.getMethod()#") ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [post#ehBean.getMethod()#] for #arguments.event#");
@@ -601,7 +636,7 @@ Only one instance of a specific ColdBox application exists.
 					// Execute postHandler()?
 					if( oHandler._actionExists("postHandler") AND validateAction(ehBean.getMethod(),oHandler.POSTHANDLER_ONLY,oHandler.POSTHANDLER_EXCEPT) ){
 						loc.tHash = services.debuggerService.timerStart("invoking runEvent [postHandler] for #arguments.event#");
-						oHandler.postHandler(oRequestContext,ehBean.getMethod(),arguments.eventArguments);
+						oHandler.postHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
 						services.debuggerService.timerEnd(loc.tHash);
 					}
 
@@ -613,14 +648,14 @@ Only one instance of a specific ColdBox application exists.
 			<cfcatch>
 				<!--- Check if onError exists? --->
 				<cfif oHandler._actionExists("onError")>
-					<cfset loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),cfcatch,arguments.eventArguments)>
+					<cfset loc.results = oHandler.onError(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,faultAction=ehBean.getmethod(),exception=cfcatch,eventArguments=arguments.eventArguments)>
 				<cfelse>
 					<!--- rethrow not supported in cfscript <cfthrow object="e"> doesn't work properly as we lose context --->
 					<cfrethrow>
 				</cfif>
 			</cfcatch>
 		</cftry>
-		
+
 		<cfscript>
 			// Check if sending back results
 			if( structKeyExists(loc,"results") ){
@@ -630,7 +665,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Flash Perist variables. --->
-	<cffunction name="persistVariables" access="public" returntype="void" hint="@deprecated DO NOT USE ANYMORE. Persist variables for flash redirections, it can use a structure of name-value pairs or keys from the request collection. Use the flash object instead, this method will auto-save all persistence automatically." output="false" >
+	<cffunction name="persistVariables" access="public" returntype="any" hint="@deprecated DO NOT USE ANYMORE. Persist variables for flash redirections, it can use a structure of name-value pairs or keys from the request collection. Use the flash object instead, this method will auto-save all persistence automatically." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="persist" 	 		required="false" default="" hint="What request collection keys to persist in the relocation. Keys must exist in the relocation">
 		<cfargument name="persistStruct" 	required="false" hint="A structure of key-value pairs to persist." colddoc:generic="struct">
@@ -647,6 +682,7 @@ Only one instance of a specific ColdBox application exists.
 			if( len(trim(arguments.persist)) ){
 				flash.persistRC(include=arguments.persist,saveNow=true);
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -703,22 +739,25 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Push Timers --->
-	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into stack" output="false" >
+	<cffunction name="pushTimers" access="private" returntype="any" hint="Push timers into stack" output="false" >
 		<cfset services.debuggerService.recordProfiler()>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- sendRelocation --->
-    <cffunction name="sendRelocation" output="false" access="private" returntype="void" hint="Send a CF relocation via ColdBox">
+    <cffunction name="sendRelocation" output="false" access="private" returntype="any" hint="Send a CF relocation via ColdBox">
     	<cfargument name="url" 			required="true"  hint="The URL to relocate to"/>
 		<cfargument name="addtoken"		required="false" default="false" hint="Add the CF tokens or not" colddoc:generic="boolean">
     	<cfargument name="statusCode" 	required="false" default="0" hint="The status code to use" colddoc:generic="numeric">
-    	
+
     	<!--- Relocate --->
 		<cfif arguments.statusCode neq 0>
     		<cflocation url="#arguments.url#" addtoken="#addtoken#" statuscode="#arguments.statusCode#">
 		<cfelse>
 			<cflocation url="#arguments.url#" addtoken="#addtoken#">
 		</cfif>
+
+		<cfreturn this>
     </cffunction>
 
 	<!--- updateSSL --->

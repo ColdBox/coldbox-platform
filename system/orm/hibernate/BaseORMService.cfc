@@ -302,7 +302,7 @@ component accessors="true"{
 
 		// Properties exists?
 		if( NOT structIsEmpty(arguments.properties) ){
-			populate( entity, arguments.properties );
+			populate(target=entity,memento=arguments.properties );
 		}
 
 		// Event Handling? If enabled, call the postNew() interception
@@ -326,7 +326,8 @@ component accessors="true"{
 						   string scope="",
 					 	   boolean trustedSetter=false,
 						   string include="",
-						   string exclude=""){
+						   string exclude="",
+						   boolean ignoreEmpty=false){
 
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
@@ -344,7 +345,8 @@ component accessors="true"{
 								   string scope="",
 								   boolean trustedSetter=false,
 								   string include="",
-								   string exclude=""){
+								   string exclude="",
+						   		   boolean ignoreEmpty=false){
 
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
@@ -364,7 +366,8 @@ component accessors="true"{
 								  string scope="",
 								  boolean trustedSetter=false,
 								  string include="",
-								  string exclude=""){
+								  string exclude="",
+						   		  boolean ignoreEmpty=false){
 
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
@@ -384,7 +387,8 @@ component accessors="true"{
 								    string scope="",
 								    boolean trustedSetter=false,
 								    string include="",
-								    string exclude=""){
+								    string exclude="",
+						   			boolean ignoreEmpty=false){
 
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
@@ -505,11 +509,12 @@ component accessors="true"{
 
 		objLen = arrayLen(objects);
 		for(var x=1; x lte objLen; x++){
+			// Delete?
 			entityDelete( objects[x] );
+			// Flush?
+			if( arguments.flush ){ orm.flush( orm.getEntityDatasource( objects[x] ) ); }
 		}
 
-		// Auto Flush
-		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entity)); }
 		return this;
 	}
 
@@ -697,15 +702,13 @@ component accessors="true"{
 			}
 			// Save it
 			entitySave(arguments.entities[x], arguments.forceInsert);
-
 			// Event Handling? If enabled, call the postSave() interception
 			if( eventHandling ){
 				ORMEventHandler.postSave( arguments.entities[x] );
 			}
+			// Auto Flush
+			if( arguments.flush ){ orm.flush( orm.getEntityDatasource( arguments.entities[x] ) ); }
 		}
-
-		// Auto Flush
-		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entities[x])); }
 
 		return true;
 	}
@@ -847,9 +850,9 @@ component accessors="true"{
 		// Single Entity
 		else{
 			if( structKeyExists(arguments,"id") )
-				evictEntity( this.get(arguments.entityName,arguments.id) );
+				evictEntity( this.get(entityName=arguments.entityName,id=arguments.id) );
 			else
-				evictEntity( this.new(arguments.entityName) );
+				evictEntity( this.new(entityName=arguments.entityName) );
 		}
 
 		return this;

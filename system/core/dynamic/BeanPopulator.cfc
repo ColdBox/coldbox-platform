@@ -17,7 +17,7 @@ Description :
     	<cfscript>
     		JSONUtil  = createObject("component","coldbox.system.core.conversion.JSON").init();
 			mixerUtil = createObject("component","coldbox.system.core.dynamic.MixerUtil").init();
-			
+
 			return this;
 		</cfscript>
     </cffunction>
@@ -33,6 +33,7 @@ Description :
 		<cfargument name="trustedSetter"  	required="false" 	type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" 	type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" 	type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" 	type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Inflate JSON
@@ -42,7 +43,7 @@ Description :
 			return populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Populate from XML--->
 	<cffunction name="populateFromXML" access="public" returntype="any" hint="Populate a named or instantiated bean from an XML packet" output="false" >
 		<!--- ************************************************************* --->
@@ -53,36 +54,37 @@ Description :
 		<cfargument name="trustedSetter"  	required="false" 	type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" 	type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false"	type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" 	type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var key				= "";
 			var childElements 	= "";
 			var	x				= 1;
-			
+
 			// determine XML
 			if( isSimpleValue(arguments.xml) ){
 				arguments.xml = xmlParse( arguments.xml );
 			}
-			
+
 			// check root
 			if( NOT len(arguments.root) ){
 				arguments.root = "XMLRoot";
 			}
-			
+
 			// check children
 			if( NOT structKeyExists(arguments.xml[arguments.root],"XMLChildren") ){
 				return;
 			}
-			
+
 			// prepare memento
 			arguments.memento = structnew();
-			
+
 			// iterate and build struct of data
 			childElements = arguments.xml[arguments.root].XMLChildren;
 			for(x=1; x lte arrayLen(childElements); x=x+1){
 				arguments.memento[ childElements[x].XMLName ] = trim(childElements[x].XMLText);
 			}
-			
+
 			return populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
@@ -97,6 +99,7 @@ Description :
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			//by default to take values from first row of the query
@@ -104,7 +107,7 @@ Description :
 			//columns array
 			var cols = listToArray(arguments.qry.columnList);
 			var i   = 1;
-			
+
 			arguments.memento = structnew();
 
 			//build the struct from the query row
@@ -116,7 +119,7 @@ Description :
 			return populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Populate an object using a query, but, only specific columns in the query. --->
 	<cffunction name="populateFromQueryWithPrefix" output=false
 		hint="Populates an Object using only specific columns from a query. Useful for performing a query with joins that needs to populate multiple objects.">
@@ -128,6 +131,7 @@ Description :
 		<cfargument name="include"  		required="false" 	type="string"  	default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" 	type="string"  	default="" hint="A list of keys to exclude in the population">
 		<cfargument name="prefix"  			required="true" 	type="string"  	hint="The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.">
+		<cfargument name="ignoreEmpty" 		required="false" 	type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<cfscript>
 			// Create a struct including only those keys that match the prefix.
 			//by default to take values from first row of the query
@@ -137,7 +141,7 @@ Description :
 			var n				= arrayLen(cols);
 			var prefixLength 	= len(arguments.prefix);
 			var trueColumnName 	= "";
-			
+
 			arguments.memento = structNew();
 
 			//build the struct from the query row
@@ -162,6 +166,7 @@ Description :
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var beanInstance = arguments.target;
@@ -172,7 +177,7 @@ Description :
 			var args = "";
 
 			try{
-				
+
 				// Determine Method of population
 				if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
 					scopeInjection = true;
@@ -181,6 +186,7 @@ Description :
 
 				// Populate Bean
 				for(key in arguments.memento){
+					// init population flag
 					pop = true;
 					// Include List?
 					if( len(arguments.include) AND NOT listFindNoCase(arguments.include,key) ){
@@ -188,6 +194,10 @@ Description :
 					}
 					// Exclude List?
 					if( len(arguments.exclude) AND listFindNoCase(arguments.exclude,key) ){
+						pop = false;
+					}
+					// Ignore Empty?
+					if( arguments.ignoreEmpty and isSimpleValue(arguments.memento[key]) and not len( trim( arguments.memento[key] ) ) ){
 						pop = false;
 					}
 
@@ -220,7 +230,7 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
 	<!--- Get ColdBox Util --->

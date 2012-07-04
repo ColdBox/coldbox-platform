@@ -29,10 +29,9 @@ Description :
 	<cfset this.ormEnabled = "true">
 	
 	<cfset this.ormSettings = {
-		dialect = "MySQLwithInnoDB",
 		logSQL = true,
 		eventhandling = true,
-		
+		dbcreate = "update",
 		secondarycacheenabled = true,
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false

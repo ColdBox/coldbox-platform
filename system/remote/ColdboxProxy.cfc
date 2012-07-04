@@ -14,7 +14,7 @@ Description :
 <cfcomponent name="ColdboxProxy" output="false" hint="This component is the coldbox remote proxy used for remote operations." >
 
 	<cfscript>
-		// Setup Namespace Key for controller locations
+		// Setup Default Namespace Key for controller locations
 		setCOLDBOX_APP_KEY("cbController");
 	</cfscript>
 
@@ -45,7 +45,7 @@ Description :
 
 			// Test event Name in the arguemnts.
 			if( not structKeyExists(arguments,event.getEventName()) ){
-				getUtil().throwit("Event not detected","The #event.geteventName()# variable does not exist in the arguments.");
+				getUtil().throwit("Event not detected","The #event.geteventName()# variable does not exist in the arguments.","ColdBoxProxy.NoEventDetected");
 			}
 
 			//Append the arguments to the collection
@@ -192,7 +192,7 @@ Description :
 		<cfscript>
 			//Verify the coldbox app is ok, else throw
 			if ( not structKeyExists(application,COLDBOX_APP_KEY) ){
-				getUtil().throwit("ColdBox Controller Not Found", "The coldbox main controller has not been initialized");
+				getUtil().throwit("ColdBox Controller Not Found", "The coldbox main controller has not been initialized","ColdBoxProxy.ControllerIllegalState");
 			}
 			else{
 				return true;
@@ -279,15 +279,11 @@ Description :
 	<!--- Get Model --->
 	<cffunction name="getModel" access="private" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 				required="false" type="any" default="" hint="The name of the model to retrieve">
-		<cfargument name="useSetterInjection" 	required="false" type="any" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence. Boolean" colddoc:generic="Boolean">
-		<cfargument name="onDICompleteUDF" 		required="false" type="any"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="stopRecursion"		required="false" type="any"  hint="A comma-delimmited list of stoprecursion classpaths.">
-		<cfargument name="dsl"					required="false" type="any"  hint="The dsl string to use to retrieve the domain object"/>
-		<cfargument name="executeInit"			required="false" type="any" default="true" hint="Whether to execute the init() constructor or not.  Defaults to execute, Boolean" colddoc:generic="Boolean"/>
-		<cfargument name="initArguments" 		required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance. Only available for WireBox integration" colddoc:generic="struct"/>
+		<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<!--- ************************************************************* --->
-		<cfreturn getController().getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
+		<cfreturn getWireBox().getInstance(argumentCollection=arguments)>
 	</cffunction>
 
 	<!--- Facade: Get COldBox OCM --->

@@ -10,16 +10,16 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" extends="coldbox.system.ioc.config.Binder">
 <cfscript>
-	
+
 	/**
 	* Configure WireBox, that's it!
 	*/
 	function configure(){
-		
+
 		// The WireBox configuration structure DSL
 		wireBox = {
 			// CacheBox Integration
-			cacheBox = { enabled = true	},			
+			cacheBox = { enabled = true	},
 			// Scope registration, automatically register a wirebox injector instance on any CF scope
 			scopeRegistration = { enabled = true},
 			// Package scan locations
@@ -29,10 +29,10 @@ Description :
 			// Stop recursions
 			stopRecursions = [ "coldbox.system.Interceptor"	]
 		};
-		
+
 		// WireBox Object Mappings
 		var myPath = "coldbox.testing.testmodel";
-		
+
 		// map to constant value, no need for scope
 		map("jsonProperty").toValue("[{name:'luis'},{name:'Jose'}]");
 		// map to ws
@@ -59,12 +59,17 @@ Description :
 		// map by convention
 		map("CategoryBean").to("#myPath#.ioc.category.CategoryBean");
 		map("categoryCoolService").to("#myPath#.ioc.category.CategoryService").asSingleton();
+		// Scopes
+		map("RequestCategoryBean").to("#myPath#.ioc.category.CategoryBean").into( this.SCOPES.REQUEST );
+		map("SessionCategoryBean").to("#myPath#.ioc.category.CategoryBean").into( this.SCOPES.SESSION );
+		map("ApplicationCategoryBean").to("#myPath#.ioc.category.CategoryBean").into( this.SCOPES.APPLICATION );
+		map("ServerCategoryBean").to("#myPath#.ioc.category.CategoryBean").into( this.SCOPES.SERVER );
 		// provider stuff
 		map("providerTest").to("#myPath#.ioc.ProviderTest");
 		map("pizza").to("#myPath#.ioc.Simple").into(this.SCOPES.SESSION);
-		// DSL creation 
+		// DSL creation
 		map("coolDSL").toDSL("logbox:root");
-		
+
 		/// factory beans
 		map("CoolFactory").to("#myPath#.ioc.FactorySimple").asSingleton();
 		map("factoryBean1").toFactoryMethod("coolFactory","getTargetObject")
@@ -73,19 +78,35 @@ Description :
 		map("factoryBean2").toFactoryMethod("coolFactory","getTargetObject")
 			.methodArg(name="name",value="alexia")
 			.methodArg(name="cool",value="true");
-		
+
 		map("calendar")
         	.noInit()
             .toJava("java.util.GregorianCalendar");
-		
+
 		map("calendar2")
         	.toJava("java.util.GregorianCalendar");
-        	
+
         // Mixins Beans
         map("MixinTest")
         	.to("#myPath#.ioc.Simple")
         	.mixins( ["/coldbox/testing/testmodel/ioc/mixins/mixin1.cfm", "/coldbox/testing/testmodel/ioc/mixins/mixin2.cfm" ] );
-				  
-	}	
+
+		// PARENT Mappings
+		// alpha and bravo are in the abstract service
+		map("someAlphaDAO").to("#myPath#.parent.SomeAlphaDAO");
+		map("someBravoDAO").to("#myPath#.parent.SomeBravoDAO");
+		// charlie and delta are in the concrete service only that also inherits from  abstract service
+		map("someCharlieDAO").to("#myPath#.parent.SomeCharlieDAO");
+		map("someDeltaDAO").to("#myPath#.parent.SomeDeltaDAO");
+		// define abstract parent service with required dependencies (alpha and bravo)
+		map("abstractService").to("#myPath#.parent.AbstractService")
+			.property(name:"someAlphaDAO", ref:"someAlphaDAO")
+			.property(name:"someBravoDAO", ref:"someBravoDAO");
+		// define concrete service that inherits the abstract parent service dependencies via the parent method
+		map("concreteService").to("#myPath#.parent.ConcreteService")
+			.parent("abstractService")
+			.property(name:"someCharlieDAO", ref:"someCharlieDAO")
+			.property(name:"someDeltaDAO", ref:"someDeltaDAO");
+	}
 </cfscript>
 </cfcomponent>

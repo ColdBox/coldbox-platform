@@ -7,7 +7,7 @@
 #
 # Host: Localhost (MySQL 5.5.15)
 # Database: coolblog
-# Generation Time: 2011-10-07 08:27:38 +0000
+# Generation Time: 2012-05-23 21:21:09 +0000
 # ************************************************************
 
 
@@ -114,19 +114,19 @@ LOCK TABLES `categories` WRITE;
 
 INSERT INTO `categories` (`category_id`, `category`, `description`, `modifydate`)
 VALUES
-	('3A2C516C-41CE-41D3-A9224EA690ED1128','Presentations','<p style=\"margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #333333\">Presso</p>','2011-02-18 10:00:00'),
-	('402881882814615e012826481061000c','Marc','This is marcs category<br>','2010-04-22 07:00:00'),
-	('402881882814615e01282bb047fd001e','Cool Wow','A cool wow category<br>','2010-04-23 07:00:00'),
-	('402881882b89b49b012b9201bda80002','PascalNews','PascalNews','2010-10-09 09:00:00'),
-	('5898F818-A9B6-4F5D-96FE70A31EBB78AC','Release','<p style=\"margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #333333\">Releases</p>','2009-04-18 20:48:53'),
-	('88B689EA-B1C0-8EEF-143A84813ACADA35','general','A general category','2010-03-31 21:53:21'),
-	('88B6C087-F37E-7432-A13A84D45A0F703B','News','A news cateogyr','2009-04-18 20:48:53'),
-	('A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91','Training','Training','2011-09-21 01:33:21'),
-	('A13C0DB0-0CBC-4D85-A5261F2E3FCBEF92','general','A test general','2010-03-31 22:06:03'),
-	('ff80808128c9fa8b0128cc3af5d90007','Geeky Stuff','Geeky Stuff','2010-05-26 01:00:00'),
-	('ff80808128c9fa8b0128cc3b20bf0008','ColdBox','ColdBox','2010-05-24 01:00:00'),
-	('ff80808128c9fa8b0128cc3b7cdd000a','ColdFusion','ColdFusion','2010-05-24 01:00:00'),
-	('ff80808128c9fa8b0128cc3ba4c4000b','ORM','ORM','2010-05-24 01:00:00');
+	('3A2C516C-41CE-41D3-A9224EA690ED1128','Presentations','<p style=\"margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #333333\">Presso</p>','2011-02-18 00:00:00'),
+	('402881882814615e012826481061000c','Marc','This is marcs category<br>','2010-04-21 22:00:00'),
+	('402881882814615e01282bb047fd001e','Cool Wow','A cool wow category<br>','2010-04-22 22:00:00'),
+	('402881882b89b49b012b9201bda80002','PascalNews','PascalNews','2010-10-09 00:00:00'),
+	('5898F818-A9B6-4F5D-96FE70A31EBB78AC','Release','<p style=\"margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #333333\">Releases</p>','2009-04-18 11:48:53'),
+	('88B689EA-B1C0-8EEF-143A84813ACADA35','general','A general category','2010-03-31 12:53:21'),
+	('88B6C087-F37E-7432-A13A84D45A0F703B','News','A news cateogyr','2009-04-18 11:48:53'),
+	('A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91','Training','Training','2012-05-09 09:46:49'),
+	('A13C0DB0-0CBC-4D85-A5261F2E3FCBEF92','general','A test general','2010-03-31 13:06:03'),
+	('ff80808128c9fa8b0128cc3af5d90007','Geeky Stuff','Geeky Stuff','2010-05-25 16:00:00'),
+	('ff80808128c9fa8b0128cc3b20bf0008','ColdBox','ColdBox','2010-05-23 16:00:00'),
+	('ff80808128c9fa8b0128cc3b7cdd000a','ColdFusion','ColdFusion','2010-05-23 16:00:00'),
+	('ff80808128c9fa8b0128cc3ba4c4000b','ORM','ORM','2010-05-23 16:00:00');
 
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -153,12 +153,12 @@ LOCK TABLES `comments` WRITE;
 
 INSERT INTO `comments` (`comment_id`, `FKentry_id`, `comment`, `time`)
 VALUES
-	('402881882814615e01282b13bbc20013','88B82629-B264-B33E-D1A144F97641614E','This entire blog post really offended me, I hate you','2010-04-23 07:00:00'),
-	('402881882814615e01282b13fb290014','88B82629-B264-B33E-D1A144F97641614E','Why are you so hurtful man!','2010-04-23 07:00:00'),
-	('402881882814615e01282b142cc60015','88B82629-B264-B33E-D1A144F97641614E','La realidad, que barbaro!','2010-04-23 07:00:00'),
-	('88B8C6C7-DFB7-0F34-C2B0EFA4E5D7DA4C','88B82629-B264-B33E-D1A144F97641614E','this blog sucks.','2010-09-02 20:39:04'),
-	('8a64b3712e3a0a5e012e3a10321d0002','402881882814615e01282b14964d0016','Vlad is awesome!','2011-02-18 10:00:00'),
-	('8a64b3712e3a0a5e012e3a12b1d10005','8a64b3712e3a0a5e012e3a11a2cf0004','Vlad is awesome!','2011-02-18 10:00:00');
+	('402881882814615e01282b13bbc20013','88B82629-B264-B33E-D1A144F97641614E','This entire blog post really offended me, I hate you','2010-04-22 22:00:00'),
+	('402881882814615e01282b13fb290014','88B82629-B264-B33E-D1A144F97641614E','Why are you so hurtful man!','2010-04-22 22:00:00'),
+	('402881882814615e01282b142cc60015','88B82629-B264-B33E-D1A144F97641614E','La realidad, que barbaro!','2010-04-22 22:00:00'),
+	('88B8C6C7-DFB7-0F34-C2B0EFA4E5D7DA4C','88B82629-B264-B33E-D1A144F97641614E','this blog sucks.','2010-09-02 11:39:04'),
+	('8a64b3712e3a0a5e012e3a10321d0002','402881882814615e01282b14964d0016','Vlad is awesome!','2011-02-18 00:00:00'),
+	('8a64b3712e3a0a5e012e3a12b1d10005','8a64b3712e3a0a5e012e3a11a2cf0004','Vlad is awesome!','2011-02-18 00:00:00');
 
 /*!40000 ALTER TABLE `comments` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -185,9 +185,9 @@ LOCK TABLES `entries` WRITE;
 
 INSERT INTO `entries` (`entry_id`, `entryBody`, `title`, `postedDate`, `FKuser_id`)
 VALUES
-	('402881882814615e01282b14964d0016','Wow, welcome to my new blog, enjoy your stay<br>','My awesome post','2010-04-23 07:00:00','88B73A03-FEFA-935D-AD8036E1B7954B76'),
-	('88B82629-B264-B33E-D1A144F97641614E','A first cool blog,hope it does not crash','A cool blog first posting','2009-04-08 09:00:00','88B73A03-FEFA-935D-AD8036E1B7954B76'),
-	('8a64b3712e3a0a5e012e3a11a2cf0004','THis is my first databoss cool blog entry post.<span class=\"Apple-tab-span\" style=\"white-space:pre\">	</span>','My First Awesome Post','2011-02-18 10:00:00','8a64b3712e3a0a5e012e3a110fab0003');
+	('402881882814615e01282b14964d0016','Wow, welcome to my new blog, enjoy your stay<br>','My awesome post','2010-04-22 22:00:00','88B73A03-FEFA-935D-AD8036E1B7954B76'),
+	('88B82629-B264-B33E-D1A144F97641614E','A first cool blog,hope it does not crash','A cool blog first posting','2009-04-08 00:00:00','88B73A03-FEFA-935D-AD8036E1B7954B76'),
+	('8a64b3712e3a0a5e012e3a11a2cf0004','THis is my first databoss cool blog entry post.<span class=\"Apple-tab-span\" style=\"white-space:pre\">	</span>','My First Awesome Post','2011-02-18 00:00:00','8a64b3712e3a0a5e012e3a110fab0003');
 
 /*!40000 ALTER TABLE `entries` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -214,11 +214,11 @@ INSERT INTO `entry_categories` (`FKcategory_id`, `FKentry_id`)
 VALUES
 	('88B689EA-B1C0-8EEF-143A84813ACADA35','88B82629-B264-B33E-D1A144F97641614E'),
 	('88B6C087-F37E-7432-A13A84D45A0F703B','88B82629-B264-B33E-D1A144F97641614E'),
-	('88B6C087-F37E-7432-A13A84D45A0F703B','402881882814615e01282b14964d0016'),
-	('402881882b89b49b012b9201bda80002','402881882814615e01282b14964d0016'),
 	('5898F818-A9B6-4F5D-96FE70A31EBB78AC','8a64b3712e3a0a5e012e3a11a2cf0004'),
 	('A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91','8a64b3712e3a0a5e012e3a11a2cf0004'),
-	('ff80808128c9fa8b0128cc3ba4c4000b','8a64b3712e3a0a5e012e3a11a2cf0004');
+	('ff80808128c9fa8b0128cc3ba4c4000b','8a64b3712e3a0a5e012e3a11a2cf0004'),
+	('88B6C087-F37E-7432-A13A84D45A0F703B','402881882814615e01282b14964d0016'),
+	('402881882b89b49b012b9201bda80002','402881882814615e01282b14964d0016');
 
 /*!40000 ALTER TABLE `entry_categories` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -248,7 +248,15 @@ VALUES
 	('0e25298a-0fc2-47b6-a78b-35eaac4882f6','FATAL','UnitTest','2011-04-28 10:55:28','UnitTest','Unit Test Sample','{}'),
 	('3acaf939-b114-423b-a46a-dc65d1bc6c24','FATAL','UnitTest','2011-04-28 10:55:29','UnitTest','Unit Test Sample','{}'),
 	('7783a211-689b-4246-82a6-3def090f6091','FATAL','UnitTest','2011-04-28 10:56:34','AsyncDBAppender','Unit Test Sample','{}'),
-	('b4fc17dc-0e63-47c4-adff-9c969c475830','FATAL','UnitTest','2011-04-28 10:56:34','UnitTest','Unit Test Sample','{}');
+	('b4fc17dc-0e63-47c4-adff-9c969c475830','FATAL','UnitTest','2011-04-28 10:56:34','UnitTest','Unit Test Sample','{}'),
+	('4c931afb-ba93-4df2-aa7b-95f46c6d951f','FATAL','UnitTest','2012-02-15 14:18:05','UnitTest','Unit Test Sample','{}'),
+	('a218a754-463c-4f0b-a8ff-5313db4a4227','FATAL','UnitTest','2012-02-15 14:18:05','AsyncDBAppender','Unit Test Sample','{}'),
+	('d4db15ba-d97c-4942-9b7a-1d20c7d97145','FATAL','UnitTest','2012-02-15 14:18:10','UnitTest','Unit Test Sample','{}'),
+	('12599064-7951-43db-8120-5d8279b600b9','FATAL','UnitTest','2012-02-15 14:18:10','UnitTest','Unit Test Sample','{}'),
+	('3c3d7341-18a5-4bee-b9ed-ebf52a9956ef','FATAL','UnitTest','2012-05-09 11:46:27','AsyncDBAppender','Unit Test Sample','{}'),
+	('e1291c21-fd27-4ede-9e38-0793859294ad','FATAL','UnitTest','2012-05-09 11:46:27','UnitTest','Unit Test Sample','{}'),
+	('f4ca8549-96cd-47f1-b1f0-ecaed19d4505','FATAL','UnitTest','2012-05-09 11:46:32','UnitTest','Unit Test Sample','{}'),
+	('9d894118-bf77-4673-b809-da8136d7956f','FATAL','UnitTest','2012-05-09 11:46:32','UnitTest','Unit Test Sample','{}');
 
 /*!40000 ALTER TABLE `logs` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -374,11 +382,11 @@ LOCK TABLES `users` WRITE;
 
 INSERT INTO `users` (`user_id`, `firstName`, `lastName`, `userName`, `password`, `lastLogin`, `FKRoleID`)
 VALUES
-	('4028818e2fb6c893012fe637c5db00a7','George','Form Injector','george','george',NULL,NULL),
-	('402884cc310b1ae901311be89381000a','ken','Advanced Guru','ken','ken',NULL,NULL),
-	('4A386F4D-DCF4-6587-7B89B3BD57C97155','Joe','Fernando','joe','joe','2009-05-15 00:00:00',NULL),
-	('88B73A03-FEFA-935D-AD8036E1B7954B76','Luis','Majano','lui','lmajano','2009-04-08 00:00:00',NULL),
-	('8a64b3712e3a0a5e012e3a110fab0003','Vladymir','Ugryumov','vlad','vlad','2011-02-18 00:00:00',NULL);
+	('4028818e2fb6c893012fe637c5db00a7','George','Form Injector','george','george',NULL,2),
+	('402884cc310b1ae901311be89381000a','ken','Advanced Guru','ken','ken',NULL,2),
+	('4A386F4D-DCF4-6587-7B89B3BD57C97155','Joe','Fernando','joe','joe','2009-05-15 00:00:00',1),
+	('88B73A03-FEFA-935D-AD8036E1B7954B76','Luis','Majano','lui','lmajano','2009-04-08 00:00:00',1),
+	('8a64b3712e3a0a5e012e3a110fab0003','Vladymir','Ugryumov','vlad','vlad','2011-02-18 00:00:00',1);
 
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;

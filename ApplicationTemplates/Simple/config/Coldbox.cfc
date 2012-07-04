@@ -88,14 +88,6 @@ function configure(){
 		exclude = [] 
 	};
 	
-	//WireBox Integration
-	wireBox = { 
-		enabled = true,
-		//binder="config.WireBox", 
-		singletonReload=true 
-	};
-	
-
 	//Layout Settings
 	layoutSettings = {
 		defaultLayout = "Layout.Main.cfm"

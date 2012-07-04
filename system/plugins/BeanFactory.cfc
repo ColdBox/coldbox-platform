@@ -5,7 +5,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author: Luis Majano
-Description: 
+Description:
 I am a plugin that taps into WireBox. I will be eventually removed as you can access wirebox directly :)
 
 ----------------------------------------------------------------------->
@@ -30,7 +30,7 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 
 			// Bean Populator
 			instance.beanPopulator 	= createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -80,6 +80,7 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.memento = controller.getRequestService().getContext().getCollection();
@@ -105,6 +106,7 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.memento = controller.getRequestService().getContext().getCollection();
@@ -126,6 +128,7 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
@@ -146,6 +149,7 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="trustedSetter"  	required="false" 	type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" 	type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false"	type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
@@ -166,6 +170,7 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
@@ -186,6 +191,7 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="include"  		required="false" 	type="string"  	default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" 	type="string"  	default="" hint="A list of keys to exclude in the population">
 		<cfargument name="prefix"  			required="true" 	type="string"  	hint="The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
 				arguments.target = getModel(arguments.target);
@@ -205,6 +211,7 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
+		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
