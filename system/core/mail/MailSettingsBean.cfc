@@ -80,7 +80,7 @@ By 3.5 remove all direct get/set and leave get/setValue() instead
 		<cfargument name="default" type="any" required="false" hint="The default value to return">
 		<cfscript>
 			if( structKeyExists(instance, arguments.setting) ){ return instance[arguments.setting];}
-			if( structKeyExists(arguments,"default") ){ return instance.default; }
+			if( structKeyExists(arguments,"default") ){ return arguments.default; }
 		</cfscript>
 		
 		<cfthrow type="MailSettingsBean.InvalidValue" 
