@@ -10,16 +10,19 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		super.setup();
 		model.init();
 	}
-	
+
 	function testValidateSimple(){
 		result = getMockBox().createMock("coldbox.system.validation.result.ValidationResult").init();
-		
+
 		r = model.validate(result,this,'test',"10","1..10");
 		assertEquals( true, r );
-		
+
+		r = model.validate(result,this,'test',"3","3..20");
+		assertEquals( true, r );
+
 		r = model.validate(result,this,'test',"123","5..9");
 		assertEquals( false, r );
-		
-		
+
+
 	}
 }
