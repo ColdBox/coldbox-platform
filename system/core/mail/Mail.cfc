@@ -76,7 +76,7 @@ Description :
 			}
 
 			// server exception
-			if( NOT len( arguments.server ) ){
+			if( structKeyExists(arguments, "server") AND NOT len( arguments.server ) ){
 				structDelete( instance, "server" );
 			}
 
