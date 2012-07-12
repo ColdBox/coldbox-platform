@@ -29,7 +29,7 @@
 
 	function testGetFromScope(){
 		// 1: Default construction
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CacheTest");
+		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CacheTest").$("getThreadSafe",false);
 		mapping.setCacheProperties(key="CacheTest",timeout="",provider="default");
 		mockCache.$("get").$("set",true);
 		mockInjector.$("buildInstance", this).$("autowire", this);

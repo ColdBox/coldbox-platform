@@ -22,7 +22,7 @@
 
 	function testGetFromScope(){
 		// 1: Default construction
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="singletontest");
+		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="singletontest").$("getThreadSafe",false);
 		mockInjector.$("buildInstance", this).$("autowire", this);
 		o = scope.getFromScope( mapping, {} );
 

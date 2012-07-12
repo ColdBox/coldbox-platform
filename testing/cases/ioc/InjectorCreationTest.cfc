@@ -91,6 +91,37 @@
 		assertEquals( session["wirebox:pizza"], providerTest.coolPizza.get() );
 		structclear(session);
 	}
+		
+	function testProvidedLogger(){
+		providerTest = injector.getInstance("ProviderTest");
+		assertEquals( "coldbox.system.logging.Logger", getMetadata(providerTest.providedLogger.get()).name );
+		assertEquals( "coldbox.testing.testmodel.ioc.ProviderTest", providerTest.providedLogger.getCategory() );		
+	}
+
+	function testMappingProvidedByID(){
+		providerTest = injector.getInstance("ProviderTest");
+		assertEquals( "coldbox.system.logging.Logger", getMetadata(providerTest.mappingProvidedByID.get()).name );
+		assertEquals( "coldbox.testing.testmodel.ioc.ProviderTest", providerTest.mappingProvidedByID.getCategory() );
+	}
+
+	function testProvidedMappingByID(){
+		providerTest = injector.getInstance("ProviderTest");
+		assertEquals( "coldbox.system.logging.Logger", getMetadata(providerTest.providedMappingByID.get()).name );
+		assertEquals( "coldbox.testing.testmodel.ioc.ProviderTest", providerTest.providedMappingByID.getCategory() );
+	}
+
+	// Just because I can...
+	function testWhatTheHeckProvider(){
+		providerTest = injector.getInstance("ProviderTest");
+		assertEquals( "coldbox.system.logging.Logger", getMetadata(providerTest.whatTheHeck.get().get().get().get().get().get().get().get()).name );
+		assertEquals( "coldbox.testing.testmodel.ioc.ProviderTest", providerTest.whatTheHeck.getCategory() );
+	}
+	
+	function testLoggerDSLViaProviderMethod(){
+		providerTest = injector.getInstance("ProviderTest");
+		assertEquals( "coldbox.system.logging.Logger", getMetadata(providerTest.getMyLogger()).name );
+		assertEquals( "coldbox.testing.testmodel.ioc.ProviderTest", providerTest.getMyLogger().getCategory() );
+	}
 
 	/*
 	function testGoogleNews(){

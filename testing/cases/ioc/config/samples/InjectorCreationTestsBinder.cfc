@@ -107,6 +107,10 @@ Description :
 			.parent("abstractService")
 			.property(name:"someCharlieDAO", ref:"someCharlieDAO")
 			.property(name:"someDeltaDAO", ref:"someDeltaDAO");
+			
+		map("myLogBoxID").toDSL("logbox:logger:{this}");
+		map("myProvidedLogBoxID").toDSL("provider:logbox:logger:{this}");
 	}
+	
 </cfscript>
 </cfcomponent>

@@ -16,9 +16,11 @@ Description :
     	<cfargument name="scopeRegistration" required="true" hint="The injector scope registration structure" colddoc:generic="struct"/>
 		<cfargument name="scopeStorage" 	 required="true" hint="The scope storage utility" 				  colddoc:generic="coldbox.system.core.collections.ScopeStorage"/>
 		<cfargument name="name" 			 required="true" hint="The name of the mapping this provider is binded to"/>
+		<cfargument name="DSL"	 			 required="true" hint="The DSL to be provided"/>
 		<cfscript>
 			instance = {
 				name 				= arguments.name,
+				DSL 				= arguments.DSL,
 				scopeRegistration 	= arguments.scopeRegistration,
 				scopeStorage 		= arguments.scopeStorage
 			};
@@ -33,7 +35,12 @@ Description :
 			
     		// Return if it exists, else throw exception
 			if( instance.scopeStorage.exists(scopeInfo.key, scopeInfo.scope) ){
-				return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope).getInstance( instance.name );
+				if(structKeyExists(this,"$targetObject")){
+					return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope).getInstance( name=getMetaData(this.$targetObject).name, dsl=instance.DSL, targetObject=this.$targetObject );
+				}
+				else{
+					return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope).getInstance( name="unknown", dsl=instance.DSL );
+				}
 			}
 		</cfscript>
     		
