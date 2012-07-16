@@ -417,7 +417,7 @@ Description :
 				// Do we have an incoming target id?
 				if( NOT len(arguments.targetID) ){
 					// need to get metadata to verify identity
-					md = getMetadata(arguments.target);
+					md = instance.utility.getInheritedMetaData(arguments.target, getBinder().getStopRecursions());
 					// We have identity now, use the full location path
 					arguments.targetID = md.path;
 				}
@@ -426,9 +426,9 @@ Description :
 				if( NOT instance.binder.mappingExists( arguments.targetID ) ){
 					// No mapping found, means we need to map this object for the first time.
 					// Is md retreived? If not, retrieve it as we need to register it for the first time.
-					if( isSimpleValue(md) ){ md = getMetadata(arguments.target); }
+					if( isSimpleValue(md) ){ md = instance.utility.getInheritedMetaData(arguments.target, getBinder().getStopRecursions()); }
 					// register new mapping instance
-					registerNewInstance(arguments.targetID,md.path);
+					registerNewInstance(arguments.targetID, md.path);
 					// get Mapping created
 					arguments.mapping = instance.binder.getMapping( arguments.targetID );
 					// process it with current metadata
