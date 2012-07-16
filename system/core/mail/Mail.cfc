@@ -434,7 +434,8 @@ Description :
 
 	<!--- addAttachments --->
     <cffunction name="addAttachments" output="false" access="public" returntype="any" hint="Add attachment(s) to this payload using a list or array of file locations">
-    	<cfargument name="files" type="any" required="true" hint="A list or array of files to attach to this payload"/>
+    	<cfargument name="files"  type="any" 		required="true" hint="A list or array of files to attach to this payload"/>
+		<cfargument name="remove" type="boolean" 	required="false" default="false" hint="If true, ColdFusion removes attachment files (if any) after the mail is successfully delivered.">
 		<cfscript>
 			var x =1;
 
@@ -442,7 +443,7 @@ Description :
 				arguments.files = listToArray(arguments.files);
 			}
 			for(x=1; x lte arrayLen(arguments.files); x=x+1){
-				addMailParam(file=arguments.files[x]);
+				addMailParam(file=arguments.files[x], remove=arguments.remove);
 			}
 
 			return this;
@@ -485,6 +486,7 @@ Description :
 		<cfargument name="type" 		required="false" type="string" hint="Initial value for the type property." />
 		<cfargument name="name" 		required="false" type="string" hint="Initial value for the name property." />
 		<cfargument name="value" 		required="false" type="string" hint="Initial value for the value property." />
+		<cfargument name="remove" 		required="false" type="boolean" hint="If true, ColdFusion removes attachment files (if any) after the mail is successfully delivered.">
 		<cfscript>
 			// Add new mail Param
 			var mailparams = structnew();
