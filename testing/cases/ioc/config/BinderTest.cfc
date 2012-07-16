@@ -573,7 +573,17 @@
 
 		config.map("NotThreadSafe").asSingleton();
 		mapping = config.getMapping("NotThreadSafe");
-		assertfalse( mapping.getThreadSafe() );
+		assertfalse( len(mapping.getThreadSafe()) );
+	}
+
+	function testUnMap(){
+		config.map("MyService");
+		mapping = config.getMapping("MyService");
+		assertTrue( isObject(mapping) );
+		assertEquals( "MyService", mapping.getName() );
+
+		config.unMap("MyService");
+		assertFalse( config.mappingExists("MyService") );
 	}
 </cfscript>
 </cfcomponent>

@@ -190,7 +190,7 @@ Description :
     </cffunction>
 
     <!--- Thread Safety for wiring --->
-    <cffunction name="getThreadSafe" access="public" returntype="boolean" output="false" hint="Get the thread safety for wiring bit">
+    <cffunction name="getThreadSafe" access="public" returntype="any" output="false" hint="Get the thread safety for wiring bit" coldstruct:generic="boolean">
     	<cfreturn instance.threadSafe>
     </cffunction>
     <cffunction name="setThreadSafe" access="public" returntype="any" output="false" hint="Set the thread safety for wiring bit">

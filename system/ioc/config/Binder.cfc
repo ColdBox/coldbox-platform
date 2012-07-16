@@ -221,6 +221,14 @@ Description :
     	</cfscript>
     </cffunction>
 
+    <!--- unMap --->
+    <cffunction name="unMap" output="false" access="public" returntype="any" hint="Destroys a mapping by name">
+		<cfargument name="name" 	required="true" hint="The name of the mapping to register"/>
+    	<cfscript>
+			structDelete( instance.mappings, arguments.name );
+    	</cfscript>
+    </cffunction>
+
 	<!--- mappingExists --->
     <cffunction name="mappingExists" output="false" access="public" returntype="any" hint="Check if an object mapping exists" colddoc:generic="Boolean">
     	<cfargument name="name" required="true" hint="The name of the mapping to verify"/>
