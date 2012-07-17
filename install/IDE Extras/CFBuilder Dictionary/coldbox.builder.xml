@@ -867,6 +867,9 @@
 	<scopevar name="map(alias)">
 			<help><![CDATA[Create a mapping to an object]]></help>
 		</scopevar>
+	<scopevar name="unMap(name)">
+			<help><![CDATA[Destroys a mapping by name]]></help>
+		</scopevar>
 	<scopevar name="mappingExists(name)">
 			<help><![CDATA[Check if an object mapping exists]]></help>
 		</scopevar>

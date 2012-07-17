@@ -862,6 +862,9 @@
 	<scope value="binder.map(alias)">
 			<help><![CDATA[Create a mapping to an object]]></help>
 		</scope>
+	<scope value="binder.unMap(name)">
+			<help><![CDATA[Destroys a mapping by name]]></help>
+		</scope>
 	<scope value="binder.mappingExists(name)">
 			<help><![CDATA[Check if an object mapping exists]]></help>
 		</scope>

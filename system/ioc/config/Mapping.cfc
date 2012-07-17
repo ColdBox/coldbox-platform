@@ -575,7 +575,7 @@ Description :
 					md = arguments.metadata;
 				}
 				else{
-					md = arguments.binder.utility.getInheritedMetaData(instance.path, arguments.binder.getStopRecursions());
+					md = arguments.injector.getUtil().getInheritedMetaData(instance.path, arguments.binder.getStopRecursions());
 				}
 
 				// Store Metadata
