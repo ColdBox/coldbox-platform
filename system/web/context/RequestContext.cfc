@@ -214,14 +214,15 @@ Description :
 
 	<cffunction name="setView" access="public" returntype="any" hint="I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout"  output="false">
 		<!--- ************************************************************* --->
-	    <cfargument name="view"     				required="false" type="string"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
+	    <cfargument name="view"     				required="false" type="any"  	hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
 		<cfargument name="nolayout" 				required="false" type="boolean" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
-		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
-		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""	hint="The cache timeout">
-		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" hint="The last access timeout">
-		<cfargument name="cacheSuffix" 				required="false" type="string"  default="" hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
-		<cfargument name="layout" 					required="false" type="string"  hint="You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.">
-		<cfargument name="module" 					required="false" type="string"  default="" hint="Is the view from a module or not"/>
+		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the rendered view.">
+		<cfargument name="cacheTimeout" 			required="false" type="any"  	default=""	hint="The cache timeout">
+		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  	default="" hint="The last access timeout">
+		<cfargument name="cacheSuffix" 				required="false" type="any"  	default="" hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
+		<cfargument name="cacheProvider" 			required="false" type="any"  	default="template" hint="The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider">
+		<cfargument name="layout" 					required="false" type="any"  	hint="You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.">
+		<cfargument name="module" 					required="false" type="any"  	default="" hint="Is the view from a module or not"/>
 		<cfargument name="args" 					required="false" type="struct"  default="#structNew()#" hint="An optional set of arguments that will be available when the view is rendered"/>
 		<!--- ************************************************************* --->
 	    <cfscript>
@@ -276,12 +277,11 @@ Description :
 				removeValue('currentLayout',true);
 			}
 
-			//Do we need to cache the view
+			// Do we need to cache the view
 			if( arguments.cache ){
-				//prepare the cache keys
+				// prepare the cache keys
 				cacheEntry.view = arguments.view;
-
-				//arg cleanup
+				// Argument cleanup
 				if ( not isNumeric(arguments.cacheTimeout) )
 					cacheEntry.Timeout = "";
 				else
@@ -290,8 +290,10 @@ Description :
 					cacheEntry.LastAccessTimeout = "";
 				else
 					cacheEntry.LastAccessTimeout = arguments.cacheLastAccessTimeout;
-				//cache suffix
-				cacheEntry.cacheSuffix = arguments.cacheSuffix;
+				// Cache Suffix
+				cacheEntry.cacheSuffix 		= arguments.cacheSuffix;
+				// Cache Provider
+				cacheEntry.cacheProvider 	= arguments.cacheProvider;
 
 				//Save the view cache entry
 				setViewCacheableEntry(cacheEntry);
