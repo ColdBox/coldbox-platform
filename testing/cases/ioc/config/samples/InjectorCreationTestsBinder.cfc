@@ -107,6 +107,11 @@ Description :
 			.parent("abstractService")
 			.property(name:"someCharlieDAO", ref:"someCharlieDAO")
 			.property(name:"someDeltaDAO", ref:"someDeltaDAO");
+
+		// Inherited metadata
+		map("WireBoxURL").toValue("http://www.coldbox.org");
+		map("ConcreteMetadata").to("coldbox.testing.testmodel.ioc.inheritance.Concrete");
+
 	}
 </cfscript>
 </cfcomponent>

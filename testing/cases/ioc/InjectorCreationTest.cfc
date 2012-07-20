@@ -36,7 +36,6 @@
 		assertEquals("coldbox.system.Plugin", r);
 	}
 
-
 	function testbuildInstance(){
 		//mapping
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyTest");
@@ -160,6 +159,19 @@
 		r = injector.getInstance("ServerCategoryBean");
 		assertEquals( server["wirebox:ServerCategoryBean"], r );
 	}
+
+	function testInheritedMetadata(){
+		r = injector.getInstance("ConcreteMetadata");
+		debug( r.getData() );
+		assertEquals( injector.getInstance("WireBoxURL"), r.getData() );
+	}
+
+	function testInheritedMetadataWithORM(){
+		c = entityLoad("Category")[1];
+		debug( c.getData() );
+		assertEquals( injector.getInstance("WireBoxURL"), c.getData() );
+	}
+
 
 </cfscript>
 </cfcomponent>
