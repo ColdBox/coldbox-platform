@@ -28,7 +28,7 @@
 		md = util.getInheritedMetaData(class1);
 		testGetInheritedMetaDataHelper(md);
 
-		md = util.getInheritedMetaData("class1");
+		md = util.getInheritedMetaData("coldbox.testing.cases.core.util.class1");
 		testGetInheritedMetaDataHelper(md);
 
 	}
@@ -39,7 +39,7 @@
 		md = util.getInheritedMetaData(class1,stopRecursions);
 		testGetInheritedMetaDataStopRecursionHelper(md);
 
-		md = util.getInheritedMetaData("class1",stopRecursions);
+		md = util.getInheritedMetaData("coldbox.testing.cases.core.util.class1",stopRecursions);
 		testGetInheritedMetaDataStopRecursionHelper(md);
 
 	}
@@ -51,7 +51,7 @@
 		assertEquals( md.inheritanceTrail[1], "coldbox.testing.cases.core.util.class1" );
 		assertEquals( md.inheritanceTrail[2], "coldbox.testing.cases.core.util.class2" );
 		assertEquals( md.inheritanceTrail[3], "coldbox.testing.cases.core.util.class3" );
-		assertEquals( md.inheritanceTrail[4], "WEB-INF.cftags.component" );
+		assertTrue( listFindNoCase("WEB-INF.cftags.component,railo-context.component", md.inheritanceTrail[4]) );
 
 		assertEquals( md.output, true );
 		assertEquals( md.scope, "server" );
