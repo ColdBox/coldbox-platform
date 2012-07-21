@@ -94,4 +94,43 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		assertEquals( 1, model.getErrorCount("test") );
 
 	}
+
+	function testGetErrorAsStruct(){
+		mockError = getMockBox().createMock("coldbox.system.validation.result.ValidationError").init();
+		mockError.configure("unit test","test","45","inList","1,2,3");
+		model.addError( mockError );
+
+		// with custom messages
+		mockError = getMockBox().createMock("coldbox.system.validation.result.ValidationError").init();
+		mockError.configure("unit test","fname","","required","true");
+		mockConstraints = {
+			"test" = {required = true, requiredMessage="This stuff is required dude!"}
+		};
+		// test the custom messages now
+		model.addError( mockError );
+
+		r = model.getAllErrorsAsStruct();
+		debug( r );
+
+
+	}
+
+	function testGetErrorAsJSON(){
+		mockError = getMockBox().createMock("coldbox.system.validation.result.ValidationError").init();
+		mockError.configure("unit test","test","45","inList","1,2,3");
+		model.addError( mockError );
+
+		// with custom messages
+		mockError = getMockBox().createMock("coldbox.system.validation.result.ValidationError").init();
+		mockError.configure("unit test","fname","","required","true");
+		mockConstraints = {
+			"test" = {required = true, requiredMessage="This stuff is required dude!"}
+		};
+		// test the custom messages now
+		model.addError( mockError );
+
+		r = model.getAllErrorsAsJSON();
+		debug( r );
+		assertTrue( isJSON( r ) );
+	}
 }

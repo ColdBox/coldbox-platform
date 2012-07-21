@@ -190,7 +190,7 @@ Description :
     </cffunction>
 
     <!--- Thread Safety for wiring --->
-    <cffunction name="getThreadSafe" access="public" returntype="boolean" output="false" hint="Get the thread safety for wiring bit">
+    <cffunction name="getThreadSafe" access="public" returntype="any" output="false" hint="Get the thread safety for wiring bit" coldstruct:generic="boolean">
     	<cfreturn instance.threadSafe>
     </cffunction>
     <cffunction name="setThreadSafe" access="public" returntype="any" output="false" hint="Set the thread safety for wiring bit">
@@ -575,7 +575,7 @@ Description :
 					md = arguments.metadata;
 				}
 				else{
-					md = getComponentMetadata( instance.path );
+					md = arguments.injector.getUtil().getInheritedMetaData(instance.path, arguments.binder.getStopRecursions());
 				}
 
 				// Store Metadata
@@ -887,33 +887,6 @@ Description :
 				}//end loop of functions
 			}//end if functions found
 
-			// Start Registering inheritances, if the exists
-			if ( structKeyExists(md, "extends")
-				 AND
-				 stopClassRecursion(md.extends.name,arguments.binder) EQ FALSE){
-				// Recursive lookup
-				processDIMetadata(arguments.binder, md.extends, arguments.dependencies);
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- stopClassRecursion --->
-	<cffunction name="stopClassRecursion" access="private" returntype="any" hint="Should we stop recursion or not due to class name found: Boolean" output="false" colddoc:generic="Boolean">
-		<cfargument name="classname" 	required="true" hint="The class name to check">
-		<cfargument name="binder" 		required="true" hint="The binder requesting the processing"/>
-		<cfscript>
-			var x 				= 1;
-			var stopRecursions 	= arguments.binder.getStopRecursions();
-			var stopLen			= arrayLen(stopRecursions);
-
-			// Try to find a match
-			for(x=1;x lte stopLen; x=x+1){
-				if( CompareNoCase( stopRecursions[x], arguments.classname) eq 0){
-					return true;
-				}
-			}
-
-			return false;
 		</cfscript>
 	</cffunction>
 

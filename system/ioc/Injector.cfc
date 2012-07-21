@@ -328,19 +328,20 @@ Description :
     <cffunction name="registerNewInstance" output="false" access="public" returntype="any" hint="Register a new requested mapping object instance thread safely and returns the mapping configured for this instance">
     	<cfargument name="name" 		required="true" hint="The name of the mapping to register"/>
 		<cfargument name="instancePath" required="true" hint="The path of the mapping to register">
-	
+
 		<cfset var mapping = "">
-		
+
     	<!--- Register new instance mapping --->
     	<cflock name="Injector.RegisterNewInstance.#hash(arguments.instancePath)#" type="exclusive" timeout="20" throwontimeout="true">
     		<cfscript>
 				if( NOT instance.binder.mappingExists( arguments.name ) ){
-					// register the mapping
-					instance.binder.map( arguments.name );
-					// retreive it and work on it
-					mapping = instance.binder.getMapping( arguments.name );
-					// set the path
-					mapping.setPath( arguments.instancePath );
+					// create a new mapping to be registered within the binder
+					mapping = createObject("component","coldbox.system.ioc.config.Mapping")
+						.init( arguments.name )
+						.setType( instance.binder.TYPES.CFC )
+						.setPath( arguments.instancePath );
+					// Now register it
+					instance.binder.setMapping( arguments.name, mapping );
 					// return it
 					return mapping;
 				}
@@ -416,7 +417,7 @@ Description :
 				// Do we have an incoming target id?
 				if( NOT len(arguments.targetID) ){
 					// need to get metadata to verify identity
-					md = getMetadata(arguments.target);
+					md = instance.utility.getInheritedMetaData(arguments.target, getBinder().getStopRecursions());
 					// We have identity now, use the full location path
 					arguments.targetID = md.path;
 				}
@@ -425,9 +426,9 @@ Description :
 				if( NOT instance.binder.mappingExists( arguments.targetID ) ){
 					// No mapping found, means we need to map this object for the first time.
 					// Is md retreived? If not, retrieve it as we need to register it for the first time.
-					if( isSimpleValue(md) ){ md = getMetadata(arguments.target); }
+					if( isSimpleValue(md) ){ md = instance.utility.getInheritedMetaData(arguments.target, getBinder().getStopRecursions()); }
 					// register new mapping instance
-					registerNewInstance(arguments.targetID,md.path);
+					registerNewInstance(arguments.targetID, md.path);
 					// get Mapping created
 					arguments.mapping = instance.binder.getMapping( arguments.targetID );
 					// process it with current metadata

@@ -844,6 +844,9 @@
 	<scope value="binder.scanLocations(locations)">
 			<help><![CDATA[Register one or more package scan locations for CFC lookups]]></help>
 		</scope>
+	<scope value="binder.setMapping(name,mapping)">
+			<help><![CDATA[Set a mapping object into the mappings map]]></help>
+		</scope>
 	<scope value="binder.toFactoryMethod(factory,method)">
 			<help><![CDATA[Map to a factory and its executing method.]]></help>
 		</scope>
@@ -858,6 +861,9 @@
 		</scope>
 	<scope value="binder.map(alias)">
 			<help><![CDATA[Create a mapping to an object]]></help>
+		</scope>
+	<scope value="binder.unMap(name)">
+			<help><![CDATA[Destroys a mapping by name]]></help>
 		</scope>
 	<scope value="binder.mappingExists(name)">
 			<help><![CDATA[Check if an object mapping exists]]></help>

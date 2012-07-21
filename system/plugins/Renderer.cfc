@@ -73,26 +73,28 @@ Description :
 	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
 		<cfargument name="view" 					required="false" type="any"  default=""			hint="If not passed in, the value in the currentView in the current RequestContext will be used">
-		<cfargument name="cache" 					required="false" type="any"  default="false" 	hint="True if you want to cache the view">
-		<cfargument name="cacheTimeout" 			required="false" type="any"  default=""			hint="The cache timeout for the view contents">
-		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  default="" 		hint="The last access timeout for the view contents">
+		<cfargument name="cache" 					required="false" type="any"  default="false" 	hint="Cache the rendered view or not">
+		<cfargument name="cacheTimeout" 			required="false" type="any"  default=""			hint="The cache timeout for the rendered view">
+		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  default="" 		hint="The last access timeout for the rendered view">
 		<cfargument name="cacheSuffix" 				required="false" type="any"  default=""     	hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
+		<cfargument name="cacheProvider" 			required="false" type="any"  default="template" hint="The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider">
 		<cfargument name="module" 					required="false" type="any"  default=""      	hint="Explicitly render a view from this module by passing the module name"/>
 		<cfargument name="args"   					required="false" type="any"  default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<cfargument name="collection" 				required="false" type="any"  hint="A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)" colddoc:generic="collection"/>
 		<cfargument name="collectionAs" 			required="false" type="any"	 default=""  	    hint="The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention"/>
 		<cfargument name="collectionStartRow" 		required="false" type="any"	 default="1"  	    hint="The start row to limit the collection rendering with" colddoc:generic="numeric"/>
 		<cfargument name="collectionMaxRows" 		required="false" type="any"	 default="0"  	    hint="The max rows to iterate over the collection rendering with" colddoc:generic="numeric"/>
-		<cfargument name="collectionDelim" 		required="false" type="any"	 default=""  	    hint="A string to delimit the collection renderings by"/>
+		<cfargument name="collectionDelim" 			required="false" type="any"	 default=""  	    hint="A string to delimit the collection renderings by"/>
 		<cfargument name="prepostExempt" 			required="false" type="any"	 default="false" 	hint="If true, pre/post view interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var viewCacheKey 	= "";
-			var viewCacheEntry 	= "";
-			var timerHash 		= 0;
-			var iData 			= arguments;
-			var explicitModule 	= false;
-			var viewLocations	= "";
+			var viewCacheKey 		= "";
+			var viewCacheEntry 		= "";
+			var viewCacheProvider 	= instance.templateCache;
+			var timerHash 			= 0;
+			var iData 				= arguments;
+			var explicitModule 		= false;
+			var viewLocations		= "";
 
 			// If no incoming explicit module call, default the value to the one in the request context for convenience
 			if( NOT len(arguments.module) ){
@@ -140,14 +142,19 @@ Description :
 				arguments.cacheTimeout				= viewCacheEntry.timeout;
 				arguments.cacheLastAccessTimeout	= viewCacheEntry.lastAccessTimeout;
 				arguments.cacheSuffix 				= viewCacheEntry.cacheSuffix;
+				arguments.cacheProvider				= viewCacheEntry.cacheProvider;
 			}
 			// Prepare caching key
 			viewCacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & arguments.module & ":" & arguments.view & arguments.cacheSuffix;
 			// Are we caching?
 			if (arguments.cache){
+				// Which provider you want to use?
+				if( arguments.cacheProvider neq "template" ){
+					viewCacheProvider = cacheBox.getCache( arguments.cacheProvider );
+				}
 				// Try to get from cache
-				timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm]");
-				iData.renderedView = instance.templateCache.get( viewCacheKey );
+				timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm] from '#arguments.cacheProvider# provider'");
+				iData.renderedView = viewCacheProvider.get( viewCacheKey );
 				// Verify it existed
 				if( structKeyExists(iData, "renderedView") ){
 					instance.debuggerService.timerEnd( timerHash );
@@ -179,7 +186,7 @@ Description :
 
 			// Are we caching view
 			if ( arguments.cache ){
-				instance.templateCache.set(viewCacheKey,iData.renderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout);
+				viewCacheProvider.set(viewCacheKey, iData.renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout);
 			}
 
 			// Return view content
@@ -333,25 +340,29 @@ Description :
 	<!--- Render an external View --->
 	<cffunction name="renderExternalView"	access="Public" hint="Renders an external view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="view" 					required="true"  type="string" hint="The full path to the view. This can be an expanded path or relative. Include extension.">
+		<cfargument name="view" 					required="true"  type="any" 	hint="The full path to the view. This can be an expanded path or relative. Include extension.">
 		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
-		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout">
-		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
-		<cfargument name="cacheSuffix" 				required="false" type="string"  default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
+		<cfargument name="cacheTimeout" 			required="false" type="any"  	default=""		hint="The cache timeout">
+		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  	default="" 		hint="The last access timeout">
+		<cfargument name="cacheSuffix" 				required="false" type="any"  	default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
+		<cfargument name="cacheProvider" 			required="false" type="any"  	default="template" hint="The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider">
 		<cfargument name="args"   					required="false" type="any"  	default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cbox_renderedView = "";
 			// Cache Entries
-			var cbox_cacheKey 	= "";
-			var cbox_cacheEntry = "";
-			var viewLocations 	= "";
+			var cbox_cacheKey 		= "";
+			var cbox_cacheEntry 	= "";
+			var cbox_cacheProvider 	= instance.templateCache;
+			var viewLocations 		= "";
 
 			// Setup the cache key
 			cbox_cacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
+			// Setup the cache provider
+			if( arguments.cacheProvider neq "template" ){ cbox_cacheProvider = cacheBox.getCache( arguments.cacheProvider ); }
 			// Try to get from cache
-			cbox_timerHash 		= instance.debuggerService.timerStart("rendering Cached External View [#arguments.view#.cfm]");
-			cbox_renderedView 	= instance.templateCache.get(cbox_cacheKey);
+			cbox_timerHash 		= instance.debuggerService.timerStart("rendering Cached External View [#arguments.view#.cfm] from '#arguments.cacheProvider#' provider");
+			cbox_renderedView 	= cbox_cacheProvider.get(cbox_cacheKey);
 			if( isDefined("cbox_renderedView") ){
 				instance.debuggerService.timerEnd( cbox_timerHash );
 				return cbox_renderedView;
@@ -365,7 +376,7 @@ Description :
  			instance.debuggerService.timerEnd(cbox_timerHash);
  			// Are we caching it
  			if( arguments.cache ){
- 				instance.templateCache.set(cbox_cacheKey,cbox_renderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout);
+ 				cbox_cacheProvider.set(cbox_cacheKey, cbox_renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout);
  			}
  			return cbox_renderedView;
 		</cfscript>

@@ -15,7 +15,6 @@
 	<property name="dir.build" 			value="${dir.exports}/coldbox" />
 	<property name="dir.dashboard"	    value="${dir.userlocation}/sites/cboxdev/core/dashboard" />
 	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
-	<property name="dir.wallpapers"		value="${dir.userlocation}/Documents/MyDocs/OrtusSolutions/Products/ColdBox/workbench/wallpapers/" />
 	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/coldbox.cfm?version=" />
 	<property name="dictionaries.http"	value="http://cf9cboxdev.jfetmac/coldbox/testing/tools/IDEDictionaries/" />
 		
@@ -99,11 +98,6 @@
 		<copy todir="${dir.build}/install">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />						
-		</copy>
-		
-		<!--Copy Wallpapers-->
-		<copy todir="${dir.build}/install/wallpapers">
-			<fileset dir="${dir.wallpapers}"/>
 		</copy>
 				
 		<!--Remove Dist-->

@@ -176,6 +176,38 @@ component accessors="true" implements="IValidationResult"{
 	}
 
 	/**
+	* Get all errors as flat structure that can easily be used for UI display
+	*/
+	struct function getAllErrorsAsStruct(string field){
+		var errorTarget = errors;
+
+		// filter by field?
+		if( structKeyExists(arguments,"field") ){
+			errorTarget = getFieldErrors( arguments.field );
+		}
+
+		var results = {};
+		for( var thisError in errorTarget ){
+			// check if field struct exists, else create it
+			if( !structKeyExists( results, thisError.getField() ) ){
+				results[ thisError.getField() ] = [];
+			}
+			// Add error Message
+			arrayAppend( results[ thisError.getField() ] , thisError.getMemento() );
+		}
+
+		return results;
+	}
+
+	/**
+	* Get all errors or by field as a JSON structure
+	*/
+	string function getAllErrorsAsJSON(string field){
+		var results = getAllErrorsAsStruct(argumentcollection=arguments);
+		return serializeJSON( results );
+	}
+
+	/**
 	* Get an error object for a specific field that failed. Throws exception if the field does not exist
 	* @field.hint The field to return error objects on
 	*/

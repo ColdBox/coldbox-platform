@@ -24,6 +24,15 @@ Description :
 			assertEquals( results, results2 );
 		}
 
+		function testRenderViewWithCacheProviders(){
+			var r = getController().getPlugin("Renderer");
+			results = r.renderView(view="navigation",cache=true,cacheTimeout="5", cacheProvider="default");
+			debug( results );
+			results2 = r.renderView(view="navigation",cache=true,cacheTimeout="5", cacheProvider="default");
+			assertEquals( results, results2 );
+			assertTrue( getCacheBox().getCache("default").lookup("cbox_view-:navigation") );
+		}
+
 		function testRenderExternalView(){
 			var r = getController().getPlugin("Renderer");
 			results = r.renderExternalView("/coldbox/testing/testviews/externalview");
@@ -35,6 +44,15 @@ Description :
 			results = r.renderExternalView(view="/coldbox/testing/testviews/externalview",cache="true",cacheTimeout="5");
 			results2 = r.renderExternalView(view="/coldbox/testing/testviews/externalview",cache="true",cacheTimeout="5");
 			assertEquals( results, results2 );
+		}
+
+		function testRenderExternalViewWithCachingProviders(){
+			var r = getController().getPlugin("Renderer");
+			results = r.renderExternalView(view="/coldbox/testing/testviews/externalview", cache="true", cacheTimeout="5", cacheProvider="default");
+			results2 = r.renderExternalView(view="/coldbox/testing/testviews/externalview", cache="true", cacheTimeout="5", cacheProvider="default");
+			assertEquals( results, results2 );
+			debug( getCacheBox().getCache("default").getKeys() );
+			assertTrue( getCacheBox().getCache("default").lookup("cbox_view-external-/coldbox/testing/testviews/externalView") );
 		}
 
 	</cfscript>

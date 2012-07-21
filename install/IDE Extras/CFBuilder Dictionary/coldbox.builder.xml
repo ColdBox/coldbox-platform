@@ -849,6 +849,9 @@
 	<scopevar name="scanLocations(locations)">
 			<help><![CDATA[Register one or more package scan locations for CFC lookups]]></help>
 		</scopevar>
+	<scopevar name="setMapping(name,mapping)">
+			<help><![CDATA[Set a mapping object into the mappings map]]></help>
+		</scopevar>
 	<scopevar name="toFactoryMethod(factory,method)">
 			<help><![CDATA[Map to a factory and its executing method.]]></help>
 		</scopevar>
@@ -863,6 +866,9 @@
 		</scopevar>
 	<scopevar name="map(alias)">
 			<help><![CDATA[Create a mapping to an object]]></help>
+		</scopevar>
+	<scopevar name="unMap(name)">
+			<help><![CDATA[Destroys a mapping by name]]></help>
 		</scopevar>
 	<scopevar name="mappingExists(name)">
 			<help><![CDATA[Check if an object mapping exists]]></help>

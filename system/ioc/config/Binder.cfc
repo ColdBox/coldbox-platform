@@ -209,7 +209,24 @@ Description :
 					 type="Binder.MappingNotFoundException" >
     	</cfif>
 
-		<cfreturn instance.mappings[arguments.name]>
+		<cfreturn instance.mappings[ arguments.name ]>
+    </cffunction>
+
+    <!--- setMapping --->
+    <cffunction name="setMapping" output="false" access="public" returntype="any" hint="Set a mapping object into the mappings map">
+		<cfargument name="name" 	required="true" hint="The name of the mapping to register"/>
+		<cfargument name="mapping" 	required="true" hint="The mapping object to register"/>
+    	<cfscript>
+			instance.mappings[ arguments.name ] = arguments.mapping;
+    	</cfscript>
+    </cffunction>
+
+    <!--- unMap --->
+    <cffunction name="unMap" output="false" access="public" returntype="any" hint="Destroys a mapping by name">
+		<cfargument name="name" 	required="true" hint="The name of the mapping to register"/>
+    	<cfscript>
+			structDelete( instance.mappings, arguments.name );
+    	</cfscript>
     </cffunction>
 
 	<!--- mappingExists --->
