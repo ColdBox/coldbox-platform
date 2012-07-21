@@ -342,7 +342,6 @@ Description :
 					</cfif>
 				</cfloop>
 			<cfelseif NOT listFind("extends,implements,EXTENDS,IMPLEMENTS", loc.key)>
->>>>>>> upstream/development
 				<cfset loc.parent[loc.key] = md[loc.key]>
 			</cfif>
 		</cfloop>
