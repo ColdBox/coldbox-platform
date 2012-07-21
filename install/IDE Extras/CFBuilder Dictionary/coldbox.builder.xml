@@ -1038,7 +1038,7 @@
 	<scopevar name="setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
 			<help><![CDATA[Set an HTTP Header]]></help>
 		</scopevar>
-	<scopevar name="setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[layout],[module],[args])">
+	<scopevar name="setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider],[layout],[module],[args])">
 			<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
 		</scopevar>
 	<scopevar name="getViewCacheableEntry()">
