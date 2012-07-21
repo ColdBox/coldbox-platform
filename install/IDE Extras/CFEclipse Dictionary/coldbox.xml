@@ -1030,7 +1030,7 @@
 	<scope value="event.setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
 			<help><![CDATA[Set an HTTP Header]]></help>
 		</scope>
-	<scope value="event.setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[layout],[module],[args])">
+	<scope value="event.setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider],[layout],[module],[args])">
 			<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
 		</scope>
 	<scope value="event.getViewCacheableEntry()">

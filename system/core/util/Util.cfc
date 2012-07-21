@@ -341,8 +341,8 @@ Description :
 						<cfset arrayAppend(loc.parent[loc.key], loc.item)>
 					</cfif>
 				</cfloop>
-			<!--- For everything else (component-level annotations), just override them directly into the parent --->
 			<cfelseif NOT listFind("extends,implements,EXTENDS,IMPLEMENTS", loc.key)>
+>>>>>>> upstream/development
 				<cfset loc.parent[loc.key] = md[loc.key]>
 			</cfif>
 		</cfloop>
