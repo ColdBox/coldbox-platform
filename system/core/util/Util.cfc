@@ -318,7 +318,7 @@ Description :
 		<!--- Override ourselves into parent --->
 		<cfloop collection="#md#" item="loc.key">
 			<!--- Functions and properties are an array of structs keyed on name, so I can treat them the same --->
-			<cfif listFind("functions,properties,FUNCTIONS,PROPERTIES",loc.key)>
+			<cfif listFindNoCase("functions,properties",loc.key)>
 				<cfif not structKeyExists(loc.parent, loc.key)>
 					<cfset loc.parent[loc.key] = []>
 				</cfif>
@@ -341,7 +341,7 @@ Description :
 						<cfset arrayAppend(loc.parent[loc.key], loc.item)>
 					</cfif>
 				</cfloop>
-			<cfelseif NOT listFind("extends,implements,EXTENDS,IMPLEMENTS", loc.key)>
+			<cfelseif NOT listFindNoCase("extends,implements", loc.key)>
 				<cfset loc.parent[loc.key] = md[loc.key]>
 			</cfif>
 		</cfloop>
