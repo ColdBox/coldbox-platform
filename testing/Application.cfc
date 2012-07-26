@@ -31,12 +31,12 @@ Description :
 	<cfset this.ormSettings = {
 		logSQL = true,
 		eventhandling = true,
-		eventHandler = "coldbox.system.orm.hibernate.WBEventHandler",
 		dbcreate = "update",
 		secondarycacheenabled = true,
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false
 	}>
+
 	<!--- <cfset this.ormsettings.eventhandler = "testmodel.EventHandler"> --->
 
 	<!--- on Request Start --->
@@ -48,6 +48,8 @@ Description :
 		<!---<cfif structKeyExists(URL,"reinit")>--->
 		<cfset ORMReload()>
 		<!---</cfif>--->
+
+		<!---<cfset application.wirebox = createObject("component","coldbox.system.ioc.Injector").init()>--->
 
 		<cfreturn true>
 	</cffunction>

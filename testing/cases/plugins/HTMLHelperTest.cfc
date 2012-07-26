@@ -540,6 +540,36 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		debug(str);
 		assertEquals('</fieldset>', str);
 	}
+
+	function testEmailField(){
+		str = plugin.emailField(name="message");
+		assertEquals('<input name="message" id="message" type="email"/>', str);
+
+		str = plugin.emailField(name="message",value="test");
+		assertEquals('<input name="message" value="test" id="message" type="email"/>', str);
+
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.emailField(name="lastName",bind=majano);
+		debug(str);
+		assertTrue( findNocase('value="Majano"', str) );
+	}
+
+	function testURLField(){
+		str = plugin.urlField(name="message");
+		assertEquals('<input name="message" id="message" type="url"/>', str);
+
+		str = plugin.urlField(name="message",value="test");
+		assertEquals('<input name="message" value="test" id="message" type="url"/>', str);
+
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.urlField(name="lastName",bind=majano);
+		debug(str);
+		assertTrue( findNocase('value="Majano"', str) );
+	}
+
+
 </cfscript>
 
 </cfcomponent>
