@@ -27,7 +27,7 @@ Description :
 				// CacheBox Factory UniqueID
 				factoryID = createObject('java','java.lang.System').identityHashCode(this),
 				// Version
-				version = "1.3.1",
+				version = "1.3.2",
 				// Configuration object
 				config  = "",
 				// ColdBox Application Link
