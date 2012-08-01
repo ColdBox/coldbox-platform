@@ -157,6 +157,7 @@ Description :
 		<!--- Determine type of invocation --->
 		<cfif structKeyExists(arguments,"argCollection")>
 			<cfinvoke method="#arguments.method#" 
+			                  component="#this#"
 					  returnvariable="refLocal.results" 
 					  argumentcollection="#arguments.argCollection#" />
 		<cfelseif structKeyExists(arguments, "argList")>
