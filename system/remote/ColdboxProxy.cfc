@@ -28,12 +28,18 @@ Description :
 		<!--- There are no arguments defined as they come in as a collection of arguments. --->
 		<cfset var cbController = "">
 		<cfset var event = "">
+		<cfset var createNewRC = true>
 		<cfset var refLocal = structnew()>
 		<cfset var interceptData = structnew()>
 		<cfsetting showdebugoutput="false">
 
 		<cftry>
 			<cfscript>
+			// ensures each remote request is processed with a unique request context
+			if(createNewRC){
+				structDelete(request,"cb_requestContext"); 
+			}
+				
 			// Locate ColdBox Controller
 			cbController = getController();
 
