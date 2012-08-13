@@ -17,6 +17,7 @@ ATTRIBUTES:
 
 <!--- Leave on end --->
 <cfif thisTag.ExecutionMode eq "end">
+	<cfsetting enablecfoutputonly="false">
 	<cfexit method="exittag">
 </cfif>
 
