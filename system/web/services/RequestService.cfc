@@ -206,12 +206,21 @@ Modification History:
 	</cffunction>
 
 	<!--- Set the context --->
-	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request context">
+	<cffunction name="setContext" access="public" output="false" returntype="any" hint="Set the Request context">
 		<cfargument name="context" type="any" required="true">
 		<cfscript>
 			request.cb_requestContext = arguments.context;
+			return this;
 		</cfscript>
 	</cffunction>
+	
+	<!--- removeContext --->    
+    <cffunction name="removeContext" output="false" access="public" returntype="any" hint="Remove the context from scope and return yourself">    
+    	<cfscript>
+			structDelete(request, "cb_requestContext");	 
+			return this;   
+    	</cfscript>    
+    </cffunction>
 
 	<!--- Check if context exists --->
 	<cffunction name="contextExists" access="public" output="false" returntype="boolean" hint="Does the request context exist">
