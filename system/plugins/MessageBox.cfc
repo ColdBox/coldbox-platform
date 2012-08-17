@@ -89,7 +89,7 @@ Description :
 			var msg = structnew();
 
 			// check message type
-			if( refindnocase("(error|warning|info)", trim(arguments.type)) ){
+			if( isValidMessageType(arguments.tupe) ){
 				// Populate message
 				msg.type 	= arguments.type;
 				msg.message = arguments.message;
@@ -306,7 +306,7 @@ Description :
 		<cfset var results = "">
 
 		<!--- Verify Message Type --->
-		<cfif refindnocase("(error|warning|info)", trim(arguments.type))>
+		<cfif isValidMessageType(arguments.tupe)>
 			<!--- Populate message struct --->
 			<cfset msgStruct.type = arguments.type>
 			<cfset msgStruct.message = arguments.message>
@@ -325,6 +325,11 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
+
+    <cffunction name="isValidMessageType" access="private" output="false" returntype="string" hint="Returns a list of valid message types.">
+	<cfargument name="messageType" type="string" required="true" />
+	<cfreturn refindnocase("(error|warning|info)", trim(arguments.type)) /> 
+    </cffunction>
 
 	<!--- flattenMessageArray --->
     <cffunction name="flattenMessageArray" output="false" access="private" returntype="any">
