@@ -327,7 +327,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
     <cffunction name="isValidMessageType" access="private" output="false" returntype="string" hint="Returns a list of valid message types.">
-	<cfargument name="messageType" type="string" required="true" />
+	<cfargument name="type" type="string" required="true" />
 	<cfreturn refindnocase("(error|warning|info)", trim(arguments.type)) /> 
     </cffunction>
 
