@@ -131,7 +131,7 @@ id , name , mail
 	<!--- afterTests --->
 	<cffunction name="afterTests" hint="The main teardown for ColdBox enabled applications after all tests execute" output="false">
 		<cfscript>
-			structDelete(application,getColdboxAppKey());
+			structDelete( application, getColdboxAppKey() );
 		</cfscript>
 	</cffunction>
 
