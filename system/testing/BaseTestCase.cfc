@@ -370,11 +370,17 @@ id , name , mail
 				if ( len(cbController.getSetting("RequestStartHandler")) ){
 					cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
 				}
-			
+				
+				// grab the latest event in the context, in case overrides occur
+				arguments.event = getRequestContext().getCurrentEvent();
+				
 				//TEST EVENT EXECUTION
-				handlerResults = cbController.runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt,eventArguments=arguments.eventArguments);
+				handlerResults = cbController.runEvent(event=arguments.event,
+													   private=arguments.private,
+													   prepostExempt=arguments.prepostExempt,
+													   eventArguments=arguments.eventArguments);
 			
-				// Request Start Handler
+				// Request End Handler
 				if ( len(cbController.getSetting("RequestEndHandler")) ){
 					cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
 				}
