@@ -1,6 +1,7 @@
 ﻿<cfcomponent output="false" extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
-
+	this.loadColdBox = false;
+	
 	function setup(){
 		test = getMockBox().createEmptyMock("coldbox.testing.cases.testing.Test");
 	}
