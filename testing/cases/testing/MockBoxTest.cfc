@@ -211,5 +211,18 @@
 		
 	}
 	
+	function testGetProperty(){
+		mock = getMockBox().createStub();
+		mock.luis = "Majano";
+		mock.$property("cool", "variables", true)
+			.$property("number", "variables.instance", 7);
+			
+		assertEquals( "Majano", mock.$getProperty(name="luis", scope="this") );
+		assertEquals( true, mock.$getProperty(name="cool") );
+		assertEquals( true, mock.$getProperty(name="cool", scope="variables") );
+		assertEquals( 7, mock.$getProperty(name="number", scope="variables.instance") );
+		assertEquals( 7, mock.$getProperty(name="number", scope="instance") );
+	}
+	
 </cfscript>
 </cfcomponent>

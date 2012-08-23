@@ -147,6 +147,25 @@ Description		:
 		</cfscript>	
 	</cffunction>	
 	
+	<!--- $getProperty --->
+	<cffunction name="$getProperty" hint="Gets an internal mocked object property" access="public" returntype="any" output="false">
+		<cfargument name="name" 	required="true"  hint="The name of the property to retrieve."/>
+		<cfargument name="scope" 	required="false" default="variables" hint="The scope to which to retrieve the property from. Defaults to 'variables' scope."/>
+		<cfargument name="default"  required="false" hint="Default value to return if property does not exist"/>
+		<cfscript>
+			var thisScope = evaluate( "#arguments.scope#" );
+			
+			if( structKeyExists( thisScope, arguments.name ) ){
+				return thisScope[ arguments.name ];
+			}
+			
+			if( structKeyExists( arguments, "default" ) ){
+				return arguments.default;
+			}
+		</cfscript>
+		<cfthrow type="MockBox.PropertyDoesNotExist" message="The property requested #arguments.name# does not exist in the #arguments.scope# scope">
+	</cffunction>
+	
 	<!--- $count --->
 	<cffunction name="$count" output="false" returntype="numeric" hint="I return the number of times the specified mock object's methods have been called or a specific method has been called.  If the mock method has not been defined the results is a -1">
 		<cfargument name="methodName" type="string" default="" required="false" hint="Name of the method to get the total made calls from. If not passed, then we count all methods in this mock object" />
@@ -461,6 +480,7 @@ Description		:
 			obj.$ 					= variables.$;
 			// Mock Property
 			obj.$property	 		= variables.$property;
+			obj.$getProperty	 	= variables.$getProperty;
 			// Mock Results
 			obj.$results			= variables.$results;
 			// Mock Arguments
