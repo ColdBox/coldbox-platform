@@ -126,9 +126,16 @@ Description		:
 	
 	<!--- createStub --->
 	<cffunction name="createStub" output="false" access="public" returntype="any" hint="Create an empty stub object that you can use for mocking.">
-		<cfargument name="callLogging" 	type="boolean" required="false" default="true" hint="Add method call logging for all mocked methods"/>
+		<cfargument name="callLogging" 	type="boolean" 	required="false" default="true" hint="Add method call logging for all mocked methods"/>
+		<cfargument name="extends" 		type="string" 	required="false" default="" hint="Make the stub extend from certain CFC"/>
+		<cfargument name="implements" 	type="string" 	required="false" default="" hint="Make the stub adhere to an interface"/>
 		<cfscript>
-			return createMock(className="coldbox.system.testing.mockutils.Stub",callLogging=arguments.callLogging);
+			// No implements or inheritance
+			if( NOT len( trim( arguments.implements ) ) AND NOT len( trim( arguments.extends ) ) ){
+				return createMock(className="coldbox.system.testing.mockutils.Stub", callLogging=arguments.callLogging);
+			}
+			// Generate the CFC + Create it + Remove it
+			return prepareMock( instance.mockGenerator.generateCFC(argumentCollection=arguments) );
 		</cfscript>
 	</cffunction>	
 
