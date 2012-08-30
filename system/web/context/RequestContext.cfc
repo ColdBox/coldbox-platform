@@ -710,7 +710,7 @@ Description :
 			}
 
 			// HTTP Location?
-			if( len(arguments.location) ){ setHTTPHeader(name="location",value="arguments.location"); }
+			if( len(arguments.location) ){ setHTTPHeader(name="location",value=arguments.location); }
 
 			// Save Rendering data privately.
 			setValue(name='cbox_renderdata',value=rd,private=true);
