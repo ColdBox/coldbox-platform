@@ -470,7 +470,7 @@ License		: 	Apache 2 License
 						invalidList = invalidList & "| Item #fi.currentrow# : The #generateNumSuffix(i)# enclosure attribute length (enclosure_length) '#listGetAt(fi[map.enclosure_length][currentrow],i)#' : Must be a whole number, 0 or greater (See <a href='#instance.SpecRssEC#item-enclosure'>#instance.SpecRssEC#item-enclosure</a>)";
 						}
 						// type attribute
-						if( i gt listLen(fi[map.enclosure_type][currentrow]) or not len(fi.enclosure_type) ) {
+						if( i gt listLen(fi[map.enclosure_type][currentrow]) or not len(listGetAt(fi[map.enclosure_type][currentrow],i) ) ) {
 						invalidList = invalidList & "| Item #fi.currentrow# : The #generateNumSuffix(i)# enclosure element : Is missing the type (enclosure_type) attribute, it cannot be left blank (See <a href='#instance.SpecRssEC#item-enclosure'>#instance.SpecRssEC#item-enclosure</a>)";
 						}
 						// url attribute
