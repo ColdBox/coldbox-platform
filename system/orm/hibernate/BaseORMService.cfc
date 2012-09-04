@@ -951,10 +951,203 @@ component accessors="true"{
 	* A nice onMissingMethod template to create awesome dynamic methods.
 	*
 	*/
-	any function onMissingMethod(String missingMethodName,Struct missingMethodArguments){
+	any function onMissingMethod(string missingMethodName,struct missingMethodArguments){
+		var method = arguments.missingMethodName;
+		var args   = arguments.missingMethodArguments;
+		
+		// Dynamic Find Unique Finders
+		if( left( method, 6 ) eq "findBy" ){
+			return findDynamically(missingMethodName=right( method, len( method ) - 6 ), missingMethodArguments=args, unique=true);
+		}
+		// Dynamic find All Finders
+		if( left( method, 9 ) eq "findAllBy" ){
+			return findDynamically(missingMethodName=right( method, len( method ) - 9 ), missingMethodArguments=args, unique=false);
+		}
+		
+		// Throw exception, method not found.
+		throw(message="Invalid method call: #method#", detail="The method you called does not exist", type="BaseORMService.MissingMethodException");
+	}
+	
+	/**
+	* A method for finding entity's dynamically, for example:
+	* findByLastNameAndFirstName('User', 'Tester', 'Test');
+	* findByLastNameOrFirstName('User', 'Tester', 'Test')
+	* findAllByLastNameIsNotNull('User');
+	* The first argument must be the 'entityName'
+	* Any argument which is a structure will be used as options for the query: { ignorecase, maxresults, offset, cacheable, cachename, timeout }
+	*/
+	any function findDynamically(string missingMethodName,struct missingMethodArguments, boolean unique=true){
+		var ALL_OPERATORS 				= "AND,OR";
+		var ALL_CONDITIONALS 			= "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";
+		var SQL_CONDITIONALS 			= "<=,<,>=,>,like,<>,is null,is not null,not between,between,not in,in";
+		var ALL_OPERATORS_CONDITIONALS 	= listAppend( ALL_OPERATORS, ALL_CONDITIONALS );
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
 
+		// The first argument needs to be the entityName
+		var entityName = args[ 1 ];
+		// The real property names
+		var realPropertyNames = getPropertyNames( entityName );
+		/*
+		Loop over all the valid operators and conditionals and
+		replace them with commas to build a list of tokens from the method name
+		*/
+		var tokens = "";
+		for (var i=1; i LTE listLen( ALL_OPERATORS_CONDITIONALS ); i++) {
+			// Get the first operator
+			var currentOperator = listGetAt( ALL_OPERATORS_CONDITIONALS, i );
+			if (i EQ 1){
+				tokens = replaceNoCase( method, currentOperator, ",", "all");
+			} else {
+				tokens = replaceNoCase( tokens, currentOperator, ",", "all");
+			}
+		}
+		//replace double commas in case you had a comparator and operator combo
+		tokens = replace( tokens, ",,", ",", "all" );
+		
+		/*
+		Loop over the tokens and remove the property names from the method call
+		so we can have a list of comparators and operators
+		*/
+		var operAndCond = "";
+		for (var i=1; i LTE listLen( tokens ); i++) {
+			// get the required token for each method tokens
+			var thisToken = listGetAt( tokens, i );
+			if (i EQ 1){
+				operAndCond = replaceNoCase( method, thisToken, "" );
+			} else {
+				operAndCond = replaceNoCase( operAndCond, thisToken, "," );
+			}
+		}
+		
+		/*
+		Sperate the operators and conditionals,
+		also, add the equals to the conditional list
+		*/
+		var operators = "";
+		var conditionals = "";
+		for (var i=1; i LTE listLen( operAndCond ); i++) {
+			// Get the first operator or conditional
+			var oc = listGetAt( operAndCond, i );
+			// is the oc an operator?
+			if( listFindNoCase( ALL_OPERATORS, oc ) ){
+				// Yes, so add it to the operator list
+				operators = listAppend( operators, oc );
+				// Add it to the conditional lists
+				conditionals = listAppend( conditionals, "=" );
+			} 
+			// is the oc a conditional statement
+			else if( listFindNoCase( ALL_CONDITIONALS, oc ) ){
+				// Add it to the conditional list
+				conditionals = listAppend( conditionals, oc );
+			} 
+			// else
+			else {
+				operators = listAppend( operators, oc );
+				conditionals = listAppend( conditionals, oc );
+			}
+		}
+		
+		// Remove any operators from the conditional list
+		for (var i=1; i LTE listLen( ALL_OPERATORS ); i++) {
+			var operator = listGetAt( ALL_OPERATORS, i );
+			conditionals = replaceNoCase( conditionals, operator, "" );
+		}
+		
+		// Remove any conditionals from the operator list and convert the conditional into valid SQL conditional
+		for (var i=1; i LTE listLen( ALL_CONDITIONALS ); i++) {
+			var conditional 	= listGetAt( ALL_CONDITIONALS, i );
+			var sqlConditional 	= listGetAt( SQL_CONDITIONALS, i );
+			operators 		= replaceNoCase( operators, conditional, "");
+			conditionals 	= replaceNoCase( conditionals, conditional, sqlConditional);
+		}
+		
+		// add the last = if it needs one
+		if( listLen( tokens ) NEQ listLen( conditionals ) ){
+			conditionals = listAppend( conditionals, "=" );
+		}
+		
+		// setup the params to bind from the arguments, and also distinguish the incoming query options
+		var params = [];
+		var options = {};
+		for(var i=2; i LTE ArrayLen( args ); i++){
+			// Check if the argument is a structure, if it is, then these are the options
+			if( isStruct( args[ i ] ) ){
+				options = args[ i ];
+			}
+			// Normal params
+			else{
+				params[ i-1 ] = args[ i ];
+			}
+		}
+		
+		// Build the HQL
+		var where = "";
+		// Begin building the hql statement
+		var hql = "from " & entityName;
+		for (var i=1; i LTE listLen( tokens ); i++) {
+			// get real property name according to token
+			var realPropertyIndex = arrayFindNoCase( realPropertyNames, listGetAt( tokens, i) );
+			// Verify if property found, else throw exception
+			if( realPropertyIndex EQ 0 ){
+				throw(message="The property you requested #listGetAt( tokens, i)# is not a valid property in the #entityName# entity",
+					  detail="Valid properties are #arrayToList( realPropertyNames )#",
+					  type="BaseORMService.InvalidEntityProperty");
+			}
+			var token 		= realPropertyNames[ realPropertyIndex ];
+			var conditional = listGetAt( conditionals, i );
+			if( len( where ) ){
+				var operator = listGetAt( operators, i-1 );
+				where = "#where# #operator# ";
+			}
+			switch( trim( conditional ) ){
+				case "is null" : case "is not null" : { 
+					where = "#where# #token# #conditional#";
+					break; 
+				}
+				case "between" : case "not between" : {
+					where = "#where# #token# #conditional# ? and ?";
+					break;
+				}
+				case "in" : case "not in" : {
+					where = "#where# #token# #conditional# (?)";
+					break;
+				}
+				default:{
+					where = "#where# #token# #conditional# ?";	
+					break;	
+				}
+			}			
+		}
+		
+		// Finalize the HQL
+		hql = hql & " where #where#";
+		
+		//results struct used for testing
+		results = structNew();
+		results.method = method;
+		results.tokens = tokens;
+		results.operators = operators;
+		results.conditionals = conditionals;
+		results.where = where;
+		results.options = options;
+		results.params = params;
+		results.hql = hql;
+		results.operAndCond = operAndCond;
+		
+		writeDump( results );
+		writeDump(var=ORMExecuteQuery( hql, params, arguments.unique, options));
+		abort;
+
+		// execute query as unique for the count
+		 try{
+		 	return ORMExecuteQuery( hql, params, arguments.unique, options);
+		 }
+		 catch("java.lang.NullPointerException" e){
+		 	throw(message="A null pointer exception occurred when running the count",
+				  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#tokens#",
+				  type="ORMService.MaybeInvalidParamCaseException");
+		 }
 	}
 
 	/**
@@ -982,14 +1175,14 @@ component accessors="true"{
 	* Returns the Property Names of the entity via hibernate metadata
 	*/
 	array function getPropertyNames(required string entityName){
-		return orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetaData(arguments.entityName).getPropertyNames();
+		return orm.getSessionFactory( orm.getEntityDatasource(arguments.entityName) ).getClassMetaData( arguments.entityName ).getPropertyNames();
 	}
 
 	/**
 	* Returns the table name that the current entity string belongs to via hibernate metadata
 	*/
 	string function getTableName(required string entityName){
-		return orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetadata(arguments.entityName).getTableName();
+		return orm.getSessionFactory( orm.getEntityDatasource(arguments.entityName) ).getClassMetadata( arguments.entityName ).getTableName();
 	}
 
 	/**
@@ -997,7 +1190,7 @@ component accessors="true"{
 	*/
 	function getEntityGivenName(required entity) {
 		if( sessionContains( arguments.entity ) ){
- 			return orm.getSession(orm.getEntityDatasource(arguments.entity)).getEntityName( entity );
+ 			return orm.getSession( orm.getEntityDatasource(arguments.entity) ).getEntityName( entity );
  		}
 
  		// else long approach

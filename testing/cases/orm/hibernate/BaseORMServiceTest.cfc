@@ -1,5 +1,7 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase"{
 
+	this.loadColdBox = false;
+
 	function setup(){
 		ormservice   = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService");
 		mockEH = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
@@ -15,6 +17,12 @@
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 		test2 = ["1","2"];
 	}
+	
+	function testFindByDynamically(){
+		//t = ormservice.findByLastLoginIsNotNullAndLastLoginNotBetween("User", "2008-01-01" , "2012-01-01" );
+		t = ormservice.findByDescriptionLike( "Category", "majano", {ignorecase=false, maxresults=20} );
+		debug( t );
+	}	
 
 	function testExists(){
 		assertEquals( false, ormservice.exists("Category", "123") );
