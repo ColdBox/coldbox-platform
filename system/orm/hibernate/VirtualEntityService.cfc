@@ -139,7 +139,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.deleteByID(argumentCollection=arguments);
 	}
 	
-	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions() ){
+	any function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions() ){
 		arguments.datasource = this.getDatasource();
 		return super.deleteByQuery(argumentCollection=arguments);
 	}
