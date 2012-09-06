@@ -210,4 +210,13 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		arguments.entityName = this.getEntityName();
 		return super.newCriteria(argumentCollection=arguments);
 	}
+	
+	/**
+	* A nice onMissingMethod template to create awesome dynamic methods based on a virtual service
+	*/
+	any function onMissingMethod(string missingMethodName, struct missingMethodArguments){
+		// Add the entity name
+		arguments.missingMethodArguments.entityName = this.getEntityName();
+		return super.onMissingMethod(argumentCollection=arguments);
+	}
 }

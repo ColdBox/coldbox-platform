@@ -997,14 +997,12 @@ component accessors="true"{
 	/**
 	* Compile HQL from a dynamic method call
 	*/
-	private any function compileHQLFromDynamicMethod(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false, struct params){
+	private any function compileHQLFromDynamicMethod(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false, struct params, entityName){
 		var method 			= arguments.missingMethodName;
 		var args   			= arguments.missingMethodArguments;
 		
-		// The first argument needs to be the entityName or if we have a named argument
-		var entityName = ( structKeyExists( args, "entityName" ) ? args.entityName : args[ 1 ] );
 		// Get all real property names
-		var realPropertyNames = getPropertyNames( entityName );
+		var realPropertyNames = getPropertyNames( arguments.entityName );
 		// Match our method gramars ini the method string
 		var methodGrammars = REMatchNoCase( "((?!(and|or|$))\w)+(#ALL_CONDITIONALS_REGEX#)?(and|or|$)", method );
 		
@@ -1034,7 +1032,7 @@ component accessors="true"{
 			// TODO: Add relationships later 
 			var realPropertyIndex = arrayFindNoCase( realPropertyNames, expression.property );
 			if( realPropertyIndex EQ 0 ){
-				throw(message="The property you requested #expression.property# is not a valid property in the #entityName# entity",
+				throw(message="The property you requested #expression.property# is not a valid property in the #arguments.entityName# entity",
 					  detail="Valid properties are #arrayToList( realPropertyNames )#",
 					  type="BaseORMService.InvalidEntityProperty");
 			}
@@ -1071,7 +1069,7 @@ component accessors="true"{
 		if( arguments.isCounting ){
 			hql &= "select count(id) ";
 		}
-		hql &= "from " & entityName;	
+		hql &= "from " & arguments.entityName;	
 		
 		var paramIndex = 1;
 		for( var thisExpression in HQLExpressions ){
@@ -1111,7 +1109,7 @@ component accessors="true"{
 	* findByLastNameAndFirstName('User', 'Tester', 'Test');
 	* findByLastNameOrFirstName('User', 'Tester', 'Test')
 	* findAllByLastNameIsNotNull('User');
-	* The first argument must be the 'entityName'
+	* The first argument must be the 'entityName' or a named agument called 'entityname'
 	* Any argument which is a structure will be used as options for the query: { ignorecase, maxresults, offset, cacheable, cachename, timeout }
 	*/
 	any function findDynamically(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false){
@@ -1123,17 +1121,28 @@ component accessors="true"{
 		// setup the params to bind from the arguments, and also distinguish the incoming query options
 		var params 	= {};
 		var options = {};
-		for(var i=2; i LTE ArrayLen( args ); i++){
+		// Verify entityName, if does not exist, use the first argument.
+		if( !structKeyExists(args, "entityName" ) ){
+			arguments.entityName = args[ 1 ];
+			// Remove it like a mighty ninja
+			structDelete( args, "1" );
+		}
+		else{
+			arguments.entityName = args.entityName;
+			// Remove it like a mighty ninja
+			structDelete( args, "entityName" );
+		}
+		// Process arguments to binding parameters, we use named as they bind better in HQL, go figure
+		for(var i=1; i LTE ArrayLen( args ); i++){
 			// Check if the argument is a structure, if it is, then these are the query options
 			if( isStruct( args[ i ] ) ){
 				options = args[ i ];
 			}
 			// Normal params
 			else{
-				params[ "param#i-1#" ] = args[ i ];
+				params[ "param#i#" ] = args[ i ];
 			}
 		}
-		
 		// Check if we have already the signature for this request
 		if( structKeyExists( HQLDynamicCache, dynamicCacheKey ) ){
 			hql = HQLDynamicCache[ dynamicCacheKey ];

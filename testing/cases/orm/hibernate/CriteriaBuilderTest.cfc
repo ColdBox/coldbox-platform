@@ -1,5 +1,5 @@
 component extends="coldbox.system.testing.BaseTestCase"{
-
+	this.loadColdbox = false;
 	function setup(){
 		criteria   = getMockBox().createMock("coldbox.system.orm.hibernate.CriteriaBuilder");
 		criteria.init("User");
