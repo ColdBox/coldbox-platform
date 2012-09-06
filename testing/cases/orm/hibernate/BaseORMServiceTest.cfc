@@ -18,10 +18,58 @@
 		test2 = ["1","2"];
 	}
 	
+	function testCountByDynamically(){
+		// Test simple Equals
+		t = ormservice.countByLastName("User", "majano");
+		assert( 1 eq t, "CountBylastName" );
+		
+	}
 	function testFindByDynamically(){
-		//t = ormservice.findByLastLoginIsNotNullAndLastLoginNotBetween("User", "2008-01-01" , "2012-01-01" );
-		t = ormservice.findByDescriptionLike( "Category", "majano", {ignorecase=false, maxresults=20} );
-		debug( t );
+		// Test simple Equals
+		t = ormservice.findByLastName("User", "majano");
+		assert( isObject( t ), "FindBylastName" );
+		// Test simple Equals with invalid
+		t = ormservice.findByLastName("User", "d");
+		assert( isNull( t ), "Invalid last name" );
+		// Using Conditionals
+		t = ormservice.findAllByLastNameLessThanEquals("User", "Majano" );
+		assert( arraylen( t ) , "Conditionals LessThanEquals");
+		t = ormservice.findAllByLastNameLessThan("User", "Majano" );
+		assert( arraylen( t ) , "Conditionals LessThan");
+		t = ormservice.findAllByLastNameGreaterThan("User", "Majano" );
+		assert( arraylen( t ) , "Conditionals GreaterThan");
+		t = ormservice.findAllByLastNameGreaterThanEquals("User", "Majano" );
+		assert( arraylen( t ) , "Conditionals GreaterThanEqauls");
+		t = ormservice.findByLastNameLike("User", "ma%" );
+		assert( isObject( t ) , "Conditionals Like");
+		t = ormservice.findAllByLastNameNotEqual("User", "Majano" );
+		assert( arrayLen( t ) , "Conditionals Equal");
+		t = ormservice.findByLastNameIsNull("User");
+		assert( isNull( t ) , "Conditionals isNull");
+		t = ormservice.findAllByLastNameIsNotNull("User");
+		assert( arrayLen( t ) , "Conditionals isNull");
+		t = ormservice.findAllByLastLoginBetween("User", "01/01/2009", "01/01/2012");
+		assert( arrayLen( t ) , "Conditionals between");
+		t = ormservice.findByLastLoginBetween("User", "01/01/2008", "11/01/2008");
+		assert( isNull( t ) , "Conditionals between");
+		t = ormservice.findByLastLoginNotBetween("User", "01/01/2009", "01/01/2012");
+		assert( isNull( t ) , "Conditionals not between");
+		t = ormservice.findAllByLastNameInList("User", "Majano,Fernando");
+		assert( arrayLen( t ) , "Conditionals inList");
+		t = ormservice.findAllByLastNameInList("User", listToArray(  "Majano,Fernando" ));
+		assert( arrayLen( t ) , "Conditionals inList");
+		t = ormservice.findAllByLastNameNotInList("User", listToArray(  "Majano,Fernando" ));
+		assert( arrayLen( t ) , "Conditionals NotinList");
+	}	
+	
+	function testFindByDynamicallyBadProperty(){
+		expectException("BaseORMService.InvalidEntityProperty");
+		t = ormservice.findByLastAndFirst("User");
+	}	
+	
+	function testFindByDynamicallyFailure(){
+		expectException("BaseORMService.HQLQueryException");
+		t = ormservice.findByLastName("User");
 	}	
 
 	function testExists(){

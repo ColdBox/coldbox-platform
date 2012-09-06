@@ -51,6 +51,28 @@ component accessors="true"{
 	* The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
 	*/
 	property name="defaultAsQuery" type="boolean" default="true";
+	
+	/**
+	* All calculated and parsed dynamic finders' and counters' HQL will be stored here for easier execution
+	*/
+	property name="HQLDynamicCache" type="struct";  
+	
+	// STATIC DYNAMIC FINDER VARIABLES
+	ALL_CONDITIONALS 		= "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";
+	ALL_CONDITIONALS_REGEX	= replace( ALL_CONDITIONALS, ",", "|", "all" );
+	CONDITIONALS_SQL_MAP 	= { 
+		"LessThanEquals" = "<=",
+		"LessThan" = "<",
+		"GreaterThanEquals" = ">=",
+		"GreaterThan" = ">",
+		"Like" = "like",
+		"NotEqual" = "<>",
+		"isNull" = "is null",
+		"isNotNull" = "is not null",
+		"NotBetween" = "not between",
+		"between" = "between",
+		"NotInList" = "not in",
+		"InList" = "in" };
 
 	/************************************** CONSTRUCTOR *********************************************/
 
@@ -65,6 +87,7 @@ component accessors="true"{
 		setEventHandling( arguments.eventHandling );
 		setUseTransactions( arguments.useTransactions );
 		setDefaultAsQuery( arguments.defaultAsQuery );
+		setHQLDynamicCache( {} );
 
 		// Create the service ORM Event Handler composition
 		if( directoryExists( expandPath("/wirebox") ) ){
@@ -949,23 +972,138 @@ component accessors="true"{
 
 	/**
 	* A nice onMissingMethod template to create awesome dynamic methods.
-	*
 	*/
-	any function onMissingMethod(string missingMethodName,struct missingMethodArguments){
+	any function onMissingMethod(string missingMethodName, struct missingMethodArguments){
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
 		
 		// Dynamic Find Unique Finders
-		if( left( method, 6 ) eq "findBy" ){
+		if( left( method, 6 ) eq "findBy" and len( method ) GT 6 ){
 			return findDynamically(missingMethodName=right( method, len( method ) - 6 ), missingMethodArguments=args, unique=true);
 		}
 		// Dynamic find All Finders
-		if( left( method, 9 ) eq "findAllBy" ){
+		if( left( method, 9 ) eq "findAllBy"  and len( method ) GT 9 ){
 			return findDynamically(missingMethodName=right( method, len( method ) - 9 ), missingMethodArguments=args, unique=false);
+		}
+		// Dynamic countBy Finders
+		if( left( method, 7 ) eq "countBy"  and len( method ) GT 7 ){
+			return findDynamically(missingMethodName=right( method, len( method ) - 7 ), missingMethodArguments=args, unique=true, isCounting=true);
 		}
 		
 		// Throw exception, method not found.
-		throw(message="Invalid method call: #method#", detail="The method you called does not exist", type="BaseORMService.MissingMethodException");
+		throw(message="Invalid method call: #method#", detail="The dynamic/static method you called does not exist", type="BaseORMService.MissingMethodException");
+	}
+	
+	/**
+	* Compile HQL from a dynamic method call
+	*/
+	private any function compileHQLFromDynamicMethod(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false, struct params){
+		var method 			= arguments.missingMethodName;
+		var args   			= arguments.missingMethodArguments;
+		
+		// The first argument needs to be the entityName or if we have a named argument
+		var entityName = ( structKeyExists( args, "entityName" ) ? args.entityName : args[ 1 ] );
+		// Get all real property names
+		var realPropertyNames = getPropertyNames( entityName );
+		// Match our method gramars ini the method string
+		var methodGrammars = REMatchNoCase( "((?!(and|or|$))\w)+(#ALL_CONDITIONALS_REGEX#)?(and|or|$)", method );
+		
+		// Throw exception if no method grammars found
+		if( !arrayLen( methodGrammars ) ){
+			throw(message="Invalid dynamic method grammar expression. Please check your syntax. You could be missing property names or conditionals", 
+				  detail="Expression: #method#", 
+				  type="BaseORMService.InvalidMethodGrammar");
+		}
+		
+		// Iterate over method grammars to build HQL Expressions
+		var HQLExpressions = [];
+		for( var thisGrammar in methodGrammars ){
+			// create expression syntax
+			var expression = { property = "", conditional = "eq", operator = "and", sql = "=" };
+
+			// Check for Or expression, AND is default expression
+			if( right( thisGrammar, 2 ) eq "or" ){
+				expression.operator = "or";
+			}
+			// Remove operator now that we have it
+			thisGrammar = REReplacenoCase( thisGrammar, "(and|or)$", "" );
+			
+			// Get property by removing conditionals from the expression
+			expression.property = REReplacenoCase( thisGrammar, "(#ALL_CONDITIONALS_REGEX#)$", "" );
+			// Verify if property exists in valid properties
+			// TODO: Add relationships later 
+			var realPropertyIndex = arrayFindNoCase( realPropertyNames, expression.property );
+			if( realPropertyIndex EQ 0 ){
+				throw(message="The property you requested #expression.property# is not a valid property in the #entityName# entity",
+					  detail="Valid properties are #arrayToList( realPropertyNames )#",
+					  type="BaseORMService.InvalidEntityProperty");
+			}
+			// now save the actual property name to the passed in property to avoid case issues with Hibernate
+			expression.property = realPropertyNames[ realPropertyIndex ];
+			// Remove property now from method expression
+			thisGrammar = REReplacenoCase( thisGrammar, "#expression.property#", "" );
+			
+			// Get Conditional Operator now if it exists, else it defaults to EQ
+			if( len( thisGrammar ) ){
+				// Match the conditional statement
+				var conditional = REMatchNoCase( "(#ALL_CONDITIONALS_REGEX#)$", thisGrammar );
+				// Did we match?
+				if( arrayLen( conditional ) ){
+					expression.conditional = conditional[ 1 ];
+					expression.sql = CONDITIONALS_SQL_MAP[ expression.conditional ];
+				}
+				else{
+					throw(message="Invalid conditional statement in method expression: #thisGrammar#",
+						  detail="Valid Conditionals: #ALL_CONDITIONALS#",
+						  type="BaseORMService.InvalidConditionalExpression");
+				}
+			}
+			
+			// Add to expressions
+			arrayAppend( HQLExpressions, expression );
+		}
+		// end compile grammars
+		
+		// Build the HQL
+		var where = "";
+		// Begin building the hql statement with or without counts
+		var hql = "";
+		if( arguments.isCounting ){
+			hql &= "select count(id) ";
+		}
+		hql &= "from " & entityName;	
+		
+		var paramIndex = 1;
+		for( var thisExpression in HQLExpressions ){
+			if( len( where ) ){
+				where = "#where# #thisExpression.operator# ";
+			}
+			switch( trim( thisExpression.conditional ) ){
+				case "isNull" : case "isNotNull" : { 
+					where = "#where# #thisExpression.property# #thisExpression.sql#";
+					break; 
+				}
+				case "between" : case "notBetween" : {
+					where = "#where# #thisExpression.property# #thisExpression.sql# :param#paramIndex++# and :param#paramIndex++#";
+					break;
+				}
+				case "inList" : case "notInList" : {
+					where = "#where# #thisExpression.property# #thisExpression.sql# (:param#paramIndex++#)";
+					// Verify if the param is an array collection
+					if( isSimpleValue( params["param#paramIndex-1#"] ) ){
+						params["param#paramIndex-1#"] = listToArray( params["param#paramIndex-1#"] );
+					}
+					break;
+				}
+				default:{
+					where = "#where# #thisExpression.property# #thisExpression.sql# :param#paramIndex++#";	
+					break;	
+				}
+			}
+		}	
+		
+		// Finalize the HQL
+		return hql & " where #where#";
 	}
 	
 	/**
@@ -976,179 +1114,64 @@ component accessors="true"{
 	* The first argument must be the 'entityName'
 	* Any argument which is a structure will be used as options for the query: { ignorecase, maxresults, offset, cacheable, cachename, timeout }
 	*/
-	any function findDynamically(string missingMethodName,struct missingMethodArguments, boolean unique=true){
-		var ALL_OPERATORS 				= "AND,OR";
-		var ALL_CONDITIONALS 			= "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";
-		var SQL_CONDITIONALS 			= "<=,<,>=,>,like,<>,is null,is not null,not between,between,not in,in";
-		var ALL_OPERATORS_CONDITIONALS 	= listAppend( ALL_OPERATORS, ALL_CONDITIONALS );
-		var method = arguments.missingMethodName;
-		var args   = arguments.missingMethodArguments;
-
-		// The first argument needs to be the entityName
-		var entityName = args[ 1 ];
-		// The real property names
-		var realPropertyNames = getPropertyNames( entityName );
-		/*
-		Loop over all the valid operators and conditionals and
-		replace them with commas to build a list of tokens from the method name
-		*/
-		var tokens = "";
-		for (var i=1; i LTE listLen( ALL_OPERATORS_CONDITIONALS ); i++) {
-			// Get the first operator
-			var currentOperator = listGetAt( ALL_OPERATORS_CONDITIONALS, i );
-			if (i EQ 1){
-				tokens = replaceNoCase( method, currentOperator, ",", "all");
-			} else {
-				tokens = replaceNoCase( tokens, currentOperator, ",", "all");
-			}
-		}
-		//replace double commas in case you had a comparator and operator combo
-		tokens = replace( tokens, ",,", ",", "all" );
-		
-		/*
-		Loop over the tokens and remove the property names from the method call
-		so we can have a list of comparators and operators
-		*/
-		var operAndCond = "";
-		for (var i=1; i LTE listLen( tokens ); i++) {
-			// get the required token for each method tokens
-			var thisToken = listGetAt( tokens, i );
-			if (i EQ 1){
-				operAndCond = replaceNoCase( method, thisToken, "" );
-			} else {
-				operAndCond = replaceNoCase( operAndCond, thisToken, "," );
-			}
-		}
-		
-		/*
-		Sperate the operators and conditionals,
-		also, add the equals to the conditional list
-		*/
-		var operators = "";
-		var conditionals = "";
-		for (var i=1; i LTE listLen( operAndCond ); i++) {
-			// Get the first operator or conditional
-			var oc = listGetAt( operAndCond, i );
-			// is the oc an operator?
-			if( listFindNoCase( ALL_OPERATORS, oc ) ){
-				// Yes, so add it to the operator list
-				operators = listAppend( operators, oc );
-				// Add it to the conditional lists
-				conditionals = listAppend( conditionals, "=" );
-			} 
-			// is the oc a conditional statement
-			else if( listFindNoCase( ALL_CONDITIONALS, oc ) ){
-				// Add it to the conditional list
-				conditionals = listAppend( conditionals, oc );
-			} 
-			// else
-			else {
-				operators = listAppend( operators, oc );
-				conditionals = listAppend( conditionals, oc );
-			}
-		}
-		
-		// Remove any operators from the conditional list
-		for (var i=1; i LTE listLen( ALL_OPERATORS ); i++) {
-			var operator = listGetAt( ALL_OPERATORS, i );
-			conditionals = replaceNoCase( conditionals, operator, "" );
-		}
-		
-		// Remove any conditionals from the operator list and convert the conditional into valid SQL conditional
-		for (var i=1; i LTE listLen( ALL_CONDITIONALS ); i++) {
-			var conditional 	= listGetAt( ALL_CONDITIONALS, i );
-			var sqlConditional 	= listGetAt( SQL_CONDITIONALS, i );
-			operators 		= replaceNoCase( operators, conditional, "");
-			conditionals 	= replaceNoCase( conditionals, conditional, sqlConditional);
-		}
-		
-		// add the last = if it needs one
-		if( listLen( tokens ) NEQ listLen( conditionals ) ){
-			conditionals = listAppend( conditionals, "=" );
-		}
+	any function findDynamically(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false){
+		var method 			= arguments.missingMethodName;
+		var args   			= arguments.missingMethodArguments;
+		var dynamicCacheKey = hash( arguments.toString() );
+		var hql				= "";
 		
 		// setup the params to bind from the arguments, and also distinguish the incoming query options
-		var params = [];
+		var params 	= {};
 		var options = {};
 		for(var i=2; i LTE ArrayLen( args ); i++){
-			// Check if the argument is a structure, if it is, then these are the options
+			// Check if the argument is a structure, if it is, then these are the query options
 			if( isStruct( args[ i ] ) ){
 				options = args[ i ];
 			}
 			// Normal params
 			else{
-				params[ i-1 ] = args[ i ];
+				params[ "param#i-1#" ] = args[ i ];
 			}
 		}
 		
-		// Build the HQL
-		var where = "";
-		// Begin building the hql statement
-		var hql = "from " & entityName;
-		for (var i=1; i LTE listLen( tokens ); i++) {
-			// get real property name according to token
-			var realPropertyIndex = arrayFindNoCase( realPropertyNames, listGetAt( tokens, i) );
-			// Verify if property found, else throw exception
-			if( realPropertyIndex EQ 0 ){
-				throw(message="The property you requested #listGetAt( tokens, i)# is not a valid property in the #entityName# entity",
-					  detail="Valid properties are #arrayToList( realPropertyNames )#",
-					  type="BaseORMService.InvalidEntityProperty");
-			}
-			var token 		= realPropertyNames[ realPropertyIndex ];
-			var conditional = listGetAt( conditionals, i );
-			if( len( where ) ){
-				var operator = listGetAt( operators, i-1 );
-				where = "#where# #operator# ";
-			}
-			switch( trim( conditional ) ){
-				case "is null" : case "is not null" : { 
-					where = "#where# #token# #conditional#";
-					break; 
-				}
-				case "between" : case "not between" : {
-					where = "#where# #token# #conditional# ? and ?";
-					break;
-				}
-				case "in" : case "not in" : {
-					where = "#where# #token# #conditional# (?)";
-					break;
-				}
-				default:{
-					where = "#where# #token# #conditional# ?";	
-					break;	
-				}
-			}			
+		// Check if we have already the signature for this request
+		if( structKeyExists( HQLDynamicCache, dynamicCacheKey ) ){
+			hql = HQLDynamicCache[ dynamicCacheKey ];
 		}
-		
-		// Finalize the HQL
-		hql = hql & " where #where#";
+		else{
+			arguments.params = params;
+			hql = compileHQLFromDynamicMethod(argumentCollection=arguments);
+			// store compiled HQL
+			HQLDynamicCache[ dynamicCacheKey ] = hql;
+		}
 		
 		//results struct used for testing
-		results = structNew();
+		var results = structNew();
 		results.method = method;
-		results.tokens = tokens;
-		results.operators = operators;
-		results.conditionals = conditionals;
-		results.where = where;
-		results.options = options;
 		results.params = params;
+		results.options = options;
+		results.unique = arguments.unique;
+		results.isCounting = arguments.isCounting;
 		results.hql = hql;
-		results.operAndCond = operAndCond;
 		
-		writeDump( results );
-		writeDump(var=ORMExecuteQuery( hql, params, arguments.unique, options));
-		abort;
-
+		//writeDump( ORMExecuteQuery( hql, params, arguments.unique, options) );
+		//writeDump(results);abort;
+		
 		// execute query as unique for the count
-		 try{
-		 	return ORMExecuteQuery( hql, params, arguments.unique, options);
-		 }
-		 catch("java.lang.NullPointerException" e){
-		 	throw(message="A null pointer exception occurred when running the count",
-				  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#tokens#",
-				  type="ORMService.MaybeInvalidParamCaseException");
-		 }
+		try{
+			return ORMExecuteQuery( hql, params, arguments.unique, options);
+		}
+		catch(Any e){
+			if( findNoCase("org.hibernate.NonUniqueResultException", e.detail) ){
+		 		throw(message=e.message & e.detail,
+					  detail="If you do not want unique results then use 'FindAllBy' instead of 'FindBy'",
+				  	  type="ORMService.NonUniqueResultException");
+			}
+			throw(message=e.message & e.detail, type="BaseORMService.HQLQueryException", detail="Dynamic compiled query: #results.toString()#");
+		}
+		
 	}
+	
 
 	/**
 	* Returns the key (id field) of a given entity, either simple or composite keys.
