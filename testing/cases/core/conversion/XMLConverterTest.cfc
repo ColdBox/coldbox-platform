@@ -1,6 +1,7 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
-
+	this.loadColdBox = false;
+	
 	function setup(){
 		xml = getMockBox().createMock(className="coldbox.system.core.conversion.XMLConverter").init();
 	}

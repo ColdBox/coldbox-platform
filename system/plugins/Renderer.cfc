@@ -131,7 +131,10 @@ Description :
 					   detail="Please remember to use the 'event.setView()' method in your handler or pass in a view to render.",
 					   type="Renderer.ViewNotSetException");
 			}
-
+			
+			// Cleanup leading / in views, just in case
+			arguments.view = reReplace( arguments.view, "^(\\|/)", "" );
+			
 			// Announce preViewRender interception
 			if( NOT arguments.prepostExempt ){ announceInterception("preViewRender", iData); }
 
@@ -416,6 +419,8 @@ Description :
 		<cfif structKeyExists(arguments,"layout")>
 			<!--- Check if any length on incoming layout --->
 			<cfif len ( arguments.layout )>
+				<!--- Cleanup leading / in views, just in case --->
+				<cfset arguments.layout = reReplace( arguments.layout, "^(\\|/)", "" )>
 				<cfset cbox_currentLayout = arguments.layout & ".cfm">
 			<cfelse>
 				<cfset cbox_currentLayout = "">
