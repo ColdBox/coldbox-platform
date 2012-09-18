@@ -225,6 +225,7 @@ Description :
 	<cffunction name="addNamespace" output="false" access="public" returntype="any" hint="Register a namespace in the specified position in the main routing table, and returns itself">
 		<cfargument name="pattern" 		type="string"  required="true"  hint="The pattern to match against the URL." />
 		<cfargument name="namespace"  	type="string"  required="true"  hint="The name of the namespace to register"/>
+		<cfargument name="append"  		type="boolean" required="false" default="true" hint="Whether the route should be appended or pre-pended to the array. By default we append to the end of the array"/>
 		<cfscript>
 
 			// Create the namespace routes container if it does not exist already, as we could create many patterns that point to the same namespace
@@ -233,7 +234,7 @@ Description :
 			}
 
 			// Store the entry point for the namespace
-			addRoute(pattern=arguments.pattern,namespaceRouting=arguments.namespace);
+			addRoute(pattern=arguments.pattern, namespaceRouting=arguments.namespace, append=arguments.append);
 
 			return this;
 		</cfscript>
