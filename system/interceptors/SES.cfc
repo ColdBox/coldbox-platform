@@ -1008,6 +1008,10 @@ Description :
 				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
 					// Setup the found Route
 					foundRoute = _routes[i];
+					// Is this namespace routing?
+					if( len(arguments.namespace) ){
+						arguments.event.setValue(name="currentRoutedNamespace",value=arguments.namespace,private=true);
+					}
 					// Debug logging
 					if( log.canDebug() ){
 						log.debug("SES Route matched: #foundRoute.toString()# on routed string: #requestString#");
