@@ -30,11 +30,12 @@ Description :
 
 	<cfset this.ormSettings = {
 		logSQL = true,
-		eventhandling = true,
 		dbcreate = "update",
 		secondarycacheenabled = true,
 		cacheProvider = "ehcache",
-		flushAtRequestEnd = false
+		flushAtRequestEnd = false,
+		eventhandling = true,
+		eventHandler = "testmodel.EventHandler"
 	}>
 
 	<!--- <cfset this.ormsettings.eventhandler = "testmodel.EventHandler"> --->

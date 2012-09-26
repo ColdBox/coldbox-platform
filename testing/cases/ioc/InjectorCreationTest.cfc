@@ -1,14 +1,21 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
-
+	this.loadColdBox = false;
+	
 	function setup(){
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector").init("coldbox.testing.cases.ioc.config.samples.InjectorCreationTestsBinder");
+		application.wirebox = injector;
 		// mock logger
 		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error");
 		injector.$property("log","instance",mockLogger);
 		// mock event manager
 		getMockBox().prepareMock( injector.getEventManager() );
+	}
+	
+	function teardown(){
+		structDelete(application, "wirebox");
+		super.teardown();
 	}
 
 	function testMixins(){
@@ -170,6 +177,11 @@
 		c = entityLoad("Category")[1];
 		debug( c.getData() );
 		assertEquals( injector.getInstance("WireBoxURL"), c.getData() );
+	}
+	
+	function testImplicitSetters(){
+		c = injector.getInstance("implicitTest");
+		debug( c );
 	}
 
 
