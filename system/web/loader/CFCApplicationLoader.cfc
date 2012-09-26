@@ -301,6 +301,10 @@ Loads a coldbox cfc configuration file
 			if ( not structKeyExists(configStruct, "RequestContextDecorator") or len(configStruct["RequestContextDecorator"]) eq 0 ){
 				configStruct["RequestContextDecorator"] = "";
 			}
+			//ControllerDecorator
+			if ( not structKeyExists(configStruct, "ControllerDecorator") or len(configStruct["ControllerDecorator"]) eq 0 ){
+				configStruct["ControllerDecorator"] = "";
+			}
 			//Check for ProxyReturnCollection
 			if ( not structKeyExists(configStruct, "ProxyReturnCollection") or not isBoolean(configStruct.ProxyReturnCollection) )
 				configStruct["ProxyReturnCollection"] = false;

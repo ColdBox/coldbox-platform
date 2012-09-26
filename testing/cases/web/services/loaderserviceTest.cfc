@@ -45,6 +45,7 @@ Description :
 		removeFile( dummyFile );
 	}
 	
+	
 	function testProcessShutdown(){
 		ls.processShutdown();
 	}
