@@ -19,7 +19,7 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="LoaderService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			setController(arguments.controller);
+			setController( arguments.controller );
 
 			// service properties
 			instance.appLoader = "";
@@ -49,7 +49,12 @@ Modification History:
 
 		// Load application configuration file
 		createAppLoader( arguments.overrideConfigFile ).loadConfiguration( arguments.overrideAppMapping );
-
+		
+		// Do we need to create a controller decorator?
+		if( len( controller.getSetting("ControllerDecorator") ) ){
+			createControllerDecorator();
+		}
+		
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if( NOT structIsEmpty( controller.getSetting("LogBoxConfig") ) ){
 			// reconfigure LogBox with user configurations
@@ -88,6 +93,25 @@ Modification History:
 		// We are now done, rock and roll!!
 		</cfscript>
 	</cffunction>
+	
+	<!--- createControllerDecorator --->
+    <cffunction name="createControllerDecorator" output="false" access="public" returntype="void" hint="Create Controller Decorator">
+    	<cfscript>
+			// create decorator
+    		var decorator 	= createObject("component", controller.getSetting("ControllerDecorator") ).init( controller );
+    		var services  	= controller.getServices();
+    		var key			= "";
+    		
+    		// Call configuration on it
+    		decorator.configure();
+    		// Override in persistence scope
+    		application[ controller.getAppKey() ] = decorator;
+    		// Override locally now in all services
+    		for( key in services ){
+    			services[ key ].setController( decorator );
+    		}
+    	</cfscript>
+    </cffunction>
 
 	<!--- Register the Aspects --->
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
