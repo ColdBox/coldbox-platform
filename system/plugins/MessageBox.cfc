@@ -89,7 +89,7 @@ Description :
 			var msg = structnew();
 
 			// check message type
-			if( isValidMessageType(arguments.tupe) ){
+			if( isValidMessageType(arguments.type) ){
 				// Populate message
 				msg.type 	= arguments.type;
 				msg.message = arguments.message;
@@ -306,7 +306,7 @@ Description :
 		<cfset var results = "">
 
 		<!--- Verify Message Type --->
-		<cfif isValidMessageType(arguments.tupe)>
+		<cfif isValidMessageType(arguments.type)>
 			<!--- Populate message struct --->
 			<cfset msgStruct.type = arguments.type>
 			<cfset msgStruct.message = arguments.message>
