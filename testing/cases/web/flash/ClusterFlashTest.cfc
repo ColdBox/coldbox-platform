@@ -1,5 +1,6 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
+	this.loadColdBox = false;
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.ClusterFlash");
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);

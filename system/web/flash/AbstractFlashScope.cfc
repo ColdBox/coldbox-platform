@@ -116,26 +116,26 @@ method which will most likely be called by the saveFlash() method in order to pe
 				// check if key exists and inflating
 				if( structKeyExists(flash, scopeKeys[x] ) AND flash[ scopeKeys[x] ].keep ){
 					thisKey = flash[ scopeKeys[x] ];
-					// Inflate into RC?
-					if( thisKey.inflateToRC ){
-						event.setValue(name=scopeKeys[x],value=thisKey.content);
-					}
-					// Inflate into PRC?
-					if( thisKey.inflateToPRC ){
-						event.setValue(name=scopeKeys[x],value=thisKey.content,private=true);
-					}
-
 					// Keep = true if autoPurge is false, because we need to keep it around.
 					if( NOT thisKey.autoPurge ){ keep = true; }
 					else{ keep = false; }
-
-					// Save and mark for cleaning
-					put(name=scopeKeys[x],
-						value=thisKey.content,
-						keep=keep,
-						autoPurge=thisKey.autoPurge,
-						inflateToRC=thisKey.inflateToRC,
-						inflateToPRC=thisKey.inflateToPRC);
+					// Save and mark for cleaning if content exists
+					if( structKeyExists( thisKey, "content") ){
+						// Inflate into RC?
+						if( thisKey.inflateToRC ){
+							event.setValue(name=scopeKeys[x],value=thisKey.content);
+						}
+						// Inflate into PRC?
+						if( thisKey.inflateToPRC ){
+							event.setValue(name=scopeKeys[x],value=thisKey.content,private=true);
+						}	
+						put(name=scopeKeys[x],
+							value=thisKey.content,
+							keep=keep,
+							autoPurge=thisKey.autoPurge,
+							inflateToRC=thisKey.inflateToRC,
+							inflateToPRC=thisKey.inflateToPRC);
+					}
 				}
 			}
 
