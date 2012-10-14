@@ -35,14 +35,10 @@ this.ROOT_ENTITY
 	
 */
 import coldbox.system.orm.hibernate.*;
-component accessors="true"{
+component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	
 	// The criteria values this criteria builder builds upon.
 	property name="criterias" type="array";
-	// The native criteria object
-	property name="nativeCriteria"  type="any";
-	// The entity name this criteria builder is binded to
-	property name="entityName" type="string";
 	// The queryCacheRegion name property for all queries in this criteria object
 	property name="queryCacheRegion" type="string" default="criterias.{entityName}";
 	// The bit that tells the service to enable query caching, disabled by default
@@ -58,29 +54,15 @@ component accessors="true"{
 		// Determine datasource for given entityName
 		var orm			= getORMUtil();
 		var datasource 	= orm.getEntityDatasource( arguments.entityName );	  
-									
+		// create new criteria
+		var criteria = orm.getSession( datasource ).createCriteria( arguments.entityName );
 		// restrictions linkage
-		this.restrictions = new criterion.Restrictions();
-		// java projections linkage
-		this.projections = CreateObject("java","org.hibernate.criterion.Projections");
+		var restrictions = new criterion.Restrictions();
+		// setup basebuilder with criteria query and restrictions
+		super.init( arguments.entityName, criteria, restrictions );    
 		
 		// local criterion values
-		setCriterias( [] );
-		// hibernate criteria query setup
-		setNativeCriteria( orm.getSession( datasource ).createCriteria( arguments.entityName ) );
-		// set entity name
-		setEntityName( arguments.entityName );
-		
-		// Setup pseudo-static join types and transformer types:
-		this.ALIAS_TO_ENTITY_MAP 	= nativeCriteria.ALIAS_TO_ENTITY_MAP;
-		this.DISTINCT_ROOT_ENTITY 	= nativeCriteria.DISTINCT_ROOT_ENTITY;
-		this.FULL_JOIN 				= nativeCriteria.FULL_JOIN;
-		this.INNER_JOIN 			= nativeCriteria.INNER_JOIN;
-		this.LEFT_JOIN 				= nativeCriteria.LEFT_JOIN;
-		this.PROJECTION 			= nativeCriteria.PROJECTION;
-		this.ROOT_ALIAS 			= nativeCriteria.ROOT_ALIAS;
-		this.ROOT_ENTITY 			= nativeCriteria.ROOT_ENTITY;
-		
+		setCriterias( [] );	
 		// caching?
 		setUseQueryCaching( arguments.useQueryCaching );
 		// caching region?
@@ -93,38 +75,6 @@ component accessors="true"{
 	}
 
 /************************************** PUBLIC *********************************************/	
-	
-	// setter override
-	any function setNativeCriteria(required any criteria){
-		variables.nativeCriteria = arguments.criteria;
-		return this;
-	}
-		
-	/**
-	* Add an ordering to the result set, you can add as many as you like
-	* @property The name of the property to order on
-	* @sortOrder The order type: asc or desc, defaults to asc
-	* @ignoreCase Wether to ignore case or not, defaults to false
-	*/
-	any function order(required string property,string sortDir="asc",boolean ignoreCase=false){
-		var order 	= CreateObject("java","org.hibernate.criterion.Order");
-		var orderBy = "";
-		// direction
-		switch(UCase(arguments.sortDir)) {
-			case "DESC":
-				orderBy = order.desc(arguments.property);
-				break;
-			default:
-				orderBy = order.asc(arguments.property);
-				break;
-		}
-		// ignore case
-		if(arguments.ignoreCase){
-			orderBy.ignoreCase();
-		}
-		nativeCriteria.addOrder( orderBy );
-		return this;
-	}
 	
 	/**
 	* Execute the criteria queries you have defined and return the results, you can pass optional parameters or define them via our methods
@@ -171,38 +121,28 @@ component accessors="true"{
 		return results;
 	}
 	
-	/**
-	* Join an association, assigning an alias to the joined association.
-	* @associationName The name of the association property
-	* @alias The alias to use for this association property on restrictions
-	* @jointType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
-	*/
-	any function createAlias(required string associationName, required string alias, numeric joinType){
-		// No Join type
-		if( NOT structKeyExists(arguments,"joinType") ){
-			nativeCriteria.createAlias( arguments.associationName, arguments.alias );
-			return this;
+	// pass off arguments to higher-level restriction builder, and handle the results
+	any function onMissingMethod(required string missingMethodName, required struct missingMethodArguments) {
+		// get the restriction/new criteria 
+		var r = createRestriction( argumentCollection=arguments );
+		// switch on the object type
+		switch( getMetaData( r ).name ) {
+			// if it's a builder, just return this
+			case 'coldbox.system.orm.hibernate.CriteriaBuilder':
+				break;
+			// everything else is a real restriction; add it to native criteria, then return this
+			default: 
+				nativeCriteria.add( r );
+			break;
 		}
-		// With Join Type
-		nativeCriteria.createAlias( arguments.associationName, arguments.alias, arguments.joinType );
 		return this;
 	}
 	
-	/**
-	* Create a new Criteria, "rooted" at the associated entity and using an Inner Join
-	* @associationName The name of the association property to root the restrictions with
-	* @jointType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
-	*/
-	any function createCriteria(required string associationName,numeric joinType){
-		// No Join type
-		if( NOT structKeyExists(arguments,"joinType") ){
-			nativeCriteria = nativeCriteria.createCriteria( arguments.associationName );
-			return this;
-		}
-		
-		// With Join Type
-		nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.joinType );
-		return this;
+	// create an instance of a detached criteriabuilder that can be added, like criteria, to the main criteria builder
+	any function createSubcriteria( required string entityName, string alias="" ) {
+		var subcriteria = new DetachedCriteriaBuilder( argumentCollection=arguments );
+		// return the subscriteria instance so we can keep chaining methods to it, but rooted to the subcriteria
+		return subcriteria;
 	}
 	
 	// Enable caching of this query result, provided query caching is enabled for the underlying session factory.
@@ -256,29 +196,6 @@ component accessors="true"{
 	}
 	
 	/**
-	* Add a restriction to constrain the results to be retrieved
-	* @criterion A single or array of criterions to add
-	*/
-	any function add(required any criterion){
-		if( NOT isArray(arguments.criterion) ){
-			arguments.criterion = [ arguments.criterion ];	
-		}
-		for(var i=1; i LTE ArrayLen(arguments.criterion); i++) {
-			nativeCriteria.add( arguments.criterion[i] );
-		}		
-		return this;
-	}
-	
-	/**
-	* Sets a valid hibernate result transformer: org.hibernate.transform.ResultTransform to use on the results
-	* @resultTransformer a custom result transform or you can use the included ones: criteria.ALIAS_TO_ENTITY_MAP, criteria.DISTINCT_ROOT_ENTITY, criteria.PROJECTION, criteria.ROOT_ENTITY.
-	*/
-	any function resultTransformer(any resultTransformer){
-		nativeCriteria.setResultTransformer( arguments.resultTransformer );
-		return this;
-	}
-	
-	/**
 	* Get the record count using hibernate projections for the given criterias
 	*/
 	numeric function count(){
@@ -291,119 +208,7 @@ component accessors="true"{
 		return results;
 	}
 	
-	/**
-	* Setup a single or a projection list via native projections class: criteria.projections
-	*/
-	any function setProjection(any projection){
-		nativeCriteria.setProjection( arguments.projection );
-		return this;
-	}
-	
-	/**
-	* Setup projections for this criteria query, you can pass one or as many projection arguments as you like.
-	* The majority of the arguments take in the property name to do the projection on, which will also use that as the alias for the column
-	* or you can pass an alias after the property name separated by a : Ex: projections(avg="balance:avgBalance")
-	* The alias on the projected value can be referred to in restrictions or orderings.
-	* Please also note that the resulting array locations are done in alphabetical order of the arguments.
-	* @avg The name of the property to avg or a list or array of property names
-	* @count The name of the property to count or a list or array of property names
-	* @countDistinct The name of the property to count distinct or a list or array of property names
-	* @distinct The name of the property to do a distinct on, this can be a single property name a list or an array of property names
-	* @groupProperty The name of the property to group by or a list or array of property names
-	* @id The projected identifier value 
-	* @max The name of the property to max or a list or array of property names
-	* @min The name of the property to min or a list or array of property names
-	* @property The name of the property to do a projected value on or a list or array of property names
-	* @rowCount Do a row count on the criteria
-	* @sum The name of the property to sum or a list or array of property names
-	*/
-	any function withProjections(string avg,string count,string countDistinct,any distinct, string groupProperty,boolean id,string max,string min,string property,boolean rowCount,string sum){
-		// create our projection list
-		var projectionList = this.PROJECTIONS.projectionList();
-		var excludes = "id,rowCount,distinct";
-		
-		// iterate and add dynamically if the incoming argument exists, man, so much easier if we had closures.
-		for(var pType in arguments){
-			if( structKeyExists(arguments,pType) AND NOT listFindNoCase(excludes, pType) ){
-				addProjection(arguments[pType], lcase(pType), projectionList);
-			}
-		}
-		
-		// id
-		if( structKeyExists(arguments,"id") ){
-			projectionList.add( this.PROJECTIONS.id() );
-		}
-		
-		// rowCount
-		if( structKeyExists(arguments,"rowCount") ){
-			projectionList.add( this.PROJECTIONS.rowCount() );
-		}
-		
-		// distinct
-		if( structKeyExists(arguments,"distinct") ){
-			addProjection(arguments.distinct,"property",projectionList);
-			projectionList = this.PROJECTIONS.distinct(projectionList);
-		}
-		
-		nativeCriteria.setProjection( projectionList );
-		return this;
-	}
-
-	// funnel missing methods to restrictions.
-	any function onMissingMethod(required string missingMethodName, required struct missingMethodArguments){
-		
-		// check for with{association} dynamic finder: 
-		if( left(arguments.missingMethodName,4) eq "with" ){
-			var args = { 
-				associationName = right( arguments.missingMethodName, len(arguments.missingMethodName)-4)
-			};
-			// join type
-			if( structKeyExists(arguments.missingMethodArguments,"1") ){
-				args.joinType = arguments.missingMethodArguments[1];
-			}
-			if( structKeyExists(arguments.missingMethodArguments,"joinType") ){
-				args.joinType = arguments.missingMethodArguments.joinType;
-			}
-			// create the dynamic criteria
-			return createCriteria(argumentCollection=args);
-		}
-		
-		// funnel missing methods to restrictions and append to criterias
-		var r = evaluate("this.restrictions.#arguments.missingMethodName#(argumentCollection=arguments.missingMethodArguments)");
-		nativeCriteria.add( r );
-		
-		return this;
-	}
-	
 	/************************************** PRIVATE *********************************************/
-	
-	// Simplified additions of projections
-	private function addProjection(any propertyName,any projectionType,any projectionList){
-		// inflate to array
-		if( isSimpleValue(arguments.propertyName) ){ arguments.propertyName = listToArray(arguments.propertyName); }
-		// iterate array and add projections
-		for(var thisP in arguments.propertyName){
-			// add projection
-			arguments.projectionList.add( evaluate("this.PROJECTIONS.#arguments.projectionType#( listFirst(thisP,':') )"), listLast(thisP,":") );
-		}
-	}
-	
-	// Normalize Sort orders
-	private void function normalizeOrder(required string sortOrder,required boolean ignoreCase){
-		
-		var sortLen = listLen(arguments.sortOrder);
-		
-		for(var x=1; x lte sortLen; x++){
-			var thisSort = listGetAt(arguments.sortOrder,x);
-			var sortField = Trim(ListFirst(thisSort," "));
-			var sortDir = "ASC";
-			if(ListLen(thisSort," ") GTE 2){
-				sortDir = ListGetAt(thisSort,2," ");
-			}
-			// add it to our ordering
-			order(sortField,sortDir,arguments.ignoreCase);
-		}
-	}
 	
 	/**
 	* Get ORM Util
