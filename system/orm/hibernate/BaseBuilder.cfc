@@ -302,7 +302,7 @@ component accessors="true"{
 		// if multiple subqueries have been specified, smartly separate them out into a sql string that will work
 		for( var x=1; x<=listLen( arguments.rawProjection.sql ); x++ ) {
 			partialSQL = listGetAt( arguments.rawProjection.sql, x );
-			partialSQL = findNoCase( "select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
+			partialSQL = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
 			partialSQL = partialSQL & " as #listGetAt( arguments.rawProjection.alias, x )#";
 			projection.sql = listAppend( projection.sql, partialSQL );
 		}

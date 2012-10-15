@@ -26,7 +26,10 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 			case 'coldbox.system.orm.hibernate.DetachedCriteriaBuilder':
 				break;
 			// if a subquery, we *need* to return the restrictino itself, or bad things happen
-			case 'org.hibernate.criterion.PropertySubqueryExpression':
+			case 'org.hibernate.criterion.PropertySubqueryExpression': 
+			case 'org.hibernate.criterion.ExistsSubqueryExpression':
+			case 'org.hibernate.criterion.NotExistsSubqueryExpression':
+			case 'org.hibernate.criterion.SimpleSubqueryExpression':
 				return r;
 			// otherwise, just a restriction; add it to nativeCriteria, then return this so we can keep chaining
 			default: 

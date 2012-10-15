@@ -15,13 +15,66 @@ component singleton extends="coldbox.system.orm.hibernate.criterion.Restrictions
 	any function getNativeClass(){
 		return subqueries;
 	}
+	
+	any function subEq( required any value, required any nativeCriteria ) {
+		return subqueries.eq( arguments.value, arguments.nativeCriteria );
+	}
+	any function subEqAll( required any value, required any nativeCriteria ) {
+		return subqueries.eqAll( arguments.value, arguments.nativeCriteria );
+	}
+	any function subGe( required any value, required any nativeCriteria ) {
+		return subqueries.ge( arguments.value, arguments.nativeCriteria );
+	}
+	any function subGeAll( required any value, required any nativeCriteria ) {
+		return subqueries.geAll( arguments.value, arguments.nativeCriteria );
+	}
+	any function subGeSome( required any value, required any nativeCriteria ) {
+		return subqueries.geSome( arguments.value, arguments.nativeCriteria );
+	}
+	any function subGt( required any value, required any nativeCriteria ) {
+		return subqueries.gt( arguments.value, arguments.nativeCriteria );
+	}
+	any function subGtAll( required any value, required any nativeCriteria ) {
+		return subqueries.gtAll( arguments.value, arguments.nativeCriteria );
+	}
+	any function subGtSome( required any value, required any nativeCriteria ) {
+		return subqueries.gtSome( arguments.value, arguments.nativeCriteria );
+	}
+	any function subIn( required any value, required any nativeCriteria ) {
+		return subqueries.in( arguments.value, arguments.nativeCriteria );
+	}
+	any function subLe( required any value, required any nativeCriteria ) {
+		return subqueries.le( arguments.value, arguments.nativeCriteria );
+	}
+	any function subLeAll( required any value, required any nativeCriteria ) {
+		return subqueries.leAll( arguments.value, arguments.nativeCriteria );
+	}
+	any function subLeSome( required any value, required any nativeCriteria ) {
+		return subqueries.leSome( arguments.value, arguments.nativeCriteria );
+	}
+	any function subLt( required any value, required any nativeCriteria ) {
+		return subqueries.lt( arguments.value, arguments.nativeCriteria );
+	}
+	any function subLtAll( required any value, required any nativeCriteria ) {
+		return subqueries.ltAll( arguments.value, arguments.nativeCriteria );
+	}
+	any function subLtSome( required any value, required any nativeCriteria ) {
+		return subqueries.ltSome( arguments.value, arguments.nativeCriteria );
+	}
+	any function subNe( required any value, required any nativeCriteria ) {
+		return subqueries.ne( arguments.value, arguments.nativeCriteria );
+	}
+	any function subNotIn( required any value, required any nativeCriteria ) {
+		return subqueries.notIn( arguments.value, arguments.nativeCriteria );
+	}
+	
 	// where subquery returns a result
 	any function exists( required any nativeCriteria ) {
 		return subqueries.exists( arguments.nativeCriteria );
 	}
 	// where subquery returns no result
 	any function notExists( required any nativeCriteria ) {
-		return subqueries.exists( arguments.nativeCriteria );
+		return subqueries.notExists( arguments.nativeCriteria );
 	}
 	any function propertyEq( required string property, required any nativeCriteria ){
 		return subqueries.propertyEq( arguments.property, arguments.nativeCriteria );
