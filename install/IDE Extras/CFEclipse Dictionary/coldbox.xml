@@ -958,38 +958,47 @@
 	<scope value="binder.getAspectBindings()">
 			<help><![CDATA[Get the collection of aspect bindings for this binder]]></help>
 		</scope>
-	<scope value="event.getViewLayouts()">
-			<help><![CDATA[Get the registered view layout associations map]]></help>
+	<scope value="event.setProxyRequest()">
+			<help><![CDATA[Set that this is a proxy request]]></help>
 		</scope>
-	<scope value="event.clearCollection([private])">
-			<help><![CDATA[Clears the entire collection]]></help>
+	<scope value="event.setViewCacheableEntry(mdCacheEntry)">
+			<help><![CDATA[Set the view cacheable entry]]></help>
 		</scope>
-	<scope value="event.isNoRender()">
-			<help><![CDATA[Is this a no render request]]></help>
+	<scope value="event.isAjax()">
+			<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
 		</scope>
-	<scope value="event.getCollection([deepCopyFlag],[private])">
-			<help><![CDATA[I Get a reference or deep copy of the public or private request Collection]]></help>
+	<scope value="event.getHTTPBasicCredentials()">
+			<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
 		</scope>
-	<scope value="event.getEventName()">
-			<help><![CDATA[The event name used by the application: String]]></help>
+	<scope value="event.renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs])">
+			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
 		</scope>
-	<scope value="event.getCurrentRoutedURL()">
-			<help><![CDATA[Get the current routed URL that matched the SES route]]></help>
-		</scope>
-	<scope value="event.buildLink(linkto,[translate],[ssl],[baseURL],[queryString])">
-			<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.]]></help>
-		</scope>
-	<scope value="event.getHTTPContent()">
-			<help><![CDATA[Get the raw HTTP content]]></help>
+	<scope value="event.getSESBaseURL()">
+			<help><![CDATA[Get the ses base URL for this request]]></help>
 		</scope>
 	<scope value="event.setSESBaseURL(sesBaseURL)">
 			<help><![CDATA[Set the ses base URL for this request]]></help>
 		</scope>
+	<scope value="event.getCurrentRoutedURL()">
+			<help><![CDATA[Get the current routed URL that matched the SES route]]></help>
+		</scope>
+	<scope value="event.getRenderData()">
+			<help><![CDATA[Get the renderData structure.]]></help>
+		</scope>
+	<scope value="event.getHTTPMethod()">
+			<help><![CDATA[Get the HTTP Request Method Type]]></help>
+		</scope>
+	<scope value="event.getSize([private])">
+			<help><![CDATA[Returns the number of elements in the collection]]></help>
+		</scope>
+	<scope value="event.init(properties)">
+			<help><![CDATA[constructor]]></help>
+		</scope>
 	<scope value="event.isSES()">
 			<help><![CDATA[Determine if you are in SES mode.]]></help>
 		</scope>
-	<scope value="event.collectionAppend(collection,[overwrite],[private])">
-			<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+	<scope value="event.getCurrentHandler()">
+			<help><![CDATA[Gets the current handler requested in the current event: String]]></help>
 		</scope>
 	<scope value="event.getFolderLayouts()">
 			<help><![CDATA[Get the registered folder layout associations map]]></help>
@@ -997,179 +1006,173 @@
 	<scope value="event.getEventCacheableEntry()">
 			<help><![CDATA[Get the event cacheable entry]]></help>
 		</scope>
-	<scope value="event.setisSES(isSES)">
-			<help><![CDATA[Set the isSES flag, usualy done by the SES interceptor]]></help>
-		</scope>
-	<scope value="event.renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs])">
-			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
-		</scope>
-	<scope value="event.setLayout(name,[module])">
-			<help><![CDATA[I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout]]></help>
-		</scope>
-	<scope value="event.getDebugPanelFlag()">
-			<help><![CDATA[I return the debugpanel flag for this request.]]></help>
-		</scope>
-	<scope value="event.getDefaultLayout()">
-			<help><![CDATA[Get's the default layout of the application: String]]></help>
-		</scope>
-	<scope value="event.getDefaultView()">
-			<help><![CDATA[Get's the default view of the application: String]]></help>
-		</scope>
-	<scope value="event.getCurrentLayout()">
-			<help><![CDATA[Gets the current set layout for rendering]]></help>
-		</scope>
-	<scope value="event.getRoutedStruct()">
-			<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
-		</scope>
-	<scope value="event.init(properties)">
-			<help><![CDATA[constructor]]></help>
-		</scope>
-	<scope value="event.$dump(var,[isAbort])">
-			<help><![CDATA[Facade for cfmx dump]]></help>
-		</scope>
-	<scope value="event.setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
-			<help><![CDATA[Set an HTTP Header]]></help>
-		</scope>
-	<scope value="event.setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider],[layout],[module],[args])">
-			<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
-		</scope>
-	<scope value="event.getViewCacheableEntry()">
-			<help><![CDATA[Get the event cacheable entry]]></help>
-		</scope>
-	<scope value="event.getRegisteredLayouts()">
-			<help><![CDATA[Get all the registered layouts in the configuration file]]></help>
-		</scope>
-	<scope value="event.getSize([private])">
-			<help><![CDATA[Returns the number of elements in the collection]]></help>
-		</scope>
-	<scope value="event.setProxyRequest()">
-			<help><![CDATA[Set that this is a proxy request]]></help>
-		</scope>
-	<scope value="event.getSelf()">
-			<help><![CDATA[Returns index.cfm?{eventName}= : String]]></help>
-		</scope>
-	<scope value="event.getCurrentHandler()">
-			<help><![CDATA[Gets the current handler requested in the current event: String]]></help>
-		</scope>
-	<scope value="event.overrideEvent([event])">
-			<help><![CDATA[I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.]]></help>
-		</scope>
-	<scope value="event.getCurrentViewModule()">
-			<help><![CDATA[Gets the current set views's module for rendering]]></help>
-		</scope>
-	<scope value="event.noLayout()">
-			<help><![CDATA[Mark this request to not use a layout for rendering]]></help>
-		</scope>
-	<scope value="event.getMemento()">
-			<help><![CDATA[Get the state of this request context]]></help>
-		</scope>
-	<scope value="event.paramValue(name,value,[private])">
-			<help><![CDATA[Just like cfparam, but for the request collection]]></help>
-		</scope>
-	<scope value="event.noRender([remove])">
-			<help><![CDATA[Set the flag that tells the framework not to render, just execute]]></help>
-		</scope>
-	<scope value="event.showDebugPanel(show)">
-			<help><![CDATA[I can override to show or not the debug panel. Very useful in AJAX debugging]]></help>
-		</scope>
-	<scope value="event.getCurrentLayoutModule()">
-			<help><![CDATA[Gets the current set layout's module for rendering]]></help>
-		</scope>
-	<scope value="event.getCurrentView()">
-			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
-		</scope>
-	<scope value="event.isNoExecution()">
-			<help><![CDATA[Determine if we need to execute an incoming event or not.]]></help>
-		</scope>
-	<scope value="event.isViewCacheable()">
-			<help><![CDATA[Check wether the incoming view has been flagged for caching]]></help>
-		</scope>
-	<scope value="event.setRoutedStruct(routedStruct)">
-			<help><![CDATA[Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.]]></help>
-		</scope>
-	<scope value="event.isSSL()">
-			<help><![CDATA[Returns boolean result whether current request is in ssl or not]]></help>
-		</scope>
-	<scope value="event.getCurrentAction()">
-			<help><![CDATA[Gets the current action requested in the current event: String]]></help>
-		</scope>
-	<scope value="event.getHTTPMethod()">
-			<help><![CDATA[Get the HTTP Request Method Type]]></help>
-		</scope>
-	<scope value="event.getCurrentModule()">
-			<help><![CDATA[Gets the current module name, else returns empty string]]></help>
-		</scope>
-	<scope value="event.noExecution()">
-			<help><![CDATA[Set that the request will not execute an incoming event. Most likely simulating a servlet call.]]></help>
-		</scope>
-	<scope value="event.getSESBaseURL()">
-			<help><![CDATA[Get the ses base URL for this request]]></help>
-		</scope>
-	<scope value="event.setDefaultLayout(DefaultLayout)">
-			<help><![CDATA[Override the default layout for a request]]></help>
-		</scope>
-	<scope value="event.getCurrentRoute()">
-			<help><![CDATA[Get the current request's SES route that matched]]></help>
-		</scope>
-	<scope value="event.getRenderData()">
-			<help><![CDATA[Get the renderData structure.]]></help>
-		</scope>
-	<scope value="event.getHTTPBasicCredentials()">
-			<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
-		</scope>
-	<scope value="event.isProxyRequest()">
-			<help><![CDATA[Is this a coldbox proxy request]]></help>
+	<scope value="event.getCollection([deepCopyFlag],[private])">
+			<help><![CDATA[I Get a reference or deep copy of the public or private request Collection]]></help>
 		</scope>
 	<scope value="event.isEventCacheable()">
 			<help><![CDATA[Check wether the incoming event has been flagged for caching. Boolean]]></help>
 		</scope>
+	<scope value="event.setMemento(memento)">
+			<help><![CDATA[Set the state of this request context]]></help>
+		</scope>
+	<scope value="event.removeValue(name,[private])">
+			<help><![CDATA[I remove a value in the request collection]]></help>
+		</scope>
+	<scope value="event.getEventName()">
+			<help><![CDATA[The event name used by the application: String]]></help>
+		</scope>
+	<scope value="event.getTrimValue(name,[defaultValue],[private])">
+			<help><![CDATA[I Get a value from the request collection and if simple value, I will trim it.]]></help>
+		</scope>
+	<scope value="event.getCurrentLayoutModule()">
+			<help><![CDATA[Gets the current set layout's module for rendering]]></help>
+		</scope>
+	<scope value="event.getHTTPContent()">
+			<help><![CDATA[Get the raw HTTP content]]></help>
+		</scope>
+	<scope value="event.buildLink(linkto,[translate],[ssl],[baseURL],[queryString])">
+			<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.]]></help>
+		</scope>
+	<scope value="event.getCurrentAction()">
+			<help><![CDATA[Gets the current action requested in the current event: String]]></help>
+		</scope>
+	<scope value="event.getRoutedStruct()">
+			<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
+		</scope>
+	<scope value="event.noRender([remove])">
+			<help><![CDATA[Set the flag that tells the framework not to render, just execute]]></help>
+		</scope>
 	<scope value="event.getCurrentViewArgs()">
+			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
+		</scope>
+	<scope value="event.getCurrentLayout()">
+			<help><![CDATA[Gets the current set layout for rendering]]></help>
+		</scope>
+	<scope value="event.getCurrentRoutedNamespace()">
+			<help><![CDATA[Get the current routed namespace that matched the SES route, if any]]></help>
+		</scope>
+	<scope value="event.getCurrentViewModule()">
+			<help><![CDATA[Gets the current set views's module for rendering]]></help>
+		</scope>
+	<scope value="event.setRoutedStruct(routedStruct)">
+			<help><![CDATA[Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.]]></help>
+		</scope>
+	<scope value="event.setLayout(name,[module])">
+			<help><![CDATA[I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout]]></help>
+		</scope>
+	<scope value="event.$dump(var,[isAbort])">
+			<help><![CDATA[Facade for cfmx dump]]></help>
+		</scope>
+	<scope value="event.paramValue(name,value,[private])">
+			<help><![CDATA[Just like cfparam, but for the request collection]]></help>
+		</scope>
+	<scope value="event.setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider],[layout],[module],[args])">
+			<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
+		</scope>
+	<scope value="event.clearCollection([private])">
+			<help><![CDATA[Clears the entire collection]]></help>
+		</scope>
+	<scope value="event.setValue(name,value,[private])">
+			<help><![CDATA[I Set a value in the request collection]]></help>
+		</scope>
+	<scope value="event.getCurrentView()">
 			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
 		</scope>
 	<scope value="event.removeEventCacheableEntry()">
 			<help><![CDATA[Remove the cacheable entry]]></help>
 		</scope>
-	<scope value="event.getTrimValue(name,[defaultValue],[private])">
-			<help><![CDATA[I Get a value from the request collection and if simple value, I will trim it.]]></help>
-		</scope>
-	<scope value="event.removeValue(name,[private])">
-			<help><![CDATA[I remove a value in the request collection]]></help>
-		</scope>
-	<scope value="event.getCurrentEvent()">
-			<help><![CDATA[Gets the current incoming event]]></help>
+	<scope value="event.isProxyRequest()">
+			<help><![CDATA[Is this a coldbox proxy request]]></help>
 		</scope>
 	<scope value="event.getHTTPHeader(header,[default])">
 			<help><![CDATA[Get a HTTP header]]></help>
 		</scope>
-	<scope value="event.valueExists(name,[private])">
-			<help><![CDATA[I Check if a value exists in the request collection.]]></help>
+	<scope value="event.getViewCacheableEntry()">
+			<help><![CDATA[Get the event cacheable entry]]></help>
 		</scope>
-	<scope value="event.setViewCacheableEntry(mdCacheEntry)">
-			<help><![CDATA[Set the view cacheable entry]]></help>
+	<scope value="event.setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
+			<help><![CDATA[Set an HTTP Header]]></help>
 		</scope>
-	<scope value="event.setEventCacheableEntry(mdCacheEntry)">
-			<help><![CDATA[Set the event cacheable entry]]></help>
+	<scope value="event.getSelf()">
+			<help><![CDATA[Returns index.cfm?{eventName}= : String]]></help>
 		</scope>
-	<scope value="event.setValue(name,value,[private])">
-			<help><![CDATA[I Set a value in the request collection]]></help>
+	<scope value="event.getCurrentRoute()">
+			<help><![CDATA[Get the current request's SES route that matched]]></help>
 		</scope>
-	<scope value="event.$throw(message,[detail],[type])">
-			<help><![CDATA[Facade for cfthrow]]></help>
+	<scope value="event.getCurrentEvent()">
+			<help><![CDATA[Gets the current incoming event]]></help>
 		</scope>
-	<scope value="event.isAjax()">
-			<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
+	<scope value="event.noLayout()">
+			<help><![CDATA[Mark this request to not use a layout for rendering]]></help>
+		</scope>
+	<scope value="event.getRegisteredLayouts()">
+			<help><![CDATA[Get all the registered layouts in the configuration file]]></help>
 		</scope>
 	<scope value="event.setDefaultView(DefaultView)">
 			<help><![CDATA[Override the default view for a request]]></help>
 		</scope>
-	<scope value="event.getValue(name,[defaultValue],[private])">
-			<help><![CDATA[I Get a value from the public or private request collection.]]></help>
+	<scope value="event.getDebugPanelFlag()">
+			<help><![CDATA[I return the debugpanel flag for this request.]]></help>
+		</scope>
+	<scope value="event.getCurrentModule()">
+			<help><![CDATA[Gets the current module name, else returns empty string]]></help>
+		</scope>
+	<scope value="event.setisSES(isSES)">
+			<help><![CDATA[Set the isSES flag, usualy done by the SES interceptor]]></help>
+		</scope>
+	<scope value="event.getViewLayouts()">
+			<help><![CDATA[Get the registered view layout associations map]]></help>
 		</scope>
 	<scope value="event.getModuleRoot([module])">
 			<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.]]></help>
 		</scope>
-	<scope value="event.setMemento(memento)">
-			<help><![CDATA[Set the state of this request context]]></help>
+	<scope value="event.getDefaultLayout()">
+			<help><![CDATA[Get's the default layout of the application: String]]></help>
+		</scope>
+	<scope value="event.setDefaultLayout(DefaultLayout)">
+			<help><![CDATA[Override the default layout for a request]]></help>
+		</scope>
+	<scope value="event.collectionAppend(collection,[overwrite],[private])">
+			<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+		</scope>
+	<scope value="event.getDefaultView()">
+			<help><![CDATA[Get's the default view of the application: String]]></help>
+		</scope>
+	<scope value="event.valueExists(name,[private])">
+			<help><![CDATA[I Check if a value exists in the request collection.]]></help>
+		</scope>
+	<scope value="event.noExecution()">
+			<help><![CDATA[Set that the request will not execute an incoming event. Most likely simulating a servlet call.]]></help>
+		</scope>
+	<scope value="event.isNoExecution()">
+			<help><![CDATA[Determine if we need to execute an incoming event or not.]]></help>
+		</scope>
+	<scope value="event.$throw(message,[detail],[type])">
+			<help><![CDATA[Facade for cfthrow]]></help>
+		</scope>
+	<scope value="event.isViewCacheable()">
+			<help><![CDATA[Check wether the incoming view has been flagged for caching]]></help>
+		</scope>
+	<scope value="event.getValue(name,[defaultValue],[private])">
+			<help><![CDATA[I Get a value from the public or private request collection.]]></help>
+		</scope>
+	<scope value="event.setEventCacheableEntry(mdCacheEntry)">
+			<help><![CDATA[Set the event cacheable entry]]></help>
+		</scope>
+	<scope value="event.isNoRender()">
+			<help><![CDATA[Is this a no render request]]></help>
+		</scope>
+	<scope value="event.getMemento()">
+			<help><![CDATA[Get the state of this request context]]></help>
+		</scope>
+	<scope value="event.isSSL()">
+			<help><![CDATA[Returns boolean result whether current request is in ssl or not]]></help>
+		</scope>
+	<scope value="event.overrideEvent([event])">
+			<help><![CDATA[I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.]]></help>
+		</scope>
+	<scope value="event.showDebugPanel(show)">
+			<help><![CDATA[I can override to show or not the debug panel. Very useful in AJAX debugging]]></help>
 		</scope>
 	<scope value="wirebox.processProviderMethods(targetObject,mapping)">
 			<help><![CDATA[Process provider methods on the selected target]]></help>
@@ -1510,7 +1513,10 @@
 	<scope value="controller.setHandlerService(handlerService)">
 			<help><![CDATA[Set HandlerService]]></help>
 		</scope>
-	<scope value="controller.init(appRootPath)">
+	<scope value="controller.getAppKey()">
+			<help><![CDATA[Get this application's key in memory space (application scope)]]></help>
+		</scope>
+	<scope value="controller.init(appRootPath,appKey)">
 			<help><![CDATA[Constructor]]></help>
 		</scope>
 	<scope value="controller.invoker(target,method,[argCollection],[private])">
@@ -1540,11 +1546,11 @@
 	<scope value="controller.setLogBox(logBox)">
 			<help><![CDATA[Set the logBox instance]]></help>
 		</scope>
-	<scope value="controller.getDebuggerService()">
-			<help><![CDATA[Get DebuggerService: coldbox.system.web.services.DebuggerService]]></help>
-		</scope>
 	<scope value="controller.getColdboxSettings()">
 			<help><![CDATA[I retrieve the ColdBox Settings Structure by Reference]]></help>
+		</scope>
+	<scope value="controller.getDebuggerService()">
+			<help><![CDATA[Get DebuggerService: coldbox.system.web.services.DebuggerService]]></help>
 		</scope>
 	<scope value="controller.getCacheBox()">
 			<help><![CDATA[Get the application's CacheBox instance as coldbox.system.cache.CacheFactory]]></help>
@@ -1578,6 +1584,9 @@
 		</scope>
 	<scope value="controller.getRequestService()">
 			<help><![CDATA[Get RequestService: coldbox.system.web.services.RequestService]]></help>
+		</scope>
+	<scope value="controller.getMemento()">
+			<help><![CDATA[Get the controller's internal state]]></help>
 		</scope>
 	<scope value="controller.getLoaderService()">
 			<help><![CDATA[Get LoaderService: coldbox.system.web.services.LoaderService]]></help>
