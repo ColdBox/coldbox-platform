@@ -22,6 +22,6 @@
 	
 	// DI Test
 	property name="testDI" inject="model:testService" persistent="false";
-	property name="controller" inject="coldbox" persistent="false";
+	//property name="controller" inject="coldbox" persistent="false" required="false";
 
 }
