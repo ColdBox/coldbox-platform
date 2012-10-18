@@ -305,15 +305,12 @@ Description :
 
 					<!--- Render Data? --->
 					<cfif isStruct(renderData) and not structisEmpty(renderData)>
-						<cfset renderDataSetup(argumentCollection=renderData)>
 						<cfset event.showDebugPanel(false)>
-						<!--- Binary --->
-						<cfif renderData.isBinary>
-							<cfcontent type="#renderData.contentType#" variable="#renderedContent#" />
-						<!--- Non Binary --->
-						<cfelse>
-							<cfoutput>#renderedContent#</cfoutput>
-						</cfif>
+						<cfset renderDataSetup(argumentCollection=renderData)><!---
+						Binary 
+						---><cfif renderData.isBinary><cfcontent type="#renderData.contentType#" variable="#renderedContent#" /><!---
+						Non Binary
+						---><cfelse><cfoutput>#renderedContent#</cfoutput></cfif>
 					<!--- Normal HTML --->
 					<cfelse>
 						<cfoutput>#renderedContent#</cfoutput>

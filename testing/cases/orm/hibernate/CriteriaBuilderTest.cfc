@@ -1,6 +1,21 @@
 component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdbox = false;
+	
+	function tearDown(){
+		structDelete( application, "wirebox");
+	}
+	
 	function setup(){
+		/**
+			mockController = getMockBox().createEmptyMock("coldbox.system.web.Controller");
+		mockLogger   = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug");
+		mockLogBox   = getMockBox().createEmptyMock("coldbox.system.logging.LogBox")
+			.$("getLogger", mockLogger);
+		mockController.$("getLogBox", mockLogBox);
+		mockController.$("getCacheBox", "");
+		**/
+		
+		application.wirebox = new coldbox.system.ioc.Injector(binder="coldbox.testing.cases.orm.hibernate.WireBox");
 		criteria   = getMockBox().createMock("coldbox.system.orm.hibernate.CriteriaBuilder");
 		criteria.init("User");
 
@@ -182,6 +197,16 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		r = criteria.order("id");
 		r = criteria.order("id","desc");
 		r = criteria.order("id","desc",true);
+	}
+
+	function testCount(){
+		criteria.init("User");
+		r = criteria.count();
+		count = new Query(datasource="coolblog", sql="select count(*) allCount from Users").execute().getResult();
+		assertEquals( count.allCount , r );
+		
+		r = criteria.count("id");
+		assertEquals( count.allCount , r );
 	}
 
 	function testList(){
