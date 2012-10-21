@@ -206,42 +206,9 @@ component accessors="true"{
 		if( structKeyExists( arguments, "detachedSQLProjection" ) ) {
 			// allow single or arrary of detachedSQLProjection
 			var projectionCollection = !isArray( arguments.detachedSQLProjection ) ? [ arguments.detachedSQLProjection ] : arguments.detachedSQLProjection;
-			// get session
-			var session = orm.getSession().getActualSession();
-			// get session factory
-			var factory = session.getSessionFactory();
 			// loop over array of detachedSQLProjections
 			for( projection in projectionCollection ) {
-				// get executable criteriaImplementation for detached criteria object
-				var criteriaImpl = projection.getNativeCriteria().getExecutableCriteria( session );
-				// get implementors for the criteria implementation
-				var implementors = factory.getImplementors( criteriaImpl.getEntityOrClassName() );
-				// create new criteria query translator; we'll use this to build up the query string
-				var translator = createObject( "java", "org.hibernate.loader.criteria.CriteriaQueryTranslator" ).init(
-					factory, // factory
-					criteriaImpl, // criteria
-					implementors[ 1 ],  // rootEntityName
-					criteriaImpl.getAlias() // rootSQLAlias
-				);
-				// not nearly as cool as the walking dead kind, but is still handy for turning a criteria into a sql string ;)
-				var walker = createObject("java", "org.hibernate.loader.criteria.CriteriaJoinWalker").init(
-					factory.getEntityPersister( implementors[1] ), // persister (loadable)
-					translator, // translator 
-					factory, // factory
-					criteriaImpl, // criteria
-					criteriaImpl.getEntityOrClassName(), // rootEntityName
-					session.getLoadQueryInfluencers() // loadQueryInfluencers
-				);
-				// get the sql from the walker
-				var sql = walker.getSQLString();
-					// by default, alias is this_...convert it to the alias provided
-					sql = replaceNoCase( sql, "this_", translator.getRootSQLAlias(), 'all' );
-					// since we need to pass a non-parameterized sql string to sqlProjection(), swap out any parameters with their values
-					sql = projection.replaceQueryParameters( sql, translator );
-					// wrap it up and uniquely alias it
-					sql = "( #sql# ) as this_#translator.getRootSQLAlias()#";
-				// now that we have the sql string, we can create the sqlProjection
-				projectionList.add( this.PROJECTIONS.sqlProjection( sql, [ "this_#translator.getRootSQLAlias()#" ], translator.getProjectedTypes() ) );
+				projectionList.add( projection.createDetachedSQLProjection() );
 			}
 		}
 

@@ -1,5 +1,5 @@
 component extends="coldbox.system.testing.BaseTestCase"{
-
+	this.loadColdBox = false;
 	function setup(){
 		restrictions   = getMockBox().createMock("coldbox.system.orm.hibernate.criterion.Restrictions");
 		restrictions.init();

@@ -28,7 +28,6 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 			// if a subquery, we *need* to return the restrictino itself, or bad things happen
 			case 'org.hibernate.criterion.PropertySubqueryExpression': 
 			case 'org.hibernate.criterion.ExistsSubqueryExpression':
-			case 'org.hibernate.criterion.NotExistsSubqueryExpression':
 			case 'org.hibernate.criterion.SimpleSubqueryExpression':
 				return r;
 			// otherwise, just a restriction; add it to nativeCriteria, then return this so we can keep chaining
@@ -38,8 +37,75 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 		}
 		return this;
 	}
-	// replace query parameter placeholders with their actual values (for detachedSQLProjection)
-	public string function replaceQueryParameters( required string sql, required any translator  ) {
+	
+	public any function createDetachedSQLProjection() {
+		// get query translator
+		var translator = getCriteriaQueryTranslator();
+		// create join walker
+		var walker = getCriteriaJoinWalker( translator=translator );
+		// get the sql from the walker
+		var sql = walker.getSQLString();
+			// by default, alias is this_...convert it to the alias provided
+			sql = replaceNoCase( sql, "this_", translator.getRootSQLAlias(), 'all' );
+			// since we need to pass a non-parameterized sql string to sqlProjection(), swap out any parameters with their values
+			sql = replaceQueryParameters( sql, translator );
+			// wrap it up and uniquely alias it
+			sql = "( #sql# ) as this_#translator.getRootSQLAlias()#";
+		// now that we have the sql string, we can create the sqlProjection
+		return this.PROJECTIONS.sqlProjection( sql, [ "this_#translator.getRootSQLAlias()#" ], translator.getProjectedTypes() );
+	}
+	
+	/************************************** PRIVATE *********************************************/
+	/* gets an instance of CriteriaJoinWalker, which can allow for translating criteria query into a sql string
+     * @translator (Any) the CriteriaQueryTranslator to use in this join walker
+     * returns CriteriaJoinWalker
+     */
+	private any function getCriteriaJoinWalker( required any translator ) {
+		// get session
+		var session = orm.getSession().getActualSession();
+		// get session factory
+		var factory = session.getSessionFactory();
+		// get executable criteriaImplementation for detached criteria object
+		var criteriaImpl = getNativeCriteria().getExecutableCriteria( session );
+		// get implementors for the criteria implementation
+		var implementors = factory.getImplementors( criteriaImpl.getEntityOrClassName() );
+		// not nearly as cool as the walking dead kind, but is still handy for turning a criteria into a sql string ;)
+		return createObject("java", "org.hibernate.loader.criteria.CriteriaJoinWalker").init(
+			factory.getEntityPersister( implementors[1] ), // persister (loadable)
+			arguments.translator, // translator 
+			factory, // factory
+			criteriaImpl, // criteria
+			criteriaImpl.getEntityOrClassName(), // rootEntityName
+			session.getLoadQueryInfluencers() // loadQueryInfluencers
+		);
+	}
+	/* gets an instance of CriteriaQueryTranslator, which can prepares criteria query for conversion to SQL
+     * returns CriteriaQueryTranslator
+     */
+	private any function getCriteriaQueryTranslator() {
+		// get session
+		var session = orm.getSession().getActualSession();
+		// get session factory
+		var factory = session.getSessionFactory();
+		// get executable criteriaImplementation for detached criteria object
+		var criteriaImpl = getNativeCriteria().getExecutableCriteria( session );
+		// get implementors for the criteria implementation
+		var implementors = factory.getImplementors( criteriaImpl.getEntityOrClassName() );
+		// create new criteria query translator; we'll use this to build up the query string
+		return createObject( "java", "org.hibernate.loader.criteria.CriteriaQueryTranslator" ).init(
+			factory, // factory
+			criteriaImpl, // criteria
+			implementors[ 1 ],  // rootEntityName
+			criteriaImpl.getAlias() // rootSQLAlias
+		);	
+	}	
+	/*
+     * replace query parameter placeholders with their actual values (for detachedSQLProjection)
+     * @sql (String) The sql string to massage
+     * @translator (CriteriaQueryTranslator) The CriteriqQueryTranslator whose values we need to use
+     * returns String
+     */
+	private string function replaceQueryParameters( required string sql, required any translator  ) {
 		var parameters = arguments.translator.getQueryParameters();
 		// get parameter values and types
 		var parameterValues = parameters.getPositionalParameterValues();
@@ -66,5 +132,4 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 		}
 		return arguments.sql;
 	}
-	/************************************** PRIVATE *********************************************/
 }
