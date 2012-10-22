@@ -209,18 +209,6 @@ component serializable=false{
 		return getValue("currentLayout","",true);
 	}
 
-	function getCurrentRoute(){
-		return getValue("currentRoute","",true);
-	}
-	
-	function getCurrentRoutedURL(){
-		return getValue("currentRoutedURL","",true);	
-	}
-	
-	function getCurrentRoutedNamespace(){
-		return getValue("currentRoutedNamespace","",true);
-	}
-	
 	function getCurrentEvent(){
 		return getValue(getEventName(),"");
 	}
@@ -374,76 +362,22 @@ component serializable=false{
 		return "index.cfm?" & getEventName() & "=";
 	}
 
-	function buildLink(required linkTo, boolean translate=true, boolean ssl=false, baseURL="", queryString=""){
-		var sesBaseURL = getSESbaseURL();
+	function buildLink(required linkTo, boolean ssl=false, baseURL="", queryString=""){
 		var frontController = "index.cfm";
 
-		/* baseURL */
-		if( len(trim(arguments.baseURL)) neq 0 ){
+		// Base URL Override
+		if( len( trim( arguments.baseURL ) ) neq 0 ){
 			frontController = arguments.baseURL;
 		}
 
-		if( isSES() ){
-			/* SSL */
-			if( arguments.ssl ){
-				sesBaseURL = replacenocase(sesBaseURL,"http:","https:");
-			}
-			/* Translate link */
-			if( arguments.translate ){
-				arguments.linkto = replace(arguments.linkto,".","/","all");
-			}
-			/* Query String Append */
-			if ( len(trim(arguments.queryString)) ){
-				if (right(arguments.queryString,1) neq  "/") {
-					arguments.linkto = arguments.linkto & "/";
-				}
-				arguments.linkto = arguments.linkto & replace(arguments.queryString,"&","/","all");
-				arguments.linkto = replace(arguments.linkto,"=","/","all");
-			}
-			/* Prepare link */
-			if( right(sesBaseURL,1) eq  "/"){
-				return sesBaseURL & arguments.linkto;
-			}
-			else{
-				return sesBaseURL & "/" & arguments.linkto;
-			}
+		// Check if sending in Query String
+		if( len( trim( arguments.queryString ) ) eq 0 ){
+			return "#frontController#?#getEventName()#=#arguments.linkto#";
 		}
 		else{
-			/* Check if sending in QUery String */
-			if( len(trim(arguments.queryString)) eq 0 ){
-				return "#frontController#?#getEventName()#=#arguments.linkto#";
-			}
-			else{
-				return "#frontController#?#getEventName()#=#arguments.linkto#&#arguments.queryString#";
-			}
+			return "#frontController#?#getEventName()#=#arguments.linkto#&#arguments.queryString#";
 		}
-	}
-
-	boolean function isSES(){
-		return instance.isSES;
-	}
-	
-	function setIsSES(required boolean isSES){
-		instance.isSES = arguments.isSES;
-		return this;
-	}
-
-	function getSESBaseURL(){
-		return instance.sesBaseURL;
-	}
-
-	function setSESBaseURL(required sesBaseURL){
-		instance.sesBaseURL = arguments.sesBaseURL;
-		return this;
-	}
-
-	struct function getRoutedStruct(){
-		return instance.routedStruct;
-	}
-
-	function setRoutedStruct(required struct routedStruct){
-		instance.routedStruct = arguments.routedStruct;
-		return this;
+		
 	}
 	
 	boolean function isSSL(){

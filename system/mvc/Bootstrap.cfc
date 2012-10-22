@@ -75,8 +75,6 @@ component serializable="false" accessors="true"{
 
 					// Verify if we are Reiniting?
 					if( structkeyExists(application,appKey) AND application[appKey].getColdboxInitiated() AND needReinit ){
-						// Process user interceptors
-						application[ appKey ].announceInterception( "preReinit" );
 						// Shutdown the application services
 						application[ appKey ].processShutdown();
 					}
@@ -102,7 +100,6 @@ component serializable="false" accessors="true"{
 					cbController.getWireBox().clearSingletons();
 				}
 			}
-
 			// Handler's Index Auto Reload
 			if( cbController.getSetting("HandlersIndexAutoReload") ){
 				lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{
@@ -112,11 +109,10 @@ component serializable="false" accessors="true"{
 
 		}
 		catch(Any e){
+			// process the exception
+			processException( cbController, e );
+			// If we get here, no custom template was chosen, so just throw exception back
 			rethrow;
-			exceptionService = cbController.getExceptionService();
-			exceptionBean = exceptionService.exceptionHandler(e, "framework", "Framework Initialization/Configuration Exception" );
-			writeOutput( exceptionService.renderBugReport( exceptionBean ) );
-			abort;
 		}
 		
 		return this;
@@ -129,11 +125,9 @@ component serializable="false" accessors="true"{
 		var exceptionBean 		= 0;
 		var renderedContent  	= "";
 		var eventCacheEntry  	= 0;
-		var interceptorData  	= structnew();
 		var renderData 	    	= structnew();
 		var refResults 			= structnew();
 		var debugPanel			= "";
-		var interceptorService 	= "";
 
 		// Start Application Requests
 		lock type="readonly" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{
@@ -147,9 +141,6 @@ component serializable="false" accessors="true"{
 			// Create Request Context & Capture Request
 			event = cbController.requestCapture();
 
-			// Execute preProcess Interception
-			cbController.announceInterception("preProcess");
-
 			// IF Found in config, run onRequestStart Handler
 			if( len( cbController.getSetting( "RequestStartHandler" ) ) ){
 				cbController.runEvent( cbController.getSetting( "RequestStartHandler" ), true );
@@ -162,8 +153,6 @@ component serializable="false" accessors="true"{
 
 			// No Render Test
 			if( not event.isNoRender() ){
-				// Execute preLayout Interception
-				cbController.announceInterception( "preLayout" );
 				
 				// Check for Marshalling and data render
 				renderData = event.getRenderData();
@@ -181,12 +170,6 @@ component serializable="false" accessors="true"{
 					renderedContent = cbController.getRenderer().renderLayout();
 				}
 
-				// PreRender Data
-				interceptorData.renderedContent = renderedContent;
-				// Execute preRender Interception
-				cbController.announceInterception( "preRender", interceptorData );
-				// Replace back Content From Interception
-				renderedContent = interceptorData.renderedContent;
 				// Render Data? With stupid CF whitespace stuff.
 				if( isStruct( renderData ) and not structisEmpty( renderData ) ){/*
 					*/renderData.controller = cbController;renderDataSetup(argumentCollection=renderData);/*
@@ -199,8 +182,6 @@ component serializable="false" accessors="true"{
 					writeOutput( renderedContent );
 				}
 
-				// Execute postRender Interception
-				cbController.announceInterception( "postRender" );
 			}
 
 
@@ -209,23 +190,20 @@ component serializable="false" accessors="true"{
 				cbController.runEvent(event=cbController.getSetting("RequestEndHandler"), prePostExempt=true);
 			}
 
-			// Execute postProcess Interception
-			cbController.announceInterception( "postProcess" );
 		}
 		catch(Any e){
-			writeDump(e);abort;
-			exceptionService = cbController.getExceptionService();
-			interceptData = { exception = e };
-			cbController.announceInterception( "onException" , interceptorData );
-			exceptionBean = exceptionService.exceptionHandler( e, "application", "Application Execution Exception" );
-			
-			writeOutput( exceptionService.renderBugReport( exceptionBean ) );
+			// process the exception
+			processException( cbController, e );
+			// If we get here, no custom template was chosen, so just throw exception back
+			rethrow;
 		}
 
 		// Time the request
 		request.fwExecTime = getTickCount() - request.fwExecTime;
 
 	}
+	
+	/************************************** APP.CFC FACADES *********************************************/
 	
 	boolean function onRequestStart(required targetPage) output=true{
 		reloadChecks();
@@ -236,13 +214,6 @@ component serializable="false" accessors="true"{
 		return true;
 	}
 
-	private function renderDataSetup(required controller, required statusCode, required statusText, required contentType, required encoding){ 
-    	// Status Codes
-		getPageContext().getResponse().setStatus( arguments.statusCode, arguments.statusText );
-		// Render the Data Content Type
-		controller.getDataMarshaller().renderContent(type=arguments.contentType, encoding=arguments.encoding, reset=true);
-	}
-	
 	boolean function onMissingTemplate(required template){
 		var cbController = "";
 		var event = "";
@@ -274,9 +245,6 @@ component serializable="false" accessors="true"{
 		lock type="readonly" name="#getAppHash()#" timeout="#lockTimeout#" throwontimeout="true"{
 			cbController = application[ locateAppKey() ];
 		}
-		//Execute Session Start interceptors
-		cbController.announceInterception( "sessionStart", session );
-
 		//Execute Session Start Handler
 		if( len( cbController.getSetting( "SessionStartHandler" ) ) ){
 			cbController.runEvent( event=cbController.getSetting( "SessionStartHandler" ), prePostExempt=true);
@@ -286,7 +254,6 @@ component serializable="false" accessors="true"{
 	function onSessionEnd(required struct sessionScope, struct appScope){
 		var cbController = "";
 		var event = "";
-		var iData = structnew();
 
 		lock type="readonly" name="#getAppHash()#" timeout="#lockTimeout#" throwontimeout="true"{
 			//Check for cb Controller
@@ -298,10 +265,6 @@ component serializable="false" accessors="true"{
 		if ( not isSimpleValue( cbController ) ){
 			// Get Context
 			event = cbController.getContext();
-			//Execute Session End interceptors
-			iData.sessionReference 		= arguments.sessionScope;
-			iData.applicationReference 	= arguments.appScope;
-			cbController.announceInterception( "sessionEnd", iData );
 
 			//Execute Session End Handler
 			if ( len( cbController.getSetting("SessionEndHandler") ) ){
@@ -324,9 +287,6 @@ component serializable="false" accessors="true"{
 	function onApplicationEnd(struct appScope){
 		var cbController = arguments.appScope[ locateAppKey() ];
 
-		// Execute Application End interceptors
-		cbController.announceInterception( "applicationEnd" );
-
 		// Execute Application End Handler
 		if( len( cbController.getSetting( 'applicationEndHandler' ) ) ){
 			cbController.runEvent( event=cbController.getSetting( "applicationEndHandler" ) ,prePostExempt=true );
@@ -336,6 +296,8 @@ component serializable="false" accessors="true"{
 		cbController.processShutdown();
 	}
 
+	/************************************** HELPERS *********************************************/
+	
 	boolean function isFWReinit(){
 		var reinitPass 		= "";
 		var incomingPass 	= "";
@@ -380,9 +342,42 @@ component serializable="false" accessors="true"{
 
 		return false;
 	}
-
-	/************************************** PRIVATE *********************************************/
 	
+	private function processException(required controller, required exception){
+		//Run custom Exception handler if Found, else run default exception routines
+		if ( len( arguments.controller.getSetting("ExceptionHandler") ) ){
+			try{
+				arguments.controller.getContext().setValue("exception", e);
+				arguments.controller.runEvent( arguments.controller.getSetting("Exceptionhandler") );
+			}
+			catch(Any e){
+				throw(message="Error running exception handler: #e.message#", detail="#e.detail# #e.stackTrace#", type="ExceptionHandlerKapoot");
+			}
+		}
+		
+		// Custom Error Template?
+		var customErrorTemplate = arguments.controller.getSetting("CustomErrorTemplate");
+		if( len( customErrorTemplate ) ){
+			var appLocation = "/";
+			if( len( arguments.controller.getSetting("AppMapping") ) ){
+				appLocation = appLocation & arguments.controller.getSetting("AppMapping") & "/";
+			}
+			// Bug report path
+			var bugReportTemplatePath = appLocation & reReplace( customErrorTemplate, "^/", "" );
+			// Show Bug Report
+			include "#bugReportTemplatePath#";
+			abort;
+		}
+		
+	}
+	
+	private function renderDataSetup(required controller, required statusCode, required statusText, required contentType, required encoding){ 
+    	// Status Codes
+		getPageContext().getResponse().setStatus( arguments.statusCode, arguments.statusText );
+		// Render the Data Content Type
+		controller.getDataMarshaller().renderContent(type=arguments.contentType, encoding=arguments.encoding, reset=true);
+	}
+
 	private function locateAppKey(){
 		if( len( trim( COLDBOX_APP_KEY ) ) ){
 			return COLDBOX_APP_KEY;

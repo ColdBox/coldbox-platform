@@ -117,8 +117,6 @@ Description :
 				instance.cacheBox = instance.coldbox.getCacheBox();
 				// Link Event Manager
 				instance.eventManager = instance.coldbox.getInterceptorService();
-				// Link Interception States
-				instance.eventManager.appendInterceptionPoints( arrayToList(instance.eventStates) );
 			}
 
 			// Store binder object built accordingly to our binder building procedures
@@ -130,9 +128,9 @@ Description :
 				configureLogBox( instance.binder.getLogBoxConfig() );
 				// Create local CacheBox reference
 				configureCacheBox( instance.binder.getCacheBoxConfig() );
-				// Create local event manager
-				configureEventManager();
 			}
+			// Create and Configure Event Manager
+			configureEventManager();
 
 			// Register All Custom Listeners
 			registerListeners();
@@ -932,6 +930,13 @@ Description :
 	<!--- configureEventManager --->
     <cffunction name="configureEventManager" output="false" access="private" returntype="void" hint="Configure a standalone version of a WireBox Event Manager">
     	<cfscript>
+			// Use or create event manager
+			if( isColdBoxLinked() && isObject( instance.eventManager ) ){
+				// Link Interception States
+				instance.eventManager.appendInterceptionPoints( arrayToList(instance.eventStates) );
+				return;
+			}
+    		
     		// create event manager
 			instance.eventManager = createObject("component","coldbox.system.core.events.EventPoolManager").init( instance.eventStates );
 			// Debugging

@@ -60,10 +60,6 @@ component accessors="true" serializable="false" extends="coldbox.system.mvc.Fram
 	}
 	
 	function renderView(view="", struct args={}, collection, collectionAs="", numeric collectionStartRow="1", numeric collectionMaxRows=0, collectionDelim="", boolean prePostExempt=false){
-		var timerHash 			= 0;
-		var iData 				= arguments;
-		var viewLocations		= "";
-
 		// Rendering an explicit view or do we need to get the view from the context or explicit context?
 		if( NOT len( arguments.view ) ){
 			// Rendering an explicit Renderer view/layout combo?
@@ -86,27 +82,21 @@ component accessors="true" serializable="false" extends="coldbox.system.mvc.Fram
 		// Cleanup leading / in views, just in case
 		arguments.view = reReplace( arguments.view, "^(\\|/)", "" );
 		
-		// Announce preViewRender interception
-		if( NOT arguments.prepostExempt ){ announceInterception("preViewRender", iData); }
-
 		// Discover and cache view/helper locations
-		viewLocations = discoverViewPaths( arguments.view );
+		var viewLocations = discoverViewPaths( arguments.view );
 
 		// Render View Composite or View Collection
 		if( structKeyExists(arguments,"collection") ){
 			// render collection in next context
-			iData.renderedView = controller.getRenderer().renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows, arguments.collectionDelim);
+			var sRenderedView = controller.getRenderer().renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows, arguments.collectionDelim);
 		}
 		else{
 			// render simple composite view
-			iData.renderedView = renderViewComposite(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args);
+			var sRenderedView = renderViewComposite(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args);
 		}
 
-		// Post View Render Interception point
-		if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
-
 		// Return view content
-		return iData.renderedView;
+		return sRenderedView;
 	}
 
 	private function discoverViewPaths(required view){
@@ -242,8 +232,6 @@ component accessors="true" serializable="false" extends="coldbox.system.mvc.Fram
 		var cbox_currentLayout 		= implicitViewChecks();
 		var cbox_layoutLocationKey 	= "";
 		var cbox_layoutLocation		= "";
-		var iData					= arguments;
-		var viewLocations 			= "";
 
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
 		if( len( trim( arguments.view ) ) AND arguments.view neq explicitView ){
@@ -263,14 +251,9 @@ component accessors="true" serializable="false" extends="coldbox.system.mvc.Fram
 			}
 		}
 
-		// Announce preLayoutRender interception
-		if( NOT arguments.prepostExempt ){
-			announceInterception("preLayoutRender", iData);
-		}
-
 		// If Layout is blank, then just delegate to the view
 		if( len( cbox_currentLayout ) eq 0 ){
-			iData.renderedLayout = renderView();
+			var renderedLayout = renderView();
 		}
 		else{
 			// Layout location key
@@ -288,17 +271,12 @@ component accessors="true" serializable="false" extends="coldbox.system.mvc.Fram
 					structInsert( controller.getSetting("layoutsRefMap"), cbox_layoutLocationKey, cbox_layoutLocation, true);
 				}
 			}
-			viewLocations = discoverViewPaths( reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ) );
+			var viewLocations = discoverViewPaths( reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ) );
 			// RenderLayout
-			iData.renderedLayout = renderViewComposite( cbox_currentLayout, viewLocations.viewPath, viewLocations.viewHelperPath, args );
+			var renderedLayout = renderViewComposite( cbox_currentLayout, viewLocations.viewPath, viewLocations.viewHelperPath, args );
 		}
 
-		// Post Layout Render Interception point
-		if( NOT arguments.prepostExempt ){
-			announceInterception("postLayoutRender", iData);
-		}
-
-		return iData.renderedLayout;
+		return renderedLayout;
 	}
 
 	function locateLayout(required layout){

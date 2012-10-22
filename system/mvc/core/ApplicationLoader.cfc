@@ -12,15 +12,12 @@ component accessors="true"{
 
 	// The ColdBox controller
 	property name="controller";
-	// The ColdBox Utility object
-	property name="util";
 
 	/************************************** CONSTRUCTOR *********************************************/
 
 	function init(required controller){
 		// setup local variables
 		variables.controller = arguments.controller;
-		variables.util 		 = createObject("component","coldbox.system.core.util.Util");
 		return this;
 	}
 	/************************************** PUBLIC *********************************************/
@@ -68,8 +65,8 @@ component accessors="true"{
 		oConfig = createObject("component", configCreatePath);
 
 		//Decorate It
-		oConfig.injectPropertyMixin = util.getMixerUtil().injectPropertyMixin;
-		oConfig.getPropertyMixin 	= util.getMixerUtil().getPropertyMixin;
+		oConfig.injectPropertyMixin = controller.getUtil().getMixerUtil().injectPropertyMixin;
+		oConfig.getPropertyMixin 	= controller.getUtil().getMixerUtil().getPropertyMixin;
 
 		//MixIn Variables
 		oConfig.injectPropertyMixin("controller", controller);
@@ -106,7 +103,7 @@ component accessors="true"{
 		parseWireBox(oConfig,configStruct);
 
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
-		configStruct.configTimeStamp = util.fileLastModified( controller.getConfigLocation() );
+		configStruct.configTimeStamp = controller.getUtil().fileLastModified( controller.getConfigLocation() );
 
 		// Store config object
 		configStruct.coldboxConfig = oConfig;
@@ -150,7 +147,7 @@ component accessors="true"{
 
 		// check if settings are available
 		if( structIsEmpty( coldboxSettings ) ){
-			util.throwit(message="ColdBox settings empty, cannot continue",type="CFCApplicationLoader.ColdBoxSettingsEmpty");
+			throw(message="ColdBox settings empty, cannot continue", type="CFCApplicationLoader.ColdBoxSettingsEmpty");
 		}
 
 		// collection append

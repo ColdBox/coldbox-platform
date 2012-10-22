@@ -5,7 +5,7 @@ component{
 	
 	function index(event,rc,prc){
 		rc.welcomeMessage = "Welcome to ColdBox!";	
-		event.setView("General/index");
+		event.setVsiew("General/index");
 	}	
 	function testReturn(event,rc,prc){
 		return "Hello from ColdBox Lite!";

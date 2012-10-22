@@ -25,7 +25,7 @@
 			//Error/Exception Handling
 			exceptionHandler		= "",
 			onInvalidEvent			= "",
-			customErrorTemplate		= "",
+			customErrorTemplate		= "includes/error.cfm",
 	
 			//Application Aspects
 			handlerCaching 			= false

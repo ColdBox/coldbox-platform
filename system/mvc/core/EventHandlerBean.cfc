@@ -30,11 +30,13 @@ component accessors="true"{
 		return this;
 	}
 
-	/************************************** PUBLIC *********************************************/
+	/************************************** PUBLIC RETURN BACK SETTERS *********************************************/
 	
 	function setHandler(required handler){ variables.handler = arguments.handler; return this; }
 	function setMethod(required method){ variables.method = arguments.method; return this; }
 	function setMissingAction(required missingAction){ variables.missingAction = arguments.missingAction; return this; }
+	
+	/************************************** UTILITY METHODS *********************************************/
 	
 	function getFullEvent(){
 		var event = getHandler() & "." & getMethod();

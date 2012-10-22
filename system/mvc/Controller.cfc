@@ -25,7 +25,6 @@ component serializable="false" accessors="true"{
 	property name="wireBox" 				type="any";
 	property name="cacheBox" 				type="any";
 	property name="dataMarshaller"			type="any";
-	property name="interceptorService"		type="any";
 	property name="util"					type="any";
 
 	/************************************** STATIC CONSTANTS *********************************************/
@@ -129,8 +128,6 @@ component serializable="false" accessors="true"{
 			.init( this )
 			.loadConfiguration( arguments.overrideAppMapping );
 		
-		// Create Event Manager
-		interceptorService = new coldbox.system.core.events.EventPoolManager( this.COLDBOX.interceptionPoints );
 		// Configure WireBox
 		wirebox.init( configSettings.wirebox.binderPath, configSettings, this);
 		// Register System Handlers
@@ -140,8 +137,6 @@ component serializable="false" accessors="true"{
 		// feed the base event handler class
 		wirebox.registerNewInstance(name="coldbox.system.mvc.EventHandler", instancePath="coldbox.system.mvc.EventHandler")
 			.addDIConstructorArgument(name="controller", value=this);
-		// Execute afterConfigurationLoad
-		interceptorService.processState("afterConfigurationLoad");
 		return this;
 	}
 	
@@ -276,11 +271,6 @@ component serializable="false" accessors="true"{
 			}
 		}
 
-		// Post Processors
-		if( NOT arguments.postProcessExempt ){
-			interceptorService.processState("postProcess");
-		}
-
 		// Send Relocation
 		sendRelocation(URL=relocationURL, addToken=arguments.addToken, statusCode=arguments.statusCode);
 
@@ -289,18 +279,10 @@ component serializable="false" accessors="true"{
 	
 	/************************************** EXECUTIONS *********************************************/
 
-	/**
-	* Announce interceptions in the system
-	*/
-	function announceInterception(required state, struct interceptData={}){
-		interceptorService.processState(argumentCollection=arguments);
-	}
-	
 	function runEvent(event="", boolean prePostExempt=false, boolean private=false, boolean defaultEvent=false, struct eventArguments={}){
 		var oRequestContext 	= getContext();
 		var ehBean 				= "";
 		var oHandler 			= "";
-		var iData				= structnew();
 		var loc					= structnew();
 
 		// Check if event empty, if empty then use default event on request context
@@ -321,10 +303,6 @@ component serializable="false" accessors="true"{
 		loc.argsMain.rc			= loc.args.rc;
 		loc.argsMain.prc		= loc.args.prc;
 		structAppend( loc.argsMain, arguments.eventArguments );
-
-		// Setup interception data
-		iData.processedEvent 	= arguments.event;
-		iData.eventArguments	= arguments.eventArguments;
 
 		// Validate the incoming event and get a handler bean to continue execution
 		ehBean = getRegisteredHandler( arguments.event );
@@ -354,9 +332,6 @@ component serializable="false" accessors="true"{
 
 			// PRE ACTIONS
 			if( NOT arguments.prePostExempt ){
-
-				// PREEVENT Interceptor
-				interceptorService.processState( "preEvent", iData );
 
 				// Execute Pre Handler if it exists and valid?
 				if( oHandler._actionExists( "preHandler" ) AND validateAction( ehBean.getMethod(), oHandler.PREHANDLER_ONLY, oHandler.PREHANDLER_EXCEPT ) ){
@@ -415,9 +390,6 @@ component serializable="false" accessors="true"{
 					oHandler.postHandler(event=oRequestContext, rc=loc.args.rc, prc=loc.args.prc, action=ehBean.getMethod(), eventArguments=arguments.eventArguments);
 				}
 
-				// Execute POSTEVENT interceptor
-				interceptorService.processState("postEvent",iData);
-
 			}// end if prePostExempt
 			
 		}// end try statement
@@ -448,8 +420,6 @@ component serializable="false" accessors="true"{
 		if( isDefined("FORM") ){ structAppend( rc, FORM ); }
 		if( isDefined("URL")  ){ structAppend( rc, URL ); }
 		
-		// Execute onRequestCapture interceptionPoint
-		interceptorService.processState("onRequestCapture");
 		// Take snapshot of incoming collection
 		prc[ "cbox_incomingContextHash" ] = hash( rc.toString() );
 		// Default Event Determination
@@ -599,15 +569,6 @@ component serializable="false" accessors="true"{
 	}
 	
 	private function invalidEvent(required event, required ehBean){
-		// Announce invalid event with invalid event, ehBean and override flag.
-		var iData = {
-			invalidEvent = arguments.event,
-			ehBean 		 = arguments.ehBean,
-			override	 = false
-		};
-		interceptorService.processState( "onInvalidEvent", iData );
-		//If the override was changed by the interceptors then they updated the ehBean of execution
-		if( iData.override ){ return; }
 		// If onInvalidEvent is registered, use it
 		if( len( trim( configSettings.onInvalidEvent ) ) ){
 
@@ -669,6 +630,9 @@ component serializable="false" accessors="true"{
 
 		return false;
 	}
+	
+	// No interceptors in lite version, WireBox listeners only
+	function getInterceptorService(){ return ""; }
 
 	/************************************** PRIVATE UTIL *********************************************/
 	
