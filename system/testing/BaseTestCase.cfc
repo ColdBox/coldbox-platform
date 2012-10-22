@@ -108,7 +108,7 @@ id , name , mail
 					}
 				}
 				//Initialize mock Controller
-				instance.controller = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( appRootPath );
+				instance.controller = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( appRootPath=appRootPath, appKey=instance.coldboxAppKey );
 				// persist for mock testing in right name
 				application[ getColdboxAppKey() ] = instance.controller;
 				// Setup

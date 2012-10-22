@@ -14,7 +14,8 @@ Description		: This is a unit test controller that basically overrides the setNe
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="init" returntype="coldbox.system.web.Controller" access="public" hint="Constructor" output="false">
-		<cfargument name="appRootPath" type="string" required="true" hint="The app Root Path"/>
+		<cfargument name="appRootPath" 	type="string" 	required="true" hint="The app Root Path"/>
+		<cfargument name="appKey"		type="any" 		required="true" hint="The application registered application key"/>
 		<cfscript>
 			super.init(argumentCollection=arguments);
 			

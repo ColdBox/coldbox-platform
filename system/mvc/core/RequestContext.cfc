@@ -46,9 +46,8 @@ component serializable=false{
 			instance.viewLayouts = arguments.properties.viewLayouts;
 		}
 
-		// Default layout + View
+		// Default layout
 		instance.defaultLayout = arguments.properties.defaultLayout;
-		instance.defaultView = arguments.properties.defaultView;
 
 		// SES Base URL
 		instance.SESBaseURL = "";
@@ -247,82 +246,49 @@ component serializable=false{
 	function setView(view, boolean noLayout=false, layout, struct args={}){
 	    var key 		= "";
 	    var cacheEntry 	= structnew();
-		var cModule		= getCurrentModule();
 
 		// view and name mesh
 		if( structKeyExists(arguments,"name") ){ arguments.view = arguments.name; }
 
-		// stash the view module
-			instance.privateContext["viewModule"] = arguments.module;
-
 		// Local Override
-		if( structKeyExists(arguments,"layout") ){
-			setLayout(arguments.layout);
+		if( structKeyExists( arguments,"layout" ) ){
+			setLayout( arguments.layout );
 		}
-
 		// If we need a layout or we haven't overriden the current layout enter if...
-	    else if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false,true) ){
+	    else if ( NOT arguments.nolayout AND NOT getValue( "layoutoverride", false, true ) ){
 
 	    	//Verify that the view has a layout in the viewLayouts structure.
-		    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.view)) ){
-				setValue("currentLayout",instance.ViewLayouts[lcase(arguments.view)],true);
+		    if ( StructKeyExists( instance.ViewLayouts, lcase( arguments.view ) ) ){
+				setValue( "currentLayout", instance.ViewLayouts[ lcase( arguments.view ) ], true );
 		    }
 			else{
 				//Check the folders structure
-				for( key in instance.FolderLayouts ){
-					if ( reFindnocase('^#key#', lcase(arguments.view)) ){
-						setValue("currentLayout",instance.FolderLayouts[key],true);
+				for( key in instance.folderLayouts ){
+					if ( reFindnocase('^#key#', lcase( arguments.view ) ) ){
+						setValue( "currentLayout", instance.FolderLayouts[ key ],true);
 						break;
 					}
 				}//end for loop
 			}//end else
 
 			//If not layout, then set default from main application
-			if( not valueExists("currentLayout",true) ){
-				setValue("currentLayout", instance.defaultLayout,true);
-			}
-
-			// Check for module integration
-			if( len(cModule)
-			    AND structKeyExists(instance.modules,cModule)
-				AND len(instance.modules[cModule].layoutSettings.defaultLayout) ){
-				setValue("currentLayout", instance.modules[getCurrentModule()].layoutSettings.defaultLayout,true);
+			if( not valueExists( "currentLayout", true ) ){
+				setValue( "currentLayout", instance.defaultLayout, true );
 			}
 
 		}//end if overridding layout
 
 		// No Layout Rendering?
 		if( arguments.nolayout ){
-			removeValue('currentLayout',true);
-		}
-
-		// Do we need to cache the view
-		if( arguments.cache ){
-			// prepare the cache keys
-			cacheEntry.view = arguments.view;
-			// Argument cleanup
-			if ( not isNumeric(arguments.cacheTimeout) )
-				cacheEntry.Timeout = "";
-			else
-				cacheEntry.Timeout = arguments.CacheTimeout;
-			if ( not isNumeric(arguments.cacheLastAccessTimeout) )
-				cacheEntry.LastAccessTimeout = "";
-			else
-				cacheEntry.LastAccessTimeout = arguments.cacheLastAccessTimeout;
-			// Cache Suffix
-			cacheEntry.cacheSuffix 		= arguments.cacheSuffix;
-			// Cache Provider
-			cacheEntry.cacheProvider 	= arguments.cacheProvider;
-
-			//Save the view cache entry
-			setViewCacheableEntry(cacheEntry);
+			removeValue( 'currentLayout', true );
 		}
 
 		//Set the current view to render.
-		instance.privateContext["currentView"] = arguments.view;
+		instance.privateContext[ "currentView" ] = arguments.view;
 
 		// Record the optional arguments
 		setValue("currentViewArgs", arguments.args, true);
+		
 		return this;
 	}
 
@@ -338,13 +304,13 @@ component serializable=false{
 	function setLayout(required name){
 		var layouts = instance.registeredLayouts;
 		// Set direct layout first.
-		instance.privateContext["currentLayout"] = trim(arguments.name) & ".cfm";
+		instance.privateContext[ "currentLayout" ] = trim( arguments.name ) & ".cfm";
 		// Do an Alias Check and override if found.
-		if( structKeyExists(layouts,arguments.name) ){
-			instance.privateContext["currentLayout"] = layouts[arguments.name];
+		if( structKeyExists( layouts, arguments.name ) ){
+			instance.privateContext[ "currentLayout" ] = layouts[ arguments.name ];
 		}
 		// set layout overwritten flag.
-		instance.privateContext["layoutoverride"] = true;
+		instance.privateContext[ "layoutoverride" ] = true;
 		return this;
 	}
 	
@@ -354,15 +320,6 @@ component serializable=false{
 	
 	function setDefaultLayout(required defaultLayout){
 		instance.defaultLayout = arguments.DefaultLayout;
-		return this;
-	}
-	
-	function getDefaultView(){
-		return instance.defaultView;
-	}
-
-	function setDefaultView(required defaultView){
-		instance.defaultView = arguments.DefaultView;
 		return this;
 	}
 	
@@ -588,17 +545,18 @@ component serializable=false{
 		if( structKeyExists(arguments,"default") ){
 			return arguments.default;
 		}
+
 		throw(message="Header #arguments.header# not found in HTTP headers",detail="Headers found: #structKeyList(headers)#",type="RequestContext.InvalidHTTPHeader");
 	}
 	
-	function setHTTPHeader(statusCode, statusText="", name, value="", charset="UTF-8"){
+	function setHTTPHeader(statusCode, statusText="", name, value=""){
 		
 		// status code?
-		if( structKeyExists(arguments, "statusCode") )
-			/*<cfheader statuscode="#arguments.statusCode#" statustext="#arguments.statusText#">*/
-		// Name Exists
+		if( structKeyExists(arguments, "statusCode") ){
+			getPageContext().getResponse().setStatus( arguments.statusCode, arguments.statusText );
+		}// Name Exists
 		else if( structKeyExists(arguments, "name") ){
-			/*<cfheader name="#arguments.name#" value="#arguments.value#" charset="#arguments.charset#">*/
+			getPageContext().getResponse().addHeader( arguments.name, arguments.value );
 		}
 		else{
 			throw(message="Invalid header arguments", detail="Pass in either a statusCode or name argument", type="RequestContext.InvalidHTTPHeaderParameters");

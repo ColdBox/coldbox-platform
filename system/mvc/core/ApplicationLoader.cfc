@@ -56,7 +56,7 @@ component accessors="true"{
 		appMappingAsDots = getAppMappingAsDots( configStruct.appMapping );
 
 		// Config Create Path if not overriding and there is an appmapping
-		if( len( appMappingAsDots ) AND NOT controller.getConfigFileLocationOverride() ){
+		if( len( appMappingAsDots ) AND NOT controller.getConfigLocationOverride() ){
 			configCreatePath = appMappingAsDots & "." & configCFCLocation;
 		}
 		// Config create path if overriding or no app mapping
@@ -106,7 +106,7 @@ component accessors="true"{
 		parseWireBox(oConfig,configStruct);
 
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
-		configStruct.configTimeStamp = util.fileLastModified( controller.getConfigFileLocation() );
+		configStruct.configTimeStamp = util.fileLastModified( controller.getConfigLocation() );
 
 		// Store config object
 		configStruct.coldboxConfig = oConfig;
@@ -227,10 +227,10 @@ component accessors="true"{
 		var appMappingAsDots 	= "";
 
 		// Handler Registration
-		configStruct["HandlersInvocationPath"] = reReplace( controller.COLDBOX.handlersConvention,"(/|\\)",".","all");
+		configStruct["HandlersInvocationPath"] = reReplace( controller.COLDBOX.handlersConvention,"(/|\\)", ".", "all");
 		configStruct["HandlersPath"] = configStruct.ApplicationPath & controller.COLDBOX.handlersConvention;
 		// Models Registration
-		configStruct["ModelsInvocationPath"] = reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all");
+		configStruct["ModelsInvocationPath"] = reReplace( controller.COLDBOX.ModelsConvention, "(/|\\)", ".", "all");
 		configStruct["ModelsPath"] = configStruct.ApplicationPath & controller.COLDBOX.ModelsConvention;
 
 		//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
@@ -261,8 +261,7 @@ component accessors="true"{
 		var layoutsArray 		= arrayNew(1);
 
 		// defaults
-		configStruct.defaultLayout 		= "";
-		configStruct.defaultView 		= "";
+		configStruct.defaultLayout 		= controller.COLDBOX.defaultLayout;
 		configStruct.registeredLayouts  = structnew();
 
 		// Register layout settings
@@ -330,14 +329,14 @@ component accessors="true"{
 			arguments.config.wirebox.binderPath = wireBoxDSL.binder;
 		}
 		// Check if WireBox.cfc exists in the config conventions, if so create binder
-		else if( fileExists( instance.controller.getAppRootPath() & "config/WireBox.cfc") ){
+		else if( fileExists( controller.getAppRootPath() & "config/WireBox.cfc") ){
 			arguments.config.wirebox.binderPath = "config.WireBox";
-			if( len(arguments.config.appMapping) ){
+			if( len( arguments.config.appMapping ) ){
 				arguments.config.wirebox.binderPath = arguments.config.appMapping & ".#arguments.config.wirebox.binderPath#";
 			}
 		}
 		// Singleton reload
-		if( structKeyExists(wireBoxDSL,"singletonReload") ){
+		if( structKeyExists( wireBoxDSL, "singletonReload" ) ){
 			arguments.config.wirebox.singletonReload = wireBoxDSL.singletonReload;
 		}
 	}
