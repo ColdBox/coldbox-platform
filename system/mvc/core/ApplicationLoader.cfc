@@ -76,7 +76,7 @@ component accessors="true"{
 		oConfig.configure();
 
 		//Environment detection
-		detectEnvironment(oConfig,configStruct);
+		detectEnvironment( oConfig, configStruct );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: APP LOCATION OVERRIDES :::::::::::::::::::::::::::::::::::::::::::: */
 
