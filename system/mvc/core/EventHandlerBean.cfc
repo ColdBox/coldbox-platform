@@ -39,11 +39,7 @@ component accessors="true"{
 	/************************************** UTILITY METHODS *********************************************/
 	
 	function getFullEvent(){
-		var event = getHandler() & "." & getMethod();
-		if( isModule() ){
-			return getModule()  & ":" & event;
-		}
-		return event;
+		return getHandler() & "." & getMethod();
 	}	
 	
 	function getRunnable(){

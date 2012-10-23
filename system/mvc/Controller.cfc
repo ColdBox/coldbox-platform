@@ -529,7 +529,7 @@ component serializable="false" accessors="true"{
 			}
 
 			// Test for Implicit View Dispatch
-			if( configSettings.ImplicitViews AND isViewDispatch( arguments.ehBean.getFullEvent(), arguments.ehBean ) ){
+			if( configSettings.implicitViews AND isViewDispatch( arguments.ehBean.getFullEvent(), arguments.ehBean ) ){
 				return oEventHandler;
 			}
 
@@ -613,21 +613,15 @@ component serializable="false" accessors="true"{
 	}
 	
 	private function isViewDispatch(required event, required ehBean){
-		var renderer 	= getRenderer();
-		var targetView	= "";
-
 		// Cleanup of . to / for lookups
-		cEvent = lcase( replace( arguments.event, ".", "/", "all" ) );
-
+		var cEvent = lcase( replace( arguments.event, ".", "/", "all" ) );
 		// Locate view
-		targetView = renderer.locateView( arguments.event );
-
+		var targetView = getRenderer().locateView( cEvent );
 		// Validate Target View
 		if( fileExists( expandPath( targetView & ".cfm" ) ) ){
 			arguments.ehBean.setViewDispatch( true );
 			return true;
 		}
-
 		return false;
 	}
 	
