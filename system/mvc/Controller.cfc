@@ -203,7 +203,7 @@ component serializable="false" accessors="true"{
 		if( structKeyExists(arguments,"URI") ){ relocationType = "URI"; }
 
 		// Cleanup event string to default if not sent in
-		if( len( trim( arguments.event ) ) eq 0 ){ arguments.event = getSetting("DefaultEvent"); }
+		if( len( trim( arguments.event ) ) eq 0 ){ arguments.event = configSettings.defaultEvent; }
 		// Overriding Front Controller via baseURL argument
 		if( len( trim( arguments.baseURL ) ) ){ frontController = arguments.baseURL; }
 
@@ -414,7 +414,7 @@ component serializable="false" accessors="true"{
 		var context 	= getContext();
 		var rc			= context.getCollection();
 		var prc 		= context.getCollection(private=true);
-		var eventName	= getSetting("EventName");
+		var eventName	= configSettings.eventName;
 		
 		// Capture FORM/URL
 		if( isDefined("FORM") ){ structAppend( rc, FORM ); }
@@ -459,9 +459,8 @@ component serializable="false" accessors="true"{
 	/************************************** HANDLER METHODS *********************************************/
 	
 	function registerHandlers(){
-		var handlersPath = getSetting("HandlersPath");
 		// Get recursive Array listing
-		var handlerArray = getHandlerListing( handlersPath );
+		var handlerArray = getHandlerListing( configSettings.handlersPath );
 		// Set registered Handlers
 		setSetting( name="registeredHandlers", value=arrayToList( handlerArray ) );
 		// Verify it
