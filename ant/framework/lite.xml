@@ -8,7 +8,7 @@ ColdBox LITE Build
 	<property name="dir.userlocation"	value="/Users/lmajano" />
 	<property name="dir.exports"		value="${dir.userlocation}/exports" />
 	<property name="dir.build" 			value="${dir.exports}/coldbox" />
-	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/coldbox.cfm?version=" />
+	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/lite.cfm?version=" />
 		
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
@@ -46,6 +46,7 @@ ColdBox LITE Build
 		<copy todir="${dir.build}/coldbox/system/core">
         	<fileset dir="system/core">
         		<exclude name="cf/**" />
+        		<exclude name="conversion/JSON.cfc" />
         		<exclude name="db/**" />
         		<exclude name="java/**" />
         		<exclude name="javaloader/**" />
@@ -54,7 +55,6 @@ ColdBox LITE Build
         		<exclude name="util/FileUtils.cfc" />
         		<exclude name="util/RequestBuffer.cfc" />
         		<exclude name="util/Validator.cfc" />
-        		<exclude name="util/Zip.cfc" />
         	</fileset>
         </copy>
 		<delete file="${dir.build}/coldbox/system/conversion/JSON.cfc" />
@@ -88,10 +88,9 @@ ColdBox LITE Build
 		<!--Remove Dist-->
 		<delete dir="dist" />
 		
-		<!-- Execute ColdDoc 
+		<!-- Execute ColdDoc --> 
 		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
-		-->
 		
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldboxLITE-ORM_${coldbox.version}.zip" basedir="${dir.build}"></zip>
@@ -99,10 +98,9 @@ ColdBox LITE Build
 		<!-- No ORM -->
 		<delete dir="${dir.build}/coldbox/system/orm" />
 		
-		<!-- Execute ColdDoc 
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${wirebox.version}" verbose="true"/>
+		<!-- Execute ColdDoc --> 
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
-		-->
 		
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldboxLITE_${coldbox.version}.zip" basedir="${dir.build}"></zip>
