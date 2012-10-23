@@ -20,19 +20,6 @@
 			<h2>
 				Registered Event Handlers
 			</h2>
-			<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle btn-small" href="##" data-toggle="dropdown">
-					<i class="icon-info-sign"></i> Related Docs
-					<span class="caret"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="http://wiki.coldbox.org/wiki/EventHandlers.cfm"><i class="icon-bookmark"></i> Event Handlers</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/layouts-views.cfm"><i class="icon-bookmark"></i> Layouts & Views</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/RequestContext.cfm"><i class="icon-bookmark"></i> Request Context</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/URLMappings.cfm"><i class="icon-bookmark"></i> URL Mappings</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/Validation.cfm"><i class="icon-bookmark"></i> Form-Object Validation</a></li>
-				</ul>
-			</div>
 		</div>
 		<p>
 			You can click on the following event handlers to execute their default action
@@ -85,12 +72,6 @@
 				</tr>
 				<tr>
 					<td>
-						<em>modules</em>
-					</td>
-					<td>Where integration and unit tests for modules go</td>
-				</tr>
-				<tr>
-					<td>
 						<em>resources</em>
 					</td>
 					<td>
@@ -132,16 +113,6 @@
 		<section id="urlActions">
 		<div class="page-header">
        		<h2>ColdBox URL Actions</h2>
-			<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle btn-small" href="##" data-toggle="dropdown">
-					<i class="icon-info-sign"></i> Related Docs
-					<span class="caret"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="http://wiki.coldbox.org/wiki/URLActions.cfm"><i class="icon-bookmark"></i> URL Actions</a></li>
-
-				</ul>
-			</div>
 	   	</div>
 		<p>ColdBox can use some very important URL actions to interact with your application. You can try them out below:</p>
 		<table class="table table-striped">
@@ -161,26 +132,6 @@
 						<a class="btn btn-danger" href="index.cfm?fwreinit=1">Execute</a>
 					</td>
 				</tr>
-				<tr>
-					<td>
-						<em>?debugmode=false</em><br/>
-						<em>?debugmode=false&debugpass={DebugPassword}</em>
-					</td>
-					<td>Remove debug mode</td>
-					<td>
-						<a class="btn btn-danger" href="index.cfm?debugmode=false">Execute</a>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<em>?debugmode=true</em><br/>
-						<em>?debugmode=true&debugpass={DebugPassword}</em>
-					</td>
-					<td>Enable debug mode</td>
-					<td>
-						<a class="btn btn-danger" href="index.cfm?debugmode=true">Execute</a>
-					</td>
-				</tr>
 			</tbody>
 		</table>
 		</section>
@@ -188,22 +139,9 @@
 		<section id="customize">
 		<div class="page-header">
 			<h2>Customizing your Application</h2>
-			<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle btn-small" href="##" data-toggle="dropdown">
-					<i class="icon-info-sign"></i> Related Docs
-					<span class="caret"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="http://wiki.coldbox.org/wiki/DirectoryStructure-Conventions.cfm"><i class="icon-bookmark"></i> Directory Structure & Conventions</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/Bootstrapper.cfm"><i class="icon-bookmark"></i> Application Bootstrapper</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/ConfigurationCFC.cfm"><i class="icon-bookmark"></i> Configuration CFC</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/layouts-views.cfm"><i class="icon-bookmark"></i> Layouts & Views</a></li>
-
-				</ul>
-			</div>
         </div>
 		<p>
-            You can now start editing your application and building great ColdBox enabled apps. Important files & locations:
+            You can now start editing your application and building great ColdBox LITE enabled apps. Important files & locations:
         </p>
 		<ol>
 		    <li>

@@ -34,24 +34,10 @@ component serializable="false" accessors="true"{
 	this.COLDBOX.author			= "Ortus Solutions";
 	this.COLDBOX.authorEmail 	= "coldbox@ortussolutions.com";
 	this.COLDBOX.authorWebsite	= "http://www.ortussolutions.com";
-	this.COLDBOX.suffix			= "Jeremiah 29:13";
+	this.COLDBOX.suffix			= "Gideon+Judges 6:15";
 	this.COLDBOX.version		= "1.0.0";
-	this.COLDBOX.description	= "This is the ColdBox Lite MVC Framework.";
+	this.COLDBOX.description	= "This is the ColdBox LITE MVC Framework.";
 	
-	// Static Registered Events
-	this.COLDBOX.interceptionPoints = [
-		// Application startup points
-		"afterConfigurationLoad", "afterAspectsLoad", "preReinit",
-		// On Actions
-		"onException", "onRequestCapture", "onInvalidEvent",
-		// Life-cycle
-		"applicationEnd" , "sessionStart", "sessionEnd", "preProcess", "preEvent", "postEvent", "postProcess",
-		// Layout-View Events
-		"preLayout", "preRender", "postRender", "preViewRender", "postViewRender", "preLayoutRender", "postLayoutRender",
-		// ORM Bridge Events
-		"ORMPostNew", "ORMPreLoad", "ORMPostLoad", "ORMPostDelete", "ORMPreDelete", "ORMPreUpdate", "ORMPostUpdate", "ORMPreInsert", "ORMPostInsert", "ORMPreSave", "ORMPostSave"
-	];
-
 	// Operation Static Defaults
 	this.COLDBOX.eventName 		= "event";
 	this.COLDBOX.eventAction	= "index";
@@ -423,7 +409,7 @@ component serializable="false" accessors="true"{
 		// Take snapshot of incoming collection
 		prc[ "cbox_incomingContextHash" ] = hash( rc.toString() );
 		// Default Event Determination
-		if ( NOT structKeyExists( rc, eventName ) ){
+		if ( NOT structKeyExists( rc, eventName ) OR !len( rc[ eventName ] ) ){
 			rc[ eventName ] = configSettings.defaultEvent;
 		}
 		// Event More Than 1 Check, grab the first event instance, other's are discarded
