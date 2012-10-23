@@ -12,6 +12,7 @@ Description :
 **/	
 component extends="coldbox.system.mvc.Bootstrap"{
 
+	// Application Properties
 	this.name = hash( getCurrentTemplatePath() );
 	this.sessionManagement = true;
 	this.sessionTimeout = createTimeSpan(0,0,30,0);

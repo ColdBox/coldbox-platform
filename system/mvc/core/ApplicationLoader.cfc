@@ -163,7 +163,7 @@ component accessors="true"{
 		if ( not StructKeyExists(configStruct, "AppName") )
 			configStruct["AppName"] = controller.getAppHash();
 		//Check for Default Event
-		if ( not StructKeyExists(configStruct, "DefaultEvent") )
+		if ( not StructKeyExists(configStruct, "DefaultEvent") OR !len( configStruct.defaultEvent ) )
 			configStruct["DefaultEvent"] = controller.COLDBOX.DefaultEvent;
 		//Check for Event Name
 		if ( not StructKeyExists(configStruct, "EventName") )
@@ -250,8 +250,8 @@ component accessors="true"{
 		var	LayoutViewStruct 	= CreateObject("java","java.util.LinkedHashMap").init();
 		var	LayoutFolderStruct 	= CreateObject("java","java.util.LinkedHashMap").init();
 		var key 				= "";
-		var layoutSettings 		= arguments.oConfig.getPropertyMixin("layoutSettings","variables",structnew());
-		var layouts 			= arguments.oConfig.getPropertyMixin("layouts","variables",arrayNew(1));
+		var layoutSettings 		= arguments.oConfig.getPropertyMixin( "layoutSettings", "variables", structnew() );
+		var layouts 			= arguments.oConfig.getPropertyMixin( "layouts", "variables", arrayNew(1) );
 		var i 					= 1;
 		var x 					= 1;
 		var thisLayout			= "";
@@ -262,15 +262,15 @@ component accessors="true"{
 		configStruct.registeredLayouts  = structnew();
 
 		// Register layout settings
-		structAppend(configStruct,layoutSettings);
+		structAppend( configStruct, layoutSettings );
 
 		// registered layouts
-		if( isStruct(layouts) ){
+		if( isStruct( layouts ) ){
 			// process structure into array
-			for(key in layouts){
+			for( key in layouts ){
 				thisLayout = layouts[key];
 				thisLayout.name = key;
-				arrayAppend(layoutsArray, thisLayout);
+				arrayAppend( layoutsArray, thisLayout );
 			}
 		}
 		else{
@@ -278,26 +278,26 @@ component accessors="true"{
 		}
 
 		// Process layouts
-		for(x=1; x lte ArrayLen(layoutsArray); x=x+1){
+		for(x=1; x lte ArrayLen( layoutsArray ); x++){
 			thisLayout = layoutsArray[x];
 
 			// register file with alias
-			configStruct.registeredLayouts[thisLayout.name] = thisLayout.file;
+			configStruct.registeredLayouts[ thisLayout.name ] = thisLayout.file;
 
 			// register views
-			if( structKeyExists(thisLayout,"views") ){
-				for(i=1; i lte listLen(thislayout.views); i=i+1){
-					if ( not StructKeyExists(LayoutViewStruct, lcase( listGetAt(thisLayout.views,i) ) ) ){
-						LayoutViewStruct[lcase( listGetAt(thisLayout.views,i) )] = thisLayout.file;
+			if( structKeyExists( thisLayout, "views" ) ){
+				for(i=1; i lte listLen( thislayout.views ); i++){
+					if( not StructKeyExists( LayoutViewStruct, lcase( listGetAt( thisLayout.views, i ) ) ) ){
+						LayoutViewStruct[ lcase( listGetAt( thisLayout.views, i ) ) ] = thisLayout.file;
 					}
 				}
 			}
 
 			// register folders
-			if( structKeyExists(thisLayout,"folders") ){
-				for(i=1; i lte listLen(thisLayout.folders); i=i+1){
-					if ( not StructKeyExists(LayoutFolderStruct, lcase( listGetAt(thisLayout.folders,i) ) ) ){
-						LayoutFolderStruct[lcase( listGetAt(thisLayout.folders,i) )] = thisLayout.file;
+			if( structKeyExists( thisLayout, "folders" ) ){
+				for(i=1; i lte listLen( thisLayout.folders ); i++){
+					if( not StructKeyExists( LayoutFolderStruct, lcase( listGetAt( thisLayout.folders, i ) ) ) ){
+						LayoutFolderStruct[ lcase( listGetAt( thisLayout.folders, i ) ) ] = thisLayout.file;
 					}
 				}
 			}
@@ -358,8 +358,8 @@ component accessors="true"{
 			// loop over environments and do coldbox environment detection
 			for(key in environments){
 				// loop over patterns
-				for(i=1; i lte listLen( environments[key] ); i++){
-					if( reFindNoCase( listGetAt(environments[key] ,i ), cgi.http_host) ){
+				for(i=1; i lte listLen( environments[ key ] ); i++){
+					if( reFindNoCase( listGetAt( environments[ key ] ,i ), cgi.http_host) ){
 						// set new environment
 						configStruct.environment = key;
 					}

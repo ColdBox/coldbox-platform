@@ -424,7 +424,7 @@ component serializable="false" accessors="true"{
 		prc[ "cbox_incomingContextHash" ] = hash( rc.toString() );
 		// Default Event Determination
 		if ( NOT structKeyExists( rc, eventName ) ){
-			rc[ eventName ] = getSetting("DefaultEvent");
+			rc[ eventName ] = configSettings.defaultEvent;
 		}
 		// Event More Than 1 Check, grab the first event instance, other's are discarded
 		if ( listLen( rc[ eventName ] ) GTE 2 ){
