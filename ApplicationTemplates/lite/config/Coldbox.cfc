@@ -13,7 +13,7 @@
 			handlersIndexAutoReload = true,
 	
 			//Implicit Events
-			defaultEvent			= "",
+			defaultEvent			= "main.index",
 			requestStartHandler		= "",
 			requestEndHandler		= "",
 			applicationStartHandler = "",
