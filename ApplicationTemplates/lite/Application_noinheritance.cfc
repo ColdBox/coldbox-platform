@@ -56,7 +56,7 @@ component{
 		arguments.appScope.cbBootstrap.onSessionStart();	
 	}
 	
-	function onSessionStart(required sessionScope, appScope){
+	function onSessionEnd(required sessionScope){
 		appScope.cbBootstrap.onSessionEnd(argumentCollection=arguments);	
 	}
 	
