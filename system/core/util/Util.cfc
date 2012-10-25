@@ -307,7 +307,8 @@ Description :
 		</cfif>
 
 		<!--- If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into. --->
-		<cfif structKeyExists(md,"extends") AND stopClassRecursion(md.extends.name,arguments.stopRecursions) EQ FALSE>
+			
+		<cfif structKeyExists(md,"extends") AND md.type eq "component" AND stopClassRecursion(md.extends.name,arguments.stopRecursions) EQ FALSE>
 			<cfset loc.parent = getInheritedMetaData(component=component, stopRecursions=stopRecursions, md=md.extends)>
 		<!--- If we're at the end of the line, it's time to start working backwards so start with an empty struct to hold our condensesd metadata. --->
 		<cfelse>
