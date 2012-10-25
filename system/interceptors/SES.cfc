@@ -225,6 +225,7 @@ Description :
 	<cffunction name="addNamespace" output="false" access="public" returntype="any" hint="Register a namespace in the specified position in the main routing table, and returns itself">
 		<cfargument name="pattern" 		type="string"  required="true"  hint="The pattern to match against the URL." />
 		<cfargument name="namespace"  	type="string"  required="true"  hint="The name of the namespace to register"/>
+		<cfargument name="append"  		type="boolean" required="false" default="true" hint="Whether the route should be appended or pre-pended to the array. By default we append to the end of the array"/>
 		<cfscript>
 
 			// Create the namespace routes container if it does not exist already, as we could create many patterns that point to the same namespace
@@ -233,7 +234,7 @@ Description :
 			}
 
 			// Store the entry point for the namespace
-			addRoute(pattern=arguments.pattern,namespaceRouting=arguments.namespace);
+			addRoute(pattern=arguments.pattern, namespaceRouting=arguments.namespace, append=arguments.append);
 
 			return this;
 		</cfscript>
@@ -1008,6 +1009,10 @@ Description :
 				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
 					// Setup the found Route
 					foundRoute = _routes[i];
+					// Is this namespace routing?
+					if( len(arguments.namespace) ){
+						arguments.event.setValue(name="currentRoutedNamespace",value=arguments.namespace,private=true);
+					}
 					// Debug logging
 					if( log.canDebug() ){
 						log.debug("SES Route matched: #foundRoute.toString()# on routed string: #requestString#");

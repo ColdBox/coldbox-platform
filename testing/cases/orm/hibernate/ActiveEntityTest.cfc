@@ -1,5 +1,5 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase"{
-
+	this.loadColdBox = false;
 	function setup(){
 		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
 
@@ -7,10 +7,67 @@
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 	}
+	
+	function testCountByDynamically(){
+		// Test simple Equals
+		t = activeUser.countByLastName("majano");
+		assert( 1 eq t, "CountBylastName" );
+		
+	}
+	function testFindByDynamically(){
+		// Test simple Equals
+		t = activeUser.findByLastName("majano");
+		assert( isObject( t ), "FindBylastName" );
+		// Test simple Equals with invalid
+		t = activeUser.findByLastName("d");
+		assert( isNull( t ), "Invalid last name" );
+		// Using Conditionals
+		t = activeUser.findAllByLastNameLessThanEquals( "Majano" );
+		assert( arraylen( t ) , "Conditionals LessThanEquals");
+		t = activeUser.findAllByLastNameLessThan( "Majano" );
+		assert( arraylen( t ) , "Conditionals LessThan");
+		t = activeUser.findAllByLastNameGreaterThan( "Majano" );
+		assert( arraylen( t ) , "Conditionals GreaterThan");
+		t = activeUser.findAllByLastNameGreaterThanEquals( "Majano" );
+		assert( arraylen( t ) , "Conditionals GreaterThanEqauls");
+		t = activeUser.findByLastNameLike( "ma%" );
+		assert( isObject( t ) , "Conditionals Like");
+		t = activeUser.findAllByLastNameNotEqual( "Majano" );
+		assert( arrayLen( t ) , "Conditionals Equal");
+		t = activeUser.findByLastNameIsNull();
+		assert( isNull( t ) , "Conditionals isNull");
+		t = activeUser.findAllByLastNameIsNotNull();
+		assert( arrayLen( t ) , "Conditionals isNull");
+		t = activeUser.findAllByLastLoginBetween( "01/01/2009", "01/01/2012");
+		assert( arrayLen( t ) , "Conditionals between");
+		t = activeUser.findByLastLoginBetween( "01/01/2008", "11/01/2008");
+		assert( isNull( t ) , "Conditionals between");
+		t = activeUser.findByLastLoginNotBetween( "01/01/2009", "01/01/2012");
+		assert( isNull( t ) , "Conditionals not between");
+		t = activeUser.findAllByLastNameInList( "Majano,Fernando");
+		assert( arrayLen( t ) , "Conditionals inList");
+		t = activeUser.findAllByLastNameInList( listToArray(  "Majano,Fernando" ));
+		assert( arrayLen( t ) , "Conditionals inList");
+		t = activeUser.findAllByLastNameNotInList( listToArray(  "Majano,Fernando" ));
+		assert( arrayLen( t ) , "Conditionals NotinList");
+	}	
+	
+	function testFindByDynamicallyBadProperty(){
+		expectException("BaseORMService.InvalidEntityProperty");
+		t = activeUser.findByLastAndFirst();
+	}	
+	
+	function testFindByDynamicallyFailure(){
+		expectException("BaseORMService.HQLQueryException");
+		t = activeUser.findByLastName();
+	}
 
 	function testIsValid(){
 		mockWireBox = getMockBox().createMock("coldbox.system.ioc.Injector").init();
-		mockWireBox.getBinder().map("WireBoxValidationManager").toValue( new coldbox.system.validation.ValidationManager( mockWireBox ) );
+		mockValidationManager = new coldbox.system.validation.ValidationManager();
+		mockValidationManager.setResourceBundle('');
+		mockValidationManager.setWireBox( mockWireBox );
+		mockWireBox.getBinder().map("WireBoxValidationManager").toValue( mockValidationManager );
 
 		activeUser.setWireBox( mockWireBox );
 		r = activeUser.isValid();

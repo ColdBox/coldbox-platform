@@ -79,7 +79,7 @@ Description :
 		<cflock name="EventPoolManager.RegisterObject.#objectName#" type="exclusive" throwontimeout="true" timeout="30">
 			<cfscript>
 				// Append Custom Statess
-				appendCustomStates(arguments.customStates);
+				appendInterceptionPoints(arguments.customStates);
 
 				// discover event states by convention
 				eventStatesFound = structnew();
@@ -115,7 +115,7 @@ Description :
 	</cffunction>
 
 	<!--- Append custom states --->
-	<cffunction name="appendCustomStates" access="public" returntype="void" hint="Append a list of custom event states to the CORE observation states" output="false" >
+	<cffunction name="appendInterceptionPoints" access="public" returntype="void" hint="Append a list of custom event states to the CORE observation states" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="customStates" required="true" type="string" hint="A comma delimmited list of custom observation states to append. If they already exists, then they will not be added again.">
 		<!--- ************************************************************* --->
@@ -202,7 +202,7 @@ Description :
 					// Verify observe annotation
 					if( structKeyExists(arguments.metadata.functions[x],"interceptionPoint") ){
 						// Register the observation point just in case
-						appendCustomStates(arguments.metadata.functions[x].name);
+						appendInterceptionPoints(arguments.metadata.functions[x].name);
 					}
 
 					// verify it's an observation state and Not Registered already

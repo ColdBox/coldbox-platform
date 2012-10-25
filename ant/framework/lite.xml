@@ -1,0 +1,111 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+ColdBox LITE Build                                                              
+====================================================================== -->
+<project name="coldbox-LITE.build" default="build" basedir="../../">
+
+	<!--Build Properties-->
+	<property name="dir.userlocation"	value="/Users/lmajano" />
+	<property name="dir.exports"		value="${dir.userlocation}/exports" />
+	<property name="dir.build" 			value="${dir.exports}/coldbox" />
+	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/lite.cfm?version=" />
+		
+	<!-- Build Labels -->
+	<tstamp prefix="start"/>
+	<property name="build.label" 		value="coldboxLITE-buildID-${start.DSTAMP}${start.TSTAMP}"/>
+	
+	<!--External Ant Tasks-->
+	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
+	
+	<!-- Init -->
+	<target name="init" description="Init">
+		<!-- Version -->
+		<input addproperty="coldbox.version" message="ColdBox LITE Version" />
+		<input addproperty="doCompile" message="Compile?" defaultvalue="true" validargs="true,false" />
+		
+		<condition property="compile.true">
+			<istrue value="${doCompile}"/>
+		</condition>
+	</target>
+	
+	<!--Framework Compile Checks -->
+	<target name="compilechecks" description="Compile framework checks." depends="init" if="compile.true">
+		<!--Need Compile Checks First -->
+		<ant antfile="${ant.compilechecks}" target="compile.checks" />		
+	</target>
+	
+	<!--BUild-->
+	<target name="build" description="Build a new ColdBox Lite distribution" depends="compilechecks">
+      	
+		<mkdir dir="${dir.build}"/>
+		
+		<!-- Copy build ID -->
+		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		
+		<!-- Copy src -->	
+		<copy todir="${dir.build}/coldbox/system/core">
+        	<fileset dir="system/core">
+        		<exclude name="cf/**" />
+        		<exclude name="conversion/JSON.cfc" />
+        		<exclude name="db/**" />
+        		<exclude name="java/**" />
+        		<exclude name="javaloader/**" />
+        		<exclude name="mail/**" />
+        		<exclude name="util/DateUtils.cfc" />
+        		<exclude name="util/FileUtils.cfc" />
+        		<exclude name="util/RequestBuffer.cfc" />
+        		<exclude name="util/Validator.cfc" />
+        	</fileset>
+        </copy>
+		<delete file="${dir.build}/coldbox/system/conversion/JSON.cfc" />
+		
+		<copy todir="${dir.build}/coldbox/system/ioc">
+        	<fileset dir="system/ioc" />
+        </copy>
+		<copy todir="${dir.build}/coldbox/system/orm/hibernate">
+			<fileset dir="system/orm/hibernate">
+			 	<exclude name="EventHandler.cfc" />
+			 </fileset>
+		</copy>
+		<copy todir="${dir.build}/coldbox/system/logging">
+        	<fileset dir="system/logging" />
+        </copy>
+		<copy todir="${dir.build}/coldbox/system/mvc">
+        	<fileset dir="system/mvc" />
+        </copy>
+		
+		<!--Copy AppTemplate-->
+		<copy todir="${dir.build}/ApplicationTemplates/lite">
+        	<fileset dir="ApplicationTemplates/lite" />
+        </copy>
+		
+		<!--Copy text files to root folder-->
+		<copy todir="${dir.build}">
+			<fileset file="license.txt" />
+			<fileset file="readme.txt" />						
+		</copy>
+				
+		<!--Remove Dist-->
+		<delete dir="dist" />
+		
+		<!-- Execute ColdDoc --> 
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.exports}/coldboxLITE-ORM_${coldbox.version}.zip" basedir="${dir.build}"></zip>
+		
+		<!-- No ORM -->
+		<delete dir="${dir.build}/coldbox/system/orm" />
+		
+		<!-- Execute ColdDoc --> 
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.exports}/coldboxLITE_${coldbox.version}.zip" basedir="${dir.build}"></zip>
+		
+		
+    </target>
+	
+</project>

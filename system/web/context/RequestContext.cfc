@@ -323,6 +323,10 @@ Description :
 	<cffunction name="getCurrentRoutedURL" output="false" access="public" returntype="any" hint="Get the current routed URL that matched the SES route">
     	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
+    
+    <cffunction name="getCurrentRoutedNamespace" output="false" access="public" returntype="any" hint="Get the current routed namespace that matched the SES route, if any">
+    	<cfreturn getValue("currentRoutedNamespace","",true)>
+    </cffunction>
 
     <cffunction name="noLayout" output="false" access="public" returntype="any" hint="Mark this request to not use a layout for rendering">
     	<cfscript>

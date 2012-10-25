@@ -72,6 +72,7 @@
 		<!-- Copy src -->	
       	<copy todir="${dir.build}/system">
         	<fileset dir="system">
+        		<exclude name="mvc/**"/>
         	</fileset>
         </copy>
 		

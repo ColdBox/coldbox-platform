@@ -63,6 +63,8 @@ Description :
 		// Map some AOP aspects
 		mapAspect("MethodLogger").to("coldbox.system.aop.aspects.MethodLogger");
 		mapAspect("HibernateTransaction").to("coldbox.system.aop.aspects.HibernateTransaction");
+		
+		map("WireBoxURL").toValue("http://www.coldbox.org");
 
 		// Bind the aspects
 		//bindAspect(classes=match().regex('coldbox\.testharness\.handlers'),methods=match().any(),aspects="MethodLogger");

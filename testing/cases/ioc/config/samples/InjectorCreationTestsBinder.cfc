@@ -112,6 +112,10 @@ Description :
 		map("WireBoxURL").toValue("http://www.coldbox.org");
 		map("ConcreteMetadata").to("coldbox.testing.testmodel.ioc.inheritance.Concrete");
 
+		// Implicit properties
+		map("implicitTest").to("#myPath#.ioc.ImplicitTest").setter(name="testProperty",value=123); 
+
+
 	}
 </cfscript>
 </cfcomponent>

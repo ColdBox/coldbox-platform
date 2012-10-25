@@ -75,8 +75,8 @@ id , name , mail
 		</cfscript>
 	</cffunction>
 
-	<!--- setup --->
-	<cffunction name="setup" hint="The main setup method for running ColdBox enabled tests" output="false">
+	<!--- beforeTests --->
+	<cffunction name="beforeTests" hint="The main setup method for running ColdBox Integration enabled tests" output="false">
 		<cfscript>
 		var appRootPath = "";
 		var context		= "";
@@ -92,45 +92,46 @@ id , name , mail
 			}
 			else{
 				// Verify App Root Path
-				if( NOT len(instance.appMapping) ){ instance.appMapping = "/"; }
-				appRootPath = expandPath(instance.appMapping);
+				if( NOT len( instance.appMapping ) ){ instance.appMapping = "/"; }
+				appRootPath = expandPath( instance.appMapping );
 				// Clean the path for nice root path.
-				if( NOT reFind("(/|\\)$",appRootPath) ){
+				if( NOT reFind( "(/|\\)$", appRootPath ) ){
 					appRootPath = appRootPath & "/";
 				}
-				
 				// Setup Coldbox configuration by convention
-				if(NOT len(instance.configMapping) ){
-					if( len(instance.appMapping) ){
+				if(NOT len( instance.configMapping ) ){
+					if( len( instance.appMapping ) ){
 						instance.configMapping = instance.appMapping & ".config.Coldbox";
 					}
 					else{
 						instance.configMapping = "config.Coldbox";
 					}
 				}
-				
 				//Initialize mock Controller
-				instance.controller = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( appRootPath );
-				
+				instance.controller = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( appRootPath=appRootPath, appKey=instance.coldboxAppKey );
 				// persist for mock testing in right name
-				application[getColdboxAppKey()] = instance.controller;
-				
+				application[ getColdboxAppKey() ] = instance.controller;
 				// Setup
-				instance.controller.getLoaderService().loadApplication(instance.configMapping,instance.appMapping);
+				instance.controller.getLoaderService().loadApplication( instance.configMapping, instance.appMapping );
 			}
-			
-			//Clean up Initial Event Context
-			context = getRequestContext();
-			context.clearCollection();
-			context.clearCollection(private=true);
 		}
 		</cfscript>
 	</cffunction>
 	
-	<!--- tearDown --->
-	<cffunction name="tearDown" hint="The main teardown for ColdBox enabled applications" output="false">
+	<!--- setup --->
+	<cffunction name="setup" hint="This executes before any test method for integration tests." output="false">
 		<cfscript>
-			structDelete(application,getColdboxAppKey());
+			// Are we doing integration tests
+			if( this.loadColdbox ){
+				getController().getRequestService().removeContext();
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- afterTests --->
+	<cffunction name="afterTests" hint="The main teardown for ColdBox enabled applications after all tests execute" output="false">
+		<cfscript>
+			structDelete( application, getColdboxAppKey() );
 		</cfscript>
 	</cffunction>
 
@@ -260,8 +261,8 @@ id , name , mail
 
 	<!--- Reset the persistence --->
 	<cffunction name="reset" access="private" returntype="void" hint="Reset the persistence of the unit test coldbox app, basically removes the controller from application scope" output="false" >
-		<cfset structDelete(application,getColdboxAppKey())>
-		<cfset structClear(request)>
+		<cfset structDelete( application, getColdboxAppKey() )>
+		<cfset structClear( request )>
 	</cffunction>
 	
 	<!--- get/Set Coldbox App Key --->
@@ -369,11 +370,17 @@ id , name , mail
 				if ( len(cbController.getSetting("RequestStartHandler")) ){
 					cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
 				}
-			
+				
+				// grab the latest event in the context, in case overrides occur
+				arguments.event = getRequestContext().getCurrentEvent();
+				
 				//TEST EVENT EXECUTION
-				handlerResults = cbController.runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt,eventArguments=arguments.eventArguments);
+				handlerResults = cbController.runEvent(event=arguments.event,
+													   private=arguments.private,
+													   prepostExempt=arguments.prepostExempt,
+													   eventArguments=arguments.eventArguments);
 			
-				// Request Start Handler
+				// Request End Handler
 				if ( len(cbController.getSetting("RequestEndHandler")) ){
 					cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
 				}

@@ -1,5 +1,5 @@
 component extends="coldbox.system.testing.BaseTestCase"{
-
+	this.loadColdBox = false;
 	function setup(){
 		factory   = getMockBox().createMock("coldbox.system.orm.hibernate.util.ORMUtilFactory");
 	}

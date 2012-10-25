@@ -35,6 +35,7 @@
 			handlersExternalLocation  = "coldbox.testing.testhandlers",
 			requestContextDecorator = "coldbox.testharness.model.myRequestContextDecorator",
 			modulesExternalLocation = ["/coldbox/testing/testModules","/coldbox/testing/testModules2"],
+			controllerDecorator			= "coldbox.testharness.model.ControllerDecorator",
 			
 			//Error/Exception Handling
 			exceptionHandler		= "",
@@ -215,8 +216,8 @@
 								 }}
 			},
 			// Root Logger
-			root = { levelmax="INFO", appenders="*" },
-			debug = ["coldbox.system.aop"] 
+			root = { levelmax="INFO", appenders="*" }
+			//debug = ["coldbox.system.aop"] 
 		};
 	}
 	

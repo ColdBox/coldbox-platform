@@ -19,7 +19,6 @@ Description :
 		instance.extraInfo	= "";
 		// converters
 		instance.xmlConverter = createObject("component","coldbox.system.core.conversion.XMLConverter").init();
-		instance.jsonConverter = createObject("component","coldbox.system.core.conversion.JSON").init();
 	</cfscript>
 	
 	<!--- init --->
@@ -53,8 +52,8 @@ Description :
 				return instance.xmlConverter.toXML( instance.extraInfo );
 			}
 			
-			// Complex values, return serialized in json (update by 3.1 when JSON is replaced by native functions)
-			return instance.jsonConverter.encode( instance.extraInfo );			
+			// Complex values, return serialized in json
+			return serializeJSON( instance.extraInfo );			
 		</cfscript>
 	</cffunction>
 	

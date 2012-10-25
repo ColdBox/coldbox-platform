@@ -62,16 +62,16 @@ Description :
 		<cfscript>
 			var appKey = locateAppKey();
 			// Cleanup of old code
-			if( structkeyExists(application,appKey) ){
-				structDelete(application,appKey);
+			if( structkeyExists( application, appKey ) ){
+				structDelete( application, appKey );
 			}
 			// Create Brand New Controller
-			application[appKey] = CreateObject("component","coldbox.system.web.Controller").init(COLDBOX_APP_ROOT_PATH);
+			application[ appKey ] = CreateObject("component","coldbox.system.web.Controller").init( COLDBOX_APP_ROOT_PATH, appKey );
 			// Setup the Framework And Application
-			application[appKey].getLoaderService().loadApplication(COLDBOX_CONFIG_FILE,COLDBOX_APP_MAPPING);
+			application[ appKey ].getLoaderService().loadApplication( COLDBOX_CONFIG_FILE, COLDBOX_APP_MAPPING );
 			// Application Start Handler
-			if ( len(application[appKey].getSetting("ApplicationStartHandler")) ){
-				application[appKey].runEvent(application[appKey].getSetting("ApplicationStartHandler"),true);
+			if ( len( application[ appKey ].getSetting("ApplicationStartHandler")) ){
+				application[ appKey ].runEvent( application[ appKey ].getSetting("ApplicationStartHandler"), true );
 			}
 		</cfscript>
 	</cffunction>
@@ -305,15 +305,12 @@ Description :
 
 					<!--- Render Data? --->
 					<cfif isStruct(renderData) and not structisEmpty(renderData)>
-						<cfset renderDataSetup(argumentCollection=renderData)>
 						<cfset event.showDebugPanel(false)>
-						<!--- Binary --->
-						<cfif renderData.isBinary>
-							<cfcontent type="#renderData.contentType#" variable="#renderedContent#" />
-						<!--- Non Binary --->
-						<cfelse>
-							<cfoutput>#renderedContent#</cfoutput>
-						</cfif>
+						<cfset renderDataSetup(argumentCollection=renderData)><!---
+						Binary 
+						---><cfif renderData.isBinary><cfcontent type="#renderData.contentType#" variable="#renderedContent#" /><!---
+						Non Binary
+						---><cfelse><cfoutput>#renderedContent#</cfoutput></cfif>
 					<!--- Normal HTML --->
 					<cfelse>
 						<cfoutput>#renderedContent#</cfoutput>

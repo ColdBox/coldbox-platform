@@ -16,19 +16,20 @@ Only one instance of a specific ColdBox application exists.
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" returntype="any" access="public" hint="Constructor" output="false" colddoc:generic="coldbox.system.web.Controller">
-		<cfargument name="appRootPath" type="any" required="true" hint="The application root path"/>
+		<cfargument name="appRootPath" 	type="any" required="true" hint="The application root path"/>
+		<cfargument name="appKey"		type="any" required="true" hint="The application registered application key"/>
 		<cfscript>
 			// local members scope
 			instance = structnew();
 			// services scope
-			services = createObject("java","java.util.LinkedHashMap").init(7);
+			services = createObject("java","java.util.LinkedHashMap").init( 7 );
 
 			// CFML Engine Utility
 			instance.CFMLEngine = CreateObject("component","coldbox.system.core.cf.CFMLEngine").init();
-
 			// Set Main Application Properties
 			instance.coldboxInitiated 		= false;
 			instance.aspectsInitiated 		= false;
+			instance.appKey					= arguments.appKey;
 			//Fix Application Path to last / standard.
 			if( NOT reFind("(/|\\)$",arguments.appRootPath) ){
 				arguments.appRootPath = appRootPath & "/";
@@ -42,19 +43,19 @@ Only one instance of a specific ColdBox application exists.
 			createObject("component","coldbox.system.web.loader.FrameworkLoader").init().loadSettings( this );
 
 			// Setup the ColdBox Services
-			services.loaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init(this);
+			services.loaderService 		= CreateObject("component", "coldbox.system.web.services.LoaderService").init( this );
 
 			// LogBox Default Configuration & Creation
 			instance.logBox = services.loaderService.createDefaultLogBox();
-			instance.log 	= instance.logBox.getLogger(this);
+			instance.log 	= instance.logBox.getLogger( this );
 
 			// Setup the ColdBox Services
-			services.RequestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init(this);
-			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init(this);
-			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init(this);
-			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init(this);
-			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init(this);
-			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this);
+			services.RequestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init( this );
+			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init( this );
+			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init( this );
+			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init( this );
+			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init( this );
+			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init( this );
 
 			// CacheBox Instance
 			instance.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
@@ -68,6 +69,14 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- Get instance memento --->
+	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the controller's internal state">
+		<cfset var memento = {
+			instance = instance, services = services
+		}>
+		<cfreturn memento>
+	</cffunction>
 
 	<!--- Get The CFMLEngine object --->
 	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.cf.CFMLEngine)" coldoc:generic="coldbox.system.core.cf.CFMLEngine">
@@ -125,6 +134,11 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getServices" output="false" access="public" returntype="any" hint="Get all the registered services structure" colddoc:generic="coldbox">
 		<cfreturn services>
 	</cffunction>
+	
+	<!--- AppKey --->
+	<cffunction name="getAppKey" access="public" returntype="any" output="false" hint="Get this application's key in memory space (application scope)">
+		<cfreturn instance.appKey>
+	</cffunction>
 
 	<!--- AppRootPath --->
 	<cffunction name="getAppRootPath" access="public" returntype="any" output="false" hint="Get this application's physical path">
@@ -171,7 +185,7 @@ Only one instance of a specific ColdBox application exists.
 
 	<!--- Exception Service --->
 	<cffunction name="getExceptionService" access="public" output="false" returntype="any" hint="Get ExceptionService: coldbox.system.web.services.ExceptionService">
-		<cfreturn CreateObject("component", "coldbox.system.web.services.ExceptionService").init(this)/>
+		<cfreturn CreateObject("component", "coldbox.system.web.services.ExceptionService").init( this )/>
 	</cffunction>
 
 	<!--- Request Service --->

@@ -1,5 +1,6 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
+	this.loadColdBox = false;
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.AbstractFlashScope");
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
@@ -18,13 +19,16 @@
 		structClear(request);
 	}
 	function testInflateFlash(){
+		testScope = { name={content="luis majano",keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true}, 
+					  date={content=now(),keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true},
+					  testData={keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true} };
 		mockEvent.$("setValue");
 		flash.$("getFlash",testScope).$("clearFlash");
 		
 		flash.inflateFlash();
 		assertEquals( flash.size(), 2);
-		debug(arrayLen(mockEvent.$callLog().setValue));
-		//assertEquals( arrayLen(mockEvent.$callLog().setValue), 2 );
+		//debug( mockEvent.$callLog().setValue );
+		assertEquals( arrayLen(mockEvent.$callLog().setValue), 2 );
 	}
 	
 	function testScopeMethods(){

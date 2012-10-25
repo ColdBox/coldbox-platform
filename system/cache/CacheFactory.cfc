@@ -669,7 +669,7 @@ Description :
     		// create event manager
 			instance.eventManager = createObject("component","coldbox.system.core.events.EventPoolManager").init( instance.eventStates );
 			// register the points to listen to
-			instance.eventManager.appendCustomStates( arrayToList(instance.eventStates) );
+			instance.eventManager.appendInterceptionPoints( arrayToList(instance.eventStates) );
 		</cfscript>
     </cffunction>
 
