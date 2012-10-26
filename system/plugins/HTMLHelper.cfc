@@ -84,7 +84,7 @@ Description :
 			event.paramValue(name="cbox_assets",value="",private=true);
 
 			for(x=1; x lte listLen(arguments.asset); x=x+1){
-				thisAsset = listGetAt(arguments.asset,x);
+				thisAsset = trim( listGetAt( arguments.asset, x ) );
 				// Is asset already loaded
 				if( NOT listFindNoCase(event.getValue(name="cbox_assets",private=true),thisAsset) ){
 
