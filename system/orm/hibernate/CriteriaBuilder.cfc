@@ -133,7 +133,7 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 			// everything else is a real restriction; add it to native criteria, then return this
 			default: 
 				nativeCriteria.add( r );
-			break;
+				break;
 		}
 		return this;
 	}

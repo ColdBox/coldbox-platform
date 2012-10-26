@@ -345,7 +345,7 @@ component accessors="true"{
 			// create the dynamic criteria
 			return createCriteria(argumentCollection=args);
 		}
-		arguments.missingMethodArguments.nativeCriteria = getNativeCriteria();
+		//arguments.missingMethodArguments.nativeCriteria = getNativeCriteria();
 		// funnel missing methods to restrictions and append to criterias
 		var r = evaluate("this.restrictions.#arguments.missingMethodName#(argumentCollection=arguments.missingMethodArguments)");
 		return r;

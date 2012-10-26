@@ -23,6 +23,8 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	
 	// pass off arguments to higher-level restriction builder, and handle the results
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ) {
+		// Append the native criteria for subqueries
+		arguments.missingMethodArguments.nativeCriteria = nativeCriteria;
 		// get the restriction/new criteria
 		var r = createRestriction( argumentCollection=arguments );
 		// switch on the object type
