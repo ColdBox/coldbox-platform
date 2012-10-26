@@ -1,12 +1,41 @@
 /**
-	Description: BaseBuilder is a common funnel through which both CriteriaBuilder and DetachedCriteriaBuilder can be run
-				 It exposes properties and methods that both builders share in common, for a singular mechanism for building 
-				 criteria queries and subqueries
-*/
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
+Description: BaseBuilder is a common funnel through which both CriteriaBuilder and DetachedCriteriaBuilder can be run
+			 It exposes properties and methods that both builders share in common, for a singular mechanism for building 
+			 criteria queries and subqueries
+			 
+We also setup several public properties:
+
+this.PROJECTIONS - Maps to the Hibernate projections class: org.hibernate.criterion.Projections
+this.RESTRICTIONS - Maps to our ColdBox restrictions class: coldbox.system.orm.hibernate.criterion.Restrictions
+
+Join Types
+this.FULL_JOIN 
+	Specifies joining to an entity based on a full join.
+this.INNER_JOIN 
+	Specifies joining to an entity based on an inner join.
+this.LEFT_JOIN 
+	Specifies joining to an entity based on a left outer join.
+
+Result Transformers
+this.ALIAS_TO_ENTITY_MAP 
+	Each row of results is a Map from alias to entity instance
+this.DISTINCT_ROOT_ENTITY 
+	Each row of results is a distinct instance of the root entity
+this.PROJECTION 
+	This result transformer is selected implicitly by calling setProjection()
+this.ROOT_ENTITY 
+	Each row of results is an instance of the root entity
+	
+*/
 import coldbox.system.orm.hibernate.*;
 import org.hibernate.*;
 component accessors="true"{
+			
 	// The native criteria object
 	property name="nativeCriteria"  type="any";
 	// The entity name this criteria builder is binded to

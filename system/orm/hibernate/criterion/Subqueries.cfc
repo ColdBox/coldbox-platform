@@ -1,21 +1,25 @@
 /**
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
 Description :
 	A proxy to hibernate org.hibernate.criterion.Subqueries object to allow
 	for criteria based subquerying
 */
-component singleton extends="coldbox.system.orm.hibernate.criterion.Restrictions" {
+component singleton extends="coldbox.system.orm.hibernate.criterion.Restrictions"{
+	
 	// Constructor
 	Subqueries function init() {
 		subqueries   = CreateObject( "java", "org.hibernate.criterion.Subqueries" );  
-		restrictions = CreateObject("java","org.hibernate.criterion.Restrictions");
+		restrictions = CreateObject( "java", "org.hibernate.criterion.Restrictions" );
 		return this;
 	}
-	
 	// Get the native hibernate subqueries object: org.hibernate.criterion.Subqueries
 	any function getNativeClass(){
 		return subqueries;
 	}
-	
 	any function subEq( required any value, required any nativeCriteria ) {
 		return subqueries.eq( arguments.value, arguments.nativeCriteria );
 	}
@@ -67,7 +71,6 @@ component singleton extends="coldbox.system.orm.hibernate.criterion.Restrictions
 	any function subNotIn( required any value, required any nativeCriteria ) {
 		return subqueries.notIn( arguments.value, arguments.nativeCriteria );
 	}
-	
 	// where subquery returns a result
 	any function exists( required any nativeCriteria ) {
 		return subqueries.exists( arguments.nativeCriteria );

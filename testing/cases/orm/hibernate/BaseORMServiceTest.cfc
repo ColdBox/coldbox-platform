@@ -1,7 +1,13 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase"{
 
 	this.loadColdBox = false;
-
+	
+	function beforeTests(){
+		super.beforeTests();
+		// Load our test injector for ORM entity binding
+		new coldbox.system.ioc.Injector(binder="coldbox.testing.cases.orm.hibernate.WireBox");
+	}
+	
 	function setup(){
 		ormservice   = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService");
 		mockEH = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
@@ -568,7 +574,7 @@
 	function testGetPropertyNames(){
 
 		test = ormservice.getPropertyNames(entityName="Category");
-		assertEquals( 3, arrayLen(test) );
+		assertEquals( 4, arrayLen(test) );
 
 		test = ormservice.getPropertyNames(entityName="User");
 		assertEquals( 6, arrayLen(test) );

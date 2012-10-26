@@ -1,5 +1,11 @@
 component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdbox = false;
+	
+	function beforeTests(){
+		super.beforeTests();
+		// Load our test injector for ORM entity binding
+		new coldbox.system.ioc.Injector(binder="coldbox.testing.cases.orm.hibernate.WireBox");
+	}
 	function setup(){
 		criteria   = getMockBox().createMock("coldbox.system.orm.hibernate.DetachedCriteriaBuilder");
 		criteria.init("Role", "Role");

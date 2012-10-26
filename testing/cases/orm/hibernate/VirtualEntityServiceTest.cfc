@@ -2,6 +2,12 @@
 	
 	this.loadColdbox = false;
 	
+	function beforeTests(){
+		super.beforeTests();
+		// Load our test injector for ORM entity binding
+		new coldbox.system.ioc.Injector(binder="coldbox.testing.cases.orm.hibernate.WireBox");
+	}
+	
 	function setup(){
 		ormservice = getMockBox().createMock("coldbox.system.orm.hibernate.VirtualEntityService");
 		// Mocks

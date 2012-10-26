@@ -1,4 +1,9 @@
 /**
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
 Description :
 	Based on the general approach of CriteriaBuilder.cfc, DetachedCriteriaBuilder allows you 
 	to create a detached criteria query that can be used:

@@ -1,8 +1,10 @@
 component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdbox = false;
 	
-	function tearDown(){
-		structDelete( application, "wirebox");
+	function beforeTests(){
+		super.beforeTests();
+		// Load our test injector for ORM entity binding
+		new coldbox.system.ioc.Injector(binder="coldbox.testing.cases.orm.hibernate.WireBox");
 	}
 	
 	function setup(){

@@ -1,5 +1,12 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdBox = false;
+	
+	function beforeTests(){
+		super.beforeTests();
+		// Load our test injector for ORM entity binding
+		new coldbox.system.ioc.Injector(binder="coldbox.testing.cases.orm.hibernate.WireBox");
+	}
+	
 	function setup(){
 		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
 

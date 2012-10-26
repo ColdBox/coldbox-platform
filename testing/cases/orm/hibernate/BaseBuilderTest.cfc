@@ -1,5 +1,13 @@
 component extends="coldbox.system.testing.BaseTestCase" {
+
 	this.loadColdbox = false;
+	
+	function beforeTests(){
+		super.beforeTests();
+		// Load our test injector for ORM entity binding
+		new coldbox.system.ioc.Injector(binder="coldbox.testing.cases.orm.hibernate.WireBox");
+	}
+	
 	function setup(){
 		criteria   = getMockBox().createMock("coldbox.system.orm.hibernate.CriteriaBuilder");
 		criteria.init("User");
@@ -11,6 +19,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 		test2 = ["1","2"];
 	}
+	
 	function testCreateCriteria(){
 
 		r = criteria.init("Role")
@@ -256,8 +265,8 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 
 	function testAnd(){
-		r = criteria.and( criteria.restrictions.between("balance",100,200), criteria.restrictions.lt("salary",20000) );
-		s = subCriteria.and( subCriteria.restrictions.between("balance",100,200), subCriteria.restrictions.lt("salary",20000) );
+		r = criteria.and( criteria.restrictions.between("balance",100,200), criteria.restrictions.isLt("salary",20000) );
+		//s = subCriteria.$and( subCriteria.restrictions.between("balance",100,200), subCriteria.restrictions.isLt("salary",20000) );
 	}
 
 	function testOr(){
