@@ -13,7 +13,7 @@
 	<property name="dir.userlocation"	value="/Users/lmajano" />
 	<property name="dir.exports"		value="${dir.userlocation}/exports" />
 	<property name="dir.build" 			value="${dir.exports}/coldbox" />
-	<property name="dir.dashboard"	    value="${dir.userlocation}/sites/cboxdev/core/dashboard" />
+	<!-- <property name="dir.dashboard"	    value="${dir.userlocation}/sites/cboxdev/core/dashboard" /> -->
 	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
 	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/coldbox.cfm?version=" />
 	<property name="dictionaries.http"	value="http://cf9cboxdev.jfetmac/coldbox/testing/tools/IDEDictionaries/" />
@@ -24,7 +24,7 @@
 	
 	<!--External Ant Tasks-->
 	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
-	<property name="ant.dashboard"      value="${dir.dashboard}/build.xml" />
+	<!--<property name="ant.dashboard"      value="${dir.dashboard}/build.xml" />-->
 	<property name="ant.forgeboxModule" value="ant/framework/ForgeBoxToTemplates.xml" />
 	
 	<!-- FTP -->
@@ -57,7 +57,7 @@
        		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
         	<fileset file="${dir.exports}/coldbox_${coldbox.version}.zip" />
 			<fileset file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" />
-			<fileset file="${dir.exports}/dashboard_${dashboard.version}.zip" />
+			<!--<fileset file="${dir.exports}/dashboard_${dashboard.version}.zip" />-->
        	</ftp>		
 	</target>
 	
@@ -70,19 +70,19 @@
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src -->	
-      	<copy todir="${dir.build}/system">
+      	<copy todir="${dir.build}/coldbox/system">
         	<fileset dir="system">
         	</fileset>
         </copy>
 		
 		<!-- Samples -->
-		<copy todir="${dir.build}/samples">
+		<copy todir="${dir.build}/coldbox/samples">
 			<fileset dir="${dir.samples}">
         	</fileset>
         </copy>
 		
 		<!-- Install folder -->
-		<copy todir="${dir.build}/install">
+		<copy todir="${dir.build}/coldbox/install">
         	<fileset dir="install" />
         </copy>
 		
@@ -90,12 +90,12 @@
 		<ant antfile="${ant.forgeboxModule}" target="copy" />
 		
 		<!--AppTemplate-->
-		<copy todir="${dir.build}/ApplicationTemplates">
+		<copy todir="${dir.build}/coldbox/ApplicationTemplates">
         	<fileset dir="ApplicationTemplates" />
         </copy>
 		
 		<!--Copy text files to install folder-->
-		<copy todir="${dir.build}/install">
+		<copy todir="${dir.build}/coldbox/install">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />						
 		</copy>
@@ -103,8 +103,9 @@
 		<!--Remove Dist-->
 		<delete dir="dist" />
 		
-		<!--Export Dashboard-->
+		<!--Export Dashboard
 		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}" />
+		-->
 		
 		<!-- Execute ColdDoc -->
 		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
@@ -120,23 +121,19 @@
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		
 		<!-- Cleanup for StandAlone Build -->
-		<delete dir="${dir.build}/ApplicationTemplates"/>
-		<delete dir="${dir.build}/install" />
-		<delete file="${dir.build}/ColdBoxDocs-${coldbox.version}.zip" />
-		<copy todir="${dir.build}">
+		<delete dir="${dir.build}/coldbox/ApplicationTemplates"/>
+		<delete dir="${dir.build}/coldbox/install" />
+		<delete file="${dir.build}/coldbox/ColdBoxDocs-${coldbox.version}.zip" />
+		<copy todir="${dir.build}/">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />		
 		</copy>		
 			
 		<!-- Zip Standalone -->
 		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" 
-			 excludes="dashboard/**,samples/**">							
+			 excludes="coldbox/samples/**">							
 		</zip>	
 		
     </target>
 	
-	<target name="test">
-		<!--Export Dashboard-->
-		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}"/>
-	</target>
 </project>

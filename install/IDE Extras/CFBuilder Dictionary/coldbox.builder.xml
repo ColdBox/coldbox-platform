@@ -966,38 +966,47 @@
 </scopevar>
 	<scopevar name="event">
 		<help><![CDATA[The request context object simulates a user request. It has two internal data collections: one public and one private.  You can also manipulate the request stream and contents from this object.]]></help>
-		<scopevar name="getViewLayouts()">
-			<help><![CDATA[Get the registered view layout associations map]]></help>
+		<scopevar name="setProxyRequest()">
+			<help><![CDATA[Set that this is a proxy request]]></help>
 		</scopevar>
-	<scopevar name="clearCollection([private])">
-			<help><![CDATA[Clears the entire collection]]></help>
+	<scopevar name="setViewCacheableEntry(mdCacheEntry)">
+			<help><![CDATA[Set the view cacheable entry]]></help>
 		</scopevar>
-	<scopevar name="isNoRender()">
-			<help><![CDATA[Is this a no render request]]></help>
+	<scopevar name="isAjax()">
+			<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
 		</scopevar>
-	<scopevar name="getCollection([deepCopyFlag],[private])">
-			<help><![CDATA[I Get a reference or deep copy of the public or private request Collection]]></help>
+	<scopevar name="getHTTPBasicCredentials()">
+			<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
 		</scopevar>
-	<scopevar name="getEventName()">
-			<help><![CDATA[The event name used by the application: String]]></help>
+	<scopevar name="renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs])">
+			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
 		</scopevar>
-	<scopevar name="getCurrentRoutedURL()">
-			<help><![CDATA[Get the current routed URL that matched the SES route]]></help>
-		</scopevar>
-	<scopevar name="buildLink(linkto,[translate],[ssl],[baseURL],[queryString])">
-			<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.]]></help>
-		</scopevar>
-	<scopevar name="getHTTPContent()">
-			<help><![CDATA[Get the raw HTTP content]]></help>
+	<scopevar name="getSESBaseURL()">
+			<help><![CDATA[Get the ses base URL for this request]]></help>
 		</scopevar>
 	<scopevar name="setSESBaseURL(sesBaseURL)">
 			<help><![CDATA[Set the ses base URL for this request]]></help>
 		</scopevar>
+	<scopevar name="getCurrentRoutedURL()">
+			<help><![CDATA[Get the current routed URL that matched the SES route]]></help>
+		</scopevar>
+	<scopevar name="getRenderData()">
+			<help><![CDATA[Get the renderData structure.]]></help>
+		</scopevar>
+	<scopevar name="getHTTPMethod()">
+			<help><![CDATA[Get the HTTP Request Method Type]]></help>
+		</scopevar>
+	<scopevar name="getSize([private])">
+			<help><![CDATA[Returns the number of elements in the collection]]></help>
+		</scopevar>
+	<scopevar name="init(properties)">
+			<help><![CDATA[constructor]]></help>
+		</scopevar>
 	<scopevar name="isSES()">
 			<help><![CDATA[Determine if you are in SES mode.]]></help>
 		</scopevar>
-	<scopevar name="collectionAppend(collection,[overwrite],[private])">
-			<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+	<scopevar name="getCurrentHandler()">
+			<help><![CDATA[Gets the current handler requested in the current event: String]]></help>
 		</scopevar>
 	<scopevar name="getFolderLayouts()">
 			<help><![CDATA[Get the registered folder layout associations map]]></help>
@@ -1005,179 +1014,173 @@
 	<scopevar name="getEventCacheableEntry()">
 			<help><![CDATA[Get the event cacheable entry]]></help>
 		</scopevar>
-	<scopevar name="setisSES(isSES)">
-			<help><![CDATA[Set the isSES flag, usualy done by the SES interceptor]]></help>
-		</scopevar>
-	<scopevar name="renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs])">
-			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
-		</scopevar>
-	<scopevar name="setLayout(name,[module])">
-			<help><![CDATA[I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout]]></help>
-		</scopevar>
-	<scopevar name="getDebugPanelFlag()">
-			<help><![CDATA[I return the debugpanel flag for this request.]]></help>
-		</scopevar>
-	<scopevar name="getDefaultLayout()">
-			<help><![CDATA[Get's the default layout of the application: String]]></help>
-		</scopevar>
-	<scopevar name="getDefaultView()">
-			<help><![CDATA[Get's the default view of the application: String]]></help>
-		</scopevar>
-	<scopevar name="getCurrentLayout()">
-			<help><![CDATA[Gets the current set layout for rendering]]></help>
-		</scopevar>
-	<scopevar name="getRoutedStruct()">
-			<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
-		</scopevar>
-	<scopevar name="init(properties)">
-			<help><![CDATA[constructor]]></help>
-		</scopevar>
-	<scopevar name="$dump(var,[isAbort])">
-			<help><![CDATA[Facade for cfmx dump]]></help>
-		</scopevar>
-	<scopevar name="setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
-			<help><![CDATA[Set an HTTP Header]]></help>
-		</scopevar>
-	<scopevar name="setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider],[layout],[module],[args])">
-			<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
-		</scopevar>
-	<scopevar name="getViewCacheableEntry()">
-			<help><![CDATA[Get the event cacheable entry]]></help>
-		</scopevar>
-	<scopevar name="getRegisteredLayouts()">
-			<help><![CDATA[Get all the registered layouts in the configuration file]]></help>
-		</scopevar>
-	<scopevar name="getSize([private])">
-			<help><![CDATA[Returns the number of elements in the collection]]></help>
-		</scopevar>
-	<scopevar name="setProxyRequest()">
-			<help><![CDATA[Set that this is a proxy request]]></help>
-		</scopevar>
-	<scopevar name="getSelf()">
-			<help><![CDATA[Returns index.cfm?{eventName}= : String]]></help>
-		</scopevar>
-	<scopevar name="getCurrentHandler()">
-			<help><![CDATA[Gets the current handler requested in the current event: String]]></help>
-		</scopevar>
-	<scopevar name="overrideEvent([event])">
-			<help><![CDATA[I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.]]></help>
-		</scopevar>
-	<scopevar name="getCurrentViewModule()">
-			<help><![CDATA[Gets the current set views's module for rendering]]></help>
-		</scopevar>
-	<scopevar name="noLayout()">
-			<help><![CDATA[Mark this request to not use a layout for rendering]]></help>
-		</scopevar>
-	<scopevar name="getMemento()">
-			<help><![CDATA[Get the state of this request context]]></help>
-		</scopevar>
-	<scopevar name="paramValue(name,value,[private])">
-			<help><![CDATA[Just like cfparam, but for the request collection]]></help>
-		</scopevar>
-	<scopevar name="noRender([remove])">
-			<help><![CDATA[Set the flag that tells the framework not to render, just execute]]></help>
-		</scopevar>
-	<scopevar name="showDebugPanel(show)">
-			<help><![CDATA[I can override to show or not the debug panel. Very useful in AJAX debugging]]></help>
-		</scopevar>
-	<scopevar name="getCurrentLayoutModule()">
-			<help><![CDATA[Gets the current set layout's module for rendering]]></help>
-		</scopevar>
-	<scopevar name="getCurrentView()">
-			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
-		</scopevar>
-	<scopevar name="isNoExecution()">
-			<help><![CDATA[Determine if we need to execute an incoming event or not.]]></help>
-		</scopevar>
-	<scopevar name="isViewCacheable()">
-			<help><![CDATA[Check wether the incoming view has been flagged for caching]]></help>
-		</scopevar>
-	<scopevar name="setRoutedStruct(routedStruct)">
-			<help><![CDATA[Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.]]></help>
-		</scopevar>
-	<scopevar name="isSSL()">
-			<help><![CDATA[Returns boolean result whether current request is in ssl or not]]></help>
-		</scopevar>
-	<scopevar name="getCurrentAction()">
-			<help><![CDATA[Gets the current action requested in the current event: String]]></help>
-		</scopevar>
-	<scopevar name="getHTTPMethod()">
-			<help><![CDATA[Get the HTTP Request Method Type]]></help>
-		</scopevar>
-	<scopevar name="getCurrentModule()">
-			<help><![CDATA[Gets the current module name, else returns empty string]]></help>
-		</scopevar>
-	<scopevar name="noExecution()">
-			<help><![CDATA[Set that the request will not execute an incoming event. Most likely simulating a servlet call.]]></help>
-		</scopevar>
-	<scopevar name="getSESBaseURL()">
-			<help><![CDATA[Get the ses base URL for this request]]></help>
-		</scopevar>
-	<scopevar name="setDefaultLayout(DefaultLayout)">
-			<help><![CDATA[Override the default layout for a request]]></help>
-		</scopevar>
-	<scopevar name="getCurrentRoute()">
-			<help><![CDATA[Get the current request's SES route that matched]]></help>
-		</scopevar>
-	<scopevar name="getRenderData()">
-			<help><![CDATA[Get the renderData structure.]]></help>
-		</scopevar>
-	<scopevar name="getHTTPBasicCredentials()">
-			<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
-		</scopevar>
-	<scopevar name="isProxyRequest()">
-			<help><![CDATA[Is this a coldbox proxy request]]></help>
+	<scopevar name="getCollection([deepCopyFlag],[private])">
+			<help><![CDATA[I Get a reference or deep copy of the public or private request Collection]]></help>
 		</scopevar>
 	<scopevar name="isEventCacheable()">
 			<help><![CDATA[Check wether the incoming event has been flagged for caching. Boolean]]></help>
 		</scopevar>
+	<scopevar name="setMemento(memento)">
+			<help><![CDATA[Set the state of this request context]]></help>
+		</scopevar>
+	<scopevar name="removeValue(name,[private])">
+			<help><![CDATA[I remove a value in the request collection]]></help>
+		</scopevar>
+	<scopevar name="getEventName()">
+			<help><![CDATA[The event name used by the application: String]]></help>
+		</scopevar>
+	<scopevar name="getTrimValue(name,[defaultValue],[private])">
+			<help><![CDATA[I Get a value from the request collection and if simple value, I will trim it.]]></help>
+		</scopevar>
+	<scopevar name="getCurrentLayoutModule()">
+			<help><![CDATA[Gets the current set layout's module for rendering]]></help>
+		</scopevar>
+	<scopevar name="getHTTPContent()">
+			<help><![CDATA[Get the raw HTTP content]]></help>
+		</scopevar>
+	<scopevar name="buildLink(linkto,[translate],[ssl],[baseURL],[queryString])">
+			<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.]]></help>
+		</scopevar>
+	<scopevar name="getCurrentAction()">
+			<help><![CDATA[Gets the current action requested in the current event: String]]></help>
+		</scopevar>
+	<scopevar name="getRoutedStruct()">
+			<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
+		</scopevar>
+	<scopevar name="noRender([remove])">
+			<help><![CDATA[Set the flag that tells the framework not to render, just execute]]></help>
+		</scopevar>
 	<scopevar name="getCurrentViewArgs()">
+			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
+		</scopevar>
+	<scopevar name="getCurrentLayout()">
+			<help><![CDATA[Gets the current set layout for rendering]]></help>
+		</scopevar>
+	<scopevar name="getCurrentRoutedNamespace()">
+			<help><![CDATA[Get the current routed namespace that matched the SES route, if any]]></help>
+		</scopevar>
+	<scopevar name="getCurrentViewModule()">
+			<help><![CDATA[Gets the current set views's module for rendering]]></help>
+		</scopevar>
+	<scopevar name="setRoutedStruct(routedStruct)">
+			<help><![CDATA[Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.]]></help>
+		</scopevar>
+	<scopevar name="setLayout(name,[module])">
+			<help><![CDATA[I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout]]></help>
+		</scopevar>
+	<scopevar name="$dump(var,[isAbort])">
+			<help><![CDATA[Facade for cfmx dump]]></help>
+		</scopevar>
+	<scopevar name="paramValue(name,value,[private])">
+			<help><![CDATA[Just like cfparam, but for the request collection]]></help>
+		</scopevar>
+	<scopevar name="setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider],[layout],[module],[args])">
+			<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
+		</scopevar>
+	<scopevar name="clearCollection([private])">
+			<help><![CDATA[Clears the entire collection]]></help>
+		</scopevar>
+	<scopevar name="setValue(name,value,[private])">
+			<help><![CDATA[I Set a value in the request collection]]></help>
+		</scopevar>
+	<scopevar name="getCurrentView()">
 			<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
 		</scopevar>
 	<scopevar name="removeEventCacheableEntry()">
 			<help><![CDATA[Remove the cacheable entry]]></help>
 		</scopevar>
-	<scopevar name="getTrimValue(name,[defaultValue],[private])">
-			<help><![CDATA[I Get a value from the request collection and if simple value, I will trim it.]]></help>
-		</scopevar>
-	<scopevar name="removeValue(name,[private])">
-			<help><![CDATA[I remove a value in the request collection]]></help>
-		</scopevar>
-	<scopevar name="getCurrentEvent()">
-			<help><![CDATA[Gets the current incoming event]]></help>
+	<scopevar name="isProxyRequest()">
+			<help><![CDATA[Is this a coldbox proxy request]]></help>
 		</scopevar>
 	<scopevar name="getHTTPHeader(header,[default])">
 			<help><![CDATA[Get a HTTP header]]></help>
 		</scopevar>
-	<scopevar name="valueExists(name,[private])">
-			<help><![CDATA[I Check if a value exists in the request collection.]]></help>
+	<scopevar name="getViewCacheableEntry()">
+			<help><![CDATA[Get the event cacheable entry]]></help>
 		</scopevar>
-	<scopevar name="setViewCacheableEntry(mdCacheEntry)">
-			<help><![CDATA[Set the view cacheable entry]]></help>
+	<scopevar name="setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
+			<help><![CDATA[Set an HTTP Header]]></help>
 		</scopevar>
-	<scopevar name="setEventCacheableEntry(mdCacheEntry)">
-			<help><![CDATA[Set the event cacheable entry]]></help>
+	<scopevar name="getSelf()">
+			<help><![CDATA[Returns index.cfm?{eventName}= : String]]></help>
 		</scopevar>
-	<scopevar name="setValue(name,value,[private])">
-			<help><![CDATA[I Set a value in the request collection]]></help>
+	<scopevar name="getCurrentRoute()">
+			<help><![CDATA[Get the current request's SES route that matched]]></help>
 		</scopevar>
-	<scopevar name="$throw(message,[detail],[type])">
-			<help><![CDATA[Facade for cfthrow]]></help>
+	<scopevar name="getCurrentEvent()">
+			<help><![CDATA[Gets the current incoming event]]></help>
 		</scopevar>
-	<scopevar name="isAjax()">
-			<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
+	<scopevar name="noLayout()">
+			<help><![CDATA[Mark this request to not use a layout for rendering]]></help>
+		</scopevar>
+	<scopevar name="getRegisteredLayouts()">
+			<help><![CDATA[Get all the registered layouts in the configuration file]]></help>
 		</scopevar>
 	<scopevar name="setDefaultView(DefaultView)">
 			<help><![CDATA[Override the default view for a request]]></help>
 		</scopevar>
-	<scopevar name="getValue(name,[defaultValue],[private])">
-			<help><![CDATA[I Get a value from the public or private request collection.]]></help>
+	<scopevar name="getDebugPanelFlag()">
+			<help><![CDATA[I return the debugpanel flag for this request.]]></help>
+		</scopevar>
+	<scopevar name="getCurrentModule()">
+			<help><![CDATA[Gets the current module name, else returns empty string]]></help>
+		</scopevar>
+	<scopevar name="setisSES(isSES)">
+			<help><![CDATA[Set the isSES flag, usualy done by the SES interceptor]]></help>
+		</scopevar>
+	<scopevar name="getViewLayouts()">
+			<help><![CDATA[Get the registered view layout associations map]]></help>
 		</scopevar>
 	<scopevar name="getModuleRoot([module])">
 			<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.]]></help>
 		</scopevar>
-	<scopevar name="setMemento(memento)">
-			<help><![CDATA[Set the state of this request context]]></help>
+	<scopevar name="getDefaultLayout()">
+			<help><![CDATA[Get's the default layout of the application: String]]></help>
+		</scopevar>
+	<scopevar name="setDefaultLayout(DefaultLayout)">
+			<help><![CDATA[Override the default layout for a request]]></help>
+		</scopevar>
+	<scopevar name="collectionAppend(collection,[overwrite],[private])">
+			<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+		</scopevar>
+	<scopevar name="getDefaultView()">
+			<help><![CDATA[Get's the default view of the application: String]]></help>
+		</scopevar>
+	<scopevar name="valueExists(name,[private])">
+			<help><![CDATA[I Check if a value exists in the request collection.]]></help>
+		</scopevar>
+	<scopevar name="noExecution()">
+			<help><![CDATA[Set that the request will not execute an incoming event. Most likely simulating a servlet call.]]></help>
+		</scopevar>
+	<scopevar name="isNoExecution()">
+			<help><![CDATA[Determine if we need to execute an incoming event or not.]]></help>
+		</scopevar>
+	<scopevar name="$throw(message,[detail],[type])">
+			<help><![CDATA[Facade for cfthrow]]></help>
+		</scopevar>
+	<scopevar name="isViewCacheable()">
+			<help><![CDATA[Check wether the incoming view has been flagged for caching]]></help>
+		</scopevar>
+	<scopevar name="getValue(name,[defaultValue],[private])">
+			<help><![CDATA[I Get a value from the public or private request collection.]]></help>
+		</scopevar>
+	<scopevar name="setEventCacheableEntry(mdCacheEntry)">
+			<help><![CDATA[Set the event cacheable entry]]></help>
+		</scopevar>
+	<scopevar name="isNoRender()">
+			<help><![CDATA[Is this a no render request]]></help>
+		</scopevar>
+	<scopevar name="getMemento()">
+			<help><![CDATA[Get the state of this request context]]></help>
+		</scopevar>
+	<scopevar name="isSSL()">
+			<help><![CDATA[Returns boolean result whether current request is in ssl or not]]></help>
+		</scopevar>
+	<scopevar name="overrideEvent([event])">
+			<help><![CDATA[I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.]]></help>
+		</scopevar>
+	<scopevar name="showDebugPanel(show)">
+			<help><![CDATA[I can override to show or not the debug panel. Very useful in AJAX debugging]]></help>
 		</scopevar>
 </scopevar>
 	<scopevar name="wirebox">
@@ -1530,7 +1533,10 @@
 	<scopevar name="setHandlerService(handlerService)">
 			<help><![CDATA[Set HandlerService]]></help>
 		</scopevar>
-	<scopevar name="init(appRootPath)">
+	<scopevar name="getAppKey()">
+			<help><![CDATA[Get this application's key in memory space (application scope)]]></help>
+		</scopevar>
+	<scopevar name="init(appRootPath,appKey)">
 			<help><![CDATA[Constructor]]></help>
 		</scopevar>
 	<scopevar name="invoker(target,method,[argCollection],[private])">
@@ -1560,11 +1566,11 @@
 	<scopevar name="setLogBox(logBox)">
 			<help><![CDATA[Set the logBox instance]]></help>
 		</scopevar>
-	<scopevar name="getDebuggerService()">
-			<help><![CDATA[Get DebuggerService: coldbox.system.web.services.DebuggerService]]></help>
-		</scopevar>
 	<scopevar name="getColdboxSettings()">
 			<help><![CDATA[I retrieve the ColdBox Settings Structure by Reference]]></help>
+		</scopevar>
+	<scopevar name="getDebuggerService()">
+			<help><![CDATA[Get DebuggerService: coldbox.system.web.services.DebuggerService]]></help>
 		</scopevar>
 	<scopevar name="getCacheBox()">
 			<help><![CDATA[Get the application's CacheBox instance as coldbox.system.cache.CacheFactory]]></help>
@@ -1598,6 +1604,9 @@
 		</scopevar>
 	<scopevar name="getRequestService()">
 			<help><![CDATA[Get RequestService: coldbox.system.web.services.RequestService]]></help>
+		</scopevar>
+	<scopevar name="getMemento()">
+			<help><![CDATA[Get the controller's internal state]]></help>
 		</scopevar>
 	<scopevar name="getLoaderService()">
 			<help><![CDATA[Get LoaderService: coldbox.system.web.services.LoaderService]]></help>

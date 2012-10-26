@@ -197,10 +197,16 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	
 	/**
 	* Get the record count using hibernate projections for the given criterias
+	* @propertyName The name of the property to do the count on or do it for all row results instead
 	*/
-	numeric function count(){
+	numeric function count(propertyName=""){
 		// else project on the local criterias
-		nativeCriteria.setProjection( this.projections.rowCount() );
+		if( len( arguments.propertyName ) ){
+			nativeCriteria.setProjection( this.projections.countDistinct( arguments.propertyName ) );
+		}
+		else{
+			nativeCriteria.setProjection( this.projections.distinct( this.projections.rowCount() ) );
+		}
 		var results = nativeCriteria.uniqueResult();
 		// clear count like a ninja, so we can reuse this criteria object.
 		nativeCriteria.setProjection( javacast("null","") );

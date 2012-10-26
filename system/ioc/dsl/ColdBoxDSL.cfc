@@ -210,7 +210,7 @@ Description :
 			}
 
 			// Check for Bean existence first
-			if( oIOC.getIOCFactory().containsBean(beanName) ){
+			if( oIOC.containsBean(beanName) ){
 				return oIOC.getBean(beanName);
 			}
 			else if( instance.log.canDebug() ){
