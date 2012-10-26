@@ -27,7 +27,7 @@ Description :
 
 	<cfset this.datasource = "coolblog">
 	<cfset this.ormEnabled = "true">
-
+	
 	<cfset this.ormSettings = {
 		logSQL = true,
 		dbcreate = "update",
