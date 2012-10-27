@@ -17,14 +17,12 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 		// create new DetachedCriteria
 		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName( arguments.entityName, arguments.alias );
 		// setup base builder with detached criteria and subqueries
-		super.init( arguments.entityName, criteria, new criterion.Subqueries() );
+		super.init( arguments.entityName, criteria, new criterion.Subqueries( criteria ) );
 		return this;
 	}
 	
 	// pass off arguments to higher-level restriction builder, and handle the results
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ) {
-		// Append the native criteria for subqueries
-		arguments.missingMethodArguments.nativeCriteria = nativeCriteria;
 		// get the restriction/new criteria
 		var r = createRestriction( argumentCollection=arguments );
 		// switch on the object type
