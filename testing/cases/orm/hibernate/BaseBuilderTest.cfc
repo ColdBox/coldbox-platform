@@ -266,7 +266,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 
 	function testAnd(){
 		r = criteria.and( criteria.restrictions.between("balance",100,200), criteria.restrictions.isLt("salary",20000) );
-		//s = subCriteria.$and( subCriteria.restrictions.between("balance",100,200), subCriteria.restrictions.isLt("salary",20000) );
+		s = subCriteria.$and( subCriteria.restrictions.between("balance",100,200), subCriteria.restrictions.isLt("salary",20000) );
 	}
 
 	function testOr(){
