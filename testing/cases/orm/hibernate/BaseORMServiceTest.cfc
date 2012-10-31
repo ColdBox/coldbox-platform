@@ -632,4 +632,20 @@
 		c = ormservice.newCriteria("User");
 
 	}
+	
+	function testMerge(){
+		// loaded entity
+		test = entityLoad("User",{firstName="Luis"},true);
+		stats = ormservice.getSessionStatistics();
+		
+		ormclearSession();
+		stats = ormservice.getSessionStatistics();
+		assertEquals( 0, stats.entityCount );
+		
+		test = ormservice.merge( test );
+		stats = ormservice.getSessionStatistics();
+		assertEquals( 1, stats.entityCount );
+
+		
+	}
 }

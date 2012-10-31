@@ -914,17 +914,17 @@ component accessors="true"{
     * Merge an entity or array of entities back into the session
     */
 	any function merge(required any entity){
-		var objects = arrayNew(1);
+		var objects = [];
 
-		if( not isArray(arguments.entities) ){
-			arrayAppend(objects, arguments.entities);
+		if( not isArray( arguments.entity ) ){
+			arrayAppend( objects, arguments.entity );
 		}
 		else{
-			objects = arguments.entities;
+			objects = arguments.entity;
 		}
 
-		for( var x=1; x lte arrayLen(objects); x++){
-			entityMerge( objects[x] );
+		for( var x=1; x lte arrayLen( objects ); x++){
+			entityMerge( objects[ x ] );
 		}
 
 		return this;
