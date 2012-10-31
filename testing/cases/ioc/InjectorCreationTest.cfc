@@ -183,6 +183,11 @@
 		c = injector.getInstance("implicitTest");
 		debug( c );
 	}
+	
+	function testDSLCreation(){
+		c = injector.getInstance(dsl="wirebox");
+		assertEquals( c, injector );
+	}
 
 
 </cfscript>
