@@ -20,7 +20,7 @@
 		<tr <cfif x mod 2 eq 0>class="even"</cfif> id="cbox_cache_tr_#urlEncodedFormat(thisKey)#">
 	  	<!--- Link --->
 		<td align="left">
-		  	<a href="javascript:cachebox_openwindow('#URLBase##(Find("?",URLBase) ? '&' : '?')#debugpanel=cacheviewer&cbox_cacheName=#arguments.cacheName#&cbox_cacheEntry=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" 
+		  	<a href="javascript:cachebox_openwindow('#URLBase##iif(Find("?", URLBase), DE('&'), DE('?'))#debugpanel=cacheviewer&cbox_cacheName=#arguments.cacheName#&cbox_cacheEntry=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" 
 			   title="#thisKey#">
 		  	#thisKey#
 			</a>
