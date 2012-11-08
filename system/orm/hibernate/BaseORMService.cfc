@@ -89,16 +89,16 @@ component accessors="true"{
 		setDefaultAsQuery( arguments.defaultAsQuery );
 		setHQLDynamicCache( {} );
 
-		// Create the service ORM Event Handler composition
-		if( directoryExists( expandPath("/wirebox") ) ){
+		// Create the ORM Utility component
+		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
+		
+		// Create the service ORM Event Handler
+		if( directoryExists( expandPath("/wirebox") ) OR structKeyExists( application, "cblite" ) ){
 			ORMEventHandler = new coldbox.system.orm.hibernate.WBEventHandler();
 		}
 		else{
 			ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
 		}
-
-		// Create the ORM Utility component
-		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();

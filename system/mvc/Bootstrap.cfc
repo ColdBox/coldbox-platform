@@ -48,6 +48,8 @@ component serializable="false" accessors="true"{
 		if( structkeyExists( application, appKey ) ){
 			structDelete( application, appKey );
 		}
+		// Setup Lite Bit
+		application.cblite = true;
 		// Create Brand New Controller
 		application[ appKey ] = CreateObject("component","coldbox.system.mvc.Controller").init( COLDBOX_APP_ROOT_PATH, appKey );
 		// Setup the Framework And Application
