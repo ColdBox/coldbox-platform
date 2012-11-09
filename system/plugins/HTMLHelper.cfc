@@ -1459,8 +1459,10 @@ Description :
 						arguments.args.checked = true;
 					}
 				}
-				// If there is no incoming value, then bind it
-				arguments.args.value = entityValue;
+				else{
+					// If there is no incoming value, then bind it
+					arguments.args.value = entityValue;
+				}
 			}
 		</cfscript>
 	</cffunction>
