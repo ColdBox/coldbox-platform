@@ -1232,10 +1232,23 @@ Description :
 						// is key found in manytoone arg
 						if( structKeyExists(arguments.manytomany, prop.name) ){
 							if( structKeyExists(arguments.manytomany[prop.name],"valueColumn") ){ loc.column = arguments.manytomany[prop.name].valueColumn; }
+							else{
+								$throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory", 
+									   detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}",
+									   type="EntityFieldsInvalidRelationData");
+							}
 							if( structKeyExists(arguments.manytomany[prop.name],"nameColumn") ){ loc.nameColumn = arguments.manytomany[prop.name].nameColumn; }
+							else{
+								loc.nameColumn = arguments.manytomany[prop.name].valueColumn;
+							}
 							if( structKeyExists(arguments.manytomany[prop.name],"criteria") ){ loc.criteria = arguments.manytomany[prop.name].criteria; }
 							if( structKeyExists(arguments.manytomany[prop.name],"sortorder") ){ loc.sortorder = arguments.manytomany[prop.name].sortorder; }
 							if( structKeyExists(arguments.manytomany[prop.name],"selectColumn") ){ loc.selectColumn = arguments.manytomany[prop.name].selectColumn; }
+						}
+						else{ 
+							$throw(message="There is no many to many information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one", 
+								  detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}",
+								  type="EntityFieldsInvalidRelationData"); 
 						}
 
 						// values should be an array of objects, so let's convert them
@@ -1337,10 +1350,22 @@ Description :
 						loc.nameColumn = "";
 						// is key found in manytoone arg
 						if( structKeyExists(arguments.manytoone, prop.name) ){
+							// Verify the valueColumn which is mandatory
 							if( structKeyExists(arguments.manytoone[prop.name],"valueColumn") ){ loc.column = arguments.manytoone[prop.name].valueColumn; }
+							else{ 
+								$throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory", 
+									   detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}",
+									   type="EntityFieldsInvalidRelationData"); 
+							}
 							if( structKeyExists(arguments.manytoone[prop.name],"nameColumn") ){ loc.nameColumn = arguments.manytoone[prop.name].nameColumn; }
+							else { loc.nameColumn = arguments.manytoone[prop.name].valueColumn; }
 							if( structKeyExists(arguments.manytoone[prop.name],"criteria") ){ loc.criteria = arguments.manytoone[prop.name].criteria; }
 							if( structKeyExists(arguments.manytoone[prop.name],"sortorder") ){ loc.sortorder = arguments.manytoone[prop.name].sortorder; }
+						}
+						else{ 
+							$throw(message="There is no many to one information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one", 
+								  detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}",
+								  type="EntityFieldsInvalidRelationData"); 
 						}
 						// generation args
 						args = {
@@ -1424,6 +1449,8 @@ Description :
 				// entity value
 				entityValue = evaluate("arguments.args.bind.get#arguments.args.bindProperty#()");
 				if( isNull( entityValue ) ){ entityValue = ""; }
+				// Verify if the value is an entity, if it is, then use the 'column' to retrieve the value
+				if( isObject( entityValue ) ){ entityValue = evaluate("entityValue.get#arguments.args.column#()"); }
 
 				// If radio or checkbox button, check it
 				if( structKeyExists(arguments.args,"type") AND listFindNoCase("radio,checkbox", arguments.args.type) ){
