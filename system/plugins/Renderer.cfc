@@ -402,8 +402,8 @@ Description :
 		<cfset var viewLocations = "" />
 
 		<cfif NOT structKeyExists(arguments,"layout")>
-			<cfif right( cbox_implicitLayout, 4 ) eq '.cfm'>
-				<cfset cbox_implicitLayout = left(cbox_implicitLayout,len(cbox_implicitLayout)-4)>
+			<cfif len(cbox_implicitLayout) gt 4 AND right(cbox_implicitLayout,4) eq '.cfm'>
+				<cfset cbox_implicitLayout = left(cbox_implicitLayout,len(cbox_implicitLayout)-4) />
 			</cfif>
 			<cfset arguments.layout = cbox_implicitLayout />
 		</cfif>
@@ -420,11 +420,6 @@ Description :
 			<cfset cbox_explicitModule = true>
 		</cfif>
 
-		<!--- Announce preLayoutRender interception --->
-		<cfif NOT arguments.prepostExempt>
-			<cfset announceInterception("preLayoutRender", iData)>
-		</cfif>
-
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
 			<!--- Check if any length on incoming layout --->
@@ -433,6 +428,11 @@ Description :
 			<cfelse>
 				<cfset cbox_currentLayout = "">
 			</cfif>
+		</cfif>
+
+		<!--- Announce preLayoutRender interception --->
+		<cfif NOT arguments.prepostExempt>
+			<cfset announceInterception("preLayoutRender", iData)>
 		</cfif>
 
 		<!--- Choose location algorithm if in module mode --->
