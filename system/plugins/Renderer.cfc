@@ -391,7 +391,8 @@ Description :
 		<cfargument name="viewModule"   type="any" 	required="false" default="" hint="Explicitly render a view from this module"/>
 		<cfargument name="prepostExempt" type="any"	required="false" default="false" 	hint="If true, pre/post layout interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
 
-		<cfset var cbox_currentLayout 		= implicitViewChecks()>
+		<cfset var cbox_implicitLayout 		= implicitViewChecks()>
+		<cfset var cbox_currentLayout 		= cbox_implicitLayout>
 		<cfset var cbox_timerhash 			= "">
 		<cfset var cbox_locateUDF 			= variables.locateLayout>
 		<cfset var cbox_explicitModule  	= false>
@@ -399,6 +400,13 @@ Description :
 		<cfset var cbox_layoutLocation		= "">
 		<cfset var iData					= arguments>
 		<cfset var viewLocations = "" />
+
+		<cfif NOT structKeyExists(arguments,"layout")>
+			<cfif right( cbox_implicitLayout, 4 ) eq '.cfm'>
+				<cfset cbox_implicitLayout = left(cbox_implicitLayout,len(cbox_implicitLayout)-4)>
+			</cfif>
+			<cfset arguments.layout = cbox_implicitLayout />
+		</cfif>
 
 		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
 		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
@@ -412,6 +420,11 @@ Description :
 			<cfset cbox_explicitModule = true>
 		</cfif>
 
+		<!--- Announce preLayoutRender interception --->
+		<cfif NOT arguments.prepostExempt>
+			<cfset announceInterception("preLayoutRender", iData)>
+		</cfif>
+
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
 			<!--- Check if any length on incoming layout --->
@@ -420,11 +433,6 @@ Description :
 			<cfelse>
 				<cfset cbox_currentLayout = "">
 			</cfif>
-		</cfif>
-
-		<!--- Announce preLayoutRender interception --->
-		<cfif NOT arguments.prepostExempt>
-			<cfset announceInterception("preLayoutRender", iData)>
 		</cfif>
 
 		<!--- Choose location algorithm if in module mode --->
