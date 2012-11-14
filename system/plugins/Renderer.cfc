@@ -420,6 +420,11 @@ Description :
 			<cfset cbox_explicitModule = true>
 		</cfif>
 
+		<!--- Announce preLayoutRender interception --->
+		<cfif NOT arguments.prepostExempt>
+			<cfset announceInterception("preLayoutRender", iData)>
+		</cfif>
+
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
 			<!--- Check if any length on incoming layout --->
@@ -428,11 +433,6 @@ Description :
 			<cfelse>
 				<cfset cbox_currentLayout = "">
 			</cfif>
-		</cfif>
-
-		<!--- Announce preLayoutRender interception --->
-		<cfif NOT arguments.prepostExempt>
-			<cfset announceInterception("preLayoutRender", iData)>
 		</cfif>
 
 		<!--- Choose location algorithm if in module mode --->
