@@ -401,16 +401,18 @@ Description :
 		<cfset var iData					= arguments>
 		<cfset var viewLocations = "" />
 
+		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
+		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
+			<cfreturn getPlugin("Renderer").setExplicitView(arguments.view).renderLayout(argumentCollection=arguments)>
+		</cfif>
+
+		<!--- If the layout has not been specified set it to the implicit value. --->
 		<cfif NOT structKeyExists(arguments,"layout")>
+			<!--- Strip off the .cfm extension if it is set. --->
 			<cfif len(cbox_implicitLayout) gt 4 AND right(cbox_implicitLayout,4) eq '.cfm'>
 				<cfset cbox_implicitLayout = left(cbox_implicitLayout,len(cbox_implicitLayout)-4) />
 			</cfif>
 			<cfset arguments.layout = cbox_implicitLayout />
-		</cfif>
-
-		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
-		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
-			<cfreturn getPlugin("Renderer").setExplicitView(arguments.view).renderLayout(argumentCollection=arguments)>
 		</cfif>
 
 		<!--- Module Default Value --->
