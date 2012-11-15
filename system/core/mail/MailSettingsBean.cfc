@@ -21,7 +21,7 @@ By 3.5 remove all direct get/set and leave get/setValue() instead
 		<cfargument name="server" 			required="false" type="string" 	default=""		hint="Initial value for the server property." />
 		<cfargument name="username" 		required="false" type="string" 	default="" 		hint="Initial value for the username property." />
 		<cfargument name="password" 		required="false" type="string" 	default=""		hint="Initial value for the password property." />
-		<cfargument name="port" 			required="false" type="numeric" default="25"	hint="Initial value for the port property." />
+		<cfargument name="port" 			required="false" type="numeric" default="0"		hint="Initial value for the port property." />
 		<cfargument name="protocol"			required="false" type="struct" 	default="#structNew()#">
 		<!--- Mail Tag Settings --->
 		<cfargument name="from" 			required="false" type="string" 		hint="Initial value for the from property." />
