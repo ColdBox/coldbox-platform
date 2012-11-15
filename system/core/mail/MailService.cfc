@@ -66,7 +66,7 @@ Description :
 			if( NOT mail.propertyExists("password") AND len(mailSettings.getPassword()) ){
 				mail.setPassword( mailSettings.getPassword() );
 			}
-			if( NOT mail.propertyExists("port") AND len(mailSettings.getPort()) ){
+			if( NOT mail.propertyExists("port") AND len(mailSettings.getPort()) and mailSettings.getPort() NEQ 0 ){
 				mail.setPort( mailSettings.getPort() );
 			}
 			
