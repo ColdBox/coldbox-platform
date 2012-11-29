@@ -67,11 +67,11 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
      */
 	private any function getCriteriaJoinWalker( required any translator ) {
 		// get session
-		var session = orm.getSession().getActualSession();
+		var ormsession = orm.getSession();
 		// get session factory
-		var factory = session.getSessionFactory();
+		var factory = ormsession.getSessionFactory();
 		// get executable criteriaImplementation for detached criteria object
-		var criteriaImpl = getNativeCriteria().getExecutableCriteria( session );
+		var criteriaImpl = getNativeCriteria().getExecutableCriteria( ormsession );
 		// get implementors for the criteria implementation
 		var implementors = factory.getImplementors( criteriaImpl.getEntityOrClassName() );
 		// not nearly as cool as the walking dead kind, but is still handy for turning a criteria into a sql string ;)
@@ -81,7 +81,7 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 			factory, // factory
 			criteriaImpl, // criteria
 			criteriaImpl.getEntityOrClassName(), // rootEntityName
-			session.getLoadQueryInfluencers() // loadQueryInfluencers
+			ormsession.getLoadQueryInfluencers() // loadQueryInfluencers
 		);
 	}
 	/* gets an instance of CriteriaQueryTranslator, which can prepares criteria query for conversion to SQL
@@ -89,11 +89,11 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
      */
 	private any function getCriteriaQueryTranslator() {
 		// get session
-		var session = orm.getSession().getActualSession();
+		var ormsession = orm.getSession();
 		// get session factory
-		var factory = session.getSessionFactory();
+		var factory = ormsession.getSessionFactory();
 		// get executable criteriaImplementation for detached criteria object
-		var criteriaImpl = getNativeCriteria().getExecutableCriteria( session );
+		var criteriaImpl = getNativeCriteria().getExecutableCriteria( ormsession );
 		// get implementors for the criteria implementation
 		var implementors = factory.getImplementors( criteriaImpl.getEntityOrClassName() );
 		// create new criteria query translator; we'll use this to build up the query string

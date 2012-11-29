@@ -21,9 +21,11 @@ component implements="coldbox.system.orm.hibernate.util.IORMUtil"{
 
 	public any function getSession(string datasource) {
 		if(StructKeyExists(arguments,"datasource"))
-			return ORMGetSession(arguments.datasource);
+			// get actual session from coldfusion.orm.hibernate.SessionWrapper
+			return ORMGetSession(arguments.datasource).getActualSession();
 		else
-			return ORMGetSession();
+			// get actual session from coldfusion.orm.hibernate.SessionWrapper
+			return ORMGetSession().getActualSession();
 	}
 	
 	public any function getSessionFactory(string datasource) {
