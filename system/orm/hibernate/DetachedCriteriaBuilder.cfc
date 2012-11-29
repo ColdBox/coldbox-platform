@@ -67,7 +67,7 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
      */
 	private any function getCriteriaJoinWalker( required any translator ) {
 		// get session
-		var ormsession = getPlatform()=="ColdFusion Server" ? orm.getSession().getActualSession() : orm.getSession();
+		var ormsession = orm.getSession();
 		// get session factory
 		var factory = ormsession.getSessionFactory();
 		// get executable criteriaImplementation for detached criteria object
@@ -89,7 +89,7 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
      */
 	private any function getCriteriaQueryTranslator() {
 		// get session
-		var ormsession = getPlatform()=="ColdFusion Server" ? orm.getSession().getActualSession() : orm.getSession();
+		var ormsession = orm.getSession();
 		// get session factory
 		var factory = ormsession.getSessionFactory();
 		// get executable criteriaImplementation for detached criteria object
@@ -136,9 +136,5 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 			arguments.sql = reReplaceNoCase( arguments.sql, "\?", pvTyped, "one" );
 		}
 		return arguments.sql;
-	}
-	
-	private string function getPlatform() {
-		return server.coldfusion.productname;
 	}
 }
