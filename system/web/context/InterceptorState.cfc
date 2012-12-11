@@ -16,7 +16,8 @@ Description :
 	<!--- init --->
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="InterceptorState">
 	    <!--- ************************************************************* --->
-	    <cfargument name="state" 		type="string" 	required="true" hint="The interception state I model">
+	    <cfargument name="state" 	type="any" required="true" hint="The interception state I model">
+		<cfargument name="logbox" 	type="any" required="true" hint="An instance of logbox"/>
 	    <!--- ************************************************************* --->
 		<cfscript>
 			super.init(argumentCollection=arguments);			
@@ -25,6 +26,12 @@ Description :
 			instance.MDMap = structnew();
 			// java system
 			instance.javaSystem = createObject('java','java.lang.System');
+			// Utilities
+			instance.utility = createObject("component","coldbox.system.core.util.Util");
+			// UUID Helper
+			instance.uuidHelper	= createobject("java", "java.util.UUID");
+			// Logger Object
+			instance.log = arguments.logbox.getLogger( this );
 			
 			return this;
 		</cfscript>
@@ -65,29 +72,89 @@ Description :
 	</cffunction>
 	
 	<!--- Process the Interceptors --->
-	<cffunction name="process" access="public" returntype="void" hint="Process this state's interceptors" output="false" >
+	<cffunction name="process" access="public" returntype="any" hint="Process this state's interceptors. If you use the asynchronous facilities, you will get a thread structure report as a result." output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" 	type="any"  hint="The event context object.">
-		<cfargument name="interceptData" required="true" 	type="any" 	hint="A data structure used to pass intercepted information.">
+		<cfargument name="event" 		 	required="true" 	type="any"  hint="The event context object.">
+		<cfargument name="interceptData"	required="true" 	type="any" 	hint="A data structure used to pass intercepted information.">
+		<cfargument name="async" 			required="false" 	type="boolean" 	default="false" hint="If true, the entire interception chain will be ran in a separate thread."/>
+		<cfargument name="asyncAll" 		required="false" 	type="boolean" 	default="false" hint="If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end."/>
+		<cfargument name="asyncAllJoin"		required="false" 	type="boolean" 	default="true" hint="If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize."/>
+		<cfargument name="asyncPriority" 	required="false" 	type="string"	default="NORMAL" hint="The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL"/>
+		<cfargument name="asyncJoinTimeout"	required="false" 	type="numeric"	default="0" hint="The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout."/>
 		<!--- ************************************************************* --->
-		<cfscript>
-		var key 			= "";
-		var stopChain 		= "";
-		var thisInterceptor = "";
-		var interceptors    = getInterceptors();
+		<cfset var threadName = "">
 		
-		// Loop and execute each interceptor as registered in order
-		for( key in interceptors ){
-			thisInterceptor = interceptors.get(key);
-			
-			// Check if we can execute this Interceptor
-			if( isExecutable(thisInterceptor,arguments.event) ){
-				// Invoke the execution point
-				if ( invoker( thisInterceptor, arguments.event, arguments.interceptData ) ){ break; }
-			}
-		}		
-		</cfscript>
+		<!--- Process master asynchronously if not already in thread, if already in thread it will process in synch --->
+		<cfif arguments.async AND NOT instance.utility.inThread()>
+			<!--- Prepare thread safe name --->
+			<cfset threadName = "cbox_ichain_#replace( instance.uuidHelper.randomUUID(), "-", "", "all" )#">
+			<!--- Log It --->
+			<cfif instance.log.canDebug()>
+				<cfset instance.log.debug("Threading interceptor chain: '#getState()#' with thread name: #threadName#, priority: #arguments.asyncPriority#")>
+			</cfif>
+			<!--- Thread master chain --->
+			<cfthread name="#threadName#" action="run" priority="#arguments.asyncPriority#" 
+					  event="#arguments.event#" interceptData="#arguments.interceptData#" threadName="#threadName#">
+				<!--- Process interception --->
+				<cfset variables.processSync( attributes.event, attributes.interceptData )>
+				<!--- Log It --->
+				<cfif instance.log.canDebug()>
+					<cfset instance.log.debug("Finished thread interceptor chain: #getState()# with thread name: #attributes.threadName#", thread)>
+				</cfif>
+			</cfthread>
+			<!---Return the thread information --->
+			<cfreturn cfthread[ threadName ]>
+		<!---Process all asynchronously --->
+		<cfelseif arguments.asyncAll>
+			<cfset processAsyncAll(argumentCollection=arguments)>
+		<!--- Process synchronously --->
+		<cfelse>
+			<cfset processSync( arguments.event, arguments.interceptData )>
+		</cfif>
 	</cffunction>
+	
+	<!--- processSync --->    
+    <cffunction name="processSync" output="false" access="private" returntype="any" hint="Process an execution synchronously">    
+    	<cfargument name="event" 		 	hint="The event context object.">
+		<cfargument name="interceptData"	hint="A data structure used to pass intercepted information.">
+		<cfscript>	
+			var key 			= "";
+			var interceptors 	= getInterceptors();
+			var thisInterceptor = "";
+			
+			// Debug interceptions
+			if( instance.log.canDebug() ){
+				instance.log.debug("Starting '#getState()#' chain with #structCount( interceptors )# interceptors");
+			}
+			
+			// Loop and execute each interceptor as registered in order
+			for( key in interceptors ){
+				// Retreive interceptor
+				thisInterceptor = interceptors.get( key );
+				
+				// Check if we can execute this Interceptor
+				if( isExecutable( thisInterceptor, arguments.event ) ){
+					// Invoke the execution point
+					if( invoker( thisInterceptor, arguments.event, arguments.interceptData ) ){ 
+						// Debug interceptions
+						if( instance.log.canDebug() ){
+							instance.log.debug("Interceptor '#getMetadata( thisInterceptor ).name#' fired in chain: '#getState()#' and breaking the chain");
+						}
+						break; 
+					}
+					// Debug interceptions
+					if( instance.log.canDebug() ){
+						instance.log.debug("Interceptor '#getMetadata( thisInterceptor ).name#' fired in chain: '#getState()#'");
+					} 
+				}
+			}	
+			
+			// Debug interceptions
+			if( instance.log.canDebug() ){
+				instance.log.debug("Finished '#getState()#' execution chain");
+			}    
+    	</cfscript>    
+    </cffunction>
 	
 	<!--- isExecutable --->
 	<cffunction name="isExecutable" output="false" access="public" returntype="any" hint="Checks if an interceptor is executable or not. Boolean">
@@ -95,20 +162,20 @@ Description :
 		<cfargument name="event"  type="any" required="true" hint="The event context object.">
 		<cfscript>
 			var state			= getState();
-			var idCode 			= instance.javaSystem.identityHashCode(arguments.target) & state;
+			var idCode 			= instance.javaSystem.identityHashCode( arguments.target ) & state;
 			var fncMetadata 	= "";
 			
 			// check md if it exists, else set it
-			if( NOT structKeyExists(instance.MDMap, idCode) ){
-				instance.MDMap[idCode] = getMetadata(arguments.target[state]);
+			if( NOT structKeyExists( instance.MDMap, idCode ) ){
+				instance.MDMap[ idCode ] = getMetadata( arguments.target[ state ] );
 			}
 			// Get md now
-			fncMetadata = instance.MDMap[idCode];
+			fncMetadata = instance.MDMap[ idCode ];
 			
 			// Check if the event pattern matches the current event, else return false
-			if( structKeyExists(fncMetadata,"eventPattern") AND
-				len(fncMetadata.eventPattern) AND
-			    NOT reFindNoCase(fncMetadata.eventPattern, arguments.event.getCurrentEvent()) ){
+			if( structKeyExists( fncMetadata, "eventPattern" ) AND
+				len( fncMetadata.eventPattern ) AND
+			    NOT reFindNoCase( fncMetadata.eventPattern, arguments.event.getCurrentEvent() ) ){
 				return false;
 			}
 			

@@ -110,37 +110,38 @@ Description :
 	</cffunction>
 
 	<!--- Process a State's Interceptors --->
-	<cffunction name="processState" access="public" returntype="any" hint="Process an interception state announcement" output="true">
+	<cffunction name="processState" access="public" returntype="any" hint="Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result." output="true">
 		<!--- ************************************************************* --->
-		<cfargument name="state" 		 required="true" 	type="any" hint="An interception state to process">
-		<cfargument name="interceptData" required="false" 	type="any" default="#structNew()#" hint="A data structure used to pass intercepted information.">
+		<cfargument name="state" 		 	required="true" 	type="any" hint="An interception state to process">
+		<cfargument name="interceptData" 	required="false" 	type="any" 		default="#structNew()#" hint="A data structure used to pass intercepted information.">
+		<cfargument name="async" 			required="false" 	type="boolean" 	default="false" hint="If true, the entire interception chain will be ran in a separate thread."/>
+		<cfargument name="asyncAll" 		required="false" 	type="boolean" 	default="false" hint="If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end."/>
+		<cfargument name="asyncAllJoin"		required="false" 	type="boolean" 	default="true" hint="If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize."/>
+		<cfargument name="asyncPriority" 	required="false" 	type="string"	default="NORMAL" hint="The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL"/>
+		<cfargument name="asyncJoinTimeout"	required="false" 	type="numeric"	default="0" hint="The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout."/>
 		<!--- ************************************************************* --->
-		<cfset var timerHash = 0><cfsilent>
+		<cfsilent>
 		<cfscript>
-		/** Is ColdBox Inited and ready to serve requests?
-		if ( NOT controller.getColdboxInitiated() ){
-			return this;
-		}
-		**/
-
+		var loc = {};
 		// Validate Incoming State
-		if ( instance.interceptorConfig.throwOnInvalidStates AND NOT listFindNoCase(arrayToList( instance.interceptionPoints ), arguments.state)){
-			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","Valid states are #instance.interceptionPoints.toString()#","InterceptorService.InvalidInterceptionState");
+		if( instance.interceptorConfig.throwOnInvalidStates AND NOT listFindNoCase( arrayToList( instance.interceptionPoints ), arguments.state ) ){
+			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#", "Valid states are #instance.interceptionPoints.toString()#", "InterceptorService.InvalidInterceptionState");
 		}
 
 		// Process The State if it exists, else just exit out
-		if( structKeyExists(instance.interceptionStates, arguments.state) ){
-			// Execute Interception
-			structFind( instance.interceptionStates, arguments.state).process(controller.getRequestService().getContext(),arguments.interceptData);
+		if( structKeyExists( instance.interceptionStates, arguments.state ) ){
+			// Execute Interception in the state object
+			arguments.event = controller.getRequestService().getContext();
+			loc.results = structFind( instance.interceptionStates, arguments.state ).process(argumentCollection=arguments);
 		}
-
-		// Process Output Buffer: looks weird, but we are outputting stuff
+		// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace
 		</cfscript>
 		</cfsilent><!---
 		---><cfif instance.requestBuffer.isBufferInScope()><!---
 			---><cfset writeOutput(instance.requestBuffer.getString())><!---
 			---><cfset instance.requestBuffer.clear()><!---
-		---></cfif>
+		---></cfif><!--- Return results if any
+		---><cfif structKeyExists( loc, "results" )><cfreturn loc.results></cfif>
 	</cffunction>
 
 	<!--- Register an Interceptor --->
@@ -369,7 +370,7 @@ Description :
 
 			// Verify if state doesn't exist, create it
 			if ( NOT structKeyExists( instance.interceptionStates, arguments.state ) ){
-				oInterceptorState = CreateObject("component","coldbox.system.web.context.InterceptorState").init( arguments.state );
+				oInterceptorState = CreateObject("component","coldbox.system.web.context.InterceptorState").init( arguments.state, controller.getLogBox() );
 				structInsert( instance.interceptionStates , arguments.state, oInterceptorState );
 			}
 			else{

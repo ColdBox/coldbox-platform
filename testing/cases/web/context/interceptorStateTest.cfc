@@ -1,8 +1,12 @@
-﻿<cfcomponent name="interceptorStateTest" extends="coldbox.system.testing.BaseTestCase">
-	<!--- setup and teardown --->
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 	
+	<!--- setup and teardown --->
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
+			mockLogBox = getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
+			mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger");
+			mockLogBox.$("getLogger",mockLogger);
+			
 			this.state = getMockBox().createMock("coldbox.system.web.context.InterceptorState");		
 			this.event = getMockRequestContext();
 			this.event.$("getEventName","event");
@@ -11,18 +15,12 @@
 			
 			this.key = "cbox_interceptor_" & "mock";
 			
-			this.state.init('unittest');
+			this.state.init('unittest', mockLogBox);
 			
 			//register one interceptor for testing
 			this.state.register(this.key,this.mock);
 		</cfscript>
 	</cffunction>
-
-	<cffunction name="tearDown" returntype="void" access="public">
-		<!--- Any code needed to return your environment to normal goes here --->
-	</cffunction>
-	
-	<!--- Begin specific tests --->
 	
 	<cffunction name="testgetInterceptor" access="public" returnType="void">
 		<cfscript>
@@ -85,7 +83,6 @@
 			this.state.unregister('nothing baby');
 		</cfscript>
 	</cffunction>		
-	
 	
 	<cffunction name="unittest" access="private" returntype="void" eventPattern="^UnitTest">
 		<cfargument name="event" 		 required="true" type="any" hint="The event object.">

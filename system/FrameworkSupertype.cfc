@@ -212,10 +212,15 @@ Description :
 	</cffunction>
 
 	<!--- Announce Interception --->
-	<cffunction name="announceInterception" access="public" returntype="void" hint="Announce an interception to the system." output="true" >
+	<cffunction name="announceInterception" access="public" returntype="any" hint="Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result." output="true" >
 		<cfargument name="state" 			required="true"  type="any" hint="The interception state to execute">
 		<cfargument name="interceptData" 	required="false" type="any" hint="A data structure used to pass intercepted information.">
-		<cfset controller.getInterceptorService().processState(argumentCollection=arguments)>
+		<cfargument name="async" 			required="false" type="boolean" default="false" hint="If true, the entire interception chain will be ran in a separate thread."/>
+		<cfargument name="asyncAll" 		required="false" type="boolean" default="false" hint="If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end."/>
+		<cfargument name="asyncAllJoin"		required="false" type="boolean" default="true" hint="If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize."/>
+		<cfargument name="asyncPriority" 	required="false" type="string"	default="NORMAL" hint="The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL"/>
+		<cfargument name="asyncJoinTimeout"	required="false" type="numeric"	default="0" hint="The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout."/>
+		<cfreturn controller.getInterceptorService().processState(argumentCollection=arguments)>
 	</cffunction>
 
 	<!---Cache Facades --->

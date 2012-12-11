@@ -408,10 +408,15 @@ id , name , mail
 	</cffunction>
 	
 	<!--- Announce Interception --->
-	<cffunction name="announceInterception" access="private" returntype="void" hint="Announce an interception in the system." output="false" >
-		<cfargument name="state" 			required="true"  type="string" hint="The interception state to execute">
-		<cfargument name="interceptData" 	required="false" type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
-		<cfset getController().getInterceptorService().processState(argumentCollection=arguments)>
+	<cffunction name="announceInterception" access="private" returntype="any" hint="Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result." output="true" >
+		<cfargument name="state" 			required="true"  type="any" hint="The interception state to execute">
+		<cfargument name="interceptData" 	required="false" type="any" default="#structNew()#" hint="A data structure used to pass intercepted information.">
+		<cfargument name="async" 			required="false" type="boolean" default="false" hint="If true, the entire interception chain will be ran in a separate thread."/>
+		<cfargument name="asyncAll" 		required="false" type="boolean" default="false" hint="If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end."/>
+		<cfargument name="asyncAllNoJoin"	required="false" type="boolean" default="false" hint="If true, each interceptor in the interception chain will be ran in a separate thread but NOT joined together at the end."/>
+		<cfargument name="asyncPriority" 	required="false" type="string"	default="NORMAL" hint="The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL"/>
+		<cfargument name="asyncJoinTimeout"	required="false" type="numeric"	default="0" hint="The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout."/>
+		<cfreturn getController().getInterceptorService().processState(argumentCollection=arguments)>
 	</cffunction>
 
 	<!--- Interceptor Facade --->
