@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -253,6 +253,18 @@ Description :
 		<cfargument name="module" 		type="any" 	    required="false" default="" hint="The module to retrieve the plugin from"/>
 		<cfargument name="init" 		type="boolean"  required="false" default="true" hint="Auto init() the plugin upon construction"/>
 		<!--- ************************************************************* --->
+		<cfreturn getController().getPlugin(argumentCollection=arguments)>
+	</cffunction>
+	
+	<!--- Facade: Get a "my" plugin --->
+	<cffunction name="getMyPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="plugin" 		type="any"  hint="The Plugin object's name to instantiate" >
+		<cfargument name="newInstance"  type="boolean"  required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
+		<cfargument name="module" 		type="any" 	    required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="init" 		type="boolean"  required="false" default="true" hint="Auto init() the plugin upon construction"/>
+		<!--- ************************************************************* --->
+		<cfset arguments.customPlugin = true>
 		<cfreturn getController().getPlugin(argumentCollection=arguments)>
 	</cffunction>
 
