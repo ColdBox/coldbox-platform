@@ -452,7 +452,13 @@ Description		:
 			var arg = "";
 			
 			for(arg in argOrderedTree) {
-				if(isSimpleValue(argOrderedTree[arg])) {
+				if(NOT structKeyExists(argOrderedTree, arg)) {
+					/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
+					 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
+					 */
+					 
+				}
+				else if(isSimpleValue(argOrderedTree[arg])) {
 					/* toString() works best for simple values.  It is equivalent in the following scenario
 					 * i = 1;
 					 * j = i; j++; j--;
