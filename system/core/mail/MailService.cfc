@@ -59,7 +59,7 @@ Description :
 			if( NOT mail.propertyExists("server") AND len(mailSettings.getServer()) ){
 				mail.setServer( mailSettings.getServer() );
 			}
-			// Same with username, password and port
+			// Same with username, password, port, useSSL and useTLS
 			if( NOT mail.propertyExists("username") AND len(mailSettings.getUsername()) ){
 				mail.setUsername( mailSettings.getUsername() );
 			}
@@ -69,7 +69,12 @@ Description :
 			if( NOT mail.propertyExists("port") AND len(mailSettings.getPort()) and mailSettings.getPort() NEQ 0 ){
 				mail.setPort( mailSettings.getPort() );
 			}
-			
+			if( NOT mail.propertyExists("useSSL")  AND len(mailSettings.getValue("useSSL","")) ){
+				mail.setUseSSL( mailSettings.getValue("useSSL") );
+			}
+			if( NOT mail.propertyExists("useTLS")  AND len(mailSettings.getValue("useTLS","")) ){
+				mail.setUseSSL( mailSettings.getValue("useTLS") );
+			}
 			// set default mail attributes if the MailSettings bean has values
 			if( NOT len(mail.getTo()) AND len(mailSettings.getValue("to","")) ){
 				mail.setTo( mailSettings.getValue("to") );
