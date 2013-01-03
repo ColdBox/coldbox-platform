@@ -474,7 +474,7 @@ Description :
 
 		if( isSES() ){
 			/* SSL */
-			if( arguments.ssl ){
+			if( arguments.ssl OR isSSL() ){
 				sesBaseURL = replacenocase(sesBaseURL,"http:","https:");
 			}
 			/* Translate link */
