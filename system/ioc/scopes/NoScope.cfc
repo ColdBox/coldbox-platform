@@ -26,9 +26,10 @@ Description :
     <cffunction name="getFromScope" output="false" access="public" returntype="any" hint="Retrieve an object from scope or create it if not found in scope">
     	<cfargument name="mapping" 			type="any" required="true"  hint="The object mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
 		<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="targetObject" 	required="false" default="" 	hint="The target object we are getting this instance for. If empty, means we are just requesting an instance."/>
 		<cfscript>
 			// create and return the no scope instance, no locking needed.
-			var object = instance.injector.buildInstance( arguments.mapping, arguments.initArguments );
+			var object = instance.injector.buildInstance( argumentCollection = arguments );
 			// wire it
 			instance.injector.autowire(target=object,mapping=arguments.mapping);
 			// send it back

@@ -36,14 +36,24 @@
 		// logbox:logger:custom
 		def = {dsl="logbox:logger:hello"};
 		r = builder.process(def);
+		callArgs = mockLogBox.$callLog().getLogger[3];
+		assertEquals( "hello", callArgs.1 );
 		assertEquals( mockLogger, r);
 		
-		// logbox:logger:{this}
+		// logbox:logger:{this} with targetObject
 		def = {dsl="logbox:logger:{this}"};
 		r = builder.process(def, this);
 		callArgs = mockLogBox.$callLog().getLogger[4];
 		assertEquals( this, callArgs.1 );
-		//debug( mockLogBox.$callLog().getLogger[3] );
+		
+		// logbox:logger:{this} without targetObject
+		// This should never happen, but if it does, "{this}" will just be used as the logger name
+		def = {dsl="logbox:logger:{this}"};
+		r = builder.process(def);
+		callArgs = mockLogBox.$callLog().getLogger[5];
+		assertEquals( "{this}", callArgs.1 );
+		
+		
 	}
 	
 	

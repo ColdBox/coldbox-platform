@@ -115,7 +115,8 @@ Description :
 		// Implicit properties
 		map("implicitTest").to("#myPath#.ioc.ImplicitTest").setter(name="testProperty",value=123); 
 
-
+		map("myLogBoxID").toDSL("logbox:logger:{this}");
+		map("myProvidedLogBoxID").toDSL("provider:logbox:logger:{this}");
 	}
 </cfscript>
 </cfcomponent>

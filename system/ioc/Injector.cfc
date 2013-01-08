@@ -203,9 +203,11 @@ Description :
 
 	<!--- getInstance --->
     <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
-    	<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
-		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
-		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="name" 			required="false" 						hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 						hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="targetObject" 	required="false" default="" 			hint="The target object we are getting this instance for. If empty, means we are just requesting an instance."/>
+		<cfargument name="targetID" 		required="false" default="ExplicitCall"	hint="The target object we are getting this instance for. If empty, means we are just requesting an instance."/>
 		<cfscript>
 			var instancePath 	= "";
 			var mapping 		= "";
@@ -214,7 +216,7 @@ Description :
 
 			// Get by DSL?
 			if( structKeyExists(arguments,"dsl") ){
-				return instance.builder.buildSimpleDSL( arguments.dsl, "ExplicitCall" );
+				return instance.builder.buildSimpleDSL( arguments.dsl, arguments.targetID, arguments.targetObject);
 			}
 
 			// Check if Mapping Exists?
@@ -257,7 +259,7 @@ Description :
 			}
 
 			// Request object from scope now, we now have it from the scope created, initialized and wired
-			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments );
+			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments, arguments.targetObject );
 
 			// Announce creation, initialization and DI magicfinicitation!
 			iData = {mapping=mapping,target=target,injector=this};
@@ -271,6 +273,7 @@ Description :
     <cffunction name="buildInstance" output="false" access="public" returntype="any" hint="Build an instance, this is called from registered scopes only as they provide locking and transactions">
     	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="targetObject" 	required="false" default="" 	hint="The target object we are building this instance for. If empty, means we are just building an instance."/>
 		<cfscript>
     		var thisMap = arguments.mapping;
 			var oModel	= "";
@@ -298,7 +301,7 @@ Description :
 					oModel = instance.builder.buildFeed( thisMap ); break;
 				}
 				case "dsl" : {
-					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL(), thisMap.getName() ); break;
+					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL(), thisMap.getName(), arguments.targetObject ); break;
 				}
 				case "factory" : {
 					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
@@ -472,7 +475,7 @@ Description :
 				// DISetter injection
 				processInjection( targetObject, thisMap.getDISetters(), arguments.targetID );
 				// Process Provider Methods
-				processProviderMethods( targetObject, thisMap );
+				processProviderMethods( targetObject, thisMap, arguments.targetID );
 				// Process Mixins
 				processMixins( targetObject, thisMap );
 				// Process After DI Complete
@@ -510,7 +513,8 @@ Description :
 	<!--- processProviderMethods --->
     <cffunction name="processProviderMethods" output="false" access="private" returntype="void" hint="Process provider methods on the selected target">
     	<cfargument name="targetObject" 	required="true"  	hint="The target object to do some goodness on">
-		<cfargument name="mapping" 			required="true"  	hint="The target mapping">
+		<cfargument name="mapping" 			required="true"  	hint="A string representing the mapping ID or DSL to be provided">
+    	<cfargument name="targetID"		 	required="true"  	hint="The ID of the target object">
 		<cfscript>
 			var providerMethods = arguments.mapping.getProviderMethods();
 			var providerLen 	= arrayLen(providerMethods);
@@ -520,6 +524,7 @@ Description :
 			if( providerLen ){
 				arguments.targetObject.$wbScopeInfo 	= getScopeRegistration();
 				arguments.targetObject.$wbScopeStorage 	= instance.scopeStorage;
+				arguments.targetObject.$wbTargetID		= arguments.targetID;
 				arguments.targetObject.$wbProviders 	= {};
 			}
 

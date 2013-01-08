@@ -9,7 +9,7 @@
 		};
 		mockScopeStorage = getMockBox().createEmptyMock("coldbox.system.core.collections.ScopeStorage")
 			.$("exists",false);
-		provider = getMockBox().createMock("coldbox.system.ioc.Provider").init(scopeInfo,mockScopeStorage,"UnitTest");
+		provider = getMockBox().createMock("coldbox.system.ioc.Provider").init(scopeInfo,mockScopeStorage,"UnitTest","UnitTest");
 	}
 	
 	function testGetNoScope(){
@@ -27,7 +27,7 @@
 		mockScopeStorage.$("exists",true).$("get",mockInjector);
 		
 		results = provider.get();
-		assertEquals("UnitTest", mockInjector.$callLog().getInstance[1][1] );
+		assertEquals("UnitTest", mockInjector.$callLog().getInstance[1]["dsl"] );
 		assertEquals(mockTarget, results);
 		
 	}
