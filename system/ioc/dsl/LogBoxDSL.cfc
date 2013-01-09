@@ -26,7 +26,7 @@ Description :
 	<!--- process --->
     <cffunction name="process" output="false" access="public" returntype="any" hint="Process an incoming DSL definition and produce an object with it.">
 		<cfargument name="definition" 	required="true" hint="The injection dsl definition structure to process. Keys: name, dsl"/>
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisType 			= arguments.definition.dsl;
 			var thisTypeLen 		= listLen(thisType,":");
@@ -55,7 +55,7 @@ Description :
 						// Get a named Logger
 						case "logger" : { 
 							// Check for {this} and targetobject exists
-							if( thisLocationKey eq "{this}" AND structKeyExists(arguments, "targetObject") ){ 
+							if( thisLocationKey eq "{this}" AND structKeyExists(arguments, "targetObject") AND isObject(arguments.targetObject) ){ 
 								return instance.logBox.getLogger( arguments.targetObject ); 
 							}
 							// Normal Logger injection

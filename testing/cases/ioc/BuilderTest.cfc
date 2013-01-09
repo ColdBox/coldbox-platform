@@ -132,7 +132,9 @@
 	
 	function testgetProviderDSL(){
 		makePublic(builder,"getProviderDSL");
-		data = {name="luis", dsl="provider:luis"};
+		data = {name="luis", dsl="provider"};
+		data2 = {name="luis", dsl="provider:luis"};
+		data3 = {name="luis", dsl="provider:coldbox:logbox"};
 		
 		// mocks
 		mockLuis = getMockBox().createStub();
@@ -144,6 +146,18 @@
 		
 		p = builder.getProviderDSL(data);
 		assertEquals(mockLuis, p.get() );
+		assertEquals("luis", mockInjector.$callLog().getInstance[1]["DSL"] );
+		
+		p = builder.getProviderDSL(data2);
+		assertEquals(mockLuis, p.get() );
+		assertEquals("luis", mockInjector.$callLog().getInstance[2]["DSL"] );
+		
+		targetObject = getMockBox().createStub();
+		p = builder.getProviderDSL(data3,targetObject,"myTargetID");
+		p.get();
+		assertEquals("coldbox:logbox", mockInjector.$callLog().getInstance[3]["DSL"] );
+		assertEquals(targetObject, mockInjector.$callLog().getInstance[3]["targetObject"] );
+		assertEquals("myTargetID", mockInjector.$callLog().getInstance[3]["targetID"] );
 		
 	}
 	
@@ -246,10 +260,39 @@
 		//mocks
 		builder.$wbscopeInfo    = scopeInfo;
 		builder.$wbScopeStorage = scopeStorage;
-		builder.$wbProviders  = {buildProviderMixer="luis"};
+		builder.$wbTargetID		= "myTargetID";
+		builder.$wbProviders	= {buildProviderMixer="luis"};
 		
 		p = builder.buildProviderMixer();
 		assertEquals(mockLuis, p );		
+		assertEquals("luis", mockInjector.$callLog().getInstance[1]["dsl"] );
+		assertTrue(isObject(mockInjector.$callLog().getInstance[1]["targetObject"]) );
+		assertEquals("myTargetID", mockInjector.$callLog().getInstance[1]["targetID"] );
+	}
+	
+	function getGetModelDSL(){
+		makePublic(builder,"getModelDSL");
+		data = {name="brad", dsl="model"};
+		data2 = {name="brad", dsl="model:brad"};
+		data3 = {name="brad", dsl="model:brad:myMethod"};
+		
+		// mocks
+		mockBrad = getMockBox().createStub().$("myMethod","returnVal");
+		mockInjector.$("containsInstance",true).$("getInstance", mockBrad);
+		
+		m = builder.getModelDSL(data);
+		assertEquals(mockBrad, m );
+		assertEquals("brad", mockInjector.$callLog().getInstance[1]["name"] );
+		
+		m = builder.getModelDSL(data2);
+		assertEquals(mockBrad, m );
+		assertEquals("brad", mockInjector.$callLog().getInstance[2]["name"] );
+		
+		targetObject = getMockBox().createStub();
+		m = builder.getModelDSL(data3,targetObject);
+		assertEquals("returnVal", m );
+		assertEquals("brad", mockInjector.$callLog().getInstance[3]["name"] );
+		assertEquals(targetObject, mockInjector.$callLog().getInstance[3]["targetObject"] );
 	}
 	
 </cfscript>

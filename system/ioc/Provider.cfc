@@ -15,12 +15,16 @@ Description :
     <cffunction name="init" output="false" access="public" returntype="Provider" hint="Constructor">
     	<cfargument name="scopeRegistration" required="true" hint="The injector scope registration structure" colddoc:generic="struct"/>
 		<cfargument name="scopeStorage" 	 required="true" hint="The scope storage utility" 				  colddoc:generic="coldbox.system.core.collections.ScopeStorage"/>
-		<cfargument name="name" 			 required="true" hint="The name of the mapping this provider is binded to"/>
+		<cfargument name="DSL"	 			 required="true" hint="The DSL to be provided (may just be a mapping ID)"/>
+		<cfargument name="targetObject"		 required="false" default="" hint="The object who will be requesting building by this provider"/>
+		<cfargument name="targetID"	 		 required="false" default="" hint="The ID of the object who will be requesting building by this provider"/>
 		<cfscript>
 			instance = {
-				name 				= arguments.name,
 				scopeRegistration 	= arguments.scopeRegistration,
-				scopeStorage 		= arguments.scopeStorage
+				scopeStorage 		= arguments.scopeStorage,
+				DSL 				= arguments.DSL,
+				targetObject		= arguments.targetObject,
+				targetID			= arguments.targetID
 			};
 			return this;
 		</cfscript>
@@ -31,9 +35,10 @@ Description :
     	<cfscript>
     		var scopeInfo = instance.scopeRegistration;
 			
-    		// Return if it exists, else throw exception
+    		// Return if the injector exists in scope, else throw exception
 			if( instance.scopeStorage.exists(scopeInfo.key, scopeInfo.scope) ){
-				return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope).getInstance( instance.name );
+				return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope)
+					.getInstance( dsl=instance.DSL, targetObject=instance.targetObject, targetID=instance.targetID );
 			}
 		</cfscript>
     		

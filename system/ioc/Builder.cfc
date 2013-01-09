@@ -69,7 +69,7 @@ TODO: update dsl consistency, so it is faster.
     	<cfscript>
     		// return the instance from the injected counterparts
 			return this.$wbScopeStorage.get(this.$wbScopeInfo.key, this.$wbScopeInfo.scope)
-						.getInstance( this.$wbProviders[ getFunctionCalledName() ] );
+						.getInstance( dsl=this.$wbProviders[ getFunctionCalledName() ], targetID=this.$wbTargetID, targetObject=this);
 		</cfscript>
     </cffunction>
 	
@@ -284,12 +284,13 @@ TODO: update dsl consistency, so it is faster.
 	<cffunction name="buildSimpleDSL" output="false" access="public" returntype="any" hint="Build a DSL Dependency using a simple dsl string">
 		<cfargument name="dsl" 			required="true" 	hint="The dsl string to build">
 		<cfargument name="targetID" 	required="true" 	hint="The target ID we are building this dependency for"/>
+		<cfargument name="targetObject" required="false" default=""	hint="The target object we are building the DSL for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var definition = {
 				name = "",
 				dsl = arguments.dsl
 			};
-			return buildDSLDependency( definition, arguments.targetID );
+			return buildDSLDependency( definition, arguments.targetID, arguments.targetObject );
 		</cfscript>
 	</cffunction>
 
@@ -297,7 +298,7 @@ TODO: update dsl consistency, so it is faster.
 	<cffunction name="buildDSLDependency" output="false" access="public" returntype="any" hint="Build a DSL Dependency, if not found, returns null">
 		<cfargument name="definition" 	required="true"  hint="The dependency definition structure: name, dsl as keys">
 		<cfargument name="targetID" 	required="true"  hint="The target ID we are building this dependency for"/>
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
@@ -367,7 +368,7 @@ TODO: update dsl consistency, so it is faster.
 	<!--- getEntityServiceDSL --->
 	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var entityName  = getToken(arguments.definition.dsl,2,":");
 
@@ -384,7 +385,7 @@ TODO: update dsl consistency, so it is faster.
 	<!--- getWireBoxDSL --->
 	<cffunction name="getWireBoxDSL" access="private" returntype="any" hint="Get dependencies using the wirebox dependency DSL" output="false" >
 		<cfargument name="definition" 	required="true"  hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		
 		<cfscript>
 			var thisType 			= arguments.definition.dsl;
@@ -427,7 +428,7 @@ TODO: update dsl consistency, so it is faster.
 	<!--- getModelDSL --->
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
 		<cfargument name="definition" 	required="true"  hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisType 		= arguments.definition.dsl;
 			var thisTypeLen 	= listLen(thisType,":");
@@ -453,7 +454,7 @@ TODO: update dsl consistency, so it is faster.
 			// Check if model Exists
 			if( instance.injector.containsInstance( modelName ) ){
 				// Get Model object
-				oModel = instance.injector.getInstance( modelName );
+				oModel = instance.injector.getInstance( name= modelName, targetObject = arguments.targetObject );
 				// Factories: TODO: Add arguments with 'ref()' parsing for argument references or 'dsl()'
 				if( len(methodCall) ){
 					return evaluate("oModel.#methodCall#()");
@@ -469,30 +470,39 @@ TODO: update dsl consistency, so it is faster.
 	<!--- getProviderDSL --->
 	<cffunction name="getProviderDSL" access="private" returntype="any" hint="Get dependencies using the our provider pattern DSL" output="false" >
 		<cfargument name="definition" 	required="true"  hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfargument name="targetID" 	required="false" default="" hint="The ID of the target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		
 		<cfscript>
 			var thisType 		= arguments.definition.dsl;
 			var thisTypeLen 	= listLen(thisType,":");
-			var providerName 	= "";
+			var providerDSL 	= "";
 			
 			// DSL stages
 			switch(thisTypeLen){
 				// provider default, get name of the provider from property
-				case 1: { providerName = arguments.definition.name; break; }
-				// provider:{name} stage
-				case 2: { providerName = getToken(thisType,2,":"); break;
+				// property name="myService" inject="provider";
+				case 1: { 
+					providerDSL = arguments.definition.name;
+					break;
+				}
+				// property name="myService" inject="provider:yourService";
+				// property name="mySetting" inject="provider:coldbox:setting:mySetting";
+				default: {
+					providerDSL = listRest(thisType,":");
+					break;
 				}
 			}
 
-			// Check if model Exists
-			if( instance.injector.containsInstance( providerName ) ){
-				// Build provider and return it.
-				return createObject("component","coldbox.system.ioc.Provider").init(instance.injector.getScopeRegistration(), instance.injector.getScopeStorage(), providerName);
-			}
-			else if( instance.log.canDebug() ){
-				instance.log.debug("getProviderDSL() cannot find model object #providerName# using definition #arguments.definition.toString()#");
-			}
+			// Build provider and return it.
+			return createObject("component","coldbox.system.ioc.Provider")
+				.init(
+					instance.injector.getScopeRegistration(),
+					instance.injector.getScopeStorage(),
+					providerDSL,
+					arguments.targetObject,
+					arguments.targetID
+				 );
 		</cfscript>
 	</cffunction>
 	
