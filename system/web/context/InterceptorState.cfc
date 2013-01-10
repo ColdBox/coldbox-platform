@@ -82,7 +82,6 @@ Description :
 		<cfargument name="asyncPriority" 	required="false" 	type="string"	default="NORMAL" hint="The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL"/>
 		<cfargument name="asyncJoinTimeout"	required="false" 	type="numeric"	default="0" hint="The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout."/>
 		<!--- ************************************************************* --->
-		<cfset var threadName = "">
 		
 		<!--- Process master asynchronously if not already in thread, if already in thread it will process in synch --->
 		<cfif arguments.async AND NOT instance.utility.inThread()>
@@ -114,7 +113,7 @@ Description :
 			<cfset variables.processSync( attributes.event, attributes.interceptData )>
 			<!--- Log It --->
 			<cfif instance.log.canDebug()>
-				<cfset instance.log.debug("Finished thread interceptor chain: #getState()# with thread name: #attributes.threadName#", thread)>
+				<cfset instance.log.debug("Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#", thread)>
 			</cfif>
 		</cfthread>
 		<!---Return the thread information --->
@@ -139,7 +138,7 @@ Description :
 		
 		<!--- Log It --->
 		<cfif instance.log.canDebug()>
-			<cfset instance.log.debug("AsyncAll interceptor chain starting for: '#getState()#' ")>
+			<cfset instance.log.debug("AsyncAll interceptor chain starting for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#")>
 		</cfif>
 		
 		<!---Iterate over interceptors --->
@@ -171,14 +170,15 @@ Description :
 		<cfif arguments.asyncAllJoin>
 			<!--- Log It --->
 			<cfif instance.log.canDebug()>
-				<cfset instance.log.debug("AsyncAll interceptor chain waiting for join: '#getState()#' ")>
+				<cfset instance.log.debug("AsyncAll interceptor chain waiting for join: '#getState()#', timeout: #arguments.asyncJoinTimeout# ")>
 			</cfif>
+			<!--- Wait it --->
 			<cfthread action="join" name="#arrayToList( threadNames )#" timeout="#arguments.asyncJoinTimeout#" />
 		</cfif>
 		
 		<!--- Log It --->
 		<cfif instance.log.canDebug()>
-			<cfset instance.log.debug("AsyncAll interceptor chain ended for: '#getState()#' with asyncAllJoin: #arguments.asyncAllJoin#")>
+			<cfset instance.log.debug("AsyncAll interceptor chain ended for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#")>
 		</cfif>
 		
 		<!--- Return cfthread information --->
