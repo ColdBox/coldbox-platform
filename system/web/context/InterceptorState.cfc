@@ -23,7 +23,7 @@ Description :
 			super.init(argumentCollection=arguments);			
 			
 			// md ref map
-			instance.MDMap = structnew();
+			instance.metadataMap = structnew();
 			// java system
 			instance.javaSystem = createObject('java','java.lang.System');
 			// Utilities
@@ -39,36 +39,62 @@ Description :
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!---Get metadata map --->
+	<cffunction name="getMetadataMap" access="public" returntype="any" output="false" hint="Return the state's metadata map for it's registered interecptors">    
+		<cfargument name="interceptorKey" required="false" hint="Pass a key and retrieve that interceptor's metadata map only"/>
+    	<cfscript>
+			if( structKeyExists( arguments, "interceptorKey") ){
+				return instance.metadataMap[ arguments.interceptorKey ];
+			}
+			return instance.metadataMap;
+		</cfscript>
+    </cffunction>
+
 	<!--- Register a new interceptor with this state --->
-	<cffunction name="register" access="public" returntype="void" hint="Register an interceptor class with this state" output="false" >
+	<cffunction name="register" access="public" returntype="any" hint="Register an interceptor class with this state" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorKey" 	required="true" type="string" 	hint="The interceptor key class to register">
-		<cfargument name="interceptor" 		required="true" type="any" 		hint="The interceptor reference from the cache.">
+		<cfargument name="interceptorKey" 	required="true" hint="The interceptor key class to register">
+		<cfargument name="interceptor" 		required="true" hint="The interceptor reference from the cache.">
+		<cfargument name="interceptorMD" 	required="true" hint="The interceptor state metadata.">
 		<!--- ************************************************************* --->
-		<cfset super.register(arguments.interceptorKey,arguments.interceptor)>
+		<cfscript>
+			// Register interceptor object
+			super.register( arguments.interceptorKey, arguments.interceptor );
+			// Register interceptor metadata
+			instance.metadataMap[ arguments.interceptorKey ] = arguments.interceptorMD;
+			
+			return this; 			
+		</cfscript>
 	</cffunction>
 	
 	<!--- Remove an interceptor key from this state --->
-	<cffunction name="unregister" access="public" returntype="void" hint="Unregister an interceptor class from this state" output="false" >
+	<cffunction name="unregister" access="public" returntype="any" hint="Unregister an interceptor class from this state" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">
+		<cfargument name="interceptorKey" 	required="true" hint="The interceptor key class to Unregister">
 		<!--- ************************************************************* --->
-		<cfset super.unregister(arguments.interceptorKey)>
+		<cfscript>
+			// unregister object
+			var results = super.unregister( arguments.interceptorKey );
+			// unregister metadata map
+			structDelete( instance.metadataMap, arguments.interceptorKey );
+			
+			return results;			
+		</cfscript>
 	</cffunction>	
 	
 	<!--- exists --->
 	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Checks if the passed interceptor key already exists">
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorKey" 	required="true" type="string" 	hint="The interceptor key class to register">
+		<cfargument name="interceptorKey" 	required="true" hint="The interceptor key class to verify it exists">
 		<!--- ************************************************************* --->
-		<cfreturn super.exists(arguments.interceptorKey)>
+		<cfreturn super.exists( arguments.interceptorKey )>
 	</cffunction>
 	
 	<cffunction name="getInterceptor" access="public" returntype="any" hint="Get an interceptor from this state. Else return a blank structure if not found" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">
+		<cfargument name="interceptorKey" 	required="true" hint="The interceptor key class to retrieve">
 		<!--- ************************************************************* --->
-		<cfreturn super.getObject(arguments.interceptorKey)>
+		<cfreturn super.getObject( arguments.interceptorKey )>
 	</cffunction>
 	
 	<!--- Process the Interceptors --->
@@ -208,7 +234,7 @@ Description :
 				thisInterceptor = interceptors.get( key );
 				
 				// Check if we can execute this Interceptor
-				if( isExecutable( thisInterceptor, arguments.event ) ){
+				if( isExecutable( thisInterceptor, arguments.event, key ) ){
 					// Invoke the execution point
 					if( invoker( thisInterceptor, arguments.event, arguments.interceptData ) ){ 
 						// Debug interceptions
@@ -233,24 +259,16 @@ Description :
 	
 	<!--- isExecutable --->
 	<cffunction name="isExecutable" output="false" access="public" returntype="any" hint="Checks if an interceptor is executable or not. Boolean">
-		<cfargument name="target" type="any" required="true" hint="The target interceptor to check"/>
-		<cfargument name="event"  type="any" required="true" hint="The event context object.">
+		<cfargument name="target" 		type="any" required="true" hint="The target interceptor to check"/>
+		<cfargument name="event" 		type="any" required="true" hint="The event context object.">
+		<cfargument name="targetKey" 	type="any" required="true" hint="The target interceptor key to check.">
 		<cfscript>
-			var state			= getState();
-			var idCode 			= instance.javaSystem.identityHashCode( arguments.target ) & state;
-			var fncMetadata 	= "";
-			
-			// check md if it exists, else set it
-			if( NOT structKeyExists( instance.MDMap, idCode ) ){
-				instance.MDMap[ idCode ] = getMetadata( arguments.target[ state ] );
-			}
-			// Get md now
-			fncMetadata = instance.MDMap[ idCode ];
+			// Get interceptor metadata
+			var iData = instance.metadataMap[ arguments.targetKey ];
 			
 			// Check if the event pattern matches the current event, else return false
-			if( structKeyExists( fncMetadata, "eventPattern" ) AND
-				len( fncMetadata.eventPattern ) AND
-			    NOT reFindNoCase( fncMetadata.eventPattern, arguments.event.getCurrentEvent() ) ){
+			if( len( iData.eventPattern ) AND
+			    NOT reFindNoCase( iData.eventPattern, arguments.event.getCurrentEvent() ) ){
 				return false;
 			}
 			
@@ -282,7 +300,7 @@ Description :
 		</cfinvoke>
 		
 		<!--- Check if we have results --->
-		<cfif structKeyExists(refLocal,"results") and isBoolean(refLocal.results)>
+		<cfif structKeyExists( refLocal, "results" ) and isBoolean( refLocal.results )>
 			<cfreturn refLocal.results>
 		<cfelse>
 			<cfreturn false>

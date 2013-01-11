@@ -4,7 +4,7 @@
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
 			mockLogBox = getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
-			mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger");
+			mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug", false);
 			mockLogBox.$("getLogger",mockLogger);
 			
 			this.state = getMockBox().createMock("coldbox.system.web.context.InterceptorState");		
@@ -18,7 +18,8 @@
 			this.state.init('unittest', mockLogBox);
 			
 			//register one interceptor for testing
-			this.state.register(this.key,this.mock);
+			mockMetadata = { async=false, asyncPriority = "normal", eventPattern = "" };
+			this.state.register(this.key, this.mock, mockMetadata );
 		</cfscript>
 	</cffunction>
 	
@@ -43,15 +44,15 @@
 
 	<cffunction name="testprocess" access="public" returnType="void">
 		<cfscript>
-			this.state.process(this.event,structnew());
+			this.state.process( this.event, structnew() );
 			assertEquals( this.event.getValue('unittest'), true);
 			
 			// Now process with other method for event pattern
 			this.event.setValue("unittest",false);
 			this.mock.unittest = variables.unittest;
-			this.state.$property("MDMap","instance",structnew());
+			this.state.$property("metadataMap","instance", { "#this.key#" = {async=false, asyncPriority="normal", eventPattern="^UnitTest"} } );
 			this.state.process(this.event,structnew());
-			assertEquals(false,this.event.getValue('unittest'));
+			assertEquals(false, this.event.getValue('unittest'));
 			
 			// Now add event
 			this.event.setValue("event","UnitTest.test");
@@ -62,8 +63,11 @@
 	
 	<cffunction name="testregister" access="public" returnType="void">
 		<cfscript>
-			this.state.register(this.key,this.mock);
+			mockMetadata = { async=false, asyncPriority = "normal", eventPattern = "" };
+			this.state.register( this.key, this.mock, mockMetadata );
 			AssertEquals( this.state.getInterceptor(this.key), this.mock);
+			assertEquals( this.state.getMetadataMap( this.key ), mockMetadata );
+			debug( this.state.getMetadataMap() );
 		</cfscript>
 	</cffunction>		
 	
@@ -79,6 +83,7 @@
 			
 			this.state.unregister(this.key);
 			AssertFalse( this.state.getINterceptors().size() );
+			assertFalse( structKeyExists( this.state.getMetadataMap(), this.key ) );
 			
 			this.state.unregister('nothing baby');
 		</cfscript>

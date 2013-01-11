@@ -40,7 +40,7 @@ Description :
 				// ORM Bridge Events
 				"ORMPostNew", "ORMPreLoad", "ORMPostLoad", "ORMPostDelete", "ORMPreDelete", "ORMPreUpdate", "ORMPostUpdate", "ORMPreInsert", "ORMPostInsert", "ORMPreSave", "ORMPostSave" ];
 
-			// Init Container of interception statues
+			// Init Container of interception states
 			instance.interceptionStates = {};
 			// Init the Request Buffer
 			instance.requestBuffer = CreateObject("component","coldbox.system.core.util.RequestBuffer").init();
@@ -48,7 +48,6 @@ Description :
 			instance.log = controller.getLogBox().getLogger( this );
     		// Setup Default Configuration
     		instance.interceptorConfig = {};
-
 			// Interceptor base class
 			instance.INTERCEPTOR_BASE_CLASS = "coldbox.system.Interceptor";
 
@@ -59,30 +58,35 @@ Description :
 <!------------------------------------------- Configure ------------------------------------------->
 
 	<!--- configure --->
-	<cffunction name="configure" access="public" output="false" returntype="void">
+	<cffunction name="configure" access="public" output="false" returntype="any" hint="Configure the interceptor service">
 		<cfscript>
 			// Reconfigure Logging With Application Configuration Data
     		instance.log = controller.getLogBox().getLogger( this );
     		// Setup Configuration
     		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
 			// Register CFC Configuration Object
-			registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'),interceptorName="coldboxConfig");
+			registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'), interceptorName="coldboxConfig");
+			
+			return this;
 		</cfscript>
 	</cffunction>
 
 	<!--- onConfigurationLoad --->
-	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
+	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="any" hint="Fires after the main ColdBox application configuration is loaded">
 		<cfscript>
 			// Register All Application Interceptors
 			registerInterceptors();
+			return this;
 		</cfscript>
 	</cffunction>
+	
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- Register All the interceptors --->
-	<cffunction name="registerInterceptors" access="public" returntype="any" hint="Register all the interceptors according to configuration. All interception states are lazy loaded in." output="false" >
+	<!--- Register all the interceptors --->
+	<cffunction name="registerInterceptors" access="public" returntype="any" hint="Register all the interceptors according to ColdBox configuration. All interception states are lazy loaded in." output="false" >
 		<cfscript>
-			var x = 1;
+			var x		= 1;
+			var iLen 	= 0;
 
 			// if simple, inflate
 			if( isSimpleValue( instance.interceptorConfig.customInterceptionPoints ) ){
@@ -92,14 +96,15 @@ Description :
 			// Check if we have custom interception points, and register them if we do
 			if( arrayLen( instance.interceptorConfig.customInterceptionPoints ) ){
 				appendInterceptionPoints( instance.interceptorConfig.customInterceptionPoints );
-
+				// Debug log
 				if( instance.log.canDebug() ){
 					instance.log.debug("Registering custom interception points: #instance.interceptorConfig.customInterceptionPoints.toString()#");
 				}
 			}
 
 			// Loop over the Interceptor Array, to begin registration
-			for (; x lte arrayLen(instance.interceptorConfig.interceptors); x=x+1){
+			iLen = arrayLen( instance.interceptorConfig.interceptors );
+			for (; x lte iLen; x=x+1){
 				registerInterceptor(interceptorClass=instance.interceptorConfig.interceptors[x].class,
 									interceptorProperties=instance.interceptorConfig.interceptors[x].properties,
 									interceptorName=instance.interceptorConfig.interceptors[x].name);
@@ -161,22 +166,22 @@ Description :
 			var interceptData = structnew();
 
 			// determine registration names
-			if( structKeyExists(arguments,"interceptorClass") ){
-				objectName = listLast(arguments.interceptorClass,".");
-				if( structKeyExists(arguments,"interceptorName") ){
+			if( structKeyExists( arguments, "interceptorClass" ) ){
+				objectName = listLast( arguments.interceptorClass, "." );
+				if( structKeyExists( arguments, "interceptorName" ) ){
 					objectName = arguments.interceptorName;
 				}
 			}
-			else if ( structKeyExists(arguments,"interceptorObject") ){
-				objectName = listLast( getMetaData(arguments.interceptorObject).name, ".");
-				if( structKeyExists(arguments,"interceptorName") ){
+			else if( structKeyExists( arguments, "interceptorObject" ) ){
+				objectName = listLast( getMetaData( arguments.interceptorObject ).name, ".");
+				if( structKeyExists( arguments, "interceptorName" ) ){
 					objectName = arguments.interceptorName;
 				}
 				oInterceptor = arguments.interceptorObject;
 			}
 			else{
 				getUtil().throwit(message="Invalid registration.",
-								  detail="You did not send in an interceptorClass or interceptorObject for registration",
+								  detail="You did not send in an interceptorClass or interceptorObject argument for registration",
 					  			  type="InterceptorService.InvalidRegistration");
 			}
 		</cfscript>
@@ -185,14 +190,14 @@ Description :
 		<cflock name="interceptorService.registerInterceptor.#objectName#" type="exclusive" throwontimeout="true" timeout="30">
 			<cfscript>
 				// Did we send in a class to instantiate
-				if( structKeyExists(arguments,"interceptorClass") ){
+				if( structKeyExists( arguments, "interceptorClass" ) ){
 					// Create the Interceptor Class
 					try{
-						oInterceptor = createInterceptor(interceptorClass,objectName,interceptorProperties);
+						oInterceptor = createInterceptor( interceptorClass, objectName, interceptorProperties );
 					}
 					catch(Any e){
 						instance.log.error("Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",e.tagContext);
-						getUtil().rethrowit(e);
+						getUtil().rethrowit( e );
 					}
 
 					// Configure the Interceptor
@@ -205,11 +210,16 @@ Description :
 
 				// Parse Interception Points
 				interceptionPointsFound = structnew();
-				interceptionPointsFound = parseMetadata( getMetaData(oInterceptor), interceptionPointsFound);
-
+				interceptionPointsFound = parseMetadata( getMetaData( oInterceptor ), interceptionPointsFound );
+				
 				// Register this Interceptor's interception point with its appropriate interceptor state
 				for(stateKey in interceptionPointsFound){
-					registerInterceptionPoint(objectName,stateKey,oInterceptor);
+					// Register the point
+					registerInterceptionPoint(interceptorKey=objectName, 
+											  state=stateKey, 
+											  oInterceptor=oInterceptor,
+											  interceptorMD=interceptionPointsFound[ stateKey ]);
+					// Debug log
 					if( instance.log.canDebug() ){
 						instance.log.debug("Registering #objectName# on '#statekey#' interception point ");
 					}
@@ -325,8 +335,8 @@ Description :
 		<cfscript>
 			var states = getInterceptionStates();
 
-			if( structKeyExists(states,arguments.state) ){
-				return states[arguments.state];
+			if( structKeyExists( states, arguments.state ) ){
+				return states[ arguments.state ];
 			}
 
 			return structnew();
@@ -361,12 +371,18 @@ Description :
 	<!--- Register an Interception Point --->
 	<cffunction name="registerInterceptionPoint" access="public" returntype="any" hint="Register an Interception point into a new or created interception state." output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorKey" 	required="true" type="any" hint="The interceptor key to use for lookups in the state.">
-		<cfargument name="state" 			required="true" type="any" hint="The state to create">
-		<cfargument name="oInterceptor" 	required="true" type="any" hint="The interceptor to register">
+		<cfargument name="interceptorKey" 	required="true" 	type="any" hint="The interceptor key to use for lookups in the state.">
+		<cfargument name="state" 			required="true" 	type="any" hint="The state to create">
+		<cfargument name="oInterceptor" 	required="true" 	type="any" hint="The interceptor to register">
+		<cfargument name="interceptorMD" 	required="false" 	type="any" hint="The metadata about the interception point: {async, asyncPriority, eventPattern}">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oInterceptorState = "";
+			
+			// Init md if not passed
+			if( not structKeyExists( arguments, "interceptorMD") ){
+				arguments.interceptorMD = newPointRecord();
+			}
 
 			// Verify if state doesn't exist, create it
 			if ( NOT structKeyExists( instance.interceptionStates, arguments.state ) ){
@@ -381,7 +397,9 @@ Description :
 			// Verify if the interceptor is already in the state
 			if( NOT oInterceptorState.exists( arguments.interceptorKey ) ){
 				//Register it
-				oInterceptorState.register( arguments.interceptorKey, arguments.oInterceptor );
+				oInterceptorState.register(interceptorKey=arguments.interceptorKey,
+										   interceptor=arguments.oInterceptor,
+										   interceptorMD=arguments.interceptorMD);
 			}
 
 			return this;
@@ -389,6 +407,14 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
+
+	<!--- newPointRecord --->    
+    <cffunction name="newPointRecord" output="false" access="private" returntype="any" hint="Create a new interception point record">    
+    	<cfscript>
+			var pointRecord = { async = false, asyncPriority = "normal", eventPattern = "" };
+			return pointRecord;    
+    	</cfscript>    
+    </cffunction>
 
 	<!--- wireboxSetup --->
     <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for interceptor classes is online">
@@ -409,37 +435,46 @@ Description :
 	<!--- Get an interceptors interception points via metadata --->
 	<cffunction name="parseMetadata" returntype="struct" access="private" output="false" hint="I get a components valid interception points">
 		<!--- ************************************************************* --->
-		<cfargument name="metadata" required="true" type="any" 		hint="The recursive metadata">
-		<cfargument name="points" 	required="true" type="struct" 	hint="The active points">
+		<cfargument name="metadata" required="true" hint="The recursive metadata">
+		<cfargument name="points" 	required="true" hint="The active points structure">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var x 			= 1;
+			var fncLen		= 0;
 			var pointsFound = arguments.points;
 			var currentList = arrayToList( instance.interceptionPoints );
+			var pointRecord	= "";
 
-			// Register local functions
-			if( structKeyExists(arguments.metadata, "functions") ){
+			// Register local functions only
+			if( structKeyExists( arguments.metadata, "functions" ) ){
+				fncLen = ArrayLen( arguments.metadata.functions );
+				for(x=1; x lte fncLen; x=x+1 ){
 
-				for(x=1; x lte ArrayLen(arguments.metadata.functions); x=x+1 ){
-
-					// Verify the @interceptionPoint annotation
-					if( structKeyExists(arguments.metadata.functions[x],"interceptionPoint") ){
+					// Verify the @interceptionPoint annotation so the function can be registered as an interception point
+					if( structKeyExists( arguments.metadata.functions[ x ], "interceptionPoint" ) ){
 						// Register the point by convention and annotation
-						currentList = arrayToList( appendInterceptionPoints( arguments.metadata.functions[x].name ) );
+						currentList = arrayToList( appendInterceptionPoints( arguments.metadata.functions[ x ].name ) );
 					}
 
 					// verify its a plugin point by comparing it to the local defined interception points
-					if ( listFindNoCase( currentList, arguments.metadata.functions[x].name ) AND
-						 NOT structKeyExists( pointsFound, arguments.metadata.functions[x].name ) ){
+					// Also verify it has not been found already
+					if ( listFindNoCase( currentList, arguments.metadata.functions[ x ].name ) AND
+						 NOT structKeyExists( pointsFound, arguments.metadata.functions[ x ].name ) ){
+						// Create point record
+						pointRecord = newPointRecord();
+						// Discover point information
+						if( structKeyExists( arguments.metadata.functions[ x ], "async" ) ){ pointRecord.async = true; }
+						if( structKeyExists( arguments.metadata.functions[ x ], "asyncPriority" ) ){ pointRecord.asyncPriority = arguments.metadata.functions[ x ].asyncPriority; }
+						if( structKeyExists( arguments.metadata.functions[ x ], "eventPattern" ) ){ pointRecord.eventPattern = arguments.metadata.functions[ x ].eventPattern; }
 						// Insert to metadata struct of points found
-						structInsert( pointsFound, arguments.metadata.functions[x].name, true );
+						structInsert( pointsFound, arguments.metadata.functions[ x ].name, pointRecord );
 					}
 
 				}// loop over functions
 			}
 
 			// Start Registering inheritances
-			if ( structKeyExists(arguments.metadata, "extends") and
+			if ( structKeyExists( arguments.metadata, "extends" ) and
 				 (arguments.metadata.extends.name neq "coldbox.system.Interceptor" and
 				  arguments.metadata.extends.name neq "coldbox.system.Plugin" and
 				  arguments.metadata.extends.name neq "coldbox.system.EventHandler" )
@@ -447,6 +482,7 @@ Description :
 				// Recursive lookup
 				parseMetadata( arguments.metadata.extends, pointsFound );
 			}
+			
 			//return the interception points found
 			return pointsFound;
 		</cfscript>
