@@ -235,19 +235,17 @@ Description :
 				
 				// Check if we can execute this Interceptor
 				if( isExecutable( thisInterceptor, arguments.event, key ) ){
-					// Invoke the execution point
-					if( invoker( thisInterceptor, arguments.event, arguments.interceptData ) ){ 
-						// Debug interceptions
-						if( instance.log.canDebug() ){
-							instance.log.debug("Interceptor '#getMetadata( thisInterceptor ).name#' fired in chain: '#getState()#' and breaking the chain");
-						}
+					
+					// Async Execution only if not in a thread already
+					if( instance.metadataMap[ key ].async AND NOT instance.utility.inThread() ){
+						invokerAsync(event=arguments.event, interceptData=arguments.interceptData, interceptorKey=key, asyncPriority=instance.metadataMap[ key ].asyncPriority);
+					}
+					// Invoke the execution point synchronously
+					else if( invoker(interceptor=thisInterceptor, event=arguments.event, interceptData=arguments.interceptData, interceptorKey=key) ){ 
 						break; 
 					}
-					// Debug interceptions
-					if( instance.log.canDebug() ){
-						instance.log.debug("Interceptor '#getMetadata( thisInterceptor ).name#' fired in chain: '#getState()#'");
-					} 
 				}
+				
 			}	
 			
 			// Debug interceptions
@@ -269,6 +267,12 @@ Description :
 			// Check if the event pattern matches the current event, else return false
 			if( len( iData.eventPattern ) AND
 			    NOT reFindNoCase( iData.eventPattern, arguments.event.getCurrentEvent() ) ){
+			    
+			    // Log it	
+			    if( instance.log.canDebug() ){
+					instance.log.debug("Interceptor '#getMetadata( arguments.target ).name#' did NOT fire in chain: '#getState()#' due to event pattern mismatch: #iData.eventPattern#.");
+				} 
+				
 				return false;
 			}
 			
@@ -283,21 +287,69 @@ Description :
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
-
+	
+	<!--- Interceptor Async Invoker --->
+	<cffunction name="invokerAsync" access="private" returntype="any" hint="Execute an interceptor execution point asynchronously" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" 		 	required="true" 	type="any" 		hint="The event context">
+		<cfargument name="interceptData" 	required="true" 	type="any" 		hint="A metadata structure used to pass intercepted information.">
+		<cfargument name="interceptorKey" 	required="true" 	type="any" 		hint="The interceptor key to invoke">
+		<cfargument name="asyncPriority" 	required="false" 	type="any" default="normal"	hint="The thread priority for the execution">
+		<!--- ************************************************************* --->
+		
+		<!--- Prepare thread safe name --->
+		<cfset var thisThreadName = "asyncInterceptor_#arguments.interceptorKey#_#replace( instance.uuidHelper.randomUUID(), "-", "", "all" )#">
+		
+		<!--- Log It --->
+		<cfif instance.log.canDebug()>
+			<cfset instance.log.debug("Async interception starting for: '#getState()#', interceptor: #arguments.interceptorKey#, priority: #arguments.asyncPriority#")>
+		</cfif>
+		
+		<!--- Thread Interceptor Call --->
+		<cfthread name="#thisThreadName#" action="run" priority="#arguments.asyncPriority#" 
+				  event="#arguments.event#" interceptData="#arguments.interceptData#" threadName="#thisThreadName#" key="#arguments.interceptorKey#">
+			
+			<!--- Invoke the interceptor --->
+			<cfinvoke component="#this.getInterceptors().get( attributes.key )#" method="#this.getstate()#">
+				<cfinvokeargument name="event" 			value="#attributes.event#">
+				<cfinvokeargument name="interceptData" 	value="#attributes.interceptData#">
+			</cfinvoke>
+			
+			<!--- Log It --->
+			<cfif instance.log.canDebug()>
+				<cfset instance.log.debug("Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#")>
+			</cfif>
+			
+		</cfthread>
+		
+	</cffunction>
+	
 	<!--- Interceptor Invoker --->
 	<cffunction name="invoker" access="private" returntype="any" hint="Execute an interceptor execution point" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="interceptor" 		required="true" type="any" 		hint="The interceptor reference from cache">
 		<cfargument name="event" 		 	required="true" type="any" 		hint="The event context">
 		<cfargument name="interceptData" 	required="true" type="any" 		hint="A metadata structure used to pass intercepted information.">
+		<cfargument name="interceptorKey" 	required="true" type="any" 		hint="The interceptor key to invoke">
 		<!--- ************************************************************* --->
+		<!--- Results reference --->
 		<cfset var refLocal = structnew()>
+		
+		<!--- Log It --->
+		<cfif instance.log.canDebug()>
+			<cfset instance.log.debug("Interception started for: '#getState()#', key: #arguments.interceptorKey#")>
+		</cfif>
 		
 		<!--- Invoke the interceptor --->
 		<cfinvoke component="#arguments.interceptor#" method="#getstate()#" returnvariable="refLocal.results">
 			<cfinvokeargument name="event" 			value="#arguments.event#">
 			<cfinvokeargument name="interceptData" 	value="#arguments.interceptData#">
 		</cfinvoke>
+		
+		<!--- Log It --->
+		<cfif instance.log.canDebug()>
+			<cfset instance.log.debug("Interception ended for: '#getState()#', key: #arguments.interceptorKey#")>
+		</cfif>
 		
 		<!--- Check if we have results --->
 		<cfif structKeyExists( refLocal, "results" ) and isBoolean( refLocal.results )>

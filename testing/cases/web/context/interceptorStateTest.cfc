@@ -10,9 +10,8 @@
 			this.state = getMockBox().createMock("coldbox.system.web.context.InterceptorState");		
 			this.event = getMockRequestContext();
 			this.event.$("getEventName","event");
-			this.mock = createObject("component","coldbox.testing.testinterceptors.mock");
-			this.mock2 = createObject("component","coldbox.testing.testinterceptors.mock");
-			
+			this.mock = getMockBox().createMock("coldbox.testing.testinterceptors.mock");
+			this.mock2 = getMockBox().createMock("coldbox.testing.testinterceptors.mock");
 			this.key = "cbox_interceptor_" & "mock";
 			
 			this.state.init('unittest', mockLogBox);
@@ -86,6 +85,47 @@
 			assertFalse( structKeyExists( this.state.getMetadataMap(), this.key ) );
 			
 			this.state.unregister('nothing baby');
+		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testInvoker" access="public" returnType="void">
+		<cfscript>
+			//debug( this.state.getState() );
+			
+			// 1: Execute Normally
+			//register one interceptor for testing
+			this.state.unregister( this.key );
+			mockMetadata = { async=false, asyncPriority = "normal", eventPattern = "" };
+			mockInterceptor = getMockBox().createMock("coldbox.testing.testinterceptors.mock").$("unittest");
+			this.state.register(this.key, mockInterceptor, mockMetadata );
+			
+			// Invoke
+			makepublic( this.state, "invoker" );
+			assertTrue( mockInterceptor.$never("unittest") );
+			this.state.invoker(mockInterceptor, getMockRequestContext(), {}, this.key );
+			assertTrue( mockInterceptor.$once("unittest") );
+			
+		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testInvokerThreaded" access="public" returnType="void">
+		<cfscript>
+			//debug( this.state.getState() );
+			
+			// 1: Execute Threaded
+			//register one interceptor for testing
+			this.state.unregister( this.key );
+			mockMetadata = { async=true, asyncPriority = "high", eventPattern = "" };
+			mockInterceptor = getMockBox().createMock("coldbox.testing.testinterceptors.mock").$("unittest");
+			this.state.register(this.key, mockInterceptor, mockMetadata );
+			
+			// Invoke
+			makepublic( this.state, "invokerAsync" );
+			assertTrue( mockInterceptor.$never("unittest") );
+			this.state.invokerAsync(mockInterceptor, getMockRequestContext(), this.key, "high" );
+			sleep( 1000 );
+			assertTrue( mockInterceptor.$once("unittest") );
+			debug( cfthread );
 		</cfscript>
 	</cffunction>		
 	
