@@ -180,9 +180,9 @@ Description :
 				// Retrieve interceptor to fire.
 				var thisInterceptor = this.getInterceptors().get( attributes.key );
 				// Check if we can execute this Interceptor
-				if( variables.isExecutable( thisInterceptor, attributes.event ) ){
+				if( variables.isExecutable( thisInterceptor, attributes.event, attributes.key ) ){
 					// Invoke the execution point
-					variables.invoker( thisInterceptor, attributes.event, attributes.interceptData ); 
+					variables.invoker(interceptor=thisInterceptor, event=attributes.event, interceptData=attributes.interceptData, interceptorKey=attributes.key); 
 					// Debug interceptions
 					if( instance.log.canDebug() ){
 						instance.log.debug("Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'");
