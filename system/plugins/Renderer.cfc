@@ -394,7 +394,8 @@ Description :
 		<cfargument name="viewModule"   type="any" 	required="false" default="" hint="Explicitly render a view from this module"/>
 		<cfargument name="prepostExempt" type="any"	required="false" default="false" 	hint="If true, pre/post layout interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
 
-		<cfset var cbox_currentLayout 		= implicitViewChecks()>
+		<cfset var cbox_implicitLayout 		= implicitViewChecks()>
+		<cfset var cbox_currentLayout 		= cbox_implicitLayout>
 		<cfset var cbox_timerhash 			= "">
 		<cfset var cbox_locateUDF 			= variables.locateLayout>
 		<cfset var cbox_explicitModule  	= false>
@@ -408,11 +409,25 @@ Description :
 			<cfreturn getPlugin("Renderer").setExplicitView(arguments.view).renderLayout(argumentCollection=arguments)>
 		</cfif>
 
+		<!--- If the layout has not been specified set it to the implicit value. --->
+		<cfif NOT structKeyExists(arguments,"layout")>
+			<!--- Strip off the .cfm extension if it is set. --->
+			<cfif len(cbox_implicitLayout) gt 4 AND right(cbox_implicitLayout,4) eq '.cfm'>
+				<cfset cbox_implicitLayout = left(cbox_implicitLayout,len(cbox_implicitLayout)-4) />
+			</cfif>
+			<cfset arguments.layout = cbox_implicitLayout />
+		</cfif>
+
 		<!--- Module Default Value --->
 		<cfif NOT len(arguments.module)>
 			<cfset arguments.module = event.getCurrentModule()>
 		<cfelse>
 			<cfset cbox_explicitModule = true>
+		</cfif>
+
+		<!--- Announce preLayoutRender interception --->
+		<cfif NOT arguments.prepostExempt>
+			<cfset announceInterception("preLayoutRender", iData)>
 		</cfif>
 
 		<!--- Check explicit layout rendering --->
@@ -425,11 +440,6 @@ Description :
 			<cfelse>
 				<cfset cbox_currentLayout = "">
 			</cfif>
-		</cfif>
-
-		<!--- Announce preLayoutRender interception --->
-		<cfif NOT arguments.prepostExempt>
-			<cfset announceInterception("preLayoutRender", iData)>
 		</cfif>
 
 		<!--- Choose location algorithm if in module mode --->
