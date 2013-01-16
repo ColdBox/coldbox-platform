@@ -1,7 +1,8 @@
-﻿<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.events.EventPool">
 <cfscript>
 	function setup(){
-		pool = getMockBox().createMock("coldbox.system.core.events.EventPool");
+		super.setup();
+		pool = model;
 		pool.init('onTest');
 	}
 	function testEventPool(){
