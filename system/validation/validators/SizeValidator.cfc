@@ -29,7 +29,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		}
 
 		var min = listFirst( arguments.validationData,'..');
-		var max = "";
+		var max = min;
 		if( find("..",arguments.validationData) ){
 			max = listLast( arguments.validationData,'..');
 		}
