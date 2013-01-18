@@ -416,6 +416,7 @@ Description :
 		<cfargument name="name" 	type="any" 		required="true" hint="A name for the meta tag or an array of struct data to convert to meta tags.Keys [name,content,type]"/>
 		<cfargument name="content" 	type="any" 		required="false" default="" hint="The content attribute"/>
 		<cfargument name="type" 	type="string"	 required="false" default="name" hint="Either ''name'' or ''equiv'' which produces http-equiv instead of the name"/>
+		<cfargument name="sendToHeader" type="boolean"	required="false" default="true" hint="Send to the header via htmlhead by default, else it returns the content"/>
 		<cfscript>
 			var x 		= 1;
 			var buffer	= createObject("java","java.lang.StringBuffer").init("");
@@ -426,21 +427,29 @@ Description :
 
 			// Array of structs or simple value
 			if( isSimpleValue(arguments.name) ){
-				return '<meta #arguments.type#="#arguments.name#" content="#arguments.content#" />';
+				buffer.append('<meta #arguments.type#="#arguments.name#" content="#arguments.content#" />');
 			}
-
-			for(x=1; x lte arrayLen(arguments.name); x=x+1 ){
-				if( NOT structKeyExists(arguments.name[x], "type") ){
-					arguments.name[x].type = "name";
+			
+			if(isArray(arguments.name)){
+				for(x=1; x lte arrayLen(arguments.name); x=x+1 ){
+					if( NOT structKeyExists(arguments.name[x], "type") ){
+						arguments.name[x].type = "name";
+					}
+					if(	arguments.name[x].type eq "equiv" ){
+						arguments.name[x].type = "http-equiv";
+					}
+	
+					buffer.append('<meta #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
 				}
-				if(	arguments.name[x].type eq "equiv" ){
-					arguments.name[x].type = "http-equiv";
-				}
-
-				buffer.append('<meta #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
 			}
-
-			return buffer.toString();
+			
+			//Load it
+			if( arguments.sendToHeader AND len(buffer.toString())){
+				$htmlhead(buffer.toString());
+			}
+			else{
+				return buffer.toString();
+			}
 		</cfscript>
 	</cffunction>
 
