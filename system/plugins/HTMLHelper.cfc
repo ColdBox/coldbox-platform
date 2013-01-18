@@ -197,15 +197,31 @@ Description :
 		<cfargument name="media" 	 	type="any"		required="false" 	default="" hint="The media attribute"/>
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="charset" 		type="any" 		required="false" 	default="UTF-8" hint="The charset to add, defaults to utf-8"/>
+		<cfargument name="sendToHeader" type="boolean"	required="false" 	default="true" hint="Send to the header via htmlhead by default, else it returns the content"/>
 		<cfscript>
 			var buffer 		= createObject("java","java.lang.StringBuffer").init("<link");
 
 			// Check if we have a base URL
 			arguments.href = prepareBaseLink(arguments.noBaseURL,arguments.href);
+			
+			//exclusions
+			local.excludes = "noBaseURL";
+			if(structKeyExists(arguments,'rel')){
+				if(arguments.rel == "canonical"){
+					local.excludes &= ",type,title,media,charset";
+				}
+			}
+			
 			// build link
-			flattenAttributes(arguments,"noBaseURL",buffer).append('/>');
-
-			return buffer.toString();
+			flattenAttributes(arguments,local.excludes,buffer).append('/>');
+			
+			//Load it
+			if( arguments.sendToHeader AND len(buffer.toString())){
+				$htmlhead(buffer.toString());
+			}
+			else{
+				return buffer.toString();
+			}
 		</cfscript>
 	</cffunction>
 
@@ -1553,7 +1569,7 @@ Description :
 			var key	 = "";
 
 			// global exclusions
-			arguments.excludes &= ",fieldWrapper,labelWrapper,entity,booleanSelect,textareas,manytoone,onetomany";
+			arguments.excludes &= ",fieldWrapper,labelWrapper,entity,booleanSelect,textareas,manytoone,onetomany,sendToHeader";
 
 			for(key in arguments.target){
 
