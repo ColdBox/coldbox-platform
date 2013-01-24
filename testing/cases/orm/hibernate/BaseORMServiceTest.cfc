@@ -597,6 +597,13 @@
 		test = ormservice.convertIDValueToJavaType(entityName="User",id=["1","2","3"]);
 		assertEquals( [1,2,3], test );
 	}
+	
+	function testConvertValueToJavaType(){
+
+		test = ormservice.convertValueToJavaType(entityName="User",propertyName="id",value=testUserID);
+		assertEquals( testUserID, test );
+
+	}
 
 	function testCreateService(){
 
