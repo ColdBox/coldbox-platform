@@ -1252,6 +1252,16 @@ component accessors="true"{
 
 		return arguments.id;
 	}
+	
+	/**
+	* Coverts a value to the correct javaType for the property passed in
+	* The method returns the value in the proper Java Type
+	*/
+	any function convertValueToJavaType(required entityName, required propertyName, required value){
+		var hibernateMD = orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetaData(arguments.entityName);
+
+		return hibernateMD.getPropertyType(arguments.propertyName).fromStringValue(arguments.value);
+	}
 
 	/**
 	* Get our hibernate org.hibernate.criterion.Restrictions proxy object
