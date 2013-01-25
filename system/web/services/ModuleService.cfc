@@ -295,7 +295,7 @@ I oversee and manage ColdBox modules
 			mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
 
 			// Register the Config as an observable also.
-			interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[arguments.moduleName]);
+			interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[arguments.moduleName], interceptorName="ModuleConfig:#arguments.moduleName#");
 
 			// Register Interceptors with Announcement service
 			for(y=1; y lte arrayLen(mConfig.interceptors); y++){
@@ -396,9 +396,11 @@ I oversee and manage ColdBox modules
 			}
 
 			// Unregister all interceptors
-			for(x=1; x lte arrayLen(appConfig.modules[arguments.moduleName].interceptors); x++){
-				interceptorService.unregister(appConfig.modules[arguments.moduleName].interceptors[x].name);
+			for(x=1; x lte arrayLen( appConfig.modules[ arguments.moduleName ].interceptors ); x++){
+				interceptorService.unregister( appConfig.modules[ arguments.moduleName ].interceptors[ x ].name);
 			}
+			// Unregister Config object
+			interceptorService.unregister( "ModuleConfig:#arguments.moduleName#" );
 			
 			// Remove SES if enabled.
 			if( controller.settingExists('sesBaseURL') ){
@@ -595,6 +597,5 @@ I oversee and manage ColdBox modules
 			return true;
     	</cfscript>
     </cffunction>
-
 
 </cfcomponent>
