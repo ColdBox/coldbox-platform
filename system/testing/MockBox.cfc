@@ -269,8 +269,6 @@ Description		:
 	<!--- $args --->
 	<cffunction name="$args" output="false" access="public" returntype="any" hint="Use this method to mock specific arguments when calling a mocked method.  Can only be called when chained to a $() call.  If a method is called with arguments and no match, it defaults to the base results defined. Injected as: $args()">
 		<cfscript>
-			var argOrderedTree = "";
-			
 			// check if method is set on concat
 			if( len(this._mockCurrentMethod) ){
 				
@@ -445,14 +443,46 @@ Description		:
 	</cffunction>
 	
 	<!--- normalizeArguments --->
-    <cffunction name="normalizeArguments" output="false" access="public" returntype="string" hint="Normalize argument values on method calls">
-    	<cfargument name="args" type="any" required="true" hint="The arguments structure to normalize"/>
-    	<cfscript>
-    		var argOrderedTree = createObject("java","java.util.TreeMap").init(arguments.args).values().toString();
+	<cffunction name="normalizeArguments" output="false" access="public" returntype="any" hint="Normalize argument values on method calls">
+		<cfargument name="args" type="any" required="true" hint="The arguments structure to normalize"/>
+		<cfscript>
+			// TreeMap will give us arguments in a consistent order, but we can't rely on Java to serialize argument values in the same way ColdFusion will
+			var argOrderedTree = createObject("java","java.util.TreeMap").init(arguments.args);
+			var serializedArgs = "";
+			var arg = "";
 			
-			return hash( argOrderedTree );
+			for(arg in argOrderedTree) {
+				if(NOT structKeyExists(argOrderedTree, arg)) {
+					/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
+					 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
+					 */
+					 
+				}
+				else if(isSimpleValue(argOrderedTree[arg])) {
+					/* toString() works best for simple values.  It is equivalent in the following scenario
+					 * i = 1;
+					 * j = i; j++; j--;
+					 * toString(i) eq toString(j);
+					 * This works around the ColdFusion bug (9.0.2 at least) where an integer variable is converted to a real number by the ++ or -- operators.
+					 * serializeJSON and other Java methods of stringifying don't work around that issue.
+					 * 
+					 * Strangely, it converts a literal real number 1.0 to the string "1.0".
+					 */
+					serializedArgs &= toString(argOrderedTree[arg]);
+				}
+				else {
+					/* serializeJSON works for complex datatypes, but Objects have to be the same instance not just the same component in equivalent state
+					 */
+					serializedArgs &= serializeJSON(argOrderedTree[arg]);
+				}
+				
+			}
+			/* ColdFusion isn't case sensitive, so case of string values shouldn't matter.  We do it after serializing all args 
+			 * to catch any values deep in complex variables.
+			 */
+			return hash(lcase(serializedArgs));
 		</cfscript>
-    </cffunction>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
@@ -514,5 +544,12 @@ Description		:
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
-
+	
+	<cffunction name="maildump">
+		<cfargument name="content" default="failure">
+		<cfargument name="to" default="safeldkamp@natsem.com">
+		<cfargument name="subject" default="MockBox.cfc">
+		<cfmail from="webalerts@natsem.com" to="#to#" subject="#subject#" type=HTML><cfdump var="#arguments.content#" expand="true"></cfmail>
+	</cffunction>
+	
 </cfcomponent>
