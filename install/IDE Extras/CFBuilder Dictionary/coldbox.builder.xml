@@ -489,13 +489,28 @@
 				<help><![CDATA[ The content to send to the head ]]></help>
 			</parameter>
 			</function>
-	<function name="announceInterception" returns="void">
-			<help><![CDATA[ Announce an interception to the system. (Context: FrameworkSupertype) ]]></help>
+	<function name="announceInterception" returns="any">
+			<help><![CDATA[ Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="state" required="true" type="any">
 				<help><![CDATA[ The interception state to execute ]]></help>
 			</parameter>
 			<parameter name="interceptData" required="false" type="any">
 				<help><![CDATA[ A data structure used to pass intercepted information. ]]></help>
+			</parameter>
+			<parameter name="async" required="false" type="boolean">
+				<help><![CDATA[ If true, the entire interception chain will be ran in a separate thread. ]]></help>
+			</parameter>
+			<parameter name="asyncAll" required="false" type="boolean">
+				<help><![CDATA[ If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end. ]]></help>
+			</parameter>
+			<parameter name="asyncAllJoin" required="false" type="boolean">
+				<help><![CDATA[ If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize. ]]></help>
+			</parameter>
+			<parameter name="asyncPriority" required="false" type="string">
+				<help><![CDATA[ The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL ]]></help>
+			</parameter>
+			<parameter name="asyncJoinTimeout" required="false" type="numeric">
+				<help><![CDATA[ The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout. ]]></help>
 			</parameter>
 			</function>
 	<function name="setDebugMode" returns="void">
