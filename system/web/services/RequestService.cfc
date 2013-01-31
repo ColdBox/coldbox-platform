@@ -147,6 +147,11 @@ Modification History:
 			// Are we using event caching?
 			eventCachingTest(context, fwCache);
 			
+			if ( len(instance.decorator) ){
+				// Configure decorator
+				context.configure();
+			}
+			
 			return context;
 		</cfscript>
 	</cffunction>
@@ -251,8 +256,6 @@ Modification History:
 			oDecorator = CreateObject("component",instance.decorator).init(oContext,controller);
 			//Set Request Context in storage
 			setContext(oDecorator);
-			// Configure decorator
-			oDecorator.configure();
 			//Return
 			return oDecorator;
 		}
