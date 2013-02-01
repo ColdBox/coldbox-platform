@@ -65,15 +65,15 @@ Modification History:
 			}
 			
 			// Create Flash RAM object
-			instance.flashScope = createObject("component",flashPath).init(controller, flashData);
+			instance.flashScope = createObject("component", flashPath).init( controller, flashData );
 			
 			// Request Context Decorator?
-			if ( controller.settingExists("RequestContextDecorator") and len(controller.getSetting("RequestContextDecorator")) ){
+			if ( controller.settingExists( "RequestContextDecorator" ) and len( controller.getSetting( "RequestContextDecorator" ) ) ){
 				instance.decorator = controller.getSetting("RequestContextDecorator");
 			}
 			
 			//Get Local Logger Configured
-			instance.log = controller.getLogBox().getLogger(this);
+			instance.log = controller.getLogBox().getLogger( this );
 			// Local Configuration data and dependencies
 			instance.debugPassword  	= controller.getSetting("debugPassword");
 			instance.eventName			= controller.getSetting("eventName");
@@ -97,18 +97,18 @@ Modification History:
 			var fwCache		= false;
 			
 			// Capture FORM/URL
-			if( isDefined("FORM") ){ structAppend(rc, FORM); }
-			if( isDefined("URL")  ){ structAppend(rc, URL); }
+			if( isDefined( "FORM" ) ){ structAppend( rc, FORM ); }
+			if( isDefined( "URL" )  ){ structAppend( rc, URL ); }
 			
 			// Execute onRequestCapture interceptionPoint
-			instance.interceptorService.processState("onRequestCapture");
+			instance.interceptorService.processState( "onRequestCapture" );
 			
 			// Remove FW reserved commands just in case before collection snapshot
-			fwCache = structKeyExists(rc,"fwCache");
-			structDelete(rc, "fwCache");
+			fwCache = structKeyExists( rc,"fwCache" );
+			structDelete( rc, "fwCache" );
 			
 			// Take snapshot of incoming collection
-			prc["cbox_incomingContextHash"] = hash( rc.toString() );
+			prc[ "cbox_incomingContextHash" ] = hash( rc.toString() );
 			
 			// Do we have flash elements to inflate?
 			if( instance.flashScope.flashExists() ){
@@ -132,20 +132,25 @@ Modification History:
 			}
 
 			// Default Event Determination
-			if ( NOT structKeyExists(rc, instance.eventName)){
-				rc[instance.eventName] = controller.getSetting("DefaultEvent");
+			if ( NOT structKeyExists( rc, instance.eventName ) ){
+				rc[ instance.eventName ] = controller.getSetting( "DefaultEvent" );
 			}
 			
 			// Event More Than 1 Check, grab the first event instance, other's are discarded
-			if ( listLen( rc[instance.eventName] ) GTE 2 ){
-				rc[instance.eventName] = getToken( rc[instance.eventName], 2, ",");
+			if ( listLen( rc[ instance.eventName ] ) GTE 2 ){
+				rc[ instance.eventName ] = getToken( rc[ instance.eventName ], 2, ",");
 			}
 			
 			// Default Event Action Checks
-			instance.handlerService.defaultEventCheck(context);
+			instance.handlerService.defaultEventCheck( context );
 			
 			// Are we using event caching?
-			eventCachingTest(context, fwCache);
+			eventCachingTest( context, fwCache );
+			
+			// Configure decorator if available?
+			if ( len( instance.decorator ) ){
+				context.configure();
+			}
 			
 			return context;
 		</cfscript>
@@ -246,19 +251,17 @@ Modification History:
 		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init(controller.getConfigSettings());
 		
 		//Determine if we have a decorator, if we do, then decorate it.
-		if ( len(instance.decorator) ){
+		if ( len( instance.decorator ) ){
 			//Create the decorator
-			oDecorator = CreateObject("component",instance.decorator).init(oContext,controller);
+			oDecorator = CreateObject( "component", instance.decorator ).init( oContext, controller );
 			//Set Request Context in storage
-			setContext(oDecorator);
-			// Configure decorator
-			oDecorator.configure();
+			setContext( oDecorator );
 			//Return
 			return oDecorator;
 		}
 		
 		//Set Request Context in storage
-		setContext(oContext);
+		setContext( oContext );
 		
 		//Return Context
 		return oContext;
