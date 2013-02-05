@@ -24,13 +24,13 @@ Description :
 			<cfset varVal = "Null">
 		</cfif>
 		<tr>
-			<td align="right" width="15%" class="fw_debugTablesTitles"><strong>#lcase(vars)#:</strong></td>
+			<td align="right" width="15%" class="fw_debugTablesTitles"><strong>#lcase( htmlEditFormat( vars ) )#:</strong></td>
 			<td  class="fw_debugTablesCells">
-			<cfif isSimpleValue(varVal) >
+			<cfif isSimpleValue( varVal ) >
 				<cfif varVal eq "">
 					<span class="fw_redText">N/A</span>
 				<cfelse>
-					#htmlEditFormat(varVal)#
+					#htmlEditFormat( varVal )#
 				</cfif>
 			<cfelse>
 				<!--- Max Display For Queries  --->
