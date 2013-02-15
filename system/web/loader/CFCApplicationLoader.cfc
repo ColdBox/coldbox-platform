@@ -229,7 +229,7 @@ Loads a coldbox cfc configuration file
 			if ( not StructKeyExists(configStruct, "AppName") )
 				instance.util.throwit("There was no 'AppName' setting defined. This is required by the framework.","","MissingSetting");
 			//Check for Default Event
-			if ( not StructKeyExists(configStruct, "DefaultEvent") )
+			if ( not StructKeyExists(configStruct, "DefaultEvent") OR NOT len( configStruct[ "DefaultEvent" ] ) )
 				configStruct["DefaultEvent"] = fwSettingsStruct["DefaultEvent"];
 			//Check for Event Name
 			if ( not StructKeyExists(configStruct, "EventName") )
