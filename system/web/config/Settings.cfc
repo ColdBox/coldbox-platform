@@ -23,6 +23,7 @@ ColdBox Default Configuration
 	// Operation Defaults
 	this.eventName 	= "event";
 	this.defaultEvent = "main.index";
+	this.defaultLayout = "Main.cfm";
 
 	// flash scope defaults
 	this.flash = {

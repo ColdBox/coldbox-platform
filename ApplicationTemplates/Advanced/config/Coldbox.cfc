@@ -120,7 +120,7 @@ Optional Methods
 
 		//Layout Settings
 		layoutSettings = {
-			defaultLayout = "Layout.Main.cfm",
+			defaultLayout = "Main.cfm",
 			defaultView   = ""
 		};
 

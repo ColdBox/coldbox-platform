@@ -637,22 +637,23 @@ Loads a coldbox cfc configuration file
 			var x 					= 1;
 			var thisLayout			= "";
 			var layoutsArray 		= arrayNew(1);
-
+			var fwSettingsStruct 	= instance.coldboxSettings;
+			
 			// defaults
-			configStruct.defaultLayout 		= "";
+			configStruct.defaultLayout 		= fwSettingsStruct.defaultLayout;
 			configStruct.defaultView 		= "";
 			configStruct.registeredLayouts  = structnew();
 
 			// Register layout settings
-			structAppend(configStruct,layoutSettings);
+			structAppend( configStruct, layoutSettings );
 
 			// registered layouts
-			if( isStruct(layouts) ){
+			if( isStruct( layouts ) ){
 				// process structure into array
-				for(key in layouts){
-					thisLayout = layouts[key];
+				for( key in layouts ){
+					thisLayout = layouts[ key ];
 					thisLayout.name = key;
-					arrayAppend(layoutsArray, thisLayout);
+					arrayAppend( layoutsArray, thisLayout );
 				}
 			}
 			else{

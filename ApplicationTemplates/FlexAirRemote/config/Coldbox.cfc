@@ -127,7 +127,7 @@ function configure(){
 	
 	//Layout Settings
 	layoutSettings = {
-		defaultLayout = "Layout.Main.cfm"
+		defaultLayout = "Main.cfm"
 	};
 	
 	//Register interceptors as an array, we need order

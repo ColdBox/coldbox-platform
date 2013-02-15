@@ -15,7 +15,7 @@ function configure(){
 		handlersIndexAutoReload = true,
 
 		//Implicit Events
-		defaultEvent			= "general.index",
+		defaultEvent			= "main.index",
 		requestStartHandler		= "",
 		requestEndHandler		= "",
 		applicationStartHandler = "",
@@ -33,19 +33,6 @@ function configure(){
 		handlerCaching 			= false,
 		eventCaching			= false
 	};
-
-	//Layout Settings
-	layoutSettings = {
-		defaultLayout = "Layout.Main.cfm"
-	};
-
-	//Register interceptors as an array, we need order
-	interceptors = [
-		//SES
-		{class="coldbox.system.interceptors.SES",
-		 properties={}
-		}
-	];
 
 }
 
