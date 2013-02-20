@@ -480,13 +480,14 @@ Description :
 
 	<!--- addMailParam --->
 	<cffunction name="addMailParam" access="public" returntype="any" output="false" hint="Add mail params to this payload">
-		<cfargument name="contentID" 	required="false" type="string" hint="Initial value for the contentID property." />
-		<cfargument name="disposition" 	required="false" type="string" hint="Initial value for the dispositio nproperty." />
-		<cfargument name="file" 		required="false" type="string" hint="Initial value for the file property." />
-		<cfargument name="type" 		required="false" type="string" hint="Initial value for the type property." />
-		<cfargument name="name" 		required="false" type="string" hint="Initial value for the name property." />
-		<cfargument name="value" 		required="false" type="string" hint="Initial value for the value property." />
+		<cfargument name="contentID" 	required="false" type="any" 	hint="Initial value for the contentID property." />
+		<cfargument name="disposition" 	required="false" type="any" 	hint="Initial value for the dispositio nproperty." />
+		<cfargument name="file" 		required="false" type="any" 	hint="Initial value for the file property." />
+		<cfargument name="type" 		required="false" type="any" 	hint="Initial value for the type property." />
+		<cfargument name="name" 		required="false" type="any" 	hint="Initial value for the name property." />
+		<cfargument name="value" 		required="false" type="any" 	hint="Initial value for the value property." />
 		<cfargument name="remove" 		required="false" type="boolean" hint="If true, ColdFusion removes attachment files (if any) after the mail is successfully delivered.">
+		<cfargument name="content" 		required="false" type="any" 	hint="Lets you send the contents of a ColdFusion variable as an attachment." />
 		<cfscript>
 			// Add new mail Param
 			var mailparams = structnew();
