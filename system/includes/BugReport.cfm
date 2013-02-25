@@ -203,7 +203,7 @@ Description :
 	 <cfloop collection="#form#" item="key">
 	 	<cfif key neq "fieldnames">
 	 <tr>
-	   <td align="right" class="fw_errorTablesTitles"> #key#: </td>
+	   <td align="right" class="fw_errorTablesTitles">#htmlEditFormat(key)#:</td>
 	   <td >#htmlEditFormat(form[key])#</td>
 	 </tr>
 	 	</cfif>
