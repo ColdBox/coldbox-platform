@@ -268,6 +268,24 @@ component accessors="true"{
 		return this;
 	}
 	
+	/**
+	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
+	* The method returns a coverted array of ID's
+	*/
+	any function convertIDValueToJavaType(required id){
+		arguments.entityName = variables.entityName;
+		return new BaseORMService().convertIDValueToJavaType(argumentCollection=arguments);
+	}
+	
+	/**
+	* Coverts a value to the correct javaType for the property passed in
+	* The method returns the value in the proper Java Type
+	*/
+	any function convertValueToJavaType(required propertyName, required value){
+		arguments.entityName = variables.entityName;
+		return new BaseORMService().convertValueToJavaType(argumentCollection=arguments);
+	}
+	
 	/************************************** PRIVATE *********************************************/
 	
 	// Simplified additions of projections

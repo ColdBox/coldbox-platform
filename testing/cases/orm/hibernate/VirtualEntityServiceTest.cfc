@@ -52,8 +52,6 @@
 		assert( arrayLen( t ) , "Conditionals between");
 		t = ormservice.findByLastLoginBetween( "01/01/2008", "11/01/2008");
 		assert( isNull( t ) , "Conditionals between");
-		t = ormservice.findByLastLoginNotBetween( "01/01/2009", "01/01/2012");
-		assert( isNull( t ) , "Conditionals not between");
 		t = ormservice.findAllByLastNameInList( "Majano,Fernando");
 		assert( arrayLen( t ) , "Conditionals inList");
 		t = ormservice.findAllByLastNameInList( listToArray(  "Majano,Fernando" ));
@@ -206,5 +204,21 @@
 		c = ormservice.newCriteria();
 		assertEquals( "User", c.getEntityName() );
 		
+	}
+	
+	function testConvertIDValueToJavaType(){
+
+		test = ormservice.convertIDValueToJavaType(id=1);
+		assertEquals( [1], test );
+
+		test = ormservice.convertIDValueToJavaType(id=["1","2","3"]);
+		assertEquals( [1,2,3], test );
+	}
+	
+	function testConvertValueToJavaType(){
+
+		test = ormservice.convertValueToJavaType(propertyName="id",value=testUserID);
+		assertEquals( testUserID, test );
+
 	}
 }

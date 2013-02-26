@@ -95,4 +95,20 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		s = getMockBox().createMock("coldbox.system.orm.hibernate.DetachedCriteriaBuilder");
 		assertTrue( isInstanceOf( s, "coldbox.system.orm.hibernate.DetachedCriteriaBuilder" ) );
 	}
+	
+	function testConvertIDValueToJavaType(){
+
+		test = criteria.convertIDValueToJavaType(id=1);
+		assertEquals( [1], test );
+
+		test = criteria.convertIDValueToJavaType(id=["1","2","3"]);
+		assertEquals( [1,2,3], test );
+	}
+	
+	function testConvertValueToJavaType(){
+
+		test = criteria.convertValueToJavaType(propertyName="id",value=testUserID);
+		assertEquals( testUserID, test );
+
+	}
 }

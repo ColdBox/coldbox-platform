@@ -212,6 +212,24 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	}
 	
 	/**
+	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
+	* The method returns a coverted array of ID's
+	*/
+	any function convertIDValueToJavaType(required id){
+		arguments.entityName = this.getEntityName();
+		return super.convertIDValueToJavaType(argumentCollection=arguments);
+	}
+	
+	/**
+	* Coverts a value to the correct javaType for the property passed in
+	* The method returns the value in the proper Java Type
+	*/
+	any function convertValueToJavaType(required propertyName, required value){
+		arguments.entityName = this.getEntityName();
+		return super.convertValueToJavaType(argumentCollection=arguments);
+	}
+	
+	/**
 	* A nice onMissingMethod template to create awesome dynamic methods based on a virtual service
 	*/
 	any function onMissingMethod(string missingMethodName, struct missingMethodArguments){
