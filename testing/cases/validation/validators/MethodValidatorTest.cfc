@@ -14,16 +14,21 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 	function testValidate(){
 		result = getMockBox().createMock("coldbox.system.validation.result.ValidationResult").init();
 		
-		mock = getMockBox().createStub().$("validate",false)
+		mock = getMockBox().createStub()
+			.$("validate",false)
 			.$("coolValidate",true);
 		
-		// not empty
-		r = model.validate(result,mock,'test',"woot", "validate");
-		assertEquals( false, r );
-		
-		// not empty
+		// call coolvalidate
 		r = model.validate(result,mock,'test', 55, "coolValidate");
 		assertEquals( true, r );
+		
+		// call validate = false
+		r = model.validate(result,mock,'test',"woot","validate");
+		assertEquals( false, r );
+		
+		// call with null value
+		r = model.validate(result,mock,'test', javaCast("null","") ,"validate");
+		assertEquals( false, r );
 		
 	}
 	
