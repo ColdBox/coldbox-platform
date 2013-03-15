@@ -119,7 +119,7 @@ Description :
 			var newMessage = "";
 
 			// Do we have a message?
-			if( isEmpty() ){
+			if( isEmptyMessage() ){
 				// Set default message
 				setMessage('info',arguments.message);
 			}
@@ -144,7 +144,7 @@ Description :
 			var newMessage = "";
 
 			// Do we have a message?
-			if( isEmpty() ){
+			if( isEmptyMessage() ){
 				// Set default message
 				setMessage(type='info',messageArray=arguments.messageArray);
 			}
@@ -169,7 +169,7 @@ Description :
 			var newMessage = "";
 
 			// Do we have a message?
-			if( isEmpty() ){
+			if( isEmptyMessage() ){
 				// Set default message
 				setMessage(type='info',messageArray=arguments.messageArray);
 			}
@@ -210,7 +210,7 @@ Description :
 	</cffunction>
 
 	<!--- Is Empty --->
-	<cffunction name="isEmpty" access="public" hint="Checks wether the MessageBox is empty or not." returntype="boolean" output="false">
+	<cffunction name="isEmptyMessage" access="public" hint="Checks wether the MessageBox is empty or not." returntype="boolean" output="false">
 		<cfscript>
 			var msgStruct = getMessage();
 
@@ -328,7 +328,7 @@ Description :
 
     <cffunction name="isValidMessageType" access="private" output="false" returntype="string" hint="Returns a list of valid message types.">
 	<cfargument name="type" type="string" required="true" />
-	<cfreturn refindnocase("(error|warning|info)", trim(arguments.type)) /> 
+	<cfreturn refindnocase("(error|warning|info)", trim(arguments.type)) />
     </cffunction>
 
 	<!--- flattenMessageArray --->
