@@ -4,7 +4,7 @@
 	
 	function setup(){
 		super.setup();
-		adapter = getMockBox().createMock("coldbox.system.ioc.adapters.ColdSpringAdapter");
+		adapter = getMockBox().createMock("coldbox.system.ioc.adapters.ColdSpring2Adapter");
 	}
 
 	function creationTest(){
@@ -16,7 +16,7 @@
 		
 		assertEquals( true, isObject(adapter.getBean('testService')) );
 		
-		parent = getMockBox().createMock("coldbox.system.ioc.adapters.ColdSpringAdapter");
+		parent = getMockBox().createMock("coldbox.system.ioc.adapters.ColdSpring2Adapter");
 		parent.init(definitionFile=expandPath('/coldbox/testing/cases/ioc/adapters/resources/coldspring.xml.cfm'));
 		parent.createFactory();
 		adapter.setParentFactory( parent.getFactory() );
