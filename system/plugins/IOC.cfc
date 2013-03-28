@@ -25,7 +25,7 @@ Description :
 			
 			// Plugin Properties
 			setpluginName("IOC");
-			setpluginVersion("3.0");
+			setpluginVersion("4.0");
 			setpluginDescription("This is an inversion of control plugin.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
@@ -57,10 +57,10 @@ Description :
 			}
 			
 			// build adapter using application chosen properties
-			buildAdapter(instance.IOCFramework, definitionFile);
+			instance.adapter = buildAdapter(instance.IOCFramework, definitionFile);
 			
 			// Do we have a parent to build?
-			if( len(parentFramework) ){
+			if( len( parentFramework ) ){
 				
 				if( log.canDebug() ){
 					log.debug("Parent Factory detected: #parentFramework#:#paretDefinitionFile# and loading...");
@@ -103,7 +103,7 @@ Description :
 			refLocal.oBean = instance.adapter.getBean( arguments.beanName );
 			
 			// process WireBox autowires only if not wireBox.
-			instance.beanFactory.autowire(target=refLocal.oBean,annotationCheck=true);
+			instance.beanFactory.autowire(target=refLocal.oBean, annotationCheck=true);
 			
 			// processObjectCaching?
 			if( instance.objCaching ){
@@ -178,12 +178,13 @@ Description :
     </cffunction>
 	
 	<!--- buildAdapter --->
-    <cffunction name="buildAdapter" output="false" access="private" returntype="any" hint="Build an IoC framework adapter and return it">
+    <cffunction name="buildAdapter" output="false" access="private" returntype="any" hint="Build an IoC framework adapter and returns it">
     	<cfargument name="framework"		required="true" hint="The framework adapter to build"/>
 		<cfargument name="definitionFile" 	required="true" hint="The framework definition file to load"/>
 		<cfscript>	
 			var adapterPath = "";
-			
+			var thisAdapter = "";
+
 			switch( arguments.framework ){
 				case "coldspring" 	: { adapterPath = "coldbox.system.ioc.adapters.ColdSpringAdapter"; break; }
 				case "coldspring2" 	: { adapterPath = "coldbox.system.ioc.adapters.ColdSpring2Adapter"; break; }
@@ -193,9 +194,9 @@ Description :
 				default				: { adapterPath = arguments.framework; break;}	
 			}
 			
-			// Create Adapter
+			// Create Adapter First
 			try{
-				instance.adapter = createObject("component",adapterPath).init(validateDefinitionFile(arguments.definitionFile),controller.getConfigSettings(),controller);
+				thisAdapter = createObject( "component", adapterPath ).init( validateDefinitionFile( arguments.definitionFile ), controller.getConfigSettings(), controller );
 				
 				if( log.canDebug() ){
 					log.debug("ioc factory adapter: #adapterPath# built successfully");
@@ -206,11 +207,12 @@ Description :
 				$throw(message="Error Creating ioc factory adapter (#adapterPath#) : #e.message#",detail="#e.detail# #e.stacktrace#",type="IOC.AdapterCreationException");
 			}
 			
-			// Create Adapter Factory
+			// Create Adapter Factory it represents second
 			try{
-				instance.adapter.createFactory();
+				thisAdapter.createFactory();
+				
 				if( log.canDebug() ){
-					log.debug("ioc framework: #getMetadata(instance.adapter.getFactory()).name# loaded successfully and ready for operation.");
+					log.debug("ioc framework: #getMetadata( thisAdatper.getFactory() ).name# loaded successfully and ready for operation.");
 				}
 			}
 			catch(Any e){
@@ -221,6 +223,8 @@ Description :
 			if( log.canInfo() ){
 				log.info("IoC factory: #arguments.framework#:#arguments.definitionFile# loaded and configured for operation");
 			}
+			
+			return thisAdapter;
 		</cfscript>
     </cffunction>
 	
