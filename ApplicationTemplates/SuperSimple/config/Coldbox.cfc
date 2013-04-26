@@ -15,7 +15,7 @@ function configure(){
 		handlersIndexAutoReload = true,
 
 		//Implicit Events
-		defaultEvent			= "main.index",
+		defaultEvent			= "",
 		requestStartHandler		= "",
 		requestEndHandler		= "",
 		applicationStartHandler = "",

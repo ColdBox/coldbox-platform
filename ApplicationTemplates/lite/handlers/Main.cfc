@@ -5,7 +5,7 @@ component{
 	
 	function index(event,rc,prc){
 		rc.welcomeMessage = "Welcome to ColdBox!";	
-		event.setView("General/index");
+		event.setView("main/index");
 	}	
 	
 }

@@ -17,6 +17,22 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testindex" returntype="void" output="false">
+		<cfscript>
+		var event = "";
+		
+		//Place any variables on the form or URL scope to test the handler.
+		//URL.name = "luis"
+		event = execute("main.index");
+		
+		debug(event.getCollection());
+		
+		//Do your asserts below
+		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
+			
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testonAppInit" returntype="void" output="false">
 		<cfscript>
 		var event = "";

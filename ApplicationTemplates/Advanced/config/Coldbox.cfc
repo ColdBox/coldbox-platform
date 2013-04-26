@@ -54,7 +54,7 @@ Optional Methods
 			handlersIndexAutoReload = true,
 
 			//Implicit Events
-			defaultEvent			= "General.index",
+			defaultEvent			= "",
 			requestStartHandler		= "Main.onRequestStart",
 			requestEndHandler		= "",
 			applicationStartHandler = "Main.onAppInit",
@@ -120,7 +120,7 @@ Optional Methods
 
 		//Layout Settings
 		layoutSettings = {
-			defaultLayout = "Main.cfm",
+			defaultLayout = "",
 			defaultView   = ""
 		};
 
