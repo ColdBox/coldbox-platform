@@ -385,9 +385,13 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
-		str = plugin.textField(name="lastName",bind=majano);
-		debug(str);
+		str = plugin.textField(name="lastName",bind=majano, data={ type="awesome", tooltip="true", modal=true });
+		
+		//writeDump(str);abort;		
+
 		assertTrue( findNocase('value="Majano"', str) );
+		assertTrue( findNocase('data-type="awesome"', str) );
+		assertTrue( findNocase('data-tooltip="true"', str) );
 	}
 
 	function testButton(){

@@ -1601,19 +1601,28 @@ Description :
 		<cfargument name="buffer" 	type="any" required="true"/>
 		<cfscript>
 			var key	 = "";
+			var datakey = "";
 
 			// global exclusions
 			arguments.excludes &= ",fieldWrapper,labelWrapper,entity,booleanSelect,textareas,manytoone,onetomany,sendToHeader";
 
 			for(key in arguments.target){
-
+				// Normal Keys
 				if( (NOT len(arguments.excludes) OR (len(arguments.excludes) AND NOT listFindNoCase(arguments.excludes,key)))
 						AND (structKeyExists(arguments.target, key) AND isSimpleValue(arguments.target[key]) AND len(arguments.target[key])) ){
 					arguments.buffer.append(' #lcase(key)#="#arguments.target[key]#"');
 				}
+				// data keys
+				if( key eq "data" and isStruct( arguments.target[ key ] ) ){
+					for( dataKey in arguments.target.data ){
+						if( isSimplevalue( arguments.target.data[ dataKey ] ) ){
+							arguments.buffer.append(' data-#lcase( dataKey )#="#arguments.target.data[ datakey ]#"');
+						}
+					}
+				}
 
 			}
-
+			
 			return arguments.buffer;
 		</cfscript>
 	</cffunction>
