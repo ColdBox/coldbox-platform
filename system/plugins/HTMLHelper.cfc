@@ -134,7 +134,7 @@ Description :
 	<cffunction name="tag" output="false" access="public" returntype="any" hint="Surround content with a tag">
 		<cfargument name="tag" 			type="string" required="true"	hint="The tag to generate"/>
 		<cfargument name="content"		type="string" required="false" default=""	hint="The content of the tag"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer	= createObject("java","java.lang.StringBuffer").init("<#arguments.tag#");
 
@@ -149,7 +149,7 @@ Description :
 	<cffunction name="anchor" output="false" access="public" returntype="any" hint="Create an anchor tag">
 		<cfargument name="name" 	 	type="any" 		required="true" 	hint="The name of the anchor"/>
 		<cfargument name="text" 	 	type="any" 		required="false" default="" 	hint="The text of the link"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer 		= createObject("java","java.lang.StringBuffer").init("<a");
 
@@ -169,7 +169,7 @@ Description :
 		<cfargument name="target"	 	type="any" 		required="false" 	default="" hint="The target of the href link"/>
 		<cfargument name="ssl" 			type="boolean" 	required="false" 	default="false" hint="If true, it will change http to https if found in the ses base url ONLY"/>
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer 	= createObject("java","java.lang.StringBuffer").init("<a");
 			var event	= controller.getRequestService().getContext();
@@ -201,7 +201,7 @@ Description :
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="charset" 		type="any" 		required="false" 	default="UTF-8" hint="The charset to add, defaults to utf-8"/>
 		<cfargument name="sendToHeader" type="boolean"	required="false" 	default="false" hint="Send to the header via htmlhead by default, else it returns the content"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer 		= createObject("java","java.lang.StringBuffer").init("<link");
 
@@ -240,7 +240,7 @@ Description :
 		<cfargument name="rel" 		 type="string"	required="false" default="" hint="The rel tag"/>
 		<cfargument name="name" 	 type="string"	required="false" default="" hint="The name tag"/>
 		<cfargument name="noBaseURL" type="boolean" required="false" default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init("<img");
 
@@ -278,7 +278,7 @@ Description :
 		<cfargument name="tag"	 		type="string" required="true" hint="The list tag type"/>
 		<cfargument name="values" 		type="any"		required="true" default="" hint="An array of values or list of values"/>
 		<cfargument name="column"		 	type="string" required="false" default="" hint="If the values is a query, this is the name of the column to get the data from to create the list"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var val 	= arguments.values;
 			var x	 	= 1;
@@ -518,7 +518,7 @@ Description :
 		<cfargument name="href" 	 	type="any" 		required="false" hint="The href link to discover"/>
 		<cfargument name="rel" 		 	type="any"		required="false" default="alternate" hint="The rel attribute"/>
 		<cfargument name="title"	 	type="any" 		required="false" default="" hint="The title attribute"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer	= createObject("java","java.lang.StringBuffer").init("<link");
 
@@ -548,7 +548,7 @@ Description :
 		<cfargument name="preload"	 type="boolean" required="false" default="false" hint="If true, the video will be loaded at page load, and ready to run. Ignored if 'autoplay' is present"/>
 		<cfargument name="noBaseURL" type="boolean" required="false" default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="name" 	 type="string"	required="false" default="" hint="The name tag"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var video 		= createObject("java","java.lang.StringBuffer").init("<video");
 			var x			= 1;
@@ -603,7 +603,7 @@ Description :
 		<cfargument name="preLoad"	 type="boolean" required="false" default="false" hint="If true, the audio will be loaded at page load, and ready to run. Ignored if 'autoplay' is present"/>
 		<cfargument name="noBaseURL" type="boolean" required="false" default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="name" 	 type="string"	required="false" default="" hint="The name tag"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var audio 		= createObject("java","java.lang.StringBuffer").init("<audio");
 			var x			= 1;
@@ -654,7 +654,7 @@ Description :
 		<cfargument name="id" 		 type="string"	required="true"	hint="The id of the canvas"/>
 		<cfargument name="width" 	 type="string"	required="false" default="" hint="The width tag"/>
 		<cfargument name="height"		type="string"	required="false" default="" hint="The height tag"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var canvas 		= createObject("java","java.lang.StringBuffer").init("<canvas");
 
@@ -673,7 +673,7 @@ Description :
 		<cfargument name="multipart" 	type="boolean" 	required="false" 	default="false"	hint="Set the multipart encoding type on the form"/>
 		<cfargument name="ssl" 			type="boolean" 	required="false" 	default="false" hint="If true, it will change http to https if found in the ses base url ONLY"/>
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var formBuffer	= createObject("java","java.lang.StringBuffer").init("<form");
 			var event 		= controller.getRequestService().getContext();
@@ -711,7 +711,7 @@ Description :
 	<!--- startFieldset --->
 	<cffunction name="startFieldset" output="false" access="public" returntype="any" hint="Create a fieldset tag with or without a legend.">
 		<cfargument name="legend" 		type="string" 	required="false" 	default="" hint="The legend to use (if any)"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('<fieldset');
 
@@ -737,7 +737,7 @@ Description :
 		<cfargument name="field" 		type="string" required="true"	hint="The for who attribute"/>
 		<cfargument name="content" 		type="string" required="false" default="" hint="The label content. If not passed the field is used"/>
 		<cfargument name="wrapper" 		type="string" required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 
@@ -772,7 +772,7 @@ Description :
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control, the value comes by convention from the name attribute"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 
@@ -898,7 +898,7 @@ Description :
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 
@@ -1132,7 +1132,7 @@ Description :
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 
@@ -1193,7 +1193,7 @@ Description :
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer 		= createObject("java","java.lang.StringBuffer").init('');
 			var excludeList = "label,wrapper,labelWrapper,bind,bindProperty";
