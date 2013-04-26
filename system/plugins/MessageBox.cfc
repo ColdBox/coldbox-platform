@@ -276,11 +276,12 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="clearMessage" type="boolean" required="false" default="true" hint="Flag to clear the message structure or not after rendering. Default is true.">
 		<!--- ************************************************************* --->
-		<cfset var msgStruct = getMessage()>
-		<cfset var results = "">
+		<cfset var msgStruct 	= getMessage()>
+		<cfset var results 		= "">
+		<cfset var template 	= getSetting(name="messagebox_template", defaultValue="/coldbox/system/includes/messagebox/MessageBox.cfm")>
 
 		<cfif msgStruct.type.length() neq 0>
-			<cfsavecontent variable="results"><cfinclude template="/coldbox/system/includes/messagebox/MessageBox.cfm"></cfsavecontent>
+			<cfsavecontent variable="results"><cfinclude template="#template#"></cfsavecontent>
 		<cfelse>
 			<cfset results = "">
 		</cfif>
@@ -304,6 +305,7 @@ Description :
 		<cfset var msgStruct = structnew()>
 		<cfset var i = 0>
 		<cfset var results = "">
+		<cfset var template = getSetting(name="messagebox_template", defaultValue="/coldbox/system/includes/messagebox/MessageBox.cfm")>
 
 		<!--- Verify Message Type --->
 		<cfif isValidMessageType(arguments.type)>
@@ -319,7 +321,7 @@ Description :
 			<cfset msgStruct.message = flattenMessageArray(arguments.messageArray)>
 		</cfif>
 
-		<cfsavecontent variable="results"><cfinclude template="/coldbox/system/includes/messagebox/MessageBox.cfm"></cfsavecontent>
+		<cfsavecontent variable="results"><cfinclude template="#template#"></cfsavecontent>
 
 		<cfreturn results>
 	</cffunction>

@@ -58,7 +58,8 @@
 			feedReader_cacheType = "ram",
 			feedReader_cacheTimeout = 10,
 			testingModelPath = "coldbox.testing.testmodel",
-			javaloader_libpath = controller.getAppRootPath() & "model/java"
+			javaloader_libpath = controller.getAppRootPath() & "model/java",
+			messagebox_template = "/coldbox/testharness/includes/messagebox.cfm"
 		};
 		
 		// Modules Configuration
