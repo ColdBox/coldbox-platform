@@ -6,6 +6,14 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.testing.BasePluginTest" plugin="coldbox.system.plugins.HTMLHelper">
 <cfscript>
+	function setup(){
+		super.setup();
+		application.wirebox = createObject("component","coldbox.system.ioc.Injector").init(binder="coldbox.testing.resources.WireBox");
+	}
+	function teardown(){
+		super.teardown();
+		structClear( application );
+	}
 
 	function testaddAssetJS(){
 		var mockEvent = getMockRequestContext();
@@ -85,11 +93,9 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		mockController.$("settingExists",true);
 		plugin.$("getSetting").$args("htmlBaseURL").$results("http://www.coldbox.org");
 
-		str = plugin.link('luis.css');
-
+		str = plugin.link(href='luis.css', sendToHeader=false);
 		debug(str);
-
-		str = plugin.link('http://hello.com/luis.css');
+		str = plugin.link(href='http://hello.com/luis.css', sendToHeader=false);
 
 		assertEquals('<link rel="stylesheet" charset="UTF-8" type="text/css" href="http://hello.com/luis.css"/>', str);
 	}
@@ -134,10 +140,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		];
 
 
-		str = plugin.meta(name="luis",content="awesome");
+		str = plugin.meta(name="luis",content="awesome",sendToHeader=false);
 		assertEquals('<meta name="luis" content="awesome" />', str);
 
-		str = plugin.meta(name="luis",content="awesome",type="equiv");
+		str = plugin.meta(name="luis",content="awesome",type="equiv",sendToHeader=false);
 		assertEquals('<meta http-equiv="luis" content="awesome" />', str);
 
 		str = plugin.meta(data);
@@ -414,7 +420,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
-		str = plugin.checkbox(name="lastName",bind=majano);
+		str = plugin.checkbox(name="lastName", bind=majano);
 		debug(str);
 		assertTrue( findNocase('value="Majano"', str) );
 	}
