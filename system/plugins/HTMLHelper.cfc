@@ -58,7 +58,7 @@ Description :
 	<!--- addAsset --->
 	<cffunction name="addAsset" output="false" access="public" returntype="any" hint="Add a js/css asset(s) to the html head section. You can also pass in a list of assets via the asset argument to try to load all of them.	You can also make this method return the string that will be sent to the header instead.">
 		<cfargument name="asset" 		type="any"		required="true" hint="The asset(s) to load, only js or css files. This can also be a comma delimmited list."/>
-		<cfargument name="sendToHeader" type="boolean"	required="false" default="false" hint="Send to the header via htmlhead by default, else it returns the content"/>
+		<cfargument name="sendToHeader" type="boolean"	required="false" default="true" hint="Send to the header via htmlhead by default, else it returns the content"/>
 		<cfargument name="async" 		type="boolean" 	required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)"/>
 		<cfargument name="defer" 		type="boolean" 	required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)"/>
 		<cfscript>

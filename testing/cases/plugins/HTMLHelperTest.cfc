@@ -43,8 +43,6 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		plugin.$("$htmlhead").$("settingExists",false);
 		plugin.addAsset('test.css,luis.css');
 
-		//debug( plugin.$callLog().$htmlhead);
-
 		// test duplicate call
 		assertEquals('<link href="test.css" type="text/css" rel="stylesheet" /><link href="luis.css" type="text/css" rel="stylesheet" />' , plugin.$callLog().$htmlhead[1][1] );
 		plugin.addAsset('test.css');
@@ -420,9 +418,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
-		str = plugin.checkbox(name="lastName", bind=majano);
+		str = plugin.checkbox(name="lastName", bind=majano, value="majano");
 		debug(str);
 		assertTrue( findNocase('value="Majano"', str) );
+		assertTrue( findNocase('checked="true"', str) );
 	}
 
 	function testRadioButton(){
@@ -435,9 +434,9 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
-		str = plugin.radioButton(name="lastName",bind=majano);
-		debug(str);
-		assertTrue( findNocase('value="Majano"', str) );
+		str = plugin.radioButton(name="lastName", bind=majano, value="majano");
+		assertTrue( findNocase('value="majano"', str) );
+		assertTrue( findNocase('checked="true"', str) );
 	}
 
 	function testsubmitButton(){
