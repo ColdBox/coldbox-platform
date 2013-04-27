@@ -738,6 +738,7 @@ Description :
 		<cfargument name="content" 		type="string" required="false" default="" hint="The label content. If not passed the field is used"/>
 		<cfargument name="wrapper" 		type="string" required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="class"		type="string" required="false" default="" hint="The class to be applied to the label">
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 
@@ -767,9 +768,11 @@ Description :
 		<cfargument name="value" 		type="string"	required="false" default="" hint="The value of the textarea"/>
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="readonly" 	type="boolean" 	required="false" default="false" hint="Readonly"/>
-		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the textarea. Empty by default">
-		<cfargument name="label" 		type="string"	required="false" default="" hint="If passed we will prepend a label tag with this value"/>
+		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
+		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control, the value comes by convention from the name attribute"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
@@ -778,9 +781,10 @@ Description :
 
 			// ID Normalization
 			normalizeID(arguments);
-
+			// group wrapper?
+			wrapTag(buffer,arguments.groupWrapper);
 			// label?
-			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper) ); }
+			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper,class=arguments.labelClass) ); }
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper);
@@ -797,11 +801,12 @@ Description :
 
 			// create textarea
 			buffer.append("<textarea");
-			flattenAttributes(arguments,"value,label,wrapper,labelWrapper,bind,bindProperty",buffer).append(">#arguments.value#</textarea>");
+			flattenAttributes(arguments,"value,label,wrapper,labelWrapper,groupWrapper,labelClass,bind,bindProperty",buffer).append(">#arguments.value#</textarea>");
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper,1);
-
+			// group wrapper?
+			wrapTag(buffer,arguments.groupWrapper,1);
 			return buffer.toString();
 		</cfscript>
 	</cffunction>
@@ -813,8 +818,10 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="readonly" 	type="boolean" 	required="false" default="false" hint="Readonly"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfscript>
@@ -862,8 +869,10 @@ Description :
 		<cfargument name="name" 		type="string" 	required="false" default="" hint="The name of the field"/>
 		<cfargument name="value" 		type="string"	required="false" default="" hint="The value of the field"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfscript>
@@ -879,8 +888,10 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="readonly" 	type="boolean" 	required="false" default="false" hint="Readonly"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfscript>
@@ -896,17 +907,20 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled button or not?"/>
 		<cfargument name="type" 		type="string"	 required="false" default="button" hint="The type of button to create: button, reset or submit"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 
 			// ID Normalization
 			normalizeID(arguments);
-
+			// group wrapper?
+			wrapTag(buffer,arguments.groupWrapper);
 			// label?
-			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper) ); }
+			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper,class=arguments.labelClass) ); }
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper);
@@ -917,11 +931,12 @@ Description :
 
 			// create textarea
 			buffer.append("<button");
-			flattenAttributes(arguments,"value,label,wrapper,labelWrapper",buffer).append(">#arguments.value#</button>");
+			flattenAttributes(arguments,"value,label,wrapper,labelWrapper,groupWrapper,labelClass",buffer).append(">#arguments.value#</button>");
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper,1);
-
+			// group wrapper?
+			wrapTag(buffer,arguments.groupWrapper,1);
 			return buffer.toString();
 		</cfscript>
 	</cffunction>
@@ -933,8 +948,10 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="readonly" 	type="boolean" 	required="false" default="false" hint="Readonly"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfscript>
 			arguments.type="file";
 			return inputField(argumentCollection=arguments);
@@ -948,8 +965,10 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="checked" 		type="boolean" 	required="false" default="false" hint="Checked"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfscript>
@@ -965,8 +984,10 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="checked" 		type="boolean" 	required="false" default="false" hint="Checked"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfscript>
@@ -981,8 +1002,10 @@ Description :
 		<cfargument name="value" 		type="string"	required="false" default="Submit" hint="The value of the field"/>
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfscript>
 			arguments.type="submit";
 			return inputField(argumentCollection=arguments);
@@ -995,8 +1018,10 @@ Description :
 		<cfargument name="value" 		type="string"	required="false" default="Reset" hint="The value of the field"/>
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfscript>
 			arguments.type="reset";
 			return inputField(argumentCollection=arguments);
@@ -1009,8 +1034,10 @@ Description :
 		<cfargument name="name" 		type="string" 	required="false" default=""	hint="The name of the field"/>
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfscript>
 			arguments.type="image";
 			return inputField(argumentCollection=arguments);
@@ -1130,17 +1157,21 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled button or not?"/>
 		<cfargument name="multiple" 	type="boolean" 	required="false" default="false" hint="multiple button or not?"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
+
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 
 			// ID Normalization
 			normalizeID(arguments);
-
+			// group wrapper?
+			wrapTag(buffer,arguments.groupWrapper);
 			// label?
-			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper) ); }
+			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper,class=arguments.labelClass) ); }
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper);
@@ -1154,7 +1185,7 @@ Description :
 
 			// create select
 			buffer.append("<select");
-			flattenAttributes(arguments,"options,column,nameColumn,selectedIndex,selectedValue,bind,bindProperty,label,wrapper,labelWrapper",buffer).append(">");
+			flattenAttributes(arguments,"options,column,nameColumn,selectedIndex,selectedValue,bind,bindProperty,label,wrapper,labelWrapper,groupWrapper,labelClass",buffer).append(">");
 
 			// binding of option
 			bindValue(arguments);
@@ -1175,6 +1206,8 @@ Description :
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper,1);
+			// group wrapper?
+			wrapTag(buffer,arguments.groupWrapper, 1);
 
 			return buffer.toString();
 		</cfscript>
@@ -1189,21 +1222,23 @@ Description :
 		<cfargument name="checked" 		type="boolean" 	required="false" default="false" hint="Checked"/>
 		<cfargument name="readonly" 	type="boolean" 	required="false" default="false" hint="Readonly"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
 			var buffer 		= createObject("java","java.lang.StringBuffer").init('');
-			var excludeList = "label,wrapper,labelWrapper,bind,bindProperty";
+			var excludeList = "label,wrapper,labelWrapper,groupWrapper,labelClass,bind,bindProperty";
 
 			// ID Normalization
 			normalizeID(arguments);
-
+			// group wrapper?
+			wrapTag( buffer, arguments.groupWrapper );
 			// label?
-			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper) ); }
-
+			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper,class=arguments.labelClass) ); }
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper);
 
@@ -1226,6 +1261,8 @@ Description :
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper,1);
+			// group wrapper?
+			wrapTag( buffer, arguments.groupWrapper, 1 );
 
 			return buffer.toString();
 		</cfscript>
