@@ -32,6 +32,10 @@ Author 	    :	Luis Majano
 		r = plugin.getResource(resource="testrep", values=[ "luis", "test" ]);	
 		debug( r );
 		assertEquals( "Hello my name is luis and test", r );
+		
+		r = plugin.getResource(resource="testrepByKey", values={name="luis majano", quote="I am amazing!"});	
+		debug( r );
+		assertEquals( "Hello my name is luis majano and I am amazing!", r );
 	}
 </cfscript>
 </cfcomponent>
