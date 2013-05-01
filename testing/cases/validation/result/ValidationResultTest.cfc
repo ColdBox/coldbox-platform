@@ -44,7 +44,7 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		mockError = getMockBox().createMock("coldbox.system.validation.result.ValidationError").init();
 		mockError.configure("unit test","test","","required","true");
 		mockConstraints = {
-			"test" = {required = true, requiredMessage="This stuff is required dude!"}
+			"test" = {required = true, requiredMessage="This stuff is required dude for the field: {field}!"}
 		};
 		model.init(constraints=mockConstraints);
 		assertTrue( arrayLen(model.getErrors()) eq 0 );
@@ -52,7 +52,7 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		model.addError( mockError );
 		assertTrue( arrayLen(model.getErrors()) eq 1 );
 		r = model.getFieldErrors("test")[1];
-		assertEquals( "This stuff is required dude!" , r.getMemento().message );
+		assertEquals( "This stuff is required dude for the field: test!" , r.getMemento().message );
 
 		// with i18n
 		mockError = getMockBox().createMock("coldbox.system.validation.result.ValidationError").init();

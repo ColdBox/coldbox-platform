@@ -52,6 +52,8 @@ Description :
 		
 		// Map Bindings below
 		mapPath( "coldbox.testing.testmodel.TestService" );
+		
+		map("WireBoxURL").toValue("www.coldbox.org");
 	}	
 </cfscript>
 </cfcomponent>

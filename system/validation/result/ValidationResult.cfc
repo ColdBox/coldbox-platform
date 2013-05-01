@@ -102,42 +102,49 @@ component accessors="true" implements="IValidationResult"{
 		// Verify Custom Messages via constraints, these take precedence
 		if( structKeyExists( constraints, error.getField() ) AND structKeyExists( constraints[error.getField()], "#error.getValidationType()#Message" ) ){
 			// override message with custom constraint
-			arguments.error.setMessage( constraints[error.getField()]["#error.getValidationType()#Message"] );
+			// process global replacements
+			globalReplacements( constraints[error.getField()]["#error.getValidationType()#Message"], error );
 		}
 		// Validate localization?
 		else if( hasLocale() ){
 			// get i18n message, if it exists
-			var message = resourceBundle.getResource(resource="#targetName#.#error.getField()#.#error.getValidationType()#",default="",locale=getValidationLocale());
+			var message = resourceBundle.getResource(resource="#targetName#.#error.getField()#.#error.getValidationType()#",
+													 default="",
+													 locale=getValidationLocale());
 			// Override with localized message
-			if( len(message) ){
+			if( len( message ) ){
 				// process global replacements
-
-				// The rejected value
-				message = replacenocase(message,"{rejectedValue}", error.getRejectedValue(), "all");
-				// The property or field value
-				message = replacenocase(message,"{field}", error.getField(), "all");
-				// Hyrule Compatibility for property
-				message = replacenocase(message,"{property}", error.getField(), "all");
-				// The validation type
-				message = replacenocase(message,"{validationType}", error.getValidationType(), "all");
-				// The validation data
-				message = replacenocase(message,"{validationData}", error.getValidationData(), "all");
-				// The target name of the object
-				message = replacenocase(message,"{targetName}", getTargetName(), "all");
-
-				// process result metadata replacements
-				var errorData = error.getErrorMetadata();
-				for( var key in errorData ){
-					message = replacenocase(message,"{#key#}", errorData[key], "all");
-				}
-
-				// override message
-				arguments.error.setMessage( message );
+				globalReplacements( message, error );
 			}
 		}
 		// append error
 		arrayAppend( errors, arguments.error );
 		return this;
+	}
+
+	// Replace global messages
+	private void function globalReplacements(required message, required error){
+		// The rejected value
+		arguments.message = replacenocase( arguments.message, "{rejectedValue}", arguments.error.getRejectedValue(), "all");
+		// The property or field value
+		arguments.message = replacenocase( arguments.message, "{field}", arguments.error.getField(), "all");
+		// Hyrule Compatibility for property
+		arguments.message = replacenocase( arguments.message, "{property}", arguments.error.getField(), "all");
+		// The validation type
+		arguments.message = replacenocase( arguments.message, "{validationType}", arguments.error.getValidationType(), "all");
+		// The validation data
+		arguments.message = replacenocase( arguments.message, "{validationData}", arguments.error.getValidationData(), "all");
+		// The target name of the object
+		arguments.message = replacenocase( arguments.message, "{targetName}", getTargetName(), "all");
+
+		// process result metadata replacements
+		var errorData = arguments.error.getErrorMetadata();
+		for( var key in errorData ){
+			arguments.message = replacenocase( arguments.message, "{#key#}", errorData[key], "all" );
+		}
+
+		// override message
+		arguments.error.setMessage( arguments.message );
 	}
 
 	/**
