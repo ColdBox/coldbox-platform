@@ -456,12 +456,15 @@ I oversee and manage ColdBox modules
 			oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
 
 			//MixIn Variables
-			oConfig.injectPropertyMixin("controller",controller);
-			oConfig.injectPropertyMixin("appMapping",controller.getSetting("appMapping"));
-			oConfig.injectPropertyMixin("moduleMapping",mConfig.mapping);
-			oConfig.injectPropertyMixin("modulePath",mConfig.path);
-			oConfig.injectPropertyMixin("log",controller.getLogBox().getLogger(oConfig));
-			oConfig.injectPropertyMixin("binder",controller.getWireBox().getBinder());
+			oConfig.injectPropertyMixin( "controller", controller );
+			oConfig.injectPropertyMixin( "appMapping", controller.getSetting("appMapping") );
+			oConfig.injectPropertyMixin( "moduleMapping", mConfig.mapping );
+			oConfig.injectPropertyMixin( "modulePath", mConfig.path );
+			oConfig.injectPropertyMixin( "logBox", controller.getLogBox() );
+			oConfig.injectPropertyMixin( "log", controller.getLogBox().getLogger(oConfig) );
+			oConfig.injectPropertyMixin( "wirebox", controller.getWireBox() );
+			oConfig.injectPropertyMixin( "binder", controller.getWireBox().getBinder() );
+			oConfig.injectPropertyMixin( "cachebox", controller.getCacheBox() );
 			
 			//Configure the module
 			oConfig.configure();
