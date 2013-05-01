@@ -243,7 +243,7 @@
                 <a href="http://blog.coldbox.org">Blog</a>
             </li>
             <li>
-                <a href="http://coldbox.assembla.com">Bug Tracker</a>
+                <a href="https://ortussolutions.atlassian.net/browse/COLDBOX">Bug Tracker</a>
             </li>
 			<li>
                 <a href="https://github.com/ColdBox/coldbox-platform">Source Code</a>
