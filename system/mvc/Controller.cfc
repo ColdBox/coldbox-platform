@@ -42,7 +42,7 @@ component serializable="false" accessors="true"{
 	this.COLDBOX.eventName 		= "event";
 	this.COLDBOX.eventAction	= "index";
 	this.COLDBOX.defaultEvent 	= "main.index";
-	this.COLDBOX.defaultLayout	= "main.cfm";
+	this.COLDBOX.defaultLayout	= "Main.cfm";
 
 	// Static Conventions
     this.COLDBOX.handlersConvention	= "handlers";
