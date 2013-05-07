@@ -29,4 +29,24 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		assertEquals( true, r );
 		
 	}
+	
+	function testValidateComplex(){
+		result = getMockBox().createMock("coldbox.system.validation.result.ValidationResult").init();
+		// array
+		r = model.validate(result,this,'test', [1,2,3] ,"true");
+		assertEquals( true, r );
+		
+		// query
+		r = model.validate(result,this,'test', querySim("id, name
+		1 | Luis") ,"true");
+		assertEquals( true, r );
+		
+		// struct
+		r = model.validate(result,this,'test', { name="luis", awesome=true } ,"true");
+		assertEquals( true, r );
+		
+		// object
+		r = model.validate(result,this,'test', this ,"true");
+		assertEquals( true, r );
+	}
 }
