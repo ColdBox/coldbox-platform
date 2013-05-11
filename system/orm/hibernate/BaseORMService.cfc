@@ -488,7 +488,7 @@ component accessors="true"{
 		}
 
 		// type safe conversions
-		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
+		arguments.id = convertIDValueToJavaType(entityName=arguments.entityName, id=arguments.id);
 		var q = "FROM #arguments.entityName# where id in (:idlist)";
 		// ordering?
 		if( len(arguments.sortOrder) ){
@@ -581,7 +581,7 @@ component accessors="true"{
 		var count   = 0;
 
 		// type safe conversions
-		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
+		arguments.id = convertIDValueToJavaType(entityName=arguments.entityName, id=arguments.id);
 
 		// delete using lowercase id convention from hibernate for identifier
 		var datasource = orm.getEntityDatasource(arguments.entityName);
