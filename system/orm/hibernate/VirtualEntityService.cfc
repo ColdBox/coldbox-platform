@@ -225,7 +225,9 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	* The method returns the value in the proper Java Type
 	*/
 	any function convertValueToJavaType(required propertyName, required value){
-		arguments.entityName = this.getEntityName();
+		if(!structKeyExists(arguments, "entityName")){
+			arguments.entityName = this.getEntityName();
+		}
 		return super.convertValueToJavaType(argumentCollection=arguments);
 	}
 	
