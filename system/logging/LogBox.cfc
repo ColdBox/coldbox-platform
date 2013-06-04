@@ -33,7 +33,7 @@ Description :
 		// Category Appenders
 		instance.categoryAppenders = "";	
 		// Version
-		instance.version = "1.6";	 
+		instance.version = "1.7.0";	 
 		// Configuration object
 		instance.config = "";
 		// ColdBox Application Link
