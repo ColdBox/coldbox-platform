@@ -74,7 +74,7 @@ component accessors="true" serialize="false" implements="IValidationManager"{
 	ValidationManager function init(struct sharedConstraints=structNew()){
 
 		// valid validator registrations
-		validValidators = "required,type,size,range,regex,sameAs,sameAsNoCase,inList,discrete,udf,method,validator,min,max";
+		validValidators = "required,type,size,range,regex,sameAs,sameAsNoCase,inList,discrete,udf,method,validator,min,max,unique";
 		// store shared constraints if passed
 		variables.sharedConstraints = arguments.sharedConstraints;
 		return this;
