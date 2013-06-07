@@ -350,7 +350,10 @@ component accessors="true"{
 					 	   boolean trustedSetter=false,
 						   string include="",
 						   string exclude="",
-						   boolean ignoreEmpty=false){
+						   boolean ignoreEmpty=false,
+						   string nullEmptyInclude="",
+						   string nullEmptyExclude="",
+						   boolean composeRelationships=false){
 
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
@@ -369,13 +372,16 @@ component accessors="true"{
 								   boolean trustedSetter=false,
 								   string include="",
 								   string exclude="",
-						   		   boolean ignoreEmpty=false){
+						   		   boolean ignoreEmpty=false,
+						   		   string nullEmptyInclude="",
+						   		   string nullEmptyExclude="",
+						   		   boolean composeRelationships=false){
 
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
 	/**
-	* Populate from XML, for argument definitions look at the populate method. <br/>
+	* Populate from XML, for argument definitions look at the populate method
 	* @root.hint The XML root element to start from
 	* @xml.hint	The XML string or packet or XML object to populate from
 	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
@@ -390,13 +396,16 @@ component accessors="true"{
 								  boolean trustedSetter=false,
 								  string include="",
 								  string exclude="",
-						   		  boolean ignoreEmpty=false){
+						   		  boolean ignoreEmpty=false,
+						   		  string nullEmptyInclude="",
+						   		  string nullEmptyExclude="",
+						   		  boolean composeRelationships=false){
 
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
 	/**
-	* Populate from Query, for argument definitions look at the populate method. <br/>
+	* Populate from Query, for argument definitions look at the populate method
 	* @qry.hint The query to use for population
 	* @rowNumber.hint	The row number to use for population
 	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
@@ -411,7 +420,10 @@ component accessors="true"{
 								    boolean trustedSetter=false,
 								    string include="",
 								    string exclude="",
-						   			boolean ignoreEmpty=false){
+						   			boolean ignoreEmpty=false,
+						   			string nullEmptyInclude="",
+						   		  	string nullEmptyExclude="",
+						   		  	boolean composeRelationships=false){
 
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}

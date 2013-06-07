@@ -81,6 +81,9 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.memento = controller.getRequestService().getContext().getCollection();
@@ -107,6 +110,9 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.memento = controller.getRequestService().getContext().getCollection();
@@ -129,6 +135,9 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
@@ -150,6 +159,9 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="include"  		required="false" 	type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false"	type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
@@ -171,6 +183,9 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
@@ -192,6 +207,9 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="exclude"  		required="false" 	type="string"  	default="" hint="A list of keys to exclude in the population">
 		<cfargument name="prefix"  			required="true" 	type="string"  	hint="The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
 				arguments.target = getModel(arguments.target);
@@ -212,6 +230,9 @@ I am a plugin that taps into WireBox. I will be eventually removed as you can ac
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			if( isSimpleValue(arguments.target) ){
