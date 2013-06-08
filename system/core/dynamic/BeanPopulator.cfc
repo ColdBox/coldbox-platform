@@ -290,14 +290,48 @@ Description :
 									}
 									
 								}
+								// if targetEntityName was successfully found
 								if( len( targetEntityName) ) {
-									// If value is an array, we can try to create an array of related entities (one-to-many, many-to-many)
-									if( isArray( propertyValue ) ) {
-										var manyMap = [];
+									// array or struct type (one-to-many, many-to-many)
+									if( listContainsNoCase( "one-to-many,many-to-many", relationalMeta[ key ].fieldtype ) ) {
+										// Support straight-up lists and convert to array
+    									if( isSimpleValue( propertyValue ) ) {
+    										propertyValue = listToArray( propertyValue );
+    									}
+										var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[ key ].type != "any" ? relationalMeta[ key ].type : 'array';
+										var manyMap = reltype=="struct" ? {} : [];
 										// loop over array
-										for( var relValue in propertyValue ) {										
-											// add composed relationship to array
-											arrayAppend( manyMap, EntityLoadByPK( targetEntityName, relValue ) );
+										for( var relValue in propertyValue ) {
+											// for type of array
+											if( relType=="array" ) {
+												// add composed relationship to array
+												arrayAppend( manyMap, EntityLoadByPK( targetEntityName, relValue ) );
+											}
+											// for type of struct
+											else {
+												// make sure structKeyColumn is defined in meta
+												if( structKeyExists( relationalMeta[ key ], "structKeyColumn" ) ) {
+													// load the value
+													var item = EntityLoadByPK( targetEntityName, relValue );
+													var structKeyColumn = relationalMeta[ key ].structKeyColumn;
+													var keyValue = "";
+													// try to get struct key value from entity
+													if( !isNull( item ) ) {
+														try {
+															keyValue = evaluate("item.get#structKeyColumn#()");
+														}
+														catch( Any e ) {
+															getUtil().throwIt(type="BeanPopulator.PopulateBeanException",
+                    							  			  message="Error populating bean #getMetaData(beanInstance).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
+                    							  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
+														}
+													}
+													// if the structKeyColumn value was found...
+													if( len( keyValue ) ) {
+														manyMap[ keyValue ] = item;
+													}
+												}
+											}
 										}
 										// set main property value to the full array of entities
 										propertyValue = manyMap;
