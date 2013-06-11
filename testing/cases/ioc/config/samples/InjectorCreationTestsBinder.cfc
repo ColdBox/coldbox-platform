@@ -49,6 +49,8 @@ Description :
 		mapPath("#myPath#.ioc.product.ProductDAO").asSingleton();
 		mapPath("#myPath#.ioc.product.ProductService")
 			.noAutowire().initArg(name="ProductDAO",ref="ProductDAO");
+		// Map simple notation inject cfc
+		mapPath("#myPath#.ioc.ScriptNotation");
 		// map using all 3 injection types
 		mapPath("#myPath#.ioc.category.CategoryService")
 			.noAutowire().initArg(name="categoryDAO",ref="categoryDAO")

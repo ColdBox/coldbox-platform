@@ -1,7 +1,10 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
-
+	this.loadColdBox = false;
+	
 	function setup(){
+		super.setup();
+		
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector");
 
@@ -34,9 +37,11 @@
 
 	function testGetBinder(){
 		debug( injector.getBinder() );
+		assert( isObject( injector.getBinder() ) );
 	}
 	function testgetVersion(){
 		debug( injector.getVersion() );
+		assert( len( injector.getVersion() ) );
 	}
 	function testGetInjectorID(){
 		debug( injector.getInjectorID() );
