@@ -34,9 +34,9 @@ For the latest usage, please visit the wiki.
 			if( not propertyExists('rulesSource') ){
 				$throw(message="The rulesSource property has not been set.",type="interceptors.Security.SettingUndefinedException");
 			}
-			if( not reFindnocase("^(xml|db|ioc|ocm|model)$",getProperty('rulesSource')) ){
+			if( not reFindnocase("^(xml|db|ioc|ocm|model|json)$",getProperty('rulesSource')) ){
 				$throw(message="The rules source you set is invalid: #getProperty('rulesSource')#.",
-					  detail="The valid sources are xml,db,ioc, model and ocm.",
+					  detail="The valid sources are xml,db,ioc, model, ocm, or json",
 					  type="interceptors.Security.SettingUndefinedException");
 			}
 			// Query Checks
@@ -52,8 +52,8 @@ For the latest usage, please visit the wiki.
 			rulesSourceChecks();
 			
 			// Create the internal properties now
-			setProperty('rules',Arraynew(1));
-			setProperty('rulesLoaded',false);
+			setProperty( 'rules', arraynew(1) );
+			setProperty( 'rulesLoaded', false );
 		</cfscript>
 	</cffunction>
 
@@ -68,6 +68,10 @@ For the latest usage, please visit the wiki.
 				case "xml" : { 
 					loadXMLRules(); 
 					break; 
+				}
+				case "json" : {
+					loadJSONRules();
+					break;
 				}
 				case "db" : { 
 					loadDBRules(); 
@@ -359,6 +363,45 @@ For the latest usage, please visit the wiki.
 		</cfscript>
 	</cffunction>
 	
+	<!--- Load JSON Rules --->
+	<cffunction name="loadJSONRules" access="private" returntype="void" output="false" hint="Load rules from JSON file">
+		<cfscript>
+			// Validate the JSON File
+			var rulesFile 	= "";
+			var jsonRules 	= "";
+			var x			= 1;
+			var thisRule  	= "";
+			var node 	  	= "";
+			
+			// Try to locate the file path
+			rulesFile = locateFilePath( getProperty('rulesFile') );
+			// Validate Location
+			if( len( rulesFile ) eq 0 ){
+				$throw(message='Security Rules File could not be located: #getProperty('rulesFile')#. Please check again.', type='Security.rulesFileNotFound' );
+			}
+			// Set the correct expanded path now
+			setProperty( 'rulesFile', rulesFile );
+			// Read in and parse
+			jsonRules = fileRead( rulesFile );
+			// Validate JSON
+			if( not isJSON( jsonRules ) ){
+				$throw(message='Security Rules File is not valid JSON: #getProperty('rulesFile')#. Please check again.', type='Security.invalidJSON' );
+			}
+			jsonRules = deserializeJSON( jsonRules );
+			// Loop And create Rules
+			for(x=1; x lte arraylen( jsonRules ); x=x+1){
+				node = structnew();
+				// Loop over found rule structure and create the node
+				for( thisRule in jsonRules[ x ] ){
+					node[ lcase( thisRule ) ] = trim( jsonRules[ x ][ thisRule ] );
+				}
+				arrayAppend( getProperty( "rules" ), node );
+			}
+			
+			setProperty( "rulesLoaded", true );	
+		</cfscript>
+	</cffunction>
+	
 	<!--- Load DB Rules --->
 	<cffunction name="loadDBRules" access="private" returntype="void" output="false" hint="Load rules from the database">
 		<cfset var qRules = "">
@@ -506,11 +549,11 @@ For the latest usage, please visit the wiki.
 		<cfscript>
 			switch( getProperty('rulesSource') ){
 				
-				case "xml" :
+				case "xml" : case "json" :
 				{
 					// Check if file property exists
 					if( not propertyExists('rulesFile') ){
-						$throw(message="Missing setting for XML source: rulesFile ",type="Security.settingUndefinedException");
+						$throw(message="Missing setting for #getProperty('rulesSource')# source: rulesFile ", type="Security.settingUndefinedException");
 					}
 					break;
 				}//end of xml check
@@ -518,10 +561,10 @@ For the latest usage, please visit the wiki.
 				case "db" :
 				{
 					if( not propertyExists('rulesDSN') ){
-						$throw(message="Missing setting for DB source: rulesDSN ",type="Security.settingUndefinedException");
+						$throw(message="Missing setting for DB source: rulesDSN ", type="Security.settingUndefinedException");
 					}
 					if( not propertyExists('rulesTable') ){
-						$throw(message="Missing setting for DB source: rulesTable ",type="Security.settingUndefinedException");
+						$throw(message="Missing setting for DB source: rulesTable ", type="Security.settingUndefinedException");
 					}
 					/* Optional DB settings are checked when loading rules. */
 					break;
@@ -530,10 +573,10 @@ For the latest usage, please visit the wiki.
 				case "ioc" :
 				{
 					if( not propertyExists('rulesBean') ){
-						$throw(message="Missing setting for ioc source: rulesBean ",type="Security.settingUndefinedException");
+						$throw(message="Missing setting for ioc source: rulesBean ", type="Security.settingUndefinedException");
 					}
 					if( not propertyExists('rulesBeanMethod') ){
-						$throw(message="Missing setting for ioc source: rulesBeanMethod ",type="Security.settingUndefinedException");
+						$throw(message="Missing setting for ioc source: rulesBeanMethod ", type="Security.settingUndefinedException");
 					}
 					
 					break;
@@ -542,10 +585,10 @@ For the latest usage, please visit the wiki.
 				case "model" :
 				{
 					if( not propertyExists('rulesModel') ){
-						$throw(message="Missing setting for model source: rulesModel ",type="Security.settingUndefinedException");
+						$throw(message="Missing setting for model source: rulesModel ", type="Security.settingUndefinedException");
 					}
 					if( not propertyExists('rulesModelMethod') ){
-						$throw(message="Missing setting for model source: rulesModelMethod ",type="Security.settingUndefinedException");
+						$throw(message="Missing setting for model source: rulesModelMethod ", type="Security.settingUndefinedException");
 					}
 					
 					break;
@@ -554,7 +597,7 @@ For the latest usage, please visit the wiki.
 				case "ocm" :
 				{
 					if( not propertyExists('rulesOCMkey') ){
-						$throw(message="Missing setting for ioc source: rulesOCMkey ",type="Security.settingUndefinedException");
+						$throw(message="Missing setting for ioc source: rulesOCMkey ", type="Security.settingUndefinedException");
 					}
 					break;
 				}//end of OCM check			
