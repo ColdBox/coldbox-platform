@@ -51,7 +51,7 @@ Description :
 		</cfif>
 
 		<!---<cfset application.wirebox = createObject("component","coldbox.system.ioc.Injector").init()>--->
-
+			
 		<cfreturn true>
 	</cffunction>
 

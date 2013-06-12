@@ -10,6 +10,8 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	function setup(){
 		// setup properties
 		super.setup();
+		mockController.$("getAppHash", hash( "appHash" ) ).$("getAppRootPath", expandPath("/coldbox/testing") );
+		
 		security = interceptor;	
 	}
 
@@ -60,6 +62,35 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		/* Register */
 		security.registerValidator( validator );
 		assertEquals( validator, security.getValidator() );
+	}
+	
+	function testLoadRules(){
+		interceptor.$("loadXMLRules").$("loadJSONRules").$("loadDBRules").$("loadIOCRules").$("loadModelRules");
+		
+		interceptor.$("getProperty","xml").loadRules();
+		assertTrue( interceptor.$once( "loadXMLRules" ) );
+		
+		interceptor.$("getProperty","json").loadRules();
+		assertTrue( interceptor.$once( "loadJSONRules" ) );
+		
+		interceptor.$("getProperty","db").loadRules();
+		assertTrue( interceptor.$once( "loadDBRules" ) );
+		
+		interceptor.$("getProperty","ioc").loadRules();
+		assertTrue( interceptor.$once( "loadIOCRules" ) );
+		
+		interceptor.$("getProperty","model").loadRules();
+		assertTrue( interceptor.$once( "loadModelRules" ) );
+	}
+	
+	function testLoadJSONRules(){
+		//interceptor.$("getProperty").$args("rulesFile").$results( expandPath( "/coldbox/testing/resources/security.json.cfm" ) );
+		interceptor.getProperties().rulesFile = expandPath( "/coldbox/testing/resources/security.json.cfm" );
+		interceptor.getProperties().rules = [];
+		makePublic( interceptor, "loadJSONRules" );
+		interceptor.loadJSONRules();
+		
+		assert( arrayLen( interceptor.getProperty("rules") ) eq 2 );
 	}
 
 </cfscript>
