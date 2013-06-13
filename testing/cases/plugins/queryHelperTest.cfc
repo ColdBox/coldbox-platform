@@ -91,6 +91,14 @@ Description :
 			assertTrue(isQuery(plugin.rotateQuery(q1)), "Returned value is not query");
 
 			assertEquals(plugin.slugifyCol("Test Col Slug"),"test_col_slug", "Slugs did not match");
+			
+			var q = querySim("id,name
+			1 | luis majano
+			2 | jose majano");
+			
+			aResults = plugin.queryToArrayOfStructures( q );
+			debug( aResults );
+			assertTrue( isArray( aResults ) );
 		</cfscript>
 	</cffunction>
 

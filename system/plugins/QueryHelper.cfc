@@ -530,7 +530,84 @@ Description :
 			return theQuery;
     	</cfscript>
     </cffunction>
+    
+    <!--- queryToArrayOfStructures --->    
+    <cffunction name="queryToArrayOfStructures" output="false" access="public" returntype="array" hint="Converts a query to an array of structures">    
+    	<cfargument name="theQuery" type="query" required="true" hint="The query to convert" />
+    	<cfscript>	 
+			var theArray = arraynew(1);
+			var cols = listToArray( arguments.theQuery.columnlist );
+			var row = 1;
+			var thisRow = "";
+			var col = 1;
+			
+			for(row = 1; row LTE arguments.theQuery.recordcount; row = row + 1){
+				thisRow = {};
+				for(col = 1; col LTE arraylen( cols ); col = col + 1){
+					thisRow[ cols[ col ] ] = arguments.theQuery[ cols[ col ] ][ row ];
+				}
+				arrayAppend(theArray, thisRow);
+			}
+			
+			return theArray;
+    	</cfscript>    
+    </cffunction>
 
+	<!--- ************************************************************************************** --->
+    <!--- Rotates query swapping rows for cols and cols for rows, first col becomes new col names --->
+    <!---------------------------------------------------------------------------------------------->
+    <cffunction name="rotateQuery" output="false" access="public" returntype="Query" hint="Rotates query swapping rows for cols and cols for rows, first col becomes new col names">
+		<cfargument name="originalQuery" 			type="query" 	required="true" hint="The query to rotate"/>
+		<cfset var qMetaData = getmetadata(originalQuery)>
+		<cfset var colums = "" />
+		<cfset var columsType = "" />
+		<cfset var i = "" />
+		<cfset var j = "" />
+		<cfset var rotatedQuery = "" />
+		<cfset var newRow = "" />
+		<cfset var tempz = "" />
+		<cfset var temp = "" />
+
+		<cfloop from="1" to="#originalQuery.RecordCount#" index="i">
+			<cfset colums = colums & "#slugifyCol(originalQuery[qMetaData[1].name][i])#," />
+			<cfset columsType = columsType & "VarChar," />
+		</cfloop>
+
+		<cfset rotatedQuery = QueryNew(colums, columsType) />
+		<cfset newRow = QueryAddRow(rotatedQuery, arrayLen(qMetaData))>
+		<cfloop from="2" to="#arrayLen(qMetaData)#" index="j">
+			<cfloop from="1" to="#originalQuery.recordcount#" index="i">
+				<cfset tempz = "originalQuery.#qMetaData[j].Name#[i]" />
+				<cfset temp = QuerySetCell(rotatedQuery, "#slugifyCol(originalQuery[qMetaData[1].name][i])#", evaluate(tempz), j)>
+			</cfloop>
+		</cfloop>
+		<cfreturn rotatedQuery />
+	</cffunction>
+
+	<!--- ************************************************** --->
+    <!--- Create a query column name safe slug from a string --->
+    <!---------------------------------------------------------->
+	<cffunction name="slugifyCol" output="false" access="public" returntype="string" hint="Create a query column name safe slug from a string">
+		<cfargument name="str" 			type="string" 	required="true" hint="The string to slugify"/>
+		<cfargument name="maxLength" 	type="numeric" 	required="false" default="0" hint="The maximum number of characters for the slug"/>
+		<cfargument name="allow" type="string" required="false" default="" hint="a regex safe list of additional characters to allow"/>
+		<cfscript>
+			// Cleanup and slugify the string
+			var slug = lcase(trim(arguments.str));
+
+			slug = reReplace(slug,"[^a-z0-9-\s#arguments.allow#]","","all");
+			slug = trim ( reReplace(slug,"[\s-]+", " ", "all") );
+			slug = reReplace(slug,"\s", "_", "all");
+
+			// is there a max length restriction
+			if ( arguments.maxlength ) {slug = left ( slug, arguments.maxlength );}
+
+			if ( isNumeric(slug) ) {slug = "col_" & slug;}
+
+			return slug;
+		</cfscript>
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ********************************************************************* --->
@@ -594,7 +671,7 @@ Description :
 	<!--- ********************************************************************* --->
     <!---copy value in a row from qryFrom to qryTo without adding additional row--->
     <!----------------------------------------------------------------------------->
-    <cffunction name="QrySetCell" access="private" returntype="query" output="false" hint="Insert value into query">
+    <cffunction name="qrySetCell" access="private" returntype="query" output="false" hint="Insert value into query">
         <cfargument name="qryFrom" type="query" required="true" />
         <cfargument name="qryTo" type="query" required="true" />
         <cfargument name="ArrayCols" type="array" required="true" />
@@ -606,82 +683,26 @@ Description :
             var QryReturn	= Duplicate(arguments.qryTo);
             var ColumName	= "";
             var ColumValue	= "";
-        try{
-            // loop over each column and insert value into query
-            for( i = 1; i LTE arrayLen(arguments.ArrayCols); i = i + 1 ){
-                // get the value of column
-                ColumName	= arguments.ArrayCols[i];
-                ColumValue	= arguments.qryFrom[ColumName][arguments.FromRowNumber];
-                // set it in the new row
-                if( structkeyExists( QryReturn, arguments.ArrayCols[i] ) ){
-                    QuerySetCell( QryReturn, ColumName, ColumValue , arguments.ToRowNumber );
-                }
-            }
-            // return updated query
-            return QryReturn;
-
-          }Catch(Any e){
-			$throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","QueryHelper.InvalidQrySetCellException");
-		 }
+	        try{
+	            // loop over each column and insert value into query
+	            for( i = 1; i LTE arrayLen(arguments.ArrayCols); i = i + 1 ){
+	                // get the value of column
+	                ColumName	= arguments.ArrayCols[i];
+	                ColumValue	= arguments.qryFrom[ColumName][arguments.FromRowNumber];
+	                // set it in the new row
+	                if( structkeyExists( QryReturn, arguments.ArrayCols[i] ) ){
+	                    QuerySetCell( QryReturn, ColumName, ColumValue , arguments.ToRowNumber );
+	                }
+	            }
+	            // return updated query
+	            return QryReturn;
+	
+	          }
+	          catch(Any e){
+				$throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","QueryHelper.InvalidQrySetCellException");
+			 }
         </cfscript>
 
     </cffunction>
 
-	<!--- ************************************************************************************** --->
-    <!--- Rotates query swapping rows for cols and cols for rows, first col becomes new col names --->
-    <!---------------------------------------------------------------------------------------------->
-    <cffunction name="rotateQuery" output="false" access="public" returntype="Query" hint="Rotates query swapping rows for cols and cols for rows, first col becomes new col names">
-		<cfargument name="originalQuery" 			type="query" 	required="true" hint="The query to rotate"/>
-		<cfset var qMetaData = getmetadata(originalQuery)>
-		<cfset var colums = "" />
-		<cfset var columsType = "" />
-		<cfset var i = "" />
-		<cfset var j = "" />
-		<cfset var rotatedQuery = "" />
-		<cfset var newRow = "" />
-		<cfset var tempz = "" />
-		<cfset var temp = "" />
-
-		<cfloop from="1" to="#originalQuery.RecordCount#" index="i">
-			<cfset colums = colums & "#slugifyCol(originalQuery[qMetaData[1].name][i])#," />
-			<cfset columsType = columsType & "VarChar," />
-		</cfloop>
-
-		<cfset rotatedQuery = QueryNew(colums, columsType) />
-		<cfset newRow = QueryAddRow(rotatedQuery, arrayLen(qMetaData))>
-		<cfloop from="2" to="#arrayLen(qMetaData)#" index="j">
-			<cfloop from="1" to="#originalQuery.recordcount#" index="i">
-				<cfset tempz = "originalQuery.#qMetaData[j].Name#[i]" />
-				<cfset temp = QuerySetCell(rotatedQuery, "#slugifyCol(originalQuery[qMetaData[1].name][i])#", evaluate(tempz), j)>
-			</cfloop>
-		</cfloop>
-		<cfreturn rotatedQuery />
-	</cffunction>
-
-
-	<!--- ************************************************** --->
-    <!--- Create a query column name safe slug from a string --->
-    <!---------------------------------------------------------->
-	<cffunction name="slugifyCol" output="false" access="public" returntype="string" hint="Create a query column name safe slug from a string">
-		<cfargument name="str" 			type="string" 	required="true" hint="The string to slugify"/>
-		<cfargument name="maxLength" 	type="numeric" 	required="false" default="0" hint="The maximum number of characters for the slug"/>
-		<cfargument name="allow" type="string" required="false" default="" hint="a regex safe list of additional characters to allow"/>
-		<cfscript>
-			// Cleanup and slugify the string
-			var slug = lcase(trim(arguments.str));
-
-			slug = reReplace(slug,"[^a-z0-9-\s#arguments.allow#]","","all");
-			slug = trim ( reReplace(slug,"[\s-]+", " ", "all") );
-			slug = reReplace(slug,"\s", "_", "all");
-
-			// is there a max length restriction
-			if ( arguments.maxlength ) {slug = left ( slug, arguments.maxlength );}
-
-			if ( isNumeric(slug) ) {slug = "col_" & slug;}
-
-			return slug;
-		</cfscript>
-	</cffunction>
-
 </cfcomponent>
-
