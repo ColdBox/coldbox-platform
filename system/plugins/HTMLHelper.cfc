@@ -16,7 +16,7 @@ Description :
 		<cfscript>
 
 			setpluginName("HTMLHelper");
-			setpluginVersion("1.1");
+			setpluginVersion("2.0");
 			setpluginDescription("A cool utility that helps you when working with HTML");
 			setpluginAuthor("Ortus Solutions");
 			setpluginAuthorURL("http://www.coldbox.org");
@@ -273,45 +273,6 @@ Description :
 		<cfreturn toHTMLList(argumentCollection=arguments)>
 	</cffunction>
 
-	<!--- toHTMLList --->
-	<cffunction name="toHTMLList" output="false" access="private" returntype="any" hint="Convert a sent in tag type to an HTML list">
-		<cfargument name="tag"	 		type="string" required="true" hint="The list tag type"/>
-		<cfargument name="values" 		type="any"		required="true" default="" hint="An array of values or list of values"/>
-		<cfargument name="column"		 	type="string" required="false" default="" hint="If the values is a query, this is the name of the column to get the data from to create the list"/>
-		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
-		<cfscript>
-			var val 	= arguments.values;
-			var x	 	= 1;
-			var str 	= createObject("java","java.lang.StringBuffer").init("");
-			var br		= chr(13);
-			var args	= "";
-
-			// list or array or query?
-			if( isSimpleValue(val) ){ val = listToArray(val); }
-			if( isQuery(val) ){ val = getPlugin("QueryHelper").getColumnArray(val,arguments.column); }
-
-			// start tag
-			str.append("<#arguments.tag#");
-			// flatten extra attributes via arguments
-			flattenAttributes(arguments,"tag,values,column",str).append(">");
-
-			// values
-			for(x=1; x lte arrayLen(val); x=x+1){
-
-				if( isArray(val[x]) ){
-					str.append( toHTMLList(arguments.tag,val[x],arguments.column) );
-				}
-				else{
-					str.append("<li>#val[x]#</li>");
-				}
-
-			}
-
-			str.append("</#arguments.tag#>");
-			return str.toString();
-		</cfscript>
-	</cffunction>
-
 	<!--- table --->
 	<cffunction name="table" output="false" access="public" returntype="any" hint="Convert a table out of data (either a query or array of structures or array of entities)">
 		<cfargument name="data" 		type="any"			 required="true"	hint="The query or array of structures or array of entities to convert into a table"/>
@@ -356,80 +317,6 @@ Description :
 			str.append("</tbody></table>");
 
 			return str.toString();
-		</cfscript>
-	</cffunction>
-
-	<!--- arrayToTable --->
-	<cffunction name="arrayToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array">
-		<cfargument name="data" 		type="any"			 required="true"	hint="The array to convert into a table"/>
-		<cfargument name="includes" 	type="string"		required="false" default=""	hint="The columns to include in the rendering"/>
-		<cfargument name="excludes" 	type="string"		required="false" default=""	hint="The columns to exclude in the rendering"/>
-		<cfargument name="buffer" 		type="any" 	 	 required="true"/>
-		<cfscript>
-			var str		= arguments.buffer;
-			var attrs	= "";
-			var x			= 1;
-			var y		 = 1;
-			var key		= "";
-			var cols	 = listToArray(structKeyList(data[1]));
-
-			// Render Headers
-			for(x=1; x lte arrayLen(cols); x=x+1){
-				// Display?
-				if( passIncludeExclude(cols[x],arguments.includes,arguments.excludes) ){
-					str.append("<th>#cols[x]#</th>");
-				}
-			}
-			str.append("</tr></thead>");
-
-			// Render Body
-			str.append("<tbody>");
-			for(x=1; x lte arrayLen(arguments.data); x=x+1){
-				str.append("<tr>");
-				for(y=1; y lte arrayLen(cols); y=y+1){
-					// Display?
-					if( passIncludeExclude(cols[y],arguments.includes,arguments.excludes) ){
-						str.append("<td>#arguments.data[x][cols[y]]#</td>");
-					}
-				}
-				str.append("</tr>");
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- queryToTable --->
-	<cffunction name="queryToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array of structures">
-		<cfargument name="data" 		type="any"			 required="true"	hint="The query to convert into a table"/>
-		<cfargument name="includes" 	type="string"		required="false" default=""	hint="The columns to include in the rendering"/>
-		<cfargument name="excludes" 	type="string"		required="false" default=""	hint="The columns to exclude in the rendering"/>
-		<cfargument name="buffer" 		type="any" 	 	 required="true"/>
-		<cfscript>
-			var str		= arguments.buffer;
-			var cols	 = listToArray(arguments.data.columnList);
-			var x			= 1;
-			var y		 = 1;
-
-			// Render Headers
-			for(x=1; x lte arrayLen(cols); x=x+1){
-				// Display?
-				if( passIncludeExclude(cols[x],arguments.includes,arguments.excludes) ){
-					str.append("<th>#cols[x]#</th>");
-				}
-			}
-			str.append("</tr></thead>");
-
-			// Render Body
-			str.append("<tbody>");
-			for(x=1; x lte arguments.data.recordcount; x=x+1){
-				str.append("<tr>");
-				for(y=1; y lte arrayLen(cols); y=y+1){
-					// Display?
-					if( passIncludeExclude(cols[y],arguments.includes,arguments.excludes) ){
-						str.append("<td>#arguments.data[cols[y]][x]#</td>");
-					}
-				}
-				str.append("</tr>");
-			}
 		</cfscript>
 	</cffunction>
 
@@ -707,7 +594,6 @@ Description :
 		<cfreturn "</form>">
 	</cffunction>
 
-
 	<!--- startFieldset --->
 	<cffunction name="startFieldset" output="false" access="public" returntype="any" hint="Create a fieldset tag with or without a legend.">
 		<cfargument name="legend" 		type="string" 	required="false" 	default="" hint="The legend to use (if any)"/>
@@ -837,8 +723,10 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="readonly" 	type="boolean" 	required="false" default="false" hint="Readonly"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfscript>
@@ -854,8 +742,10 @@ Description :
 		<cfargument name="disabled" 	type="boolean" 	required="false" default="false" hint="Disabled"/>
 		<cfargument name="readonly" 	type="boolean" 	required="false" default="false" hint="Readonly"/>
 		<cfargument name="wrapper" 		type="string" 	required="false" default="" hint="The wrapper tag to use around the tag. Empty by default">
+		<cfargument name="groupWrapper" type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="label" 		type="string"	required="false" default="" hint="If Passed we will prepend a label tag"/>
 		<cfargument name="labelwrapper" type="string"	required="false" default="" hint="The wrapper tag to use around the label. Empty by default"/>
+		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="bind" 		type="any" 		required="false" default="" hint="The entity binded to this control"/>
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfscript>
@@ -1271,8 +1161,10 @@ Description :
 	<!--- entityFields --->
 	<cffunction name="entityFields" output="false" access="public" returntype="any" hint="Create fields based on entity properties">
 		<cfargument name="entity" 			type="any" 		required="true" hint="The entity binded to this control"/>
+		<cfargument name="groupWrapper" 	type="string" 	required="false" default="" hint="The wrapper tag to use around the tag and label. Empty by default">
 		<cfargument name="fieldwrapper" 	type="any"		required="false" default="" hint="The wrapper tag to use around the field items. Empty by default"/>
 		<cfargument name="labelwrapper" 	type="any"		required="false" default="" hint="The wrapper tag to use around the label items. Empty by default"/>
+		<cfargument name="labelClass" 		type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfargument name="textareas" 		type="any"		required="false" default="" hint="A list of property names that you want as textareas"/>
 		<cfargument name="booleanSelect" 	type="boolean" 	required="false" default="true" hint="If a boolean is detected a dropdown is generated, if false, then radio buttons"/>
 		<cfargument name="showRelations" 	type="boolean" 	required="false" default="true" hint="If true it will show relation tables for one to one and one to many"/>
@@ -1377,8 +1269,9 @@ Description :
 						}
 						// generation args
 						args = {
-							name=prop.name,options=entityLoad(prop.cfc,loc.criteria,loc.sortorder),column=loc.column, nameColumn=loc.nameColumn,
-							multiple=true,label=prop.name,labelwrapper=arguments.labelWrapper,wrapper=arguments.fieldwrapper,selectedValue=arrayToList(loc.values)
+							name=prop.name, options=entityLoad( prop.cfc, loc.criteria, loc.sortorder ), column=loc.column, nameColumn=loc.nameColumn,
+							multiple=true, label=prop.name, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass, wrapper=arguments.fieldwrapper, 
+							groupWrapper=arguments.groupWrapper, selectedValue=arrayToList( loc.values )
 						};
 						structAppend(args,arguments);
 						buffer.append( this.select(argumentCollection=args) );
@@ -1399,7 +1292,7 @@ Description :
 
 						// Label Generation
 						args = {
-							field=prop.name,wrapper=arguments.labelWrapper
+							field=prop.name, wrapper=arguments.labelWrapper, class=arguments.labelClass
 						};
 						structAppend(args,arguments);
 						buffer.append( this.label(argumentCollection=args) );
@@ -1435,7 +1328,7 @@ Description :
 
 						// Label Generation
 						args = {
-							field=prop.name,wrapper=arguments.labelWrapper
+							field=prop.name, wrapper=arguments.labelWrapper, class=arguments.labelClass
 						};
 						structAppend(args,arguments);
 						buffer.append( this.label(argumentCollection=args) );
@@ -1482,9 +1375,10 @@ Description :
 						}
 						// generation args
 						args = {
-							name=prop.name,options=entityLoad(prop.cfc,loc.criteria,loc.sortorder),
+							name=prop.name, options=entityLoad( prop.cfc, loc.criteria, loc.sortorder ),
 							column=loc.column, nameColumn=loc.nameColumn,
-							label=prop.name,bind=arguments.entity,labelwrapper=arguments.labelWrapper,wrapper=arguments.fieldwrapper
+							label=prop.name, bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass,
+							wrapper=arguments.fieldwrapper, groupWrapper=arguments.groupWrapper
 						};
 						structAppend(args,arguments);
 						buffer.append( this.select(argumentCollection=args) );
@@ -1498,14 +1392,16 @@ Description :
 							// boolean select or radio buttons
 							if( arguments.booleanSelect ){
 								args = {
-									name=prop.name, options=[true,false], label=prop.name,bind=arguments.entity,labelwrapper=arguments.labelWrapper,wrapper=arguments.fieldwrapper
+									name=prop.name, options=[true,false], label=prop.name, bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass,
+									wrapper=arguments.fieldwrapper, groupWrapper=arguments.groupWrapper
 								};
 								structAppend(args,arguments);
 								buffer.append( this.select(argumentCollection=args) );
 							}
 							else{
 								args = {
-									name=prop.name,value="true",label="True",bind=arguments.entity,labelwrapper=arguments.labelWrapper
+									name=prop.name, value="true", label="True", bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass, 
+									groupWrapper=arguments.groupWrapper, wrapper=arguments.fieldWrapper
 								};
 								structAppend(args,arguments);
 								buffer.append( this.radioButton(argumentCollection=args) );
@@ -1517,7 +1413,8 @@ Description :
 						}
 						// text args
 						args = {
-							name=prop.name,label=prop.name,bind=arguments.entity,labelwrapper=arguments.labelWrapper,wrapper=arguments.fieldwrapper
+							name=prop.name, label=prop.name, bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass, 
+							wrapper=arguments.fieldwrapper, groupWrapper=arguments.groupWrapper
 						};
 						structAppend(args,arguments);
 						// text and textarea fields
@@ -1538,7 +1435,120 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
+	
+	<!--- arrayToTable --->
+	<cffunction name="arrayToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array">
+		<cfargument name="data" 		type="any"			 required="true"	hint="The array to convert into a table"/>
+		<cfargument name="includes" 	type="string"		required="false" default=""	hint="The columns to include in the rendering"/>
+		<cfargument name="excludes" 	type="string"		required="false" default=""	hint="The columns to exclude in the rendering"/>
+		<cfargument name="buffer" 		type="any" 	 	 required="true"/>
+		<cfscript>
+			var str		= arguments.buffer;
+			var attrs	= "";
+			var x			= 1;
+			var y		 = 1;
+			var key		= "";
+			var cols	 = listToArray(structKeyList(data[1]));
 
+			// Render Headers
+			for(x=1; x lte arrayLen(cols); x=x+1){
+				// Display?
+				if( passIncludeExclude(cols[x],arguments.includes,arguments.excludes) ){
+					str.append("<th>#cols[x]#</th>");
+				}
+			}
+			str.append("</tr></thead>");
+
+			// Render Body
+			str.append("<tbody>");
+			for(x=1; x lte arrayLen(arguments.data); x=x+1){
+				str.append("<tr>");
+				for(y=1; y lte arrayLen(cols); y=y+1){
+					// Display?
+					if( passIncludeExclude(cols[y],arguments.includes,arguments.excludes) ){
+						str.append("<td>#arguments.data[x][cols[y]]#</td>");
+					}
+				}
+				str.append("</tr>");
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- queryToTable --->
+	<cffunction name="queryToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array of structures">
+		<cfargument name="data" 		type="any"			 required="true"	hint="The query to convert into a table"/>
+		<cfargument name="includes" 	type="string"		required="false" default=""	hint="The columns to include in the rendering"/>
+		<cfargument name="excludes" 	type="string"		required="false" default=""	hint="The columns to exclude in the rendering"/>
+		<cfargument name="buffer" 		type="any" 	 	 required="true"/>
+		<cfscript>
+			var str		= arguments.buffer;
+			var cols	 = listToArray(arguments.data.columnList);
+			var x			= 1;
+			var y		 = 1;
+
+			// Render Headers
+			for(x=1; x lte arrayLen(cols); x=x+1){
+				// Display?
+				if( passIncludeExclude(cols[x],arguments.includes,arguments.excludes) ){
+					str.append("<th>#cols[x]#</th>");
+				}
+			}
+			str.append("</tr></thead>");
+
+			// Render Body
+			str.append("<tbody>");
+			for(x=1; x lte arguments.data.recordcount; x=x+1){
+				str.append("<tr>");
+				for(y=1; y lte arrayLen(cols); y=y+1){
+					// Display?
+					if( passIncludeExclude(cols[y],arguments.includes,arguments.excludes) ){
+						str.append("<td>#arguments.data[cols[y]][x]#</td>");
+					}
+				}
+				str.append("</tr>");
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- toHTMLList --->
+	<cffunction name="toHTMLList" output="false" access="private" returntype="any" hint="Convert a sent in tag type to an HTML list">
+		<cfargument name="tag"	 		type="string" required="true" hint="The list tag type"/>
+		<cfargument name="values" 		type="any"		required="true" default="" hint="An array of values or list of values"/>
+		<cfargument name="column"		 	type="string" required="false" default="" hint="If the values is a query, this is the name of the column to get the data from to create the list"/>
+		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
+		<cfscript>
+			var val 	= arguments.values;
+			var x	 	= 1;
+			var str 	= createObject("java","java.lang.StringBuffer").init("");
+			var br		= chr(13);
+			var args	= "";
+
+			// list or array or query?
+			if( isSimpleValue(val) ){ val = listToArray(val); }
+			if( isQuery(val) ){ val = getPlugin("QueryHelper").getColumnArray(val,arguments.column); }
+
+			// start tag
+			str.append("<#arguments.tag#");
+			// flatten extra attributes via arguments
+			flattenAttributes(arguments,"tag,values,column",str).append(">");
+
+			// values
+			for(x=1; x lte arrayLen(val); x=x+1){
+
+				if( isArray(val[x]) ){
+					str.append( toHTMLList(arguments.tag,val[x],arguments.column) );
+				}
+				else{
+					str.append("<li>#val[x]#</li>");
+				}
+
+			}
+
+			str.append("</#arguments.tag#>");
+			return str.toString();
+		</cfscript>
+	</cffunction>
+	
 	<!--- bindValue --->
 	<cffunction name="bindValue" output="false" access="private" returntype="any" hint="Bind entity values">
 		<cfargument name="args">
