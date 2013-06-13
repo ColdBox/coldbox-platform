@@ -1667,10 +1667,10 @@ Description :
 					arguments.buffer.append(' #lcase(key)#="#arguments.target[key]#"');
 				}
 				// data keys
-				if( key eq "data" and isStruct( arguments.target[ key ] ) ){
-					for( dataKey in arguments.target.data ){
-						if( isSimplevalue( arguments.target.data[ dataKey ] ) ){
-							arguments.buffer.append(' data-#lcase( dataKey )#="#arguments.target.data[ datakey ]#"');
+				if( isStruct( arguments.target[ key ] ) ){
+					for( dataKey in arguments.target[ key ] ){
+						if( isSimplevalue( arguments.target[ key ][ dataKey ] ) ){
+							arguments.buffer.append(' #lcase( key )#-#lcase( dataKey )#="#arguments.target[ key ][ datakey ]#"');
 						}
 					}
 				}
