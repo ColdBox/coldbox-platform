@@ -1680,5 +1680,24 @@ Description :
 			return arguments.buffer;
 		</cfscript>
 	</cffunction>
+	
+	<!--- onMissingMethod --->
+    <cffunction name="onMissingMethod" output="false" access="public" returntype="any" hint="Proxy calls to provided element">
+    	<cfargument	name="missingMethodName"		required="true"	hint="missing method name"	/>
+		<cfargument	name="missingMethodArguments" 	required="true"	hint="missing method arguments"/>
+    	
+    	<!---Incorporate tag to args --->
+    	<cfset missingMethodArguments.tag = arguments.missingMethodName>
+		
+		<!--- Do Content --->
+		<cfif structKeyExists(arguments.missingMethodArguments, 1)>
+			<cfset arguments.missingMethodArguments.content = arguments.missingMethodArguments.1>
+			<cfset structdelete( arguments.missingMethodArguments, 1)>
+		</cfif>
+
+		<!--- Execute Tag --->
+    	<cfreturn tag( argumentCollection=arguments.missingMethodArguments )>
+		
+    </cffunction>
 
 </cfcomponent>
