@@ -1,0 +1,230 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Luis Majano
+     Mar 16, 2007 5:13:17 PM                                                        
+
+     coldbox.newapplication    
+     This task creates a new coldbox application template with your 
+     application name already configured.
+                
+     The task will generate a new application template for you in a 
+     directory of your choice, full path.
+     ====================================================================== -->
+<project name="coldbox.newapplication" default="run" basedir=".">	
+	<!-- Properties -->
+	<property file="build.properties"/>
+	
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="../../install/antlib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+	
+	<!-- run -->
+	<target name="run" description="Run the generator">
+		<!--Init TimeStamp-->
+		<tstamp />
+		<echoproperties regex="gen" />
+		<!-- Input -->
+		<input message="Open the SwingGUI Generator or the AntInput Generator. (If you are running this build in Mac OSX from within Eclipse please use AntInput unless running from the command line)"
+		   	   addproperty="wizardType"
+		 	   validargs="SwingGUI,AntInput"
+			   defaultvalue="SwingGUI" />
+		<if>
+			<equals arg1="${wizardType}" arg2="SwingGUI" casesensitive="false" />
+			<then>
+				<antcall target="wizardGUI" inheritrefs="true" />
+			</then>
+			<else>
+				<antcall target="wizard" inheritrefs="true" />
+			</else>
+		</if>
+	</target>
+
+	<!-- Old School Wizard -->
+	<target name="wizard" description="Question Wizard">
+		<!--Ask for user input to create application-->
+		<input message="What is the name of your application: (Ex:blog,forum)?"
+		       addproperty="app.name"/>
+		<!-- Destination -->
+		<input message="What is the destination directory: (Ex:/data/webroot)?" 
+		       addproperty="app.destination" />
+		<!-- Use Inheritance -->
+		<input message="Use Application.cfc with Inheritance?" validargs="true,false" defaultvalue="true"  
+		       addproperty="app.useInheritance" />
+		<!-- Use Custom Error Template -->
+		<input message="Configure the application to use a custom error template (You can skin it afterwards)?" 
+			   validargs="false,true" defaultvalue="false"
+		       addproperty="app.useErrorTemplate" />
+		<!-- app.favs -->
+		<input message="Generate Extra Files (robots.txt,favicon, and more)?"
+			   validargs="true,false" defaultvalue="true"
+		       addproperty="app.favs" />
+		<!-- app.rewrite -->
+		<input message="Configure your SES Rewrite Engine (If none, /index.cfm/ will be used)?"
+			   validargs="none,mod_rewrite,isapi" defaultvalue="mod_rewrite"
+		       addproperty="app.rewrite" />
+		<!-- Run Generation -->
+		<antcall target="generate" inheritall="true" inheritrefs="true" />
+	</target>
+	
+	<!-- Wizard GUI -->
+	<target name="wizardGUI" 
+			description="Create the input forms using AntForm GUI. Quirky in Mac OSX from within Eclipse. Run from the command line.">
+		
+			<taskdef name="antform" classname="com.sardak.antform.AntForm"	classpathref="cp"/>
+			<antform title="ColdBox Application Generator"
+				 image="../install/Logos-Images-Icons/chat_icon.png"
+				 width="650"
+				 height="700"
+				 lookandfeel="javax.swing.plaf.metal.MetalLookAndFeel"
+				 icon="../install/Logos-Images-Icons/chat_icon.png">
+			<Controlbar>
+				<Button label="Cancel" type="cancel" />
+				<Button label="Reset" type="reset" />
+				<Button label="Generate" type="ok" target="generate" newproject="false" />				
+			</Controlbar>
+				
+			<!--Ask for user input to create application-->
+			<textProperty label="Application Name"
+					      property="app.name"
+						  columns="25"
+						  Required="true"
+						  tooltip="The name of the application to generate"
+						  focus="true"/>
+			<!-- Destination -->
+			<fileselectionproperty label="Destination Directory"
+								   property="app.destination"
+								   directoryChooser="true"
+								   Required="true"
+								   columns="25"
+								   tooltip="Destination Directory (ex: /data/webroot)"/>
+			<!-- Inheritance -->
+			<label>Application.cfc with inheritance is the default. If not chosen, then I will build a composition Application.cfc (Inheritance is recommended)</label>
+			<radioSelectionProperty label="Application.cfc Inheritance?"
+							   property="app.useInheritance"
+							   values="true,false"
+							   tooltip="Create the application.cfc using inheritance" />
+			<!-- Error Template -->
+			<label>Configure the application to use a custom error template. The default is to use the framework's error template.</label>
+			<radioSelectionProperty label="Use Custom Error Template?"
+							   property="app.useErrorTemplate"
+							   values="false,true"
+							   tooltip="Configure the application to use a custom error template." />
+			<!-- Favs Template -->
+			<label>Generate a robots.txt, favicon and more.</label>
+			<radioSelectionProperty label="Generate Extras?"
+							   property="app.favs"
+							   values="true,false"
+							   tooltip="Generate a favicon,robots.txt and more." />
+			<!-- Favs Template -->
+			<label>Choose your URL rewrite engine if any. This will create an appropriate .htaccess or isapirewrite.ini file or none and configure your routes.</label>
+			<selectionProperty label="URL Rewrite Engine?"
+							   property="app.rewrite"
+							   values="mod_rewrite,isapi,none"
+							   tooltip="Choose your URL rewrite engine." />
+		</antform>		
+	</target>
+
+	<!--Generate-->
+	<target name="generate" description="Generate the new skeleton">
+		<echo>Generating new Application: ${app.name}</echo>
+		<echo>Destination Directory: ${basedir}/${app.destination}</echo>
+		<echo>Generation Date: ${TODAY}</echo>
+		
+		<!--Generate-->
+		<copy todir="${app.destination}/${app.name}">
+			<fileset dir="${src.dir}">
+				<exclude name="${app.destination}" />
+				<exclude name="header.txt" />
+				<exclude name="build.xml" />
+				<exclude name="**/*.xml.cfm" />
+			</fileset>
+		</copy>
+		<copy todir="${app.destination}/${app.name}">
+			<fileset dir="${src.dir}">
+				<exclude name="${app.destination}" />
+				<exclude name="header.txt" />
+				<exclude name="build.xml" />
+				<include name="**/*.xml.cfm" />
+			</fileset>
+		</copy>
+		<!--Replace AppName in Config -->
+		<replace file="${app.destination}/${app.name}/${base.config}" value="${app.name}" summary="yes">
+			<replacetoken>Your App Name here</replacetoken>
+		</replace>
+		<!--Replace AppName in eclipse project -->
+		<replace file="${app.destination}/${app.name}/.project" value="${app.name}" summary="yes">
+			<replacetoken>@appname@</replacetoken>
+		</replace>
+		<!--Delete Header Files-->
+		<delete file="${app.destination}/${app.name}/build.xml" />
+		<delete file="${app.destination}/${app.name}/build.properties" />
+		<!-- Inheritance If -->
+		<if>
+			<equals arg1="${app.useInheritance}" arg2="true" casesensitive="false" />
+			<then>
+				<delete file="${app.destination}/${app.name}/Application_noinheritance.cfc" />
+			</then>
+			<else>
+				<delete file="${app.destination}/${app.name}/Application.cfc" />
+				<move file="${app.destination}/${app.name}/Application_noinheritance.cfc"
+				      tofile="${app.destination}/${app.name}/Application.cfc" />
+			</else>
+		</if>
+		<!-- Error Template -->
+		<if>
+			<equals arg1="${app.useErrorTemplate}" arg2="true" casesensitive="false" />
+			<then>
+				<replace file="${app.destination}/${app.name}/${base.config}" value="${base.errortemplate}" summary="yes">
+					<replacetoken><![CDATA[<Setting name="CustomErrorTemplate"			value="" />]]></replacetoken>
+				</replace>
+			</then>
+			<else>
+				<replace file="${app.destination}/${app.name}/${base.config}" value="" summary="yes">
+					<replacetoken>@errortemplate@</replacetoken>
+				</replace>
+			</else>
+		</if>
+		<!--Favs -->
+		<if>
+			<equals arg1="${app.favs}" arg2="false" />
+			<then>
+				<delete file="${app.destination}/${app.name}/robots.txt" />
+				<delete file="${app.destination}/${app.name}/favicon.ico" />		
+			</then>
+		</if>
+		<!-- Rewrite Setup -->
+		<if>
+			<equals arg1="${app.rewrite}" arg2="mod_rewrite" />
+			<then>
+				<copy file="${base.htacess}" todir="${app.destination}/${app.name}/" />	
+				<antcall target="replaceRewrite" />
+			</then>
+		</if>
+		<if>
+			<equals arg1="${app.rewrite}" arg2="isapi" />
+			<then>
+				<copy file="${base.isapi}" todir="${app.destination}/${app.name}/" />	
+				<antcall target="replaceRewrite" />
+			</then>
+		</if>	
+	</target>
+	
+	<!-- Rewrite Engine Setup -->
+	<target name="replaceRewrite" description="Replace some rewrite stuff">
+		<replace file="${app.destination}/${app.name}/config/routes.cfm" value="" summary="yes">
+			<replacetoken>/index.cfm</replacetoken>
+		</replace>
+	</target>
+	
+	<target name="test">
+		<replace file="config/test.xml" value="${base.errortemplatexml}" summary="yes">
+			<replacetoken><![CDATA[<Setting name="CustomErrorTemplate"			value="" />]]></replacetoken>
+		</replace>
+	</target>
+	
+</project>

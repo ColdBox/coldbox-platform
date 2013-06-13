@@ -6,7 +6,7 @@ Description :
 	Unit test for the ehMain Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/ApplicationTemplates/Advanced">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/ApplicationTemplates/Simple">
 	
 	<cffunction name="setUp" returntype="void" output="false">
 		<cfscript>
@@ -28,7 +28,7 @@ Description :
 		debug(event.getCollection());
 		
 		//Do your asserts below
-		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
+		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage","",true), "Failed to assert welcome message");
 			
 		</cfscript>
 	</cffunction>

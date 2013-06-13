@@ -1,7 +1,7 @@
 ﻿<cfoutput>
 <div class="hero-unit">
 	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
-	<h1>#rc.welcomeMessage#</h1>
+	<h1>#prc.welcomeMessage#</h1>
 	<p>
 		You are now running <strong>#getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</strong>.
 		Welcome to the next generation of ColdFusion applications.  You can now start building your application with ease, we already did the hard work

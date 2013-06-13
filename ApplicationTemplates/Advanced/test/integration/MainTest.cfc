@@ -28,7 +28,7 @@ Description :
 		debug(event.getCollection());
 		
 		//Do your asserts below
-		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
+		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage","",true), "Failed to assert welcome message");
 			
 		</cfscript>
 	</cffunction>
