@@ -317,15 +317,23 @@ component accessors="true"{
 
 	/**
     * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
+    * @entityName.hint The entity to create
+    * @properties.hint The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
+    * @composeRelationships.hint Automatically attempt to compose relationships from the incoming properties memento
+    * @nullEmptyInclude.hint A list of keys to NULL when empty
+    * @nullEmptyExclude.hint A list of keys to NOT NULL when empty
+    * @ignoreEmpty.hint Ignore empty values on populations, great for ORM population
+    * @include.hint A list of keys to include in the population from the incoming properties memento
+    * @exclude.hint A list of keys to exclude in the population from the incoming properties memento
     */
-	any function new(required string entityName,struct properties=structnew()){
-		var entity   = entityNew(arguments.entityName);
-		var key      = "";
-		var excludes = "entityName,properties";
+	any function new(required string entityName, struct properties=structnew(), boolean composeRelationships=true, nullEmptyInclude="", nullEmptyExclude="", boolean ignoreEmpty=false, include="", exclude=""){
+		var entity   = entityNew( arguments.entityName );
 
 		// Properties exists?
 		if( NOT structIsEmpty(arguments.properties) ){
-			populate(target=entity,memento=arguments.properties );
+			populate(target=entity, memento=arguments.properties, composeRelationships=arguments.composeRelationships,
+					 nullEmptyInclude=arguments.nullEmptyInclude, nullEmptyExclude=arguments.nullEmptyExclude, ignoreEmpty=arguments.ignoreEmpty,
+					 include=arguments.include, exclude=arguments.exclude );
 		}
 
 		// Event Handling? If enabled, call the postNew() interception
@@ -353,7 +361,7 @@ component accessors="true"{
 						   boolean ignoreEmpty=false,
 						   string nullEmptyInclude="",
 						   string nullEmptyExclude="",
-						   boolean composeRelationships=false){
+						   boolean composeRelationships=true){
 
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
@@ -375,7 +383,7 @@ component accessors="true"{
 						   		   boolean ignoreEmpty=false,
 						   		   string nullEmptyInclude="",
 						   		   string nullEmptyExclude="",
-						   		   boolean composeRelationships=false){
+						   		   boolean composeRelationships=true){
 
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
@@ -399,7 +407,7 @@ component accessors="true"{
 						   		  boolean ignoreEmpty=false,
 						   		  string nullEmptyInclude="",
 						   		  string nullEmptyExclude="",
-						   		  boolean composeRelationships=false){
+						   		  boolean composeRelationships=true){
 
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
@@ -423,7 +431,7 @@ component accessors="true"{
 						   			boolean ignoreEmpty=false,
 						   			string nullEmptyInclude="",
 						   		  	string nullEmptyExclude="",
-						   		  	boolean composeRelationships=false){
+						   		  	boolean composeRelationships=true){
 
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}

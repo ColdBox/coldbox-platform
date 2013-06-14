@@ -168,7 +168,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  boolean ignoreEmpty=false,
 						  string nullEmptyInclude="",
 						  string nullEmptyExclude="",
-						  boolean composeRelationships=false){
+						  boolean composeRelationships=true){
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
 
@@ -189,7 +189,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						   	 	  boolean ignoreEmpty=false,
 						  		  string nullEmptyInclude="",
 						  		  string nullEmptyExclude="",
-						  		  boolean composeRelationships=false){
+						  		  boolean composeRelationships=true){
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
@@ -212,7 +212,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						   	     boolean ignoreEmpty=false,
 						  		 string nullEmptyInclude="",
 						  		 string nullEmptyExclude="",
-						  		 boolean composeRelationships=false){
+						  		 boolean composeRelationships=true){
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
@@ -235,7 +235,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  		   boolean ignoreEmpty=false,
 						  		   string nullEmptyInclude="",
 						  		   string nullEmptyExclude="",
-						  		   boolean composeRelationships=false){
+						  		   boolean composeRelationships=true){
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
 
