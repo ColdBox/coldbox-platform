@@ -136,6 +136,7 @@ Description :
 		if( structKeyExists( instance.interceptionStates, arguments.state ) ){
 			// Execute Interception in the state object
 			arguments.event = controller.getRequestService().getContext();
+			arguments.buffer = instance.requestBuffer;
 			loc.results = structFind( instance.interceptionStates, arguments.state ).process(argumentCollection=arguments);
 		}
 		// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace

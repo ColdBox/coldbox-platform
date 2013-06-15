@@ -162,6 +162,13 @@ id , name , mail
 			return getMockBox().createMock("coldbox.system.core.collections.ConfigBean").init(arguments.configStruct);
 		</cfscript>
 	</cffunction>
+	
+	<!--- getMockRequestBuffer --->
+	<cffunction name="getMockRequestBuffer" access="private" output="false" returnType="coldbox.system.core.util.RequestBuffer" hint="I will return to you a mock request buffer object used mostly in interceptor calls">
+	    <cfscript>
+			return getMockBox().createMock("coldbox.system.core.util.RequestBuffer").init();
+		</cfscript>
+	</cffunction>
 		
 	<!--- getMockRequestContext --->
 	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it.">
@@ -196,7 +203,7 @@ id , name , mail
 			
 			// return decorator context
 			if( structKeyExists(arguments,"decorator") ){
-				mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest');
+				mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
 				return getMockBox().createMock(arguments.decorator).init(mockRC, mockController);
 			}
 			
