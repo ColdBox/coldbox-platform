@@ -7,23 +7,23 @@
 	</tr>
 	<tr>
 		<td valign="top"><strong>Type</strong></td>
-		<td valign="top">#exception.type#</td>
+		<td valign="top">#HTMLEditFormat(exception.type)#</td>
 	</tr>
 	<tr>
 		<td valign="top"><strong>Message</strong></td>
-		<td valign="top">#exception.message#</td>
+		<td valign="top">#HTMLEditFormat(exception.message)#</td>
 	</tr>
 	<tr>
 		<td valign="top"><strong>Detail</strong></td>
-		<td valign="top">#exception.detail#</td>
+		<td valign="top">#HTMLEditFormat(exception.detail)#</td>
 	</tr>
 	<tr>
 		<td valign="top"><strong>Extended Info</strong></td>
-		<td valign="top">#exception.extendedInfo#</td>
+		<td valign="top">#HTMLEditFormat(exception.extendedInfo)#</td>
 	</tr>
 	<tr>
 		<td valign="top"><strong>Message</strong></td>
-		<td valign="top">#exception.message#</td>
+		<td valign="top">#HTMLEditFormat(exception.message)#</td>
 	</tr>
 	<tr>
 		<td valign="top"><strong>Tag Context</strong></td>
