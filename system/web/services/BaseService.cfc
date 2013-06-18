@@ -44,12 +44,12 @@ Modification History:
     </cffunction>
 
 	<!--- Get Controller --->
-	<cffunction name="getController" access="package" output="false" returntype="any" hint="Get controller">
+	<cffunction name="getController" access="public" output="false" returntype="any" hint="Get controller">
 		<cfreturn controller/>
 	</cffunction>
 	
 	<!--- Set Controller --->
-	<cffunction name="setController" access="package" output="false" returntype="void" hint="Set controller">
+	<cffunction name="setController" access="public" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>

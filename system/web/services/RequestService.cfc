@@ -248,7 +248,7 @@ Modification History:
 		var oDecorator = "";
 		
 		//Create the original request context
-		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init(controller.getConfigSettings());
+		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init( properties=controller.getConfigSettings(), controller=controller );
 		
 		//Determine if we have a decorator, if we do, then decorate it.
 		if ( len( instance.decorator ) ){

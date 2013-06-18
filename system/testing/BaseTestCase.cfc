@@ -169,6 +169,13 @@ id , name , mail
 			return getMockBox().createMock("coldbox.system.core.util.RequestBuffer").init();
 		</cfscript>
 	</cffunction>
+	
+	<!--- getMockController --->
+	<cffunction name="getMockController" access="private" output="false" returnType="coldbox.system.testing.mock.web.MockController" hint="I will return a mock controller object">
+	    <cfscript>
+			return CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
+		</cfscript>
+	</cffunction>
 		
 	<!--- getMockRequestContext --->
 	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it.">
@@ -187,8 +194,9 @@ id , name , mail
 			}
 			
 			// Create functioning request context
-			mockRC = getMockBox().createMock("coldbox.system.web.context.RequestContext");
-			
+			mockRC 			= getMockBox().createMock("coldbox.system.web.context.RequestContext");
+			mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
+				
 			// Create mock properties
 			rcProps.DefaultLayout = "";
 			rcProps.DefaultView = "";
@@ -199,11 +207,10 @@ id , name , mail
 			rcProps.FolderLayouts = structnew();
 			rcProps.RegisteredLayouts = structnew();
 			rcProps.modules = structnew();
-			mockRC.init(rcProps);
+			mockRC.init( properties=rcProps, controller=mockController );
 			
 			// return decorator context
 			if( structKeyExists(arguments,"decorator") ){
-				mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
 				return getMockBox().createMock(arguments.decorator).init(mockRC, mockController);
 			}
 			

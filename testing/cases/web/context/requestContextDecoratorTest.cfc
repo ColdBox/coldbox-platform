@@ -1,37 +1,31 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
-	
+	<cfset this.loadColdBox = false>
+		
 	<!--- setup and teardown --->
-	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.decorator = createObject("component","coldbox.system.web.context.RequestContextDecorator");		
-			this.rc = createObject("component","coldbox.system.web.context.RequestContext");		
-			this.controller = createObject("component","coldbox.system.web.Controller");
-			
-			this.decorator.init(this.rc,this.controller);
+			super.init();
+			mockDecorator = createObject("component","coldbox.system.web.context.RequestContextDecorator");		
+						
+			mockDecorator.init( getMockRequestContext(), getMockController() );
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="tearDown" returntype="void" access="public">
-		<!--- Any code needed to return your environment to normal goes here --->
-	</cffunction>
 		
 	<!--- Begin specific tests --->
-	
 	<cffunction name="testRC" access="public" returnType="void">
 		<cfscript>
-			assertEquals( this.rc, this.decorator.getRequestContext() );
+			assertEquals( mockContext, mockDecorator.getRequestContext() );
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetController" access="public" returnType="void">
 		<cfscript>
-			makePublic(this.decorator,"getController","_getController");
-			this.decorator.init(this.rc,this.controller);
-			assertEquals( this.controller, this.decorator._getController() );
+			makePublic(mockDecorator,"getController","_getController");
+			mockDecorator.init(mockContext, mockController);
+			assertEquals( mockController, mockDecorator._getController() );
 		</cfscript>
 	</cffunction>
-	
 	
 
 </cfcomponent>

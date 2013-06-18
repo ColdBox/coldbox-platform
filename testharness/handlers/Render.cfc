@@ -77,6 +77,17 @@
 	function pdfHTML(event,rc,prc){
 		event.renderData(data=renderView("vwQuote"),type="pdf");
 	}
+	
+	function renderFormats(event,rc,prc){
+		prc.data = new coldbox.system.testing.MockBox().querySim("id, name
+		1 | Luis Majano
+		2 | Darth Vader
+		3 | Joe Crabshack
+		4 | Veronica M
+		5 | Joe Dirt");
+		
+		event.renderData(data=prc.data, formats="xml,json,html,pdf", formatsView="Render/renderFormats");
+	}
 
 </cfscript>
 </cfcomponent>
