@@ -23,7 +23,7 @@ Description :
 		
 		//Place any variables on the form or URL scope to test the handler.
 		//URL.name = "luis"
-		event = execute("main.index");
+		event = execute(event="main.index", renderResults=true);
 		
 		debug(event.getCollection());
 		
