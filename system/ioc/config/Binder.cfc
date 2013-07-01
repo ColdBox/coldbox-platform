@@ -793,6 +793,11 @@ Description :
 			if( structKeyExists( wireBoxDSL, "logBoxConfig") ){
 				logBoxConfig(wireBoxDSL.logBoxConfig);
 			}
+			
+			// Register Parent Injector
+			if( structKeyExists( wireBoxDSL, "parentInjector") ){
+				parentInjector( wireBoxDSL.parentInjector );
+			}
 
 			// Register Server Scope Registration
 			if( structKeyExists( wireBoxDSL, "scopeRegistration") ){

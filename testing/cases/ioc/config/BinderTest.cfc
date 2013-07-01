@@ -1,6 +1,9 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
+	this.loadColdBox = false;
 	function setup(){
+		super.setup();
+		
 		dataConfigPath = "coldbox.testing.cases.ioc.config.samples.SampleWireBox";
 		// Available WireBox public scopes
 		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
@@ -424,6 +427,7 @@
 			customScopes = {
 				AwesomeScope = "my.awesome.scope"
 			},
+			parentInjector = this,
 			scanLocations = ["coldbox.system"],
 			stopRecursions = ["coldbox.system.EventHandler"],
 			listeners = [
@@ -435,6 +439,8 @@
 			}
 		};
 		config.loadDataDSL( raw );
+		
+		assertEquals( this, config.getParentInjector() );
 	}
 
 	function testInto(){
