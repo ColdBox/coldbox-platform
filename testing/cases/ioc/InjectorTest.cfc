@@ -10,9 +10,29 @@
 
 		// init injector
 		injector.init();
-
+		
+		mockLogger = getMockBox().createStub();
 		util = getMockBox().createMock("coldbox.system.core.util.util").$("getInheritedMetaData").$results({path="path.to.object"});
 		injector.$property("instance.utility","variables",util);
+		injector.$property("instance.log","variables", mockLogger);
+	}
+
+	function testShutdown(){
+		// mocks
+		parent = getMockBox().createStub().$("shutdown");
+		cachebox = getMockBox().createStub().$("shutdown");
+		eventManager = getMockBox().createStub().$("processState");
+		injector.setParent( parent );
+		injector.$property("cachebox", "instance", cachebox)
+			.$property("eventManager", "instance", eventManager)
+			.$("isCacheBoxLinked", true).$("removeFromScope");
+		mockLogger.$("canInfo", true).$("info");
+		
+		injector.shutdown();
+		assertTrue( eventManager.$times(2, "processState") );
+		assertTrue( parent.$once( "shutdown" ) );
+		assertTrue( injector.$once( "removeFromScope" ) );
+		assertTrue( cacheBox.$once( "shutdown" ) );
 	}
 
 	function testbuildBinder(){

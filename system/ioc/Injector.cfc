@@ -179,12 +179,12 @@ Description :
 			instance.eventManager.processState("beforeInjectorShutdown",iData);
 
 			// Is parent linked
-			if( isObject(instance.parent) ){
+			if( isObject( instance.parent ) ){
 				instance.parent.shutdown();
 			}
 
 			// standalone cachebox? Yes, then shut it down baby!
-			if( NOT isColdBoxLinked() ){
+			if( isCacheBoxLinked() ){
 				instance.cacheBox.shutdown();
 			}
 
