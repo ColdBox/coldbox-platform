@@ -13,15 +13,24 @@ Description :
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="Provider" hint="Constructor">
-    	<cfargument name="scopeRegistration" required="true" hint="The injector scope registration structure" colddoc:generic="struct"/>
-		<cfargument name="scopeStorage" 	 required="true" hint="The scope storage utility" 				  colddoc:generic="coldbox.system.core.collections.ScopeStorage"/>
-		<cfargument name="name" 			 required="true" hint="The name of the mapping this provider is binded to"/>
+    	<cfargument name="scopeRegistration" required="true" 	hint="The injector scope registration structure" colddoc:generic="struct"/>
+		<cfargument name="scopeStorage" 	 required="true" 	hint="The scope storage utility" 				  colddoc:generic="coldbox.system.core.collections.ScopeStorage"/>
+		<cfargument name="name" 			 required="false" 	hint="The name of the mapping this provider is binded to, MUTEX with name"/>
+		<cfargument name="dsl"				 required="false" 	hint="The DSL string this provider is binded to, MUTEX with name"/>
+		<cfargument name="targetObject"		 required="true" 	hint="The target object that requested the provider."/>
 		<cfscript>
 			instance = {
-				name 				= arguments.name,
+				name = "",
+				dsl  = "",
 				scopeRegistration 	= arguments.scopeRegistration,
-				scopeStorage 		= arguments.scopeStorage
+				scopeStorage 		= arguments.scopeStorage,
+				targetObject		= arguments.targetObject
 			};
+			
+			// Verify incoming name or DSL
+			if( structKeyExists( arguments, "name" ) ){ instance.name = arguments.name; }
+			if( structKeyExists( arguments, "dsl" ) ){ instance.dsl = arguments.dsl; }
+			
 			return this;
 		</cfscript>
     </cffunction>
@@ -31,9 +40,13 @@ Description :
     	<cfscript>
     		var scopeInfo = instance.scopeRegistration;
 			
-    		// Return if it exists, else throw exception
+    		// Return if scope exists, else throw exception
 			if( instance.scopeStorage.exists(scopeInfo.key, scopeInfo.scope) ){
-				return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope).getInstance( instance.name );
+				// retrieve by name or DSL
+				if( len( instance.name ) )
+					return instance.scopeStorage.get( scopeInfo.key, scopeInfo.scope ).getInstance( name=instance.name, targetObject=instance.targetObject );
+				if( len( instance.dsl ) )
+					return instance.scopeStorage.get( scopeInfo.key, scopeInfo.scope ).getInstance( dsl=instance.dsl, targetObject=instance.targetObject );
 			}
 		</cfscript>
     		

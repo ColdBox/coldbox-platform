@@ -11,7 +11,7 @@
 		// init injector
 		injector.init();
 		
-		mockLogger = getMockBox().createStub();
+		mockLogger = getMockBox().createStub().$("canDebug", false).$("error");
 		util = getMockBox().createMock("coldbox.system.core.util.util").$("getInheritedMetaData").$results({path="path.to.object"});
 		injector.$property("instance.utility","variables",util);
 		injector.$property("instance.log","variables", mockLogger);
@@ -96,7 +96,7 @@
 			injector.registerListeners();
 		}
 		catch("Injector.ListenerCreationException" e){}
-		catch(Any e){ faile(e); }
+		catch(Any e){ fail(e); }
 
 	}
 

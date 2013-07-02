@@ -215,7 +215,7 @@ TODO: update dsl consistency, so it is faster.
 				
 				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
 				if( structKeyExists(DIArgs[x],"dsl") ){
-					args[ DIArgs[x].name ] = buildDSLDependency( DIArgs[x], thisMap.getName(), arguments.targetObject );
+					args[ DIArgs[x].name ] = buildDSLDependency( definition=DIArgs[x], targetID=thisMap.getName(), targetObject=arguments.targetObject );
 					continue;
 				}
 				
@@ -284,12 +284,13 @@ TODO: update dsl consistency, so it is faster.
 	<cffunction name="buildSimpleDSL" output="false" access="public" returntype="any" hint="Build a DSL Dependency using a simple dsl string">
 		<cfargument name="dsl" 			required="true" 	hint="The dsl string to build">
 		<cfargument name="targetID" 	required="true" 	hint="The target ID we are building this dependency for"/>
+		<cfargument name="targetObject" required="false"	default="" 	hint="The target object we are building the DSL dependency for"/>
 		<cfscript>
 			var definition = {
 				name = "",
 				dsl = arguments.dsl
 			};
-			return buildDSLDependency( definition, arguments.targetID );
+			return buildDSLDependency( definition=definition, targetID=arguments.targetID, targetObject=arguments.targetObject );
 		</cfscript>
 	</cffunction>
 
@@ -297,7 +298,7 @@ TODO: update dsl consistency, so it is faster.
 	<cffunction name="buildDSLDependency" output="false" access="public" returntype="any" hint="Build a DSL Dependency, if not found, returns null">
 		<cfargument name="definition" 	required="true"  hint="The dependency definition structure: name, dsl as keys">
 		<cfargument name="targetID" 	required="true"  hint="The target ID we are building this dependency for"/>
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
@@ -314,7 +315,7 @@ TODO: update dsl consistency, so it is faster.
 			
 			// Determine Type of Injection according to Internal Types first
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
-			switch(DSLNamespace){
+			switch( DSLNamespace ){
 				// ColdBox Context DSL
 				case "ioc" : case "ocm" : case "webservice" : case "javaloader" : case "coldbox" : { 
 					refLocal.dependency = instance.coldboxDSL.process(argumentCollection=arguments); break; 
@@ -335,12 +336,12 @@ TODO: update dsl consistency, so it is faster.
 				// No internal DSL's found, then check custom DSL's
 				default : {
 					// Check if Custom DSL exists, if it does, execute it
-					if( structKeyExists(instance.customDSL, DSLNamespace) ){
+					if( structKeyExists( instance.customDSL, DSLNamespace ) ){
 						refLocal.dependency = instance.customDSL[ DSLNamespace ].process(argumentCollection=arguments);
 					}
 					
 					// If no custom DSL's found, let's try to use the name as the empty namespace
-					if( NOT find(":", arguments.definition.dsl) ){
+					if( NOT find( ":", arguments.definition.dsl ) ){
 						arguments.definition.dsl = "id:#arguments.definition.dsl#";
 						refLocal.dependency = getModelDSL(argumentCollection=arguments);
 					}
@@ -348,7 +349,7 @@ TODO: update dsl consistency, so it is faster.
 			}
 				
 			// return only if found
-			if( structKeyExists(refLocal,"dependency") ){ return refLocal.dependency; }
+			if( structKeyExists( refLocal, "dependency" ) ){ return refLocal.dependency; }
 			
 			// Logging
 			if( instance.log.canError() ){
@@ -469,30 +470,43 @@ TODO: update dsl consistency, so it is faster.
 	<!--- getProviderDSL --->
 	<cffunction name="getProviderDSL" access="private" returntype="any" hint="Get dependencies using the our provider pattern DSL" output="false" >
 		<cfargument name="definition" 	required="true"  hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		
+		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisType 		= arguments.definition.dsl;
 			var thisTypeLen 	= listLen(thisType,":");
 			var providerName 	= "";
+			var args			= {};
 			
 			// DSL stages
-			switch(thisTypeLen){
+			switch( thisTypeLen ){
 				// provider default, get name of the provider from property
 				case 1: { providerName = arguments.definition.name; break; }
 				// provider:{name} stage
-				case 2: { providerName = getToken(thisType,2,":"); break;
+				case 2: { providerName = getToken(thisType,2,":"); break; }
+				// multiple stages then most likely it is a full DSL being used
+				default : {
+					providerName = replaceNoCase( thisType, "provider:", "" );
 				}
 			}
 
-			// Check if model Exists
+			// Build provider arguments
+			args = { 
+				scopeRegistration = instance.injector.getScopeRegistration(),
+				scopeStorage = instance.injector.getScopeStorage(),
+				targetObject = arguments.targetObject
+			};
+			
+			// Check if the passed in provider is an ID directly
 			if( instance.injector.containsInstance( providerName ) ){
-				// Build provider and return it.
-				return createObject("component","coldbox.system.ioc.Provider").init(instance.injector.getScopeRegistration(), instance.injector.getScopeStorage(), providerName);
+				args.name = providerName;
 			}
-			else if( instance.log.canDebug() ){
-				instance.log.debug("getProviderDSL() cannot find model object #providerName# using definition #arguments.definition.toString()#");
+			// Else try to tag it by FULL DSL
+			else{
+				args.dsl = providerName;
 			}
+			
+			// Build provider and return it.
+			return createObject("component","coldbox.system.ioc.Provider").init( argumentCollection=args );
 		</cfscript>
 	</cffunction>
 	

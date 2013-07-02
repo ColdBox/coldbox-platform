@@ -206,6 +206,7 @@ Description :
     	<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
 		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
 		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="targetObject" 	required="false"	default="" 	hint="The object requesting the dependency, usually only used by DSL lookups"/>
 		<cfscript>
 			var instancePath 	= "";
 			var mapping 		= "";
@@ -213,8 +214,8 @@ Description :
 			var iData			= {};
 
 			// Get by DSL?
-			if( structKeyExists(arguments,"dsl") ){
-				return instance.builder.buildSimpleDSL( arguments.dsl, "ExplicitCall" );
+			if( structKeyExists( arguments,"dsl" ) ){
+				return instance.builder.buildSimpleDSL( dsl=arguments.dsl, targetID="ExplicitCall", targetObject=arguments.targetObject );
 			}
 
 			// Check if Mapping Exists?
@@ -299,7 +300,7 @@ Description :
 					oModel = instance.builder.buildFeed( thisMap ); break;
 				}
 				case "dsl" : {
-					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL(), thisMap.getName() ); break;
+					oModel = instance.builder.buildSimpleDSL( dsl=thisMap.getDSL(), targetID=thisMap.getName() ); break;
 				}
 				case "factory" : {
 					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
@@ -590,7 +591,7 @@ Description :
 				// else check if dsl is used?
 				else if( structKeyExists(arguments.DIData[x], "dsl") ){
 					// Get DSL dependency by sending entire DI structure to retrieve
-					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x], arguments.targetID, arguments.targetObject );
+					refLocal.dependency = instance.builder.buildDSLDependency( definition=arguments.DIData[ x ], targetID=arguments.targetID, targetObject=arguments.targetObject );
 				}
 				// else we have to have a reference ID or a nasty bug has ocurred
 				else{

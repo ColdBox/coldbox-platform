@@ -1,7 +1,10 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
+	this.loadColdBox = false;
 	
 	function setup(){
+		super.setup();
+		
 		mockColdBox = getMockBox().createEmptyMock("coldbox.system.web.Controller");
 		mockCacheBox =  getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
 		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error").$("canWarn",true).$("warn");
@@ -172,6 +175,21 @@
 		
 		test = builder.buildDSLDependency(def, "UnitTest");
 		assertEquals( "woopee", test.getName() );
+		
+	}
+	
+	function testbuildSimpleDSL(){
+		
+		//mocks
+		mockStub = getMockBox().createStub().$("verify", true);
+		builder.$("buildDSLDependency", mockStub );
+		
+		// build it
+		r = builder.buildSimpleDSL(dsl="logbox:logger:test", targetID="unit", targetObject=this);
+		assertEquals( "unit", builder.$callLog().buildDSLDependency[ 1 ].targetID );
+		assertEquals( this, builder.$callLog().buildDSLDependency[ 1 ].targetObject );
+		assertEquals( "logbox:logger:test", builder.$callLog().buildDSLDependency[ 1 ].definition.dsl );
+		assertEquals( "", builder.$callLog().buildDSLDependency[ 1 ].definition.name );
 		
 	}
 	
