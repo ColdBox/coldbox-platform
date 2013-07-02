@@ -81,12 +81,21 @@
 		val = injector.buildInstance( mapping );
 		assertEquals("testbaby", val);
 
-		//Provider
+		// Provider
 		mockProvider = getMockBox().createEmptyMock("coldbox.system.ioc.Provider").$("get",mockStub);
 		mapping.setType("provider").setPath("MyCoolProvider");
 		injector.$("getInstance").$args("MyCoolProvider").$results(mockProvider);
 		val = injector.buildInstance( mapping );
 		assertEquals(mockStub, val);
+		// Provider closure
+		mapping.setType("provider").setPath( providerUDF );
+		val = injector.buildInstance( mapping );
+		assertTrue( val.verify() );
+		
+	}
+	
+	function providerUDF(){
+		return new coldbox.system.testing.MockBox().createStub().$("verify", true);
 	}
 
 	function testProviderMethods(){

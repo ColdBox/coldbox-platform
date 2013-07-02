@@ -275,6 +275,7 @@ Description :
     		var thisMap = arguments.mapping;
 			var oModel	= "";
 			var iData	= "";
+			var closure = "";
 
 			// before construction event
 			iData = {mapping=arguments.mapping,injector=this};
@@ -304,7 +305,15 @@ Description :
 					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
 				}
 				case "provider" : {
-					oModel = getInstance( thisMap.getPath() ).get(); break;
+					// verify if it is a simple value or closure/UDF
+					if( isSimpleValue( thisMap.getPath() ) ){
+						oModel = getInstance( thisMap.getPath() ).get();	
+					}
+					else{
+						closure = thisMap.getPath();
+						oModel = closure();
+					}
+					break;
 				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}

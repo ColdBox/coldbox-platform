@@ -407,7 +407,7 @@ Description :
     </cffunction>
 
 	<!--- toProvider --->
-    <cffunction name="toProvider" output="false" access="public" returntype="any" hint="Map to a provider object that must implement coldbox.system.ioc.IProvider">
+    <cffunction name="toProvider" output="false" access="public" returntype="any" hint="Map to a provider object that must implement coldbox.system.ioc.IProvider or a closure or UDF">
     	<cfargument name="provider" required="true" hint="The provider to map to"/>
 		<cfscript>
 			currentMapping.setPath( arguments.provider ).setType( this.TYPES.PROVIDER );
