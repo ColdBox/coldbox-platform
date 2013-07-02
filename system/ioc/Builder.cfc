@@ -67,9 +67,16 @@ TODO: update dsl consistency, so it is faster.
 	<!--- buildProviderMixer --->
     <cffunction name="buildProviderMixer" output="false" access="public" returntype="any" hint="Used to provider providers via mixers on targeted objects">
     	<cfscript>
-    		// return the instance from the injected counterparts
-			return this.$wbScopeStorage.get(this.$wbScopeInfo.key, this.$wbScopeInfo.scope)
-						.getInstance( this.$wbProviders[ getFunctionCalledName() ] );
+			var targetInjector = this.$wbScopeStorage.get(this.$wbScopeInfo.key, this.$wbScopeInfo.scope);
+			var targetProvider = this.$wbProviders[ getFunctionCalledName() ];
+			
+			// Verify if this is a mapping first?
+			if( targetInjector.containsInstance( targetProvider ) ){
+				return targetInjector.getInstance(name=targetProvider, targetObject=this);
+			}
+			
+			// else treat as full DSL
+			return targetInjector.getInstance(dsl=targetProvider, targetObject=this);
 		</cfscript>
     </cffunction>
 	
@@ -157,7 +164,6 @@ TODO: update dsl consistency, so it is faster.
 		<cfreturn oModel>
     </cffunction>
 
-	
 	<!--- buildJavaClass --->
     <cffunction name="buildJavaClass" output="false" access="public" returntype="any" hint="Build a Java class via mappings">
     	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">

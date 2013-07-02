@@ -256,18 +256,32 @@
 	function testbuildProviderMixer(){
 		// mocks
 		mockLuis = getMockBox().createStub();
-		scopeInfo = {enabled=true,scope="application",key="wirebox"};
-		scopeStorage = getMockBox().createEmptyMock("coldbox.system.core.collections.ScopeStorage")
-				.$("exists",true).$("get",mockInjector);
-		mockInjector.$("getInstance", mockLuis);
+		mockTarget = getMockBox().createStub();
+		scopeInfo = {enabled=true, scope="application", key="wirebox"};
+		mockInjector.$("getInstance", mockLuis)
+			.$("containsInstance", true);
+		scopeStorage = getMockBox().createStub()
+				.$( "exists",true )
+				.$( "get", mockInjector );
 		
-		//mocks
-		builder.$wbscopeInfo    = scopeInfo;
-		builder.$wbScopeStorage = scopeStorage;
-		builder.$wbProviders  = {buildProviderMixer="luis"};
+		// inject mocks on target
+		mockTarget.$wbscopeInfo    = scopeInfo;
+		mockTarget.$wbScopeStorage = scopeStorage;
+		mockTarget.$wbProviders  = { buildProviderMixer = "luis" };
+		mockTarget.buildProviderMixer = builder.buildProviderMixer;
 		
-		p = builder.buildProviderMixer();
-		assertEquals(mockLuis, p );		
+		// 1. Via mapping first
+		p = mockTarget.buildProviderMixer();
+		assertEquals( "luis", mockInjector.$callLog().getInstance[ 1 ].name );
+		assertEquals( mockLuis, p );
+		
+		// 2. Via DSL
+		mockInjector.$("getInstance", mockLuis)
+			.$("containsInstance", false);
+		mockTarget.$wbProviders  = { buildProviderMixer = "logbox:logger:{this}" };
+		p = mockTarget.buildProviderMixer();
+		assertEquals( "logbox:logger:{this}", mockInjector.$callLog().getInstance[ 1 ].dsl );
+		assertEquals( mockLuis, p );		
 	}
 	
 </cfscript>
