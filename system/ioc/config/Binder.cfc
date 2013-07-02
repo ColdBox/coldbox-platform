@@ -248,9 +248,10 @@ Description :
 
 	<!--- mapDirectory --->
     <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection">
-    	<cfargument name="packagePath"  required="true" hint="The instantiation packagePath to map"/>
-		<cfargument name="include" 		required="true" default="" hint="An include regex that if matches will only include CFCs that match this case insensitive regex"/>
-		<cfargument name="exclude" 		required="true" default="" hint="An exclude regex that if matches will exclude CFCs that match this case insensitive regex"/>
+    	<cfargument name="packagePath"  required="true" 	hint="The instantiation packagePath to map"/>
+		<cfargument name="include" 		required="true" 	default="" hint="An include regex that if matches will only include CFCs that match this case insensitive regex"/>
+		<cfargument name="exclude" 		required="true" 	default="" hint="An exclude regex that if matches will exclude CFCs that match this case insensitive regex"/>
+		<cfargument name="influence" 	required="false" 	hint="The influence closure or UDF that will receive the currently working mapping so you can influence it during the iterations"/>
 		<cfscript>
 			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
 			var qObjects		= "";
@@ -277,6 +278,11 @@ Description :
 
 				<!--- Map the Path --->
 				<cfset mapPath( thisTargetPath )>
+				
+				<!--- Influence --->
+				<cfif structKeyExists( arguments, "influence" )>
+					<cfset arguments.influence( this, thisTargetPath )>
+				</cfif>
 
 			</cfif>
 

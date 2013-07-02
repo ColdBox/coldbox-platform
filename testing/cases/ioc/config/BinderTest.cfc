@@ -473,7 +473,18 @@
 		config.mapDirectory(packagePath="coldbox.testing.testModel",exclude="ioc.*");
 		//debug( config.getMappings() );
 		assertTrue( structCount(config.getMappings()) gt 5 );
-
+		
+		// with influence
+		config.reset();
+		
+		config.mapDirectory(packagePath="coldbox.testing.testModel.ioc", influence=influenceUDF);
+		assertEquals( "singleton", config.getMapping("Simple").getScope() );
+	}
+	
+	private function influenceUDF(binder, path){
+		if( findNoCase( "simple", arguments.path) ){
+			arguments.binder.asSingleton();
+		}
 	}
 
 	function testMapFactoryMethod(){
