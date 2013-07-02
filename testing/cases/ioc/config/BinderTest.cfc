@@ -476,15 +476,22 @@
 		
 		// with influence
 		config.reset();
-		
 		config.mapDirectory(packagePath="coldbox.testing.testModel.ioc", influence=influenceUDF);
 		assertEquals( "singleton", config.getMapping("Simple").getScope() );
+		
+		// with filters
+		config.reset();
+		config.mapDirectory(packagePath="coldbox.testing.testModel.ioc", filter=filterUDF);
+		assertFalse( config.mappingExists("Simple") );
 	}
 	
 	private function influenceUDF(binder, path){
 		if( findNoCase( "simple", arguments.path) ){
 			arguments.binder.asSingleton();
 		}
+	}
+	private boolean function filterUDF(path){
+		return ( findNoCase( "simple", arguments.path ) ? false : true );
 	}
 
 	function testMapFactoryMethod(){

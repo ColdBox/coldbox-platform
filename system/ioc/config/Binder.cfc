@@ -252,6 +252,7 @@ Description :
 		<cfargument name="include" 		required="true" 	default="" hint="An include regex that if matches will only include CFCs that match this case insensitive regex"/>
 		<cfargument name="exclude" 		required="true" 	default="" hint="An exclude regex that if matches will exclude CFCs that match this case insensitive regex"/>
 		<cfargument name="influence" 	required="false" 	hint="The influence closure or UDF that will receive the currently working mapping so you can influence it during the iterations"/>
+		<cfargument name="filter" 		required="false" 	hint="The filter closure or UDF that will receive the path of the CFC to process and returns TRUE to continue processing or FALSE to skip processing"/>
 		<cfscript>
 			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
 			var qObjects		= "";
@@ -272,9 +273,10 @@ Description :
 			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase(qObjects.name,".cfc","") ,"(/|\\)",".","all")>
 
 			<!--- Include/Exclude --->
-			<cfif ( len(arguments.include) AND reFindNoCase(arguments.include, thisTargetPath) )
-			      OR ( len(arguments.exclude) AND NOT reFindNoCase(arguments.exclude,thisTargetPath) )
-				  OR ( NOT len(arguments.include) AND NOT len(arguments.exclude) )>
+			<cfif ( len( arguments.include ) AND reFindNoCase( arguments.include, thisTargetPath ) )
+			      OR ( len( arguments.exclude ) AND NOT reFindNoCase( arguments.exclude,thisTargetPath ) )
+				  OR ( structKeyExists( arguments, "filter" ) AND arguments.filter( thisTargetPath ) )
+				  OR ( NOT len( arguments.include ) AND NOT len( arguments.exclude ) AND NOT structKeyExists( arguments, "filter") )>
 
 				<!--- Map the Path --->
 				<cfset mapPath( thisTargetPath )>
