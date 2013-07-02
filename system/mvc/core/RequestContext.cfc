@@ -12,7 +12,7 @@ component serializable=false{
 
 	/************************************** CONSTRUCTOR *********************************************/
 	
-	function init(struct properties){
+	function init(required struct properties, required any controller){
 		instance = structnew();
 
 		// Create the Collections
@@ -54,6 +54,9 @@ component serializable=false{
 		if( structKeyExists(arguments.properties,"SESBaseURL") ){
 			instance.SESBaseURL = arguments.properties.SESBaseURL;
 		}
+		
+		// Store Controller
+		instance.controller = arguments.controller;
 
 		return this;
 	}
@@ -390,10 +393,15 @@ component serializable=false{
 	function renderData(type="HTML", required data, contentType="", encoding="utf-8", numeric statusCode=200, statusText="", location="",
 						jsonCallback="", jsonQueryFormat="query", boolean jsonAsText=false,
 						xmlColumnList="", boolean xmlUseCDATA=false, xmlListDelimiter=",", xmlRootName="",
-						struct pdfArgs={}){
+						struct pdfArgs={}, formats="", formatsView=""){
 
 		var rd = structnew();
-
+	
+		// With Formats?
+		if( isArray( arguments.formats ) OR len( arguments.formats ) ){
+			return renderWithFormats( argumentCollection=arguments );
+		}
+		
 		// Validate rendering type
 		if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type) ){
 			$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF","RequestContext.InvalidRenderTypeException");
@@ -450,12 +458,48 @@ component serializable=false{
 		}
 
 		// HTTP Location?
-		if( len(arguments.location) ){ setHTTPHeader(name="location",value="arguments.location"); }
+		if( len(arguments.location) ){ setHTTPHeader(name="location", value=arguments.location); }
 
 		// Save Rendering data privately.
 		setValue(name='cbox_renderdata',value=rd,private=true);
 
 		return this;
+	}
+	
+	private function renderWithFormats(){
+		var viewToRender = "";
+			
+		// inflate list to array if found
+		if( isSimpleValue( arguments.formats ) ){ arguments.formats = listToArray( arguments.formats ); }
+		// param incoming rc.format to "html"
+		paramValue( "format", "html" );
+		// try to match the incoming format with the ones defined, if not defined then throw an exception
+		if( arrayFindNoCase( arguments.formats, instance.context.format )  ){
+			// Cleanup of formats
+			arguments.formats = "";
+			// Determine view from incoming or implicit
+			viewToRender = ( len( arguments.formatsView ) ? arguments.formatsView : replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" ) );
+			// Rendering switch
+			switch( instance.context.format ){
+				case "json" : case "jsonp" : case "jsont" : case "xml" : case "text" : case "wddx" : {
+					arguments.type=instance.context.format;
+					return renderData( argumentCollection=arguments );
+				}
+				case "pdf" : {
+					arguments.type = "pdf";
+					arguments.data = instance.controller.getRenderer().renderView( view=viewToRender);
+					return renderData( argumentCollection=arguments );
+				}
+				case "html" : case "plain" : {
+					return setView( view=viewToRender);
+				}
+			}
+		}					
+		else{
+			throw(message="The incoming format #instance.context.format# is not a valid registered format", 
+					  detail="Valid incoming formats are #arguments.formats.toString()#", 
+					  type="RequestContext.InvalidFormat");
+		}
 	}
 	
 	function getRenderData(){

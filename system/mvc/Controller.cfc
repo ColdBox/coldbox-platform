@@ -432,7 +432,7 @@ component serializable="false" accessors="true"{
 	
 	private coldbox.system.mvc.core.RequestContext function createContext(){
 		//Create the original request context
-		request.cb_requestContext = new coldbox.system.mvc.core.RequestContext( configSettings );
+		request.cb_requestContext = new coldbox.system.mvc.core.RequestContext( configSettings, this );
 		//Return Created Context
 		return request.cb_requestContext;
 	}
