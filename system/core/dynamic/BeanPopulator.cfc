@@ -235,7 +235,7 @@ Description :
 							beanInstance.populatePropertyMixin(propertyName=key,propertyValue=propertyValue,scope=arguments.scope);
 						}
 						// Check if setter exists, evaluate is used, so it can call on java/groovy objects
-						else if( structKeyExists(beanInstance,"set" & key) or arguments.trustedSetter ){
+						else if( structKeyExists( beanInstance, "set" & key ) or arguments.trustedSetter ){
 							// top-level null settings
 							if( arguments.nullEmptyInclude == "*" ) {
 								nullValue = true;
@@ -274,7 +274,7 @@ Description :
 								if( listFindNoCase( validEntityNames, key ) ) {
 									targetEntityName = key;
 								}
-								// 2.) attempt match on cfc
+								// 2.) attempt match on CFC metadata
 								else if( listFindNoCase( validEntityNames, listLast( relationalMeta[ key ].cfc, "." ) ) ) {
 									targetEntityName = listLast( relationalMeta[ key ].cfc, "." );
 								}
@@ -342,19 +342,20 @@ Description :
 											propertyValue = EntityLoadByPK( targetEntityName, propertyValue );
 										}
 									}	
-								}
+								} // if target entity name found
 							}
+							// Populate the property as a null value
 							if( isNull( propertyValue ) ) {
 								// Finally...set the value
-								evaluate("beanInstance.set#key#( JavaCast( 'null', '' ) )");
+								evaluate( "beanInstance.set#key#( JavaCast( 'null', '' ) )" );
 							}
+							// Populate the property as the value obtained whether simple or related
 							else {
-								// Finally...set the value
-								evaluate("beanInstance.set#key#( propertyValue )");
+								evaluate( "beanInstance.set#key#( propertyValue )" );
 							}
 							
-						}
-					}
+						} // end if setter or scope injection
+					}// end if prop ignored
 
 				}//end for loop
 				return beanInstance;
@@ -363,8 +364,8 @@ Description :
 				if( isNull( propertyValue ) ) {
 					arguments.keyTypeAsString = "NULL";
 				}
-				else if (isObject(propertyValue) OR isCustomFunction(propertyValue)){
-					arguments.keyTypeAsString = getMetaData(propertyValue).name;
+				else if ( isObject( propertyValue ) OR isCustomFunction( propertyValue )){
+					arguments.keyTypeAsString = getMetaData( propertyValue ).name;
 				}
 				else{
 		        	arguments.keyTypeAsString = propertyValue.getClass().toString();
@@ -382,12 +383,14 @@ Description :
 		<cfscript>
 			var meta = {};
 			// get array of properties
-			var properties = getMetaData( target ).properties;
+			var properties = getMetaData( arguments.target ).properties;
 			// loop over properties
-			for( var i = 1; i<=arrayLen( properties ); i++ ) {
+			for( var i = 1; i <= arrayLen( properties ); i++ ) {
 				var property = properties[ i ];
 				// if property has a name, a fieldtype, and is not the ID, add to maps
-				if( structKeyExists( property, "fieldtype" ) && structKeyExists( property, "name" ) && property.fieldtype != "id" ) {
+				if( structKeyExists( property, "fieldtype" ) && 
+					structKeyExists( property, "name" ) && 
+					!listFindNoCase( "id,column", property.fieldtype ) ) {
 					meta[ property.name ] = property;
 				}
 			}
