@@ -1057,7 +1057,7 @@ Description :
 				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
 					
 					// Verify condition matching
-					if( structKeyExists( _routes[ i ], "condition" ) AND NOT isSimpleValue( _routes[ i ].condition ) AND NOT _routes[ i ].condition() ){
+					if( structKeyExists( _routes[ i ], "condition" ) AND NOT isSimpleValue( _routes[ i ].condition ) AND NOT _routes[ i ].condition(requestString) ){
 						// Debug logging
 						if( log.canDebug() ){
 							log.debug("SES Route matched but condition closure did not pass: #_routes[ i ].toString()# on routed string: #requestString#");
