@@ -9,6 +9,11 @@
 		
 		variables.collaborator = createObject("component","coldbox.testing.cases.testing.Collaborator");		
 	</cfscript>
+	
+	<cffunction name="containsTest">
+		<cfargument name="mock">
+		<cfset mock.contains()>
+	</cffunction>
 
 	<cffunction name="displayData" access="public" returntype="query" hint="get data and send it back" output="false" >
 		<cfreturn variables.collaborator.getDataFromDB()>
