@@ -20,6 +20,13 @@
 		builder = getMockBox().createMock("coldbox.system.ioc.Builder").init( mockInjector );
 	}
 	
+	function testGetJavaDSL(){
+		makePublic(builder, "getJavaDSL");
+		def = {dsl="java:java.util.LinkedHashMap"};
+		e = builder.getJavaDSL( def );
+		assertTrue( isInstanceOf(e, "java.util.LinkedHashMap") );	
+	}
+	
 	function testGetEntityServiceDSL(){
 		makePublic(builder, "getEntityServiceDSL");
 		def = {dsl="entityService"};
