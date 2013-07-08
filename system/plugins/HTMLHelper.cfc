@@ -1445,10 +1445,10 @@ Description :
 		<cfscript>
 			var str		= arguments.buffer;
 			var attrs	= "";
-			var x			= 1;
-			var y		 = 1;
+			var x		= 1;
+			var y		= 1;
 			var key		= "";
-			var cols	 = listToArray(structKeyList(data[1]));
+			var cols	= structKeyArray( data[ 1 ] );
 
 			// Render Headers
 			for(x=1; x lte arrayLen(cols); x=x+1){
