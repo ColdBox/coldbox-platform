@@ -4,7 +4,129 @@
 		<cfset super.setup()>
 		<cfset populator = model.init()>
 	</cffunction>
+	
+	<cffunction name="testGetRelationshipMetaData" access="public" returntype="void" output="false">
+		<!--- Now test some events --->
+		<cfscript>
+			stime = getTickCount();
+			/* We are using the formBean object: fname,lname,email,initDate */
+			obj = entityNew("User");
+			makePublic( populator,"getRelationshipMetaData");
+			meta = populator.getRelationshipMetaData( target = obj );
+			assertTrue( isStruct( meta ) );
+			for( item in meta ) {
+				assertTrue( structKeyExists( meta[ item ], "cfc" ) );
+			}			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testPopulateFromStructWithComposeRelationships" access="public" returntype="void" output="false">
+		<!--- Now test some events --->
+		<cfscript>
+			stime = getTickCount();
 
+			/* We are using the formBean object: fname,lname,email,initDate */
+			obj = entityNew("User");
+			role= entityNew("Role");
+
+			/* Struct */
+			myStruct = structnew();
+			//myStruct.id = "";
+			myStruct.firstName = "Luis";
+			myStruct.lastName = "Majano";
+			myStruct.role = 1;
+			
+			/* Populate From Struct - populate role */
+			user = populator.populateFromStruct(target=obj,memento=myStruct,composeRelationships=true);
+			assertTrue( getMetaData( user.getRole() ).name=="testmodel.entities.Role" );
+			
+			/* Struct */
+			roleArgs = {
+				Users = [ "4028818e2fb6c893012fe637c5db00a7", "88B73A03-FEFA-935D-AD8036E1B7954B76" ]
+			};
+			/* Populate From Struct - populate role */
+			role = populator.populateFromStruct(target=role,memento=roleArgs,composeRelationships=true);
+			/** Have to comment out DI in User.cfc to work!! **/
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testPopulateFromStructWithEmptyNullIncludes" access="public" returntype="void" output="false">
+		<!--- Now test some events --->
+		<cfscript>
+			stime = getTickCount();
+
+			/* We are using the formBean object: fname,lname,email,initDate */
+			obj = entityNew("User");
+
+			/* Struct */
+			myStruct = structnew();
+			myStruct.id = "";
+			myStruct.firstName = "Luis";
+			myStruct.lastName = "Majano";
+			myStruct.username = "";
+			myStruct.password = "";
+
+			/* Populate From Struct - no columns null*/
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="");
+
+			assertEquals( myStruct.firstName, user.getFirstName() );
+			assertFalse( isNull( user.getUsername() ) );
+			assertFalse( isNull( user.getPassword() ) );
+			
+			/* Populate From Struct - One column null*/
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="username");
+
+			assertEquals( myStruct.firstName, user.getFirstName() );
+			assertTrue( isNull( user.getUsername() ) );
+			assertFalse( isNull( user.getPassword() ) );
+			
+			/* Populate From Struct - All columns null*/
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="*");
+
+			assertEquals( myStruct.firstName, user.getFirstName() );
+			assertTrue( isNull( user.getUsername() ) );
+			assertTrue( isNull( user.getPassword() ) );
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="testPopulateFromStructWithEmptyNullExcludes" access="public" returntype="void" output="false">
+		<!--- Now test some events --->
+		<cfscript>
+			stime = getTickCount();
+
+			/* We are using the formBean object: fname,lname,email,initDate */
+			obj = entityNew("User");
+
+			/* Struct */
+			myStruct = structnew();
+			myStruct.id = "";
+			myStruct.firstName = "Luis";
+			myStruct.lastName = "Majano";
+			myStruct.username = "";
+			myStruct.password = "";
+
+			/* Populate From Struct - no columns null*/
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyExclude="");
+
+			assertEquals( myStruct.firstName, user.getFirstName() );
+			assertFalse( isNull( user.getUsername() ) );
+			assertFalse( isNull( user.getPassword() ) );
+			
+			/* Populate From Struct - One column not null*/
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="*",nullEmptyExclude="username");
+
+			assertEquals( myStruct.firstName, user.getFirstName() );
+			assertFalse( isNull( user.getUsername() ) );
+			assertTrue( isNull( user.getPassword() ) );
+			
+			/* Populate From Struct - All columns null*/
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyExclude="*");
+
+			assertEquals( myStruct.firstName, user.getFirstName() );
+			assertFalse( isNull( user.getUsername() ) );
+			assertFalse( isNull( user.getPassword() ) );
+		</cfscript>
+	</cffunction>
 
 	<cffunction name="testPopulateFromStructWithNulls" access="public" returntype="void" output="false">
 		<!--- Now test some events --->

@@ -119,7 +119,7 @@ Description :
 			var newMessage = "";
 
 			// Do we have a message?
-			if( isEmpty() ){
+			if( isEmptyMessage() ){
 				// Set default message
 				setMessage('info',arguments.message);
 			}
@@ -144,7 +144,7 @@ Description :
 			var newMessage = "";
 
 			// Do we have a message?
-			if( isEmpty() ){
+			if( isEmptyMessage() ){
 				// Set default message
 				setMessage(type='info',messageArray=arguments.messageArray);
 			}
@@ -169,7 +169,7 @@ Description :
 			var newMessage = "";
 
 			// Do we have a message?
-			if( isEmpty() ){
+			if( isEmptyMessage() ){
 				// Set default message
 				setMessage(type='info',messageArray=arguments.messageArray);
 			}
@@ -210,7 +210,7 @@ Description :
 	</cffunction>
 
 	<!--- Is Empty --->
-	<cffunction name="isEmpty" access="public" hint="Checks wether the MessageBox is empty or not." returntype="boolean" output="false">
+	<cffunction name="isEmptyMessage" access="public" hint="Checks wether the MessageBox is empty or not." returntype="boolean" output="false">
 		<cfscript>
 			var msgStruct = getMessage();
 
@@ -274,13 +274,17 @@ Description :
 	<!--- Render It --->
 	<cffunction name="renderit" access="public" hint="Renders the message box and clears the message structure by default." output="false" returntype="any">
 		<!--- ************************************************************* --->
-		<cfargument name="clearMessage" type="boolean" required="false" default="true" hint="Flag to clear the message structure or not after rendering. Default is true.">
+		<cfargument name="clearMessage" type="boolean" 	required="false" default="true" hint="Flag to clear the message structure or not after rendering. Default is true.">
+		<cfargument name="template" 	type="string" 	required="false" default="" 	hint="An optional template to use for rendering instead of core or setting"/>
 		<!--- ************************************************************* --->
-		<cfset var msgStruct = getMessage()>
-		<cfset var results = "">
+		<cfset var msgStruct 	= getMessage()>
+		<cfset var results 		= "">
+		<cfset var thisTemplate	= getSetting(name="messagebox_template", defaultValue="/coldbox/system/includes/messagebox/MessageBox.cfm")>
+
+		<cfif len( trim( arguments.template ) )><cfset thisTemplate = arguments.template></cfif>
 
 		<cfif msgStruct.type.length() neq 0>
-			<cfsavecontent variable="results"><cfinclude template="/coldbox/system/includes/messagebox/MessageBox.cfm"></cfsavecontent>
+			<cfsavecontent variable="results"><cfinclude template="#thisTemplate#"></cfsavecontent>
 		<cfelse>
 			<cfset results = "">
 		</cfif>
@@ -300,11 +304,15 @@ Description :
 		<cfargument name="type"     	required="true"   type="string" hint="The message type.Available types [error][warning][info]">
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
 		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
+		<cfargument name="template" 	required="false"  type="string" default="" 	hint="An optional template to use for rendering instead of core or setting"/>
 		<!--- ************************************************************* --->
 		<cfset var msgStruct = structnew()>
 		<cfset var i = 0>
 		<cfset var results = "">
+		<cfset var thisTemplate = getSetting(name="messagebox_template", defaultValue="/coldbox/system/includes/messagebox/MessageBox.cfm")>
 
+		<cfif len( trim( arguments.template ) )><cfset thisTemplate = arguments.template></cfif>
+		
 		<!--- Verify Message Type --->
 		<cfif isValidMessageType(arguments.type)>
 			<!--- Populate message struct --->
@@ -319,7 +327,7 @@ Description :
 			<cfset msgStruct.message = flattenMessageArray(arguments.messageArray)>
 		</cfif>
 
-		<cfsavecontent variable="results"><cfinclude template="/coldbox/system/includes/messagebox/MessageBox.cfm"></cfsavecontent>
+		<cfsavecontent variable="results"><cfinclude template="#thisTemplate#"></cfsavecontent>
 
 		<cfreturn results>
 	</cffunction>
@@ -328,7 +336,7 @@ Description :
 
     <cffunction name="isValidMessageType" access="private" output="false" returntype="string" hint="Returns a list of valid message types.">
 	<cfargument name="type" type="string" required="true" />
-	<cfreturn refindnocase("(error|warning|info)", trim(arguments.type)) /> 
+	<cfreturn refindnocase("(error|warning|info)", trim(arguments.type)) />
     </cffunction>
 
 	<!--- flattenMessageArray --->

@@ -41,5 +41,16 @@
 		assertEquals( data.name , config.getKey("name") );
 	}
 		
+	function testgetMockRequestBuffer(){
+		makePUblic( test, "getMockRequestBuffer");
+		r = test.getMockRequestBuffer();
+		assertEquals( "coldbox.system.core.util.RequestBuffer", getMetadata(r).name );
+	}
+	
+	function testGetMockController(){
+		makePUblic( test, "getMockController");
+		r = test.getMockController();
+		assertEquals( "coldbox.system.testing.mock.web.MockController", getMetadata(r).name );
+	}
 </cfscript>
 </cfcomponent>

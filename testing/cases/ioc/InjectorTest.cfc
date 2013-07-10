@@ -1,15 +1,38 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
-
+	this.loadColdBox = false;
+	
 	function setup(){
+		super.setup();
+		
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector");
 
 		// init injector
 		injector.init();
-
+		
+		mockLogger = getMockBox().createStub().$("canDebug", false).$("error");
 		util = getMockBox().createMock("coldbox.system.core.util.util").$("getInheritedMetaData").$results({path="path.to.object"});
 		injector.$property("instance.utility","variables",util);
+		injector.$property("instance.log","variables", mockLogger);
+	}
+
+	function testShutdown(){
+		// mocks
+		parent = getMockBox().createStub().$("shutdown");
+		cachebox = getMockBox().createStub().$("shutdown");
+		eventManager = getMockBox().createStub().$("processState");
+		injector.setParent( parent );
+		injector.$property("cachebox", "instance", cachebox)
+			.$property("eventManager", "instance", eventManager)
+			.$("isCacheBoxLinked", true).$("removeFromScope");
+		mockLogger.$("canInfo", true).$("info");
+		
+		injector.shutdown();
+		assertTrue( eventManager.$times(2, "processState") );
+		assertTrue( parent.$once( "shutdown" ) );
+		assertTrue( injector.$once( "removeFromScope" ) );
+		assertTrue( cacheBox.$once( "shutdown" ) );
 	}
 
 	function testbuildBinder(){
@@ -34,9 +57,11 @@
 
 	function testGetBinder(){
 		debug( injector.getBinder() );
+		assert( isObject( injector.getBinder() ) );
 	}
 	function testgetVersion(){
 		debug( injector.getVersion() );
+		assert( len( injector.getVersion() ) );
 	}
 	function testGetInjectorID(){
 		debug( injector.getInjectorID() );
@@ -71,7 +96,7 @@
 			injector.registerListeners();
 		}
 		catch("Injector.ListenerCreationException" e){}
-		catch(Any e){ faile(e); }
+		catch(Any e){ fail(e); }
 
 	}
 

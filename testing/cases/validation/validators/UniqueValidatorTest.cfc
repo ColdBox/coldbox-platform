@@ -8,7 +8,12 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 
 	function setup(){
 		super.setup();
+		application.wirebox = createObject("component","coldbox.system.ioc.Injector").init(binder="coldbox.testing.resources.WireBox");
 		model.init();
+	}
+	function teardown(){
+		super.teardown();
+		structClear( application );
 	}
 
 	function testValidate(){
@@ -23,12 +28,12 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		r = model.validate(result, category, 'category', "luis", "true");
 		assertEquals( true, r );
 		// 2: No ID, Not Unique
-		r = model.validate(result, category, 'category', "ORM", "true");
+		r = model.validate(result, category, 'category', "ColdBox", "true");
 		assertEquals( false, r );
 
-		var category = entityLoad("Category", {category="ORM"} , true);
+		var category = entityLoad("Category", {category="ColdBox"} , true);
 		// 3: With ID, the same
-		r = model.validate(result, category, 'category', "ORM", "true");
+		r = model.validate(result, category, 'category', "ColdBox", "true");
 		assertEquals( true, r );
 		// 3: With ID, and unique
 		r = model.validate(result, category, 'category', "THIS IS UNIQUE", "true");

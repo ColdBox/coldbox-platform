@@ -162,6 +162,20 @@ id , name , mail
 			return getMockBox().createMock("coldbox.system.core.collections.ConfigBean").init(arguments.configStruct);
 		</cfscript>
 	</cffunction>
+	
+	<!--- getMockRequestBuffer --->
+	<cffunction name="getMockRequestBuffer" access="private" output="false" returnType="coldbox.system.core.util.RequestBuffer" hint="I will return to you a mock request buffer object used mostly in interceptor calls">
+	    <cfscript>
+			return getMockBox().createMock("coldbox.system.core.util.RequestBuffer").init();
+		</cfscript>
+	</cffunction>
+	
+	<!--- getMockController --->
+	<cffunction name="getMockController" access="private" output="false" returnType="coldbox.system.testing.mock.web.MockController" hint="I will return a mock controller object">
+	    <cfscript>
+			return CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
+		</cfscript>
+	</cffunction>
 		
 	<!--- getMockRequestContext --->
 	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it.">
@@ -180,8 +194,9 @@ id , name , mail
 			}
 			
 			// Create functioning request context
-			mockRC = getMockBox().createMock("coldbox.system.web.context.RequestContext");
-			
+			mockRC 			= getMockBox().createMock("coldbox.system.web.context.RequestContext");
+			mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
+				
 			// Create mock properties
 			rcProps.DefaultLayout = "";
 			rcProps.DefaultView = "";
@@ -192,11 +207,10 @@ id , name , mail
 			rcProps.FolderLayouts = structnew();
 			rcProps.RegisteredLayouts = structnew();
 			rcProps.modules = structnew();
-			mockRC.init(rcProps);
+			mockRC.init( properties=rcProps, controller=mockController );
 			
 			// return decorator context
 			if( structKeyExists(arguments,"decorator") ){
-				mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest');
 				return getMockBox().createMock(arguments.decorator).init(mockRC, mockController);
 			}
 			
@@ -349,11 +363,15 @@ id , name , mail
 		<cfargument name="private" 			required="false" type="boolean" default="false" hint="Call a private event or not">
 		<cfargument name="prepostExempt"	required="false" type="boolean" default="false" hint="If true, pre/post handlers will not be fired.">
 		<cfargument name="eventArguments"   required="false" type="struct"  default="#structNew()#" hint="A collection of arguments to passthrough to the calling event handler method"/>
+		<cfargument name="renderResults" 	required="false" type="boolean" default="false" hint="If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content"/>
 		<cfscript>
 			var handlerResults  = "";
 			var requestContext  = "";
 			var relocationTypes = "TestController.setNextEvent,TestController.setNextRoute,TestController.relocate";
 			var cbController    = getController();
+			var renderData		= "";
+			var renderedContent = "";
+			var iData			= {};
 				
 			//Setup the request Context with setup FORM/URL variables set in the unit test.
 			setupRequest(arguments.event);
@@ -372,18 +390,57 @@ id , name , mail
 				}
 				
 				// grab the latest event in the context, in case overrides occur
-				arguments.event = getRequestContext().getCurrentEvent();
+				requestContext  = getRequestContext();
+				arguments.event = requestContext.getCurrentEvent();
 				
-				//TEST EVENT EXECUTION
-				handlerResults = cbController.runEvent(event=arguments.event,
+				// TEST EVENT EXECUTION
+				if( NOT requestContext.isNoExecution() ){
+					// execute the event
+					handlerResults = cbController.runEvent(event=arguments.event,
 													   private=arguments.private,
 													   prepostExempt=arguments.prepostExempt,
 													   eventArguments=arguments.eventArguments);
-			
+					
+					// Are we doing rendering procedures?
+					if( arguments.renderResults ){
+						// preLayout
+						cbController.getInterceptorService().processState("preLayout");
+						
+						// Render Data?
+						renderData = requestContext.getRenderData();
+						if( isStruct( renderData ) and NOT structIsEmpty( renderData ) ){
+							renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=renderData);
+						}
+						// If we have handler results save them in our context for assertions
+						else if ( isDefined("handlerResults") ){
+							requestContext.setValue("cbox_handler_results", handlerResults);
+							renderedContent = handlerResults;
+						}
+						// render layout/view pair
+						else{
+							renderedContent = cbController.getPlugin("Renderer")
+								.renderLayout(module=requestContext.getCurrentLayoutModule(), 
+										     viewModule=requestContext.getCurrentViewModule());
+						}
+						
+						// Pre Render
+						iData = { renderedContent = renderedContent };
+						cbController.getInterceptorService().processState("preRender", iData);
+						renderedContent = iData.renderedContent;
+						
+						// Store in collection for assertions
+						requestContext.setValue( "cbox_rendered_content", renderedContent );
+					
+						// postRender
+						cbController.getInterceptorService().processState("postRender");
+					}
+				}
+				
 				// Request End Handler
 				if ( len(cbController.getSetting("RequestEndHandler")) ){
-					cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
+					cbController.runEvent( cbController.getSetting("RequestEndHandler"), true );
 				}
+				
 				// postProcess
 				cbController.getInterceptorService().processState("postProcess");
 				
@@ -395,13 +452,8 @@ id , name , mail
 				}
 			}
 			
-			//Return the correct event context.
+			// Return the correct event context.
 			requestContext = getRequestContext();
-			
-			//If we have results save them in our context for assertions
-			if ( isDefined("handlerResults") ){
-				requestContext.setValue("cbox_handler_results", handlerResults);
-			}
 			
 			return requestContext;
 		</cfscript>

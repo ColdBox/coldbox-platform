@@ -1,6 +1,6 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
-
+	this.loadcoldbox = false;
 	function setup(){
 		adapter = getMockBox().createMock("coldbox.system.ioc.adapters.WireBoxAdapter");
 	}

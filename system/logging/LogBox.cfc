@@ -33,7 +33,7 @@ Description :
 		// Category Appenders
 		instance.categoryAppenders = "";	
 		// Version
-		instance.version = "1.6";	 
+		instance.version = "1.7.0";	 
 		// Configuration object
 		instance.config = "";
 		// ColdBox Application Link
@@ -185,40 +185,8 @@ Description :
 		<cfreturn structKeyList(instance.appenderRegistry)>
 	</cffunction>
 
-<!------------------------------------------- PRIVATE ------------------------------------------>
-	
-	<!--- locateCategoryParentLogger --->
-	<cffunction name="locateCategoryParentLogger" output="false" access="private" returntype="any" hint="Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.">
-		<cfargument name="category" required="true" hint="The category name to investigate for parents."/>
-		<cfscript>
-			// Get parent category name shortened by one.
-			var parentCategory = "";
-			
-			// category len check
-			if( len(arguments.category) ){
-				parentCategory = listDeleteAt(arguments.category, listLen(arguments.category,"."), ".");
-			}
-			
-			// Check if parent Category is empty
-			if( len(parentCategory) EQ 0 ){
-				// Just return the root logger, nothing found.
-				return instance.loggerRegistry["ROOT"];
-			}			
-			// Does it exist already in the instantiated loggers?
-			if( structKeyExists(instance.loggerRegistry,parentCategory) ){
-				return instance.loggerRegistry[parentCategory];
-			}
-			// Do we need to create it, lazy loading?
-			if( instance.config.categoryExists(parentCategory) ){
-				return getLogger(parentCategory);	
-			}
-			// Else, it was not located, recurse
-			return locateCategoryParentLogger(parentCategory);			
-		</cfscript>
-	</cffunction>
-	
 	<!--- registerAppender --->
-	<cffunction name="registerAppender" output="false" access="private" returntype="any" hint="Register a new appender object in the appender registry.">
+	<cffunction name="registerAppender" output="false" access="public" returntype="any" hint="Register a new appender object in the appender registry.">
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="class" 		required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
@@ -249,6 +217,38 @@ Description :
 				</cfscript>
 			</cflock>
 		</cfif>
+	</cffunction>
+
+<!------------------------------------------- PRIVATE ------------------------------------------>
+	
+	<!--- locateCategoryParentLogger --->
+	<cffunction name="locateCategoryParentLogger" output="false" access="private" returntype="any" hint="Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.">
+		<cfargument name="category" required="true" hint="The category name to investigate for parents."/>
+		<cfscript>
+			// Get parent category name shortened by one.
+			var parentCategory = "";
+			
+			// category len check
+			if( len(arguments.category) ){
+				parentCategory = listDeleteAt(arguments.category, listLen(arguments.category,"."), ".");
+			}
+			
+			// Check if parent Category is empty
+			if( len(parentCategory) EQ 0 ){
+				// Just return the root logger, nothing found.
+				return instance.loggerRegistry["ROOT"];
+			}			
+			// Does it exist already in the instantiated loggers?
+			if( structKeyExists(instance.loggerRegistry,parentCategory) ){
+				return instance.loggerRegistry[parentCategory];
+			}
+			// Do we need to create it, lazy loading?
+			if( instance.config.categoryExists(parentCategory) ){
+				return getLogger(parentCategory);	
+			}
+			// Else, it was not located, recurse
+			return locateCategoryParentLogger(parentCategory);			
+		</cfscript>
 	</cffunction>
 	
 	<!--- getAppendersMap --->

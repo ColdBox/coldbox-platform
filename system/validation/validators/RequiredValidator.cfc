@@ -41,6 +41,22 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 		if( isSimpleValue(arguments.targetValue) AND len(trim( arguments.targetValue )) ){
 			return true;
 		}
+		// Array Tests
+		if( isArray( arguments.targetValue ) and arrayLen( arguments.targetValue ) ){
+			return true;
+		}
+		// Query Tests
+		if( isQuery( arguments.targetValue ) and arguments.targetValue.recordcount ){
+			return true;
+		}
+		// Struct Tests
+		if( isStruct( arguments.targetValue ) and structCount( arguments.targetValue ) ){
+			return true;
+		}
+		// Object
+		if( isObject( arguments.targetValue ) ){
+			return true;
+		}
 
 		var args = {message="The '#arguments.field#' value is required",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 		validationResult.addError( validationResult.newError(argumentCollection=args) );

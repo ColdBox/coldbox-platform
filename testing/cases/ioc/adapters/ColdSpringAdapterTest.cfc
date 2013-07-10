@@ -1,7 +1,9 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
-
+	this.loadcoldbox = false;
+	
 	function setup(){
+		super.setup();
 		adapter = getMockBox().createMock("coldbox.system.ioc.adapters.ColdSpringAdapter");
 	}
 

@@ -285,6 +285,13 @@
 			assertTrue( isInstanceOf( mock, "coldbox.system.cache.ICacheProvider" ) );
 		}
 		
+		function testContainsCFKeyword(){
+			test = getMockBox().createMock("coldbox.testing.cases.testing.Test");
+			mockTest = getMockBox().createEmptyMock( "coldbox.testing.cases.testing.ContainsTest" )
+				.$("contains", true);
+			assertTrue( mockTest.contains() );
+		}
+		
 	</cfscript>
 
 </cfcomponent>

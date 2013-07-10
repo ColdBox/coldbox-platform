@@ -646,6 +646,11 @@ Loads a coldbox cfc configuration file
 
 			// Register layout settings
 			structAppend( configStruct, layoutSettings );
+			
+			// Check blank defaultLayout
+			if( !len( trim( configStruct.defaultLayout ) ) ){
+				configStruct.defaultLayout = fwSettingsStruct.defaultLayout;
+			}
 
 			// registered layouts
 			if( isStruct( layouts ) ){

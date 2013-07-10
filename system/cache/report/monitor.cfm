@@ -68,7 +68,7 @@ ATTRIBUTES:
 </cfif>
 
 <!--- Render Reports According To Panel Requested --->
-<cfswitch expression="#debugPanel#">
+<cfswitch expression="#url.debugPanel#">
 	<cfcase value="cache">
 		<cfset ajaxRender = false>
 		<cfset report = reportHandler.renderCachePanel()>

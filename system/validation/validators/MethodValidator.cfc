@@ -23,9 +23,16 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 	* @validationData.hint The validation data the validator was created with
 	*/
 	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
-
-
-		if( evaluate("arguments.target.#arguments.validationData#( arguments.targetValue, arguments.target )")  ){
+	
+		// null checks
+		if( isNull(arguments.targetValue) ){
+			var args = {message="The '#arguments.field#' value is null",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
+			validationResult.addError( validationResult.newError(argumentCollection=args) );
+			return false;
+		}
+		
+		// Validate via method
+		if( evaluate("arguments.target.#arguments.validationData#( arguments.targetValue )")  ){
 			return true;
 		}
 

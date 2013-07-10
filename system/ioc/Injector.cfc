@@ -48,7 +48,7 @@ Description :
 				// Scope Storages
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(),
 				// Version
-				version  = "1.6.0",
+				version  = "1.7.0",
 				// The Configuration Binder object
 				binder   = "",
 				// ColdBox Application Link
@@ -179,12 +179,12 @@ Description :
 			instance.eventManager.processState("beforeInjectorShutdown",iData);
 
 			// Is parent linked
-			if( isObject(instance.parent) ){
+			if( isObject( instance.parent ) ){
 				instance.parent.shutdown();
 			}
 
 			// standalone cachebox? Yes, then shut it down baby!
-			if( NOT isColdBoxLinked() ){
+			if( isCacheBoxLinked() ){
 				instance.cacheBox.shutdown();
 			}
 
@@ -206,6 +206,7 @@ Description :
     	<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
 		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
 		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="targetObject" 	required="false"	default="" 	hint="The object requesting the dependency, usually only used by DSL lookups"/>
 		<cfscript>
 			var instancePath 	= "";
 			var mapping 		= "";
@@ -213,8 +214,8 @@ Description :
 			var iData			= {};
 
 			// Get by DSL?
-			if( structKeyExists(arguments,"dsl") ){
-				return instance.builder.buildSimpleDSL( arguments.dsl, "ExplicitCall" );
+			if( structKeyExists( arguments,"dsl" ) ){
+				return instance.builder.buildSimpleDSL( dsl=arguments.dsl, targetID="ExplicitCall", targetObject=arguments.targetObject );
 			}
 
 			// Check if Mapping Exists?
@@ -275,6 +276,7 @@ Description :
     		var thisMap = arguments.mapping;
 			var oModel	= "";
 			var iData	= "";
+			var closure = "";
 
 			// before construction event
 			iData = {mapping=arguments.mapping,injector=this};
@@ -298,13 +300,21 @@ Description :
 					oModel = instance.builder.buildFeed( thisMap ); break;
 				}
 				case "dsl" : {
-					oModel = instance.builder.buildSimpleDSL( thisMap.getDSL(), thisMap.getName() ); break;
+					oModel = instance.builder.buildSimpleDSL( dsl=thisMap.getDSL(), targetID=thisMap.getName() ); break;
 				}
 				case "factory" : {
 					oModel = instance.builder.buildFactoryMethod( thisMap, arguments.initArguments ); break;
 				}
 				case "provider" : {
-					oModel = getInstance( thisMap.getPath() ).get(); break;
+					// verify if it is a simple value or closure/UDF
+					if( isSimpleValue( thisMap.getPath() ) ){
+						oModel = getInstance( thisMap.getPath() ).get();	
+					}
+					else{
+						closure = thisMap.getPath();
+						oModel = closure();
+					}
+					break;
 				}
 				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}
@@ -581,7 +591,7 @@ Description :
 				// else check if dsl is used?
 				else if( structKeyExists(arguments.DIData[x], "dsl") ){
 					// Get DSL dependency by sending entire DI structure to retrieve
-					refLocal.dependency = instance.builder.buildDSLDependency( arguments.DIData[x], arguments.targetID, arguments.targetObject );
+					refLocal.dependency = instance.builder.buildDSLDependency( definition=arguments.DIData[ x ], targetID=arguments.targetID, targetObject=arguments.targetObject );
 				}
 				// else we have to have a reference ID or a nasty bug has ocurred
 				else{

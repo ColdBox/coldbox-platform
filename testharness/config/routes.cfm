@@ -14,6 +14,20 @@
 		     action={GET='show', PUT='update', DELETE='delete', POST='save'});
 	
 	*/
+
+	function ff(){
+		return ( findnocase( "Firefox", cgi.HTTP_USER_AGENT ) ? true : false ); 
+	};
+	
+	function fResponse(rc){
+		return "<h1>Hello from closure land: #arguments.rc.lname#</h1>";
+	};
+	
+	// Responses
+	addRoute(pattern="/ff", response="Hello FireFox", condition=ff);
+	addRoute(pattern="/luis/:lname", response="<h1>Hi Luis {lname}, how are {you}</h1>", statusCode="200", statusText="What up dude!");
+	addRoute(pattern="/luis2/:lname", response=fResponse, statusCode="202", statusText="What up from closure land");
+	
 	// Views No Events
 	addRoute(pattern="contactus",view="simpleView");
 	addRoute(pattern="contactus2",view="simpleView",viewnoLayout=true);

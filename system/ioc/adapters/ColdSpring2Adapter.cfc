@@ -60,9 +60,9 @@ Description :
 	</cffunction>
 	
 	<!--- setParentFactory --->
-    <cffunction name="setParentBeanFactory" output="false" access="public" returntype="void" hint="Set a parent factory on the adapted factory">
+    <cffunction name="setParentFactory" output="false" access="public" returntype="void" hint="Set a parent factory on the adapted factory">
     	<cfargument name="parent" type="any" required="true" hint="The parent factory to add"/>
-  		<cfset getFactory().setParentFactory( arguments.parent )>
+  		<cfset getFactory().setParentBeanFactory( arguments.parent )>
     </cffunction>
 	
 	<!--- getParentFactory --->

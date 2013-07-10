@@ -125,9 +125,8 @@ Description :
 		<cfargument name="asyncPriority" 	required="false" 	type="string"	default="NORMAL" hint="The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL"/>
 		<cfargument name="asyncJoinTimeout"	required="false" 	type="numeric"	default="0" hint="The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout."/>
 		<!--- ************************************************************* --->
-		<cfsilent>
+		<cfset var loc = {}><cfsilent>
 		<cfscript>
-		var loc = {};
 		// Validate Incoming State
 		if( instance.interceptorConfig.throwOnInvalidStates AND NOT listFindNoCase( arrayToList( instance.interceptionPoints ), arguments.state ) ){
 			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#", "Valid states are #instance.interceptionPoints.toString()#", "InterceptorService.InvalidInterceptionState");
@@ -137,6 +136,7 @@ Description :
 		if( structKeyExists( instance.interceptionStates, arguments.state ) ){
 			// Execute Interception in the state object
 			arguments.event = controller.getRequestService().getContext();
+			arguments.buffer = instance.requestBuffer;
 			loc.results = structFind( instance.interceptionStates, arguments.state ).process(argumentCollection=arguments);
 		}
 		// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace

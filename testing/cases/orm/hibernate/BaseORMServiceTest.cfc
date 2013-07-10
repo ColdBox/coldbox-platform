@@ -58,7 +58,7 @@
 		assert( arrayLen( t ) , "Conditionals between");
 		t = ormservice.findByLastLoginBetween("User", "01/01/2008", "11/01/2008");
 		assert( isNull( t ) , "Conditionals between");
-		t = ormservice.findByLastLoginNotBetween("User", "01/01/2009", "01/01/2012");
+		t = ormservice.findByLastLoginNotBetween("User", "01/01/2009", "01/01/2018");
 		assert( isNull( t ) , "Conditionals not between");
 		t = ormservice.findAllByLastNameInList("User", "Majano,Fernando");
 		assert( arrayLen( t ) , "Conditionals inList");

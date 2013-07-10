@@ -271,6 +271,7 @@ component accessors="true" serializable="false" extends="coldbox.system.mvc.Fram
 					structInsert( controller.getSetting("layoutsRefMap"), cbox_layoutLocationKey, cbox_layoutLocation, true);
 				}
 			}
+
 			var viewLocations = discoverViewPaths( reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ) );
 			// RenderLayout
 			var renderedLayout = renderViewComposite( cbox_currentLayout, viewLocations.viewPath, viewLocations.viewHelperPath, args );
@@ -281,12 +282,12 @@ component accessors="true" serializable="false" extends="coldbox.system.mvc.Fram
 
 	function locateLayout(required layout){
 		// Default path is the conventions
-		return "/#appMapping#/#layoutsConvention#/#arguments.layout#";
+		return "#( len( appMapping) ? "/" & appMapping : "")#/#layoutsConvention#/#arguments.layout#";
 	}
 
 	function locateView(required view){
 		// Default path is the conventions
-		return "/#appMapping#/#viewsConvention#/#arguments.view#";
+		return "#( len( appMapping) ? "/" & appMapping : "")#/#viewsConvention#/#arguments.view#";
 	}
 
 	/************************************** PRIVATE *********************************************/

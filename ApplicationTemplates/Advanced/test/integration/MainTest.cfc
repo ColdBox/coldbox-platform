@@ -17,6 +17,35 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testindex" returntype="void" output="false">
+		<cfscript>
+		var event = "";
+		
+		//Place any variables on the form or URL scope to test the handler.
+		//URL.name = "luis"
+		event = execute(event="main.index", renderResults=true);
+		
+		debug(event.getCollection());
+		
+		//Do your asserts below
+		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage","",true), "Failed to assert welcome message");
+			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testdoSomething" returntype="void" output="false">
+		<cfscript>
+		var event = "";
+		
+		//Place any variables on the form or URL scope to test the handler.
+		//URL.name = "luis"
+		event = execute("main.doSomething");
+		debug(event.getCollection());
+		//Do your asserts below for setnextevent you can test for a setnextevent boolean flag
+		assertEquals("main.index", event.getValue("setnextevent",""), "Relocation Test");
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testonAppInit" returntype="void" output="false">
 		<cfscript>
 		var event = "";

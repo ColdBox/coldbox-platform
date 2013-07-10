@@ -317,15 +317,23 @@ component accessors="true"{
 
 	/**
     * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
+    * @entityName.hint The entity to create
+    * @properties.hint The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
+    * @composeRelationships.hint Automatically attempt to compose relationships from the incoming properties memento
+    * @nullEmptyInclude.hint A list of keys to NULL when empty
+    * @nullEmptyExclude.hint A list of keys to NOT NULL when empty
+    * @ignoreEmpty.hint Ignore empty values on populations, great for ORM population
+    * @include.hint A list of keys to include in the population from the incoming properties memento
+    * @exclude.hint A list of keys to exclude in the population from the incoming properties memento
     */
-	any function new(required string entityName,struct properties=structnew()){
-		var entity   = entityNew(arguments.entityName);
-		var key      = "";
-		var excludes = "entityName,properties";
+	any function new(required string entityName, struct properties=structnew(), boolean composeRelationships=true, nullEmptyInclude="", nullEmptyExclude="", boolean ignoreEmpty=false, include="", exclude=""){
+		var entity   = entityNew( arguments.entityName );
 
 		// Properties exists?
 		if( NOT structIsEmpty(arguments.properties) ){
-			populate(target=entity,memento=arguments.properties );
+			populate(target=entity, memento=arguments.properties, composeRelationships=arguments.composeRelationships,
+					 nullEmptyInclude=arguments.nullEmptyInclude, nullEmptyExclude=arguments.nullEmptyExclude, ignoreEmpty=arguments.ignoreEmpty,
+					 include=arguments.include, exclude=arguments.exclude );
 		}
 
 		// Event Handling? If enabled, call the postNew() interception
@@ -350,7 +358,10 @@ component accessors="true"{
 					 	   boolean trustedSetter=false,
 						   string include="",
 						   string exclude="",
-						   boolean ignoreEmpty=false){
+						   boolean ignoreEmpty=false,
+						   string nullEmptyInclude="",
+						   string nullEmptyExclude="",
+						   boolean composeRelationships=true){
 
 		return beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
@@ -369,13 +380,16 @@ component accessors="true"{
 								   boolean trustedSetter=false,
 								   string include="",
 								   string exclude="",
-						   		   boolean ignoreEmpty=false){
+						   		   boolean ignoreEmpty=false,
+						   		   string nullEmptyInclude="",
+						   		   string nullEmptyExclude="",
+						   		   boolean composeRelationships=true){
 
 		return beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
 
 	/**
-	* Populate from XML, for argument definitions look at the populate method. <br/>
+	* Populate from XML, for argument definitions look at the populate method
 	* @root.hint The XML root element to start from
 	* @xml.hint	The XML string or packet or XML object to populate from
 	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
@@ -390,13 +404,16 @@ component accessors="true"{
 								  boolean trustedSetter=false,
 								  string include="",
 								  string exclude="",
-						   		  boolean ignoreEmpty=false){
+						   		  boolean ignoreEmpty=false,
+						   		  string nullEmptyInclude="",
+						   		  string nullEmptyExclude="",
+						   		  boolean composeRelationships=true){
 
 		return beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
 
 	/**
-	* Populate from Query, for argument definitions look at the populate method. <br/>
+	* Populate from Query, for argument definitions look at the populate method
 	* @qry.hint The query to use for population
 	* @rowNumber.hint	The row number to use for population
 	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
@@ -411,7 +428,10 @@ component accessors="true"{
 								    boolean trustedSetter=false,
 								    string include="",
 								    string exclude="",
-						   			boolean ignoreEmpty=false){
+						   			boolean ignoreEmpty=false,
+						   			string nullEmptyInclude="",
+						   		  	string nullEmptyExclude="",
+						   		  	boolean composeRelationships=true){
 
 		return beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
@@ -488,7 +508,7 @@ component accessors="true"{
 		}
 
 		// type safe conversions
-		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
+		arguments.id = convertIDValueToJavaType(entityName=arguments.entityName, id=arguments.id);
 		var q = "FROM #arguments.entityName# where id in (:idlist)";
 		// ordering?
 		if( len(arguments.sortOrder) ){
@@ -581,7 +601,7 @@ component accessors="true"{
 		var count   = 0;
 
 		// type safe conversions
-		arguments.id = convertIDValueToJavaType(arguments.entityName,arguments.id);
+		arguments.id = convertIDValueToJavaType(entityName=arguments.entityName, id=arguments.id);
 
 		// delete using lowercase id convention from hibernate for identifier
 		var datasource = orm.getEntityDatasource(arguments.entityName);

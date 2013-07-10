@@ -34,6 +34,9 @@ Description :
 		<cfargument name="include"  		required="false" 	type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" 	type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" 	type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" 	type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" 	type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Inflate JSON
@@ -55,6 +58,9 @@ Description :
 		<cfargument name="include"  		required="false" 	type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false"	type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" 	type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" 	type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" 	type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			var key				= "";
@@ -100,6 +106,9 @@ Description :
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string" 	default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string" 	default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			//by default to take values from first row of the query
@@ -132,6 +141,9 @@ Description :
 		<cfargument name="exclude"  		required="false" 	type="string"  	default="" hint="A list of keys to exclude in the population">
 		<cfargument name="prefix"  			required="true" 	type="string"  	hint="The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.">
 		<cfargument name="ignoreEmpty" 		required="false" 	type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" 	type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" 	type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<cfscript>
 			// Create a struct including only those keys that match the prefix.
 			//by default to take values from first row of the query
@@ -167,6 +179,9 @@ Description :
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<cfargument name="ignoreEmpty" 		required="false" type="boolean" default="false" hint="Ignore empty values on populations, great for ORM population"/>
+		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
+		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
+		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			var beanInstance = arguments.target;
@@ -175,6 +190,9 @@ Description :
 			var scopeInjection = false;
 			var udfCall = "";
 			var args = "";
+			var nullValue = false;
+			var propertyValue = "";
+			var relationalMeta = "";
 
 			try{
 
@@ -184,10 +202,17 @@ Description :
 					mixerUtil.start( beanInstance );
 				}
 
+				// If composing relationships, get target metadata
+				if( arguments.composeRelationships ) {
+					relationalMeta = getRelationshipMetaData( arguments.target );
+				}
+
 				// Populate Bean
 				for(key in arguments.memento){
 					// init population flag
 					pop = true;
+					// init nullValue flag
+					nullValue = false;
 					// Include List?
 					if( len(arguments.include) AND NOT listFindNoCase(arguments.include,key) ){
 						pop = false;
@@ -203,26 +228,147 @@ Description :
 
 					// Pop?
 					if( pop ){
+						// shortcut to property value
+						propertyValue = arguments.memento[ key ];
 						// Scope Injection?
 						if( scopeInjection ){
-							beanInstance.populatePropertyMixin(propertyName=key,propertyValue=arguments.memento[key],scope=arguments.scope);
+							beanInstance.populatePropertyMixin(propertyName=key,propertyValue=propertyValue,scope=arguments.scope);
 						}
 						// Check if setter exists, evaluate is used, so it can call on java/groovy objects
-						else if( structKeyExists(beanInstance,"set" & key) or arguments.trustedSetter ){
-							evaluate("beanInstance.set#key#(arguments.memento[key])");
-						}
-					}
+						else if( structKeyExists( beanInstance, "set" & key ) or arguments.trustedSetter ){
+							// top-level null settings
+							if( arguments.nullEmptyInclude == "*" ) {
+								nullValue = true;
+							}
+							if( arguments.nullEmptyExclude == "*" ) {
+								nullValue = false;
+							}
+							// Is property in empty-to-null include list?
+							if( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
+								nullValue = true;
+							} 
+							// Is property in empty-to-null exclude list, or is exclude list "*"?
+							if( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ){
+								nullValue = false;
+							}
+							// Is value nullable (e.g., simple, empty string)? If so, set null...
+							if( isSimpleValue( propertyValue ) && !len( trim( propertyValue ) ) && nullValue ) {
+								propertyValue = JavaCast( "null", "" );
+							}
+
+							// If property isn't null, try to compose the relationship
+							if( !isNull( propertyValue ) && composeRelationships && structKeyExists( relationalMeta, key ) ) {
+								// get valid, known entity name list
+								var validEntityNames = structKeyList( ORMGetSessionFactory().getAllClassMetadata() );
+								var targetEntityName = "";
+								/**
+								 * The only info we know about the relationships are the property names and the cfcs
+								 * CFC setting can be relative, so can't assume that component lookup will work
+								 * APPROACH
+								 * 1.) Easy: If property name of relationship is a valid entity name, use that
+								 * 2.) Harder: If property name is not a valid entity name (e.g., one-to-many, many-to-many), use cfc name
+								 * 3.) Nuclear: If neither above works, try by component meta data lookup. Won't work if using relative paths!!!!
+								 */
+
+								// 1.) name match
+								if( listFindNoCase( validEntityNames, key ) ) {
+									targetEntityName = key;
+								}
+								// 2.) attempt match on CFC metadata
+								else if( listFindNoCase( validEntityNames, listLast( relationalMeta[ key ].cfc, "." ) ) ) {
+									targetEntityName = listLast( relationalMeta[ key ].cfc, "." );
+								}
+								// 3.) component lookup
+								else {
+									try {
+										targetEntityName = getComponentMetaData( relationalMeta[ key ].cfc ).entityName;
+									}
+									catch( any e ) {
+										getUtil().throwIt(type="BeanPopulator.PopulateBeanException",
+							  			  message="Error populating bean #getMetaData(beanInstance).name# relationship of #key#. The component #relationalMeta[ key ].cfc# could not be found.",
+							  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
+									}
+									
+								}
+								// if targetEntityName was successfully found
+								if( len( targetEntityName) ) {
+									// array or struct type (one-to-many, many-to-many)
+									if( listContainsNoCase( "one-to-many,many-to-many", relationalMeta[ key ].fieldtype ) ) {
+										// Support straight-up lists and convert to array
+    									if( isSimpleValue( propertyValue ) ) {
+    										propertyValue = listToArray( propertyValue );
+    									}
+										var relType = structKeyExists( relationalMeta[ key ], "type" ) && relationalMeta[ key ].type != "any" ? relationalMeta[ key ].type : 'array';
+										var manyMap = reltype=="struct" ? {} : [];
+										// loop over array
+										for( var relValue in propertyValue ) {
+											// for type of array
+											if( relType=="array" ) {
+												// add composed relationship to array
+												arrayAppend( manyMap, EntityLoadByPK( targetEntityName, relValue ) );
+											}
+											// for type of struct
+											else {
+												// make sure structKeyColumn is defined in meta
+												if( structKeyExists( relationalMeta[ key ], "structKeyColumn" ) ) {
+													// load the value
+													var item = EntityLoadByPK( targetEntityName, relValue );
+													var structKeyColumn = relationalMeta[ key ].structKeyColumn;
+													var keyValue = "";
+													// try to get struct key value from entity
+													if( !isNull( item ) ) {
+														try {
+															keyValue = evaluate("item.get#structKeyColumn#()");
+														}
+														catch( Any e ) {
+															getUtil().throwIt(type="BeanPopulator.PopulateBeanException",
+                    							  			  message="Error populating bean #getMetaData(beanInstance).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
+                    							  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
+														}
+													}
+													// if the structKeyColumn value was found...
+													if( len( keyValue ) ) {
+														manyMap[ keyValue ] = item;
+													}
+												}
+											}
+										}
+										// set main property value to the full array of entities
+										propertyValue = manyMap;
+									}
+									// otherwise, simple value; load relationship (one-to-one, many-to-one)
+									else {
+										if( isSimpleValue( propertyValue ) && trim( propertyValue ) != "" ) {
+											propertyValue = EntityLoadByPK( targetEntityName, propertyValue );
+										}
+									}	
+								} // if target entity name found
+							}
+							// Populate the property as a null value
+							if( isNull( propertyValue ) ) {
+								// Finally...set the value
+								evaluate( "beanInstance.set#key#( JavaCast( 'null', '' ) )" );
+							}
+							// Populate the property as the value obtained whether simple or related
+							else {
+								evaluate( "beanInstance.set#key#( propertyValue )" );
+							}
+							
+						} // end if setter or scope injection
+					}// end if prop ignored
 
 				}//end for loop
-
 				return beanInstance;
 			}
-			catch(Any e){
-				if (isObject(arguments.memento[key]) OR isCustomFunction(arguments.memento[key])){
-					arguments.keyTypeAsString = getMetaData(arguments.memento[key]).name;
+			catch( Any e ){
+				if( isNull( propertyValue ) ) {
+					arguments.keyTypeAsString = "NULL";
+				}
+				else if ( isObject( propertyValue ) OR isCustomFunction( propertyValue )){
+					arguments.keyTypeAsString = getMetaData( propertyValue ).name;
 				}
 				else{
-		        	arguments.keyTypeAsString = arguments.memento[key].getClass().toString();
+		        	arguments.keyTypeAsString = propertyValue.getClass().toString();
 				}
 				getUtil().throwIt(type="BeanPopulator.PopulateBeanException",
 					  			  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
@@ -232,6 +378,25 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
+	<cffunction name="getRelationshipMetaData" access="private" output="false" returntype="Struct" hint="Prepares a structure of target relational meta data">
+		<cfargument name="target" required="true" type="any" />
+		<cfscript>
+			var meta = {};
+			// get array of properties
+			var properties = getMetaData( arguments.target ).properties;
+			// loop over properties
+			for( var i = 1; i <= arrayLen( properties ); i++ ) {
+				var property = properties[ i ];
+				// if property has a name, a fieldtype, and is not the ID, add to maps
+				if( structKeyExists( property, "fieldtype" ) && 
+					structKeyExists( property, "name" ) && 
+					!listFindNoCase( "id,column", property.fieldtype ) ) {
+					meta[ property.name ] = property;
+				}
+			}
+			return meta;
+		</cfscript>
+	</cffunction>
 
 	<!--- Get ColdBox Util --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">

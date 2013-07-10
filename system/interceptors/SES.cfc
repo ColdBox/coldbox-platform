@@ -25,7 +25,7 @@ Description :
 			instance.withModule	= "";
 
 			// STATIC Reserved Keys as needed for cleanups
-			instance.RESERVED_KEYS 			  	= "handler,action,view,viewNoLayout,module,moduleRouting";
+			instance.RESERVED_KEYS 			  	= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition";
 			instance.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation,ssl,append";
 
 			// STATIC Valid Extensions
@@ -116,18 +116,18 @@ Description :
 
 			// Find a route to dispatch
 			aRoute = findRoute(action=cleanedPaths["pathInfo"],event=arguments.event);
-
+			
 			// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 			for( key in aRoute ){
 				// Reserved Keys Check, only translate NON reserved keys
-				if( not listFindNoCase(instance.RESERVED_KEYS,key) ){
-					rc[key] = aRoute[key];
-					routedStruct[key] = aRoute[key];
+				if( not listFindNoCase( instance.RESERVED_KEYS, key ) ){
+					rc[ key ] = aRoute[ key ];
+					routedStruct[ key ] = aRoute[ key ];
 				}
 			}
 
 			// Create Event To Dispatch if handler key exists
-			if( structKeyExists(aRoute,"handler") ){
+			if( structKeyExists( aRoute,"handler" ) ){
 				// If no action found, default to the convention of the framework, must likely 'index'
 				if( NOT structKeyExists(aRoute,"action") ){
 					aRoute.action = getDefaultFrameworkAction();
@@ -150,26 +150,70 @@ Description :
 					}
 				}
 				// Create routed event
-				rc[instance.eventName] = aRoute.handler & "." & aRoute.action;
-
+				rc[ instance.eventName ] = aRoute.handler & "." & aRoute.action;
+ 
 				// Do we have a module?If so, create routed module event.
-				if( len(aRoute.module) ){
-					rc[instance.eventName] = aRoute.module & ":" & rc[instance.eventName];
+				if( len( aRoute.module ) ){
+					rc[ instance.eventName ] = aRoute.module & ":" & rc[ instance.eventName ];
 				}
 
 			}// end if handler exists
 
 			// See if View is Dispatched
-			if( structKeyExists(aRoute,"view") ){
+			if( structKeyExists( aRoute, "view" ) ){
 				// Dispatch the View
 				arguments.event.setView(name=aRoute.view, noLayout=aRoute.viewNoLayout)
 					.noExecution();
+			}
+			// See if Response is dispatched
+			if( structKeyExists( aRoute, "response" ) ){
+				renderResponse( aRoute, arguments.event );
 			}
 
 			// Save the Routed Variables so event caching can verify them
 			arguments.event.setRoutedStruct( routedStruct );
 		</cfscript>
 	</cffunction>
+	
+	<!--- renderResponse --->    
+    <cffunction name="renderResponse" output="false" access="private" returntype="any" hint="Render a RESTful response">    
+    	<cfargument name="route" required="true" hint="The route response"/>
+    	<cfargument name="event" required="true" hint="The event object.">
+		<cfscript>
+			var aRoute 			= arguments.route;
+			var replacements 	= "";
+			var thisReplacement = "";
+			var thisKey			= "";
+			var theResponse		= "";
+			
+			// standardize status codes
+			if( !structKeyExists( aRoute, "statusCode") ){ aRoute.statusCode = 200; }
+			if( !structKeyExists( aRoute, "statusText") ){ aRoute.statusText = ""; }
+				
+			// simple values
+			if( isSimpleValue( aRoute.response ) ){
+				// setup default response
+				theResponse = aRoute.response;
+				// String replacements
+				replacements = reMatchNoCase( "{[^{]+?}", aRoute.response );
+				for( thisReplacement in replacements ){
+					thisKey = reReplaceNoCase( thisReplacement, "({|})", "", "all" );
+					if( event.valueExists( thisKey ) ){				
+						theResponse = replace( aRoute.response, thisReplacement, event.getValue( thisKey ), "all");
+					}
+				}
+				
+			}
+			// Closure
+			else{
+				theResponse = aRoute.response( event.getCollection() );				
+			} 
+			
+			// render it out
+			event.renderdata(data=theResponse, statusCode=aRoute.statusCode, statusText=aRoute.statusText)
+				.noExecution();
+    	</cfscript>    
+    </cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
@@ -347,6 +391,10 @@ Description :
 		<cfargument name="namespaceRouting"		 type="string"  required="false" default="" hint="Called internally by addNamespaceRoutes to add a namespaced routing route."/>
 		<cfargument name="ssl" 					 type="boolean" required="false" default="false" hint="Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl"/>
 		<cfargument name="append"  				 type="boolean" required="false" default="true" hint="Whether the route should be appended or pre-pended to the array. By default we append to the end of the array"/>
+		<cfargument name="response" 			 type="any" 	required="false" hint="An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}"/>
+		<cfargument name="statusCode"   		 type="numeric" required="false" hint="The HTTP status code to send to the browser response." />
+		<cfargument name="statusText"   		 type="string"  required="false" hint="Explains the HTTP status code sent to the browser response." />
+		<cfargument name="condition"   		 	 type="any"  	required="false" hint="A closure or UDF to execute that MUST return true to use route if matched or false and continue." />
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisRoute = structNew();
@@ -1007,6 +1055,17 @@ Description :
 				if( (match.len[1] IS NOT 0 AND getLooseMatching())
 				     OR
 				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
+					
+					// Verify condition matching
+					if( structKeyExists( _routes[ i ], "condition" ) AND NOT isSimpleValue( _routes[ i ].condition ) AND NOT _routes[ i ].condition(requestString) ){
+						// Debug logging
+						if( log.canDebug() ){
+							log.debug("SES Route matched but condition closure did not pass: #_routes[ i ].toString()# on routed string: #requestString#");
+						}
+						// Condition did not pass, move to next route
+						continue;
+					}
+					
 					// Setup the found Route
 					foundRoute = _routes[i];
 					// Is this namespace routing?
@@ -1034,7 +1093,7 @@ Description :
 			if( foundRoute.ssl AND NOT event.isSSL() ){
 				setNextEvent(URL=event.getSESBaseURL() & reReplace(cgi.path_info, "^\/", ""), ssl=true, statusCode=302, queryString=cgi.query_string);
 			}
-
+			
 			// Check if the match is a module Routing entry point or a namespace entry point or not?
 			if( len( foundRoute.moduleRouting ) OR len( foundRoute.namespaceRouting ) ){
 				// build routing argument struct

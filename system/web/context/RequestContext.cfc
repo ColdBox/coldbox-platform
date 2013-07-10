@@ -16,9 +16,14 @@ Description :
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContext">
 		<cfargument name="properties" type="any" required="true" hint="The context properties struct">
+		<cfargument name="controller"  type="any" required="true" hint="The ColdBox Controller">
+		
 		<cfscript>
 			instance = structnew();
-
+			
+			// Store controller;
+			instance.controller = arguments.controller;
+			
 			// Create the Collections
 			instance.context		= structnew();
 			instance.privateContext = structnew();
@@ -634,10 +639,10 @@ Description :
 		return this;
 		</cfscript>
 	</cffunction>
-
+	
 	<cffunction name="renderData" access="public" returntype="any" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="type" 		required="true"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
+		<cfargument name="type" 		required="false"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
 		<cfargument name="data" 		required="true"  type="any"    hint="The data you would like to marshall and return by the framework">
 		<cfargument name="contentType"  required="true"  type="string"  default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
 		<cfargument name="encoding" 	required="false" type="string"  default="utf-8" hint="The default character encoding to use"/>
@@ -655,8 +660,16 @@ Description :
 		<cfargument name="xmlRootName"      type="string"   required="false" default="" hint="XML Only: The name of the initial root element of the XML packet">
 		<!--- ************************************************************* --->
 		<cfargument name="pdfArgs"      type="struct"   required="false" default="#structNew()#" hint="All the PDF arguments to pass along to the CFDocument tag.">
+		<!--- ************************************************************* --->
+		<cfargument name="formats"			type="any" required="false" default="" hint="The formats list or array that ColdBox should respond to using the passed in data argument. You can pass any of the valid types (JSON,JSONP,JSONT,XML,WDDX,PLAIN,HTML,TEXT,PDF). For PDF and HTML we will try to render the view by convention based on the incoming event.">
+		<cfargument name="formatsView"		type="any" required="false" default="" hint="The view that should be used for rendering HTML/PLAIN/PDF. By default ColdBox uses the name of the event as an implicit view.">
 		<cfscript>
 			var rd = structnew();
+			
+			// With Formats?
+			if( isArray( arguments.formats ) OR len( arguments.formats ) ){
+				return renderWithFormats( argumentCollection=arguments );
+			}
 
 			// Validate rendering type
 			if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type) ){
@@ -714,7 +727,7 @@ Description :
 			}
 
 			// HTTP Location?
-			if( len(arguments.location) ){ setHTTPHeader(name="location",value="arguments.location"); }
+			if( len(arguments.location) ){ setHTTPHeader(name="location",value=arguments.location); }
 
 			// Save Rendering data privately.
 			setValue(name='cbox_renderdata',value=rd,private=true);
@@ -820,6 +833,45 @@ Description :
     </cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
+		<!--- renderWithFormats --->    
+    <cffunction name="renderWithFormats" output="false" access="private" returntype="any" hint="Render With Formats">    
+    	<cfscript>	    
+			var viewToRender = "";
+			
+			// inflate list to array if found
+			if( isSimpleValue( arguments.formats ) ){ arguments.formats = listToArray( arguments.formats ); }
+			// param incoming rc.format to "html"
+			paramValue( "format", "html" );
+			// try to match the incoming format with the ones defined, if not defined then throw an exception
+			if( arrayFindNoCase( arguments.formats, instance.context.format )  ){
+				// Cleanup of formats
+				arguments.formats = "";
+				// Determine view from incoming or implicit
+				viewToRender = ( len( arguments.formatsView ) ? arguments.formatsView : replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" ) );
+				// Rendering switch
+				switch( instance.context.format ){
+					case "json" : case "jsonp" : case "jsont" : case "xml" : case "text" : case "wddx" : {
+						arguments.type=instance.context.format;
+						return renderData( argumentCollection=arguments );
+					}
+					case "pdf" : {
+						arguments.type = "pdf";
+						arguments.data = instance.controller.getPlugin("Renderer").renderView( view=viewToRender);
+						return renderData( argumentCollection=arguments );
+					}
+					case "html" : case "plain" : {
+						return setView( view=viewToRender);
+					}
+				}
+			}					
+			else{
+				throw(message="The incoming format #instance.context.format# is not a valid registered format", 
+						  detail="Valid incoming formats are #arguments.formats.toString()#", 
+						  type="RequestContext.InvalidFormat");
+			}
+    	</cfscript>    
+    </cffunction>
 
 	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
 		<cfargument name="message" 	type="string" 	required="yes">

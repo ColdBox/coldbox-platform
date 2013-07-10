@@ -20,8 +20,8 @@
 
 	function testMixins(){
 		r = injector.getInstance("MixinTest");
-		assertEquals( "lui", r.echo("lui") );
-		assertEquals( "lui", r.echo2("lui") );
+		assertEquals( "lui", r.myEcho("lui") );
+		assertEquals( "lui", r.myEcho2("lui") );
 	}
 
 	function testSetters(){
@@ -81,15 +81,27 @@
 		val = injector.buildInstance( mapping );
 		assertEquals("testbaby", val);
 
-		//Provider
+		// Provider
 		mockProvider = getMockBox().createEmptyMock("coldbox.system.ioc.Provider").$("get",mockStub);
 		mapping.setType("provider").setPath("MyCoolProvider");
 		injector.$("getInstance").$args("MyCoolProvider").$results(mockProvider);
 		val = injector.buildInstance( mapping );
 		assertEquals(mockStub, val);
+		// Provider closure
+		mapping.setType("provider").setPath( providerUDF );
+		val = injector.buildInstance( mapping );
+		assertTrue( val.verify() );
+		
+	}
+	
+	function providerUDF(){
+		return new coldbox.system.testing.MockBox().createStub().$("verify", true);
 	}
 
 	function testProviderMethods(){
+		// skip for railo as they don't have the context method
+		if( structKeyExists( server, "railo" ) ){ return; }
+		
 		providerTest = injector.getInstance("ProviderTest");
 		assertEquals( true, isObject(providerTest.getPizza()) );
 		assertEquals( true, structKeyExists(session,"wirebox:pizza") );
@@ -119,7 +131,15 @@
 
 	function testWebService(){
 		ws = injector.getInstance("coldboxWS");
-		assertEquals( "coldfusion.xml.rpc.ServiceProxy", getMetadata(ws).name );
+		
+		// Railo
+		if( structKeyExists( server, "railo" ) ){
+			assertEquals( "railo.runtime.net.rpc.client.rpcclient", getMetadata(ws).name );
+		}
+		// adobe
+		else{
+			assertEquals( "coldfusion.xml.rpc.ServiceProxy", getMetadata(ws).name );
+		}
 	}
 
 	function testDSL(){
@@ -137,8 +157,6 @@
 		b2 = injector.getInstance("factoryBean2");
 		assertEquals( "alexia", b2.name );
 		assertEquals( true, b2.cool );
-
-
 	}
 
 	function testTImeZone(){
@@ -188,7 +206,6 @@
 		c = injector.getInstance(dsl="wirebox");
 		assertEquals( c, injector );
 	}
-
-
+	
 </cfscript>
 </cfcomponent>

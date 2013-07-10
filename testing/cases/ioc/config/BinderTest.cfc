@@ -1,6 +1,9 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
+	this.loadColdBox = false;
 	function setup(){
+		super.setup();
+		
 		dataConfigPath = "coldbox.testing.cases.ioc.config.samples.SampleWireBox";
 		// Available WireBox public scopes
 		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
@@ -424,6 +427,7 @@
 			customScopes = {
 				AwesomeScope = "my.awesome.scope"
 			},
+			parentInjector = this,
 			scanLocations = ["coldbox.system"],
 			stopRecursions = ["coldbox.system.EventHandler"],
 			listeners = [
@@ -435,6 +439,8 @@
 			}
 		};
 		config.loadDataDSL( raw );
+		
+		assertEquals( this, config.getParentInjector() );
 	}
 
 	function testInto(){
@@ -467,7 +473,25 @@
 		config.mapDirectory(packagePath="coldbox.testing.testModel",exclude="ioc.*");
 		//debug( config.getMappings() );
 		assertTrue( structCount(config.getMappings()) gt 5 );
-
+		
+		// with influence
+		config.reset();
+		config.mapDirectory(packagePath="coldbox.testing.testModel.ioc", influence=influenceUDF);
+		assertEquals( "singleton", config.getMapping("Simple").getScope() );
+		
+		// with filters
+		config.reset();
+		config.mapDirectory(packagePath="coldbox.testing.testModel.ioc", filter=filterUDF);
+		assertFalse( config.mappingExists("Simple") );
+	}
+	
+	private function influenceUDF(binder, path){
+		if( findNoCase( "simple", arguments.path) ){
+			arguments.binder.asSingleton();
+		}
+	}
+	private boolean function filterUDF(path){
+		return ( findNoCase( "simple", arguments.path ) ? false : true );
 	}
 
 	function testMapFactoryMethod(){

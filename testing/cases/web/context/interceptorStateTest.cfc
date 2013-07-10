@@ -43,19 +43,20 @@
 
 	<cffunction name="testprocess" access="public" returnType="void">
 		<cfscript>
-			this.state.process( this.event, structnew() );
+			mockBuffer = getMockBox().createStub();
+			this.state.process( event=this.event, interceptData=structnew(), buffer=mockBuffer );
 			assertEquals( this.event.getValue('unittest'), true);
 			
 			// Now process with other method for event pattern
 			this.event.setValue("unittest",false);
 			this.mock.unittest = variables.unittest;
 			this.state.$property("metadataMap","instance", { "#this.key#" = {async=false, asyncPriority="normal", eventPattern="^UnitTest"} } );
-			this.state.process(this.event,structnew());
+			this.state.process( event=this.event, interceptData=structnew(), buffer=mockBuffer );
 			assertEquals(false, this.event.getValue('unittest'));
 			
 			// Now add event
 			this.event.setValue("event","UnitTest.test");
-			this.state.process(this.event,structnew());
+			this.state.process( event=this.event, interceptData=structnew(), buffer=mockBuffer );
 			assertEquals(true,this.event.getValue('unittest'));
 		</cfscript>
 	</cffunction>		
@@ -102,7 +103,8 @@
 			// Invoke
 			makepublic( this.state, "invoker" );
 			assertTrue( mockInterceptor.$never("unittest") );
-			this.state.invoker(mockInterceptor, getMockRequestContext(), {}, this.key );
+			mockBuffer = getMockBox().createStub();
+			this.state.invoker(mockInterceptor, getMockRequestContext(), {}, this.key, mockBuffer );
 			assertTrue( mockInterceptor.$once("unittest") );
 			
 		</cfscript>

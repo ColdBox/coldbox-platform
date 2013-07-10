@@ -45,8 +45,7 @@ Description		:
 			
 			// Create Method Signature
 			udfOut.append('
-			<cfset this["#arguments.method#"] = #arguments.method#>
-			<cfset variables["#arguments.method#"] = #arguments.method#>
+			<cfset this[ "#arguments.method#" ] = variables[ "#arguments.method#" ]> 
 			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">
 			<cfset var results = this._mockResults>
 			<cfset var resultsKey = "#arguments.method#">

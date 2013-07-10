@@ -1,7 +1,10 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-
-	<cffunction name="setUp" returntype="void" access="public" output="false">
+﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+	<cfset this.loadColdBox = false>
+	
+	<cffunction name="setUp">
 		<cfscript>
+			super.init();
+			
 			oRC = createObject("component","coldbox.system.web.context.RequestContext");
 
 			/* Properties */
@@ -20,15 +23,15 @@
 			};
 
 			/* Init it */
-			oRC.init(props);
+			oRC.init(props, getMockController() );
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="getRequestContext" access="private" returntype="any" hint="" output="false" >
+	<cffunction name="getRequestContext" access="private">
 		<cfreturn oRC>
 	</cffunction>
 
-	<cffunction name="testgetCollection" returntype="void" access="Public" output="false">
+	<cffunction name="testgetCollection">
 		<cfscript>
 			var event = getRequestContext();
 
@@ -36,7 +39,7 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testclearCollection" access="public" returntype="void" output="false">
+	<cffunction name="testclearCollection">
 		<cfscript>
 			var event = getRequestContext();
 			var test = {today=now()};
@@ -50,7 +53,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testcollectionAppend" access="public" returntype="void" output="false">
+	<cffunction name="testcollectionAppend">
 		<cfscript>
 			var event = getRequestContext();
 			var test = structnew();
@@ -65,7 +68,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testgetSize" access="public" returntype="void" output="false">
+	<cffunction name="testgetSize">
 		<cfscript>
 			var event = getRequestContext();
 			var test = structnew();
@@ -80,7 +83,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testgetValue" returntype="void" access="Public" output="false">
+	<cffunction name="testgetValue">
 		<cfscript>
 			var event = getRequestContext();
 			var test = structnew();
@@ -98,7 +101,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testsetValue" access="Public"  output="false" returntype="void">
+	<cffunction name="testsetValue" >
 		<cfscript>
 			var event = getRequestContext();
 			var test = structnew();
@@ -115,7 +118,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testremoveValue" access="Public" output="false" returntype="void">
+	<cffunction name="testremoveValue">
 		<cfscript>
 			var event = getRequestContext();
 			var test = structnew();
@@ -134,7 +137,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testvalueExists" returntype="void" access="Public" output="false">
+	<cffunction name="testvalueExists">
 		<cfscript>
 			var event = getRequestContext();
 			var test = structnew();
@@ -153,7 +156,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testparamValue" returntype="void" access="Public"	output="false">
+	<cffunction name="testparamValue"	output="false">
 		<cfscript>
 			var event = getRequestContext();
 			var test = structnew();
@@ -172,7 +175,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testCurrentView" access="public"  returntype="void" output="false">
+	<cffunction name="testCurrentView" >
 		<cfscript>
 			var event = getRequestContext();
 			var view = "vwHome";
@@ -203,7 +206,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testCurrentLayout" access="public" returntype="void" output="false">
+	<cffunction name="testCurrentLayout">
 		<cfscript>
 			var event = getRequestContext();
 			var layout = "layout.pdf";
@@ -217,7 +220,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testgetCurrentEventHandlerAction" access="public"returntype="void" output="false">
+	<cffunction name="testgetCurrentEventHandlerAction"returntype="void">
 		<cfscript>
 			var event = getRequestContext();
 			var defaultEvent = "ehTest.doSomething";
@@ -249,7 +252,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testoverrideEvent" access="Public"  output="false" returntype="void">
+	<cffunction name="testoverrideEvent" >
 		<cfscript>
 			var event = getRequestContext();
 			var newEvent = "pio.yea";
@@ -264,7 +267,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testshowdebugpanel" access="public" returntype="void">
+	<cffunction name="testshowdebugpanel">
 		<cfscript>
 			var event = getRequestContext();
 
@@ -279,7 +282,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testProxyRequest" access="public" returntype="void" >
+	<cffunction name="testProxyRequest" >
 		<cfscript>
 			var event = getRequestContext();
 
@@ -292,7 +295,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testNoRender" access="public" returntype="void">
+	<cffunction name="testNoRender">
 		<cfscript>
 			var event = getRequestContext();
 
@@ -307,7 +310,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testgetEventName" access="public" returntype="void" output="false">
+	<cffunction name="testgetEventName">
 		<cfscript>
 			var event = getRequestContext();
 			var test = props.eventName;
@@ -319,7 +322,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testgetSelf" access="public" output="false" returntype="void">
+	<cffunction name="testgetSelf">
 		<cfscript>
 			var event = getRequestContext();
 			var test = props.eventname;
@@ -331,7 +334,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testEventCacheableEntry" access="public" output="false" returntype="void">
+	<cffunction name="testEventCacheableEntry">
 		<cfscript>
 			var event = getRequestContext();
 			var centry = structnew();
@@ -350,7 +353,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testViewCacheableEntry" access="public" output="false" returntype="void">
+	<cffunction name="testViewCacheableEntry">
 		<cfscript>
 			var event = getRequestContext();
 			var centry = structnew();
@@ -369,7 +372,7 @@
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="testRoutedStruct" access="public" output="false" returntype="void">
+	<cffunction name="testRoutedStruct">
 		<cfscript>
 			var event = getRequestContext();
 			var routedStruct = structnew();
@@ -384,7 +387,7 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testSES" access="public" output="false" returntype="void">
+	<cffunction name="testSES">
 		<cfscript>
 			var event = getRequestContext();
 			base = "http://www.luismajano.com/index.cfm";
@@ -399,7 +402,7 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testBuildLink" access="public" output="false" returntype="void">
+	<cffunction name="testBuildLink">
 		<cfscript>
 			var event = getRequestContext();
 			base = "http://www.luismajano.com/index.cfm";
@@ -447,7 +450,7 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testRenderData" access="public" output="false" returntype="void">
+	<cffunction name="testRenderData">
 		<cfscript>
 			var event = getRequestContext();
 
@@ -519,7 +522,7 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testCurrentModule" access="public"  returntype="void" output="false">
+	<cffunction name="testCurrentModule" >
 		<cfscript>
 			var event = getRequestContext();
 
@@ -535,7 +538,7 @@
 	</cffunction>
 
 
-	<cffunction name="testModuleRoot" access="public"  returntype="void" output="false">
+	<cffunction name="testModuleRoot" >
 		<cfscript>
 			var event = getRequestContext();
 
@@ -550,7 +553,7 @@
 	</cffunction>
 
 
-	<cffunction name="testsetHTTPHeader" access="public"  returntype="void" output="false">
+	<cffunction name="testsetHTTPHeader" >
 		<cfscript>
 			var event = getRequestContext();
 
@@ -560,7 +563,7 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testGetHTTPConetnt" access="public"  returntype="void" output="false">
+	<cffunction name="testGetHTTPConetnt" >
 		<cfscript>
 			var event = getRequestContext();
 
@@ -571,7 +574,7 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testNoLayout" access="public"  returntype="void" output="false">
+	<cffunction name="testNoLayout" >
 		<cfscript>
 			var event = getRequestContext();
 

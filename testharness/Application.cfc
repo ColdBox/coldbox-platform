@@ -40,13 +40,13 @@ Description :
 		<cfset this.ormEnabled = "true">
 		<cfset this.ormSettings = {
 			dialect = "MySQLwithInnoDB",
-			cfclocation = ["/coldbox","/testmodel"],
+			cfclocation = [ "/coldbox" ],
 			skipCFCWithError = true,
 			eventHandling=true,
 			logSQL = true,
 			eventhandling = true,
 			eventhandler = "model.EventHandler",
-			secondarycacheenabled = true,
+			secondarycacheenabled = false,
 			cacheProvider = "ehcache",
 			flushAtRequestEnd = false
 		}>

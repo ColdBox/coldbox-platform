@@ -52,7 +52,7 @@ function configure(){
 		handlersIndexAutoReload = true,
 		
 		//Implicit Events
-		defaultEvent			= "general.index",
+		defaultEvent			= "",
 		requestStartHandler		= "",
 		requestEndHandler		= "",
 		applicationStartHandler = "",

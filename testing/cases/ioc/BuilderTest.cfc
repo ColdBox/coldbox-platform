@@ -1,7 +1,10 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
+	this.loadColdBox = false;
 	
 	function setup(){
+		super.setup();
+		
 		mockColdBox = getMockBox().createEmptyMock("coldbox.system.web.Controller");
 		mockCacheBox =  getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
 		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error").$("canWarn",true).$("warn");
@@ -15,6 +18,13 @@
 			.$("getCacheBox",mockCacheBox );
 		
 		builder = getMockBox().createMock("coldbox.system.ioc.Builder").init( mockInjector );
+	}
+	
+	function testGetJavaDSL(){
+		makePublic(builder, "getJavaDSL");
+		def = {dsl="java:java.util.LinkedHashMap"};
+		e = builder.getJavaDSL( def );
+		assertTrue( isInstanceOf(e, "java.util.LinkedHashMap") );	
 	}
 	
 	function testGetEntityServiceDSL(){
@@ -175,6 +185,21 @@
 		
 	}
 	
+	function testbuildSimpleDSL(){
+		
+		//mocks
+		mockStub = getMockBox().createStub().$("verify", true);
+		builder.$("buildDSLDependency", mockStub );
+		
+		// build it
+		r = builder.buildSimpleDSL(dsl="logbox:logger:test", targetID="unit", targetObject=this);
+		assertEquals( "unit", builder.$callLog().buildDSLDependency[ 1 ].targetID );
+		assertEquals( this, builder.$callLog().buildDSLDependency[ 1 ].targetObject );
+		assertEquals( "logbox:logger:test", builder.$callLog().buildDSLDependency[ 1 ].definition.dsl );
+		assertEquals( "", builder.$callLog().buildDSLDependency[ 1 ].definition.name );
+		
+	}
+	
 	function testgetWireBoxDSL(){
 		makePublic(builder,"getWireBoxDSL");
 		data = {name="luis", dsl="wirebox"};
@@ -238,18 +263,32 @@
 	function testbuildProviderMixer(){
 		// mocks
 		mockLuis = getMockBox().createStub();
-		scopeInfo = {enabled=true,scope="application",key="wirebox"};
-		scopeStorage = getMockBox().createEmptyMock("coldbox.system.core.collections.ScopeStorage")
-				.$("exists",true).$("get",mockInjector);
-		mockInjector.$("getInstance", mockLuis);
+		mockTarget = getMockBox().createStub();
+		scopeInfo = {enabled=true, scope="application", key="wirebox"};
+		mockInjector.$("getInstance", mockLuis)
+			.$("containsInstance", true);
+		scopeStorage = getMockBox().createStub()
+				.$( "exists",true )
+				.$( "get", mockInjector );
 		
-		//mocks
-		builder.$wbscopeInfo    = scopeInfo;
-		builder.$wbScopeStorage = scopeStorage;
-		builder.$wbProviders  = {buildProviderMixer="luis"};
+		// inject mocks on target
+		mockTarget.$wbscopeInfo    = scopeInfo;
+		mockTarget.$wbScopeStorage = scopeStorage;
+		mockTarget.$wbProviders  = { buildProviderMixer = "luis" };
+		mockTarget.buildProviderMixer = builder.buildProviderMixer;
 		
-		p = builder.buildProviderMixer();
-		assertEquals(mockLuis, p );		
+		// 1. Via mapping first
+		p = mockTarget.buildProviderMixer();
+		assertEquals( "luis", mockInjector.$callLog().getInstance[ 1 ].name );
+		assertEquals( mockLuis, p );
+		
+		// 2. Via DSL
+		mockInjector.$("getInstance", mockLuis)
+			.$("containsInstance", false);
+		mockTarget.$wbProviders  = { buildProviderMixer = "logbox:logger:{this}" };
+		p = mockTarget.buildProviderMixer();
+		assertEquals( "logbox:logger:{this}", mockInjector.$callLog().getInstance[ 1 ].dsl );
+		assertEquals( mockLuis, p );		
 	}
 	
 </cfscript>

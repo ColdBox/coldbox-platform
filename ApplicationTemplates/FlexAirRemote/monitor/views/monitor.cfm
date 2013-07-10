@@ -1,5 +1,5 @@
 ﻿<cfoutput>
-<h2><img src="includes/images/coldbox.png" class="middle" style="padding-right:10px" alt="ColdBox" /> #rc.welcomeMessage#</h2>
+<h2><img src="includes/images/coldbox.png" class="middle" style="padding-right:10px" alt="ColdBox" /> #prc.welcomeMessage#</h2>
 
 <div id="content">
 	<h3>Getting Started</h3>
