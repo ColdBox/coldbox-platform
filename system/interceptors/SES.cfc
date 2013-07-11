@@ -1230,7 +1230,7 @@ Description :
 
 			// Clean ContextRoots
 			if( len( getContextRoot() ) ){
-				items["pathInfo"] 	= replacenocase(items["pathInfo"],getContextRoot(),"");
+				//items["pathInfo"] 	= replacenocase(items["pathInfo"],getContextRoot(),"");
 				items["scriptName"] = replacenocase(items["scriptName"],getContextRoot(),"");
 			}
 

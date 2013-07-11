@@ -158,18 +158,18 @@
 				<help><![CDATA[ coldbox.system.web.Controller ]]></help>
 			</parameter>
 			</function>
-<!-- Functions for: coldbox.system.FrameworkSupertype -->
+<!-- Functions for: coldbox.system.FrameworkSuperType -->
 	<function creator="8" name="loadGlobalUDFLibraries" returns="any">
-			<help><![CDATA[ Load the global UDF libraries defined in the UDFLibraryFile Setting (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Load the global UDF libraries defined in the UDFLibraryFile Setting (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="$rethrow" returns="void">
-			<help><![CDATA[ Rethrow facade (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Rethrow facade (Context: FrameworkSuperType) ]]></help>
 		<parameter name="throwObject" required="true" type="any">
 				<help><![CDATA[ The cfcatch object ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getInterceptor" returns="any">
-			<help><![CDATA[ Get an interceptor (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Get an interceptor (Context: FrameworkSuperType) ]]></help>
 		<parameter name="interceptorName" required="false" type="any">
 				<help><![CDATA[ The name of the interceptor to search for ]]></help>
 			</parameter>
@@ -178,7 +178,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="relocate" returns="void">
-			<help><![CDATA[ This method will be deprecated, please use setNextEvent() instead. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ This method will be deprecated, please use setNextEvent() instead. (Context: FrameworkSuperType) ]]></help>
 		<parameter name="url" required="true" type="string">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -190,22 +190,22 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getModuleSettings" returns="any">
-			<help><![CDATA[ Get a module's setting structure if it exists (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Get a module's setting structure if it exists (Context: FrameworkSuperType) ]]></help>
 		<parameter name="module" required="true" type="any">
 				<help><![CDATA[ The module name ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getColdboxOCM" returns="any">
-			<help><![CDATA[ Get a CacheBox Cache of type: coldbox.system.cache.IColdboxApplicationCache (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Get a CacheBox Cache of type: coldbox.system.cache.IColdboxApplicationCache (Context: FrameworkSuperType) ]]></help>
 		<parameter name="cacheName" required="false" type="any">
 				<help><![CDATA[ The cache name to retrieve ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="$abort" returns="void">
-			<help><![CDATA[ Facade for cfabort (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade for cfabort (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="setfwLocale" returns="any">
-			<help><![CDATA[ Set the default locale to use in the framework for a specific user. Utility Method (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Set the default locale to use in the framework for a specific user. Utility Method (Context: FrameworkSuperType) ]]></help>
 		<parameter name="locale" required="false" type="any">
 				<help><![CDATA[ The locale to change and set. Must be Java Style: en_US ]]></help>
 			</parameter>
@@ -214,22 +214,22 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getNewMail" returns="any">
-			<help><![CDATA[ Get a new mail payload object ready for sending email through our mail service.  This function's arguments match the cfmail tag, so send whatever you like (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Get a new mail payload object ready for sending email through our mail service.  This function's arguments match the cfmail tag, so send whatever you like (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="getDatasource" returns="any">
-			<help><![CDATA[ I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct (Context: FrameworkSuperType) ]]></help>
 		<parameter name="alias" required="false" type="any">
 				<help><![CDATA[ The alias of the datasource to get from the configstruct (alias property in the config file) ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getController" returns="any">
-			<help><![CDATA[ Get controller: coldbox.system.web.Controller (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Get controller: coldbox.system.web.Controller (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="getMailService" returns="any">
-			<help><![CDATA[ Get a reference to our Mail Service plugin (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Get a reference to our Mail Service plugin (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="$dump" returns="void">
-			<help><![CDATA[ Facade for cfmx dump (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade for cfmx dump (Context: FrameworkSuperType) ]]></help>
 		<parameter name="var" required="yes" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -238,7 +238,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getModel" returns="any">
-			<help><![CDATA[ Create or retrieve model objects by convention (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Create or retrieve model objects by convention (Context: FrameworkSuperType) ]]></help>
 		<parameter name="name" required="false" type="any">
 				<help><![CDATA[ The mapping name or CFC instance path to try to build up ]]></help>
 			</parameter>
@@ -250,7 +250,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="renderLayout" returns="any">
-			<help><![CDATA[ Renders a layout with view combinations (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Renders a layout with view combinations (Context: FrameworkSuperType) ]]></help>
 		<parameter name="layout" required="false" type="any">
 				<help><![CDATA[ The explicit layout to use in rendering. ]]></help>
 			</parameter>
@@ -265,7 +265,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="renderView" returns="Any">
-			<help><![CDATA[ Renders all kinds of views (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Renders all kinds of views (Context: FrameworkSuperType) ]]></help>
 		<parameter name="view" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -295,19 +295,19 @@
 			</parameter>
 			</function>
 	<function creator="8" name="locateFilePath" returns="string">
-			<help><![CDATA[ Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSuperType) ]]></help>
 		<parameter name="pathToCheck" required="true" type="any">
 				<help><![CDATA[ The path to check ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="$include" returns="void">
-			<help><![CDATA[ Facade for cfinclude (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade for cfinclude (Context: FrameworkSuperType) ]]></help>
 		<parameter name="template" required="false" type="string">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getSetting" returns="any">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
 		<parameter name="name" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -319,10 +319,10 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getDebugMode" returns="boolean">
-			<help><![CDATA[ Facade to get your current debug mode (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade to get your current debug mode (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="getPlugin" returns="any">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
 		<parameter name="plugin" required="false" type="any">
 				<help><![CDATA[ The Plugin object's name to instantiate, as a string ]]></help>
 			</parameter>
@@ -340,7 +340,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="settingExists" returns="boolean">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
 		<parameter name="name" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -349,10 +349,10 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getValidationManager" returns="coldbox.system.validation.IValidationManager">
-			<help><![CDATA[ Retrieve the application's configured Validation Manager (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Retrieve the application's configured Validation Manager (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="getSettingStructure" returns="struct">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
 		<parameter name="FWSetting" required="false" type="boolean">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -361,10 +361,10 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getMemento" returns="any">
-			<help><![CDATA[ Get the memento of this object (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Get the memento of this object (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="setNextRoute" returns="void">
-			<help><![CDATA[ This method is now deprecated, please use setNextEvent(). This method will be removed later on (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ This method is now deprecated, please use setNextEvent(). This method will be removed later on (Context: FrameworkSuperType) ]]></help>
 		<parameter name="route" required="true" type="string">
 				<help><![CDATA[ The route to relocate to, do not prepend the baseURL or /. ]]></help>
 			</parameter>
@@ -382,7 +382,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="setNextEvent" returns="void">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
 		<parameter name="event" required="false" type="string">
 				<help><![CDATA[ The name of the event to run, if not passed, then it will use the default event found in your configuration file. ]]></help>
 			</parameter>
@@ -418,25 +418,25 @@
 			</parameter>
 			</function>
 	<function creator="8" name="addAsset" returns="any">
-			<help><![CDATA[ Add a js/css asset(s) to the html head section. You can also pass in a list of assets. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Add a js/css asset(s) to the html head section. You can also pass in a list of assets. (Context: FrameworkSuperType) ]]></help>
 		<parameter name="asset" required="true" type="any">
 				<help><![CDATA[ The asset to load, only js or css files. This can also be a comma delimmited list. ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="getSettingsBean" returns="coldbox.system.core.collections.ConfigBean">
-			<help><![CDATA[ Returns a configBean with all the configuration structure. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Returns a configBean with all the configuration structure. (Context: FrameworkSuperType) ]]></help>
 		<parameter name="FWSetting" required="false" type="boolean">
 				<help><![CDATA[ Whether to build the config bean with coldbox settings or config settings ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="includeUDF" returns="void">
-			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally. (Context: FrameworkSuperType) ]]></help>
 		<parameter name="udflibrary" required="true" type="any">
 				<help><![CDATA[ The UDF library to inject. ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="populateModel" returns="Any">
-			<help><![CDATA[ Populate a named or instantiated model (java/cfc) from the request collection items (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Populate a named or instantiated model (java/cfc) from the request collection items (Context: FrameworkSuperType) ]]></help>
 		<parameter name="model" required="true" type="any">
 				<help><![CDATA[ The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method ]]></help>
 			</parameter>
@@ -455,9 +455,18 @@
 			<parameter name="ignoreEmpty" required="false" type="boolean">
 				<help><![CDATA[ Ignore empty values on populations, great for ORM population ]]></help>
 			</parameter>
+			<parameter name="nullEmptyInclude" required="false" type="string">
+				<help><![CDATA[ A list of keys to NULL when empty ]]></help>
+			</parameter>
+			<parameter name="nullEmptyExclude" required="false" type="string">
+				<help><![CDATA[ A list of keys to NOT NULL when empty ]]></help>
+			</parameter>
+			<parameter name="composeRelationships" required="false" type="boolean">
+				<help><![CDATA[ Automatically attempt to compose relationships from memento ]]></help>
+			</parameter>
 			</function>
 	<function creator="8" name="validateModel" returns="coldbox.system.validation.result.IValidationResult">
-			<help><![CDATA[ Validate a target object (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Validate a target object (Context: FrameworkSuperType) ]]></help>
 		<parameter name="target" required="true" type="any">
 				<help><![CDATA[ The target object to validate or a structure of name-value paris to validate. ]]></help>
 			</parameter>
@@ -475,7 +484,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getResource" returns="any">
-			<help><![CDATA[ Facade to i18n.getResource. Returns a string. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade to i18n.getResource. Returns a string. (Context: FrameworkSuperType) ]]></help>
 		<parameter name="resource" required="true" type="any">
 				<help><![CDATA[ The resource to retrieve from the loaded localized bundle ]]></help>
 			</parameter>
@@ -487,13 +496,13 @@
 			</parameter>
 			</function>
 	<function creator="8" name="$htmlhead" returns="void">
-			<help><![CDATA[ Facade to cfhtmlhead (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade to cfhtmlhead (Context: FrameworkSuperType) ]]></help>
 		<parameter name="content" required="true" type="string">
 				<help><![CDATA[ The content to send to the head ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="announceInterception" returns="any">
-			<help><![CDATA[ Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result. (Context: FrameworkSuperType) ]]></help>
 		<parameter name="state" required="true" type="any">
 				<help><![CDATA[ The interception state to execute ]]></help>
 			</parameter>
@@ -517,13 +526,13 @@
 			</parameter>
 			</function>
 	<function creator="8" name="setDebugMode" returns="void">
-			<help><![CDATA[ Facade to set your debug mode (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade to set your debug mode (Context: FrameworkSuperType) ]]></help>
 		<parameter name="mode" required="true" type="boolean">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="persistVariables" returns="void">
-			<help><![CDATA[ Persist variables for flash redirections (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Persist variables for flash redirections (Context: FrameworkSuperType) ]]></help>
 		<parameter name="persist" required="false" type="string">
 				<help><![CDATA[ What request collection keys to persist in the relocation ]]></help>
 			</parameter>
@@ -532,7 +541,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="setSetting" returns="void">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
 		<parameter name="name" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -541,10 +550,10 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getfwLocale" returns="any">
-			<help><![CDATA[ Get the user's currently set locale or default locale (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Get the user's currently set locale or default locale (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="renderExternalView" returns="Any">
-			<help><![CDATA[ Renders external views (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Renders external views (Context: FrameworkSuperType) ]]></help>
 		<parameter name="view" required="true" type="any">
 				<help><![CDATA[ The full path to the view. This can be an expanded path or relative. Include extension. ]]></help>
 			</parameter>
@@ -565,7 +574,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getMyPlugin" returns="any">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
 		<parameter name="plugin" required="true" type="any">
 				<help><![CDATA[ The plugin name as a string ]]></help>
 			</parameter>
@@ -580,7 +589,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="$throw" returns="any">
-			<help><![CDATA[ Facade for cfthrow (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade for cfthrow (Context: FrameworkSuperType) ]]></help>
 		<parameter name="message" required="yes" type="string">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -592,10 +601,10 @@
 			</parameter>
 			</function>
 	<function creator="8" name="getMailSettings" returns="any">
-			<help><![CDATA[ I will return to you a mailsettingsBean modeled after your mail settings in your config file. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ I will return to you a mailsettingsBean modeled after your mail settings in your config file. (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function creator="8" name="runEvent" returns="any">
-			<help><![CDATA[ Facade to controller's runEvent() method. (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Facade to controller's runEvent() method. (Context: FrameworkSuperType) ]]></help>
 		<parameter name="event" required="false" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -613,7 +622,7 @@
 			</parameter>
 			</function>
 	<function creator="8" name="locateDirectoryPath" returns="string">
-			<help><![CDATA[ Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSuperType) ]]></help>
 		<parameter name="pathToCheck" required="true" type="any">
 				<help><![CDATA[ The path to check ]]></help>
 			</parameter>
@@ -851,7 +860,7 @@
 			<help><![CDATA[If you call this method on an object mapping, the object's constructor will not be called. By default all constructors are called.]]></help>
 		</scope>
 	<scope value="binder.toProvider(provider)">
-			<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider]]></help>
+			<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider or a closure or UDF]]></help>
 		</scope>
 	<scope value="binder.providerMethod(method,mapping)">
 			<help><![CDATA[Add a new provider method mapping]]></help>
@@ -916,7 +925,7 @@
 	<scope value="binder.mapDSL(namespace,path)">
 			<help><![CDATA[Register a new custom dsl namespace]]></help>
 		</scope>
-	<scope value="binder.mapDirectory(packagePath,include,exclude)">
+	<scope value="binder.mapDirectory(packagePath,include,exclude,[influence],[filter])">
 			<help><![CDATA[Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection]]></help>
 		</scope>
 	<scope value="binder.initArg([name],[ref],[dsl],[value],[javaCast])">
@@ -985,7 +994,7 @@
 	<scope value="event.getHTTPBasicCredentials()">
 			<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
 		</scope>
-	<scope value="event.renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs])">
+	<scope value="event.renderData([type],data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs],[formats],[formatsView])">
 			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
 		</scope>
 	<scope value="event.getSESBaseURL()">
@@ -1006,7 +1015,7 @@
 	<scope value="event.getSize([private])">
 			<help><![CDATA[Returns the number of elements in the collection]]></help>
 		</scope>
-	<scope value="event.init(properties)">
+	<scope value="event.init(properties,controller)">
 			<help><![CDATA[constructor]]></help>
 		</scope>
 	<scope value="event.isSES()">
@@ -1177,6 +1186,9 @@
 	<scope value="event.isNoRender()">
 			<help><![CDATA[Is this a no render request]]></help>
 		</scope>
+	<scope value="event.renderWithFormats()">
+			<help><![CDATA[Render With Formats]]></help>
+		</scope>
 	<scope value="event.getMemento()">
 			<help><![CDATA[Get the state of this request context]]></help>
 		</scope>
@@ -1300,7 +1312,7 @@
 	<scope value="wirebox.locateInstance(name)">
 			<help><![CDATA[Tries to locate a specific instance by scanning all scan locations and returning the instantiation path. If model not found then the returned instantiation path will be empty]]></help>
 		</scope>
-	<scope value="wirebox.getInstance([name],[dsl],[initArguments])">
+	<scope value="wirebox.getInstance([name],[dsl],[initArguments],[targetObject])">
 			<help><![CDATA[Locates, Creates, Injects and Configures an object model instance]]></help>
 		</scope>
 	<scope value="wirebox.processAfterCompleteDI(targetObject,DICompleteMethods)">
