@@ -225,10 +225,10 @@ For the latest usage, please visit the wiki.
 						//Redirect
 						if( arguments.event.isSES() ){
 							// Save the secured URL
-							rc._securedURL = "#cgi.script_name##cgi.path_info#";
+							rc._securedURL = arguments.event.buildLink( linkTo=reReplace( cgi.path_info, "^/", "" ) );
 						}
 						else{ 
-							// Save the secured URL */
+							// Save the secured URL
 							rc._securedURL = "#cgi.script_name#";							
 						}
 						
