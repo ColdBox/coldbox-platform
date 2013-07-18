@@ -192,7 +192,9 @@
 			};
 			
 			//1: Mock with positional and all calls should validate.
-			test.$( "getSetting" ).$args( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object ).$results( "UnitTest" );
+			test.$( "getSetting" )
+				.$args( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object )
+				.$results( "UnitTest" );
 		
 			// Test positional
 			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
@@ -207,10 +209,6 @@
 			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
 			assertEquals( "UnitTest", results );
 			args.integer = 23;
-			// Test that it doesn't match an integer with a real number of the same value
-			args.integer = 23.0;
-			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
-			assertFalse(isDefined( "results" ));
 			args.integer = 23;
 			
 			//2. Mock with named values and all calls should validate.
@@ -232,12 +230,6 @@
 			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
 			assertEquals( "UnitTest2", results );
 			args.integer = 23;
-			// Test that it doesn't match an integer with a real number of the same value
-			args.integer = 23.0;
-			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
-			assertFalse(isDefined( "results" ));
-			args.integer = 23;
-			
 			
 			test.$( "getSetting" ).$args( argumentCollection=args ).$results( "UnitTest3" );
 			// Test name-value pairs
@@ -255,12 +247,6 @@
 			args.integer++;args.integer--;
 			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
 			assertEquals( "UnitTest3", results );
-			args.integer = 23;
-			// Test that it doesn't match an integer with a real number of the same value
-			args.integer = 23.0;
-			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
-			assertFalse(isDefined( "results" ));
-			args.integer = 23;
 		}
 		
 		function testGetProperty(){
@@ -292,6 +278,16 @@
 			assertTrue( mockTest.contains() );
 		}
 		
+		function testContainsClosureOrUDF(){
+			mock = getMockBox().createStub();
+			mock.$("mockMe", { mocked=true } );
+			
+			debug( mock.mockMe( variables.testFunction ) );
+		}
+		
+		private function testFunction(){
+			return "Hola Amigo!";
+		}
 	</cfscript>
 
 </cfcomponent>

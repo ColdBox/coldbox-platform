@@ -449,13 +449,13 @@ Description		:
 			var arg = "";
 			
 			for(arg in argOrderedTree) {
-				if(NOT structKeyExists(argOrderedTree, arg)) {
+				if( NOT structKeyExists( argOrderedTree, arg ) ){
 					/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 					 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 					 */
-					 
+					 serializedArgs &= "--null--";
 				}
-				else if(isSimpleValue(argOrderedTree[arg])) {
+				else if( isSimpleValue( argOrderedTree[ arg ] ) ){
 					/* toString() works best for simple values.  It is equivalent in the following scenario
 					 * i = 1;
 					 * j = i; j++; j--;
@@ -465,19 +465,22 @@ Description		:
 					 * 
 					 * Strangely, it converts a literal real number 1.0 to the string "1.0".
 					 */
-					serializedArgs &= toString(argOrderedTree[arg]);
+					serializedArgs &= toString( argOrderedTree[ arg ] );
 				}
-				else {
-					/* serializeJSON works for complex datatypes, but Objects have to be the same instance not just the same component in equivalent state
-					 */
-					serializedArgs &= serializeJSON(argOrderedTree[arg]);
+				else if( isObject( argOrderedTree[ arg ] ) and isInstanceOf( argOrderedTree[ arg ], "Component" ) ){
+					// If an object and CFC, just use serializeJSON 
+					serializedArgs &= serializeJSON( argOrderedTree[ arg ] );
+				}
+				else{
+					// Get obj rep
+					serializedArgs &= argOrderedTree[ arg ].toString();
 				}
 				
 			}
 			/* ColdFusion isn't case sensitive, so case of string values shouldn't matter.  We do it after serializing all args 
 			 * to catch any values deep in complex variables.
 			 */
-			return hash(lcase(serializedArgs));
+			return hash( lcase( serializedArgs ) );
 		</cfscript>
 	</cffunction>
 
