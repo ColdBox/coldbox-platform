@@ -848,7 +848,13 @@ Description :
 				// Cleanup of formats
 				arguments.formats = "";
 				// Determine view from incoming or implicit
-				viewToRender = ( len( arguments.formatsView ) ? arguments.formatsView : replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" ) );
+				//viewToRender = ( len( arguments.formatsView ) ? arguments.formatsView : replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" ) );
+				if( len( arguments.formatsView ) ){
+					viewToRender = arguments.formatsView;
+				}
+				else{
+					viewToRender = replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" );
+				}
 				// Rendering switch
 				switch( instance.context.format ){
 					case "json" : case "jsonp" : case "jsont" : case "xml" : case "text" : case "wddx" : {
