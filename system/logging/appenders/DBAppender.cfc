@@ -77,6 +77,18 @@ If you are building a mapper, the map must have the above keys in it.
 			if( NOT propertyExists("textDBType") ){
 				setProperty("textDBType","text");
 			}
+			if( NOT propertyExists( "rotate" ) ){
+				setProperty( "rotate", true );
+			}
+			if( NOT propertyExists( "rotationDays" ) ){
+				setProperty( "rotationDays", 30 );
+			}
+			if( NOT propertyExists( "rotationFrequency" ) ){
+				setProperty( "rotationFrequency", 5 );
+			}
+			
+			// DB Rotation Time
+			instance.lastDBRotation = "";
 			
 			return this;
 		</cfscript>
@@ -132,7 +144,41 @@ If you are building a mapper, the map must have the above keys in it.
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#loge.getExtraInfoAsString()#">
 			)
 		</cfquery>
+		
+		<!--- rotation --->
+		<cfset this.rotationCheck()>
 	</cffunction>
+	
+	<!--- rotationCheck --->    
+    <cffunction name="rotationCheck" output="false" access="public" returntype="any" hint="Rotation checks">    
+    	<cfscript>	    
+			// Verify if in rotation frequency
+			if( isDate( instance.lastDBRotation ) AND dateDiff( "n",  instance.lastDBRotation, now() ) LTE getProperty( "rotationFrequency" ) ){
+				return;
+			}
+			
+			// Rotations
+			this.doRotation();
+			
+			// Store last profile time
+			instance.lastDBRotation = now();			
+    	</cfscript>    
+    </cffunction>
+    
+    <!--- doRotation --->    
+    <cffunction name="doRotation" output="false" access="public" returntype="any" hint="Do Rotation">    
+   		<cfset var qLogs = "">
+		<cfset var cols = instance.columns>
+		<cfset var targetDate = dateAdd( "d", "-#getProperty( "rotationDays" )#", now() ) >
+		
+   		<cfquery datasource="#getProperty("dsn")#" name="qLogs">
+			DELETE
+			  FROM #getProperty('table')#
+			 WHERE #listgetAt( cols,4)# < <cfqueryparam cfsqltype="#getDateTimeDBType()#" value="#dateFormat( targetDate, 'mm/dd/yyyy')#">
+			ORDER BY #listgetAt(cols,4)# asc
+		</cfquery>
+		
+    </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
@@ -191,5 +237,30 @@ If you are building a mapper, the map must have the above keys in it.
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- getDateTimeDBType --->    
+    <cffunction name="getDateTimeDBType" output="false" access="private" returntype="any">    
+    	<cfset var qResults = "">
+    	<cfdbinfo type="Version" name="qResults" datasource="#getProperty( 'dsn' )#" >
+    	<cfscript>	 
+			switch( qResults.database_productName ){
+				case "PostgreSQL" : {
+					return "cf_sql_timestamp";
+				}
+				case "MySQL" : {
+					return "cf_sql_timestamp";
+				}
+				case "Microsoft SQL Server" : {
+					return "cf_sql_date";
+				}
+				case "Oracle" :{
+					return "cf_sql_timestamp";
+				}
+				default : {
+					return "cf_sql_timestamp";
+				}
+			}   
+    	</cfscript>    
+    </cffunction>
 	
 </cfcomponent>
