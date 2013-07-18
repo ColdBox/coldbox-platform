@@ -280,9 +280,14 @@
 		
 		function testContainsClosureOrUDF(){
 			mock = getMockBox().createStub();
-			mock.$("mockMe", { mocked=true } );
+			mock.$("mockMe", "Mocked" );
 			
-			debug( mock.mockMe( variables.testFunction ) );
+			assertEquals( "Mocked" , mock.mockMe( variables.testFunction ) );
+			assertEquals( "Mocked" , mock.mockMe( test = variables.testFunction ) );
+			assertEquals( "Mocked" , mock.mockMe( [ variables.testFunction ] ) );
+			assertEquals( "Mocked" , mock.mockMe( test = [ variables.testFunction ] ) );
+			assertEquals( "Mocked" , mock.mockMe( { mockData = variables.testFunction } ) );
+			assertEquals( "Mocked" , mock.mockMe( test = { mockData = variables.testFunction } ) );
 		}
 		
 		private function testFunction(){
