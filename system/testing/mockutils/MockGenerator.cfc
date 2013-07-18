@@ -15,10 +15,13 @@ Description		:
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="MockGenerator" hint="Constructor">
-		<cfargument name="mockBox" type="coldbox.system.testing.MockBox" required="true"/>
+		<cfargument name="mockBox" required="true"/>
+		<cfargument name="removeStubs" required="false" default="true" hint="Always remove stubs unless we are debugging"/>
 		<cfscript>
-			instance.lb 		= "#chr(13)##chr(10)#";
-			instance.mockBox 	= arguments.mockBox;
+			instance.lb 			= "#chr(13)##chr(10)#";
+			instance.mockBox 		= arguments.mockBox;
+			instance.removeStubs 	= arguments.removeStubs;
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -46,7 +49,19 @@ Description		:
 			// Create Method Signature
 			udfOut.append('
 			<cfset this[ "#arguments.method#" ] = variables[ "#arguments.method#" ]> 
-			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">
+			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">#instance.lb#');
+			
+			// Create Arguments Signature
+			for( var x=1; x lte arrayLen( fncMD.parameters ); x++ ){
+				udfOut.append( '<cfargument');
+				for( var argKey in fncMD.parameters[ x ] ){
+					udfOut.append( ' #lcase( argKey )#="#fncMD.parameters[ x ][ argKey ]#"');
+				}
+				udfOut.append('>#instance.lb#');
+			}
+			
+			// Continue Method Generation
+			udfOut.append('
 			<cfset var results = this._mockResults>
 			<cfset var resultsKey = "#arguments.method#">
 			<cfset var resultsCounter = 0>
@@ -127,7 +142,7 @@ Description		:
 	<cffunction name="removeStub" output="false" access="public" returntype="boolean" hint="Remove a method generator stub">
 		<cfargument name="genPath" type="string" required="true"/>
 		
-		<cfif fileExists(arguments.genPath)>
+		<cfif fileExists(arguments.genPath) and instance.removeStubs>
 			<cffile action="delete" file="#arguments.genPath#">
 			<cfreturn true>
 		<cfelse>

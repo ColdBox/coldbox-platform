@@ -290,6 +290,13 @@
 			assertEquals( "Mocked" , mock.mockMe( test = { mockData = variables.testFunction } ) );
 		}
 		
+		function testInterfaceContracts(){
+			mock = getMockBox().createMock( "coldbox.testing.cases.testing.MyInterfaceMock" );
+			mock.$("testThis", "mocked!");
+			
+			assertEquals( "mocked!", mock.testThis( "name", 35 ) );
+		}
+		
 		private function testFunction(){
 			return "Hola Amigo!";
 		}

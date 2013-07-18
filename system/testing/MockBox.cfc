@@ -34,8 +34,8 @@ Description		:
 				instance.generationPath = instance.generationPath & "/";
 			}
 			
-			instance.version 		= "2.1";
-			instance.mockGenerator 	= createObject("component","coldbox.system.testing.mockutils.MockGenerator").init(this);
+			instance.version 		= "2.2";
+			instance.mockGenerator 	= createObject("component","coldbox.system.testing.mockutils.MockGenerator").init( this, false );
 			
 			return this;
 		</cfscript>
