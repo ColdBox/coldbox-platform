@@ -22,7 +22,7 @@ Modification History:
 		<cfscript>
 			setController(arguments.controller);			
 			
-			instance.flashScope 		= 0;
+			instance.flashScope 		= "";
 			instance.decorator			= "";
 			
 			return this;
@@ -33,40 +33,6 @@ Modification History:
 	
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
-			// Let's determine the flash type and create our flash ram object
-			var flashData = controller.getSetting("flash");
-			var flashPath = "";
-			
-			// Shorthand Flash Types
-			switch(flashData.scope){
-				case "session" : {
-					flashpath = "coldbox.system.web.flash.SessionFlash";
-					break;
-				}
-				case "client" : {
-					flashpath = "coldbox.system.web.flash.ClientFlash";
-					break;
-				}
-				case "cluster" : {
-					flashpath = "coldbox.system.web.flash.ClusterFlash";
-					break;
-				}
-				case "cache" : {
-					flashpath = "coldbox.system.web.flash.ColdboxCacheFlash";
-					break;
-				}
-				case "mock" : {
-					flashpath = "coldbox.system.web.flash.MockFlash";
-					break;
-				}
-				default : { 
-					flashPath = flashData.scope;
-				}
-			}
-			
-			// Create Flash RAM object
-			instance.flashScope = createObject("component", flashPath).init( controller, flashData );
-			
 			// Request Context Decorator?
 			if ( controller.settingExists( "RequestContextDecorator" ) and len( controller.getSetting( "RequestContextDecorator" ) ) ){
 				instance.decorator = controller.getSetting("RequestContextDecorator");
@@ -237,6 +203,45 @@ Modification History:
 	<!--- getFlashScope --->
     <cffunction name="getFlashScope" output="false" access="public" returntype="any" hint="Get the current running Flash Ram Scope of base type:coldbox.system.web.flash.AbstractFlashScope">
    		<cfreturn instance.flashScope >
+    </cffunction>
+    
+    <!--- buildFlashScope --->
+    <cffunction name="buildFlashScope" output="false" access="public" returntype="any" hint="Build's the Flash RAM Scope as defined in the application spec.">
+   		<cfscript>
+   			// Let's determine the flash type and create our flash ram object
+			var flashData = controller.getSetting("flash");
+			var flashPath = "";
+			
+			// Shorthand Flash Types
+			switch( flashData.scope ){
+				case "session" : {
+					flashpath = "coldbox.system.web.flash.SessionFlash";
+					break;
+				}
+				case "client" : {
+					flashpath = "coldbox.system.web.flash.ClientFlash";
+					break;
+				}
+				case "cluster" : {
+					flashpath = "coldbox.system.web.flash.ClusterFlash";
+					break;
+				}
+				case "cache" : {
+					flashpath = "coldbox.system.web.flash.ColdboxCacheFlash";
+					break;
+				}
+				case "mock" : {
+					flashpath = "coldbox.system.web.flash.MockFlash";
+					break;
+				}
+				default : { 
+					flashPath = flashData.scope;
+				}
+			}
+			
+			// Create Flash RAM object
+			instance.flashScope = createObject("component", flashPath).init( controller, flashData );
+   		</cfscript>
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

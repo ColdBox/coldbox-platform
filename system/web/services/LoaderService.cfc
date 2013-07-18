@@ -120,6 +120,9 @@ Modification History:
 		var validationManager 	= "";
 		var validationData 		= controller.getSetting("validation");
 
+		// Activate Flash RAM
+		controller.getRequestService().buildFlashScope();
+	
 		// if engine allows it, create validation engine
 		if( controller.getCFMLEngine().isValidationSupported() ){
 			// construct the validation manager specified in the config
