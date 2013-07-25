@@ -23,7 +23,6 @@ Modification History:
 			setController(arguments.controller);			
 			
 			instance.flashScope 		= "";
-			instance.decorator			= "";
 			
 			return this;
 		</cfscript>
@@ -33,11 +32,6 @@ Modification History:
 	
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
-			// Request Context Decorator?
-			if ( controller.settingExists( "RequestContextDecorator" ) and len( controller.getSetting( "RequestContextDecorator" ) ) ){
-				instance.decorator = controller.getSetting("RequestContextDecorator");
-			}
-			
 			//Get Local Logger Configured
 			instance.log = controller.getLogBox().getLogger( this );
 			// Local Configuration data and dependencies
@@ -114,7 +108,7 @@ Modification History:
 			eventCachingTest( context, fwCache );
 			
 			// Configure decorator if available?
-			if ( len( instance.decorator ) ){
+			if ( structKeyExists( context, "configure" ) ){
 				context.configure();
 			}
 			
@@ -252,23 +246,23 @@ Modification History:
 		var oContext = "";
 		var oDecorator = "";
 		
-		//Create the original request context
+		// Create the original request context
 		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init( properties=controller.getConfigSettings(), controller=controller );
-		
-		//Determine if we have a decorator, if we do, then decorate it.
-		if ( len( instance.decorator ) ){
+			
+		// Determine if we have a decorator, if we do, then decorate it.
+		if ( len( controller.getSetting( name="RequestContextDecorator", defaultValue="" ) ) ){
 			//Create the decorator
-			oDecorator = CreateObject( "component", instance.decorator ).init( oContext, controller );
+			oDecorator = CreateObject( "component", controller.getSetting(name="RequestContextDecorator") ).init( oContext, controller );
 			//Set Request Context in storage
 			setContext( oDecorator );
 			//Return
 			return oDecorator;
 		}
 		
-		//Set Request Context in storage
+		// Set Request Context in storage
 		setContext( oContext );
 		
-		//Return Context
+		// Return Context
 		return oContext;
 		</cfscript>
 	</cffunction>
