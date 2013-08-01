@@ -35,7 +35,7 @@ Description		:
 			}
 			
 			instance.version 		= "2.2";
-			instance.mockGenerator 	= createObject("component","coldbox.system.testing.mockutils.MockGenerator").init( this, false );
+			instance.mockGenerator 	= createObject("component","coldbox.system.testing.mockutils.MockGenerator").init( this, true );
 			
 			return this;
 		</cfscript>
