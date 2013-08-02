@@ -52,12 +52,14 @@ Description		:
 			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">#instance.lb#');
 			
 			// Create Arguments Signature
+			if( structKeyExists( fncMD, "parameters" ) ){
 			for( var x=1; x lte arrayLen( fncMD.parameters ); x++ ){
 				udfOut.append( '<cfargument');
 				for( var argKey in fncMD.parameters[ x ] ){
 					udfOut.append( ' #lcase( argKey )#="#fncMD.parameters[ x ][ argKey ]#"');
 				}
 				udfOut.append('>#instance.lb#');
+			}
 			}
 			
 			// Continue Method Generation
