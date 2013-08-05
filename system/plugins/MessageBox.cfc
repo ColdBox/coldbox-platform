@@ -48,7 +48,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- error --->
-    <cffunction name="error" output="false" access="public" returntype="void" hint="Facade to setmessage with error type">
+	<cffunction name="error" output="false" access="public" returntype="void" hint="Facade to setmessage with error type">
    		<!--- ************************************************************* --->
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
 		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
@@ -57,8 +57,8 @@ Description :
 		<cfset setMessage(argumentCollection=arguments)>
 	 </cffunction>
 
-	<!--- error --->
-    <cffunction name="info" output="false" access="public" returntype="void" hint="Facade to setmessage with info type">
+	<!--- info --->
+	<cffunction name="info" output="false" access="public" returntype="void" hint="Facade to setmessage with info type">
    		<!--- ************************************************************* --->
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
 		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
@@ -67,9 +67,9 @@ Description :
 		<cfset setMessage(argumentCollection=arguments)>
 	</cffunction>
 
-	<!--- error --->
-    <cffunction name="warn" output="false" access="public" returntype="void" hint="Facade to setmessage with warning type">
-    	<!--- ************************************************************* --->
+	<!--- warn --->
+	<cffunction name="warn" output="false" access="public" returntype="void" hint="Facade to setmessage with warning type">
+		<!--- ************************************************************* --->
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
 		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
 		<!--- ************************************************************* --->
