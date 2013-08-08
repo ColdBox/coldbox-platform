@@ -72,6 +72,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfargument name="loadColdFusionClassPath"  type="boolean"  required="false" default="false" hint="Loads the ColdFusion libraries">
 		<cfargument name="parentClassLoader" 		type="any" 		required="false" default=""  hint="(Expert use only) The parent java.lang.ClassLoader to set when creating the URLClassLoader">
 		<!--- ************************************************************* --->
+		<cfset var JavaLoader = "">
 		
 		<!--- setup the javaloader --->
 		<cfif ( not isJavaLoaderInScope() )>
@@ -81,7 +82,13 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 					<cfset setJavaLoaderInScope( CreateObject("component","coldbox.system.core.javaloader.JavaLoader").init(argumentCollection=arguments) )>
 				</cfif>
 			</cflock>
+		<cfelse>
+			<cflock name="#getStaticIDKey()#" throwontimeout="true" timeout="30" type="readonly">
+				<!--- Get the javaloader. --->
+				<cfset getJavaLoaderFromScope().init(argumentCollection=arguments)>
+			</cflock>
 		</cfif>
+
 	</cffunction>
 	
 	<!--- getJavaLoader --->
