@@ -46,7 +46,8 @@ Description :
 					<cfif isArray(varVal)>
 						<cfset setLabel="Limited Array length of #arrayLen(varVal)# to 2 entries">
 					</cfif>
-					<cfdump var="#varVal#" expand="false" top="2" label="#setLabel#">				</cfif>			
+					<cfdump var="#varVal#" expand="false" top="2" label="#setLabel#">
+				</cfif>			
 			</cfif>
 			</td>
 		</tr>
