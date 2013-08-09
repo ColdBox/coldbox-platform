@@ -42,8 +42,11 @@ Description :
 				<cfelseif isObject(varVal)>
 					<cfdump var="#varVal#" expand="false" top="2">
 				<cfelse>
-					<cfdump var="#varVal#" expand="false">
-				</cfif>			
+					<cfset setLabel="">
+					<cfif isArray(varVal)>
+						<cfset setLabel="Limited Array length of #arrayLen(varVal)# to 2 entries">
+					</cfif>
+					<cfdump var="#varVal#" expand="false" top="2" label="#setLabel#">				</cfif>			
 			</cfif>
 			</td>
 		</tr>
