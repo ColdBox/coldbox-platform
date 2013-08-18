@@ -155,18 +155,18 @@
 				<help><![CDATA[ coldbox.system.web.Controller ]]></help>
 			</parameter>
 			</function>
-<!-- Functions for: coldbox.system.FrameworkSuperType -->
+<!-- Functions for: coldbox.system.FrameworkSupertype -->
 	<function name="loadGlobalUDFLibraries" returns="any">
-			<help><![CDATA[ Load the global UDF libraries defined in the UDFLibraryFile Setting (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Load the global UDF libraries defined in the UDFLibraryFile Setting (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="$rethrow" returns="void">
-			<help><![CDATA[ Rethrow facade (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Rethrow facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="throwObject" required="true" type="any">
 				<help><![CDATA[ The cfcatch object ]]></help>
 			</parameter>
 			</function>
 	<function name="getInterceptor" returns="any">
-			<help><![CDATA[ Get an interceptor (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Get an interceptor (Context: FrameworkSupertype) ]]></help>
 		<parameter name="interceptorName" required="false" type="any">
 				<help><![CDATA[ The name of the interceptor to search for ]]></help>
 			</parameter>
@@ -175,7 +175,7 @@
 			</parameter>
 			</function>
 	<function name="relocate" returns="void">
-			<help><![CDATA[ This method will be deprecated, please use setNextEvent() instead. (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ This method will be deprecated, please use setNextEvent() instead. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="url" required="true" type="string">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -187,22 +187,22 @@
 			</parameter>
 			</function>
 	<function name="getModuleSettings" returns="any">
-			<help><![CDATA[ Get a module's setting structure if it exists (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Get a module's setting structure if it exists (Context: FrameworkSupertype) ]]></help>
 		<parameter name="module" required="true" type="any">
 				<help><![CDATA[ The module name ]]></help>
 			</parameter>
 			</function>
 	<function name="getColdboxOCM" returns="any">
-			<help><![CDATA[ Get a CacheBox Cache of type: coldbox.system.cache.IColdboxApplicationCache (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Get a CacheBox Cache of type: coldbox.system.cache.IColdboxApplicationCache (Context: FrameworkSupertype) ]]></help>
 		<parameter name="cacheName" required="false" type="any">
 				<help><![CDATA[ The cache name to retrieve ]]></help>
 			</parameter>
 			</function>
 	<function name="$abort" returns="void">
-			<help><![CDATA[ Facade for cfabort (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade for cfabort (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="setfwLocale" returns="any">
-			<help><![CDATA[ Set the default locale to use in the framework for a specific user. Utility Method (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Set the default locale to use in the framework for a specific user. Utility Method (Context: FrameworkSupertype) ]]></help>
 		<parameter name="locale" required="false" type="any">
 				<help><![CDATA[ The locale to change and set. Must be Java Style: en_US ]]></help>
 			</parameter>
@@ -211,22 +211,22 @@
 			</parameter>
 			</function>
 	<function name="getNewMail" returns="any">
-			<help><![CDATA[ Get a new mail payload object ready for sending email through our mail service.  This function's arguments match the cfmail tag, so send whatever you like (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Get a new mail payload object ready for sending email through our mail service.  This function's arguments match the cfmail tag, so send whatever you like (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="getDatasource" returns="any">
-			<help><![CDATA[ I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct (Context: FrameworkSupertype) ]]></help>
 		<parameter name="alias" required="false" type="any">
 				<help><![CDATA[ The alias of the datasource to get from the configstruct (alias property in the config file) ]]></help>
 			</parameter>
 			</function>
 	<function name="getController" returns="any">
-			<help><![CDATA[ Get controller: coldbox.system.web.Controller (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Get controller: coldbox.system.web.Controller (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="getMailService" returns="any">
-			<help><![CDATA[ Get a reference to our Mail Service plugin (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Get a reference to our Mail Service plugin (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="$dump" returns="void">
-			<help><![CDATA[ Facade for cfmx dump (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade for cfmx dump (Context: FrameworkSupertype) ]]></help>
 		<parameter name="var" required="yes" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -235,7 +235,7 @@
 			</parameter>
 			</function>
 	<function name="getModel" returns="any">
-			<help><![CDATA[ Create or retrieve model objects by convention (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Create or retrieve model objects by convention (Context: FrameworkSupertype) ]]></help>
 		<parameter name="name" required="false" type="any">
 				<help><![CDATA[ The mapping name or CFC instance path to try to build up ]]></help>
 			</parameter>
@@ -247,7 +247,7 @@
 			</parameter>
 			</function>
 	<function name="renderLayout" returns="any">
-			<help><![CDATA[ Renders a layout with view combinations (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Renders a layout with view combinations (Context: FrameworkSupertype) ]]></help>
 		<parameter name="layout" required="false" type="any">
 				<help><![CDATA[ The explicit layout to use in rendering. ]]></help>
 			</parameter>
@@ -262,7 +262,7 @@
 			</parameter>
 			</function>
 	<function name="renderView" returns="Any">
-			<help><![CDATA[ Renders all kinds of views (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Renders all kinds of views (Context: FrameworkSupertype) ]]></help>
 		<parameter name="view" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -292,19 +292,19 @@
 			</parameter>
 			</function>
 	<function name="locateFilePath" returns="string">
-			<help><![CDATA[ Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSupertype) ]]></help>
 		<parameter name="pathToCheck" required="true" type="any">
 				<help><![CDATA[ The path to check ]]></help>
 			</parameter>
 			</function>
 	<function name="$include" returns="void">
-			<help><![CDATA[ Facade for cfinclude (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade for cfinclude (Context: FrameworkSupertype) ]]></help>
 		<parameter name="template" required="false" type="string">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function name="getSetting" returns="any">
-			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="name" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -316,10 +316,10 @@
 			</parameter>
 			</function>
 	<function name="getDebugMode" returns="boolean">
-			<help><![CDATA[ Facade to get your current debug mode (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade to get your current debug mode (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="getPlugin" returns="any">
-			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="plugin" required="false" type="any">
 				<help><![CDATA[ The Plugin object's name to instantiate, as a string ]]></help>
 			</parameter>
@@ -337,7 +337,7 @@
 			</parameter>
 			</function>
 	<function name="settingExists" returns="boolean">
-			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="name" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -346,10 +346,10 @@
 			</parameter>
 			</function>
 	<function name="getValidationManager" returns="coldbox.system.validation.IValidationManager">
-			<help><![CDATA[ Retrieve the application's configured Validation Manager (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Retrieve the application's configured Validation Manager (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="getSettingStructure" returns="struct">
-			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="FWSetting" required="false" type="boolean">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -358,10 +358,10 @@
 			</parameter>
 			</function>
 	<function name="getMemento" returns="any">
-			<help><![CDATA[ Get the memento of this object (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Get the memento of this object (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="setNextRoute" returns="void">
-			<help><![CDATA[ This method is now deprecated, please use setNextEvent(). This method will be removed later on (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ This method is now deprecated, please use setNextEvent(). This method will be removed later on (Context: FrameworkSupertype) ]]></help>
 		<parameter name="route" required="true" type="string">
 				<help><![CDATA[ The route to relocate to, do not prepend the baseURL or /. ]]></help>
 			</parameter>
@@ -379,7 +379,7 @@
 			</parameter>
 			</function>
 	<function name="setNextEvent" returns="void">
-			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="event" required="false" type="string">
 				<help><![CDATA[ The name of the event to run, if not passed, then it will use the default event found in your configuration file. ]]></help>
 			</parameter>
@@ -415,25 +415,25 @@
 			</parameter>
 			</function>
 	<function name="addAsset" returns="any">
-			<help><![CDATA[ Add a js/css asset(s) to the html head section. You can also pass in a list of assets. (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Add a js/css asset(s) to the html head section. You can also pass in a list of assets. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="asset" required="true" type="any">
 				<help><![CDATA[ The asset to load, only js or css files. This can also be a comma delimmited list. ]]></help>
 			</parameter>
 			</function>
 	<function name="getSettingsBean" returns="coldbox.system.core.collections.ConfigBean">
-			<help><![CDATA[ Returns a configBean with all the configuration structure. (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Returns a configBean with all the configuration structure. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="FWSetting" required="false" type="boolean">
 				<help><![CDATA[ Whether to build the config bean with coldbox settings or config settings ]]></help>
 			</parameter>
 			</function>
 	<function name="includeUDF" returns="void">
-			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally. (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="udflibrary" required="true" type="any">
 				<help><![CDATA[ The UDF library to inject. ]]></help>
 			</parameter>
 			</function>
 	<function name="populateModel" returns="Any">
-			<help><![CDATA[ Populate a named or instantiated model (java/cfc) from the request collection items (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Populate a named or instantiated model (java/cfc) from the request collection items (Context: FrameworkSupertype) ]]></help>
 		<parameter name="model" required="true" type="any">
 				<help><![CDATA[ The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method ]]></help>
 			</parameter>
@@ -463,7 +463,7 @@
 			</parameter>
 			</function>
 	<function name="validateModel" returns="coldbox.system.validation.result.IValidationResult">
-			<help><![CDATA[ Validate a target object (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Validate a target object (Context: FrameworkSupertype) ]]></help>
 		<parameter name="target" required="true" type="any">
 				<help><![CDATA[ The target object to validate or a structure of name-value paris to validate. ]]></help>
 			</parameter>
@@ -481,7 +481,7 @@
 			</parameter>
 			</function>
 	<function name="getResource" returns="any">
-			<help><![CDATA[ Facade to i18n.getResource. Returns a string. (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade to i18n.getResource. Returns a string. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="resource" required="true" type="any">
 				<help><![CDATA[ The resource to retrieve from the loaded localized bundle ]]></help>
 			</parameter>
@@ -493,13 +493,13 @@
 			</parameter>
 			</function>
 	<function name="$htmlhead" returns="void">
-			<help><![CDATA[ Facade to cfhtmlhead (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade to cfhtmlhead (Context: FrameworkSupertype) ]]></help>
 		<parameter name="content" required="true" type="string">
 				<help><![CDATA[ The content to send to the head ]]></help>
 			</parameter>
 			</function>
 	<function name="announceInterception" returns="any">
-			<help><![CDATA[ Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result. (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="state" required="true" type="any">
 				<help><![CDATA[ The interception state to execute ]]></help>
 			</parameter>
@@ -523,13 +523,13 @@
 			</parameter>
 			</function>
 	<function name="setDebugMode" returns="void">
-			<help><![CDATA[ Facade to set your debug mode (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade to set your debug mode (Context: FrameworkSupertype) ]]></help>
 		<parameter name="mode" required="true" type="boolean">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function name="persistVariables" returns="void">
-			<help><![CDATA[ Persist variables for flash redirections (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Persist variables for flash redirections (Context: FrameworkSupertype) ]]></help>
 		<parameter name="persist" required="false" type="string">
 				<help><![CDATA[ What request collection keys to persist in the relocation ]]></help>
 			</parameter>
@@ -538,7 +538,7 @@
 			</parameter>
 			</function>
 	<function name="setSetting" returns="void">
-			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="name" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -547,10 +547,10 @@
 			</parameter>
 			</function>
 	<function name="getfwLocale" returns="any">
-			<help><![CDATA[ Get the user's currently set locale or default locale (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Get the user's currently set locale or default locale (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="renderExternalView" returns="Any">
-			<help><![CDATA[ Renders external views (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Renders external views (Context: FrameworkSupertype) ]]></help>
 		<parameter name="view" required="true" type="any">
 				<help><![CDATA[ The full path to the view. This can be an expanded path or relative. Include extension. ]]></help>
 			</parameter>
@@ -571,7 +571,7 @@
 			</parameter>
 			</function>
 	<function name="getMyPlugin" returns="any">
-			<help><![CDATA[ Facade (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="plugin" required="true" type="any">
 				<help><![CDATA[ The plugin name as a string ]]></help>
 			</parameter>
@@ -586,7 +586,7 @@
 			</parameter>
 			</function>
 	<function name="$throw" returns="any">
-			<help><![CDATA[ Facade for cfthrow (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade for cfthrow (Context: FrameworkSupertype) ]]></help>
 		<parameter name="message" required="yes" type="string">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -598,10 +598,10 @@
 			</parameter>
 			</function>
 	<function name="getMailSettings" returns="any">
-			<help><![CDATA[ I will return to you a mailsettingsBean modeled after your mail settings in your config file. (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ I will return to you a mailsettingsBean modeled after your mail settings in your config file. (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="runEvent" returns="any">
-			<help><![CDATA[ Facade to controller's runEvent() method. (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Facade to controller's runEvent() method. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="event" required="false" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -619,7 +619,7 @@
 			</parameter>
 			</function>
 	<function name="locateDirectoryPath" returns="string">
-			<help><![CDATA[ Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSuperType) ]]></help>
+			<help><![CDATA[ Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSupertype) ]]></help>
 		<parameter name="pathToCheck" required="true" type="any">
 				<help><![CDATA[ The path to check ]]></help>
 			</parameter>
