@@ -572,6 +572,14 @@ Only one instance of a specific ColdBox application exists.
 
 					// PREEVENT Interceptor
 					services.interceptorService.processState("preEvent",iData);
+					
+					// Verify if event was overriden
+					if( arguments.event NEQ iData.processedEvent ){
+						// Validate the overriden event
+						ehBean = services.handlerService.getRegisteredHandler( iData.processedEvent );
+						// Get new handler to follow execution
+						oHandler = services.handlerService.getHandler( ehBean, oRequestContext );
+					}
 
 					// Execute Pre Handler if it exists and valid?
 					if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
