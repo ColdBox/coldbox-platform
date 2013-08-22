@@ -114,6 +114,8 @@ id , name , mail
 				// Setup
 				instance.controller.getLoaderService().loadApplication( instance.configMapping, instance.appMapping );
 			}
+			// Auto registration of test as interceptor
+			instance.controller.getInterceptorService().registerInterceptor(interceptorObject=this);
 		}
 		</cfscript>
 	</cffunction>
