@@ -13,6 +13,7 @@ Inspiration from Tim Blair <tim@bla.ir> cflogger project.
 
 Properties:
  - dsn : the dsn to use for logging
+ - schema : the schema in which the table exists. (Optional)
  - table : the table to store the logs in
  - columnMap : A column map for aliasing columns. (Optional)
  - autocreate : if true, then we will create the table. Defaults to false (Optional)
@@ -122,7 +123,7 @@ If you are building a mapper, the map must have the above keys in it.
 		
 		<!--- write the log message to the DB --->
 		<cfquery datasource="#getProperty("dsn")#">
-			INSERT INTO #getProperty('table')# (#cols#) VALUES (
+			INSERT INTO <cfif getProperty("schema") neq '' >#getProperty("schema")#.</cfif>#getProperty('table')# (#cols#) VALUES (
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#instance.uuid.randomUUID().toString()#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#severityToString(loge.getseverity())#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#category#">,
