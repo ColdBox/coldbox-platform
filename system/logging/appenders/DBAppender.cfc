@@ -184,7 +184,7 @@ If you are building a mapper, the map must have the above keys in it.
 			DELETE
 			  FROM #getProperty('table')#
 			 WHERE #listgetAt( cols,4)# < <cfqueryparam cfsqltype="#getDateTimeDBType()#" value="#dateFormat( targetDate, 'mm/dd/yyyy')#">
-			ORDER BY #listgetAt(cols,4)# asc
+			
 		</cfquery>
 		
     </cffunction>
