@@ -50,12 +50,12 @@ Only one instance of a specific ColdBox application exists.
 			instance.log 	= instance.logBox.getLogger( this );
 
 			// Setup the ColdBox Services
-			services.RequestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init( this );
-			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init( this );
-			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init( this );
-			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init( this );
-			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init( this );
-			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init( this );
+			services.requestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init( this );
+			services.debuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init( this );
+			services.handlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init( this );
+			services.pluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init( this );
+			services.moduleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init( this );
+			services.interceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init( this );
 
 			// CacheBox Instance
 			instance.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
