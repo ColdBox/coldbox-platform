@@ -135,15 +135,9 @@ If you are building a mapper, the map must have the above keys in it.
 				cols = instance.columns;
 			}
 		</cfscript>
-		<cftry>
-			<cfset var tbl = getProperty('schema') & "." & getProperty('table') >
-			<cfcatch>
-				<cfset var tbl = getProperty('table') >
-			</cfcatch>
-		</cftry>
 		<!--- write the log message to the DB --->
 		<cfquery datasource="#getProperty("dsn")#">
-			INSERT INTO #tbl# (#cols#) VALUES (
+			INSERT INTO #getTable()# (#cols#) VALUES (
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#instance.uuid.randomUUID().toString()#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#severityToString(loge.getseverity())#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#category#">,
@@ -180,9 +174,9 @@ If you are building a mapper, the map must have the above keys in it.
 		<cfset var cols = instance.columns>
 		<cfset var targetDate = dateAdd( "d", "-#getProperty( "rotationDays" )#", now() ) >
 		
-   		<cfquery datasource="#getProperty("dsn")#" name="qLogs">
+		<cfquery datasource="#getProperty("dsn")#" name="qLogs">
 			DELETE
-			  FROM #getProperty('table')#
+			  FROM #getTable()#
 			 WHERE #listgetAt( cols,4)# < <cfqueryparam cfsqltype="#getDateTimeDBType()#" value="#dateFormat( targetDate, 'mm/dd/yyyy')#">
 			
 		</cfquery>
@@ -190,7 +184,16 @@ If you are building a mapper, the map must have the above keys in it.
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
+	<cffunction name="getTable" hint="Return the table name with the schema included if found.">
+		<cftry>
+			<cfset var tbl = getProperty('schema') & "." & getProperty('table') >
+			<cfcatch>
+				<cfset var tbl = getProperty('table') >
+			</cfcatch>
+		</cftry>
+		<cfreturn tbl>
+	</cffunction>
+
 	<!--- ensureTable --->
 	<cffunction name="ensureTable" output="false" access="private" returntype="void" hint="Verify or create the logging table">
 		<cfset var dsn = getProperty("dsn")>
@@ -213,15 +216,9 @@ If you are building a mapper, the map must have the above keys in it.
 		
 		<!--- AutoCreate Table? --->
 		<cfif NOT tableFound and getProperty('autoCreate')>
-			<cftry>
-				<cfset var tbl = getProperty('schema') & "." & getProperty('table') >
-				<cfcatch>
-					<cfset var tbl = getProperty('table') >
-				</cfcatch>
-			</cftry>
 			<!--- Try to Create Table  --->
 			<cfquery name="qCreate" datasource="#dsn#">
-				CREATE TABLE #tbl# (
+				CREATE TABLE #getTable()# (
 					#listgetAt(cols,1)# VARCHAR(36) NOT NULL,
 					#listgetAt(cols,2)# VARCHAR(10) NOT NULL,
 					#listgetAt(cols,3)# VARCHAR(100) NOT NULL,
