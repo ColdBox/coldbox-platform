@@ -212,7 +212,7 @@ Description :
 				thisAdapter.createFactory();
 				
 				if( log.canDebug() ){
-					log.debug("ioc framework: #getMetadata( thisAdatper.getFactory() ).name# loaded successfully and ready for operation.");
+					log.debug("ioc framework: #getMetadata( thisAdapter.getFactory() ).name# loaded successfully and ready for operation.");
 				}
 			}
 			catch(Any e){
