@@ -328,6 +328,59 @@ Description :
 		</cfscript>
     </cffunction>
 
+    <cffunction name="mapDirectoryToNamespace" output="false" access="public" returntype="any" hint="Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection">
+    	<cfargument name="packagePath"  required="true" hint="The instantiation packagePath to map"/>
+		<cfargument name="include" 		required="true" 	default="" 		hint="An include regex that if matches will only include CFCs that match this case insensitive regex"/>
+		<cfargument name="exclude" 		required="true" 	default="" 		hint="An exclude regex that if matches will exclude CFCs that match this case insensitive regex"/>
+    	<cfargument name="namespace"	required="true"		default="" 		hint="Provide namespace to merge it in"/>
+    	<cfargument name="prepend"		required="false"	default="false" hint="where to attach the namespace"/>	
+	
+		<cfscript>
+			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
+			var qObjects		= "";
+			var thisTargetPath 	= "";
+		</cfscript>
+
+		<!--- check directory --->
+		<cfif NOT directoryExists(directory)>
+			<cfthrow message="Directory does not exist" detail="Directory: #directory#" type="Binder.DirectoryNotFoundException">
+		</cfif>
+
+		<!--- Get directory listing --->
+		<cfdirectory action="list" directory="#directory#" filter="*.cfc" recurse="true" listinfo="name" name="qObjects">
+
+		<!--- Loop and Register --->
+		<cfloop query="qObjects">
+			<!--- Remove .cfc and /\ with . notation--->
+			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase(qObjects.name,".cfc","") ,"(/|\\)",".","all")>
+
+			<!--- Include/Exclude --->
+			<cfif ( len(arguments.include) AND reFindNoCase(arguments.include, thisTargetPath) )
+			      OR ( len(arguments.exclude) AND NOT reFindNoCase(arguments.exclude,thisTargetPath) )
+				  OR ( NOT len(arguments.include) AND NOT len(arguments.exclude) )>
+
+				<!--- Map the Path --->
+				<cfset mapPathToNamespace( namespace=arguments.namespace, path=thisTargetPath, prepend=arguments.prepend )>
+			</cfif>
+		</cfloop>
+
+		<cfreturn this>
+    </cffunction>
+	
+		<!--- mapPath --->
+    <cffunction name="mapPathToNamespace" output="false" access="public" returntype="any" hint="Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.">
+    	<cfargument name="namespace"	required="true"		default=""	 	hint="Provide namespace to merge it in"/>
+    	<cfargument name="path" 		required="true"						hint="The class path to the object to map"/>
+    	<cfargument name="prepend"		required="false"	default="false" hint="where to attach the namespace"/>	
+		<cfscript>
+			// directly map to a path
+			if (arguments.prepend) 	return map( arguments.namespace & listlast(arguments.path,".") ).to(arguments.path);
+			else 					return map( listlast(arguments.path,".") & arguments.namespace ).to(arguments.path);
+		</cfscript>
+    </cffunction>
+
+
+
 	<!--- to --->
     <cffunction name="to" output="false" access="public" returntype="any" hint="Map to a destination CFC class path.">
     	<cfargument name="path" required="true" hint="The class path to the object to map"/>
