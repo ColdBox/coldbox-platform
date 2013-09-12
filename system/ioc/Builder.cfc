@@ -310,13 +310,13 @@ TODO: update dsl consistency, so it is faster.
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
 			var coldboxDSLRegex		= "^(ioc|ocm|webservice|javaloader|coldbox|cachebox)$";
 			
-			// coldbox context check
-			if( refindNoCase(coldboxDSLRegex,DSLNamespace) AND NOT instance.injector.isColdBoxLinked() ){
-				instance.utility.throwIt(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",type="Builder.IllegalDSLException");
-			}
 			// cachebox context check
-			else if( refindNoCase("^cachebox",DSLNamespace) AND NOT instance.injector.isCacheBoxLinked() ){
+			if( refindNoCase("^cachebox",DSLNamespace) AND NOT instance.injector.isCacheBoxLinked() ){
 				instance.utility.throwIt(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a CacheBox Context",type="Builder.IllegalDSLException");
+			}
+			// coldbox context check
+			else if( refindNoCase(coldboxDSLRegex,DSLNamespace) AND NOT instance.injector.isColdBoxLinked() ){
+				instance.utility.throwIt(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",type="Builder.IllegalDSLException");
 			}
 			
 			// Determine Type of Injection according to Internal Types first
