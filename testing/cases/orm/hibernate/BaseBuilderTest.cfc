@@ -87,8 +87,8 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r = criteria
 			.withProjections( 
 				detachedSQLProjection=[
-					criteria.createSubcriteria( "Role", "Role" )
-        			 .withProjections( count="Role.role" )
+					criteria.createSubcriteria( "Role", "Role1" )
+        			 .withProjections( count="Role1.role:Role" )
 				]
 			)
 			.list();
@@ -283,4 +283,137 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r = criteria.add( criteria.restrictions.gt("salary",200) );
 		s = subCriteria.add( subCriteria.restrictions.gt("salary",200));
 	}
+	
+	function testGetSQL() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%");
+		// test it returns a string
+		assertTrue( isSimpleValue( r.getSQL() ) );
+		// test it returns non-executable sql
+		assertTrue( findNoCase( "?", r.getSQL( returnExecutableSql=false ) ) );
+		// test it returns executable sql
+		assertFalse( findNoCase( "?", r.getSQL( returnExecutableSql=true ) ) );
+		// test it returns non-formatted sql
+		assertFalse( findNoCase( "<pre>", r.getSQL( formatSql=false) ) );
+		// test it returns formatted sql
+		assertTrue( findNoCase( "<pre>", r.getSQL( formatSql=true ) ) );
+	}
+	
+	function testGetSqlLog() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%");
+		
+		assertIsArray( r.getSqlLog() );
+	}
+	
+	function testStartSqlLog() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.startSqlLog()
+			.like("u.lastName","M%");
+		
+		assertTrue( r.$getProperty( "sqlLoggerActive" ) );
+	}
+	
+	function testStopSqlLog() {
+		r = criteria.init("Role")
+			.startSqlLog()
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%")
+			.stopSqlLog();
+		
+		assertFalse( r.$getProperty( "sqlLoggerActive" ) );
+	}
+	
+	function testLogSql() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%");
+			
+		r.logSql( "FullQuery" );
+		
+		assertIsArray( r.getSqlLog() );
+		assertTrue( arrayLen( r.getSqlLog() )==1 );
+		assertTrue( r.getSqlLog()[1].Type=="FullQuery" );
+	}
+	
+	function testCanLogSql() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%");
+		// make the private method public
+		makePublic( r, "canLogSql" );
+		// start sql log=can log sql
+		r.startSqlLog();
+		assertTrue( r.$getProperty( "sqlLoggerActive" ) );
+		// stop sql log=can't log sql
+		r.stopSqlLog();
+		assertFalse( r.$getProperty( "sqlLoggerActive" ) );
+	}
+	
+	function testHasProjection() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%");
+		// make the private method public
+		makePublic( r, "hasProjection" );
+		// no projection
+		assertFalse( r.hasProjection() );
+		// add projection
+		r.withProjections( count="u.lastName:LastName" );
+		// with projection
+		assertTrue( r.hasProjection() );
+	}
+	
+	function testMapProjectionsToPropertyNames() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%")
+			.withProjections( count="u.lastName:LastNameCount", property="role" );
+		results = r.list( asMappedArray=true )[ 1 ];
+		// each array element should be a struct -> key/value pairs
+		assertIsStruct( results );
+		// key 1: LastNameCount
+		assertTrue( structKeyExists( results, "LastNameCount" ) );
+		// key 2: role
+		assertTrue( structKeyExists( results, "role" ) );
+	}
+	
+	function testGetPositionalSQLParameterValues() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%");
+		var values = r.getPositionalSQLParameterValues();
+		// test it returns an array
+		assertIsArray( values );
+		// test it returns the number of param values we expect (1)
+		assertTrue( arrayLen( values )==1 );
+	}
+	
+	function testGetPositionalSQLParameterTypes() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%");
+		var simpletypes = r.getPositionalSQLParameterTypes( true );
+		var complexttypes=r.getPositionalSQLParameterTypes( false );
+		// test it returns an array
+		assertIsArray( simpletypes );
+		// test it returns the number of param types we expect (1)
+		assertTrue( arrayLen( simpletypes )==1 );
+		// if not simple, test that the result is an object
+		assertTrue( isObject( complexttypes[ 1 ] ) );
+	}
+	
+	function testGetPositionalSQLParameters() {
+		r = criteria.init("Role")
+			.createAlias("users", "u", criteria.INNER_JOIN )
+			.like("u.lastName","M%");
+		var params = r.getPositionalSQLParameters();
+		// test it returns an array
+		assertIsArray( params );
+		// test it returns the number of param types we expect (1)
+		assertTrue( arrayLen( params )==1 );
+	}	
 }

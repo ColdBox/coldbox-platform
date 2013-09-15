@@ -84,7 +84,8 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	  		 		  numeric timeout=0,
 	  		 		  string  sortOrder="",
 	  		 		  boolean ignoreCase=false,
-	  		 		  boolean asQuery=false){
+	  		 		  boolean asQuery=false,
+	  		 		  boolean asMappedArray=false){
 	  		 		  	 
 		// Setup listing options
 		if( arguments.offset NEQ 0 ){
@@ -106,7 +107,10 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 		if( Len(Trim(arguments.sortOrder)) ){
 			normalizeOrder( arguments.sortOrder, arguments.ignoreCase );
 		}
-
+		// process interception - beforeCriteriaBuilderList
+		eventManager.processState( "beforeCriteriaBuilderList", {
+			"CriteriaBuilder" = this
+		});
 		// Get listing
 		var results = nativeCriteria.list();
 
@@ -117,7 +121,15 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 		if( arguments.asQuery ){
 			results = EntityToQuery(results);
 		}
-
+		// Map Projection array to array of structs?
+		if( arguments.asMappedArray && hasProjection() ) {
+			results = mapProjectionsToPropertyNames( results );
+		}
+		// process interception - afterCriteriaBuilderList
+		eventManager.processState( "afterCriteriaBuilderList", {
+			"CriteriaBuilder" = this,
+			"results" = results
+		});
 		return results;
 	}
 	
@@ -133,6 +145,11 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 			// everything else is a real restriction; add it to native criteria, then return this
 			default: 
 				nativeCriteria.add( r );
+				// process interception
+				eventManager.processState( "onCriteriaBuilderAddition", {
+					"type" = "Restriction",
+					"CriteriaBuilder" = this
+				});
 				break;
 		}
 		return this;
@@ -141,6 +158,11 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	// create an instance of a detached criteriabuilder that can be added, like criteria, to the main criteria builder
 	any function createSubcriteria( required string entityName, string alias="" ) {
 		var subcriteria = new DetachedCriteriaBuilder( argumentCollection=arguments );
+		// process interception
+		eventManager.processState( "onCriteriaBuilderAddition", {
+			"type" = "Subquery",
+			"CriteriaBuilder" = this
+		});
 		// return the subscriteria instance so we can keep chaining methods to it, but rooted to the subcriteria
 		return subcriteria;
 	}
@@ -169,12 +191,26 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	// Set the first result to be retrieved or the offset integer
 	any function firstResult(required numeric firstResult){
 		nativeCriteria.setFirstResult( javaCast("int", arguments.firstResult) );
+		if( SQLHelper.canLogLimitOffset() ) {
+			// process interception
+			eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Offset",
+				"CriteriaBuilder" = this
+			});
+		}
 		return this;
 	}
 	
 	// Set a limit upon the number of objects to be retrieved.
 	any function maxResults(required numeric maxResults){
 		nativeCriteria.setMaxResults( javaCast("int", arguments.maxResults) );
+		if( SQLHelper.canLogLimitOffset() ) {
+			// process interception
+			eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Max",
+				"CriteriaBuilder" = this
+			});
+		}
 		return this;
 	}
 	
@@ -200,6 +236,10 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	* @propertyName The name of the property to do the count on or do it for all row results instead
 	*/
 	numeric function count(propertyName=""){
+		// process interception - beforeCriteriaBuilderCount
+		eventManager.processState( "beforeCriteriaBuilderCount", {
+			"CriteriaBuilder" = this
+		});
 		// else project on the local criterias
 		if( len( arguments.propertyName ) ){
 			nativeCriteria.setProjection( this.projections.countDistinct( arguments.propertyName ) );
@@ -207,10 +247,20 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 		else{
 			nativeCriteria.setProjection( this.projections.distinct( this.projections.rowCount() ) );
 		}
+		// process interception
+		eventManager.processState( "onCriteriaBuilderAddition", {
+			"type" = "Count",
+			"CriteriaBuilder" = this
+		});
 		var results = nativeCriteria.uniqueResult();
 		// clear count like a ninja, so we can reuse this criteria object.
 		nativeCriteria.setProjection( javacast("null","") );
 		nativeCriteria.setResultTransformer( this.ROOT_ENTITY );
+		// process interception - afterCriteriaBuilderCount
+		eventManager.processState( "afterCriteriaBuilderCount", {
+			"CriteriaBuilder" = this,
+			"results" = results
+		});
 		return results;
 	}
 	

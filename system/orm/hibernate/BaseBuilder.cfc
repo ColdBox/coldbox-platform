@@ -55,6 +55,14 @@ component accessors="true"{
 		setEntityName( arguments.entityName );
 		// get orm utils
 		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
+		// set sql logger usage
+		sqlLoggerActive = false;
+		// add SQL Helper
+		SQLHelper = createObject( "component", "coldbox.system.orm.hibernate.sql.SQLHelper" ).init( this );
+		// get wirebox
+		wirebox = application[ "wirebox" ];
+		// get event manager
+		eventManager = wirebox.getEventManager();
 		// Setup pseudo-static join types and transformer types:
 		this.ALIAS_TO_ENTITY_MAP	= nativeCriteria.ALIAS_TO_ENTITY_MAP;
 		this.DISTINCT_ROOT_ENTITY	= nativeCriteria.DISTINCT_ROOT_ENTITY;
@@ -99,6 +107,11 @@ component accessors="true"{
 			orderBy.ignoreCase();
 		}
 		nativeCriteria.addOrder( orderBy );
+		// process interception
+		eventManager.processState( "onCriteriaBuilderAddition", {
+			"type" = "Order",
+			"CriteriaBuilder" = this
+		});
 		return this;
 	}
 	
@@ -112,10 +125,19 @@ component accessors="true"{
 		// No Join type
 		if( NOT structKeyExists(arguments,"joinType") ){
 			nativeCriteria.createAlias( arguments.associationName, arguments.alias );
+				eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Alias",
+				"CriteriaBuilder" = this
+			});
 			return this;
 		}
 		// With Join Type
 		nativeCriteria.createAlias( arguments.associationName, arguments.alias, arguments.joinType );
+		// process interception
+		eventManager.processState( "onCriteriaBuilderAddition", {
+			"type" = "Alias w/Join Type",
+			"CriteriaBuilder" = this
+		});
 		return this;
 	}
 	
@@ -128,11 +150,20 @@ component accessors="true"{
 		// No Join type
 		if( NOT structKeyExists(arguments,"joinType") ){
 			nativeCriteria = nativeCriteria.createCriteria( arguments.associationName );
+			// log sql if enabled
+			if( canLogSql() ) {
+				logSQL( "New Criteria" );
+			}
 			return this;
 		}
 		
 		// With Join Type
 		nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.joinType );
+		// process interception
+		eventManager.processState( "onCriteriaBuilderAddition", {
+			"type" = "New Criteria w/Join Type",
+			"CriteriaBuilder" = this
+		});
 		return this;
 	}
 	
@@ -146,6 +177,11 @@ component accessors="true"{
 		}
 		for(var i=1; i LTE ArrayLen(arguments.criterion); i++) {
 			nativeCriteria.add( arguments.criterion[i] );
+			// process interception
+			/*eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Restriction",
+				"CriteriaBuilder" = this
+			});*/
 		}	   
 		return this;
 	}
@@ -164,6 +200,11 @@ component accessors="true"{
 	*/
 	any function setProjection(any projection){
 		nativeCriteria.setProjection( arguments.projection );
+		// process interception
+		eventManager.processState( "onCriteriaBuilderAddition", {
+			"type" = "Projection",
+			"CriteriaBuilder" = this
+		});
 		return this;
 	}
 	
@@ -265,9 +306,14 @@ component accessors="true"{
 		}
 		// add all the projections
 		nativeCriteria.setProjection( projectionList );
+		// process interception
+		eventManager.processState( "onCriteriaBuilderAddition", {
+			"type" = "Projection",
+			"CriteriaBuilder" = this
+		});
 		return this;
 	}
-	
+
 	/**
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
 	* The method returns a coverted array of ID's
@@ -286,8 +332,127 @@ component accessors="true"{
 		return new BaseORMService().convertValueToJavaType(argumentCollection=arguments);
 	}
 	
+	/**
+	 * Returns the SQL string that will be prepared for the criteria object at the time of request
+	 * @executable {Boolean} Whether or not to do query param replacements on returned SQL string 
+	 * return string
+	 */
+	public string function getSQL( required boolean returnExecutableSql=false, required boolean formatSql=true ) {
+		return SQLHelper.getSQL( argumentCollection=arguments );
+	}
+
+	/** 
+	 * Gets the positional SQL parameter values from the criteria query
+	 * return array
+	 */
+	public array function getPositionalSQLParameterValues() {
+		return SQLHelper.getPositionalSQLParameterValues();
+	}
+
+	/**
+	 * Gets positional SQL parameter types from the criteria query
+	 * @simple {Boolean} Whether to return a simply array or full objects
+	 * return any
+	 */
+	public any function getPositionalSQLParameterTypes( required boolean simple=true ) {
+		return SQLHelper.getPositionalSQLParameterTypes( argumentCollection=arguments );
+	}
+
+	/**
+	 * Returns a formatted array of parameter value and types
+	 * return array
+	 */
+	public array function getPositionalSQLParameters() {
+		return SQLHelper.getPositionalSQLParameters();
+	}
+
+	/**
+	 * Retrieves the SQL Log
+	 * return Array
+	 */
+	public array function getSQLLog() {
+		return SQLHelper.getLog();
+	}
+
+	/**
+	 * Triggers CriteriaBuilder to start internally logging the state of SQL at each iterative build
+	 * @returnExecutableSql {Boolean} Whether or not to return sql with query params replaced with positional values
+	 * @formatSql {Boolean} Whether or not to run sql through formatter and wrap the sql in <pre> tags for more readable output
+	 * return CriteriaBuilder
+	 */
+	public any function startSqlLog( required Any returnExecutableSql=false, required Any formatSql=false ) {
+		SQLHelper.setReturnExecutableSql( arguments.returnExecutableSql );
+		SQLHelper.setFormatSql( arguments.formatSql );
+		sqlLoggerActive = true;
+		return this;
+	}
+
+	/**
+	 * Stops CriteriaBuilder from continuing to internally log the state of SQL
+	 * return CriteriaBuilder
+	 */
+	public any function stopSqlLog() {
+		sqlLoggerActive = false;
+		return this;
+	}
+
+	/**
+	 * Allows for one-off sql logging at any point in the process of building up CriteriaBuilder; will log the SQL state at the time of the call
+	 * @label {String} The label to use for the sql log record
+	 * return void
+	 */
+	public void function logSQL( required String label ) {
+		SQLHelper.log( argumentCollection=arguments );
+	}
+
+	/**
+	 * Returns whether or not CriteriaBuilder is currently configured to log SQL
+	 * return Boolean
+	 */
+	public boolean function canLogSql() {
+		return sqlLoggerActive;
+	}
 	/************************************** PRIVATE *********************************************/
 	
+	/**
+	 * Checks whether or not a projection is currently applied to the CriteriaBuilder
+	 * return Boolean
+	 */
+	private boolean function hasProjection() {
+		var projectionExists = false;
+		if( !isNull( nativeCriteria.getProjection() ) ) {
+			projectionExists = nativeCriteria.getProjection().getLength() ? true : false;
+		}
+		return projectionExists;
+	}
+
+	/**
+	 * Handy way to turn not-terribly useful projection arrays into an array of structures with named keys which match the query aliases
+	 * @data {Array} The projection array data to convert
+	 * return Array
+	 */
+	private array function mapProjectionsToPropertyNames( required Array data ) {
+		// get alias list
+		var aliasList = hasProjection() ? nativeCriteria.getProjection().getAliases() : [];
+		var mappedData = [];
+		for( var row in arguments.data ) {
+			var collection = {};
+			if( !isArray( row ) ) {
+				row = [ row ];
+			}
+			for( var k=1; k<=arrayLen( row ); k++ ) {
+				try {
+					collection[ aliasList[ k ] ] = row[ k ];
+				}
+				catch( any e ) {
+					collection[ aliasList[ k ] ] = JavaCast( "null", "" );
+				}
+			}
+			arrayAppend( mappedData, collection );
+		}
+		return mappedData;
+	}
+
 	// Simplified additions of projections
 	private function addProjection(any propertyName,any projectionType,any projectionList){
 		// inflate to array
@@ -296,9 +461,19 @@ component accessors="true"{
 		for(var thisP in arguments.propertyName){
 			// add projection
 			arguments.projectionList.add( evaluate("this.PROJECTIONS.#arguments.projectionType#( listFirst(thisP,':') )"), listLast(thisP,":") );
+			// process interception
+			eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Projection",
+				"CriteriaBuilder" = this
+			});
 		}
 	}
 	
+	/**
+	 * Helper method to prepare sqlProjection for addition to CriteriaBuilder
+	 * @rawProjection {Struct} The raw projection configuration
+	 * return Struct
+	 */
 	private struct function prepareSQLProjection( rawProjection ) {
 		// get metadata for current root entity
 		var metaData = orm.getSessionFactory( orm.getEntityDatasource( this.getentityName() ) )
@@ -367,5 +542,5 @@ component accessors="true"{
 		// funnel missing methods to restrictions and append to criterias
 		var r = evaluate("this.restrictions.#arguments.missingMethodName#(argumentCollection=arguments.missingMethodArguments)");
 		return r;
-	}   
+	}
 }

@@ -17,34 +17,12 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		var r = criteria.createDetachedSQLProjection();
 		assertTrue( isInstanceOf( r, 'org.hibernate.criterion.SQLProjection' ) );
 	}
-	// private method
-	function testGetCriteriaQueryTranslator() {
+	
+	function testGetNativeCriteria() {
 		criteria.withProjections( count="Role.role" );
-		makePublic( criteria, "getCriteriaQueryTranslator" );
-		r = criteria.getCriteriaQueryTranslator();
-		assertTrue( isInstanceOf( r, "org.hibernate.loader.criteria.CriteriaQueryTranslator" ) );
+		assertTrue( isInstanceOf( criteria.getNativeCriteria(), "org.hibernate.impl.CriteriaImpl" ) );
 	}
-	// private method
-	function testGetCriteriaJoinWalker() {
-		criteria.withProjections( count="Role.role" );
-		makePublic( criteria, "getCriteriaQueryTranslator" );
-		makePublic( criteria, "getCriteriaJoinWalker" );
-		t = criteria.getCriteriaQueryTranslator();
-		r = criteria.getCriteriaJoinWalker( t );
-		assertTrue( isInstanceOf( r, "org.hibernate.loader.criteria.CriteriaJoinWalker" ) );
-	}
-	// private method
-	function testReplaceQueryParameters() {
-		criteria.withProjections( count="Role.role" );
-		makePublic( criteria, "getCriteriaQueryTranslator" );
-		makePublic( criteria, "getCriteriaJoinWalker" );
-		makePublic( criteria, "replaceQueryParameters" );
-		t = criteria.getCriteriaQueryTranslator();
-		w = criteria.getCriteriaJoinWalker( t );
-		sql = w.getSQLString();
-		r = criteria.replaceQueryParameters( sql, t );
-		assertTrue( isSimpleValue( r ) );
-	}
+	
 	// test missingmethod handler functions
 	function testSubEq() {
 		criteria.withProjection( property="fkentry_id" );
