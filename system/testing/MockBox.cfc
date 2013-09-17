@@ -297,6 +297,7 @@ Description		:
 		<cfargument name="throwDetail" 	  type="string"  required="false" default="" hint="The detail of the exception to throw"/>
 		<cfargument name="throwMessage"	  type="string"  required="false" default="" hint="The message of the exception to throw"/>
 		<cfargument name="callLogging" 	  type="boolean" required="false" default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
+		<cfargument name="preserveArguments" type="boolean" required="false" default="false" hint="If true, argument signatures are kept, else they are ignored. If true, BEWARE with $args() matching as default values and missing arguments need to be passed too."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var fncMD = structnew();
@@ -453,7 +454,7 @@ Description		:
 					/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 					 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 					 */
-					 serializedArgs &= "--null--";
+					 continue;
 				}
 				else if( isSimpleValue( argOrderedTree[ arg ] ) ){
 					/* toString() works best for simple values.  It is equivalent in the following scenario
