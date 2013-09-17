@@ -189,6 +189,7 @@
 				,structure = {key1 = 'value1',key2 = getMockBox().createStub()}
 				,array = ['element1', getMockBox().createStub()]
 				,object = getMockBox().createStub()
+				,aNull = javaCast("null", "")
 			};
 			
 			//1: Mock with positional and all calls should validate.
