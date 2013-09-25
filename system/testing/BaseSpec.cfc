@@ -15,7 +15,7 @@ component{
 	this.$customMatchers 	= {};
 	// Utility object
 	this.$utility 			= new coldbox.system.core.util.Util();
-	// Test Suites
+	// Test Suites are stored here
 	this.$suites 			= [];
 	
 	/************************************** EXPECTATIONS *********************************************/

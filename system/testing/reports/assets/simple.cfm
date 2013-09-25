@@ -17,21 +17,24 @@
 	h2{ font-size: 13px;}
 	h3{ font-size: 12px;}
 	h4{ font-size: 11px; font-style: italic;}
+	/** status **/
+	.passed { color: green; }
+	.failed { color: orange; }
+	.error { color: red; }
+	.skipped{ color: blue;}
+	/** utility **/
 	.centered { text-align: center !important; }
 	.inline{ display: inline !important; }
 	.margin10{ margin: 10px; }
 	.padding10{ padding: 10px; }
 	.margin0{ margin: 0px; }
 	.padding0{ padding: 0px; }
-	.passed { color: green; }
-	.failed { color: orange; }
-	.error { color: red; }
 	.float-right{ float: right;}
 	.float-left{ float: left;}
 	.box{ border:1px solid gray; margin: 10px 0px; padding: 10px; background-color: ##f5f5f5}
 	dd{ margin: 3px 0px 3px 15px}
 	</style>
-	<script src="js/jquery.js"></script>
+	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
 	<script>
 
 	</script>
@@ -40,16 +43,16 @@
 <body>
 
 <!-- Header --->
-<p>TestBox v#runner.getVersion()#</p>
+<p>TestBox v#runner.getVersion()# - Simple Reporter</p>
 
 <!-- Global Stats --->
 <div class="box">
 <h2>Global Stats</h2>
-[ Bundles/Specs: #results.getBundleCount()#/#results.getSpecCount()# ]
-[ Duration: #results.getTotalDuration()# ms ]
+[ Bundles/Specs: #results.getBundleCount()#/#results.getSpecCount()# in #results.getTotalDuration()# ms ]
 [ <span class="passed">Pass: #results.getTotalPass()#</span> ]
 [ <span class="failed">Failures: #results.getTotalFail()#</span> ]
 [ <span class="error">Errors: #results.getTotalError()#</span> ]
+[ <span class="skipped">Skipped: #results.getTotalSkipped()#</span> ]
 </div>
 
 <!--- Bundle Stats --->
@@ -62,28 +65,30 @@
 	[ <span class="passed">Pass: #sBundle.totalPass#</span> ]
 	[ <span class="failed">Failures: #sBundle.totalFail#</span> ]
 	[ <span class="error">Errors: #sBundle.totalError#</span> ]
-	</div>
+	[ <span class="skipped">Skipped: #sBundle.totalSkipped#</span> ]
+	
+
 	<dl>
-		<dt>#sBundle.name#</dt>
+		<dt><strong>#sBundle.name#</strong></dt>
 		<cfloop array="#sBundle.specs#" index="thisSpec">
 			<dd class="#lcase( thisSpec.status )#">
 				#thisSpec.name# (#thisSpec.totalDuration# ms)
 				<cfif thisSpec.status eq "failed">
 					- <strong>#thisSpec.failMessage#</strong><br>
 					<div class="box">
-						<cfdump var="#thisSpec.failorigin#">
+						<cfdump var="#thisSpec.failorigin#" expand=false label="Failure Origin">
 					</div>
 				</cfif>
 				<cfif thisSpec.status eq "error">
 					- <strong>#thisSpec.error.message#</strong><br>
 					<div class="box">
-						<cfdump var="#thisSpec.error#">
+						<cfdump var="#thisSpec.error#" expand=false label="Exception Structure">
 					</div>
 				</cfif>
 			</dd>	
 		</cfloop>
 	</dl>
-
+	</div>
 </cfloop>
 
 	</body>

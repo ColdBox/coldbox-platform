@@ -17,6 +17,7 @@ component accessors="true"{
 	property name="totalPass" 		type="numeric";
 	property name="totalFail" 		type="numeric";
 	property name="totalError" 		type="numeric";
+	property name="totalSkipped"	type="numeric";
 
 	// specific stats
 	property name="bundleStats"		type="struct";
@@ -30,12 +31,13 @@ component accessors="true"{
 		variables.endTime 		= 0;
 		variables.totalDuration = 0;
 
-		// Stats
+		// Global Stats
 		variables.bundleCount 	= arguments.bundleCount;
 		variables.specCount 	= 0;
 		variables.totalPass		= 0;
 		variables.totalFail		= 0;
 		variables.totalError	= 0;
+		variables.totalSkipped 	= 0;
 		
 		// Init bundle stats structure
 		// its a concurrent map so it can support async updates
@@ -50,11 +52,12 @@ component accessors="true"{
 		return this;
 	}
 	
-	TestResult function incrementSpecStatus(required type="pass"){
+	TestResult function incrementGlobalStat(required type="pass"){
 		switch( arguments.type ){
 			case "fail" 	: { variables.totalFail++; return this; }
 			case "pass" 	: { variables.totalPass++; return this; }
 			case "error" 	: { variables.totalError++; return this; }
+			case "skipped" 	: { variables.totalSkipped++; return this; }
 		}
 		return this;
 	}
@@ -122,6 +125,8 @@ component accessors="true"{
 			totalFail	= 0,
 			// Total error in specs
 			totalError	= 0,
+			// Total skipped specs/suites
+			totalSkipped = 0,
 			// Durations
 			startTime 	= getTickCount(),
 			endTime		= 0,

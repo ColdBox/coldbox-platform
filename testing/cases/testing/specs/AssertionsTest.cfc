@@ -20,6 +20,18 @@ component displayName="TestBox xUnit style assertions test"{
 
 /*********************************** Test Methods ***********************************/
 
+	function testSkipped() skip{
+		$assert.fail( "This Test should fail" );
+	}
+
+	boolean function isRailo(){
+		return true;
+	}
+
+	function testSkippedWithConstraint() skip="isRailo"{
+		$assert.fail( "This Test should fail" );
+	}
+
 	function testFails(){
 		$assert.fail( "This Test should fail" );
 	}
