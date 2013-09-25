@@ -1,51 +1,84 @@
+/**
+********************************************************************************
+Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+* The TestBox main testing runner.  You will be able to execute your tests/specs
+* with this awesome runner and create simple or elegant testing reports
+*/ 
 component accessors="true"{
-			
+	
+	// The CFC bundles to test
 	property name="bundles";
-	property name="results";
+	// The main utility object
 	property name="utility";
+	// The reporter attached to this runner
+	property name="reporter";
 			
 	/**
 	* Constructor
 	* @bundles.hint The path, list of paths or array of paths of the spec bundle CFCs to run and test
+	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter
 	*/
-	TestRunner function init( any bundles=[] ){
+	Runner function init( any bundles=[], any reporter="simple" ){
 		
 		// init util
 		variables.utility = new coldbox.system.core.util.Util();
+		// reporter
+		variables.reporter = arguments.reporter;
 		
 		// inflate bundles to array
 		inflateBundles( arguments.bundles );
 		
-		// startup results
-		variables.results = "";
 		
 		return this;
 	}
 	
 	/**
-	* Run the bundles setup in this Runner.
+	* Run the bundles setup in this Runner and produces an awesome report according to sepcified reporter
+	* @bundles.hint The path, list of paths or array of paths of the spec bundle CFCs to run and test
+	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter
 	*/
-	TestResult function run(any bundles){
+	any function run( any bundles, any reporter ){
+		// reporter passed?
+		if( structKeyExists( arguments, "reporter" ) ){ variables.reporter = arguments.reporter; }
 		// if bundles passed, inflate those as the target
 		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
-		
 		// create results object
 		var results = new TestResult( arrayLen( variables.bundles ) );
-		
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
 			testBundle( thisBundlePath, results );
 		}
-		
 		// mark end of testing bundles
 		results.end();
 		
-		return results;
+		return produceReport( results );
 	}
 	
 	
 	/************************************** PRIVATE *********************************************/
 	
+	private function produceReport( required results ){
+		// if reporter is simple value, then its a core reporter, go get it
+		if( isSimpleValue( variables.reporter ) ){
+			variables.reporter = buildCoreReporter( variables.reporter );
+		}
+		return variables.reporter.runReport( arguments.results );
+	}
+
+	private function buildCoreReporter( required reporter ){
+		var reporterList = "json,raw,simple";
+
+		switch( arguments.reporter ){
+			case "json" : { return new "coldbox.system.testing.reports.JSONReporter"(); }
+			case "raw" : { return new "coldbox.system.testing.reports.RawReporter"(); }
+			default: {
+				throw(type="TestBox.InvalidReporterType", message="The passed in reporter [#arguments.reporter#] is not a valid report. Valid reporters are #reporterList#");
+			}
+		}
+	}
+
 	private function getBundle(required bundlePath){
 		var bundle		= new "#arguments.bundlePath#"();
 		var familyPath 	= "coldbox.system.testing.BaseSpec";
@@ -76,7 +109,7 @@ component accessors="true"{
 		return bundle;
 	}
 	
-	private TestRunner function testBundle(
+	private Runner function testBundle(
 		required string bundlePath, 
 		required TestResult testResults){
 		

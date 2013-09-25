@@ -1,4 +1,8 @@
 /**
+********************************************************************************
+Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 * This is a base spec object that is used to test XUnit and BDD style specification methods
 */ 
 component{
