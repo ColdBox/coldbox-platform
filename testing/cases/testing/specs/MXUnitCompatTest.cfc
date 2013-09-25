@@ -29,43 +29,58 @@ component extends="BaseTest" {
 	}
 
 	function testAssertArrayEquals() {
-		assertArrayEquals();
+		var today = now();
+		assertArrayEquals( [1,2,3], [1,2,3] );
+		assertArrayEquals( [1,2,3, today, { name="luis", awesome=true } ], [1,2,3, today, { name="luis", awesome=true } ] );
 	}
 
 	function testAssertEquals() {
-		assertEquals();
+		assertEquals(4, 4);
+		assertEquals( { name="luis", awesome=true }, { name="luis", awesome=true } );
+		assertEquals( "hello", "Hello" );
+		assertArrayEquals( [1,2,3], [1,2,3] );
 	}
 
-	function testassertEqualsCase() {
-		assertEqualsCase();
+	function testAssertEqualsCase() {
+		assertEqualsCase( "hello", "hello" );
 	}
 
 	function testassertFalse() {
-		assertFalse();
+		assertFalse( false );
 	}
 
 	function testassertNotEquals() {
-		assertNotEquals();
+		assertNotEquals( "hello", "there" );
 	}
 
 	function testassertNotSame() {
-		assertNotSame();
+		assertNotSame( this, createObject("component", "coldbox.system.testing.MockBox") );
 	}
 
 	function testassertQueryEquals() {
-		assertQueryEquals();
+		var q1 = querySim( "id, name
+			1 | luis majano
+			2 | alexia majano
+			3 | lucas majano");
+
+		var q2 = querySim( "id, name
+			1 | luis majano
+			2 | alexia majano
+			3 | lucas majano");
+
+		assertQueryEquals( q1, q2 );
 	}
 
 	function testassertSame() {
-		assertSame();
+		assertSame( this, this );
 	}
 
 	function testassertStructEquals() {
-		assertSame();
+		assertSame( { name="luis", awesome=true }, { name="luis", awesome=true } );
 	}
 
 	function testAssertTrue() {
-		assertSame();
+		assertTrue( true );
 	}
 	
 	function nonStandardNamesWillNotRun() {
@@ -77,7 +92,7 @@ component extends="BaseTest" {
 	}
 
 	function testExpectException(){
-		expectException();
+		expectException( "InvalidType" );
 	}
 
 	private function privateMethodsDontRun() {

@@ -53,10 +53,10 @@ component{
 	* @expected.hint The expected data
 	* @message.hint The message to send in the failure
 	*/
-	function equal( required any actual, required any expected, message="" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.expected.toString()#] but received [#arguments.actual.toString()#]" );
+	function isEqual( required any actual, required any expected, message="" ){
 		// validate equality
 		if( equalize( arguments.actual, arguments.expected ) ){ return this; }
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]" );
 		// if we reach here, nothing is equal man!
 		fail( arguments.message );
 	}
@@ -67,8 +67,8 @@ component{
 	* @expected.hint The expected data
 	* @message.hint The message to send in the failure
 	*/
-	function notEqual( required any actual, required any expected, message="" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.expected.toString()#] to not be [#arguments.actual.toString()#]" );
+	function isNotEqual( required any actual, required any expected, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]" );
 		// validate equality
 		if( !equalize( arguments.actual, arguments.expected ) ){ return this; }
 		// if we reach here, they are equal!
@@ -81,8 +81,8 @@ component{
 	* @expected.hint The expected data
 	* @message.hint The message to send in the failure
 	*/
-	function equalWithCase( required string actual, required string expected, message="" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.expected.toString()#] but received [#arguments.actual.toString()#]" );
+	function isEqualWithCase( required string actual, required string expected, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]" );
 		// equalize with case
 		if( compare( arguments.actual, arguments.expected ) eq 0 ){ return this; }
 		// if we reach here, nothing is equal man!
@@ -195,11 +195,265 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function notMatch( required string actual, required string regex, message=""){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] matches [#arguments.regex#]" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] actually matches [#arguments.regex#]" );
 		if( arrayLen( reMatchNoCase( arguments.regex, arguments.actual ) ) eq 0 ){ return this; }
 		fail( arguments.message );
 	}
 
+	/**
+	* Assert that a given key exists in the passed in struct/object
+	* @target.hint The target object/struct
+	* @key.hint The key to check for existence
+	* @message.hint The message to send in the failure
+	*/
+	function key( required any target, required string key, message=""){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist in the target object. Found keys are [#structKeyArray( arguments.target ).toList()#]" );
+		if( structKeyExists( arguments.target, arguments.key ) ){ return this; }
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that a given key DOES NOT exist in the passed in struct/object
+	* @target.hint The target object/struct
+	* @key.hint The key to check for existence
+	* @message.hint The message to send in the failure
+	*/
+	function notKey( required any target, required string key, message=""){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toList()#]" );
+		if( !structKeyExists( arguments.target, arguments.key ) ){ return this; }
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that a given key exists in the passed in struct by searching the entire nested structure
+	* @target.hint The target object/struct
+	* @key.hint The key to check for existence anywhere in the nested structure
+	* @message.hint The message to send in the failure
+	*/
+	function deepKey( required struct target, required string key, message=""){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist anywhere in the target object." );
+		if( arrayLen( structFindKey( arguments.target, arguments.key ) ) GT 0 ){ return this; }
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that a given key DOES NOT exists in the passed in struct by searching the entire nested structure
+	* @target.hint The target object/struct
+	* @key.hint The key to check for existence anywhere in the nested structure
+	* @message.hint The message to send in the failure
+	*/
+	function notDeepKey( required struct target, required string key, message=""){
+		var results = structFindKey( arguments.target, arguments.key );
+		// check if not found?
+		if( arrayLen( results ) EQ 0 ){ return this; }
+		// found, so throw it
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] actually exists in the target object: #results.toString()#" );
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert the size of a given string, array, structure or query
+	* @target.hint The target object to check the length for, this can be a string, array, structure or query
+	* @length.hint The length to check
+	* @message.hint The message to send in the failure
+	*/
+	function lengthOf( required any target, required string length, message=""){
+		var aLength = 0;
+
+		if( isSimpleValue( arguments.target ) ){ aLength = len( arguments.aLength ); }
+		if( isArray( arguments.target ) ){ aLength = arrayLen( arguments.target); }
+		if( isStruct( arguments.target ) ){ aLength = structCount( arguments.target); }
+		if( isQuery( arguments.target ) ){ aLength = arguments.target.recordcount; }
+
+		// validate it
+		if( aLength eq arguments.length ){ return this; }
+
+		// found, so throw it
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected length [#arguments.length#] is different than the actual length [#aLength#]" );
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the passed in function will throw an exception
+	* @target.hint The target function to execute and check for exceptions
+	* @type.hint Match this type with the exception thrown
+	* @regex.hint Match this regex against the message of the exception
+	* @message.hint The message to send in the failure
+	*/
+	function throws( required any target, type="", regex=".*", message="" ){
+		
+		try{
+			arguments.target();
+		}
+		catch(Any e){
+			// If no type, message expectations
+			if( !len( arguments.type ) && arguments.regex eq ".*" ){ return this; }
+			// Type expectation then
+			if( len( arguments.type ) && e.type eq arguments.type && reFindNoCase( arguments.regex, e.message ) ){
+				return this;
+			}
+			// Message regex then only
+			if( arguments.regex neq ".*" && reFindNoCase( arguments.regex, e.message ) ){
+				return this;
+			}
+
+		}
+
+		// found, so throw it
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function did not throw an expected exception. Type=[#arguments.type#], Regex=[#arguments.regex#]" );
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the passed in function will NOT throw an exception, an exception of a specified type or exception message regex
+	* @target.hint The target function to execute and check for exceptions
+	* @type.hint Match this type with the exception thrown
+	* @regex.hint Match this regex against the message of the exception
+	* @message.hint The message to send in the failure
+	*/
+	function notThrows( required any target, type="", regex="", message="" ){
+		try{
+			arguments.target();
+		}
+		catch(Any e){
+			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function DID throw an exception of type [#e.type#] with message [#e.message#]" );
+		
+			// If type passed and matches, then its ok
+			if( len( arguments.type ) && e.type neq arguments.type ){
+				return this;
+			}
+			// Message regex must not match
+			if( len( arguments.message) && !reFindNoCase( arguments.regex, e.message ) ){
+				return this;
+			}
+
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	* Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
+	* @actual.hint The actual number or date
+	* @expected.hint The expected number or date
+	* @delta.hint The +/- delta to range it
+	* @datepart.hint If passed in values are dates, then you can use the datepart to evaluate it
+	* @message.hint The message to send in the failure
+	*/
+	function closeTo( required any actual, required any expected, required any delta, datePart="", message=""){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not in range of [#arguments.expected#] by +/- [#arguments.delta#]" );
+		
+		if( isNumeric( arguments.actual ) ){
+			if( isValid( "range", arguments.actual, (arguments.expected-arguments.delta), (arguments.expected+arguments.delta) ) ){ return this; }
+		}
+		else if( isDate( arguments.actual ) ){ 
+
+			if( !listFindNoCase( "yyyy,q,m,ww,w,y,d,h,n,s,l", arguments.datePart ) ){
+				fail( "The passed in datepart [#arguments.datepart#] is not valid." );
+			}
+
+			if( abs( dateDiff( arguments.datePart, arguments.actual, arguments.expected) ) lt arguments.delta ){ return this; }
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the passed in actual number or date is between the passed in min and max values
+	* @actual.hint The actual number or date to evaluate
+	* @min.hint The expected min number or date
+	* @max.hint The expected max number or date
+	* @message.hint The message to send in the failure
+	*/
+	function between( required any actual, required any min, required any max, message=""){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not between [#arguments.min#] and [#arguments.max#]" );
+		
+		// numeric between
+		if( isNumeric( arguments.actual ) ){
+			if( isValid( "range", arguments.actual, arguments.min, arguments.max ) ){
+				return this;
+			}
+		}
+		else if( isDate( arguments.actual ) ){
+			// check min/max dates first
+			if( dateCompare( arguments.min, arguments.max ) NEQ -1 ){
+				fail( "The passed in min [#arguments.min#] is either equal or later than max [#arguments.max#]" );
+			}
+
+			// To pass, ( actual > min && actual < max )
+			if( ( dateCompare( arguments.actual, arguments.min ) EQ 1 ) AND 
+				( dateCompare( arguments.actual, arguments.max ) EQ -1 ) 
+			){
+				return this;
+			}
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
+	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
+	* @needle.hint The substring to find in a string or the value to find in an array
+	* @message.hint The message to send in the failure
+	*/
+	function includes( required any target, required any needle, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]" );
+		
+		// string
+		if( isSimpleValue( arguments.target ) AND findNoCase( arguments.needle, arguments.target ) ){
+			return this;
+		}
+		// array
+		if( isArray( arguments.target ) AND ArrayFindNoCase( arguments.target, arguments.needle ) ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the given "needle" argument exists in the incoming string or array with case-sensitivity
+	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
+	* @needle.hint The substring to find in a string or the value to find in an array
+	* @message.hint The message to send in the failure
+	*/
+	function includesWithCase( required any target, required any needle, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]" );
+		
+		// string
+		if( isSimpleValue( arguments.target ) AND find( arguments.needle, arguments.target ) ){
+			return this;
+		}
+		// array
+		if( isArray( arguments.target ) AND arrayContains( arguments.target, arguments.needle ) ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
+	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
+	* @needle.hint The substring to find in a string or the value to find in an array
+	* @message.hint The message to send in the failure
+	*/
+	function notInclude( required any target, required any needle, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]" );
+		
+		// string
+		if( isSimpleValue( arguments.target ) AND !findNoCase( arguments.needle, arguments.target ) ){
+			return this;
+		}
+		// array
+		if( isArray( arguments.target ) AND !ArrayFindNoCase( arguments.target, arguments.needle ) ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
 
 /*********************************** PRIVATE Methods ***********************************/	
 
@@ -215,17 +469,15 @@ component{
 		}
 		
 		// Arrays
-		if( isArray( arguments.actual ) && isArray( arguments.expected ) && 
-			if( createObject("java", "java.util.Arrays").deepEquals( arguments.actual, arguments.expected ) ){
-				return true;
-			}
+		if( isArray( arguments.actual ) && isArray( arguments.expected ) &&
+			createObject("java", "java.util.Arrays").deepEquals( arguments.actual, arguments.expected ) ){
+			return true;
 		}
 
 		// Queries
-		if( isQuery( arguments.actual ) && isQuery( arguments.expected ) && 
-			if( serializeJSON( arguments.actual ) eq serializeJSON( arguments.expected ) ){
-				return true;
-			}
+		if( isQuery( arguments.actual ) && isQuery( arguments.expected ) &&
+			serializeJSON( arguments.actual ) eq serializeJSON( arguments.expected ) ){
+			return true;
 		}
 
 		// Objects
@@ -248,5 +500,9 @@ component{
 		return false;
 	}
 	
-	
+	private function getStringName(required obj){
+		if( isSimpleValue( arguments.obj) ){ return arguments.obj; }
+		if( isObject( arguments.obj) ){ return getMetadata( arguments.obj ).name; }
+		return arguments.obj.toString();		
+	}
 }

@@ -1,13 +1,14 @@
+/**
+* This is a base spec object that is used to test XUnit and BDD style specification methods
+*/ 
 component{
 			
-	// init local properies
-
 	// MockBox mocking framework
-	variables.mockBox 			= new coldbox.system.testing.MockBox();
-	// Assertion object
-	variables.assert 			= new coldbox.system.testing.Assertion();
+	variables.$mockBox 			= new coldbox.system.testing.MockBox();
+	// Assertions object
+	variables.$assert			= new coldbox.system.testing.Assertion();
 	// Custom Matchers
-	variables.customMatchers 	= {};
+	variables.$customMatchers 	= {};
 	
 	/************************************** EXPECTATIONS *********************************************/
 	
@@ -16,7 +17,7 @@ component{
 	* @facade
 	*/
 	function assert(required expression, message=""){
-		return variables.assert.assert(argumentCollection=arguments);
+		return variables.$assert.assert(argumentCollection=arguments);
 	}
 
 	/**
@@ -24,7 +25,7 @@ component{
 	* @facade
 	*/
 	function fail(message=""){
-		variables.assert.fail(argumentCollection=arguments);
+		variables.$assert.fail(argumentCollection=arguments);
 	}
 
 	/**
@@ -42,7 +43,7 @@ component{
 
 		if( isStruct( arguments.matchers ) ){
 			// register the custom matchers with override
-			structAppend( variables.customMatchers, arguments.matchers, true );
+			structAppend( variables.$customMatchers, arguments.matchers, true );
 			return this;
 		}
 
@@ -60,7 +61,7 @@ component{
 
 		// Register the methods into our custom matchers
 
-		
+
 
 		return this;
 	}
@@ -112,12 +113,19 @@ component{
 		
 		return this;
 	}
+
+	/**
+	* First line are the query columns separated by commas. Then do a consecuent rows separated by line breaks separated by | to denote columns.
+	*/
+	function querySim(required queryData){
+		return variables.$mockbox.querySim( arguments.queryData );
+	}
 	
 	/**
-	* Get a reference to MockBox engine 
+	* Get a reference to the MockBox engine 
 	*/
 	function getMockBox(){
-		return variables.mockBox;
+		return variables.$mockBox;
 	}
 	
 }
