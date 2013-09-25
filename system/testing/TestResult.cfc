@@ -7,12 +7,19 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 */ 
 component accessors="true"{
 
+	// Durations
 	property name="startTime"		type="numeric" ;
 	property name="endTime"			type="numeric";
-	property name="specCount" 		type="numeric";
+	property name="totalDuration"	type="numeric";
+	// Global Stats
 	property name="bundleCount"		type="numeric";
+	property name="specCount" 		type="numeric";
+	property name="totalPass" 		type="numeric";
+	property name="totalFail" 		type="numeric";
+	property name="totalError" 		type="numeric";
+
+	// specific stats
 	property name="bundleStats"		type="struct";
-	property name="errors";
 	
 	/**
 	* Constructor
@@ -21,6 +28,7 @@ component accessors="true"{
 		// Global test durations
 		variables.startTime 	= getTickCount();	
 		variables.endTime 		= 0;
+		variables.totalDuration = 0;
 
 		// Stats
 		variables.bundleCount 	= arguments.bundleCount;
@@ -31,7 +39,8 @@ component accessors="true"{
 		
 		// Init bundle stats structure
 		// its a concurrent map so it can support async updates
-		variables.bundleStats = createObject("java", "java.util.concurrent.ConcurrentHashMap").init();
+		//variables.bundleStats = createObject("java", "java.util.concurrent.ConcurrentHashMap").init();
+		variables.bundleStats = {};
 		
 		return this;
 	}
@@ -55,6 +64,7 @@ component accessors="true"{
 			throw( type = "InvalidState", message = "Testing is already complete." );
 		}
 		variables.endTime = getTickCount();
+		variables.totalDuration = variables.endTime - variables.startTime;
 		return this;
 	}
 
@@ -70,7 +80,7 @@ component accessors="true"{
 
 	numeric function getTotalDuration() {
 		if ( isComplete() ) {
-			return( variables.endTime - variables.startTime );
+			return variables.totalDuration;
 		}
 		return( getTickCount() - variables.startTime );
 	}
@@ -102,15 +112,22 @@ component accessors="true"{
 			
 		// setup stats data for bundle
 		var results = variables.bundleStats[ arguments.bundlePath ] = {
+			// The bundle name
 			name		= arguments.name,
+			// Total specs found to test
 			totalSpecs 	= arguments.specCount,
+			// Total passed specs
 			totalPass	= 0,
+			// Total failed specs
 			totalFail	= 0,
+			// Total error in specs
 			totalError	= 0,
+			// Durations
 			startTime 	= getTickCount(),
 			endTime		= 0,
-			specs 		= [],
-			bundleException = ""
+			totalDuration = 0,
+			// The specs stats
+			specs 		= []
 		};
 		
 		return results;
@@ -122,11 +139,20 @@ component accessors="true"{
 			
 		// setup stats data for bundle
 		var stats = {
+			// name of the spec
 			name		= arguments.name,
+			// test status
 			status		= "not executed",
-			startTime 	= getTickCount(),
-			endTime		= 0, 
-			error		= {}
+			// timers
+			startTime 		= getTickCount(),
+			endTime			= 0, 
+			totalDuration 	= 0,
+			// exception structure
+			error		= {},
+			// the failure message
+			failMessage	= "",
+			// the failure origin
+			failOrigin = {}
 		};
 		
 		arrayAppend( arguments.bundleStats.specs, stats );
@@ -138,7 +164,7 @@ component accessors="true"{
 	* Get a flat representation of this result
 	*/
 	struct function getMemento(){
-		var pList = listToArray( "startTime,endTime,specCount,bundleCount,bundleStats,totalPass,totalFail,totalError" );
+		var pList = listToArray( "startTime,endTime,totalDuration,specCount,bundleCount,bundleStats,totalPass,totalFail,totalError" );
 		var result = {};
 		
 		// Do simple properties only

@@ -7,13 +7,15 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 */ 
 component{
 
-	function init(){ return this; }
+	function init(){ 
+		return this; 
+	}
 
 	/**
 	* Get the name of the reporter
 	*/
 	function getName(){
-		return "Raw";
+		return "Simple";
 	}
 
 	/**
@@ -25,9 +27,16 @@ component{
 	*/
 	any function runReport( 
 		required coldbox.system.testing.TestResult results,
-		required coldbox.system.testing.Runner runner 
+		required coldbox.system.testing.Runner runner
 	){
-		return arguments.results.getMemento();
+		// bundle stats
+		bundleStats = arguments.results.getBundleStats();
+		
+		// prepare the report
+		savecontent variable="local.report"{
+			include "assets/simple.cfm";
+		}
+		return local.report;
 	}
 	
 }

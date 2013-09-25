@@ -8,13 +8,15 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 component{
 			
 	// MockBox mocking framework
-	variables.$mockBox 			= new coldbox.system.testing.MockBox();
+	this.$mockBox 			= new coldbox.system.testing.MockBox();
 	// Assertions object
-	variables.$assert			= new coldbox.system.testing.Assertion();
+	this.$assert			= new coldbox.system.testing.Assertion();
 	// Custom Matchers
-	variables.$customMatchers 	= {};
+	this.$customMatchers 	= {};
 	// Utility object
-	variables.$utility 			= new coldbox.system.core.util.Util();
+	this.$utility 			= new coldbox.system.core.util.Util();
+	// Test Suites
+	this.$suites 			= [];
 	
 	/************************************** EXPECTATIONS *********************************************/
 	
@@ -23,7 +25,7 @@ component{
 	* @facade
 	*/
 	function assert(required expression, message=""){
-		return variables.$assert.assert(argumentCollection=arguments);
+		return this.$assert.assert(argumentCollection=arguments);
 	}
 
 	/**
@@ -31,7 +33,7 @@ component{
 	* @facade
 	*/
 	function fail(message=""){
-		variables.$assert.fail(argumentCollection=arguments);
+		this.$assert.fail(argumentCollection=arguments);
 	}
 
 	/**
@@ -49,7 +51,7 @@ component{
 
 		if( isStruct( arguments.matchers ) ){
 			// register the custom matchers with override
-			structAppend( variables.$customMatchers, arguments.matchers, true );
+			structAppend( this.$customMatchers, arguments.matchers, true );
 			return this;
 		}
 
@@ -138,7 +140,7 @@ component{
 	any function makePublic( required any target, required string method, string newName="" ){
 		
 		// mix it
-		arguments.target.$exposeMixin = variables.$utility.getMixerUtil().exposeMixin;
+		arguments.target.$exposeMixin = this.$utility.getMixerUtil().exposeMixin;
 		// expose it
 		arguments.target.$exposeMixin( arguments.method, arguments.newName );
 
@@ -149,14 +151,14 @@ component{
 	* First line are the query columns separated by commas. Then do a consecuent rows separated by line breaks separated by | to denote columns.
 	*/
 	function querySim(required queryData){
-		return variables.$mockbox.querySim( arguments.queryData );
+		return this.$mockBox.querySim( arguments.queryData );
 	}
 	
 	/**
 	* Get a reference to the MockBox engine 
 	*/
 	function getMockBox(){
-		return variables.$mockBox;
+		return this.$mockBox;
 	}
 	
 }

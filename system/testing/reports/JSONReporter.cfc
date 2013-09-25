@@ -21,8 +21,12 @@ component{
 	* The report should return back in whatever format they desire and should set any
 	* Specifc browser types if needed.
 	* @results.hint The instance of the TestBox TestResult object to build a report on
+	* @runner.hint The TestBox runner object
 	*/
-	any function runReport( required coldbox.system.testing.TestResult results ){
+	any function runReport( 
+		required coldbox.system.testing.TestResult results,
+		required coldbox.system.testing.Runner runner 
+	){
 		getPageContext().getResponse().setContentType( "application/json" );
 		return serializeJSON( arguments.results.getMemento() );
 	}

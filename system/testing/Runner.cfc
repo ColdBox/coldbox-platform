@@ -14,6 +14,10 @@ component accessors="true"{
 	property name="utility";
 	// The reporter attached to this runner
 	property name="reporter";
+	// The version
+	property name="version";
+	// The codename
+	property name="codename";
 			
 	/**
 	* Constructor
@@ -21,15 +25,15 @@ component accessors="true"{
 	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter
 	*/
 	Runner function init( any bundles=[], any reporter="simple" ){
-		
+		// TestBox version
+		variables.version 	= "1.0.0.@build.number@";
+		variables.codename 	= ""; 
 		// init util
 		variables.utility = new coldbox.system.core.util.Util();
 		// reporter
 		variables.reporter = arguments.reporter;
-		
 		// inflate bundles to array
 		inflateBundles( arguments.bundles );
-		
 		
 		return this;
 	}
@@ -64,7 +68,7 @@ component accessors="true"{
 		if( isSimpleValue( variables.reporter ) ){
 			variables.reporter = buildCoreReporter( variables.reporter );
 		}
-		return variables.reporter.runReport( arguments.results );
+		return variables.reporter.runReport( arguments.results, this );
 	}
 
 	private function buildCoreReporter( required reporter ){
@@ -73,6 +77,7 @@ component accessors="true"{
 		switch( arguments.reporter ){
 			case "json" : { return new "coldbox.system.testing.reports.JSONReporter"(); }
 			case "raw" : { return new "coldbox.system.testing.reports.RawReporter"(); }
+			case "simple" : { return new "coldbox.system.testing.reports.SimpleReporter"(); }
 			default: {
 				throw(type="TestBox.InvalidReporterType", message="The passed in reporter [#arguments.reporter#] is not a valid report. Valid reporters are #reporterList#");
 			}
@@ -95,7 +100,7 @@ component accessors="true"{
 		// Mix it up baby
 		variables.utility.getMixerUtil().start( bundle );
 		
-		// Mix in methods
+		// Mix in the virtual methods
 		for( var key in baseObject ){
 			// If target has overriden method, then don't override it with mixin, simulated inheritance
 			if( NOT structKeyExists( bundle, key ) AND NOT listFindNoCase( excludedProperties, key ) ){
@@ -132,6 +137,7 @@ component accessors="true"{
 																  name=bundleName, 
 																  specCount=testSpecsCount );
 
+		// NOTHING IS TRAPPED BELOW AS THAT MEANS THERE IS AN ACTUAL EXCEPTION IN THE TEST ITSELF
 		// execute beforeAll(), beforeTests()
 		if( structKeyExists( target, "beforeAll" ) ){ target.beforeAll(); }
 		if( structKeyExists( target, "beforeTests" ) ){ target.beforeTests(); }
@@ -146,7 +152,8 @@ component accessors="true"{
 		if( structKeyExists( target, "afterTests" ) ){ target.afterTests(); }
 		
 		// end the bundle stats time count
-		bundleStats.endTime = getTickCount();
+		bundleStats.endTime 		= getTickCount();
+		bundleStats.totalDuration 	= bundleStats.endTime - bundleStats.startTime;
 		
 		return this;
 	}
@@ -173,23 +180,31 @@ component accessors="true"{
 			if( structKeyExists( arguments.target, "teardown" ) ){ arguments.target.teardown(); }
 			
 			// store end time and stats
-			specStats.endTime 	= getTickCount();
 			specStats.status 	= "Passed";
 			arguments.testResults.incrementSpecStatus(type="pass");
 			arguments.bundleStats.totalPass++;
 		}
+		// Catch assertion failures
 		catch("TestBox.AssertionFailed" e){
-			// increment failures
-			specStats.status = "Failed";
+			// increment failures and stats
+			specStats.status 		= "Failed";
+			specStats.failMessage 	= e.message;
+			specStats.failOrigin 	= e.tagContext[ 1 ];
 			arguments.bundleStats.totalFail++;
 			arguments.testResults.incrementSpecStatus(type="fail");
 		}
+		// Catch errors
 		catch(any e){
 			// increment errors
-			specStats.error 	= e;
-			specStats.status 	= "Error";
+			specStats.error 		= e;
+			specStats.status 		= "Error";
 			arguments.bundleStats.totalError++;
 			arguments.testResults.incrementSpecStatus(type="error");
+		}
+		finally{
+			// Complete timing of the spec test
+			specStats.endTime 	= getTickCount();
+			specStats.totalDuration = specStats.endTime - specStats.startTime;			
 		}
 		
 		return this;

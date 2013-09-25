@@ -1,5 +1,3 @@
-<cfscript>
-r = new coldbox.system.testing.Runner( "coldbox.testing.cases.testing.specs.MXUnitCompatTest" );
-</cfscript>
 <cfsetting showdebugoutput="false" >
-<cfoutput>#r.run(reporter="json")#</cfoutput>
+<cfset r = new coldbox.system.testing.Runner( "coldbox.testing.cases.testing.specs.AssertionsTest" ) >
+<cfoutput>#r.run(reporter="simple")#</cfoutput>

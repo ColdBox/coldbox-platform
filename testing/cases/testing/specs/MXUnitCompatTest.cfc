@@ -26,6 +26,7 @@ component extends="BaseTest" {
 
 	function testAssert() {
 		assert( application.salvador == 1 );
+		assertEquals( 1, request.foo );
 	}
 
 	function testAssertArrayEquals() {
@@ -71,7 +72,7 @@ component extends="BaseTest" {
 		assertQueryEquals( q1, q2 );
 	}
 
-	function testassertSame() {
+	function testassertSame(){
 		assertSame( this, this );
 	}
 
@@ -92,7 +93,8 @@ component extends="BaseTest" {
 	}
 
 	function testExpectException(){
-		expectException( "InvalidType" );
+		//expectException( "InvalidType" );
+		// TODO: Implement
 	}
 
 	function testMakePublic(){

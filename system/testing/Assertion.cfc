@@ -21,7 +21,7 @@ component{
 	* @expression.hint The expression to test
 	* @message.hint The message to send in the failure
 	*/
-	function assert( required boolean actual, message="" ){
+	function assert( required boolean expression, message="" ){
 		return isTrue( arguments.expression, arguments.message );
 	}
 	
@@ -99,9 +99,10 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function null( required any actual, message="" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected a null value but got #arguments.actual.toString()#" );
 		// equalize with case
 		if( isNull( arguments.actual ) ){ return this; }
+		arguments.message = ( len( arguments.message ) ? 
+			arguments.message : "Expected a null value but got #getStringName( arguments.actual )#" );
 		// if we reach here, nothing is equal man!
 		fail( arguments.message );
 	}
@@ -113,9 +114,9 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function notNull( required any actual, message="" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected the actual value to be NOT null but it was null" );
 		// equalize with case
 		if( !isNull( arguments.actual ) ){ return this; }
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected the actual value to be NOT null but it was null" );
 		// if we reach here, nothing is equal man!
 		fail( arguments.message );
 	}
@@ -264,7 +265,7 @@ component{
 	function lengthOf( required any target, required string length, message=""){
 		var aLength = 0;
 
-		if( isSimpleValue( arguments.target ) ){ aLength = len( arguments.aLength ); }
+		if( isSimpleValue( arguments.target ) ){ aLength = len( arguments.target ); }
 		if( isArray( arguments.target ) ){ aLength = arrayLen( arguments.target); }
 		if( isStruct( arguments.target ) ){ aLength = structCount( arguments.target); }
 		if( isQuery( arguments.target ) ){ aLength = arguments.target.recordcount; }
