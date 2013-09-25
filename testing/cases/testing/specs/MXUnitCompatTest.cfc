@@ -95,6 +95,12 @@ component extends="BaseTest" {
 		expectException( "InvalidType" );
 	}
 
+	function testMakePublic(){
+		t = new coldbox.testing.resources.test1();
+		assertTrue( makePublic( t, "aPrivateMethod" ).aPrivateMethod() );
+		assertTrue( makePublic( t, "aPrivateMethod", "funkyMethod" ).funkyMethod() );
+	}
+
 	private function privateMethodsDontRun() {
 		fail( "Private method don't run" );
 	}

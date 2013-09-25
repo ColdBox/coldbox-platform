@@ -5,6 +5,7 @@
 */
 component extends="coldbox.system.testing.BaseSpec"{
 
+	this.$expectException = {};
 
 /*********************************** RUNNER Methods ***********************************/
 
