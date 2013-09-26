@@ -1,4 +1,4 @@
-component displayName="TestBox xUnit style assertions test"{
+component displayName="TestBox xUnit suite"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -33,11 +33,11 @@ component displayName="TestBox xUnit style assertions test"{
 	}
 
 	function testFails(){
-		$assert.fail( "This Test should fail" );
+		//$assert.fail( "This Test should fail" );
 	}
 
 	function testFailsShortcut(){
-		fail( "This Test should fail" );
+		//fail( "This Test should fail" );
 	}
 
 	function testAssert() {
@@ -105,9 +105,9 @@ component displayName="TestBox xUnit style assertions test"{
 		$assert.notTypeOf( "date", "monday" );
 		$assert.notTypeOf( "time", "1");
 		$assert.notTypeOf( "float", "Hello" );
-		$assert.notTypeOf( "numeric", false );
+		$assert.notTypeOf( "numeric", "eeww2" );
 		$assert.notTypeOf( "query", [] );
-		$assert.notTypeOf( "string", false );
+		$assert.notTypeOf( "string", this );
 		$assert.notTypeOf( "struct", [] );
 		$assert.notTypeOf( "uuid", "123" );
 		$assert.notTypeOf( "url", "coldbox" );
@@ -142,7 +142,7 @@ component displayName="TestBox xUnit style assertions test"{
 	}
 
 	function testDeepKey(){
-		$assert.deedpKey( {name="luis", awesome=true, parent = { age=70 } }, "age" );
+		$assert.deepKey( {name="luis", awesome=true, parent = { age=70 } }, "age" );
 	}
 
 	function testNotDeepKey(){

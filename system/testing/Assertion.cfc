@@ -128,7 +128,7 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function typeOf( required string type, required any actual, message=""){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Actual data is not of this type: [#arguments.type#]" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Actual data [#getStringName( arguments.actual )#] is not of this type: [#arguments.type#]" );
 		if( isValid( arguments.type, arguments.actual ) ){ return this; }
 		fail( arguments.message );
 	}
@@ -140,7 +140,7 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function notTypeOf( required string type, required any actual, message=""){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Actual data is actually of this type: [#arguments.type#]" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Actual data [#getStringName( arguments.actual )#] is actually of this type: [#arguments.type#]" );
 		if( !isValid( arguments.type, arguments.actual ) ){ return this; }
 		fail( arguments.message );
 	}

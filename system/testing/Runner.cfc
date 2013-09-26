@@ -61,8 +61,11 @@ component accessors="true"{
 	}
 	
 	
-	/************************************** PRIVATE *********************************************/
+/************************************** PRIVATE *********************************************/
 	
+
+	/************************************** REPORTING *********************************************/
+
 	/**
 	* Build a report according to this runner's setup reporter, which can be anything.
 	* @results.hint The results object to use to produce a report
@@ -92,6 +95,267 @@ component accessors="true"{
 			}
 		}
 	}
+
+	/************************************** TESTING METHODS *********************************************/
+
+	
+	/**
+	* This method tests a bundle CFC in its entirety
+	* @bundlePath.hint The path of the Bundle CFC to test.
+	* @testResults.hint The testing results object to keep track of results
+	*/
+	private Runner function testBundle(
+		required bundlePath, 
+		required testResults
+	){
+		
+		// create new target bundle and get its metadata
+		var target 		= getBundle( arguments.bundlePath );
+		var targetMD 	= getMetadata( target );
+		var bundleName 	= ( structKeyExists( targetMD, "displayName" ) ? targetMD.displayname : arguments.bundlePath );
+		
+		// Discover the test suite data to use for testing
+		var testSuites 		= getTestSuites( target, targetMD );
+		var testSuitesCount = arrayLen( testSuites );
+
+		// Start recording stats for this bundle
+		var bundleStats = arguments.testResults.startBundleStats( bundlePath=arguments.bundlePath, name=bundleName );
+
+		//#### NOTHING IS TRAPPED BELOW SO AS TO THROW REAL EXCEPTIONS FROM TESTS THAT ARE WRITTEN WRONG
+
+		// execute beforeAll(), beforeTests() for this bundle, no matter how many suites they have.
+		if( structKeyExists( target, "beforeAll" ) ){ target.beforeAll(); }
+		if( structKeyExists( target, "beforeTests" ) ){ target.beforeTests(); }
+		
+		// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
+		for( var thisSuite in testSuites ){
+			testSuite( target=target, 
+					   suite=thisSuite, 
+					   testResults=arguments.testResults,
+					   bundleStats=bundleStats );
+		}
+
+		// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
+		if( structKeyExists( target, "afterAll" ) ){ target.afterAll(); }
+		if( structKeyExists( target, "afterTests" ) ){ target.afterTests(); }
+		
+		// finalize the bundle stats
+		arguments.testResults.endStats( bundleStats );
+		
+		return this;
+	}
+
+	/**
+	* Test the incoming suite definition
+	* @target.hint The target bundle CFC
+	* @method.hint The method definition to test
+	* @testResults.hint The testing results object
+	*/
+	private function testSuite(
+		required target,
+		required suite,
+		required testResults
+	){
+
+		// Get bundle stats
+		var bundleStats = arguments.testResults.getBundleStats( bundleStats.id );
+		// Start suite stats
+		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, bundleStats );
+		
+		// Record bundle + suite initial stats
+		bundleStats.totalSuites++;
+		suiteStats.totalSpecs 	= arrayLen( arguments.suite.specs );
+		bundleStats.totalSpecs += suiteStats.totalSpecs;
+
+		// Verify we can execute the incoming suite
+		if( !arguments.suite.skip ){
+
+			// iterate over suite specs and test them
+			for( var thisSpec in arguments.suite.specs ){
+				
+				testSpec( target=arguments.target, 
+						  spec=thisSpec, 
+						  testResults=arguments.testResults, 
+						  suiteStats=suiteStats );
+
+			}
+			
+			// All specs finalized, set suite status according to spec data
+			if( suiteStats.totalError GT 0 ){ suiteStats.status = "Error"; }
+			else if( suiteStats.totalFail GT 0 ){ suiteStats.status = "Failed"; }
+			else{ suiteStats.status = "Passed"; }
+
+			// Do we have any internal suites? If we do, test them recursively.
+
+		}
+		else{
+			// Record skipped stats and status
+			suiteStats.status = "Skipped";
+			arguments.bundleStats.totalSkipped += suiteStats.totalSpecs;
+		}
+
+		// Finalize the suite stats
+		arguments.testResults.endStats( suiteStats );
+	}
+
+	/**
+	* Test the incoming spec definition
+	* @target.hint The target bundle CFC
+	* @spec.hint The spec definition to test
+	* @testResults.hint The testing results object
+	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
+	*/
+	private function testSpec(
+		required target,
+		required spec,
+		required testResults,
+		required suiteStats
+	){
+			
+		try{
+			
+			// init spec tests
+			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
+			
+			// Verify we can execute
+			if( !arguments.spec.skip ){
+
+				// execute beforeEach(), setup()
+				if( structKeyExists( arguments.target, "beforeEach" ) ){ arguments.target.beforeEach(); }
+				if( structKeyExists( arguments.target, "setup" ) ){ arguments.target.setup(); }
+				
+				// Execute Spec
+				evaluate( "arguments.target.#arguments.spec.name#()" );
+				
+				// execute afterEach(), teardown()
+				if( structKeyExists( arguments.target, "afterEach" ) ){ arguments.target.afterEach(); }
+				if( structKeyExists( arguments.target, "teardown" ) ){ arguments.target.teardown(); }
+				
+				// store spec status
+				specStats.status 	= "Passed";
+				// Increment recursive pass stats
+				arguments.testResults.incrementSpecStat( type="pass", stats=specStats );
+			}
+			else{
+				// store spec status
+				specStats.status = "Skipped";
+				// Increment recursive pass stats
+				arguments.testResults.incrementSpecStat( type="skipped", stats=specStats );
+			}
+		}
+		// Catch assertion failures
+		catch("TestBox.AssertionFailed" e){
+			// store spec status and debug data
+			specStats.status 		= "Failed";
+			specStats.failMessage 	= e.message;
+			specStats.failOrigin 	= e.tagContext[ 1 ];
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
+		}
+		// Catch errors
+		catch(any e){
+			// store spec status and debug data
+			specStats.status 		= "Error";
+			specStats.error 		= e;
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
+		}
+		finally{
+			// Complete spec testing
+			arguments.testResults.endStats( specStats );
+		}
+		
+		return this;
+	}
+
+	/************************************** DISCOVERY METHODS *********************************************/
+	
+	/**
+	* Get all the test suites in the passed in bundle
+	* @target.hint The target to get the suites from
+	* @targetMD.hint The metdata of the target
+	*/
+	private array function getTestSuites( 
+		required target,
+		required targetMD
+	){
+		// check if doing Unit Style or BDD style
+		if( arrayLen( arguments.target.$suites ) eq 0 ){
+			return getUnitStyleSuite( arguments.target, arguments.targetMD );
+		}
+
+		// else build and return BDD suite.
+	}
+
+	/**
+	* Build a unit style suite
+	*/
+	private array function getUnitStyleSuite(
+		required target,
+		required targetMD
+	){
+
+		var suite = {
+			// bundle this suite belongs to
+			bundlePath = arguments.targetMD.name,
+			// suite name
+			name 		= ( structKeyExists( arguments.targetMD, "displayName" ) ? arguments.targetMD.displayname : arguments.targetMD.name ),
+			// async flag
+			asyncAll 	= false,
+			// skip suite testing flag
+			skip 		= ( structKeyExists( arguments.targetMD, "skip" ) ?  ( len( arguments.targetMD.skip ) ? arguments.targetMD.skip : true ) : false ),
+			// labels attached to the suite for execution
+			labels 		= ( structKeyExists( arguments.targetMD, "labels" ) ? listToArray( arguments.targetMD.labels ) : [] ),
+			// the specs attached to this suite.
+			specs 		= getTestMethods( arguments.target ),
+			// the recursive suites
+			suites 		= []
+		};
+
+		// skip constraint for suite?
+		if( !isBoolean( suite.skip ) && isCustomFunction( arguments.target[ suite.skip ] ) ){
+			suite.skip = evaluate( "arguments.target.#suite.skip#()" );
+		}
+
+		return [ suite ];
+	}
+
+	/**
+	* Retrieve the testing methods/specs from a given target.
+	* @target.hint The target to get the methods from
+	*/
+	private array function getTestMethods( required any target ){
+		var mResults = [];
+		var methodArray = structKeyArray( arguments.target );
+		var index = 1;
+
+		for( var thisMethod in methodArray ) {
+			// only valid functions and test functions allowed
+			if( isCustomFunction( arguments.target[ thisMethod ] ) &&
+				isValidTestMethod( thisMethod ) ) {
+				// Build the spec data packet
+				var specMD = getMetadata( arguments.target[ thisMethod ] );
+				var spec = {
+					name 				= specMD.name,
+					hint 				= ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
+					skip 				= ( structKeyExists( specMD, "skip" ) ?  ( len( specMD.skip ) ? specMD.skip : true ) : false ),
+					labels 				= ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] ),
+					order 				= ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ ),
+					expectedException   = ( structKeyExists( specMD, "expectedException" ) ? specMD.expectedException : "" ),
+				};
+
+				// skip constraint?
+				if( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ){
+					spec.skip = evaluate( "arguments.target.#spec.skip#()" );
+				}
+
+				arrayAppend( mResults, spec );
+			}
+		}
+		return mResults;
+	}
+
+	/************************************** UTILITY METHODS *********************************************/
 
 	/**
 	* Creates and returns a bundle CFC with spec capabilities if not inherited.
@@ -126,161 +390,7 @@ component accessors="true"{
 		
 		return bundle;
 	}
-	
-	/**
-	* This method tests a bundle CFC in its entirety
-	* @bundlePath.hint The path of the Bundle CFC to test.
-	* @testResults.hint The testing results object to keep track of results
-	*/
-	private Runner function testBundle(
-		required bundlePath, 
-		required testResults
-	){
-		
-		// create new target bundle and get its metadata
-		var target 		= getBundle( arguments.bundlePath );
-		var targetMD 	= getMetadata( target );
-		// setup bundle name
-		var bundleName = ( structKeyExists( targetMD, "displayName" ) ? targetMD.displayname : arguments.bundlePath );
-		
-		// get test target specs to test for this bundle
-		var testSpecs = getTestMethods( target );
-		var testSpecsCount = arrayLen( testSpecs );
-		
-		// record global stats
-		arguments.testResults.incrementSpecs( count=testSpecsCount );
-		
-		// Start stats for this spec bundle
-		var bundleStats = arguments.testResults.startBundleStats( bundlePath=arguments.bundlePath, 
-																  name=bundleName, 
-																  specCount=testSpecsCount );
 
-		// NOTHING IS TRAPPED BELOW AS THAT MEANS THERE IS AN ACTUAL EXCEPTION IN THE TEST ITSELF
-		// execute beforeAll(), beforeTests()
-		if( structKeyExists( target, "beforeAll" ) ){ target.beforeAll(); }
-		if( structKeyExists( target, "beforeTests" ) ){ target.beforeTests(); }
-		
-		// iterate and test specs in this bundle
-		for( var thisMethod in testSpecs ){
-			testSpec( target, thisMethod, arguments.testResults, bundleStats );
-		}
-		
-		// execute afterAll(), afterTests()
-		if( structKeyExists( target, "afterAll" ) ){ target.afterAll(); }
-		if( structKeyExists( target, "afterTests" ) ){ target.afterTests(); }
-		
-		// end the bundle stats time count
-		bundleStats.endTime 		= getTickCount();
-		bundleStats.totalDuration 	= bundleStats.endTime - bundleStats.startTime;
-		
-		return this;
-	}
-	
-	/**
-	* Test the incoming spec definition
-	* @target.hint The target bundle CFC
-	* @method.hint The method definition to test
-	* @testResults.hint The testing results object
-	* @bundleStats
-	*/
-	private function testSpec(
-		required target,
-		required method,
-		required testResults, 
-		required bundleStats
-	){
-			
-		try{
-			// init spec tests
-			var specStats = arguments.testResults.startSpecStats( arguments.method.name, arguments.bundleStats );
-			
-			// Verify we can execute
-			if( !arguments.method.skip ){
-
-				// execute beforeEach(), setup()
-				if( structKeyExists( arguments.target, "beforeEach" ) ){ arguments.target.beforeEach(); }
-				if( structKeyExists( arguments.target, "setup" ) ){ arguments.target.setup(); }
-				
-				// Execute Test Method
-				evaluate( "arguments.target.#arguments.method.name#()" );
-				
-				// execute afterEach(), teardown()
-				if( structKeyExists( arguments.target, "afterEach" ) ){ arguments.target.afterEach(); }
-				if( structKeyExists( arguments.target, "teardown" ) ){ arguments.target.teardown(); }
-				
-				// store end time and stats
-				specStats.status 	= "Passed";
-				arguments.testResults.incrementGlobalStat(type="pass");
-				arguments.bundleStats.totalPass++;
-			}
-			else{
-				// Record skipped stats
-				specStats.status = "Skipped";
-				arguments.testResults.incrementGlobalStat(type="skipped");
-				arguments.bundleStats.totalSkipped++;
-			}
-		}
-		// Catch assertion failures
-		catch("TestBox.AssertionFailed" e){
-			// increment failures and stats
-			specStats.status 		= "Failed";
-			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= e.tagContext[ 1 ];
-			arguments.bundleStats.totalFail++;
-			arguments.testResults.incrementGlobalStat(type="fail");
-		}
-		// Catch errors
-		catch(any e){
-			// increment errors
-			specStats.error 		= e;
-			specStats.status 		= "Error";
-			arguments.bundleStats.totalError++;
-			arguments.testResults.incrementGlobalStat(type="error");
-		}
-		finally{
-			// Complete timing of the spec test
-			specStats.endTime 	= getTickCount();
-			specStats.totalDuration = specStats.endTime - specStats.startTime;			
-		}
-		
-		return this;
-	}
-	
-	/**
-	* Retrieve the testing methods/specs from a given target.
-	* @target.hint The target to get the methods from
-	*/
-	private array function getTestMethods( required any target ){
-		var mResults = [];
-		var methodArray = structKeyArray( arguments.target );
-		var index = 1;
-
-		for( var thisMethod in methodArray ) {
-			// only valid functions and test functions allowed
-			if( isCustomFunction( arguments.target[ thisMethod ] ) &&
-				isValidTestMethod( thisMethod ) ) {
-				// Build the spec data packet
-				var specMD = getMetadata( arguments.target[ thisMethod ] );
-				var spec = {
-					name 				= specMD.name,
-					hint 				= ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
-					skip 				= ( structKeyExists( specMD, "skip" ) ?  ( len( specMD.skip ) ? specMD.skip : true ) : false ),
-					labels 				= ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] ),
-					order 				= ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ ),
-					expectedException   = ( structKeyExists( specMD, "expectedException" ) ? specMD.expectedException : "" ),
-				};
-
-				// skip constraint?
-				if( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ){
-					spec.skip = evaluate( "arguments.target.#spec.skip#()" );
-				}
-				
-				arrayAppend( mResults, spec );
-			}
-		}
-		return mResults;
-	}
-	
 	/**
 	* Validate the incoming method name is a valid TestBox test method name
 	*/
