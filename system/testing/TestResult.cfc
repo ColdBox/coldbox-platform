@@ -71,9 +71,19 @@ component accessors="true"{
 		return( variables.endTime != 0 );
 	}
 
-
+	/**
+	* Increment the global specs found
+	*/
 	TestResult function incrementSpecs(required count=1){
-		variables.specCount += arguments.count;
+		variables.totalSpecs += arguments.count;
+		return this;
+	}
+
+	/**
+	* Increment the global suites found
+	*/
+	TestResult function incrementSuites(required count=1){
+		variables.totalSuites += arguments.count;
 		return this;
 	}
 	

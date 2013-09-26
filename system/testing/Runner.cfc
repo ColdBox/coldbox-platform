@@ -22,9 +22,10 @@ component accessors="true"{
 	/**
 	* Constructor
 	* @bundles.hint The path, list of paths or array of paths of the spec bundle CFCs to run and test
+	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter
 	*/
-	Runner function init( any bundles=[], any reporter="simple" ){
+	Runner function init( any bundles=[], any directory={}, any reporter="simple" ){
 		// TestBox version
 		variables.version 	= "1.0.0.@build.number@";
 		variables.codename 	= ""; 
@@ -32,12 +33,18 @@ component accessors="true"{
 		variables.utility = new coldbox.system.core.util.Util();
 		// reporter
 		variables.reporter = arguments.reporter;
+
+		// directory passed?
+		if( !structIsEmpty( arguments.directory ) ){
+			arguments.bundles = getSpecPaths( arguments.directory );
+		}
+
 		// inflate bundles to array
 		inflateBundles( arguments.bundles );
 		
 		return this;
 	}
-	
+
 	/**
 	* Run the bundles setup in this Runner and produces an awesome report according to sepcified reporter
 	* @bundles.hint The path, list of paths or array of paths of the spec bundle CFCs to run and test
@@ -162,10 +169,13 @@ component accessors="true"{
 		// Start suite stats
 		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, bundleStats );
 		
-		// Record bundle + suite initial stats
-		bundleStats.totalSuites++;
+		// Record bundle + suite + global initial stats
 		suiteStats.totalSpecs 	= arrayLen( arguments.suite.specs );
 		bundleStats.totalSpecs += suiteStats.totalSpecs;
+		bundleStats.totalSuites++;
+		// increment global suites + specs
+		arguments.testResults.incrementSuites()
+			.incrementSpecs( suiteStats.totalSpecs );
 
 		// Verify we can execute the incoming suite
 		if( !arguments.suite.skip ){
@@ -405,5 +415,42 @@ component accessors="true"{
 	private function inflateBundles(required any bundles){
 		variables.bundles = ( isSimpleValue( arguments.bundles ) ? listToArray( arguments.bundles ) : arguments.bundles );
 	}
+
+	/**
+	* Get an array of spec paths from a directory
+	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	*/
+	private function getSpecPaths( required directory ){
+		var results = [];
+
+		// recurse default
+		arguments.directory.recurse = ( structKeyExists( arguments.directory, "recurse" ) ? arguments.directory.recurse : true );
+		// clean up paths
+		var bundleExpandedPath 	= expandPath( "/" & replace( arguments.directory.mapping, ".", "/", "all" ) )
+		bundleExpandedPath 		= replace( bundleExpandedPath, "\", "/", "all" );
+		// search directory with filters
+		var bundlesFound 		= directoryList( bundleExpandedPath, arguments.directory.recurse, "path", "*.cfc", "asc" );
+
+		// cleanup paths and store them for usage
+		for( var x=1; x lte arrayLen( bundlesFound ); x++ ){
+
+			// filter closure exists and the filter does not match the path
+			if( structKeyExists( arguments.directory, "filter" ) && !arguments.directory.filter( bundlesFound[ x ] ) ){
+				continue;
+			}
+
+			// standardize paths
+			bundlesFound[ x ] = rereplace( replaceNoCase( bundlesFound[ x ], ".cfc", "" ) , "(\\|/)", "/", "all" );
+			// clean base out of them
+			bundlesFound[ x ] = replace( bundlesFound[ x ], bundleExpandedPath, "" );
+			// Clean out slashes and append the mapping.
+			bundlesFound[ x ] = arguments.directory.mapping & rereplace( bundlesFound[ x ], "(\\|/)", ".", "all" );
+
+			arrayAppend( results, bundlesFound[ x ] );
+		}
+
+		return results;
+	}
+	
 	
 }

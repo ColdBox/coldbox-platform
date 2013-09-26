@@ -32,6 +32,7 @@
 	.float-right{ float: right;}
 	.float-left{ float: left;}
 	.box{ border:1px solid gray; margin: 10px 0px; padding: 10px; background-color: ##f5f5f5}
+	##globalStats{ background-color: ##dceef4 }
 	.specStatus{ cursor:pointer;}
 	dd{ margin: 3px 0px 3px 15px}
 	</style>
@@ -54,7 +55,11 @@
 
 			// toggle the opposite type
 			if( !$this.hasClass( type ) ){
-				$this.fadeToggle();
+				$this.fadeOut();
+			}
+			else{
+				// show the type you sent
+				$this.fadeIn();
 			}
 
 		} );
