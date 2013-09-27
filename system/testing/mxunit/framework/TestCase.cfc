@@ -137,4 +137,11 @@ component extends="coldbox.system.testing.BaseSpec"{
 		this.$assert.typeOf( "struct", arguments.actual, arguments.message );
 	}
 
+	/**
+	* Assert something is of a certrain object type
+	*/
+	function assertIsTypeOf( required actual, required typeName, message="" ){
+		this.$assert.instanceOf( arguments.actual, arguments.typeName, arguments.message );
+	}
+
 }
