@@ -366,15 +366,14 @@ component accessors="true"{
 				// Build the spec data packet
 				var specMD = getMetadata( arguments.target[ thisMethod ] );
 				var spec = {
-					name = specMD.name
+					name 		= specMD.name,
+					hint 		= ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
+					skip 		= ( structKeyExists( specMD, "skip" ) ?  ( len( specMD.skip ) ? specMD.skip : true ) : false ),
+					labels 		= ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] ),
+					order 		= ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ ),
+					expectedException  = ( structKeyExists( specMD, "expectedException" ) ? specMD.expectedException : "" )
 				};
-				// Stupid cf9 bug
-				spec.hint 				= ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" );
-				spec.skip 				= ( structKeyExists( specMD, "skip" ) ?  ( len( specMD.skip ) ? specMD.skip : true ) : false );
-				spec.labels 			= ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] );
-				spec.order 				= ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ );
-				spec.expectedException  = ( structKeyExists( specMD, "expectedException" ) ? specMD.expectedException : "" );
-
+				
 				// skip constraint?
 				if( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ){
 					spec.skip = evaluate( "arguments.target.#spec.skip#()" );
