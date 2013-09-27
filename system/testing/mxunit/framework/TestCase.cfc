@@ -21,7 +21,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 	/**
 	*  MXUnit style debug
-	*/ 
+	*/
 	function debug(required var){
 		arguments.deepCopy = true;
 		super.debug( argumentCollection=arguments );
@@ -41,7 +41,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 	function fail(message=""){
 		this.$assert.fail( arguments.message );
 	}
-	
+
 	/**
 	* Assert that the passed expression is true
 	*/
@@ -69,7 +69,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 	function assertEqualsCase( required any expected, required any actual, message="" ){
 		this.$assert.isEqualWithCase( arguments.expected, arguments.actual, arguments.message );
 	}
-	
+
 	/**
 	* Assert something is false
 	*/
@@ -83,7 +83,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 	function assertNotEquals( required any expected, required any actual, message="" ){
 		this.$assert.isNotEqual( arguments.expected, arguments.actual, arguments.message );
 	}
-	
+
 	/**
 	* Assert that an expected and actual objec is NOT the same instance
 	* This only works on objects that are passed by reference, please remember that in Railo
@@ -121,6 +121,27 @@ component extends="coldbox.system.testing.BaseSpec"{
 	*/
 	function assertTrue( required string condition, message="" ){
 		this.$assert.isTrue( arguments.condition, arguments.message );
+	}
+
+	/**
+	* Assert something is array
+	*/
+	function assertIsArray( required actual, message="" ){
+		this.$assert.typeOf( "array", arguments.actual, arguments.message );
+	}
+
+	/**
+	* Assert something is struct
+	*/
+	function assertIsStruct( required actual, message="" ){
+		this.$assert.typeOf( "struct", arguments.actual, arguments.message );
+	}
+
+	/**
+	* Assert something is of a certrain object type
+	*/
+	function assertIsTypeOf( required actual, required typeName, message="" ){
+		this.$assert.instanceOf( arguments.actual, arguments.typeName, arguments.message );
 	}
 
 }
