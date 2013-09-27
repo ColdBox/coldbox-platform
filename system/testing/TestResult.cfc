@@ -20,6 +20,7 @@ component accessors="true"{
 	property name="totalFail" 		type="numeric";
 	property name="totalError" 		type="numeric";
 	property name="totalSkipped"	type="numeric";
+	property name="labels"			type="array";
 
 	// bundle stats
 	property name="bundleStats"		type="struct";
@@ -27,7 +28,7 @@ component accessors="true"{
 	/**
 	* Constructor
 	*/
-	TestResult function init( numeric bundleCount=0) {
+	TestResult function init( numeric bundleCount=0, array labels=[] ) {
 		// Global test durations
 		variables.startTime 	= getTickCount();	
 		variables.endTime 		= 0;
@@ -41,6 +42,7 @@ component accessors="true"{
 		variables.totalFail		= 0;
 		variables.totalError	= 0;
 		variables.totalSkipped 	= 0;
+		variables.labels 		= arguments.labels;
 		
 		// Bundle Stats
 		variables.bundleStats 	= [];
@@ -285,7 +287,7 @@ component accessors="true"{
 	* Get a flat representation of this result
 	*/
 	struct function getMemento(){
-		var pList = listToArray( "startTime,endTime,totalDuration,totalBundles,totalSuites,totalSpecs,totalPass,totalFail,totalError,totalSkipped,bundleStats" );
+		var pList = listToArray( "labels,startTime,endTime,totalDuration,totalBundles,totalSuites,totalSpecs,totalPass,totalFail,totalError,totalSkipped,bundleStats" );
 		var result = {};
 		
 		// Do simple properties only

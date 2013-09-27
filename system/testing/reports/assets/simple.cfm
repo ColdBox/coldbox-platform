@@ -80,6 +80,10 @@
 [ <span class="specStatus failed" data-status="failed">Failures: #results.getTotalFail()#</span> ]
 [ <span class="specStatus error" data-status="error">Errors: #results.getTotalError()#</span> ]
 [ <span class="specStatus skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span> ]
+<br>
+<cfif arrayLen( results.getLabels() )>
+[ Labels Applied: #arrayToList( results.getLabels() )# ]
+</cfif>
 
 </div>
 

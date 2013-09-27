@@ -1,4 +1,4 @@
-component displayName="TestBox xUnit suite"{
+component displayName="TestBox xUnit suite" labels="railo,cf"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -36,7 +36,7 @@ component displayName="TestBox xUnit suite"{
 		//$assert.fail( "This Test should fail" );
 	}
 
-	function testFailsShortcut(){
+	function testFailsShortcut() labels="railo"{
 		//fail( "This Test should fail" );
 	}
 

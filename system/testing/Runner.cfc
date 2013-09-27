@@ -10,6 +10,8 @@ component accessors="true"{
 	
 	// The CFC bundles to test
 	property name="bundles";
+	// The labels used for the testing
+	property name="labels";
 	// The main utility object
 	property name="utility";
 	// The reporter attached to this runner
@@ -24,8 +26,9 @@ component accessors="true"{
 	* @bundles.hint The path, list of paths or array of paths of the spec bundle CFCs to run and test
 	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter
+	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
 	*/
-	Runner function init( any bundles=[], any directory={}, any reporter="simple" ){
+	Runner function init( any bundles=[], struct directory={}, any reporter="simple", any labels=[] ){
 		// TestBox version
 		variables.version 	= "1.0.0.@build.number@";
 		variables.codename 	= ""; 
@@ -38,7 +41,8 @@ component accessors="true"{
 		if( !structIsEmpty( arguments.directory ) ){
 			arguments.bundles = getSpecPaths( arguments.directory );
 		}
-
+		// inflate labels
+		variables.labels = ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ); 
 		// inflate bundles to array
 		inflateBundles( arguments.bundles );
 		
@@ -50,13 +54,17 @@ component accessors="true"{
 	* @bundles.hint The path, list of paths or array of paths of the spec bundle CFCs to run and test
 	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter
 	*/
-	any function run( any bundles, any reporter ){
+	any function run( any bundles, struct directory, any reporter, any labels ){
+		// inflate labels if passed
+		if( structKeyExists( arguments, "labels" ) ){ 
+			variables.labels = ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ); 
+		}
 		// reporter passed?
 		if( structKeyExists( arguments, "reporter" ) ){ variables.reporter = arguments.reporter; }
 		// if bundles passed, inflate those as the target
 		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
 		// create results object
-		var results = new TestResult( arrayLen( variables.bundles ) );
+		var results = new TestResult( arrayLen( variables.bundles ), variables.labels );
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
 			testBundle( thisBundlePath, results );
@@ -177,7 +185,7 @@ component accessors="true"{
 		arguments.testResults.incrementSuites()
 			.incrementSpecs( suiteStats.totalSpecs );
 
-		// Verify we can execute the incoming suite
+		// Verify we can execute the incoming suite via skipping or labels
 		if( !arguments.suite.skip ){
 
 			// iterate over suite specs and test them
@@ -327,6 +335,18 @@ component accessors="true"{
 			suite.skip = evaluate( "arguments.target.#suite.skip#()" );
 		}
 
+		// do we have labels applied?
+		if( arrayLen( variables.labels ) ){
+			for( var thisLabel in variables.labels ){
+				// verify that a label exists, if it does, break, it matches the criteria, if no matches, then skip it.
+				if( arrayFindNoCase( suite.labels, thisLabel ) ){
+					suite.skip = false;
+					break;
+				}
+				suite.skip = true;
+			}
+		}
+
 		return [ suite ];
 	}
 
@@ -357,6 +377,18 @@ component accessors="true"{
 				// skip constraint?
 				if( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ){
 					spec.skip = evaluate( "arguments.target.#spec.skip#()" );
+				}
+
+				// do we have labels applied?
+				if( arrayLen( variables.labels ) ){
+					for( var thisLabel in variables.labels ){
+						// verify that a label exists, if it does, break, it matches the criteria, if no matches, then skip it.
+						if( arrayFindNoCase( spec.labels, thisLabel ) ){
+							spec.skip = false;
+							break;
+						}
+						spec.skip = true;
+					}
 				}
 
 				arrayAppend( mResults, spec );
