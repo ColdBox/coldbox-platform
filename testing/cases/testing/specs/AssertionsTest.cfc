@@ -33,11 +33,11 @@ component displayName="TestBox xUnit suite" labels="railo,cf"{
 	}
 
 	function testFails(){
-		//$assert.fail( "This Test should fail" );
+		$assert.dfail( "This Test should fail" );
 	}
 
 	function testFailsShortcut() labels="railo"{
-		//fail( "This Test should fail" );
+		fail( "This Test should fail" );
 	}
 
 	function testAssert() {

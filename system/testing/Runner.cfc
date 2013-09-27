@@ -99,12 +99,13 @@ component accessors="true"{
 	* @reporter.hint The reporter type to build.
 	*/
 	private any function buildCoreReporter( required reporter ){
-		var reporterList = "json,raw,simple";
+		var reporterList = "json,raw,simple,dot";
 
 		switch( arguments.reporter ){
 			case "json" : { return new "coldbox.system.testing.reports.JSONReporter"(); }
 			case "raw" : { return new "coldbox.system.testing.reports.RawReporter"(); }
 			case "simple" : { return new "coldbox.system.testing.reports.SimpleReporter"(); }
+			case "dot" : { return new "coldbox.system.testing.reports.DotReporter"(); }
 			default: {
 				throw(type="TestBox.InvalidReporterType", message="The passed in reporter [#arguments.reporter#] is not a valid report. Valid reporters are #reporterList#");
 			}
