@@ -239,15 +239,13 @@ component accessors="true"{
 			// Verify we can execute
 			if( !arguments.spec.skip ){
 
-				// execute beforeEach(), setup()
-				if( structKeyExists( arguments.target, "beforeEach" ) ){ arguments.target.beforeEach(); }
+				// execute setup()
 				if( structKeyExists( arguments.target, "setup" ) ){ arguments.target.setup(); }
 				
 				// Execute Spec
 				evaluate( "arguments.target.#arguments.spec.name#()" );
 				
-				// execute afterEach(), teardown()
-				if( structKeyExists( arguments.target, "afterEach" ) ){ arguments.target.afterEach(); }
+				// execute teardown()
 				if( structKeyExists( arguments.target, "teardown" ) ){ arguments.target.teardown(); }
 				
 				// store spec status
@@ -315,8 +313,6 @@ component accessors="true"{
 	){
 
 		var suite = {
-			// bundle this suite belongs to
-			bundlePath = arguments.targetMD.name,
 			// suite name
 			name 		= ( structKeyExists( arguments.targetMD, "displayName" ) ? arguments.targetMD.displayname : arguments.targetMD.name ),
 			// async flag

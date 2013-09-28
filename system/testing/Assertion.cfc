@@ -263,18 +263,58 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function lengthOf( required any target, required string length, message=""){
-		var aLength = 0;
-
-		if( isSimpleValue( arguments.target ) ){ aLength = len( arguments.target ); }
-		if( isArray( arguments.target ) ){ aLength = arrayLen( arguments.target); }
-		if( isStruct( arguments.target ) ){ aLength = structCount( arguments.target); }
-		if( isQuery( arguments.target ) ){ aLength = arguments.target.recordcount; }
-
+		var aLength = getTargetLength( arguments.target );
 		// validate it
 		if( aLength eq arguments.length ){ return this; }
 
 		// found, so throw it
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected length [#arguments.length#] is different than the actual length [#aLength#]" );
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert the size of a given string, array, structure or query
+	* @target.hint The target object to check the length for, this can be a string, array, structure or query
+	* @length.hint The length to check
+	* @message.hint The message to send in the failure
+	*/
+	function notLengthOf( required any target, required string length, message=""){
+		var aLength = getTargetLength( arguments.target );
+		// validate it
+		if( aLength neq arguments.length ){ return this; }
+
+		// found, so throw it
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected length [#arguments.length#] is equal than the actual length [#aLength#]" );
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that a a given string, array, structure or query is empty
+	* @target.hint The target object to check the length for, this can be a string, array, structure or query
+	* @message.hint The message to send in the failure
+	*/
+	function isEmpty( required any target, message=""){
+		var aLength = getTargetLength( arguments.target );
+		// validate it
+		if( aLength eq 0 ){ return this; }
+
+		// found, so throw it
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected value is not empty, actual size [#aLength#]" );
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that a a given string, array, structure or query is not empty
+	* @target.hint The target object to check the length for, this can be a string, array, structure or query
+	* @message.hint The message to send in the failure
+	*/
+	function isNotEmpty( required any target, message=""){
+		var aLength = getTargetLength( arguments.target );
+		// validate it
+		if( aLength GT 0 ){ return this; }
+
+		// found, so throw it
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected target to be empty but has a size of [#aLength#]" );
 		fail( arguments.message );
 	}
 
@@ -440,12 +480,33 @@ component{
 	}
 
 	/**
+	* Assert that the given "needle" argument does not exist in the incoming string or array with case-sensitivity
+	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
+	* @needle.hint The substring to find in a string or the value to find in an array
+	* @message.hint The message to send in the failure
+	*/
+	function notIncludesWithCase( required any target, required any needle, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]" );
+		
+		// string
+		if( isSimpleValue( arguments.target ) AND !find( arguments.needle, arguments.target ) ){
+			return this;
+		}
+		// array
+		if( isArray( arguments.target ) AND !arrayContains( arguments.target, arguments.needle ) ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
 	* Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
 	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
 	* @needle.hint The substring to find in a string or the value to find in an array
 	* @message.hint The message to send in the failure
 	*/
-	function notInclude( required any target, required any needle, message="" ){
+	function notIncludes( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]" );
 		
 		// string
@@ -510,4 +571,16 @@ component{
 		if( isObject( arguments.obj) ){ return getMetadata( arguments.obj ).name; }
 		return arguments.obj.toString();		
 	}
+
+	private function getTargetLength( required any target ){
+		var aLength = 0;
+
+		if( isSimpleValue( arguments.target ) ){ aLength = len( arguments.target ); }
+		if( isArray( arguments.target ) ){ aLength = arrayLen( arguments.target); }
+		if( isStruct( arguments.target ) ){ aLength = structCount( arguments.target); }
+		if( isQuery( arguments.target ) ){ aLength = arguments.target.recordcount; }
+
+		return aLength;
+	}
+
 }

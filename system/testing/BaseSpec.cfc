@@ -15,10 +15,12 @@ component{
 	this.$customMatchers 	= {};
 	// Utility object
 	this.$utility 			= new coldbox.system.core.util.Util();
-	// Test Suites are stored here
+	// BDD Test Suites are stored here as an array so they are executed in order of definition
 	this.$suites 			= [];
+	// A reverse lookup for the suite definitions
+	this.$suiteReverseLookup	= {};
 	
-	/************************************** EXPECTATIONS *********************************************/
+	/************************************** BDD & EXPECTATIONS *********************************************/
 	
 	/**
 	* Assert that the passed expression is true
@@ -37,18 +39,206 @@ component{
 	}
 
 	/**
+	* This function is used for BDD test suites to store the beforeEach() function to execute for a test suite group
+	* @body.hint The closure function
+	*/
+	function beforeEach( required any body ){
+		this.$suitesReverseLookup[ this.$suiteContext ].beforeEach = arguments.body;
+	}
+
+	/**
+	* This function is used for BDD test suites to store the afterEach() function to execute for a test suite group
+	* @body.hint The closure function
+	*/
+	function afterEach( required any body ){
+		this.$suitesReverseLookup[ this.$suiteContext ].afterEach = arguments.body;
+	}
+
+	/**
+	* The way to describe BDD test suites in TestBox. The title is usually what you are testing or grouping of tests.
+	* The body is the function that implements the suite.
+	* @title.hint The name of this test suite
+	* @body.hint The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	BaseSpec function describe(
+		required string title,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+
+		// closure checks
+		if( !isClosure( arguments.body ) ){
+			throw( type="TestBox.InvalidBody", message="The body of this test suite must be a closure and you did not give me one, what's up with that!" );
+		}
+
+		var suite = {
+			// suite name
+			name 		= arguments.title,
+			// async flag
+			asyncAll 	= arguments.asyncAll,
+			// skip suite testing
+			skip 		= arguments.skip,
+			// labels attached to the suite for execution
+			labels 		= ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			// the test specs for this suite
+			specs 		= [],
+			// the recursive suites
+			suites 		= [],
+			// the beforeEach closure
+			beforeEach 	= function(){},
+			// the afterEach closure
+			afterEach 	= function(){}
+		};
+
+		// skip constraint for suite as a closure
+		if( isClosure( arguments.skip ) ){
+			suite.skip = arguments.skip();
+		}
+
+		// Are we in a nested describe() block
+		if( len( this.$suiteContext ) and this.$suiteContext neq arguments.title ){
+			// Append this suite to the nested suite.
+			arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].suites, suite );
+			this.$suitesReverseLookup[ arguments.title ] = suite;
+			// Store parent context
+			var parentContext 	= this.$suiteContext;
+			var parentSpecIndex = this.$specOrderIndex;
+			// Switch contexts and go deep
+			this.$suiteContext 		= arguments.title;
+			this.$specOrderIndex 	= 1;
+			// execute the test suite definition with this context now.
+			arguments.body();
+			// switch back the context to parent
+			this.$suiteContext 		= parentContext;
+			this.$specOrderIndex 	= parentSpecIndex;
+		}
+		else{
+			// Append this definition to the master root
+			arrayAppend( $this.suites, suite );
+			// setup pivot context now and reverse lookups
+			this.$suiteContext 		= arguments.title;
+			this.$specOrderIndex 	= 1;
+			this.$suitesReverseLookup[ arguments.title ] = suite;
+			// execute the test suite definition with this context now.
+			arguments.body();
+		}
+
+		return this;
+	}
+
+	/**
+	* The it() function describes a spec or a test in TestBox.  The body argument is the closure that implements
+	* the test which usually contains one or more expectations that test the state of the code under test.
+	* @title.hint The title of this spec
+	* @body.hint The closure that represents the test
+	* @labels The list or array of labels this spec belongs to
+	* @skip A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	*/
+	BaseSpec function it(
+		required string title,
+		required any body,
+		any labels=[],
+		any skip=false,
+		numeric order
+	){
+		// closure checks
+		if( !isClosure( arguments.body ) ){
+			throw( type="TestBox.InvalidBody", message="The body of this test suite must be a closure and you did not give me one, what's up with that!" );
+		}
+
+		// Context checks
+		if( !len( this.$suiteContext ) ){
+			throw( type="TestBox.InvalidContext", message="You cannot define a spec without a test suite! This it() must exist within a describe() body! Go fix it :)" );
+		}
+
+		// define the spec
+		var spec = {
+			// spec title
+			name 		= arguments.title,
+			// skip spec testing
+			skip 		= arguments.skip,
+			// labels attached to the spec for execution
+			labels 		= ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			// the spec body
+			body 		= arguments.body,
+			// The order of execution
+			order 		= this.$specOrderIndex++
+		};
+
+		// skip constraint for suite as a closure
+		if( isClosure( arguments.skip ) ){
+			spec.skip = arguments.skip();
+		}
+
+		// Attach this spec to the incoming context array of specs
+		arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].specs, spec );
+		
+		return this;
+	}
+
+	/**
+	* This is a convenience method that makes sure the test suite is skipped from execution
+	* @title.hint The name of this test suite
+	* @body.hint The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	*/
+	BaseSpec function xdescribe(
+		required string title,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false
+	){
+		arguments.skip = true;
+		return describe( argumentCollection=arguments );
+	}
+
+	/**
+	* This is a convenience method that makes sure the test spec is skipped from execution
+	* @title.hint The title of this spec
+	* @body.hint The closure that represents the test
+	* @labels The list or array of labels this spec belongs to
+	*/
+	BaseSpec function xit(
+		required string title,
+		required any body,
+		any labels=[],
+	){
+		arguments.skip = true;
+		return it( argumentCollection=arguments );
+	}
+
+	/**
 	* Start an expectation expression. This returns an instance of Expectation so you can work with its matchers.
 	*/
 	Expectation function expect( required any actual ){
-		// build an expectation 
+		// build an expectation
+		var oExpectation = new Expectation( spec=this, assertions=this.$assert, mockbox=this.$mockbox );
+
+		// Store the actual data
+		oExpectation.actual = arguments.actual;
+
+		// Do we have any custom matchers to add to this expectation?
+		if( !structIsEmpty( this.$customMatchers ) ){
+			for( var thisMatcher in this.$customMatchers ){
+				oExpectation[ thisMatcher ] = this.$customMatchers[ thisMatcher ];
+			}
+		}
+		
+		return oExpectation;
 	}
 	
 	/**
 	* Add custom matchers to your expectations
 	* @matchers.hint The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
 	*/
-	function addMatchers(required any matchers){
-
+	function addMatchers( required any matchers ){
+		// register structure
 		if( isStruct( arguments.matchers ) ){
 			// register the custom matchers with override
 			structAppend( this.$customMatchers, arguments.matchers, true );
@@ -67,9 +257,11 @@ component{
 			throw(type="TestBox.InvalidMatcher", message="The matchers argument you sent is not valid, it must be a struct, string or object");
 		}
 
-		// Register the methods into our custom matchers
-
-
+		// Register the methods into our custom matchers struct
+		var matcherArray = structKeyArray( oMatchers );
+		for( var thisMatcher in matcherArray ){
+			this.$customMatchers[ thisMatcher ] = oMatchers[ thisMatcher ];
+		}
 
 		return this;
 	}
@@ -156,9 +348,69 @@ component{
 	
 	/**
 	* Get a reference to the MockBox engine 
+	* @generationPath.hint The path to generate the mocks if passed, else uses default location.
 	*/
-	function getMockBox(){
+	function getMockBox( string generationPath ){
+		if( structKeyExists( arguments, "generationPath" ) ){
+			this.$mockBox.setGenerationPath( arguments.generationPath );
+		}
 		return this.$mockBox;
 	}
+
+	/**
+	* Create an empty mock
+	* @className.hint The class name of the object to mock. The mock factory will instantiate it for you
+	* @object.hint The object to mock, already instantiated
+	* @callLogging.hint Add method call logging for all mocked methods. Defaults to true
+	*/
+	function createEmptyMock(
+		string className,
+		any object,
+		boolean callLogging=true
+	){
+		return this.$mockBox.createEmptyMock( argumentCollection=arguments );
+	}
+
+	/**
+	* Create a mock with or without clearing implementations, usually not clearing means you want to build object spies
+	* @className.hint The class name of the object to mock. The mock factory will instantiate it for you
+	* @object.hint The object to mock, already instantiated
+	* @clearMethods.hint If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock. Defaults to false
+	* @callLogging.hint Add method call logging for all mocked methods. Defaults to true
+	*/
+	function createMock(
+		string className,
+		any object,
+		boolean clearMethods=false
+		boolean callLogging=true
+	){
+		return this.$mockBox.createMock( argumentCollection=arguments );
+	}
+
+	/**
+	* Prepares an already instantiated object to act as a mock for spying and much more
+	* @object.hint The object to mock, already instantiated
+	* @callLogging.hint Add method call logging for all mocked methods. Defaults to true
+	*/
+	function prepareMock(
+		any object,
+		boolean callLogging=true
+	){
+		return this.$mockBox.prepareMock( argumentCollection=arguments );
+	}
+
+	/**
+	* Create an empty stub object that you can use for mocking
+	* @callLogging.hint Add method call logging for all mocked methods. Defaults to true
+	* @extends.hint Make the stub extend from certain CFC
+	* @implements.hint Make the stub adhere to an interface
+	*/
+	function createStub(
+		boolean callLogging=true,
+		string extends="",
+		string implements=""
+	){
+		return this.$mockBox.createStub( argumentCollection=arguments );
+	}	
 	
 }

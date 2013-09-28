@@ -20,6 +20,41 @@ component displayName="TestBox xUnit suite" labels="railo,cf"{
 
 /*********************************** Test Methods ***********************************/
 
+	function testIncludes(){
+		$assert.includes( "hello", "HE" );
+		$assert.includes( [ "Monday", "Tuesday" ] , "monday" );
+	}
+
+	function testIncludesWithCase(){
+		$assert.includesWithCase( "hello", "he" );
+		$assert.includesWithCase( [ "Monday", "Tuesday" ] , "Monday" );
+	}
+
+	function testnotIncludesWithCase(){
+		$assert.notincludesWithCase( "hello", "aa" );
+		$assert.notincludesWithCase( [ "Monday", "Tuesday" ] , "monday" );
+	}
+
+	function testNotIncludes(){
+		$assert.notIncludes( "hello", "what" );
+		$assert.notIncludes( [ "Monday", "Tuesday" ] , "Friday" );
+	}
+
+	function testIsEmpty(){
+		$assert.isEmpty( [] );
+		$assert.isEmpty( {} );
+		$assert.isEmpty( "" );
+		$assert.isEmpty( queryNew("") );
+	}
+
+	function testIsNotEmpty(){
+		$assert.isNotEmpty( [1,2] );
+		$assert.isNotEmpty( {name="luis"} );
+		$assert.isNotEmpty( "HelloLuis" );
+		$assert.isNotEmpty( querySim( "id, name
+			1 | luis") );
+	}
+
 	function testSkipped() skip{
 		$assert.fail( "This Test should fail" );
 	}
@@ -155,6 +190,15 @@ component displayName="TestBox xUnit suite" labels="railo,cf"{
 		$assert.lengthOf( {name="luis"}, 1 );
 		$assert.lengthOf( querySim( "id, name
 			1 | luis"), 1 );
+
+	}
+
+	function testNotLengthOf(){
+		$assert.notLengthOf( "heelo", 3 );
+		$assert.notLengthOf( [1,2], 5 );
+		$assert.notLengthOf( {name="luis"}, 5 );
+		$assert.notLengthOf( querySim( "id, name
+			1 | luis"), 0 );
 
 	}
 
