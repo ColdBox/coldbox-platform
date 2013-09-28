@@ -41,7 +41,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 	* @bundlePath.hint The path of the Bundle CFC to test.
 	* @testResults.hint The testing results object to keep track of results
 	*/
-	private UnitRunner function testBundle(
+	private function testBundle(
 		required bundlePath, 
 		required testResults
 	){
@@ -215,22 +215,6 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 		required target,
 		required targetMD
 	){
-		// check if doing Unit Style or BDD style
-		if( arrayLen( arguments.target.$suites ) eq 0 ){
-			return getUnitStyleSuite( arguments.target, arguments.targetMD );
-		}
-
-		// else build and return BDD suite.
-	}
-
-	/**
-	* Build a unit style suite
-	*/
-	private array function getUnitStyleSuite(
-		required target,
-		required targetMD
-	){
-
 		var suite = {
 			// suite name
 			name 		= ( structKeyExists( arguments.targetMD, "displayName" ) ? arguments.targetMD.displayname : arguments.targetMD.name ),
@@ -253,14 +237,8 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 		// do we have labels applied?
 		if( arrayLen( variables.labels ) ){
-			for( var thisLabel in variables.labels ){
-				// verify that a label exists, if it does, break, it matches the criteria, if no matches, then skip it.
-				if( arrayFindNoCase( suite.labels, thisLabel ) ){
-					suite.skip = false;
-					break;
-				}
-				suite.skip = true;
-			}
+			// check them.
+			suite.skip = ( ! canRunLabel( suite.labels ) );
 		}
 
 		return [ suite ];

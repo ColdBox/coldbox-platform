@@ -22,7 +22,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 		// if bundles passed, inflate those as the target
 		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
 		// create results object
-		var results = new TestResult( arrayLen( variables.bundles ), variables.labels );
+		var results = new coldbox.system.testing.TestResult( arrayLen( variables.bundles ), variables.labels );
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
 			testBundle( thisBundlePath, results );
@@ -34,5 +34,126 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 	}
 
 	/************************************** TESTING METHODS *********************************************/
+
+	/**
+	* This method tests a bundle CFC in its entirety
+	* @bundlePath.hint The path of the Bundle CFC to test.
+	* @testResults.hint The testing results object to keep track of results
+	*/
+	private function testBundle(
+		required bundlePath, 
+		required testResults
+	){
+		
+		// create new target bundle and get its metadata
+		var target 		= getBundle( arguments.bundlePath );
+		var targetMD 	= getMetadata( target );
+		var bundleName 	= ( structKeyExists( targetMD, "displayName" ) ? targetMD.displayname : arguments.bundlePath );
+		
+		// Execute the suite descriptors
+		target.run();
+
+		// Discover the test suite data to use for testing
+		var testSuites 		= getTestSuites( target, targetMD );
+		var testSuitesCount = arrayLen( testSuites );
+
+		// Start recording stats for this bundle
+		var bundleStats = arguments.testResults.startBundleStats( bundlePath=arguments.bundlePath, name=bundleName );
+
+		//#### NOTHING IS TRAPPED BELOW SO AS TO THROW REAL EXCEPTIONS FROM TESTS THAT ARE WRITTEN WRONG
+
+		// execute beforeAll() for this bundle, no matter how many suites they have.
+		if( structKeyExists( target, "beforeAll" ) ){ target.beforeAll(); }
+
+		// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
+		for( var thisSuite in testSuites ){
+			testSuite( target=target, 
+					   suite=thisSuite, 
+					   testResults=arguments.testResults,
+					   bundleStats=bundleStats );
+		}
+
+		// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
+		if( structKeyExists( target, "afterAll" ) ){ target.afterAll(); }
+		if( structKeyExists( target, "afterTests" ) ){ target.afterTests(); }
+		
+		// finalize the bundle stats
+		arguments.testResults.endStats( bundleStats );
+		
+		return this;
+	}
+
+	/**
+	* Test the incoming suite definition
+	* @target.hint The target bundle CFC
+	* @method.hint The method definition to test
+	* @testResults.hint The testing results object
+	*/
+	private function testSuite(
+		required target,
+		required suite,
+		required testResults
+	){
+
+		// Get bundle stats
+		var bundleStats = arguments.testResults.getBundleStats( bundleStats.id );
+		// Start suite stats
+		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, bundleStats );
+		
+		// Record bundle + suite + global initial stats
+		suiteStats.totalSpecs 	= arrayLen( arguments.suite.specs );
+		bundleStats.totalSpecs += suiteStats.totalSpecs;
+		bundleStats.totalSuites++;
+		// increment global suites + specs
+		arguments.testResults.incrementSuites()
+			.incrementSpecs( suiteStats.totalSpecs );
+
+		// Verify we can execute the incoming suite via skipping or labels
+		if( !arguments.suite.skip && canRunLabel( arguments.suite.labels ) ){
+
+			// iterate over suite specs and test them
+			for( var thisSpec in arguments.suite.specs ){
+				
+				testSpec( target=arguments.target, 
+						  spec=thisSpec, 
+						  testResults=arguments.testResults, 
+						  suiteStats=suiteStats );
+
+			}
+			
+			// All specs finalized, set suite status according to spec data
+			if( suiteStats.totalError GT 0 ){ suiteStats.status = "Error"; }
+			else if( suiteStats.totalFail GT 0 ){ suiteStats.status = "Failed"; }
+			else{ suiteStats.status = "Passed"; }
+
+			// Do we have any internal suites? If we do, test them recursively.
+
+		}
+		else{
+			// Record skipped stats and status
+			suiteStats.status = "Skipped";
+			arguments.bundleStats.totalSkipped += suiteStats.totalSpecs;
+		}
+
+		// Finalize the suite stats
+		arguments.testResults.endStats( suiteStats );
+	}
+
+	/************************************** DISCOVERY METHODS *********************************************/
+
+	/**
+	* Get all the test suites in the passed in bundle
+	* @target.hint The target to get the suites from
+	* @targetMD.hint The metdata of the target
+	*/
+	private array function getTestSuites( 
+		required target,
+		required targetMD
+	){
+		// get the spec suites
+		return arguments.target.$suites;
+	}
+
+
 
 }

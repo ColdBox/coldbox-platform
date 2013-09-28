@@ -8,17 +8,19 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 component{
 			
 	// MockBox mocking framework
-	this.$mockBox 			= new coldbox.system.testing.MockBox();
+	this.$mockBox 				= new coldbox.system.testing.MockBox();
 	// Assertions object
-	this.$assert			= new coldbox.system.testing.Assertion();
+	this.$assert				= new coldbox.system.testing.Assertion();
 	// Custom Matchers
-	this.$customMatchers 	= {};
+	this.$customMatchers 		= {};
 	// Utility object
-	this.$utility 			= new coldbox.system.core.util.Util();
+	this.$utility 				= new coldbox.system.core.util.Util();
 	// BDD Test Suites are stored here as an array so they are executed in order of definition
-	this.$suites 			= [];
+	this.$suites 				= [];
 	// A reverse lookup for the suite definitions
 	this.$suiteReverseLookup	= {};
+	// The suite context
+	this.$suiteContext			= "";
 	
 	/************************************** BDD & EXPECTATIONS *********************************************/
 	
@@ -63,7 +65,7 @@ component{
 	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
 	*/
-	BaseSpec function describe(
+	any function describe(
 		required string title,
 		required any body,
 		any labels=[],
@@ -119,7 +121,7 @@ component{
 		}
 		else{
 			// Append this definition to the master root
-			arrayAppend( $this.suites, suite );
+			arrayAppend( this.$suites, suite );
 			// setup pivot context now and reverse lookups
 			this.$suiteContext 		= arguments.title;
 			this.$specOrderIndex 	= 1;
@@ -139,7 +141,7 @@ component{
 	* @labels The list or array of labels this spec belongs to
 	* @skip A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
 	*/
-	BaseSpec function it(
+	any function it(
 		required string title,
 		required any body,
 		any labels=[],
@@ -188,7 +190,7 @@ component{
 	* @labels The list or array of labels this suite group belongs to
 	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 	*/
-	BaseSpec function xdescribe(
+	any function xdescribe(
 		required string title,
 		required any body,
 		any labels=[],
@@ -204,7 +206,7 @@ component{
 	* @body.hint The closure that represents the test
 	* @labels The list or array of labels this spec belongs to
 	*/
-	BaseSpec function xit(
+	any function xit(
 		required string title,
 		required any body,
 		any labels=[],
@@ -229,7 +231,7 @@ component{
 				oExpectation[ thisMatcher ] = this.$customMatchers[ thisMatcher ];
 			}
 		}
-		
+
 		return oExpectation;
 	}
 	

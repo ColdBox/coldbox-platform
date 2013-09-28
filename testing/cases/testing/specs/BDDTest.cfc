@@ -5,17 +5,17 @@ component{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
-	beforeAll = function(){
+	function beforeAll(){
 		application.salvador = 1;
 	}
 
-	afterAll = function(){
+	function afterAll(){
 		structClear( application );	
 	}
 
 /*********************************** BDD SUITES ***********************************/
 
-	suites = function(){
+	function run(){
 
 		/** 
 		* describe() starts a suite group of spec tests.
@@ -69,7 +69,7 @@ component{
 			}, "railo");
 			
 			// specs with a skip closure
-			it(title="can have a skip that is executed at runtime",function(){
+			it(title="can have a skip that is executed at runtime", body=function(){
 				fail( "Skipped programmatically, this should fail" );
 			},skip=function(){ return true; })
 		
@@ -83,7 +83,7 @@ component{
 		}, labels="railo");
 		
 		// xdescribe() skips the entire suite
-		xdescribe("A suite that is skipped", body=function(){
+		xdescribe("A suite that is skipped", function(){
 			it("will never execute this", function(){
 				fail( "This should not have executed" );
 			})	
