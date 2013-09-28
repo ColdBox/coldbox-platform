@@ -27,7 +27,7 @@ component{
 	*/
 	any function runReport( 
 		required coldbox.system.testing.TestResult results,
-		required coldbox.system.testing.Runner runner
+		required coldbox.system.testing.runners.IRunner runner
 	){
 		// bundle stats
 		bundleStats = arguments.results.getBundleStats();

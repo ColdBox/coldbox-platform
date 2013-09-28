@@ -44,6 +44,14 @@ component accessors="true"{
 	}
 
 	/**
+	* Fail an assertion
+	* @message The message to fail with.
+	*/
+	function fail( message="" ){
+		variables.assert.fail( argumentCollection=arguments );
+	}
+
+	/**
 	* Set the not bit to TRUE for this expectation.
 	*/
 	function not(){
