@@ -73,9 +73,8 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 					   bundleStats=bundleStats );
 		}
 
-		// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
+		// execute afterAll() for this bundle, no matter how many suites they have.
 		if( structKeyExists( target, "afterAll" ) ){ target.afterAll(); }
-		if( structKeyExists( target, "afterTests" ) ){ target.afterTests(); }
 		
 		// finalize the bundle stats
 		arguments.testResults.endStats( bundleStats );
@@ -88,39 +87,40 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 	* @target.hint The target bundle CFC
 	* @method.hint The method definition to test
 	* @testResults.hint The testing results object
+	* @bundleStats.hint The bundle stats this suite belongs to
 	*/
 	private function testSuite(
 		required target,
 		required suite,
-		required testResults
+		required testResults,
+		required bundleStats
 	){
 
-		// Get bundle stats
-		var bundleStats = arguments.testResults.getBundleStats( bundleStats.id );
 		// Start suite stats
-		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, bundleStats );
+		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats );
 		
 		// Record bundle + suite + global initial stats
 		suiteStats.totalSpecs 	= arrayLen( arguments.suite.specs );
-		bundleStats.totalSpecs += suiteStats.totalSpecs;
-		bundleStats.totalSuites++;
+		arguments.bundleStats.totalSpecs += suiteStats.totalSpecs;
+		arguments.bundleStats.totalSuites++;
 		// increment global suites + specs
 		arguments.testResults.incrementSuites()
 			.incrementSpecs( suiteStats.totalSpecs );
 
 		// Verify we can execute the incoming suite via skipping or labels
 		if( !arguments.suite.skip && canRunLabel( arguments.suite.labels ) ){
-
+			
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
 				
 				testSpec( target=arguments.target, 
-						  spec=thisSpec, 
+						  spec=thisSpec,
+						  suite=arguments.suite,
 						  testResults=arguments.testResults, 
 						  suiteStats=suiteStats );
 
 			}
-			
+
 			// All specs finalized, set suite status according to spec data
 			if( suiteStats.totalError GT 0 ){ suiteStats.status = "Error"; }
 			else if( suiteStats.totalFail GT 0 ){ suiteStats.status = "Failed"; }
@@ -137,6 +137,76 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 		// Finalize the suite stats
 		arguments.testResults.endStats( suiteStats );
+	}
+
+	/**
+	* Test the incoming spec definition
+	* @target.hint The target bundle CFC
+	* @spec.hint The spec definition to test
+	* @suite.hint The suite definition this spec belongs to
+	* @testResults.hint The testing results object
+	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
+	*/
+	private function testSpec(
+		required target,
+		required spec,
+		required suite,
+		required testResults,
+		required suiteStats
+	){
+			
+		try{
+			
+			// init spec tests
+			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
+			
+			// Verify we can execute
+			if( !arguments.spec.skip && canRunLabel( arguments.spec.labels ) ){
+
+				// execute beforeEach()
+				arguments.suite.beforeEach();
+				
+				// Execute the Spec body
+				arguments.spec.body();
+				
+				// execute afterEach()
+				arguments.suite.afterEach();
+				
+				// store spec status
+				specStats.status 	= "Passed";
+				// Increment recursive pass stats
+				arguments.testResults.incrementSpecStat( type="pass", stats=specStats );
+			}
+			else{
+				// store spec status
+				specStats.status = "Skipped";
+				// Increment recursive pass stats
+				arguments.testResults.incrementSpecStat( type="skipped", stats=specStats );
+			}
+		}
+		// Catch assertion failures
+		catch("TestBox.AssertionFailed" e){
+			// store spec status and debug data
+			specStats.status 		= "Failed";
+			specStats.failMessage 	= e.message;
+			specStats.failOrigin 	= e.tagContext;
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
+		}
+		// Catch errors
+		catch(any e){
+			// store spec status and debug data
+			specStats.status 		= "Error";
+			specStats.error 		= e;
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
+		}
+		finally{
+			// Complete spec testing
+			arguments.testResults.endStats( specStats );
+		}
+		
+		return this;
 	}
 
 	/************************************** DISCOVERY METHODS *********************************************/

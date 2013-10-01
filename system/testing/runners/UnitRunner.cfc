@@ -87,22 +87,22 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 	* @target.hint The target bundle CFC
 	* @method.hint The method definition to test
 	* @testResults.hint The testing results object
+	* @bundleStats.hint The bundle stats this suite belongs to
 	*/
 	private function testSuite(
 		required target,
 		required suite,
-		required testResults
+		required testResults,
+		required bundleStats
 	){
 
-		// Get bundle stats
-		var bundleStats = arguments.testResults.getBundleStats( bundleStats.id );
 		// Start suite stats
-		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, bundleStats );
+		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats );
 		
 		// Record bundle + suite + global initial stats
 		suiteStats.totalSpecs 	= arrayLen( arguments.suite.specs );
-		bundleStats.totalSpecs += suiteStats.totalSpecs;
-		bundleStats.totalSuites++;
+		arguments.bundleStats.totalSpecs += suiteStats.totalSpecs;
+		arguments.bundleStats.totalSuites++;
 		// increment global suites + specs
 		arguments.testResults.incrementSuites()
 			.incrementSpecs( suiteStats.totalSpecs );
@@ -186,7 +186,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			// store spec status and debug data
 			specStats.status 		= "Failed";
 			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= e.tagContext[ 1 ];
+			specStats.failOrigin 	= e.tagContext;
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
 		}

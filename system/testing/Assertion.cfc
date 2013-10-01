@@ -212,7 +212,7 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function key( required any target, required string key, message=""){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist in the target object. Found keys are [#structKeyArray( arguments.target ).toList()#]" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]" );
 		if( structKeyExists( arguments.target, arguments.key ) ){ return this; }
 		fail( arguments.message );
 	}
@@ -224,7 +224,7 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function notKey( required any target, required string key, message=""){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toList()#]" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]" );
 		if( !structKeyExists( arguments.target, arguments.key ) ){ return this; }
 		fail( arguments.message );
 	}
@@ -329,6 +329,7 @@ component{
 		
 		try{
 			arguments.target();
+			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function did not throw an expected exception. Type=[#arguments.type#], Regex=[#arguments.regex#]" );
 		}
 		catch(Any e){
 			// If no type, message expectations
@@ -341,11 +342,11 @@ component{
 			if( arguments.regex neq ".*" && reFindNoCase( arguments.regex, e.message ) ){
 				return this;
 			}
-
+			// diff messsage types
+			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function threw exception [#e.type#] [#e.message#] different than expected type=[#arguments.type#], Regex=[#arguments.regex#]" );
 		}
 
 		// found, so throw it
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function did not throw an expected exception. Type=[#arguments.type#], Regex=[#arguments.regex#]" );
 		fail( arguments.message );
 	}
 

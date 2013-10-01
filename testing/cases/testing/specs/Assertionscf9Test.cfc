@@ -2,19 +2,19 @@ component displayName="TestBox xUnit suite" labels="railo,cf"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
-	function beforeAll(){
+	function beforeTests(){
 		application.salvador = 1;
 	}
 
-	function afterAll(){
+	function afterTests(){
 		structClear( application );
 	}
 
-	function beforeEach(){
+	function setup(){
 		request.foo = 1;
 	}
 
-	function afterEach(){
+	function teardown(){
 		structClear( request );
 	}
 
@@ -60,7 +60,7 @@ component displayName="TestBox xUnit suite" labels="railo,cf"{
 	}
 
 	boolean function isRailo(){
-		return true;
+		return structKeyExists( server, "railo" );
 	}
 
 	function testSkippedWithConstraint() skip="isRailo"{

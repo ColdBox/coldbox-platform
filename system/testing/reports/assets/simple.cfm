@@ -131,6 +131,7 @@
 	</div>
 </cfloop>
 
-	</body>
+<!--- <cfdump var="#results#"> --->
+</body>
 </html>
 </cfoutput>

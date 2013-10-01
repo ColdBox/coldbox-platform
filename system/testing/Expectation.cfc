@@ -52,9 +52,41 @@ component accessors="true"{
 	}
 
 	/**
+	* Process dynamic expectations like any matcher starting with the word "not" is negated
+	*/
+	function onMissingMethod( required missingMethodName, required missingMethodArguments ){
+		
+		// detect negation
+		if( left( arguments.missingMethodName, 3 ) eq "not" ){
+			// remove NOT
+			arguments.missingMethodName = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 3 );
+			// set isNot pivot on this matcher
+			this.isNot = true;
+		}
+
+		// detect toBeTypeOf dynamic shortcuts
+		if( reFindNoCase( "^toBe(array|binary|boolean|component|creditcard|date|time|email|eurodate|float|numeric|guid|integer|query|ssn|social_security_number|string|struct|telephone|url|UUID|usdate|zipcode)$", arguments.missingMethodName ) ){
+			// remove the toBe to get the type.
+			var type 	= right( arguments.missingMethodName, len( arguments.missingMethodName ) - 4 );
+			// detect incoming message
+			var message = ( structKeyExists( arguments.missingMethodArguments, "message" ) ? arguments.missingMethodArguments.message : "" );
+			message = ( structKeyExists( arguments.missingMethodArguments, "1" ) ? arguments.missingMethodArguments[ 1 ] : message );
+			// execute the method
+			return toBeTypeOf( type=type, message=message );
+		}
+
+		// execute the dynamic method
+		var results = evaluate( "#arguments.missingMethodName#( argumentCollection=arguments.missingMethodArguments )" );
+		if( !isNull( results ) ){ return results; }
+
+		// throw exception
+		//throw(type="InvalidMethod", message="The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC", detail="Available methods are #structKeyArray( this ).toString()#");
+	}
+
+	/**
 	* Set the not bit to TRUE for this expectation.
 	*/
-	function not(){
+	function _not(){
 		this.isNot = true;
 		return this;
 	}
@@ -177,7 +209,7 @@ component accessors="true"{
 	* @type.hint The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
 	* @message.hint The message to send in the failure
 	*/
-	function toBeTypeOf( required string type, required any actual, message=""){
+	function toBeTypeOf( required string type, message=""){
 		arguments.actual = this.actual;
 		if( this.isNot )
 			return variables.assert.notTypeOf( argumentCollection=arguments );

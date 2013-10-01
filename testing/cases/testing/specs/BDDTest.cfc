@@ -54,70 +54,111 @@ component{
 			// more than 1 expectation
 			it("can have more than one expectation test", function(){
 				coldbox = coldbox * 8;
+				// type checks
+				expect( coldbox ).toBeTypeOf( 'numeric' );
+				// dynamic type methods
 				expect( coldbox ).toBeNumeric();
+				// delta ranges
 				expect( coldbox ).toBeCloseTo( expected=10, delta=2 );
+				// negations
+				expect( coldbox ).notToBe( 4 );
+			});
+
+			// negations
+			it("can have negative expectations", function(){
+				coldbox = coldbox * 8;
+				// type checks
+				expect( coldbox ).notToBeTypeOf( 'usdate' );
+				// dynamic type methods
+				expect( coldbox ).notToBeArray();
+				// delta ranges
+				expect( coldbox ).notToBeCloseTo( expected=10, delta=2 );
 			});
 			
 			// xit() skips
-			xit("can have tests that can be skipped easily", function(){
+			xit("can have tests that can be skipped easily, like this one", function(){
 				fail( "xit() this should skip" );	
 			});
 			
-			// label specs
-			it("can have tests that execute if the right label is applied", function(){
-				expect( server ).toHaveKeys( "railo" );
-			}, "railo");
+			// acf dynamic skips
+			it( title="can have tests that execute if the right environment exists (railo only)", body=function(){
+				expect( server ).toHaveKey( "railo" );
+			}, skip=( !isRailo() ));
+
+			// railo dynamic skips
+			it( title="can have tests that execute if the right environment exists (acf only)", body=function(){
+				expect( server ).notToHaveKey( "railo" );
+			}, skip=( isRailo() ));
 			
-			// specs with a skip closure
+			// specs with a random skip closure
 			it(title="can have a skip that is executed at runtime", body=function(){
 				fail( "Skipped programmatically, this should fail" );
-			},skip=function(){ return true; })
+			},skip=function(){ return true; });
 		
 		});
-		
-		// Label attached suites
+
+		// Skip by env suite
 		describe(title="A railo only suite", body=function(){
+			
 			it("should only execute for railo", function(){
-				expect( server ).toHaveKeys( "railo" );	
+				expect( server ).toHaveKey( "railo" );	
 			});
-		}, labels="railo");
+
+		}, skip=( !isRailo() ));
 		
 		// xdescribe() skips the entire suite
-		xdescribe("A suite that is skipped", function(){
+		xdescribe("A suite that is skipped via xdescribe()", function(){
 			it("will never execute this", function(){
 				fail( "This should not have executed" );
-			})	
+			});
 		});
 
 		describe("A calculator", function(){
 			
-			it("Can have no beforeEach if needed", function(){
-				c = new Calculator();
-				expect( c ).toBeObject();
+			// before each spec in THIS suite group
+			beforeEach(function(){
+				calc = new coldbox.testing.testModel.Calculator();
+			});
+			
+			// after each spec in THIS suite group
+			afterEach(function(){
+				structdelete( variables, "calc" );
+			});
+
+			it("Can have a separate beforeEach for this suite", function(){
+				expect( calc ).toBeComponent();
 			});
 			
 			it("can add correctly", function(){
-				c = new Calculator();
-				var r = c.add( 2, 2 );
+				var r = calc.add( 2, 2 );
 				expect( r ).toBe( 4 );
 			});
 			
 			it("cannot divide by zero", function(){
-				c = new Calculator();
 				expect( function(){
-					c.divide( 3, 0 );
-				}).toThrow( "DivideByZero" );
+					calc.divide( 3, 0 );
+				}).toThrow();
+			});
+
+			it("cannot divide by zero with message regex", function(){
+				expect( function(){
+					calc.divide( 3, 0 );
+				}).toThrow( regex="zero" );
 			});
 			
 			it("can use a mocked stub", function(){
 				c = createStub().$("getData", 4);
-				r = new Calculator().add( 4, c.getData() );
+				r = calc.add( 4, c.getData() );
 				expect( r ).toBe( 8 );
 				expect( c.$once( "getData") ).toBeTrue();
 			});
 			
 		});
 
+	}
+
+	private function isRailo(){
+		return ( structKeyExists( server, "railo" ) );
 	}
 
 }

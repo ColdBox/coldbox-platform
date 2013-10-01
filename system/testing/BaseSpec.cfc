@@ -98,7 +98,7 @@ component{
 		};
 
 		// skip constraint for suite as a closure
-		if( isClosure( arguments.skip ) ){
+		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
 			suite.skip = arguments.skip();
 		}
 
@@ -120,7 +120,7 @@ component{
 			this.$specOrderIndex 	= parentSpecIndex;
 		}
 		else{
-			// Append this definition to the master root
+			// Append this spec definition to the master root
 			arrayAppend( this.$suites, suite );
 			// setup pivot context now and reverse lookups
 			this.$suiteContext 		= arguments.title;
@@ -129,6 +129,10 @@ component{
 			// execute the test suite definition with this context now.
 			arguments.body();
 		}
+
+		// Remove suite context
+		this.$suiteContext 		= "";
+		this.$specOrderIndex 	= 1;
 
 		return this;
 	}
@@ -145,8 +149,7 @@ component{
 		required string title,
 		required any body,
 		any labels=[],
-		any skip=false,
-		numeric order
+		any skip=false
 	){
 		// closure checks
 		if( !isClosure( arguments.body ) ){
@@ -173,7 +176,7 @@ component{
 		};
 
 		// skip constraint for suite as a closure
-		if( isClosure( arguments.skip ) ){
+		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
 			spec.skip = arguments.skip();
 		}
 
@@ -209,7 +212,7 @@ component{
 	any function xit(
 		required string title,
 		required any body,
-		any labels=[],
+		any labels=[]
 	){
 		arguments.skip = true;
 		return it( argumentCollection=arguments );
