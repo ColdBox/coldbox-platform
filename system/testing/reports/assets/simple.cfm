@@ -134,4 +134,17 @@
 <!--- <cfdump var="#results#"> --->
 </body>
 </html>
+
+<cffunction name="genReport" output="false">
+	<cfargument name="results">
+
+	<cfsavecontent variable="local.report">
+		<cfoutput>
+		
+		</cfoutput>
+	</cfsavecontent>
+
+</cffunction>
+
+<cfdump var="#results#">
 </cfoutput>

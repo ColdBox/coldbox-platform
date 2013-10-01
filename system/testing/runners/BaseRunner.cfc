@@ -84,6 +84,29 @@ component accessors="true"{
 	/************************************** UTILITY METHODS *********************************************/
 
 	/**
+	* Checks if the incoming labels are good for running
+	* @incomingLabels.hint The incoming labels to test against this runner's labels.
+	*/
+	boolean function canRunLabel( required incomingLabels ){
+
+		// do we have labels applied?
+		if( arrayLen( variables.labels ) ){
+			for( var thisLabel in variables.labels ){
+				// verify that a label exists, if it does, break, it matches the criteria, if no matches, then skip it.
+				if( arrayFindNoCase( incomingLabels, thisLabel ) ){
+					// match, so we can run it.
+					return true;
+				}
+			}
+			
+			// if we get here, we have labels, but none matched.
+			return false;
+		}
+		// we can run it.
+		return true;
+	}
+	
+	/**
 	* Creates and returns a bundle CFC with spec capabilities if not inherited.
 	* @bundlePath.hint The path to the Bundle CFC
 	*/ 
@@ -168,28 +191,4 @@ component accessors="true"{
 		return results;
 	}
 
-	/**
-	* Checks if the incoming labels are good for running
-	* @incomingLabels.hint The incoming labels to test against this runner's labels.
-	*/
-	private boolean function canRunLabel( required incomingLabels ){
-
-		// do we have labels applied?
-		if( arrayLen( variables.labels ) ){
-			for( var thisLabel in variables.labels ){
-				// verify that a label exists, if it does, break, it matches the criteria, if no matches, then skip it.
-				if( arrayFindNoCase( incomingLabels, thisLabel ) ){
-					// match, so we can run it.
-					return true;
-				}
-			}
-			
-			// if we get here, we have labels, but none matched.
-			return false;
-		}
-		// we can run it.
-		return true;
-	}
-	
-	
 }

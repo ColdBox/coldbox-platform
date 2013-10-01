@@ -112,12 +112,12 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
-				
-				testSpec( target=arguments.target, 
-						  spec=thisSpec,
-						  suite=arguments.suite,
-						  testResults=arguments.testResults, 
-						  suiteStats=suiteStats );
+				// execute the test within the context of the spec target
+				arguments.target.runSpecInContext( spec=thisSpec,
+								  				   suite=arguments.suite,
+								  				   testResults=arguments.testResults, 
+								  				   suiteStats=suiteStats,
+								  				   runner=this );
 
 			}
 
@@ -137,76 +137,6 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 		// Finalize the suite stats
 		arguments.testResults.endStats( suiteStats );
-	}
-
-	/**
-	* Test the incoming spec definition
-	* @target.hint The target bundle CFC
-	* @spec.hint The spec definition to test
-	* @suite.hint The suite definition this spec belongs to
-	* @testResults.hint The testing results object
-	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
-	*/
-	private function testSpec(
-		required target,
-		required spec,
-		required suite,
-		required testResults,
-		required suiteStats
-	){
-			
-		try{
-			
-			// init spec tests
-			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
-			
-			// Verify we can execute
-			if( !arguments.spec.skip && canRunLabel( arguments.spec.labels ) ){
-
-				// execute beforeEach()
-				arguments.suite.beforeEach();
-				
-				// Execute the Spec body
-				arguments.spec.body();
-				
-				// execute afterEach()
-				arguments.suite.afterEach();
-				
-				// store spec status
-				specStats.status 	= "Passed";
-				// Increment recursive pass stats
-				arguments.testResults.incrementSpecStat( type="pass", stats=specStats );
-			}
-			else{
-				// store spec status
-				specStats.status = "Skipped";
-				// Increment recursive pass stats
-				arguments.testResults.incrementSpecStat( type="skipped", stats=specStats );
-			}
-		}
-		// Catch assertion failures
-		catch("TestBox.AssertionFailed" e){
-			// store spec status and debug data
-			specStats.status 		= "Failed";
-			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= e.tagContext;
-			// Increment recursive pass stats
-			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
-		}
-		// Catch errors
-		catch(any e){
-			// store spec status and debug data
-			specStats.status 		= "Error";
-			specStats.error 		= e;
-			// Increment recursive pass stats
-			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
-		}
-		finally{
-			// Complete spec testing
-			arguments.testResults.endStats( specStats );
-		}
-		
-		return this;
 	}
 
 	/************************************** DISCOVERY METHODS *********************************************/

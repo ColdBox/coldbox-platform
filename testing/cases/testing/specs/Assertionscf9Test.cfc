@@ -1,4 +1,4 @@
-component displayName="TestBox xUnit suite" labels="railo,cf"{
+component displayName="TestBox xUnit suite for CF9" labels="railo,cf"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 

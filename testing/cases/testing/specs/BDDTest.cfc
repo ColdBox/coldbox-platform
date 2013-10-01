@@ -26,7 +26,7 @@ component{
 		* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 		* @skip A flag that tells TestBox to skip this suite group from testing if true
 		*/
-		describe( "A spec", function(){
+		xdescribe( "A spec", function(){
 		
 			// before each spec in THIS suite group
 			beforeEach(function(){
@@ -97,8 +97,63 @@ component{
 		
 		});
 
+		// Custom Matchers
+		describe("Custom Matchers", function(){
+
+			beforeEach(function(){
+				// add custom matchers
+				addMatchers({
+					toBeReallyFalse : function(message=""){
+						if( this.isNot )
+							return ( this.actual eq true );
+						else
+							return ( this.actual eq false );
+						arguments.message = ( len( arguments.message ) ? arguments.message : "[#this.actual#] is not really false" );
+						fail( arguments.message );
+					},
+					toBeReallyTrue = function(message=""){
+						if( this.isNot )
+							return ( this.actual eq false );
+						else
+							return ( this.actual eq true );
+						arguments.message = ( len( arguments.message ) ? arguments.message : "[#this.actual#] is not really true" );
+						fail( arguments.message );
+					}
+				});
+				foo = false;
+			});
+			
+			it("are cool and foo should be really false", function(){
+				expect( foo ).toBeReallyFalse();
+			});
+
+			it("are still cool and the negation of foo should be really true", function(){
+				expect( foo ).toBeReallyTrue();
+			});
+
+			// Custom Matchers
+			describe("Loaded via a CFC", function(){
+
+				beforeEach(function(){
+					// add custom matcher via CFC
+					addMatchers( new coldbox.testing.cases.testing.CustomMatcher() );
+					foofoo = false;
+				});
+				
+				it("should be awesome", function(){
+					expect( foofoo ).toBeAwesome();
+				});
+
+				it("should know its maker", function(){
+					expect( "Luis Majano" ).toBeLuisMajano();
+				});
+
+			});
+
+		});
+
 		// Skip by env suite
-		describe(title="A railo only suite", body=function(){
+		xdescribe(title="A railo only suite", body=function(){
 			
 			it("should only execute for railo", function(){
 				expect( server ).toHaveKey( "railo" );	
@@ -113,11 +168,12 @@ component{
 			});
 		});
 
-		describe("A calculator", function(){
+		xdescribe("A calculator test suite", function(){
 			
 			// before each spec in THIS suite group
 			beforeEach(function(){
-				calc = new coldbox.testing.testModel.Calculator();
+				// using request until railo fixes their closure bugs
+				request.calc = calc = new coldbox.testing.testModel.Calculator();
 			});
 			
 			// after each spec in THIS suite group
@@ -136,13 +192,13 @@ component{
 			
 			it("cannot divide by zero", function(){
 				expect( function(){
-					calc.divide( 3, 0 );
-				}).toThrow();
+					request.calc.divide( 3, 0 );
+				}).toThrow( regex="zero" );
 			});
 
 			it("cannot divide by zero with message regex", function(){
 				expect( function(){
-					calc.divide( 3, 0 );
+					request.calc.divide( 3, 0 );
 				}).toThrow( regex="zero" );
 			});
 			
