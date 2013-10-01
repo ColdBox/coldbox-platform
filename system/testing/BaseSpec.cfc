@@ -22,7 +22,7 @@ component{
 	// The suite context
 	this.$suiteContext			= "";
 	
-	/************************************** BDD & EXPECTATIONS *********************************************/
+	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 	
 	/**
 	* Assert that the passed expression is true
@@ -304,6 +304,8 @@ component{
 		return this;
 	}
 
+	/************************************** RUN BDD METHODS *********************************************/
+
 	/**
 	* Test the incoming spec definition within the context of a base spec for context options. Usually called by a runner.
 	* TODO: Remove from here back to BDD runner once Railo fixes its closure's context bug.
@@ -314,7 +316,7 @@ component{
 	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
 	* @runner.hint The runner calling this BDD test
 	*/
-	function runSpecInContext(
+	function runSpec(
 		required spec,
 		required suite,
 		required testResults,

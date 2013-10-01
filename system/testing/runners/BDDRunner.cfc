@@ -90,16 +90,18 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 	* @method.hint The method definition to test
 	* @testResults.hint The testing results object
 	* @bundleStats.hint The bundle stats this suite belongs to
+	* @parentStats.hint If this is a nested test suite, then it will have some parentStats goodness
 	*/
 	private function testSuite(
 		required target,
 		required suite,
 		required testResults,
-		required bundleStats
+		required bundleStats,
+		parentStats={}
 	){
 
 		// Start suite stats
-		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats );
+		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats, arguments.parentStats );
 		
 		// Record bundle + suite + global initial stats
 		suiteStats.totalSpecs 	= arrayLen( arguments.suite.specs );
@@ -114,12 +116,13 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
-				// execute the test within the context of the spec target
-				arguments.target.runSpecInContext( spec=thisSpec,
-								  				   suite=arguments.suite,
-								  				   testResults=arguments.testResults, 
-								  				   suiteStats=suiteStats,
-								  				   runner=this );
+				
+				// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
+				arguments.target.runSpec( spec=thisSpec,
+						  				  suite=arguments.suite,
+						  				  testResults=arguments.testResults, 
+						  				  suiteStats=suiteStats,
+						  				  runner=this );
 
 			}
 
@@ -128,7 +131,21 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			else if( suiteStats.totalFail GT 0 ){ suiteStats.status = "Failed"; }
 			else{ suiteStats.status = "Passed"; }
 
-			// Do we have any internal suites? If we do, test them recursively.
+			// Do we have any internal suites? If we do, test them recursively, go down the rabbit hole
+			for( var thisInternalSuite in arguments.suite.suites ){
+				// run parent before each
+				arguments.suite.beforeEach();
+
+				// run the suite specs recursively
+				testSuite( target=arguments.target,
+						   suite=thisInternalSuite,
+						   testResults=arguments.testResults,
+						   bundleStats=arguments.bundleStats,
+						   parentStats=suiteStats );
+
+				// run parent before each
+				arguments.suite.afterEach();
+			}
 
 		}
 		else{

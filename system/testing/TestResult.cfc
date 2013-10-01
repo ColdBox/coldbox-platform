@@ -174,16 +174,20 @@ component accessors="true"{
 	* Start a new suite stats and return its reference
 	* @name.hint The name of the suite
 	* @bundleStats.hint The bundle stats reference this belongs to.
+	* @parentStats.hint If passed, the parent stats this suite belongs to
 	*/
 	struct function startSuiteStats(
 		required string name,
-		required struct bundleStats
+		required struct bundleStats,
+		struct parentStats={}
 	){
 			
 		// setup stats data for incoming suite
 		var stats = {
 			// suite id
 			id 			= createUUID(),
+			// parent suite id
+			parentID 	= "",
 			// bundle id
 			bundleID	= arguments.bundleStats.id,
 			// The suite name
@@ -210,8 +214,18 @@ component accessors="true"{
 			specStats 		= []
 		};
 
-		// store it
-		arrayAppend( arguments.bundleStats.suiteStats, stats );
+		// Parent stats
+		if( !structIsEmpty( arguments.parentStats ) ){
+			// link parent
+			stats.parentID = arguments.parentStats.id;
+			// store it in the nested suite
+			arrayAppend( arguments.parentStats.suiteStats, stats );
+		}
+		else{
+			// store it in the bundle stats
+			arrayAppend( arguments.bundleStats.suiteStats, stats );
+		}
+
 		// store in the reverse lookup for faster access
 		variables.suiteReverseLookup[ stats.id ] = stats;
 		
