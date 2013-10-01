@@ -55,12 +55,28 @@ component accessors="true"{
 	* @results.hint The results object to use to produce a report
 	*/
 	private any function produceReport( required results ){
-		// if reporter is simple value, then its a core reporter, go get it
+		var iData = { type="", options={} };
+
+		// If the type is a simple value then inflate it
 		if( isSimpleValue( variables.reporter ) ){
-			variables.reporter = buildReporter( variables.reporter );
+			iData = { type=buildReporter( variables.reporter ), options={} };
 		}
+
+		// If the incoming reporter is an object.
+		if( isObject( variables.reporter ) ){
+			iData = { type=variables.reporter, options={} };
+		}
+
+		// Do we have reporter type and options
+		if( isStruct( variables.reporter ) ){
+			iData.type = buildReporter( variables.reporter );
+			if( structKeyExists( variables.reporter, "options" ) ){
+				iData.options = variables.reporter.options;
+			}
+		}
+
 		// build the report from the reporter
-		return variables.reporter.runReport( arguments.results, this );
+		return iData.type.runReport( arguments.results, this, iData.options );
 	}
 
 	/**
@@ -68,10 +84,10 @@ component accessors="true"{
 	* @reporter.hint The reporter type to build.
 	*/
 	private any function buildReporter( required reporter ){
-		var reporterList = "json,raw,simple,dot";
 
 		switch( arguments.reporter ){
 			case "json" : { return new "coldbox.system.testing.reports.JSONReporter"(); }
+			case "xml" : { return new "coldbox.system.testing.reports.XMLReporter"(); }
 			case "raw" : { return new "coldbox.system.testing.reports.RawReporter"(); }
 			case "simple" : { return new "coldbox.system.testing.reports.SimpleReporter"(); }
 			case "dot" : { return new "coldbox.system.testing.reports.DotReporter"(); }
@@ -105,7 +121,7 @@ component accessors="true"{
 		// we can run it.
 		return true;
 	}
-	
+
 	/**
 	* Creates and returns a bundle CFC with spec capabilities if not inherited.
 	* @bundlePath.hint The path to the Bundle CFC

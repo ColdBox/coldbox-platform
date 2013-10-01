@@ -28,4 +28,8 @@ component displayName="TestBox xUnit suite" labels="railo,cf" extends="Assertion
 		$assert.isAwesome( "Luis Majano" );
 	}
 
+	function testNegatedAwesomeCustomAssertion(){
+		$assert.isNotAwesome( "Luis Majano" );
+	}
+
 }

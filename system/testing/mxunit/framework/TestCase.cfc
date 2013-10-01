@@ -9,12 +9,11 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 /*********************************** RUNNER Methods ***********************************/
 
-	remote function run(any testResult){
-		// TODO: implement
-	}
+	remote function runTestRemote(any testMethod="", boolean debug=false, output="simple") output=true{
+		var runner = new coldbox.system.testing.runners.UnitRunner( bundles="#getMetadata(this).name#", method=arguments.testMethod, reporter=arguments.output );
 
-	remote function runTestRemote(any testMethod, boolean debug=false, output="html"){
-		// TODO: implement
+		// Produce report
+		writeOutput( runner.run() );
 	}
 
 /*********************************** UTILITY Methods ***********************************/

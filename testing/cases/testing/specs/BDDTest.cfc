@@ -168,14 +168,13 @@ component{
 			});
 		});
 
-		xdescribe("A calculator test suite", function(){
-			
+		describe("A calculator test suite", function(){
 			// before each spec in THIS suite group
 			beforeEach(function(){
 				// using request until railo fixes their closure bugs
-				request.calc = calc = new coldbox.testing.testModel.Calculator();
+				calc = new coldbox.testing.testModel.Calculator();
 			});
-			
+
 			// after each spec in THIS suite group
 			afterEach(function(){
 				structdelete( variables, "calc" );
@@ -192,13 +191,13 @@ component{
 			
 			it("cannot divide by zero", function(){
 				expect( function(){
-					request.calc.divide( 3, 0 );
+					calc.divide( 4, 0 );
 				}).toThrow( regex="zero" );
 			});
 
-			it("cannot divide by zero with message regex", function(){
+			xit("cannot divide by zero with message regex", function(){
 				expect( function(){
-					request.calc.divide( 3, 0 );
+					calc.divide( 3, 0 );
 				}).toThrow( regex="zero" );
 			});
 			
