@@ -13,8 +13,13 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]	
 	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
 	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
+	* @options.hint A structure of configuration options that are optionally used to configure a runner.
 	*/
-	any function run( any bundles, struct directory, any reporter, any labels ){
+	any function run( any bundles, struct directory, any reporter, any labels, struct options ){
+		// inflate options if passed
+		if( structKeyExists( arguments, "options" ) ){ 
+			variables.options = arguments.options;
+		}
 		// inflate labels if passed
 		if( structKeyExists( arguments, "labels" ) ){ 
 			variables.labels = ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ); 

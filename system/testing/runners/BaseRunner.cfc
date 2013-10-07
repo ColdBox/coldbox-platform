@@ -19,6 +19,8 @@ component accessors="true"{
 	property name="version";
 	// The codename
 	property name="codename";
+	// The configuration options attached to this runner
+	property name="options";
 			
 	/**
 	* Constructor
@@ -26,8 +28,9 @@ component accessors="true"{
 	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter
 	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
+	* @options.hint A structure of configuration options that are optionally used to configure a runner.
 	*/
-	any function init( any bundles=[], struct directory={}, any reporter="simple", any labels=[] ){
+	any function init( any bundles=[], struct directory={}, any reporter="simple", any labels=[], struct options={} ){
 		// TestBox version
 		variables.version 	= "1.0.0.@build.number@";
 		variables.codename 	= ""; 
@@ -35,6 +38,8 @@ component accessors="true"{
 		variables.utility = new coldbox.system.core.util.Util();
 		// reporter
 		variables.reporter = arguments.reporter;
+		// options
+		variables.options = arguments.options;
 
 		// directory passed?
 		if( !structIsEmpty( arguments.directory ) ){
