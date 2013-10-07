@@ -27,7 +27,8 @@ component{
 	*/
 	any function runReport( 
 		required coldbox.system.testing.TestResult results,
-		required coldbox.system.testing.runners.IRunner runner
+		required coldbox.system.testing.runners.IRunner runner,
+		struct options={}
 	){
 		// bundle stats
 		bundleStats = arguments.results.getBundleStats();

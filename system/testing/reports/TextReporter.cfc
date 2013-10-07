@@ -3,7 +3,7 @@
 Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-* A dot matrix reporter
+* A text reporter
 */ 
 component{
 
@@ -15,7 +15,7 @@ component{
 	* Get the name of the reporter
 	*/
 	function getName(){
-		return "Simple";
+		return "Text";
 	}
 
 	/**
@@ -30,12 +30,14 @@ component{
 		required coldbox.system.testing.runners.IRunner runner,
 		struct options={}
 	){
+		// content type
+		getPageContext().getResponse().setContentType( "text/plain" );
 		// bundle stats
 		bundleStats = arguments.results.getBundleStats();
 		
 		// prepare the report
 		savecontent variable="local.report"{
-			include "assets/dot.cfm";
+			include "assets/text.cfm";
 		}
 
 		return local.report;

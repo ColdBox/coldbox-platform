@@ -25,7 +25,8 @@ component{
 	*/
 	any function runReport( 
 		required coldbox.system.testing.TestResult results,
-		required coldbox.system.testing.runners.IRunner runner 
+		required coldbox.system.testing.runners.IRunner runner,
+		struct options={}
 	){
 		getPageContext().getResponse().setContentType( "application/json" );
 		return serializeJSON( arguments.results.getMemento() );
