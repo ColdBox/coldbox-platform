@@ -98,6 +98,7 @@ component accessors="true"{
 			case "dot" : { return new "coldbox.system.testing.reports.DotReporter"(); }
 			case "text" : { return new "coldbox.system.testing.reports.TextReporter"(); }
 			case "junit" : { return new "coldbox.system.testing.reports.JUnitReporter"(); }
+			case "console" : { return new "coldbox.system.testing.reports.ConsoleReporter"(); }
 			default: {
 				return new "#arguments.reporter#"();
 			}
