@@ -76,14 +76,11 @@
 
 	<!--- Dots --->
 	<div class="dots">
-		<!--- Bundle Info --->
+		<!--- Iterate over bundles --->
 		<cfloop array="#bundleStats#" index="thisBundle">
 			<!-- Iterate over suites -->
 			<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-				<cfloop array="#suiteStats.specStats#" index="thisSpec">
-					<a href="javascript:showInfo( '#thisSpec.failMessage#', '#thisSpec.id#', #NOT structIsEmpty( thisSpec.error )# )" title="#thisSpec.name# (#thisSpec.totalDuration# ms)" data-info="#thisSpec.failMessage#"><span class="#lcase( thisSpec.status )#">.</span></a>
-					<div style="display:none;" id="error_#thisSpec.id#"><cfdump var="#thisSpec.error#"></div>
-				</cfloop>
+				#genSuiteReport( suiteStats, thisBundle )#
 			</cfloop>
 		</cfloop>
 	</div>
@@ -91,4 +88,36 @@
 
 	</body>
 </html>
+
+<!--- Recursive Output --->
+<cffunction name="genSuiteReport" output="false">
+	<cfargument name="suiteStats">
+	<cfargument name="bundleStats">
+	
+	<cfset var thisSpec = "">
+	
+	<cfsavecontent variable="local.report">
+		<cfoutput>
+			
+			<!--- Iterate over suite specs --->
+			<cfloop array="#arguments.suiteStats.specStats#" index="thisSpec">
+				<a href="javascript:showInfo( '#thisSpec.failMessage#', '#thisSpec.id#', #NOT structIsEmpty( thisSpec.error )# )" 
+				   title="#thisSpec.name# (#thisSpec.totalDuration# ms)" 
+				   data-info="#thisSpec.failMessage#"><span class="#lcase( thisSpec.status )#">.</span></a>
+				
+				<div style="display:none;" id="error_#thisSpec.id#"><cfdump var="#thisSpec.error#"></div>
+			</cfloop>			
+
+			<!--- Do we have nested suites --->
+			<cfif arrayLen( arguments.suiteStats.suiteStats )>
+				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
+					#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
+				</cfloop>
+			</cfif>	
+
+		</cfoutput>
+	</cfsavecontent>
+
+	<cfreturn local.report>
+</cffunction>
 </cfoutput>
