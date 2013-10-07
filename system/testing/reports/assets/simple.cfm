@@ -8,8 +8,7 @@
 	<style>
 	body{
 		font-family:  Monaco, "Lucida Console", monospace;
-		font-size: 11px;
-		font-weight: 300;
+		font-size: 10.5px;
 		line-height: 14px;
 	}
 	h1,h2,h3,h4{ margin-top: 3px;}
@@ -34,7 +33,9 @@
 	.box{ border:1px solid gray; margin: 10px 0px; padding: 10px; background-color: ##f5f5f5}
 	##globalStats{ background-color: ##dceef4 }
 	.specStatus{ cursor:pointer;}
-	dd{ margin: 3px 0px 3px 15px}
+	.suite{ margin-left: -1px;}
+	ul{ margin-left: -10px;}
+	li{ margin-left: -10px; list-style: none;}
 	</style>
 	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
 	<script>
@@ -102,9 +103,9 @@
 		<!-- Iterate over bundle suites -->
 		<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 			<div class="suite #lcase( suiteStats.status)#" data-bundleid="#thisBundle.id#">
-			<dl>
+			<ul>
 				#genSuiteReport( suiteStats, thisBundle )#
-			</dl>
+			</ul>
 			</div>
 		</cfloop>
 		
@@ -123,43 +124,47 @@
 	<cfsavecontent variable="local.report">
 		<cfoutput>
 		<!--- Suite Results --->
-		<dt class="#lcase( arguments.suiteStats.status )#"><strong>#arguments.suiteStats.name#</strong></dt>
-		<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
+		<li class="#lcase( arguments.suiteStats.status )#"><strong>#arguments.suiteStats.name#</strong></li>
+			<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 
-			<!--- Spec Results --->
-			<div class="spec #lcase( local.thisSpec.status )#" data-bundleid="#arguments.bundleStats.id#">
-				<dd class="#lcase( local.thisSpec.status )#">
-					#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)
-					
-					<cfif local.thisSpec.status eq "failed">
-						- <strong>#local.thisSpec.failMessage#</strong><br>
-						<div class="box">
-							<cfdump var="#local.thisSpec.failorigin#" expand=false label="Failure Origin">
-						</div>
-					</cfif>
-					
-					<cfif local.thisSpec.status eq "error">
-						- <strong>#local.thisSpec.error.message#</strong><br>
-						<div class="box">
-							<cfdump var="#local.thisSpec.error#" expand=false label="Exception Structure">
-						</div>
-					</cfif>
-				</dd>
-			</div>
+				<!--- Spec Results --->
+				<ul>
+				<div class="spec #lcase( local.thisSpec.status )#" data-bundleid="#arguments.bundleStats.id#">
+					<li class="#lcase( local.thisSpec.status )#">
+						#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)
+						
+						<cfif local.thisSpec.status eq "failed">
+							- <strong>#local.thisSpec.failMessage#</strong><br>
+							<div class="box">
+								<cfdump var="#local.thisSpec.failorigin#" expand=false label="Failure Origin">
+							</div>
+						</cfif>
+						
+						<cfif local.thisSpec.status eq "error">
+							- <strong>#local.thisSpec.error.message#</strong><br>
+							<div class="box">
+								<cfdump var="#local.thisSpec.error#" expand=false label="Exception Structure">
+							</div>
+						</cfif>
+					</li>
+				</div>
+				</ul>
+			</cfloop>
 
 			<!--- Do we have nested suites --->
 			<cfif arrayLen( arguments.suiteStats.suiteStats )>
 				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-					#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
+					<div class="suite #lcase( arguments.suiteStats.status )#" data-bundleid="#arguments.bundleStats.id#">
+						<ul>
+						#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
+					</ul>
+					</div>
 				</cfloop>
-			</cfif>
+			</cfif>	
 
-		</cfloop>
 		</cfoutput>
 	</cfsavecontent>
 
 	<cfreturn local.report>
 </cffunction>
-
-<cfdump var="#results#">
 </cfoutput>

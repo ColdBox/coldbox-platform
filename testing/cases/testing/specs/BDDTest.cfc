@@ -26,7 +26,7 @@ component{
 		* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 		* @skip A flag that tells TestBox to skip this suite group from testing if true
 		*/
-		xdescribe( "A spec", function(){
+		describe( "A spec", function(){
 		
 			// before each spec in THIS suite group
 			beforeEach(function(){
@@ -148,12 +148,24 @@ component{
 					expect( "Luis Majano" ).toBeLuisMajano();
 				});
 
+				describe("Yet another nested suite", function(){
+
+					it("should have cascaded beforeEach() call from parent", function(){
+						expect( foofoo ).toBeAwesome();
+					});
+
+					it("should have cascaded beforeEach() call from grandparent", function(){
+						expect( foo ).toBeFalse();
+					});
+
+				});
+
 			});
 
 		});
 
 		// Skip by env suite
-		xdescribe(title="A railo only suite", body=function(){
+		describe(title="A railo only suite", body=function(){
 			
 			it("should only execute for railo", function(){
 				expect( server ).toHaveKey( "railo" );	
@@ -168,7 +180,7 @@ component{
 			});
 		});
 
-		xdescribe("A calculator test suite", function(){
+		describe("A calculator test suite", function(){
 			// before each spec in THIS suite group
 			beforeEach(function(){
 				// using request until railo fixes their closure bugs
