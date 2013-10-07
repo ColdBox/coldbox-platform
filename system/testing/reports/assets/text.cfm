@@ -22,38 +22,53 @@ Global Stats (#results.getTotalDuration()# ms)
 ->[Failures: #thisBundle.totalFail#]
 ->[Errors: #thisBundle.totalError#]
 ->[Skipped: #thisBundle.totalSkipped#]
+
 <cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 #genSuiteReport( suiteStats, thisBundle )#
 </cfloop>
-=============================================================
 </cfloop>
 
+=============================================================
+Legend:
+=============================================================
+(P) = Passed
+(-) = Skipped
+(X) = Exception/Error
+(!) = Failure
+<cffunction name="getStatusBit" output="false">
+	<cfargument name="status">
+	<cfscript>
+		switch( arguments.status ){
+			case "failed" : { return "!"; }
+			case "error" : { return "X"; }
+			case "skipped" : { return "-"; }
+			default : { return "+"; }
+		}		
+	</cfscript>
+</cffunction>
 <!--- Recursive Output --->
 <cffunction name="genSuiteReport" output="false">
 	<cfargument name="suiteStats">
 	<cfargument name="bundleStats">
 	<cfargument name="level" default=0>
 
+<cfset var tabs = repeatString( "    ", arguments.level )>
+
 <cfsavecontent variable="local.report">
 <cfoutput>
-#repeatString( chr(9), arguments.level )#*#arguments.suiteStats.name# #chr(13)#
+#tabs#(#getStatusBit( arguments.suiteStats.status )#)#arguments.suiteStats.name# #chr(13)#
 <cfset arguments.level++>
 <cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-#repeatString( chr(9), arguments.level)##local.thisSpec.name# (#local.thisSpec.totalDuration# ms) #chr(13)#
-			
-	<cfif local.thisSpec.status eq "failed">
-		- <strong>#local.thisSpec.failMessage#</strong><br>
-		<div class="box">
-			<cfdump var="#local.thisSpec.failorigin#" expand=false label="Failure Origin">
-		</div>
-	</cfif>
+#repeatString( "    ", arguments.level )#(#getStatusBit( local.thisSpec.status )#)#local.thisSpec.name# (#local.thisSpec.totalDuration# ms) #chr(13)#
+<cfif local.thisSpec.status eq "failed">
+	-> Failure: #local.thisSpec.failMessage##chr(13)#
+	-> Failure Origin: #local.thisSpec.failorigin.toString()# #chr(13)##chr(13)#
+</cfif>
 	
-	<cfif local.thisSpec.status eq "error">
-		- <strong>#local.thisSpec.error.message#</strong><br>
-		<div class="box">
-			<cfdump var="#local.thisSpec.error#" expand=false label="Exception Structure">
-		</div>
-	</cfif>
+<cfif local.thisSpec.status eq "error">
+	-> Error: #local.thisSpec.error.message##chr(13)#
+	-> Exception Trace: #local.thisSpec.error.toString()# #chr(13)##chr(13)#
+</cfif>
 </cfloop>
 
 <cfif arrayLen( arguments.suiteStats.suiteStats )>
