@@ -57,6 +57,12 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 		var targetMD 	= getMetadata( target );
 		var bundleName 	= ( structKeyExists( targetMD, "displayName" ) ? targetMD.displayname : arguments.bundlePath );
 		
+		// Test BDD Spec
+		if( !structKeyExists( target, "run" ) ){
+			throw(type="InvalidBDDBundle", 
+				  message="The bundle you have sent for testing is not a valid BDD bundle, it has no run() method.",
+				  detail="The target bundle is : #getMetadata( target ).name# path: #getMetadata( target ).path#");
+		}
 		// Execute the suite descriptors
 		target.run();
 
