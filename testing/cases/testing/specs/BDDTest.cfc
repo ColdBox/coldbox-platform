@@ -193,12 +193,12 @@ component{
 			});
 
 			it("Can have a separate beforeEach for this suite", function(){
-				expect( [] ).toBeComponent();
+				expect( request.calc ).toBeComponent();
 			});
 			
-			it("can add correctly", function(){
+			it("can add incorrectly", function(){
 				var r = calc.add( 2, 2 );
-				exxpect( r ).toBe( 4 );
+				expect( r ).toBe( 5 );
 			});
 			
 			it("cannot divide by zero", function(){
@@ -218,6 +218,10 @@ component{
 				r = calc.add( 4, c.getData() );
 				expect( r ).toBe( 8 );
 				expect( c.$once( "getData") ).toBeTrue();
+			});
+
+			it("can produce errors", function(){
+				exxpect();
 			});
 			
 		});
