@@ -5,95 +5,74 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 * This TestBox runner is used to run and report on BDD style test suites.
 */ 
-component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbox.system.testing.runners.IRunner"{
+component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbox.system.testing.runners.IRunner" accessors="true"{
+
+	// runner options
+	property name="options";
 
 	/**
-	* Run the bundles setup in this Runner and produces an awesome report according to sepcified passed reporter
-	* @bundles.hint The path, list of paths or array of paths of the spec bundle CFCs to run and test
-	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]	
-	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
-	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
-	* @options.hint A structure of configuration options that are optionally used to configure a runner.
+	* Constructor
+	* @options.hint The options for this runner
 	*/
-	any function run( any bundles, struct directory, any reporter, any labels, struct options ){
-		// inflate options if passed
-		if( structKeyExists( arguments, "options" ) ){ 
-			variables.options = arguments.options;
-		}
-		// inflate labels if passed
-		if( structKeyExists( arguments, "labels" ) ){ 
-			variables.labels = ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ); 
-		}
-		// reporter passed?
-		if( structKeyExists( arguments, "reporter" ) ){ variables.reporter = arguments.reporter; }
-		// if bundles passed, inflate those as the target
-		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
-		// create results object
-		var results = new coldbox.system.testing.TestResult( arrayLen( variables.bundles ), variables.labels );
-		// iterate and run the test bundles
-		for( var thisBundlePath in variables.bundles ){
-			testBundle( thisBundlePath, results );
-		}
-		// mark end of testing bundles
-		results.end();
+	function init( required struct options ){
+
+		variables.options = arguments.options;
 		
-		return produceReport( results );
+		return this;
 	}
 
-	/************************************** TESTING METHODS *********************************************/
-
 	/**
-	* This method tests a bundle CFC in its entirety
-	* @bundlePath.hint The path of the Bundle CFC to test.
-	* @testResults.hint The testing results object to keep track of results
+	* Execute a BDD test on the incoming target and store the results in the incoming test results
+	* @target.hint The target bundle CFC to test
+	* @testResults.hint The test results object to keep track of results for this test case
 	*/
-	private function testBundle(
-		required bundlePath, 
-		required testResults
+	any function run( 
+		required any target,
+		required coldbox.system.testing.TestResult testResults
 	){
+		// Get target metadata
+		var targetMD 	= getMetadata( arguments.target );
+		var bundleName 	= ( structKeyExists( targetMD, "displayName" ) ? targetMD.displayname : targetMD.name );
 		
-		// create new target bundle and get its metadata
-		var target 		= getBundle( arguments.bundlePath );
-		var targetMD 	= getMetadata( target );
-		var bundleName 	= ( structKeyExists( targetMD, "displayName" ) ? targetMD.displayname : arguments.bundlePath );
-		
-		// Test BDD Spec
-		if( !structKeyExists( target, "run" ) ){
-			throw(type="InvalidBDDBundle", 
-				  message="The bundle you have sent for testing is not a valid BDD bundle, it has no run() method.",
-				  detail="The target bundle is : #getMetadata( target ).name# path: #getMetadata( target ).path#");
-		}
 		// Execute the suite descriptors
-		target.run();
+		arguments.target.run();
 
 		// Discover the test suite data to use for testing
-		var testSuites 		= getTestSuites( target, targetMD );
+		var testSuites 		= getTestSuites( arguments.target, targetMD );
 		var testSuitesCount = arrayLen( testSuites );
 
 		// Start recording stats for this bundle
-		var bundleStats = arguments.testResults.startBundleStats( bundlePath=arguments.bundlePath, name=bundleName );
+		var bundleStats = arguments.testResults.startBundleStats( bundlePath=targetMD.name, name=bundleName );
 
 		//#### NOTHING IS TRAPPED BELOW SO AS TO THROW REAL EXCEPTIONS FROM TESTS THAT ARE WRITTEN WRONG
 
 		// execute beforeAll() for this bundle, no matter how many suites they have.
-		if( structKeyExists( target, "beforeAll" ) ){ target.beforeAll(); }
+		if( structKeyExists( arguments.target, "beforeAll" ) ){ 
+			arguments.target.beforeAll(); 
+		}
 
 		// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
 		for( var thisSuite in testSuites ){
-			testSuite( target=target, 
+			
+			testSuite( target=arguments.target, 
 					   suite=thisSuite, 
 					   testResults=arguments.testResults,
 					   bundleStats=bundleStats );
+
 		}
 
 		// execute afterAll() for this bundle, no matter how many suites they have.
-		if( structKeyExists( target, "afterAll" ) ){ target.afterAll(); }
+		if( structKeyExists( arguments.target, "afterAll" ) ){ 
+			arguments.target.afterAll(); 
+		}
 		
 		// finalize the bundle stats
 		arguments.testResults.endStats( bundleStats );
 		
 		return this;
 	}
+
+	/************************************** TESTING METHODS *********************************************/
 
 	/**
 	* Test the incoming suite definition
@@ -123,7 +102,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			.incrementSpecs( suiteStats.totalSpecs );
 
 		// Verify we can execute the incoming suite via skipping or labels
-		if( !arguments.suite.skip && canRunLabel( arguments.suite.labels ) ){
+		if( !arguments.suite.skip && canRunLabel( arguments.suite.labels, arguments.testResults ) ){
 			
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
@@ -183,7 +162,5 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 		// get the spec suites
 		return arguments.target.$suites;
 	}
-
-
 
 }

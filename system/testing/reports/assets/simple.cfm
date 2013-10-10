@@ -3,7 +3,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<meta name="generator" content="TestBox v#runner.getVersion()#">
+	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 	<style>
 	body{
@@ -32,7 +32,7 @@
 	.float-left{ float: left;}
 	.box{ border:1px solid gray; margin: 10px 0px; padding: 10px; background-color: ##f5f5f5}
 	##globalStats{ background-color: ##dceef4 }
-	.specStatus{ cursor:pointer;}
+	.specStatus, .reset{ cursor:pointer;}
 	.suite{ margin-left: -1px;}
 	ul{ margin-left: -10px;}
 	li{ margin-left: -10px; list-style: none;}
@@ -43,8 +43,17 @@
 		// spec toggler
 		$("span.specStatus").click( function(){
 			toggleSpecs( $( this ).attr( "data-status" ), $( this ).attr( "data-bundleid" ) );
-		} );
+		});
+		// spec toggler
+		$("span.reset").click( function(){
+			resetSpecs();
+		});
 	});
+	function resetSpecs(){
+		$("div.spec").each( function(){
+			$(this).show();
+		});
+	}
 	function toggleSpecs( type, bundleid ){
 		$("div.spec").each( function(){
 			var $this = $( this );
@@ -71,7 +80,7 @@
 <body>
 
 <!-- Header --->
-<p>TestBox v#runner.getVersion()# - Simple Reporter</p>
+<p>TestBox v#testbox.getVersion()# - Simple Reporter</p>
 
 <!-- Global Stats --->
 <div class="box" id="globalStats">
@@ -81,6 +90,7 @@
 [ <span class="specStatus failed" data-status="failed">Failures: #results.getTotalFail()#</span> ]
 [ <span class="specStatus error" data-status="error">Errors: #results.getTotalError()#</span> ]
 [ <span class="specStatus skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span> ]
+[ <span class="reset">Reset</span> ]
 <br>
 <cfif arrayLen( results.getLabels() )>
 [ Labels Applied: #arrayToList( results.getLabels() )# ]
@@ -99,6 +109,7 @@
 		[ <span class="specStatus failed" 	data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span> ]
 		[ <span class="specStatus error" 	data-status="error" data-bundleid="#thisBundle.id#">Errors: #thisBundle.totalError#</span> ]
 		[ <span class="specStatus skipped" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span> ]
+		[ <span class="reset">Reset</span> ]
 		
 		<!-- Iterate over bundle suites -->
 		<cfloop array="#thisBundle.suiteStats#" index="suiteStats">

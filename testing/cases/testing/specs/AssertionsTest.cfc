@@ -3,10 +3,10 @@ component displayName="TestBox xUnit suite" labels="railo,cf" extends="Assertion
 	function beforeTests(){
 		super.beforeTests();
 		addAssertions({
-			isAwesome = function(required expected){
+			isAwesome = function( required expected ){
 				return ( arguments.expected == "Luis Majano" ? true : false );
 			},
-			isNotAwesome = function(){
+			isNotAwesome = function( required expected ){
 				return ( arguments.expected == "Luis Majano" ? false : true );
 			}
 		});

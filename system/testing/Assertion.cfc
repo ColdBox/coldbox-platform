@@ -98,7 +98,7 @@ component{
 	* @actual.hint The actual data to test
 	* @message.hint The message to send in the failure
 	*/
-	function null( required any actual, message="" ){
+	function null( any actual, message="" ){
 		// equalize with case
 		if( isNull( arguments.actual ) ){ return this; }
 		arguments.message = ( len( arguments.message ) ? 
@@ -113,7 +113,7 @@ component{
 	* @actual.hint The actual data to test
 	* @message.hint The message to send in the failure
 	*/
-	function notNull( required any actual, message="" ){
+	function notNull( any actual, message="" ){
 		// equalize with case
 		if( !isNull( arguments.actual ) ){ return this; }
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected the actual value to be NOT null but it was null" );

@@ -10,7 +10,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 /*********************************** RUNNER Methods ***********************************/
 
 	remote function runTestRemote(any testMethod="", boolean debug=false, output="simple") output=true{
-		var runner = new coldbox.system.testing.runners.UnitRunner( bundles="#getMetadata(this).name#", method=arguments.testMethod, reporter=arguments.output );
+		var runner = new coldbox.system.testing.TestBox( bundles="#getMetadata(this).name#", method=arguments.testMethod, reporter=arguments.output );
 
 		// Produce report
 		writeOutput( runner.run() );

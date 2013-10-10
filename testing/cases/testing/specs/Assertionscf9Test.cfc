@@ -63,7 +63,7 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf"{
 		return structKeyExists( server, "railo" );
 	}
 
-	function testSkippedWithConstraint() skip="isRailo"{
+	function testThatShouldFail(){
 		$assert.fail( "This Test should fail" );
 	}
 

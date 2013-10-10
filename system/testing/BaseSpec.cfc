@@ -330,7 +330,7 @@ component{
 			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
 			
 			// Verify we can execute
-			if( !arguments.spec.skip && arguments.runner.canRunLabel( arguments.spec.labels ) ){
+			if( !arguments.spec.skip && arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) ){
 
 				// execute beforeEach()
 				arguments.suite.beforeEach();
