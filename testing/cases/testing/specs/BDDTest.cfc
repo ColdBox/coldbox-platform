@@ -47,7 +47,7 @@ component{
 			* @labels The list or array of labels this spec belongs to
 			* @skip A flag that tells TestBox to skip this spec from testing if true
 			*/
-			it("is just a closure, so it can contain code", function(){
+			it("is just a closure so it can contain code", function(){
 				expect( coldbox ).toBe( 1 );
 			});
 			
@@ -76,7 +76,7 @@ component{
 			});
 			
 			// xit() skips
-			xit("can have tests that can be skipped easily, like this one", function(){
+			xit("can have tests that can be skipped easily like this one", function(){
 				fail( "xit() this should skip" );	
 			});
 			

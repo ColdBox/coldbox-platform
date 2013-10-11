@@ -24,11 +24,21 @@ component accessors="true"{
 
 	// bundle stats
 	property name="bundleStats"		type="struct";
+
+	// suites and specs only values
+	property name="testSuites" 		type="array";
+	property name="testSpecs" 		type="array";
 	
 	/**
 	* Constructor
 	*/
-	TestResult function init( numeric bundleCount=0, array labels=[] ) {
+	TestResult function init( 
+		numeric bundleCount=0, 
+		array labels=[], 
+		array testSuites=[], 
+		array testSpecs=[]
+	){
+
 		// Global test durations
 		variables.startTime 	= getTickCount();	
 		variables.endTime 		= 0;
@@ -43,6 +53,8 @@ component accessors="true"{
 		variables.totalError	= 0;
 		variables.totalSkipped 	= 0;
 		variables.labels 		= arguments.labels;
+		variables.testSuites	= arguments.testSuites;
+		variables.testSpecs		= arguments.testSpecs;
 		
 		// Bundle Stats
 		variables.bundleStats 	= [];
@@ -76,7 +88,7 @@ component accessors="true"{
 	/**
 	* Increment the global specs found
 	*/
-	TestResult function incrementSpecs(required count=1){
+	TestResult function incrementSpecs( required count=1 ){
 		variables.totalSpecs += arguments.count;
 		return this;
 	}
@@ -84,7 +96,7 @@ component accessors="true"{
 	/**
 	* Increment the global suites found
 	*/
-	TestResult function incrementSuites(required count=1){
+	TestResult function incrementSuites( required count=1 ){
 		variables.totalSuites += arguments.count;
 		return this;
 	}
@@ -93,12 +105,12 @@ component accessors="true"{
 	* Increment a global stat
 	* @type.hint The type of stat to increment: fail,pass,error or skipped
 	*/
-	TestResult function incrementStat(required type="pass"){
+	TestResult function incrementStat( required type="pass", numeric count=1 ){
 		switch( arguments.type ){
-			case "fail" 	: { variables.totalFail++; return this; }
-			case "pass" 	: { variables.totalPass++; return this; }
-			case "error" 	: { variables.totalError++; return this; }
-			case "skipped" 	: { variables.totalSkipped++; return this; }
+			case "fail" 	: { variables.totalFail += arguments.count; return this; }
+			case "pass" 	: { variables.totalPass += arguments.count; return this; }
+			case "error" 	: { variables.totalError += arguments.count; return this; }
+			case "skipped" 	: { variables.totalSkipped += arguments.count; return this; }
 		}
 		return this;
 	}

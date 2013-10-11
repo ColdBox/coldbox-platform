@@ -34,6 +34,16 @@ component{
 		// bundle stats
 		bundleStats = arguments.results.getBundleStats();
 		
+		// prepare base links
+		baseURL = "?";
+		if( structKeyExists( url, "method") ){ baseURL&= "method=#URLEncodedFormat( url.method )#"; }
+		if( structKeyExists( url, "output") ){ baseURL&= "output=#URLEncodedFormat( url.output )#"; }
+
+		// prepare incoming params
+		if( !structKeyExists( url, "testMethod") ){ url.testMethod = ""; }
+		if( !structKeyExists( url, "testSpecs") ){ url.testSpecs = ""; }
+		if( !structKeyExists( url, "testSuites") ){ url.testSuites = ""; }
+
 		// prepare the report
 		savecontent variable="local.report"{
 			include "assets/simple.cfm";

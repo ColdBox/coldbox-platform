@@ -39,6 +39,74 @@ component{
 	}
 
 	/**
+	* Checks if we can run the spec due to using testSpec arguments or incoming URL filters.
+	* @name.hint The spec name
+	* @testResults.hint The testing results object
+	*/
+	boolean function canRunSpec( 
+		required name,
+		required testResults
+	){
+
+		var testSpecs = arguments.testResults.getTestSpecs();
+
+		// Verify URL conventions
+		if( structKeyExists( url, "testSpecs") ){
+			testSpecs.addAll( listToArray( url.testSpecs ) );
+		}
+		if( structKeyExists( url, "testMethod") ){
+			testSpecs.addAll( listToArray( url.testMethod ) );	
+		}
+
+		// verify we have some?
+		if( arrayLen( testSpecs ) ){
+			return ( arrayFindNoCase( testSpecs, arguments.name ) ? true : false );
+		}
+
+		// we can run it.
+		return true;
+	}
+
+	/**
+	* Checks if we can run the suite due to using testSuite arguments or incoming URL filters.
+	* @suite.hint The suite definition
+	* @testResults.hint The testing results object
+	*/
+	boolean function canRunSuite( 
+		required suite,
+		required testResults
+	){
+
+		var testSuites = arguments.testResults.getTestSuites();
+
+			// Verify URL conventions
+		if( structKeyExists( url, "testSuites") ){
+			testSuites.addAll( listToArray( url.testSuites ) );
+		}
+
+		// verify we have some?
+		if( arrayLen( testSuites ) ){
+			var results = ( arrayFindNoCase( testSuites, arguments.suite.name ) ? true : false );
+
+			// Verify nested if no match, maybe it is an embedded suite that is trying to execute.
+			if( results == false && arrayLen( arguments.suite.suites ) ){
+				for( var thisSuite in arguments.suite.suites ){
+					// go down the rabitt hole
+					if( canRunSuite( thisSuite, arguments.testResults ) ){
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			return results;
+		}
+
+		// we can run it.
+		return true;
+	}
+
+	/**
 	* Validate the incoming method name is a valid TestBox test method name
 	* @methodName.hint The method name to validate
 	*/

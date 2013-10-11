@@ -94,7 +94,9 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			.incrementSpecs( suiteStats.totalSpecs );
 
 		// Verify we can execute the incoming suite via skipping or labels
-		if( !arguments.suite.skip ){
+		if( !arguments.suite.skip && 
+			canRunSuite( arguments.suite, arguments.testResults )
+		){
 
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
@@ -111,13 +113,17 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			else if( suiteStats.totalFail GT 0 ){ suiteStats.status = "Failed"; }
 			else{ suiteStats.status = "Passed"; }
 
-			// Do we have any internal suites? If we do, test them recursively.
+			// Skip Checks
+			if( suiteStats.totalSpecs == suiteStats.totalSkipped ){
+				suiteStats.status = "Skipped";
+			}
 
 		}
 		else{
 			// Record skipped stats and status
 			suiteStats.status = "Skipped";
 			arguments.bundleStats.totalSkipped += suiteStats.totalSpecs;
+			arguments.testResults.incrementStat( "skipped", suiteStats.totalSpecs );
 		}
 
 		// Finalize the suite stats
@@ -144,7 +150,9 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
 			
 			// Verify we can execute
-			if( !arguments.spec.skip ){
+			if( !arguments.spec.skip &&
+				canRunSpec( arguments.spec.name, arguments.testResults )
+			){
 
 				// execute setup()
 				if( structKeyExists( arguments.target, "setup" ) ){ arguments.target.setup(); }

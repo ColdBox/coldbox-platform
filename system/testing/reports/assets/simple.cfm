@@ -36,6 +36,8 @@
 	.suite{ margin-left: -1px;}
 	ul{ margin-left: -10px;}
 	li{ margin-left: -10px; list-style: none;}
+	a{ text-decoration: none;}
+	a:hover{ text-decoration: underline;}
 	</style>
 	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
 	<script>
@@ -135,14 +137,16 @@
 	<cfsavecontent variable="local.report">
 		<cfoutput>
 		<!--- Suite Results --->
-		<li class="#lcase( arguments.suiteStats.status )#"><strong>#arguments.suiteStats.name#</strong></li>
+		<li>
+			<a href="#baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#" class="#lcase( arguments.suiteStats.status )#"><strong>#arguments.suiteStats.name#</strong></a>
+		</li>
 			<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 
 				<!--- Spec Results --->
 				<ul>
 				<div class="spec #lcase( local.thisSpec.status )#" data-bundleid="#arguments.bundleStats.id#">
-					<li class="#lcase( local.thisSpec.status )#">
-						#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)
+					<li>
+						<a href="#baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#" class="#lcase( local.thisSpec.status )#">#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</a>
 						
 						<cfif local.thisSpec.status eq "failed">
 							- <strong>#local.thisSpec.failMessage#</strong><br>

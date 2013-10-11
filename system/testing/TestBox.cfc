@@ -31,7 +31,14 @@ component accessors="true"{
 	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
 	* @options.hint A structure of configuration options that are optionally used to configure a runner.
 	*/
-	any function init( any bundles=[], struct directory={}, any reporter="simple", any labels=[], struct options={} ){
+	any function init( 
+		any bundles=[], 
+		struct directory={}, 
+		any reporter="simple", 
+		any labels=[], 
+		struct options={} 
+	){
+		
 		// TestBox version
 		variables.version 	= "1.0.0.@build.number@";
 		variables.codename 	= "";
@@ -64,8 +71,19 @@ component accessors="true"{
 	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
 	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
 	* @options.hint A structure of configuration options that are optionally used to configure a runner.
+	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!
+	* @testSpecs.hint A list or array of test names that are the ones that will be executed ONLY!
 	*/
-	any function run( any bundles, struct directory, any reporter, any labels, struct options ){
+	any function run( 
+		any bundles,
+		struct directory,
+		any reporter,
+		any labels,
+		struct options,
+		any testSuites=[],
+		any testSpecs=[]
+	){
+	
 		// reporter passed?
 		if( structKeyExists( arguments, "reporter" ) ){ variables.reporter = arguments.reporter; }
 		// run it and get results
@@ -80,13 +98,28 @@ component accessors="true"{
 	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]	
 	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
 	* @options.hint A structure of configuration options that are optionally used to configure a runner.
+	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!
+	* @testSpecs.hint A list or array of test names that are the ones that will be executed ONLY!
 	*/
-	coldbox.system.testing.TestResult function runRaw( any bundles, struct directory, any labels, struct options ){
+	coldbox.system.testing.TestResult function runRaw( 
+		any bundles,
+		struct directory,
+		any labels,
+		struct options,
+		any testSuites=[],
+		any testSpecs=[]
+	){
+		
 		// inflate options if passed
 		if( structKeyExists( arguments, "options" ) ){ 
 			variables.options = arguments.options;
 		}
-		
+
+		// inflate test suites and specs from incoming variables.
+		arguments.testSuites = ( isSimpleValue( arguments.testSuites ) ? listToArray( arguments.testSuites ) : arguments.testSuites );
+		arguments.testSpecs = ( isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs );
+		// If we have incoming via URL by convention, then add them.
+
 		// inflate labels if passed
 		if( structKeyExists( arguments, "labels" ) ){ inflateLabels( arguments.labels ); }
 		
@@ -94,7 +127,10 @@ component accessors="true"{
 		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
 		
 		// create results object
-		var results = new coldbox.system.testing.TestResult( arrayLen( variables.bundles ), variables.labels );
+		var results = new coldbox.system.testing.TestResult( bundleCount=arrayLen( variables.bundles ), 
+															 labels=variables.labels,
+															 testSuites=arguments.testSuites,
+															 testSpecs=arguments.testSpecs );
 		
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){

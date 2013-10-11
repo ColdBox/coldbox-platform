@@ -102,7 +102,10 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			.incrementSpecs( suiteStats.totalSpecs );
 
 		// Verify we can execute the incoming suite via skipping or labels
-		if( !arguments.suite.skip && canRunLabel( arguments.suite.labels, arguments.testResults ) ){
+		if( !arguments.suite.skip && 
+			canRunLabel( arguments.suite.labels, arguments.testResults ) && 
+			canRunSuite( arguments.suite, arguments.testResults )
+		){
 			
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
@@ -137,11 +140,17 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 				arguments.suite.afterEach();
 			}
 
+			// Skip Checks
+			if( suiteStats.totalSpecs == suiteStats.totalSkipped ){
+				suiteStats.status = "Skipped";	
+			}
+
 		}
 		else{
 			// Record skipped stats and status
 			suiteStats.status = "Skipped";
 			arguments.bundleStats.totalSkipped += suiteStats.totalSpecs;
+			arguments.testResults.incrementStat( "skipped", suiteStats.totalSpecs );
 		}
 
 		// Finalize the suite stats
