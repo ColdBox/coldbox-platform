@@ -3,7 +3,7 @@
 Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-* A simple HTML reporter
+* A minimalistic reporter
 */ 
 component{
 
@@ -15,7 +15,7 @@ component{
 	* Get the name of the reporter
 	*/
 	function getName(){
-		return "Simple";
+		return "Min";
 	}
 
 	/**
@@ -34,19 +34,9 @@ component{
 		// bundle stats
 		bundleStats = arguments.results.getBundleStats();
 		
-		// prepare base links
-		baseURL = "?";
-		if( structKeyExists( url, "method") ){ baseURL&= "method=#URLEncodedFormat( url.method )#"; }
-		if( structKeyExists( url, "output") ){ baseURL&= "output=#URLEncodedFormat( url.output )#"; }
-
-		// prepare incoming params
-		if( !structKeyExists( url, "testMethod") ){ url.testMethod = ""; }
-		if( !structKeyExists( url, "testSpecs") ){ url.testSpecs = ""; }
-		if( !structKeyExists( url, "testSuites") ){ url.testSuites = ""; }
-
 		// prepare the report
 		savecontent variable="local.report"{
-			include "assets/simple.cfm";
+			include "assets/min.cfm";
 		}
 		return local.report;
 	}
