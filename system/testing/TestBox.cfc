@@ -118,11 +118,14 @@ component accessors="true"{
 		// inflate test suites and specs from incoming variables.
 		arguments.testSuites = ( isSimpleValue( arguments.testSuites ) ? listToArray( arguments.testSuites ) : arguments.testSuites );
 		arguments.testSpecs = ( isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs );
-		// If we have incoming via URL by convention, then add them.
+		
+		// directory passed?
+		if( structKeyExists( arguments, "directory" ) && !structIsEmpty( arguments.directory ) ){
+			arguments.bundles = getSpecPaths( arguments.directory );
+		}
 
 		// inflate labels if passed
 		if( structKeyExists( arguments, "labels" ) ){ inflateLabels( arguments.labels ); }
-		
 		// if bundles passed, inflate those as the target
 		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
 		
@@ -141,6 +144,70 @@ component accessors="true"{
 		results.end();
 		
 		return results;
+	}
+
+	/**
+	* Run me some testing goodness, remotely via SOAP, Flex, REST, URL
+	* @bundles.hint The path or list of paths of the spec bundle CFCs to run and test
+	* @directory.hint The directory mapping to test: directory = the path to the directory using dot notation (myapp.testing.specs)
+	* @recurse.hint Recurse the directory mapping or not, by default it does
+	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or a class path to the reporter to use.
+	* @reporterOptions.hint A JSON struct literal of options to pass into the reporter
+	* @labels.hint The list of labels that a suite or spec must have in order to execute.
+	* @options.hint A JSON struct literal of configuration options that are optionally used to configure a runner.
+	* @testSuites.hint A list of suite names that are the ones that will be executed ONLY!
+	* @testSpecs.hint A list of test names that are the ones that will be executed ONLY!
+	*/
+	remote function runRemote( 
+		string bundles,
+		string directory,
+		boolean recurse=true,
+		string reporter="simple",
+		string reporterOptions="{}",
+		string labels="",
+		string options,
+		string testSuites="",
+		string testSpecs=""
+	) output=true {
+		// local init
+		init();
+
+		// simple to complex
+		arguments.labels 		= listToArray( arguments.labels );
+		arguments.testSuites 	= listToArray( arguments.testSuites );
+		arguments.testSpecs 	= listToArray( arguments.testSpecs );
+
+		// options inflate from JSON
+		if( structKeyExists( arguments, "options" ) and isJSON( arguments.options ) ){
+			arguments.options = deserializeJSON( arguments.options );
+		}
+		else{
+			arguments.options = {};
+		}
+
+		// Inflate directory?
+		if( structKeyExists( arguments, "directory" ) and len( arguments.directory ) ){
+			arguments.directory = { mapping = arguments.directory, recurse = arguments.recurse };
+		}
+
+		// reporter options inflate from JSON
+		if( structKeyExists( arguments, "reporterOptions" ) and isJSON( arguments.reporterOptions ) ){
+			arguments.reporterOptions = deserializeJSON( arguments.reporterOptions );
+		}
+		else{
+			arguments.reporterOptions = {};
+		}
+		
+		// setup reporter
+		if( structKeyExists( arguments, "reporter" ) and len( arguments.reporter ) ){ 
+			variables.reporter = { type = arguments.reporter, options = arguments.reporterOptions }; 
+		}
+
+		// run it and get results
+		var results = runRaw( argumentCollection=arguments );
+
+		// return report
+		writeOutput( produceReport( results ) );
 	}
 
 	/************************************** REPORTING COMMON METHODS *********************************************/
@@ -164,12 +231,11 @@ component accessors="true"{
 
 		// Do we have reporter type and options
 		if( isStruct( variables.reporter ) ){
-			iData.type = buildReporter( variables.reporter );
+			iData.type = buildReporter( variables.reporter.type );
 			if( structKeyExists( variables.reporter, "options" ) ){
 				iData.options = variables.reporter.options;
 			}
 		}
-
 		// build the report from the reporter
 		return iData.type.runReport( arguments.results, this, iData.options );
 	}

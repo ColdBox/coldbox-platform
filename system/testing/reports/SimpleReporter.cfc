@@ -31,6 +31,9 @@ component{
 		required coldbox.system.testing.TestBox testbox,
 		struct options={}
 	){
+		// content type
+		getPageContext().getResponse().setContentType( "text/html" );
+		
 		// bundle stats
 		bundleStats = arguments.results.getBundleStats();
 		
