@@ -82,7 +82,7 @@
 <body>
 
 <!-- Header --->
-<p>TestBox v#testbox.getVersion()# - Simple Reporter</p>
+<p>TestBox v#testbox.getVersion()#</p>
 
 <!-- Global Stats --->
 <div class="box" id="globalStats">
