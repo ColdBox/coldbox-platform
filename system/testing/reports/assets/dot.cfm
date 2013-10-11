@@ -54,7 +54,7 @@
 <body>
 
 	<!-- Header --->
-	<p>TestBox v#testbox.getVersion()# - Dot Reporter</p>
+	<p>TestBox v#testbox.getVersion()#</p>
 
 	<!-- Stats --->
 	<div class="box" id="globalStats">

@@ -190,6 +190,7 @@ component accessors="true"{
 			case "junit" : { return new "coldbox.system.testing.reports.JUnitReporter"(); }
 			case "console" : { return new "coldbox.system.testing.reports.ConsoleReporter"(); }
 			case "min" : { return new "coldbox.system.testing.reports.MinReporter"(); }
+			case "tap" : { return new "coldbox.system.testing.reports.TapReporter"(); }
 			default: {
 				return new "#arguments.reporter#"();
 			}

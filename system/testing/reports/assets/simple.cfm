@@ -138,7 +138,10 @@
 		<cfoutput>
 		<!--- Suite Results --->
 		<li>
-			<a href="#baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#" class="#lcase( arguments.suiteStats.status )#"><strong>#arguments.suiteStats.name#</strong></a>
+			<a title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#" 
+			   href="#baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#" 
+			   class="#lcase( arguments.suiteStats.status )#"><strong>+#arguments.suiteStats.name#</strong></a> 
+			(#arguments.suiteStats.totalDuration# ms)
 		</li>
 			<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 
