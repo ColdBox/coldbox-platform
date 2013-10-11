@@ -79,7 +79,7 @@ component{
 
 		var testSuites = arguments.testResults.getTestSuites();
 
-			// Verify URL conventions
+		// Verify URL conventions
 		if( structKeyExists( url, "testSuites") ){
 			testSuites.addAll( listToArray( url.testSuites ) );
 		}
@@ -93,6 +93,17 @@ component{
 				for( var thisSuite in arguments.suite.suites ){
 					// go down the rabitt hole
 					if( canRunSuite( thisSuite, arguments.testResults ) ){
+						return true;
+					}
+				}
+				return false;
+			}
+
+			// Verify hierarchy slug
+			if( results == false && len( arguments.suite.slug ) ){
+				var slugArray = listToArray( arguments.suite.slug, "/" );
+				for( var thisSlug in slugArray ){
+					if( arrayFindNoCase( testSuites, thisSlug ) ){
 						return true;
 					}
 				}

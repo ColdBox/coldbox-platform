@@ -94,7 +94,11 @@ component{
 			// the beforeEach closure
 			beforeEach 	= function(){},
 			// the afterEach closure
-			afterEach 	= function(){}
+			afterEach 	= function(){},
+			// the parent suite
+			parent 		= "",
+			// hiearachy slug
+			slug 		= ""
 		};
 
 		// skip constraint for suite as a closure
@@ -107,6 +111,14 @@ component{
 			// Append this suite to the nested suite.
 			arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].suites, suite );
 			this.$suitesReverseLookup[ arguments.title ] = suite;
+			
+			// Setup parent reference
+			suite.parent = this.$suiteContext;
+
+			// Build hiearachy slug separated by /
+			suite.slug = this.$suitesReverseLookup[ this.$suiteContext ].parent & "/" & this.$suiteContext;
+			if( left( suite.slug, 1) != "/" ){ suite.slug = "/" & suite.slug; }
+				
 			// Store parent context
 			var parentContext 	= this.$suiteContext;
 			var parentSpecIndex = this.$specOrderIndex;
