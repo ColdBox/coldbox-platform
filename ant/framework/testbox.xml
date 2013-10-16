@@ -1,0 +1,120 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 18, 2007 1:30:20 AM                                                        
+
+     TestBox Build                                                                
+     ====================================================================== -->
+<project name="testbox.newbuild" default="build" basedir="../../">
+
+	<!--Build Properties-->
+	<property name="dir.userlocation"	value="/Users/lmajano" />
+	<property name="dir.exports"		value="${dir.userlocation}/exports" />
+	<property name="dir.build" 			value="${dir.exports}/testbox-distro" />
+	<property name="colddoc.http"		value="http://cf10tools.jfetmac/ColdDoc/testbox.cfm?version=" />
+	
+	<!-- FTP -->
+	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
+	
+	<!-- Build Labels -->
+	<tstamp prefix="start"/>
+	
+	<!-- Init -->
+	<target name="init" description="Init">
+		<!-- Version -->
+		<input addproperty="testbox.version" message="TestBox Version" />
+		<!-- Build Number -->
+		<propertyfile file="ant/framework/build.number" comment="Build Number for ANT. Edit not!">
+			<entry key="build.number" 
+					type="int" 
+			     	operation="+"
+					pattern="00000"
+			     	default="1" />
+		</propertyfile>
+		<property file="ant/framework/build.number"/>
+		<!-- Build Label -->
+		<property name="build.label" value="testbox-${testbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<!-- Cleanup + Init -->
+		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}"/>
+	</target>
+	
+	<!-- FTP Upload of new build -->
+	<target name="ftp.deploy" depends="build">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	
+		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset file="${dir.exports}/testbox_{mockbox.version}.zip" />
+       	</ftp>		
+	</target>
+	
+	<!--build-->
+	<target name="build" description="Build a new TestBox distribution" depends="init">
+      	
+		<!-- Copy build ID -->
+		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		
+		<!-- Copy src to TestBox namespace -->	
+      	<copy todir="${dir.build}/testbox/system/testing">
+        	<fileset dir="system/testing" />
+        </copy>
+		<copy todir="${dir.build}/testbox/system/core/dynamic">
+        	<fileset dir="system/core/dynamic" />
+        </copy>
+		<copy todir="${dir.build}/testbox/system/core/util">
+        	<fileset dir="system/core/util" />
+        </copy>
+		<copy todir="${dir.build}/testbox/system/core/conversion">
+        	<fileset dir="system/core/conversion" />
+        </copy>
+		
+		<!-- cleanup coldbox specific stuff -->
+		<delete dir="${dir.build}/testbox/system/testing/mock" />
+		<delete file="${dir.build}/testbox/system/testing/BaseHandlerTest.cfc" />
+		<delete file="${dir.build}/testbox/system/testing/BaseInterceptorTest.cfc" />
+		<delete file="${dir.build}/testbox/system/testing/BaseModelTest.cfc" />
+		<delete file="${dir.build}/testbox/system/testing/BasePluginTest.cfc" />
+				
+		<!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		  <fileset dir="${dir.build}/testbox/system">
+		  </fileset>
+		</replaceregexp>
+						
+		<echo>Refactoring for coldbox absolute paths</echo>
+		<replace dir="${dir.build}" value="/testbox/system/" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>/coldbox/system/</replacetoken>
+		</replace>
+		
+		<echo>Refactoring for testbox instantitation and cfc paths</echo>
+		<replace dir="${dir.build}" value="testbox.system." summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>coldbox.system.</replacetoken>
+		</replace>
+		
+		<!--Copy text files to root folder-->
+		<copy todir="${dir.build}/">
+			<fileset file="license.txt" />
+			<fileset file="system/testing/mockbox.txt" />
+			<fileset file="system/testing/testbox.txt" />
+		</copy>
+		
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${testbox.version}&amp;path=${dir.build}" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+				
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.exports}/testbox_${testbox.version}.zip" basedir="${dir.build}"></zip>
+		
+		<!-- Cleanup -->
+		<delete dir="${dir.build}" />
+				
+    </target>
+</project>
