@@ -92,9 +92,9 @@ component{
 			// the recursive suites
 			suites 		= [],
 			// the beforeEach closure
-			beforeEach 	= function(){},
+			beforeEach 	= variables.closureStub,
 			// the afterEach closure
-			afterEach 	= function(){},
+			afterEach 	= variables.closureStub,
 			// the parent suite
 			parent 		= "",
 			// hiearachy slug
@@ -540,4 +540,6 @@ component{
 		return this.$mockBox.createStub( argumentCollection=arguments );
 	}	
 	
+	// Closure Stub
+	private function closureStub(){}
 }
