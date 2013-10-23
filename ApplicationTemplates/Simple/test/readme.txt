@@ -1,4 +1,4 @@
-﻿********************************************************************************
+********************************************************************************
 Copyright since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
@@ -12,9 +12,9 @@ Structure:
 - integration (Where you place all your integration tests for handlers)
 - mocks (For any mock testing or mock objects)
 - resources (where you can drop testing resources, it includes already an MXUnit
-	         RemoteFacade.cfc you can configure from eclipse.)
- -unit (For all your unit test cases)
- Application.cfc (So you can configure it as you like for your own testing)
+  RemoteFacade.cfc you can configure from eclipse.)
+- unit (For all your unit test cases)
+- Application.cfc (So you can configure it as you like for your own testing)
  
 SPECIAL CONSIDERATIONS:
 Make sure that if you are using any relative paths in your application, that they become
