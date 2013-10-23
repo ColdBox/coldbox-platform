@@ -541,5 +541,5 @@ component{
 	}	
 	
 	// Closure Stub
-	private function closureStub(){}
+	function closureStub(){}
 }
