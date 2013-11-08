@@ -317,7 +317,20 @@ component{
 	}
 
 	/************************************** RUN BDD METHODS *********************************************/
+	/**
+	* Run a test remotely, only useful if the spec inherits from this class. Useful for remote executions.
+	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!
+	* @testSpecs.hint A list or array of test names that are the ones that will be executed ONLY!
+	* @debug.hint Show debug output on the reports or not
+	* @reporter.hint The type of reporter to run the test with
+	*/
+	remote function runRemote( string testSpecs="", string testSuites="", boolean debug=false, string reporter="simple" ) output=true{
+		var runner = new coldbox.system.testing.TestBox( bundles="#getMetadata(this).name#", reporter=arguments.reporter );
 
+		// Produce report
+		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );
+	}
+	
 	/**
 	* Test the incoming spec definition within the context of a base spec for context options. Usually called by a runner.
 	* TODO: Remove from here back to BDD runner once Railo fixes its closure's context bug.
