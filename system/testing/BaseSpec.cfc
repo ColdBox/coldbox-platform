@@ -317,6 +317,7 @@ component{
 	}
 
 	/************************************** RUN BDD METHODS *********************************************/
+	
 	/**
 	* Run a test remotely, only useful if the spec inherits from this class. Useful for remote executions.
 	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!

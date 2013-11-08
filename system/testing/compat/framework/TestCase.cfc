@@ -9,11 +9,17 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 /*********************************** RUNNER Methods ***********************************/
 
+	/**
+	* Run a test remotely like MXUnit
+	* @testMethod.hint A list or array of test names that are the ones that will be executed ONLY!
+	* @debug.hint Show debug output on the reports or not
+	* @output.hint The type of reporter to run the test with
+	*/
 	remote function runTestRemote(any testMethod="", boolean debug=false, output="simple") output=true{
-		var runner = new coldbox.system.testing.TestBox( bundles="#getMetadata(this).name#", method=arguments.testMethod, reporter=arguments.output );
+		var runner = new coldbox.system.testing.TestBox( bundles="#getMetadata(this).name#", reporter=arguments.output );
 
 		// Produce report
-		writeOutput( runner.run() );
+		writeOutput( runner.run( testSpecs=arguments.testMethod ) );
 	}
 
 /*********************************** UTILITY Methods ***********************************/
@@ -32,6 +38,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 	function expectException(type, message=""){
 		// TODO: implement
 	}
+	
 /*********************************** ASSERTION METHODS ***********************************/
 
 	/**
