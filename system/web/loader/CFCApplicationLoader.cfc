@@ -918,14 +918,14 @@ Loads a coldbox cfc configuration file
 			};
 
 			// Check if we have defined DSL first in application config
-			validationDSL = arguments.oConfig.getPropertyMixin("validation","variables",structnew());
+			validationDSL = arguments.oConfig.getPropertyMixin( "validation", "variables", structnew() );
 
 			// manager
-			if( structKeyExists(validationDSL,"manager") ){
-				structAppend( arguments.config.validation.manager, validationDSL.manager, true);
+			if( structKeyExists( validationDSL, "manager" ) ){
+				arguments.config.validation.manager = validationDSL.manager;
 			}
 			// shared constraints
-			if( structKeyExists(validationDSL,"sharedConstraints") ){
+			if( structKeyExists( validationDSL, "sharedConstraints" ) ){
 				structAppend( arguments.config.validation.sharedConstraints, validationDSL.sharedConstraints, true);
 			}
 		</cfscript>
