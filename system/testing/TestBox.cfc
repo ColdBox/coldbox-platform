@@ -206,8 +206,14 @@ component accessors="true"{
 		// run it and get results
 		var results = runRaw( argumentCollection=arguments );
 
-		// return report
-		writeOutput( produceReport( results ) );
+		// check if reporter is "raw" and if raw, just return it
+		if( variables.reporter.type == "raw" ){
+			return produceReport( results );
+		}
+		else{
+			// return report
+			writeOutput( produceReport( results ) );
+		}
 	}
 
 	/************************************** REPORTING COMMON METHODS *********************************************/
