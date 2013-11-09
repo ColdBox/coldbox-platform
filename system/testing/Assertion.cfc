@@ -521,6 +521,15 @@ component{
 
 		fail( arguments.message );
 	}
+	
+	/**
+	* Get a string name representation of an incoming object.
+	*/
+	function getStringName( required obj ){
+		if( isSimpleValue( arguments.obj) ){ return arguments.obj; }
+		if( isObject( arguments.obj) ){ return getMetadata( arguments.obj ).name; }
+		return arguments.obj.toString();		
+	}
 
 /*********************************** PRIVATE Methods ***********************************/	
 
@@ -567,12 +576,6 @@ component{
 		return false;
 	}
 	
-	private function getStringName(required obj){
-		if( isSimpleValue( arguments.obj) ){ return arguments.obj; }
-		if( isObject( arguments.obj) ){ return getMetadata( arguments.obj ).name; }
-		return arguments.obj.toString();		
-	}
-
 	private function getTargetLength( required any target ){
 		var aLength = 0;
 

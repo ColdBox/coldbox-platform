@@ -94,7 +94,13 @@ component{
 			it(title="can have a skip that is executed at runtime", body=function(){
 				fail( "Skipped programmatically, this should fail" );
 			},skip=function(){ return true; });
-		
+
+			// null expectations
+			it( "can have null expectations", function(){
+				expect(	javaCast("null", "") ).toBeNull();
+				expect(	123 ).notToBeNull();
+			});
+
 		});
 
 		// Custom Matchers

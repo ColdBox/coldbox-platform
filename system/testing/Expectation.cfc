@@ -156,7 +156,7 @@ component accessors="true"{
 		else{
 			if( isNull( this.actual ) ){ return this; }
 			arguments.message = ( len( arguments.message ) ? 
-				arguments.message : "Expected a null value but got #getStringName( arguments.actual )#" );
+				arguments.message : "Expected a null value but got [#variables.assert.getStringName( this.actual )#] instead" );
 			
 		}
 

@@ -232,13 +232,19 @@ component{
 
 	/**
 	* Start an expectation expression. This returns an instance of Expectation so you can work with its matchers.
+	* @actual.hint The actual value, it is not required as it can be null.
 	*/
-	Expectation function expect( required any actual ){
+	Expectation function expect( any actual ){
 		// build an expectation
 		var oExpectation = new Expectation( spec=this, assertions=this.$assert, mockbox=this.$mockbox );
 
 		// Store the actual data
-		oExpectation.actual = arguments.actual;
+		if( !isNull( arguments.actual ) ){
+			oExpectation.actual = arguments.actual;
+		}
+		else{
+			oExpectation.actual = javacast( "null", "" );
+		}
 
 		// Do we have any custom matchers to add to this expectation?
 		if( !structIsEmpty( this.$customMatchers ) ){
