@@ -25,26 +25,39 @@ component extends="coldbox.system.testing.BaseSpec"{
 /*********************************** UTILITY Methods ***********************************/
 
 	/**
-	*  MXUnit style debug
+	* MXUnit style debug
+	* @var.hint The variable to debug
 	*/
-	function debug(required var){
+	function debug( required var ){
 		arguments.deepCopy = true;
 		super.debug( argumentCollection=arguments );
 	}
 
 	/**
 	* Expect an exception from the testing spec
+	* @type.hint the type to expect
+	* @message.hint Optional exception message
 	*/
-	function expectException(type, message=""){
+	function expectException( type, message="" ){
 		// TODO: implement
+	}
+
+	/**
+	* Alias to 'expectException'
+	* @type.hint the type to expect
+	* @message.hint Optional exception message
+	*/
+	function expectedException( type, message="" ){
+		expectException( argumentCollection=arguments );
 	}
 	
 /*********************************** ASSERTION METHODS ***********************************/
 
 	/**
 	* Fail assertion
+	* @message.hint The message to fail with
 	*/
-	function fail(message=""){
+	function fail( message="" ){
 		this.$assert.fail( arguments.message );
 	}
 

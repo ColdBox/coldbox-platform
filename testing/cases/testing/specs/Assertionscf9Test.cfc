@@ -1,4 +1,4 @@
-component displayName="TestBox xUnit suite for CF9" labels="railo,cf"{
+component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="coldbox.system.testing.BaseSpec"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -199,7 +199,22 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf"{
 		$assert.notLengthOf( {name="luis"}, 5 );
 		$assert.notLengthOf( querySim( "id, name
 			1 | luis"), 0 );
+	}
 
+	/**
+	* @expectedException
+	*/
+	function testExpectedExceptionNoValue(){
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+	}
+
+	/**
+	* @expectedException InvalidException
+	*/
+	function testExpectedExceptionWithValue(){
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception of type InvalidException" );
 	}
 
 /*********************************** NON-RUNNABLE Methods ***********************************/	

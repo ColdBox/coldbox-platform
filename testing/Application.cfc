@@ -35,7 +35,8 @@ Description :
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false,
 		eventhandling = true,
-		eventHandler = "testmodel.EventHandler"
+		eventHandler = "testmodel.EventHandler",
+		skipcfcWithError = true
 	}>
 
 	<!--- <cfset this.ormsettings.eventhandler = "testmodel.EventHandler"> --->

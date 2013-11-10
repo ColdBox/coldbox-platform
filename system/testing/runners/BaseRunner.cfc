@@ -125,5 +125,22 @@ component{
 		// All test methods must start with the term, "test". 
 		return( !! reFindNoCase( "^test", methodName ) );
 	}
+
+	/**
+	* Get metadata from a method
+	* @target.hint The target method
+	* @name.hint The annotation to look for
+	* @defaultValue.hint The default value to return if not found
+	*/
+	function getMethodAnnotation( required target, required name, defaultValue="" ){
+		var md = getMetadata( arguments.target );
+
+		if( structKeyExists( md, arguments.name ) ){
+			return ( len( md[ arguments.name ] ) ? md[ arguments.name ] : true );
+		}
+		else{
+			return arguments.defaultValue;
+		}
+	}
 	
 }

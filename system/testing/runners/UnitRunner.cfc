@@ -158,8 +158,22 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 				if( structKeyExists( arguments.target, "setup" ) ){ arguments.target.setup(); }
 				
 				// Execute Spec
-				evaluate( "arguments.target.#arguments.spec.name#()" );
-				
+				try{
+					evaluate( "arguments.target.#arguments.spec.name#()" );
+				}
+				catch( Any e ){
+					var expectedException = getMethodAnnotation( arguments.target[ arguments.spec.name ], "expectedException", "false" );
+					// Verify expected exceptions
+					if( expectedException != false ){
+						// check if not 'true' so we can do match on type
+						if( expectedException != true AND !findNoCase( e.type, expectedException ) ){
+							rethrow;
+						}
+					} else {
+						rethrow;
+					}
+				}
+
 				// execute teardown()
 				if( structKeyExists( arguments.target, "teardown" ) ){ arguments.target.teardown(); }
 				
@@ -176,7 +190,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			}
 		}
 		// Catch assertion failures
-		catch("TestBox.AssertionFailed" e){
+		catch( "TestBox.AssertionFailed" e ){
 			// store spec status and debug data
 			specStats.status 		= "Failed";
 			specStats.failMessage 	= e.message;
@@ -185,7 +199,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
 		}
 		// Catch errors
-		catch(any e){
+		catch( any e ){
 			// store spec status and debug data
 			specStats.status 		= "Error";
 			specStats.error 		= e;

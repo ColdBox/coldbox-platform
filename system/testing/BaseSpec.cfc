@@ -389,7 +389,7 @@ component{
 			}
 		}
 		// Catch assertion failures
-		catch("TestBox.AssertionFailed" e){
+		catch( "TestBox.AssertionFailed" e ){
 			// store spec status and debug data
 			specStats.status 		= "Failed";
 			specStats.failMessage 	= e.message;
@@ -398,7 +398,7 @@ component{
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
 		}
 		// Catch errors
-		catch(any e){
+		catch( any e ){
 			// store spec status and debug data
 			specStats.status 		= "Error";
 			specStats.error 		= e;

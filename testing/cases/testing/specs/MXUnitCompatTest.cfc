@@ -92,9 +92,20 @@ component extends="BaseTest" {
 		debug( "Hello from TestBox" );
 	}
 
-	function testExpectException(){
-		//expectException( "InvalidType" );
-		// TODO: Implement
+	/**
+	* @mxunit:expectedException
+	*/
+	function testExpectedExceptionNoValue(){
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+	}
+
+	/**
+	* @mxunit:expectedException InvalidException
+	*/
+	function testExpectedExceptionWithValue(){
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception of type InvalidException" );
 	}
 
 	function testMakePublic(){
