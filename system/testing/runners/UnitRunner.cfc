@@ -155,7 +155,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			){
 
 				// execute setup()
-				if( structKeyExists( arguments.target, "setup" ) ){ arguments.target.setup(); }
+				if( structKeyExists( arguments.target, "setup" ) ){ arguments.target.setup( currentMethod=arguments.spec.name ); }
 				
 				// Execute Spec
 				try{
@@ -175,7 +175,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 				}
 
 				// execute teardown()
-				if( structKeyExists( arguments.target, "teardown" ) ){ arguments.target.teardown(); }
+				if( structKeyExists( arguments.target, "teardown" ) ){ arguments.target.teardown( currentMethod=arguments.spec.name ); }
 				
 				// store spec status
 				specStats.status 	= "Passed";
