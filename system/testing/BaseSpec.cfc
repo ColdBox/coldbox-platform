@@ -8,9 +8,9 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 component{
 			
 	// MockBox mocking framework
-	this.$mockBox 				= new coldbox.system.testing.MockBox();
+	variables.$mockBox = this.$mockBox 	= new coldbox.system.testing.MockBox();
 	// Assertions object
-	this.$assert				= new coldbox.system.testing.Assertion();
+	variables.$assert = this.$assert = new coldbox.system.testing.Assertion();
 	// Custom Matchers
 	this.$customMatchers 		= {};
 	// Utility object
@@ -21,7 +21,7 @@ component{
 	this.$suiteReverseLookup	= {};
 	// The suite context
 	this.$suiteContext			= "";
-	
+
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 	
 	/**
