@@ -368,13 +368,13 @@ component{
 			){
 
 				// execute beforeEach()
-				arguments.suite.beforeEach();
+				arguments.suite.beforeEach( currentSpec=arguments.spec.name );
 				
 				// Execute the Spec body
 				arguments.spec.body();
 				
 				// execute afterEach()
-				arguments.suite.afterEach();
+				arguments.suite.afterEach( currentSpec=arguments.spec.name );
 				
 				// store spec status
 				specStats.status 	= "Passed";
