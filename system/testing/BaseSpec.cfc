@@ -339,9 +339,7 @@ component{
 	}
 	
 	/**
-	* Test the incoming spec definition within the context of a base spec for context options. Usually called by a runner.
-	* TODO: Remove from here back to BDD runner once Railo fixes its closure's context bug.
-	* @target.hint The target bundle CFC
+	* Run a BDD test in this target CFC
 	* @spec.hint The spec definition to test
 	* @suite.hint The suite definition this spec belongs to
 	* @testResults.hint The testing results object
@@ -375,6 +373,91 @@ component{
 				
 				// execute afterEach()
 				arguments.suite.afterEach( currentSpec=arguments.spec.name );
+				
+				// store spec status
+				specStats.status 	= "Passed";
+				// Increment recursive pass stats
+				arguments.testResults.incrementSpecStat( type="pass", stats=specStats );
+			}
+			else{
+				// store spec status
+				specStats.status = "Skipped";
+				// Increment recursive pass stats
+				arguments.testResults.incrementSpecStat( type="skipped", stats=specStats );
+			}
+		}
+		// Catch assertion failures
+		catch( "TestBox.AssertionFailed" e ){
+			// store spec status and debug data
+			specStats.status 		= "Failed";
+			specStats.failMessage 	= e.message;
+			specStats.failOrigin 	= e.tagContext;
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
+		}
+		// Catch errors
+		catch( any e ){
+			// store spec status and debug data
+			specStats.status 		= "Error";
+			specStats.error 		= e;
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
+		}
+		finally{
+			// Complete spec testing
+			arguments.testResults.endStats( specStats );
+		}
+		
+		return this;
+	}
+
+	/**
+	* Runs a xUnit style test in this target CFC
+	* @spec.hint The spec definition to test
+	* @testResults.hint The testing results object
+	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
+	* @runner.hint The runner calling this BDD test
+	*/
+	function runTest(
+		required spec,
+		required testResults,
+		required suiteStats,
+		required runner
+	){
+			
+		try{
+			
+			// init spec tests
+			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
+			
+			// Verify we can execute
+			if( !arguments.spec.skip &&
+				arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) &&
+				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
+			){
+
+				// execute setup()
+				if( structKeyExists( this, "setup" ) ){ this.setup( currentMethod=arguments.spec.name ); }
+				
+				// Execute Spec
+				try{
+					evaluate( "this.#arguments.spec.name#()" );
+				}
+				catch( Any e ){
+					var expectedException = arguments.runner.getMethodAnnotation( this[ arguments.spec.name ], "expectedException", "false" );
+					// Verify expected exceptions
+					if( expectedException != false ){
+						// check if not 'true' so we can do match on type
+						if( expectedException != true AND !findNoCase( e.type, expectedException ) ){
+							rethrow;
+						}
+					} else {
+						rethrow;
+					}
+				}
+
+				// execute teardown()
+				if( structKeyExists( this, "teardown" ) ){ this.teardown( currentMethod=arguments.spec.name ); }
 				
 				// store spec status
 				specStats.status 	= "Passed";

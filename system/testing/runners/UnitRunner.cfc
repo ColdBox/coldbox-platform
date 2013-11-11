@@ -95,16 +95,17 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 		// Verify we can execute the incoming suite via skipping or labels
 		if( !arguments.suite.skip && 
+			canRunLabel( arguments.suite.labels, arguments.testResults ) && 
 			canRunSuite( arguments.suite, arguments.testResults )
 		){
 
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
 				
-				testSpec( target=arguments.target, 
-						  spec=thisSpec, 
-						  testResults=arguments.testResults, 
-						  suiteStats=suiteStats );
+				arguments.target.runTest( spec=thisSpec, 
+										  testResults=arguments.testResults, 
+						  				  suiteStats=suiteStats,
+						  				  runner=this );
 
 			}
 			
@@ -128,90 +129,6 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 		// Finalize the suite stats
 		arguments.testResults.endStats( suiteStats );
-	}
-
-	/**
-	* Test the incoming spec definition
-	* @target.hint The target bundle CFC
-	* @spec.hint The spec definition to test
-	* @testResults.hint The testing results object
-	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
-	*/
-	private function testSpec(
-		required target,
-		required spec,
-		required testResults,
-		required suiteStats
-	){
-			
-		try{
-			
-			// init spec tests
-			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
-			
-			// Verify we can execute
-			if( !arguments.spec.skip &&
-				canRunSpec( arguments.spec.name, arguments.testResults )
-			){
-
-				// execute setup()
-				if( structKeyExists( arguments.target, "setup" ) ){ arguments.target.setup( currentMethod=arguments.spec.name ); }
-				
-				// Execute Spec
-				try{
-					evaluate( "arguments.target.#arguments.spec.name#()" );
-				}
-				catch( Any e ){
-					var expectedException = getMethodAnnotation( arguments.target[ arguments.spec.name ], "expectedException", "false" );
-					// Verify expected exceptions
-					if( expectedException != false ){
-						// check if not 'true' so we can do match on type
-						if( expectedException != true AND !findNoCase( e.type, expectedException ) ){
-							rethrow;
-						}
-					} else {
-						rethrow;
-					}
-				}
-
-				// execute teardown()
-				if( structKeyExists( arguments.target, "teardown" ) ){ arguments.target.teardown( currentMethod=arguments.spec.name ); }
-				
-				// store spec status
-				specStats.status 	= "Passed";
-				// Increment recursive pass stats
-				arguments.testResults.incrementSpecStat( type="pass", stats=specStats );
-			}
-			else{
-				// store spec status
-				specStats.status = "Skipped";
-				// Increment recursive pass stats
-				arguments.testResults.incrementSpecStat( type="skipped", stats=specStats );
-			}
-		}
-		// Catch assertion failures
-		catch( "TestBox.AssertionFailed" e ){
-			// store spec status and debug data
-			specStats.status 		= "Failed";
-			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= e.tagContext;
-			// Increment recursive pass stats
-			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
-		}
-		// Catch errors
-		catch( any e ){
-			// store spec status and debug data
-			specStats.status 		= "Error";
-			specStats.error 		= e;
-			// Increment recursive pass stats
-			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
-		}
-		finally{
-			// Complete spec testing
-			arguments.testResults.endStats( specStats );
-		}
-		
-		return this;
 	}
 
 	/**
