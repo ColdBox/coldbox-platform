@@ -5,7 +5,8 @@
 */
 component extends="coldbox.system.testing.BaseSpec"{
 
-	this.$expectException = {};
+	// ExpectedException Annotation
+	this.$exceptionAnnotation	= "mxunit:expectedException";
 
 /*********************************** RUNNER Methods ***********************************/
 

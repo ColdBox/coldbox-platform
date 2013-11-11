@@ -21,6 +21,8 @@ component{
 	this.$suiteReverseLookup	= {};
 	// The suite context
 	this.$suiteContext			= "";
+	// ExpectedException Annotation
+	this.$exceptionAnnotation	= "expectedException";
 
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 	
@@ -444,7 +446,7 @@ component{
 					evaluate( "this.#arguments.spec.name#()" );
 				}
 				catch( Any e ){
-					var expectedException = arguments.runner.getMethodAnnotation( this[ arguments.spec.name ], "expectedException", "false" );
+					var expectedException = arguments.runner.getMethodAnnotation( this[ arguments.spec.name ], this.$exceptionAnnotation, "false" );
 					// Verify expected exceptions
 					if( expectedException != false ){
 						// check if not 'true' so we can do match on type
