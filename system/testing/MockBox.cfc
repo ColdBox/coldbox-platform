@@ -381,8 +381,11 @@ Description		:
 	<!--- $reset --->
     <cffunction name="$reset" output="false" access="public" returntype="any" hint="Reset all mock counters and logs on the targeted mock. Injected as $reset">
     	<cfscript>
-    		this._mockMethodCallCounters = structnew();
-			this._mockCallLoggers 		 = structnew();
+    		for(var item in this._mockMethodCallCounters)
+			{
+				this._mockMethodCallCounters[item]	= 0;
+				this._mockCallLoggers[item]			= arrayNew(1);
+			}
 			return this;
 		</cfscript>
     </cffunction>
