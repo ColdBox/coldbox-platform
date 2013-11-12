@@ -22,7 +22,7 @@
 	.failed { color: orange; }
 	.error { color: red; }
 	.skipped{ color: blue;}
-	.dots{ font-size: 35px; clear: both; margin-bottom: 20px; }
+	.dots{ font-size: 45px; clear: both; margin-bottom: 20px; }
 	.dots span{ float: left; margin: -2px;}
 	/** utility **/
 	.centered { text-align: center !important; }
