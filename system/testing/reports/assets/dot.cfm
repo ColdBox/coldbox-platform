@@ -44,7 +44,7 @@
 		if( failMessage.length ){
 			alert( "Failure Message: " + failMessage );
 		}
-		if( isError ){
+		else if( isError || isError == 'yes' || isError == 'true' ){
 			$("##error_" + specID).fadeToggle();
 		}
 	}
@@ -101,7 +101,7 @@
 			
 			<!--- Iterate over suite specs --->
 			<cfloop array="#arguments.suiteStats.specStats#" index="thisSpec">
-				<a href="javascript:showInfo( '#thisSpec.failMessage#', '#thisSpec.id#', #NOT structIsEmpty( thisSpec.error )# )" 
+				<a href="javascript:showInfo( '#JSStringFormat( thisSpec.failMessage )#', '#thisSpec.id#', '#lcase( NOT structIsEmpty( thisSpec.error ) )#' )" 
 				   title="#thisSpec.name# (#thisSpec.totalDuration# ms)" 
 				   data-info="#thisSpec.failMessage#"><span class="#lcase( thisSpec.status )#">.</span></a>
 				
