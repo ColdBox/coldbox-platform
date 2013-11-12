@@ -92,7 +92,7 @@
 [ <span class="specStatus failed" data-status="failed">Failures: #results.getTotalFail()#</span> ]
 [ <span class="specStatus error" data-status="error">Errors: #results.getTotalError()#</span> ]
 [ <span class="specStatus skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span> ]
-[ <span class="reset">Reset</span> ]
+[ <span class="reset" title="Clear status filters">Reset</span> ]
 <br>
 <cfif arrayLen( results.getLabels() )>
 [ Labels Applied: #arrayToList( results.getLabels() )# ]
@@ -111,7 +111,7 @@
 		[ <span class="specStatus failed" 	data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span> ]
 		[ <span class="specStatus error" 	data-status="error" data-bundleid="#thisBundle.id#">Errors: #thisBundle.totalError#</span> ]
 		[ <span class="specStatus skipped" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span> ]
-		[ <span class="reset">Reset</span> ]
+		[ <span class="reset" title="Clear status filters">Reset</span> ]
 		
 		<!-- Iterate over bundle suites -->
 		<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
