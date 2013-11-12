@@ -5,38 +5,10 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
+	<link href="/coldbox/system/testing/reports/assets/css/simple.css" rel="stylesheet">
 	<style>
-	body{
-		font-family:  Monaco, "Lucida Console", monospace;
-		font-size: 11px;
-		font-weight: 300;
-		line-height: 14px;
-	}
-	h1,h2,h3,h4{ margin-top: 3px;}
-	h1{ font-size: 14px;}
-	h2{ font-size: 13px;}
-	h3{ font-size: 12px;}
-	h4{ font-size: 11px; font-style: italic;}
-	/** status **/
-	.passed { color: green; }
-	.failed { color: orange; }
-	.error { color: red; }
-	.skipped{ color: blue;}
-	.dots{ font-size: 45px; clear: both; margin-bottom: 20px; }
-	.dots span{ float: left; margin: -2px;}
-	/** utility **/
-	.centered { text-align: center !important; }
-	.inline{ display: inline !important; }
-	.margin10{ margin: 10px; }
-	.padding10{ padding: 10px; }
-	.margin0{ margin: 0px; }
-	.padding0{ padding: 0px; }
-	.float-right{ float: right;}
-	.float-left{ float: left;}
-	.box{ border:1px solid gray; margin: 10px 0px; padding: 10px; background-color: ##f5f5f5}
-	##globalStats{ background-color: ##dceef4 }
-	.specStatus{ cursor:pointer;}
-	dd{ margin: 3px 0px 3px 15px}
+	.dots{ font-size: 60px; clear: both; margin-bottom: 20px; }
+	.dots span{ float: left; margin: -6px;}
 	</style>
 	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
 	<script>
@@ -50,7 +22,6 @@
 	}
 	</script>
 </head>
-
 <body>
 
 	<!-- Header --->
@@ -58,6 +29,11 @@
 
 	<!-- Stats --->
 	<div class="box" id="globalStats">
+
+		<div class="buttonBar">
+			<button onclick="window.location.reload()" title="Run all the tests">Run All</button>
+		</div>
+
 		<cfif results.getTotalFail() gt 0>
 			<cfset totalClass = "fail">
 		<cfelseif results.getTotalError() gt 0>
