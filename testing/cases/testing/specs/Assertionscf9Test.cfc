@@ -217,6 +217,32 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="c
 		throw( type="InvalidException", message="This test method should pass with an expected exception of type InvalidException" );
 	}
 
+	/**
+	* @expectedException InvalidException:(pass with an)
+	*/
+	function testExpectedExceptionWithValueAndRegex(){
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception of type InvalidException" );
+	}
+
+	function testExpectedExceptionFromMethod(){
+		expectedException();
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+	}
+
+	function testExpectedExceptionFromMethodWithType(){
+		expectedException( "InvalidException" );
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+	}
+
+	function testExpectedExceptionFromMethodWithTypeAndRegex(){
+		expectedException( "InvalidException", "(pass with an)" );
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+	}
+
 /*********************************** NON-RUNNABLE Methods ***********************************/	
 
 	function nonStandardNamesWillNotRun() {

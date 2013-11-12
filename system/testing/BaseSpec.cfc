@@ -23,9 +23,21 @@ component{
 	this.$suiteContext			= "";
 	// ExpectedException Annotation
 	this.$exceptionAnnotation	= "expectedException";
+	// Expected Exception holder, only use on synchronous testing.
+	this.$expectedException		= {};
 
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 	
+	/**
+	* Expect an exception from the testing spec
+	* @type.hint The type to expect
+	* @regex.hint Optional exception message regular expression to match, by default it matches .*
+	*/
+	function expectedException( type="", regex=".*" ){
+		this.$expectedException = arguments;
+		return this;
+	}
+
 	/**
 	* Assert that the passed expression is true
 	* @facade
@@ -438,6 +450,9 @@ component{
 				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
 			){
 
+				// Reset expected exceptions: Only works on synchronous testing.
+				this.$expectedException = {};
+
 				// execute setup()
 				if( structKeyExists( this, "setup" ) ){ this.setup( currentMethod=arguments.spec.name ); }
 				
@@ -446,16 +461,7 @@ component{
 					evaluate( "this.#arguments.spec.name#()" );
 				}
 				catch( Any e ){
-					var expectedException = arguments.runner.getMethodAnnotation( this[ arguments.spec.name ], this.$exceptionAnnotation, "false" );
-					// Verify expected exceptions
-					if( expectedException != false ){
-						// check if not 'true' so we can do match on type
-						if( expectedException != true AND !findNoCase( e.type, expectedException ) ){
-							rethrow;
-						}
-					} else {
-						rethrow;
-					}
+					if( !isExpectedException( e, arguments.spec.name, arguments.runner ) ){ rethrow; }
 				}
 
 				// execute teardown()
@@ -496,6 +502,42 @@ component{
 		}
 		
 		return this;
+	}
+
+	/**
+	* Check if the incoming exception is expected or not.
+	*/
+	private boolean function isExpectedException( required exception, required specName, required runner ){
+		var results = false;
+		// do we have an expected annotation?
+		var eAnnotation = arguments.runner.getMethodAnnotation( this[ arguments.specName ], this.$exceptionAnnotation, "false" );
+		if( eAnnotation != false ){
+			// incorporate it.
+			this.$expectedException = {
+				type =  ( eAnnotation == "true" ? "" : listFirst( eAnnotation, ":" ) ),
+				regex = ( find( ":", eAnnotation ) ? listLast( eAnnotation, ":" ) : ".*" )
+			};
+		}
+		
+		// Verify expected exceptions
+		if( !structIsEmpty( this.$expectedException ) ){
+			// If no type, message expectations
+			if( !len( this.$expectedException.type ) && this.$expectedException.regex eq ".*" ){
+				results = true;
+			}
+			// Type expectation then
+			else if( len( this.$expectedException.type ) && 
+					 arguments.exception.type eq this.$expectedException.type && 
+					 reFindNoCase( this.$expectedException.regex, arguments.exception.message ) ){
+				results = true;
+			}
+			// Message regex then only
+			else if( this.$expectedException.regex neq ".*" && reFindNoCase( this.$expectedException.regex, arguments.exception.message ) ){
+				results = true;
+			}
+		}
+
+		return results;
 	}
 
 	/************************************** UTILITY METHODS *********************************************/

@@ -36,20 +36,11 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 	/**
 	* Expect an exception from the testing spec
-	* @type.hint the type to expect
-	* @message.hint Optional exception message
+	* @expectedExceptionType.hint the type to expect
+	* @expectedExceptionMessage.hint Optional exception message
 	*/
-	function expectException( type, message="" ){
-		// TODO: implement
-	}
-
-	/**
-	* Alias to 'expectException'
-	* @type.hint the type to expect
-	* @message.hint Optional exception message
-	*/
-	function expectedException( type, message="" ){
-		expectException( argumentCollection=arguments );
+	function expectException( expectedExceptionType, expectedExceptionMessage=".*" ){
+		super.expectedException( arguments.expectedExceptionType, arguments.expectedExceptionMessage );
 	}
 	
 /*********************************** ASSERTION METHODS ***********************************/

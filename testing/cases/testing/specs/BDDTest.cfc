@@ -168,6 +168,15 @@ component{
 
 			});
 
+			// Another suite
+			describe( "Another Nested Suite", function(){
+				
+				it( "can also be awesome", function(){
+					expect(	foo ).toBeFalse();
+				});
+			
+			});
+
 		});
 
 		// Skip by env suite

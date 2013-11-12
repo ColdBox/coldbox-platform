@@ -108,6 +108,18 @@ component extends="BaseTest" {
 		throw( type="InvalidException", message="This test method should pass with an expected exception of type InvalidException" );
 	}
 
+	function testExpectedExceptionFromMethodWithType(){
+		expectedException( "InvalidException" );
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+	}
+
+	function testExpectedExceptionFromMethodWithTypeAndRegex(){
+		expectedException( "InvalidException", "(pass with an)" );
+		// This method should throw an invalid exception and pass
+		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+	}
+
 	function testMakePublic(){
 		t = new coldbox.testing.resources.test1();
 		assertTrue( makePublic( t, "aPrivateMethod" ).aPrivateMethod() );
