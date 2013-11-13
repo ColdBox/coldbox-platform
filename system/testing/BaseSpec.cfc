@@ -264,7 +264,7 @@ component{
 		// Do we have any custom matchers to add to this expectation?
 		if( !structIsEmpty( this.$customMatchers ) ){
 			for( var thisMatcher in this.$customMatchers ){
-				oExpectation[ thisMatcher ] = this.$customMatchers[ thisMatcher ];
+				oExpectation.registerMatcher( thisMatcher, this.$customMatchers[ thisMatcher ] );
 			}
 		}
 

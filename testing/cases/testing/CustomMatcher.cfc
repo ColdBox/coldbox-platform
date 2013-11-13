@@ -3,17 +3,17 @@
 */
 component{
 
-	function toBeAwesome(){
-		if( this.isNot )
+	function toBeAwesome( expectation ){
+		if( expectation.isNot )
 			return false;
 		else
 			return true;
 	}
 
-	function toBeLuisMajano(){
-		var results = ( this.actual == "Luis Majano" ? true : false ); 		
+	function toBeLuisMajano( expectation ){
+		var results = ( expectation.actual == "Luis Majano" ? true : false ); 		
 
-		if( this.isNot )
+		if( expectation.isNot )
 			return !results;
 		else
 			return results;

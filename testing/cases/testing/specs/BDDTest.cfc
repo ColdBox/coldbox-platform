@@ -109,21 +109,19 @@ component{
 			beforeEach(function(){
 				// add custom matchers
 				addMatchers({
-					toBeReallyFalse : function(message=""){
-						if( this.isNot )
-							return ( this.actual eq true );
+					toBeReallyFalse : function( expectation, args={} ){
+						expectation.message = ( structKeyExists( args, "message" ) ? args.message : "[#expectation.actual#] is not really false" );
+						if( expectation.isNot )
+							return ( expectation.actual eq true );
 						else
-							return ( this.actual eq false );
-						arguments.message = ( len( arguments.message ) ? arguments.message : "[#this.actual#] is not really false" );
-						fail( arguments.message );
+							return ( expectation.actual eq false );
 					},
-					toBeReallyTrue = function(message=""){
-						if( this.isNot )
-							return ( this.actual eq false );
+					toBeReallyTrue = function( expectation, args={} ){
+						expectation.message = ( structKeyExists( args, "message" ) ? args.message : "[#expectation.actual#] is not really true" );
+						if( expectation.isNot )
+							return ( expectation.actual eq false );
 						else
-							return ( this.actual eq true );
-						arguments.message = ( len( arguments.message ) ? arguments.message : "[#this.actual#] is not really true" );
-						fail( arguments.message );
+							return ( expectation.actual eq true );
 					}
 				});
 				foo = false;
@@ -134,7 +132,7 @@ component{
 			});
 
 			it("are still cool and the negation of foo should be really true", function(){
-				expect( foo ).toBeReallyTrue();
+				expect( foo ).notToBeReallyTrue();
 			});
 
 			// Custom Matchers

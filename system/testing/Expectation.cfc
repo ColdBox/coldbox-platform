@@ -20,8 +20,23 @@ component accessors="true"{
 	this.actual 	= "";
 	// The negation bit
 	this.isNot 		= false;
-	// The expected value
-	this.expected 	= "";
+	// Custom messages
+	this.message 	= "";
+
+	/**
+	* Registers a custom matcher on this Expectation object
+	* @name.hint The name of the custom matcher
+	* @body.hint The body closure/udf representing this matcher.
+	*/
+	function registerMatcher( required name, required body ){
+		// store new custom matcher function according to specs
+		this[ arguments.name ] = variables[ arguments.name ] = function(){
+			// execute custom matcher
+			var results = body( this, arguments );
+			// if not passed, then fail the custom matcher, else you can concatenate
+			return( !results ? variables.assert.fail( this.message ) : this );
+		};
+	}
 
 	/**
 	* Constructor
@@ -42,7 +57,7 @@ component accessors="true"{
 
 		return this;
 	}
-
+	
 	/**
 	* Fail an assertion
 	* @message The message to fail with.
