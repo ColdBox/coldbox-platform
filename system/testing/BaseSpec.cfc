@@ -130,7 +130,7 @@ component{
 			suite.parent = this.$suiteContext;
 
 			// Build hiearachy slug separated by /
-			suite.slug = this.$suitesReverseLookup[ this.$suiteContext ].parent & "/" & this.$suiteContext;
+			suite.slug = this.$suitesReverseLookup[ this.$suiteContext ].slug & "/" & this.$suiteContext;
 			if( left( suite.slug, 1) != "/" ){ suite.slug = "/" & suite.slug; }
 				
 			// Store parent context
@@ -154,10 +154,11 @@ component{
 			this.$suitesReverseLookup[ arguments.title ] = suite;
 			// execute the test suite definition with this context now.
 			arguments.body();
+			// reset context, finalized it already.
+			this.$suiteContext = "";
 		}
 
-		// Remove suite context
-		this.$suiteContext 		= "";
+		// Restart spec index
 		this.$specOrderIndex 	= 1;
 
 		return this;

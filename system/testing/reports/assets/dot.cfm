@@ -31,7 +31,7 @@
 	<div class="box" id="globalStats">
 
 		<div class="buttonBar">
-			<button onclick="window.location.reload()" title="Run all the tests">Run All</button>
+			<a href="?"><button title="Run all the tests">Run All</button></a>
 		</div>
 
 		<cfif results.getTotalFail() gt 0>

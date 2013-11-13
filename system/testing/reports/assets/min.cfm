@@ -16,7 +16,7 @@
 <!-- Global Stats --->
 <div class="box" id="globalStats">
 	<div class="buttonBar">
-		<button onclick="window.location.reload()" title="Run all the tests">Run All</button>
+		<a href="?"><button title="Run all the tests">Run All</button></a>
 	</div>
 
 	<h3>Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#  (#results.getTotalDuration()# ms)</h3>
