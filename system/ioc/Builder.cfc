@@ -353,19 +353,23 @@ TODO: update dsl consistency, so it is faster.
 					}
 				}
 			}
-				
+			
 			// return only if found
 			if( structKeyExists( refLocal, "dependency" ) ){ return refLocal.dependency; }
 			
-			// Logging
-			if( instance.log.canError() ){
-				instance.log.error("Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency");
+			// was dependency required? If so, then throw exception
+			if( arguments.definition.required ){
+				// Logging
+				if( instance.log.canError() ){
+					instance.log.error("Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency");
+				}
+				
+				// Throw exception as DSL Dependency requested was not located
+				instance.utility.throwit(message="The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
+										 detail="The target requesting the dependency is: '#arguments.targetID#'",
+										 type="Builder.DSLDependencyNotFoundException");
 			}
-			
-			// Throw exception as DSL Dependency requested was not located
-			instance.utility.throwit(message="The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
-									 detail="The target requesting the dependency is: '#arguments.targetID#'",
-									 type="Builder.DSLDependencyNotFoundException");
+			// else return void, no dependency found that was required									 
 		</cfscript>
 	</cffunction>
 

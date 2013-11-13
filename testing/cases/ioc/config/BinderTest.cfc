@@ -279,10 +279,11 @@
 		config.mapPath("Test")
 			.property(name="binding",value="2")
 			.property(name="obj2",ref="obj2")
-			.property(name="obj3", dsl="provider:obj3",scope="instance");
+			.property(name="obj3", dsl="provider:obj3",scope="instance", required=false);
 		mapping = config.getMapping("Test");
 		properties = mapping.getDIProperties();
 		assertEquals( 3, arrayLen(properties));
+		assertFalse( properties[ 3 ].required );
 	}
 
 	function testOnDIComplete(){

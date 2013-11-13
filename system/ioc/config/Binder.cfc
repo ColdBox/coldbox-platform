@@ -527,7 +527,8 @@ Description :
 		<cfargument name="value" 	required="false" hint="The value of the property, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
     	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
-    	<cfscript>
+    	<cfargument name="required" required="false" default="true" hint="If the property is required or not, by default we assume required DI properties."/>
+		<cfscript>
     		currentMapping.addDIProperty(argumentCollection=arguments);
     		return this;
     	</cfscript>

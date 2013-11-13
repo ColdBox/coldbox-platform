@@ -597,7 +597,7 @@ Description :
 				else{
 					refLocal.dependency = getInstance( arguments.DIData[x].ref );
 				}
-
+				
 				// Check if dependency located, else log it and skip
 				if( structKeyExists(refLocal,"dependency") ){
 					// scope or setter determination
