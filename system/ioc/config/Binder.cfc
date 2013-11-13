@@ -498,7 +498,8 @@ Description :
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	required="false" hint="The value of the constructor argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
-    	<cfscript>
+    	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
+		<cfscript>
     		currentMapping.addDIConstructorArgument(argumentCollection=arguments);
     		return this;
     	</cfscript>
