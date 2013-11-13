@@ -4,10 +4,10 @@ component displayName="TestBox xUnit suite" labels="railo,cf" extends="Assertion
 		super.beforeTests();
 		addAssertions({
 			isAwesome = function( required expected ){
-				return ( arguments.expected == "Luis Majano" ? true : false );
+				return ( arguments.expected == "Luis Majano" ? true : fail( 'not luis majano' ) );
 			},
 			isNotAwesome = function( required expected ){
-				return ( arguments.expected == "Luis Majano" ? false : true );
+				return ( arguments.expected == "Luis Majano" ? fail( 'luis majano is always awesome' ) : true );
 			}
 		});
 	}
@@ -29,7 +29,7 @@ component displayName="TestBox xUnit suite" labels="railo,cf" extends="Assertion
 	}
 
 	function testNegatedAwesomeCustomAssertion(){
-		$assert.isNotAwesome( "Luis Majano" );
+		$assert.isNotAwesome( "Lui Majan" );
 	}
 
 }
