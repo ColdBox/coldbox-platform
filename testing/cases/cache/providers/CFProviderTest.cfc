@@ -12,7 +12,11 @@ Description :
 <cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 
+	this.loadColdBox = false;
+	
 	function setup(){
+		super.setup();
+		
 		//Mocks
 		mockFactory  = getMockBox().createEmptyMock(className='coldbox.system.cache.CacheFactory');
 		mockEventManager  = getMockBox().createEmptyMock(className='coldbox.system.core.events.EventPoolManager');
