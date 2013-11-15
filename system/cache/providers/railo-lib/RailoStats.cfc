@@ -46,17 +46,17 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	}
 	
 	any function getHits() output=false{
-		var props = cacheGetProperties("object");
-		if( arrayLen(props) and structKeyExists(props[1], "hit_count") ){
-			return props[1].hit_count;
+		var props = cacheGetProperties( getCacheProvider().getConfiguration().cacheName );
+		if( arrayLen( props ) and structKeyExists( props[ 1 ], "hit_count" ) ){
+			return props[ 1 ].hit_count;
 		}
 		return 0;
 	}
 	
 	any function getMisses() output=false{
-		var props = cacheGetProperties("object");
-		if( arrayLen(props) and structKeyExists(props[1], "miss_count") ){
-			return props[1].miss_count;
+		var props = cacheGetProperties( getCacheProvider().getConfiguration().cacheName );
+		if( arrayLen( props ) and structKeyExists( props[ 1 ], "miss_count" ) ){
+			return props[ 1 ].miss_count;
 		}
 		return 0;
 	}

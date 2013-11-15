@@ -31,7 +31,7 @@ Description :
 	<cfset this.ormSettings = {
 		logSQL = true,
 		dbcreate = "update",
-		secondarycacheenabled = true,
+		secondarycacheenabled = false,
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false,
 		eventhandling = true,

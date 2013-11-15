@@ -26,17 +26,16 @@ Description :
 		// Mock Methods
 		mockFactory.$("getLogBox",mockLogBox);
 		mockLogBox.$("getLogger", mockLogger);
-		mockLogger.$("error").$("debug").$("info");
+		mockLogger.$("error").$("debug").$("info").$("canDebug", false);
 		mockEventManager.$("processState");
 
 		// Config
 		config = {
-
 		};
 
 		// Create Provider
 		cache = getMockBox().createMock("coldbox.system.cache.providers.RailoProvider").init();
-
+		
 		// Decorate it
 		cache.setConfiguration( config );
 		cache.setCacheFactory( mockFactory );
