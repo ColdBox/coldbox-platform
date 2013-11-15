@@ -237,8 +237,8 @@ Description :
 			var i 		   = 1;
 
 			// Log startup
-			if( instance.log.canInfo() ){
-    			instance.log.info("Shutdown of cache factory: #getFactoryID()# requested and started.");
+			if( instance.log.canDebug() ){
+    			instance.log.debug("Shutdown of cache factory: #getFactoryID()# requested and started.");
     		}
 
 			// Notify Listeners
@@ -283,8 +283,8 @@ Description :
 			instance.eventManager.processState("afterCacheFactoryShutdown",iData);
 
 			// Log shutdown complete
-			if( instance.log.canInfo() ){
-				instance.log.info("Shutdown of cache factory: #getFactoryID()# completed.");
+			if( instance.log.canDebug() ){
+				instance.log.debug("Shutdown of cache factory: #getFactoryID()# completed.");
 			}
 		</cfscript>
     </cffunction>
@@ -309,8 +309,8 @@ Description :
 			cache = getCache(arguments.name);
 
 			// log it
-			if( instance.log.canInfo() ){
-				instance.log.info("Shutdown of cache: #arguments.name# requested and started on factoryID: #getFactoryID()#");
+			if( instance.log.canDebug() ){
+				instance.log.debug("Shutdown of cache: #arguments.name# requested and started on factoryID: #getFactoryID()#");
 			}
 
 			// Notify Listeners
