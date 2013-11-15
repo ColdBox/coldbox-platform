@@ -16,7 +16,7 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor" output="false" >
-		<cfargument name="config"  		required="false" hint="The CacheBoxConfig object to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration." colddoc:generic="coldbox.system.cache.config.CacheBoxConfig"/>
+		<cfargument name="config"  		required="false" hint="The CacheBoxConfig object or path to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration." colddoc:generic="coldbox.system.cache.config.CacheBoxConfig"/>
 		<cfargument name="coldbox" 		required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it." colddoc:generic="coldbox.system.web.Controller"/>
 		<cfargument name="factoryID" 	required="false" default="" hint="A unique ID or name for this factory. If not passed I will make one up for you."/>
 		<cfscript>
@@ -85,9 +85,12 @@ Description :
 			}
 
 			// Passed in configuration?
-			if( NOT structKeyExists(arguments,"config") ){
+			if( NOT structKeyExists( arguments, "config" ) ){
 				// Create default configuration
-				arguments.config = createObject("component","coldbox.system.cache.config.CacheBoxConfig").init(CFCConfigPath=defaultConfigPath);
+				arguments.config = createObject( "component", "coldbox.system.cache.config.CacheBoxConfig" ).init( CFCConfigPath=defaultConfigPath );
+			}
+			else if( isSimpleValue( arguments.config ) ){
+				arguments.config = createObject( "component", "coldbox.system.cache.config.CacheBoxConfig" ).init( CFCConfigPath=arguments.config );
 			}
 
 			// Configure Logging for the Cache Factory
