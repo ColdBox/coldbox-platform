@@ -351,6 +351,43 @@ Properties
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- getOrSet --->
+	<cffunction name="getOrSet" access="public" output="false" returntype="any" hint="Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it.">
+		<!--- ************************************************************* --->
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		<cfargument name="produce"				type="any" 		required="true" hint="The closure/udf to produce the data if not found">
+		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="extra" 				type="any" 		required="false" default="#structNew()#" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation" colddoc:generic="struct"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var refLocal = {
+				object = get( arguments.objectKey )
+			};
+			// Verify if it exists? if so, return it.
+			if( structKeyExists( refLocal, "object" ) ){ return refLocal.object; }
+			// else, produce it
+		</cfscript>
+		<cflock name="CacheBoxProvider.GetOrSet.#instance.cacheID#.#arguments.objectKey#" type="exclusive" timeout="#instance.lockTimeout#" throwonTimeout="true">
+			<cfscript>
+				// double lock
+				refLocal.object = get( arguments.objectKey );
+				if( not structKeyExists( refLocal, "object" ) ){
+					// produce it
+					refLocal.object = arguments.produce();
+					// store it
+					set( objectKey=arguments.objectKey, 
+						 object=refLocal.object, 
+						 timeout=arguments.timeout,
+						 lastAccessTimeout=arguments.lastAccessTimeout,
+						 extra=arguments.extra );
+				}
+			</cfscript>
+		</cflock>
+		
+		<cfreturn refLocal.object>
+	</cffunction>
 
 	<!--- Set an Object in the cache --->
 	<cffunction name="set" access="public" output="false" returntype="any" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later." colddoc:generic="boolean">

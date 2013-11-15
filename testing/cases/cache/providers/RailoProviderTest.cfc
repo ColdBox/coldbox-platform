@@ -98,6 +98,20 @@ Description :
 		assertFalse( isDefined("results") );
 		//assertEquals( 1, cache.getStats().getMisses() );
 	}
+	
+	function testGetOrSet(){
+		cache.clearStatistics();
+		
+		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
+		assertTrue( structKeyExists( results, "name" ) );
+		assertEquals( 2, cache.getStats().getMisses() );
+		assertEquals( 0, cache.getStats().getHits() );
+		
+		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
+		assertTrue( structKeyExists( results, "name" ) );
+		assertEquals( 2, cache.getStats().getMisses() );
+		assertEquals( 1, cache.getStats().getHits() );
+	}
 
 	function testGetQuiet(){
 		testVal = {name="luis", age=32};

@@ -114,6 +114,25 @@ Description :
 		assertEquals( 1, cache.getStats().getMisses() );
 	}
 	
+	function testGetOrSet(){
+		cache.clearStatistics();
+		
+		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
+		assertTrue( structKeyExists( results, "name" ) );
+		assertEquals( 2, cache.getStats().getMisses() );
+		assertEquals( 0, cache.getStats().getHits() );
+		
+		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
+		assertTrue( structKeyExists( results, "name" ) );
+		assertEquals( 2, cache.getStats().getMisses() );
+		assertEquals( 1, cache.getStats().getHits() );
+	}
+	
+	// this is not a closure, so as to work on cf8.
+	private function cacheProducer(){
+		return { date=now(), name="luis majano", id = createUUID() };
+	}
+	
 	function testGetQuiet(){
 		testVal = {name="luis", age=32};
 		cache.getObjectStore().set("test",testVal,20);
