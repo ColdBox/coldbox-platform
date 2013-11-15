@@ -91,7 +91,9 @@ Properties
 
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
-			instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
+			
+			if( instance.logger.canDebug() )
+				instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
 
 			// Validate the configuration
 			validateConfiguration();
@@ -125,7 +127,8 @@ Properties
 			instance.reportingEnabled = true;
 
 			// startup message
-			instance.logger.info("CacheBox Cache: #getName()# has been initialized successfully for operation");
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "CacheBox Cache: #getName()# has been initialized successfully for operation" );
 		</cfscript>
 		</cflock>
 
@@ -134,9 +137,8 @@ Properties
 	<!--- shutdown --->
     <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
    		<cfscript>
-   			// TODO: We can do fancy shmancy stuff later on here.
-
-   			instance.logger.info("CacheBox Cache: #getName()# has been shutdown.");
+		   	if( instance.logger.canDebug() )
+   				instance.logger.debug("CacheBox Cache: #getName()# has been shutdown.");
    		</cfscript>
     </cffunction>
 
@@ -585,7 +587,8 @@ Properties
 		<cfscript>
 
 			// log it
-			instance.logger.info("Starting to reap CacheBoxProvider: #getName()#, id: #instance.cacheID#");
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "Starting to reap CacheBoxProvider: #getName()#, id: #instance.cacheID#" );
 
 			// Run Storage reaping first, before our local algorithm
 			instance.objectStore.reap();
@@ -649,7 +652,8 @@ Properties
 			getStats().setLastReapDatetime( now() );
 
 			// log it
-			instance.logger.info("Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #instance.cacheID#");
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #instance.cacheID#" );
 		</cfscript>
 		</cflock>
 	</cffunction>
