@@ -19,8 +19,10 @@ Description :
 		<cfscript>
 			setController(arguments.controller);
 			
-			// set the unique cookie name
+			// Set the unique cookie name per ColdBox application
 			instance.cookieName = "coldbox_debugmode_#controller.getAppHash()#";
+			// This will store the secret key
+			instance.secretKey = "";
 			// Create persistent profilers
 			instance.profilers = arrayNew(1);
 			// Create persistent tracers
@@ -41,6 +43,11 @@ Description :
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<cfscript>
 			instance.debugMode = controller.getSetting("debugMode");
+			instance.debugPassword = controller.getSetting("debugPassword");
+			
+			// Initialize secret key
+			rotateSecretKey();
+			
     	</cfscript>
     </cffunction>
     
@@ -130,44 +137,62 @@ Description :
 	<!--- Get the debug mode flag --->
 	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode. Boolean" returntype="any"  output="false" colddoc:generic="Boolean">
 		<cfscript>
-			// Check global debug Mode and cookie setup, else init their debug cookie
-			if( instance.debugMode AND NOT isDebugCookieValid() ){
-				setDebugmode(true);
+			var secretKey = getSecretKey();
+			
+			// If no secretKey has been set, don't allow debug mode
+			if( not(len(secretKey)) ) {
+				return false;
 			}
-			// Check vapor cookie
-			if( structKeyExists(cookie,instance.cookieName) ){
-				if( isBoolean(cookie[instance.cookieName]) ){
-					return cookie[instance.cookieName];
+			
+			// If Cookie exists, it's value is used. 
+			if( isDebugCookieValid() ){
+				
+				// Must be equal to the current secret key
+				if( cookie[instance.cookieName] == secretKey ) {
+					return true;	
+				} else {
+					return false;
 				}
-				structDelete(cookie, instance.cookieName);
 			}
-			return false;
+			
+			// If there is no cookie, then use default to app setting
+			return instance.debugMode;
 		</cfscript>
 	</cffunction>
 	
 	<!--- isDebugCookieValid --->
     <cffunction name="isDebugCookieValid" output="false" access="public" returntype="any" hint="Checks if the debug cookie is a valid cookie. Boolean">
 	    <cfscript>
-	    	if( structKeyExists(cookie, instance.cookieName ) AND isBoolean(cookie[instance.cookieName]) ){ 
-				return true;
-			}
-			return false;
+	    	return structKeyExists(cookie, instance.cookieName );
 	    </cfscript>
     </cffunction>
 
 	<!--- Set the debug mode flag --->
 	<cffunction name="setDebugMode" access="public" hint="I set the current user's debugmode" returntype="void"  output="false">
 		<cfargument name="mode" type="boolean" required="true" >
+		
 		<!--- True --->
 		<cfif arguments.mode>
-			<cfcookie name="#getCookieName()#" value="true">
-		<!--- False with global True --->
-		<cfelseif structKeyExists(cookie,getCookieName()) AND controller.getSetting('debugMode')>
-			<cfcookie name="#instance.cookieName#" value="false">
-		<!--- Flase with global False --->
+			<cfcookie name="#getCookieName()#" value="#getSecretKey()#">
+		<!--- False --->
 		<cfelse>
-			<cfcookie name="#instance.cookieName#" value="false" expires="#now()#">
+			<cfcookie name="#instance.cookieName#" value="_disabled_" expires="#now()#">
 		</cfif>
+	</cffunction>
+	
+	<!--- Generate a new secret key.  --->
+	<cffunction name="rotateSecretKey" access="public" hint="I generate a secret key value for the cookie which enables debug mode" returntype="void" output="false">
+		<cfscript>
+			/* 
+				This secret key is what the value of the user's cookie must equal to enable debug mode.
+				This key will be different every time it is generated.  It is unique based on the application,
+				current debugPassword and a random salt.  The salt also protects against someone being able to
+				reverse engineer the orignal password from an intercepted cookie value.
+			*/
+			var salt = createUUID();
+			var appHash = controller.getAppHash(); 
+			setSecretKey( hash( appHash & instance.debugPassword & salt , "SHA-256") );
+		</cfscript>
 	</cffunction>
 
 	<!--- render the debug log --->
@@ -236,6 +261,15 @@ Description :
 		<cfset instance.cookieName = arguments.cookieName/>
 	</cffunction>
 	
+	<!--- Get set the secret key --->
+	<cffunction name="getSecretKey" access="private" output="false" returntype="any" hint="Get secret key">
+		<cfreturn instance.secretKey/>
+	</cffunction>
+	<cffunction name="setSecretKey" access="private" output="false" returntype="void" hint="Set secret key">
+		<cfargument name="secretKey" type="string" required="true"/>
+		<cfset instance.secretKey = arguments.secretKey/>
+	</cffunction>
+		
 	<!--- Configuration Bean --->
 	<cffunction name="getDebuggerConfig" access="public" output="false" returntype="any" hint="Get DebuggerConfig: coldbox.system.web.config.DebuggerConfig">
 		<cfreturn instance.DebuggerConfig/>
