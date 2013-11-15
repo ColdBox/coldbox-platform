@@ -125,7 +125,9 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 		
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
-			instance.logger.debug("Starting up Railoprovider Cache: #getName()# with configuration: #config.toString()#");
+			
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "Starting up Railoprovider Cache: #getName()# with configuration: #config.toString()#" );
 			
 			// Validate the configuration
 			validateConfiguration();
@@ -133,7 +135,9 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			// enabled cache
 			instance.enabled = true;
 			instance.reportingEnabled = true;
-			instance.logger.info("Cache #getName()# started up successfully");
+			
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "Cache #getName()# started up successfully" );
 		}
 		
 	}
@@ -143,7 +147,8 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     */
     void function shutdown() output=false{
 		//nothing to shutdown
-		instance.logger.info("RailoProvider Cache: #getName()# has been shutdown.");
+		if( instance.logger.canDebug() )
+			instance.logger.debug( "RailoProvider Cache: #getName()# has been shutdown." );
 	}
 	
 	/*
@@ -213,12 +218,17 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get all the keys in this provider
     */
     any function getKeys() output=false{
-		
-		if( isDefaultCache() ){
-			return cacheGetAllIds();
+		try{
+			if( isDefaultCache() ){
+				return cacheGetAllIds();
+			}
+			
+			return cacheGetAllIds( "", getConfiguration().cacheName );
 		}
-		
-		return cacheGetAllIds("",getConfiguration().cacheName);
+		catch(Any e){
+			instance.logger.error( "Error retrieving all keys from cache: #e.message# #e.detail#", e.stacktrace );
+			return [ "Error retrieving keys from cache: #e.message#" ];
+		}
 	}
 	
 	/**

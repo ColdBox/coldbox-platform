@@ -125,7 +125,9 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 		
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
-			instance.logger.debug("Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#");
+			
+			if( instance.logger.canDebug() )
+				instance.logger.debug("Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#");
 			
 			// Validate the configuration
 			validateConfiguration();
@@ -201,7 +203,9 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			// enabled cache
 			instance.enabled = true;
 			instance.reportingEnabled = true;
-			instance.logger.info("Cache #getName()# started up successfully");
+			
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "Cache #getName()# started up successfully" );
 		}
 	}
 	
@@ -209,7 +213,8 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * shutdown the cache
     */
     void function shutdown() output=false{
-		instance.logger.info("CFProvider Cache: #getName()# has been shutdown.");
+		if( instance.logger.canDebug() )
+			instance.logger.debug( "CFProvider Cache: #getName()# has been shutdown." );
 	}
 	
 	/*
@@ -305,11 +310,16 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get all the keys in this provider
     */
     any function getKeys() output=false{
-    var thisCacheName = getConfiguration().cacheName;
-    if ( thisCacheName == "object") {
-			return cacheGetAllIds();
-		} else {
-			return cacheGetAllIds(thisCacheName);
+	   try{
+	   	    var thisCacheName = getConfiguration().cacheName;
+			if ( thisCacheName == "object") {
+				return cacheGetAllIds();
+			}
+			return cacheGetAllIds( thisCacheName );
+		}
+		catch(Any e){
+			instance.logger.error( "Error retrieving all keys from cache: #e.message# #e.detail#", e.stacktrace );
+			return [ "Error retrieving keys from cache: #e.message#" ];
 		}
 	}
 	
