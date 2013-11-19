@@ -39,6 +39,8 @@ component accessors="true"{
 		array testSpecs=[]
 	){
 
+		// internal id
+		variables.resultsID 	= createUUID();
 		// Global test durations
 		variables.startTime 	= getTickCount();	
 		variables.endTime 		= 0;
@@ -70,11 +72,13 @@ component accessors="true"{
 	* Finish recording stats
 	*/
 	TestResult function end() {
-		if ( isComplete() ) {
-			throw( type = "InvalidState", message = "Testing is already complete." );
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			if ( isComplete() ) {
+				throw( type = "InvalidState", message = "Testing is already complete." );
+			}
+			variables.endTime = getTickCount();
+			variables.totalDuration = variables.endTime - variables.startTime;
 		}
-		variables.endTime = getTickCount();
-		variables.totalDuration = variables.endTime - variables.startTime;
 		return this;
 	}
 
@@ -82,14 +86,18 @@ component accessors="true"{
 	* Verify testing is complete in results
 	*/
 	boolean function isComplete() {
-		return( variables.endTime != 0 );
+		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10"{
+			return( variables.endTime != 0 );
+		}
 	}
 
 	/**
 	* Increment the global specs found
 	*/
 	TestResult function incrementSpecs( required count=1 ){
-		variables.totalSpecs += arguments.count;
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			variables.totalSpecs += arguments.count;
+		}
 		return this;
 	}
 
@@ -97,7 +105,9 @@ component accessors="true"{
 	* Increment the global suites found
 	*/
 	TestResult function incrementSuites( required count=1 ){
-		variables.totalSuites += arguments.count;
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			variables.totalSuites += arguments.count;
+		}
 		return this;
 	}
 	
@@ -106,11 +116,13 @@ component accessors="true"{
 	* @type.hint The type of stat to increment: fail,pass,error or skipped
 	*/
 	TestResult function incrementStat( required type="pass", numeric count=1 ){
-		switch( arguments.type ){
-			case "fail" 	: { variables.totalFail += arguments.count; return this; }
-			case "pass" 	: { variables.totalPass += arguments.count; return this; }
-			case "error" 	: { variables.totalError += arguments.count; return this; }
-			case "skipped" 	: { variables.totalSkipped += arguments.count; return this; }
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			switch( arguments.type ){
+				case "fail" 	: { variables.totalFail += arguments.count; return this; }
+				case "pass" 	: { variables.totalPass += arguments.count; return this; }
+				case "error" 	: { variables.totalError += arguments.count; return this; }
+				case "skipped" 	: { variables.totalSkipped += arguments.count; return this; }
+			}
 		}
 		return this;
 	}
@@ -122,39 +134,41 @@ component accessors="true"{
 		required string bundlePath,
 		required string name
 	){
-			
-		// setup stats data for incoming bundle
-		var stats = {
-			// bundle id
-			id 			= createUUID(),
-			// The bundle name
-			name		= arguments.name,
-			// Path of the bundle
-			path 		= arguments.bundlePath,
-			// Total Suites in Bundle
-			totalSuites = 0,
-			// Total specs found to test
-			totalSpecs 	= 0,
-			// Total passed specs
-			totalPass	= 0,
-			// Total failed specs
-			totalFail	= 0,
-			// Total error in specs
-			totalError	= 0,
-			// Total skipped specs/suites
-			totalSkipped = 0,
-			// Durations
-			startTime 		= getTickCount(),
-			endTime			= 0,
-			totalDuration 	= 0,
-			// Suite stats holder
-			suiteStats 		= []
-		};
+		
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			// setup stats data for incoming bundle
+			var stats = {
+				// bundle id
+				id 			= createUUID(),
+				// The bundle name
+				name		= arguments.name,
+				// Path of the bundle
+				path 		= arguments.bundlePath,
+				// Total Suites in Bundle
+				totalSuites = 0,
+				// Total specs found to test
+				totalSpecs 	= 0,
+				// Total passed specs
+				totalPass	= 0,
+				// Total failed specs
+				totalFail	= 0,
+				// Total error in specs
+				totalError	= 0,
+				// Total skipped specs/suites
+				totalSkipped = 0,
+				// Durations
+				startTime 		= getTickCount(),
+				endTime			= 0,
+				totalDuration 	= 0,
+				// Suite stats holder
+				suiteStats 		= []
+			};
 
-		// store it in the bundle stats array
-		arrayAppend( variables.bundleStats, stats );
-		// store in the reverse lookup for faster access
-		variables.bundleReverseLookup[ stats.id ] = stats;
+			// store it in the bundle stats array
+			arrayAppend( variables.bundleStats, stats );
+			// store in the reverse lookup for faster access
+			variables.bundleReverseLookup[ stats.id ] = stats;
+		} //end lock
 		
 		return stats;
 	}
@@ -164,8 +178,10 @@ component accessors="true"{
 	* @stats.hint The bundle stats structure reference to complete
 	*/
 	TestResult function endStats( required struct stats ){
-		arguments.stats.endTime 		= getTickCount();
-		arguments.stats.totalDuration 	= arguments.stats.endTime - arguments.stats.startTime;
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			arguments.stats.endTime 		= getTickCount();
+			arguments.stats.totalDuration 	= arguments.stats.endTime - arguments.stats.startTime;
+		}
 		return this;
 	}
 
@@ -174,12 +190,14 @@ component accessors="true"{
 	* @id.hint If passed, then retrieve by id
 	*/
 	any function getBundleStats( string id ){
-		// search in reverse lookup
-		if( structKeyExists( arguments, "id" ) ){
-			return variables.bundleReverseLookup[ arguments.id ];
+		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10"{
+			// search in reverse lookup
+			if( structKeyExists( arguments, "id" ) ){
+				return variables.bundleReverseLookup[ arguments.id ];
+			}
+			// else return the bundle stats array
+			return variables.bundleStats;
 		}
-		// else return the bundle stats array
-		return variables.bundleStats;
 	}
 
 	/**
@@ -193,53 +211,55 @@ component accessors="true"{
 		required struct bundleStats,
 		struct parentStats={}
 	){
-			
-		// setup stats data for incoming suite
-		var stats = {
-			// suite id
-			id 			= createUUID(),
-			// parent suite id
-			parentID 	= "",
-			// bundle id
-			bundleID	= arguments.bundleStats.id,
-			// The suite name
-			name		= arguments.name,
-			// test status
-			status		= "not executed",
-			// Total specs found to test
-			totalSpecs 	= 0,
-			// Total passed specs
-			totalPass	= 0,
-			// Total failed specs
-			totalFail	= 0,
-			// Total error in specs
-			totalError	= 0,
-			// Total skipped specs/suites
-			totalSkipped = 0,
-			// Durations
-			startTime 		= getTickCount(),
-			endTime			= 0,
-			totalDuration 	= 0,
-			// Recursive Suite stats holder
-			suiteStats 		= [],
-			// Spec stats holder
-			specStats 		= []
-		};
+		
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			// setup stats data for incoming suite
+			var stats = {
+				// suite id
+				id 			= createUUID(),
+				// parent suite id
+				parentID 	= "",
+				// bundle id
+				bundleID	= arguments.bundleStats.id,
+				// The suite name
+				name		= arguments.name,
+				// test status
+				status		= "not executed",
+				// Total specs found to test
+				totalSpecs 	= 0,
+				// Total passed specs
+				totalPass	= 0,
+				// Total failed specs
+				totalFail	= 0,
+				// Total error in specs
+				totalError	= 0,
+				// Total skipped specs/suites
+				totalSkipped = 0,
+				// Durations
+				startTime 		= getTickCount(),
+				endTime			= 0,
+				totalDuration 	= 0,
+				// Recursive Suite stats holder
+				suiteStats 		= [],
+				// Spec stats holder
+				specStats 		= []
+			};
 
-		// Parent stats
-		if( !structIsEmpty( arguments.parentStats ) ){
-			// link parent
-			stats.parentID = arguments.parentStats.id;
-			// store it in the nested suite
-			arrayAppend( arguments.parentStats.suiteStats, stats );
-		}
-		else{
-			// store it in the bundle stats
-			arrayAppend( arguments.bundleStats.suiteStats, stats );
-		}
+			// Parent stats
+			if( !structIsEmpty( arguments.parentStats ) ){
+				// link parent
+				stats.parentID = arguments.parentStats.id;
+				// store it in the nested suite
+				arrayAppend( arguments.parentStats.suiteStats, stats );
+			}
+			else{
+				// store it in the bundle stats
+				arrayAppend( arguments.bundleStats.suiteStats, stats );
+			}
 
-		// store in the reverse lookup for faster access
-		variables.suiteReverseLookup[ stats.id ] = stats;
+			// store in the reverse lookup for faster access
+			variables.suiteReverseLookup[ stats.id ] = stats;
+		} // end lock
 		
 		return stats;
 	}
@@ -249,7 +269,9 @@ component accessors="true"{
 	* @id.hint Retrieve by id
 	*/
 	any function getSuiteStats( required string id ){
-		return variables.suiteReverseLookup[ arguments.id ];
+		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10"{
+			return variables.suiteReverseLookup[ arguments.id ];
+		}
 	}
 
 	/**
@@ -259,32 +281,35 @@ component accessors="true"{
 	*/
 	struct function startSpecStats(
 		required string name, 
-		required struct suiteStats){
-			
-		// spec stats
-		var stats = {
-			// suite id
-			id 				= createUUID(),
-			// suite id
-			suiteID			= arguments.suiteStats.id,
-			// name of the spec
-			name			= arguments.name,
-			// spec status
-			status			= "na",
-			// durations
-			startTime 		= getTickCount(),
-			endTime			= 0, 
-			totalDuration 	= 0,
-			// exception structure
-			error		= {},
-			// the failure message
-			failMessage	= "",
-			// the failure origin
-			failOrigin = {}
-		};
+		required struct suiteStats
+	){
 		
-		// append to the parent stats
-		arrayAppend( arguments.suiteStats.specStats, stats );
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			// spec stats
+			var stats = {
+				// suite id
+				id 				= createUUID(),
+				// suite id
+				suiteID			= arguments.suiteStats.id,
+				// name of the spec
+				name			= arguments.name,
+				// spec status
+				status			= "na",
+				// durations
+				startTime 		= getTickCount(),
+				endTime			= 0, 
+				totalDuration 	= 0,
+				// exception structure
+				error		= {},
+				// the failure message
+				failMessage	= "",
+				// the failure origin
+				failOrigin = {}
+			};
+			
+			// append to the parent stats
+			arrayAppend( arguments.suiteStats.specStats, stats );
+		} // end lock
 		
 		return stats;
 	}
@@ -299,14 +324,16 @@ component accessors="true"{
 		required struct stats
 	){
 
-		// increment suite stat
-		variables.suiteReverseLookup[ arguments.stats.suiteID ][ "total#arguments.type#" ]++;
-		// increment bundle stat
-		variables.bundleReverseLookup[ 
-			variables.suiteReverseLookup[ arguments.stats.suiteID ].bundleID
-		][ "total#arguments.type#" ]++;
-		// increment global stat
-		variables[ "total#arguments.type#" ]++;
+		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
+			// increment suite stat
+			variables.suiteReverseLookup[ arguments.stats.suiteID ][ "total#arguments.type#" ]++;
+			// increment bundle stat
+			variables.bundleReverseLookup[ 
+				variables.suiteReverseLookup[ arguments.stats.suiteID ].bundleID
+			][ "total#arguments.type#" ]++;
+			// increment global stat
+			variables[ "total#arguments.type#" ]++;
+		}
 	}
 	
 	/**
