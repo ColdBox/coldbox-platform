@@ -130,30 +130,20 @@ component accessors="true"{
 		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
 		
 		// create results object
-		thread.results = new coldbox.system.testing.TestResult( bundleCount=arrayLen( variables.bundles ), 
+		var results = new coldbox.system.testing.TestResult( bundleCount=arrayLen( variables.bundles ), 
 															 	labels=variables.labels,
 															 	testSuites=arguments.testSuites,
 															 	testSpecs=arguments.testSpecs );
 		
-		var threadNames = [];
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
-			// prepare thread info
-			var thisThreadName = "tb-bundle-#hash( thisBundlePath )#";
-			arrayAppend( threadNames, thisThreadname );
-			// thread it
-			thread name="#thisThreadName#" thisBundlePath="#thisBundlePath#"{
-				testBundle( attributes.thisBundlePath, thread.results );
-			}
+			testBundle( thisBundlePath, results );
 		}
 
-		// join up bundles
-		thread action="join" name="#arrayToList( threadNames )#"{};
-		
 		// mark end of testing bundles
-		thread.results.end();
+		results.end();
 		
-		return thread.results;
+		return results;
 	}
 
 	/**
