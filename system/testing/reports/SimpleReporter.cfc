@@ -46,6 +46,7 @@ component{
 		if( !structKeyExists( url, "testMethod") ){ url.testMethod = ""; }
 		if( !structKeyExists( url, "testSpecs") ){ url.testSpecs = ""; }
 		if( !structKeyExists( url, "testSuites") ){ url.testSuites = ""; }
+		if( !structKeyExists( url, "testBundles") ){ url.testBundles = ""; }
 
 		// prepare the report
 		savecontent variable="local.report"{

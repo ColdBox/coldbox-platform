@@ -25,16 +25,23 @@ component accessors="true"{
 	// bundle stats
 	property name="bundleStats"		type="struct";
 
-	// suites and specs only values
+	// bundles, suites and specs only values that can execute
+	property name="testBundles" 	type="array";
 	property name="testSuites" 		type="array";
 	property name="testSpecs" 		type="array";
 	
 	/**
 	* Constructor
+	* @bundleCount.hint the count to init the results for
+	* @labels.hint The lables to use
+	* @testBundles.hint The test bundles that should execute ONLY
+	* @testSuites.hint The test suites that should execute ONLY
+	* @testSpecs.hint The test specs that should execut ONLY
 	*/
 	TestResult function init( 
 		numeric bundleCount=0, 
 		array labels=[], 
+		array testBundles=[],
 		array testSuites=[], 
 		array testSpecs=[]
 	){
@@ -55,6 +62,9 @@ component accessors="true"{
 		variables.totalError	= 0;
 		variables.totalSkipped 	= 0;
 		variables.labels 		= arguments.labels;
+
+		// Run only
+		variables.testBundles	= arguments.testBundles;
 		variables.testSuites	= arguments.testSuites;
 		variables.testSpecs		= arguments.testSpecs;
 		

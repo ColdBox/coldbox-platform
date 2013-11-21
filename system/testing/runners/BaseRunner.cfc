@@ -50,14 +50,6 @@ component{
 
 		var testSpecs = arguments.testResults.getTestSpecs();
 
-		// Verify URL conventions
-		if( structKeyExists( url, "testSpecs") ){
-			testSpecs.addAll( listToArray( url.testSpecs ) );
-		}
-		if( structKeyExists( url, "testMethod") ){
-			testSpecs.addAll( listToArray( url.testMethod ) );	
-		}
-
 		// verify we have some?
 		if( arrayLen( testSpecs ) ){
 			return ( arrayFindNoCase( testSpecs, arguments.name ) ? true : false );
@@ -78,11 +70,6 @@ component{
 	){
 
 		var testSuites = arguments.testResults.getTestSuites();
-
-		// Verify URL conventions
-		if( structKeyExists( url, "testSuites") ){
-			testSuites.addAll( listToArray( url.testSuites ) );
-		}
 
 		// verify we have some?
 		if( arrayLen( testSuites ) ){
@@ -111,6 +98,27 @@ component{
 			}
 			
 			return results;
+		}
+
+		// we can run it.
+		return true;
+	}
+
+	/**
+	* Checks if we can run the test bundle due to using testBundles arguments or incoming URL filters.
+	* @suite.hint The suite definition
+	* @testResults.hint The testing results object
+	*/
+	boolean function canRunBundle( 
+		required bundlePath,
+		required testResults
+	){
+
+		var testBundles = arguments.testResults.getTestBundles();
+
+		// verify we have some?
+		if( arrayLen( testBundles ) ){
+			return ( arrayFindNoCase( testBundles, arguments.bundlePath ) ? true : false );
 		}
 
 		// we can run it.

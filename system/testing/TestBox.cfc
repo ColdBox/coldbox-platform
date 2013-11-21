@@ -71,6 +71,7 @@ component accessors="true"{
 	* @reporter.hint The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a coldbox.system.testing.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
 	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
 	* @options.hint A structure of configuration options that are optionally used to configure a runner.
+	* @testBundles.hint A list or array of bundle names that are the ones that will be executed ONLY!
 	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!
 	* @testSpecs.hint A list or array of test names that are the ones that will be executed ONLY!
 	*/
@@ -80,6 +81,7 @@ component accessors="true"{
 		any reporter,
 		any labels,
 		struct options,
+		any testBundles=[],
 		any testSuites=[],
 		any testSpecs=[]
 	){
@@ -98,6 +100,7 @@ component accessors="true"{
 	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]	
 	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
 	* @options.hint A structure of configuration options that are optionally used to configure a runner.
+	* @testBundles.hint A list or array of bundle names that are the ones that will be executed ONLY!
 	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!
 	* @testSpecs.hint A list or array of test names that are the ones that will be executed ONLY!
 	*/
@@ -106,6 +109,7 @@ component accessors="true"{
 		struct directory,
 		any labels,
 		struct options,
+		any testBundles=[],
 		any testSuites=[],
 		any testSpecs=[]
 	){
@@ -115,25 +119,41 @@ component accessors="true"{
 			variables.options = arguments.options;
 		}
 
-		// inflate test suites and specs from incoming variables.
-		arguments.testSuites = ( isSimpleValue( arguments.testSuites ) ? listToArray( arguments.testSuites ) : arguments.testSuites );
-		arguments.testSpecs = ( isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs );
+		// inflate test bundles, suites and specs from incoming variables.
+		arguments.testBundles 	= ( isSimpleValue( arguments.testBundles ) ? listToArray( arguments.testBundles ) : arguments.testBundles );
+		arguments.testSuites 	= ( isSimpleValue( arguments.testSuites ) ? listToArray( arguments.testSuites ) : arguments.testSuites );
+		arguments.testSpecs 	= ( isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs );
 		
-		// directory passed?
+		// Verify URL conventions for bundle, suites and specs exclusions.
+		if( structKeyExists( url, "testBundles") ){
+			testBundles.addAll( listToArray( url.testBundles ) );
+		}
+		if( structKeyExists( url, "testSuites") ){
+			arguments.testSuites.addAll( listToArray( url.testSuites ) );
+		}
+		if( structKeyExists( url, "testSpecs") ){
+			arguments.testSpecs.addAll( listToArray( url.testSpecs ) );
+		}
+		if( structKeyExists( url, "testMethod") ){
+			arguments.testSpecs.addAll( listToArray( url.testMethod ) );
+		}
+
+		// Using a directory runner?
 		if( structKeyExists( arguments, "directory" ) && !structIsEmpty( arguments.directory ) ){
 			arguments.bundles = getSpecPaths( arguments.directory );
 		}
 
-		// inflate labels if passed
+		// Inflate labels if passed
 		if( structKeyExists( arguments, "labels" ) ){ inflateLabels( arguments.labels ); }
-		// if bundles passed, inflate those as the target
+		// If bundles passed, inflate those as the target
 		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
 		
 		// create results object
 		var results = new coldbox.system.testing.TestResult( bundleCount=arrayLen( variables.bundles ), 
-															 	labels=variables.labels,
-															 	testSuites=arguments.testSuites,
-															 	testSpecs=arguments.testSpecs );
+															 labels=variables.labels,
+															 testBundles=arguments.testBundles,
+															 testSuites=arguments.testSuites,
+															 testSpecs=arguments.testSpecs );
 		
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
@@ -155,6 +175,7 @@ component accessors="true"{
 	* @reporterOptions.hint A JSON struct literal of options to pass into the reporter
 	* @labels.hint The list of labels that a suite or spec must have in order to execute.
 	* @options.hint A JSON struct literal of configuration options that are optionally used to configure a runner.
+	* @testBundles.hint A list or array of bundle names that are the ones that will be executed ONLY!
 	* @testSuites.hint A list of suite names that are the ones that will be executed ONLY!
 	* @testSpecs.hint A list of test names that are the ones that will be executed ONLY!
 	*/
@@ -166,6 +187,7 @@ component accessors="true"{
 		string reporterOptions="{}",
 		string labels="",
 		string options,
+		string testBundles="",
 		string testSuites="",
 		string testSpecs=""
 	) output=true {
@@ -174,6 +196,7 @@ component accessors="true"{
 
 		// simple to complex
 		arguments.labels 		= listToArray( arguments.labels );
+		arguments.testBundles	= listToArray( arguments.testBundles );
 		arguments.testSuites 	= listToArray( arguments.testSuites );
 		arguments.testSpecs 	= listToArray( arguments.testSpecs );
 

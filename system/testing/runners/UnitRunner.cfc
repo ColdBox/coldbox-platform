@@ -44,22 +44,27 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 		//#### NOTHING IS TRAPPED BELOW SO AS TO THROW REAL EXCEPTIONS FROM TESTS THAT ARE WRITTEN WRONG
 
-		// execute beforeAll(), beforeTests() for this bundle, no matter how many suites they have.
-		if( structKeyExists( arguments.target, "beforeAll" ) ){ arguments.target.beforeAll(); }
-		if( structKeyExists( arguments.target, "beforeTests" ) ){ arguments.target.beforeTests(); }
+		// Verify we can run this bundle
+		if( canRunBundle( bundlePath=targetMD.name, testResults=arguments.testResults ) ){
+
+			// execute beforeAll(), beforeTests() for this bundle, no matter how many suites they have.
+			if( structKeyExists( arguments.target, "beforeAll" ) ){ arguments.target.beforeAll(); }
+			if( structKeyExists( arguments.target, "beforeTests" ) ){ arguments.target.beforeTests(); }
+			
+			// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
+			for( var thisSuite in testSuites ){
+				testSuite( target=arguments.target, 
+						   suite=thisSuite, 
+						   testResults=arguments.testResults,
+						   bundleStats=bundleStats );
+			}
+
+			// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
+			if( structKeyExists( arguments.target, "afterAll" ) ){ arguments.target.afterAll(); }
+			if( structKeyExists( arguments.target, "afterTests" ) ){ arguments.target.afterTests(); }
 		
-		// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
-		for( var thisSuite in testSuites ){
-			testSuite( target=arguments.target, 
-					   suite=thisSuite, 
-					   testResults=arguments.testResults,
-					   bundleStats=bundleStats );
 		}
 
-		// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
-		if( structKeyExists( arguments.target, "afterAll" ) ){ arguments.target.afterAll(); }
-		if( structKeyExists( arguments.target, "afterTests" ) ){ arguments.target.afterTests(); }
-		
 		// finalize the bundle stats
 		arguments.testResults.endStats( bundleStats );
 		

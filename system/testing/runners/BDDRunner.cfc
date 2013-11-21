@@ -45,26 +45,31 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 		var bundleStats = arguments.testResults.startBundleStats( bundlePath=targetMD.name, name=bundleName );
 
 		//#### NOTHING IS TRAPPED BELOW SO AS TO THROW REAL EXCEPTIONS FROM TESTS THAT ARE WRITTEN WRONG
+		
+		// Verify we can run this bundle
+		if( canRunBundle( bundlePath=targetMD.name, testResults=arguments.testResults ) ){
+		
+			// execute beforeAll() for this bundle, no matter how many suites they have.
+			if( structKeyExists( arguments.target, "beforeAll" ) ){ 
+				arguments.target.beforeAll(); 
+			}
 
-		// execute beforeAll() for this bundle, no matter how many suites they have.
-		if( structKeyExists( arguments.target, "beforeAll" ) ){ 
-			arguments.target.beforeAll(); 
-		}
+			// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
+			for( var thisSuite in testSuites ){
+				
+				testSuite( target=arguments.target, 
+						   suite=thisSuite, 
+						   testResults=arguments.testResults,
+						   bundleStats=bundleStats );
 
-		// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
-		for( var thisSuite in testSuites ){
-			
-			testSuite( target=arguments.target, 
-					   suite=thisSuite, 
-					   testResults=arguments.testResults,
-					   bundleStats=bundleStats );
+			}
 
-		}
+			// execute afterAll() for this bundle, no matter how many suites they have.
+			if( structKeyExists( arguments.target, "afterAll" ) ){ 
+				arguments.target.afterAll(); 
+			}
 
-		// execute afterAll() for this bundle, no matter how many suites they have.
-		if( structKeyExists( arguments.target, "afterAll" ) ){ 
-			arguments.target.afterAll(); 
-		}
+		} // end if we can run bundle
 		
 		// finalize the bundle stats
 		arguments.testResults.endStats( bundleStats );
