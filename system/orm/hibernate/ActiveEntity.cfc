@@ -53,7 +53,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		arguments.datasource = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil().getEntityDatasource( this );
 
 		// init the super class with our own arguments
-		super.init(argumentCollection=arguments);
+		super.init( argumentCollection=arguments );
 
 		return this;
 	}
@@ -70,7 +70,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 			arguments.entity = this;
 		}
 
-		return super.save(argumentCollection=arguments);
+		return super.save( argumentCollection=arguments );
 	}
 
 	/**
@@ -85,7 +85,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 		if( !structKeyExists(arguments,"entity") ){
 			arguments.entity = this;
 		}
-		return super.delete(argumentCollection=arguments);
+		return super.delete( argumentCollection=arguments );
 	}
 
 	/**
@@ -169,7 +169,30 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  string nullEmptyInclude="",
 						  string nullEmptyExclude="",
 						  boolean composeRelationships=true){
-		return beanPopulator.populateFromStruct(argumentCollection=arguments);
+		return beanPopulator.populateFromStruct( argumentCollection=arguments );
+	}
+	
+	/**
+    * Simple map to property population for entities with structure key prefixes
+	* @memento.hint	The map/struct to populate the entity with
+	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include.hint A list of keys to include in the population ONLY
+	* @exclude.hint A list of keys to exclude from the population
+	* @prefix.hint The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id' 
+    */
+	any function populateWithPrefix(any target=this,
+						  required struct memento,
+						  string scope="",
+					 	  boolean trustedSetter=false,
+						  string include="",
+						  string exclude="",
+						  boolean ignoreEmpty=false,
+						  string nullEmptyInclude="",
+						  string nullEmptyExclude="",
+						  boolean composeRelationships=true,
+						  required string prefix){
+		return beanPopulator.populateFromStructWithPrefix( argumentCollection=arguments );
 	}
 
 	/**
@@ -190,7 +213,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  		  string nullEmptyInclude="",
 						  		  string nullEmptyExclude="",
 						  		  boolean composeRelationships=true){
-		return beanPopulator.populateFromJSON(argumentCollection=arguments);
+		return beanPopulator.populateFromJSON( argumentCollection=arguments );
 	}
 
 	/**
@@ -213,7 +236,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  		 string nullEmptyInclude="",
 						  		 string nullEmptyExclude="",
 						  		 boolean composeRelationships=true){
-		return beanPopulator.populateFromXML(argumentCollection=arguments);
+		return beanPopulator.populateFromXML( argumentCollection=arguments );
 	}
 
 	/**
@@ -236,7 +259,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  		   string nullEmptyInclude="",
 						  		   string nullEmptyExclude="",
 						  		   boolean composeRelationships=true){
-		return beanPopulator.populateFromQuery(argumentCollection=arguments);
+		return beanPopulator.populateFromQuery( argumentCollection=arguments );
 	}
 
 	/**

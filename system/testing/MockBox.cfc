@@ -34,7 +34,7 @@ Description		:
 				instance.generationPath = instance.generationPath & "/";
 			}
 			
-			instance.version 		= "2.2";
+			instance.version 		= "2.2.0.@build.number@";
 			instance.mockGenerator 	= createObject("component","coldbox.system.testing.mockutils.MockGenerator").init( this, true );
 			
 			return this;
@@ -297,6 +297,7 @@ Description		:
 		<cfargument name="throwDetail" 	  type="string"  required="false" default="" hint="The detail of the exception to throw"/>
 		<cfargument name="throwMessage"	  type="string"  required="false" default="" hint="The message of the exception to throw"/>
 		<cfargument name="callLogging" 	  type="boolean" required="false" default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
+		<cfargument name="preserveArguments" type="boolean" required="false" default="false" hint="If true, argument signatures are kept, else they are ignored. If true, BEWARE with $args() matching as default values and missing arguments need to be passed too."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var fncMD = structnew();
@@ -381,8 +382,10 @@ Description		:
 	<!--- $reset --->
     <cffunction name="$reset" output="false" access="public" returntype="any" hint="Reset all mock counters and logs on the targeted mock. Injected as $reset">
     	<cfscript>
-    		this._mockMethodCallCounters = structnew();
-			this._mockCallLoggers 		 = structnew();
+			for( var item in this._mockMethodCallCounters ){
+				this._mockMethodCallCounters[ item ]	= 0;
+				this._mockCallLoggers[ item ]			= [];
+            }
 			return this;
 		</cfscript>
     </cffunction>
@@ -453,7 +456,7 @@ Description		:
 					/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 					 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 					 */
-					 serializedArgs &= "--null--";
+					 continue;
 				}
 				else if( isSimpleValue( argOrderedTree[ arg ] ) ){
 					/* toString() works best for simple values.  It is equivalent in the following scenario

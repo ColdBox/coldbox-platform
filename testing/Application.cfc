@@ -31,11 +31,12 @@ Description :
 	<cfset this.ormSettings = {
 		logSQL = true,
 		dbcreate = "update",
-		secondarycacheenabled = true,
+		secondarycacheenabled = false,
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false,
 		eventhandling = true,
-		eventHandler = "testmodel.EventHandler"
+		eventHandler = "testmodel.EventHandler",
+		skipcfcWithError = true
 	}>
 
 	<!--- <cfset this.ormsettings.eventhandler = "testmodel.EventHandler"> --->
@@ -45,7 +46,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
-
+		
 		<cfif structKeyExists(URL,"reinit")>
 			<cfset ORMReload()>
 		</cfif>

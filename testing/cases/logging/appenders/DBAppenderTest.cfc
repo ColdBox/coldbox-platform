@@ -1,5 +1,7 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
+	this.loadColdBox = false;
+
 	function setup(){
 		props = {dsn='coolblog',table='logs',autocreate='true'};
 		db = getMockBox().createMock(className="coldbox.system.logging.appenders.DBAppender");
@@ -7,6 +9,13 @@
 		
 		loge = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
 		loge.init("Unit Test Sample",0,structnew(),"UnitTest");
+	}
+
+	function testSchema(){
+		assertTrue( len( db.getProperty('schema') ) eq 0 );
+		props = {dsn='coolblog',table='logs',autocreate='true', schema="test"};
+		db.init( 'UnitTest', props );
+		assertTrue( len( db.getProperty('schema') ) );
 	}
 	
 	function testEnsureTable(){
@@ -17,6 +26,7 @@
 	function testLogMessage(){
 		db.logMessage(loge);
 	}
+
 	function testLogMessageWithColumnMap(){
 		//invalid map
 		props.columnmap = {

@@ -197,6 +197,34 @@
 			}
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testPopulateFromStructWithPrefix" access="public" returntype="void" output="false">
+		<!--- Now test some events --->
+		<cfscript>
+			stime = getTickCount();
+
+			/* We are using the formBean object: fname,lname,email,initDate */
+			obj = getMockBox().createMock('coldbox.testing.testmodel.formBean');
+
+			/* Struct */
+			myStruct = structnew();
+			myStruct.user_fname = "Luis";
+			myStruct.user_lname = "Majano";
+			myStruct.user_email = "test@coldboxframework.com";
+			myStruct.user_initDate = now();
+
+			/* Populate From Struct */
+			obj = populator.populateFromStructWithPrefix( target=obj, memento=myStruct, prefix="user_" );
+			objInstance = obj.getInstance();
+
+			//debug("Timer: #getTickCount()-stime#");
+
+			/* Assert Population */
+			for( key in objInstance ){
+				AssertEquals( objInstance[key], myStruct[ "user_" & key ], "Asserting #key# From Struct" );
+			}
+		</cfscript>
+	</cffunction>
 
 	<!--- testpopulateFromJSON --->
 	<cffunction name="testpopulateFromJSON" output="false" access="public" returntype="any" hint="">
