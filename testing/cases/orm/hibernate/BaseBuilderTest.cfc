@@ -367,20 +367,6 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		assertTrue( r.hasProjection() );
 	}
 	
-	function testMapProjectionsToPropertyNames() {
-		r = criteria.init("Role")
-			.createAlias("users", "u", criteria.INNER_JOIN )
-			.like("u.lastName","M%")
-			.withProjections( count="u.lastName:LastNameCount", property="role" );
-		results = r.list( asMappedArray=true )[ 1 ];
-		// each array element should be a struct -> key/value pairs
-		assertIsStruct( results );
-		// key 1: LastNameCount
-		assertTrue( structKeyExists( results, "LastNameCount" ) );
-		// key 2: role
-		assertTrue( structKeyExists( results, "role" ) );
-	}
-	
 	function testGetPositionalSQLParameterValues() {
 		r = criteria.init("Role")
 			.createAlias("users", "u", criteria.INNER_JOIN )

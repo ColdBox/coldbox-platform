@@ -426,33 +426,6 @@ component accessors="true"{
 		return projectionExists;
 	}
 
-	/**
-	 * Handy way to turn not-terribly useful projection arrays into an array of structures with named keys which match the query aliases
-	 * @data {Array} The projection array data to convert
-	 * return Array
-	 */
-	private array function mapProjectionsToPropertyNames( required Array data ) {
-		// get alias list
-		var aliasList = hasProjection() ? nativeCriteria.getProjection().getAliases() : [];
-		var mappedData = [];
-		for( var row in arguments.data ) {
-			var collection = {};
-			if( !isArray( row ) ) {
-				row = [ row ];
-			}
-			for( var k=1; k<=arrayLen( row ); k++ ) {
-				try {
-					collection[ aliasList[ k ] ] = row[ k ];
-				}
-				catch( any e ) {
-					collection[ aliasList[ k ] ] = JavaCast( "null", "" );
-				}
-			}
-			arrayAppend( mappedData, collection );
-		}
-		return mappedData;
-	}
-
 	// Simplified additions of projections
 	private function addProjection(any propertyName,any projectionType,any projectionList){
 		// inflate to array

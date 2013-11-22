@@ -84,8 +84,7 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	  		 		  numeric timeout=0,
 	  		 		  string  sortOrder="",
 	  		 		  boolean ignoreCase=false,
-	  		 		  boolean asQuery=false,
-	  		 		  boolean asMappedArray=false){
+	  		 		  boolean asQuery=false){
 	  		 		  	 
 		// Setup listing options
 		if( arguments.offset NEQ 0 ){
@@ -120,10 +119,6 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 		// Objects or Query?
 		if( arguments.asQuery ){
 			results = EntityToQuery(results);
-		}
-		// Map Projection array to array of structs?
-		if( arguments.asMappedArray && hasProjection() ) {
-			results = mapProjectionsToPropertyNames( results );
 		}
 		// process interception - afterCriteriaBuilderList
 		eventManager.processState( "afterCriteriaBuilderList", {
