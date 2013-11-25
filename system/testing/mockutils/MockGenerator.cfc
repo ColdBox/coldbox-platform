@@ -29,6 +29,7 @@ Description		:
 		<cfargument name="method" 			type="string" 	required="true" hint="The method you want to mock or spy on"/>
 		<cfargument name="returns" 			type="any" 		required="false" hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
 		<cfargument name="preserveReturnType" type="boolean" required="true" default="true" hint="If false, the mock will make the returntype of the method equal to ANY"/>
+		<cfargument name="preserveMethodSignature" type="boolean" required="true" default="true" hint="If false, the mock will remove all method parameters."/>
 		<cfargument name="throwException" type="boolean" 	required="false" default="false" hint="If you want the method call to throw an exception"/>
 		<cfargument name="throwType" 	  type="string" 	required="false" default="" hint="The type of the exception to throw"/>
 		<cfargument name="throwDetail" 	  type="string" 	required="false" default="" hint="The detail of the exception to throw"/>
@@ -42,11 +43,13 @@ Description		:
 			var genPath = ExpandPath( instance.mockBox.getGenerationPath() );
 			var tmpFile = createUUID() & ".cfm";
 			var fncMD = arguments.metadata;
+			var parameterString = arguments.preserveMethodSignature ? generateParameterString( fncMD.parameters ) : "";
 			
 			// Create Method Signature
 			udfOut.append('
 			<cfset this[ "#arguments.method#" ] = variables[ "#arguments.method#" ]> 
 			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">
+			#parameterString#
 			<cfset var results = this._mockResults>
 			<cfset var resultsKey = "#arguments.method#">
 			<cfset var resultsCounter = 0>
@@ -190,6 +193,23 @@ Description		:
     	</cfscript>    
     </cffunction>
     
+    <!--- generateParameterString --->    
+    <cffunction name="generateParameterString" output="false" access="private" returntype="string" hint="Generates CFML method parameter string from parameter array.">
+    	<cfargument name="oParameter" type="array" required="true" hint="The array of parameters"/>
+		<cfscript>
+			var local 			= {};
+			var parameterString = createObject("java","java.lang.StringBuffer").init('');
+			
+			for( local.i = 1; local.i lte arrayLen( arguments.oParameter ); local.i++ ){
+				parameterString.append('
+					<cfargument name="#arguments.oParameter[ local.i ]['name']#" type="#arguments.oParameter[ local.i ]['type']#" required="#arguments.oParameter[ local.i ]['required']#"/>
+				');
+			}
+			
+			return parameterString;
+		</cfscript>
+	</cffunction>
+
     <!--- generateMethodsFromMD --->    
     <cffunction name="generateMethodsFromMD" output="false" access="private" returntype="any" hint="Generates methods from functions metadata">    
     	<cfargument name="buffer" 	type="any" required="true" hint="The string buffer to append stuff to"/>
