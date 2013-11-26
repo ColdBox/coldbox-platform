@@ -101,6 +101,16 @@ component{
 				expect(	123 ).notToBeNull();
 			});
 
+			// discrete math
+			it( "can have discrete math", function(){
+				expect( "d" ).toBeGT( "c" );
+				expect( 4 ).toBeGT( 1 );
+
+				expect( 4 ).toBeGTE( 4 );
+				expect( 1 ).toBeLT( 10 );
+				expect( 10 ).toBeLTE( 10 );
+			});
+
 		});
 
 		// Custom Matchers

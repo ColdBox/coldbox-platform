@@ -369,4 +369,61 @@ component accessors="true"{
 			return variables.assert.includesWithCase( argumentCollection=arguments );
 	}
 
+	/**
+	* Assert that the actual value is greater than the target value
+	* @target.hint The target value
+	* @message.hint The message to send in the failure
+	*/
+	function toBeGT( required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not greater than [#arguments.target#]" );
+
+		if( this.isNot )
+			variables.assert.isLTE( this.actual, arguments.target, arguments.message );
+		else	
+			variables.assert.isGT( this.actual, arguments.target, arguments.message );
+		
+	}
+
+	/**
+	* Assert that the actual value is greater than or equal the target value
+	* @target.hint The target value
+	* @message.hint The message to send in the failure
+	*/
+	function toBeGTE( required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not greater than or equal to [#arguments.target#]" );
+		
+		if( this.isNot )
+			variables.assert.isLT( this.actual, arguments.target, arguments.message );
+		else	
+			variables.assert.isGTE( this.actual, arguments.target, arguments.message );
+	}
+
+	/**
+	* Assert that the actual value is less than the target value
+	* @target.hint The target value
+	* @message.hint The message to send in the failure
+	*/
+	function toBeLT( required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than [#arguments.target#]" );
+		
+		if( this.isNot )
+			variables.assert.isGTE( this.actual, arguments.target, arguments.message );
+		else	
+			variables.assert.isLT( this.actual, arguments.target, arguments.message );
+	}
+
+	/**
+	* Assert that the actual value is less than or equal the target value
+	* @target.hint The target value
+	* @message.hint The message to send in the failure
+	*/
+	function toBeLTE( required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than or equal to [#arguments.target#]" );
+		
+		if( this.isNot )
+			variables.assert.isGT( this.actual, arguments.target, arguments.message );
+		else	
+			variables.assert.isLTE( this.actual, arguments.target, arguments.message );
+	}
+
 }
