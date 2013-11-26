@@ -243,6 +243,30 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="c
 		throw( type="InvalidException", message="This test method should pass with an expected exception" );
 	}
 
+	function testIsGT(){
+		$assert.isGT( "b", "a" );
+		$assert.isGT( 5, 3 );
+		$assert.isGT( "01/01/2013", "01/01/2012" );
+	}
+
+	function testIsGTE(){
+		$assert.isGTE( "b", "b" );
+		$assert.isGTE( 5, 5 );
+		$assert.isGTE( "01/01/2013", "01/01/2013" );
+	}
+
+	function testIsLT(){
+		$assert.isLT( "a", "d" );
+		$assert.isLT( 5, 30 );
+		$assert.isLT( "01/01/2013", "01/02/2013" );
+		$assert.isLT( "01/01/2013 08:00:00", "01/01/2013 12:00:00" );
+	}
+
+	function testIsLTE(){
+		$assert.isLTE( "b", "b" );
+		$assert.isLTE( 5, 10 );
+	}
+
 /*********************************** NON-RUNNABLE Methods ***********************************/	
 
 	function nonStandardNamesWillNotRun() {

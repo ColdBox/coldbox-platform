@@ -521,6 +521,71 @@ component{
 
 		fail( arguments.message );
 	}
+
+	/**
+	* Assert that the actual value is greater than the target value
+	* @actual.hint The actual value
+	* @target.hint The target value
+	* @message.hint The message to send in the failure
+	*/
+	function isGT( required any actual, required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than [#arguments.target#]" );
+		
+		if( arguments.actual gt arguments.target ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the actual value is greater than or equal the target value
+	* @actual.hint The actual value
+	* @target.hint The target value
+	* @message.hint The message to send in the failure
+	*/
+	function isGTE( required any actual, required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than or equal to [#arguments.target#]" );
+		
+		if( arguments.actual gte arguments.target ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the actual value is less than the target value
+	* @actual.hint The actual value
+	* @target.hint The target value
+	* @message.hint The message to send in the failure
+	*/
+	function isLT( required any actual, required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than [#arguments.target#]" );
+		
+		if( arguments.actual lt arguments.target ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert that the actual value is less than or equal the target value
+	* @actual.hint The actual value
+	* @target.hint The target value
+	* @message.hint The message to send in the failure
+	*/
+	function isLTE( required any actual, required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than or equal to [#arguments.target#]" );
+		
+		if( arguments.actual lte arguments.target ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
 	
 	/**
 	* Get a string name representation of an incoming object.
