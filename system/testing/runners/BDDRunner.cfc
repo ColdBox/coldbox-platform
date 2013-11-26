@@ -96,15 +96,14 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 	){
 
 		// Start suite stats
-		var suiteStats 	= arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats, arguments.parentStats );
+		var suiteStats = arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats, arguments.parentStats );
 		
 		// Record bundle + suite + global initial stats
-		suiteStats.totalSpecs 	= arrayLen( arguments.suite.specs );
+		suiteStats.totalSpecs = arrayLen( arguments.suite.specs );
 		arguments.bundleStats.totalSpecs += suiteStats.totalSpecs;
 		arguments.bundleStats.totalSuites++;
 		// increment global suites + specs
-		arguments.testResults.incrementSuites()
-			.incrementSpecs( suiteStats.totalSpecs );
+		arguments.testResults.incrementSuites().incrementSpecs( suiteStats.totalSpecs );
 
 		// Verify we can execute the incoming suite via skipping or labels
 		if( !arguments.suite.skip && 
@@ -112,17 +111,43 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			canRunSuite( arguments.suite, arguments.testResults )
 		){
 			
+			// prepare threaded names
+			var threadNames = [];
+			// threaded variables just in case some suite is async and another is not.
+			thread.testResults 	= arguments.testResults;
+			thread.suiteStats  	= suiteStats;
+			thread.target 		= arguments.target;
+
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
 				
-				// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
-				arguments.target.runSpec( spec=thisSpec,
-						  				  suite=arguments.suite,
-						  				  testResults=arguments.testResults, 
-						  				  suiteStats=suiteStats,
-						  				  runner=this );
+				// is this async or not?
+				if( arguments.suite.asyncAll ){
+					// prepare thread names
+					var thisThreadName = "tb-suite-#hash( thisSpec.name )#";
+					arrayAppend( threadNames, thisThreadName );
+					// thread it
+					thread name="#thisThreadName#" thisSpec="#thisSpec#" suite="#arguments.suite#" threadName="#thisThreadName#"{
+						// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
+						thread.target.runSpec( spec=attributes.thisSpec,
+								  			   suite=attributes.suite,
+								  			   testResults=thread.testResults, 
+								  			   suiteStats=thread.suiteStats,
+								  			   runner=this );
+					}
 
-			}
+				} else {
+					// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
+					thread.target.runSpec( spec=thisSpec,
+								  		   suite=arguments.suite,
+								  		   testResults=thread.testResults, 
+								  		   suiteStats=thread.suiteStats,
+								  		   runner=this );
+				}
+			} // end loop over specs
+
+			// join threads if async
+			if( arguments.suite.asyncAll ){ thread action="join" name="#arrayToList( threadNames )#"{}; }
 
 			// All specs finalized, set suite status according to spec data
 			if( suiteStats.totalError GT 0 ){ suiteStats.status = "Error"; }

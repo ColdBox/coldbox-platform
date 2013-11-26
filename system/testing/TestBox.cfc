@@ -95,7 +95,7 @@ component accessors="true"{
 	}
 
 	/**
-	* Run me some testing goodness but give you back the raw TestResults object instead
+	* Run me some testing goodness but give you back the raw TestResults object instead of a report
 	* @bundles.hint The path, list of paths or array of paths of the spec bundle CFCs to run and test
 	* @directory.hint The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]	
 	* @labels.hint The list or array of labels that a suite or spec must have in order to execute.
@@ -295,7 +295,7 @@ component accessors="true"{
 	/***************************************** PRIVATE ************************************************************ //
 
 	/**
-	* This method tests a bundle CFC according to type
+	* This method executes the tests in a bundle CFC according to type
 	* @bundlePath.hint The path of the Bundle CFC to test.
 	* @testResults.hint The testing results object to keep track of results
 	*/
@@ -309,12 +309,12 @@ component accessors="true"{
 		
 		// Discover type?
 		if( structKeyExists( target, "run" ) ){
-			// BDD Style
+			// Run via BDD Style
 			new coldbox.system.testing.runners.BDDRunner( options=variables.options )
 				.run( target, arguments.testResults );
 		}
 		else{
-			// xUnit Style
+			// Run via xUnit Style
 			new coldbox.system.testing.runners.UnitRunner( options=variables.options )
 				.run( target, arguments.testResults );
 		}
