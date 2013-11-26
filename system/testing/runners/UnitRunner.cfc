@@ -104,15 +104,43 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			canRunSuite( arguments.suite, arguments.testResults )
 		){
 
+			// prepare threaded names
+			var threadNames = [];
+			// threaded variables just in case some suite is async and another is not.
+			thread.testResults 	= arguments.testResults;
+			thread.suiteStats  	= suiteStats;
+			thread.target 		= arguments.target;
+
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
 				
-				arguments.target.runTest( spec=thisSpec, 
-										  testResults=arguments.testResults, 
-						  				  suiteStats=suiteStats,
-						  				  runner=this );
+				// is this async or not?
+				if( arguments.suite.asyncAll ){
+					// prepare thread names
+					var thisThreadName = "tb-suite-#hash( thisSpec.name )#";
+					arrayAppend( threadNames, thisThreadName );
+					// thread it
+					thread name="#thisThreadName#" thisSpec="#thisSpec#" suite="#arguments.suite#" threadName="#thisThreadName#"{
+						// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
+						thread.target.runTest( spec=attributes.thisSpec, 
+										  	   testResults=thread.testResults, 
+						  				  	   suiteStats=thread.suiteStats,
+						  				  	   runner=this );
+				
+					}
 
-			}
+				} else {
+					// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
+					thread.target.runTest( spec=thisSpec,
+								  		   testResults=thread.testResults, 
+								  		   suiteStats=thread.suiteStats,
+								  		   runner=this );
+				}
+
+			} // end loop over specs
+
+			// join threads if async
+			if( arguments.suite.asyncAll ){ thread action="join" name="#arrayToList( threadNames )#"{}; }
 			
 			// All specs finalized, set suite status according to spec data
 			if( suiteStats.totalError GT 0 ){ suiteStats.status = "Error"; }
@@ -151,7 +179,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			// suite name
 			name 		= ( structKeyExists( arguments.targetMD, "displayName" ) ? arguments.targetMD.displayname : arguments.targetMD.name ),
 			// async flag
-			asyncAll 	= false,
+			asyncAll 	= ( structKeyExists( arguments.targetMD, "asyncAll" ) ? arguments.targetMD.asyncAll : false ),
 			// skip suite testing flag
 			skip 		= ( structKeyExists( arguments.targetMD, "skip" ) ?  ( len( arguments.targetMD.skip ) ? arguments.targetMD.skip : true ) : false ),
 			// labels attached to the suite for execution
