@@ -110,6 +110,15 @@
 	</div>
 </cfloop>
 
+<!--- Debug Panel --->
+<div class="box" id="globalDebugData">
+	<h2>Debug Stream <button onclick="toggleDebug( 'tb-debug-stream' )" title="Toggle the test debug stream">+</button></h2>
+	<div class="debugdata" data-specid="tb-debug-stream">
+		<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
+		<cfdump var="#results.getDebugBuffer()#" />
+	</div>
+</div>
+
 <!--- <cfdump var="#results#"> --->
 </body>
 </html>

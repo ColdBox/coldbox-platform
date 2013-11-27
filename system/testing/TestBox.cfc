@@ -318,6 +318,9 @@ component accessors="true"{
 			new coldbox.system.testing.runners.UnitRunner( options=variables.options )
 				.run( target, arguments.testResults );
 		}
+
+		// Store debug buffer
+		arguments.testResults.setDebugBuffer( target.getDebugBuffer() );
 		
 		return this;
 	}

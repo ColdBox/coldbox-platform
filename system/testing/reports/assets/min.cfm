@@ -6,6 +6,23 @@
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 	<link href="/coldbox/system/testing/reports/assets/css/simple.css" rel="stylesheet">
+	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
+	<script>
+	$(document).ready(function() {
+	});
+	function toggleDebug( specid ){
+		$("div.debugdata").each( function(){
+			var $this = $( this );
+		
+			// if bundleid passed and not the same bundle
+			if( specid != undefined && $this.attr( "data-specid" ) != specid ){
+				return;
+			}
+			// toggle.
+			$this.fadeToggle();
+		});
+	}
+	</script>
 </head>
 
 <body>
@@ -30,5 +47,14 @@
 	[ Labels Applied: #arrayToList( results.getLabels() )# ]
 	</cfif>
 
+</div>
+
+<!--- Debug Panel --->
+<div class="box" id="globalDebugData">
+	<h2>Debug Stream <button onclick="toggleDebug( 'tb-debug-stream' )" title="Toggle the test debug stream">+</button></h2>
+	<div class="debugdata" data-specid="tb-debug-stream">
+		<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
+		<cfdump var="#results.getDebugBuffer()#" />
+	</div>
 </div>
 </cfoutput>

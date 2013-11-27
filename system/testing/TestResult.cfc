@@ -29,6 +29,9 @@ component accessors="true"{
 	property name="testBundles" 	type="array";
 	property name="testSuites" 		type="array";
 	property name="testSpecs" 		type="array";
+
+	// debug buffer
+	property name="debugBuffer"		type="array";
 	
 	/**
 	* Constructor
@@ -74,6 +77,9 @@ component accessors="true"{
 		// Reverse Lookups
 		variables.bundleReverseLookup 	= {};
 		variables.suiteReverseLookup 	= {};
+
+		// debug buffer
+		variables.debugBuffer = [];
 		
 		return this;
 	}

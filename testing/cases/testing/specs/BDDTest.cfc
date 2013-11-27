@@ -6,10 +6,13 @@ component{
 /*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
+		print( "<h1>BDD Testing is Awesome!</h1>" );
+		console( "Executed beforeAll() at #now()# " );
 		application.salvador = 1;
 	}
 
 	function afterAll(){
+		console( "Executed afterAll() at #now()#" );
 		structClear( application );	
 	}
 
@@ -32,6 +35,7 @@ component{
 			beforeEach(function(){
 				coldbox = 0;
 				coldbox++;
+				debug( "beforeEach suite: coldbox = #coldbox#" );
 			});
 			
 			// after each spec in THIS suite group
@@ -62,6 +66,7 @@ component{
 				expect( coldbox ).toBeCloseTo( expected=10, delta=2 );
 				// negations
 				expect( coldbox ).notToBe( 4 );
+				debug( " >1 expectation tests: coldbox = #coldbox#" );
 			});
 
 			// negations
@@ -156,6 +161,7 @@ component{
 				
 				it("should be awesome", function(){
 					expect( foofoo ).toBeAwesome();
+					debug( " foofoo should be awesome #foofoo#" );
 				});
 
 				it("should know its maker", function(){

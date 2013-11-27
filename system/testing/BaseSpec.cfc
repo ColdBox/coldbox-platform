@@ -25,6 +25,10 @@ component{
 	this.$exceptionAnnotation	= "expectedException";
 	// Expected Exception holder, only use on synchronous testing.
 	this.$expectedException		= {};
+	// Internal testing ID
+	this.$testID 				= createUUID();
+	// Debug buffer
+	this.$debugBuffer			= [];
 
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 	
@@ -505,51 +509,15 @@ component{
 		return this;
 	}
 
-	/**
-	* Check if the incoming exception is expected or not.
-	*/
-	private boolean function isExpectedException( required exception, required specName, required runner ){
-		var results = false;
-		// do we have an expected annotation?
-		var eAnnotation = arguments.runner.getMethodAnnotation( this[ arguments.specName ], this.$exceptionAnnotation, "false" );
-		if( eAnnotation != false ){
-			// incorporate it.
-			this.$expectedException = {
-				type =  ( eAnnotation == "true" ? "" : listFirst( eAnnotation, ":" ) ),
-				regex = ( find( ":", eAnnotation ) ? listLast( eAnnotation, ":" ) : ".*" )
-			};
-		}
-		
-		// Verify expected exceptions
-		if( !structIsEmpty( this.$expectedException ) ){
-			// If no type, message expectations
-			if( !len( this.$expectedException.type ) && this.$expectedException.regex eq ".*" ){
-				results = true;
-			}
-			// Type expectation then
-			else if( len( this.$expectedException.type ) && 
-					 arguments.exception.type eq this.$expectedException.type && 
-					 reFindNoCase( this.$expectedException.regex, arguments.exception.message ) ){
-				results = true;
-			}
-			// Message regex then only
-			else if( this.$expectedException.regex neq ".*" && reFindNoCase( this.$expectedException.regex, arguments.exception.message ) ){
-				results = true;
-			}
-		}
-
-		return results;
-	}
-
 	/************************************** UTILITY METHODS *********************************************/
 	
 	/**
-	* Send some information to the console via writedump(output="console")
+	* Send some information to the console via writedump( output="console" )
 	* @var.hint The data to send
 	* @top.hint Apply a top to the dump, by default it does 9999 levels
 	*/
-	BaseSpec function console(required var, top=9999){
-		writedump(var=arguments.var, output="console", top=arguments.top );
+	any function console( required var, top=9999 ){
+		writedump( var=arguments.var, output="console", top=arguments.top );
 		return this;
 	}
 	
@@ -558,33 +526,37 @@ component{
 	* @var.hint The data to send
 	* @deepCopy.hint By default we do not duplicate the incoming information, but you can :)
 	*/
-	BaseSpec function debug(required var, boolean deepCopy=false){
-		var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
-		arrayAppend( getDebug(), newVar );
+	any function debug( required var, boolean deepCopy=false ){
+		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10"{
+			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
+			arrayAppend( this.$debugBuffer, newVar );
+		}
 		return this;
 	}
 
 	/**
 	*  Clear the debug array buffer
 	*/
-	BaseSpec function clearDebug(){
-		if( structKeyExists( request, "$testbox_debug" ) ){
-			structclear( request.$testbox_debug );
+	any function clearDebugBuffer(){
+		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10"{
+			arrayClear( this.$debugBuffer );
 		}
 		return this;
 	}
 
 	/**
-	*  Get the debug array buffer
+	*  Get the debug array buffer from scope
 	*/
-	array function getDebug(){
-		return ( structKeyExists( request, "$testbox_debug" ) ? request.$testbox_debug : [] );
+	array function getDebugBuffer(){
+		lock name="tb-debug-#this.$testID#" type="readonly" timeout="10"{
+			return this.$debugBuffer;
+		}
 	}
 
 	/**
 	* Write some output to the ColdFusion output buffer
 	*/
-	BaseSpec function print(required message) output=true{
+	any function print(required message) output=true{
 		writeOutput( arguments.message );
 		return this;
 	}
@@ -592,7 +564,7 @@ component{
 	/**
 	* Write some output to the ColdFusion output buffer using a <br> attached
 	*/
-	BaseSpec function println(required message) output=true{
+	any function println(required message) output=true{
 		return print( arguments.message & "<br>" );
 	}
 	
@@ -690,4 +662,42 @@ component{
 	
 	// Closure Stub
 	function closureStub(){}
+
+	/************************************** PRIVATE METHODS *********************************************/
+
+	/**
+	* Check if the incoming exception is expected or not.
+	*/
+	private boolean function isExpectedException( required exception, required specName, required runner ){
+		var results = false;
+		// do we have an expected annotation?
+		var eAnnotation = arguments.runner.getMethodAnnotation( this[ arguments.specName ], this.$exceptionAnnotation, "false" );
+		if( eAnnotation != false ){
+			// incorporate it.
+			this.$expectedException = {
+				type =  ( eAnnotation == "true" ? "" : listFirst( eAnnotation, ":" ) ),
+				regex = ( find( ":", eAnnotation ) ? listLast( eAnnotation, ":" ) : ".*" )
+			};
+		}
+		
+		// Verify expected exceptions
+		if( !structIsEmpty( this.$expectedException ) ){
+			// If no type, message expectations
+			if( !len( this.$expectedException.type ) && this.$expectedException.regex eq ".*" ){
+				results = true;
+			}
+			// Type expectation then
+			else if( len( this.$expectedException.type ) && 
+					 arguments.exception.type eq this.$expectedException.type && 
+					 reFindNoCase( this.$expectedException.regex, arguments.exception.message ) ){
+				results = true;
+			}
+			// Message regex then only
+			else if( this.$expectedException.regex neq ".*" && reFindNoCase( this.$expectedException.regex, arguments.exception.message ) ){
+				results = true;
+			}
+		}
+
+		return results;
+	}
 }
