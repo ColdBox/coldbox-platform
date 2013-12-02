@@ -1,28 +1,26 @@
 ﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
-     Mar 18, 2007 1:30:20 AM                                                        
-
-     TestBox Build                                                                
+     TestBox Standalone Build (www.coldbox.org)                                                     
      ====================================================================== -->
-<project name="testbox.newbuild" default="build" basedir="../../">
-
-	<!--Build Properties-->
-	<property name="dir.userlocation"	value="/Users/lmajano" />
-	<property name="dir.exports"		value="${dir.userlocation}/exports" />
-	<property name="dir.build" 			value="${dir.exports}/testbox-distro" />
-	<property name="colddoc.http"		value="http://cf10tools.jfetmac/ColdDoc/testbox.cfm?version=" />
-	
-	<!-- FTP -->
-	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
-	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
-	
+<project name="testbox-build" default="build" basedir="../../">
+	<description>
+    	Build a new distribution of TestBox Standalone
+    </description>
+	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	<property name="testbox.version"	value="1.0.0.RC"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	
 	<!-- Init -->
 	<target name="init" description="Init">
-		<!-- Version -->
-		<input addproperty="testbox.version" message="TestBox Version" />
+		<!-- Default environment check, if not passed via -Denvironment -->
+    	<condition property="environment" value="local">
+    		<not><isset property="environment" /></not>
+    	</condition>
+    	<echo>Loading from environment: ${environment}</echo>
+		<!-- Load env properties -->
+		<loadproperties srcFile="ant/framework/testbox-${environment}.properties"/>
+
 		<!-- Build Number -->
 		<propertyfile file="ant/framework/build.number" comment="Build Number for ANT. Edit not!">
 			<entry key="build.number" 
@@ -39,19 +37,8 @@
 		<mkdir dir="${dir.build}"/>
 	</target>
 	
-	<!-- FTP Upload of new build -->
-	<target name="ftp.deploy" depends="build">
-       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
-       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
-      	
-		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
-       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
-        	<fileset file="${dir.exports}/testbox_{mockbox.version}.zip" />
-       	</ftp>		
-	</target>
-	
 	<!--build-->
-	<target name="build" description="Build a new TestBox distribution" depends="init">
+	<target name="build" description="Build a new TestBox Standalone distribution" depends="init">
       	
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
@@ -69,17 +56,30 @@
 		<copy todir="${dir.build}/testbox/system/core/conversion">
         	<fileset dir="system/core/conversion" />
         </copy>
+		<copy todir="${dir.build}/runner">
+        	<fileset dir="ApplicationTemplates/testbox-runner" />
+        </copy>
 		
-		<!-- cleanup coldbox specific stuff -->
+		<!-- cleanup coldbox platform specific stuff -->
 		<delete dir="${dir.build}/testbox/system/testing/mock" />
 		<delete file="${dir.build}/testbox/system/testing/BaseHandlerTest.cfc" />
 		<delete file="${dir.build}/testbox/system/testing/BaseInterceptorTest.cfc" />
 		<delete file="${dir.build}/testbox/system/testing/BaseModelTest.cfc" />
 		<delete file="${dir.build}/testbox/system/testing/BasePluginTest.cfc" />
-				
+		<delete file="${dir.build}/testbox/system/core/util/Validator.cfc" />
+		<delete file="${dir.build}/testbox/system/core/util/Zip.cfc" />
+		<delete file="${dir.build}/testbox/system/core/util/RequestBuffer.cfc" />
+		
+		<!--Copy text files to root folder-->
+		<copy todir="${dir.build}/">
+			<fileset file="license.txt" />
+			<fileset file="system/testing/mockbox.txt" />
+			<fileset file="system/testing/testbox.txt" />
+		</copy>
+		
 		<!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
-		  <fileset dir="${dir.build}/testbox/system">
+		  <fileset dir="${dir.build}">
 		  </fileset>
 		</replaceregexp>
 						
@@ -99,15 +99,8 @@
 			<replacetoken>coldbox.system.</replacetoken>
 		</replace>
 		
-		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}/">
-			<fileset file="license.txt" />
-			<fileset file="system/testing/mockbox.txt" />
-			<fileset file="system/testing/testbox.txt" />
-		</copy>
-		
 		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${testbox.version}&amp;path=${dir.build}" verbose="true"/>
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${testbox.version}&amp;path=${dir.api}&amp;testbox_root=${dir.build}/testbox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
 				
 		<!-- Zip Bundle -->
