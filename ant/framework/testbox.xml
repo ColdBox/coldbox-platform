@@ -102,6 +102,9 @@
 		<!-- Execute ColdDoc -->
 		<get dest="${dir.build}/colddoc.html" src="${url.api}${testbox.version}&amp;path=${dir.api}&amp;testbox_root=${dir.build}/testbox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.exports}/TestBoxDocs-${testbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
 				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/testbox_${testbox.version}.zip" basedir="${dir.build}"></zip>
