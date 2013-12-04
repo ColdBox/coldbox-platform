@@ -47,7 +47,11 @@ For the latest usage, please visit the wiki.
 			if( not propertyExists("preEventSecurity") or not isBoolean(getProperty("preEventSecurity")) ){
 				setProperty("preEventSecurity",false);
 			}
-						
+			// Use SSL property: Defaults to FALSE
+			if( not propertyExists('useSSL') or not isBoolean(getProperty('useSSL')) ){
+				setProperty('useSSL',false);
+			}
+			
 			// Now Call sourcesCheck
 			rulesSourceChecks();
 			
@@ -189,7 +193,7 @@ For the latest usage, please visit the wiki.
 			var rules 		= getProperty('rules');
 			var rulesLen 	= arrayLen(rules);
 			var rc 		 	= event.getCollection();
-			var ssl		 	= false;
+			var ssl		 	= getProperty('useSSL');
 			var matchType   = "event";
 			var matchTarget = "";
 			
