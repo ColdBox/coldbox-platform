@@ -319,9 +319,9 @@ component accessors="true"{
 				.run( target, arguments.testResults );
 		}
 
-		// Store debug buffer
-		arguments.testResults.setDebugBuffer( target.getDebugBuffer() );
-		
+		// Store debug buffer for this bundle
+		arguments.testResults.storeDebugBuffer( target.getDebugBuffer() );
+
 		return this;
 	}
 

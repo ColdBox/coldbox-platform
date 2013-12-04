@@ -62,15 +62,6 @@
 		[ <span class="skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span> ]
 	</div>
 
-	<!--- Debug Panel --->
-	<div class="box" id="globalDebugData">
-		<h2>Debug Stream <button onclick="toggleDebug( 'tb-debug-stream' )" title="Toggle the test debug stream">+</button></h2>
-		<div class="debugdata" data-specid="tb-debug-stream">
-			<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
-			<cfdump var="#results.getDebugBuffer()#" />
-		</div>
-	</div>
-
 	<!--- Dots --->
 	<div class="dots">
 		<!--- Iterate over bundles --->
@@ -81,6 +72,20 @@
 			</cfloop>
 		</cfloop>
 	</div>
+
+	<div style="clear:both;margin:20px">&nbsp;</div>
+
+	<!--- Debug Panel --->
+	<cfloop array="#bundleStats#" index="thisBundle">
+		<!--- Debug Panel --->
+		<cfif arrayLen( thisBundle.debugBuffer )>
+			<h2>Debug Stream: #thisBundle.path# <button onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">+</button></h2>
+			<div class="debugdata" data-specid="#thisBundle.id#">
+				<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
+				<cfdump var="#thisBundle.debugBuffer#" />
+			</div>
+		</cfif>
+	</cfloop>
 
 	</body>
 </html>

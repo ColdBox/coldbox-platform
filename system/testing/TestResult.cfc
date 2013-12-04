@@ -30,9 +30,6 @@ component accessors="true"{
 	property name="testSuites" 		type="array";
 	property name="testSpecs" 		type="array";
 
-	// debug buffer
-	property name="debugBuffer"		type="array";
-	
 	/**
 	* Constructor
 	* @bundleCount.hint the count to init the results for
@@ -78,9 +75,6 @@ component accessors="true"{
 		variables.bundleReverseLookup 	= {};
 		variables.suiteReverseLookup 	= {};
 
-		// debug buffer
-		variables.debugBuffer = [];
-		
 		return this;
 	}
 
@@ -177,7 +171,9 @@ component accessors="true"{
 				endTime			= 0,
 				totalDuration 	= 0,
 				// Suite stats holder
-				suiteStats 		= []
+				suiteStats 		= [],
+				// Debug output buffer
+				debugBuffer 	= []
 			};
 
 			// store it in the bundle stats array
@@ -215,6 +211,16 @@ component accessors="true"{
 			return variables.bundleStats;
 		}
 	}
+
+	/**
+	* Store latest bundle debug output buffer by adding it to the top bundle
+	*/
+	any function storeDebugBuffer( array buffer ){
+		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10"{
+			variables.bundleStats[ arrayLen( variables.bundleStats ) ].debugBuffer = arguments.buffer;
+		}
+	}
+
 
 	/**
 	* Start a new suite stats and return its reference

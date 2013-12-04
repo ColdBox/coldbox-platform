@@ -106,18 +106,19 @@
 			</ul>
 			</div>
 		</cfloop>
+
+		<!--- Debug Panel --->
+		<cfif arrayLen( thisBundle.debugBuffer )>
+			<hr>
+			<h2>Debug Stream <button onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">+</button></h2>
+			<div class="debugdata" data-specid="#thisBundle.id#">
+				<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
+				<cfdump var="#thisBundle.debugBuffer#" />
+			</div>
+		</cfif>
 		
 	</div>
 </cfloop>
-
-<!--- Debug Panel --->
-<div class="box" id="globalDebugData">
-	<h2>Debug Stream <button onclick="toggleDebug( 'tb-debug-stream' )" title="Toggle the test debug stream">+</button></h2>
-	<div class="debugdata" data-specid="tb-debug-stream">
-		<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
-		<cfdump var="#results.getDebugBuffer()#" />
-	</div>
-</div>
 
 <!--- <cfdump var="#results#"> --->
 </body>
