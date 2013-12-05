@@ -19,8 +19,12 @@
 	}
 	
 	function testEnsureTable(){
+		// drop table
+		new Query( datasource="coolblog", sql="drop table logs").execute();
 		makePublic(db,"ensureTable");
 		db.ensureTable();
+		var r = new Query( datasource="coolblog", sql="check table logs").execute().getResult();
+		assertEquals( r.msg_text, "ok" );
 	}
 	
 	function testLogMessage(){

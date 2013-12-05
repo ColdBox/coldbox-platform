@@ -223,7 +223,7 @@ If you are building a mapper, the map must have the above keys in it.
 					#listgetAt(cols,1)# VARCHAR(36) NOT NULL,
 					#listgetAt(cols,2)# VARCHAR(10) NOT NULL,
 					#listgetAt(cols,3)# VARCHAR(100) NOT NULL,
-					#listgetAt(cols,4)# DATETIME NOT NULL,
+					#listgetAt(cols,4)# #getDateTimeColumnType()# NOT NULL,
 					#listgetAt(cols,5)# VARCHAR(100) NOT NULL,
 					#listgetAt(cols,6)# #getProperty("textDBType")#,
 					#listgetAt(cols,7)# #getProperty("textDBType")#,
@@ -272,6 +272,31 @@ If you are building a mapper, the map must have the above keys in it.
 				}
 				default : {
 					return "cf_sql_timestamp";
+				}
+			}   
+    	</cfscript>    
+    </cffunction>
+
+    <!--- getDateTimeColumnType --->    
+    <cffunction name="getDateTimeColumnType" output="false" access="private" returntype="any">    
+    	<cfset var qResults = "">
+    	<cfdbinfo type="Version" name="qResults" datasource="#getProperty( 'dsn' )#" >
+    	<cfscript>	 
+			switch( qResults.database_productName ){
+				case "PostgreSQL" : {
+					return "TIMESTAMP";
+				}
+				case "MySQL" : {
+					return "DATETIME";
+				}
+				case "Microsoft SQL Server" : {
+					return "DATETIME";
+				}
+				case "Oracle" :{
+					return "DATE";
+				}
+				default : {
+					return "DATETIME";
 				}
 			}   
     	</cfscript>    
