@@ -526,7 +526,8 @@ component{
 	* @var.hint The data to send
 	* @deepCopy.hint By default we do not duplicate the incoming information, but you can :)
 	*/
-	any function debug( required var, boolean deepCopy=false ){
+	any function debug( var, boolean deepCopy=false ){
+		if( isNull( arguments.var ) ){ arrayAppend( this.$debugBuffer, "null" ); return; }
 		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10"{
 			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
 			arrayAppend( this.$debugBuffer, newVar );
