@@ -1556,13 +1556,13 @@ Description :
 			var entityValue = "";
 
 			// binding?
-			if( isObject(arguments.args.bind) ){
+			if( isObject( arguments.args.bind ) ){
 				// do we have a bindProperty, else default it from the name
-				if( NOT len(arguments.args.bindProperty) ){
+				if( NOT len( arguments.args.bindProperty ) ){
 
 					// check if name exists else throw exception
-					if( NOT structKeyExists(arguments.args,"name") OR NOT len(arguments.args.name)){
-						$throw(type="HTMLHelper.NameBindingException",message="The 'name' argument was not passed and not binding property was passed, so we can't bind dude!");
+					if( NOT structKeyExists( arguments.args, "name" ) OR NOT len( arguments.args.name ) ){
+						$throw( type="HTMLHelper.NameBindingException", message="The 'name' argument was not passed and not binding property was passed, so we can't bind dude!" );
 					}
 
 					// bind name property
@@ -1570,15 +1570,21 @@ Description :
 				}
 
 				// entity value
-				entityValue = evaluate("arguments.args.bind.get#arguments.args.bindProperty#()");
+				entityValue = evaluate( "arguments.args.bind.get#arguments.args.bindProperty#()" );
 				if( isNull( entityValue ) ){ entityValue = ""; }
 				// Verify if the value is an entity, if it is, then use the 'column' to retrieve the value
-				if( isObject( entityValue ) ){ entityValue = evaluate("entityValue.get#arguments.args.column#()"); }
+				if( isObject( entityValue ) ){ entityValue = evaluate( "entityValue.get#arguments.args.column#()" ); }
 
 				// If radio or checkbox button, check it
-				if( structKeyExists(arguments.args,"type") AND listFindNoCase("radio,checkbox", arguments.args.type) ){
-					// is incoming value eq to property value?
-					if( structKeyExists(arguments.args,"value") and arguments.args.value EQ entityValue ){
+				if( structKeyExists( arguments.args, "type" ) AND listFindNoCase( "radio,checkbox", arguments.args.type ) ){
+					// is incoming value eq to property value with boolean aspects
+					if( structKeyExists( arguments.args, "value" ) and
+					    isBoolean( arguments.args.value ) and 
+					    yesNoFormat( arguments.args.value ) EQ yesNoFormat( entityValue ) ){
+						arguments.args.checked = true;
+					}
+					// else with no boolean evals
+					else if( structKeyExists( arguments.args, "value" ) and arguments.args.value EQ entityValue ){
 						arguments.args.checked = true;
 					}
 				}
@@ -1668,18 +1674,21 @@ Description :
 			var datakey = "";
 
 			// global exclusions
-			arguments.excludes &= ",fieldWrapper,labelWrapper,entity,booleanSelect,textareas,manytoone,onetomany,sendToHeader";
+			arguments.excludes &= ",fieldWrapper,labelWrapper,entity,booleanSelect,textareas,manytoone,onetomany,sendToHeader,bind";
 
 			for(key in arguments.target){
+				// Excludes
+				if( len( arguments.excludes ) AND listFindNoCase( arguments.excludes, key ) ){
+					continue;
+				}
 				// Normal Keys
-				if( (NOT len(arguments.excludes) OR (len(arguments.excludes) AND NOT listFindNoCase(arguments.excludes,key)))
-						AND (structKeyExists(arguments.target, key) AND isSimpleValue(arguments.target[key]) AND len(arguments.target[key])) ){
+				if( structKeyExists( arguments.target, key ) AND isSimpleValue( arguments.target[ key ] ) AND len( arguments.target[ key ] ) ){
 					arguments.buffer.append(' #lcase(key)#="#arguments.target[key]#"');
 				}
 				// data keys
 				if( isStruct( arguments.target[ key ] ) ){
 					for( dataKey in arguments.target[ key ] ){
-						if( isSimplevalue( arguments.target[ key ][ dataKey ] ) ){
+						if( isSimplevalue( arguments.target[ key ][ dataKey ] ) AND len( arguments.target[ key ][ dataKey ] ) ){
 							arguments.buffer.append(' #lcase( key )#-#lcase( dataKey )#="#arguments.target[ key ][ datakey ]#"');
 						}
 					}

@@ -429,17 +429,24 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 
 	function testRadioButton(){
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.radioButton(name="lastName", bind=majano, value="majano");
+		
+		assertTrue( findNocase('value="majano"', str) );
+		assertTrue( findNocase('checked="true"', str) );
+
 		str = plugin.radioButton(name="message");
 		assertEquals('<input name="message" value="true" id="message" type="radio"/>', str);
 
 		str = plugin.radioButton(name="message",value="test",checked=true);
-		debug(str);
-		assertEquals('<input name="message" value="test" id="message" checked="checked" type="radio"/>', str);
-
-		// entity binding
+		assertEquals( "checked", xmlParse( str ).input.xmlAttributes.checked );
+		
+		
 		majano = entityLoad("User",{lastName="Majano"}, true);
-		str = plugin.radioButton(name="lastName", bind=majano, value="majano");
-		assertTrue( findNocase('value="majano"', str) );
+		majano.setuserName( 'yes' );
+		str = plugin.radioButton( name="userName", bind=majano, value="yes" );
+		assertTrue( findNocase('value="yes"', str) );
 		assertTrue( findNocase('checked="true"', str) );
 	}
 
