@@ -13,11 +13,23 @@ Description :
 import coldbox.system.orm.hibernate.*;
 component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	
-	DetachedCriteriaBuilder function init( required String entityName, required String alias ) {
+	/**
+	* Constructor
+	*/
+	DetachedCriteriaBuilder function init( 
+		required string entityName, 
+		required string alias,
+		required any ORMService 
+	){
 		// create new DetachedCriteria
 		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName( arguments.entityName, arguments.alias );
+		
 		// setup base builder with detached criteria and subqueries
-		super.init( arguments.entityName, criteria, new criterion.Subqueries( criteria ) );
+		super.init( entityName=arguments.entityName, 
+					criteria=criteria, 
+					restrictions=new criterion.Subqueries( criteria ),
+					ORMService=arguments.ORMService );
+		
 		return this;
 	}
 	
@@ -39,7 +51,7 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 			default: 
 				nativeCriteria.add( r );
 				// process interception
-				eventManager.processState( "onCriteriaBuilderAddition", {
+				variables.eventManager.processState( "onCriteriaBuilderAddition", {
 					"type" = "Subquery Restriction",
 					"CriteriaBuilder" = this
 				});
@@ -49,7 +61,7 @@ component accessors="true" extends="coldbox.system.orm.hibernate.BaseBuilder" {
 	}
 	
 	public any function getNativeCriteria() {
-		var ormsession = orm.getSession();
+		var ormsession = variables.ORMService.getORM().getSession();
 		return variables.nativeCriteria.getExecutableCriteria( ormsession );
 	}
 

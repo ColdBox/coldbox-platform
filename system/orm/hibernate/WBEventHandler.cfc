@@ -59,111 +59,118 @@ component implements="CFIDE.orm.IEventHandler"{
 	/**
 	* The scope key to use
 	*/
-	scopeKey = "wirebox";
+	variables.scopeKey = "wirebox";
 	
 	/**
 	* Include list of ORM entities to include in the injection, if blank it includes all, which is the default
 	*/
-	injectorInclude = "";
+	variables.injectorInclude = "";
 	
 	/**
 	* Exclude list of ORM entities to exclude in the injection, if blank it includes none, which is the default
 	*/
-	injectorExclude = "";
+	variables.injectorExclude = "";
 	
 	/**
 	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
 	*/
-	public void function postNew(any entity,any entityName){
-		var args = {entity = arguments.entity, entityName=arguments.entityName};
-		processEntityInjection(args.entityName, args.entity);
-		announceInterception("ORMPostNew",args);
+	public void function postNew( entity, entityName ){
+		var args = { entity = arguments.entity, entityName=arguments.entityName };
+		processEntityInjection( args.entityName, args.entity );
+		announceInterception( "ORMPostNew", args );
 	}
 	
 	/**
 	* preLoad called by hibernate which in turn announces a WireBox interception: ORMPreLoad
 	*/
-	public void function preLoad(any entity){
-		announceInterception("ORMPreLoad",{entity = arguments.entity});
+	public void function preLoad( entity ){
+		announceInterception( "ORMPreLoad", { entity = arguments.entity } );
 	}
 
 	/**
 	* postLoad called by hibernate which in turn announces a WireBox interception: ORMPostLoad
 	*/
-	public void function postLoad(any entity){
+	public void function postLoad( entity ){
 		var orm 		= getORMUtil();
 		var datasource 	= orm.getEntityDatasource( arguments.entity );
 		
 		var args = { entity=arguments.entity, entityName=orm.getSession( datasource ).getEntityName( arguments.entity ) };
 		processEntityInjection(args.entityName, args.entity);
-		announceInterception("ORMPostLoad",args);
+		announceInterception( "ORMPostLoad",args);
 	}
 
 	/**
 	* postDelete called by hibernate which in turn announces a WireBox interception: ORMPostDelete
 	*/
-	public void function postDelete(any entity){
-		announceInterception("ORMPostDelete", {entity=arguments.entity});
+	public void function postDelete( entity ){
+		announceInterception( "ORMPostDelete", {entity=arguments.entity});
 	}
 
 	/**
 	* preDelete called by hibernate which in turn announces a WireBox interception: ORMPreDelete
 	*/
-	public void function preDelete(any entity) {
-		announceInterception("ORMPreDelete", {entity=arguments.entity});
+	public void function preDelete( entity ) {
+		announceInterception( "ORMPreDelete", {entity=arguments.entity});
 	}
 
 	/**
 	* preUpdate called by hibernate which in turn announces a WireBox interception: ORMPreUpdate
 	*/
-	public void function preUpdate(any entity, struct oldData=structNew()){
-		announceInterception("ORMPreUpdate", {entity=arguments.entity, oldData=arguments.oldData});
+	public void function preUpdate( entity, struct oldData=structNew()){
+		announceInterception( "ORMPreUpdate", {entity=arguments.entity, oldData=arguments.oldData});
 	}
 
 	/**
 	* postUpdate called by hibernate which in turn announces a WireBox interception: ORMPostUpdate
 	*/
-	public void function postUpdate(any entity){
-		announceInterception("ORMPostUpdate", {entity=arguments.entity});
+	public void function postUpdate( entity ){
+		announceInterception( "ORMPostUpdate", {entity=arguments.entity});
 	}
 
 	/**
 	* preInsert called by hibernate which in turn announces a WireBox interception: ORMPreInsert
 	*/
-	public void function preInsert(any entity){
-		announceInterception("ORMPreInsert", {entity=arguments.entity});
+	public void function preInsert( entity ){
+		announceInterception( "ORMPreInsert", {entity=arguments.entity});
 	}
 
 	/**
 	* postInsert called by hibernate which in turn announces a WireBox interception: ORMPostInsert
 	*/
-	public void function postInsert(any entity){
-		announceInterception("ORMPostInsert", {entity=arguments.entity});
+	public void function postInsert( entity ){
+		announceInterception( "ORMPostInsert", {entity=arguments.entity});
 	}
 
 	/**
 	* preSave called by WireBox Base service before save() calls
 	*/
-	public void function preSave(any entity){
-		announceInterception("ORMPreSave", {entity=arguments.entity});
+	public void function preSave( entity ){
+		announceInterception( "ORMPreSave", {entity=arguments.entity});
 	}
 
 	/**
 	* postSave called by WireBox Base service after transaction commit or rollback via the save() method
 	*/
-	public void function postSave(any entity){
-		announceInterception("ORMPostSave", {entity=arguments.entity});
+	public void function postSave( entity ){
+		announceInterception( "ORMPostSave", {entity=arguments.entity});
 	}
-	
-	/************************************** PRIVATE *********************************************/
-	
+
 	/**
 	* Process a wirebox event
 	*/
-	private function announceInterception(required string state, data=structNew()){
+	public function announceInterception( required string state, data=structNew() ){
 		// announce event
 		getWireBox().getEventManager().processState( arguments.state, arguments.data );
 	}
+
+	/**
+	* Get the system Event Manager
+	*/
+	public function getEventManager(){
+		return getWireBox().getEventManager();
+	}
+	
+	/************************************** PRIVATE *********************************************/
 	
 	/**
 	* Get a reference to WireBox
@@ -195,4 +202,5 @@ component implements="CFIDE.orm.IEventHandler"{
 	private function getORMUtil() {
 		return new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 	}
+
 }

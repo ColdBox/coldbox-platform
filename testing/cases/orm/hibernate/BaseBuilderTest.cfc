@@ -9,10 +9,17 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function setup(){
+		ormService = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService")
+					.init();
+		mockEventHandler = getMockBox().createStub().$( "getEventManager", 
+			getMockBox().createStub().$( "processState" )
+		);
+		ormService.$( "getORMEventHandler", mockEventHandler );
+
 		criteria   = getMockBox().createMock("coldbox.system.orm.hibernate.CriteriaBuilder");
-		criteria.init("User");
+		criteria.init( entityName="User", ORMService=ormService );
 		subCriteria   = getMockBox().createMock("coldbox.system.orm.hibernate.DetachedCriteriaBuilder");
-		subCriteria.init("User","User2");
+		subCriteria.init( entityName="User", alias="User2", ormService=ormService );
 
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
@@ -22,7 +29,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	
 	function testCreateCriteria(){
 
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createCriteria("users", criteria.INNER_JOIN )
 				.like("lastName","M%")
 			.list();
@@ -30,27 +37,27 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		assertEquals("Administrator", r[1].getRole() );
 
 		// with join Type
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.withusers( criteria.LEFT_JOIN ).like("lastName","M%")
 			.list();
 			
 		assertEquals("Administrator", r[1].getRole() );
 		// No Joins
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.withusers().like("lastName","M%")
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
 	}
 
 	function testCreateAlias(){
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%")
 			.list();
 
 		assertEquals("Administrator", r[1].getRole() );
 		// with join Type
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users","u")
 			.like("u.lastName","M%")
 			.list();
@@ -285,7 +292,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testGetSQL() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		// test it returns a string
@@ -301,7 +308,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testGetSqlLog() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		
@@ -309,7 +316,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testStartSqlLog() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.startSqlLog()
 			.like("u.lastName","M%");
@@ -318,7 +325,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testStopSqlLog() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.startSqlLog()
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%")
@@ -328,7 +335,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testLogSql() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 			
@@ -340,7 +347,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testCanLogSql() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		// make the private method public
@@ -354,7 +361,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testHasProjection() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		// make the private method public
@@ -368,7 +375,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testGetPositionalSQLParameterValues() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		var values = r.getPositionalSQLParameterValues();
@@ -379,7 +386,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testGetPositionalSQLParameterTypes() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		var simpletypes = r.getPositionalSQLParameterTypes( true );
@@ -393,7 +400,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testGetPositionalSQLParameters() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		var params = r.getPositionalSQLParameters();

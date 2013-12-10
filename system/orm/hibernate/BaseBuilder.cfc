@@ -36,33 +36,51 @@ import coldbox.system.orm.hibernate.*;
 import org.hibernate.*;
 component accessors="true"{
 			
-	// The native criteria object
+	/** 
+	* The native criteria object
+	*/
 	property name="nativeCriteria"  type="any";
-	// The entity name this criteria builder is binded to
-	property name="entityName" type="string";
+	/** 
+	* The entity name this criteria builder is binded to
+	*/
+	property name="entityName" 		type="string";
+	/** 
+	* The bit that determines if we are tracking SQL
+	*/
+	property name="SQLLoggerActive" type="boolean" default="false";
+	/** 
+	* The system event manager
+	*/
+	property name="eventManager"  	type="any";
 
 /************************************** Constructor *********************************************/
 
 	// Constructor
-	BaseBuilder function init( required string entityName, required any criteria, required any restrictions ){				 
+	BaseBuilder function init( 
+		required string entityName, 
+		required any criteria, 
+		required any restrictions,
+		required any ORMService
+	){				 
+	
 		// java projections linkage
 		this.projections = CreateObject("java","org.hibernate.criterion.Projections");
 		// restrictions linkage
 		this.restrictions = arguments.restrictions;
+		
 		// hibernate criteria query setup - will be either CriteriaBuilder or DetachedCriteriaBuilder
-		setNativeCriteria( arguments.criteria );
+		variables.nativeCriteria = arguments.criteria;
 		// set entity name
-		setEntityName( arguments.entityName );
-		// get orm utils
-		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
+		variables.entityName = arguments.entityName;
+		// Link to orm service
+		variables.ORMService = arguments.ORMService;
+		// Link to system event handler
+		variables.eventManager = arguments.ORMService.getORMEventHandler().getEventManager();
 		// set sql logger usage
-		sqlLoggerActive = false;
+		variables.SQLLoggerActive = false;
 		// add SQL Helper
-		SQLHelper = createObject( "component", "coldbox.system.orm.hibernate.sql.SQLHelper" ).init( this );
-		// get wirebox
-		wirebox = application[ "wirebox" ];
-		// get event manager
-		eventManager = wirebox.getEventManager();
+		variables.SQLHelper = new coldbox.system.orm.hibernate.sql.SQLHelper( this );
+		
 		// Setup pseudo-static join types and transformer types:
 		this.ALIAS_TO_ENTITY_MAP	= nativeCriteria.ALIAS_TO_ENTITY_MAP;
 		this.DISTINCT_ROOT_ENTITY	= nativeCriteria.DISTINCT_ROOT_ENTITY;
@@ -81,6 +99,12 @@ component accessors="true"{
 	// setter override
 	any function setNativeCriteria( required any criteria ){
 		variables.nativeCriteria = arguments.criteria;
+		return this;
+	}
+
+	// setter override
+	any function setEntityName( required any entityName ){
+		variables.entityName = arguments.entityName;
 		return this;
 	}
 		
@@ -107,11 +131,14 @@ component accessors="true"{
 			orderBy.ignoreCase();
 		}
 		nativeCriteria.addOrder( orderBy );
+		
 		// process interception
-		eventManager.processState( "onCriteriaBuilderAddition", {
-			"type" = "Order",
-			"CriteriaBuilder" = this
-		});
+		if( ORMService.getEventHandling() ){
+			variables.eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Order",
+				"criteriaBuilder" = this
+			});
+		}
 		return this;
 	}
 	
@@ -124,20 +151,30 @@ component accessors="true"{
 	any function createAlias( required string associationName, required string alias, numeric joinType ){
 		// No Join type
 		if( NOT structKeyExists(arguments,"joinType") ){
+			// create alias
 			nativeCriteria.createAlias( arguments.associationName, arguments.alias );
-				eventManager.processState( "onCriteriaBuilderAddition", {
-				"type" = "Alias",
-				"CriteriaBuilder" = this
-			});
+
+			// announce
+			if( ORMService.getEventHandling() ){
+				variables.eventManager.processState( "onCriteriaBuilderAddition", {
+					"type" = "Alias",
+					"criteriaBuilder" = this
+				});
+			}
+				
 			return this;
 		}
 		// With Join Type
 		nativeCriteria.createAlias( arguments.associationName, arguments.alias, arguments.joinType );
-		// process interception
-		eventManager.processState( "onCriteriaBuilderAddition", {
-			"type" = "Alias w/Join Type",
-			"CriteriaBuilder" = this
-		});
+		
+		// announce
+		if( ORMService.getEventHandling() ){
+			variables.eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Alias w/Join Type",
+				"criteriaBuilder" = this
+			});
+		}
+
 		return this;
 	}
 	
@@ -159,11 +196,15 @@ component accessors="true"{
 		
 		// With Join Type
 		nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.joinType );
-		// process interception
-		eventManager.processState( "onCriteriaBuilderAddition", {
-			"type" = "New Criteria w/Join Type",
-			"CriteriaBuilder" = this
-		});
+		
+		// announce
+		if( ORMService.getEventHandling() ){
+			variables.eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "New Criteria w/Join Type",
+				"criteriaBuilder" = this
+			});
+		}
+
 		return this;
 	}
 	
@@ -177,11 +218,6 @@ component accessors="true"{
 		}
 		for(var i=1; i LTE ArrayLen(arguments.criterion); i++) {
 			nativeCriteria.add( arguments.criterion[i] );
-			// process interception
-			/*eventManager.processState( "onCriteriaBuilderAddition", {
-				"type" = "Restriction",
-				"CriteriaBuilder" = this
-			});*/
 		}	   
 		return this;
 	}
@@ -199,12 +235,17 @@ component accessors="true"{
 	* Setup a single or a projection list via native projections class: criteria.projections
 	*/
 	any function setProjection(any projection){
+		// set projection 
 		nativeCriteria.setProjection( arguments.projection );
-		// process interception
-		eventManager.processState( "onCriteriaBuilderAddition", {
-			"type" = "Projection",
-			"CriteriaBuilder" = this
-		});
+		
+		// announce
+		if( ORMService.getEventHandling() ){
+			variables.eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Projection",
+				"criteriaBuilder" = this
+			});
+		}
+
 		return this;
 	}
 	
@@ -306,11 +347,15 @@ component accessors="true"{
 		}
 		// add all the projections
 		nativeCriteria.setProjection( projectionList );
-		// process interception
-		eventManager.processState( "onCriteriaBuilderAddition", {
-			"type" = "Projection",
-			"CriteriaBuilder" = this
-		});
+
+		// announce
+		if( ORMService.getEventHandling() ){
+			variables.eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Projection",
+				"criteriaBuilder" = this
+			});
+		}
+
 		return this;
 	}
 
@@ -434,11 +479,16 @@ component accessors="true"{
 		for(var thisP in arguments.propertyName){
 			// add projection
 			arguments.projectionList.add( evaluate("this.PROJECTIONS.#arguments.projectionType#( listFirst(thisP,':') )"), listLast(thisP,":") );
-			// process interception
-			eventManager.processState( "onCriteriaBuilderAddition", {
-				"type" = "Projection",
-				"CriteriaBuilder" = this
-			});
+			
+
+			// announce
+			if( ORMService.getEventHandling() ){
+				variables.eventManager.processState( "onCriteriaBuilderAddition", {
+					"type" = "Projection",
+					"criteriaBuilder" = this
+				});
+			}
+
 		}
 	}
 	
@@ -449,7 +499,7 @@ component accessors="true"{
 	 */
 	private struct function prepareSQLProjection( rawProjection ) {
 		// get metadata for current root entity
-		var metaData = orm.getSessionFactory( orm.getEntityDatasource( this.getentityName() ) )
+		var metaData = ORMService.getORM().getSessionFactory( ORMService.getORM().getEntityDatasource( this.getentityName() ) )
 						  .getClassMetaData( this.getentityName() );
 		// establish projection struct
 		var projection = {};

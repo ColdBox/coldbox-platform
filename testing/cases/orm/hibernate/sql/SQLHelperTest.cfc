@@ -9,8 +9,15 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function setup(){
+		ormService = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService")
+					.init();
+		mockEventHandler = getMockBox().createStub().$( "getEventManager", 
+			getMockBox().createStub().$( "processState" )
+		);
+		ormService.$( "getORMEventHandler", mockEventHandler );
+
 		criteria   = getMockBox().createMock("coldbox.system.orm.hibernate.CriteriaBuilder");
-		criteria.init("User");
+		criteria.init( entityName="User", ormservice=ormservice );
 		SQLHelper = getMockBox().createMock("coldbox.system.orm.hibernate.sql.SQLHelper");
 		SQLHelper.init( criteria );
 
@@ -51,7 +58,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testGetPositionalSQLParameterValues() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormservice=ormservice )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		var values = r.getPositionalSQLParameterValues();
@@ -62,7 +69,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testGetPositionalSQLParameterTypes() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormservice=ormservice )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		var simpletypes = r.getPositionalSQLParameterTypes( true );
@@ -76,7 +83,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function testGetPositionalSQLParameters() {
-		r = criteria.init("Role")
+		r = criteria.init( entityName="Role", ormservice=ormservice )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
 		var params = r.getPositionalSQLParameters();

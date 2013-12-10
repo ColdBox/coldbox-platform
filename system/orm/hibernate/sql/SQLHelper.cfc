@@ -9,75 +9,105 @@ Description :
 */
 import org.hibernate.*;
 component displayName="SQLHelper" accessors="true" {
-    property name="log" type="array";
-    property name="formatSql" type="boolean";
-    property name="returnExecutableSql" type="boolean";
 
-    SQLHelper function init( required Any CriteriaBuilder, boolean returnExecutableSql = false, boolean formatSql = false  ) {
-        cb = arguments.CriteriaBuilder;
-        entityName = cb.getEntityName();
-        criteriaImpl = cb.getNativeCriteria();
-        ormSession = criteriaImpl.getSession();
-        factory = ormSession.getFactory();
+    /**
+    * The log array
+    */
+    property name="log"                 type="array";
+    /**
+    * Format the SQL or not.
+    */
+    property name="formatSql"           type="boolean"  default="false";
+    /**
+    * Bit to return the executable SQL or not
+    */
+    property name="returnExecutableSql" type="boolean"  default="false";
+
+    /**
+    * Constructor
+    */
+    SQLHelper function init( 
+        required any criteriaBuilder, 
+        boolean returnExecutableSql = false, 
+        boolean formatSql = false  
+    ){
+
+        // Setup properties
+        variables.cb            = arguments.criteriaBuilder;
+        variables.entityName    = cb.getEntityName();
+        variables.criteriaImpl  = cb.getNativeCriteria();
+        variables.ormSession    = criteriaImpl.getSession();
+        variables.factory       = ormSession.getFactory();
         // get formatter for sql string beautification
-        formatter = createObject( "java", "org.hibernate.jdbc.util.BasicFormatterImpl" );
+        variables.formatter     = createObject( "java", "org.hibernate.jdbc.util.BasicFormatterImpl" );
         // set properties
-        setLog( [] );
-        setFormatSql( arguments.formatSql );
-        setReturnExecutableSql( arguments.returnExecutableSql );
+        variables.log           = [];
+        variables.formatSQL     = arguments.formatSQL;
+        variables.returnExecutableSql = arguments.returnExecutableSql;
+
         return this;
     }
 
     /**
      * Logs current state of criteria to internal tracking log
-     * @label {String} The label for the log record
+     * @label {string} The label for the log record
      * return void
      */
-    public Void function log( required String label="Criteria" ) {
+    function log( required string label="Criteria" ) {
         var logentry = {
             "type" = arguments.label,
-            "sql" = getSQL( argumentCollection=arguments )
+            "sql"  = getSQL( argumentCollection=arguments )
         };
-        arrayAppend( getLog(), logentry );
+        arrayAppend( variables.log, logentry );
+
+        return this;
     }
 
     /**
      * Returns the SQL string that will be prepared for the criteria object at the time of request
      * @returnExecutableSql {Boolean} Whether or not to do query param replacements on returned SQL string
      * @formatSql {Boolean} Whether to format the sql
-     * return String
+     * return string
      */
-    public String function getSQL( required Boolean returnExecutableSql=getReturnExecutableSql(), required Boolean formatSql=getFormatSql() ) {
-        var sql = getCriteriaJoinWalker().getSQLString();
+    string function getSQL( 
+        required boolean returnExecutableSql=getReturnExecutableSql(), 
+        required boolean formatSql=getFormatSql() 
+    ){
+
+        var sql = getCriteriaJoinWalker().getSQLstring();
         var selection = getQueryParameters().getRowSelection();
         var useLimit = useLimit( selection );
         var hasFirstRow = getFirstRow( selection ) > 0;
         var useOffset = hasFirstRow && useLimit && getDialect().supportsLimitOffset();
+       
         // try to add limit/offset in
         if( useLimit ) {
-            sql = getDialect().getLimitString( 
+            sql = getDialect().getLimitstring( 
                 sql, 
                 useOffset ? getFirstRow(selection) : 0,
                 getMaxOrLimit( selection )
             );
         }
+
         // if we want executable sql string...
         if( arguments.returnExecutableSql ) {
             sql = replaceQueryParameters( sql, arguments.formatSql );
         }
+        
         // if we want to beautify the sql string
         if( arguments.formatSql ) {
             sql = applyFormatting( sql );
         }
+        
         return sql;
     }
 
     /**
      * Applies pretty formatting to a sql string
-     * @sql {String} The SQL string to format
-     * return String
+     * @sql {string} The SQL string to format
+     * return string
      */
-    public String function applyFormatting( required String sql ) {
+    string function applyFormatting( required string sql ) {
         return "<pre>" & formatter.format( arguments.sql ) & "</pre>";
     }
 
@@ -85,7 +115,7 @@ component displayName="SQLHelper" accessors="true" {
      * Gets the positional SQL parameter values from the criteria query
      * return array
      */
-    public Array function getPositionalSQLParameterValues() {
+    array function getPositionalSQLParameterValues() {
         return getCriteriaQueryTranslator().getQueryParameters().getPositionalParameterValues();
     }
 
@@ -94,7 +124,7 @@ component displayName="SQLHelper" accessors="true" {
      * @simple {Boolean} Whether to return a simply array or full objects
      * return any
      */
-    public Any function getPositionalSQLParameterTypes( required Boolean simple=true ) {
+    any function getPositionalSQLParameterTypes( required Boolean simple=true ) {
         var types = getCriteriaQueryTranslator().getQueryParameters().getPositionalParameterTypes();
         if( !arguments.simple ) {
             return types;
@@ -126,17 +156,17 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Generates a unique SQL Alias within the criteria query
-     * return String
+     * return string
      */
-    public String function generateSQLAlias() {
+    string function generateSQLAlias() {
         return getCriteriaQueryTranslator().generateSQLAlias();
     }
 
     /**
      * Retrieves the "rooted" SQL alias for the criteria query
-     * return String
+     * return string
      */
-    public String function getRootSQLAlias() {
+    string function getRootSQLAlias() {
         return getCriteriaQueryTranslator().getRootSQLAlias();
     }
 
@@ -144,15 +174,15 @@ component displayName="SQLHelper" accessors="true" {
      * Retrieves the projected types of the criteria query
      * return string
      */
-    public Any function getProjectedTypes() {
+    any function getProjectedTypes() {
         return getCriteriaQueryTranslator().getProjectedTypes();
     }
 
     /**
      * Get the alias of the current projection
-     * return String
+     * return string
      */
-    public String function getProjectionAlias() {
+    string function getProjectionAlias() {
         return getCriteriaQueryTranslator().getProjectedAliases()[ 1 ];
     }
 
@@ -160,22 +190,24 @@ component displayName="SQLHelper" accessors="true" {
      * Retrieves the correct dialect of the database engine
      * return any
      */
-    public Any function getDialect() {
+    any function getDialect() {
         return factory.getDialect();
     }
 
-    public Boolean function canLogLimitOffset() {
+    Boolean function canLogLimitOffset() {
         var dialect = getDialect();
         var max = !isNull( criteriaImpl.getMaxResults() ) ? criteriaImpl.getMaxResults() : 0;
         return dialect.supportsLimitOffset() && max > 0;
     }
+
+    /********************************* PRIVATE *********************************/
 
     /**
      * Small utility method to convert weird arrays from Java methods into something CF understands
      * @array {Array} The array to convert
      * return Array
      */
-    private Array function convertToCFArray( required Any array ) {
+    private array function convertToCFArray( required any array ) {
         var newArray = [];
         newArray.addAll( createObject( "java", "java.util.Arrays" ).asList( arguments.array ) );
         return newArray;
@@ -185,17 +217,17 @@ component displayName="SQLHelper" accessors="true" {
      * Gets currently applied query parameters for the query object
      * return org.hibernate.engine.QueryParameters
      */
-    private Any function getQueryParameters() {
+    private any function getQueryParameters() {
         var translator = getCriteriaQueryTranslator();
         return translator.getQueryParameters();
     }
 
     /**
      * replace query parameter placeholders with their actual values (for detachedSQLProjection)
-     * @sql (String) The sql string to massage
-     * returns String
+     * @sql (string) The sql string to massage
+     * returns string
      */
-    private String function replaceQueryParameters( required string sql ) {
+    private string function replaceQueryParameters( required string sql ) {
         var dialect = getDialect();
         var parameters = getQueryParameters();
         // get parameter values and types
@@ -261,7 +293,7 @@ component displayName="SQLHelper" accessors="true" {
                 var value = positionalValues[ x ];
                 // cast values to appropriate SQL type
                 if( !type.isAssociationType() && type.getName() != "text" ) {
-                    var pvTyped = type.objectToSQLString( value, getDialect() );
+                    var pvTyped = type.objectToSQLstring( value, getDialect() );
                     // remove parameter placeholders
                     arguments.sql = reReplaceNoCase( arguments.sql, "\?", pvTyped, "one" );
                 }
@@ -269,7 +301,7 @@ component displayName="SQLHelper" accessors="true" {
                     // remove parameter placeholders
                     arguments.sql = reReplaceNoCase( arguments.sql, "\?", "'#value#'", "one" );
                 }
-                // association values can't be cast to SQL String by normal convention; just do a simple replace
+                // association values can't be cast to SQL string by normal convention; just do a simple replace
                 else {
                     arguments.sql = reReplaceNoCase( arguments.sql, "\?", value, "one" );
                 }
@@ -284,10 +316,10 @@ component displayName="SQLHelper" accessors="true" {
      * Inserts parameter values into the running list based on the dialect of the database engine
      * @positionalValues {Array} The positional values for this query
      * @append {Boolean} Whether values are appended or prepended to the array
-     * @selection {Any} The current row selection
+     * @selection {any} The current row selection
      * return Array
      */
-    private Array function bindLimitParameters( required Array positionalValues, required Boolean append, required Any selection ) {
+    private Array function bindLimitParameters( required Array positionalValues, required Boolean append, required any selection ) {
         var dialect = getDialect();
         // trackers
         var newPositionalValues = [];
@@ -329,37 +361,37 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Determines whether the database engine allows for the use of "limit/offset" syntax
-     * @selection {Any} The current row selection
+     * @selection {any} The current row selection
      * return Boolean
      */
-    private Boolean function useLimit( required Any selection ) {
+    private Boolean function useLimit( required any selection ) {
         return getDialect().supportsLimit() && hasMaxRows( argumentCollection=arguments );
     }
 
     /**
      * Determines whether the current row selection has a limit already applied
-     * @selection {Any} The current row selection
+     * @selection {any} The current row selection
      * return Boolean
      */
-    private Boolean function hasMaxRows( required Any selection ) {
+    private Boolean function hasMaxRows( required any selection ) {
         return !isNull( selection.getMaxRows() );
     }
 
     /**
      * Gets the first row (or 0) for the current row selection
-     * @selection {Any} The current row selection
+     * @selection {any} The current row selection
      * return Numeric
      */
-    private Numeric function getFirstRow( required Any selection ) {
+    private Numeric function getFirstRow( required any selection ) {
         return isNull( selection.getFirstRow() ) ? 0 : selection.getFirstRow().intValue();
     }
 
     /**
      * Gets correct "limit" value for the current row selection
-     * @selection {Any} The current row selection
+     * @selection {any} The current row selection
      * return Numeric
      */
-    private Numeric function getMaxOrLimit( required Any selection ) {
+    private Numeric function getMaxOrLimit( required any selection ) {
         var dialect = getDialect();
         var firstRow = dialect.convertToFirstRowValue( getFirstRow( selection ) );
         var lastRow = selection.getMaxRows().intValue();

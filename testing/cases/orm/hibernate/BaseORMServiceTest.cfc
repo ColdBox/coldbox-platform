@@ -9,14 +9,14 @@
 	}
 	
 	function setup(){
-		ormservice   = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService");
-		mockEH = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		ormservice 	= getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService");
+		mockEH 		= getMockBox().createMock("coldbox.system.orm.hibernate.WBEventHandler");
 
 		// Mocks
 		ormservice.init();
 
 		// Mock event handler
-		ormservice.$property("ORMEventHandler","variables",mockEH);
+		ormservice.$property( "ORMEventHandler", "variables", mockEH );
 
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
@@ -230,16 +230,18 @@
 	}
 
 	function testDeleteWithFlush(){
+		ormservice.clear();
+
 		cat = entityNew("Category");
 		cat.setCategory('unitTest');
 		cat.setDescription('unitTest');
 		entitySave(cat);ORMFlush();
 
 		try{
-			test = entityLoad("Category",{category="unittest"}, true);
+			test = entityLoad("Category", {"category"="unitTest"}, true );
 			//debug(test);
 			ormservice.delete(entity=test,flush=true);
-			test = entityLoad("Category",{category="unittest"}, true);
+			test = entityLoad("Category",{category="unitTest"}, true);
 			assertTrue( isNull(test) );
 		}
 		catch(any e){
@@ -637,7 +639,6 @@
 
 	function testNewCriteria(){
 		c = ormservice.newCriteria("User");
-
 	}
 	
 	function testMerge(){

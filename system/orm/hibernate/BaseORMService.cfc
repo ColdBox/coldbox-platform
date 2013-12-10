@@ -43,6 +43,16 @@ component accessors="true"{
 	property name="eventHandling" type="boolean" default="true";
 
 	/**
+	* The system ORM event handler to transmitt ORM events to
+	*/
+	property name="ORMEventHandler";
+
+	/**
+	* The system ORM utility object
+	*/
+	property name="ORM";
+	
+	/**
 	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
 	*/
 	property name="useTransactions" type="boolean" default="true";
@@ -76,35 +86,37 @@ component accessors="true"{
 
 	/************************************** CONSTRUCTOR *********************************************/
 
-	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
-								  boolean useQueryCaching=false,
-								  boolean eventHandling=true,
-								  boolean useTransactions=true,
-								  boolean defaultAsQuery=true){
-		// setup properties
-		setQueryCacheRegion( arguments.queryCacheRegion );
-		setUseQueryCaching( arguments.useQueryCaching );
-		setEventHandling( arguments.eventHandling );
-		setUseTransactions( arguments.useTransactions );
-		setDefaultAsQuery( arguments.defaultAsQuery );
-		setHQLDynamicCache( {} );
+	BaseORMService function init( 
+		string queryCacheRegion="ORMService.defaultCache",
+		boolean useQueryCaching=false,
+		boolean eventHandling=true,
+		boolean useTransactions=true,
+		boolean defaultAsQuery=true
+	){
+		
+		// setup local properties
+		variables.queryCacheRegion 	= arguments.queryCacheRegion;
+		variables.useQueryCaching 	= arguments.useQueryCaching;
+		variables.eventHandling 	= arguments.eventHandling;
+		variables.useTransactions 	= arguments.useTransactions;
+		variables.defaultAsQuery 	= arguments.defaultAsQuery;
+		variables.HQLDynamicCache	= {};
 
 		// Create the ORM Utility component
-		orm = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
+		variables.ORM = new coldbox.system.orm.hibernate.util.ORMUtilFactory().getORMUtil();
 		
 		// Create the service ORM Event Handler
 		if( directoryExists( expandPath("/wirebox") ) OR structKeyExists( application, "cblite" ) ){
-			ORMEventHandler = new coldbox.system.orm.hibernate.WBEventHandler();
+			variables.ORMEventHandler = new coldbox.system.orm.hibernate.WBEventHandler();
 		}
 		else{
-			ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
+			variables.ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
 		}
 
-		// Create our bean populator utility
-		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
-
+		// Create our bean populator utility object
+		variables.beanPopulator = new coldbox.system.core.dynamic.BeanPopulator();
 		// Restrictions orm.hibernate.criterion.Restrictions
-		restrictions = createObject("component","coldbox.system.orm.hibernate.criterion.Restrictions").init();
+		variables.restrictions  = new coldbox.system.orm.hibernate.criterion.Restrictions();
 
 		return this;
 	}
@@ -119,7 +131,7 @@ component accessors="true"{
 							   string queryCacheRegion=getQueryCacheRegion(),
 							   boolean eventHandling=getEventHandling()) {
 
-		return  CreateObject("component", "coldbox.system.orm.hibernate.VirtualEntityService").init( argumentCollection=arguments );
+		return new coldbox.system.orm.hibernate.VirtualEntityService( argumentCollection=arguments );
 	}
 
 	/**
@@ -1407,10 +1419,15 @@ component accessors="true"{
 	* @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
 	* @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
 	*/
-	any function newCriteria(required string entityName,
-							 boolean useQueryCaching=false,
-							 string queryCacheRegion=""){
-
+	any function newCriteria(
+		required string entityName,
+		boolean useQueryCaching=false,
+		string queryCacheRegion=""
+	){
+		
+		// mix in yourself as a dependency
+		arguments.ORMService = this;
+		// create new criteria builder
 		return new CriteriaBuilder( argumentCollection=arguments );
 	}
 
@@ -1439,7 +1456,7 @@ component accessors="true"{
 	* @method the method to closure
 	* @argCollection the arguments to passthrough
 	*/
-	private any function $transactioned(method,argCollection=structnew()){
+	private any function $transactioned( required method, argCollection=structnew() ){
 		// Are we already in a transaction?
 		if( structKeyExists(request,"cbox_aop_transaction") ){
 			return arguments.method(argumentCollection=arguments.argCollection);
