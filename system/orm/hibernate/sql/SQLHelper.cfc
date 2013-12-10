@@ -100,8 +100,8 @@ component displayName="SQLHelper" accessors="true" {
             return types;
         }
         var simplifiedTypes = [];
-        for( var type in types ) {
-            arrayAppend( simplifiedTypes, type.getName() );
+        for( var x=1; x <= arrayLen( types ); x++ ) {
+            arrayAppend( simplifiedTypes, types[ x ].getName() );
         }
         return simplifiedTypes;
     }
@@ -115,7 +115,7 @@ component displayName="SQLHelper" accessors="true" {
         var values = getPositionalSQLParameterValues();
         var types  = getPositionalSQLParameterTypes( true );
         // loop over them
-        for( var x=1; x<=arrayLen( types ); x++ ) {
+        for( var x=1; x <= arrayLen( types ); x++ ) {
             arrayAppend( params, {
                 "type" = types [ x ],
                 "value" = values[ x ]
