@@ -56,8 +56,16 @@
 		<copy todir="${dir.build}/testbox/system/core/conversion">
         	<fileset dir="system/core/conversion" />
         </copy>
-		<copy todir="${dir.build}/runner">
+		<copy todir="${dir.build}/runner-template">
         	<fileset dir="ApplicationTemplates/testbox-runner" />
+        </copy>
+		<copy todir="${dir.build}/runner">
+        	<fileset dir="test-runner" />
+        </copy>
+		<copy todir="${dir.build}/samples">
+        	<fileset dir="testing/cases/testing">
+        		<exclude name="**/BaseTestCaseTest.cfc" />
+        	</fileset>
         </copy>
 		
 		<!-- cleanup coldbox platform specific stuff -->

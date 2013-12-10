@@ -1,7 +1,7 @@
 /**
 * This tests the BDD functionality in TestBox. This is CF10+, Railo4+
 */
-component{
+component extends="coldbox.system.testing.BaseSpec"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
