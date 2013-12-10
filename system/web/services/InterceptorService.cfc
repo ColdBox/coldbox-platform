@@ -37,6 +37,8 @@ Description :
 				"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload",
 				// Debugger
 				"beforeDebuggerPanel", "afterDebuggerPanel",
+				// CriteriaBuilder
+				"onCriteriaBuilderAddition", "beforeCriteriaBuilderList", "afterCriteriaBuilderList", "beforeCriteriaBuilderCount", "afterCriteriaBuilderCount",
 				// ORM Bridge Events
 				"ORMPostNew", "ORMPreLoad", "ORMPostLoad", "ORMPostDelete", "ORMPreDelete", "ORMPreUpdate", "ORMPostUpdate", "ORMPreInsert", "ORMPostInsert", "ORMPreSave", "ORMPostSave" ];
 
