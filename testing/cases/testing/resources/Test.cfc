@@ -7,7 +7,7 @@
 		variables.settings["appname"] = "mockFactory";
 		variables.settings["appmapping"] = "/mockFactory";
 		
-		variables.collaborator = createObject("component","coldbox.testing.cases.testing.Collaborator");		
+		variables.collaborator = createObject("component","coldbox.testing.cases.testing.resources.Collaborator");		
 	</cfscript>
 	
 	<cffunction name="containsTest">

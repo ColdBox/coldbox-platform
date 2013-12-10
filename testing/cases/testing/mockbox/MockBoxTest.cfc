@@ -1,126 +1,125 @@
-﻿<cfcomponent output="false" extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseSpec" displayname="MockBox Suite">
 	
 	<cfscript>
-		this.loadColdBox = false;
 	
 		function setup(){
-			test = getMockBox().createEmptyMock( "coldbox.testing.cases.testing.Test" );
+			test = getMockBox().createEmptyMock( "coldbox.testing.cases.testing.resources.Test" );
 		}
 		
 		function testMockRealMethods(){
-			Test = getMockBox().createMock( "coldbox.testing.cases.testing.Test" );
+			Test = getMockBox().createMock( "coldbox.testing.cases.testing.resources.Test" );
 			test.getData();
-			assertEquals( -1, test.$count( "getData" ) );
+			$assert.isEqual( -1, test.$count( "getData" ) );
 			test.$( "getData", 1000 );
-			assertEquals( 0, test.$count( "getData" ) );
+			$assert.isEqual( 0, test.$count( "getData" ) );
 			test.getData();
 			test.getData();
-			assertEquals( 2, test.$count( "getData" ) );
+			$assert.isEqual( 2, test.$count( "getData" ) );
 		
 			// With DSL
 			test.$reset().$( "getData" ).$results( 1000 );
-			assertEquals( 0, test.$count( "getData" ) );
+			$assert.isEqual( 0, test.$count( "getData" ) );
 			test.getData();
 			test.getData();
-			assertEquals( 2, test.$count( "getData" ) );
-			assertEquals( 1000, test.getData() );
+			$assert.isEqual( 2, test.$count( "getData" ) );
+			$assert.isEqual( 1000, test.getData() );
 		}
 		
 		function testVirtualMethods(){
-			Test = getMockBox().createMock( "coldbox.testing.cases.testing.Test" );
+			Test = getMockBox().createMock( "coldbox.testing.cases.testing.resources.Test" );
 			test.$( "virtualReturn" ).$results( 'Virtual Called Baby!!' );
-			assertEquals( 0, test.$count( "virtualReturn" ) );
-			assertEquals( "Virtual Called Baby!!", test.virtualReturn() );
+			$assert.isEqual( 0, test.$count( "virtualReturn" ) );
+			$assert.isEqual( "Virtual Called Baby!!", test.virtualReturn() );
 			debug( test.$callLog() );
-			assertTrue( structKeyExists( test.$callLog(), "virtualReturn" ) );
+			$assert.isTrue( structKeyExists( test.$callLog(), "virtualReturn" ) );
 		}
 		
 		function testProperties(){
-			Test = getMockBox().createMock( "coldbox.testing.cases.testing.Test" );
+			Test = getMockBox().createMock( "coldbox.testing.cases.testing.resources.Test" );
 			// reload original property value
 			original = test.getReload();
 			test.$property( propertyName="reload", propertyScope="variables", mock=true );
-			assertEquals( true, test.getReload() );
+			$assert.isEqual( true, test.getReload() );
 		}
 		
 		function testMockPrivateMethods(){
-			Test = getMockBox().createMock( "coldbox.testing.cases.testing.Test" );
+			Test = getMockBox().createMock( "coldbox.testing.cases.testing.resources.Test" );
 			name = test.getFullName();
 			debug( name );
 			test.$( "getName", "Mock Ruler" );
-			assertEquals( "Mock Ruler", test.getFullName() );
+			$assert.isEqual( "Mock Ruler", test.getFullName() );
 		}
 		
 		function testSpys(){
-			Test = createObject( "component", "coldbox.testing.cases.testing.Test" );
+			Test = createObject( "component", "coldbox.testing.cases.testing.resources.Test" );
 			getMockBox().prepareMock( test );
 			// mock un-spy methods
-			assertEquals( 5, test.getData() );
-			assertEquals( 5, test.spyTest() );
+			$assert.isEqual( 5, test.getData() );
+			$assert.isEqual( 5, test.spyTest() );
 			// spy the methods
 			test.$( "getData" ).$results( 1000 );
-			assertEquals( 1000, test.getData() );
-			assertEquals( 0, test.spyTest() );
+			$assert.isEqual( 1000, test.getData() );
+			$assert.isEqual( 0, test.spyTest() );
 		}
 		
 		function testMockWithArguments(){
-			Test = getMockBox().createMock( "coldbox.testing.cases.testing.Test" );
+			Test = getMockBox().createMock( "coldbox.testing.cases.testing.resources.Test" );
 			//unmocked
-			assertEquals( "/mockFactory", test.getSetting( "AppMapping" ) );
-			assertEquals( "NOT FOUND", test.getSetting( "DebugMode" ) );
+			$assert.isEqual( "/mockFactory", test.getSetting( "AppMapping" ) );
+			$assert.isEqual( "NOT FOUND", test.getSetting( "DebugMode" ) );
 		
 			// Mock
 			test.$( method='getSetting', callLogging=true ).$args( "AppMapping" ).$results( "mockbox.testing" );
 			test.$( method='getSetting', callLogging=true ).$args( "DebugMode" ).$results( "true" );
-			assertEquals( "mockbox.testing", test.getSetting( "AppMapping" ) );
-			assertEquals( "true", test.getSetting( "DebugMode" ) );
+			$assert.isEqual( "mockbox.testing", test.getSetting( "AppMapping" ) );
+			$assert.isEqual( "true", test.getSetting( "DebugMode" ) );
 		}
 		
 		function testCollaborator(){
-			Test = createObject( "component", "coldbox.testing.cases.testing.Test" );
-			mockCollaborator = getMockBox().createMock( className="coldbox.testing.cases.testing.Collaborator", 
+			Test = createObject( "component", "coldbox.testing.cases.testing.resources.Test" );
+			mockCollaborator = getMockBox().createMock( className="coldbox.testing.cases.testing.resources.Collaborator", 
 		                                             callLogging=true );
 		
 			mockCollaborator.$( "getDataFromDB" ).$results( queryNew( "" ) );
 			Test.setCollaborator( mockCollaborator );
 			debug( mockCollaborator.$callLog() );
-			assertEquals( queryNew( "" ), test.displayData() );
+			$assert.isEqual( queryNew( "" ), test.displayData() );
 		}
 		
 		function testStateMachineResults(){
-			Test = getMockBox().createMock( "coldbox.testing.cases.testing.Test" );
+			Test = getMockBox().createMock( "coldbox.testing.cases.testing.resources.Test" );
 			test.$( "getSetting" ).$results( "S1", "S2", "S3" );
 		
-			assertEquals( "S1", test.getSetting() );
-			assertEquals( "S2", test.getSetting() );
-			assertEquals( "S3", test.getSetting() );
-			assertEquals( "S1", test.getSetting() );
-			assertEquals( "S2", test.getSetting() );
+			$assert.isEqual( "S1", test.getSetting() );
+			$assert.isEqual( "S2", test.getSetting() );
+			$assert.isEqual( "S3", test.getSetting() );
+			$assert.isEqual( "S1", test.getSetting() );
+			$assert.isEqual( "S2", test.getSetting() );
 		}
 		
 		function testStubs(){
 			stub = getMockBox().createStub().$( "getName", "Luis Majano" );
-			assertEquals( "Luis Majano", stub.getName() );
+			$assert.isEqual( "Luis Majano", stub.getName() );
 		}
 		
 		function testVerifyOnce(){
 			test.$( "displayData", queryNew( '' ) ).$( "testIt" ).$( "testNone" );
 			test.testIt();
-			assertTrue( test.$once() );
+			$assert.isTrue( test.$once() );
 			test.displayData();
-			assertTrue( test.$once( "displayData" ) );
+			$assert.isTrue( test.$once( "displayData" ) );
 		
-			assertFalse( test.$once( "testNone" ) );
+			$assert.isFalse( test.$once( "testNone" ) );
 		}
 		
 		function testVerifyNever(){
 			test.$( "displayData", queryNew( '' ) );
 			test.$( "testIt" );
-			assertTrue( test.$never() );
+			$assert.isTrue( test.$never() );
 			test.testIt();
-			assertTrue( test.$never( "displayData" ) );
+			$assert.isTrue( test.$never( "displayData" ) );
 			test.displayData();
-			assertFalse( test.$never( "displayData" ) );
+			$assert.isFalse( test.$never( "displayData" ) );
 		}
 		
 		function testVerifyAtMost(){
@@ -130,50 +129,50 @@
 			test.displayData();
 			test.displayData();
 			test.displayData();
-			assertFalse( test.$atMost( 3 ) );
-			assertTrue( test.$atMost( 5 ) );
+			$assert.isFalse( test.$atMost( 3 ) );
+			$assert.isTrue( test.$atMost( 5 ) );
 		}
 		
 		function testVerifyAtLeast(){
 			test.$( "displayData", queryNew( '' ) );
-			assertTrue( test.$atLeast( 0 ) );
+			$assert.isTrue( test.$atLeast( 0 ) );
 			test.displayData();
 			test.displayData();
 			test.displayData();
 			test.displayData();
 			test.displayData();
-			assertTrue( test.$atLeast( 3 ) );
+			$assert.isTrue( test.$atLeast( 3 ) );
 		}
 		
 		function testVerifyCallCount(){
 			test.$( "displayData", queryNew( '' ) );
-			assertTrue( test.$verifyCallCount( 0 ) );
-			assertFalse( test.$verifyCallCount( 1 ) );
+			$assert.isTrue( test.$verifyCallCount( 0 ) );
+			$assert.isFalse( test.$verifyCallCount( 1 ) );
 		
 			test.displayData();
-			assertEquals( true, test.$verifyCallCount( 1 ) );
+			$assert.isEqual( true, test.$verifyCallCount( 1 ) );
 		
 			test.displayData();
 			test.displayData();
 			test.displayData();
-			assertEquals( true, test.$verifyCallCount( 4 ) );
-			assertEquals( true, test.$verifyCallCount( 4, "displayData" ) );
+			$assert.isEqual( true, test.$verifyCallCount( 4 ) );
+			$assert.isEqual( true, test.$verifyCallCount( 4, "displayData" ) );
 		}
 		
 		function testMockMethodCallCount(){
 			test.$( "displayData", queryNew( '' ) );
 			test.$( "getLuis", 1 );
 		
-			assertEquals( 0, test.$count( "displayData" ) );
-			assertEquals( -1, test.$count( "displayData2" ) );
+			$assert.isEqual( 0, test.$count( "displayData" ) );
+			$assert.isEqual( -1, test.$count( "displayData2" ) );
 		
 			test.displayData();
 		
-			assertEquals( 1, test.$count( "displayData" ) );
+			$assert.isEqual( 1, test.$count( "displayData" ) );
 		
 			test.getLuis();
 			test.getLuis();
-			assertEquals( 3, test.$count() );
+			$assert.isEqual( 3, test.$count() );
 		}
 		
 		function testMethodArgumentSignatures(){
@@ -199,16 +198,16 @@
 		
 			// Test positional
 			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
-			assertEquals( "UnitTest", results );
+			$assert.isEqual( "UnitTest", results );
 			// Test case sensitivity
 			args.string = "TEST";
 			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
-			assertEquals( "UnitTest", results );
+			$assert.isEqual( "UnitTest", results );
 			args.string = "test";
 			// Test increment/decrement value (ColdFusion bug converts integers to real numbers with increment and decrement operator)
 			args.integer++; args.integer--;
 			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
-			assertEquals( "UnitTest", results );
+			$assert.isEqual( "UnitTest", results );
 			args.integer = 23;
 			args.integer = 23;
 			
@@ -217,37 +216,37 @@
 			
 			// Test name-value pairs
 			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
-			assertEquals( "UnitTest2", results );
+			$assert.isEqual( "UnitTest2", results );
 			// Test argCollection
 			results = test.getSetting( argumentCollection=args );
-			assertEquals( "UnitTest2", results );
+			$assert.isEqual( "UnitTest2", results );
 			// Test case sensitivity
 			args.string = "TEST";
 			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
-			assertEquals( "UnitTest2", results );
+			$assert.isEqual( "UnitTest2", results );
 			args.string = "test";
 			// Test increment/decrement value (ColdFusion bug converts integers to real numbers with increment and decrement operator)
 			args.integer++;args.integer--;
 			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
-			assertEquals( "UnitTest2", results );
+			$assert.isEqual( "UnitTest2", results );
 			args.integer = 23;
 			
 			test.$( "getSetting" ).$args( argumentCollection=args ).$results( "UnitTest3" );
 			// Test name-value pairs
 			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
-			assertEquals( "UnitTest3", results );
+			$assert.isEqual( "UnitTest3", results );
 			// Test argCollection
 			results = test.getSetting( argumentCollection=args );
-			assertEquals( "UnitTest3", results );
+			$assert.isEqual( "UnitTest3", results );
 			// Test case sensitivity
 			args.string = "TEST";
 			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
-			assertEquals( "UnitTest3", results );
+			$assert.isEqual( "UnitTest3", results );
 			args.string = "test";
 			// Test increment/decrement value (ColdFusion bug converts integers to real numbers with increment and decrement operator)
 			args.integer++;args.integer--;
 			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
-			assertEquals( "UnitTest3", results );
+			$assert.isEqual( "UnitTest3", results );
 		}
 		
 		function testGetProperty(){
@@ -255,47 +254,47 @@
 			mock.luis = "Majano";
 			mock.$property( "cool", "variables", true ).$property( "number", "variables.instance", 7 );
 		
-			assertEquals( "Majano", mock.$getProperty( name="luis", scope="this" ) );
-			assertEquals( true, mock.$getProperty( name="cool" ) );
-			assertEquals( true, mock.$getProperty( name="cool", scope="variables" ) );
-			assertEquals( 7, mock.$getProperty( name="number", scope="variables.instance" ) );
-			assertEquals( 7, mock.$getProperty( name="number", scope="instance" ) );
+			$assert.isEqual( "Majano", mock.$getProperty( name="luis", scope="this" ) );
+			$assert.isEqual( true, mock.$getProperty( name="cool" ) );
+			$assert.isEqual( true, mock.$getProperty( name="cool", scope="variables" ) );
+			$assert.isEqual( 7, mock.$getProperty( name="number", scope="variables.instance" ) );
+			$assert.isEqual( 7, mock.$getProperty( name="number", scope="instance" ) );
 		}
 		
 		function testStubWithInheritance(){
 			mock = getMockBox().createStub( extends="coldbox.system.EventHandler" );
-			assertTrue( isInstanceOf( mock, "coldbox.system.EventHandler" ) );
+			$assert.isTrue( isInstanceOf( mock, "coldbox.system.EventHandler" ) );
 		}
 		
 		function testStubWithImplements(){
 			mock = getMockBox().createStub( implements="coldbox.system.cache.ICacheProvider" );
-			assertTrue( isInstanceOf( mock, "coldbox.system.cache.ICacheProvider" ) );
+			$assert.isTrue( isInstanceOf( mock, "coldbox.system.cache.ICacheProvider" ) );
 		}
 		
 		function testContainsCFKeyword(){
-			test = getMockBox().createMock("coldbox.testing.cases.testing.Test");
-			mockTest = getMockBox().createEmptyMock( "coldbox.testing.cases.testing.ContainsTest" )
+			test = getMockBox().createMock("coldbox.testing.cases.testing.resources.Test");
+			mockTest = getMockBox().createEmptyMock( "coldbox.testing.cases.testing.resources.ContainsTest" )
 				.$("contains", true);
-			assertTrue( mockTest.contains() );
+			$assert.isTrue( mockTest.contains() );
 		}
 		
 		function testContainsClosureOrUDF(){
 			mock = getMockBox().createStub();
 			mock.$("mockMe", "Mocked" );
 			
-			assertEquals( "Mocked" , mock.mockMe( variables.testFunction ) );
-			assertEquals( "Mocked" , mock.mockMe( test = variables.testFunction ) );
-			assertEquals( "Mocked" , mock.mockMe( [ variables.testFunction ] ) );
-			assertEquals( "Mocked" , mock.mockMe( test = [ variables.testFunction ] ) );
-			assertEquals( "Mocked" , mock.mockMe( { mockData = variables.testFunction } ) );
-			assertEquals( "Mocked" , mock.mockMe( test = { mockData = variables.testFunction } ) );
+			$assert.isEqual( "Mocked" , mock.mockMe( variables.testFunction ) );
+			$assert.isEqual( "Mocked" , mock.mockMe( test = variables.testFunction ) );
+			$assert.isEqual( "Mocked" , mock.mockMe( [ variables.testFunction ] ) );
+			$assert.isEqual( "Mocked" , mock.mockMe( test = [ variables.testFunction ] ) );
+			$assert.isEqual( "Mocked" , mock.mockMe( { mockData = variables.testFunction } ) );
+			$assert.isEqual( "Mocked" , mock.mockMe( test = { mockData = variables.testFunction } ) );
 		}
 		
 		function testInterfaceContracts(){
-			mock = getMockBox().createMock( "coldbox.testing.cases.testing.MyInterfaceMock" );
+			mock = getMockBox().createMock( "coldbox.testing.cases.testing.resources.MyInterfaceMock" );
 			mock.$("testThis", "mocked!");
 			
-			assertEquals( "mocked!", mock.testThis( "name", 35 ) );
+			$assert.isEqual( "mocked!", mock.testThis( "name", 35 ) );
 		}
 		
 		private function testFunction(){

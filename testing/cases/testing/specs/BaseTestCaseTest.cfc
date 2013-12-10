@@ -1,4 +1,4 @@
-﻿<cfcomponent output="false" extends="mxunit.framework.TestCase">
+﻿<cfcomponent output="false" extends="coldbox.system.testing.BaseSpec">
 <cfscript>
 
 	function setup(){
@@ -9,22 +9,22 @@
 	function testGetMockRequestContext(){
 		makePublic(test,"getMockRequestContext");
 		rc = test.getMockRequestContext();
-		assertTrue( isObject(rc) );
+		$assert.isTrue( isObject(rc) );
 		
 		rc = test.getMockRequestContext(true,'coldbox.testharness.model.myRequestContextDecorator');
-		assertTrue( isObject(rc) );	
+		$assert.isTrue( isObject(rc) );	
 		
 		rc = test.getMockRequestContext(false,'coldbox.testharness.model.myRequestContextDecorator');
-		assertTrue( isObject(rc) );	
+		$assert.isTrue( isObject(rc) );	
 	}
 	
 	function testgetMockDatasource(){
 		makePublic(test,"getMockDatasource");
 		dsn = test.getMockDatasource(name="dbtest");
-		assertTrue( isObject(dsn) );
+		$assert.isTrue( isObject(dsn) );
 		debug( dsn.getMemento() );
-		assertEquals( "dbtest", dsn.getName() );
-		assertEquals( "dbtest", dsn.getAlias() );
+		$assert.isEqual( "dbtest", dsn.getName() );
+		$assert.isEqual( "dbtest", dsn.getAlias() );
 	}
 	
 	function testgetMockConfigBean(){
@@ -35,22 +35,22 @@
 			test = this
 		};
 		config = test.getMockConfigBean(data);
-		assertTrue( isObject(config) );
+		$assert.isTrue( isObject(config) );
 		//debug( config.getConfigStruct() );
-		assertEquals( data.today, config.getKey("today") );
-		assertEquals( data.name , config.getKey("name") );
+		$assert.isEqual( data.today, config.getKey("today") );
+		$assert.isEqual( data.name , config.getKey("name") );
 	}
 		
 	function testgetMockRequestBuffer(){
 		makePUblic( test, "getMockRequestBuffer");
 		r = test.getMockRequestBuffer();
-		assertEquals( "coldbox.system.core.util.RequestBuffer", getMetadata(r).name );
+		$assert.isEqual( "coldbox.system.core.util.RequestBuffer", getMetadata(r).name );
 	}
 	
 	function testGetMockController(){
 		makePUblic( test, "getMockController");
 		r = test.getMockController();
-		assertEquals( "coldbox.system.testing.mock.web.MockController", getMetadata(r).name );
+		$assert.isEqual( "coldbox.system.testing.mock.web.MockController", getMetadata(r).name );
 	}
 </cfscript>
 </cfcomponent>

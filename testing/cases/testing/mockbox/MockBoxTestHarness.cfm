@@ -1,7 +1,7 @@
 ﻿<!--- Create Mock Box --->
 <cfset mockBox = createObject("component","coldbox.system.testing.MockBox").init()>
 <!--- Create a mock based on Test CFC --->
-<cfset Test = mockBox.createMock("coldbox.testing.cases.testing.Test")>
+<cfset Test = mockBox.createMock("coldbox.testing.cases.testing.resources.Test")>
 
 <cfoutput>
 <!--- MOCKING REAL METHODS --->
@@ -67,7 +67,7 @@ Mocked Test.getFullName() = #test.getFullName()#<br />
 <p>Stub Fake Get Name: #stub.getName()#</p>
 
 <!--- PREPARE A MOCK FOR SPYING --->
-<cfset Test = createObject("component","coldbox.testing.cases.testing.Test")>
+<cfset Test = createObject("component","coldbox.testing.cases.testing.resources.Test")>
 <cfset mockBox.prepareMock(test)>
 <h1>Mocking Spy Methods</h1>
 UnMocked Spy -> Test.getData() = #test.getData()#<br />
@@ -78,7 +78,7 @@ Mocked Spy Call -> Test.spyTest() = #test.spyTest()# <br />
 
 <hr />
 <!--- MOCKING WITH ARGUMENTS --->
-<cfset Test = mockBox.createMock("coldbox.testing.cases.testing.Test")>
+<cfset Test = mockBox.createMock("coldbox.testing.cases.testing.resources.Test")>
 <h1>Mocking With Specific ARguments</h1>
 <p>
 	Unmocked <strong>getSetting() method</strong>:<br />
@@ -96,8 +96,8 @@ Mocked Spy Call -> Test.spyTest() = #test.spyTest()# <br />
 </p>
 
 <!--- MOCKING A COLLABORATOR --->
-<cfset Test = createObject("component","coldbox.testing.cases.testing.Test")>
-<cfset mockCollaborator = MockBox.createMock(className="coldbox.testing.cases.testing.Collaborator",callLogging=true)>
+<cfset Test = createObject("component","coldbox.testing.cases.testing.resources.Test")>
+<cfset mockCollaborator = MockBox.createMock(className="coldbox.testing.cases.testing.resources.Collaborator",callLogging=true)>
 <cfset mockCollaborator.$("getDataFromDB").$results(queryNew(""))>
 <cfset Test.setCollaborator(mockCollaborator)>
 Mock Call Logger Dump on Collaborator: <cfdump var="#mockCollaborator.$callLog()#">

@@ -155,7 +155,7 @@ component{
 
 				beforeEach(function(){
 					// add custom matcher via CFC
-					addMatchers( new coldbox.testing.cases.testing.CustomMatcher() );
+					addMatchers( new coldbox.testing.cases.testing.resources.CustomMatcher() );
 					foofoo = false;
 				});
 				
