@@ -480,7 +480,6 @@ component accessors="true"{
 			// add projection
 			arguments.projectionList.add( evaluate("this.PROJECTIONS.#arguments.projectionType#( listFirst(thisP,':') )"), listLast(thisP,":") );
 			
-
 			// announce
 			if( ORMService.getEventHandling() ){
 				variables.eventManager.processState( "onCriteriaBuilderAddition", {

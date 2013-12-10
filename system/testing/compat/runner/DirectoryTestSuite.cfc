@@ -1,4 +1,4 @@
-<cfcomponent hint="MXUnit Compat Automatic Test Suite Runner">
+<cfcomponent hint="MXUnit Compat Automatic Test Suite Runner" output="false">
 
 	<cffunction name="run" access="public" hint="Runs a directory of tests via TestBox" returntype="any" output="false">
 		<cfargument name="directory" required="true" hint="directory of tests to run">
@@ -10,7 +10,7 @@
 			if( NOT len( arguments.componentPath ) ){
 				arguments.componentPath = getComponentPath( arguments.directory );
 			}
-			return new DirectoryResults( argumentCollection=arguments ); 
+			return new Results( argumentCollection=arguments ); 
 		</cfscript>
 		
 	</cffunction>
