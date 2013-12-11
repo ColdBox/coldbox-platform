@@ -223,6 +223,9 @@ Properties
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<cfscript>
 			var refLocal = {};
+			// cleanup the key
+			arguments.objectKey = lcase( arguments.objectKey );
+
 			// get quietly
 			refLocal.results = instance.objectStore.get( arguments.objectKey );
 			if( structKeyExists( refLocal, "results" ) ){
