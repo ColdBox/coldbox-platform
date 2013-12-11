@@ -25,21 +25,21 @@ Author 	    :	Luis Majano
 
 		plugin.init( mockController );
 		plugin.$("getFWLocale", "en_US");
-		plugin.loadBundle( rbFile=expandPath("/coldbox/testing/resources/main") );
+		plugin.loadBundle( rbFile=expandPath("/coldbox/testing/resources/main"), rbAlias="default" );
 	}
 
 	function testLoadBundle(){
-		plugin.loadBundle( rbFile = expandPath("/coldbox/testing/resources/main") );
+		plugin.loadBundle( rbFile = expandPath("/coldbox/testing/resources/main"), rbAlias="default" );
 		assertTrue( structCount( plugin.getBundles() ) );	
 	}
 
 	function testgetResourceBundle(){
-		bundle = plugin.getResourceBundle( rbFile = expandPath("/coldbox/testing/resources/main"), rbLocale="es_SV" );
+		bundle = plugin.getResourceBundle( rbFile = expandPath("/coldbox/testing/resources/main"), rbLocale="es_SV", rbAlias="default" );
 		//debug( bundle );
 		assertTrue( structCount( bundle ) );
 		assertTrue( structKeyExists( bundle, "helloworld" ) );
 
-		bundle = plugin.getResourceBundle( rbFile = expandPath("/coldbox/testing/resources/main") );
+		bundle = plugin.getResourceBundle( rbFile = expandPath("/coldbox/testing/resources/main"), rbAlias="default" );
 		//debug( bundle );
 		assertTrue( structCount( bundle ) );
 		assertTrue( structKeyExists( bundle, "helloworld" ) );
