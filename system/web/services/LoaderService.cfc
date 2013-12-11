@@ -149,7 +149,7 @@ Modification History:
 		// Load i18N if application is using it.
 		if ( controller.getSetting("using_i18N") ){
 			//Create i18n Plugin and configure it.
-			controller.getPlugin("i18n").init_i18N(controller.getSetting("DefaultResourceBundle"),controller.getSetting("DefaultLocale"));
+			controller.getPlugin("i18n").init_i18N();
 		}
 
 		// Set Debugging Mode according to configuration File

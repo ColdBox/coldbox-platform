@@ -29,8 +29,9 @@ Author 	    :	Luis Majano
 	}
 
 	function testLoadBundle(){
-		plugin.loadBundle( rbFile = expandPath("/coldbox/testing/resources/main"), rbAlias="default" );
-		assertTrue( structCount( plugin.getBundles() ) );	
+		plugin.loadBundle( rbFile = expandPath("/coldbox/testing/resources/main"), rbAlias="testing" );
+		var bundles = plugin.getBundles();
+		assertTrue( structkeyExists( bundles, "testing" ) );
 	}
 
 	function testgetResourceBundle(){
