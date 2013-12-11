@@ -1,21 +1,20 @@
 <cfparam name="url.version" default="0">
+<cfparam name="url.path" 	default="#expandPath( "./MockBox-APIDocs" )#">
 <cfscript>
-	version = url.version;
-	
-	docName = "MockBoxDocs-#version#";
-	colddoc = createObject("component", "ColdDoc").init();
+	docName = "MockBox-APIDocs";
+	base = expandPath( "/mockbox" );
 
-	base = expandPath("/mockbox");
-	docs = expandPath(docName);
+	colddoc 	= new ColdDoc();
+	strategy 	= new colddoc.strategy.api.HTMLAPIStrategy( url.path, "MockBox v#url.version#" );
+	colddoc.setStrategy( strategy );
 
-	strategy = createObject("component", "colddoc.strategy.api.HTMLAPIStrategy").init(docs, "MockBox Version #version#");
-	colddoc.setStrategy(strategy);
-
-	colddoc.generate(inputSource=base,outputDir=docs,inputMapping="mockbox");
+	colddoc.generate( inputSource=base, outputDir=url.path, inputMapping="mockbox" );
 </cfscript>
 
-<cfzip action="zip" file="#expandPath('.')#/#docname#.zip" source="#expandPath(docName)#" overwrite="true" recurse="yes">
-<cffile action="move" source="#expandPath('.')#/#docname#.zip" destination="/Users/lmajano/exports/mockbox-distro">
+<!---
+<cfzip action="zip" file="#expandPath('.')#/#docname#.zip" source="#expandPath( docName )#" overwrite="true" recurse="yes">
+<cffile action="move" source="#expandPath('.')#/#docname#.zip" destination="#url.path#">
+--->
 
 <cfoutput>
 <h1>Done!</h1>

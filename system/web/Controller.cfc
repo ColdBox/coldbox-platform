@@ -25,7 +25,7 @@ Only one instance of a specific ColdBox application exists.
 			services = createObject("java","java.util.LinkedHashMap").init( 7 );
 
 			// CFML Engine Utility
-			instance.CFMLEngine = CreateObject("component","coldbox.system.core.cf.CFMLEngine").init();
+			instance.CFMLEngine = CreateObject("component","coldbox.system.core.util.CFMLEngine").init();
 			// Set Main Application Properties
 			instance.coldboxInitiated 		= false;
 			instance.aspectsInitiated 		= false;
@@ -79,7 +79,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Get The CFMLEngine object --->
-	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.cf.CFMLEngine)" coldoc:generic="coldbox.system.core.cf.CFMLEngine">
+	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.util.CFMLEngine)" coldoc:generic="coldbox.system.core.util.CFMLEngine">
 		<cfreturn instance.CFMLEngine>
 	</cffunction>
 

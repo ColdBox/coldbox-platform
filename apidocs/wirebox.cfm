@@ -1,19 +1,20 @@
 <cfparam name="url.version" default="0">
+<cfparam name="url.path" 	default="#expandPath( "./WireBox-APIDocs" )#">
 <cfscript>
-	version = url.version;
-	
-	docName = "WireBoxDocs-#version#";
-	base = expandPath("/wirebox");
-	docs = expandPath(docName);
-	colddoc = createObject("component", "ColdDoc").init();
-	strategy = createObject("component", "colddoc.strategy.api.HTMLAPIStrategy").init(docs, "ColdBox Platform - WireBox Version #version#");
-	colddoc.setStrategy(strategy);
+	docName = "WireBox-APIDocs";
+	base = expandPath( "/wirebox" );
 
-	colddoc.generate(inputSource=base,outputDir=docs,inputMapping="wirebox");
+	colddoc 	= new ColdDoc();
+	strategy 	= new colddoc.strategy.api.HTMLAPIStrategy( url.path, "WireBox v#url.version#" );
+	colddoc.setStrategy( strategy );
+
+	colddoc.generate( inputSource=base, outputDir=url.path, inputMapping="wirebox" );
 </cfscript>
 
-<cfzip action="zip" file="#expandPath('.')#/#docname#.zip" source="#expandPath(docName)#" overwrite="true" recurse="yes">
-<cffile action="copy" source="#expandPath('.')#/#docname#.zip" destination="/Users/lmajano/exports/wirebox-distro">
+<!---
+<cfzip action="zip" file="#expandPath('.')#/#docname#.zip" source="#expandPath( docName )#" overwrite="true" recurse="yes">
+<cffile action="move" source="#expandPath('.')#/#docname#.zip" destination="#url.path#">
+--->
 
 <cfoutput>
 <h1>Done!</h1>

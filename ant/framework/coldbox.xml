@@ -1,45 +1,49 @@
 ﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
-     Mar 18, 2007 1:30:20 AM                                                        
-
-     coldbox.deploy    
-     ColdBox Deployment
-                   
-     lmajano                                                                
+     ColdBox Platform Build (www.coldbox.org)                                                               
      ====================================================================== -->
-<project name="coldbox.newbuild" default="build" basedir="../../">
+<project name="coldbox-build" default="build" basedir="../../">
 
-	<!--Build Properties-->
-	<property name="dir.userlocation"	value="/Users/lmajano" />
-	<property name="dir.exports"		value="${dir.userlocation}/exports" />
-	<property name="dir.build" 			value="${dir.exports}/coldbox" />
-	<!-- <property name="dir.dashboard"	    value="${dir.userlocation}/sites/cboxdev/core/dashboard" /> -->
-	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
-	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/coldbox.cfm?version=" />
-	<property name="dictionaries.http"	value="http://cf9cboxdev.jfetmac/coldbox/testing/tools/IDEDictionaries/" />
-		
+	<description>
+    	Build a new distribution of ColdBox Platform
+    </description>
+	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	<property name="coldbox.version"	value="3.8.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
-	<property name="build.label" 		value="coldbox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
 	
 	<!--External Ant Tasks-->
 	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
-	<!--<property name="ant.dashboard"      value="${dir.dashboard}/build.xml" />-->
-	<property name="ant.forgeboxModule" value="ant/framework/ForgeBoxToTemplates.xml" />
-	
-	<!-- FTP -->
-	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
-	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
 	
 	<!-- Init -->
 	<target name="init" description="Init">
-		<!-- Version -->
-		<input addproperty="coldbox.version" message="ColdBox Version" />
 		<input addproperty="doCompile" message="Compile?" defaultvalue="true" validargs="true,false" />
-		
 		<condition property="compile.true">
 			<istrue value="${doCompile}"/>
 		</condition>
+
+		<!-- Default environment check, if not passed via -Denvironment -->
+    	<condition property="environment" value="local">
+    		<not><isset property="environment" /></not>
+    	</condition>
+    	<echo>Loading from environment: ${environment}</echo>
+		<!-- Load env properties -->
+		<loadproperties srcFile="ant/framework/coldbox-${environment}.properties"/>
+
+		<!-- Build Number -->
+		<propertyfile file="ant/framework/build.number" comment="Build Number for ANT. Edit not!">
+			<entry key="build.number" 
+					type="int" 
+			     	operation="+"
+					pattern="00000"
+			     	default="1" />
+		</propertyfile>
+		<property file="ant/framework/build.number"/>
+		<!-- Build Label -->
+		<property name="build.label" value="coldbox-${coldbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<!-- Cleanup + Init -->
+		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}"/>
 	</target>
 	
 	<!--Framework Compile Checks -->
@@ -48,24 +52,9 @@
 		<ant antfile="${ant.compilechecks}" target="compile.checks" />		
 	</target>
 	
-	<!-- FTP Upload of new build -->
-	<target name="ftp.deploy" depends="build">
-       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
-       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
-      	
-		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
-       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
-        	<fileset file="${dir.exports}/coldbox_${coldbox.version}.zip" />
-			<fileset file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" />
-			<!--<fileset file="${dir.exports}/dashboard_${dashboard.version}.zip" />-->
-       	</ftp>		
-	</target>
-	
 	<!--BUild-->
-	<target name="build" description="Build a new coldbox distribution" depends="compilechecks">
+	<target name="build" description="Build a new ColdBox Platform distribution" depends="compilechecks">
       	
-		<mkdir dir="${dir.build}"/>
-		
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
@@ -74,20 +63,28 @@
         	<fileset dir="system">
         	</fileset>
         </copy>
+
+        <!-- Copy TestBox Runner -->	
+      	<copy todir="${dir.build}/coldbox/test-runner">
+        	<fileset dir="test-runner">
+        	</fileset>
+        </copy>
 		
 		<!-- Samples -->
 		<copy todir="${dir.build}/coldbox/samples">
 			<fileset dir="${dir.samples}">
+				<exclude name="settings.xml" />
+				<exclude name=".project" />
+				<exclude name="ant/*" />
         	</fileset>
         </copy>
 		
 		<!-- Install folder -->
 		<copy todir="${dir.build}/coldbox/install">
-        	<fileset dir="install" />
+        	<fileset dir="install">
+        		<exclude name="ColdboxCheatSheet.pages" />
+        	</fileset>
         </copy>
-		
-		<!--Copy ForgeBox Modules-->
-		<ant antfile="${ant.forgeboxModule}" target="copy" />
 		
 		<!--AppTemplate-->
 		<copy todir="${dir.build}/coldbox/ApplicationTemplates">
@@ -99,40 +96,47 @@
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />						
 		</copy>
-				
-		<!--Remove Dist-->
-		<delete dir="dist" />
+
+		<!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		  <fileset dir="${dir.build}">
+		  </fileset>
+		</replaceregexp>
 		
-		<!--Export Dashboard
-		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}" />
-		-->
-		
+		<!-- Execute IDE Dictionaries -->
+		<get dest="${dir.build}/cfbuilder.html" src="${url.dictionaries}/builderDictionary.cfm" verbose="true"/>
+		<delete file="${dir.build}/cfbuilder.html" />
+		<get dest="${dir.build}/cfeclipse.html" src="${url.dictionaries}/cfeclipseDictionary.cfm" verbose="true"/>
+		<delete file="${dir.build}/cfeclipse.html" />
+		<get dest="${dir.build}/sublime.html" src="${url.dictionaries}/sublime-completions.cfm" verbose="true"/>
+		<delete file="${dir.build}/sublime.html" />
+
 		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${coldbox.version}&amp;path=${dir.api}&amp;coldbox_root=${dir.build}/coldbox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
 		
-		<!-- Execute CFBuilder & CFEclipse Dictionaries -->
-		<get dest="${dir.build}/cfbuilder.html" src="${dictionaries.http}/builderDictionary.cfm" verbose="true"/>
-		<delete file="${dir.build}/cfbuilder.html" />
-		<get dest="${dir.build}/cfeclipse.html" src="${dictionaries.http}/cfeclipseDictionary.cfm" verbose="true"/>
-		<delete file="${dir.build}/cfeclipse.html" />
-			
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
+				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		
 		<!-- Cleanup for StandAlone Build -->
 		<delete dir="${dir.build}/coldbox/ApplicationTemplates"/>
+		<delete dir="${dir.build}/apidocs" />
+		<delete dir="${dir.build}/coldbox/test-runner" />
 		<delete dir="${dir.build}/coldbox/install" />
-		<delete file="${dir.build}/coldbox/ColdBoxDocs-${coldbox.version}.zip" />
+		<delete dir="${dir.build}/coldbox/samples" />
 		<copy todir="${dir.build}/">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />		
-		</copy>		
+		</copy>	
 			
-		<!-- Zip Standalone -->
-		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" 
-			 excludes="coldbox/samples/**">							
-		</zip>	
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}"></zip>
+		
+		<!-- Cleanup -->
+		<delete dir="${dir.build}" />
 		
     </target>
 	

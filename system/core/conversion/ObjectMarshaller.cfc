@@ -15,7 +15,7 @@ Description :
     	<cfscript>
 			var engine = "";
 			var version = "";
-			var CFMLEngine = createObject("component","coldbox.system.core.cf.CFMLEngine").init();
+			var CFMLEngine = createObject("component","coldbox.system.core.util.CFMLEngine").init();
 
 			engine  = CFMLEngine.getEngine();
 			version = CFMLEngine.getVersion();

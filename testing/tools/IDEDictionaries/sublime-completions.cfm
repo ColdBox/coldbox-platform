@@ -62,7 +62,8 @@ functions = {
 	"FrameworkSuperType" = "coldbox.system.FrameworkSuperType",
 	"EventHandler" = "coldbox.system.EventHandler",
 	"Plugin" = "coldbox.system.Plugin",
-	"Interceptor" = "coldbox.system.Interceptor"
+	"Interceptor" = "coldbox.system.Interceptor",
+	"BaseSpec" = "coldbox.system.testing.BaseSpec"
 };
 
 ignoreMethods = "init,configure";

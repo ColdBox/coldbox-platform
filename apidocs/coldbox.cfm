@@ -1,21 +1,20 @@
 <cfparam name="url.version" default="0">
+<cfparam name="url.path" 	default="#expandPath( "./ColdBox-APIDocs" )#">
 <cfscript>
-	version = url.version;
-	
-	docName = "ColdBoxDocs-#version#";
-	colddoc = createObject("component", "ColdDoc").init();
+	docName = "ColdBox-APIDocs";
+	base = expandPath( "/coldbox/system" );
 
-	base = expandPath("/coldbox/system");
-	docs = expandPath(docName);
+	colddoc 	= new ColdDoc();
+	strategy 	= new colddoc.strategy.api.HTMLAPIStrategy( url.path, "ColdBox Platform v#url.version#" );
+	colddoc.setStrategy( strategy );
 
-	strategy = createObject("component", "colddoc.strategy.api.HTMLAPIStrategy").init(docs, "ColdBox Platform Version #version#");
-	colddoc.setStrategy(strategy);
-
-	colddoc.generate(inputSource=base,outputDir=docs,inputMapping="coldbox.system");
+	colddoc.generate( inputSource=base, outputDir=url.path, inputMapping="coldbox.system" );
 </cfscript>
 
-<cfzip action="zip" file="#expandPath('.')#/#docname#.zip" source="#expandPath(docName)#" overwrite="true" recurse="yes">
-<cffile action="copy" source="#expandPath('.')#/#docname#.zip" destination="/Users/lmajano/exports/coldbox">
+<!---
+<cfzip action="zip" file="#expandPath('.')#/#docname#.zip" source="#expandPath( docName )#" overwrite="true" recurse="yes">
+<cffile action="move" source="#expandPath('.')#/#docname#.zip" destination="#url.path#">
+--->
 
 <cfoutput>
 <h1>Done!</h1>

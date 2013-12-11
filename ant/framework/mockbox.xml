@@ -1,45 +1,45 @@
 ﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
-     Mar 18, 2007 1:30:20 AM                                                        
-
-     MockBox Build                                                                
+     MockBox Standalone Build (www.coldbox.org)                                                               
      ====================================================================== -->
-<project name="mockbox.newbuild" default="build" basedir="../../">
+<project name="mockbox-build" default="build" basedir="../../">
 
-	<!--Build Properties-->
-	<property name="dir.userlocation"	value="/Users/lmajano" />
-	<property name="dir.exports"		value="${dir.userlocation}/exports" />
-	<property name="dir.build" 			value="${dir.exports}/mockbox-distro" />
-	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/mockbox.cfm?version=" />
-	
-	<!-- FTP -->
-	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
-	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
-	
+	<description>
+    	Build a new distribution of MockBox Standalone
+    </description>
+	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	<property name="mockbox.version"	value="2.2.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
-	<property name="build.label" 		value="mockbox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
 	
 	<!-- Init -->
 	<target name="init" description="Init">
-		<!-- Version -->
-		<input addproperty="mockbox.version" message="MockBox Version" />
-	</target>
-	
-	<!-- FTP Upload of new build -->
-	<target name="ftp.deploy" depends="build">
-       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
-       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
-      	
-		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
-       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
-        	<fileset file="${dir.exports}/mockbox_{mockbox.version}.zip" />
-       	</ftp>		
+		<!-- Default environment check, if not passed via -Denvironment -->
+    	<condition property="environment" value="local">
+    		<not><isset property="environment" /></not>
+    	</condition>
+    	<echo>Loading from environment: ${environment}</echo>
+		<!-- Load env properties -->
+		<loadproperties srcFile="ant/framework/mockbox-${environment}.properties"/>
+
+		<!-- Build Number -->
+		<propertyfile file="ant/framework/build.number" comment="Build Number for ANT. Edit not!">
+			<entry key="build.number" 
+					type="int" 
+			     	operation="+"
+					pattern="00000"
+			     	default="1" />
+		</propertyfile>
+		<property file="ant/framework/build.number"/>
+		<!-- Build Label -->
+		<property name="build.label" value="mockbox-${mockbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<!-- Cleanup + Init -->
+		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}"/>
 	</target>
 	
 	<!--build-->
-	<target name="build" description="Build a new logbox distribution" depends="init">
-      	<delete dir="${dir.build}" />
+	<target name="build" description="Build a new MockBox distribution" depends="init">
 		
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
@@ -49,17 +49,23 @@
         	<fileset dir="system/testing" />
         </copy>
 		<copy todir="${dir.build}/mockbox/system/core">
-        	<fileset dir="system/core" />
+        	<fileset dir="system/core">
+        		<include name="util/*" />
+        	</fileset>
         </copy>
-		
-		<!-- Copy src to coldbox namespace -->	
-      	<copy todir="${dir.build}/coldbox/system/testing">
-        	<fileset dir="system/testing" />
-        </copy>
-		<copy todir="${dir.build}/coldbox/system/core">
-        	<fileset dir="system/core" />
-        </copy>
-				
+
+        <!--Copy text files to root folder-->
+		<copy todir="${dir.build}/">
+			<fileset file="license.txt" />
+			<fileset file="system/testing/readme.txt" />						
+		</copy>
+
+		<!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		  <fileset dir="${dir.build}">
+		  </fileset>
+		</replaceregexp>
+					
 		<echo>Refactoring for coldbox absolute paths</echo>
 		<replace dir="${dir.build}" value="/mockbox/system/" summary="yes">
 		  	<include name="**/*.cfc" />
@@ -75,18 +81,16 @@
 			<replacetoken>coldbox.system.</replacetoken>
 		</replace>
 		
-		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}/">
-			<fileset file="license.txt" />
-			<fileset file="system/testing/readme.txt" />						
-		</copy>
-		
 		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${mockbox.version}" verbose="true"/>
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${mockbox.version}&amp;path=${dir.api}&amp;mockbox_root=${dir.build}/mockbox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.exports}/MockBoxDocs-${mockbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
 				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/mockbox_${mockbox.version}.zip" basedir="${dir.build}"></zip>
 		
+		<delete dir="${dir.build}" />
     </target>
 </project>

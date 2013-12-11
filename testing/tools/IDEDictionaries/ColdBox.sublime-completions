@@ -2,7 +2,7 @@
     "scope": "meta.name.interpolated.hash - string, source.cfscript - source.sql - text.html.cfm - string - meta - comment, source.cfscript.embedded.cfml - string, source.sql, text",
     "completions":
     [
-	// Functions for: coldbox.system.Interceptor 
+	// Functions for: coldbox.Interceptor 
 	{ "trigger": "appendToBuffer\tfn. (ColdBox Interceptor)", "contents": "appendToBuffer( str=${1:any} )" },
 	{ "trigger": "clearBuffer\tfn. (ColdBox Interceptor)", "contents": "clearBuffer()" },
 	{ "trigger": "getBufferObject\tfn. (ColdBox Interceptor)", "contents": "getBufferObject()" },
@@ -14,9 +14,9 @@
 	{ "trigger": "setProperties\tfn. (ColdBox Interceptor)", "contents": "setProperties( properties=${1:{}} )" },
 	{ "trigger": "setProperty\tfn. (ColdBox Interceptor)", "contents": "setProperty( property=${1:any}, value=${2:any} )" },
 	{ "trigger": "unregister\tfn. (ColdBox Interceptor)", "contents": "unregister( state=${1:any} )" },
-	// END Functions for: coldbox.system.Interceptor 
+	// END Functions for: coldbox.Interceptor 
 
-	// Functions for: coldbox.system.Plugin 
+	// Functions for: coldbox.Plugin 
 	{ "trigger": "getpluginAuthor\tfn. (ColdBox Plugin)", "contents": "getpluginAuthor()" },
 	{ "trigger": "getpluginAuthorURL\tfn. (ColdBox Plugin)", "contents": "getpluginAuthorURL()" },
 	{ "trigger": "getPluginDescription\tfn. (ColdBox Plugin)", "contents": "getPluginDescription()" },
@@ -30,12 +30,45 @@
 	{ "trigger": "setPluginDescription\tfn. (ColdBox Plugin)", "contents": "setPluginDescription( pluginDescription=${1:any} )" },
 	{ "trigger": "setPluginName\tfn. (ColdBox Plugin)", "contents": "setPluginName( pluginName=${1:any} )" },
 	{ "trigger": "setPluginVersion\tfn. (ColdBox Plugin)", "contents": "setPluginVersion( pluginVersion=${1:any} )" },
-	// END Functions for: coldbox.system.Plugin 
+	// END Functions for: coldbox.Plugin 
 
-	// Functions for: coldbox.system.EventHandler 
+	// Functions for: coldbox.EventHandler 
 	{ "trigger": "_actionExists\tfn. (ColdBox EventHandler)", "contents": "_actionExists( action=${1:any} )" },
 	{ "trigger": "_privateInvoker\tfn. (ColdBox EventHandler)", "contents": "_privateInvoker( method=${1:any}, argCollection=${2:any} )" },
-	// END Functions for: coldbox.system.EventHandler 
+	// END Functions for: coldbox.EventHandler 
+
+	// Functions for: coldbox.testing.BaseSpec 
+	{ "trigger": "addAssertions\tfn. (ColdBox BaseSpec)", "contents": "addAssertions( assertions=${1:any} )" },
+	{ "trigger": "addMatchers\tfn. (ColdBox BaseSpec)", "contents": "addMatchers( matchers=${1:any} )" },
+	{ "trigger": "afterEach\tfn. (ColdBox BaseSpec)", "contents": "afterEach( body=${1:any} )" },
+	{ "trigger": "assert\tfn. (ColdBox BaseSpec)", "contents": "assert( expression=${1:any}, message=${2:any} )" },
+	{ "trigger": "beforeEach\tfn. (ColdBox BaseSpec)", "contents": "beforeEach( body=${1:any} )" },
+	{ "trigger": "clearDebugBuffer\tfn. (ColdBox BaseSpec)", "contents": "clearDebugBuffer()" },
+	{ "trigger": "closureStub\tfn. (ColdBox BaseSpec)", "contents": "closureStub()" },
+	{ "trigger": "console\tfn. (ColdBox BaseSpec)", "contents": "console( var=${1:any}, top=${2:any} )" },
+	{ "trigger": "createEmptyMock\tfn. (ColdBox BaseSpec)", "contents": "createEmptyMock( className=\"${1:}\", object=${2:any}, callLogging=${3:true,false} )" },
+	{ "trigger": "createMock\tfn. (ColdBox BaseSpec)", "contents": "createMock( className=\"${1:}\", object=${2:any}, clearMethods=${3:true,false} )" },
+	{ "trigger": "createStub\tfn. (ColdBox BaseSpec)", "contents": "createStub( callLogging=${1:true,false}, extends=\"${2:}\", implements=\"${3:}\" )" },
+	{ "trigger": "debug\tfn. (ColdBox BaseSpec)", "contents": "debug( var=${1:any}, deepCopy=${2:true,false} )" },
+	{ "trigger": "describe\tfn. (ColdBox BaseSpec)", "contents": "describe( title=\"${1:}\", body=${2:any}, labels=${3:any}, asyncAll=${4:true,false}, skip=${5:any} )" },
+	{ "trigger": "expect\tfn. (ColdBox BaseSpec)", "contents": "expect( actual=${1:any} )" },
+	{ "trigger": "expectedException\tfn. (ColdBox BaseSpec)", "contents": "expectedException( type=${1:any}, regex=${2:any} )" },
+	{ "trigger": "fail\tfn. (ColdBox BaseSpec)", "contents": "fail( message=${1:any} )" },
+	{ "trigger": "getDebugBuffer\tfn. (ColdBox BaseSpec)", "contents": "getDebugBuffer()" },
+	{ "trigger": "getMockBox\tfn. (ColdBox BaseSpec)", "contents": "getMockBox( generationPath=\"${1:}\" )" },
+	{ "trigger": "isExpectedException\tfn. (ColdBox BaseSpec)", "contents": "isExpectedException( exception=${1:any}, specName=${2:any}, runner=${3:any} )" },
+	{ "trigger": "it\tfn. (ColdBox BaseSpec)", "contents": "it( title=\"${1:}\", body=${2:any}, labels=${3:any}, skip=${4:any} )" },
+	{ "trigger": "makePublic\tfn. (ColdBox BaseSpec)", "contents": "makePublic( target=${1:any}, method=\"${2:}\", newName=\"${3:}\" )" },
+	{ "trigger": "prepareMock\tfn. (ColdBox BaseSpec)", "contents": "prepareMock( object=${1:any}, callLogging=${2:true,false} )" },
+	{ "trigger": "print\tfn. (ColdBox BaseSpec)", "contents": "print( message=${1:any} )" },
+	{ "trigger": "println\tfn. (ColdBox BaseSpec)", "contents": "println( message=${1:any} )" },
+	{ "trigger": "querySim\tfn. (ColdBox BaseSpec)", "contents": "querySim( queryData=${1:any} )" },
+	{ "trigger": "runRemote\tfn. (ColdBox BaseSpec)", "contents": "runRemote( testSpecs=\"${1:}\", testSuites=\"${2:}\", debug=${3:true,false}, reporter=\"${4:}\" )" },
+	{ "trigger": "runSpec\tfn. (ColdBox BaseSpec)", "contents": "runSpec( spec=${1:any}, suite=${2:any}, testResults=${3:any}, suiteStats=${4:any}, runner=${5:any} )" },
+	{ "trigger": "runTest\tfn. (ColdBox BaseSpec)", "contents": "runTest( spec=${1:any}, testResults=${2:any}, suiteStats=${3:any}, runner=${4:any} )" },
+	{ "trigger": "xdescribe\tfn. (ColdBox BaseSpec)", "contents": "xdescribe( title=\"${1:}\", body=${2:any}, labels=${3:any}, asyncAll=${4:true,false} )" },
+	{ "trigger": "xit\tfn. (ColdBox BaseSpec)", "contents": "xit( title=\"${1:}\", body=${2:any}, labels=${3:any} )" },
+	// END Functions for: coldbox.testing.BaseSpec 
 
 	// Functions for: coldbox.system.FrameworkSupertype 
 	{ "trigger": "$abort\tfn. (ColdBox FrameworkSuperType)", "contents": "$abort()" },
@@ -60,7 +93,7 @@
 	{ "trigger": "getMyPlugin\tfn. (ColdBox FrameworkSuperType)", "contents": "getMyPlugin( plugin=${1:any}, newInstance=${2:any}, module=${3:any}, init=${4:any} )" },
 	{ "trigger": "getNewMail\tfn. (ColdBox FrameworkSuperType)", "contents": "getNewMail()" },
 	{ "trigger": "getPlugin\tfn. (ColdBox FrameworkSuperType)", "contents": "getPlugin( plugin=${1:any}, customPlugin=${2:any}, newInstance=${3:any}, module=${4:any}, init=${5:any} )" },
-	{ "trigger": "getResource\tfn. (ColdBox FrameworkSuperType)", "contents": "getResource( resource=${1:any}, default=${2:any}, locale=${3:any} )" },
+	{ "trigger": "getResource\tfn. (ColdBox FrameworkSuperType)", "contents": "getResource( resource=${1:any}, default=${2:any}, locale=${3:any}, values=${4:any}, bundle=${5:any} )" },
 	{ "trigger": "getSetting\tfn. (ColdBox FrameworkSuperType)", "contents": "getSetting( name=${1:any}, FWSetting=${2:true,false}, defaultValue=${3:any} )" },
 	{ "trigger": "getSettingsBean\tfn. (ColdBox FrameworkSuperType)", "contents": "getSettingsBean( FWSetting=${1:true,false} )" },
 	{ "trigger": "getSettingStructure\tfn. (ColdBox FrameworkSuperType)", "contents": "getSettingStructure( FWSetting=${1:true,false}, DeepCopyFlag=${2:true,false} )" },
@@ -157,7 +190,7 @@
 	{ "trigger": "binder.getScopeRegistration\tfn. (ColdBox binder)", "contents": "getScopeRegistration()" },
 	{ "trigger": "binder.getStopRecursions\tfn. (ColdBox binder)", "contents": "getStopRecursions()" },
 	{ "trigger": "binder.inCacheBox\tfn. (ColdBox binder)", "contents": "inCacheBox( key=${1:any}, timeout=${2:any}, lastAccessTimeout=${3:any}, provider=${4:any} )" },
-	{ "trigger": "binder.initArg\tfn. (ColdBox binder)", "contents": "initArg( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any} )" },
+	{ "trigger": "binder.initArg\tfn. (ColdBox binder)", "contents": "initArg( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, required=${6:any} )" },
 	{ "trigger": "binder.initWith\tfn. (ColdBox binder)", "contents": "initWith()" },
 	{ "trigger": "binder.into\tfn. (ColdBox binder)", "contents": "into( scope=${1:any} )" },
 	{ "trigger": "binder.listener\tfn. (ColdBox binder)", "contents": "listener( class=${1:any}, properties=${2:any}, name=${3:any} )" },
@@ -165,9 +198,9 @@
 	{ "trigger": "binder.logBoxConfig\tfn. (ColdBox binder)", "contents": "logBoxConfig( config=${1:any} )" },
 	{ "trigger": "binder.map\tfn. (ColdBox binder)", "contents": "map( alias=${1:any} )" },
 	{ "trigger": "binder.mapAspect\tfn. (ColdBox binder)", "contents": "mapAspect( aspect=${1:any}, autoBinding=${2:true,false} )" },
-	{ "trigger": "binder.mapDirectory\tfn. (ColdBox binder)", "contents": "mapDirectory( packagePath=${1:any}, include=${2:any}, exclude=${3:any}, influence=${4:any}, filter=${5:any} )" },
+	{ "trigger": "binder.mapDirectory\tfn. (ColdBox binder)", "contents": "mapDirectory( packagePath=${1:any}, include=${2:any}, exclude=${3:any}, influence=${4:any}, filter=${5:any}, namespace=${6:any}, prepend=${7:any} )" },
 	{ "trigger": "binder.mapDSL\tfn. (ColdBox binder)", "contents": "mapDSL( namespace=${1:any}, path=${2:any} )" },
-	{ "trigger": "binder.mapPath\tfn. (ColdBox binder)", "contents": "mapPath( path=${1:any} )" },
+	{ "trigger": "binder.mapPath\tfn. (ColdBox binder)", "contents": "mapPath( path=${1:any}, namespace=${2:any}, prepend=${3:any} )" },
 	{ "trigger": "binder.mappingExists\tfn. (ColdBox binder)", "contents": "mappingExists( name=${1:any} )" },
 	{ "trigger": "binder.mapScope\tfn. (ColdBox binder)", "contents": "mapScope( annotation=${1:any}, path=${2:any} )" },
 	{ "trigger": "binder.match\tfn. (ColdBox binder)", "contents": "match()" },
@@ -180,7 +213,7 @@
 	{ "trigger": "binder.parent\tfn. (ColdBox binder)", "contents": "parent( alias=${1:any} )" },
 	{ "trigger": "binder.parentInjector\tfn. (ColdBox binder)", "contents": "parentInjector( injector=${1:any} )" },
 	{ "trigger": "binder.processMappings\tfn. (ColdBox binder)", "contents": "processMappings()" },
-	{ "trigger": "binder.property\tfn. (ColdBox binder)", "contents": "property( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, scope=${6:any} )" },
+	{ "trigger": "binder.property\tfn. (ColdBox binder)", "contents": "property( name=${1:any}, ref=${2:any}, dsl=${3:any}, value=${4:any}, javaCast=${5:any}, scope=${6:any}, required=${7:any} )" },
 	{ "trigger": "binder.propertyExists\tfn. (ColdBox binder)", "contents": "propertyExists( name=${1:any} )" },
 	{ "trigger": "binder.providerMethod\tfn. (ColdBox binder)", "contents": "providerMethod( method=${1:any}, mapping=${2:any} )" },
 	{ "trigger": "binder.removeScanLocations\tfn. (ColdBox binder)", "contents": "removeScanLocations( locations=${1:any} )" },
@@ -319,7 +352,7 @@
 	{ "trigger": "event.paramValue\tfn. (ColdBox event)", "contents": "paramValue( name=${1:any}, value=${2:any}, private=${3:true,false} )" },
 	{ "trigger": "event.removeEventCacheableEntry\tfn. (ColdBox event)", "contents": "removeEventCacheableEntry()" },
 	{ "trigger": "event.removeValue\tfn. (ColdBox event)", "contents": "removeValue( name=\"${1:}\", private=${2:true,false} )" },
-	{ "trigger": "event.renderData\tfn. (ColdBox event)", "contents": "renderData( type=\"${1:}\", data=${2:any}, contentType=\"${3:}\", encoding=\"${4:}\", statusCode=${5:numeric}, statusText=\"${6:}\", location=\"${7:}\", jsonCallback=\"${8:}\", jsonQueryFormat=\"${9:}\", jsonAsText=${10:true,false}, xmlColumnList=\"${11:}\", xmlUseCDATA=${12:true,false}, xmlListDelimiter=\"${13:}\", xmlRootName=\"${14:}\", pdfArgs=${15:{}}, formats=${16:any}, formatsView=${17:any} )" },
+	{ "trigger": "event.renderData\tfn. (ColdBox event)", "contents": "renderData( type=\"${1:}\", data=${2:any}, contentType=\"${3:}\", encoding=\"${4:}\", statusCode=${5:numeric}, statusText=\"${6:}\", location=\"${7:}\", jsonCallback=\"${8:}\", jsonQueryFormat=\"${9:}\", jsonAsText=${10:true,false}, xmlColumnList=\"${11:}\", xmlUseCDATA=${12:true,false}, xmlListDelimiter=\"${13:}\", xmlRootName=\"${14:}\", pdfArgs=${15:{}}, formats=${16:any}, formatsView=${17:any}, isBinary=${18:true,false} )" },
 	{ "trigger": "event.renderWithFormats\tfn. (ColdBox event)", "contents": "renderWithFormats()" },
 	{ "trigger": "event.setDefaultLayout\tfn. (ColdBox event)", "contents": "setDefaultLayout( DefaultLayout=\"${1:}\" )" },
 	{ "trigger": "event.setDefaultView\tfn. (ColdBox event)", "contents": "setDefaultView( DefaultView=\"${1:}\" )" },

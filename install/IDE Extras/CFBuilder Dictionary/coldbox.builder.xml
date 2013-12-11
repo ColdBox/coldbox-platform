@@ -2,7 +2,7 @@
 <dictionary>
 	<tags></tags>
 	<functions>
-<!-- Functions for: coldbox.system.Interceptor -->
+<!-- Functions for: coldbox.Interceptor -->
 	<function name="setProperty" returns="void">
 			<help><![CDATA[ Set an interceptor property (Context: Interceptor) ]]></help>
 		<parameter name="property" required="true" type="any">
@@ -69,7 +69,7 @@
 	<function name="getBufferString" returns="any">
 			<help><![CDATA[ Get the string representation of the buffer (Context: Interceptor) ]]></help>
 		</function>
-<!-- Functions for: coldbox.system.Plugin -->
+<!-- Functions for: coldbox.Plugin -->
 	<function name="getPluginDescription" returns="string">
 			<help><![CDATA[ Get the instance's pluginDescription (Context: Plugin) ]]></help>
 		</function>
@@ -133,7 +133,7 @@
 	<function name="getpluginAuthorURL" returns="string">
 			<help><![CDATA[ Get the instance's pluginAuthorURL (Context: Plugin) ]]></help>
 		</function>
-<!-- Functions for: coldbox.system.EventHandler -->
+<!-- Functions for: coldbox.EventHandler -->
 	<function name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
@@ -483,13 +483,19 @@
 	<function name="getResource" returns="any">
 			<help><![CDATA[ Facade to i18n.getResource. Returns a string. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="resource" required="true" type="any">
-				<help><![CDATA[ The resource to retrieve from the loaded localized bundle ]]></help>
+				<help><![CDATA[ The resource (key) to retrieve from the main loaded bundle. ]]></help>
 			</parameter>
 			<parameter name="default" required="false" type="any">
-				<help><![CDATA[ A default value to send back if resource not found ]]></help>
+				<help><![CDATA[ A default value to send back if the resource (key) not found ]]></help>
 			</parameter>
 			<parameter name="locale" required="false" type="any">
 				<help><![CDATA[ Pass in which locale to take the resource from. By default it uses the user's current set locale ]]></help>
+			</parameter>
+			<parameter name="values" required="false" type="any">
+				<help><![CDATA[ An array, struct or simple string of value replacements to use on the resource string ]]></help>
+			</parameter>
+			<parameter name="bundle" required="false" type="any">
+				<help><![CDATA[ The bundle alias to use to get the resource from when using multiple resource bundles. By default the bundle name used is 'default' ]]></help>
 			</parameter>
 			</function>
 	<function name="$htmlhead" returns="void">
@@ -798,7 +804,7 @@
 	<scopevar name="mixins(mixins)">
 			<help><![CDATA[Adds one, a list or an array of UDF templates to mixin to a CFC]]></help>
 		</scopevar>
-	<scopevar name="property(name,[ref],[dsl],[value],[javaCast],[scope])">
+	<scopevar name="property(name,[ref],[dsl],[value],[javaCast],[scope],[required])">
 			<help><![CDATA[Map a cfproperty to a mapping]]></help>
 		</scopevar>
 	<scopevar name="scopeRegistration([enabled],[scope],[key])">
@@ -852,7 +858,7 @@
 	<scopevar name="removeScanLocations(locations)">
 			<help><![CDATA[Try to remove all the scan locations passed in]]></help>
 		</scopevar>
-	<scopevar name="mapPath(path)">
+	<scopevar name="mapPath(path,[namespace],[prepend])">
 			<help><![CDATA[Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.]]></help>
 		</scopevar>
 	<scopevar name="into(scope)">
@@ -930,10 +936,10 @@
 	<scopevar name="mapDSL(namespace,path)">
 			<help><![CDATA[Register a new custom dsl namespace]]></help>
 		</scopevar>
-	<scopevar name="mapDirectory(packagePath,include,exclude,[influence],[filter])">
+	<scopevar name="mapDirectory(packagePath,include,exclude,[influence],[filter],[namespace],[prepend])">
 			<help><![CDATA[Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection]]></help>
 		</scopevar>
-	<scopevar name="initArg([name],[ref],[dsl],[value],[javaCast])">
+	<scopevar name="initArg([name],[ref],[dsl],[value],[javaCast],[required])">
 			<help><![CDATA[Map a constructor argument to a mapping]]></help>
 		</scopevar>
 	<scopevar name="setter(name,[ref],[dsl],[value],[javaCast],[argName])">
@@ -1002,7 +1008,7 @@
 	<scopevar name="getHTTPBasicCredentials()">
 			<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
 		</scopevar>
-	<scopevar name="renderData([type],data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs],[formats],[formatsView])">
+	<scopevar name="renderData([type],data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs],[formats],[formatsView],[isBinary])">
 			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
 		</scopevar>
 	<scopevar name="getSESBaseURL()">
@@ -1582,7 +1588,7 @@
 			<help><![CDATA[Checks if an action can be executed according to inclusion/exclusion lists. Boolean]]></help>
 		</scopevar>
 	<scopevar name="getCFMLEngine()">
-			<help><![CDATA[Get the CFMLEngine utility(coldbox.system.core.cf.CFMLEngine)]]></help>
+			<help><![CDATA[Get the CFMLEngine utility(coldbox.system.core.util.CFMLEngine)]]></help>
 		</scopevar>
 	<scopevar name="getUtil()">
 			<help><![CDATA[Create and return a util object]]></help>

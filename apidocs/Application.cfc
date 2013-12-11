@@ -17,7 +17,7 @@ Description :
 
 	<cfscript>
 		
-	this.name = "cboxsite_" & hash(getCurrentTemplatePath());
+	this.name = "CBOX_APIDOCS" & hash(getCurrentTemplatePath());
 	this.sessionManagement 	= true;
 	this.sessionTimeout 	= createTimeSpan(0,0,1,0);
 	this.setClientCookies 	= true;
@@ -29,8 +29,8 @@ Description :
 
 	// Core Mappings
 	this.mappings[ "/colddoc" ]  = API_ROOT;
-	this.mappings[ "/coldbox" ]  = COLDBOX_ROOT;
 	// Standlone mappings
+	this.mappings[ "/coldbox" ]  = ( structKeyExists( url, "coldbox_root" ) ? url.coldbox_root : COLDBOX_ROOT );
 	this.mappings[ "/cachebox" ] = ( structKeyExists( url, "cachebox_root" ) ? url.cachebox_root : COLDBOX_ROOT );
 	this.mappings[ "/logbox" ] 	 = ( structKeyExists( url, "logbox_root" )   ? url.logbox_root   : COLDBOX_ROOT );
 	this.mappings[ "/mockbox" ]  = ( structKeyExists( url, "mockbox_root" )  ? url.mockbox_root  : COLDBOX_ROOT );
