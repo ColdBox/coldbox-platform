@@ -136,10 +136,10 @@ Description :
 		<cfargument name="content"		type="string" required="false" default=""	hint="The content of the tag"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer	= createObject("java","java.lang.StringBuffer").init("<#arguments.tag#");
+			var buffer	= createObject("java","java.lang.StringBuffer").init( "<#arguments.tag#" );
 
 			// append tag attributes
-			flattenAttributes(arguments,"tag,content",buffer).append('>#arguments.content#</#arguments.tag#>');
+			flattenAttributes( arguments, "tag,content", buffer ).append( '>#arguments.content#</#arguments.tag#>' );
 
 			return buffer.toString();
 		</cfscript>
@@ -154,7 +154,7 @@ Description :
 			var buffer 		= createObject("java","java.lang.StringBuffer").init("<a");
 
 			// build link
-			flattenAttributes(arguments,"text",buffer).append('>#arguments.text#</a>');
+			flattenAttributes( arguments, "text", buffer ).append( '>#arguments.text#</a>' );
 
 			return buffer.toString();
 		</cfscript>
@@ -1120,17 +1120,17 @@ Description :
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer 		= createObject("java","java.lang.StringBuffer").init('');
+			var buffer 		= createObject( "java", "java.lang.StringBuffer" ).init( '' );
 			var excludeList = "label,wrapper,labelWrapper,groupWrapper,labelClass,bind,bindProperty";
 
 			// ID Normalization
-			normalizeID(arguments);
+			normalizeID( arguments );
 			// group wrapper?
 			wrapTag( buffer, arguments.groupWrapper );
 			// label?
-			if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper,class=arguments.labelClass) ); }
+			if( len( arguments.label ) ){ buffer.append( this.label( field=arguments.id, content=arguments.label, wrapper=arguments.labelWrapper, class=arguments.labelClass ) ); }
 			//wrapper?
-			wrapTag(buffer,arguments.wrapper);
+			wrapTag( buffer, arguments.wrapper );
 
 			// disabled fix
 			if( arguments.disabled ){ arguments.disabled = "disabled"; }
@@ -1143,14 +1143,14 @@ Description :
 			else{ arguments.readonly = ""; }
 
 			// binding?
-			bindValue(arguments);
+			bindValue( arguments );
 
 			// create textarea
 			buffer.append("<input");
-			flattenAttributes(arguments,excludeList,buffer).append("/>");
+			flattenAttributes( arguments, excludeList, buffer ).append( "/>" );
 
 			//wrapper?
-			wrapTag(buffer,arguments.wrapper,1);
+			wrapTag( buffer, arguments.wrapper, 1 );
 			// group wrapper?
 			wrapTag( buffer, arguments.groupWrapper, 1 );
 
@@ -1613,7 +1613,7 @@ Description :
 		<cfargument name="end" required="false" default="false">
 		<cfscript>
 			var slash = "";
-			if( len(arguments.tag) ){
+			if( len( arguments.tag ) ){
 				if( arguments.end ){ slash = "/"; }
 				arguments.buffer.append("<#slash##arguments.tag#>");
 			}
@@ -1624,7 +1624,7 @@ Description :
 	<cffunction name="makePretty" access="private" returntype="any" output="false" hint="make pretty text">
 		<cfargument name="text">
 		<cfscript>
-			return ucase(left(arguments.text, 1)) & removeChars(lcase(replace(arguments.text, "_"," ")),1,1);
+			return ucase( left( arguments.text, 1 ) ) & removeChars( lcase( replace( arguments.text, "_", " ") ), 1, 1 );
 		</cfscript>
 	</cffunction>
 
@@ -1683,13 +1683,13 @@ Description :
 				}
 				// Normal Keys
 				if( structKeyExists( arguments.target, key ) AND isSimpleValue( arguments.target[ key ] ) AND len( arguments.target[ key ] ) ){
-					arguments.buffer.append(' #lcase(key)#="#arguments.target[key]#"');
+					arguments.buffer.append(' #lcase( key )#="#HTMLEditFormat( arguments.target[ key ] )#"');
 				}
 				// data keys
 				if( isStruct( arguments.target[ key ] ) ){
 					for( dataKey in arguments.target[ key ] ){
 						if( isSimplevalue( arguments.target[ key ][ dataKey ] ) AND len( arguments.target[ key ][ dataKey ] ) ){
-							arguments.buffer.append(' #lcase( key )#-#lcase( dataKey )#="#arguments.target[ key ][ datakey ]#"');
+							arguments.buffer.append(' #lcase( key )#-#lcase( dataKey )#="#HTMLEditFormat( arguments.target[ key ][ datakey ] )#"');
 						}
 					}
 				}
