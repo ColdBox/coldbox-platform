@@ -121,9 +121,12 @@
 		//i18n & Localization
 		i18n = {
 			defaultResourceBundle = "includes/main",
+			resourceBundles = {
+				"support" = "includes/support"
+			},
 			defaultLocale = "en_US",
 			localeStorage = "session",
-			unknownTranslation = "**NOT FOUND**"		
+			unknownTranslation = "**NOT FOUND**"	
 		};
 		
 		//webservices
