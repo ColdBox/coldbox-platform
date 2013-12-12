@@ -43,7 +43,7 @@
 	<div class="box" id="globalStats">
 
 		<div class="buttonBar">
-			<a href="?"><button title="Run all the tests">Run All</button></a>
+			<a href="#baseURL#"><button title="Run all the tests">Run All</button></a>
 		</div>
 
 		<cfif results.getTotalFail() gt 0>

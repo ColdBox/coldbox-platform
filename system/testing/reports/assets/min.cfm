@@ -33,7 +33,7 @@
 <!-- Global Stats --->
 <div class="box" id="globalStats">
 	<div class="buttonBar">
-		<a href="?"><button title="Run all the tests">Run All</button></a>
+		<a href="#baseURL#"><button title="Run all the tests">Run All</button></a>
 	</div>
 
 	<h3>Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#  (#results.getTotalDuration()# ms)</h3>

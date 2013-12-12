@@ -67,7 +67,7 @@
 <div class="box" id="globalStats">
 
 <div class="buttonBar">
-	<a href="?"><button title="Run all the tests">Run All</button></a>
+	<a href="#baseURL#"><button title="Run all the tests">Run All</button></a>
 	<button onclick="toggleDebug()" title="Toggle the test debug information">Debug</button>
 </div>
 

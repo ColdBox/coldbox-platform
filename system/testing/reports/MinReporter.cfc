@@ -33,9 +33,21 @@ component{
 	){
 		// content type
 		getPageContext().getResponse().setContentType( "text/html" );
+		
 		// bundle stats
 		bundleStats = arguments.results.getBundleStats();
 		
+		// prepare base links
+		baseURL = "?";
+		if( structKeyExists( url, "method") ){ baseURL&= "method=#URLEncodedFormat( url.method )#"; }
+		if( structKeyExists( url, "output") ){ baseURL&= "output=#URLEncodedFormat( url.output )#"; }
+
+		// prepare incoming params
+		if( !structKeyExists( url, "testMethod") ){ url.testMethod = ""; }
+		if( !structKeyExists( url, "testSpecs") ){ url.testSpecs = ""; }
+		if( !structKeyExists( url, "testSuites") ){ url.testSuites = ""; }
+		if( !structKeyExists( url, "testBundles") ){ url.testBundles = ""; }
+
 		// prepare the report
 		savecontent variable="local.report"{
 			include "assets/min.cfm";
