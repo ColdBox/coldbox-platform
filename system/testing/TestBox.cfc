@@ -287,6 +287,7 @@ component accessors="true"{
 			case "console" : { return new "coldbox.system.testing.reports.ConsoleReporter"(); }
 			case "min" : { return new "coldbox.system.testing.reports.MinReporter"(); }
 			case "tap" : { return new "coldbox.system.testing.reports.TapReporter"(); }
+			case "doc" : { return new "coldbox.system.testing.reports.DocReporter"(); }
 			default: {
 				return new "#arguments.reporter#"();
 			}
