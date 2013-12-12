@@ -22,7 +22,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 	* @targetValue.hint The target value to validate
 	* @validationData.hint The validation data the validator was created with
 	*/
-	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
+	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, any validationData){
 
 		// get secondary value from property
 		var compareValue = evaluate("arguments.target.get#arguments.validationData#()");

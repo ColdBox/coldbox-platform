@@ -23,7 +23,7 @@ component accessors="true" implements="coldbox.system.validation.validators.IVal
 	* @targetValue.hint The target value to validate
 	* @validationData.hint The validation data the validator was created with
 	*/
-	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData){
+	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, any validationData){
 		// check incoming type
 		if( !reFindNoCase( "^(#replace(validTypes,",","|","all")#)$", arguments.validationData ) ){
 			throw(message="The Required validator data is invalid: #arguments.validationData#",type="TypeValidator.InvalidValidationData");
