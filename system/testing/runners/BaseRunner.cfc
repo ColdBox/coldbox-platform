@@ -130,8 +130,8 @@ component{
 	* @methodName.hint The method name to validate
 	*/
 	boolean function isValidTestMethod( required methodName ) {
-		// All test methods must start with the term, "test". 
-		return( !! reFindNoCase( "^test", methodName ) );
+		// All test methods must start or end with the term, "test". 
+		return( !! reFindNoCase( "(^test|test$)", methodName ) );
 	}
 
 	/**
