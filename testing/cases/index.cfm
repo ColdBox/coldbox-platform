@@ -1,6 +1,9 @@
+<!--- SETUP YOUR ROOT PATH RIGHT HERE FOR THE BROWSER --->
+<cfset rootPath = expandPath( "/coldbox/testing/cases" )>
+
 <cfparam name="url.path" default="/">
 <cfset url.path = urlDecode( url.path )>
-<cfset rootPath = getDirectoryFromPath( getCurrentTemplatePath() )>
+
 
 <!--- Run Tests Action?--->
 <cfif structKeyExists( url, "action")>
@@ -20,7 +23,6 @@
 	<cfabort>
 	
 </cfif>
-
 
 <cfdirectory action="list" directory="#rootPath & url.path#" name="qResults" sort="asc" >
 <cfset embedPath = reReplaceNoCase( replaceNoCase( rootPath & url.path, rootPath, "" ), "^/", "" ) & "/">

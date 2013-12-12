@@ -69,6 +69,12 @@
         	<fileset dir="test-runner">
         	</fileset>
         </copy>
+
+        <!-- Copy TestBox Browser -->	
+      	<copy todir="${dir.build}/coldbox/test-browser">
+        	<fileset dir="test-browser">
+        	</fileset>
+        </copy>
 		
 		<!-- Samples -->
 		<copy todir="${dir.build}/coldbox/samples">

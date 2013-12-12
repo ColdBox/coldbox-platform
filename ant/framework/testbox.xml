@@ -62,6 +62,9 @@
 		<copy todir="${dir.build}/runner">
         	<fileset dir="test-runner" />
         </copy>
+        <copy todir="${dir.build}/browser">
+        	<fileset dir="test-browser" />
+        </copy>
 		<copy todir="${dir.build}/samples">
         	<fileset dir="testing/cases/testing">
         		<exclude name="**/BaseTestCaseTest.cfc" />
