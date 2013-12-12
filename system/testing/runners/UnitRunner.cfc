@@ -122,19 +122,19 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 					// thread it
 					thread name="#thisThreadName#" thisSpec="#thisSpec#" suite="#arguments.suite#" threadName="#thisThreadName#"{
 						// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
-						thread.target.runTest( spec=attributes.thisSpec, 
-										  	   testResults=thread.testResults, 
-						  				  	   suiteStats=thread.suiteStats,
-						  				  	   runner=this );
+						thread.target.runTestMethod( spec=attributes.thisSpec, 
+										  	   		 testResults=thread.testResults, 
+						  				  	   		 suiteStats=thread.suiteStats,
+						  				  	   		 runner=this );
 				
 					}
 
 				} else {
 					// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
-					thread.target.runTest( spec=thisSpec,
-								  		   testResults=thread.testResults, 
-								  		   suiteStats=thread.suiteStats,
-								  		   runner=this );
+					thread.target.runTestMethod( spec=thisSpec,
+								  		   		 testResults=thread.testResults, 
+								  		   		 suiteStats=thread.suiteStats,
+								  		   		 runner=this );
 				}
 
 			} // end loop over specs

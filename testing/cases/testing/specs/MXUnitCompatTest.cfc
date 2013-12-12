@@ -130,4 +130,25 @@ component extends="BaseTest" {
 		fail( "Private method don't run" );
 	}
 
+	function testInjectProperty(){
+		var obj = getMockBox().createStub();
+		injectProperty( obj, "luis", "majano", "this" );
+		assertEquals( obj.luis, "majano" );
+	}
+
+	function testInjectMethod(){
+		var giver 		= this;
+		var receiver 	= getMockBox().createStub();
+
+		injectMethod( receiver, giver, "getData" );
+		assertEquals( receiver.getData(), [1,2,3] );
+
+		injectMethod( receiver, giver, "getData", "getIt" );
+		assertEquals( receiver.getIt(), [1,2,3] );
+	}
+
+	private function getData(){
+		return [1,2,3];
+	}
+
 }

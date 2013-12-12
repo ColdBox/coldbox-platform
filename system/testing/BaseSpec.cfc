@@ -431,13 +431,13 @@ component{
 	}
 
 	/**
-	* Runs a xUnit style test in this target CFC
+	* Runs a xUnit style test method in this target CFC
 	* @spec.hint The spec definition to test
 	* @testResults.hint The testing results object
 	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
 	* @runner.hint The runner calling this BDD test
 	*/
-	function runTest(
+	function runTestMethod(
 		required spec,
 		required testResults,
 		required suiteStats,

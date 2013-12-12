@@ -42,6 +42,46 @@ component extends="coldbox.system.testing.BaseSpec"{
 	function expectException( expectedExceptionType, expectedExceptionMessage=".*" ){
 		super.expectedException( arguments.expectedExceptionType, arguments.expectedExceptionMessage );
 	}
+
+	/**
+	* Injects properties into the receiving object
+	*/
+	any function injectProperty( 
+		required any receiver, 
+		required string propertyName, 
+		required any propertyValue,
+		string scope="variables"
+	){
+		// Mock it baby
+		getMockBox().prepareMock( arguments.receiver )
+			.$property( propertyName=arguments.propertyName, 
+						propertyScope=arguments.scope, 
+						mock=arguments.propertyValue );
+
+		return arguments.receiver;
+	}
+
+	/**
+	* injects the method from giver into receiver. This is helpful for quick and dirty mocking
+	*/
+	any function injectMethod( 
+		required any receiver, 
+		required any giver, 
+		required string functionName,
+		string functionNameInReceiver="#arguments.functionName#"
+	){
+		// Mock it baby
+		getMockBox().prepareMock( arguments.giver );
+		
+		// inject it.
+		if( structkeyexists( arguments.giver, arguments.functionName ) ){
+			arguments.receiver[ arguments.functionNameInReceiver ] = arguments.giver.$getProperty( name=arguments.functionName, scope="this" );
+		} else {
+			arguments.receiver[ arguments.functionNameInReceiver ] = arguments.giver.$getProperty( name=arguments.functionName, scope="variables" );
+		}
+		
+		return arguments.receiver;
+	}
 	
 /*********************************** ASSERTION METHODS ***********************************/
 
