@@ -288,6 +288,7 @@ component accessors="true"{
 			case "min" : { return new "coldbox.system.testing.reports.MinReporter"(); }
 			case "tap" : { return new "coldbox.system.testing.reports.TapReporter"(); }
 			case "doc" : { return new "coldbox.system.testing.reports.DocReporter"(); }
+			case "codexwiki" : { return new "coldbox.system.testing.reports.CodexWikiReporter"(); }
 			default: {
 				return new "#arguments.reporter#"();
 			}
