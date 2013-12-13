@@ -2,7 +2,7 @@
     "scope": "meta.name.interpolated.hash - string, source.cfscript - source.sql - text.html.cfm - string - meta - comment, source.cfscript.embedded.cfml - string, source.sql, text",
     "completions":
     [
-	// Functions for: coldbox.Interceptor 
+	// Functions for: coldbox.system.Interceptor 
 	{ "trigger": "appendToBuffer\tfn. (ColdBox Interceptor)", "contents": "appendToBuffer( str=${1:any} )" },
 	{ "trigger": "clearBuffer\tfn. (ColdBox Interceptor)", "contents": "clearBuffer()" },
 	{ "trigger": "getBufferObject\tfn. (ColdBox Interceptor)", "contents": "getBufferObject()" },
@@ -14,9 +14,9 @@
 	{ "trigger": "setProperties\tfn. (ColdBox Interceptor)", "contents": "setProperties( properties=${1:{}} )" },
 	{ "trigger": "setProperty\tfn. (ColdBox Interceptor)", "contents": "setProperty( property=${1:any}, value=${2:any} )" },
 	{ "trigger": "unregister\tfn. (ColdBox Interceptor)", "contents": "unregister( state=${1:any} )" },
-	// END Functions for: coldbox.Interceptor 
+	// END Functions for: coldbox.system.Interceptor 
 
-	// Functions for: coldbox.Plugin 
+	// Functions for: coldbox.system.Plugin 
 	{ "trigger": "getpluginAuthor\tfn. (ColdBox Plugin)", "contents": "getpluginAuthor()" },
 	{ "trigger": "getpluginAuthorURL\tfn. (ColdBox Plugin)", "contents": "getpluginAuthorURL()" },
 	{ "trigger": "getPluginDescription\tfn. (ColdBox Plugin)", "contents": "getPluginDescription()" },
@@ -30,14 +30,14 @@
 	{ "trigger": "setPluginDescription\tfn. (ColdBox Plugin)", "contents": "setPluginDescription( pluginDescription=${1:any} )" },
 	{ "trigger": "setPluginName\tfn. (ColdBox Plugin)", "contents": "setPluginName( pluginName=${1:any} )" },
 	{ "trigger": "setPluginVersion\tfn. (ColdBox Plugin)", "contents": "setPluginVersion( pluginVersion=${1:any} )" },
-	// END Functions for: coldbox.Plugin 
+	// END Functions for: coldbox.system.Plugin 
 
-	// Functions for: coldbox.EventHandler 
+	// Functions for: coldbox.system.EventHandler 
 	{ "trigger": "_actionExists\tfn. (ColdBox EventHandler)", "contents": "_actionExists( action=${1:any} )" },
 	{ "trigger": "_privateInvoker\tfn. (ColdBox EventHandler)", "contents": "_privateInvoker( method=${1:any}, argCollection=${2:any} )" },
-	// END Functions for: coldbox.EventHandler 
+	// END Functions for: coldbox.system.EventHandler 
 
-	// Functions for: coldbox.testing.BaseSpec 
+	// Functions for: coldbox.system.testing.BaseSpec 
 	{ "trigger": "addAssertions\tfn. (ColdBox BaseSpec)", "contents": "addAssertions( assertions=${1:any} )" },
 	{ "trigger": "addMatchers\tfn. (ColdBox BaseSpec)", "contents": "addMatchers( matchers=${1:any} )" },
 	{ "trigger": "afterEach\tfn. (ColdBox BaseSpec)", "contents": "afterEach( body=${1:any} )" },
@@ -65,10 +65,10 @@
 	{ "trigger": "querySim\tfn. (ColdBox BaseSpec)", "contents": "querySim( queryData=${1:any} )" },
 	{ "trigger": "runRemote\tfn. (ColdBox BaseSpec)", "contents": "runRemote( testSpecs=\"${1:}\", testSuites=\"${2:}\", debug=${3:true,false}, reporter=\"${4:}\" )" },
 	{ "trigger": "runSpec\tfn. (ColdBox BaseSpec)", "contents": "runSpec( spec=${1:any}, suite=${2:any}, testResults=${3:any}, suiteStats=${4:any}, runner=${5:any} )" },
-	{ "trigger": "runTest\tfn. (ColdBox BaseSpec)", "contents": "runTest( spec=${1:any}, testResults=${2:any}, suiteStats=${3:any}, runner=${4:any} )" },
+	{ "trigger": "runTestMethod\tfn. (ColdBox BaseSpec)", "contents": "runTestMethod( spec=${1:any}, testResults=${2:any}, suiteStats=${3:any}, runner=${4:any} )" },
 	{ "trigger": "xdescribe\tfn. (ColdBox BaseSpec)", "contents": "xdescribe( title=\"${1:}\", body=${2:any}, labels=${3:any}, asyncAll=${4:true,false} )" },
 	{ "trigger": "xit\tfn. (ColdBox BaseSpec)", "contents": "xit( title=\"${1:}\", body=${2:any}, labels=${3:any} )" },
-	// END Functions for: coldbox.testing.BaseSpec 
+	// END Functions for: coldbox.system.testing.BaseSpec 
 
 	// Functions for: coldbox.system.FrameworkSupertype 
 	{ "trigger": "$abort\tfn. (ColdBox FrameworkSuperType)", "contents": "$abort()" },

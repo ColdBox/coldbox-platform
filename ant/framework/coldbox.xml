@@ -131,6 +131,7 @@
 		<delete dir="${dir.build}/coldbox/ApplicationTemplates"/>
 		<delete dir="${dir.build}/apidocs" />
 		<delete dir="${dir.build}/coldbox/test-runner" />
+		<delete dir="${dir.build}/coldbox/test-browser" />
 		<delete dir="${dir.build}/coldbox/install" />
 		<delete dir="${dir.build}/coldbox/samples" />
 		<copy todir="${dir.build}/">

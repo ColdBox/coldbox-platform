@@ -2,7 +2,7 @@
 <dictionary>
 	<tags></tags>
 	<functions>
-<!-- Functions for: coldbox.Interceptor -->
+<!-- Functions for: coldbox.system.Interceptor -->
 	<function name="setProperty" returns="void">
 			<help><![CDATA[ Set an interceptor property (Context: Interceptor) ]]></help>
 		<parameter name="property" required="true" type="any">
@@ -69,7 +69,7 @@
 	<function name="getBufferString" returns="any">
 			<help><![CDATA[ Get the string representation of the buffer (Context: Interceptor) ]]></help>
 		</function>
-<!-- Functions for: coldbox.Plugin -->
+<!-- Functions for: coldbox.system.Plugin -->
 	<function name="getPluginDescription" returns="string">
 			<help><![CDATA[ Get the instance's pluginDescription (Context: Plugin) ]]></help>
 		</function>
@@ -133,7 +133,7 @@
 	<function name="getpluginAuthorURL" returns="string">
 			<help><![CDATA[ Get the instance's pluginAuthorURL (Context: Plugin) ]]></help>
 		</function>
-<!-- Functions for: coldbox.EventHandler -->
+<!-- Functions for: coldbox.system.EventHandler -->
 	<function name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
