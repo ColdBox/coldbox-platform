@@ -103,8 +103,8 @@
 			<!--- Iterate over suite specs --->
 			<cfloop array="#arguments.suiteStats.specStats#" index="thisSpec">
 				<a href="javascript:showInfo( '#JSStringFormat( thisSpec.failMessage )#', '#thisSpec.id#', '#lcase( NOT structIsEmpty( thisSpec.error ) )#' )" 
-				   title="#thisSpec.name# (#thisSpec.totalDuration# ms)" 
-				   data-info="#thisSpec.failMessage#"><span class="#lcase( thisSpec.status )#">.</span></a>
+				   title="#htmlEditFormat( thisSpec.name )# (#thisSpec.totalDuration# ms)" 
+				   data-info="#HTMLEditFormat( thisSpec.failMessage )#"><span class="#lcase( thisSpec.status )#">.</span></a>
 				
 				<div style="display:none;" id="error_#thisSpec.id#"><cfdump var="#thisSpec.error#"></div>
 			</cfloop>			

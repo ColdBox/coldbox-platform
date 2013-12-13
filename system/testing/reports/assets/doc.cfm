@@ -59,12 +59,12 @@
 				</dt>
 					
 				<cfif local.thisSpec.status eq "failed">
-					<dd>#local.thisSpec.failMessage#</dd>
+					<dd>#htmlEditFormat( local.thisSpec.failMessage )#</dd>
 					<dd><textarea cols="100" rows="20">#local.thisSpec.failOrigin.toString()#</textarea></dd>
 				</cfif>
 				
 				<cfif local.thisSpec.status eq "error">
-					<dd>#local.thisSpec.error.message#</dd>
+					<dd>#htmlEditFormat( local.thisSpec.error.message )#</dd>
 					<dd><textarea cols="100" rows="20">#local.thisSpec.error.stacktrace#</textarea></dd>
 				</cfif>
 			</cfloop>
