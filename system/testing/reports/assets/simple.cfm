@@ -5,8 +5,8 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-	<link href="/coldbox/system/testing/reports/assets/css/simple.css" rel="stylesheet">
-	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
+	<script><cfinclude template="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
+	<style><cfinclude template="/coldbox/system/testing/reports/assets/css/simple.css"></style>
 	<script>
 	$(document).ready(function() {
 		// spec toggler
