@@ -46,7 +46,7 @@ component{
 	* Assert that the passed expression is true
 	* @facade
 	*/
-	function assert(required expression, message=""){
+	function assert( required expression, message="" ){
 		return this.$assert.assert(argumentCollection=arguments);
 	}
 
@@ -54,7 +54,7 @@ component{
 	* Fail an assertion
 	* @facade
 	*/
-	function fail(message=""){
+	function fail( message="" ){
 		this.$assert.fail(argumentCollection=arguments);
 	}
 
