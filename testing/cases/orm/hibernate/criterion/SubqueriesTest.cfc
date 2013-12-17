@@ -1,18 +1,16 @@
 component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdBox = false;
 	function setup(){
-		subCriteria   = getMockBox().createMock("coldbox.system.orm.hibernate.DetachedCriteriaBuilder");
-		subCriteria.init("Comments","Comments");
+		subCriteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName( "User", "u" );
 		subqueries   = getMockBox().createMock("coldbox.system.orm.hibernate.criterion.Subqueries");
-		subqueries.init( subCriteria.getNativeCriteria() );
+		subqueries.init( subCriteria );
 	}
-	function getNativeClass(){
+	function testGetNativeClass(){
 		r = subqueries.getNativeClass();
 		assertTrue( isInstanceOf(r,"org.hibernate.criterion.Subqueries") );
 	}
 	
 	function testSubEq() {
-		subCriteria.withProjection( property="fkentry_id" );
 		s = subqueries.subEq( '88B82629-B264-B33E-D1A144F97641614E' );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
@@ -80,79 +78,79 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		s = subqueries.subNotIn( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function exists() {
+	function testexists() {
 		s = subqueries.exists();
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.ExistsSubqueryExpression" ) );
 	}
-	function notExists() {
+	function testNotExists() {
 		s = subqueries.notExists();
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.ExistsSubqueryExpression" ) );
 	}
-	function propertyEq(){
+	function testPropertyEq(){
 		s = subqueries.propertyEq( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyEqAll(){
+	function testPropertyEqAll(){
 		s = subqueries.propertyEqAll( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyGe(){
+	function testPropertyGe(){
 		s = subqueries.propertyGe( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyGeAll(){
+	function testPropertyGeAll(){
 		s = subqueries.propertyGeAll( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyGeSome(){
+	function testPropertyGeSome(){
 		s = subqueries.propertyGeSome( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyGt(){
+	function testPropertyGt(){
 		s = subqueries.propertyGt( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyGtAll(){
+	function testPropertyGtAll(){
 		s = subqueries.propertyGtAll( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyGtSome(){
+	function testPropertyGtSome(){
 		s = subqueries.propertyGtSome( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyIn(){
+	function testPropertyIn(){
 		s = subqueries.propertyIn( "entry_id" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyLe(){
+	function testPropertyLe(){
 		s = subqueries.propertyLe( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyLeAll(){
+	function testPropertyLeAll(){
 		s = subqueries.propertyLeAll( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyLeSome(){
+	function testPropertyLeSome(){
 		s = subqueries.propertyLeSome( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyLt(){
+	function testPropertyLt(){
 		s = subqueries.propertyLt( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyLtAll(){
+	function testPropertyLtAll(){
 		s = subqueries.propertyLtAll( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyLtSome(){
+	function testPropertyLtSome(){
 		s = subqueries.propertyLtSome( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyNe(){
+	function testPropertyNe(){
 		s = subqueries.propertyNe( "views" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
-	function propertyNotIn(){
+	function testPropertyNotIn(){
 		s = subqueries.propertyNotIn( "entry_id" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}

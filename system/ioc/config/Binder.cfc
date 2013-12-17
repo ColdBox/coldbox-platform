@@ -239,10 +239,20 @@ Description :
 
 	<!--- mapPath --->
     <cffunction name="mapPath" output="false" access="public" returntype="any" hint="Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.">
-    	<cfargument name="path" required="true" hint="The class path to the object to map"/>
+    	<cfargument name="path" 		required="true" hint="The class path to the object to map"/>
+		<cfargument name="namespace"	required="false"	default=""		hint="Provide namespace to merge it in"/>
+    	<cfargument name="prepend"		required="false"	default="false" hint="Where to attach the namespace"/>	
 		<cfscript>
+			var cName = listlast( arguments.path, "." );
+			
+			if( arguments.prepend ){
+				cName = arguments.namespace & cName;
+			} else {
+				cName = cName & arguments.namespace;
+			}
+			
 			// directly map to a path
-			return map( listlast(arguments.path,".") ).to(arguments.path);
+			return map( cName ).to( arguments.path );
 		</cfscript>
     </cffunction>
 
@@ -253,6 +263,8 @@ Description :
 		<cfargument name="exclude" 		required="true" 	default="" hint="An exclude regex that if matches will exclude CFCs that match this case insensitive regex"/>
 		<cfargument name="influence" 	required="false" 	hint="The influence closure or UDF that will receive the currently working mapping so you can influence it during the iterations"/>
 		<cfargument name="filter" 		required="false" 	hint="The filter closure or UDF that will receive the path of the CFC to process and returns TRUE to continue processing or FALSE to skip processing"/>
+		<cfargument name="namespace"	required="false"	default="" hint="Provide namespace to merge it in"/>
+    	<cfargument name="prepend"		required="false"	default="false" hint="where to attach the namespace"/>	
 		<cfscript>
 			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
 			var qObjects		= "";
@@ -279,7 +291,7 @@ Description :
 				  OR ( NOT len( arguments.include ) AND NOT len( arguments.exclude ) AND NOT structKeyExists( arguments, "filter") )>
 
 				<!--- Map the Path --->
-				<cfset mapPath( thisTargetPath )>
+				<cfset mapPath( path=thisTargetPath, namespace=arguments.namespace, prepend=arguments.prepend )>
 				
 				<!--- Influence --->
 				<cfif structKeyExists( arguments, "influence" )>
@@ -292,7 +304,7 @@ Description :
 
 		<cfreturn this>
     </cffunction>
-
+    
 	<!--- map --->
     <cffunction name="map" output="false" access="public" returntype="any" hint="Create a mapping to an object">
     	<cfargument name="alias" required="true" hint="A single alias or a list or an array of aliases for this mapping. Remember an object can be refered by many names"/>
@@ -498,7 +510,8 @@ Description :
 		<cfargument name="dsl" 		required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	required="false" hint="The value of the constructor argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
-    	<cfscript>
+    	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
+		<cfscript>
     		currentMapping.addDIConstructorArgument(argumentCollection=arguments);
     		return this;
     	</cfscript>
@@ -526,7 +539,8 @@ Description :
 		<cfargument name="value" 	required="false" hint="The value of the property, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
     	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
-    	<cfscript>
+    	<cfargument name="required" required="false" default="true" hint="If the property is required or not, by default we assume required DI properties."/>
+		<cfscript>
     		currentMapping.addDIProperty(argumentCollection=arguments);
     		return this;
     	</cfscript>

@@ -1,48 +1,50 @@
 ﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
-     Wirebox Build                                                                
+     WireBox Standalone Build (www.coldbox.org)                                                                
      ====================================================================== -->
-<project name="wirebox.newbuild" default="build" basedir="../../">
+<project name="wirebox-build" default="build" basedir="../../">
 
-	<!--Build Properties-->
-	<property name="dir.userlocation"	value="/Users/lmajano" />
-	<property name="dir.exports"		value="${dir.userlocation}/exports" />
-	<property name="dir.build" 			value="${dir.exports}/wirebox-distro" />
-	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/wirebox.cfm?version=" />
-	
-	<!-- FTP -->
-	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
-	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
-	
+	<description>
+    	Build a new distribution of WireBox Standalone
+    </description>
+	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	<property name="wirebox.version"	value="1.8.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
-	<property name="build.label" 		value="wirebox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
-	
+
 	<!-- Init -->
 	<target name="init" description="Init">
-		<!-- Version -->
-		<input addproperty="wirebox.version" message="WireBox Version" />
-	</target>
-	
-	<!-- FTP Upload of new build -->
-	<target name="ftp.deploy" depends="build">
-       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
-       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
-      	
-		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
-       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
-        	<fileset file="${dir.exports}/cachebox_${wirebox.version}.zip" />
-       	</ftp>		
+		<!-- Default environment check, if not passed via -Denvironment -->
+    	<condition property="environment" value="local">
+    		<not><isset property="environment" /></not>
+    	</condition>
+    	<echo>Loading from environment: ${environment}</echo>
+		<!-- Load env properties -->
+		<loadproperties srcFile="ant/framework/wirebox-${environment}.properties"/>
+
+		<!-- Build Number -->
+		<propertyfile file="ant/framework/build.number" comment="Build Number for ANT. Edit not!">
+			<entry key="build.number" 
+					type="int" 
+			     	operation="+"
+					pattern="00000"
+			     	default="1" />
+		</propertyfile>
+		<property file="ant/framework/build.number"/>
+		<!-- Build Label -->
+		<property name="build.label" value="wirebox-${wirebox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<!-- Cleanup + Init -->
+		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}"/>
 	</target>
 	
 	<!--build-->
-	<target name="build" description="Build a new wirebox distribution" depends="init">
-      	<delete dir="${dir.build}" />
+	<target name="build" description="Build a new WireBox distribution" depends="init">
 		
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
-		<!-- Copy src to wirebox namespace-->	
+		<!-- Copy src to WireBox namespace-->	
       	<copy todir="${dir.build}/wirebox/system/ioc">
         	<fileset dir="system/ioc" />
         </copy>
@@ -69,28 +71,18 @@
 		<copy todir="${dir.build}/wirebox/system/logging">
         	<fileset dir="system/logging" />
         </copy>
-		
-		<!-- Copy src to coldbox namespace -->
-		<copy todir="${dir.build}/coldbox/system/aop">
-		 	<fileset dir="system/aop" />
+
+        <!--Copy text files to root folder-->
+		<copy todir="${dir.build}/">
+			<fileset file="license.txt" />
+			<fileset file="system/ioc/readme.txt" />						
 		</copy>
-		<copy todir="${dir.build}/coldbox/system/orm/hibernate">
-			<fileset dir="system/orm/hibernate">
-			 	<exclude name="EventHandler.cfc" />
-			 </fileset>
-		</copy>
-		<copy todir="${dir.build}/coldbox/system/ioc">
-        	<fileset dir="system/ioc" />
-        </copy>
-		<copy todir="${dir.build}/coldbox/system/cache">
-        	<fileset dir="system/cache" />
-        </copy>
-		<copy todir="${dir.build}/coldbox/system/core">
-        	<fileset dir="system/core" />
-        </copy>
-		<copy todir="${dir.build}/coldbox/system/logging">
-        	<fileset dir="system/logging" />
-        </copy>
+
+		<!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		  <fileset dir="${dir.build}">
+		  </fileset>
+		</replaceregexp>
 		
 		<!-- Refactor cachebox namespace -->
 		<echo>Refactoring for coldbox absolute paths</echo>
@@ -109,30 +101,27 @@
 			<include name="**/*.css" />
 			<replacetoken>coldbox.system.</replacetoken>
 		</replace>
-		
-		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}/">
-			<fileset file="license.txt" />
-			<fileset file="system/ioc/readme.txt" />						
-		</copy>
-		
+
 		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${wirebox.version}" verbose="true"/>
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${wirebox.version}&amp;path=${dir.api}&amp;wirebox_root=${dir.build}/wirebox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
 		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.exports}/WireBoxDocs-${wirebox.version}.zip" basedir="${dir.build}/apidocs"></zip>
+				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/wirebox+cachebox_${wirebox.version}.zip" basedir="${dir.build}"></zip>
-		
-		<!-- No CacheBox -->
-		<delete dir="${dir.build}/coldbox/system/cache" />
+
+		<!-- No CacheBox NOW -->
 		<delete dir="${dir.build}/wirebox/system/cache" />
-		
 		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${wirebox.version}" verbose="true"/>
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${wirebox.version}&amp;path=${dir.api}&amp;wirebox_root=${dir.build}/wirebox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/wirebox_${wirebox.version}.zip" basedir="${dir.build}"></zip>
+
+		<delete dir="${dir.build}" />
 				
     </target>
 </project>

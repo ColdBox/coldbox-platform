@@ -164,7 +164,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		super.evict(argumentCollection=arguments);
 	}
 	
-	void function clear(string datasource=this.getDatasource()){
+	any function clear(string datasource=this.getDatasource()){
 		return super.clear(argumentCollection=arguments);
 	}
 	

@@ -91,7 +91,9 @@ Properties
 
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
-			instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
+			
+			if( instance.logger.canDebug() )
+				instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
 
 			// Validate the configuration
 			validateConfiguration();
@@ -125,7 +127,8 @@ Properties
 			instance.reportingEnabled = true;
 
 			// startup message
-			instance.logger.info("CacheBox Cache: #getName()# has been initialized successfully for operation");
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "CacheBox Cache: #getName()# has been initialized successfully for operation" );
 		</cfscript>
 		</cflock>
 
@@ -134,9 +137,8 @@ Properties
 	<!--- shutdown --->
     <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
    		<cfscript>
-   			// TODO: We can do fancy shmancy stuff later on here.
-
-   			instance.logger.info("CacheBox Cache: #getName()# has been shutdown.");
+		   	if( instance.logger.canDebug() )
+   				instance.logger.debug("CacheBox Cache: #getName()# has been shutdown.");
    		</cfscript>
     </cffunction>
 
@@ -221,9 +223,12 @@ Properties
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<cfscript>
 			var refLocal = {};
+			// cleanup the key
+			arguments.objectKey = lcase( arguments.objectKey );
+
 			// get quietly
-			refLocal.results = getQuiet(arguments.objectKey);
-			if( structKeyExists(refLocal, "results") ){
+			refLocal.results = instance.objectStore.get( arguments.objectKey );
+			if( structKeyExists( refLocal, "results" ) ){
 				getStats().hit();
 				return refLocal.results;
 			}
@@ -240,10 +245,10 @@ Properties
 			var refLocal = {};
 
 			// cleanup the key
-			arguments.objectKey = lcase(arguments.objectKey);
+			arguments.objectKey = lcase( arguments.objectKey );
 
 			// get object from store
-			refLocal.results = instance.objectStore.get( arguments.objectKey );
+			refLocal.results = instance.objectStore.getQuiet( arguments.objectKey );
 			if( structKeyExists(refLocal, "results") ){
 				return refLocal.results;
 			}
@@ -348,6 +353,43 @@ Properties
 				set(objectKey=arguments.prefix & key,object=arguments.mapping[key],timeout=arguments.timeout,lastAccessTimeout=arguments.lastAccessTimeout);
 			}
 		</cfscript>
+	</cffunction>
+	
+	<!--- getOrSet --->
+	<cffunction name="getOrSet" access="public" output="false" returntype="any" hint="Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it.">
+		<!--- ************************************************************* --->
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		<cfargument name="produce"				type="any" 		required="true" hint="The closure/udf to produce the data if not found">
+		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="extra" 				type="any" 		required="false" default="#structNew()#" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation" colddoc:generic="struct"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var refLocal = {
+				object = get( arguments.objectKey )
+			};
+			// Verify if it exists? if so, return it.
+			if( structKeyExists( refLocal, "object" ) ){ return refLocal.object; }
+			// else, produce it
+		</cfscript>
+		<cflock name="CacheBoxProvider.GetOrSet.#instance.cacheID#.#arguments.objectKey#" type="exclusive" timeout="#instance.lockTimeout#" throwonTimeout="true">
+			<cfscript>
+				// double lock
+				refLocal.object = get( arguments.objectKey );
+				if( not structKeyExists( refLocal, "object" ) ){
+					// produce it
+					refLocal.object = arguments.produce();
+					// store it
+					set( objectKey=arguments.objectKey, 
+						 object=refLocal.object, 
+						 timeout=arguments.timeout,
+						 lastAccessTimeout=arguments.lastAccessTimeout,
+						 extra=arguments.extra );
+				}
+			</cfscript>
+		</cflock>
+		
+		<cfreturn refLocal.object>
 	</cffunction>
 
 	<!--- Set an Object in the cache --->
@@ -585,7 +627,8 @@ Properties
 		<cfscript>
 
 			// log it
-			instance.logger.info("Starting to reap CacheBoxProvider: #getName()#, id: #instance.cacheID#");
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "Starting to reap CacheBoxProvider: #getName()#, id: #instance.cacheID#" );
 
 			// Run Storage reaping first, before our local algorithm
 			instance.objectStore.reap();
@@ -649,7 +692,8 @@ Properties
 			getStats().setLastReapDatetime( now() );
 
 			// log it
-			instance.logger.info("Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #instance.cacheID#");
+			if( instance.logger.canDebug() )
+				instance.logger.debug( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #instance.cacheID#" );
 		</cfscript>
 		</cflock>
 	</cffunction>

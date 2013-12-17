@@ -4,9 +4,9 @@
 		//mocks
 		fwloader = getMockBox().createMock("coldbox.system.web.loader.FrameworkLoader").init();
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
-		mockEngine = getMockBox().createMock("coldbox.system.core.cf.CFMLEngine").init();
+		mockEngine = getMockBox().createMock("coldbox.system.core.util.CFMLEngine").init();
 		mockController.$("getCFMLEngine",mockEngine);
-		mockController.$("getAppRootPath",expandPath("/coldbox/testHarness"));
+		mockController.$("getAppRootPath",expandPath("/coldbox/test-harness"));
 		fwloader.loadSettings(mockController);
 		
 		loader = getMockBox().createMock("coldbox.system.web.loader.XMLApplicationLoader").init(mockController);

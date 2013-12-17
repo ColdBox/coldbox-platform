@@ -85,14 +85,16 @@ Description :
 
 	<!--- Get a Resource --->
 	<cffunction name="getResource" access="public" output="false" returnType="any" hint="Facade to i18n.getResource. Returns a string.">
-		<cfargument name="resource" type="any" required="true"  hint="The resource to retrieve from the loaded localized bundle">
-		<cfargument name="default"  type="any" required="false" hint="A default value to send back if resource not found" >
+		<cfargument name="resource" type="any" required="true"  hint="The resource (key) to retrieve from the main loaded bundle.">
+		<cfargument name="default"  type="any" required="false" hint="A default value to send back if the resource (key) not found" >
 		<cfargument name="locale"   type="any" required="false" hint="Pass in which locale to take the resource from. By default it uses the user's current set locale" >
+		<cfargument name="values" 	type="any" required="false" hint="An array, struct or simple string of value replacements to use on the resource string"/>
+		<cfargument name="bundle" 	type="any" required="false"	hint="The bundle alias to use to get the resource from when using multiple resource bundles. By default the bundle name used is 'default'">
 		<cfscript>
-			if(NOT structKeyExists(variables,"cboxResourceBundle") ){
-				variables.cboxResourceBundle = controller.getPlugin("ResourceBundle");
+			if( NOT structKeyExists( variables, "cboxResourceBundle" ) ){
+				variables.cboxResourceBundle = controller.getPlugin( "ResourceBundle" );
 			}
-			return variables.cboxResourceBundle.getResource(argumentCollection=arguments);
+			return variables.cboxResourceBundle.getResource( argumentCollection=arguments );
 		</cfscript>
 	</cffunction>
 

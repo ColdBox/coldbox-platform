@@ -310,15 +310,6 @@ TODO: update dsl consistency, so it is faster.
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
 			var coldboxDSLRegex		= "^(ioc|ocm|webservice|javaloader|coldbox|cachebox)$";
 			
-			// coldbox context check
-			if( refindNoCase(coldboxDSLRegex,DSLNamespace) AND NOT instance.injector.isColdBoxLinked() ){
-				instance.utility.throwIt(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",type="Builder.IllegalDSLException");
-			}
-			// cachebox context check
-			else if( refindNoCase("^cachebox",DSLNamespace) AND NOT instance.injector.isCacheBoxLinked() ){
-				instance.utility.throwIt(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a CacheBox Context",type="Builder.IllegalDSLException");
-			}
-			
 			// Determine Type of Injection according to Internal Types first
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch( DSLNamespace ){
@@ -327,7 +318,14 @@ TODO: update dsl consistency, so it is faster.
 					refLocal.dependency = instance.coldboxDSL.process(argumentCollection=arguments); break; 
 				} 
 				// CacheBox Context DSL
-				case "cacheBox"			 : { refLocal.dependency = instance.cacheBoxDSL.process(argumentCollection=arguments); break;}
+				case "cacheBox"			 : { 
+					// check if linked
+					if( !instance.injector.isCacheBoxLinked() AND !instance.injector.isColdBoxLinked() ){
+						instance.utility.throwIt(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",type="Builder.IllegalDSLException");
+					}
+					// retrieve it
+					refLocal.dependency = instance.cacheBoxDSL.process(argumentCollection=arguments); break;
+				}
 				// logbox injection DSL always available
 				case "logbox"			 : { refLocal.dependency = instance.logBoxDSL.process(argumentCollection=arguments); break;}
 				// WireBox Internal DSL for models and id
@@ -355,19 +353,23 @@ TODO: update dsl consistency, so it is faster.
 					}
 				}
 			}
-				
+			
 			// return only if found
 			if( structKeyExists( refLocal, "dependency" ) ){ return refLocal.dependency; }
 			
-			// Logging
-			if( instance.log.canError() ){
-				instance.log.error("Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency");
+			// was dependency required? If so, then throw exception
+			if( arguments.definition.required ){
+				// Logging
+				if( instance.log.canError() ){
+					instance.log.error("Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency");
+				}
+				
+				// Throw exception as DSL Dependency requested was not located
+				instance.utility.throwit(message="The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
+										 detail="The target requesting the dependency is: '#arguments.targetID#'",
+										 type="Builder.DSLDependencyNotFoundException");
 			}
-			
-			// Throw exception as DSL Dependency requested was not located
-			instance.utility.throwit(message="The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
-									 detail="The target requesting the dependency is: '#arguments.targetID#'",
-									 type="Builder.DSLDependencyNotFoundException");
+			// else return void, no dependency found that was required									 
 		</cfscript>
 	</cffunction>
 

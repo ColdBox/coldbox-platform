@@ -14,10 +14,17 @@ Description :
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent output="false">
+	
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = "ColdBoxTestingSuite" & hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
 	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 	<cfset this.setClientCookies = true>
-	
+
+	<!--- Create testing mapping --->
+	<cfset this.mappings[ "/test" ] = getDirectoryFromPath( getCurrentTemplatePath() )>
+	<!--- Map back to its root --->
+	<cfset rootPath = REReplaceNoCase( this.mappings[ "/test" ], "test(\\|/)", "" )>
+	<cfset this.mappings["/root"]   = rootPath>
+
 </cfcomponent>

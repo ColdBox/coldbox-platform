@@ -15,10 +15,13 @@ Description		:
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="MockGenerator" hint="Constructor">
-		<cfargument name="mockBox" type="coldbox.system.testing.MockBox" required="true"/>
+		<cfargument name="mockBox" required="true"/>
+		<cfargument name="removeStubs" required="false" default="true" hint="Always remove stubs unless we are debugging"/>
 		<cfscript>
-			instance.lb 		= "#chr(13)##chr(10)#";
-			instance.mockBox 	= arguments.mockBox;
+			instance.lb 			= "#chr(13)##chr(10)#";
+			instance.mockBox 		= arguments.mockBox;
+			instance.removeStubs 	= arguments.removeStubs;
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -26,16 +29,17 @@ Description		:
 	<!--- generate --->
 	<cffunction name="generate" output="false" access="public" returntype="string" hint="Generate a mock method and return the generated path">
 		<!--- ************************************************************* --->
-		<cfargument name="method" 			type="string" 	required="true" hint="The method you want to mock or spy on"/>
-		<cfargument name="returns" 			type="any" 		required="false" hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
-		<cfargument name="preserveReturnType" type="boolean" required="true" default="true" hint="If false, the mock will make the returntype of the method equal to ANY"/>
-		<cfargument name="throwException" type="boolean" 	required="false" default="false" hint="If you want the method call to throw an exception"/>
-		<cfargument name="throwType" 	  type="string" 	required="false" default="" hint="The type of the exception to throw"/>
-		<cfargument name="throwDetail" 	  type="string" 	required="false" default="" hint="The detail of the exception to throw"/>
-		<cfargument name="throwMessage"	  type="string" 	required="false" default="" hint="The message of the exception to throw"/>
-		<cfargument name="metadata" 	  type="any" 		required="true" default="" hint="The function metadata"/>
-		<cfargument name="targetObject"	  type="any" 		required="true" hint="The target object to mix in"/>
-		<cfargument name="callLogging" 	  type="boolean" 	required="false" default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
+		<cfargument name="method" 				type="string" 	required="true" 	hint="The method you want to mock or spy on"/>
+		<cfargument name="returns" 				type="any" 		required="false" 	hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
+		<cfargument name="preserveReturnType" 	type="boolean" 	required="true" 	default="true" hint="If false, the mock will make the returntype of the method equal to ANY"/>
+		<cfargument name="throwException" 		type="boolean" 	required="false" 	default="false" hint="If you want the method call to throw an exception"/>
+		<cfargument name="throwType" 	  		type="string" 	required="false" 	default="" hint="The type of the exception to throw"/>
+		<cfargument name="throwDetail" 	  		type="string" 	required="false" 	default="" hint="The detail of the exception to throw"/>
+		<cfargument name="throwMessage"	  		type="string" 	required="false" 	default="" hint="The message of the exception to throw"/>
+		<cfargument name="metadata" 	  		type="any" 		required="true" 	default="" hint="The function metadata"/>
+		<cfargument name="targetObject"	  		type="any" 		required="true" 	hint="The target object to mix in"/>
+		<cfargument name="callLogging" 	  		type="boolean" 	required="false" 	default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
+		<cfargument name="preserveArguments" 	type="boolean" 	required="false" 	default="false" hint="If true, argument signatures are kept, else they are ignored. If true, BEWARE with $args() matching as default values and missing arguments need to be passed too."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var udfOut = CreateObject("java","java.lang.StringBuffer").init('');
@@ -46,7 +50,21 @@ Description		:
 			// Create Method Signature
 			udfOut.append('
 			<cfset this[ "#arguments.method#" ] = variables[ "#arguments.method#" ]> 
-			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">
+			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">#instance.lb#');
+			
+			// Create Arguments Signature
+			if( structKeyExists( fncMD, "parameters" ) AND arguments.preserveArguments ){
+			for( var x=1; x lte arrayLen( fncMD.parameters ); x++ ){
+				udfOut.append( '<cfargument');
+				for( var argKey in fncMD.parameters[ x ] ){
+					udfOut.append( ' #lcase( argKey )#="#fncMD.parameters[ x ][ argKey ]#"');
+				}
+				udfOut.append('>#instance.lb#');
+			}
+			}
+			
+			// Continue Method Generation
+			udfOut.append('
 			<cfset var results = this._mockResults>
 			<cfset var resultsKey = "#arguments.method#">
 			<cfset var resultsCounter = 0>
@@ -127,7 +145,7 @@ Description		:
 	<cffunction name="removeStub" output="false" access="public" returntype="boolean" hint="Remove a method generator stub">
 		<cfargument name="genPath" type="string" required="true"/>
 		
-		<cfif fileExists(arguments.genPath)>
+		<cfif fileExists(arguments.genPath) and instance.removeStubs>
 			<cffile action="delete" file="#arguments.genPath#">
 			<cfreturn true>
 		<cfelse>

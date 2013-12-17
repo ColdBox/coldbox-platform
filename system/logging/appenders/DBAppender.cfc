@@ -14,6 +14,7 @@ Inspiration from Tim Blair <tim@bla.ir> cflogger project.
 Properties:
  - dsn : the dsn to use for logging
  - table : the table to store the logs in
+ - schema : which schema the table exists in (Optional)
  - columnMap : A column map for aliasing columns. (Optional)
  - autocreate : if true, then we will create the table. Defaults to false (Optional)
  - ensureChecks : if true, then we will check the dsn and table existence.  Defaults to true (Optional)
@@ -77,6 +78,22 @@ If you are building a mapper, the map must have the above keys in it.
 			if( NOT propertyExists("textDBType") ){
 				setProperty("textDBType","text");
 			}
+			if( NOT propertyExists( "rotate" ) ){
+				setProperty( "rotate", true );
+			}
+			if( NOT propertyExists( "rotationDays" ) ){
+				setProperty( "rotationDays", 30 );
+			}
+			if( NOT propertyExists( "rotationFrequency" ) ){
+				setProperty( "rotationFrequency", 5 );
+			}
+			if( NOT propertyExists( "schema" ) ){
+				setProperty( "schema", "" );
+			}
+			
+			
+			// DB Rotation Time
+			instance.lastDBRotation = "";
 			
 			return this;
 		</cfscript>
@@ -122,7 +139,7 @@ If you are building a mapper, the map must have the above keys in it.
 		
 		<!--- write the log message to the DB --->
 		<cfquery datasource="#getProperty("dsn")#">
-			INSERT INTO #getProperty('table')# (#cols#) VALUES (
+			INSERT INTO #getTable()# (#cols#) VALUES (
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#instance.uuid.randomUUID().toString()#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#severityToString(loge.getseverity())#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#category#">,
@@ -132,10 +149,52 @@ If you are building a mapper, the map must have the above keys in it.
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#loge.getExtraInfoAsString()#">
 			)
 		</cfquery>
+		
+		<!--- rotation --->
+		<cfset this.rotationCheck()>
 	</cffunction>
+	
+	<!--- rotationCheck --->    
+    <cffunction name="rotationCheck" output="false" access="public" returntype="any" hint="Rotation checks">    
+    	<cfscript>	    
+			// Verify if in rotation frequency
+			if( isDate( instance.lastDBRotation ) AND dateDiff( "n",  instance.lastDBRotation, now() ) LTE getProperty( "rotationFrequency" ) ){
+				return;
+			}
+			
+			// Rotations
+			this.doRotation();
+			
+			// Store last profile time
+			instance.lastDBRotation = now();			
+    	</cfscript>    
+    </cffunction>
+    
+    <!--- doRotation --->    
+    <cffunction name="doRotation" output="false" access="public" returntype="any" hint="Do Rotation">    
+   		<cfset var qLogs = "">
+		<cfset var cols = instance.columns>
+		<cfset var targetDate = dateAdd( "d", "-#getProperty( "rotationDays" )#", now() ) >
+		
+   		<cfquery datasource="#getProperty("dsn")#" name="qLogs">
+			DELETE
+			  FROM #getTable()#
+			 WHERE #listgetAt( cols,4)# < <cfqueryparam cfsqltype="#getDateTimeDBType()#" value="#dateFormat( targetDate, 'mm/dd/yyyy')#">
+		</cfquery>
+		
+    </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
+	<cffunction name="getTable" hint="Return the table name with the schema included if found." access="private">
+		<cfscript>
+			if( len( getProperty( 'schema' ) ) ){
+				return getProperty( 'schema' ) & "." & getProperty( 'table' );  
+			}
+			return getProperty( 'table' );
+		</cfscript>
+	</cffunction>
+
 	<!--- ensureTable --->
 	<cffunction name="ensureTable" output="false" access="private" returntype="void" hint="Verify or create the logging table">
 		<cfset var dsn = getProperty("dsn")>
@@ -159,11 +218,11 @@ If you are building a mapper, the map must have the above keys in it.
 		<cfif NOT tableFound and getProperty('autoCreate')>
 			<!--- Try to Create Table  --->
 			<cfquery name="qCreate" datasource="#dsn#">
-				CREATE TABLE #getProperty('table')# (
+				CREATE TABLE #getTable()# (
 					#listgetAt(cols,1)# VARCHAR(36) NOT NULL,
 					#listgetAt(cols,2)# VARCHAR(10) NOT NULL,
 					#listgetAt(cols,3)# VARCHAR(100) NOT NULL,
-					#listgetAt(cols,4)# DATETIME NOT NULL,
+					#listgetAt(cols,4)# #getDateTimeColumnType()# NOT NULL,
 					#listgetAt(cols,5)# VARCHAR(100) NOT NULL,
 					#listgetAt(cols,6)# #getProperty("textDBType")#,
 					#listgetAt(cols,7)# #getProperty("textDBType")#,
@@ -191,5 +250,55 @@ If you are building a mapper, the map must have the above keys in it.
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- getDateTimeDBType --->    
+    <cffunction name="getDateTimeDBType" output="false" access="private" returntype="any">    
+    	<cfset var qResults = "">
+    	<cfdbinfo type="Version" name="qResults" datasource="#getProperty( 'dsn' )#" >
+    	<cfscript>	 
+			switch( qResults.database_productName ){
+				case "PostgreSQL" : {
+					return "cf_sql_timestamp";
+				}
+				case "MySQL" : {
+					return "cf_sql_timestamp";
+				}
+				case "Microsoft SQL Server" : {
+					return "cf_sql_date";
+				}
+				case "Oracle" :{
+					return "cf_sql_timestamp";
+				}
+				default : {
+					return "cf_sql_timestamp";
+				}
+			}   
+    	</cfscript>    
+    </cffunction>
+
+    <!--- getDateTimeColumnType --->    
+    <cffunction name="getDateTimeColumnType" output="false" access="private" returntype="any">    
+    	<cfset var qResults = "">
+    	<cfdbinfo type="Version" name="qResults" datasource="#getProperty( 'dsn' )#" >
+    	<cfscript>	 
+			switch( qResults.database_productName ){
+				case "PostgreSQL" : {
+					return "TIMESTAMP";
+				}
+				case "MySQL" : {
+					return "DATETIME";
+				}
+				case "Microsoft SQL Server" : {
+					return "DATETIME";
+				}
+				case "Oracle" :{
+					return "DATE";
+				}
+				default : {
+					return "DATETIME";
+				}
+			}   
+    	</cfscript>    
+    </cffunction>
 	
 </cfcomponent>

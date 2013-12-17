@@ -393,7 +393,7 @@ component serializable=false{
 	function renderData(type="HTML", required data, contentType="", encoding="utf-8", numeric statusCode=200, statusText="", location="",
 						jsonCallback="", jsonQueryFormat="query", boolean jsonAsText=false,
 						xmlColumnList="", boolean xmlUseCDATA=false, xmlListDelimiter=",", xmlRootName="",
-						struct pdfArgs={}, formats="", formatsView=""){
+						struct pdfArgs={}, formats="", formatsView="", boolean isBinary=false){
 
 		var rd = structnew();
 	
@@ -412,7 +412,7 @@ component serializable=false{
 		rd.data = arguments.data;
 		rd.encoding = arguments.encoding;
 		rd.contentType = "text/html";
-		rd.isBinary = false;
+		rd.isBinary = arguments.isBinary;
 
 		// HTTP status
 		rd.statusCode = arguments.statusCode;

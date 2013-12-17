@@ -72,7 +72,7 @@
 		</cfif>
 		</section>
 
-		<section id="testHarness">
+		<section id="test-harness">
 		<div class="page-header">
 			<h2>
 				Application Test Harness
@@ -100,21 +100,15 @@
 			<tbody>
 				<tr>
 					<td>
-						<em>integration</em>
+						<em>specs</em>
 					</td>
-					<td>Where all your global integration tests go</td>
+					<td>Where all your bdd, module, unit and integration tests go</td>
 				</tr>
 				<tr>
 					<td>
-						<em>mocks</em>
+						<em>results</em>
 					</td>
-					<td>Where custom mock objects/data can be placed</td>
-				</tr>
-				<tr>
-					<td>
-						<em>modules</em>
-					</td>
-					<td>Where integration and unit tests for modules go</td>
+					<td>Where automated test results go</td>
 				</tr>
 				<tr>
 					<td>
@@ -123,16 +117,10 @@
 					<td>
 						Where test resources go, we have placed two for you:
 						<ul>
-							<li><strong>HttpAntRunner</strong> - ANT Integration</li>
-							<li><strong>RemoteFacade</strong> - Eclipse Integration</li>
+							<li><strong>HttpAntRunner</strong> - MXUnit ANT Integration</li>
+							<li><strong>RemoteFacade</strong> - MXUnit Eclipse Integration</li>
 						</ul>
 					</td>
-				</tr>
-				<tr>
-					<td>
-						<em>unit</em>
-					</td>
-					<td>Where unit tests go</td>
 				</tr>
 				<tr>
 					<td>
@@ -144,13 +132,13 @@
 					<td>
 						<em>test.xml</em>
 					</td>
-					<td>A script for executing all application tests via ANT</td>
+					<td>A script for executing all application tests via TestBox ANT</td>
 				</tr>
 				<tr>
 					<td>
-						<em>TestSuite.cfm</em>
+						<em>runner.cfm</em>
 					</td>
-					<td>A test suite for executing all application tests via a browser.</td>
+					<td>A TestBox runner so you can execute your tests.</td>
 				</tr>
 			</tbody>
 		</table>

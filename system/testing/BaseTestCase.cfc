@@ -5,34 +5,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 Author 	  : Luis Majano
 Description :
-	Base Unit Test Component based on MXUnit.
-	{ADD MORE DESCRIPTION HERE}
-	
-	This is a base test component for testing coldbox handlers. All you need
-	to do is add the extends portions of your test cases to this base test
-	and you will have a coldbox handler test.  The setup method will need
-	to be changed in order to match your application path.
+	Base Unit Test Component based on TestBox for the ColdBox Platform
 
-	MODIFY:
-	1) instance.appMapping : To point to your application relative from the root
-	                         or via CF Mappings.
-	2) instance.ConfigMapping : The expanded path location of your coldbox configuration file.
-
-	OPTIONAL:
-	3) Execute the on App start handler. You will need to fill out the name
-	   of the Application Start Handler to be executed.
-
-<cfscript>
-people = querySim('
-id , name , mail
-1 | weed | weed@theflowerpot.not
-2 | bill | bill@theflowerpot.not
-3 | ben | ben@theflowerpot.not
-');
-</cfscript>
+TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 
 ---------------------------------------------------------------------->
-<cfcomponent extends="mxunit.framework.TestCase" 
+<cfcomponent extends="coldbox.system.testing.compat.framework.TestCase" 
 			 output="false" 
 			 hint="A base test case for doing ColdBox Testing based on the MXUnit Framework">
 
@@ -47,9 +25,6 @@ id , name , mail
 		
 		// Public Switch Properties
 		this.loadColdbox = true;
-		
-		// Prepare MockBox
-		instance.mockBox = createObject("component","coldbox.system.testing.MockBox").init();
 	</cfscript>
 
 	<!--- metadata Inspection --->
@@ -114,6 +89,8 @@ id , name , mail
 				// Setup
 				instance.controller.getLoaderService().loadApplication( instance.configMapping, instance.appMapping );
 			}
+			// Auto registration of test as interceptor
+			instance.controller.getInterceptorService().registerInterceptor(interceptorObject=this);
 		}
 		</cfscript>
 	</cffunction>
@@ -127,21 +104,30 @@ id , name , mail
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- afterTests --->
-	<cffunction name="afterTests" hint="The main teardown for ColdBox enabled applications after all tests execute" output="false">
+	<cffunction name="afterTests" hint="xUnit: The main teardown for ColdBox enabled applications after all tests execute" output="false">
 		<cfscript>
 			structDelete( application, getColdboxAppKey() );
 		</cfscript>
 	</cffunction>
 
+	<!--- beforeAll --->
+	<cffunction name="beforeAll" hint="BDD: The main setup method for running ColdBox Integration enabled tests" output="false">
+		<cfscript>
+			beforeTests();
+		</cfscript>
+	</cffunction>
+
+	<!--- afterAll --->
+	<cffunction name="afterAll" hint="BDD: The main teardown for ColdBox enabled applications after all tests execute" output="false">
+		<cfscript>
+			afterTests();
+		</cfscript>
+	</cffunction>
+
 <!------------------------------------------- HELPERS ------------------------------------------->
 
-	<!--- getMockBox --->
-	<cffunction name="getMockBox" output="false" access="private" returntype="coldbox.system.testing.MockBox" hint="Get a reference to the MockBox framework">
-		<cfreturn instance.mockBox>
-	</cffunction>
-	
 	<!--- Get a Mock Datasource Object --->
 	<cffunction name="getMockDatasource" access="private" output="false" returnType="coldbox.system.core.db.DatasourceBean" hint="I will return to you a datasourceBean according to the mocking parameters sent">
 		<cfargument name="name" 	type="string" required="true"  hint="The name of the DSN on the ColdFusion administrator"/>
@@ -525,14 +511,6 @@ id , name , mail
 	<cffunction name="$include" access="private" hint="Facade for cfinclude" returntype="void" output="false">
 		<cfargument name="template" type="string">
 		<cfinclude template="#template#">
-	</cffunction>
-	
-	<!--- Query Sim --->
-	<cffunction name="querySim" access="private" returntype="query" hint="Query Simulator" output="false" >
-		<cfargument name="queryData"  type="string" required="true" hint="The data to create queries">
-		<cfscript>
-		return getMockBox().querySim(argumentCollection=arguments);
-		</cfscript>
 	</cffunction>
 	
 	<!--- getUtil --->

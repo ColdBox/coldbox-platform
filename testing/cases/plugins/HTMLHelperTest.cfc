@@ -92,12 +92,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		plugin.$("getSetting").$args("htmlBaseURL").$results("http://www.coldbox.org");
 
 		str = plugin.link(href='luis.css', sendToHeader=false);
-		debug(str);
 		str = plugin.link(href='http://hello.com/luis.css', sendToHeader=false);
 
-		assertEquals('<link rel="stylesheet" charset="UTF-8" type="text/css" href="http://hello.com/luis.css"/>', str);
+		var xml = xmlParse( str );
+		assertEquals( xml.link.XMLAttributes.charset, "UTF-8" );
+		assertEquals( xml.link.XMLAttributes.href, "http://hello.com/luis.css" );
 	}
-
 
 	function testOL(){
 
@@ -244,48 +244,38 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 
 	function testAutoDiscoveryLink(){
-		str = plugin.autoDiscoveryLink(href="/action/rss",title="MY RSS Feed");
-		//debug(str);
-		assertEquals('<link rel="alternate" type="application/rss+xml" title="MY RSS Feed" href="/action/rss"/>' , str);
+		var str = plugin.autoDiscoveryLink(href="/action/rss",title="MY RSS Feed");
+		var xml = xmlParse( str );
+		assertEquals( xml.link.XMLAttributes.type, "application/rss+xml" );
+		assertEquals( xml.link.XMLAttributes.href, "/action/rss" );
 
-		str = plugin.autoDiscoveryLink(type="atom",href="/action/rss",title="MY RSS Feed");
-		//debug(str);
-		assertEquals('<link rel="alternate" type="application/atom+xml" title="MY RSS Feed" href="/action/rss"/>' , str);
+		var str = plugin.autoDiscoveryLink(type="atom",href="/action/rss",title="MY RSS Feed");
+		var xml = xmlParse( str );
+		assertEquals( xml.link.XMLAttributes.type, "application/atom+xml" );
+		assertEquals( xml.link.XMLAttributes.href, "/action/rss" );
 	}
 
 	function testVideo(){
-		str = plugin.video("includes/movie.ogg");
-		//debug(str);
-		assertEquals('<video controls="controls" src="includes/movie.ogg" />', str);
+		var str = plugin.video(src="includes/movie.ogg",autoplay=true,width="200",height="200");
+		var xml = xmlParse( str );
+		assertEquals( xml.video.XMLAttributes.width, "200" );
+		assertEquals( xml.video.XMLAttributes.height, "200" );
+		assertEquals( xml.video.XMLAttributes.src, "includes/movie.ogg" );
 
-		str = plugin.video(src="includes/movie.ogg",autoplay=true,width="200",height="200");
-		debug(str);
-		assertEquals('<video controls="controls" autoplay="autoplay" height="200" width="200" src="includes/movie.ogg" />', str);
-
-		str = plugin.video(["includes/movie.ogg","includes/movie2.mp4"]);
-		//debug(str);
-		assertEquals('<video controls="controls"><source src="includes/movie.ogg"/><source src="includes/movie2.mp4"/></video>', str);
 	}
 
 	function testAudio(){
-		str = plugin.audio("includes/song.ogg");
-		//debug(str);
-		assertEquals('<audio controls="controls" src="includes/song.ogg" />', str);
-
-		str = plugin.audio(src="includes/song.ogg",autoplay=true,loop=true);
-		debug(str);
-		assertEquals('<audio controls="controls" autoplay="autoplay" loop="loop" src="includes/song.ogg" />', str);
-
-		str = plugin.audio(["includes/song.ogg","includes/song.mp4"]);
-		//debug(str);
-		assertEquals('<audio controls="controls"><source src="includes/song.ogg"/><source src="includes/song.mp4"/></audio>', str);
+		var str = plugin.audio(src="includes/song.ogg",autoplay=true,loop=true);
+		var xml = xmlParse( str );
+		assertEquals( xml.audio.XMLAttributes.autoplay, "autoplay" );
+		assertEquals( xml.audio.XMLAttributes.loop, "loop" );
+		assertEquals( xml.audio.XMLAttributes.src, "includes/song.ogg" );
 	}
 
-
 	function testCanvas(){
-		str = plugin.canvas("test");
-		debug(str);
-		assertEquals('<canvas id="test"></canvas>', str);
+		var str = plugin.canvas("test");
+		var xml = xmlParse( str );
+		assertEquals( xml.canvas.XMLAttributes.id, "test" );
 	}
 
 	function testForm(){
@@ -429,17 +419,24 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 
 	function testRadioButton(){
+		// entity binding
+		majano = entityLoad("User",{lastName="Majano"}, true);
+		str = plugin.radioButton(name="lastName", bind=majano, value="majano");
+		
+		assertTrue( findNocase('value="majano"', str) );
+		assertTrue( findNocase('checked="true"', str) );
+
 		str = plugin.radioButton(name="message");
 		assertEquals('<input name="message" value="true" id="message" type="radio"/>', str);
 
 		str = plugin.radioButton(name="message",value="test",checked=true);
-		debug(str);
-		assertEquals('<input name="message" value="test" id="message" checked="checked" type="radio"/>', str);
-
-		// entity binding
+		assertEquals( "checked", xmlParse( str ).input.xmlAttributes.checked );
+		
+		
 		majano = entityLoad("User",{lastName="Majano"}, true);
-		str = plugin.radioButton(name="lastName", bind=majano, value="majano");
-		assertTrue( findNocase('value="majano"', str) );
+		majano.setuserName( 'yes' );
+		str = plugin.radioButton( name="userName", bind=majano, value="yes" );
+		assertTrue( findNocase('value="yes"', str) );
 		assertTrue( findNocase('checked="true"', str) );
 	}
 
@@ -576,6 +573,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = plugin.urlField(name="lastName",bind=majano);
 		debug(str);
 		assertTrue( findNocase('value="Majano"', str) );
+	}
+
+	function testXSS(){
+		var str = plugin.textField( name="luis", value='"><img src=x onerror=prompt(1)> or "><script>alert(/xss/)</script>' );
+		// if it parses, then it is escaped, else it fails.
+		var xml = xmlParse( str );
 	}
 
 

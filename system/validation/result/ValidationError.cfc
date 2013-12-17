@@ -138,7 +138,7 @@ component accessors="true" implements="IValidationError"{
 	* @rejectedValue.hint The optional rejected value
 	* @validationType.hint The name of the rejected validator
 	*/
-	IValidationError function configure(required string message, required string field, string rejectedValue, string validationType, string validationData){
+	IValidationError function configure(required string message, required string field, string rejectedValue, string validationType, any validationData){
 		for(var key in arguments){
 			if( structKeyExists(arguments,key) ){ variables[key] = arguments[ key ]; }
 		}

@@ -9,6 +9,7 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 	function setup(){
 		super.setup();
 		application.wirebox = createObject("component","coldbox.system.ioc.Injector").init(binder="coldbox.testing.resources.WireBox");
+		application.cbController = getMockBox().createMock( "coldbox.system.web.Controller" ).$( "getWireBox", application.wirebox );
 		model.init();
 	}
 	function teardown(){

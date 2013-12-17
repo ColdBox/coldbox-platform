@@ -659,10 +659,11 @@ Description :
 		<cfargument name="xmlListDelimiter" type="string"   required="false" default="," hint="XML Only: The delimiter in the list. Comma by default">
 		<cfargument name="xmlRootName"      type="string"   required="false" default="" hint="XML Only: The name of the initial root element of the XML packet">
 		<!--- ************************************************************* --->
-		<cfargument name="pdfArgs"      type="struct"   required="false" default="#structNew()#" hint="All the PDF arguments to pass along to the CFDocument tag.">
+		<cfargument name="pdfArgs"      	type="struct"   required="false" default="#structNew()#" hint="All the PDF arguments to pass along to the CFDocument tag.">
 		<!--- ************************************************************* --->
-		<cfargument name="formats"			type="any" required="false" default="" hint="The formats list or array that ColdBox should respond to using the passed in data argument. You can pass any of the valid types (JSON,JSONP,JSONT,XML,WDDX,PLAIN,HTML,TEXT,PDF). For PDF and HTML we will try to render the view by convention based on the incoming event.">
-		<cfargument name="formatsView"		type="any" required="false" default="" hint="The view that should be used for rendering HTML/PLAIN/PDF. By default ColdBox uses the name of the event as an implicit view.">
+		<cfargument name="formats"			type="any" 		required="false" default="" hint="The formats list or array that ColdBox should respond to using the passed in data argument. You can pass any of the valid types (JSON,JSONP,JSONT,XML,WDDX,PLAIN,HTML,TEXT,PDF). For PDF and HTML we will try to render the view by convention based on the incoming event.">
+		<cfargument name="formatsView"		type="any" 		required="false" default="" hint="The view that should be used for rendering HTML/PLAIN/PDF. By default ColdBox uses the name of the event as an implicit view.">
+		<cfargument name="isBinary" 		type="boolean" 	required="false" default="false" hint="Bit that determines if the data being set for rendering is binary or not."/>
 		<cfscript>
 			var rd = structnew();
 			
@@ -681,7 +682,7 @@ Description :
 			rd.data = arguments.data;
 			rd.encoding = arguments.encoding;
 			rd.contentType = "text/html";
-			rd.isBinary = false;
+			rd.isBinary = arguments.isBinary;
 
 			// HTTP status
 			rd.statusCode = arguments.statusCode;
@@ -848,7 +849,13 @@ Description :
 				// Cleanup of formats
 				arguments.formats = "";
 				// Determine view from incoming or implicit
-				viewToRender = ( len( arguments.formatsView ) ? arguments.formatsView : replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" ) );
+				//viewToRender = ( len( arguments.formatsView ) ? arguments.formatsView : replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" ) );
+				if( len( arguments.formatsView ) ){
+					viewToRender = arguments.formatsView;
+				}
+				else{
+					viewToRender = replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" );
+				}
 				// Rendering switch
 				switch( instance.context.format ){
 					case "json" : case "jsonp" : case "jsont" : case "xml" : case "text" : case "wddx" : {

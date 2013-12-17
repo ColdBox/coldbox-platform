@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	Some tests just are expecting to execute
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/testharness">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/test-harness">
 <cfscript>
 	
 	function setup(){

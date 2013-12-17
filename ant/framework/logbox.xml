@@ -1,45 +1,44 @@
 ﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
-     Mar 18, 2007 1:30:20 AM                                                        
-
-     LogBox Build                                                                
+     LogBox Standalone Build (www.coldbox.org)                                                     
      ====================================================================== -->
-<project name="logbox.newbuild" default="build" basedir="../../">
-
-	<!--Build Properties-->
-	<property name="dir.userlocation"	value="/Users/lmajano" />
-	<property name="dir.exports"		value="${dir.userlocation}/exports" />
-	<property name="dir.build" 			value="${dir.exports}/logbox-distro" />
-	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/logbox.cfm?version=" />
-	
-	<!-- FTP -->
-	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
-	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
-	
+<project name="logbox-build" default="build" basedir="../../">
+	<description>
+    	Build a new distribution of LogBox Standalone
+    </description>
+	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	<property name="logbox.version"	value="1.8.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
-	<property name="build.label" 		value="logbox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
 	
 	<!-- Init -->
 	<target name="init" description="Init">
-		<!-- Version -->
-		<input addproperty="logbox.version" message="LogBox Version" />
+		<!-- Default environment check, if not passed via -Denvironment -->
+    	<condition property="environment" value="local">
+    		<not><isset property="environment" /></not>
+    	</condition>
+    	<echo>Loading from environment: ${environment}</echo>
+		<!-- Load env properties -->
+		<loadproperties srcFile="ant/framework/logbox-${environment}.properties"/>
+
+		<!-- Build Number -->
+		<propertyfile file="ant/framework/build.number" comment="Build Number for ANT. Edit not!">
+			<entry key="build.number" 
+					type="int" 
+			     	operation="+"
+					pattern="00000"
+			     	default="1" />
+		</propertyfile>
+		<property file="ant/framework/build.number"/>
+		<!-- Build Label -->
+		<property name="build.label" value="logbox-${logbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<!-- Cleanup + Init -->
+		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}"/>
 	</target>
-	
-	<!-- FTP Upload of new build -->
-	<target name="ftp.deploy" depends="build">
-       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
-       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
-      	
-		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
-       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
-        	<fileset file="${dir.exports}/logbox_${logbox.version}.zip" />
-       	</ftp>		
-	</target>
-	
+		
 	<!--build-->
-	<target name="build" description="Build a new logbox distribution" depends="init">
-      	<delete dir="${dir.build}" />
+	<target name="build" description="Build a new LogBox distribution" depends="init">
 		
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
@@ -49,16 +48,24 @@
         	<fileset dir="system/logging" />
         </copy>
 		<copy todir="${dir.build}/logbox/system/core">
-        	<fileset dir="system/core" />
+        	<fileset dir="system/core">
+        		<include name="util/*" />
+        		<include name="collections/*" />
+        		<include name="conversion/*" />
+        	</fileset>
         </copy>
-		
-		<!-- Copy src to coldbox namespace -->
-		<copy todir="${dir.build}/coldbox/system/logging">
-        	<fileset dir="system/logging" />
-        </copy>
-		<copy todir="${dir.build}/coldbox/system/core">
-        	<fileset dir="system/core" />
-        </copy>
+
+        <!--Copy text files to root folder-->
+		<copy todir="${dir.build}/">
+			<fileset file="license.txt" />
+			<fileset file="system/logging/readme.txt" />						
+		</copy>
+
+        <!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		  <fileset dir="${dir.build}">
+		  </fileset>
+		</replaceregexp>
 		
 		<!-- Refactor logbox namespace -->
 		<echo>Refactoring for coldbox absolute paths</echo>
@@ -76,18 +83,19 @@
 			<replacetoken>coldbox.system.</replacetoken>
 		</replace>
 		
-		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}/">
-			<fileset file="license.txt" />
-			<fileset file="system/logging/readme.txt" />						
-		</copy>
 		
 		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${logbox.version}" verbose="true"/>
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${logbox.version}&amp;path=${dir.api}&amp;logbox_root=${dir.build}/logbox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
 		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.exports}/LogBoxDocs-${logbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
+				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/logbox_${logbox.version}.zip" basedir="${dir.build}"></zip>
+		
+		<!-- Cleanup -->
+		<delete dir="${dir.build}" />
 		
     </target>
 </project>

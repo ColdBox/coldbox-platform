@@ -12,8 +12,11 @@ Description :
 <cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 
+	this.loadColdBox = false;
+	
 	function setup(){
-
+		super.setup();
+		
 		//Mocks
 		mockFactory  = getMockBox().createEmptyMock(className='coldbox.system.cache.CacheFactory');
 		mockEventManager  = getMockBox().createEmptyMock(className='coldbox.system.core.events.EventPoolManager');
@@ -23,17 +26,16 @@ Description :
 		// Mock Methods
 		mockFactory.$("getLogBox",mockLogBox);
 		mockLogBox.$("getLogger", mockLogger);
-		mockLogger.$("error").$("debug").$("info");
+		mockLogger.$("error").$("debug").$("info").$("canDebug", false);
 		mockEventManager.$("processState");
 
 		// Config
 		config = {
-
 		};
 
 		// Create Provider
 		cache = getMockBox().createMock("coldbox.system.cache.providers.RailoProvider").init();
-
+		
 		// Decorate it
 		cache.setConfiguration( config );
 		cache.setCacheFactory( mockFactory );
@@ -95,6 +97,20 @@ Description :
 		results = cache.get("test2");
 		assertFalse( isDefined("results") );
 		//assertEquals( 1, cache.getStats().getMisses() );
+	}
+	
+	function testGetOrSet(){
+		cache.clearStatistics();
+		
+		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
+		assertTrue( structKeyExists( results, "name" ) );
+		assertEquals( 2, cache.getStats().getMisses() );
+		assertEquals( 0, cache.getStats().getHits() );
+		
+		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
+		assertTrue( structKeyExists( results, "name" ) );
+		assertEquals( 2, cache.getStats().getMisses() );
+		assertEquals( 1, cache.getStats().getHits() );
 	}
 
 	function testGetQuiet(){

@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?><cfsilent>
+<cfscript>
+	variables.qMetaData = arguments.qMetaData;
+
+	primitiveMap = {
+		boolean = "_q5yYQOXIEd686otsIQBbbA"
+		,String = "_q5yNUOXIEd686otsIQBbbA"
+		,Array = "_2vrXgOXyEd62aotsIQBbbA"
+		,Struct = "_3vrTgOXyEd686otsIQBbbA"
+		,Query = "_5Hv5sOXyEd686otsIQBbbA"
+		,XML = "_7UJf0OXyEd686otsIQBbbA"
+		,Numeric = "_HCt_wOXzEd686otsIQBbbA"
+		,Date = "_Hd7_wOXzEd686otsIQBbbA"
+		,binary = "_Kt9icOXzEd686otsIQBbbA"
+		,uuid = "_QHE8MOXzEd686otsIQBbbA"
+		,any = "_SLUr4OXzEd686otsIQBbbA"
+	};
+
+	assocMap = {};
+</cfscript>
+
+<cfsavecontent variable="primitiveTypes">
+</cfsavecontent>
+
+</cfsilent><cfoutput><uml:Package xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_q4YqEOXIEd686otsIQBbbA">
+<!-- default primitive types -->
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_q5yNUOXIEd686otsIQBbbA" name="String"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_q5yYQOXIEd686otsIQBbbA" name="Boolean"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_2vrXgOXyEd62aotsIQBbbA" name="Array"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_3vrTgOXyEd686otsIQBbbA" name="Struct"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_5Hv5sOXyEd686otsIQBbbA" name="Query"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7UJf0OXyEd686otsIQBbbA" name="XML"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_HCt_wOXzEd686otsIQBbbA" name="Numeric"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_Hd7_wOXzEd686otsIQBbbA" name="Date"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_Kt9icOXzEd686otsIQBbbA" name="Binary"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_QHE8MOXzEd686otsIQBbbA" name="UUID"/>
+	<packagedElement xmi:type="uml:PrimitiveType" xmi:id="_SLUr4OXzEd686otsIQBbbA" name="Any"/>
+
+	<cfscript>
+		args.builder = createObject("java", "java.lang.StringBuilder").init();
+		visitPackageTree(arguments.packages, displayPackageStart, displayPackageEnd, args);
+    </cfscript>
+
+	#args.builder.toString()#
+</uml:Package>
+</cfoutput>
+<cfsilent>
+
+<cffunction name="displayPackageStart" hint="start: displays a package" access="public" returntype="void" output="false">
+	<cfargument name="name" hint="the simple name of the package" type="string" required="Yes">
+	<cfargument name="fullname" hint="the full name of the package" type="string" required="Yes">
+	<cfargument name="builder" hint="the string builder with the content" type="string" required="Yes">
+	<cfscript>
+		var xml = 0;
+		id = getPackageID(arguments.fullname);
+    </cfscript>
+	<cfoutput>
+	<cfsavecontent variable="xml">
+		<packagedElement xmi:type="uml:Package" xmi:id="#id#" name="#arguments.name#">
+	</cfsavecontent>
+	</cfoutput>
+	<cfscript>
+		arguments.builder.append(xml);
+		displayClass(arguments.fullname, arguments.builder);
+    </cfscript>
+</cffunction>
+
+<cffunction name="displayPackageEnd" hint="end: displays a package" access="public" returntype="void" output="false">
+	<cfargument name="name" hint="the simple name of the package" type="string" required="Yes">
+	<cfargument name="fullname" hint="the full name of the package" type="string" required="Yes">
+	<cfargument name="builder" hint="the string builder with the content" type="string" required="Yes">
+	<cfscript>
+		arguments.builder.append('</packagedElement>');
+    </cfscript>
+</cffunction>
+
+<cffunction name="displayClass" hint="displays a class" access="public" returntype="void" output="false">
+	<cfargument name="package" hint="the full name of the package" type="string" required="Yes">
+	<cfargument name="builder" hint="the string builder with the content" type="string" required="Yes">
+	<cfscript>
+		var xml = 0;
+		var id = 0;
+		var qProperties = 0;
+		var qClasses = getMetaSubquery(qMetaData, "package = '#arguments.package#'", "name asc");
+    </cfscript>
+	<cfoutput>
+	<cfloop query="qClasses">
+		<cfsavecontent variable="xml">
+			<cfset metadata = structCopy(metadata)>
+			<cfset id = getTypeId(metadata.name, arguments.package)>
+			<packagedElement xmi:type="uml:Class" xmi:id="#id#" name="#name#"<cfif isAbstractClass(name, arguments.package)> isAbstract="true"</cfif>>
+		</cfsavecontent>
+		<cfset arguments.builder.append(xml)>
+		<cfset qProperties = determineProperties(metadata, arguments.package)>
+		<cfset displayClassGeneralization(metadata, arguments.builder)>
+		<cfset displayClassProperties(metadata, qProperties, arguments.builder)>
+		<cfset displayClassFunctions(metadata, qProperties, arguments.builder)>
+		<cfset arguments.builder.append('</packagedElement>')>
+		<cfset displayClassUsage(metadata, qProperties, arguments.builder)>
+		<cfset displayClassAssociations(metadata, qProperties, arguments.builder)>
+	</cfloop>
+	</cfoutput>
+</cffunction>
+
+<cffunction name="displayClassUsage" hint="displays a class usage based on parameters" access="private" returntype="void" output="false">
+	<cfargument name="meta" hint="the classes meta" type="struct" required="Yes">
+	<cfargument name="qProperties" hint="the property query" type="query" required="Yes">
+	<cfargument name="builder" hint="the string builder with the content" type="string" required="Yes">
+	<cfscript>
+		var qFunctions = buildFunctionMetaData(arguments.meta);
+		var param = 0;
+		var package = getPackage(arguments.meta.name);
+		var safeMeta = 0;
+		var visited = {};
+    </cfscript>
+	<cfloop query="qFunctions">
+		<cfset safeMeta = structCopy(metadata)>
+		<cfif NOT isFunctionAProperty(arguments.qProperties, name)>
+			<cfloop array="#safeMeta.parameters#" index="param">
+				<cfif NOT isPrimitive(param.type) AND NOT structKeyExists(visited, resolveClassName(param.type, package))>
+					<cfset arguments.builder.append('<packagedElement xmi:type="uml:Usage" xmi:id="_#createUUID()#" supplier="#getTypeId(param.type, package)#" client="#getTypeId(arguments.meta.name, package)#"/>')>
+					<cfset visited[resolveClassName(param.type, package)] = 1>
+				</cfif>
+			</cfloop>
+			<cfif safeMeta.name neq "init" AND  NOT isPrimitive(safeMeta.returnType) AND NOT structKeyExists(visited, resolveClassName(safeMeta.returnType, package))>
+				<cfset arguments.builder.append('<packagedElement xmi:type="uml:Usage" xmi:id="_#createUUID()#" supplier="#getTypeId(safeMeta.returnType, package)#" client="#getTypeId(arguments.meta.name, package)#"/>')>
+			</cfif>
+		</cfif>
+	</cfloop>
+</cffunction>
+
+<cffunction name="displayClassGeneralization" hint="displays a classes inheritence, if it has any" access="private" returntype="void" output="false">
+	<cfargument name="meta" hint="the classes meta" type="struct" required="Yes">
+	<cfargument name="builder" hint="the string builder with the content" type="string" required="Yes">
+	<cfscript>
+		var package = getPackage(arguments.meta.name);
+
+		//ignore interfaces for now
+		if(arguments.meta.type eq "component" and structKeyExists(arguments.meta, "extends") AND arguments.meta.extends.name neq "WEB-INF.cftags.component")
+		{
+			arguments.builder.append('<generalization xmi:id="_#createUUID()#"');
+			if(typeExists(qMetadata, arguments.meta.extends.name, package))
+			{
+				arguments.builder.append(' general="#getTypeId(arguments.meta.extends.name, package)#"');
+			}
+			arguments.builder.append('/>');
+		}
+    </cfscript>
+</cffunction>
+
+<cffunction name="displayClassProperties" hint="displays all of a classes properties" access="private" returntype="void" output="false">
+	<cfargument name="meta" hint="the classes meta" type="struct" required="Yes">
+	<cfargument name="qProperties" hint="the property query" type="query" required="Yes">
+	<cfargument name="builder" hint="the string builder with the content" type="string" required="Yes">
+	<cfscript>
+		var package = getPackage(arguments.meta.name);
+    </cfscript>
+	<cfloop query="arguments.qProperties">
+		<cfset arguments.builder.append('<ownedAttribute xmi:id="_#createUUID()#" name="#name#" visibility="#access#"')>
+		<cfif typeExists(qMetadata, type, package)>
+			<cfset arguments.builder.append(' type="#getTypeId(type, package)#"')>
+		</cfif>
+		<cfset arguments.builder.append(' aggregation="shared"/>')>
+	</cfloop>
+</cffunction>
+
+<cffunction name="displayClassAssociations" hint="display all the class associations" access="private" returntype="void" output="false">
+	<cfargument name="meta" hint="the classes meta" type="struct" required="Yes">
+	<cfargument name="qProperties" hint="the property query" type="query" required="Yes">
+	<cfargument name="builder" hint="the string builder with the content" type="string" required="Yes">
+	<cfscript>
+		var fragment = 0;
+		var package = 0;
+		var assocID = 0;
+		var endID = 0;
+		var sourceID = 0;
+		var genericType = 0;
+		var bidirection = 0;
+    </cfscript>
+	<cfloop query="arguments.qProperties">
+		<cfscript>
+			assocID = "_" & createUUID();
+			endID = "_" & createUUID();
+			sourceID = "_" & createUUID();
+
+			package = getPackage(arguments.meta.name);
+        </cfscript>
+
+		<cfif NOT isPrimitive(type)>
+			<cfscript>
+				bidirection = getBiderectionalAssociation(arguments.meta, type, package);
+            </cfscript>
+
+			<!--- only do it if it hasn't been done before --->
+			<cfif structIsEmpty(bidirection) OR NOT bidirection.completed>
+				<cfoutput>
+				<cfsavecontent variable="fragment">
+						<packagedElement xmi:type="uml:Association" xmi:id="#assocID#" memberEnd="#sourceID# #endID#">
+							<ownedEnd xmi:id="#sourceID#" name="#name#" type="#getTypeId(arguments.meta.name, package)#" aggregation="<cfif NOT StructIsEmpty(bidirection)>shared<cfelse>none</cfif>" association="#assocID#">
+						      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_#createUUID()#" value="<cfif NOT structIsEmpty(bidirection) AND listFindNoCase("array,struct", bidirection.type)>*<cfelse>1</cfif>"/>
+						      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_#createUUID()#" value="<cfif NOT structIsEmpty(bidirection) AND listFindNoCase("array,struct", bidirection.type)>0<cfelse>1</cfif>"/>
+						    </ownedEnd>
+						    <ownedEnd xmi:id="#endID#" name="<cfif NOT StructIsEmpty(bidirection)>#bidirection.name#</cfif>" type="#getTypeId(type, package)#" aggregation="shared" association="#assocID#">
+						      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_#createUUID()#" value="<cfif listFindNoCase("array,struct", type)>*<cfelse>1</cfif>"/>
+						      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_#createUUID()#" value="<cfif listFindNoCase("array,struct", type)>0<cfelse>1</cfif>"/>
+						    </ownedEnd>
+						</packagedElement>
+				</cfsavecontent>
+				</cfoutput>
+				<cfset arguments.builder.append(fragment)>
+			</cfif>
+		</cfif>
+
+		<cfloop array="#generic#" index="genericType">
+			<cfif NOT isPrimitive(genericType)>
+				<cfscript>
+					assocID = "_" & createUUID();
+					endID = "_" & createUUID();
+					sourceID = "_" & createUUID();
+
+					package = getPackage(arguments.meta.name);
+
+					bidirection = getBiderectionalAssociation(arguments.meta, genericType, package);
+		        </cfscript>
+				<!--- only do it if it hasn't been done before --->
+				<cfif structIsEmpty(bidirection) OR NOT bidirection.completed>
+					<cfoutput>
+					<cfsavecontent variable="fragment">
+						<packagedElement xmi:type="uml:Association" xmi:id="#assocID#" memberEnd="#sourceID# #endID#">
+							<ownedEnd xmi:id="#sourceID#" name="#name#" type="#getTypeId(arguments.meta.name, package)#" aggregation="<cfif NOT StructIsEmpty(bidirection)>shared<cfelse>none</cfif>" association="#assocID#">
+							  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_#createUUID()#" value="<cfif NOT structIsEmpty(bidirection) AND listFindNoCase("array,struct", bidirection.type)>*<cfelse>1</cfif>"/>
+						      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_#createUUID()#" value="<cfif NOT structIsEmpty(bidirection) AND listFindNoCase("array,struct", bidirection.type)>0<cfelse>1</cfif>"/>
+						    </ownedEnd>
+						    <ownedEnd xmi:id="#endID#" name="<cfif NOT StructIsEmpty(bidirection)>#bidirection.name#</cfif>" type="#getTypeId(genericType, package)#" aggregation="shared" association="#assocID#">
+						      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_#createUUID()#" value="<cfif listFindNoCase("array,struct", type)>*<cfelse>1</cfif>"/>
+						      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_#createUUID()#" value="<cfif listFindNoCase("array,struct", type)>0<cfelse>1</cfif>"/>
+						    </ownedEnd>
+						</packagedElement>
+					</cfsavecontent>
+					</cfoutput>
+					<cfset arguments.builder.append(fragment)>
+				</cfif>
+			</cfif>
+		</cfloop>
+	</cfloop>
+</cffunction>
+
+<cffunction name="getBiderectionalAssociation" hint="returns an empty struct if not bidirectional association found.
+												Returns a struct with keys 'name' and 'type' for the association type if it finds a bidirectional association.
+												Returns the key 'completed', which has a value of 'true|false' which is true, if an association has already been set before"
+			access="private" returntype="struct" output="false">
+	<cfargument name="meta" hint="the classes meta" type="struct" required="Yes">
+	<cfargument name="associationType" hint="the type of the association" type="string" required="Yes">
+	<cfargument name="package" hint="the current package we are in" type="string" required="Yes">
+	<cfscript>
+		var local = {};
+
+		arguments.associationType = resolveClassName(arguments.associationType, arguments.package);
+		local.class = resolveClassName(arguments.meta.name, arguments.package);
+
+		local.assocMeta = getComponentMetadata(arguments.associationType);
+
+		if(NOT structKeyExists(assocMap, local.class))
+		{
+			assocMap[local.class] = {};
+		}
+
+		//this is to stop the other side doing the same thing
+		if(structKeyExists(assocMap, arguments.associationType) AND structKeyExists(assocMap[arguments.associationType], local.class))
+		{
+			local.result = {completed=true};
+			return local.result;
+		}
+
+		local.qProperties = determineProperties(local.assocMeta, getPackage(local.assocMeta.name));
+    </cfscript>
+	<cfloop query="local.qProperties">
+		<cfif type eq local.class>
+			<cfset assocMap[local.class][arguments.associationType] = 1>
+			<cfset local.result = {name=name, type=type, completed=false}>
+			<cfreturn local.result />
+		</cfif>
+		<cfloop array="#generic#" index="local.genericType">
+			<cfif local.genericType eq local.class>
+				<cfset assocMap[local.class][arguments.associationType] = 1>
+				<cfset local.result = {name=name, type=type, completed=false}>
+				<cfreturn local.result />
+			</cfif>
+		</cfloop>
+	</cfloop>
+	<cfreturn StructNew() />
+</cffunction>
+
+<cffunction name="displayClassFunctions" hint="displays all of a classes functions" access="private" returntype="void" output="false">
+	<cfargument name="meta" hint="the classes meta" type="struct" required="Yes">
+	<cfargument name="qProperties" hint="the property query" type="query" required="Yes">
+	<cfargument name="builder" hint="the string builder with the content" type="string" required="Yes">
+	<cfscript>
+		var qFunctions = buildFunctionMetaData(arguments.meta);
+		var qInitFunctions = getMetaSubQuery(qFunctions, "UPPER(name)='INIT'");
+		var qBodyFunctions = getMetaSubQuery(qFunctions, "UPPER(name)!='INIT'");
+    </cfscript>
+	<!--- make sure init() comes first --->
+	<cfloop query="qInitFunctions">
+		<cfset arguments.builder.append(buildFunctionXML(arguments.meta, metadata))>
+	</cfloop>
+	<cfloop query="qBodyFunctions">
+		<cfscript>
+			//don't display get/set functions for properties
+			if(NOT isFunctionAProperty(arguments.qProperties, name))
+			{
+				arguments.builder.append(buildFunctionXML(arguments.meta, metadata));
+			}
+        </cfscript>
+	</cfloop>
+</cffunction>
+
+<cffunction name="isFunctionAProperty" hint="is the current function a property?" access="private" returntype="boolean" output="false">
+	<cfargument name="qProperties" hint="the property query" type="query" required="Yes">
+	<cfargument name="functionName" hint="the function name" type="string" required="Yes">
+	<cfscript>
+		var check = true;
+		var property = 0;
+		var qProperty = 0;
+
+		if(lCase(arguments.functionName).startsWith("set"))
+		{
+			property = replaceNoCase(arguments.functionName, "set", "");
+		}
+		else if(lCase(arguments.functionName).startsWith("get"))
+		{
+			property = replaceNoCase(arguments.functionName, "get", "");
+		}
+		else if(lCase(arguments.functionName).startsWith("is"))
+		{
+			property = replaceNoCase(arguments.functionName, "is", "");
+		}
+		else
+		{
+			return false;
+		}
+
+		qProperty = getMetaSubQuery(arguments.qProperties, "LOWER(name) = LOWER('#property#')");
+		return qProperty.recordCount;
+    </cfscript>
+</cffunction>
+
+<cffunction name="buildFunctionXML" hint="builds the XML for a function" access="private" returntype="string" output="false">
+	<cfargument name="meta" hint="the classes meta" type="struct" required="Yes">
+	<cfargument name="func" hint="the functions meta" type="struct" required="Yes">
+	<cfscript>
+		var id= "_" & createUUID();
+		var package = getPackage(arguments.meta.name);
+		var param = 0;
+    </cfscript>
+	<cfoutput>
+	<cfsavecontent variable="xml">
+      <ownedOperation xmi:id="#id#" name="#arguments.func.name#" visibility="#arguments.func.access#">
+        <ownedParameter xmi:id="_#createUUID()#" <cfif arguments.func.returntype neq "void" AND typeExists(qMetaData, arguments.func.returntype, package)>type="#getTypeId(arguments.func.returntype, package)#"</cfif> direction="return"/>
+		<cfif StructKeyExists(arguments.func, "parameters")>
+			<cfloop array="#arguments.func.parameters#" index="param">
+				<cfset safeParamMeta(param)>
+				<ownedParameter xmi:id="_#createUUID()#" name="#param.name#" <cfif typeExists(qMetadata, param.type, package)>type="#getTypeId(param.type, package)#"</cfif>>
+					<defaultValue xmi:type="uml:LiteralString" xmi:id="_#createUUID()#"/>
+				</ownedParameter>
+			</cfloop>
+		</cfif>
+      </ownedOperation>
+	</cfsavecontent>
+	</cfoutput>
+	<cfreturn xml />
+</cffunction>
+
+<cffunction name="getPackageID" hint="returns a package ID" access="private" returntype="string" output="false">
+	<cfargument name="package" hint="The package in question" type="string" required="Yes">
+	<cfscript>
+		return "_" &  hash("package:" & lCase(arguments.package));
+    </cfscript>
+</cffunction>
+
+<cffunction name="getTypeId" hint="gets the id of a given type" access="private" returntype="string" output="false">
+	<cfargument name="type" hint="the coldfusion type" type="string" required="Yes">
+	<cfargument name="package" hint="The package in question" type="string" required="Yes">
+	<cfscript>
+		if(structKeyExists(primitiveMap, arguments.type))
+		{
+			return primitiveMap[arguments.type];
+		}
+
+		arguments.type = resolveClassName(arguments.type, arguments.package);
+
+		return "_" & hash("class:"  & lcase(arguments.type));
+    </cfscript>
+</cffunction>
+
+<!--- cleanup --->
+<cfscript>
+	funcs = "getBiderectionalAssociation,displayPackageStart,displayPackageEnd,displayClass,displayClassFunctions,getPackageID,getTypeId,buildFunctionXML,displayClassProperties,isFunctionAProperty,displayClassUsage,displayClassAssociations";
+</cfscript>
+<cfloop list="funcs" index="func">
+	<cfset structDelete(variables, func)>
+</cfloop>
+
+
+</cfsilent>

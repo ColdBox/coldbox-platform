@@ -19,6 +19,12 @@
 		
 		builder = getMockBox().createMock("coldbox.system.ioc.Builder").init( mockInjector );
 	}
+
+	function testCacheboxLinkOff(){
+		mockInjector.$("isColdBoxLinked", false).$("isCacheBoxLinked", false);
+		expectException( "Builder.IllegalDSLException" );
+		builder.buildDSLDependency( definition={dsl = "cachebox:default"}, targetID="unit-test", targetObject=getMockBox().createStub() );
+	}
 	
 	function testGetJavaDSL(){
 		makePublic(builder, "getJavaDSL");

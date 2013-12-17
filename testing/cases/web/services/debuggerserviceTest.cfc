@@ -16,7 +16,7 @@ Modification History:
 <cfscript>
 	function setup(){
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
+		setAppMapping("/coldbox/test-harness");
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		super.setup();
 		

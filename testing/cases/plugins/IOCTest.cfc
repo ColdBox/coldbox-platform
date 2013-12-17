@@ -20,7 +20,7 @@ Modification History:
 		//namespace the plugin test target
 		ioc = plugin;
 		mockLogger.$("info").$("error").$("debug").$("canInfo", false).$("CanDebug", false);
-		mockController.$("getAppRootPath",expandPath("/coldbox/testharness"));
+		mockController.$("getAppRootPath",expandPath("/coldbox/test-harness"));
 		mockController.$("getConfigSettings",structnew());
 		application.cbController = mockController;
 		
@@ -43,18 +43,18 @@ Modification History:
 		makePublic( ioc, "buildAdapter" );
 		
 		// established path
-		factory = ioc.buildAdapter( "coldspring", "/coldbox/testharness/config/coldspring.xml.cfm" );
+		factory = ioc.buildAdapter( "coldspring", "/coldbox/test-harness/config/coldspring.xml.cfm" );
 		assertTrue( isObject( factory ) );
 		
 		// custom path
-		factory = ioc.buildAdapter( "coldbox.system.ioc.adapters.ColdSpringAdapter", "/coldbox/testharness/config/coldspring.xml.cfm" );
+		factory = ioc.buildAdapter( "coldbox.system.ioc.adapters.ColdSpringAdapter", "/coldbox/test-harness/config/coldspring.xml.cfm" );
 		assertTrue( isObject( factory ) );
 	}
 	
 	function testConfigure(){
 		ioc.$("getSetting").$args("IOCObjectCaching").$results("false");
 		ioc.$("getSetting").$args("IOCFramework").$results("coldspring");
-		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/testharness/config/coldspring.xml.cfm");
+		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/test-harness/config/coldspring.xml.cfm");
 		ioc.$("getSetting").$args("IOCParentFactory").$results("");
 		ioc.$("getSetting").$args("IOCParentFactoryDefinitionFile").$results("");
 		
@@ -66,7 +66,7 @@ Modification History:
 	function testConfigureWithParent(){
 		ioc.$("getSetting").$args("IOCObjectCaching").$results("false");
 		ioc.$("getSetting").$args("IOCFramework").$results("coldspring");
-		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/testharness/config/coldspring.xml.cfm");
+		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/test-harness/config/coldspring.xml.cfm");
 		ioc.$("getSetting").$args("IOCParentFactory").$results("coldspring");
 		ioc.$("getSetting").$args("IOCParentFactoryDefinitionFile").$results("/coldbox/testing/resources/coldspring.xml.cfm");
 		
@@ -81,7 +81,7 @@ Modification History:
 	function testGetBean(){
 		// mock setup
 		ioc.$("getSetting").$args("IOCFramework").$results("coldspring");
-		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/testharness/config/coldspring.xml.cfm");
+		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/test-harness/config/coldspring.xml.cfm");
 		ioc.$("getSetting").$args("IOCObjectCaching").$results(false);
 		ioc.$("getSetting").$args("IOCParentFactory").$results("");
 		ioc.$("getSetting").$args("IOCParentFactoryDefinitionFile").$results("");
@@ -96,7 +96,7 @@ Modification History:
 	function testGetBeanWithCaching(){
 		// mock setup
 		ioc.$("getSetting").$args("IOCFramework").$results("coldspring");
-		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/testharness/config/coldspring.xml.cfm");
+		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/test-harness/config/coldspring.xml.cfm");
 		ioc.$("getSetting").$args("IOCObjectCaching").$results(true);
 		ioc.$("getSetting").$args("IOCParentFactory").$results("");
 		ioc.$("getSetting").$args("IOCParentFactoryDefinitionFile").$results("");

@@ -8,7 +8,7 @@
 		
 		flash.init(mockController);
 		
-		obj = createObject("component","coldbox.system.core.cf.CFMLEngine").init();
+		obj = createObject("component","coldbox.system.core.util.CFMLEngine").init();
 		
 		//test scope
 		testscope = {

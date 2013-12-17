@@ -157,7 +157,7 @@ component accessors="true" serialize="false" implements="IValidationManager"{
 	/**
 	* Create validators according to types and validation data
 	*/
-	coldbox.system.validation.validators.IValidator function getValidator(required string validatorType, required string validationData){
+	coldbox.system.validation.validators.IValidator function getValidator(required string validatorType, required any validationData){
 
 		switch( arguments.validatorType ){
 			case "required" 	: { return wirebox.getInstance("coldbox.system.validation.validators.RequiredValidator"); }

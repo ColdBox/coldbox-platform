@@ -101,7 +101,16 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	public void function postSave(any entity){
 		announceInterception("ORMPostSave", {entity=arguments.entity});
 	}
+
+	/**
+	* Get the system Event Manager
+	*/
+	public any function getEventManager(){
+		return getWireBox().getEventManager();
+	}
 	
+	/********************************* PRIVATE *********************************/
+
 	/**
 	* process entity injection
 	*/

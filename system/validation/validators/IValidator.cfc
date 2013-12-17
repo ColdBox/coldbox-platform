@@ -14,7 +14,7 @@ interface{
 	* @field.hint The field on the target object to validate on
 	* @targetValue.hint The target value to validate
 	*/
-	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, string validationData);
+	boolean function validate(required coldbox.system.validation.result.IValidationResult validationResult, required any target, required string field, any targetValue, any validationData);
 	
 	/**
 	* Get the name of the validator

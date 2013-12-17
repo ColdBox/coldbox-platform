@@ -164,7 +164,7 @@ Description :
 		<cfif isSimpleValue(cacheValue)>
 			<cfsavecontent variable="dumperContents"><cfoutput><strong>#cachekey#</strong> = #cacheValue#</cfoutput></cfsavecontent>
 		<cfelse>
-			<cfsavecontent variable="dumperContents"><cfdump var="#cacheValue#" label="#cachekey#" top="1"></cfsavecontent>
+			<cfsavecontent variable="dumperContents"><cfdump var="#cacheValue#" label="#cachekey#" top="5"></cfsavecontent>
 		</cfif>
 		
 		<!--- Return it --->

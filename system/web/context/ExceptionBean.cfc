@@ -155,7 +155,7 @@ Modification History:
 		<cfset var tagContextLength = ArrayLen(arrayTagContext)>
 		<cfif structkeyExists(instance.exceptionStruct, "TagContext") and tagContextLength>
 			<cfloop from="1" to="#tagContextLength#" index="i">
-			  <cfsavecontent variable="entry"><cfoutput>ID: <cfif not structKeyExists(arrayTagContext[i], "ID")>N/A<cfelse>#arrayTagContext[i].ID#</cfif>; LINE: #arrayTagContext[i].LINE#; TEMPLATE: #arrayTagContext[i].Template# #chr(13)#</cfoutput></cfsavecontent>
+			  <cfsavecontent variable="entry"><cfoutput>ID: <cfif not structKeyExists(arrayTagContext[i], "ID")>N/A<cfelse>#arrayTagContext[i].ID#</cfif>; LINE: #arrayTagContext[i].LINE#; TEMPLATE: #arrayTagContext[i].Template# #chr(13)##chr(10)#</cfoutput></cfsavecontent>
 			  <cfset rtnString = rtnString & entry>
 			</cfloop>
 			<cfreturn rtnString>

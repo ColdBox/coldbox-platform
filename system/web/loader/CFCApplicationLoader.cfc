@@ -21,7 +21,7 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			// setup local variables
 			instance.controller = arguments.controller;
-			instance.util 		= createObject("component","coldbox.system.core.util.Util");
+			instance.util 		= createObject( "component","coldbox.system.core.util.Util" );
 			// Coldbox Settings
 			instance.coldboxSettings = arguments.controller.getColdBoxSettings();
 
@@ -40,7 +40,7 @@ Loads a coldbox cfc configuration file
 		var configStruct		= structNew();
 		var coldboxSettings 	= instance.coldboxSettings;
 		var appRootPath 		= instance.controller.getAppRootPath();
-		var configCFCLocation 	= coldboxSettings["ConfigFileLocation"];
+		var configCFCLocation 	= coldboxSettings[ "ConfigFileLocation" ];
 		var configCreatePath 	= "";
 		var oConfig 			= "";
 		var logBoxConfigHash  	= hash(instance.controller.getLogBox().getConfig().getMemento().toString());
@@ -57,8 +57,8 @@ Loads a coldbox cfc configuration file
 
 		//Default Locations for ROOT based apps, which is the default
 		//Parse out the first / to create the invocation Path
-		if ( left(configStruct["AppMapping"],1) eq "/" ){
-			configStruct["AppMapping"] = removeChars(configStruct["AppMapping"],1,1);
+		if ( left(configStruct[ "AppMapping" ],1) eq "/" ){
+			configStruct[ "AppMapping" ] = removeChars(configStruct[ "AppMapping" ],1,1);
 		}
 		//AppMappingInvocation Path
 		appMappingAsDots = getAppMappingAsDots(configStruct.appMapping);
@@ -73,16 +73,16 @@ Loads a coldbox cfc configuration file
 		}
 
 		//Create config Object
-		oConfig = createObject("component", configCreatePath);
+		oConfig = createObject( "component", configCreatePath);
 
 		//Decorate It
 		oConfig.injectPropertyMixin = instance.util.getMixerUtil().injectPropertyMixin;
 		oConfig.getPropertyMixin 	= instance.util.getMixerUtil().getPropertyMixin;
 
 		//MixIn Variables
-		oConfig.injectPropertyMixin("controller",instance.controller);
-		oConfig.injectPropertyMixin("logBoxConfig",instance.controller.getLogBox().getConfig());
-		oConfig.injectPropertyMixin("appMapping",configStruct.appMapping);
+		oConfig.injectPropertyMixin( "controller",instance.controller);
+		oConfig.injectPropertyMixin( "logBoxConfig",instance.controller.getLogBox().getConfig());
+		oConfig.injectPropertyMixin( "appMapping",configStruct.appMapping);
 
 		//Configure it
 		oConfig.configure();
@@ -160,7 +160,7 @@ Loads a coldbox cfc configuration file
 		parseValidation(oConfig,configStruct);
 
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
-		configStruct.configTimeStamp = instance.util.fileLastModified(coldboxSettings["ConfigFileLocation"]);
+		configStruct.configTimeStamp = instance.util.fileLastModified(coldboxSettings[ "ConfigFileLocation" ]);
 
 		//finish by loading configuration
 		configStruct.coldboxConfig = oConfig;
@@ -173,9 +173,9 @@ Loads a coldbox cfc configuration file
     	<cfargument name="configStruct" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			// Get the web path from CGI.
-			var	webPath = replacenocase(cgi.script_name,getFileFromPath(cgi.script_name),"");
+			var	webPath = replacenocase(cgi.script_name,getFileFromPath(cgi.script_name),"" );
 			// Cleanup the template path
-			var localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
+			var localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all" ));
 			// Verify Path Location
 			var pathLocation = findnocase(webPath, localPath);
 
@@ -196,7 +196,7 @@ Loads a coldbox cfc configuration file
 
 			//Clean j2ee context
 			if( len(getContextRoot()) ){
-				arguments.configStruct.AppMapping = replacenocase(arguments.configStruct.AppMapping,getContextRoot(),"");
+				arguments.configStruct.AppMapping = replacenocase(arguments.configStruct.AppMapping,getContextRoot(),"" );
 			}
     	</cfscript>
     </cffunction>
@@ -209,11 +209,11 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct = arguments.config;
 			var fwSettingsStruct = instance.coldboxSettings;
-			var coldboxSettings = arguments.oConfig.getPropertyMixin("coldbox","variables",structnew());
+			var coldboxSettings = arguments.oConfig.getPropertyMixin( "coldbox","variables",structnew());
 
 			// check if settings are available
 			if( structIsEmpty(coldboxSettings) ){
-				instance.util.throwit(message="ColdBox settings empty, cannot continue",type="CFCApplicationLoader.ColdBoxSettingsEmpty");
+				instance.util.throwit(message="ColdBox settings empty, cannot continue",type="CFCApplicationLoader.ColdBoxSettingsEmpty" );
 			}
 
 			// collection append
@@ -226,103 +226,98 @@ Loads a coldbox cfc configuration file
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 
 			//Check for AppName or throw
-			if ( not StructKeyExists(configStruct, "AppName") )
-				instance.util.throwit("There was no 'AppName' setting defined. This is required by the framework.","","MissingSetting");
+			if ( not structKeyExists( configStruct, "AppName" ) )
+				instance.util.throwit( "There was no 'AppName' setting defined. This is required by the framework.","","MissingSetting" );
 			//Check for Default Event
-			if ( not StructKeyExists(configStruct, "DefaultEvent") OR NOT len( configStruct[ "DefaultEvent" ] ) )
-				configStruct["DefaultEvent"] = fwSettingsStruct["DefaultEvent"];
+			if ( not structKeyExists( configStruct, "DefaultEvent" ) OR NOT len( configStruct[ "DefaultEvent" ] ) )
+				configStruct[ "DefaultEvent" ] = fwSettingsStruct[ "DefaultEvent" ];
 			//Check for Event Name
-			if ( not StructKeyExists(configStruct, "EventName") )
-				configStruct["EventName"] = fwSettingsStruct["EventName"] ;
+			if ( not structKeyExists( configStruct, "EventName" ) )
+				configStruct[ "EventName" ] = fwSettingsStruct[ "EventName" ] ;
 			//Check for Application Start Handler
-			if ( not StructKeyExists(configStruct, "ApplicationStartHandler") )
-				configStruct["ApplicationStartHandler"] = "";
+			if ( not structKeyExists( configStruct, "ApplicationStartHandler" ) )
+				configStruct[ "ApplicationStartHandler" ] = "";
 			//Check for Application End Handler
-			if ( not StructKeyExists(configStruct, "ApplicationEndHandler") )
-				configStruct["applicationEndHandler"] = "";
+			if ( not structKeyExists( configStruct, "ApplicationEndHandler" ) )
+				configStruct[ "applicationEndHandler" ] = "";
 			//Check for Request End Handler
-			if ( not StructKeyExists(configStruct, "RequestStartHandler") )
-				configStruct["RequestStartHandler"] = "";
+			if ( not structKeyExists( configStruct, "RequestStartHandler" ) )
+				configStruct[ "RequestStartHandler" ] = "";
 			//Check for Application Start Handler
-			if ( not StructKeyExists(configStruct, "RequestEndHandler") )
-				configStruct["RequestEndHandler"] = "";
+			if ( not structKeyExists( configStruct, "RequestEndHandler" ) )
+				configStruct[ "RequestEndHandler" ] = "";
 			//Check for Session Start Handler
-			if ( not StructKeyExists(configStruct, "SessionStartHandler") )
-				configStruct["SessionStartHandler"] = "";
+			if ( not structKeyExists( configStruct, "SessionStartHandler" ) )
+				configStruct[ "SessionStartHandler" ] = "";
 			//Check for Session End Handler
-			if ( not StructKeyExists(configStruct, "SessionEndHandler") )
-				configStruct["SessionEndHandler"] = "";
+			if ( not structKeyExists( configStruct, "SessionEndHandler" ) )
+				configStruct[ "SessionEndHandler" ] = "";
 			//Check for InvalidEventHandler
-			if ( not StructKeyExists(configStruct, "onInvalidEvent") )
-				configStruct["onInvalidEvent"] = "";
+			if ( not structKeyExists( configStruct, "onInvalidEvent" ) )
+				configStruct[ "onInvalidEvent" ] = "";
 			//Check For DebugMode in settings
-			if ( not structKeyExists(configStruct, "DebugMode") or not isBoolean(configStruct.DebugMode) )
-				configStruct["DebugMode"] = "false";
+			if ( not structKeyExists( configStruct, "DebugMode" ) or not isBoolean(configStruct.DebugMode) )
+				configStruct[ "DebugMode" ] = "false";
 			//Check for Implicit Views
-			if ( not StructKeyExists(configStruct, "ImplicitViews") OR not isBoolean(configStruct.implicitViews) )
-				configStruct["ImplicitViews"] = true;
-
-			//Check for DebugPassword in settings, else leave blank.
-			if ( not structKeyExists(configStruct, "DebugPassword") ){ configStruct["DebugPassword"] = ""; }
-			else if( len(configStruct["DebugPassword"]) ){ configStruct["DebugPassword"] = hash(configStruct["DebugPassword"]); }
-
+			if ( not structKeyExists( configStruct, "ImplicitViews" ) OR not isBoolean(configStruct.implicitViews) )
+				configStruct[ "ImplicitViews" ] = true;
+			//Check for DebugPassword in settings
+			if ( not structKeyExists( configStruct, "DebugPassword" ) ){ configStruct[ "DebugPassword" ] = hash( createUUID() ); }
+			else if( len(configStruct[ "DebugPassword" ]) ){ configStruct[ "DebugPassword" ] = hash( configStruct[ "DebugPassword" ] ); }
 			//Check for ReinitPassword
-			if ( not structKeyExists(configStruct, "ReinitPassword") ){ configStruct["ReinitPassword"] = ""; }
-			else if( len(configStruct["ReinitPassword"]) ){ configStruct["ReinitPassword"] = hash(configStruct["ReinitPassword"]); }
-
-
+			if ( not structKeyExists( configStruct, "ReinitPassword" ) ){ configStruct[ "ReinitPassword" ] = hash( createUUID() ); }
+			else if( len(configStruct[ "ReinitPassword" ]) ){ configStruct[ "ReinitPassword" ] = hash( configStruct[ "ReinitPassword" ] ); }
 			//Check For UDFLibraryFile
-			if ( not StructKeyExists(configStruct, "UDFLibraryFile") )
-				configStruct["UDFLibraryFile"] = "";
+			if ( not structKeyExists( configStruct, "UDFLibraryFile" ) )
+				configStruct[ "UDFLibraryFile" ] = "";
 			// inflate if needed to array
-			if( isSimpleValue( configStruct["UDFLibraryFile"] ) ){
-				configStruct["UDFLibraryFile"] = listToArray( configStruct["UDFLibraryFile"] );
+			if( isSimpleValue( configStruct[ "UDFLibraryFile" ] ) ){
+				configStruct[ "UDFLibraryFile" ] = listToArray( configStruct[ "UDFLibraryFile" ] );
 			}
-
 			//Check For CustomErrorTemplate
-			if ( not StructKeyExists(configStruct, "CustomErrorTemplate") )
-				configStruct["CustomErrorTemplate"] = "";
+			if ( not structKeyExists( configStruct, "CustomErrorTemplate" ) )
+				configStruct[ "CustomErrorTemplate" ] = "";
 			//Check for HandlersIndexAutoReload, default = false
-			if ( not structkeyExists(configStruct, "HandlersIndexAutoReload") or not isBoolean(configStruct.HandlersIndexAutoReload) )
-				configStruct["HandlersIndexAutoReload"] = false;
+			if ( not structKeyExists( configStruct, "HandlersIndexAutoReload" ) or not isBoolean(configStruct.HandlersIndexAutoReload) )
+				configStruct[ "HandlersIndexAutoReload" ] = false;
 			//Check for ExceptionHandler if found
-			if ( not structkeyExists(configStruct, "ExceptionHandler") )
-				configStruct["ExceptionHandler"] = "";
+			if ( not structKeyExists( configStruct, "ExceptionHandler" ) )
+				configStruct[ "ExceptionHandler" ] = "";
 			//Check for PluginsExternalLocation if found
-			if ( not structkeyExists(configStruct, "PluginsExternalLocation") )
-				configStruct["PluginsExternalLocation"] = "";
+			if ( not structKeyExists( configStruct, "PluginsExternalLocation" ) )
+				configStruct[ "PluginsExternalLocation" ] = "";
 			//Check for Handler Caching
-			if ( not structKeyExists(configStruct, "HandlerCaching") or not isBoolean(configStruct.HandlerCaching) )
-				configStruct["HandlerCaching"] = true;
+			if ( not structKeyExists( configStruct, "HandlerCaching" ) or not isBoolean(configStruct.HandlerCaching) )
+				configStruct[ "HandlerCaching" ] = true;
 			//Check for Event Caching
-			if ( not structKeyExists(configStruct, "EventCaching") or not isBoolean(configStruct.EventCaching) )
-				configStruct["EventCaching"] = true;
+			if ( not structKeyExists( configStruct, "EventCaching" ) or not isBoolean(configStruct.EventCaching) )
+				configStruct[ "EventCaching" ] = true;
 			//RequestContextDecorator
-			if ( not structKeyExists(configStruct, "RequestContextDecorator") or len(configStruct["RequestContextDecorator"]) eq 0 ){
-				configStruct["RequestContextDecorator"] = "";
+			if ( not structKeyExists( configStruct, "RequestContextDecorator" ) or len(configStruct[ "RequestContextDecorator" ]) eq 0 ){
+				configStruct[ "RequestContextDecorator" ] = "";
 			}
 			//ControllerDecorator
-			if ( not structKeyExists(configStruct, "ControllerDecorator") or len(configStruct["ControllerDecorator"]) eq 0 ){
-				configStruct["ControllerDecorator"] = "";
+			if ( not structKeyExists( configStruct, "ControllerDecorator" ) or len(configStruct[ "ControllerDecorator" ]) eq 0 ){
+				configStruct[ "ControllerDecorator" ] = "";
 			}
 			//Check for ProxyReturnCollection
-			if ( not structKeyExists(configStruct, "ProxyReturnCollection") or not isBoolean(configStruct.ProxyReturnCollection) )
-				configStruct["ProxyReturnCollection"] = false;
+			if ( not structKeyExists( configStruct, "ProxyReturnCollection" ) or not isBoolean(configStruct.ProxyReturnCollection) )
+				configStruct[ "ProxyReturnCollection" ] = false;
 			//Check for External Handlers Location
-			if ( not structKeyExists(configStruct, "HandlersExternalLocation") or len(configStruct["HandlersExternalLocation"]) eq 0 )
-				configStruct["HandlersExternalLocation"] = "";
+			if ( not structKeyExists( configStruct, "HandlersExternalLocation" ) or len(configStruct[ "HandlersExternalLocation" ]) eq 0 )
+				configStruct[ "HandlersExternalLocation" ] = "";
 
 			//Check for Missing Template Handler
-			if ( not StructKeyExists(configStruct, "MissingTemplateHandler") )
-				configStruct["MissingTemplateHandler"] = "";
+			if ( not structKeyExists( configStruct, "MissingTemplateHandler" ) )
+				configStruct[ "MissingTemplateHandler" ] = "";
 
 			// Check for ColdBox Extensions Location
-			if( not structKeyExists(configStruct, "ColdBoxExtensionsLocation") OR not len(configStruct.ColdBoxExtensionsLocation) ){
-				configStruct["ColdBoxExtensionsLocation"] = "";
+			if( not structKeyExists( configStruct, "ColdBoxExtensionsLocation" ) OR not len(configStruct.ColdBoxExtensionsLocation) ){
+				configStruct[ "ColdBoxExtensionsLocation" ] = "";
 			}
 
 			//Modules Configuration
-			if( not structKeyExists(configStruct,"ModulesExternalLocation") ){
+			if( not structKeyExists( configStruct,"ModulesExternalLocation" ) ){
 				configStruct.ModulesExternalLocation = arrayNew(1);
 			}
 			if( isSimpleValue(configStruct.ModulesExternalLocation) ){
@@ -337,7 +332,7 @@ Loads a coldbox cfc configuration file
 		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var settings = arguments.oConfig.getPropertyMixin("settings","variables",structnew());
+			var settings = arguments.oConfig.getPropertyMixin( "settings","variables",structnew());
 
 			//append it
 			structAppend(configStruct,settings,true);
@@ -351,16 +346,16 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct = arguments.config;
 			var fwSettingsStruct = instance.coldboxSettings;
-			var conventions = arguments.oConfig.getPropertyMixin("conventions","variables",structnew());
+			var conventions = arguments.oConfig.getPropertyMixin( "conventions","variables",structnew());
 
 			// Override conventions on a per found basis.
-			if( structKeyExists(conventions,"handlersLocation") ){ fwSettingsStruct["handlersConvention"] = trim(conventions.handlersLocation); }
-			if( structKeyExists(conventions,"pluginsLocation") ){ fwSettingsStruct["pluginsConvention"] = trim(conventions.pluginsLocation); }
-			if( structKeyExists(conventions,"layoutsLocation") ){ fwSettingsStruct["LayoutsConvention"] = trim(conventions.layoutsLocation); }
-			if( structKeyExists(conventions,"viewsLocation") ){ fwSettingsStruct["ViewsConvention"] = trim(conventions.viewsLocation); }
-			if( structKeyExists(conventions,"eventAction") ){ fwSettingsStruct["eventAction"] = trim(conventions.eventAction); }
-			if( structKeyExists(conventions,"modelsLocation") ){ fwSettingsStruct["ModelsConvention"] = trim(conventions.modelsLocation); }
-			if( structKeyExists(conventions,"modulesLocation") ){ fwSettingsStruct["ModulesConvention"] = trim(conventions.modulesLocation); }
+			if( structKeyExists( conventions,"handlersLocation" ) ){ fwSettingsStruct[ "handlersConvention" ] = trim(conventions.handlersLocation); }
+			if( structKeyExists( conventions,"pluginsLocation" ) ){ fwSettingsStruct[ "pluginsConvention" ] = trim(conventions.pluginsLocation); }
+			if( structKeyExists( conventions,"layoutsLocation" ) ){ fwSettingsStruct[ "LayoutsConvention" ] = trim(conventions.layoutsLocation); }
+			if( structKeyExists( conventions,"viewsLocation" ) ){ fwSettingsStruct[ "ViewsConvention" ] = trim(conventions.viewsLocation); }
+			if( structKeyExists( conventions,"eventAction" ) ){ fwSettingsStruct[ "eventAction" ] = trim(conventions.eventAction); }
+			if( structKeyExists( conventions,"modelsLocation" ) ){ fwSettingsStruct[ "ModelsConvention" ] = trim(conventions.modelsLocation); }
+			if( structKeyExists( conventions,"modulesLocation" ) ){ fwSettingsStruct[ "ModulesConvention" ] = trim(conventions.modulesLocation); }
 		</cfscript>
 	</cffunction>
 
@@ -371,7 +366,7 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct = arguments.config;
 			var fwSettingsStruct = instance.coldboxSettings;
-			var ioc = arguments.oConfig.getPropertyMixin("ioc","variables",structnew());
+			var ioc = arguments.oConfig.getPropertyMixin( "ioc","variables",structnew());
 
 			//defaults
 			configStruct.IOCFramework = "";
@@ -382,23 +377,23 @@ Loads a coldbox cfc configuration file
 			configStruct.IOCParentFactoryDefinitionFile = "";
 
 			//Check for IOC Framework
-			if ( structKeyExists(ioc, "framework") ){
-				configStruct["IOCFramework"] = ioc.framework;
-				configStruct["IOCDefinitionFile"] = ioc.definitionFile;
+			if ( structKeyExists(ioc, "framework" ) ){
+				configStruct[ "IOCFramework" ] = ioc.framework;
+				configStruct[ "IOCDefinitionFile" ] = ioc.definitionFile;
 
-				if( structKeyExists(ioc,"reload") ){
-					configStruct["IOCFrameworkReload"] = ioc.reload;
+				if( structKeyExists(ioc,"reload" ) ){
+					configStruct[ "IOCFrameworkReload" ] = ioc.reload;
 				}
-				if( structKeyExists(ioc,"objectCaching") ){
-					configStruct["IOCObjectCaching"] = ioc.objectCaching;
+				if( structKeyExists(ioc,"objectCaching" ) ){
+					configStruct[ "IOCObjectCaching" ] = ioc.objectCaching;
 				}
 
 			}
 
 			// Parent Factory
-			if ( structKeyExists(ioc, "ParentFactory") ){
-				configStruct["IOCParentFactoryDefinitionFile"] = ioc.parentFactory.definitionFile;
-				configStruct["IOCParentFactory"] = ioc.parentFactory.framework;
+			if ( structKeyExists(ioc, "ParentFactory" ) ){
+				configStruct[ "IOCParentFactoryDefinitionFile" ] = ioc.parentFactory.definitionFile;
+				configStruct[ "IOCParentFactory" ] = ioc.parentFactory.framework;
 			}
 		</cfscript>
 	</cffunction>
@@ -413,47 +408,47 @@ Loads a coldbox cfc configuration file
 			var appMappingAsDots = "";
 
 			// Handler Registration
-			configStruct["HandlersInvocationPath"] = reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all");
-			configStruct["HandlersPath"] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.handlersConvention;
+			configStruct[ "HandlersInvocationPath" ] = reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all" );
+			configStruct[ "HandlersPath" ] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.handlersConvention;
 			// Custom Plugins Registration
-			configStruct["MyPluginsInvocationPath"] = reReplace(fwSettingsStruct.pluginsConvention,"(/|\\)",".","all");
-			configStruct["MyPluginsPath"] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.pluginsConvention;
+			configStruct[ "MyPluginsInvocationPath" ] = reReplace(fwSettingsStruct.pluginsConvention,"(/|\\)",".","all" );
+			configStruct[ "MyPluginsPath" ] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.pluginsConvention;
 			// Models Registration
-			configStruct["ModelsInvocationPath"] = reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all");
-			configStruct["ModelsPath"] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModelsConvention;
+			configStruct[ "ModelsInvocationPath" ] = reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all" );
+			configStruct[ "ModelsPath" ] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModelsConvention;
 
 			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
-			if( len(configStruct["AppMapping"]) ){
-				appMappingAsDots = reReplace(configStruct["AppMapping"],"(/|\\)",".","all");
+			if( len(configStruct[ "AppMapping" ]) ){
+				appMappingAsDots = reReplace(configStruct[ "AppMapping" ],"(/|\\)",".","all" );
 				// Handler Path Registrations
-				configStruct["HandlersInvocationPath"] = appMappingAsDots & ".#reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all")#";
-				configStruct["HandlersPath"] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.handlersConvention#";
-				configStruct["HandlersPath"] = expandPath(configStruct["HandlersPath"]);
+				configStruct[ "HandlersInvocationPath" ] = appMappingAsDots & ".#reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all" )#";
+				configStruct[ "HandlersPath" ] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.handlersConvention#";
+				configStruct[ "HandlersPath" ] = expandPath(configStruct[ "HandlersPath" ]);
 				// Custom Plugins Registrations
-				configStruct["MyPluginsInvocationPath"] = appMappingAsDots & ".#reReplace(fwSettingsStruct.pluginsConvention,"(/|\\)",".","all")#";
-				configStruct["MyPluginsPath"] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.pluginsConvention#";
-				configStruct["MyPluginsPath"] = expandPath(configStruct["MyPluginsPath"]);
+				configStruct[ "MyPluginsInvocationPath" ] = appMappingAsDots & ".#reReplace(fwSettingsStruct.pluginsConvention,"(/|\\)",".","all" )#";
+				configStruct[ "MyPluginsPath" ] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.pluginsConvention#";
+				configStruct[ "MyPluginsPath" ] = expandPath(configStruct[ "MyPluginsPath" ]);
 				// Model Registrations
-				configStruct["ModelsInvocationPath"] = appMappingAsDots & ".#reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all")#";
-				configStruct["ModelsPath"] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.ModelsConvention#";
-				configStruct["ModelsPath"] = expandPath(configStruct["ModelsPath"]);
+				configStruct[ "ModelsInvocationPath" ] = appMappingAsDots & ".#reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all" )#";
+				configStruct[ "ModelsPath" ] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.ModelsConvention#";
+				configStruct[ "ModelsPath" ] = expandPath(configStruct[ "ModelsPath" ]);
 			}
 
 			//Set the Handlers External Configuration Paths
-			configStruct["HandlersExternalLocationPath"] = "";
-			if( len(configStruct["HandlersExternalLocation"]) ){
+			configStruct[ "HandlersExternalLocationPath" ] = "";
+			if( len(configStruct[ "HandlersExternalLocation" ]) ){
 				//Expand the external location to get a registration path
-				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
+				configStruct[ "HandlersExternalLocationPath" ] = ExpandPath( "/" & replace(configStruct[ "HandlersExternalLocation" ],".","/","all" ));
 			}
 
 			//Configure the modules locations for the conventions not the external ones.
 			if( len(configStruct.AppMapping) ){
 				configStruct.ModulesLocation 		= "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
-				configStruct.ModulesInvocationPath	= appMappingAsDots & ".#reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all")#";
+				configStruct.ModulesInvocationPath	= appMappingAsDots & ".#reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all" )#";
 			}
 			else{
 				configStruct.ModulesLocation 		= "/#fwSettingsStruct.ModulesConvention#";
-				configStruct.ModulesInvocationPath 	= reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all");
+				configStruct.ModulesInvocationPath 	= reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all" );
 			}
 			configStruct.ModulesPath = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModulesConvention;
 		</cfscript>
@@ -468,39 +463,39 @@ Loads a coldbox cfc configuration file
 			var fwSettingsStruct = instance.coldboxSettings;
 
 			// ViewsExternalLocation Setup
-			if( structKeyExists(configStruct,"ViewsExternalLocation") and len(configStruct["ViewsExternalLocation"]) ){
+			if( structKeyExists( configStruct,"ViewsExternalLocation" ) and len(configStruct[ "ViewsExternalLocation" ]) ){
 				// Verify the locations, do relative to the app mapping first
-				if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct["ViewsExternalLocation"]) ){
-					configStruct["ViewsExternalLocation"] = "/" & configStruct["AppMapping"] & "/" & configStruct["ViewsExternalLocation"];
+				if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct[ "ViewsExternalLocation" ]) ){
+					configStruct[ "ViewsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "ViewsExternalLocation" ];
 				}
-				else if( not directoryExists(expandPath(configStruct["ViewsExternalLocation"])) ){
-					instance.util.throwIt("ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException");
+				else if( not directoryExists(expandPath(configStruct[ "ViewsExternalLocation" ])) ){
+					instance.util.throwIt( "ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
 				}
 				// Cleanup
-				if ( right(configStruct["ViewsExternalLocation"],1) eq "/" ){
-					 configStruct["ViewsExternalLocation"] = left(configStruct["ViewsExternalLocation"],len(configStruct["ViewsExternalLocation"])-1);
+				if ( right(configStruct[ "ViewsExternalLocation" ],1) eq "/" ){
+					 configStruct[ "ViewsExternalLocation" ] = left(configStruct[ "ViewsExternalLocation" ],len(configStruct[ "ViewsExternalLocation" ])-1);
 				}
 			}
 			else{
-				configStruct["ViewsExternalLocation"] = "";
+				configStruct[ "ViewsExternalLocation" ] = "";
 			}
 
 			// LayoutsExternalLocation Setup
-			if( structKeyExists(configStruct,"LayoutsExternalLocation") and configStruct["LayoutsExternalLocation"] neq "" ){
+			if( structKeyExists( configStruct,"LayoutsExternalLocation" ) and configStruct[ "LayoutsExternalLocation" ] neq "" ){
 				// Verify the locations, do relative to the app mapping first
-				if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct["LayoutsExternalLocation"]) ){
-					configStruct["LayoutsExternalLocation"] = "/" & configStruct["AppMapping"] & "/" & configStruct["LayoutsExternalLocation"];
+				if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct[ "LayoutsExternalLocation" ]) ){
+					configStruct[ "LayoutsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "LayoutsExternalLocation" ];
 				}
-				else if( not directoryExists(expandPath(configStruct["LayoutsExternalLocation"])) ){
-					instance.util.throwIt("LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException");
+				else if( not directoryExists(expandPath(configStruct[ "LayoutsExternalLocation" ])) ){
+					instance.util.throwIt( "LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
 				}
 				// Cleanup
-				if ( right(configStruct["LayoutsExternalLocation"],1) eq "/" ){
-					 configStruct["LayoutsExternalLocation"] = left(configStruct["LayoutsExternalLocation"],len(configStruct["LayoutsExternalLocation"])-1);
+				if ( right(configStruct[ "LayoutsExternalLocation" ],1) eq "/" ){
+					 configStruct[ "LayoutsExternalLocation" ] = left(configStruct[ "LayoutsExternalLocation" ],len(configStruct[ "LayoutsExternalLocation" ])-1);
 				}
 			}
 			else{
-				configStruct["LayoutsExternalLocation"] = "";
+				configStruct[ "LayoutsExternalLocation" ] = "";
 			}
 		</cfscript>
 	</cffunction>
@@ -511,7 +506,7 @@ Loads a coldbox cfc configuration file
 		<cfargument name="config" 	  type="any"   required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			configStruct.mailSettings = arguments.oConfig.getPropertyMixin("mailSettings","variables",structnew());
+			configStruct.mailSettings = arguments.oConfig.getPropertyMixin( "mailSettings","variables",structnew());
 		</cfscript>
 	</cffunction>
 
@@ -521,51 +516,58 @@ Loads a coldbox cfc configuration file
 		<cfargument name="config" 	  type="any"   required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct	= arguments.config;
-			var i18n 			= arguments.oConfig.getPropertyMixin("i18N","variables",structnew());
+			var i18n 			= arguments.oConfig.getPropertyMixin( "i18N", "variables", structnew() );
 
 
-			//Defaults
-			configStruct.defaultResourceBundle = "";
-			configStruct.defaultLocale = "";
-			configStruct.localeStorage = "";
-			configStruct.unknownTranslation = "";
-			configStruct["using_i18N"] = false;
+			// Defaults
+			configStruct[ "defaultResourceBundle" ] 	= "";
+			configStruct[ "defaultLocale" ] 			= "";
+			configStruct[ "localeStorage" ] 			= "";
+			configStruct[ "unknownTranslation" ] 		= "";
+			configStruct[ "using_i18N" ] 				= false;
+			configStruct[ "resourceBundles" ]			= structNew();
+			configStruct[ "RBundles" ]					= structNew();
 
-			//Check if empty
+			// Check if empty
 			if ( NOT structIsEmpty(i18n) ){
 
-				//Check for DefaultResourceBundle
-				if ( structKeyExists(i18n, "DefaultResourceBundle") AND len(i18n.defaultResourceBundle) ){
-					configStruct["DefaultResourceBundle"] = i18n.defaultResourceBundle;
+				// Check for DefaultResourceBundle
+				if ( structKeyExists( i18n, "DefaultResourceBundle" ) AND len(i18n.defaultResourceBundle) ){
+					configStruct[ "DefaultResourceBundle" ] = i18n.defaultResourceBundle;
 				}
 
-				//Check for DefaultLocale
-				if ( structKeyExists(i18n, "DefaultLocale") AND len(i18n.DefaultLocale) ){
-					if( find("_", i18n.defaultLocale) ){
-						configStruct["DefaultLocale"] = lcase(listFirst(i18n.defaultLocale,"_")) & "_" & ucase(listLast(i18n.defaultLocale,"_"));
+				// Check for DefaultLocale
+				if ( structKeyExists( i18n, "DefaultLocale" ) AND len(i18n.DefaultLocale) ){
+					if( find( "_", i18n.defaultLocale) ){
+						configStruct[ "DefaultLocale" ] = lcase(listFirst(i18n.defaultLocale,"_" )) & "_" & ucase(listLast(i18n.defaultLocale,"_" ));
 					}
 					else{
-						configStruct["DefaultLocale"] = i18n.defaultLocale;
+						configStruct[ "DefaultLocale" ] = i18n.defaultLocale;
 					}
 				}
 
-				//Check for LocaleStorage
-				if ( structKeyExists(i18n, "LocaleStorage") AND len(i18n.LocaleStorage) ){
-					configStruct["LocaleStorage"] = i18n.LocaleStorage;
-					if( NOT reFindNoCase("^(session|cookie|client|request)$",configStruct["LocaleStorage"]) ){
-						instance.util.throwit(message="Invalid local storage scope: #configStruct["localeStorage"]#",
+				// Check for LocaleStorage
+				if ( structKeyExists( i18n, "LocaleStorage" ) AND len(i18n.LocaleStorage) ){
+					configStruct[ "LocaleStorage" ] = i18n.LocaleStorage;
+					if( NOT reFindNoCase( "^(session|cookie|client|request)$",configStruct[ "LocaleStorage" ]) ){
+						instance.util.throwit(message="Invalid local storage scope: #configStruct[ "localeStorage" ]#",
 							   			  detail="Valid scopes are session,client, cookie, or request",
-							   			  type="CFCApplicationLoader.InvalidLocaleStorage");
+							   			  type="CFCApplicationLoader.InvalidLocaleStorage" );
 					}
 				}
 
-				//Check for UnknownTranslation
-				if ( structKeyExists(i18n, "UnknownTranslation") AND len(i18n.UnknownTranslation) ){
-					configStruct["UnknownTranslation"] = i18n.UnknownTranslation;
+				// Check for UnknownTranslation
+				if ( structKeyExists( i18n, "UnknownTranslation" ) AND len(i18n.UnknownTranslation) ){
+					configStruct[ "UnknownTranslation" ] = i18n.UnknownTranslation;
 				}
 
-				//set i18n
-				configStruct["using_i18N"] = true;
+				// Check for ResourceBundles
+				if ( structKeyExists( i18n, "resourceBundles" ) AND isStruct( i18n.resourceBundles ) ){
+					configStruct[ "resourceBundles" ] = i18n.resourceBundles;
+				}
+
+				// set i18n being used
+				configStruct[ "using_i18N" ] = true;
 			}
 		</cfscript>
 	</cffunction>
@@ -577,7 +579,7 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct = arguments.config;
 			var key=1;
-			var webservices = arguments.oConfig.getPropertyMixin("webservices","variables",structnew());
+			var webservices = arguments.oConfig.getPropertyMixin( "webservices","variables",structnew());
 
 			// Defaults
 			configStruct.webservices = structnew();
@@ -594,7 +596,7 @@ Loads a coldbox cfc configuration file
 		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			var datasources = arguments.oConfig.getPropertyMixin("datasources","variables",structnew());
+			var datasources = arguments.oConfig.getPropertyMixin( "datasources","variables",structnew());
 			var key = "";
 
 			// Defaults
@@ -603,17 +605,17 @@ Loads a coldbox cfc configuration file
 			//loop over datasources
 			for( key in datasources ){
 
-				if( NOT structKeyExists(datasources[key],"name") ){
-					instance.util.throwit("This datasource #key# entry's name cannot be blank","","CFCApplicationLoader.DatasourceException");
+				if( NOT structKeyExists(datasources[key],"name" ) ){
+					instance.util.throwit( "This datasource #key# entry's name cannot be blank","","CFCApplicationLoader.DatasourceException" );
 				}
 				// defaults
-				if( NOT structKeyExists(datasources[key],"username") ){
+				if( NOT structKeyExists(datasources[key],"username" ) ){
 					datasources[key].username = "";
 				}
-				if( NOT structKeyExists(datasources[key],"password") ){
+				if( NOT structKeyExists(datasources[key],"password" ) ){
 					datasources[key].password = "";
 				}
-				if( NOT structKeyExists(datasources[key],"dbType") ){
+				if( NOT structKeyExists(datasources[key],"dbType" ) ){
 					datasources[key].dbType = "";
 				}
 				// save datasoure definition
@@ -628,11 +630,11 @@ Loads a coldbox cfc configuration file
 		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct 		= arguments.config;
-			var	LayoutViewStruct 	= CreateObject("java","java.util.LinkedHashMap").init();
-			var	LayoutFolderStruct 	= CreateObject("java","java.util.LinkedHashMap").init();
+			var	LayoutViewStruct 	= CreateObject( "java","java.util.LinkedHashMap" ).init();
+			var	LayoutFolderStruct 	= CreateObject( "java","java.util.LinkedHashMap" ).init();
 			var key 				= "";
-			var layoutSettings 		= arguments.oConfig.getPropertyMixin("layoutSettings","variables",structnew());
-			var layouts 			= arguments.oConfig.getPropertyMixin("layouts","variables",arrayNew(1));
+			var layoutSettings 		= arguments.oConfig.getPropertyMixin( "layoutSettings","variables",structnew());
+			var layouts 			= arguments.oConfig.getPropertyMixin( "layouts","variables",arrayNew(1));
 			var i 					= 1;
 			var x 					= 1;
 			var thisLayout			= "";
@@ -673,7 +675,7 @@ Loads a coldbox cfc configuration file
 				configStruct.registeredLayouts[thisLayout.name] = thisLayout.file;
 
 				// register views
-				if( structKeyExists(thisLayout,"views") ){
+				if( structKeyExists(thisLayout,"views" ) ){
 					for(i=1; i lte listLen(thislayout.views); i=i+1){
 						if ( not StructKeyExists(LayoutViewStruct, lcase( listGetAt(thisLayout.views,i) ) ) ){
 							LayoutViewStruct[lcase( listGetAt(thisLayout.views,i) )] = thisLayout.file;
@@ -682,7 +684,7 @@ Loads a coldbox cfc configuration file
 				}
 
 				// register folders
-				if( structKeyExists(thisLayout,"folders") ){
+				if( structKeyExists(thisLayout,"folders" ) ){
 					for(i=1; i lte listLen(thisLayout.folders); i=i+1){
 						if ( not StructKeyExists(LayoutFolderStruct, lcase( listGetAt(thisLayout.folders,i) ) ) ){
 							LayoutFolderStruct[lcase( listGetAt(thisLayout.folders,i) )] = thisLayout.file;
@@ -707,7 +709,7 @@ Loads a coldbox cfc configuration file
 
 			// CacheBox Defaults
 			configStruct.cacheBox				= structnew();
-			configStruct.cacheBox.dsl  			= arguments.oConfig.getPropertyMixin("cacheBox","variables",structnew());
+			configStruct.cacheBox.dsl  			= arguments.oConfig.getPropertyMixin( "cacheBox","variables",structnew());
 			configStruct.cacheBox.xml  			= "";
 			configStruct.cacheBox.configFile 	= "";
 
@@ -715,13 +717,13 @@ Loads a coldbox cfc configuration file
 			if( NOT structIsEmpty(configStruct.cacheBox.dsl) ){
 
 				// Do we have a configFile key for external loading?
-				if( structKeyExists(configStruct.cacheBox.dsl,"configFile") ){
+				if( structKeyExists( configStruct.cacheBox.dsl,"configFile" ) ){
 					configStruct.cacheBox.configFile = configStruct.cacheBox.dsl.configFile;
 				}
 
 			}
 			// Check if LogBoxConfig.cfc exists in the config conventions
-			else if( fileExists( instance.controller.getAppRootPath() & "config/CacheBox.cfc") ){
+			else if( fileExists( instance.controller.getAppRootPath() & "config/CacheBox.cfc" ) ){
 				configStruct.cacheBox.configFile = loadCacheBoxByConvention(configStruct);
 			}
 			// else, load the default coldbox cachebox config
@@ -738,7 +740,7 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct = arguments.config;
 			var fwSettings = instance.coldboxSettings;
-			var debugger = arguments.oConfig.getPropertyMixin("debugger","variables",structnew());
+			var debugger = arguments.oConfig.getPropertyMixin( "debugger","variables",structnew());
 
 			// defaults
 			configStruct.debuggerSettings = {};
@@ -756,8 +758,8 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			var configStruct = arguments.config;
 			var x = 1;
-			var interceptorSettings = arguments.oConfig.getPropertyMixin("interceptorSettings","variables",structnew());
-			var interceptors = arguments.oConfig.getPropertyMixin("interceptors","variables",arrayNew(1));
+			var interceptorSettings = arguments.oConfig.getPropertyMixin( "interceptorSettings","variables",structnew());
+			var interceptors = arguments.oConfig.getPropertyMixin( "interceptors","variables",arrayNew(1));
 
 			//defaults
 			configStruct.interceptorConfig = structnew();
@@ -771,11 +773,11 @@ Loads a coldbox cfc configuration file
 			//Register interceptors
 			for(x=1; x lte arrayLen(interceptors); x=x+1){
 				//Name check
-				if( NOT structKeyExists(interceptors[x],"name") ){
-					interceptors[x].name = listLast(interceptors[x].class,".");
+				if( NOT structKeyExists(interceptors[x],"name" ) ){
+					interceptors[x].name = listLast(interceptors[x].class,"." );
 				}
 				//Properties check
-				if( NOT structKeyExists(interceptors[x],"properties") ){
+				if( NOT structKeyExists(interceptors[x],"properties" ) ){
 					interceptors[x].properties = structnew();
 				}
 
@@ -797,16 +799,16 @@ Loads a coldbox cfc configuration file
 			var key				  = "";
 
 			// Default Config Structure
-			arguments.config["LogBoxConfig"] = structnew();
+			arguments.config[ "LogBoxConfig" ] = structnew();
 
 			// Check if we have defined DSL first in application config
-			logBoxDSL = arguments.oConfig.getPropertyMixin("logBox","variables",structnew());
+			logBoxDSL = arguments.oConfig.getPropertyMixin( "logBox","variables",structnew());
 			if( NOT structIsEmpty(logBoxDSL) ){
 				// Reset Configuration we have declared a configuration DSL
 				logBoxConfig.reset();
 
 				// Do we have a configFile key?
-				if( structKeyExists(logBoxDSL,"configFile") ){
+				if( structKeyExists(logBoxDSL,"configFile" ) ){
 					// Load by file
 					loadLogBoxByFile( logBoxConfig, logBoxDSL.configFile);
 				}
@@ -817,15 +819,15 @@ Loads a coldbox cfc configuration file
 				}
 
 				// Store for reconfiguration
-				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();
+				arguments.config[ "LogBoxConfig" ] = logBoxConfig.getMemento();
 			}
 			// Check if LogBoxConfig.cfc exists in the config conventions and load it.
-			else if( fileExists( instance.controller.getAppRootPath() & "config/LogBox.cfc") ){
+			else if( fileExists( instance.controller.getAppRootPath() & "config/LogBox.cfc" ) ){
 				loadLogBoxByConvention(logBoxConfig,arguments.config);
 			}
 			// Check if hash changed by means of programmatic object config
 			else if( compare(arguments.configHash, newConfigHash) neq 0 ){
-				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();
+				arguments.config[ "LogBoxConfig" ] = logBoxConfig.getMemento();
 			}
 		</cfscript>
 	</cffunction>
@@ -845,14 +847,14 @@ Loads a coldbox cfc configuration file
 			arguments.config.wirebox.singletonReload = false;
 
 			// Check if we have defined DSL first in application config
-			wireBoxDSL = arguments.oConfig.getPropertyMixin("wireBox","variables",structnew());
+			wireBoxDSL = arguments.oConfig.getPropertyMixin( "wireBox","variables",structnew());
 
 			// Get Binder Paths
-			if( structKeyExists(wireBoxDSL,"binder") ){
+			if( structKeyExists(wireBoxDSL,"binder" ) ){
 				arguments.config.wirebox.binderPath = wireBoxDSL.binder;
 			}
 			// Check if WireBox.cfc exists in the config conventions, if so create binder
-			else if( fileExists( instance.controller.getAppRootPath() & "config/WireBox.cfc") ){
+			else if( fileExists( instance.controller.getAppRootPath() & "config/WireBox.cfc" ) ){
 				arguments.config.wirebox.binderPath = "config.WireBox";
 				if( len(arguments.config.appMapping) ){
 					arguments.config.wirebox.binderPath = arguments.config.appMapping & ".#arguments.config.wirebox.binderPath#";
@@ -860,7 +862,7 @@ Loads a coldbox cfc configuration file
 			}
 
 			// Singleton reload
-			if( structKeyExists(wireBoxDSL,"singletonReload") ){
+			if( structKeyExists(wireBoxDSL,"singletonReload" ) ){
 				arguments.config.wirebox.singletonReload = wireBoxDSL.singletonReload;
 			}
 		</cfscript>
@@ -881,10 +883,10 @@ Loads a coldbox cfc configuration file
 			};
 
 			// Check if we have defined DSL first in application config
-			ormDSL = arguments.oConfig.getPropertyMixin("orm","variables",structnew());
+			ormDSL = arguments.oConfig.getPropertyMixin( "orm","variables",structnew());
 
 			// injection
-			if( structKeyExists(ormDSL,"injection") ){
+			if( structKeyExists(ormDSL,"injection" ) ){
 				structAppend( arguments.config.orm.injection, ormDSL.injection, true);
 			}
 		</cfscript>
@@ -918,14 +920,14 @@ Loads a coldbox cfc configuration file
 			};
 
 			// Check if we have defined DSL first in application config
-			validationDSL = arguments.oConfig.getPropertyMixin("validation","variables",structnew());
+			validationDSL = arguments.oConfig.getPropertyMixin( "validation", "variables", structnew() );
 
 			// manager
-			if( structKeyExists(validationDSL,"manager") ){
-				structAppend( arguments.config.validation.manager, validationDSL.manager, true);
+			if( structKeyExists( validationDSL, "manager" ) ){
+				arguments.config.validation.manager = validationDSL.manager;
 			}
 			// shared constraints
-			if( structKeyExists(validationDSL,"sharedConstraints") ){
+			if( structKeyExists( validationDSL, "sharedConstraints" ) ){
 				structAppend( arguments.config.validation.sharedConstraints, validationDSL.sharedConstraints, true);
 			}
 		</cfscript>
@@ -944,7 +946,7 @@ Loads a coldbox cfc configuration file
 			arguments.config.flash 	= fwSettingsStruct.flash;
 
 			// Check if we have defined DSL first in application config
-			flashScopeDSL = arguments.oConfig.getPropertyMixin("flash","variables",structnew());
+			flashScopeDSL = arguments.oConfig.getPropertyMixin( "flash","variables",structnew());
 
 			// check if empty or not, if not, then append and override
 			if( NOT structIsEmpty( flashScopeDSL ) ){
@@ -959,7 +961,7 @@ Loads a coldbox cfc configuration file
 		<cfargument name="config" 	  	type="any"  required="true" hint="The config struct"/>
 		<cfscript>
 			var configStruct  = arguments.config;
-			var modules 	  = arguments.oConfig.getPropertyMixin("modules","variables",structnew());
+			var modules 	  = arguments.oConfig.getPropertyMixin( "modules","variables",structnew());
 
 			// Defaults
 			configStruct.ModulesAutoReload  = false;
@@ -967,9 +969,9 @@ Loads a coldbox cfc configuration file
 			configStruct.ModulesExclude		= arrayNew(1);
 			configStruct.Modules 			= structNew();
 
-			if( structKeyExists(modules,"autoReload") ){ configStruct.modulesAutoReload = modules.autoReload; }
-			if( structKeyExists(modules,"include") ){ configStruct.modulesInclude = modules.include; }
-			if( structKeyExists(modules,"exclude") ){ configStruct.modulesExclude = modules.exclude; }
+			if( structKeyExists(modules,"autoReload" ) ){ configStruct.modulesAutoReload = modules.autoReload; }
+			if( structKeyExists(modules,"include" ) ){ configStruct.modulesInclude = modules.include; }
+			if( structKeyExists(modules,"exclude" ) ){ configStruct.modulesExclude = modules.exclude; }
 
 		</cfscript>
 	</cffunction>
@@ -980,7 +982,7 @@ Loads a coldbox cfc configuration file
 		<cfargument name="oConfig" 		type="any" 	    required="true" hint="The config object"/>
 		<cfargument name="config" 		type="any" 	required="true" hint="The config struct"/>
 		<cfscript>
-			var environments = arguments.oConfig.getPropertyMixin("environments","variables",structnew());
+			var environments = arguments.oConfig.getPropertyMixin( "environments","variables",structnew());
 			var configStruct = arguments.config;
 			var key = "";
 			var i = 1;
@@ -989,7 +991,7 @@ Loads a coldbox cfc configuration file
 			configStruct.environment = "production";
 
 			// is detection is custom
-			if( structKeyExists(arguments.oConfig,"detectEnvironment") ){
+			if( structKeyExists(arguments.oConfig,"detectEnvironment" ) ){
 				//detect custom environment
 				configStruct.environment = arguments.oConfig.detectEnvironment();
 			}
@@ -1040,7 +1042,7 @@ Loads a coldbox cfc configuration file
 				configCreatePath = appMappingAsDots & "." & configCreatePath;
 			}
 			arguments.logBoxConfig.init(CFCConfigPath=configCreatePath).validate();
-			arguments.config["LogBoxConfig"] = arguments.logBoxConfig.getMemento();
+			arguments.config[ "LogBoxConfig" ] = arguments.logBoxConfig.getMemento();
 		</cfscript>
     </cffunction>
 
@@ -1050,7 +1052,7 @@ Loads a coldbox cfc configuration file
     	<cfargument name="filePath" 	type="any" 		required="true"/>
 		<cfscript>
     		// Load according xml?
-			if( listFindNoCase("cfm,xml", listLast(arguments.filePath,".")) ){
+			if( listFindNoCase( "cfm,xml", listLast(arguments.filePath,"." )) ){
 				arguments.logBoxConfig.init(XMLConfig=arguments.filePath).validate();
 			}
 			// Load according to CFC Path
@@ -1084,7 +1086,7 @@ Loads a coldbox cfc configuration file
     <cffunction name="getAppMappingAsDots" output="false" access="private" returntype="any" hint="Get the App Mapping as Dots">
     	<cfargument name="appMapping" type="any" required="true" />
 		<cfscript>
-			return reReplace(arguments.appMapping,"(/|\\)",".","all");
+			return reReplace(arguments.appMapping,"(/|\\)",".","all" );
 		</cfscript>
     </cffunction>
 

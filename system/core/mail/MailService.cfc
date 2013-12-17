@@ -73,7 +73,7 @@ Description :
 				mail.setUseSSL( mailSettings.getValue("useSSL") );
 			}
 			if( NOT mail.propertyExists("useTLS")  AND len(mailSettings.getValue("useTLS","")) ){
-				mail.setUseSSL( mailSettings.getValue("useTLS") );
+				mail.setUseTLS( mailSettings.getValue("useTLS") );
 			}
 			// set default mail attributes if the MailSettings bean has values
 			if( NOT len(mail.getTo()) AND len(mailSettings.getValue("to","")) ){

@@ -427,14 +427,15 @@ Description :
 		<cfargument name="value" 	required="false" hint="The value of the property, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
     	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
-    	<cfscript>
+    	<cfargument name="required" required="false" default="true" hint="If the property is required or not, by default we assume required DI properties."/>
+		<cfscript>
     		var def = getDIDefinition();
 			var x	= 1;
 			// check if already registered, if it is, just return
-			for(x=1; x lte arrayLen(instance.DIProperties); x++){
-				if( instance.DIProperties[x].name eq arguments.name ){ return this;}
+			for( x=1; x lte arrayLen( instance.DIProperties ); x++ ){
+				if( instance.DIProperties[ x ].name eq arguments.name ){ return this;}
 			}
-			structAppend(def, arguments, true);
+			structAppend( def, arguments, true );
 			arrayAppend( instance.DIProperties, def );
 			return this;
     	</cfscript>
@@ -796,7 +797,7 @@ Description :
 					if( structKeyExists(md.properties[x],"inject") ){
 						// prepare default params, we do this so we do not alter the md as it is cached by cf
 						params = {
-							scope="variables", inject="model", name=md.properties[x].name
+							scope="variables", inject="model", name=md.properties[x].name, required=true
 						};
 						// default injection scope, if not found in object
 						if( structKeyExists(md.properties[x],"scope") ){
@@ -806,8 +807,12 @@ Description :
 						if( len(md.properties[x].inject) ){
 							params.inject = md.properties[x].inject;
 						}
+						// Get required
+						if( structKeyExists( md.properties[ x ], "required" ) and isBoolean( md.properties[ x ].required ) ){
+							params.required = md.properties[ x ].required;
+						}
 						// Add to property to mappings
-						addDIProperty(name=params.name,dsl=params.inject,scope=params.scope);
+						addDIProperty( name=params.name, dsl=params.inject, scope=params.scope, required=params.required );
 					}
 
 				}

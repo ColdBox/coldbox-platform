@@ -25,7 +25,7 @@ Only one instance of a specific ColdBox application exists.
 			services = createObject("java","java.util.LinkedHashMap").init( 7 );
 
 			// CFML Engine Utility
-			instance.CFMLEngine = CreateObject("component","coldbox.system.core.cf.CFMLEngine").init();
+			instance.CFMLEngine = CreateObject("component","coldbox.system.core.util.CFMLEngine").init();
 			// Set Main Application Properties
 			instance.coldboxInitiated 		= false;
 			instance.aspectsInitiated 		= false;
@@ -50,12 +50,12 @@ Only one instance of a specific ColdBox application exists.
 			instance.log 	= instance.logBox.getLogger( this );
 
 			// Setup the ColdBox Services
-			services.RequestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init( this );
-			services.DebuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init( this );
-			services.HandlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init( this );
-			services.PluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init( this );
-			services.ModuleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init( this );
-			services.InterceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init( this );
+			services.requestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init( this );
+			services.debuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init( this );
+			services.handlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init( this );
+			services.pluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init( this );
+			services.moduleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init( this );
+			services.interceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init( this );
 
 			// CacheBox Instance
 			instance.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
@@ -79,7 +79,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Get The CFMLEngine object --->
-	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.cf.CFMLEngine)" coldoc:generic="coldbox.system.core.cf.CFMLEngine">
+	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.util.CFMLEngine)" coldoc:generic="coldbox.system.core.util.CFMLEngine">
 		<cfreturn instance.CFMLEngine>
 	</cffunction>
 
@@ -572,6 +572,14 @@ Only one instance of a specific ColdBox application exists.
 
 					// PREEVENT Interceptor
 					services.interceptorService.processState("preEvent",iData);
+					
+					// Verify if event was overriden
+					if( arguments.event NEQ iData.processedEvent ){
+						// Validate the overriden event
+						ehBean = services.handlerService.getRegisteredHandler( iData.processedEvent );
+						// Get new handler to follow execution
+						oHandler = services.handlerService.getHandler( ehBean, oRequestContext );
+					}
 
 					// Execute Pre Handler if it exists and valid?
 					if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){

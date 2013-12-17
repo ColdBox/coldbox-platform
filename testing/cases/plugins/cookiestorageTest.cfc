@@ -16,7 +16,7 @@ Description :
 		super.setup();
 		
 		//mocks
-		mockController.$("getCFMLEngine", getMockBox().createEmptyMock("coldbox.system.core.cf.CFMLEngine").$("getEngine","ADOBE"));
+		mockController.$("getCFMLEngine", getMockBox().createEmptyMock("coldbox.system.core.util.CFMLEngine").$("getEngine","ADOBE"));
 		plugin.$("settingExists",false).init( mockController );
 		</cfscript>
 	</cffunction>

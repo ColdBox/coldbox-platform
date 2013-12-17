@@ -455,6 +455,15 @@
 			<parameter name="ignoreEmpty" required="false" type="boolean">
 				<help><![CDATA[ Ignore empty values on populations, great for ORM population ]]></help>
 			</parameter>
+			<parameter name="nullEmptyInclude" required="false" type="string">
+				<help><![CDATA[ A list of keys to NULL when empty ]]></help>
+			</parameter>
+			<parameter name="nullEmptyExclude" required="false" type="string">
+				<help><![CDATA[ A list of keys to NOT NULL when empty ]]></help>
+			</parameter>
+			<parameter name="composeRelationships" required="false" type="boolean">
+				<help><![CDATA[ Automatically attempt to compose relationships from memento ]]></help>
+			</parameter>
 			</function>
 	<function creator="8" name="validateModel" returns="coldbox.system.validation.result.IValidationResult">
 			<help><![CDATA[ Validate a target object (Context: FrameworkSupertype) ]]></help>
@@ -477,13 +486,19 @@
 	<function creator="8" name="getResource" returns="any">
 			<help><![CDATA[ Facade to i18n.getResource. Returns a string. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="resource" required="true" type="any">
-				<help><![CDATA[ The resource to retrieve from the loaded localized bundle ]]></help>
+				<help><![CDATA[ The resource (key) to retrieve from the main loaded bundle. ]]></help>
 			</parameter>
 			<parameter name="default" required="false" type="any">
-				<help><![CDATA[ A default value to send back if resource not found ]]></help>
+				<help><![CDATA[ A default value to send back if the resource (key) not found ]]></help>
 			</parameter>
 			<parameter name="locale" required="false" type="any">
 				<help><![CDATA[ Pass in which locale to take the resource from. By default it uses the user's current set locale ]]></help>
+			</parameter>
+			<parameter name="values" required="false" type="any">
+				<help><![CDATA[ An array, struct or simple string of value replacements to use on the resource string ]]></help>
+			</parameter>
+			<parameter name="bundle" required="false" type="any">
+				<help><![CDATA[ The bundle alias to use to get the resource from when using multiple resource bundles. By default the bundle name used is 'default' ]]></help>
 			</parameter>
 			</function>
 	<function creator="8" name="$htmlhead" returns="void">
@@ -784,7 +799,7 @@
 	<scope value="binder.mixins(mixins)">
 			<help><![CDATA[Adds one, a list or an array of UDF templates to mixin to a CFC]]></help>
 		</scope>
-	<scope value="binder.property(name,[ref],[dsl],[value],[javaCast],[scope])">
+	<scope value="binder.property(name,[ref],[dsl],[value],[javaCast],[scope],[required])">
 			<help><![CDATA[Map a cfproperty to a mapping]]></help>
 		</scope>
 	<scope value="binder.scopeRegistration([enabled],[scope],[key])">
@@ -838,7 +853,7 @@
 	<scope value="binder.removeScanLocations(locations)">
 			<help><![CDATA[Try to remove all the scan locations passed in]]></help>
 		</scope>
-	<scope value="binder.mapPath(path)">
+	<scope value="binder.mapPath(path,[namespace],[prepend])">
 			<help><![CDATA[Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.]]></help>
 		</scope>
 	<scope value="binder.into(scope)">
@@ -851,7 +866,7 @@
 			<help><![CDATA[If you call this method on an object mapping, the object's constructor will not be called. By default all constructors are called.]]></help>
 		</scope>
 	<scope value="binder.toProvider(provider)">
-			<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider]]></help>
+			<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider or a closure or UDF]]></help>
 		</scope>
 	<scope value="binder.providerMethod(method,mapping)">
 			<help><![CDATA[Add a new provider method mapping]]></help>
@@ -916,10 +931,10 @@
 	<scope value="binder.mapDSL(namespace,path)">
 			<help><![CDATA[Register a new custom dsl namespace]]></help>
 		</scope>
-	<scope value="binder.mapDirectory(packagePath,include,exclude)">
+	<scope value="binder.mapDirectory(packagePath,include,exclude,[influence],[filter],[namespace],[prepend])">
 			<help><![CDATA[Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection]]></help>
 		</scope>
-	<scope value="binder.initArg([name],[ref],[dsl],[value],[javaCast])">
+	<scope value="binder.initArg([name],[ref],[dsl],[value],[javaCast],[required])">
 			<help><![CDATA[Map a constructor argument to a mapping]]></help>
 		</scope>
 	<scope value="binder.setter(name,[ref],[dsl],[value],[javaCast],[argName])">
@@ -985,7 +1000,7 @@
 	<scope value="event.getHTTPBasicCredentials()">
 			<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
 		</scope>
-	<scope value="event.renderData(type,data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs])">
+	<scope value="event.renderData([type],data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs],[formats],[formatsView],[isBinary])">
 			<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
 		</scope>
 	<scope value="event.getSESBaseURL()">
@@ -1006,7 +1021,7 @@
 	<scope value="event.getSize([private])">
 			<help><![CDATA[Returns the number of elements in the collection]]></help>
 		</scope>
-	<scope value="event.init(properties)">
+	<scope value="event.init(properties,controller)">
 			<help><![CDATA[constructor]]></help>
 		</scope>
 	<scope value="event.isSES()">
@@ -1177,6 +1192,9 @@
 	<scope value="event.isNoRender()">
 			<help><![CDATA[Is this a no render request]]></help>
 		</scope>
+	<scope value="event.renderWithFormats()">
+			<help><![CDATA[Render With Formats]]></help>
+		</scope>
 	<scope value="event.getMemento()">
 			<help><![CDATA[Get the state of this request context]]></help>
 		</scope>
@@ -1300,7 +1318,7 @@
 	<scope value="wirebox.locateInstance(name)">
 			<help><![CDATA[Tries to locate a specific instance by scanning all scan locations and returning the instantiation path. If model not found then the returned instantiation path will be empty]]></help>
 		</scope>
-	<scope value="wirebox.getInstance([name],[dsl],[initArguments])">
+	<scope value="wirebox.getInstance([name],[dsl],[initArguments],[targetObject])">
 			<help><![CDATA[Locates, Creates, Injects and Configures an object model instance]]></help>
 		</scope>
 	<scope value="wirebox.processAfterCompleteDI(targetObject,DICompleteMethods)">
@@ -1550,7 +1568,7 @@
 			<help><![CDATA[Checks if an action can be executed according to inclusion/exclusion lists. Boolean]]></help>
 		</scope>
 	<scope value="controller.getCFMLEngine()">
-			<help><![CDATA[Get the CFMLEngine utility(coldbox.system.core.cf.CFMLEngine)]]></help>
+			<help><![CDATA[Get the CFMLEngine utility(coldbox.system.core.util.CFMLEngine)]]></help>
 		</scope>
 	<scope value="controller.getUtil()">
 			<help><![CDATA[Create and return a util object]]></help>

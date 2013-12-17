@@ -18,14 +18,15 @@ Description :
 			instance.mixins = StructNew();
 
 			// Place our methods on the mixins struct
-			instance.mixins["removeMixin"] 				= variables.removeMixin;
-			instance.mixins["injectMixin"] 				= variables.injectMixin;
-			instance.mixins["invokerMixin"] 			= variables.invokerMixin;
-			instance.mixins["injectPropertyMixin"] 		= variables.injectPropertyMixin;
-			instance.mixins["removePropertyMixin"] 		= variables.removePropertyMixin;
-			instance.mixins["populatePropertyMixin"] 	= variables.populatePropertyMixin;
-			instance.mixins["includeitMixin"] 			= variables.includeitMixin;
-			instance.mixins["getPropertyMixin"]			= variables.getPropertyMixin;
+			instance.mixins[ "removeMixin" ] 				= variables.removeMixin;
+			instance.mixins[ "injectMixin" ] 				= variables.injectMixin;
+			instance.mixins[ "invokerMixin" ] 				= variables.invokerMixin;
+			instance.mixins[ "injectPropertyMixin" ] 		= variables.injectPropertyMixin;
+			instance.mixins[ "removePropertyMixin" ] 		= variables.removePropertyMixin;
+			instance.mixins[ "populatePropertyMixin" ] 		= variables.populatePropertyMixin;
+			instance.mixins[ "includeitMixin" ] 			= variables.includeitMixin;
+			instance.mixins[ "getPropertyMixin" ]			= variables.getPropertyMixin;
+			instance.mixins[ "exposeMixin" ]				= variables.exposeMixin;
 
 			instance.system = createObject('java','java.lang.System');
 
@@ -70,6 +71,20 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- MIXINS ------------------------------------------>
+
+	<!--- exposeMixin --->
+	<cffunction name="exposeMixin" access="public" hint="Exposes a private function publicly" returntype="void" output="true">
+		<cfargument name="method" 	required="true">
+		<cfargument name="newName" 	required="false" default="">
+
+		<cfscript>
+			if( !len( arguments.newName ) ){
+				arguments.newName = arguments.method;
+			}
+			// expose it
+			this[ arguments.newName ] = variables[ arguments.method ];
+		</cfscript>
+	</cffunction>
 
 	<!--- includeitMixin --->
 	<cffunction name="includeitMixin" access="public" hint="Facade for cfinclude" returntype="void" output="true">

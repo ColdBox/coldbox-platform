@@ -14,12 +14,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	
 	function testConfigure(){
 		// mocks
-		mockController.$("getSetting").$args("HandlersPath").$results( expandPath("/coldbox/testharness/handlers") )
+		mockController.$("getSetting").$args("HandlersPath").$results( expandPath("/coldbox/test-harness/handlers") )
 			.$("getSetting").$args("HandlersExternalLocationPath").$results("")
 			.$("getSetting").$args("Modules").$results( {} )
 			.$("getSetting").$args("EventName").$results( 'event' )
 			.$("getSetting").$args("DefaultEvent").$results( 'index' );
-		ses.$("getSetting").$args("AppMapping").$results("/coldbox/testharness")
+		ses.$("getSetting").$args("AppMapping").$results("/coldbox/test-harness")
 			.$("importConfiguration")
 			.$("setSetting");
 		ses.setBaseURL("http://localhost");

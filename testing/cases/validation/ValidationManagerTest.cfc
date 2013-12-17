@@ -16,17 +16,20 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 
 	function testProcessRules(){
 		results = getMockBox().createMock("coldbox.system.validation.result.ValidationResult").init();
-
-		mockValidator = getMockBox().createMock("coldbox.testing.cases.validation.resources.MockValidator").$("validate",true);
-		model.$("getValidator", mockValidator);
+		//mockValidator = getMockBox().createMock("coldbox.testing.cases.validation.resources.MockValidator");
+		
+		//model.$("getValidator", mockValidator);
+		
 		mockRules = {
 			required = true,
-			sameAs = "joe"
+			sameAs = "joe",
+			udf = variables._validateit
 		};
-		getMockBox().prepareMock(this).$("getName","luis");
-
-		model.processRules(results, mockRules, this,"name");
-		AssertEquals( true, model.$times(2,"getValidator") );
+		
+		getMockBox().prepareMock( this ).$( "getName","luis" ).$( "getJoe", "luis" );
+		model.processRules( results=results, rules=mockRules, target=this, field="name" );
+		
+		assertEquals( 0, results.getErrorCount() );
 
 	}
 
@@ -76,6 +79,11 @@ component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.v
 		assertEquals( true, r.hasErrors() );
 		assertEquals( 0, arrayLen( r.getFieldErrors("age") ) );
 		assertEquals( 1, arrayLen( r.getFieldErrors("name") ) );
+	}
+
+
+	private function _validateit( targetValue, target ){
+		return true;
 	}
 
 }
