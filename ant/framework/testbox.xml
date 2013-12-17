@@ -7,7 +7,7 @@
     	Build a new distribution of TestBox Standalone
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="testbox.version"	value="1.0.0.RC"/>
+	<property name="testbox.version"	value="1.0.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	
