@@ -3,7 +3,7 @@
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 			
-			controller = getMockBox().createMock("coldbox.system.web.Controller").init(ExpandPath('/coldbox/testharness'));
+			controller = getMockBox().createMock("coldbox.system.web.Controller").init(ExpandPath('/coldbox/test-harness'));
 			getMockBox().prepareMock( controller.getRequestService() );
 			getMockBox().prepareMock( controller.getInterceptorService() );
 			
@@ -12,7 +12,7 @@
 	
 	<cffunction name="testAppRoots" returntype="void" access="public" output="false">
 		<cfscript>
-			AssertTrue( controller.getAppRootPath() eq expandPath('/coldbox/testharness') & "/");
+			AssertTrue( controller.getAppRootPath() eq expandPath('/coldbox/test-harness') & "/");
 			controller.setAppRootPath('nothing');
 			AssertTrue( controller.getAppRootPath() eq "nothing");
 		</cfscript>
@@ -103,7 +103,7 @@
 	
 	<cffunction name="testAppHash" access="public" returntype="any" hint="" output="false" >
 		<cfscript>
-			AssertTrue( hash(expandPath('/coldbox/testharness')) eq controller.getAppHash() );
+			AssertTrue( hash(expandPath('/coldbox/test-harness')) eq controller.getAppHash() );
 			
 			controller.setAppHash(hash('unittest'));
 			AssertTrue( hash('unittest') eq controller.getAppHash() );

@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/testharness">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/test-harness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

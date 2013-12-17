@@ -104,11 +104,25 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- afterTests --->
-	<cffunction name="afterTests" hint="The main teardown for ColdBox enabled applications after all tests execute" output="false">
+	<cffunction name="afterTests" hint="xUnit: The main teardown for ColdBox enabled applications after all tests execute" output="false">
 		<cfscript>
 			structDelete( application, getColdboxAppKey() );
+		</cfscript>
+	</cffunction>
+
+	<!--- beforeAll --->
+	<cffunction name="beforeAll" hint="BDD: The main setup method for running ColdBox Integration enabled tests" output="false">
+		<cfscript>
+			beforeTests();
+		</cfscript>
+	</cffunction>
+
+	<!--- afterAll --->
+	<cffunction name="afterAll" hint="BDD: The main teardown for ColdBox enabled applications after all tests execute" output="false">
+		<cfscript>
+			afterTests();
 		</cfscript>
 	</cffunction>
 

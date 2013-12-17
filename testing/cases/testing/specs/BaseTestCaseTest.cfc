@@ -11,10 +11,10 @@
 		rc = test.getMockRequestContext();
 		$assert.isTrue( isObject(rc) );
 		
-		rc = test.getMockRequestContext(true,'coldbox.testharness.model.myRequestContextDecorator');
+		rc = test.getMockRequestContext(true,'coldbox.test-harness.model.myRequestContextDecorator');
 		$assert.isTrue( isObject(rc) );	
 		
-		rc = test.getMockRequestContext(false,'coldbox.testharness.model.myRequestContextDecorator');
+		rc = test.getMockRequestContext(false,'coldbox.test-harness.model.myRequestContextDecorator');
 		$assert.isTrue( isObject(rc) );	
 	}
 	

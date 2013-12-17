@@ -24,7 +24,7 @@ Description :
 	
 	function testRegisterHandlers(){
 		// Mocks
-		mockController.$("getSetting").$args("HandlersPath").$results(expandPath('/coldbox/testharness/handlers'));
+		mockController.$("getSetting").$args("HandlersPath").$results(expandPath('/coldbox/test-harness/handlers'));
 		mockController.$("getSetting").$args("HandlersExternalLocationPath").$results(expandPath('/coldbox/testing/testhandlers'));
 		mockController.$("setSetting");
 		handlers = ["ehGeneral","blog"];
@@ -37,7 +37,7 @@ Description :
 	}
 	
 	function testRecurseListing(){
-		path = expandPath("/coldbox/testharness/handlers");
+		path = expandPath("/coldbox/test-harness/handlers");
 		makePublic(handlerService,"getHandlerListing");
 		
 		files = handlerService.getHandlerListing(path);

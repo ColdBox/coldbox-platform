@@ -21,7 +21,7 @@ Author 	    :	Luis Majano
 			.$("getSetting").$args("DefaultResourceBundle").$results( "" )
 			.$("getSetting").$args("UnknownTranslation").$results( "**TEST**" )
 			.$("settingExists", true)
-			.$("getAppRootPath", expandPath("/coldbox/testharness") );
+			.$("getAppRootPath", expandPath("/coldbox/test-harness") );
 
 		plugin.init( mockController );
 		plugin.$("getFWLocale", "en_US");

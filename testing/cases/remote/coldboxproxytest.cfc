@@ -9,12 +9,12 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
+<cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/test-harness">
 	<cfscript>
 		function setup(){
 			// load virtual aplication.
 			super.setup();
-			proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
+			proxy = CreateObject("component","coldbox.test-harness.coldboxproxy");
 		}
 
 		function testRemotingUtil(){
@@ -121,13 +121,13 @@ Description :
 			createObject("component","coldbox.system.core.dynamic.MixerUtil").init().start(proxy);
 
 			local.load = structnew();
-			local.load.appMapping = "/coldbox/testharness";
-			local.load.configLocation = "coldbox.testharness.config.Coldbox";
+			local.load.appMapping = "/coldbox/test-harness";
+			local.load.configLocation = "coldbox.test-harness.config.Coldbox";
 			local.load.reloadApp = true;
 			proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
 
 			local.load = structnew();
-			local.load.appMapping = "/coldbox/testharness";
+			local.load.appMapping = "/coldbox/test-harness";
 			local.load.reloadApp = true;
 
 			proxy.invokerMixin(method='loadColdbox',argCollection=local.load);

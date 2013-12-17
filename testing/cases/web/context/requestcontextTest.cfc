@@ -14,11 +14,11 @@
 			props.ViewLayouts = structnew();
 			props.EventName = "event";
 			props.isSES = false;
-			props.sesBaseURL = "http://jfetmac/applications/coldbox/testharness/index.cfm";
+			props.sesBaseURL = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
 			props.registeredLayouts = structnew();
 			props.modules = {
 				test1 = {
-					mapping = "/coldbox/testharness"
+					mapping = "/coldbox/test-harness"
 				}
 			};
 

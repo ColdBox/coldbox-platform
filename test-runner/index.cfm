@@ -7,7 +7,7 @@
 // create testbox
 testBox = new coldbox.system.testing.TestBox();		
 // create reporters
-reporters = [ "Console", "Dot", "JSON", "JUnit", "Min", "Raw", "Simple", "Tap", "Text", "XML" ];
+reporters = [ "ANTJunit", "Console", "Codexwiki", "Doc", "Dot", "JSON", "JUnit", "Min", "Raw", "Simple", "Tap", "Text", "XML" ];
 
 if( url.opt_run ){
 	// clean up

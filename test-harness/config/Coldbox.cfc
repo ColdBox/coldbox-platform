@@ -28,14 +28,14 @@
 			
 			//Extension Points
 			UDFLibraryFile 			= "includes/udf.cfm",
-			coldboxExtensionsLocation = "coldbox.testharness.extensions",
+			coldboxExtensionsLocation = "coldbox.test-harness.extensions",
 			pluginsExternalLocation = "coldbox.testing.testplugins",
 			viewsExternalLocation	= "/coldbox/testing/testviews",
 			layoutsExternalLocation = "/#appMapping#/extlayouts",
 			handlersExternalLocation  = "coldbox.testing.testhandlers",
-			requestContextDecorator = "coldbox.testharness.model.myRequestContextDecorator",
+			requestContextDecorator = "coldbox.test-harness.model.myRequestContextDecorator",
 			modulesExternalLocation = ["/coldbox/testing/testModules","/coldbox/testing/testModules2"],
-			controllerDecorator			= "coldbox.testharness.model.ControllerDecorator",
+			controllerDecorator			= "coldbox.test-harness.model.ControllerDecorator",
 			
 			//Error/Exception Handling
 			exceptionHandler		= "",
@@ -59,7 +59,7 @@
 			feedReader_cacheTimeout = 10,
 			testingModelPath = "coldbox.testing.testmodel",
 			javaloader_libpath = controller.getAppRootPath() & "model/java",
-			messagebox_template = "/coldbox/testharness/includes/messagebox.cfm"
+			messagebox_template = "/coldbox/test-harness/includes/messagebox.cfm"
 		};
 		
 		// Modules Configuration
@@ -89,7 +89,7 @@
 		// WireBox
 		wireBox = { 
 			enabled = true,
-			//binder="coldbox.testHarness.config.WireBox", 
+			//binder="coldbox.test-harness.config.WireBox", 
 			singletonReload=true 
 		};
 		

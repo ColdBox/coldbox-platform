@@ -9,7 +9,7 @@ Date        :	November 10, 2008
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="AntiSamyTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
+<cfcomponent name="AntiSamyTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/test-harness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

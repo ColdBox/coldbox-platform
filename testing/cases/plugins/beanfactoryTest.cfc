@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	BeanFactoryTest
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/test-harness">
 	<cfscript>
 	
 		function setup(){

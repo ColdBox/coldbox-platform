@@ -6,7 +6,7 @@
 		<cfscript>
 			this.ehbean = createObject("component","coldbox.system.web.context.EventHandlerBean");	
 			
-			this.instance.invocationPath = "coldbox.testharness";
+			this.instance.invocationPath = "coldbox.test-harness";
 			this.instance.handler = "general";
 			this.instance.method = "index";
 			this.instance.isPrivate = false;

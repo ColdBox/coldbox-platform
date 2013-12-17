@@ -7,7 +7,7 @@
 		<cfset getColdboxOCM().set("mysiteDSNBean", getDatasource("mysite"), 0 )>
 		<cfset getPlugin("Logger").logEntry("information","AppStart Fired")>
 		<!--- A-La-Carte loading --->
-		<cfset controller.getModuleService().registerAndActivateModule(moduleName="ExternalTest",invocationPath="coldbox.testharness.extmodules")>
+		<cfset controller.getModuleService().registerAndActivateModule(moduleName="ExternalTest",invocationPath="coldbox.test-harness.extmodules")>
 		
 	</cffunction>
 	
