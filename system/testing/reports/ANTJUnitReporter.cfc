@@ -3,7 +3,7 @@
 Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-* A JUnit reporter
+* A JUnit reporter for use with the ANT junitreport task, which uses an old version of JUnit formatting.
 */ 
 component{
 
@@ -13,7 +13,7 @@ component{
 	* Get the name of the reporter
 	*/
 	function getName(){
-		return "JUnit";
+		return "ANTJUnit";
 	}
 
 	/**
@@ -35,28 +35,20 @@ component{
 	}
 
 	private function toJUnit( required results ){
-		var buffer = createObject("java", "java.lang.StringBuilder").init('<?xml version="1.0" encoding="UTF-8"?>');
+		var buffer = createObject("java", "java.lang.StringBuilder").init('');
 		var r = arguments.results;
-
+	
 		// build top level test suites container
-		buffer.append('<testsuites 
-			name="ColdBox.TestBox.TestResults" 
-			time="#r.getTotalDuration()/1000#"
-			tests="#r.getTotalSpecs()#" 
-			failures="#r.getTotalFail()#"
-			disabled="#r.getTotalSkipped()#"
-			errors="#r.getTotalError()#" 
-			labels="#arrayToList( r.getLabels() )#"
-			>');
-
+		buffer.append('<testsuites>');
+			
 		// iterate over bundles
 		var bundlestats = r.getBundleStats();
 		for( var thisBundle in bundleStats ){
 			buildTestSuites( buffer, r, thisBundle, thisBundle.suiteStats );
 		}
 		
-		buffer.append("</testsuites>");
-
+		buffer.append('</testsuites>');
+		
 		return buffer.toString();
 	}
 
@@ -71,6 +63,7 @@ component{
 		var r 		 = arguments.results;
 		var out 	 = arguments.buffer;
 		var stats 	 = arguments.suiteStats;
+		var index	 = 1;
 		
 		// iterate over
 		for( var thisSuite in arguments.suiteStats ){
@@ -82,10 +75,11 @@ component{
 				tests="#thisSuite.totalSpecs#"
 				failures="#thisSuite.totalFail#"
 				errors="#thisSuite.totalError#"
-				time="#thisSuite.totalDuration/1000#"
 				skipped="#thisSuite.totalSkipped#"
-				timestamp="#dateFormat(now(),"mm/dd/yy")# #timeFormat(now(),"medium")#"
+				time="#thisSuite.totalDuration/1000#"
+				timestamp="#dateFormat(now(),"yyyy-mm-dd")#T#timeFormat(now(),"HH:mm:ss")#"
 				hostname="#xmlFormat( cgi.remote_host )#"
+				id="#index++#"
 				package="#xmlFormat( arguments.bundleStats.path )#"
 				>');
 
@@ -117,7 +111,6 @@ component{
 			name="#xmlFormat( stats.name )#"
 			time="#stats.totalDuration/1000#"
 			classname="#arguments.bundleStats.path#"
-			status="#stats.status#"
 			>');
 
 		switch( stats.status ){

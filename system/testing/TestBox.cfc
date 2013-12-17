@@ -284,6 +284,7 @@ component accessors="true"{
 			case "dot" : { return new "coldbox.system.testing.reports.DotReporter"(); }
 			case "text" : { return new "coldbox.system.testing.reports.TextReporter"(); }
 			case "junit" : { return new "coldbox.system.testing.reports.JUnitReporter"(); }
+			case "antjunit" : { return new "coldbox.system.testing.reports.ANTJUnitReporter"(); }
 			case "console" : { return new "coldbox.system.testing.reports.ConsoleReporter"(); }
 			case "min" : { return new "coldbox.system.testing.reports.MinReporter"(); }
 			case "tap" : { return new "coldbox.system.testing.reports.TapReporter"(); }
