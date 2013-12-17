@@ -90,6 +90,14 @@ Optional Methods
 		interceptors = [
 			{class="#moduleMapping#.interceptors.Simple"}
 		];
+
+		// i18n
+		i18n = {
+			defaultLocale = "es_SV",
+			resourceBundles = {
+				"module@test1" = "#moduleMapping#/includes/module"
+			}
+		};
 		
 	}
 	
