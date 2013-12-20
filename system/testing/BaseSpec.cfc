@@ -664,12 +664,10 @@ component{
 	// Closure Stub
 	function closureStub(){}
 
-	/************************************** PRIVATE METHODS *********************************************/
-
 	/**
 	* Check if the incoming exception is expected or not.
 	*/
-	private boolean function isExpectedException( required exception, required specName, required runner ){
+	boolean function isExpectedException( required exception, required specName, required runner ){
 		var results = false;
 		// do we have an expected annotation?
 		var eAnnotation = arguments.runner.getMethodAnnotation( this[ arguments.specName ], this.$exceptionAnnotation, "false" );
