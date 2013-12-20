@@ -19,10 +19,18 @@ component{
 		return this;
 	}	
 	
-	any function getResultsOutput( reporter="simple" ){
+	any function getResultsOutput( mode="simple" ){
+
+		switch( arguments.mode ){
+			case "junitxml" : { arguments.mode = "junit"; break; } 
+			case "query" 	: case "array" 		: { arguments.mode = "raw"; break; }
+			case "html" 	: case "rawhtml" 	: { arguments.mode = "simple"; break; }
+			default 		: { arguments.mode = "simple"; }
+		}
+
 		var tb = new coldbox.system.testing.TestBox( bundles=variables.bundles );
 		
-		return tb.run( testSpecs=variables.testSpecs, reporter=arguments.reporter );
+		return tb.run( testSpecs=variables.testSpecs, reporter=arguments.mode );
 	}
 
 }

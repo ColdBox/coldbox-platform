@@ -17,7 +17,15 @@ component extends="coldbox.system.testing.BaseSpec"{
 	* @output.hint The type of reporter to run the test with
 	*/
 	remote function runTestRemote(any testMethod="", boolean debug=false, output="simple") output=true{
-		var runner = new coldbox.system.testing.TestBox( bundles="#getMetadata(this).name#", reporter=arguments.output );
+
+		switch( arguments.output ){
+			case "junitxml" : { arguments.output = "junit"; break; } 
+			case "query" 	: case "array" : { arguments.output = "raw"; break; }
+			case "html" 	: { arguments.output = "simple"; break; }
+			default 		: { arguments.output = "simple"; }
+		}
+
+		var runner = new coldbox.system.testing.TestBox( bundles="#getMetadata( this ).name#", reporter=arguments.output );
 
 		// Produce report
 		writeOutput( runner.run( testSpecs=arguments.testMethod ) );
