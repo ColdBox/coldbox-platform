@@ -20,7 +20,7 @@ results = testbox.run( reporter=url.reporter );
 if( url.reporter eq "ANTJunit" ){
 	xmlReport = xmlParse( results );
 	for( thisSuite in xmlReport.testsuites.XMLChildren ){
-		fileWrite( url.reportpath & "/TEST-" & thisSuite.XMLAttributes.name & ".xml", toString( thisSuite ) );
+		fileWrite( url.reportpath & "/TEST-" & thisSuite.XMLAttributes.package & ".xml", toString( thisSuite ) );
 	}
 }
 // Writeout Results

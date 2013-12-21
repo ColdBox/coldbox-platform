@@ -44,7 +44,28 @@ component{
 		// iterate over bundles
 		var bundlestats = r.getBundleStats();
 		for( var thisBundle in bundleStats ){
+
+			// build test suite header
+			buffer.append('<testsuite
+			tests="#thisBundle.totalSpecs#"
+			failures="#thisBundle.totalFail#"
+			errors="#thisBundle.totalError#"
+			skipped="#thisBundle.totalSkipped#"
+			time="#thisBundle.totalDuration/1000#"
+			timestamp="#dateFormat(now(),"yyyy-mm-dd")#T#timeFormat(now(),"HH:mm:ss")#"
+			hostname="#xmlFormat( cgi.remote_host )#"
+			package="#xmlFormat( thisBundle.path )#"
+			name="#xmlFormat( thisBundle.name )#"
+			>');
+
+			// build out properties
+			buildProperties( buffer );
+
+			// build out tests, even if nested, treat as single threaded
 			buildTestSuites( buffer, r, thisBundle, thisBundle.suiteStats );
+
+			// close header
+			buffer.append("</testsuite>");
 		}
 		
 		buffer.append('</testsuites>');
@@ -69,46 +90,28 @@ component{
 		for( var thisSuite in arguments.suiteStats ){
 			// build out full suite name
 			var fullName = xmlFormat( arguments.parentName & thisSuite.name );
-			// build test suite header
-			out.append('<testsuite
-				name="#fullName#"
-				tests="#thisSuite.totalSpecs#"
-				failures="#thisSuite.totalFail#"
-				errors="#thisSuite.totalError#"
-				skipped="#thisSuite.totalSkipped#"
-				time="#thisSuite.totalDuration/1000#"
-				timestamp="#dateFormat(now(),"yyyy-mm-dd")#T#timeFormat(now(),"HH:mm:ss")#"
-				hostname="#xmlFormat( cgi.remote_host )#"
-				id="#index++#"
-				package="#xmlFormat( arguments.bundleStats.path )#"
-				>');
-
-			// build out properties
-			buildProperties( out, r, thisSuite, arguments.bundleStats );
-
+			
 			// build out test cases
 			for( var thisSpecStat in thisSuite.specStats ){
-				buildTestCase( out, r, thisSpecStat, arguments.bundleStats );
+				buildTestCase( out, r, thisSpecStat, arguments.bundleStats, fullName );
 			}
-			// close header
-			out.append("</testsuite>");
-
+			
 			// Check embedded suites
 			if( arrayLen( thisSuite.suiteStats ) ){
-				buildTestSuites( out, r, arguments.bundlestats, thisSuite.suiteStats, xmlFormat( fullName & "##" ) );
+				buildTestSuites( out, r, arguments.bundlestats, thisSuite.suiteStats, xmlFormat( fullName & " " ) );
 			}
 		}
 
 	}
 
-	private function buildTestCase( required buffer, required results, required specStats, required bundleStats ){
+	private function buildTestCase( required buffer, required results, required specStats, required bundleStats, required fullName ){
 		var r 		= arguments.results;
 		var out 	= arguments.buffer;
 		var stats 	= arguments.specStats;
 
 		// build test case
 		out.append('<testcase
-			name="#xmlFormat( stats.name )#"
+			name="#xmlFormat( fullName & " " & stats.name )#"
 			time="#stats.totalDuration/1000#"
 			classname="#arguments.bundleStats.path#"
 			>');
@@ -135,10 +138,8 @@ component{
 		out.append('</testcase>');
 	}
 
-	private function buildProperties( required buffer, required results, required bundleStats, required suiteStats ){
-		var r 		= arguments.results;
+	private function buildProperties( required buffer ){
 		var out 	= arguments.buffer;
-		var stats 	= arguments.suiteStats;
 
 		out.append("<properties>");
 
