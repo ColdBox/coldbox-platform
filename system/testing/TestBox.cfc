@@ -22,6 +22,8 @@ component accessors="true"{
 	property name="reporter";
 	// The configuration options attached to this runner
 	property name="options";
+    // Last TestResult in case runner wants to inspect it
+    property name="result";
 			
 	/**
 	* Constructor
@@ -92,6 +94,7 @@ component accessors="true"{
 		if( structKeyExists( arguments, "reporter" ) ){ variables.reporter = arguments.reporter; }
 		// run it and get results
 		var results = runRaw( argumentCollection=arguments );
+        variables.result = results;
 		// return report
 		return produceReport( results );
 	}
