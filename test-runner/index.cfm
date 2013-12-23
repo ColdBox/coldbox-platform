@@ -44,12 +44,13 @@ if( url.opt_run ){
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>TestBox Global Runner</title>
-	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
+	<script><cfinclude template="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
 	<script>
 	$(document).ready(function() {
 		
 	});
 	function runTests(){
+		$("#tb-results").html( "" );
 		$("#btn-run").html( 'Running...' ).css( "opacity", "0.5" );
 		$("#tb-results").load( "index.cfm", $("#runnerForm").serialize(), function( data ){
 			$("#btn-run").html( 'Run' ).css( "opacity", "1" );

@@ -381,13 +381,13 @@ component{
 
 	/**
 	* Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
-	* @actual.hint The actual number or date
 	* @expected.hint The expected number or date
+	* @actual.hint The actual number or date
 	* @delta.hint The +/- delta to range it
 	* @datepart.hint If passed in values are dates, then you can use the datepart to evaluate it
 	* @message.hint The message to send in the failure
 	*/
-	function closeTo( required any actual, required any expected, required any delta, datePart="", message=""){
+	function closeTo( required any expected, required any actual, required any delta, datePart="", message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not in range of [#arguments.expected#] by +/- [#arguments.delta#]" );
 		
 		if( isNumeric( arguments.actual ) ){

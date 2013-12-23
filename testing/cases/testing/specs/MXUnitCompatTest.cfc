@@ -147,6 +147,50 @@ component extends="BaseTest" {
 		assertEquals( receiver.getIt(), [1,2,3] );
 	}
 
+	function testIsDefined(){
+		assertIsDefined( "url" );
+	}
+
+	function testassertEqualsWithTolerance(){
+		assertEqualsWithTolerance( 5, 3, 2 );
+	}
+
+	function testAssertIsEmpty(){
+		assertIsEmpty( "" );
+	}
+
+	function testassertIsEmptyStruct(){
+		assertIsEmptyStruct( {} );
+	}
+
+	function testassertIsEmptyQuery(){
+		assertIsEmptyQuery( queryNew("") );
+	}
+
+	function testassertIsEmptyArray(){
+		assertIsEmptyArray( [] );
+	}
+
+	function testassertIsXMLDoc(){
+		assertIsXMLDoc( xmlParse( "<root></root>" ) );
+	}
+
+	function testassertIsExactTypeOf(){
+		assertIsExactTypeOf( this, getMetadata( this ).name );
+	}
+
+	function testassertIsStruct(){
+		assertIsStruct( {} );
+	}
+
+	function testassertIsQuery(){
+		assertIsQuery( queryNew("") );
+	}
+
+	function testassertIsArray(){
+		assertIsArray( [] );
+	}
+
 	private function getData(){
 		return [1,2,3];
 	}

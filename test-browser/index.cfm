@@ -42,7 +42,7 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>TestBox Global Runner</title>
-	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
+	<script><cfinclude template="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
 	<script>
 	$(document).ready(function() {
 		

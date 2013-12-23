@@ -185,8 +185,15 @@ component extends="coldbox.system.testing.BaseSpec"{
 	/**
 	* Assert something is array
 	*/
-	function assertIsArray( required actual, message="" ){
-		this.$assert.typeOf( "array", arguments.actual, arguments.message );
+	function assertIsArray( required a, message="" ){
+		this.$assert.typeOf( "array", arguments.a, arguments.message );
+	}
+
+	/**
+	* Assert something is query
+	*/
+	function assertIsQuery( required q, message="" ){
+		this.$assert.typeOf( "query", arguments.q, arguments.message );
 	}
 
 	/**
@@ -201,6 +208,68 @@ component extends="coldbox.system.testing.BaseSpec"{
 	*/
 	function assertIsTypeOf( required actual, required typeName, message="" ){
 		this.$assert.instanceOf( arguments.actual, arguments.typeName, arguments.message );
+	}
+
+	/**
+	* Assert something is of a certrain object type without any inheritance lookup
+	*/
+	function assertIsExactTypeOf( required o, required type, message="" ){
+		this.$assert.isEqual( arguments.type, getMetadata( arguments.o ).name, arguments.message );
+	}
+
+	/**
+	* Assert something is defined or not
+	*/
+	function assertIsDefined( required o, message="" ){
+		this.$assert.isTrue( isDefined( evaluate( "arguments.o" ) ) , arguments.message );
+	}
+
+	/**
+	* Assert something is an XMLDoc
+	*/
+	function assertIsXMLDoc( required xml, message="Passed in xml is not a valid XML Object" ){
+		this.$assert.isTrue( isXMLDoc( arguments.xml ), arguments.message );
+	}
+
+	/**
+	* Assert array is empty
+	*/
+	function assertIsEmptyArray( required a, message="" ){
+		this.$assert.isEqual( 0, arrayLen( arguments.a ), arguments.message );
+	}
+
+	/**
+	* Assert query is empty
+	*/
+	function assertIsEmptyQuery( required q, message="" ){
+		this.$assert.isEqual( 0, arguments.q.recordcount, arguments.message );
+	}
+
+	/**
+	* Assert struct is empty
+	*/
+	function assertIsEmptyStruct( required struct, message="" ){
+		this.$assert.isEqual( 0, structCount( arguments.struct ), arguments.message );
+	}
+
+	/**
+	* Assert string is empty
+	*/
+	function assertIsEmpty( required o, message="" ){
+		this.$assert.isEqual( 0, len( arguments.o ) , arguments.message );
+	}
+
+	/**
+	* Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
+	*/
+	function assertEqualsWithTolerance( 
+		required expected, 
+		required actual, 
+		required numeric tolerance, 
+		datePart="",
+		message="" 
+	){
+		this.$assert.closeTo( arguments.expected, arguments.actual, arguments.tolerance, arguments.datePart, arguments.message );
 	}
 
 }
