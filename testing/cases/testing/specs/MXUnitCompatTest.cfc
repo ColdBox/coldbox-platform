@@ -191,6 +191,12 @@ component extends="BaseTest" {
 		assertIsArray( [] );
 	}
 
+	function testMockMethods(){
+		setMockingFramework( "MockBox" );
+		var m = getMockFactory( "MockBox" );
+		var m = mock( "coldbox.system.testing.TestBox" );
+	}
+
 	private function getData(){
 		return [1,2,3];
 	}

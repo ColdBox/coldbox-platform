@@ -33,6 +33,18 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 /*********************************** UTILITY Methods ***********************************/
 
+	function setMockingFramework(){ 
+		// does nothing, we always use MockBox 
+	}
+
+	function getMockFactory(){
+		return getMockBox();
+	}
+
+	function mock( mocked ){
+		return createMock( arguments.mocked );
+	}
+
 	/**
 	* MXUnit style debug
 	* @var.hint The variable to debug
