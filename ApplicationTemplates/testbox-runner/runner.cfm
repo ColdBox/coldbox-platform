@@ -16,6 +16,10 @@ else{
 }
 // Run Tests using correct reporter
 results = testbox.run( reporter=url.reporter );
+// Write TEST.properties file for Ant runner
+testResult = testbox.getResult();
+errors = testResult.getTotalFail() + testResult.getTotalError();
+fileWrite( url.reportpath & "/TEST.properties", errors ? "test.failed=true" : "test.passed=true" );
 // do stupid JUnitReport task processing, if the report is ANTJunit
 if( url.reporter eq "ANTJunit" ){
 	xmlReport = xmlParse( results );
