@@ -33,6 +33,13 @@ component{
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 	
 	/**
+	* Constructor
+	*/ 
+	remote function init(){
+		return this;
+	}
+
+	/**
 	* Expect an exception from the testing spec
 	* @type.hint The type to expect
 	* @regex.hint Optional exception message regular expression to match, by default it matches .*
