@@ -6,23 +6,8 @@
 <cfparam name="url.bundles" 		default="">
 <cfparam name="url.labels" 			default="">
 <cfparam name="url.reportpath" 		default="#expandPath( "/test/results" )#">
-<cfscript>
-// prepare for tests for bundles or directories
-if( len( url.bundles ) ){
-	testbox = new coldbox.system.testing.TestBox( bundles=url.bundles, labels=url.labels );
-}
-else{
-	testbox = new coldbox.system.testing.TestBox( directory={ mapping=url.directory, recurse=url.recurse}, labels=url.labels );
-}
-// Run Tests using correct reporter
-results = testbox.run( reporter=url.reporter );
-// do stupid JUnitReport task processing, if the report is ANTJunit
-if( url.reporter eq "ANTJunit" ){
-	xmlReport = xmlParse( results );
-	for( thisSuite in xmlReport.testsuites.XMLChildren ){
-		fileWrite( url.reportpath & "/TEST-" & thisSuite.XMLAttributes.package & ".xml", toString( thisSuite ) );
-	}
-}
-// Writeout Results
-writeoutput( results );
-</cfscript>
+<cfparam name="url.propertiesFilename" 	default="TEST.properties">
+<cfparam name="url.propertiesSummary" 	default="false" type="boolean">
+
+<!--- Include the TestBox HTML Runner --->
+<cfinclude template="/coldbox/system/testing/runners/HTMLRunner.cfm" >

@@ -94,6 +94,7 @@ component accessors="true"{
 		if( structKeyExists( arguments, "reporter" ) ){ variables.reporter = arguments.reporter; }
 		// run it and get results
 		var results = runRaw( argumentCollection=arguments );
+		// store latest results
         variables.result = results;
 		// return report
 		return produceReport( results );
