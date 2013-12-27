@@ -586,10 +586,10 @@ component{
 	*/
 	any function makePublic( required any target, required string method, string newName="" ){
 		
-		// mix it
-		arguments.target.$exposeMixin = this.$utility.getMixerUtil().exposeMixin;
+		// decorate it
+		this.$utility.getMixerUtil().start( arguments.target );
 		// expose it
-		arguments.target.$exposeMixin( arguments.method, arguments.newName );
+		arguments.target.exposeMixin( arguments.method, arguments.newName );
 
 		return arguments.target;
 	}

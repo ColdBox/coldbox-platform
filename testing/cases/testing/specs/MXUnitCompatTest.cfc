@@ -121,9 +121,17 @@ component extends="BaseTest" {
 	}
 
 	function testMakePublic(){
-		t = new coldbox.testing.resources.test1();
-		assertTrue( makePublic( t, "aPrivateMethod" ).aPrivateMethod() );
+		var t = new coldbox.testing.resources.test1();
+		assertTrue( makePublic( t, "aPrivateMethod").aPrivateMethod() );
+
+		var t = new coldbox.testing.resources.test1();
 		assertTrue( makePublic( t, "aPrivateMethod", "funkyMethod" ).funkyMethod() );
+	}
+
+	function testMakePublicWithPackage(){
+		variables.test = new somepackage.ComponentInDifferentPackage();
+		makepublic(variables.test, "aPackageMethod");
+		assertEquals("test for this value", variables.test.aPackageMethod());
 	}
 
 	private function privateMethodsDontRun() {
