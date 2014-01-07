@@ -88,7 +88,12 @@ Description :
 			return instance.context;
 		</cfscript>
 	</cffunction>
-
+		
+	<cffunction name="getPrivateCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the private request collection" output="false" colddoc:generic="struct">
+		<cfargument name="deepCopyFlag" type="boolean" required="false" default="false" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection.">
+		<cfreturn getCollection(arguments.deepCopyFlag, true)>
+	</cffunction>
+	
 	<cffunction name="clearCollection" access="public" returntype="any" output="false" hint="Clears the entire collection">
 		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
@@ -96,6 +101,10 @@ Description :
 			else { structClear(instance.context); }
 			return this;
 		</cfscript>
+	</cffunction>
+	
+	<cffunction name="clearPrivateCollection" access="public" returntype="any" output="false" hint="Clears the entire private request collection">
+		<cfreturn clearCollection(true)>
 	</cffunction>
 
 	<cffunction name="collectionAppend" access="public" returntype="any" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
@@ -108,6 +117,12 @@ Description :
 			return this;
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="privateCollectionAppend" access="public" returntype="any" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
+		<cfargument name="collection" type="any" required="true" hint="A collection to append">
+		<cfargument name="overwrite" type="boolean" required="false" default="false" hint="If you need to override data in the collection, set this to true.">		
+		<cfreturn collectionAppend(arguments.collection, arguments.overwrite, true)>
+	</cffunction>
 
 	<cffunction name="getSize" access="public" returntype="numeric" output="false" hint="Returns the number of elements in the collection">
 		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
@@ -115,6 +130,10 @@ Description :
 			if( arguments.private ){ return structCount(instance.privateContext); }
 			return structCount(instance.context);
 		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getPrivateSize" access="public" returntype="numeric" output="false" hint="Returns the number of elements in the private request collection">
+		<cfreturn getSize(true)>
 	</cffunction>
 
 	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the public or private request collection." output="false">
@@ -142,7 +161,13 @@ Description :
 				   "RequestContext.ValueNotFound");
 		</cfscript>
 	</cffunction>
-
+	
+	<cffunction name="getPrivateValue" returntype="Any" access="Public" hint="I Get a value from the private request collection." output="false">
+		<cfargument name="name" type="any" required="true"  hint="Name of the variable to get from the private request collection">
+		<cfargument name="defaultValue" type="any" required="false" hint="Default value to return if not found.">
+		<cfreturn getValue(arguments.name, arguments.defaultValue, true)>
+	</cffunction>
+	
 	<cffunction name="getTrimValue" returntype="Any" access="Public" hint="I Get a value from the request collection and if simple value, I will trim it." output="false">
 		<cfargument name="name"         type="any" 		required="true"  hint="Name of the variable to get from the request collection">
 		<cfargument name="defaultValue"	type="any" 		required="false" hint="Default value to return if not found.">
@@ -156,7 +181,13 @@ Description :
 			return value;
 		</cfscript>
 	</cffunction>
-
+	
+	<cffunction name="getTrimPrivateValue" returntype="Any" access="Public" hint="I Get a value from the private request collection and if simple value, I will trim it." output="false">
+		<cfargument name="name" type="any" required="true" hint="Name of the variable to get from the private request collection">
+		<cfargument name="defaultValue" type="any" required="false" hint="Default value to return if not found.">
+		<cfreturn getTrimValue(arguments.name, arguments.defaultValue, true)>
+	</cffunction>
+	
 	<cffunction name="setValue" access="Public" hint="I Set a value in the request collection" output="false" returntype="any">
 		<cfargument name="name"  	type="any" 		required="true" hint="The name of the variable to set. String">
 		<cfargument name="value" 	type="any" 		required="true" hint="The value of the variable to set">
@@ -170,6 +201,12 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="setPrivateValue" access="Public" hint="I set a value in the private request collection" output="false" returntype="any">
+		<cfargument name="name" type="any" required="true" hint="The name of the variable to set. String">
+		<cfargument name="value" type="any" required="true" hint="The value of the variable to set">
+		<cfreturn setValue(arguments.name, arguments.value, true)>
+	</cffunction>
+	
 	<cffunction name="removeValue" access="Public" hint="I remove a value in the request collection" output="false" returntype="any">
 		<cfargument name="name"  	type="string" 	required="true" hint="The name of the variable to remove.">
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
@@ -183,6 +220,11 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="removePrivateValue" access="Public" hint="I remove a value in the private request collection" output="false" returntype="any">
+		<cfargument name="name" type="string" required="true" hint="The name of the variable to remove.">
+		<cfreturn removeValue(arguments.name, true)>
+	</cffunction>
+
 	<cffunction name="valueExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the request collection." output="false">
 		<cfargument name="name" 	type="any" 		required="true" hint="Name of the variable to find in the request collection: String">
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
@@ -191,6 +233,11 @@ Description :
 			if( arguments.private ){ collection = instance.privateContext; }
 			return structKeyExists(collection, arguments.name);
 		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="privateValueExists" returntype="boolean" access="Public" hint="I Check if a value exists in the private request collection." output="false">
+		<cfargument name="name" type="any" required="true" hint="Name of the variable to find in the private request collection: String">
+		<cfreturn valueExists(arguments.name, true)>
 	</cffunction>
 
 	<cffunction name="paramValue" returntype="any" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
@@ -205,6 +252,13 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="paramPrivateValue" returntype="any" access="Public" hint="Just like cfparam, but for the private request collection" output="false">
+		<cfargument name="name" type="any" required="true" hint="Name of the variable to param in the private request collection: String">
+		<cfargument name="value" type="any" required="true" hint="The value of the variable to set if not found.">
+		<cfreturn paramValue(arguments.name, arguments.value, true)>
+	</cffunction>
+
+	
 	<cffunction name="getCurrentView" access="public" hint="Gets the current set view the framework will try to render for this request" returntype="any" output="false">
 		<cfreturn getValue("currentView","",true)>
 	</cffunction>
