@@ -548,11 +548,4 @@ Description		:
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 	
-	<cffunction name="maildump">
-		<cfargument name="content" default="failure">
-		<cfargument name="to" default="safeldkamp@natsem.com">
-		<cfargument name="subject" default="MockBox.cfc">
-		<cfmail from="webalerts@natsem.com" to="#to#" subject="#subject#" type=HTML><cfdump var="#arguments.content#" expand="true"></cfmail>
-	</cffunction>
-	
 </cfcomponent>
