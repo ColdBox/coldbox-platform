@@ -43,7 +43,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 		
 		// iterate and add
 		for( var x=1; x lte arrayLen( aFunctions ); x++ ){
-			var thisFunction = aFunctions[ xx ];
+			var thisFunction = aFunctions[ x ];
 			if( !structKeyExists( thisFunction, "access" ) or thisFunction.access eq "public" ){
 				variables[ thisFunction.name ] 	= oDecorator[ thisFunction.name ];
 				this[ thisFunction.name ] 		= oDecorator[ thisFunction.name ];
