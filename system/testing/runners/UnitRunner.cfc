@@ -62,6 +62,9 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 				if( structKeyExists( arguments.target, "afterTests" ) ){ arguments.target.afterTests(); }
 			} catch(Any e) {
 				bundleStats.globalException = e;
+				// For a righteous man falls seven times, and rises (tests) again :)
+				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
+				bundleStats.totalFail = 7;
 			}
 		}
 
