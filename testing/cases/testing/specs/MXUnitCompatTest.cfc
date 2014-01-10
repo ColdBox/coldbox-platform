@@ -3,6 +3,7 @@ component extends="BaseTest" {
 /*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeTests(){
+		addAssertDecorator( "coldbox.testing.cases.testing.resources.CustomAsserts" );
 		application.salvador = 1;
 	}
 
@@ -20,6 +21,11 @@ component extends="BaseTest" {
 
 /*********************************** Test Methods ***********************************/
 	
+	function testAddAssertDecorator(){
+		assertIsFunky( 100 );
+		assertIsAwesome( "testbox", "testbox" );
+	}
+
 	function testFails(){
 		fail( "This Test should fail" );
 	}

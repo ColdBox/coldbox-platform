@@ -23,6 +23,13 @@
 
 #chr(10)#
 
+<!-- Global Error --->
+<cfif !isSimpleValue( thisBundle.globalException )>
+== Global Bundle Exception ==
+* #thisBundle.globalException.type#:#thisBundle.globalException.message#:#thisBundle.globalException.detail#
+<pre>#thisBundle.globalException.stacktrace#</pre>
+</cfif>
+
 <cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 #genSuiteReport( suiteStats, thisBundle )#
 </cfloop>

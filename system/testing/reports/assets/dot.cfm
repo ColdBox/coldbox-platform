@@ -77,6 +77,13 @@
 
 	<!--- Debug Panel --->
 	<cfloop array="#bundleStats#" index="thisBundle">
+
+		<!-- Global Error --->
+		<cfif !isSimpleValue( thisBundle.globalException )>
+			<h2>Global Bundle (#thisBundle.name#) Exception<h2>
+			<cfdump var="#thisBundle.globalException#" />
+		</cfif>
+
 		<!--- Debug Panel --->
 		<cfif arrayLen( thisBundle.debugBuffer )>
 			<h2>Debug Stream: #thisBundle.path# <button onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">+</button></h2>

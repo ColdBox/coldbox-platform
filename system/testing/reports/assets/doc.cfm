@@ -30,6 +30,12 @@
 			<span class="specStatus skipped" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span>
 		</p>
 
+		<!-- Global Error --->
+		<cfif !isSimpleValue( thisBundle.globalException )>
+			<h2>Global Bundle Exception<h2>
+			<p>#thisBundle.globalException.stacktrace#</p>
+		</cfif>
+
 		<!-- Iterate over bundle suites -->
 		<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 			<section class="suite #lcase( suiteStats.status)#" data-suiteid="#suiteStats.id#">

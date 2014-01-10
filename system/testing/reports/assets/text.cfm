@@ -22,6 +22,17 @@ Global Stats (#results.getTotalDuration()# ms)
 ->[Failures: #thisBundle.totalFail#]
 ->[Errors: #thisBundle.totalError#]
 ->[Skipped: #thisBundle.totalSkipped#]
+<cfif !isSimpleValue( thisBundle.globalException )>
+GLOBAL BUNDLE EXCEPTION
+-> #thisBundle.globalException.type#:#thisBundle.globalException.message#:#thisBundle.globalException.detail#
+=============================================================
+STACKTRACE
+=============================================================
+#thisBundle.globalException.stacktrace#
+=============================================================
+END STACKTRACE
+=============================================================
+</cfif>
 
 <cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 #genSuiteReport( suiteStats, thisBundle )#

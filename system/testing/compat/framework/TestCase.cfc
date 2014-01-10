@@ -33,6 +33,26 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 /*********************************** UTILITY Methods ***********************************/
 
+	/**
+	* Utility for dynamically adding assertion behaviors at runtime
+	* @decoratorName.hint The fully qualied name of the assertion component to add; e.g., org.mycompany.MyAssertionComponent
+	*/
+	function addAssertDecorator( required string decoratorName ){
+		var oDecorator = new "#arguments.decoratorName#"();
+		var aFunctions = getMetadata( oDecorator ).functions;
+		
+		// iterate and add
+		for( var x=1; x lte arrayLen( aFunctions ); x++ ){
+			var thisFunction = aFunctions[ xx ];
+			if( !structKeyExists( thisFunction, "access" ) or thisFunction.access eq "public" ){
+				variables[ thisFunction.name ] 	= oDecorator[ thisFunction.name ];
+				this[ thisFunction.name ] 		= oDecorator[ thisFunction.name ];
+			}
+		}
+
+		return this;
+	}
+
 	function setMockingFramework(){ 
 		// does nothing, we always use MockBox 
 	}

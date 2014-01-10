@@ -173,7 +173,9 @@ component accessors="true"{
 				// Suite stats holder
 				suiteStats 		= [],
 				// Debug output buffer
-				debugBuffer 	= []
+				debugBuffer 	= [],
+				// Global Exception
+				globalException = ""
 			};
 
 			// store it in the bundle stats array
