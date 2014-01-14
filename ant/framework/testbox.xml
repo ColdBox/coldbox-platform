@@ -7,7 +7,7 @@
     	Build a new distribution of TestBox Standalone
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="testbox.version"	value="1.0.0"/>
+	<property name="testbox.version"	value="1.1.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	
@@ -56,16 +56,16 @@
 		<copy todir="${dir.build}/testbox/system/core/conversion">
         	<fileset dir="system/core/conversion" />
         </copy>
-		<copy todir="${dir.build}/runner-template">
+		<copy todir="${dir.build}/testbox/runner-template">
         	<fileset dir="ApplicationTemplates/testbox-runner" />
         </copy>
-		<copy todir="${dir.build}/runner">
+		<copy todir="${dir.build}/testbox/runner">
         	<fileset dir="test-runner" />
         </copy>
-        <copy todir="${dir.build}/browser">
+        <copy todir="${dir.build}/testbox/browser">
         	<fileset dir="test-browser" />
         </copy>
-		<copy todir="${dir.build}/samples">
+		<copy todir="${dir.build}/testbox/samples">
         	<fileset dir="testing/cases/testing">
         		<exclude name="**/BaseTestCaseTest.cfc" />
         	</fileset>
@@ -108,6 +108,22 @@
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
 			<replacetoken>coldbox.system.</replacetoken>
+		</replace>
+
+		<echo>Refactoring for testbox samples</echo>
+		<replace dir="${dir.build}" value="testbox.samples" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>coldbox.testing.cases.testing</replacetoken>
+		</replace>
+
+		<echo>Refactoring for testbox samples</echo>
+		<replace dir="${dir.build}" value="/testbox/samples" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>/coldbox/testing/cases/testing</replacetoken>
 		</replace>
 		
 		<!-- Execute ColdDoc -->
