@@ -302,6 +302,20 @@
 			$assert.isEqual( "en-GB", local.mocked.getLocale() );
 		}
 
+		function testCallbacks(){
+			// shortcut
+			var mocked = getMockBox().createStub().$( method="getAmigo", callback=variables.testFunction );
+			$assert.isEqual( mocked.getAmigo(), testFunction() );
+
+			// no arguments
+			var mocked = getMockBox().createStub().$("getAmigo").$callback( variables.testFunction );
+			$assert.isEqual( mocked.getAmigo(), testFunction() );
+
+			// with arguments
+			var mocked = getMockBox().createStub().$("getAmigo").$args( "luis" ).$callback( variables.testFunction );
+			$assert.isEqual( mocked.getAmigo( "luis" ), testFunction() );
+		}
+
 		private function testFunction(){
 			return "Hola Amigo!";
 		}

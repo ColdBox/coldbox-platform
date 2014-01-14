@@ -40,6 +40,7 @@ Description		:
 		<cfargument name="targetObject"	  		type="any" 		required="true" 	hint="The target object to mix in"/>
 		<cfargument name="callLogging" 	  		type="boolean" 	required="false" 	default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
 		<cfargument name="preserveArguments" 	type="boolean" 	required="false" 	default="false" hint="If true, argument signatures are kept, else they are ignored. If true, BEWARE with $args() matching as default values and missing arguments need to be passed too."/>
+		<cfargument name="callback" 			type="any" 		required="false"	hint="A callback to execute that should return the desired results, this can be a UDF or closure."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var udfOut  		= createObject( "java", "java.lang.StringBuffer" ).init( '' );
@@ -78,19 +79,36 @@ Description		:
 			<cfset var resultsCounter = 0>
 			<cfset var internalCounter = 0>
 			<cfset var resultsLen = 0>
-			<cfset var argsHashKey = resultsKey & "|" & this.mockBox.normalizeArguments(arguments)>
+			<cfset var callbackLen = 0>
+			<cfset var argsHashKey = resultsKey & "|" & this.mockBox.normalizeArguments( arguments )>
+			<cfset var fCallBack = "">
 			
 			<!--- If Method & argument Hash Results, switch the results struct --->
-			<cfif structKeyExists(this._mockArgResults,argsHashKey)>
-				<cfset results = this._mockArgResults>
-				<cfset resultsKey = argsHashKey>
+			<cfif structKeyExists( this._mockArgResults, argsHashKey )>
+				<!--- Check if it is a callback --->
+				<cfif isStruct( this._mockArgResults[ argsHashKey ] ) and 
+					  structKeyExists( this._mockArgResults[ argsHashKey ], "type" ) and
+					  structKeyExists( this._mockArgResults[ argsHashKey ], "target" )>
+					<cfset fCallBack = this._mockArgResults[ argsHashKey ].target>
+				<cfelse>
+					<!--- switch context and key --->
+					<cfset results = this._mockArgResults>
+					<cfset resultsKey = argsHashKey>
+				</cfif>
 			</cfif>
 			
 			<!--- Get the statemachine counter --->
-			<cfset resultsLen = arrayLen(results[resultsKey])>
+			<cfif isSimpleValue( fCallBack )>
+				<cfset resultsLen = arrayLen( results[ resultsKey ] )>
+			</cfif>
+
+			<!--- Get the callback counter, if it exists --->
+			<cfif structKeyExists( this._mockCallbacks, resultsKey )>
+				<cfset callbackLen = arrayLen( this._mockCallbacks[ resultsKey ] )>
+			</cfif>
 			
 			<!--- Log the Method Call --->
-			<cfset this._mockMethodCallCounters[listFirst(resultsKey,"|")] = this._mockMethodCallCounters[listFirst(resultsKey,"|")] + 1>
+			<cfset this._mockMethodCallCounters[ listFirst( resultsKey, "|" ) ] = this._mockMethodCallCounters[ listFirst( resultsKey, "|" ) ] + 1>
 			
 			<!--- Get the CallCounter Reference --->
 			<cfset internalCounter = this._mockMethodCallCounters[listFirst(resultsKey,"|")]>
@@ -104,7 +122,8 @@ Description		:
 			// Exceptions? To Throw
 			if( arguments.throwException ){
 				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" />#instance.lb#');
-			}			
+			}	
+
 			// Returns Something according to metadata?
 			if ( fncMD["returntype"] neq "void" ){
 				/* Results Recyling Code, basically, state machine code */
@@ -117,7 +136,20 @@ Description		:
 						<cfreturn results[resultsKey][internalCounter]>
 					</cfif>
 				</cfif>
-				');			
+				');		
+				// Callback Single
+				udfOut.append('
+				<cfif callbackLen neq 0>
+					<cfset fCallBack = this._mockCallbacks[ resultsKey ][ 1 ]>
+					<cfreturn fCallBack()>
+				</cfif>
+				');
+				// Callback Args
+				udfOut.append('
+				<cfif not isSimpleValue( fCallBack )>
+					<cfreturn fCallBack()>
+				</cfif>
+				');
 			}
 			udfOut.append('</cffunction>');
 			

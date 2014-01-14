@@ -243,16 +243,17 @@ Description		:
 	<!--- $results --->
 	<cffunction name="$results" output="false" access="public" returntype="any" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a $() or $().$args() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm. Injected as: $results()">
 		<!--- Check if current method set? --->
-		<cfif len(this._mockCurrentMethod)>
+		<cfif len( this._mockCurrentMethod )>
 			<cfscript>
 				// Check if arguments hash is set
-				if( len(this._mockCurrentArgsHash) ){
-					this._mockArgResults[this._mockCurrentArgsHash] = arguments;
+				if( len( this._mockCurrentArgsHash ) ){
+					this._mockArgResults[ this._mockCurrentArgsHash ] = arguments;
 				}
 				else{
 					// Save incoming results array
-					this._mockResults[this._mockCurrentMethod] = arguments;
+					this._mockResults[ this._mockCurrentMethod ] = arguments;
 				}
+
 				// Cleanup
 				this._mockCurrentMethod = "";
 				this._mockCurrentArgsHash = "";
@@ -263,7 +264,36 @@ Description		:
 		
 		<cfthrow type="MockFactory.IllegalStateException"
 			     message="No current method name set"
-			     detail="This method was probably called without chaining it to a mockMethod() call. Ex: obj.$().mockResults(), or obj.$('method').mockArgs().mockResults()">
+			     detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$results(), or obj.$('method').$args().$results()">
+	</cffunction>
+
+	<!--- $callback --->
+	<cffunction name="$callback" output="false" access="public" returntype="any" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a $() or $().$args() call. Results will be determined by the callback sent in. Basically the method will call this callback and return its results)">
+		<cfargument name="target" type="any" required="true" hint="The UDF or closure to execute as a callback">
+
+		<!--- Check if current method set? --->
+		<cfif len( this._mockCurrentMethod )>
+			<cfscript>
+				// Check if arguments hash is set
+				if( len( this._mockCurrentArgsHash ) ){
+					this._mockArgResults[ this._mockCurrentArgsHash ] = { type="callback", target=arguments.target };
+				}
+				else{
+					// Save incoming callback as what it should return
+					this._mockCallbacks[ this._mockCurrentMethod ][ 1 ] = arguments.target;
+				}
+				
+				// Cleanup
+				this._mockCurrentMethod = "";
+				this._mockCurrentArgsHash = "";
+				
+				return this;
+			</cfscript>
+		</cfif>
+		
+		<cfthrow type="MockFactory.IllegalStateException"
+			     message="No current method name set"
+			     detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$callback(), or obj.$('method').$args().$callback()">
 	</cffunction>
 	
 	<!--- $args --->
@@ -289,15 +319,16 @@ Description		:
 	<!--- $ --->
 	<cffunction name="$" output="false" access="public" returntype="any" hint="Mock a Method, simple but magical Injected as: $()">
 		<!--- ************************************************************* --->
-		<cfargument name="method" 	type="string" 	required="true" hint="The method you want to mock or spy on"/>
-		<cfargument name="returns" 	type="any" 		required="false" hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
-		<cfargument name="preserveReturnType" type="boolean" required="true" default="true" hint="If false, the mock will make the returntype of the method equal to ANY"/>
-		<cfargument name="throwException" type="boolean" required="false" default="false" hint="If you want the method call to throw an exception"/>
-		<cfargument name="throwType" 	  type="string"  required="false" default="" hint="The type of the exception to throw"/>
-		<cfargument name="throwDetail" 	  type="string"  required="false" default="" hint="The detail of the exception to throw"/>
-		<cfargument name="throwMessage"	  type="string"  required="false" default="" hint="The message of the exception to throw"/>
-		<cfargument name="callLogging" 	  type="boolean" required="false" default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
-		<cfargument name="preserveArguments" type="boolean" required="false" default="false" hint="If true, argument signatures are kept, else they are ignored. If true, BEWARE with $args() matching as default values and missing arguments need to be passed too."/>
+		<cfargument name="method" 				type="string" 	required="true"  hint="The method you want to mock or spy on"/>
+		<cfargument name="returns" 				type="any" 		required="false" hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
+		<cfargument name="preserveReturnType" 	type="boolean"  required="true"  default="true" hint="If false, the mock will make the returntype of the method equal to ANY"/>
+		<cfargument name="throwException" 		type="boolean"  required="false" default="false" hint="If you want the method call to throw an exception"/>
+		<cfargument name="throwType" 	  		type="string"   required="false" default="" hint="The type of the exception to throw"/>
+		<cfargument name="throwDetail" 	  		type="string"   required="false" default="" hint="The detail of the exception to throw"/>
+		<cfargument name="throwMessage"	  		type="string"   required="false" default="" hint="The message of the exception to throw"/>
+		<cfargument name="callLogging" 	  		type="boolean"  required="false" default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
+		<cfargument name="preserveArguments" 	type="boolean"  required="false" default="false" hint="If true, argument signatures are kept, else they are ignored. If true, BEWARE with $args() matching as default values and missing arguments need to be passed too."/>
+		<cfargument name="callback" 			type="any" 		required="false" hint="A callback to execute that should return the desired results, this can be a UDF or closure."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var fncMD = structnew();
@@ -329,24 +360,34 @@ Description		:
 			}
 			
 			// Remove Method From Object
-			structDelete(this,arguments.method);
-			structDelete(variables,arguments.method);
+			structDelete( this,arguments.method );
+			structDelete( variables,arguments.method );
 			
 			// Generate Mock Method
 			arguments.metadata = fncMD;
 			arguments.targetObject = this;
-			oMockGenerator.generate(argumentCollection=arguments);
+			oMockGenerator.generate( argumentCollection=arguments );
 			
 			// Results Setup For No Argument Definitions or base results
-			if( structKeyExists(arguments, "returns") ){
-				this._mockResults[arguments.method] = ArrayNew(1);
-				this._mockResults[arguments.method][1] = arguments.returns;
+			if( structKeyExists( arguments, "returns" ) ){
+				this._mockResults[ arguments.method ] = ArrayNew( 1 );
+				this._mockResults[ arguments.method ][ 1 ] = arguments.returns;
 			}
 			else{
-				this._mockResults[arguments.method] = ArrayNew(1);
+				this._mockResults[ arguments.method ] = ArrayNew( 1 );
 			}
+
+			// Callbacks Setup For No Argument Definitions or base results
+			if( structKeyExists( arguments, "callback" ) ){
+				this._mockCallbacks[ arguments.method ] = ArrayNew( 1 );
+				this._mockCallbacks[ arguments.method ][ 1 ] = arguments.callback;
+			}
+			else{
+				this._mockCallbacks[ arguments.method ] = ArrayNew( 1 );
+			}
+
 			// Create Mock Call Counters
-			this._mockMethodCallCounters["#arguments.method#"] = 0;
+			this._mockMethodCallCounters[ "#arguments.method#" ] = 0;
 			
 			// Save method name for concatenation
 			this._mockCurrentMethod = arguments.method;
@@ -369,6 +410,7 @@ Description		:
 	<cfscript>
 		var rtn 					= structnew();
 		rtn.mockResults 			= this._mockResults;
+		rtn.mockCallBacks 			= this._mockCallbacks;
 		rtn.mockArgResults 			= this._mockArgResults;
 		rtn.mockMethodCallCounters 	= this._mockMethodCallCounters;
 		rtn.mockCallLoggingActive 	= this._mockCallLoggingActive;
@@ -496,26 +538,22 @@ Description		:
 			var obj = target;
 			
 			// Mock Method Results Holder
-			obj._mockResults = structnew();
+			obj._mockResults 	= structnew();
+			obj._mockCallbacks 	= structnew();
 			obj._mockArgResults = structnew();
 			// Call Counters
 			obj._mockMethodCallCounters = structnew();
 			// Call Logging
 			obj._mockCallLoggingActive = false;
-			
 			// Mock Method Call Logger
 			obj._mockCallLoggers = structnew();
-			
 			// Mock Generation Path
 			obj._mockGenerationPath = getGenerationPath();
-			
 			// Original Metadata
 			obj._mockOriginalMD = getMetadata(obj);
-			
 			// Chanining Properties
 			obj._mockCurrentMethod = "";
 			obj._mockCurrentArgsHash = "";
-			
 			// Mock Method
 			obj.$ 					= variables.$;
 			// Mock Property
@@ -523,6 +561,7 @@ Description		:
 			obj.$getProperty	 	= variables.$getProperty;
 			// Mock Results
 			obj.$results			= variables.$results;
+			obj.$callback 			= variables.$callback;
 			// Mock Arguments
 			obj.$args				= variables.$args;
 			// CallLog
