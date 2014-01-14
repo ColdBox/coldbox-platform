@@ -213,7 +213,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 			// before each spec in THIS suite group
 			beforeEach(function(){
 				// using request until railo fixes their closure bugs
-				request.calc = calc = new coldbox.testing.testModel.Calculator();
+				request.calc = calc = new coldbox.testing.cases.testing.resources.Calculator();
 			});
 
 			// after each spec in THIS suite group
@@ -240,6 +240,22 @@ component extends="coldbox.system.testing.BaseSpec"{
 				expect( function(){
 					request.calc.divide( 3, 0 );
 				}).toThrow( regex="zero" );
+			});
+
+			it( "can do throws with no message", function(){
+				expect(	function(){
+					request.calc.divideNoMessage();
+				} ).toThrow( type="DivideByZero" );
+			});
+
+			it( "can do throws with message and detail regex", function(){
+				expect(	function(){
+					request.calc.divideWithDetail();
+				} ).toThrow( regex="(zero|impossible)" );
+
+				expect(	function(){
+					request.calc.divideWithDetail();
+				} ).toThrow( regex="impossible" );
 			});
 			
 			it("can use a mocked stub", function(){

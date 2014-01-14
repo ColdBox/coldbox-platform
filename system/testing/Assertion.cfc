@@ -322,7 +322,7 @@ component{
 	* Assert that the passed in function will throw an exception
 	* @target.hint The target function to execute and check for exceptions
 	* @type.hint Match this type with the exception thrown
-	* @regex.hint Match this regex against the message of the exception
+	* @regex.hint Match this regex against the message + detail of the exception
 	* @message.hint The message to send in the failure
 	*/
 	function throws( required any target, type="", regex=".*", message="" ){
@@ -332,18 +332,26 @@ component{
 			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function did not throw an expected exception. Type=[#arguments.type#], Regex=[#arguments.regex#]" );
 		}
 		catch(Any e){
-			// If no type, message expectations
+			// If no type, message expectations, just throw flag
 			if( !len( arguments.type ) && arguments.regex eq ".*" ){ return this; }
-			// Type expectation then
-			if( len( arguments.type ) && e.type eq arguments.type && reFindNoCase( arguments.regex, e.message ) ){
+
+			// Type expectation + message regex, do match no case to account for empty messages
+			if( len( arguments.type ) && 
+				e.type eq arguments.type && 
+				( arrayLen( reMatchNoCase( arguments.regex, e.message ) ) OR arrayLen( reMatchNoCase( arguments.regex, e.detail ) ) )
+			){
 				return this;
 			}
-			// Message regex then only
-			if( arguments.regex neq ".*" && reFindNoCase( arguments.regex, e.message ) ){
+
+			// Message+Detail regex then only
+			if( arguments.regex neq ".*" && 
+				( arrayLen( reMatchNoCase( arguments.regex, e.message ) ) OR arrayLen( reMatchNoCase( arguments.regex, e.detail ) ) )
+			){
 				return this;
 			}
+
 			// diff messsage types
-			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function threw exception [#e.type#] [#e.message#] different than expected type=[#arguments.type#], Regex=[#arguments.regex#]" );
+			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function threw exception [#e.type#] [#e.message#] [#e.detail#] different than expected params type=[#arguments.type#], regex=[#arguments.regex#]" );
 		}
 
 		// found, so throw it
@@ -354,7 +362,7 @@ component{
 	* Assert that the passed in function will NOT throw an exception, an exception of a specified type or exception message regex
 	* @target.hint The target function to execute and check for exceptions
 	* @type.hint Match this type with the exception thrown
-	* @regex.hint Match this regex against the message of the exception
+	* @regex.hint Match this regex against the message+detail of the exception
 	* @message.hint The message to send in the failure
 	*/
 	function notThrows( required any target, type="", regex="", message="" ){
@@ -362,14 +370,17 @@ component{
 			arguments.target();
 		}
 		catch(Any e){
-			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function DID throw an exception of type [#e.type#] with message [#e.message#]" );
+			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function DID throw an exception of type [#e.type#] with message [#e.message#] detail [#e.detail#]" );
 		
 			// If type passed and matches, then its ok
-			if( len( arguments.type ) && e.type neq arguments.type ){
+			if( len( arguments.type ) AND e.type neq arguments.type ){
 				return this;
 			}
-			// Message regex must not match
-			if( len( arguments.message) && !reFindNoCase( arguments.regex, e.message ) ){
+
+			// Message+Detail regex must not match
+			if( len( arguments.regex ) AND 
+				( !arrayLen( reMatchNoCase( arguments.regex, e.message ) ) OR !arrayLen( reMatchNoCase( arguments.regex, e.detail ) ) )
+			){
 				return this;
 			}
 

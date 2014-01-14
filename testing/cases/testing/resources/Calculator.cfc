@@ -20,4 +20,12 @@ component{
 		return a/b;
 	}
 
+	function divideNoMessage(a,b){
+		throw(type="DivideByZero");
+	}
+
+	function divideWithDetail(a,b){
+		throw(type="DivideByZero", message="Can't divide by zero", detail="This is impossible");
+	}
+
 }
