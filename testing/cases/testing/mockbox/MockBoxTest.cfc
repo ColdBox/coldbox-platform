@@ -296,7 +296,12 @@
 			
 			$assert.isEqual( "mocked!", mock.testThis( "name", 35 ) );
 		}
-		
+
+		function testCFUDF(){
+			var mocked = getMockBox().createStub().$( "getLocale", "en-GB" );
+			$assert.isEqual( "en-GB", local.mocked.getLocale() );
+		}
+
 		private function testFunction(){
 			return "Hola Amigo!";
 		}

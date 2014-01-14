@@ -42,15 +42,23 @@ Description		:
 		<cfargument name="preserveArguments" 	type="boolean" 	required="false" 	default="false" hint="If true, argument signatures are kept, else they are ignored. If true, BEWARE with $args() matching as default values and missing arguments need to be passed too."/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var udfOut = CreateObject("java","java.lang.StringBuffer").init('');
-			var genPath = ExpandPath( instance.mockBox.getGenerationPath() );
-			var tmpFile = createUUID() & ".cfm";
-			var fncMD = arguments.metadata;
-			
+			var udfOut  		= createObject( "java", "java.lang.StringBuffer" ).init( '' );
+			var genPath 		= expandPath( instance.mockBox.getGenerationPath() );
+			var tmpFile 		= createUUID() & ".cfm";
+			var fncMD 			= arguments.metadata;
+			var isReservedName 	= false;
+			var safeMethodName	= arguments.method;
+
+			// Check reserved list and if so, rename it so we can include it, stupid CF
+			if( structKeyExists( getFunctionList(), arguments.method ) ){
+				isReservedName = true;
+				safeMethodName = "$reserved_#arguments.method#";
+			}
+
 			// Create Method Signature
 			udfOut.append('
-			<cfset this[ "#arguments.method#" ] = variables[ "#arguments.method#" ]> 
-			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">#instance.lb#');
+			<cfset this[ "#safeMethodName#" ] = variables[ "#safeMethodName#" ]> 
+			<cffunction name="#safeMethodName#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">#instance.lb#');
 			
 			// Create Arguments Signature
 			if( structKeyExists( fncMD, "parameters" ) AND arguments.preserveArguments ){
@@ -118,11 +126,18 @@ Description		:
 		
 			// Mix In Stub
 			try{
+				// include it
 				arguments.targetObject.$include = variables.$include;
 				arguments.targetObject.$include( instance.mockBox.getGenerationPath() & tmpFile );
-				structDelete(arguments.targetObject,"$include");
+				structDelete( arguments.targetObject, "$include" );
+
+				// reserved rename to original
+				if( isReservedName ){
+					arguments.targetObject[ arguments.method ] = arguments.targetObject[ safeMethodName ];
+				}
+
 				// Remove Stub	
-				removeStub(genPath & tmpFile);				
+				removeStub( genPath & tmpFile );				
 			}
 			catch(Any e){
 				// Remove Stub
