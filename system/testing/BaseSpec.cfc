@@ -488,6 +488,11 @@ component{
 				// Execute Spec
 				try{
 					evaluate( "this.#arguments.spec.name#()" );
+
+					// Where we expecting an exception and it did not throw?
+					if( !isExpectedException( { type="", message="" }, arguments.spec.name, arguments.runner ) ){
+						$assert.fail( 'Method did not throw expected exception: [#this.$expectedException.toString()#]' );
+					}
 				}
 				catch( Any e ){
 					if( !isExpectedException( e, arguments.spec.name, arguments.runner ) ){ rethrow; }

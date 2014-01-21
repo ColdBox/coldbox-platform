@@ -17,6 +17,7 @@ a:hover{ text-decoration: underline;}
 .failed { color: orange; }
 .error { color: red; }
 .skipped{ color: blue;}
+div.skipped{ display: none;}
 /** utility **/
 .centered { text-align: center !important; }
 .inline{ display: inline !important; }
