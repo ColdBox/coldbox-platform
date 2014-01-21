@@ -128,9 +128,14 @@ component{
 	/**
 	* Validate the incoming method name is a valid TestBox test method name
 	* @methodName.hint The method name to validate
+	* @target.hint The target object
 	*/
-	boolean function isValidTestMethod( required methodName ) {
-		// All test methods must start or end with the term, "test". 
+	boolean function isValidTestMethod( required methodName, required target ) {
+		// True if annotation "test" exists
+		if( structKeyExists( getMetadata( arguments.target[ arguments.methodName ] ), "test" ) ){
+			return true;
+		}
+		// All xUnit test methods must start or end with the term, "test". 
 		return( !! reFindNoCase( "(^test|test$)", methodName ) );
 	}
 

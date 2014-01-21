@@ -221,7 +221,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 		for( var thisMethod in methodArray ) {
 			// only valid functions and test functions allowed
 			if( isCustomFunction( arguments.target[ thisMethod ] ) &&
-				isValidTestMethod( thisMethod ) ) {
+				isValidTestMethod( thisMethod, arguments.target ) ) {
 				// Build the spec data packet
 				var specMD = getMetadata( arguments.target[ thisMethod ] );
 				var spec = {
