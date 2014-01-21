@@ -8,6 +8,15 @@ component extends="coldbox.system.testing.BaseSpec"{
 	// ExpectedException Annotation
 	this.$exceptionAnnotation	= "mxunit:expectedException";
 
+/*********************************** LIFE-CYCLE Methods ***********************************/
+	
+	// Added signatures for backwards compat
+	function init(){ return this; }
+	function setup(){}
+	function teardown(){}
+	function afterTests(){}
+	function beforeTests(){}
+
 /*********************************** RUNNER Methods ***********************************/
 
 	/**
