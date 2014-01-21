@@ -34,10 +34,17 @@ component{
 			default 		: { arguments.mode = "simple"; }
 		}
 
-		
-		var tb = new coldbox.system.testing.TestBox( directory=dir, testBundles=variables.excludes, reporter=arguments.mode );
+		var tb = new coldbox.system.testing.TestBox( directory={ mapping=dir, recurse=true, filter=variables.filterExcludes }, reporter=arguments.mode );
 		
 		return tb.run();
+	}
+
+	private function filterExcludes( required path ){
+
+		var cfcName = listFirst( getFileFromPath( arguments.path ), "." );
+
+		return ( listFindNoCase( variables.excludes, cfcName ) ? false : true );
+
 	}
 
 }
