@@ -338,7 +338,7 @@ component accessors="true"{
 	* @bundlePath.hint The path to the Bundle CFC
 	*/ 
 	private any function getBundle( required bundlePath ){
-		var bundle		= new "#arguments.bundlePath#"();
+		var bundle		= createObject( "component", "#arguments.bundlePath#" );
 		var familyPath 	= "coldbox.system.testing.BaseSpec";
 		
 		// check if base spec assigned
