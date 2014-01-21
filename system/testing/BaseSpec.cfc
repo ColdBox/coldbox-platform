@@ -490,12 +490,15 @@ component{
 					evaluate( "this.#arguments.spec.name#()" );
 
 					// Where we expecting an exception and it did not throw?
-					if( !isExpectedException( { type="", message="" }, arguments.spec.name, arguments.runner ) ){
+					if( !structIsEmpty( this.$expectedException ) ){
 						$assert.fail( 'Method did not throw expected exception: [#this.$expectedException.toString()#]' );
 					}
 				}
 				catch( Any e ){
-					if( !isExpectedException( e, arguments.spec.name, arguments.runner ) ){ rethrow; }
+					// if not the expected exception, then rethrow it
+					if( !isExpectedException( e, arguments.spec.name, arguments.runner ) ){ 
+						$assert.fail( 'Method did not throw expected exception: [#this.$expectedException.toString()#], actual exception [type:#e.type#][message:#e.message#]' );
+					}
 				}
 
 				// execute teardown()
@@ -707,7 +710,7 @@ component{
 				regex = ( find( ":", eAnnotation ) ? listLast( eAnnotation, ":" ) : ".*" )
 			};
 		}
-		
+
 		// Verify expected exceptions
 		if( !structIsEmpty( this.$expectedException ) ){
 			// If no type, message expectations
@@ -717,11 +720,14 @@ component{
 			// Type expectation then
 			else if( len( this.$expectedException.type ) && 
 					 arguments.exception.type eq this.$expectedException.type && 
-					 reFindNoCase( this.$expectedException.regex, arguments.exception.message ) ){
+					 arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) ) 
+			){
 				results = true;
 			}
 			// Message regex then only
-			else if( this.$expectedException.regex neq ".*" && reFindNoCase( this.$expectedException.regex, arguments.exception.message ) ){
+			else if( this.$expectedException.regex neq ".*" && 
+				arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
+			){
 				results = true;
 			}
 		}

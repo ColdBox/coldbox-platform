@@ -211,7 +211,7 @@ component extends="BaseTest" {
 		var m = mock( "coldbox.system.testing.TestBox" );
 	}
 
-	function testExpectException_fail_no_exception_raised(){
+	function testExpectException_should_fail(){
 		expectException("MyException");
 	}
 
@@ -221,7 +221,7 @@ component extends="BaseTest" {
 	}
 	function testRaiseException_fail_wrong_exception_raised(){
 		expectException("MyException");
-		raiseExpectedException();
+		raiseUnexpectedException();
 	}
 
 	private	function raiseExpectedException(){
