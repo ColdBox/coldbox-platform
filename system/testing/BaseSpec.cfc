@@ -122,6 +122,8 @@ component{
 			afterEach 	= variables.closureStub,
 			// the parent suite
 			parent 		= "",
+			// the parent ref
+			parentRef	= "",
 			// hiearachy slug
 			slug 		= ""
 		};
@@ -138,7 +140,8 @@ component{
 			this.$suitesReverseLookup[ arguments.title ] = suite;
 			
 			// Setup parent reference
-			suite.parent = this.$suiteContext;
+			suite.parent 	= this.$suiteContext;
+			suite.parentRef = this.$suitesReverseLookup[ this.$suiteContext ];
 
 			// Build hiearachy slug separated by /
 			suite.slug = this.$suitesReverseLookup[ this.$suiteContext ].slug & "/" & this.$suiteContext;
@@ -390,15 +393,29 @@ component{
 				arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) &&
 				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
 			){
-
+				
 				// execute beforeEach()
 				arguments.suite.beforeEach( currentSpec=arguments.spec.name );
+				
+				// do we have nested suites? If so, traverse and execute life-cycle methods
+				var parentSuite = arguments.suite.parentRef;
+				while( !isSimpleValue( parentSuite ) ){
+					parentSuite.beforeEach( currentSpec=arguments.spec.name );
+					parentSuite = parentSuite.parentRef;
+				}
 				
 				// Execute the Spec body
 				arguments.spec.body();
 				
 				// execute afterEach()
 				arguments.suite.afterEach( currentSpec=arguments.spec.name );
+
+				// do we have nested suites? If so, traverse and execute life-cycle methods
+				var parentSuite = arguments.suite.parentRef;
+				while( !isSimpleValue( parentSuite ) ){
+					parentSuite.afterEach( currentSpec=arguments.spec.name );
+					parentSuite = parentSuite.parentRef;
+				}
 				
 				// store spec status
 				specStats.status 	= "Passed";
