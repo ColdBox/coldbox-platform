@@ -132,6 +132,10 @@ component extends="BaseTest" {
 
 		var t = new coldbox.testing.resources.test1();
 		assertTrue( makePublic( t, "aPrivateMethod", "funkyMethod" ).funkyMethod() );
+
+		var obj1 = new coldbox.testing.cases.testing.resources.CallPrivate();
+        var obj2 = makePublic( obj1, "callPrivate" );
+        assertEquals( "called", obj2.callIt() ); // will fail because variables.callPrivate no longer exists
 	}
 
 	function testMakePublicWithPackage(){

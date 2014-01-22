@@ -490,12 +490,16 @@ component{
 					evaluate( "this.#arguments.spec.name#()" );
 
 					// Where we expecting an exception and it did not throw?
-					if( !structIsEmpty( this.$expectedException ) ){
+					if( hasExpectedException( arguments.spec.name, arguments.runner ) ){
 						$assert.fail( 'Method did not throw expected exception: [#this.$expectedException.toString()#]' );
-					}
+					} // else all good.
 				}
 				catch( Any e ){
-					// if not the expected exception, then rethrow it
+					// do we have expected exception? else rethrow it
+					if( !hasExpectedException( arguments.spec.name, arguments.runner ) ){
+						rethrow;
+					}
+					// if not the expected exception, then fail it
 					if( !isExpectedException( e, arguments.spec.name, arguments.runner ) ){ 
 						$assert.fail( 'Method did not throw expected exception: [#this.$expectedException.toString()#], actual exception [type:#e.type#][message:#e.message#]' );
 					}
@@ -697,10 +701,9 @@ component{
 	function closureStub(){}
 
 	/**
-	* Check if the incoming exception is expected or not.
+	* Check if an expected exception is defined
 	*/
-	boolean function isExpectedException( required exception, required specName, required runner ){
-		var results = false;
+	boolean function hasExpectedException( required specName, required runner ){
 		// do we have an expected annotation?
 		var eAnnotation = arguments.runner.getMethodAnnotation( this[ arguments.specName ], this.$exceptionAnnotation, "false" );
 		if( eAnnotation != false ){
@@ -711,8 +714,17 @@ component{
 			};
 		}
 
-		// Verify expected exceptions
-		if( !structIsEmpty( this.$expectedException ) ){
+		return ( structIsEmpty( this.$expectedException ) ? false : true );
+	}
+
+	/**
+	* Check if the incoming exception is expected or not.
+	*/
+	boolean function isExpectedException( required exception, required specName, required runner ){
+		var results = false;
+		
+		// normalize expected exception
+		if( hasExpectedException( arguments.specName, arguments.runner ) ){
 			// If no type, message expectations
 			if( !len( this.$expectedException.type ) && this.$expectedException.regex eq ".*" ){
 				results = true;
