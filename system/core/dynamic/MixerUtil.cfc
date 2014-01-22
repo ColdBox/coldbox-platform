@@ -90,7 +90,6 @@ Description :
 			this.$exposedMethods[ arguments.method ] = variables[ arguments.method ];
 
 			// replace with proxy.
-			structDelete( variables, arguments.method );
 			this[ arguments.newName ] = this.methodProxy;
 
 			// Create alias if needed
