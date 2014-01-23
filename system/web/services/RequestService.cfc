@@ -20,9 +20,11 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="RequestService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true" hint="Coldbox controller">
 		<cfscript>
-			setController(arguments.controller);			
+			setController( arguments.controller );			
 			
-			instance.flashScope 		= "";
+			instance.flashScope 	= "";
+			instance.flashData 		= "";
+			instance.flashDataHash 	= "";
 			
 			return this;
 		</cfscript>
@@ -32,17 +34,21 @@ Modification History:
 	
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
-			//Get Local Logger Configured
-			instance.log = controller.getLogBox().getLogger( this );
 			// Local Configuration data and dependencies
-			instance.debugPassword  	= controller.getSetting("debugPassword");
-			instance.eventName			= controller.getSetting("eventName");
-			instance.eventCaching		= controller.getSetting("EventCaching");
+			instance.log 				= controller.getLogBox().getLogger( this );
+			instance.debugPassword  	= controller.getSetting( "debugPassword" );
+			instance.eventName			= controller.getSetting( "eventName" );
+			instance.eventCaching		= controller.getSetting( "EventCaching" );
 			instance.interceptorService = controller.getInterceptorService();
 			instance.handlerService		= controller.getHandlerService();
 			instance.cacheBox			= controller.getCacheBox();
 			instance.cache				= controller.getColdBoxOCM();
-			instance.templateCache		= controller.getColdBoxOCM("template");
+			instance.templateCache		= controller.getColdBoxOCM( "template" );
+			instance.flashData 			= controller.getSetting( "flash" );
+			instance.flashDataHash		= hash( instance.flashData.toString() );
+			
+			// build out Flash RAM
+			buildFlashScope();
 		</cfscript>
 	</cffunction>
 
@@ -198,16 +204,23 @@ Modification History:
     <cffunction name="getFlashScope" output="false" access="public" returntype="any" hint="Get the current running Flash Ram Scope of base type:coldbox.system.web.flash.AbstractFlashScope">
    		<cfreturn instance.flashScope >
     </cffunction>
+
+    <!--- rebuildFlashScope --->
+    <cffunction name="rebuildFlashScope" output="false" access="public" returntype="any" hint="Rebuild's the Flash RAM Scope if the application spec has changed, else it ignores it.">
+   		<cfscript>
+   			if( instance.flashDataHash neq hash( controller.getSetting( "flash" ).toString() ) ){
+   				buildFlashScope();
+	   		}
+   		</cfscript>
+   	</cffunction>
     
     <!--- buildFlashScope --->
     <cffunction name="buildFlashScope" output="false" access="public" returntype="any" hint="Build's the Flash RAM Scope as defined in the application spec.">
    		<cfscript>
-   			// Let's determine the flash type and create our flash ram object
-			var flashData = controller.getSetting("flash");
-			var flashPath = "";
+   			var flashPath 	= "";
 			
 			// Shorthand Flash Types
-			switch( flashData.scope ){
+			switch( instance.flashData.scope ){
 				case "session" : {
 					flashpath = "coldbox.system.web.flash.SessionFlash";
 					break;
@@ -229,12 +242,12 @@ Modification History:
 					break;
 				}
 				default : { 
-					flashPath = flashData.scope;
+					flashPath = instance.flashData.scope;
 				}
 			}
-			
+
 			// Create Flash RAM object
-			instance.flashScope = createObject("component", flashPath).init( controller, flashData );
+			instance.flashScope = createObject( "component", flashPath ).init( controller, instance.flashData );
    		</cfscript>
     </cffunction>
 	
