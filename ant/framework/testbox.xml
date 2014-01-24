@@ -137,7 +137,7 @@
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/testbox_${testbox.version}.zip" basedir="${dir.build}"></zip>
 		
-		<!-- Perms for automated builds --->
+		<!-- Perms for automated builds -->
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 
 		<!-- Cleanup -->
