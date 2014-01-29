@@ -610,6 +610,7 @@ component{
 /*********************************** PRIVATE Methods ***********************************/	
 
 	private function equalize( required expected, required actual ){
+				
 		// Numerics
 		if( isNumeric( arguments.actual ) && isNumeric( arguments.expected ) && arguments.actual eq arguments.expected ){
 			return true;
@@ -619,12 +620,6 @@ component{
 		if( isSimpleValue( arguments.actual ) && isSimpleValue( arguments.expected ) && arguments.actual eq arguments.expected ){
 			return true;
 		}
-		
-		// Arrays
-		if( isArray( arguments.actual ) && isArray( arguments.expected ) &&
-			createObject("java", "java.util.Arrays").deepEquals( arguments.actual, arguments.expected ) ){
-			return true;
-		}
 
 		// Queries
 		if( isQuery( arguments.actual ) && isQuery( arguments.expected ) &&
@@ -632,23 +627,62 @@ component{
 			return true;
 		}
 
-		// Objects
-		if( isObject( arguments.actual ) && isObject( arguments.expected ) ){
-			var system = createObject("java", "java.lang.System");
-			var aHash = system.identityHashCode( arguments.actual );
-			var eHash = system.identityHashCode( arguments.expected );
-			if( aHash eq eHash ){ return true; }
+		// UDFs
+		if( isCustomFunction(arguments.actual) && isCustomFunction(arguments.expected) && arguments.actual.toString() eq arguments.expected.toString() ) {
+			return true;
 		}
 
-		// Structs
+		// XML
+		if( IsXmlDoc(arguments.actual) && IsXmlDoc(arguments.expected) && toString(arguments.actual) eq toString(arguments.expected) ) {
+			return true;
+		}
+		
+		// Arrays
+		if( isArray( arguments.actual ) && isArray( arguments.expected ) ) {
+			var i = 0;
+			
+			// Confirm both arrays are the same length
+			if( arrayLen(arguments.actual) neq arrayLen(arguments.expected) ) {
+				return false;
+			}
+						
+			// Loop over each item
+			while( ++i lte arrayLen(arguments.actual) ) {
+				// And make sure they match
+				if( !equalize( arguments.actual[i], arguments.expected[i] ) ) {
+					return false;
+				}
+			}
+			
+			// If we made it here, we couldn't find anything different
+			return true;
+		}
+		
+		// Structs / Object
 		if( isStruct( arguments.actual ) && isStruct( arguments.expected ) ){
-			// use ordered trees for not caring about position or case
-			var eTree = createObject("java","java.util.TreeMap").init( arguments.expected );
-			var aTree = createObject("java","java.util.TreeMap").init( arguments.actual );
-			// evaluate them
-			if( eTree.toString() eq aTree.toString() ){ return true; }
+			
+			var actualKeys = listSort(structKeyList(arguments.actual),'textNoCase');
+			var expectedKeys = listSort(structKeyList(arguments.expected),'textNoCase');
+			var key = '';
+			
+			// Confirm both structs have the same keys
+			if( actualKeys neq expectedKeys ) {
+				return false;
+			}
+			
+			// Loop over each key
+			for( key in arguments.actual ) {
+				// And make sure they match
+				if( !equalize( arguments.actual[key], arguments.expected[key] ) ) {
+					return false;
+				}
+			}
+			
+			// If we made it here, we couldn't find anything different
+			return true;
+		
 		}
-
+				
 		return false;
 	}
 	
