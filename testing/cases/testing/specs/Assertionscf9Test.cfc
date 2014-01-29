@@ -91,7 +91,30 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="c
 		$assert.isFalse( 0 );
 	}
 
-	function testisEqual() {
+	// Used in testIsEqual()
+	function f1(){}
+
+
+	function testisEqual() {		
+		
+		var query = queryNew("");
+		queryAddColumn(query, "id", [1,2,3,4]);
+		queryAddColumn(query, "data", ["tahi","rua","toru", "wha"]);
+		struct = {query=query};	
+		$assert.isEqual(struct, duplicate(struct));
+
+		$assert.isEqual(
+			[1,12],		// strings
+			[1*1, 1*12]	// doubles
+		);
+		
+		$assert.isEqual(f1, f1);
+		
+		$assert.isEqual( new coldbox.system.testing.MockBox(), new coldbox.system.testing.MockBox() );
+		
+		var xmlString = '<root><item attr="value" /><item attr="again" /></root>';
+		$assert.isEqual( XMLParse(xmlString), XMLParse(xmlString) );
+		
 		$assert.isEqual( 0, 0 );
 		$assert.isEqual( "hello", "HEllO" );
 		$assert.isEqual( [], [] );
