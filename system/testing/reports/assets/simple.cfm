@@ -87,6 +87,11 @@
 
 <!--- Bundle Info --->
 <cfloop array="#bundleStats#" index="thisBundle">
+	<!--- Skip if not in the includes list --->
+	<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+		<cfcontinue>
+	</cfif>
+	<!--- Bundle div --->
 	<div class="box" id="bundleStats_#thisBundle.path#">
 		
 		<!--- bundle stats --->
