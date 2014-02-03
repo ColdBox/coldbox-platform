@@ -173,7 +173,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 			}
 
 			// Skip Checks
-			if( suiteStats.totalSpecs == suiteStats.totalSkipped ){
+			if( suiteStats.totalSpecs neq 0 && suiteStats.totalSpecs == suiteStats.totalSkipped ){
 				suiteStats.status = "Skipped";	
 			}
 
