@@ -73,6 +73,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 				// For a righteous man falls seven times, and rises (tests) again :)
 				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
 				bundleStats.totalFail = 7;
+				arguments.testResults.incrementSpecStat( type="error", stats=bundleStats.totalFail );
 			}
 
 		} // end if we can run bundle
