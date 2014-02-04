@@ -8,9 +8,17 @@
     	Build a new distribution of ColdBox Platform
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="coldbox.version"	value="3.8.0"/>
+	<property name="coldbox.version"	value="3.8.1"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="install/antlib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	
 	<!--External Ant Tasks-->
 	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
@@ -128,8 +136,8 @@
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		
-		<!-- Perms for automated builds -->
-		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+		<!-- Perms for automated builds 
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />-->
 		<if>
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>

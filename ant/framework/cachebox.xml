@@ -11,6 +11,14 @@
 	<property name="cachebox.version"	value="1.6.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="install/antlib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	
 	<!-- Init -->
 	<target name="init" description="Init">

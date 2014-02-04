@@ -8,9 +8,17 @@
     	Build a new distribution of MockBox Standalone
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="mockbox.version"	value="2.2.0"/>
+	<property name="mockbox.version"	value="2.3.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="install/antlib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	
 	<!-- Init -->
 	<target name="init" description="Init">

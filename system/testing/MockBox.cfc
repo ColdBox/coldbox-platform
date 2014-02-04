@@ -34,7 +34,7 @@ Description		:
 				instance.generationPath = instance.generationPath & "/";
 			}
 			
-			instance.version 		= "2.2.0.@build.number@";
+			instance.version 		= "2.3.0.@build.number@";
 			instance.mockGenerator 	= createObject("component","coldbox.system.testing.mockutils.MockGenerator").init( this, true );
 			
 			return this;

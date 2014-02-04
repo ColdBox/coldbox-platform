@@ -56,6 +56,7 @@
 	{ "trigger": "fail\tfn. (ColdBox BaseSpec)", "contents": "fail( message=${1:any} )" },
 	{ "trigger": "getDebugBuffer\tfn. (ColdBox BaseSpec)", "contents": "getDebugBuffer()" },
 	{ "trigger": "getMockBox\tfn. (ColdBox BaseSpec)", "contents": "getMockBox( generationPath=\"${1:}\" )" },
+	{ "trigger": "hasExpectedException\tfn. (ColdBox BaseSpec)", "contents": "hasExpectedException( specName=${1:any}, runner=${2:any} )" },
 	{ "trigger": "isExpectedException\tfn. (ColdBox BaseSpec)", "contents": "isExpectedException( exception=${1:any}, specName=${2:any}, runner=${3:any} )" },
 	{ "trigger": "it\tfn. (ColdBox BaseSpec)", "contents": "it( title=\"${1:}\", body=${2:any}, labels=${3:any}, skip=${4:any} )" },
 	{ "trigger": "makePublic\tfn. (ColdBox BaseSpec)", "contents": "makePublic( target=${1:any}, method=\"${2:}\", newName=\"${3:}\" )" },
