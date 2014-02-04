@@ -774,11 +774,6 @@ Description :
 		<cfset instance.routes = arguments.routes/>
 	</cffunction>
 
-	<!--- Get Default Framework Action --->
-	<cffunction name="getDefaultFrameworkAction" access="private" returntype="string" hint="Get the default framework action" output="false" >
-		<cfreturn getController().getSetting("eventAction",1)>
-	</cffunction>
-
 	<!--- CGI Element Facade. --->
 	<cffunction name="getCGIElement" access="private" returntype="any" hint="The cgi element facade method" output="true" >
 		<cfargument name="cgielement" required="true" hint="The cgi element to retrieve">
@@ -950,9 +945,7 @@ Description :
 					<cfset newpath = "/" & handler />
 				</cfif>
 				<!--- route path with handler + action if not the default event action --->
-				<cfif len(handler)
-					  AND len(action)
-					  AND action NEQ getDefaultFrameworkAction()>
+				<cfif len(handler) AND len(action)>
 					<cfset newpath = newpath & "/" & action />
 				</cfif>
 			</cfif>
