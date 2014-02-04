@@ -16,6 +16,30 @@ Description :
 	<cfscript>
 		// Setup Default Namespace Key for controller locations
 		setCOLDBOX_APP_KEY("cbController");
+		
+		// Prevent recursive object creation in Railo
+		if( !structKeyExists( request, 'proxyAutowire' ) ){
+			request.proxyAutowire = true;
+			
+			// Find the path of the proxy component being called
+			this.$componentpath = replaceNoCase(mid(cgi.script_name,2,len(cgi.script_name)-5),'/','.');
+			// Get its metadata
+			this.$md = getUtil().getInheritedMetaData(this.$componentpath);
+		
+			injector = getWirebox();
+			binder = injector.getBinder();
+			
+			// register new mapping instance
+			injector.registerNewInstance(this.$md.path, this.$md.path);
+			// get Mapping created
+			mapping = binder.getMapping( this.$md.path );
+			// process it with the correct metadata
+			mapping.process(binder=binder,injector=injector,metadata=this.$md);
+		
+		
+			// Autowire ourself based on the new mapping
+			getWirebox().autowire(target=this, mapping=mapping);
+		}
 	</cfscript>
 
 	<!--- getRemotingUtil --->
