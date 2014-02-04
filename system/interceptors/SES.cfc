@@ -125,15 +125,11 @@ Description :
 					routedStruct[ key ] = aRoute[ key ];
 				}
 			}
-
+				
 			// Create Event To Dispatch if handler key exists
 			if( structKeyExists( aRoute,"handler" ) ){
-				// If no action found, default to the convention of the framework, must likely 'index'
-				if( NOT structKeyExists(aRoute,"action") ){
-					aRoute.action = getDefaultFrameworkAction();
-				}
-				// else check if using HTTP method actions via struct
-				else if( isStruct(aRoute.action) ){
+				// Check if using HTTP method actions via struct
+				if( structKeyExists(aRoute,"action") && isStruct(aRoute.action) ){
 					// Verify HTTP method used is valid, else throw exception and 403 error
 					if( structKeyExists(aRoute.action,HTTPMethod) ){
 						aRoute.action = aRoute.action[HTTPMethod];
@@ -150,9 +146,12 @@ Description :
 					}
 				}
 				// Create routed event
-				rc[ instance.eventName ] = aRoute.handler & "." & aRoute.action;
+				rc[ instance.eventName ] = aRoute.handler;
+				if( structKeyExists(aRoute,"action") ){
+					rc[ instance.eventName ] &= "." & aRoute.action;
+				}
  
-				// Do we have a module?If so, create routed module event.
+				// Do we have a module? If so, create routed module event.
 				if( len( aRoute.module ) ){
 					rc[ instance.eventName ] = aRoute.module & ":" & rc[ instance.eventName ];
 				}
