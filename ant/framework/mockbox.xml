@@ -36,6 +36,7 @@
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}"/>
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 	</target>
 	
 	<!--build-->
@@ -90,6 +91,17 @@
 				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/mockbox_${mockbox.version}.zip" basedir="${dir.build}"></zip>
+
+		<!-- Perms for automated builds -->
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+
+		<if>
+			<equals arg1="${be.name}" arg2="" />
+			<then></then>
+			<else>
+				<move file="${dir.exports}/mockbox_${mockbox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+			</else>
+		</if>
 		
 		<delete dir="${dir.build}" />
     </target>

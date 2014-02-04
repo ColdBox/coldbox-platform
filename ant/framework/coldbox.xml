@@ -44,6 +44,7 @@
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}"/>
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 	</target>
 	
 	<!--Framework Compile Checks -->
@@ -127,6 +128,16 @@
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		
+		<!-- Perms for automated builds -->
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+		<if>
+			<equals arg1="${be.name}" arg2="" />
+			<then></then>
+			<else>
+				<move file="${dir.exports}/coldbox_${coldbox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+			</else>
+		</if>
+
 		<!-- Cleanup for StandAlone Build -->
 		<delete dir="${dir.build}/coldbox/ApplicationTemplates"/>
 		<delete dir="${dir.build}/apidocs" />
@@ -141,6 +152,15 @@
 			
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}"></zip>
+
+		<!-- Perms for automated builds -->
+		<if>
+			<equals arg1="${be.name}" arg2="" />
+			<then></then>
+			<else>
+				<move file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" tofile="${dir.exports}/${be.name}_standalone.zip" />	
+			</else>
+		</if>
 		
 		<!-- Cleanup -->
 		<delete dir="${dir.build}" />

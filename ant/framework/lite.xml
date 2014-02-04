@@ -45,6 +45,7 @@ ColdBox LITE Build
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}"/>
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 	</target>
 	
 	<!--Framework Compile Checks -->
@@ -125,6 +126,18 @@ ColdBox LITE Build
 		
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldboxLITE_${coldbox.version}.zip" basedir="${dir.build}"></zip>
+
+		<!-- Perms for automated builds -->
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+
+		<if>
+			<equals arg1="${be.name}" arg2="" />
+			<then></then>
+			<else>
+				<move file="${dir.exports}/coldboxLITE_${coldbox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+				<move file="${dir.exports}/coldboxLITE-ORM_${coldbox.version}.zip" tofile="${dir.exports}/${be.name}+ORM.zip" />	
+			</else>
+		</if>
 
 		<!-- Cleanup -->
 		<delete dir="${dir.build}" />
