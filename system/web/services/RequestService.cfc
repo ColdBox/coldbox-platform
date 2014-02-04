@@ -65,6 +65,9 @@ Modification History:
 			// Capture FORM/URL
 			if( isDefined( "FORM" ) ){ structAppend( rc, FORM ); }
 			if( isDefined( "URL" )  ){ structAppend( rc, URL ); }
+
+			// Configure decorator if available?
+			if ( structKeyExists( context, "configure" ) ){ context.configure(); }
 			
 			// Execute onRequestCapture interceptionPoint
 			instance.interceptorService.processState( "onRequestCapture" );
@@ -112,11 +115,6 @@ Modification History:
 			
 			// Are we using event caching?
 			eventCachingTest( context, fwCache );
-			
-			// Configure decorator if available?
-			if ( structKeyExists( context, "configure" ) ){
-				context.configure();
-			}
 			
 			return context;
 		</cfscript>
