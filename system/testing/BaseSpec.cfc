@@ -357,11 +357,18 @@ component{
 	* Run a test remotely, only useful if the spec inherits from this class. Useful for remote executions.
 	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!
 	* @testSpecs.hint A list or array of test names that are the ones that will be executed ONLY!
-	* @debug.hint Show debug output on the reports or not
 	* @reporter.hint The type of reporter to run the test with
+	* @labels.hint A list or array of labels to apply to the testing.
 	*/
-	remote function runRemote( string testSpecs="", string testSuites="", boolean debug=false, string reporter="simple" ) output=true{
-		var runner = new coldbox.system.testing.TestBox( bundles="#getMetadata(this).name#", reporter=arguments.reporter );
+	remote function runRemote( 
+		string testSpecs="", 
+		string testSuites="", 
+		string reporter="simple", 
+		string labels="" 
+	) output=true{
+		var runner = new coldbox.system.testing.TestBox( bundles="#getMetadata(this).name#", 
+														 labels=arguments.labels,
+														 reporter=arguments.reporter );
 
 		// Produce report
 		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );

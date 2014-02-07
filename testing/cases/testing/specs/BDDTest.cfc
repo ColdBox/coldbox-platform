@@ -29,7 +29,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 		* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 		* @skip A flag that tells TestBox to skip this suite group from testing if true
 		*/
-		describe( "A spec", function(){
+		describe( title="A spec", labels="luis", body=function(){
 		
 			// before each spec in THIS suite group
 			beforeEach(function(){
@@ -51,9 +51,9 @@ component extends="coldbox.system.testing.BaseSpec"{
 			* @labels The list or array of labels this spec belongs to
 			* @skip A flag that tells TestBox to skip this spec from testing if true
 			*/
-			it("is just a closure so it can contain code", function(){
+			it(title="is just a closure so it can contain code", body=function(){
 				expect( coldbox ).toBe( 1 );
-			});
+			},labels="luis");
 			
 			// more than 1 expectation
 			it("can have more than one expectation test", function(){
