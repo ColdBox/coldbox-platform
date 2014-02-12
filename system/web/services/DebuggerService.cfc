@@ -176,7 +176,7 @@ Description :
 			<cfcookie name="#getCookieName()#" value="#getSecretKey()#">
 		<!--- False --->
 		<cfelse>
-			<cfcookie name="#instance.cookieName#" value="_disabled_" expires="#now()#">
+			<cfcookie name="#getCookieName()#" value="_disabled_">
 		</cfif>
 	</cffunction>
 	
