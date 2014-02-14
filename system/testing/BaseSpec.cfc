@@ -394,10 +394,18 @@ component{
 			
 			// init spec tests
 			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
-			
+			// init consolidated spec labels
+			var consolidatedLabels = [];
+			// Build labels from nested suites, so suites inherit from parent suite labels
+			var parentSuite = arguments.suite;
+			while( !isSimpleValue( parentSuite ) ){
+				consolidatedLabels.addAll( parentSuite.labels );
+				parentSuite = parentSuite.parentref;
+			}
+
 			// Verify we can execute
 			if( !arguments.spec.skip && 
-				arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) &&
+				arguments.runner.canRunLabel( consolidatedLabels, arguments.testResults ) &&
 				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
 			){
 				

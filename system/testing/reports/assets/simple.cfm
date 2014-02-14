@@ -22,26 +22,33 @@
 		$("div.spec").each( function(){
 			$(this).show();
 		});
+		$("div.suite").each( function(){
+			$(this).show();
+		});
 	}
-	function toggleSpecs( type, bundleid ){
+	function toggleSpecs( type, bundleID ){
 		$("div.spec").each( function(){
-			var $this = $( this );
-		
-			// if bundleid passed and not the same bundle, skip
-			if( bundleid != undefined && $this.attr( "data-bundleid" ) != bundleid ){
-				return;
-			}
-
-			// toggle the opposite type
-			if( !$this.hasClass( type ) ){
-				$this.fadeOut();
-			}
-			else{
-				// show the type you sent
-				$this.fadeIn();
-			}
-
+			handleToggle( $( this ), bundleID, type );
 		} );
+		$("div.suite").each( function(){
+			handleToggle( $( this ), bundleID, type );
+		} );
+	}
+	function handleToggle( target, bundleID, type ){
+		var $this = target;
+		
+		// if bundleid passed and not the same bundle, skip
+		if( bundleID != undefined && $this.attr( "data-bundleid" ) != bundleID ){
+			return;
+		}
+
+		// toggle the opposite type
+		if( !$this.hasClass( type ) ){
+			$this.fadeOut();
+		} else {
+			// show the type you sent
+			$this.fadeIn();
+		}
 	}
 	function toggleDebug( specid ){
 		$("div.debugdata").each( function(){

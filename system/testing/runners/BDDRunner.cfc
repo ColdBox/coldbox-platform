@@ -104,7 +104,15 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 		// Start suite stats
 		var suiteStats = arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats, arguments.parentStats );
-		
+		// init consolidated spec labels
+		var consolidatedLabels = [];
+		// Build labels from nested suites, so suites inherit from parent suite labels
+		var parentSuite = arguments.suite;
+		while( !isSimpleValue( parentSuite ) ){
+			consolidatedLabels.addAll( parentSuite.labels );
+			parentSuite = parentSuite.parentref;
+		}
+
 		// Record bundle + suite + global initial stats
 		suiteStats.totalSpecs = arrayLen( arguments.suite.specs );
 		arguments.bundleStats.totalSpecs += suiteStats.totalSpecs;
@@ -114,7 +122,7 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 		// Verify we can execute the incoming suite via skipping or labels
 		if( !arguments.suite.skip && 
-			canRunLabel( arguments.suite.labels, arguments.testResults ) && 
+			canRunLabel( consolidatedLabels, arguments.testResults ) && 
 			canRunSuite( arguments.suite, arguments.testResults )
 		){
 			

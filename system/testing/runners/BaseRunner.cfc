@@ -31,6 +31,8 @@ component{
 				}
 			}
 			
+			// TODO: check if the incoming label exists in a parent suite.
+
 			// if we get here, we have labels, but none matched.
 			return false;
 		}
