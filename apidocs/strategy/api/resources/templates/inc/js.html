@@ -1,0 +1,14 @@
+<cfparam name="rootPath" default="">
+<cfoutput>
+<script src="#attributes.rootPath#bootstrap/js/jquery-2.1.0.min.js" type="text/javascript"></script>
+<script src="#attributes.rootPath#bootstrap/js/bootstrap.min.js" 	type="text/javascript"></script>
+</cfoutput>
+<script>
+$(document).ready(function() {
+	// Global Tool Tip Settings
+	$( '[title]' ).tooltip({
+		 animation: 'slide',
+		 delay: { show: 250, hide: 250 }
+	});
+});
+</script>

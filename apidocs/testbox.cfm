@@ -2,13 +2,13 @@
 <cfparam name="url.path" 	default="#expandPath( "./TestBox-APIDocs" )#">
 <cfscript>
 	docName = "TestBox-APIDocs";
-	base = expandPath( "/testbox" );
+	base = expandPath( "/testbox/system" );
 
 	colddoc 	= new ColdDoc();
 	strategy 	= new colddoc.strategy.api.HTMLAPIStrategy( url.path, "TestBox v#url.version#" );
 	colddoc.setStrategy( strategy );
 
-	colddoc.generate( inputSource=base, outputDir=url.path, inputMapping="testbox" );
+	colddoc.generate( inputSource=base, outputDir=url.path, inputMapping="testbox.system" );
 </cfscript>
 
 <!---

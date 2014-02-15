@@ -1,39 +1,38 @@
-/* Javadoc style sheet */
-
-/* Define colors, fonts and other style attributes here to override the defaults */
-
-/* Page background color */
 body { 
 	background-color: #FFFFFF;
+	margin: 10px;
 	font-family: "ubuntu", Helvetica, arial, sans-serif;
-	font-size:13px; 
 }
-
+body.withNavbar{ margin-top: 70px;}
 a{ color: #006699; text-decoration: none; }
 
 /* Headings */
 h1 { font-size: 145% }
 hr { color: #c0c0c0; border: 1px dotted #c0c0c0 }
 
-/* Table colors */
-.TableHeadingColor     { background: #DEE8F1 } /* Dark mauve */
-.TableSubHeadingColor  { background: #DEE8F1 } /* Light mauve */
-.TableRowColor         { background: #FFFFFF } /* White */
+pre{ margin-top: 10px; margin-bottom: 10px;}
+kbd{ padding: 5px 7px; }
+kbd a{ color: white; }
+
+/* table colors */
+.tableheadingcolor     { background: #dee8f1 } /* dark mauve */
+.tablesubheadingcolor  { background: #dee8f1 } /* light mauve */
+.tablerowcolor         { background: #ffffff } /* white */
 
 th{ font-size: 14px; !important; padding: 5px}
 th font{ font-size: inherit; }
 
-/* Font used in left-hand frame lists */
-.FrameTitleFont   { font-size: 100%; }
-.FrameHeadingFont { font-size:  90%;}
-.FrameItemFont    { font-size:  90%;}
+/* font used in left-hand frame lists */
+.frametitlefont   { font-size: 100%; }
+.frameheadingfont { font-size:  90%;}
+.frameitemfont    { font-size:  90%;}
 
-/* Navigation bar fonts and colors */
-.NavBarCell1    { background-color:#E2E2E2;} /* Light mauve */
-.NavBarCell1Rev { background-color:#666666;} /* Dark Blue */
-.NavBarFont1    { color:#000000;}
-.NavBarFont1Rev { color:#FFFFFF;}
+/* navigation bar fonts and colors */
+.navbarcell1    { background-color:#e2e2e2;} /* light mauve */
+.navbarcell1rev { background-color:#666666;} /* dark blue */
+.navbarfont1    { color:#000000;}
+.navbarfont1rev { color:#ffffff;}
 
-.NavBarCell2    { background-color:#FFFFFF;}
-.NavBarCell3    { background-color:#FFFFFF;}
+.navbarcell2    { background-color:#ffffff;}
+.navbarcell3    { background-color:#ffffff;}
 

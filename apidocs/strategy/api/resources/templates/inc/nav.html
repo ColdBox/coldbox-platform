@@ -1,65 +1,69 @@
 <cfparam name="attributes.package" default="">
 <cfparam name="attributes.file">
 
+<cfset root = RepeatString('../', ListLen(attributes.package, ".")) />
+
 <!-- ========= START OF NAVBAR ======= -->
-<A NAME="navbar_top"><!-- --></A>
-<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
-<TR>
-<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<A NAME="navbar_top_firstrow"><!-- --></A>
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
-  <TR ALIGN="center" VALIGN="top">
-	<cfset root = RepeatString('../', ListLen(attributes.package, ".")) />
+<a name="navbar_top"></a>
+<a href="#skip-navbar_top" title="skip navigation links"></a>	
 
-  <cfif attributes.page eq "Overview">
-	<TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Overview</B></FONT>&nbsp;</TD>
-  <cfelse>
-	<cfoutput>
-	<TD BGCOLOR="##EEEEFF" CLASS="NavBarCell1">    <A HREF="#root#overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-	</cfoutput>
-  </cfif>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+    
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#class-navigation">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#"><strong><cfoutput>#attributes.projecttitle#</cfoutput></strong></a>
+		</div>
 
-  <cfif attributes.page eq "Package">
-	<TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Package</B></FONT>&nbsp;</TD>
-  <cfelseif attributes.page eq "Class">
-	<TD BGCOLOR="##EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
-  <cfelse>
-	<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <FONT CLASS="NavBarFont1">Package</FONT>&nbsp;</TD>
-  </cfif>
+	    <div class="collapse navbar-collapse" id="class-navigation">
+	    	<ul class="nav navbar-nav">
+				<cfif attributes.page eq "overview">
+					<li class="active"><a href="#"><i class="glyphicon glyphicon-plane"></i> overview</a></li>
+				<cfelse>
+					<cfoutput>
+					<li><a href="#root#overview-summary.html"><i class="glyphicon glyphicon-plane"></i> overview</a></li>
+					</cfoutput>
+				</cfif>
 
-	<cfif attributes.page eq "Class">
-		<TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-	<cfelse>
-	<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <FONT CLASS="NavBarFont1">Class</FONT>&nbsp;</TD>
-	</cfif>
+				<cfif attributes.page eq "package">
+					<li class="active"><a href="#"><i class="glyphicon glyphicon-folder-open"></i> &nbsp;package</a></li>
+				<cfelseif attributes.page eq "class">
+					<li><a href="package-summary.html"><i class="glyphicon glyphicon-folder-open"></i> &nbsp;package</a></li>
+				</cfif>
 
-  <!---
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <FONT CLASS="NavBarFont1">Package</FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  --->
+			  	<cfif attributes.page eq "class">
+					<li class="dropdown active">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-flash"></i> class <b class="caret"></b></a>
 
-  </TR>
-</TABLE>
-</TD>
-<TD ALIGN="right" VALIGN="top" ROWSPAN=3><strong><EM>
-<cfoutput>
-#attributes.projectTitle#</EM></strong>
-</cfoutput>
-</TD>
-</TR>
+						<ul class="dropdown-menu">
+							<li><a href="#class">Class Definition</a></li>
+							<li><a href="#constructor_summary">Constructor Summary</a></li>
+							<li><a href="#constructor_detail">Constructor Detail</a></li>
+							<li><a href="#inherited_methods">Inherited Methods</a></li>
+							<li><a href="#method_summary">Method Summary</a></li>
+							<li><a href="#method_detail">Method Detail</a></li>
+							<li><a href="#property_summary">Property Summary</a></li>
+							<li><a href="#property_detail">Property Detail</a></li>
+							
+						</ul>
+					</li>
+				</cfif>
+	      	</ul>
 
-<TR>
+			<ul class="nav navbar-nav navbar-right">
+				<li><cfoutput><a href="#root#index.html?#attributes.file#.html" target="_top">
+					<i class="glyphicon glyphicon-fullscreen"></i> Frames
+					</a></cfoutput>
+				</li>
+			</ul>
+	    </div>
 
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-	<cfoutput>
-	  <A HREF="#root#index.html?#attributes.file#.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-	</cfoutput>
-</FONT></TD>
+	</div>
+</nav>	
 
-</TR>
-</TABLE>
-<A NAME="skip-navbar_top"></A>
+<a name="skip-navbar_top"></a>
 <!-- ========= END OF NAVBAR ========= -->
