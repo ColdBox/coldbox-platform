@@ -59,6 +59,7 @@
 		<copy todir="${dir.build}/logbox/system/core">
         	<fileset dir="system/core">
         		<include name="util/*" />
+        		<include name="dynamic/*" />
         		<include name="collections/*" />
         		<include name="conversion/*" />
         	</fileset>
