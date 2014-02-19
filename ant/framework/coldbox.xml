@@ -126,7 +126,7 @@
 		<get dest="${dir.build}/sublime.html" src="${url.dictionaries}/sublime-completions.cfm" verbose="true"/>
 		<delete file="${dir.build}/sublime.html" />
 
-		<!-- Execute ColdDoc -->
+		<!-- Execute DocBox -->
 		<get dest="${dir.build}/colddoc.html" src="${url.api}${coldbox.version}&amp;path=${dir.api}&amp;coldbox_root=${dir.build}/coldbox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
 		
@@ -174,5 +174,25 @@
 		<delete dir="${dir.build}" />
 		
     </target>
+	
+	<target name="docs" depends="init" description="Generate docs only">
+		
+		<!-- Copy src -->	
+      	<copy todir="${dir.build}/coldbox/system">
+        	<fileset dir="system">
+        	</fileset>
+        </copy>
+
+		<!-- Execute DocBox -->
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${coldbox.version}&amp;path=${dir.api}&amp;coldbox_root=${dir.build}/coldbox" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
+		
+		<!-- Cleanup -->
+		<delete dir="${dir.build}" />
+				
+	</target>
 	
 </project>

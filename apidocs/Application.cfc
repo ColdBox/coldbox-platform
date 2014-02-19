@@ -25,7 +25,7 @@ Description :
 	// API Root
 	API_ROOT = getDirectoryFromPath( getCurrentTemplatePath() );
 	// ColdBox Root
-	COLDBOX_ROOT = REReplaceNoCase( API_ROOT, "apidocs(\\|\/)$", "" ) & "system";
+	COLDBOX_ROOT = REReplaceNoCase( API_ROOT, "apidocs(\\|\/)$", "" );
 
 	// Core Mappings
 	this.mappings[ "/colddoc" ]  = API_ROOT;
