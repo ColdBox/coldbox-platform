@@ -181,9 +181,19 @@ component extends="coldbox.system.testing.runners.BaseRunner" implements="coldbo
 
 			}
 
-			// Skip Checks
+			// Suite Skipped Status?
 			if( suiteStats.totalSpecs neq 0 && suiteStats.totalSpecs == suiteStats.totalSkipped ){
-				suiteStats.status = "Skipped";	
+				var suiteSkipped = true;
+				// iterate over nested suites to discover if indeed skipped
+				for( var thisSuiteStat in suiteStats.suiteStats ){
+					// if not skipped, then short circuit it as not skipped
+					if( thisSuiteStat.status neq "Skipped" ){
+						suiteSkipped = false;
+						break;
+					}
+				}
+				// mark suite skipped if indeed it was skipped.
+				if( suiteSkipped ){ suiteStats.status = "Skipped"; }	
 			}
 
 		}
