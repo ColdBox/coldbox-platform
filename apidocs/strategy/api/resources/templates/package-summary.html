@@ -35,7 +35,7 @@
 					<td>
 						<cfset meta = metadata>
 						<cfif structkeyexists(meta, "hint")>
-							#listgetat(meta.hint, 1, ".")#
+							#listgetat(meta.hint, 1, chr(13)&chr(10)&'.' )#
 						</cfif>
 					</td>
 				</tr>
@@ -59,7 +59,7 @@
 					<td>
 						<cfset meta = metadata>
 						<cfif structkeyexists(meta, "hint") and len(meta.hint) gt 0>
-							#listgetat(meta.hint, 1, ".")#
+							#listgetat( meta.hint, 1, chr(13)&chr(10)&'.' )#
 						</cfif>
 					</td>
 				</tr>

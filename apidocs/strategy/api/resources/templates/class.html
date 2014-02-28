@@ -173,9 +173,7 @@ Class
 
 <cfif StructKeyExists(arguments.metadata, "hint")>
 <div id="class-hint">
-	<cfset local.hint = replace( arguments.metadata.hint, chr(10), '<br>' )>
-	<cfset local.hint = replace( local.hint, chr(13), '<br>' )>
-	<p class="lead">#local.hint#</p>
+	<p>#arguments.metadata.hint#</p>
 </div>
 </cfif>
 
@@ -229,7 +227,7 @@ Class
 			<br>
 			<cfif StructKeyExists( local.prop, "hint" ) AND Len( local.prop.hint )>
 			<!-- only grab the first sentence of the hint -->
-			#repeatString( '&nbsp;', 5)# #listGetAt(local.prop.hint, 1, ".")#.
+			#repeatString( '&nbsp;', 5)# #listGetAt( local.prop.hint, 1, chr(13)&chr(10)&'.' )#.
 			</cfif>
 			<br><br>
 			<ul>
@@ -284,7 +282,7 @@ Class
 				#writemethodlink(arguments.name, arguments.package, local.init, arguments.qmetadata)#
 				<br>
 				<cfif StructKeyExists(local.init, "hint") and len( local.init.hint ) >
-				#repeatString( '&nbsp;', 5)# #listGetAt(local.init.hint, 1, ".")#.
+				#repeatString( '&nbsp;', 5)# #listGetAt( local.init.hint, 1, chr(13)&chr(10)&'.' )#.
 				</cfif>
 			</td>
 		</tr>
@@ -315,7 +313,7 @@ Class
 			#writemethodlink(arguments.name, arguments.package, local.func, arguments.qmetadata)#
 			<br>
 			<cfif StructKeyExists(local.func, "hint") AND Len(local.func.hint)>
-			#repeatString( '&nbsp;', 5)##listGetAt(local.func.hint, 1, ".")#.
+			#repeatString( '&nbsp;', 5)##listGetAt( local.func.hint, 1, chr(13)&chr(10)&'.' )#.
 			</cfif>
 		</td>
 	</tr>
