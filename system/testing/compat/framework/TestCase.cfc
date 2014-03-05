@@ -190,7 +190,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 	* arrays pass by reference and in Adobe CF they pass by value.
 	*/
 	function assertNotSame( required expected, required actual, message="" ){
-		this.$assert.isNotEqual( arguments.expected, arguments.actual, arguments.message );
+		this.$assert.isNotSameInstance( arguments.expected, arguments.actual, arguments.message );
 	}
 
 	/**
@@ -206,7 +206,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 	* arrays pass by reference and in Adobe CF they pass by value.
 	*/
 	function assertSame( required expected, required actual, message="" ){
-		this.$assert.isEqual( arguments.expected, arguments.actual, arguments.message );
+		this.$assert.isSameInstance( arguments.expected, arguments.actual, arguments.message );
 	}
 
 	/**

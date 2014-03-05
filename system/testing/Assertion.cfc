@@ -78,6 +78,40 @@ component{
 		// if we reach here, they are equal!
 		fail( arguments.message );
 	}
+	
+	/**
+	* Assert an object is the same instance as another object 
+	* @expected.hint The expected data
+	* @actual.hint The actual data to test
+	* @message.hint The message to send in the failure
+	*/
+	function isSameInstance( required any expected, required any actual, message="" ){ 
+		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
+		var actualIdentityHashCode = getIdentityHashCode( arguments.actual );
+		
+		// validate same object
+		if( expectedIdentityHashCode == actualIdentityHashCode ){ return this; }
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#:#expectedIdentityHashCode#] but received [#getStringName( arguments.actual )#:#actualIdentityHashCode#]" );
+		// if we reach here, the objects weren't the same
+		fail( arguments.message );
+	}
+
+	/**
+	* Assert an object is not the same instance as another object
+	* @expected.hint The expected data
+	* @actual.hint The actual data to test
+	* @message.hint The message to send in the failure
+	*/
+	function isNotSameInstance( required any expected, required any actual, message="" ){ 
+		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
+		var actualIdentityHashCode = getIdentityHashCode( arguments.actual );
+		
+		// validate not same object
+		if( expectedIdentityHashCode != actualIdentityHashCode ){ return this; }
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#:#expectedIdentityHashCode#] to not be [#getStringName( arguments.actual )#:#actualIdentityHashCode#]" );
+		// if we reach here, they are equal!
+		fail( arguments.message );
+	}
 
 	/**
 	* Assert strings are equal to each other with case. 
@@ -696,5 +730,12 @@ component{
 
 		return aLength;
 	}
+	
+	private function getIdentityHashCode( required any target ){
+		var system = createObject("java", "java.lang.System");
+		return system.identityHashCode(arguments.target);
+	}
+
+
 
 }
