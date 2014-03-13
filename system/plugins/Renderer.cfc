@@ -23,23 +23,33 @@ Description :
 		<cfscript>
 			super.init(arguments.controller);
 
-			// Set Conventions
-			instance.layoutsConvention 			= controller.getSetting("layoutsConvention",true);
-			instance.viewsConvention 			= controller.getSetting("viewsConvention",true);
-			instance.appMapping 				= controller.getSetting("AppMapping");
-			instance.viewsExternalLocation 		= controller.getSetting('ViewsExternalLocation');
-			instance.layoutsExternalLocation 	= controller.getSetting('LayoutsExternalLocation');
-			instance.modulesConfig				= controller.getSetting("modules");
+			// Set Conventions, Settings and Properties
+			instance.layoutsConvention 			= controller.getSetting( "layoutsConvention", true );
+			instance.viewsConvention 			= controller.getSetting( "viewsConvention", true );
+			instance.appMapping 				= controller.getSetting( "AppMapping" );
+			instance.viewsExternalLocation 		= controller.getSetting( "ViewsExternalLocation" );
+			instance.layoutsExternalLocation 	= controller.getSetting( "LayoutsExternalLocation" );
+			instance.modulesConfig				= controller.getSetting( "modules" );
+			instance.viewsHelper				= controller.getSetting( "viewsHelper" );
+			instance.isViewsHelperIncluded		= false;
 			instance.debuggerService			= controller.getDebuggerService();
 			instance.explicitView 				= "";
 
+			// Verify View Helper Template extension + location
+			if( len( instance.viewsHelper ) ){
+				// extension detection
+				instance.viewsHelper = ( listLast( instance.viewsHelper, "." ) eq "cfm" ? instance.viewsHelper : instance.viewsHelper & ".cfm" );
+				// Append mapping to it.
+				instance.viewsHelper = "/#instance.appMapping#/#instance.viewsHelper#";
+			}
+
 			// Template Cache & Caching Maps
-			instance.templateCache 				= controller.getColdboxOCM("template");
+			instance.templateCache 				= controller.getColdboxOCM( "template" );
 			instance.renderedHelpers			= {};
 			instance.lockName					= "rendering.#controller.getAppHash()#";
 
 			// Discovery caching is tied to handlers for discovery.
-			instance.isDiscoveryCaching			= controller.getSetting("handlerCaching");
+			instance.isDiscoveryCaching			= controller.getSetting( "handlerCaching" );
 
 			// Set event scope, we are not caching, so it is threadsafe.
 			event 	= getRequestContext();
@@ -335,7 +345,19 @@ Description :
 
     	<cfset var cbox_renderedView = "">
 		<!--- Nasty CF Whitespace --->
-		<cfsavecontent variable="cbox_renderedView"><cfif len(arguments.viewHelperPath) AND NOT structKeyExists(instance.renderedHelpers,arguments.viewHelperPath)><cfoutput><cfinclude template="#arguments.viewHelperPath#"><cfset instance.renderedHelpers[arguments.viewHelperPath]=true></cfoutput></cfif><cfoutput><cfinclude template="#arguments.viewPath#.cfm"></cfoutput></cfsavecontent>
+		<cfsavecontent variable="cbox_renderedView"><!---
+			This is the global views helper
+		---><cfif ( len( instance.viewsHelper ) AND ! instance.isViewsHelperIncluded )><!---
+			---><cfoutput><cfinclude template="#instance.viewsHelper#"></cfoutput><!---
+			---><cfset instance.isViewsHelperIncluded = true><!---
+		---></cfif><!---
+			This is the internal helper + view
+		---><cfif len( arguments.viewHelperPath ) AND NOT structKeyExists( instance.renderedHelpers, arguments.viewHelperPath )><!---
+			---><cfoutput><cfinclude template="#arguments.viewHelperPath#"><!---
+			---><cfset instance.renderedHelpers[ arguments.viewHelperPath ] = true></cfoutput><!---
+		---></cfif><!---
+		---><cfoutput><cfinclude template="#arguments.viewPath#.cfm"></cfoutput><!---
+		---></cfsavecontent>
 
     	<cfreturn cbox_renderedView>
     </cffunction>

@@ -274,6 +274,9 @@ Loads a coldbox cfc configuration file
 			if( isSimpleValue( configStruct[ "UDFLibraryFile" ] ) ){
 				configStruct[ "UDFLibraryFile" ] = listToArray( configStruct[ "UDFLibraryFile" ] );
 			}
+			//Check For viewsHelper
+			if ( not structKeyExists( configStruct, "viewsHelper" ) )
+				configStruct[ "viewsHelper" ] = "";
 			//Check For CustomErrorTemplate
 			if ( not structKeyExists( configStruct, "CustomErrorTemplate" ) )
 				configStruct[ "CustomErrorTemplate" ] = "";
