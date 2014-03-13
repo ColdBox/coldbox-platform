@@ -62,6 +62,8 @@ component extends="BaseTest" {
 
 	function testassertNotSame() {
 		assertNotSame( this, createObject("component", "coldbox.system.testing.MockBox") );
+		// Even if the same CFC, two separate instances would be "equal" but not the "same".
+		assertNotSame( createObject("component", "coldbox.system.testing.MockBox"), createObject("component", "coldbox.system.testing.MockBox") );
 	}
 
 	function testassertQueryEquals() {
@@ -78,14 +80,16 @@ component extends="BaseTest" {
 		assertQueryEquals( q1, q2 );
 	}
 
+	function testassertStructEquals() {
+		assertStructEquals( { name="luis", awesome=true }, { name="luis", awesome=true } );
+	}
+
+
 	function testassertSame(){
 		assertSame( this, this );
+		var data = { name="luis", awesome=true };
+		assertSame( data, data );
 	}
-
-	function testassertStructEquals() {
-		assertSame( { name="luis", awesome=true }, { name="luis", awesome=true } );
-	}
-
 	function testAssertTrue() {
 		assertTrue( true );
 	}
