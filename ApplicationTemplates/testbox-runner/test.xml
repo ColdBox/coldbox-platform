@@ -71,7 +71,11 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 verbose="true"/>
 		 -->
 		
+        <!-- Read Result Properties -->
         <property file="${report.dir}/TEST.properties"/>
+        <!-- Echo them out -->
+        <echoproperties regex="^(test|total).*"/>
+        <!-- Fail build if they failed -->
         <fail if="test.failed"/>
 	</target>
 
@@ -115,7 +119,11 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			</report>
 		</junitreport> 
 		
+        <!-- Read Result Properties -->
         <property file="${report.dir}/TEST.properties"/>
+        <!-- Echo them out -->
+        <echoproperties regex="^(test|total).*"/>
+        <!-- Fail build if they failed -->
         <fail if="test.failed"/>
 	</target>
 

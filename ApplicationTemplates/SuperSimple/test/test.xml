@@ -19,7 +19,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 <project name="testbox-ant-runner" default="run" basedir=".">
 	
 	<!-- THE URL TO THE RUNNER, PLEASE CHANGE ACCORDINGLY-->
-	<property name="url.runner"			value="http://cf10cboxdev.jfetmac/coldbox/ApplicationTemplates/SuperSimple/runner.cfm?"/>
+	<property name="url.runner"			value="http://cf10cboxdev.jfetmac/coldbox/ApplicationTemplates/SuperSimple/test/runner.cfm?"/>
 	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
 	<property name="test.bundles"		value="" />
 	<!-- FILL OUT THE DIRECTORY MAPPING TO TEST -->
@@ -71,7 +71,11 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 verbose="true"/>
 		 -->
 		
+        <!-- Read Result Properties -->
         <property file="${report.dir}/TEST.properties"/>
+        <!-- Echo them out -->
+        <echoproperties regex="^(test|total).*"/>
+        <!-- Fail build if they failed -->
         <fail if="test.failed"/>
 	</target>
 
@@ -115,7 +119,11 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			</report>
 		</junitreport> 
 		
+        <!-- Read Result Properties -->
         <property file="${report.dir}/TEST.properties"/>
+        <!-- Echo them out -->
+        <echoproperties regex="^(test|total).*"/>
+        <!-- Fail build if they failed -->
         <fail if="test.failed"/>
 	</target>
 
