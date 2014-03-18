@@ -6,7 +6,7 @@
 		<cfargument name="Event"  required="yes">
 	    
 	    <cfset event.setView('externalview')>	     
-	</cffunction>		<!--- display login form (testing security interceptor) --->	<cffunction name="dspLogin" access="public" returntype="Void" output="false">		<cfargument name="Event"  required="yes">		<cfset var rc = event.getCollection()>		 <!--- testing secure handlers/methods --->		<cfset event.setView('vwLoginForm')>	</cffunction>		<!--- dumpsettings --->	<cffunction name="dumpsettings" access="public" returntype="void" output="false" hint="">		<cfargument name="Event" type="any" required="yes">	</cffunction>		<!--- viewCaching --->
+	</cffunction>		<!--- display login form (testing security interceptor) --->	<cffunction name="dspLogin" access="public" returntype="Void" output="false">		<cfargument name="Event"  required="yes">		<cfset var rc = event.getCollection()>		 <!--- testing secure handlers/methods --->		<cfset event.setView('vwLoginForm')>	</cffunction>		<!--- dumpsettings --->	<cffunction name="dumpsettings" access="public" returntype="void" output="false" hint="">		<cfargument name="Event" type="any" required="yes">	</cffunction>	<cffunction name="dumpRC" access="public" output="false" returntype="void">		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">	</cffunction>			<!--- viewCaching --->
     <cffunction name="viewCaching" output="false" access="public" returntype="any" hint="">
     	<cfargument name="Event" type="any" required="yes">    	    	<cfset event.setview(name="ehGeneral/viewCaching",cache="true",cacheSuffix='HelloLuis')>
     </cffunction>
