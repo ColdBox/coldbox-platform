@@ -461,16 +461,26 @@ Description :
 			patternType = "alphanumeric";
 			if( findnoCase("-numeric",thisPattern) ){ patternType = "numeric"; }
 			if( findnoCase("-alpha",thisPattern) ){ patternType = "alpha"; }
-			if( findNoCase("regex:",thisPattern) ){ patternType = "regex"; }
+			// This is a prefix like above to match a param (creates rc variable)
+			if( findNoCase("-regex:",thisPattern) ){ patternType = "regexParam"; }
+			// This is a placeholder for static text in the route
+			else if( findNoCase("regex:",thisPattern) ){ patternType = "regex"; }
 
 			// Pattern Type Regex
 			switch(patternType){
-				// CUSTOM REGEX
+				// CUSTOM REGEX for static route parts
 				case "regex" : {
 					thisRegex = replacenocase(thisPattern,"regex:","");
 					break;
 				}
-
+				// CUSTOM REGEX for route param
+				case "regexParam" : {
+					// Pull out Regex Pattern
+					thisRegex = REReplace(thisPattern, ":.*?-regex:", "");
+					// Add Route Param
+					arrayAppend(thisRoute.patternParams,thisPatternParam);
+					break;
+				}
 				// ALPHANUMERICAL OPTIONAL
 				case "alphanumeric" : {
 					if( find(":",thisPattern) ){
