@@ -22,4 +22,5 @@
 
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=default.protect">PreHandler Protection</a></p>
 <p><a href="#event.buildLink('ehGeneral.viewcaching')#">View Caching With Suffix</a></p>
+<p><a href="#getSetting("sesbaseURL")#/post/myPostID/myUserID/xml">Route with regex param matching</a></p>
 </cfoutput>
