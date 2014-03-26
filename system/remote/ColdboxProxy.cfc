@@ -16,7 +16,56 @@ Description :
 	<cfscript>
 		// Setup Default Namespace Key for controller locations
 		setCOLDBOX_APP_KEY("cbController");
+		
+		// Remote proxies are created by the CFML engine without calling init(), 
+		// so autowire in here in the pseduo constructor
+		selfAutowire();
 	</cfscript>
+
+	<!--- selfAutowire --->
+    <cffunction name="selfAutowire" output="false" access="private" hint="Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path.">
+		<cfscript>
+			// Find the path of the proxy component being called
+			var componentpath = replaceNoCase(mid(cgi.script_name,2,len(cgi.script_name)-5),'/','.');
+			var injector = getWirebox();
+			var binder = injector.getBinder();
+			var mapping = '';
+						
+			// Prevent recursive object creation in Railo
+			if( !structKeyExists( request, 'proxyAutowire' ) ){
+				request.proxyAutowire = true;
+				
+				// If a mapping for this proxy doesn't exist, create it.
+				if( !binder.mappingExists( componentpath ) ) {
+					// First one only, please
+					lock name="ColdBoxProxy.createMapping.#hash( componentpath )#" type="exclusive" timeout="20" {
+						// Double check		
+						if( !binder.mappingExists( componentpath ) ) {
+											
+							// Get its metadata
+							var md = getUtil().getInheritedMetaData( componentpath );
+							
+							// register new mapping instance
+							injector.registerNewInstance( componentpath, componentpath );
+							// get Mapping created
+							mapping = binder.getMapping( componentpath );
+							// process it with the correct metadata
+							mapping.process( binder=binder, injector=injector, metadata=md );							
+							
+						}
+						
+					} // End lock
+				} // End outer exists check
+							
+				// Guaranteed to exist now
+				mapping = binder.getMapping( componentpath );
+			
+				// Autowire ourself based on the mapping
+				getWirebox().autowire(target=this, mapping=mapping, annotationCheck=true);
+			}
+		</cfscript>
+
+    </cffunction>
 
 	<!--- getRemotingUtil --->
     <cffunction name="getRemotingUtil" output="false" access="private" returntype="coldbox.system.remote.RemotingUtil" hint="Get a reference to the ColdBox Remoting utility class.">
