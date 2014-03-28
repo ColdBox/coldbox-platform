@@ -252,7 +252,7 @@ Description :
 			}
 			
 			// directly map to a path
-			return map( cName ).to( arguments.path );
+			return this.map( cName ).to( arguments.path );
 		</cfscript>
     </cffunction>
 
@@ -863,7 +863,7 @@ Description :
 				// iterate and register
 				for(key in wireboxDSL.mappings){
 					// create mapping & process its data memento
-					map(key);
+					this.map(key);
 					instance.mappings[ key ].processMemento( wireBoxDSL.mappings[key] );
 				}
 			}
@@ -939,7 +939,7 @@ Description :
 		<cfargument name="autoBinding" 	type="boolean" 	required="true" default="true" hint="Allow autobinding of this aspect or not? Defaults to true"/>
     	<cfscript>
 			// map eagerly
-			map(arguments.aspect).asEagerInit().asSingleton();
+			this.map(arguments.aspect).asEagerInit().asSingleton();
 
 			// register the aspect
 			currentMapping.setAspect( true ).setAspectAutoBinding( arguments.autoBinding );
