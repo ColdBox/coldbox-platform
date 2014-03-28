@@ -1,6 +1,10 @@
 <!--- SETUP THE ROOTS OF THE BROWSER RIGHT HERE --->
 <cfset rootMapping 	= "/coldbox/testing">
-<cfset rootPath 	= expandPath( rootMapping )>
+<cfif directoryExists( rootMapping )>
+	<cfset rootPath = rootMapping>
+<cfelse>
+	<cfset rootPath = expandPath( rootMapping )>
+</cfif>
 
 <!--- param incoming --->
 <cfparam name="url.path" default="/">
@@ -22,7 +26,7 @@
 		<cfoutput><h1>Invalid incoming directory: #rootMapping & url.path#</h1></cfoutput>
 	</cfif>
 	<cfabort>
-	
+
 </cfif>
 
 <!--- Get list of files --->
@@ -45,7 +49,7 @@
 	<script><cfinclude template="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
 	<script>
 	$(document).ready(function() {
-		
+
 	});
 	function runTests(){
 		$("#btn-run").html( 'Running...' ).css( "opacity", "0.5" );
@@ -152,7 +156,7 @@
 			Below is a listing of the files and folders starting from your root <code>#rootPath#</code>.  You can click on individual tests in order to execute them
 			or click on the <strong>Run All</strong> button on your left and it will execute a directory runner from the visible folder.
 		</p>
-		
+
 		<fieldset><legend>Contents: #executePath#</legend>
 		<cfif url.path neq "/">
 			<a href="index.cfm?path=#URLEncodedFormat( backPath )#"><button type="button" class="btn-red">&lt;&lt; Back</button></a><br><hr>
@@ -172,7 +176,7 @@
 			<cfelse>
 				#qResults.name#<br/>
 			</cfif>
-				
+
 		</cfloop>
 		</fieldset>
 
