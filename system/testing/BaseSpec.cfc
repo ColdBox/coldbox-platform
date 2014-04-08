@@ -345,7 +345,7 @@ component{
 		// Register the methods into our custom assertions struct
 		var methodArray = structKeyArray( oAssertions );
 		for( var thisMethod in methodArray ){
-			this.$assert[ thisMethod ] = oAssertions[ methodArray ];
+			this.$assert[ thisMethod ] = oAssertions[ thisMethod ];
 		}
 
 		return this;

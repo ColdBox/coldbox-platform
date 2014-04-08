@@ -1,3 +1,6 @@
+<cfsetting showdebugoutput="false" >
+<!--- CPU Integration --->
+<cfparam name="url.cpu" default="false">
 <!--- SETUP THE ROOTS OF THE BROWSER RIGHT HERE --->
 <cfset rootMapping 	= "/coldbox/testing">
 <cfif directoryExists( rootMapping )>
@@ -116,8 +119,8 @@
 		color:#ffffff;
 		font-weight:bold;
 		font-style:normal;
-		height:25px;
-		width:71px;
+		padding: 2px 5px;
+		margin: 2px 0px;
 		text-decoration:none;
 		text-align:center;
 		cursor: pointer;
@@ -170,9 +173,9 @@
 			<cfif qResults.type eq "Dir">
 				+<a href="index.cfm?path=#dirPath#">#qResults.name#</a><br/>
 			<cfelseif listLast( qresults.name, ".") eq "cfm">
-				<a href="#executePath & qResults.name#" target="_blank">#qResults.name#</a><br/>
-			<cfelseif listLast( qresults.name, ".") eq "cfc" and findNoCase( "Test", qResults.name )>
-				<a class="test" href="#executePath & qResults.name#?method=runRemote" target="_blank"><button type="button">#qResults.name#</button></a><br/>
+				<a class="btn-red" href="#executePath & qResults.name#" <cfif !url.cpu>target="_blank"</cfif>>#qResults.name#</a><br/>
+			<cfelseif listLast( qresults.name, ".") eq "cfc" and qresults.name neq "Application.cfc">
+				<a class="test btn-red" href="#executePath & qResults.name#?method=runRemote" <cfif !url.cpu>target="_blank"</cfif>>#qResults.name#</a><br/>
 			<cfelse>
 				#qResults.name#<br/>
 			</cfif>
