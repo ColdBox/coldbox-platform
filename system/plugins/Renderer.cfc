@@ -155,8 +155,14 @@ Description :
 				arguments.cacheSuffix 				= viewCacheEntry.cacheSuffix;
 				arguments.cacheProvider				= viewCacheEntry.cacheProvider;
 			}
+			
 			// Prepare caching key
-			viewCacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & arguments.module & ":" & arguments.view & arguments.cacheSuffix;
+			viewCacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX;
+			// If we have a module, incorporate it
+			if( len( arguments.module ) ){ viewCacheKey &= arguments.module & ":"; }
+			// Incorporate view and suffix
+			viewCacheKey &= arguments.view & arguments.cacheSuffix;
+
 			// Are we caching?
 			if (arguments.cache){
 				// Which provider you want to use?
