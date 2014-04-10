@@ -36,7 +36,7 @@ Optional Methods
 - {environment}() : The name of the environment found and called by the framework.
 
 */
-	
+
 // Configure ColdBox Application
 function configure(){
 
@@ -44,13 +44,11 @@ function configure(){
 	coldbox = {
 		//Application Setup
 		appName 				= "Your app Name Here",
-		
+
 		//Development Settings
-		debugMode				= true,
-		debugPassword			= "",
 		reinitPassword			= "",
 		handlersIndexAutoReload = true,
-		
+
 		//Implicit Events
 		defaultEvent			= "",
 		requestStartHandler		= "",
@@ -60,24 +58,24 @@ function configure(){
 		sessionStartHandler 	= "",
 		sessionEndHandler		= "",
 		missingTemplateHandler	= "",
-		
+
 		//Error/Exception Handling
 		exceptionHandler		= "",
 		onInvalidEvent			= "",
 		customErrorTemplate		= "",
-			
+
 		//Application Aspects
 		handlerCaching 			= false,
 		eventCaching			= false
 	};
-	
+
 	// environment settings, create a detectEnvironment() method to detect it yourself.
 	// create a function with the name of the environment so it can be executed if that environment is detected
 	// the value of the environment is a list of regex patterns to match the cgi.http_host.
 	environments = {
 		//development = "^cf8.,^railo."
 	};
-	
+
 	// Module Directives
 	modules = {
 		//Turn to false in production
@@ -85,16 +83,16 @@ function configure(){
 		// An array of modules names to load, empty means all of them
 		include = [],
 		// An array of modules names to NOT load, empty means none
-		exclude = [] 
+		exclude = []
 	};
-	
+
 	//Register interceptors as an array, we need order
 	interceptors = [
 		 //SES
-		 {class="coldbox.system.interceptors.SES"}
+		 { class="coldbox.system.interceptors.SES" }
 	];
-	
+
 }
-	
+
 </cfscript>
 </cfcomponent>

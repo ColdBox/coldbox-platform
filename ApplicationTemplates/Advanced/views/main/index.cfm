@@ -1,5 +1,5 @@
 ﻿<cfoutput>
-<div class="hero-unit">
+<div class="jumbotron">
 	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
 	<h1>#prc.welcomeMessage#</h1>
 	<p>
@@ -13,7 +13,7 @@
 </div>
 
 <div class="row">
-	<div class="span9">
+	<div class="col-md-9">
 
 		<section id="eventHandlers">
 		<div class="page-header">
@@ -21,7 +21,7 @@
 				Registered Event Handlers
 			</h2>
 			<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle btn-small" href="##" data-toggle="dropdown">
+				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
 					<i class="icon-info-sign"></i> Related Docs
 					<span class="caret"></span>
 				</a>
@@ -40,7 +40,7 @@
 		</p>
 		<ul>
 			<cfloop list="#getSetting("RegisteredHandlers")#" index="handler">
-			<li><a href="#event.buildLink(handler)#">#handler#</a></li>
+			<li><a href="#event.buildLink( handler )#">#handler#</a></li>
 			</cfloop>
 		</ul>
 		</section>
@@ -51,7 +51,7 @@
 	        	Registered Modules
 			</h2>
 			<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle btn-small" href="##" data-toggle="dropdown">
+				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
 					<i class="icon-info-sign"></i> Related Docs
 					<span class="caret"></span>
 				</a>
@@ -64,11 +64,11 @@
 		<p>Below are your application's loaded modules, click on them to visit them.</p>
 		<ul>
 			<cfloop collection="#getSetting("Modules")#" item="thisModule">
-			<li><a href="#event.buildLink(getModuleSettings(thisModule).entryPoint)#">#thisModule#</a></li>
+			<li><a href="#event.buildLink( getModuleSettings( thisModule ).entryPoint )#">#thisModule#</a></li>
 			</cfloop>
 		</ul>
 		<cfif structCount( getSetting("Modules") ) eq 0>
-			<div class="alert alert-error">There are no modules in your application</div>
+			<div class="alert alert-info">There are no modules in your application</div>
 		</cfif>
 		</section>
 
@@ -78,7 +78,7 @@
 				Application Test Harness
 			</h2>
 			<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle btn-small" href="##" data-toggle="dropdown">
+				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
 					<i class="icon-info-sign"></i> Related Docs
 					<span class="caret"></span>
 				</a>
@@ -115,11 +115,7 @@
 						<em>resources</em>
 					</td>
 					<td>
-						Where test resources go, we have placed two for you:
-						<ul>
-							<li><strong>HttpAntRunner</strong> - MXUnit ANT Integration</li>
-							<li><strong>RemoteFacade</strong> - MXUnit Eclipse Integration</li>
-						</ul>
+						Test resources like fixtures, itegrations, etc.
 					</td>
 				</tr>
 				<tr>
@@ -148,7 +144,7 @@
 		<div class="page-header">
        		<h2>ColdBox URL Actions</h2>
 			<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle btn-small" href="##" data-toggle="dropdown">
+				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
 					<i class="icon-info-sign"></i> Related Docs
 					<span class="caret"></span>
 				</a>
@@ -173,27 +169,7 @@
 					</td>
 					<td>Reinitialize the Application</td>
 					<td>
-						<a class="btn btn-danger" href="index.cfm?fwreinit=1">Execute</a>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<em>?debugmode=false</em><br/>
-						<em>?debugmode=false&debugpass={DebugPassword}</em>
-					</td>
-					<td>Remove debug mode</td>
-					<td>
-						<a class="btn btn-danger" href="index.cfm?debugmode=false">Execute</a>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<em>?debugmode=true</em><br/>
-						<em>?debugmode=true&debugpass={DebugPassword}</em>
-					</td>
-					<td>Enable debug mode</td>
-					<td>
-						<a class="btn btn-danger" href="index.cfm?debugmode=true">Execute</a>
+						<a class="btn btn-info" href="index.cfm?fwreinit=1">Execute</a>
 					</td>
 				</tr>
 			</tbody>
@@ -204,7 +180,7 @@
 		<div class="page-header">
 			<h2>Customizing your Application</h2>
 			<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle btn-small" href="##" data-toggle="dropdown">
+				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
 					<i class="icon-info-sign"></i> Related Docs
 					<span class="caret"></span>
 				</a>
@@ -225,16 +201,25 @@
 		        <b>/config/ColdBox.cfc</b>: Your application configuration file
 		    </li>
 			<li>
-		        <b>/config/routes.cfm</b>: Your URL Mappings
+		        <b>/config/Routes.cfm</b>: Your URL Mappings
+		    </li>
+		    <li>
+		        <b>/config/WireBox.cfc</b>: Your WireBox Binder
 		    </li>
 		    <li>
 		        <b>/handlers</b>: Your application event handlers
+		    </li>
+		    <li>
+		        <b>/interceptors</b>: System interceptors
 		    </li>
 			<li>
 		        <b>/includes</b>: Assets, Helpers, i18n, templates and more.
 		    </li>
 			<li>
 		        <b>/layouts</b>:Your application skin layouts
+		    </li>
+		    <li>
+		        <b>/lib</b>: Where Jar files can be integrated
 		    </li>
 			<li>
 		        <b>/model</b>: Your model layer
@@ -243,10 +228,7 @@
 		        <b>/modules</b>: Your application modules
 		    </li>
 			<li>
-		        <b>/plugins</b>: Where you place ColdBox custom plugins built by you!
-		    </li>
-			<li>
-		        <b>/test</b>: Your unit testing harness (Just DO IT!!)
+		        <b>/test</b>: Your BDD testing harness (Just DO IT!!)
 		    </li>
 			<li>
 		        <b>/views</b>: Your application views
@@ -256,57 +238,52 @@
 	</div>
 
 	<!---Side Bar --->
-	<div class="span3">
+	<div class="col-md-3">
 		<div class="well">
-		<ul class="nav nav-list">
-			<li class="nav-header">Important Links</li>
-			<li>
-                <a href="http://www.coldbox.org">ColdBox Site</a>
-            </li>
-            <li>
-                <a href="http://blog.coldbox.org">Blog</a>
-            </li>
-            <li>
-                <a href="https://ortussolutions.atlassian.net/browse/COLDBOX">Bug Tracker</a>
-            </li>
-			<li>
-                <a href="https://github.com/ColdBox/coldbox-platform">Source Code</a>
-            </li>
-			<li>
-                <a href="http://wiki.coldbox.org">Docs</a>
-            </li>
-			<li>
-				<a href="http://apidocs.coldbox.org">Quick API Docs</a>
-			</li>
-			<li>
-				<a href="http://www.coldbox.org/forgebox" rel="tooltip" title="Community for plugins, interceptors, modules, etc.">ForgeBox</a>
-			</li>
-			<li class="nav-header">Training</li>
-            <li>
-                <a href="http://www.coldbox.org/support/training">Course Catalog</a>
-            </li>
-			<li>
-				<a href="http://coldbox.org/media">Training Videos</a>
-			</li>
-			<li>
-				<a href="http://coldbox.org/media/connection">ColdBox Connection</a>
-			</li>
-            <li class="nav-header">Support</li>
-            <li>
-                <a href="http://groups.google.com/group/coldbox">Mailing List</a>
-            </li>
-			<li>
-				<a href="http://www.coldbox.org/support/overview">Community Support</a>
-			</li>
-			<li>
-				<a href="http://www.coldbox.org/support/paid">Professional Support</a>
-			</li>
-		</ul>
-		<br/>
-		<div class="centered margin10">
-			<img src="http://www.coldbox.org/includes/images/logos/poweredby.gif" alt="ColdBox" />
-		</div>
-
+			<ul class="nav nav-list">
+				<li><strong>Important Links</strong></li>
+				<li>
+	                <a href="http://www.coldbox.org">ColdBox Site</a>
+	            </li>
+	            <li>
+	                <a href="http://blog.coldbox.org">Blog</a>
+	            </li>
+	            <li>
+	                <a href="https://ortussolutions.atlassian.net/browse/COLDBOX">Bug Tracker</a>
+	            </li>
+				<li>
+	                <a href="https://github.com/ColdBox/coldbox-platform">Source Code</a>
+	            </li>
+				<li>
+	                <a href="http://wiki.coldbox.org">Docs</a>
+	            </li>
+				<li>
+					<a href="http://apidocs.coldbox.org">Quick API Docs</a>
+				</li>
+				<li>
+					<a href="http://www.coldbox.org/forgebox" rel="tooltip" title="Community for plugins, interceptors, modules, etc.">ForgeBox</a>
+				</li>
+				<li><strong>Training</strong></li>
+	            <li>
+	                <a href="http://www.ortussolutions.com/services/training">Course Catalog</a>
+	            </li>
+				<li>
+					<a href="http://coldbox.org/media">Training Videos</a>
+				</li>
+				<li>
+					<a href="http://coldbox.org/media/connection">ColdBox Connection</a>
+				</li>
+	            <li><strong>Support</strong></li>
+	            <li>
+	                <a href="http://groups.google.com/group/coldbox">Mailing List</a>
+	            </li>
+				<li>
+					<a href="http://www.coldbox.org/support/overview">Community Support</a>
+				</li>
+				<li>
+					<a href="http://www.ortussolutions.com/services">Professional Support</a>
+				</li>
+			</ul>
 		</div>
 	</div>
 </div>

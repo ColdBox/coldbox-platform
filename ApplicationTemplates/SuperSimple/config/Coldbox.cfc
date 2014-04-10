@@ -9,8 +9,6 @@ function configure(){
 		appName 				= "SuperSimpleApp",
 
 		//Development Settings
-		debugMode				= true,
-		debugPassword			= "",
 		reinitPassword			= "",
 		handlersIndexAutoReload = true,
 

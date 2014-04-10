@@ -10,8 +10,6 @@
 			eventName 				= "event",
 
 			//Development Settings
-			debugMode				= true,
-			debugPassword			= "",
 			reinitPassword			= "",
 			handlersIndexAutoReload = true,
 
@@ -72,7 +70,7 @@
 		logBox = {
 			// Define Appenders
 			appenders = {
-				coldboxTracer = { class="coldbox.system.logging.appenders.ColdboxTracerAppender" }
+				coldboxTracer = { class="coldbox.system.logging.appenders.ConsoleAppender" }
 			},
 			// Root Logger
 			root = { levelmax="INFO", appenders="*" },
@@ -165,26 +163,6 @@
 				framework = "coldspring",
 				definitionFile = "config/parent.xml.cfm"
 			}
-		};
-
-		//Debugger Settings
-		debugger = {
-			enableDumpVar = false,
-			persistentRequestProfilers = true,
-			maxPersistentRequestProfilers = 10,
-			maxRCPanelQueryRows = 50,
-			showRCSnapshots = false,
-			//Panels
-			showTracerPanel = true,
-			expandedTracerPanel = true,
-			showInfoPanel = true,
-			expandedInfoPanel = true,
-			showCachePanel = true,
-			expandedCachePanel = true,
-			showRCPanel = true,
-			expandedRCPanel = true,
-			showModulesPanel = true,
-			expandedModulesPanel = false
 		};
 
 		//Mailsettings
