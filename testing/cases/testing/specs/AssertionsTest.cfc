@@ -1,4 +1,4 @@
-component displayName="TestBox xUnit suite" labels="railo,cf" extends="Assertionscf9Test"{
+component displayName="TestBox xUnit suite for cf10 and above" labels="railo,cf" extends="Assertionscf9Test"{
 
 	function beforeTests(){
 		super.beforeTests();
@@ -30,6 +30,13 @@ component displayName="TestBox xUnit suite" labels="railo,cf" extends="Assertion
 
 	function testNegatedAwesomeCustomAssertion(){
 		$assert.isNotAwesome( "Lui Majan" );
+	}
+
+	function testIsEmptyFunctions(){
+		$assert.throws( function(){
+			$assert.isEmpty( variables.beforeTests );
+			$assert.isEmpty( function(){} );
+		} );
 	}
 
 }
