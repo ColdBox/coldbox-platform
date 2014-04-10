@@ -35,8 +35,6 @@ Description :
 				"preLayout", "preRender", "postRender", "preViewRender", "postViewRender", "preLayoutRender", "postLayoutRender",
 				// Module Events
 				"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload",
-				// Debugger
-				"beforeDebuggerPanel", "afterDebuggerPanel",
 				// CriteriaBuilder
 				"onCriteriaBuilderAddition", "beforeCriteriaBuilderList", "afterCriteriaBuilderList", "beforeCriteriaBuilderCount", "afterCriteriaBuilderCount",
 				// ORM Bridge Events
@@ -68,7 +66,7 @@ Description :
     		instance.interceptorConfig = controller.getSetting("InterceptorConfig");
 			// Register CFC Configuration Object
 			registerInterceptor(interceptorObject=controller.getSetting('coldboxConfig'), interceptorName="coldboxConfig");
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -81,7 +79,7 @@ Description :
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Register all the interceptors --->
@@ -213,12 +211,12 @@ Description :
 				// Parse Interception Points
 				interceptionPointsFound = structnew();
 				interceptionPointsFound = parseMetadata( getMetaData( oInterceptor ), interceptionPointsFound );
-				
+
 				// Register this Interceptor's interception point with its appropriate interceptor state
 				for(stateKey in interceptionPointsFound){
 					// Register the point
-					registerInterceptionPoint(interceptorKey=objectName, 
-											  state=stateKey, 
+					registerInterceptionPoint(interceptorKey=objectName,
+											  state=stateKey,
 											  oInterceptor=oInterceptor,
 											  interceptorMD=interceptionPointsFound[ stateKey ]);
 					// Debug log
@@ -380,7 +378,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oInterceptorState = "";
-			
+
 			// Init md if not passed
 			if( not structKeyExists( arguments, "interceptorMD") ){
 				arguments.interceptorMD = newPointRecord();
@@ -410,19 +408,19 @@ Description :
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<!--- newPointRecord --->    
-    <cffunction name="newPointRecord" output="false" access="private" returntype="any" hint="Create a new interception point record">    
+	<!--- newPointRecord --->
+    <cffunction name="newPointRecord" output="false" access="private" returntype="any" hint="Create a new interception point record">
     	<cfscript>
 			var pointRecord = { async = false, asyncPriority = "normal", eventPattern = "" };
-			return pointRecord;    
-    	</cfscript>    
+			return pointRecord;
+    	</cfscript>
     </cffunction>
 
 	<!--- wireboxSetup --->
     <cffunction name="wireboxSetup" output="false" access="private" returntype="any" hint="Verifies the setup for interceptor classes is online">
     	<cfscript>
 			var wirebox = controller.getWireBox();
-			
+
 			// Check if handler mapped?
 			if( NOT wirebox.getBinder().mappingExists( instance.INTERCEPTOR_BASE_CLASS ) ){
 				// feed the base class
@@ -484,7 +482,7 @@ Description :
 				// Recursive lookup
 				parseMetadata( arguments.metadata.extends, pointsFound );
 			}
-			
+
 			//return the interception points found
 			return pointsFound;
 		</cfscript>

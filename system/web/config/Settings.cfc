@@ -35,25 +35,6 @@ ColdBox Default Configuration
 		autoSave = true
 	};
 
-	// Debugger Defaults
-	this.debuggerSettings = {
-		enableDumpVar = true,
-	    persistentRequestProfiler = true,
-	    maxPersistentRequestProfilers = 10,
-	    maxRCPanelQueryRows = 50,
-	    showTracerPanel = true,
-	    expandedTracerPanel = true,
-	    showInfoPanel = true,
-	    expandedInfoPanel = true,
-	    showCachePanel = true,
-	    expandedCachePanel = false,
-	    showRCPanel = true,
-	    expandedRCPanel = false,
-	    showModulesPanel = true,
-	    expandedModulesPanel = false,
-	    showRCSnapshots = false
-    };
-
     // Conventions
     this.handlersConvention	= "handlers";
 	this.pluginsConvention	= "plugins";

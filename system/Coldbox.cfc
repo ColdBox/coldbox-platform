@@ -180,30 +180,6 @@ Description :
 			<!--- Create Request Context & Capture Request --->
 			<cfset event = cbController.getRequestService().requestCapture()>
 
-			<!--- Debugging Monitors & Commands Check --->
-			<cfif cbController.getDebuggerService().getDebugMode()>
-
-				<!--- ColdBox Command Executions --->
-				<cfset coldboxCommands(cbController,event)>
-
-				<!--- Debug Panel rendering --->
-				<cfset debugPanel = event.getValue("debugPanel","")>
-				<cfswitch expression="#debugPanel#">
-					<cfcase value="profiler">
-						<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
-					</cfcase>
-					<cfcase value="cache,cacheReport,cacheContentReport,cacheViewer">
-						<cfmodule template="/coldbox/system/cache/report/monitor.cfm"
-								  cacheFactory="#cbController.getCacheBox()#">
-					</cfcase>
-				</cfswitch>
-				<!--- Stop Processing, we are rendering a debugger panel --->
-				<cfif len(debugPanel)>
-					<cfsetting showdebugoutput="false">
-					<cfreturn>
-				</cfif>
-			</cfif>
-
 			<!--- Execute preProcess Interception --->
 			<cfset interceptorService.processState("preProcess")>
 
@@ -307,7 +283,7 @@ Description :
 					<cfif isStruct(renderData) and not structisEmpty(renderData)>
 						<cfset event.showDebugPanel(false)>
 						<cfset renderDataSetup(argumentCollection=renderData)><!---
-						Binary 
+						Binary
 						---><cfif renderData.isBinary><cfcontent type="#renderData.contentType#" variable="#renderedContent#" /><!---
 						Non Binary
 						---><cfelse><cfoutput>#renderedContent#</cfoutput></cfif>
@@ -356,17 +332,6 @@ Description :
 
 		<!--- Time the request --->
 		<cfset request.fwExecTime = getTickCount() - request.fwExecTime>
-
-		<!--- DebugMode Routines --->
-		<cfif cbController.getDebuggerService().getDebugMode()>
-			<!--- Record Profilers --->
-			<cfset cbController.getDebuggerService().recordProfiler()>
-			<!--- Render DebugPanel --->
-			<cfif event.getDebugPanelFlag()>
-				<!--- Render Debug Log --->
-				<cfoutput>#interceptorService.processState("beforeDebuggerPanel")##cbController.getDebuggerService().renderDebugLog()##interceptorService.processState("afterDebuggerPanel")#</cfoutput>
-			</cfif>
-		</cfif>
 	</cffunction>
 
 	<!--- on Request Start --->

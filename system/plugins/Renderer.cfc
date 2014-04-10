@@ -32,7 +32,6 @@ Description :
 			instance.modulesConfig				= controller.getSetting( "modules" );
 			instance.viewsHelper				= controller.getSetting( "viewsHelper" );
 			instance.isViewsHelperIncluded		= false;
-			instance.debuggerService			= controller.getDebuggerService();
 			instance.explicitView 				= "";
 
 			// Verify View Helper Template extension + location
@@ -101,7 +100,6 @@ Description :
 			var viewCacheKey 		= "";
 			var viewCacheEntry 		= "";
 			var viewCacheProvider 	= instance.templateCache;
-			var timerHash 			= 0;
 			var iData 				= arguments;
 			var explicitModule 		= false;
 			var viewLocations		= "";
@@ -141,10 +139,10 @@ Description :
 					   detail="Please remember to use the 'event.setView()' method in your handler or pass in a view to render.",
 					   type="Renderer.ViewNotSetException");
 			}
-			
+
 			// Cleanup leading / in views, just in case
 			arguments.view = reReplace( arguments.view, "^(\\|/)", "" );
-			
+
 			// Announce preViewRender interception
 			if( NOT arguments.prepostExempt ){ announceInterception("preViewRender", iData); }
 
@@ -166,11 +164,9 @@ Description :
 					viewCacheProvider = cacheBox.getCache( arguments.cacheProvider );
 				}
 				// Try to get from cache
-				timerHash = instance.debuggerService.timerStart("rendering Cached View [#arguments.view#.cfm] from '#arguments.cacheProvider# provider'");
 				iData.renderedView = viewCacheProvider.get( viewCacheKey );
 				// Verify it existed
 				if( structKeyExists(iData, "renderedView") ){
-					instance.debuggerService.timerEnd( timerHash );
 					// Post View Render Interception
 					if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
 					// Return it
@@ -183,7 +179,6 @@ Description :
 			viewLocations = discoverViewPaths(arguments.view,arguments.module,explicitModule);
 
 			// Render View Composite or View Collection
-			timerHash = instance.debuggerService.timerStart("rendering View [#arguments.view#.cfm]");
 			if( structKeyExists(arguments,"collection") ){
 				// render collection in next context
 				iData.renderedView = getPlugin("Renderer").renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows, arguments.collectionDelim);
@@ -192,7 +187,6 @@ Description :
 				// render simple composite view
 				iData.renderedView = renderViewComposite(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args);
 			}
-			instance.debuggerService.timerEnd(timerHash);
 
 			// Post View Render Interception point
 			if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
@@ -386,19 +380,15 @@ Description :
 			// Setup the cache provider
 			if( arguments.cacheProvider neq "template" ){ cbox_cacheProvider = cacheBox.getCache( arguments.cacheProvider ); }
 			// Try to get from cache
-			cbox_timerHash 		= instance.debuggerService.timerStart("rendering Cached External View [#arguments.view#.cfm] from '#arguments.cacheProvider#' provider");
 			cbox_renderedView 	= cbox_cacheProvider.get(cbox_cacheKey);
 			if( isDefined("cbox_renderedView") ){
-				instance.debuggerService.timerEnd( cbox_timerHash );
 				return cbox_renderedView;
 			}
 			// Not in cache, render it
-			cbox_timerHash = instance.debuggerService.timerStart("rendering External View [#arguments.view#.cfm]");
 			// Get view locations
 			viewLocations = discoverViewPaths( arguments.view,"",false);
 			// Render External View
 			cbox_renderedView = renderViewComposite(view, viewLocations.viewPath, viewLocations.viewHelperPath, args);
- 			instance.debuggerService.timerEnd(cbox_timerHash);
  			// Are we caching it
  			if( arguments.cache ){
  				cbox_cacheProvider.set(cbox_cacheKey, cbox_renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout);
@@ -418,7 +408,6 @@ Description :
 
 		<cfset var cbox_implicitLayout 		= implicitViewChecks()>
 		<cfset var cbox_currentLayout 		= cbox_implicitLayout>
-		<cfset var cbox_timerhash 			= "">
 		<cfset var cbox_locateUDF 			= variables.locateLayout>
 		<cfset var cbox_explicitModule  	= false>
 		<cfset var cbox_layoutLocationKey 	= "">
@@ -469,9 +458,6 @@ Description :
 			<cfset cbox_locateUDF = variables.locateModuleLayout>
 		</cfif>
 
-		<!--- Start Timer --->
-		<cfset cbox_timerhash = instance.debuggerService.timerStart("rendering Layout [#cbox_currentLayout#]")>
-
 		<!--- If Layout is blank, then just delegate to the view --->
 		<cfif len(cbox_currentLayout) eq 0>
 			<cfset iData.renderedLayout = renderView( module = arguments.viewModule )>
@@ -496,9 +482,6 @@ Description :
 			<!--- RenderLayout --->
 			<cfset iData.renderedLayout = renderViewComposite(cbox_currentLayout, viewLocations.viewPath, viewLocations.viewHelperPath, args) />
 		</cfif>
-
-		<!--- Stop Timer --->
-		<cfset instance.debuggerService.timerEnd(cbox_timerhash)>
 
 		<!--- Post Layout Render Interception point --->
 		<cfif NOT arguments.prepostExempt>

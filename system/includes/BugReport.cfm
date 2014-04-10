@@ -12,28 +12,28 @@ Description :
 ----------------------------------------------------------------------->
 <cfscript>
 	// Detect Session Scope
-	sessionScopeExists = true; 
-	try { structKeyExists(session ,'x'); } catch (any e) { sessionScopeExists = false; }	
+	sessionScopeExists = true;
+	try { structKeyExists(session ,'x'); } catch (any e) { sessionScopeExists = false; }
 </cfscript>
 <cfoutput>
 <!--- Param Form Scope --->
 <cfparam name="form" default="#structnew()#">
 
 <!--- StyleSheets --->
-<style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
+<style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.css.cfm"></style>
 
 <div class="fw_errorDiv">
 	<h1>Oops! exception Encountered</h1>
-	
+
 	<div class="fw_errorNotice">
 	<!--- CUSTOM SET MESSAGE --->
 	<h3>#exception.getExtramessage()#</h3>
-	
+
 	<!--- ERROR TYPE --->
 	<cfif exception.getType() neq "">
 	<strong>Error Type: </strong> #exception.gettype()# : <cfif exception.geterrorCode() eq "">[N/A]<cfelse>#exception.getErrorCode()#</cfif><br />
 	</cfif>
-	
+
 	<!--- ERROR exceptionS --->
 	<cfif isStruct(exception.getexceptionStruct()) >
 		<strong>Error Messages:</strong>
@@ -61,22 +61,22 @@ Description :
 		  <tr >
 			<td align="right" class="fw_errorTablesTitles">ID:</td>
 		    <td ><cfif not structKeyExists(arrayTagContext[i], "ID")>??<cfelse>#arrayTagContext[i].ID#</cfif></td>
-		  </tr>		
+		  </tr>
 		   <tr >
 			<td align="right" class="fw_errorTablesTitles">LINE:</td>
 		    <td >#arrayTagContext[i].LINE#</td>
-		   </tr>		
+		   </tr>
 		   <tr class="fw_errorTablesBreak">
 			<td align="right" class="fw_errorTablesTitles">Template:</td>
 		    <td >#arrayTagContext[i].Template#</td>
 		   </tr>
 		  </cfloop>
 	</cfif>
-	 
+
 	<tr>
 	   <th colspan="2" >Framework Snapshot</th>
 	</tr>
-	 
+
 	<cfif exception.getErrorType() eq "Application">
 		<tr>
 		  <td width="75" align="right" class="fw_errorTablesTitles">Current Event: </td>
@@ -99,7 +99,7 @@ Description :
 	   <td align="right" class="fw_errorTablesTitles">Bug Date:</td>
 	   <td >#dateformat(now(), "MM/DD/YYYY")# #timeformat(now(),"hh:MM:SS TT")#</td>
 	 </tr>
-	 
+
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Coldfusion ID: </td>
 	   <td >
@@ -138,7 +138,7 @@ Description :
 	   <td align="right" class="fw_errorTablesTitles">Query String: </td>
 	   <td >#htmlEditFormat(cgi.QUERY_STRING)#</td>
 	 </tr>
-	
+
 	<cfif len(cgi.HTTP_REFERER)>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Referrer:</td>
@@ -154,7 +154,7 @@ Description :
 	   <td >#htmlEditFormat(cgi.remote_addr)#</td>
 	 </tr>
 	 <cfif isStruct(exception.getexceptionStruct()) >
-	 
+
 	  <cfif exception.getmissingFileName() neq  "">
 		  <tr>
 		   <th colspan="2" >Missing Include exception</th>
@@ -166,7 +166,7 @@ Description :
 			<td colspan="2" >#exception.getmissingFileName()#</td>
 		  </tr>
 	  </cfif>
-	
+
 	  <cfif findnocase("database", exception.getType() )>
 		  <tr >
 			<th colspan="2" >Database exception Information:</th>
@@ -227,7 +227,7 @@ Description :
 		 <tr>
 		   <td align="right" class="fw_errorTablesTitles"> N/A </td>
 		   <td >Session Scope Not Enabled</td>
-		 </tr>	 	
+		 </tr>
 	 </cfif>
 	 <tr >
 		<th colspan="2" >Cookies:</th>
@@ -238,7 +238,7 @@ Description :
 	   <td >#htmlEditFormat( cookie[ key ] )#</td>
 	 </tr>
 	 </cfloop>
-	 
+
 	 <tr >
 		<th colspan="2" >Stack Trace:</th>
 	 </tr>
@@ -247,11 +247,11 @@ Description :
 			<div class="fw_stacktrace"><pre>#exception.getstackTrace()#</pre></div>
 		</td>
 	 </tr>
-	 	
+
 	 <tr>
 	   <th colspan="2" >Extra Information Dump </th>
 	 </tr>
-	
+
 	 <tr>
 	    <td colspan="2" >
 	    <cfif isSimpleValue( exception.getExtraInfo() )>
