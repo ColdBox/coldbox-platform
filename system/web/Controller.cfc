@@ -51,7 +51,6 @@ Only one instance of a specific ColdBox application exists.
 
 			// Setup the ColdBox Services
 			services.requestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init( this );
-			services.debuggerService 	= CreateObject("component","coldbox.system.web.services.DebuggerService").init( this );
 			services.handlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init( this );
 			services.pluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init( this );
 			services.moduleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init( this );
@@ -69,7 +68,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<!--- Get instance memento --->
 	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the controller's internal state">
 		<cfset var memento = {
@@ -134,7 +133,7 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getServices" output="false" access="public" returntype="any" hint="Get all the registered services structure" colddoc:generic="coldbox">
 		<cfreturn services>
 	</cffunction>
-	
+
 	<!--- AppKey --->
 	<cffunction name="getAppKey" access="public" returntype="any" output="false" hint="Get this application's key in memory space (application scope)">
 		<cfreturn instance.appKey>
@@ -195,16 +194,6 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="setRequestService" access="public" output="false" returntype="any" hint="Set RequestService">
 		<cfargument name="requestService" type="any" required="true"/>
 		<cfset services.requestService = arguments.requestService/>
-		<cfreturn this>
-	</cffunction>
-
-	<!--- Debugger Service --->
-	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService: coldbox.system.web.services.DebuggerService">
-		<cfreturn services.debuggerService/>
-	</cffunction>
-	<cffunction name="setDebuggerService" access="public" output="false" returntype="any" hint="Set DebuggerService">
-		<cfargument name="debuggerService" type="any" required="true"/>
-		<cfset services.debuggerService = arguments.debuggerService/>
 		<cfreturn this>
 	</cffunction>
 
@@ -477,9 +466,6 @@ Only one instance of a specific ColdBox application exists.
 			// persist Flash RAM
 			persistVariables(argumentCollection=arguments);
 
-			// push Debugger Timers
-			pushTimers();
-
 			// Post Processors
 			if( NOT arguments.postProcessExempt ){
 				services.interceptorService.processState("postProcess");
@@ -509,7 +495,6 @@ Only one instance of a specific ColdBox application exists.
 		<cfscript>
 
 			var oRequestContext 	= services.requestService.getContext();
-			var debuggerService	 	= services.debuggerService;
 			var ehBean 				= "";
 			var oHandler 			= "";
 			var iData				= structnew();
@@ -572,7 +557,7 @@ Only one instance of a specific ColdBox application exists.
 
 					// PREEVENT Interceptor
 					services.interceptorService.processState("preEvent",iData);
-					
+
 					// Verify if event was overriden
 					if( arguments.event NEQ iData.processedEvent ){
 						// Validate the overriden event
@@ -583,20 +568,12 @@ Only one instance of a specific ColdBox application exists.
 
 					// Execute Pre Handler if it exists and valid?
 					if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
-						loc.tHash = services.debuggerService.timerStart("invoking runEvent [preHandler] for #arguments.event#");
-
 						oHandler.preHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
-
-						services.debuggerService.timerEnd(loc.tHash);
 					}
 
 					// Execute pre{Action}? if it exists and valid?
 					if( oHandler._actionExists("pre#ehBean.getMethod()#") ){
-						loc.tHash = services.debuggerService.timerStart("invoking runEvent [pre#ehBean.getMethod()#] for #arguments.event#");
-
 						invoker(oHandler,"pre#ehBean.getMethod()#",loc.args);
-
-						services.debuggerService.timerEnd(loc.tHash);
 					}
 				}
 
@@ -608,12 +585,6 @@ Only one instance of a specific ColdBox application exists.
 					oHandler = services.handlerService.getHandler(ehBean,oRequestContext);
 				}
 
-				// Execute Main Event or Missing Action Event
-				if( arguments.private)
-					loc.tHash 	= services.debuggerService.timerStart("invoking PRIVATE runEvent [#arguments.event#]");
-				else
-					loc.tHash 	= services.debuggerService.timerStart("invoking runEvent [#arguments.event#]");
-
 				// Invoke onMissingAction event
 				if( ehBean.isMissingAction() ){
 					loc.results	= oHandler.onMissingAction(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,missingAction=ehBean.getMissingAction(),eventArguments=arguments.eventArguments);
@@ -623,25 +594,15 @@ Only one instance of a specific ColdBox application exists.
 
 					// Around {Action} Advice Check?
 					if( oHandler._actionExists("around#ehBean.getMethod()#") ){
-						loc.tHash = services.debuggerService.timerStart("invoking runEvent [around#ehBean.getMethod()#] for #arguments.event#");
-
 						// Add target Action to loc.args
 						loc.args.targetAction  	= oHandler[ehBean.getMethod()];
-
 						loc.results = invoker(oHandler, "around#ehBean.getMethod()#", loc.args);
-
 						// Cleanup: Remove target action from loc.args for post events
 						structDelete(loc.args, "targetAction");
-
-						services.debuggerService.timerEnd(loc.tHash);
 					}
 					// Around Handler Advice Check?
 					else if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
-						loc.tHash = services.debuggerService.timerStart("invoking runEvent [aroundHandler] for #arguments.event#");
-
 						loc.results = oHandler.aroundHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,targetAction=oHandler[ehBean.getMethod()],eventArguments=arguments.eventArguments);
-
-						services.debuggerService.timerEnd(loc.tHash);
 					}
 					else{
 						// Normal execution
@@ -649,24 +610,17 @@ Only one instance of a specific ColdBox application exists.
 					}
 				}
 
-				// finalize execution timer of main event
-				services.debuggerService.timerEnd(loc.tHash);
-
 				// POST ACTIONS
 				if( NOT arguments.prePostExempt ){
 
 					// Execute post{Action}?
 					if( oHandler._actionExists("post#ehBean.getMethod()#") ){
-						loc.tHash = services.debuggerService.timerStart("invoking runEvent [post#ehBean.getMethod()#] for #arguments.event#");
 						invoker(oHandler,"post#ehBean.getMethod()#",loc.args);
-						services.debuggerService.timerEnd(loc.tHash);
 					}
 
 					// Execute postHandler()?
 					if( oHandler._actionExists("postHandler") AND validateAction(ehBean.getMethod(),oHandler.POSTHANDLER_ONLY,oHandler.POSTHANDLER_EXCEPT) ){
-						loc.tHash = services.debuggerService.timerStart("invoking runEvent [postHandler] for #arguments.event#");
 						oHandler.postHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
-						services.debuggerService.timerEnd(loc.tHash);
 					}
 
 					// Execute POSTEVENT interceptor
@@ -765,12 +719,6 @@ Only one instance of a specific ColdBox application exists.
 		</cfif>
 
 		<cfif structKeyExists(refLocal,"results")><cfreturn refLocal.results></cfif>
-	</cffunction>
-
-	<!--- Push Timers --->
-	<cffunction name="pushTimers" access="private" returntype="any" hint="Push timers into stack" output="false" >
-		<cfset services.debuggerService.recordProfiler()>
-		<cfreturn this>
 	</cffunction>
 
 	<!--- sendRelocation --->

@@ -42,19 +42,18 @@ Modification History:
 		<cfargument name="overrideAppMapping" required="false" default="" hint="The direct location of the application in the web server."/>
 		<!--- ************************************************************* --->
 		<cfscript>
-		var debuggerConfig 	= createObject("Component","coldbox.system.web.config.DebuggerConfig").init();
 		var coldBoxSettings = controller.getColdBoxSettings();
 		var key 			= "";
 		var services 		= controller.getServices();
 
 		// Load application configuration file
 		createAppLoader( arguments.overrideConfigFile ).loadConfiguration( arguments.overrideAppMapping );
-		
+
 		// Do we need to create a controller decorator?
 		if( len( controller.getSetting("ControllerDecorator") ) ){
 			createControllerDecorator();
 		}
-		
+
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if( NOT structIsEmpty( controller.getSetting("LogBoxConfig") ) ){
 			// reconfigure LogBox with user configurations
@@ -63,9 +62,6 @@ Modification History:
 			controller.setLog( controller.getLogBox().getLogger( controller ) );
 		}
 
-		// Configure the application debugger with user settings
-		debuggerConfig.populate( controller.getSetting("DebuggerSettings") );
-		controller.getDebuggerService().setDebuggerConfig( debuggerConfig );
 		// Clear the Cache Dictionaries, just to make sure, we are in reload mode.
 		controller.getHandlerService().clearDictionaries();
 		// Configure interceptors for operation from the configuration file
@@ -93,7 +89,7 @@ Modification History:
 		// We are now done, rock and roll!!
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- createControllerDecorator --->
     <cffunction name="createControllerDecorator" output="false" access="public" returntype="void" hint="Create Controller Decorator">
     	<cfscript>
@@ -101,7 +97,7 @@ Modification History:
     		var decorator 	= createObject("component", controller.getSetting("ControllerDecorator") ).init( controller );
     		var services  	= controller.getServices();
     		var key			= "";
-    		
+
     		// Call configuration on it
     		decorator.configure();
     		// Override in persistence scope
@@ -122,7 +118,7 @@ Modification History:
 
 		// Rebuild flash if modules changed settings.
 		controller.getRequestService().rebuildFlashScope();
-	
+
 		// if engine allows it, create validation engine
 		if( controller.getCFMLEngine().isValidationSupported() ){
 			// construct the validation manager specified in the config
@@ -151,9 +147,6 @@ Modification History:
 			//Create i18n Plugin and configure it.
 			controller.getPlugin("i18n").init_i18N();
 		}
-
-		// Set Debugging Mode according to configuration File
-		controller.getDebuggerService().setDebugMode(controller.getSetting("DebugMode"));
 
 		// Flag the aspects inited
 		controller.setAspectsInitiated(true);

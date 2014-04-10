@@ -16,8 +16,8 @@ Description :
 	<cfscript>
 		// Setup Default Namespace Key for controller locations
 		setCOLDBOX_APP_KEY("cbController");
-		
-		// Remote proxies are created by the CFML engine without calling init(), 
+
+		// Remote proxies are created by the CFML engine without calling init(),
 		// so autowire in here in the pseduo constructor
 		selfAutowire();
 	</cfscript>
@@ -30,36 +30,36 @@ Description :
 			var injector = getWirebox();
 			var binder = injector.getBinder();
 			var mapping = '';
-						
+
 			// Prevent recursive object creation in Railo
 			if( !structKeyExists( request, 'proxyAutowire' ) ){
 				request.proxyAutowire = true;
-				
+
 				// If a mapping for this proxy doesn't exist, create it.
 				if( !binder.mappingExists( componentpath ) ) {
 					// First one only, please
 					lock name="ColdBoxProxy.createMapping.#hash( componentpath )#" type="exclusive" timeout="20" {
-						// Double check		
+						// Double check
 						if( !binder.mappingExists( componentpath ) ) {
-											
+
 							// Get its metadata
 							var md = getUtil().getInheritedMetaData( componentpath );
-							
+
 							// register new mapping instance
 							injector.registerNewInstance( componentpath, componentpath );
 							// get Mapping created
 							mapping = binder.getMapping( componentpath );
 							// process it with the correct metadata
-							mapping.process( binder=binder, injector=injector, metadata=md );							
-							
+							mapping.process( binder=binder, injector=injector, metadata=md );
+
 						}
-						
+
 					} // End lock
 				} // End outer exists check
-							
+
 				// Guaranteed to exist now
 				mapping = binder.getMapping( componentpath );
-			
+
 				// Autowire ourself based on the mapping
 				getWirebox().autowire(target=this, mapping=mapping, annotationCheck=true);
 			}
@@ -85,9 +85,6 @@ Description :
 			<cfscript>
 			// Locate ColdBox Controller
 			cbController = getController();
-
-			// Trace the incoming arguments for debuggers
-			tracer('Process: Incoming arguments',arguments);
 
 			// Create the request context
 			event = cbController.getRequestService().requestCapture();
@@ -122,9 +119,6 @@ Description :
 
 			//Execute the post process interceptor
 			cbController.getInterceptorService().processState("postProcess");
-
-			// Request Profilers for debuggers.
-			pushTimers();
 			</cfscript>
 
 			<cfcatch>
@@ -159,9 +153,6 @@ Description :
 
 				// preProxyResults interception call
 				cbController.getInterceptorService().processState("preProxyResults",interceptData);
-
-				// Trace the results for debuggers
-				tracer('Process: Outgoing Results',refLocal.results);
 
 				// Return The results
 				return refLocal.results;
@@ -211,28 +202,6 @@ Description :
 
 			// Request Profilers
 			pushTimers();
-		</cfscript>
-	</cffunction>
-
-	<!--- Trace messages to the tracer panel --->
-	<cffunction name="tracer" access="private" returntype="void" hint="Trace messages to the tracer panel, will only trace if in debug mode." output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="message"    type="string" required="true" hint="Message to Send" >
-		<cfargument name="extraInfo"  required="false" default="" type="any" hint="Extra Information to dump on the trace">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var cbController = getController();
-
-			if( cbController.getDebuggerService().getDebugMode() ){
-				cbController.getDebuggerService().pushTracer(argumentCollection=arguments);
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- Push Timers --->
-	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into debugging stack" output="false" >
-		<cfscript>
-			getController().getDebuggerService().recordProfiler();
 		</cfscript>
 	</cffunction>
 
@@ -304,7 +273,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfreturn getController().getPlugin(argumentCollection=arguments)>
 	</cffunction>
-	
+
 	<!--- Facade: Get a "my" plugin --->
 	<cffunction name="getMyPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="false">
 		<!--- ************************************************************* --->

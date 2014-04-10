@@ -138,9 +138,6 @@ Loads a coldbox cfc configuration file
 		/* :::::::::::::::::::::::::::::::::::::::::  CACHE SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseCacheBox(oConfig,configStruct);
 
-		/* ::::::::::::::::::::::::::::::::::::::::: DEBUGGER SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseDebuggerSettings(oConfig,configStruct);
-
 		/* ::::::::::::::::::::::::::::::::::::::::: INTERCEPTOR SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseInterceptors(oConfig,configStruct);
 
@@ -255,15 +252,9 @@ Loads a coldbox cfc configuration file
 			//Check for InvalidEventHandler
 			if ( not structKeyExists( configStruct, "onInvalidEvent" ) )
 				configStruct[ "onInvalidEvent" ] = "";
-			//Check For DebugMode in settings
-			if ( not structKeyExists( configStruct, "DebugMode" ) or not isBoolean(configStruct.DebugMode) )
-				configStruct[ "DebugMode" ] = "false";
 			//Check for Implicit Views
 			if ( not structKeyExists( configStruct, "ImplicitViews" ) OR not isBoolean(configStruct.implicitViews) )
 				configStruct[ "ImplicitViews" ] = true;
-			//Check for DebugPassword in settings
-			if ( not structKeyExists( configStruct, "DebugPassword" ) ){ configStruct[ "DebugPassword" ] = hash( createUUID() ); }
-			else if( len(configStruct[ "DebugPassword" ]) ){ configStruct[ "DebugPassword" ] = hash( configStruct[ "DebugPassword" ] ); }
 			//Check for ReinitPassword
 			if ( not structKeyExists( configStruct, "ReinitPassword" ) ){ configStruct[ "ReinitPassword" ] = hash( createUUID() ); }
 			else if( len(configStruct[ "ReinitPassword" ]) ){ configStruct[ "ReinitPassword" ] = hash( configStruct[ "ReinitPassword" ] ); }
@@ -643,7 +634,7 @@ Loads a coldbox cfc configuration file
 			var thisLayout			= "";
 			var layoutsArray 		= arrayNew(1);
 			var fwSettingsStruct 	= instance.coldboxSettings;
-			
+
 			// defaults
 			configStruct.defaultLayout 		= fwSettingsStruct.defaultLayout;
 			configStruct.defaultView 		= "";
@@ -651,7 +642,7 @@ Loads a coldbox cfc configuration file
 
 			// Register layout settings
 			structAppend( configStruct, layoutSettings );
-			
+
 			// Check blank defaultLayout
 			if( !len( trim( configStruct.defaultLayout ) ) ){
 				configStruct.defaultLayout = fwSettingsStruct.defaultLayout;
@@ -733,24 +724,6 @@ Loads a coldbox cfc configuration file
 			else{
 				configStruct.cacheBox.configFile = "coldbox.system.web.config.CacheBox";
 			}
-		</cfscript>
-	</cffunction>
-
-	<!--- parsedebuggerSettings --->
-	<cffunction name="parseDebuggerSettings" output="false" access="public" returntype="void" hint="Parse Debugger Settings">
-		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
-		<cfscript>
-			var configStruct = arguments.config;
-			var fwSettings = instance.coldboxSettings;
-			var debugger = arguments.oConfig.getPropertyMixin( "debugger","variables",structnew());
-
-			// defaults
-			configStruct.debuggerSettings = {};
-			structAppend(configStruct.debuggerSettings, fwSettings.debuggerSettings, true);
-
-			//append settings
-			structAppend(configStruct.debuggerSettings, debugger, true);
 		</cfscript>
 	</cffunction>
 

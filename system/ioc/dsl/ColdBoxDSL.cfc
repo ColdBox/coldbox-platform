@@ -120,7 +120,6 @@ Description :
 						case "mailsettingsbean"		: { return createObject("component","coldbox.system.core.mail.MailSettingsBean").init(argumentCollection=instance.coldbox.getSetting("mailSettings"));	}
 						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
 						case "requestService"		: { return instance.coldbox.getrequestService(); }
-						case "debuggerService"		: { return instance.coldbox.getDebuggerService();}
 						case "pluginService"		: { return instance.coldbox.getPluginService(); }
 						case "handlerService"		: { return instance.coldbox.gethandlerService(); }
 						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }

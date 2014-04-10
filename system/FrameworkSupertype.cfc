@@ -320,15 +320,6 @@ Description :
 		<cfset controller.persistVariables(argumentCollection=arguments)>
 	</cffunction>
 
-	<!--- Debug Mode Facades --->
-	<cffunction name="getDebugMode" access="public" hint="Facade to get your current debug mode" returntype="boolean"  output="false">
-		<cfreturn controller.getDebuggerService().getDebugMode()>
-	</cffunction>
-	<cffunction name="setDebugMode" access="public" hint="Facade to set your debug mode" returntype="void"  output="false">
-		<cfargument name="mode" type="boolean" required="true" >
-		<cfset controller.getDebuggerService().setDebugMode(arguments.mode)>
-	</cffunction>
-
 	<!--- getController --->
 	<cffunction name="getController" access="public" output="false" returntype="any" hint="Get controller: coldbox.system.web.Controller">
 		<cfreturn variables.controller/>

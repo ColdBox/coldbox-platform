@@ -20,25 +20,24 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="RequestService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true" hint="Coldbox controller">
 		<cfscript>
-			setController( arguments.controller );			
-			
+			setController( arguments.controller );
+
 			instance.flashScope 	= "";
 			instance.flashData 		= "";
 			instance.flashDataHash 	= "";
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
-	
+
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
 			// Local Configuration data and dependencies
 			instance.log 				= controller.getLogBox().getLogger( this );
-			instance.debugPassword  	= controller.getSetting( "debugPassword" );
 			instance.eventName			= controller.getSetting( "eventName" );
-			instance.eventCaching		= controller.getSetting( "EventCaching" );
+			instance.eventCaching		= controller.getSetting( "eventCaching" );
 			instance.interceptorService = controller.getInterceptorService();
 			instance.handlerService		= controller.getHandlerService();
 			instance.cacheBox			= controller.getCacheBox();
@@ -46,7 +45,7 @@ Modification History:
 			instance.templateCache		= controller.getColdBoxOCM( "template" );
 			instance.flashData 			= controller.getSetting( "flash" );
 			instance.flashDataHash		= hash( instance.flashData.toString() );
-			
+
 			// build out Flash RAM
 			buildFlashScope();
 		</cfscript>
@@ -61,24 +60,24 @@ Modification History:
 			var rc			= context.getCollection();
 			var prc 		= context.getCollection(private=true);
 			var fwCache		= false;
-			
+
 			// Capture FORM/URL
 			if( isDefined( "FORM" ) ){ structAppend( rc, FORM ); }
 			if( isDefined( "URL" )  ){ structAppend( rc, URL ); }
 
 			// Configure decorator if available?
 			if ( structKeyExists( context, "configure" ) ){ context.configure(); }
-			
+
 			// Execute onRequestCapture interceptionPoint
 			instance.interceptorService.processState( "onRequestCapture" );
-			
+
 			// Remove FW reserved commands just in case before collection snapshot
 			fwCache = structKeyExists( rc,"fwCache" );
 			structDelete( rc, "fwCache" );
-			
+
 			// Take snapshot of incoming collection
 			prc[ "cbox_incomingContextHash" ] = hash( rc.toString() );
-			
+
 			// Do we have flash elements to inflate?
 			if( instance.flashScope.flashExists() ){
 				if( instance.log.canDebug() ){
@@ -86,36 +85,26 @@ Modification History:
 				}
 				instance.flashScope.inflateFlash();
 			}
-					
+
 			// Object Caching Garbage Collector
 			instance.cacheBox.reapAll();
-			
-			// Debug Mode Checks
-			if ( structKeyExists(rc,"debugMode") AND isBoolean(rc.debugMode) ){
-				if ( NOT len(instance.debugPassword) ){
-					controller.getDebuggerService().setDebugMode( rc.debugMode );
-				}
-				else if ( structKeyExists(rc,"debugpass") AND CompareNoCase(instance.debugPassword, hash(rc.debugpass) ) eq 0 ){
-					controller.getDebuggerService().setDebugMode( rc.debugMode );
-				}
-			}
 
 			// Default Event Determination
 			if ( NOT structKeyExists( rc, instance.eventName ) ){
 				rc[ instance.eventName ] = controller.getSetting( "DefaultEvent" );
 			}
-			
+
 			// Event More Than 1 Check, grab the first event instance, other's are discarded
 			if ( listLen( rc[ instance.eventName ] ) GTE 2 ){
 				rc[ instance.eventName ] = getToken( rc[ instance.eventName ], 2, ",");
 			}
-			
+
 			// Default Event Action Checks
 			instance.handlerService.defaultEventCheck( context );
-			
+
 			// Are we using event caching?
 			eventCachingTest( context, fwCache );
-			
+
 			return context;
 		</cfscript>
 	</cffunction>
@@ -129,20 +118,20 @@ Modification History:
 			var oEventURLFacade = instance.templateCache.getEventURLFacade();
 			var eventDictionary = 0;
 			var currentEvent    = arguments.context.getCurrentEvent();
-			
+
 			// Are we using event caching?
 			if ( instance.eventCaching ){
 				// Cleanup the cache key, just in case, maybe ses interceptor has been used.
 				arguments.context.removeEventCacheableEntry();
-					
+
 				// Get metadata entry for event that's fired.
-				eventDictionary = instance.handlerService.getEventMetaDataEntry(currentEvent);	
-				
+				eventDictionary = instance.handlerService.getEventMetaDataEntry(currentEvent);
+
 				// Verify that it is cacheable, else quit, no need for testing anymore.
 				if( NOT eventDictionary.cacheable ){
-					return;	
+					return;
 				}
-				
+
 				// Build the event cache key according to incoming request
 				eventCache.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
 															  targetEvent=currentEvent,
@@ -153,19 +142,19 @@ Modification History:
 					instance.templateCache.clear( eventCache.cacheKey );
 					return;
 				}
-				
+
 				// Event has been found, flag it so we can render it from cache if it still survives
 				arguments.context.setEventCacheableEntry( eventCache );
-				
+
 				// debug logging
 				if( instance.log.canDebug() ){
 					instance.log.debug("Event caching detected for : #eventCache.toString()#");
 				}
-				
+
 			}//end if using event caching.
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get the context --->
 	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request context from request scope or create a new one.">
 		<cfscript>
@@ -182,13 +171,13 @@ Modification History:
 			return this;
 		</cfscript>
 	</cffunction>
-	
-	<!--- removeContext --->    
-    <cffunction name="removeContext" output="false" access="public" returntype="any" hint="Remove the context from scope and return yourself">    
+
+	<!--- removeContext --->
+    <cffunction name="removeContext" output="false" access="public" returntype="any" hint="Remove the context from scope and return yourself">
     	<cfscript>
-			structDelete(request, "cb_requestContext");	 
-			return this;   
-    	</cfscript>    
+			structDelete(request, "cb_requestContext");
+			return this;
+    	</cfscript>
     </cffunction>
 
 	<!--- Check if context exists --->
@@ -197,7 +186,7 @@ Modification History:
 			return structKeyExists(request,"cb_requestContext");
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getFlashScope --->
     <cffunction name="getFlashScope" output="false" access="public" returntype="any" hint="Get the current running Flash Ram Scope of base type:coldbox.system.web.flash.AbstractFlashScope">
    		<cfreturn instance.flashScope >
@@ -211,12 +200,12 @@ Modification History:
 	   		}
    		</cfscript>
    	</cffunction>
-    
+
     <!--- buildFlashScope --->
     <cffunction name="buildFlashScope" output="false" access="public" returntype="any" hint="Build's the Flash RAM Scope as defined in the application spec.">
    		<cfscript>
    			var flashPath 	= "";
-			
+
 			// Shorthand Flash Types
 			switch( instance.flashData.scope ){
 				case "session" : {
@@ -239,7 +228,7 @@ Modification History:
 					flashpath = "coldbox.system.web.flash.MockFlash";
 					break;
 				}
-				default : { 
+				default : {
 					flashPath = instance.flashData.scope;
 				}
 			}
@@ -248,18 +237,18 @@ Modification History:
 			instance.flashScope = createObject( "component", flashPath ).init( controller, instance.flashData );
    		</cfscript>
     </cffunction>
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
+
 	<!--- Creates a new Context Object --->
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">
 		<cfscript>
 		var oContext = "";
 		var oDecorator = "";
-		
+
 		// Create the original request context
 		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init( properties=controller.getConfigSettings(), controller=controller );
-			
+
 		// Determine if we have a decorator, if we do, then decorate it.
 		if ( len( controller.getSetting( name="RequestContextDecorator", defaultValue="" ) ) ){
 			//Create the decorator
@@ -269,10 +258,10 @@ Modification History:
 			//Return
 			return oDecorator;
 		}
-		
+
 		// Set Request Context in storage
 		setContext( oContext );
-		
+
 		// Return Context
 		return oContext;
 		</cfscript>
