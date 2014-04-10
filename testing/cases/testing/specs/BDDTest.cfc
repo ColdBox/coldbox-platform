@@ -13,14 +13,14 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 	function afterAll(){
 		console( "Executed afterAll() at #now()#" );
-		structClear( application );	
+		structClear( application );
 	}
 
 /*********************************** BDD SUITES ***********************************/
 
 	function run(){
 
-		/** 
+		/**
 		* describe() starts a suite group of spec tests.
 		* Arguments:
 		* @title The title of the suite, Usually how you want to name the desired behavior
@@ -30,20 +30,20 @@ component extends="coldbox.system.testing.BaseSpec"{
 		* @skip A flag that tells TestBox to skip this suite group from testing if true
 		*/
 		describe( title="A spec", labels="luis", body=function(){
-		
+
 			// before each spec in THIS suite group
 			beforeEach(function(){
 				coldbox = 0;
 				coldbox++;
 				debug( "beforeEach suite: coldbox = #coldbox#" );
 			});
-			
+
 			// after each spec in THIS suite group
 			afterEach(function(){
 				foo = 0;
 			});
-			
-			/** 
+
+			/**
 			* it() describes a spec to test. Usually the title is prefixed with the suite name to create an expression.
 			* Arguments:
 			* @title The title of the spec
@@ -54,7 +54,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 			it(title="is just a closure so it can contain code", body=function(){
 				expect( coldbox ).toBe( 1 );
 			},labels="luis");
-			
+
 			// more than 1 expectation
 			it("can have more than one expectation test", function(){
 				coldbox = coldbox * 8;
@@ -79,12 +79,17 @@ component extends="coldbox.system.testing.BaseSpec"{
 				// delta ranges
 				expect( coldbox ).notToBeCloseTo( expected=10, delta=2 );
 			});
-			
+
+			it( "can get private properties", function(){
+				var oTest = new coldbox.testing.cases.testing.resources.Test();
+				expect( getProperty( oTest, "reload" ) ).toBeFalse();
+			});
+
 			// xit() skips
 			xit("can have tests that can be skipped easily like this one", function(){
-				fail( "xit() this should skip" );	
+				fail( "xit() this should skip" );
 			});
-			
+
 			// acf dynamic skips
 			it( title="can have tests that execute if the right environment exists (railo only)", body=function(){
 				expect( server ).toHaveKey( "railo" );
@@ -94,7 +99,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 			it( title="can have tests that execute if the right environment exists (acf only)", body=function(){
 				expect( server ).notToHaveKey( "railo" );
 			}, skip=( isRailo() ));
-			
+
 			// specs with a random skip closure
 			it(title="can have a skip that is executed at runtime", body=function(){
 				fail( "Skipped programmatically, this should fail" );
@@ -141,7 +146,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 				});
 				foo = false;
 			});
-			
+
 			it("are cool and foo should be really false", function(){
 				expect( foo ).toBeReallyFalse();
 			});
@@ -158,7 +163,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 					addMatchers( new coldbox.testing.cases.testing.resources.CustomMatcher() );
 					foofoo = false;
 				});
-				
+
 				it("should be awesome", function(){
 					expect( foofoo ).toBeAwesome();
 					debug( " foofoo should be awesome #foofoo#" );
@@ -184,24 +189,24 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 			// Another suite
 			describe( "Another Nested Suite", function(){
-				
+
 				it( "can also be awesome", function(){
 					expect(	foo ).toBeFalse();
 				});
-			
+
 			});
 
 		});
 
 		// Skip by env suite
 		describe(title="A railo only suite", body=function(){
-			
+
 			it("should only execute for railo", function(){
-				expect( server ).toHaveKey( "railo" );	
+				expect( server ).toHaveKey( "railo" );
 			});
 
 		}, skip=( !isRailo() ));
-		
+
 		// xdescribe() skips the entire suite
 		xdescribe("A suite that is skipped via xdescribe()", function(){
 			it("will never execute this", function(){
@@ -224,12 +229,12 @@ component extends="coldbox.system.testing.BaseSpec"{
 			it("Can have a separate beforeEach for this suite", function(){
 				expect( request.calc ).toBeComponent();
 			});
-			
+
 			it("can add incorrectly", function(){
 				var r = calc.add( 2, 2 );
 				expect( r ).toBe( 5 );
 			});
-			
+
 			it("cannot divide by zero", function(){
 				expect( function(){
 					request.calc.divide( 4, 0 );
@@ -257,7 +262,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 					request.calc.divideWithDetail();
 				} ).toThrow( regex="impossible" );
 			});
-			
+
 			it("can use a mocked stub", function(){
 				c = createStub().$("getData", 4);
 				r = calc.add( 4, c.getData() );
@@ -268,7 +273,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 			it("can produce errors", function(){
 				exxpect();
 			});
-			
+
 		});
 
 	}

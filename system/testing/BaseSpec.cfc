@@ -639,6 +639,19 @@ component{
 	}
 
 	/**
+	* Get a private property
+	* @target.hint The target to get a property from
+	* @name.hint The name of the property to retrieve
+	* @scope.hint The scope to get it from, defaults to 'variables' scope
+	* @defaultValue.hint A default value if the property does not exist
+	*/
+	any function getProperty( required target, required name, scope="variables", defaultValue ){
+		// stupid cf10 parser
+		if( structKeyExists( arguments, "defaultValue" ) ){ arguments.default = arguments.defaultValue; }
+		return prepareMock( arguments.target ).$getProperty( argumentCollection=arguments );
+	}
+
+	/**
 	* First line are the query columns separated by commas. Then do a consecuent rows separated by line breaks separated by | to denote columns.
 	*/
 	function querySim(required queryData){
