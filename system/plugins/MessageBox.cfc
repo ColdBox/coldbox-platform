@@ -68,7 +68,7 @@ Description :
 	</cffunction>
 
 	<!--- warn --->
-	<cffunction name="warn" output="false" access="public" returntype="void" hint="Facade to setmessage with warning type">
+	<cffunction name="warning" output="false" access="public" returntype="void" hint="Facade to setmessage with warning type">
 		<!--- ************************************************************* --->
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
 		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
