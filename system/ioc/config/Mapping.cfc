@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+﻿﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -371,6 +371,7 @@ Description :
 		<cfargument name="value" 	required="false" hint="The explicit value of the constructor argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
+		<cfargument name="type"		required="false" default="any" hint="The type of the argument."/>
 		<cfscript>
     		var def = getDIDefinition();
 			var x   = 1;
@@ -395,6 +396,7 @@ Description :
 		<cfargument name="value" 	required="false" hint="The explicit value of the method argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
+    	<cfargument name="type"		required="false" default="any" hint="The type of the argument."/>
 		<cfscript>
     		var def = getDIDefinition();
 			var x	= 1;
@@ -428,6 +430,7 @@ Description :
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
     	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
     	<cfargument name="required" required="false" default="true" hint="If the property is required or not, by default we assume required DI properties."/>
+		<cfargument name="type"		required="false" default="any" hint="The type of the property."/>
 		<cfscript>
     		var def = getDIDefinition();
 			var x	= 1;
@@ -797,7 +800,7 @@ Description :
 					if( structKeyExists(md.properties[x],"inject") ){
 						// prepare default params, we do this so we do not alter the md as it is cached by cf
 						params = {
-							scope="variables", inject="model", name=md.properties[x].name, required=true
+							scope="variables", inject="model", name=md.properties[x].name, required=true, type=md.properties[x].type
 						};
 						// default injection scope, if not found in object
 						if( structKeyExists(md.properties[x],"scope") ){
@@ -812,7 +815,7 @@ Description :
 							params.required = md.properties[ x ].required;
 						}
 						// Add to property to mappings
-						addDIProperty( name=params.name, dsl=params.inject, scope=params.scope, required=params.required );
+						addDIProperty( name=params.name, dsl=params.inject, scope=params.scope, required=params.required, type=params.type );
 					}
 
 				}
@@ -834,17 +837,16 @@ Description :
 						// Loop Over Arguments to process them for dependencies
 						for(y=1;y lte arrayLen(md.functions[x].parameters); y++){
 
-							// prepare params as we do not alter md as cf caches it
-							params = {
-								required = false, inject="model",name=md.functions[x].parameters[y].name
-							};
-
-							// Check required annotation
-							if( structKeyExists(md.functions[x].parameters[y], "required") ){
-								params.required = md.functions[x].parameters[y].required;
-							}
 							// Check injection annotation, if not found then no injection
 							if( structKeyExists(md.functions[x].parameters[y],"inject") ){
+								// prepare params as we do not alter md as cf caches it
+								params = {
+									required = false, inject="model",name=md.functions[x].parameters[y].name,type=md.functions[x].parameters[y].type
+								};
+								// Check required annotation
+								if( structKeyExists(md.functions[x].parameters[y], "required") ){
+									params.required = md.functions[x].parameters[y].required;
+								}
 
 								// Check if inject has value, else default it to 'model' or 'id' namespace
 								if( len(md.functions[x].parameters[y].inject) ){
@@ -854,7 +856,8 @@ Description :
 								// ADD Constructor argument
 								addDIConstructorArgument(name=params.name,
 														 dsl=params.inject,
-														 required=params.required);
+														 required=params.required,
+														 type=params.type);
 							}
 
 						}
