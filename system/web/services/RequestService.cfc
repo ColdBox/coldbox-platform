@@ -158,8 +158,16 @@ Modification History:
 	<!--- Get the context --->
 	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request context from request scope or create a new one.">
 		<cfscript>
-			if ( structKeyExists(request,"cb_requestContext") ){ return request.cb_requestContext; }
-			return createContext();
+			var oContext = '';
+			if ( structKeyExists(request,"cb_requestContext") )		oContext =  request.cb_requestContext; 
+			else 								oContext = createContext();
+
+			if ( !isNull(thread) ) {
+				if ( !structKeyExists(request, thread.name) ) 		request[thread.name] = duplicate( oContext );
+				oContext = request[thread.name];
+			}
+
+			return oContext;
 		</cfscript>
 	</cffunction>
 
