@@ -1,0 +1,21 @@
+﻿<?xml version="1.0"?>
+<project name="forgebox-build" basedir="." default="do.archive">
+	
+	<!-- dynamic values for build -->
+	<tstamp prefix="start"/>
+	<property name="project.name" value="forgebox" />
+	<property name="build.label" value="${project.name}-${start.DSTAMP}${start.TSTAMP}"/>
+		
+	<target name="cleanALL">
+	  	<delete>
+			<fileset dir="." includes="${project.name}-*.zip"/>
+		</delete>
+	</target>
+			
+	<target name="do.archive" depends="cleanALL">
+		<zip destfile="${build.label}.zip">
+			<fileset dir="../" excludes="forgebox/build.xml" includes="forgebox/*" />			
+		</zip>
+	</target>
+
+</project>

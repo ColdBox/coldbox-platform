@@ -1,1 +1,0 @@
-component extends="coldbox.system.orm.hibernate.WBEventHandler"{}

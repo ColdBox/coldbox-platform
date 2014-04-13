@@ -1,3 +1,4 @@
-﻿authtype Basic
+﻿#apache access file to protect the config.xml.cfm file. Delete this if you do not use apache.
+authtype Basic
 deny from all
 Options -Indexes
