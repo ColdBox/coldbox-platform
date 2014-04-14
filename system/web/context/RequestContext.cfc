@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -27,6 +27,7 @@ Description :
 			// Create the Collections
 			instance.context		= structnew();
 			instance.privateContext = structnew();
+			instance.threadContext	= structNew();
 
 			// flag if using SES
 			instance.isSES 				= false;
@@ -80,6 +81,11 @@ Description :
 		<cfscript>
 			// Private Collection
 			if( arguments.private ){
+				if ( !isNull(thread) ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	instance.threadContext[thread.name] = {};
+					return instance.threadContext[thread.name];
+				}
+				
 				if( arguments.deepCopyFlag ){ return duplicate(instance.privateContext); }
 				return instance.privateContext;
 			}
@@ -92,7 +98,13 @@ Description :
 	<cffunction name="clearCollection" access="public" returntype="any" output="false" hint="Clears the entire collection">
 		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if( arguments.private ) { structClear(instance.privateContext); }
+			if( arguments.private ) {
+				if ( !isNull(thread) ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	instance.threadContext[thread.name] = {};
+					return this;
+				}
+				else { structClear(instance.privateContext); } 
+			}
 			else { structClear(instance.context); }
 			return this;
 		</cfscript>
@@ -103,7 +115,14 @@ Description :
 		<cfargument name="overwrite"  	type="boolean" 	required="false" default="false" hint="If you need to override data in the collection, set this to true.">
 		<cfargument name="private" 		type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if( arguments.private ) { structAppend(instance.privateContext,arguments.collection, arguments.overwrite); }
+			if( arguments.private ) {
+				if ( !isNull(thread) ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	structAppend(instance.threadContext[thread.name],arguments.collection, arguments.overwrite); 
+					return this;
+				}
+			
+				structAppend(instance.privateContext,arguments.collection, arguments.overwrite); 
+			}
 			else { structAppend(instance.context,arguments.collection, arguments.overwrite); }
 			return this;
 		</cfscript>
@@ -112,7 +131,11 @@ Description :
 	<cffunction name="getSize" access="public" returntype="numeric" output="false" hint="Returns the number of elements in the collection">
 		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if( arguments.private ){ return structCount(instance.privateContext); }
+			if( arguments.private ){
+				if ( !isNull(thread) ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	return structCount(instance.threadContext[thread.name]); 
+				}
+				return structCount(instance.privateContext); }
 			return structCount(instance.context);
 		</cfscript>
 	</cffunction>
@@ -125,7 +148,12 @@ Description :
 			var collection = instance.context;
 
 			// private context switch
-			if( arguments.private ){ collection = instance.privateContext; }
+			if( arguments.private ){
+				if ( !isNull(thread) ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	{ collection = instance.threadContext[thread.name]; } 
+				}
+				else { collection = instance.privateContext; }
+			}
 
 			// Check if key exists
 			if( structKeyExists(collection, arguments.name) ){
@@ -163,7 +191,12 @@ Description :
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			var collection = instance.context;
-			if( arguments.private ) { collection = instance.privateContext; }
+			if( arguments.private ){
+				if ( !isNull(thread) ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	collection = instance.threadContext[thread.name]; 
+				}
+				else { collection = instance.privateContext; }
+			}
 
 			collection[arguments.name] = arguments.value;
 			return this;
@@ -175,7 +208,12 @@ Description :
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			var collection = instance.context;
-			if( arguments.private ){ collection = instance.privateContext; }
+			if( arguments.private ){
+				if ( !isNull(thread) ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	collection = instance.threadContext[thread.name]; 
+				}
+				else { collection = instance.privateContext; }
+			}
 
 			structDelete(collection,arguments.name);
 
@@ -188,7 +226,12 @@ Description :
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			var collection = instance.context;
-			if( arguments.private ){ collection = instance.privateContext; }
+			if( arguments.private ){
+				if ( !isNull(thread) ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	collection = instance.threadContext[thread.name]; 
+				}
+				else { collection = instance.privateContext; }
+			}
 			return structKeyExists(collection, arguments.name);
 		</cfscript>
 	</cffunction>
