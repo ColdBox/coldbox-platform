@@ -37,33 +37,33 @@ Modification History:
 		var bugReport 		= "";
 		var exceptionBean 	= createObject("component","coldbox.system.web.context.ExceptionBean").init(errorStruct=arguments.exception,extramessage=arguments.extraMessage,errorType=arguments.errorType);
 		var requestContext 	= controller.getRequestService().getContext();
-		var appLogger 		= controller.getPlugin("Logger");
-		
+		var appLogger 		= controller.getLogBox().getLogger( this );
+
 		// Test Error Type
-		if ( not reFindnocase("(application|framework|coldboxproxy)",arguments.errorType) ){
+		if ( not reFindnocase("(application|framework|coldboxproxy)", arguments.errorType) ){
 			arguments.errorType = "application";
 		}
-		
+
 		//Run custom Exception handler if Found, else run default exception routines
-		if ( len(controller.getSetting("ExceptionHandler")) ){
+		if ( len( controller.getSetting("ExceptionHandler") ) ){
 			try{
 				requestContext.setValue("exceptionBean",exceptionBean);
-				controller.runEvent(controller.getSetting("Exceptionhandler"));
+				controller.runEvent( controller.getSetting("Exceptionhandler") );
 			}
 			catch(Any e){
 				// Log Original Error First
-				appLogger.logErrorWithBean(exceptionBean);
+				appLogger.error( "Original Error: #arguments.errorType# #arguments.exception.message# #arguments.exception.detail# ", arguments.exception );
 				// Create new exception bean
 				exceptionBean = createObject("component","coldbox.system.web.context.ExceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
 				// Log it
-				appLogger.logErrorWithBean(exceptionBean);
+				appLogger.error( "Error running exception handler: #controller.getSetting("ExceptionHandler")# #e.message# #e.detail#", e );
 			}
 		}
 		else{
 			// Log Error only
-			appLogger.logErrorWithBean(exceptionBean);	
+			appLogger.error( "Error: #arguments.errorType# #arguments.exception.message# #arguments.exception.detail# ", arguments.exception );
 		}
-		
+
 		return exceptionBean;
 		</cfscript>
 	</cffunction>
@@ -79,16 +79,16 @@ Modification History:
 		<cfset var appLocPrefix				= "/">
 		<cfset var bugReportTemplatePath	= "">
 		<cfset var CustomErrorTemplate		= controller.getSetting("CustomErrorTemplate")>
-		
+
 		<!--- test for custom bug report --->
 		<cfif Exception.getErrortype() eq "application" and CustomErrorTemplate neq "">
 			<cftry>
-					
+
 				<!--- App location prefix --->
 				<cfif len(controller.getSetting('AppMapping')) >
 						<cfset appLocPrefix = appLocPrefix & controller.getSetting('AppMapping') & "/">
 				</cfif>
-		
+
 				<!--- Setup the bugReport template Path for relative location first. --->
 				<cfset bugReportTemplatePath = appLocPrefix & reReplace(CustomErrorTemplate,"^/","")>
 					<cfif NOT fileExists(expandPath(bugReportTemplatePath))>
@@ -115,7 +115,7 @@ Modification History:
 		</cfif>
 		<cfreturn cboxBugReport>
 	</cffunction>
-		
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 

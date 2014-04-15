@@ -308,7 +308,7 @@ Description :
 				case "provider" : {
 					// verify if it is a simple value or closure/UDF
 					if( isSimpleValue( thisMap.getPath() ) ){
-						oModel = getInstance( thisMap.getPath() ).get();	
+						oModel = getInstance( thisMap.getPath() ).get();
 					}
 					else{
 						closure = thisMap.getPath();
@@ -356,6 +356,15 @@ Description :
 			</cfscript>
 		</cflock>
 		<cfreturn instance.binder.getMapping( arguments.name )>
+    </cffunction>
+
+    <!--- registerDSL --->
+    <cffunction name="registerDSL" output="false" access="public" returntype="any" hint="A direct way of registering custom DSL namespaces">
+    	<cfargument name="namespace" 	required="true" hint="The namespace you would like to register"/>
+		<cfargument name="path" 		required="true" hint="The instantiation path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLBuilder"/>
+		<cfscript>
+			instance.builder.registerDSL( argumentCollection=arguments );
+		</cfscript>
     </cffunction>
 
 	<!--- containsInstance --->
@@ -597,7 +606,7 @@ Description :
 				else{
 					refLocal.dependency = getInstance( arguments.DIData[x].ref );
 				}
-				
+
 				// Check if dependency located, else log it and skip
 				if( structKeyExists(refLocal,"dependency") ){
 					// scope or setter determination
@@ -699,6 +708,11 @@ Description :
 	<!--- Get the binder config object --->
 	<cffunction name="getBinder" access="public" returntype="any" output="false" hint="Get the Injector's configuration binder object" colddoc:generic="coldbox.system.ioc.config.Binder">
 		<cfreturn instance.binder>
+	</cffunction>
+
+	<!--- Get the builder object --->
+	<cffunction name="getBuilder" access="public" returntype="any" output="false" hint="Get the Injector's builder object" colddoc:generic="coldbox.system.ioc.Builder">
+		<cfreturn instance.builder>
 	</cffunction>
 
 	<!--- getInjectorID --->
@@ -946,7 +960,7 @@ Description :
 				instance.eventManager.appendInterceptionPoints( arrayToList(instance.eventStates) );
 				return;
 			}
-    		
+
     		// create event manager
 			instance.eventManager = createObject("component","coldbox.system.core.events.EventPoolManager").init( instance.eventStates );
 			// Debugging

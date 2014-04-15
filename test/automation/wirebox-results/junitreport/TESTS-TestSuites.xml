@@ -173,7 +173,6 @@
     <testcase classname="coldbox.test.specs.ioc.config.MappingTest" name="testProcessMemento" time="0.002" />
     <testcase classname="coldbox.test.specs.ioc.config.listeners.InjectorListenersTest" name="testRegisterListeners" time="0.021" />
     <testcase classname="coldbox.test.specs.ioc.dsl.CacheBoxDSLTest" name="testProcess" time="1.16" />
-    <testcase classname="coldbox.test.specs.ioc.dsl.ColdBoxDSLTest" name="testGetJavaLoaderDSL" time="0.226" />
     <testcase classname="coldbox.test.specs.ioc.dsl.ColdBoxDSLTest" name="testgetColdboxDSLStage1AndStage2" time="0.73" />
     <testcase classname="coldbox.test.specs.ioc.dsl.ColdBoxDSLTest" name="testgetIOCDSl" time="0.364" />
     <testcase classname="coldbox.test.specs.ioc.dsl.ColdBoxDSLTest" name="testProcess" time="0.29" />

@@ -113,7 +113,6 @@
 		<menuitem label="FileUtils" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="IOC" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ResourceBundle" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="JavaLoader" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="JVMUtils" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
@@ -138,7 +137,6 @@
 		<menuitem label="FileUtils" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="IOC" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ResourceBundle" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="JavaLoader" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="JVMUtils" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
@@ -292,18 +290,6 @@
 		<menuitem label=".messageFormat()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setupInstance()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".verifyPattern()" icon="shared/CBHints/images/hintCB.gif" />
-	</menu>
-	<menu pattern="getPlugin(&quot;JavaLoader&quot;)" doctypes="ColdFusion,CFC">
-		<menuitem label=".create()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getURLClassLoader()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
-	</menu>
-	<menu pattern="getPlugin('JavaLoader')" doctypes="ColdFusion,CFC">
-		<menuitem label=".create()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getURLClassLoader()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
 	<menu pattern="getPlugin(&quot;JSON&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".decode()" icon="shared/CBHints/images/hintCB.gif" />

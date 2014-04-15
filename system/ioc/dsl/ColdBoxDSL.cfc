@@ -37,7 +37,6 @@ Description :
 				case "ioc" 				: { return getIOCDSL(argumentCollection=arguments);}
 				case "ocm" 				: { return getOCMDSL(argumentCollection=arguments);}
 				case "webservice" 		: { return getWebserviceDSL(argumentCollection=arguments);}
-				case "javaloader" 		: { return getJavaLoaderDSL(argumentCollection=arguments);}
 				case "coldbox" 			: { return getColdboxDSL(argumentCollection=arguments); }
 			}
 		</cfscript>
@@ -70,18 +69,6 @@ Description :
 				// webservice:alias
 				case 2: { return oWebservices.getWSobj( getToken(thisType,2,":") ); break; }
 			}
-		</cfscript>
-	</cffunction>
-
-	<!--- getJavaLoaderDSL --->
-	<cffunction name="getJavaLoaderDSL" access="private" returntype="any" hint="Get JavaLoader Dependency" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var className  	= listLast(arguments.definition.dsl,":");
-
-			// Get Dependency, if not found, exception is thrown
-			return instance.coldbox.getPlugin("JavaLoader").create( className );
 		</cfscript>
 	</cffunction>
 

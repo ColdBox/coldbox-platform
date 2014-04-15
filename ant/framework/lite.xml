@@ -74,7 +74,6 @@ ColdBox LITE Build
         		<exclude name="conversion/JSON.cfc" />
         		<exclude name="db/**" />
         		<exclude name="java/**" />
-        		<exclude name="javaloader/**" />
         		<exclude name="mail/**" />
         		<exclude name="util/DateUtils.cfc" />
         		<exclude name="util/FileUtils.cfc" />
