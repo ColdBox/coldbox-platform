@@ -75,7 +75,7 @@
         	<fileset dir="test-browser" />
         </copy>
 		<copy todir="${dir.build}/testbox/samples">
-        	<fileset dir="testing/cases/testing">
+        	<fileset dir="test/specs/testing">
         		<exclude name="**/BaseTestCaseTest.cfc" />
         	</fileset>
         </copy>
