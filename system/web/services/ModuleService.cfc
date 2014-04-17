@@ -220,7 +220,7 @@ I oversee and manage ColdBox modules
 			};
 			
 			// Load Module configuration from cfc and store it in module Config Cache
-			instance.mConfigCache[modName] = loadModuleConfiguration(mConfig);
+			instance.mConfigCache[ modName ] = loadModuleConfiguration( mConfig );
 			
 			// Update the paths according to conventions
 			mConfig.handlerInvocationPath 	&= ".#replace(mConfig.conventions.handlersLocation,"/",".","all")#";
@@ -231,18 +231,20 @@ I oversee and manage ColdBox modules
 			mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
 			
 			// Store module configuration in main modules configuration
-			modulesConfiguration[modName] = mConfig;
+			modulesConfiguration[ modName ] = mConfig;
 			
 			// Register Custom Interception Points
-			controller.getInterceptorService().appendInterceptionPoints(mConfig.interceptorSettings.customInterceptionPoints);
+			controller.getInterceptorService().appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
 			// Register Parent Settings
-			structAppend(appSettings, mConfig.parentSettings, true);
+			structAppend( appSettings, mConfig.parentSettings, true );
 			// Register Module Datasources
-			structAppend(appSettings.datasources, mConfig.datasources, true);
+			structAppend( appSettings.datasources, mConfig.datasources, true );
 			// Register Webservice aliases
-			structAppend(appSettings.webservices, mConfig.webservices, true);
+			structAppend( appSettings.webservices, mConfig.webservices, true );
 			// Log registration
-			instance.logger.debug("Module #arguments.moduleName# registered successfully.");
+			if( instance.logger.canDebug() ){
+				instance.logger.debug( "Module #arguments.moduleName# registered successfully." );
+			}
 			</cfscript>
 		</cflock>
 
@@ -277,7 +279,6 @@ I oversee and manage ColdBox modules
 			var y					= 1;
 			var key					= "";
 			var interceptorService  = controller.getInterceptorService();
-			var beanFactory 		= controller.getPlugin("BeanFactory");
 			var wirebox				= controller.getWireBox();
 			var flagi18n			= false;
 			var thisBundle			= "";
@@ -312,16 +313,16 @@ I oversee and manage ColdBox modules
 													    interceptorProperties=mConfig.interceptors[ y ].properties,
 													    interceptorName=mConfig.interceptors[ y ].name);
 				// Loop over module interceptors to autowire them
-				beanFactory.autowire( target=interceptorService.getInterceptor( mConfig.interceptors[ y ].name, true ),
-					     			  targetID=mConfig.interceptors[ y ].class );		
+				wirebox.autowire( target=interceptorService.getInterceptor( mConfig.interceptors[ y ].name, true ),
+					     		  targetID=mConfig.interceptors[ y ].class );		
 			}
-			
-			// Register Model path if it exists as a scan location in wirebox
+			// Register Models if it exists
 			if( directoryExists( mconfig.modelsPhysicalPath ) ){
+				// Add as scan locations
 				wirebox.getBinder().scanLocations( mConfig.modelsInvocationPath );
+				// Add as a mapped directory with module name as the namespace
+				wirebox.getBinder().mapDirectory( packagePath=mConfig.modelsInvocationPath, namespace="@#arguments.moduleName#" );
 			}
-			// Mapping DSL Registration	
-			wirebox.getBinder().loadDataDSL( mConfig.wirebox );
 						
 			// Register module routing entry point pre-pended to routes
 			if( controller.settingExists( 'sesBaseURL' ) AND len( mConfig.entryPoint ) AND NOT find( ":", mConfig.entryPoint ) ){
@@ -437,24 +438,28 @@ I oversee and manage ColdBox modules
 			interceptorService.unregister( "ModuleConfig:#arguments.moduleName#" );
 			
 			// Remove SES if enabled.
-			if( controller.settingExists('sesBaseURL') ){
-				interceptorService.getInterceptor("SES",true).removeModuleRoutes(arguments.moduleName);
+			if( controller.settingExists( "sesBaseURL" ) ){
+				interceptorService.getInterceptor( "SES", true ).removeModuleRoutes( arguments.moduleName );
 			}
 			
 			//Remove Model Mapping Location
-			controller.getPlugin("BeanFactory").removeExternalLocations(appConfig.modules[ arguments.moduleName ].invocationPath & "." & "model");
+			controller.getWirebox()
+				.getBinder()
+				.removeScanLocations( appConfig.modules[ arguments.moduleName ].invocationPath & "." & "model" );
 
 			// Remove configuration
-			structDelete(appConfig.modules, arguments.moduleName);
+			structDelete( appConfig.modules, arguments.moduleName );
 
 			// Remove Configuration object from Cache
-			structDelete(instance.mConfigCache,arguments.moduleName);
+			structDelete( instance.mConfigCache, arguments.moduleName );
 
 			//After unloading a module interception
-			interceptorService.processState("postModuleUnload",iData);
+			interceptorService.processState( "postModuleUnload", iData );
 
 			// Log it
-			instance.logger.debug("Module #arguments.moduleName# unloaded successfully.");
+			if( instance.logger.canDebug() ){
+				instance.logger.debug("Module #arguments.moduleName# unloaded successfully.");
+			}
 		</cfscript>
 		</cflock>
 
@@ -490,15 +495,15 @@ I oversee and manage ColdBox modules
 			oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
 
 			//MixIn Variables
-			oConfig.injectPropertyMixin( "controller", controller );
-			oConfig.injectPropertyMixin( "appMapping", controller.getSetting("appMapping") );
-			oConfig.injectPropertyMixin( "moduleMapping", mConfig.mapping );
-			oConfig.injectPropertyMixin( "modulePath", mConfig.path );
-			oConfig.injectPropertyMixin( "logBox", controller.getLogBox() );
-			oConfig.injectPropertyMixin( "log", controller.getLogBox().getLogger(oConfig) );
-			oConfig.injectPropertyMixin( "wirebox", controller.getWireBox() );
-			oConfig.injectPropertyMixin( "binder", controller.getWireBox().getBinder() );
-			oConfig.injectPropertyMixin( "cachebox", controller.getCacheBox() );
+			oConfig.injectPropertyMixin( "controller", 		controller );
+			oConfig.injectPropertyMixin( "appMapping", 		controller.getSetting("appMapping") );
+			oConfig.injectPropertyMixin( "moduleMapping", 	mConfig.mapping );
+			oConfig.injectPropertyMixin( "modulePath", 		mConfig.path );
+			oConfig.injectPropertyMixin( "logBox", 			controller.getLogBox() );
+			oConfig.injectPropertyMixin( "log", 			controller.getLogBox().getLogger(oConfig) );
+			oConfig.injectPropertyMixin( "wirebox", 		controller.getWireBox() );
+			oConfig.injectPropertyMixin( "binder", 			controller.getWireBox().getBinder() );
+			oConfig.injectPropertyMixin( "cachebox", 		controller.getCacheBox() );
 			
 			//Configure the module
 			oConfig.configure();
@@ -562,9 +567,6 @@ I oversee and manage ColdBox modules
 			
 			//Get SES Routes
 			mConfig.routes = oConfig.getPropertyMixin( "routes", "variables", arrayNew(1) );
-			
-			// Wirebox Mappings
-			mConfig.wirebox = oConfig.getPropertyMixin( "wirebox", "variables", structnew() );
 			
 			// Get and Append Module conventions
 			structAppend( mConfig.conventions, oConfig.getPropertyMixin( "conventions", "variables", structnew() ), true );

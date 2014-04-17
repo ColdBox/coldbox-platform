@@ -52,6 +52,7 @@ Optional Methods
 	this.viewParentLookup 	= true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
+	this.entryPoint			= "test1";
 	
 	function configure(){
 		
@@ -77,9 +78,8 @@ Optional Methods
 		
 		// SES Routes
 		routes = [
-			{pattern="/", handler="test",action="index"},	
-			{pattern="/api-docs/:name", handler="api",action="index"},
-			{pattern="/api-docs", handler="api",action="index"}				
+			{ pattern="/", handler="test",action="index" },	
+			{ pattern="/:handler/:action?" } 			
 		];		
 		
 		// Interceptor Config

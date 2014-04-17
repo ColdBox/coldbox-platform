@@ -25,6 +25,6 @@ Description :
 	<cfset this.mappings[ "/test" ] = getDirectoryFromPath( getCurrentTemplatePath() )>
 	<!--- Map back to its root --->
 	<cfset rootPath = REReplaceNoCase( this.mappings[ "/test" ], "test(\\|/)", "" )>
-	<cfset this.mappings["/root"]   = rootPath>
+	<cfset this.mappings[ "/cbtestharness" ]   = rootPath>
 
 </cfcomponent>

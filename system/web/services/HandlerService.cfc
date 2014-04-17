@@ -274,7 +274,7 @@ Description :
 				}
 			}
 			// log it as application log
-			controller.getPlugin("Logger").error("Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList(moduleSettings)#");
+			instance.log.error( "Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList(moduleSettings)#" );
 		}
 		else{
 			// Try to do list localization in the registry for full event string.
@@ -353,7 +353,7 @@ Description :
 			iData.invalidEvent 	= arguments.event;
 			iData.ehBean 		= arguments.ehBean;
 			iData.override 		= false;
-			instance.interceptorService.processState("onInvalidEvent",iData);
+			instance.interceptorService.processState( "onInvalidEvent", iData );
 
 			//If the override was changed by the interceptors then they updated the ehBean of execution
 			if( iData.override ){
@@ -364,7 +364,7 @@ Description :
 			if ( len(trim(instance.onInvalidEvent)) ){
 
 				// Test for invalid Event Error
-				if ( compareNoCase(instance.onInvalidEvent,arguments.event) eq 0 ){
+				if ( compareNoCase( instance.onInvalidEvent, arguments.event ) eq 0 ){
 					getUtil().throwit(message="The onInvalid event is also invalid",
 									  detail="The onInvalidEvent setting is also invalid: #instance.onInvalidEvent#. Please check your settings",
 									  type="HandlerService.onInValidEventSettingException");
@@ -384,7 +384,7 @@ Description :
 			}
 
 			// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
-			controller.getPlugin("Logger").error("Invalid Event detected: #arguments.event#. Path info: #cgi.path_info# , query string: #cgi.query_string#");
+			instance.log.error( "Invalid Event detected: #arguments.event#. Path info: #cgi.path_info#, query string: #cgi.query_string#" );
 
 			// Throw Exception
 			getUtil().throwit(message="The event: #arguments.event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
