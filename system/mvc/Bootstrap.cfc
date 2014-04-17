@@ -1,27 +1,29 @@
 ﻿/**
-********************************************************************************
+*********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-
-Author     :	Luis Majano
-Description :
-	This is the base component used to provide Application.cfc support.
+* This is the base component used to provide Application.cfc support.
+* @author Luis Majano <lmajano@ortussolutions.com>
 */
 component serializable="false" accessors="true"{
 
 	/************************************** CONSTRUCTOR *********************************************/
 
-	// Global ColdBox properties
+	// Configuration File Override
 	property name="COLDBOX_CONFIG_FILE";
+	// Application root path
 	property name="COLDBOX_APP_ROOT_PATH";
+	// The key used in application scope to model this app
 	property name="COLDBOX_APP_KEY";
+	// The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
 	property name="COLDBOX_APP_MAPPING";
-	// Lock Timeout
+	// Lock Timeout for startup operations
 	property name="lockTimeout";
+	// The application hash used for locks
 	property name="appHash";
 
-	// param the propreties
+	// param the properties with defaults
 	param name="COLDBOX_CONFIG_FILE" 	default="" type="string";
 	param name="COLDBOX_APP_ROOT_PATH" 	default="#getDirectoryFromPath( getbaseTemplatePath() )#" type="string";
 	param name="COLDBOX_APP_KEY" 		default="cbController" type="string";
@@ -29,7 +31,19 @@ component serializable="false" accessors="true"{
 	param name="lockTimeout"			default="30";
 	param name="appHash"				default="#hash( getBaseTemplatePath() )#";
 
-	function init(required COLDBOX_CONFIG_FILE, required COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING=""){
+	/**
+	* Constructor, called by your Application CFC
+	* @COLDBOX_CONFIG_FILE.hint The override location of the config file
+	* @COLDBOX_APP_ROOT_PATH.hint The location of the app on disk
+	* @COLDBOX_APP_KEY.hint The key used in application scope for this application
+	* @COLDBOX_APP_MAPPING.hint The application mapping override, only used for Flex/SOAP apps, this is auto-calculated 
+	*/
+	function init(
+		required string COLDBOX_CONFIG_FILE, 
+		required string COLDBOX_APP_ROOT_PATH, 
+		string COLDBOX_APP_KEY, 
+		string COLDBOX_APP_MAPPING=""
+	){
 		// Set vars for two main locations
 		setCOLDBOX_CONFIG_FILE( arguments.COLDBOX_CONFIG_FILE );
 		setCOLDBOX_APP_ROOT_PATH( arguments.COLDBOX_APP_ROOT_PATH );
