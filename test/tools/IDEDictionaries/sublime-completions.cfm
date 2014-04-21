@@ -63,7 +63,7 @@ functions = {
 	"EventHandler" = "coldbox.system.EventHandler",
 	"Plugin" = "coldbox.system.Plugin",
 	"Interceptor" = "coldbox.system.Interceptor",
-	"BaseSpec" = "coldbox.system.testing.BaseSpec"
+	"BaseSpec" = "testbox.system.BaseSpec"
 };
 
 ignoreMethods = "init,configure";

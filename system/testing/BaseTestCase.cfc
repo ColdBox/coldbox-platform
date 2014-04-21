@@ -10,19 +10,19 @@ Description :
 TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 
 ---------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.compat.framework.TestCase" 
-			 output="false" 
+<cfcomponent extends="testbox.system.compat.framework.TestCase"
+			 output="false"
 			 hint="A base test case for doing ColdBox Testing based on the MXUnit Framework">
 
 	<cfscript>
 		instance = structnew();
-		
+
 		// Internal Properties
 		instance.appMapping = "";
 		instance.configMapping = "";
 		instance.controller = 0;
 		instance.coldboxAppKey = "cbController";
-		
+
 		// Public Switch Properties
 		this.loadColdbox = true;
 	</cfscript>
@@ -42,11 +42,11 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			// ColdBox App Key
 			if( structKeyExists(md,"coldboxAppKey") ){
 				instance.coldboxAppKey = md.coldboxAppKey;
-			}	
+			}
 			// Load coldBox annotation
 			if( structKeyExists(md,"loadColdbox") ){
 				this.loadColdbox = md.loadColdbox;
-			}		
+			}
 		</cfscript>
 	</cffunction>
 
@@ -55,10 +55,10 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<cfscript>
 		var appRootPath = "";
 		var context		= "";
-		
+
 		// metadataInspection
 		metadataInspection();
-		
+
 		// Load ColdBox Application for testing?
 		if( this.loadColdbox ){
 			// Check on Scope First
@@ -94,7 +94,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- setup --->
 	<cffunction name="setup" hint="This executes before any test method for integration tests." output="false">
 		<cfscript>
@@ -140,7 +140,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			return getMockBox().createMock("coldbox.system.core.db.DatasourceBean").init(arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getMockConfigBean --->
 	<cffunction name="getMockConfigBean" access="private" output="false" returnType="coldbox.system.core.collections.ConfigBean" hint="I will return to you a configBean according to the mocking configuration structure you send in">
 		<cfargument name="configStruct" type="struct" required="false" default="#structnew()#" hint="A memento of name-value pairs to init">
@@ -148,21 +148,21 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			return getMockBox().createMock("coldbox.system.core.collections.ConfigBean").init(arguments.configStruct);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getMockRequestBuffer --->
 	<cffunction name="getMockRequestBuffer" access="private" output="false" returnType="coldbox.system.core.util.RequestBuffer" hint="I will return to you a mock request buffer object used mostly in interceptor calls">
 	    <cfscript>
 			return getMockBox().createMock("coldbox.system.core.util.RequestBuffer").init();
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getMockController --->
 	<cffunction name="getMockController" access="private" output="false" returnType="coldbox.system.testing.mock.web.MockController" hint="I will return a mock controller object">
 	    <cfscript>
 			return CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
 		</cfscript>
 	</cffunction>
-		
+
 	<!--- getMockRequestContext --->
 	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it.">
 		<cfargument name="clearMethods" type="boolean" 	required="false" default="false" hint="Clear Methods on it?"/>
@@ -171,18 +171,18 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			var mockRC 			= "";
 			var mockController 	= "";
 			var rcProps 		= structnew();
-			
+
 			if( arguments.clearMethods ){
 				if( structKeyExists(arguments,"decorator") ){
 					return getMockBox().createEmptyMock(arguments.decorator);
 				}
 				return getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
 			}
-			
+
 			// Create functioning request context
 			mockRC 			= getMockBox().createMock("coldbox.system.web.context.RequestContext");
 			mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
-				
+
 			// Create mock properties
 			rcProps.DefaultLayout = "";
 			rcProps.DefaultView = "";
@@ -194,24 +194,24 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			rcProps.RegisteredLayouts = structnew();
 			rcProps.modules = structnew();
 			mockRC.init( properties=rcProps, controller=mockController );
-			
+
 			// return decorator context
 			if( structKeyExists(arguments,"decorator") ){
 				return getMockBox().createMock(arguments.decorator).init(mockRC, mockController);
 			}
-			
+
 			// return normal RC
-			return mockRC;			
+			return mockRC;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get a Mock Model --->
 	<cffunction name="getMockModel" access="private" returntype="any" hint="*ColdBox must be loaded for this to work. Get a mock model object by convention. You can optional clear all the methods on the model object if you wanted to. The object is created but not initiated, that would be your job." output="false" >
 		<cfargument name="name" 			type="string"   required="true" hint="The name of the model to mock">
 		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
 		<cfscript>
 			var mockLocation = getController().getPlugin("BeanFactory").locateModel(arguments.name,true);
-			
+
 			if( len(mockLocation) ){
 				return getMockBox().createMock(className=mockLocation,clearMethods=arguments.clearMethods);
 			}
@@ -220,14 +220,14 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getMockPlugin --->
     <cffunction name="getMockPlugin" output="false" access="private" returntype="any" hint="Get a plugin mocked with capabilities">
     	<cfargument name="path" type="string" required="true" hint="The path of the plugin to mock"/>
     	<cfscript>
     		var mockBox = getMockBox();
 			var plugin	= mockBox.createMock( arguments.path );
-			
+
     		// Create Mock Objects
 			var mockController 		= mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
 			var mockRequestService 	= mockBox.createEmptyMock("coldbox.system.web.services.RequestService");
@@ -236,7 +236,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			var mockFlash		 	= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
 			var mockCacheBox   		= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
 			var mockWireBox   		= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
-			
+
 			// Mock Plugin Dependencies
 			mockController.$("getLogBox",mockLogBox)
 				.$("getCacheBox",mockCacheBox)
@@ -244,17 +244,17 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 				.$("getRequestService",mockRequestService);
 			mockRequestService.$("getFlashScope",mockFlash);
 			mockLogBox.$("getLogger",mockLogger);
-			
+
 			// Decorate plugin?
 			if( NOT getUtil().isFamilyType("plugin", plugin) ){
-				getUtil().convertToColdBox( "plugin", plugin );	
+				getUtil().convertToColdBox( "plugin", plugin );
 				// Check if doing cbInit()
 				if( structKeyExists(plugin, "$cbInit") ){ plugin.$cbInit( mockController ); }
 			}
 			else{
 				plugin.init( mockController );
 			}
-			
+
 			return plugin;
 		</cfscript>
     </cffunction>
@@ -264,7 +264,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<cfset structDelete( application, getColdboxAppKey() )>
 		<cfset structClear( request )>
 	</cffunction>
-	
+
 	<!--- get/Set Coldbox App Key --->
 	<cffunction name="getColdboxAppKey" access="private" output="false" returntype="string" hint="Get the coldboxAppKey used to store the coldbox controller in application scope.">
 		<cfreturn instance.coldboxAppKey/>
@@ -273,12 +273,12 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<cfargument name="coldboxAppKey" type="string" required="true"/>
 		<cfset instance.coldboxAppKey = arguments.coldboxAppKey/>
 	</cffunction>
-	
+
 	<!--- getter for AppMapping --->
 	<cffunction name="getAppMapping" access="private" returntype="string" output="false" hint="Get the AppMapping used for this test case">
 		<cfreturn instance.appMapping>
 	</cffunction>
-	
+
 	<!--- setter for AppMapping --->
 	<cffunction name="setAppMapping" access="private" output="false" returntype="void" hint="Set the AppMapping for this test case">
 		<cfargument name="AppMapping" type="string" required="true"/>
@@ -289,7 +289,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 	<cffunction name="getConfigMapping" access="private" returntype="string" output="false" hint="Get the ConfigMapping for this test case">
 		<cfreturn instance.ConfigMapping>
 	</cffunction>
-	
+
 	<!--- setter for ConfigMapping --->
 	<cffunction name="setConfigMapping" access="private" output="false" returntype="void" hint="Set the ConfigMapping for this test case">
 		<cfargument name="ConfigMapping" type="string" required="true"/>
@@ -300,22 +300,22 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 	<cffunction name="getController" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox mock controller">
 		<cfreturn instance.controller>
 	</cffunction>
-	
+
 	<!--- getWireBox --->
     <cffunction name="getWireBox" output="false" access="private" returntype="any" hint="Get the wirebox instance">
     	<cfreturn instance.controller.getwireBox()>
     </cffunction>
-	
+
 	<!--- getCacheBox --->
     <cffunction name="getCacheBox" output="false" access="private" returntype="any" hint="Get a reference to cachebox">
     	<cfreturn instance.controller.getCacheBox()>
     </cffunction>
-	
+
 	<!--- getLogBox --->
     <cffunction name="getLogBox" output="false" access="private" returntype="any" hint="Get a logbox reference">
     	<cfreturn instance.controller.getLogBox()>
     </cffunction>
-	
+
 	<!--- getColdboxOCM --->
     <cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
 		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
@@ -326,7 +326,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 	<cffunction name="getRequestContext" access="private" output="false" returntype="any" hint="Get a reference to the current mock request context">
 		<cfreturn getController().getRequestService().getContext() >
 	</cffunction>
-	
+
 	<!--- getFlashScope --->
 	<cffunction name="getFlashScope" output="false" access="private" returntype="coldbox.system.web.Flash.AbstractFlashScope" hint="Returns to you the currently used flash ram object">
 		<cfreturn getController().getRequestService().getFlashScope()>
@@ -358,12 +358,12 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			var renderData		= "";
 			var renderedContent = "";
 			var iData			= {};
-				
+
 			//Setup the request Context with setup FORM/URL variables set in the unit test.
 			setupRequest(arguments.event);
-			
+
 			try{
-			
+
 				// App Start Handler
 				if ( len(cbController.getSetting("ApplicationStartHandler")) ){
 					cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true);
@@ -374,11 +374,11 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 				if ( len(cbController.getSetting("RequestStartHandler")) ){
 					cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
 				}
-				
+
 				// grab the latest event in the context, in case overrides occur
 				requestContext  = getRequestContext();
 				arguments.event = requestContext.getCurrentEvent();
-				
+
 				// TEST EVENT EXECUTION
 				if( NOT requestContext.isNoExecution() ){
 					// execute the event
@@ -386,12 +386,12 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 													   private=arguments.private,
 													   prepostExempt=arguments.prepostExempt,
 													   eventArguments=arguments.eventArguments);
-					
+
 					// Are we doing rendering procedures?
 					if( arguments.renderResults ){
 						// preLayout
 						cbController.getInterceptorService().processState("preLayout");
-						
+
 						// Render Data?
 						renderData = requestContext.getRenderData();
 						if( isStruct( renderData ) and NOT structIsEmpty( renderData ) ){
@@ -405,31 +405,31 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 						// render layout/view pair
 						else{
 							renderedContent = cbController.getPlugin("Renderer")
-								.renderLayout(module=requestContext.getCurrentLayoutModule(), 
+								.renderLayout(module=requestContext.getCurrentLayoutModule(),
 										     viewModule=requestContext.getCurrentViewModule());
 						}
-						
+
 						// Pre Render
 						iData = { renderedContent = renderedContent };
 						cbController.getInterceptorService().processState("preRender", iData);
 						renderedContent = iData.renderedContent;
-						
+
 						// Store in collection for assertions
 						requestContext.setValue( "cbox_rendered_content", renderedContent );
-					
+
 						// postRender
 						cbController.getInterceptorService().processState("postRender");
 					}
 				}
-				
+
 				// Request End Handler
 				if ( len(cbController.getSetting("RequestEndHandler")) ){
 					cbController.runEvent( cbController.getSetting("RequestEndHandler"), true );
 				}
-				
+
 				// postProcess
 				cbController.getInterceptorService().processState("postProcess");
-				
+
 			}
 			catch(Any e){
 				// Exclude relocations so they can be asserted.
@@ -437,14 +437,14 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 					$rethrow(e);
 				}
 			}
-			
+
 			// Return the correct event context.
 			requestContext = getRequestContext();
-			
+
 			return requestContext;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Announce Interception --->
 	<cffunction name="announceInterception" access="private" returntype="any" hint="Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result." output="true" >
 		<cfargument name="state" 			required="true"  type="any" hint="The interception state to execute">
@@ -467,7 +467,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 			return getController().getInterceptorService().getInterceptor(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get Model --->
 	<cffunction name="getModel" access="private" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
@@ -477,7 +477,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<!--- ************************************************************* --->
 		<cfreturn getController().getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
 	</cffunction>
-	
+
 	<!--- Throw Facade --->
 	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
@@ -487,7 +487,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
-	
+
 	<!--- Dump facade --->
 	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void" output="false">
 		<cfargument name="var" required="yes" type="any">
@@ -495,24 +495,24 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<cfdump var="#var#">
 		<cfif arguments.isAbort><cfabort></cfif>
 	</cffunction>
-	
+
 	<!--- Rethrow Facade --->
 	<cffunction name="$rethrow" access="private" returntype="void" hint="Rethrow facade" output="false" >
 		<cfargument name="throwObject" required="true" type="any" hint="The cfcatch object">
 		<cfthrow object="#arguments.throwObject#">
 	</cffunction>
-	
+
 	<!--- Abort Facade --->
 	<cffunction name="$abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
 		<cfabort>
 	</cffunction>
-	
+
 	<!--- Include Facade --->
 	<cffunction name="$include" access="private" hint="Facade for cfinclude" returntype="void" output="false">
 		<cfargument name="template" type="string">
 		<cfinclude template="#template#">
 	</cffunction>
-	
+
 	<!--- getUtil --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
 		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>

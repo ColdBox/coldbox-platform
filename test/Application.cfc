@@ -13,9 +13,9 @@ component{
 	this.sessionTimeout = createTimeSpan(0,0,5,0);
 
 	// setup test path
-	this.mappings[ "/test" ] = getDirectoryFromPath( getCurrentTemplatePath() )
+	this.mappings[ "/test" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 	// setup root path
-	rootPath = REReplaceNoCase( this.mappings[ "/test" ], "test(\\|/)", "" )
+	rootPath = REReplaceNoCase( this.mappings[ "/test" ], "test(\\|/)", "" );
 	// harness path
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
@@ -23,23 +23,22 @@ component{
 	this.ormEnabled = "true";
 
 	this.ormSettings = {
+		cfclocation = [ "/cbtestharness/model" ],
 		logSQL = true,
 		dbcreate = "update",
 		secondarycacheenabled = false,
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false,
 		eventhandling = true,
-		eventHandler = "testmodel.EventHandler",
+		eventHandler = "coldbox.system.orm.hibernate.WBEventHandler",
 		skipcfcWithError = true
 	};
 
 	function onRequestStart( required targetPage ){
-	
+
 		if( structKeyExists(URL,"reinit") ){
 			ORMReload();
 		}
-
-		<!---application.wirebox = createObject("component","coldbox.system.ioc.Injector").init()>--->
 
 		return true;
 	}

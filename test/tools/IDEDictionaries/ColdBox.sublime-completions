@@ -37,7 +37,7 @@
 	{ "trigger": "_privateInvoker\tfn. (ColdBox EventHandler)", "contents": "_privateInvoker( method=${1:any}, argCollection=${2:any} )" },
 	// END Functions for: coldbox.system.EventHandler 
 
-	// Functions for: coldbox.system.testing.BaseSpec 
+	// Functions for: testbox.system.BaseSpec 
 	{ "trigger": "addAssertions\tfn. (ColdBox BaseSpec)", "contents": "addAssertions( assertions=${1:any} )" },
 	{ "trigger": "addMatchers\tfn. (ColdBox BaseSpec)", "contents": "addMatchers( matchers=${1:any} )" },
 	{ "trigger": "afterEach\tfn. (ColdBox BaseSpec)", "contents": "afterEach( body=${1:any} )" },
@@ -69,7 +69,7 @@
 	{ "trigger": "runTestMethod\tfn. (ColdBox BaseSpec)", "contents": "runTestMethod( spec=${1:any}, testResults=${2:any}, suiteStats=${3:any}, runner=${4:any} )" },
 	{ "trigger": "xdescribe\tfn. (ColdBox BaseSpec)", "contents": "xdescribe( title=\"${1:}\", body=${2:any}, labels=${3:any}, asyncAll=${4:true,false} )" },
 	{ "trigger": "xit\tfn. (ColdBox BaseSpec)", "contents": "xit( title=\"${1:}\", body=${2:any}, labels=${3:any} )" },
-	// END Functions for: coldbox.system.testing.BaseSpec 
+	// END Functions for: testbox.system.BaseSpec 
 
 	// Functions for: coldbox.system.FrameworkSupertype 
 	{ "trigger": "$abort\tfn. (ColdBox FrameworkSuperType)", "contents": "$abort()" },
