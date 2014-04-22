@@ -220,7 +220,7 @@ I oversee and manage ColdBox modules
 			};
 			
 			// Load Module configuration from cfc and store it in module Config Cache
-			instance.mConfigCache[ modName ] = loadModuleConfiguration( mConfig );
+			instance.mConfigCache[ modName ] = loadModuleConfiguration( mConfig, arguments.moduleName );
 			
 			// Update the paths according to conventions
 			mConfig.handlerInvocationPath 	&= ".#replace(mConfig.conventions.handlersLocation,"/",".","all")#";
@@ -482,7 +482,8 @@ I oversee and manage ColdBox modules
 
 	<!--- loadModuleConfiguration --->
 	<cffunction name="loadModuleConfiguration" output="false" access="public" returntype="any" hint="Load the module configuration object">
-		<cfargument name="config" type="struct" required="true" hint="The module config structure"/>
+		<cfargument name="config" 		type="struct" required="true" hint="The module config structure">
+		<cfargument name="moduleName"	type="string" required="true" hint="The module name">
 		<cfscript>
 			var mConfig 	= arguments.config;
 			var oConfig 	= createObject( "component", mConfig.invocationPath & ".ModuleConfig" );
@@ -514,10 +515,15 @@ I oversee and manage ColdBox modules
 			}
 
 			// Get Public Module Properties
+			if( !structKeyExists( oConfig, "title" ) ){ oConfig.title = arguments.moduleName; }
 			mConfig.title 				= oConfig.title;
+			if( !structKeyExists( oConfig, "author" ) ){ oConfig.author = ""; }
 			mConfig.author 				= oConfig.author;
+			if( !structKeyExists( oConfig, "webURL" ) ){ oConfig.webURL = ""; }
 			mConfig.webURL				= oConfig.webURL;
+			if( !structKeyExists( oConfig, "description" ) ){ oConfig.description = ""; }
 			mConfig.description 		= oConfig.description;
+			if( !structKeyExists( oConfig, "version" ) ){ oConfig.version = ""; }
 			mConfig.version				= oConfig.version;
 
 			// Optional Properties
