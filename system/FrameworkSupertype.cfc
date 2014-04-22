@@ -118,6 +118,14 @@ Description :
 		<cfreturn controller.getWireBox().getInstance(argumentCollection=arguments)>
 	</cffunction>
 
+	<!--- Get Instance --->
+	<cffunction name="getInstance" access="public" returntype="any" hint="Create or retrieve an object from WireBox" output="false" >
+		<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
+		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
+		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfreturn controller.getWireBox().getInstance(argumentCollection=arguments)>
+	</cffunction>
+
 	<!--- validateModel --->
     <cffunction name="validateModel" output="false" access="public" returntype="coldbox.system.validation.result.IValidationResult" hint="Validate a target object">
     	<cfargument name="target" 		type="any" 		required="true" hint="The target object to validate or a structure of name-value paris to validate."/>
