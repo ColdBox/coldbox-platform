@@ -1,6 +1,6 @@
 ﻿<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
-	
+
 	// Module Properties
 	this.title 				= "My Test Conventions module";
 	this.author 			= "Luis Majano";
@@ -11,14 +11,16 @@
 	this.viewParentLookup 	= true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
-	
+	this.entrypoint			= "conventionsTest";
+
 	function configure(){
-		
+
 		// SES Routes
 		routes = [
-			{pattern="/api-docs", handler="api",action="index"}		
-		];		
-	
+			{ pattern="/", handler="test",action="index" },
+			{ pattern="/:handler/:action?" }
+		];
+
 		// Module Conventions
 		conventions = {
 			handlersLocation = "system/handlers",
@@ -26,13 +28,13 @@
 			pluginsLocation = "system/plugins",
 			modelsLocation = "system/model"
 		};
-	
+
 		// Model Mappings
 		modelMappings = {
 			"Simple@conventionsTest" = {
 				path = "Simple"
 			}
-		};	
+		};
 	}
 </cfscript>
 </cfcomponent>

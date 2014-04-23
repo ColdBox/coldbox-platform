@@ -3,8 +3,8 @@
 *
 *	Extends the integration class: coldbox.system.testing.BaseTestCase
 *
-*	so you can test your ColdBox application headlessly. The 'appMapping' points by default to 
-*	the '/root' mapping created in the test folder Application.cfc.  Please note that this 
+*	so you can test your ColdBox application headlessly. The 'appMapping' points by default to
+*	the '/root' mapping created in the test folder Application.cfc.  Please note that this
 *	Application.cfc must mimic the real one in your root, including ORM settings if needed.
 *
 *	The 'execute()' method is used to execute a ColdBox event, with the following arguments
@@ -15,7 +15,7 @@
 *	* renderResults : Render back the results of the event
 *******************************************************************************/
 component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness"{
-	
+
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
@@ -29,7 +29,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 	}
 
 /*********************************** BDD SUITES ***********************************/
-	
+
 	function run(){
 
 		describe( "Modules", function(){
@@ -49,9 +49,18 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "Hola Brother!" );
 			});
 
-		
+			it( "can execute a module with custom conventions", function(){
+				var event = execute( event="conventionsTest:test.index", renderResults=true );
+				expect(	event.getValue( "data" ) ).toBeStruct();
+			});
+
+			it( "can register cfml mappings", function(){
+				var event = execute( event="test1:test.cfmlMapping", renderResults=true );
+				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "Hola Brother!" );
+			});
+
 		});
 
 	}
-	
+
 }

@@ -307,7 +307,7 @@ Description :
 		</cfif>
 
 		<!--- If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into. --->
-			
+
 		<cfif structKeyExists(md,"extends") AND md.type eq "component" AND stopClassRecursion(md.extends.name,arguments.stopRecursions) EQ FALSE>
 			<cfset loc.parent = getInheritedMetaData(component=component, stopRecursions=stopRecursions, md=md.extends)>
 		<!--- If we're at the end of the line, it's time to start working backwards so start with an empty struct to hold our condensesd metadata. --->
@@ -368,5 +368,31 @@ Description :
 			return false;
 		</cfscript>
 	</cffunction>
+
+	<!--- addMapping --->
+    <cffunction name="addMapping" output="false" access="public" returntype="Util" hint="Add a CFML Mapping">
+    	<cfargument name="name" type="string" required="true" hint="The name of the mapping"/>
+    	<cfargument name="path" type="string" required="true" hint="The path to the mapping"/>
+    	<cfscript>
+    		var mappingHelper = "";
+
+    		// Detect server
+			if( structKeyExists( server, 'railo' ) ) {
+				mappingHelper = new RailoMappingHelper();
+			} else {
+				mappingHelper = new CFMappingHelper();
+			}
+
+			// Add / registration
+			if( left( arguments.name, 1 ) != "/" ){
+				arguments.name = "/#arguments.name#";
+			}
+
+			// Add mapping
+			mappingHelper.addMapping( arguments.name, arguments.path );
+
+			return this;
+    	</cfscript>
+    </cffunction>
 
 </cfcomponent>

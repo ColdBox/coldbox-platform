@@ -182,6 +182,7 @@ I oversee and manage ColdBox modules
 				viewParentLookup 	= "true",
 				layoutParentLookup 	= "true",
 				entryPoint 			= "",
+				cfmapping			= "",
 				loadTime 			= now(),
 				activated 			= false,
 				// Module Configurations
@@ -232,6 +233,10 @@ I oversee and manage ColdBox modules
 			// Store module configuration in main modules configuration
 			modulesConfiguration[ modName ] = mConfig;
 
+			// Register CFML Mapping if it exists
+			if( len( trim( mConfig.cfMapping ) ) ){
+				getUtil().addMapping( name=mConfig.cfMapping, path=mConfig.path );
+			}
 			// Register Custom Interception Points
 			controller.getInterceptorService().appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
 			// Register Parent Settings
@@ -522,6 +527,9 @@ I oversee and manage ColdBox modules
 			mConfig.description 		= oConfig.description;
 			if( !structKeyExists( oConfig, "version" ) ){ oConfig.version = ""; }
 			mConfig.version				= oConfig.version;
+			if( !structKeyExists( oConfig, "cfmapping" ) ){ oConfig.cfmapping = ""; }
+			mConfig.cfmapping			= oConfig.cfmapping;
+
 
 			// Optional Properties
 			mConfig.viewParentLookup 	= true;

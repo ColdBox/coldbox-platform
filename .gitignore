@@ -4,3 +4,5 @@ testing/resources/logs/*.log
 /settings.xml
 .project
 test-harness/logs/*.log
+test-harness/logs
+test-harness/test/logs
