@@ -16,7 +16,6 @@ structures to create for configuration
 - parentSettings : struct (will append and override parent)
 - settings : struct
 - datasources : struct (will append and override parent)
-- webservices : struct (will append and override parent)
 - interceptorSettings : struct of the following keys ATM
 	- customInterceptionPoints : string list of custom interception points
 - interceptors : array
@@ -40,7 +39,7 @@ Optional Methods
 
 */
 component {
-	
+
 	// Module Properties
 	this.title 				= "layouttest";
 	this.author 			= "luis majano";
@@ -53,62 +52,57 @@ component {
 	this.layoutParentLookup = true;
 	// Module Entry Point
 	this.entryPoint			= "layouttest:home.index";
-	
+
 	function configure(){
-		
+
 		// parent settings
 		parentSettings = {
-		
+
 		};
-	
+
 		// module settings - stored in modules.name.settings
 		settings = {
-		
+
 		};
-		
+
 		// Layout Settings
 		layoutSettings = {
 			defaultLayout = ""
 		};
-		
+
 		// datasources
 		datasources = {
-		
+
 		};
-		
-		// web services
-		webservices = {
-		
-		};
-		
+
 		// SES Routes
 		routes = [
-			//{pattern="/api-docs", handler="api",action="index"}		
-		];		
-		
+			//{pattern="/api-docs", handler="api",action="index"}
+		];
+
 		// Custom Declared Points
 		interceptorSettings = {
 			customInterceptionPoints = ""
 		};
-		
+
 		// Custom Declared Interceptors
 		interceptors = [
 		];
-		
+
 	}
-	
+
 	/**
 	* Fired when the module is registered and activated.
 	*/
 	function onLoad(){
-		
+
 	}
-	
+
 	/**
 	* Fired when the module is unregistered and unloaded
 	*/
 	function onUnload(){
-		
+
 	}
-	
+
 }

@@ -21,7 +21,6 @@
 		// Mock spies
 		builder.$("getIOCDSL",true)
 			.$("getOCMDSL",true)
-			.$("getWebserviceDSL",true)
 			.$("getEntityServiceDSL",true)
 			.$("getColdboxDSL",true);
 
@@ -33,10 +32,6 @@
 		def = {dsl="ocm"};
 		builder.process(def);
 		assertTrue( builder.$once("getOCMDSL") );
-
-		def = {dsl="webservice"};
-		builder.process(def);
-		assertTrue( builder.$once("getWebserviceDSL") );
 
 		def = {dsl="coldbox"};
 		builder.process(def);
@@ -51,26 +46,6 @@
 		d = builder.getDatasource('test');
 		assertEquals( "test", d.getName() );
 		assertEquals( "mysql", d.getDBType() );
-	}
-
-	function testGetWebserviceDSL(){
-		// name from property
-		def = {name="propTest", dsl="webservice"};
-
-		mockPlugin = getMockBox().createEmptyMock("coldbox.system.plugins.WebServices")
-			.$("getWSObj", getMockBox().createStub() );
-		mockColdBox.$("getPlugin", mockPlugin );
-		makePublic(builder,"getWebserviceDSL");
-
-		d = builder.getWebserviceDSL(def);
-		assertTrue( mockPlugin.$once("getWSobj") );
-		assertEquals("propTest", mockPlugin.$callLog().getWSObj[1][1] );
-
-		// full dsl
-		def = {name="propTest", dsl="webservice:myWeb"};
-		d = builder.getWebserviceDSL(def);
-		assertTrue( mockPlugin.$times(2,"getWSobj") );
-		assertEquals("myWeb", mockPlugin.$callLog().getWSObj[2][1] );
 	}
 
 	function testgetIOCDSl(){

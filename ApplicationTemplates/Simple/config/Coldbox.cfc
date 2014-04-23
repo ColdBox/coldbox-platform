@@ -12,7 +12,6 @@ structures to create for configuration
 - debugger (struct)
 - mailSettings (struct)
 - i18n (struct)
-- webservices (struct)
 - datasources (struct)
 - layoutSettings (struct)
 - layouts (array of structs)

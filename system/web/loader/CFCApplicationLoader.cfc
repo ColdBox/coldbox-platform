@@ -126,9 +126,6 @@ Loads a coldbox cfc configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: I18N SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLocalization(oConfig,configStruct);
 
-		/* ::::::::::::::::::::::::::::::::::::::::: WS SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseWebservices(oConfig,configStruct);
-
 		/* ::::::::::::::::::::::::::::::::::::::::: DATASOURCES SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseDatasources(oConfig,configStruct);
 
@@ -562,24 +559,6 @@ Loads a coldbox cfc configuration file
 
 				// set i18n being used
 				configStruct[ "using_i18N" ] = true;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- parseWebservices --->
-	<cffunction name="parseWebservices" output="false" access="public" returntype="void" hint="Parse webservices">
-		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	type="any" required="true" hint="The config struct"/>
-		<cfscript>
-			var configStruct = arguments.config;
-			var key=1;
-			var webservices = arguments.oConfig.getPropertyMixin( "webservices","variables",structnew());
-
-			// Defaults
-			configStruct.webservices = structnew();
-
-			for(key in webservices){
-				configStruct.webservices[key] = webservices[key];
 			}
 		</cfscript>
 	</cffunction>

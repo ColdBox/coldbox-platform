@@ -12,7 +12,6 @@ structures/arrays to create for configuration
 - debugger (struct)
 - mailSettings (struct)
 - i18n (struct)
-- webservices (struct)
 - datasources (struct)
 - layoutSettings (struct)
 - layouts (array of structs)
@@ -217,12 +216,6 @@ Optional Methods
 			defaultLocale = "en_US",
 			localeStorage = "session",
 			unknownTranslation = "**NOT FOUND**"
-		};
-
-		//webservices
-		webservices = {
-			testWS = "http://www.test.com/test.cfc?wsdl",
-			AnotherTestWS = "http://www.coldbox.org/distribution/updatews.cfc?wsdl"
 		};
 
 		//Datasources

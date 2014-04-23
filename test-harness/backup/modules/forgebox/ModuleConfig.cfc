@@ -30,7 +30,6 @@ structures to create for configuration
 - parentSettings : struct (will append and override parent)
 - settings : struct
 - datasources : struct (will append and override parent)
-- webservices : struct (will append and override parent)
 - interceptorSettings : struct of the following keys ATM
 	- customInterceptionPoints : string list of custom interception points
 - interceptors : array
@@ -77,7 +76,7 @@ Optional Methods
 		layoutSettings = {
 			defaultLayout = "forgebox.main.cfm"
 		};
-	
+
 		// SES Routes
 		routes = [
 			"config/routes.cfm"
@@ -91,10 +90,10 @@ Optional Methods
 	* Called when the module is activated and application has loaded
 	*/
 	function onLoad(){
-		// change entry point if SES loaded	
+		// change entry point if SES loaded
 		if( NOT controller.settingExists("sesBaseURL") ){
 			controller.getSetting("modules").forgebox.entryPoint = "forgebox:manager.index";
-		}		
+		}
 	}
 </cfscript>
 </cfcomponent>

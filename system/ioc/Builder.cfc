@@ -317,13 +317,13 @@ TODO: update dsl consistency, so it is faster.
 		<cfscript>
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
-			var coldboxDSLRegex		= "^(ioc|ocm|webservice|coldbox|cachebox)$";
+			var coldboxDSLRegex		= "^(ioc|ocm|coldbox|cachebox)$";
 
 			// Determine Type of Injection according to Internal Types first
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch( DSLNamespace ){
 				// ColdBox Context DSL
-				case "ioc" : case "ocm" : case "webservice" : case "coldbox" : {
+				case "ioc" : case "ocm" : case "coldbox" : {
 					refLocal.dependency = instance.coldboxDSL.process(argumentCollection=arguments); break;
 				}
 				// CacheBox Context DSL

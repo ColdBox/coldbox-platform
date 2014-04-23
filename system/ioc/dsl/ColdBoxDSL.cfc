@@ -36,7 +36,6 @@ Description :
 			switch( DSLNamespace ){
 				case "ioc" 				: { return getIOCDSL(argumentCollection=arguments);}
 				case "ocm" 				: { return getOCMDSL(argumentCollection=arguments);}
-				case "webservice" 		: { return getWebserviceDSL(argumentCollection=arguments);}
 				case "coldbox" 			: { return getColdboxDSL(argumentCollection=arguments); }
 			}
 		</cfscript>
@@ -51,24 +50,6 @@ Description :
 		if ( structKeyExists(datasources, arguments.alias) ){
 			return createObject("component","coldbox.system.core.db.DatasourceBean").init(datasources[arguments.alias]);
 		}
-		</cfscript>
-	</cffunction>
-
-	<!--- getWebserviceDSL --->
-	<cffunction name="getWebserviceDSL" access="private" returntype="any" hint="Get webservice dependencies" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var oWebservices 	= instance.coldbox.getPlugin("Webservices");
-			var thisType 		= arguments.definition.dsl;
-			var thisTypeLen 	= listLen(thisType,":");
-
-			switch(thisTypeLen){
-				// webservice, take name from property as default.
-				case 1: { return oWebservices.getWSobj( arguments.definition.name ); break; }
-				// webservice:alias
-				case 2: { return oWebservices.getWSobj( getToken(thisType,2,":") ); break; }
-			}
 		</cfscript>
 	</cffunction>
 
