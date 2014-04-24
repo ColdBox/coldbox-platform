@@ -183,6 +183,7 @@ I oversee and manage ColdBox modules
 				layoutParentLookup 	= "true",
 				entryPoint 			= "",
 				cfmapping			= "",
+				modelNamespace		= modeName,
 				loadTime 			= now(),
 				activated 			= false,
 				// Module Configurations
@@ -323,7 +324,7 @@ I oversee and manage ColdBox modules
 				// Add as scan locations
 				wirebox.getBinder().scanLocations( mConfig.modelsInvocationPath );
 				// Add as a mapped directory with module name as the namespace
-				wirebox.getBinder().mapDirectory( packagePath=mConfig.modelsInvocationPath, namespace="@#arguments.moduleName#" );
+				wirebox.getBinder().mapDirectory( packagePath=mConfig.modelsInvocationPath, namespace="@#mConfig.mConfig.modelNamespace#" );
 			}
 
 			// Register module routing entry point pre-pended to routes
@@ -516,20 +517,28 @@ I oversee and manage ColdBox modules
 				evaluate( "oConfig.#appSettings.environment#()" );
 			}
 
-			// Get Public Module Properties
+			// title
 			if( !structKeyExists( oConfig, "title" ) ){ oConfig.title = arguments.moduleName; }
 			mConfig.title 				= oConfig.title;
+			// author
 			if( !structKeyExists( oConfig, "author" ) ){ oConfig.author = ""; }
 			mConfig.author 				= oConfig.author;
+			// web url
 			if( !structKeyExists( oConfig, "webURL" ) ){ oConfig.webURL = ""; }
 			mConfig.webURL				= oConfig.webURL;
+			// description
 			if( !structKeyExists( oConfig, "description" ) ){ oConfig.description = ""; }
 			mConfig.description 		= oConfig.description;
+			// version
 			if( !structKeyExists( oConfig, "version" ) ){ oConfig.version = ""; }
 			mConfig.version				= oConfig.version;
+			// cf mapping
 			if( !structKeyExists( oConfig, "cfmapping" ) ){ oConfig.cfmapping = ""; }
 			mConfig.cfmapping			= oConfig.cfmapping;
-
+			// model namespace override
+			if( structKeyExists( oConfig, "modelNamespace" ) ){
+				mConfig.modelNamespace = oConfig.modelNamespace;
+			}
 
 			// Optional Properties
 			mConfig.viewParentLookup 	= true;
