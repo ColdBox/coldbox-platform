@@ -6,3 +6,4 @@ testing/resources/logs/*.log
 test-harness/logs/*.log
 test-harness/logs
 test-harness/test/logs
+test-harness/test/specs/integration/logs

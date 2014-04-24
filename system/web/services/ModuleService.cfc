@@ -183,7 +183,7 @@ I oversee and manage ColdBox modules
 				layoutParentLookup 	= "true",
 				entryPoint 			= "",
 				cfmapping			= "",
-				modelNamespace		= modeName,
+				modelNamespace		= modName,
 				loadTime 			= now(),
 				activated 			= false,
 				// Module Configurations
@@ -324,7 +324,7 @@ I oversee and manage ColdBox modules
 				// Add as scan locations
 				wirebox.getBinder().scanLocations( mConfig.modelsInvocationPath );
 				// Add as a mapped directory with module name as the namespace
-				wirebox.getBinder().mapDirectory( packagePath=mConfig.modelsInvocationPath, namespace="@#mConfig.mConfig.modelNamespace#" );
+				wirebox.getBinder().mapDirectory( packagePath=mConfig.modelsInvocationPath, namespace="@#mConfig.modelNamespace#" );
 			}
 
 			// Register module routing entry point pre-pended to routes
