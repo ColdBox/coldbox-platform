@@ -210,13 +210,13 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<cfargument name="name" 			type="string"   required="true" hint="The name of the model to mock">
 		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
 		<cfscript>
-			var mockLocation = getController().getPlugin("BeanFactory").locateModel(arguments.name,true);
+			var mockLocation = getController().getWireBox().locateInstance( arguments.name );
 
-			if( len(mockLocation) ){
-				return getMockBox().createMock(className=mockLocation,clearMethods=arguments.clearMethods);
+			if( len( mockLocation ) ){
+				return getMockBox().createMock( className=mockLocation, clearMethods=arguments.clearMethods );
 			}
 			else{
-				throwit(message="Model object #arguments.name# could not be located.",type="ModelNotFoundException");
+				throw( message="Model object #arguments.name# could not be located.", type="ModelNotFoundException" );
 			}
 		</cfscript>
 	</cffunction>
@@ -475,7 +475,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
 		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
 		<!--- ************************************************************* --->
-		<cfreturn getController().getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
+		<cfreturn getController().getWireBox().getInstance( argumentCollection=arguments )>
 	</cffunction>
 
 	<!--- Throw Facade --->
