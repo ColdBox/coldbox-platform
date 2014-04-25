@@ -15,7 +15,6 @@ Description :
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="BeanPopulator" hint="Constructor">
     	<cfscript>
-    		JSONUtil  = createObject("component","coldbox.system.core.conversion.JSON").init();
 			mixerUtil = createObject("component","coldbox.system.core.dynamic.MixerUtil").init();
 
 			return this;
@@ -40,7 +39,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Inflate JSON
-			arguments.memento = JSONUtil.decode(arguments.JSONString);
+			arguments.memento = deserializeJSON( arguments.JSONString );
 
 			// populate and return
 			return populateFromStruct(argumentCollection=arguments);
@@ -168,7 +167,7 @@ Description :
 			return populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!---Populate from a struct with prefix --->
 	<cffunction name="populateFromStructWithPrefix" access="public" returntype="any" hint="Populate a named or instantiated bean from a structure" output="false" >
 		<!--- ************************************************************* --->
@@ -198,10 +197,10 @@ Description :
 					newMemento[ trueName ] = arguments.memento[ key ];
 				}
 			}
-			
+
 			// override memento
 			arguments.memento = newMemento;
-			
+
 			//populate bean and return
 			return populateFromStruct( argumentCollection=arguments );
 		</cfscript>
@@ -284,7 +283,7 @@ Description :
 							// Is property in empty-to-null include list?
 							if( ( len( arguments.nullEmptyInclude ) && listFindNoCase( arguments.nullEmptyInclude, key ) ) ) {
 								nullValue = true;
-							} 
+							}
 							// Is property in empty-to-null exclude list, or is exclude list "*"?
 							if( ( len( arguments.nullEmptyExclude ) AND listFindNoCase( arguments.nullEmptyExclude, key ) ) ){
 								nullValue = false;
@@ -326,7 +325,7 @@ Description :
 							  			  message="Error populating bean #getMetaData(beanInstance).name# relationship of #key#. The component #relationalMeta[ key ].cfc# could not be found.",
 							  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
 									}
-									
+
 								}
 								// if targetEntityName was successfully found
 								if( len( targetEntityName) ) {
@@ -379,7 +378,7 @@ Description :
 										if( isSimpleValue( propertyValue ) && trim( propertyValue ) != "" ) {
 											propertyValue = EntityLoadByPK( targetEntityName, propertyValue );
 										}
-									}	
+									}
 								} // if target entity name found
 							}
 							// Populate the property as a null value
@@ -391,7 +390,7 @@ Description :
 							else {
 								evaluate( "beanInstance.set#key#( propertyValue )" );
 							}
-							
+
 						} // end if setter or scope injection
 					}// end if prop ignored
 
@@ -426,8 +425,8 @@ Description :
 			for( var i = 1; i <= arrayLen( properties ); i++ ) {
 				var property = properties[ i ];
 				// if property has a name, a fieldtype, and is not the ID, add to maps
-				if( structKeyExists( property, "fieldtype" ) && 
-					structKeyExists( property, "name" ) && 
+				if( structKeyExists( property, "fieldtype" ) &&
+					structKeyExists( property, "name" ) &&
 					!listFindNoCase( "id,column", property.fieldtype ) ) {
 					meta[ property.name ] = property;
 				}
