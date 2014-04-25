@@ -120,9 +120,6 @@ Loads a coldbox cfc configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL LAYOUTS/VIEWS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */
 		parseExternalLocations(oConfig,configStruct);
 
-		/* ::::::::::::::::::::::::::::::::::::::::: MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseMailSettings(oConfig,configStruct);
-
 		/* ::::::::::::::::::::::::::::::::::::::::: I18N SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLocalization(oConfig,configStruct);
 
@@ -488,16 +485,6 @@ Loads a coldbox cfc configuration file
 			else{
 				configStruct[ "LayoutsExternalLocation" ] = "";
 			}
-		</cfscript>
-	</cffunction>
-
-	<!--- parseLocalization --->
-	<cffunction name="parseMailSettings" output="false" access="public" returntype="void" hint="Parse Mail Settings">
-		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	  type="any"   required="true" hint="The config struct"/>
-		<cfscript>
-			var configStruct = arguments.config;
-			configStruct.mailSettings = arguments.oConfig.getPropertyMixin( "mailSettings","variables",structnew());
 		</cfscript>
 	</cffunction>
 

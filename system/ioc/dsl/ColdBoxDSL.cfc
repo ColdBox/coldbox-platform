@@ -85,7 +85,6 @@ Description :
 						case "flash"		 		: { return instance.coldbox.getRequestService().getFlashScope(); }
 						case "fwconfigbean" 		: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getColdboxSettings() ); }
 						case "configbean" 			: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getConfigSettings() ); }
-						case "mailsettingsbean"		: { return createObject("component","coldbox.system.core.mail.MailSettingsBean").init(argumentCollection=instance.coldbox.getSetting("mailSettings"));	}
 						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
 						case "requestService"		: { return instance.coldbox.getrequestService(); }
 						case "pluginService"		: { return instance.coldbox.getPluginService(); }
