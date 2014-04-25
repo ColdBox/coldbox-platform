@@ -35,7 +35,14 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
 
 	<target name="init" description="Init the tests">
+		<delete dir="${junitreport.dir}" />
 		<mkdir dir="${junitreport.dir}" />
+		<delete>
+			<fileset dir="${report.dir}">  
+				<include name="TEST-*.xml"/>
+				<include name="TEST.properties"/>
+			</fileset>
+		</delete>
 		<tstamp prefix="start">
 			<format property="TODAY" pattern="MM-dd-YYYY hh:mm:ss aa"/>
 		</tstamp>
