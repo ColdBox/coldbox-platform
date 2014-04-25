@@ -19,40 +19,33 @@ Modification History:
 		super.setup();
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="testNewInstanceViaController" access="public" returntype="void" output="false">
 		<cfscript>
 		var plugin = getController().getPlugin("Logger",false,true);
 		AssertTrue( isObject(plugin) );
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="testNormalPluginViaController" access="public" returntype="void" output="false">
 		<cfscript>
 		var plugin = getController().getPlugin("Logger",false);
 		AssertTrue( isObject(plugin));
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="testPluginByConvention" access="public" returntype="void" output="false">
 		<cfscript>
 		var plugin = getController().getPluginService().get("dateNoAutowire",true);
 		AssertTrue( isObject(plugin));
 		</cfscript>
 	</cffunction>
-	
-	<cffunction name="testPluginByConfiguration" access="public" returntype="void" output="false">
-		<cfscript>
-		var plugin = getController().getPluginService().get("myclientstorage",true);
-		AssertTrue( isObject(plugin));
-		</cfscript>
-	</cffunction>
-	
+
 	<cffunction name="testPluginByModule" access="public" returntype="void" output="false">
 		<cfscript>
 		plugin = getController().getPluginService().get("ModPlugin",true,"test1");
 		AssertTrue( isObject(plugin));
-		
+
 		try{
 			plugin = getController().getPluginService().get("ModPlugin",true,"test2");
 			fail("Should Fail");
@@ -61,7 +54,7 @@ Modification History:
 		catch(any e){
 			$rethrow(e);
 		}
-		
+
 		try{
 			plugin = getController().getPluginService().get("BogusPlugin",true,"test1");
 			fail("Should Fail");
@@ -72,5 +65,5 @@ Modification History:
 		}
 		</cfscript>
 	</cffunction>
-	
+
 </cfcomponent>

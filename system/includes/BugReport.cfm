@@ -216,11 +216,10 @@ Description :
 		<th colspan="2" >Session Storage:</th>
 	 </tr>
 	 <cfif sessionScopeExists>
-	 	 <cfset sessioncbstorage = controller.getPlugin('SessionStorage').getStorage()>
-		 <cfloop collection="#sessioncbstorage#" item="key">
+		 <cfloop collection="#session#" item="key">
 		 <tr>
 		   <td align="right" class="fw_errorTablesTitles"> #key#: </td>
-		   <td><cfif isSimpleValue( sessioncbstorage[ key ] )>#htmlEditFormat( sessioncbstorage[ key ] )#<cfelse>#key# <cfdump var="#sessioncbstorage[ key ]#"></cfif></td>
+		   <td><cfif isSimpleValue( session[ key ] )>#htmlEditFormat( session[ key ] )#<cfelse>#key# <cfdump var="#session[ key ]#"></cfif></td>
 		 </tr>
 		 </cfloop>
 	 <cfelse>
