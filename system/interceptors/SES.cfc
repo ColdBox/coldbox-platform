@@ -116,7 +116,7 @@ Description :
 
 			// Find a route to dispatch
 			aRoute = findRoute(action=cleanedPaths["pathInfo"],event=arguments.event);
-			
+
 			// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 			for( key in aRoute ){
 				// Reserved Keys Check, only translate NON reserved keys
@@ -125,7 +125,7 @@ Description :
 					routedStruct[ key ] = aRoute[ key ];
 				}
 			}
-				
+
 			// Create Event To Dispatch if handler key exists
 			if( structKeyExists( aRoute,"handler" ) ){
 				// Check if using HTTP method actions via struct
@@ -150,7 +150,7 @@ Description :
 				if( structKeyExists(aRoute,"action") ){
 					rc[ instance.eventName ] &= "." & aRoute.action;
 				}
- 
+
 				// Do we have a module? If so, create routed module event.
 				if( len( aRoute.module ) ){
 					rc[ instance.eventName ] = aRoute.module & ":" & rc[ instance.eventName ];
@@ -173,9 +173,9 @@ Description :
 			arguments.event.setRoutedStruct( routedStruct );
 		</cfscript>
 	</cffunction>
-	
-	<!--- renderResponse --->    
-    <cffunction name="renderResponse" output="false" access="private" returntype="any" hint="Render a RESTful response">    
+
+	<!--- renderResponse --->
+    <cffunction name="renderResponse" output="false" access="private" returntype="any" hint="Render a RESTful response">
     	<cfargument name="route" required="true" hint="The route response"/>
     	<cfargument name="event" required="true" hint="The event object.">
 		<cfscript>
@@ -184,11 +184,11 @@ Description :
 			var thisReplacement = "";
 			var thisKey			= "";
 			var theResponse		= "";
-			
+
 			// standardize status codes
 			if( !structKeyExists( aRoute, "statusCode") ){ aRoute.statusCode = 200; }
 			if( !structKeyExists( aRoute, "statusText") ){ aRoute.statusText = ""; }
-				
+
 			// simple values
 			if( isSimpleValue( aRoute.response ) ){
 				// setup default response
@@ -197,21 +197,21 @@ Description :
 				replacements = reMatchNoCase( "{[^{]+?}", aRoute.response );
 				for( thisReplacement in replacements ){
 					thisKey = reReplaceNoCase( thisReplacement, "({|})", "", "all" );
-					if( event.valueExists( thisKey ) ){				
+					if( event.valueExists( thisKey ) ){
 						theResponse = replace( aRoute.response, thisReplacement, event.getValue( thisKey ), "all");
 					}
 				}
-				
+
 			}
 			// Closure
 			else{
-				theResponse = aRoute.response( event.getCollection() );				
-			} 
-			
+				theResponse = aRoute.response( event.getCollection() );
+			}
+
 			// render it out
 			event.renderdata(data=theResponse, statusCode=aRoute.statusCode, statusText=aRoute.statusText)
 				.noExecution();
-    	</cfscript>    
+    	</cfscript>
     </cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -1057,7 +1057,7 @@ Description :
 				if( (match.len[1] IS NOT 0 AND getLooseMatching())
 				     OR
 				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
-					
+
 					// Verify condition matching
 					if( structKeyExists( _routes[ i ], "condition" ) AND NOT isSimpleValue( _routes[ i ].condition ) AND NOT _routes[ i ].condition(requestString) ){
 						// Debug logging
@@ -1067,7 +1067,7 @@ Description :
 						// Condition did not pass, move to next route
 						continue;
 					}
-					
+
 					// Setup the found Route
 					foundRoute = _routes[i];
 					// Is this namespace routing?
@@ -1095,7 +1095,7 @@ Description :
 			if( foundRoute.ssl AND NOT event.isSSL() ){
 				setNextEvent(URL=event.getSESBaseURL() & reReplace(cgi.path_info, "^\/", ""), ssl=true, statusCode=302, queryString=cgi.query_string);
 			}
-			
+
 			// Check if the match is a module Routing entry point or a namespace entry point or not?
 			if( len( foundRoute.moduleRouting ) OR len( foundRoute.namespaceRouting ) ){
 				// build routing argument struct
@@ -1237,7 +1237,7 @@ Description :
 			}
 
 			// Clean up the path_info from index.cfm
-			items["pathInfo"] = trim(reReplacenocase(items["pathInfo"],"[/\\]index\.cfm",""));
+			items["pathInfo"] = trim(reReplacenocase(items["pathInfo"],"^[/\\]index\.cfm",""));
 			// Clean the scriptname from the pathinfo inccase this is a nested application
 			if( len( items["scriptName"] ) ){
 				items["pathInfo"] = replaceNocase(items["pathInfo"],items["scriptName"],'');
