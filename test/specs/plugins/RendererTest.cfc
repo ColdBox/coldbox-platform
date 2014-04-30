@@ -7,7 +7,6 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author      :	Sana Ullah
 Date        :	November 10, 2008
 Description :
-	securityTest
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/test-harness">
 
