@@ -13,7 +13,7 @@
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
 	<path id="cp">
-		<fileset dir="install/antlib">
+		<fileset dir="ant/lib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
