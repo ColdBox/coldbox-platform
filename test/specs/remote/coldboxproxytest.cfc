@@ -97,24 +97,6 @@ Description :
 			assertTrue( isObject( proxy.getModel("testModel") ) );
 		}
 
-		function testIOCMethods(){
-			var local = structnew();
-
-			mockObject  = getMockBox().createStub();
-			mockFactory = getMockBox().createEmptyMock("coldbox.system.ioc.adapters.ColdSpringAdapter");
-			ioc = getMockBox().prepareMock( getController().getPlugin("IOC") )
-				.$("getBean", mockObject)
-				.$("getIoCFactory", mockFactory);
-
-			/* Get IOCFactory */
-			makePublic(proxy, "getIoCFactory");
-			local.obj = proxy.getIoCFactory();
-
-			/* Get Bean */
-			makePublic(proxy, "getBean");
-			local.obj = proxy.getBean(beanName="testModel");
-		}
-
 		function testProxyAppLoading(){
 			var local = structnew();
 

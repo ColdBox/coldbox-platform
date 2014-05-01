@@ -19,15 +19,9 @@
 	function testProcess(){
 
 		// Mock spies
-		builder.$("getIOCDSL",true)
-			.$("getOCMDSL",true)
+		builder.$("getOCMDSL",true)
 			.$("getEntityServiceDSL",true)
 			.$("getColdboxDSL",true);
-
-		// Test dsl namespaces
-		def = {dsl="ioc"};
-		builder.process(def);
-		assertTrue( builder.$once("getIOCDSL") );
 
 		def = {dsl="ocm"};
 		builder.process(def);
@@ -46,36 +40,6 @@
 		d = builder.getDatasource('test');
 		assertEquals( "test", d.getName() );
 		assertEquals( "mysql", d.getDBType() );
-	}
-
-	function testgetIOCDSl(){
-		mockFactory = getMockBox().createStub();
-		mockIOC = getMockBox().createEmptyMock("coldbox.system.plugins.IOC")
-			.$("getIOCFactory", mockFactory);
-		mockColdBox.$("getPlugin", mockIOC );
-		makePublic(builder, "getIOCDSL");
-
-		// ioc only
-		mockFactory.$("containsBean",true);
-		mockIOC.$("getBean", this);
-		def = {name="testBean",dsl="ioc"};
-		t = builder.getIOCDSL(def);
-		assertEquals(this, t);
-
-		// ioc only not found
-		mockFactory.$("containsBean",false);
-		def = {name="testBean",dsl="ioc"};
-		t = builder.getIOCDSL(def);
-		assertTrue( mockIOC.$once("getBean") );
-		assertTrue( mockLogger.$once("canDebug") );
-
-		// ioc:bean
-		mockFactory.$("containsBean",true);
-		mockIOC.$("getBean", this);
-		def = {name="testBean",dsl="ioc:coolBean"};
-		t = builder.getIOCDSL(def);
-		assertEquals(this, t);
-		assertEquals( "coolBean", mockIOC.$callLog().getBean[1][1]);
 	}
 
 	function testGetOCMDSL(){
