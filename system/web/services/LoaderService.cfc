@@ -130,12 +130,6 @@ Modification History:
 			controller.getWireBox().getBinder().map("WireBoxValidationManager").toValue( validationManager );
 		}
 
-		// IoC Plugin Manager Configuration
-		if ( len(controller.getSetting("IOCFramework")) ){
-			//Create IoC Factory and configure it.
-			controller.getPlugin("IOC").configure();
-		}
-
 		// Load i18N if application is using it.
 		if ( controller.getSetting("using_i18N") ){
 			//Create i18n Plugin and configure it.

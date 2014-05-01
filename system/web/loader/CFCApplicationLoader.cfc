@@ -111,9 +111,6 @@ Loads a coldbox cfc configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: MODULE SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseModules(oConfig,configStruct);
 
-		/* ::::::::::::::::::::::::::::::::::::::::: IOC SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
-		parseIOC(oConfig,configStruct);
-
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLER-MODELS-PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseInvocationPaths(oConfig,configStruct);
 
@@ -344,45 +341,6 @@ Loads a coldbox cfc configuration file
 			if( structKeyExists( conventions,"eventAction" ) ){ fwSettingsStruct[ "eventAction" ] = trim(conventions.eventAction); }
 			if( structKeyExists( conventions,"modelsLocation" ) ){ fwSettingsStruct[ "ModelsConvention" ] = trim(conventions.modelsLocation); }
 			if( structKeyExists( conventions,"modulesLocation" ) ){ fwSettingsStruct[ "ModulesConvention" ] = trim(conventions.modulesLocation); }
-		</cfscript>
-	</cffunction>
-
-	<!--- parseIOC --->
-	<cffunction name="parseIOC" output="false" access="public" returntype="void" hint="Parse IOC Integration">
-		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	  type="any"  required="true" hint="The config struct"/>
-		<cfscript>
-			var configStruct = arguments.config;
-			var fwSettingsStruct = instance.coldboxSettings;
-			var ioc = arguments.oConfig.getPropertyMixin( "ioc","variables",structnew());
-
-			//defaults
-			configStruct.IOCFramework = "";
-			configStruct.IOCFrameworkReload = false;
-			configStruct.IOCDefinitionFile = "";
-			configStruct.IOCObjectCaching = false;
-			configStruct.IOCParentFactory = "";
-			configStruct.IOCParentFactoryDefinitionFile = "";
-
-			//Check for IOC Framework
-			if ( structKeyExists(ioc, "framework" ) ){
-				configStruct[ "IOCFramework" ] = ioc.framework;
-				configStruct[ "IOCDefinitionFile" ] = ioc.definitionFile;
-
-				if( structKeyExists(ioc,"reload" ) ){
-					configStruct[ "IOCFrameworkReload" ] = ioc.reload;
-				}
-				if( structKeyExists(ioc,"objectCaching" ) ){
-					configStruct[ "IOCObjectCaching" ] = ioc.objectCaching;
-				}
-
-			}
-
-			// Parent Factory
-			if ( structKeyExists(ioc, "ParentFactory" ) ){
-				configStruct[ "IOCParentFactoryDefinitionFile" ] = ioc.parentFactory.definitionFile;
-				configStruct[ "IOCParentFactory" ] = ioc.parentFactory.framework;
-			}
 		</cfscript>
 	</cffunction>
 

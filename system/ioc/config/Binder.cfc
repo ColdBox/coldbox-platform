@@ -319,6 +319,12 @@ Description :
 
 			// first entry
 			name = arguments.alias[1];
+			
+			// check if mapping exists, if so, just use and return.
+			if( structKeyExists( instance.mappings, name) ){
+				currentMapping = instance.mappings[ name ];
+				return this;
+			} 
 
 			// generate the mapping for the first name passed
 			instance.mappings[ name ] = createObject("component","coldbox.system.ioc.config.Mapping").init( name );

@@ -34,7 +34,6 @@ Description :
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
 
 			switch( DSLNamespace ){
-				case "ioc" 				: { return getIOCDSL(argumentCollection=arguments);}
 				case "ocm" 				: { return getOCMDSL(argumentCollection=arguments);}
 				case "coldbox" 			: { return getColdboxDSL(argumentCollection=arguments); }
 			}
@@ -154,33 +153,6 @@ Description :
 			// debug info
 			if( instance.log.canDebug() ){
 				instance.log.debug("getColdboxDSL() cannot find dependency using definition: #arguments.definition.toString()#");
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- getIOCDSL --->
-	<cffunction name="getIOCDSL" access="private" returntype="any" hint="Get an IOC dependency" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var thisTypeLen 	= listLen(arguments.definition.dsl,":");
-			var beanName		= "";
-			var oIOC		 	= instance.coldbox.getPlugin("IOC");
-
-			// DSL stages
-			switch(thisTypeLen){
-				// ioc only, so get name from definition
-				case 1: { beanName = arguments.definition.name; break;}
-				// ioc:beanName, so get it from here
-				case 2: { beanName = getToken(arguments.definition.dsl,2,":"); break;}
-			}
-
-			// Check for Bean existence first
-			if( oIOC.containsBean(beanName) ){
-				return oIOC.getBean(beanName);
-			}
-			else if( instance.log.canDebug() ){
-				instance.log.debug("getIOCDSL() cannot find IOC Bean: #beanName# using definition: #arguments.definition.toString()#");
 			}
 		</cfscript>
 	</cffunction>

@@ -133,13 +133,6 @@ Description :
 				</cflock>
 			</cfif>
 
-			<!--- IOC Framework Reload --->
-			<cfif cbController.getSetting("IOCFrameworkReload")>
-				<cflock type="exclusive" name="#instance.appHash#" timeout="#instance.lockTimeout#" throwontimeout="true">
-					<cfset cbController.getPlugin("IOC").configure()>
-				</cflock>
-			</cfif>
-
 			<!--- Trap Framework Errors --->
 			<cfcatch type="any">
 				<cfset exceptionService = cbController.getExceptionService()>
