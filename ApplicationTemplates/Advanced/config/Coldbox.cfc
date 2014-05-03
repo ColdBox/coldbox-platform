@@ -22,7 +22,6 @@ structures/arrays to create for configuration
 - logBox (struct)
 - flash (struct)
 - orm (struct)
-- validation (struct)
 
 Available objects in variable scope
 - controller
@@ -134,17 +133,6 @@ Optional Methods
 			 properties={}
 			}
 		];
-
-		// Object & Form Validation
-		validation = {
-			// manager = "class path" or none at all to use ColdBox as the validation manager
-			// The shared constraints for your application.
-			sharedConstraints = {
-				// EX
-				// myForm = { name={required=true}, age={type="numeric",min="18"} }
-			}
-		};
-
 
 		/*
 

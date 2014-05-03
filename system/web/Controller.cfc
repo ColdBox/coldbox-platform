@@ -60,8 +60,6 @@ Only one instance of a specific ColdBox application exists.
 			instance.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
 			// WireBox Instance
 			instance.wireBox	= createObject("component","coldbox.system.ioc.Injector");
-			// Validation Manager
-			instance.validationManager = "";
 
 			return this;
 		</cfscript>
@@ -81,16 +79,6 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.util.CFMLEngine)" coldoc:generic="coldbox.system.core.util.CFMLEngine">
 		<cfreturn instance.CFMLEngine>
 	</cffunction>
-
-	<!--- Get Set Validation Manager --->
-	<cffunction name="getValidationManager" access="public" returntype="any" output="false" hint="Get the validation manager for the application">
-    	<cfreturn instance.validationManager>
-    </cffunction>
-    <cffunction name="setValidationManager" access="public" returntype="any" output="false" hint="Store the validation manager for the application">
-    	<cfargument name="validationManager" type="any" required="true">
-    	<cfset instance.validationManager = arguments.validationManager>
-		<cfreturn this>
-    </cffunction>
 
 	<!--- getSetCacheBox --->
 	<cffunction name="getCacheBox" access="public" returntype="any" output="false" hint="Get the application's CacheBox instance as coldbox.system.cache.CacheFactory" colddoc:generic="coldbox.system.cache.CacheFactory">

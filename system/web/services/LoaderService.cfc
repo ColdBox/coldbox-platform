@@ -112,23 +112,8 @@ Modification History:
 	<!--- Register the Aspects --->
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
-		var validationManager 	= "";
-		var validationData 		= controller.getSetting("validation");
-
 		// Rebuild flash if modules changed settings.
 		controller.getRequestService().rebuildFlashScope();
-
-		// if engine allows it, create validation engine
-		if( controller.getCFMLEngine().isValidationSupported() ){
-			// construct the validation manager specified in the config
-			validationManager = controller.getWireBox().getInstance(name=validationData.manager);
-			validationManager.setSharedConstraints( validationData.sharedConstraints );
-			// store it as singleton manually in controller.
-			controller.setValidationManager( validationManager );
-			// map the manager into wirebox for retrievals
-			controller.getWireBox().getBinder().map("WireBoxValidationManagerPath").toValue( validationData.manager );
-			controller.getWireBox().getBinder().map("WireBoxValidationManager").toValue( validationManager );
-		}
 
 		// Load i18N if application is using it.
 		if ( controller.getSetting("using_i18N") ){

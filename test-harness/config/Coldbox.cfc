@@ -100,16 +100,6 @@
 			}
 		];
 
-		// Object & Form Validation
-		validation = {
-			// manager = "class path" or none at all to use ColdBox as the validation manager
-			// The shared constraints for your application.
-			sharedConstraints = {
-				// EX
-				// myForm = { name={required=true}, age={type="numeric",min="18"} }
-			}
-		};
-
 		// ORM services, injection, etc
 		orm = {
 			// entity injection

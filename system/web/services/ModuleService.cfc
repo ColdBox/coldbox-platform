@@ -20,9 +20,10 @@ I oversee and manage ColdBox modules
 			setController(arguments.controller);
 
 			// service properties
-			instance.logger 		= "";
-			instance.mConfigCache 	= {};
-			instance.moduleRegistry = createObject("java","java.util.LinkedHashMap").init();
+			instance.logger 			= "";
+			instance.mConfigCache 		= {};
+			instance.moduleRegistry 	= createObject("java","java.util.LinkedHashMap").init();
+			instance.cfmappingRegistry 	= {};
 
 			return this;
 		</cfscript>
@@ -114,8 +115,8 @@ I oversee and manage ColdBox modules
     	<cfargument name="moduleName" 		type="string" required="true" hint="The name of the module to load."/>
 		<cfargument name="invocationPath" 	type="string" required="false" default="" hint="The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry location, if not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right"/>
 		<cfscript>
-			registerModule(arguments.moduleName,arguments.invocationPath);
-			activateModule(arguments.moduleName);
+			registerModule( arguments.moduleName, arguments.invocationPath );
+			activateModule( arguments.moduleName );
 		</cfscript>
     </cffunction>
 
@@ -175,6 +176,7 @@ I oversee and manage ColdBox modules
 			mConfig = {
 				// Module MetaData and Directives
 				title				= "",
+				aliases				= [],
 				author				="",
 				webURL				="",
 				description			="",
@@ -222,21 +224,24 @@ I oversee and manage ColdBox modules
 
 			// Load Module configuration from cfc and store it in module Config Cache
 			instance.mConfigCache[ modName ] = loadModuleConfiguration( mConfig, arguments.moduleName );
-
-			// Update the paths according to conventions
-			mConfig.handlerInvocationPath 	&= ".#replace(mConfig.conventions.handlersLocation,"/",".","all")#";
-			mConfig.handlerPhysicalPath     &= "/#mConfig.conventions.handlersLocation#";
-			mConfig.pluginInvocationPath  	&= ".#replace(mConfig.conventions.pluginsLocation,"/",".","all")#";
-			mConfig.pluginsPhysicalPath		&= "/#mConfig.conventions.pluginsLocation#";
-			mConfig.modelsInvocationPath    &= ".#replace(mConfig.conventions.modelsLocation,"/",".","all")#";
-			mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
-
 			// Store module configuration in main modules configuration
 			modulesConfiguration[ modName ] = mConfig;
-
-			// Register CFML Mapping if it exists
+			// Link aliases by reference in both modules list and config cache
+			for( var thisAlias in mConfig.aliases ){
+				modulesConfiguration[ thisAlias ] 	= modulesConfiguration[ modName ];
+				instance.mConfigCache[ thisAlias ]  = instance.mConfigCache[ modName ];
+			}
+			// Update the paths according to conventions
+			mConfig.handlerInvocationPath 	&= ".#replace( mConfig.conventions.handlersLocation, "/", ".", "all" )#";
+			mConfig.handlerPhysicalPath     &= "/#mConfig.conventions.handlersLocation#";
+			mConfig.pluginInvocationPath  	&= ".#replace( mConfig.conventions.pluginsLocation, "/", ".", "all" )#";
+			mConfig.pluginsPhysicalPath		&= "/#mConfig.conventions.pluginsLocation#";
+			mConfig.modelsInvocationPath    &= ".#replace( mConfig.conventions.modelsLocation, "/", ".", "all" )#";
+			mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
+			// Register CFML Mapping if it exists, for loading purposes
 			if( len( trim( mConfig.cfMapping ) ) ){
 				getUtil().addMapping( name=mConfig.cfMapping, path=mConfig.path );
+				instance.cfmappingRegistry[ mConfig.cfMapping ] = mConfig.path;
 			}
 			// Register Custom Interception Points
 			controller.getInterceptorService().appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
@@ -254,18 +259,27 @@ I oversee and manage ColdBox modules
 		<cfreturn true>
 	</cffunction>
 
+	<!--- loadMappings --->
+    <cffunction name="loadMappings" output="false" access="public" returntype="any" hint="Load all module mappings">
+    	<cfscript>
+			// Iterate through cfmapping registry and load them
+			for( var thisMapping in instance.cfmappingRegistry ){
+				getUtil().addMapping( name=thisMapping, path=instance.cfmappingRegistry[ thisMapping ] );
+			}
+    	</cfscript>
+    </cffunction>
+
 	<!--- activateModules --->
 	<cffunction name="activateAllModules" output="false" access="public" returntype="void" hint="Go over all the loaded module configurations and activate them for usage within the application">
 		<cfscript>
 			var modules 			= controller.getSetting("modules");
-			var moduleName 			= "";
 
 			// Iterate through module configuration and activate each module
-			for(moduleName in modules){
+			for( var moduleName in modules ){
 
 				// Verify the exception and inclusion lists
 				if( canLoad( moduleName ) ){
-					activateModule(moduleName);
+					activateModule( moduleName );
 				}
 
 			}
@@ -273,10 +287,10 @@ I oversee and manage ColdBox modules
 	</cffunction>
 
 	<!--- activateModule --->
-	<cffunction name="activateModule" output="false" access="public" returntype="boolean" hint="Activate a module">
+	<cffunction name="activateModule" output="false" access="public" returntype="ModuleService" hint="Activate a module">
 		<cfargument name="moduleName" type="string" required="true" hint="The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning and returning false."/>
 		<cfscript>
-			var modules 			= controller.getSetting("modules");
+			var modules 			= controller.getSetting( "modules" );
 			var mConfig				= "";
 			var iData       		= {};
 			var y					= 1;
@@ -291,6 +305,16 @@ I oversee and manage ColdBox modules
 				getUtil().throwit( message="Cannot activate module: #arguments.moduleName#",
 								   detail="The module has not been registered, register the module first and then activate it.",
 								   type="ModuleService.IllegalModuleState" );
+			}
+
+			// Check if module already activated
+			if( modules[ arguments.moduleName ].activated ){
+				// Log it
+				if( instance.logger.canDebug() ){
+					instance.logger.debug("Module #arguments.moduleName# already activated, skipping activation.");
+				}
+				writeDump( var="Module #arguments.moduleName# already activated, skipping activation.", output="console" );
+				return this;
 			}
 		</cfscript>
 
@@ -323,8 +347,9 @@ I oversee and manage ColdBox modules
 			if( directoryExists( mconfig.modelsPhysicalPath ) ){
 				// Add as scan locations
 				wirebox.getBinder().scanLocations( mConfig.modelsInvocationPath );
-				// Add as a mapped directory with module name as the namespace
-				wirebox.getBinder().mapDirectory( packagePath=mConfig.modelsInvocationPath, namespace="@#mConfig.modelNamespace#" );
+				// Add as a mapped directory with module name as the namespace with correct mapping path
+				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
+				wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
 			}
 
 			// Register module routing entry point pre-pended to routes
@@ -370,11 +395,13 @@ I oversee and manage ColdBox modules
 			mConfig.activated = true;
 
 			// Log it
-			instance.logger.debug("Module #arguments.moduleName# activated sucessfully.");
+			if( instance.logger.canDebug() ){
+				instance.logger.debug("Module #arguments.moduleName# activated sucessfully.");
+			}
 		</cfscript>
 		</cflock>
 
-		<cfreturn true>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- reload --->
@@ -520,6 +547,12 @@ I oversee and manage ColdBox modules
 			// title
 			if( !structKeyExists( oConfig, "title" ) ){ oConfig.title = arguments.moduleName; }
 			mConfig.title 				= oConfig.title;
+			// aliases
+			if( structKeyExists( oConfig, "aliases" ) ){
+				// inflate list to array
+				if( isSimpleValue( oConfig.aliases ) ){ oConfig.aliases = listToArray( oConfig.aliases ); }
+				mConfig.aliases = oConfig.aliases;
+			}
 			// author
 			if( !structKeyExists( oConfig, "author" ) ){ oConfig.author = ""; }
 			mConfig.author 				= oConfig.author;
@@ -646,11 +679,11 @@ I oversee and manage ColdBox modules
     <cffunction name="canLoad" output="false" access="private" returntype="boolean" hint="Checks if the module can be loaded or registered">
   		<cfargument name="moduleName" type="string" required="true" hint="The module name"/>
   		<cfscript>
-    		var excludeModules = ArrayToList(controller.getSetting("ModulesExclude"));
+    		var excludeModules = ArrayToList( controller.getSetting( "ModulesExclude" ) );
 
 			// If we have excludes and in the excludes
-			if( len(excludeModules) and listFindNoCase(excludeModules,arguments.moduleName) ){
-				instance.logger.info("Module: #arguments.moduleName# excluded from loading.");
+			if( len( excludeModules ) and listFindNoCase( excludeModules, arguments.moduleName ) ){
+				instance.logger.info( "Module: #arguments.moduleName# excluded from loading." );
 				return false;
 			}
 

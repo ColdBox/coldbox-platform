@@ -2,6 +2,7 @@
 <cfscript>
 	// Module Properties
 	this.title 				= "My Test Module";
+	this.aliases			= "cbtest1";
 	this.author 			= "Luis Majano";
 	this.webURL 			= "http://www.coldbox.org";
 	this.description 		= "A funky test module";

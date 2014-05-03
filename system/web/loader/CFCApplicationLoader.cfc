@@ -144,9 +144,6 @@ Loads a coldbox cfc configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: ORM Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseORM(oConfig,configStruct);
 
-		/* ::::::::::::::::::::::::::::::::::::::::: VALIDATION Configuration :::::::::::::::::::::::::::::::::::::::::::: */
-		parseValidation(oConfig,configStruct);
-
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = instance.util.fileLastModified(coldboxSettings[ "ConfigFileLocation" ]);
 
@@ -211,7 +208,7 @@ Loads a coldbox cfc configuration file
 			configStruct.layoutsRefMap 	= structnew();
 			configStruct.viewsRefMap	= structnew();
 
-			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
+			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 
 			//Check for AppName or throw
 			if ( not structKeyExists( configStruct, "AppName" ) )
@@ -791,48 +788,6 @@ Loads a coldbox cfc configuration file
 			}
 		</cfscript>
 	</cffunction>
-
-	<!--- parseValidation --->
-	<cffunction name="parseValidation" output="false" access="public" returntype="void" hint="Parse Validation Scope">
-		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="config" 		type="any"  required="true" hint="The config struct"/>
-		<cfscript>
-
-			/**
-			Sample:
-			validation = {
-				manager = "class path" // if overriding
-				sharedConstraints = {
-					name = {
-						field = { constraints here }
-					}
-				}
-
-			}
-			*/
-
-			var validationDSL = structnew();
-
-			// Default Config Structure
-			arguments.config.validation = {
-				manager = "coldbox.system.validation.ValidationManager",
-				sharedConstraints = {}
-			};
-
-			// Check if we have defined DSL first in application config
-			validationDSL = arguments.oConfig.getPropertyMixin( "validation", "variables", structnew() );
-
-			// manager
-			if( structKeyExists( validationDSL, "manager" ) ){
-				arguments.config.validation.manager = validationDSL.manager;
-			}
-			// shared constraints
-			if( structKeyExists( validationDSL, "sharedConstraints" ) ){
-				structAppend( arguments.config.validation.sharedConstraints, validationDSL.sharedConstraints, true);
-			}
-		</cfscript>
-	</cffunction>
-
 
 	<!--- parseFlashScope --->
 	<cffunction name="parseFlashScope" output="false" access="public" returntype="void" hint="Parse ORM settings">

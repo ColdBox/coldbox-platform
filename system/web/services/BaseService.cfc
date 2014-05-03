@@ -20,7 +20,7 @@ Modification History:
 	<cfscript>
 		variables.instance 		= structnew();
 		variables.controller 	= structnew();
-		variables.util 			= CreateObject("component","coldbox.system.core.util.Util");
+		variables.util 			= CreateObject( "component", "coldbox.system.core.util.Util" );
 	</cfscript>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -33,50 +33,50 @@ Modification History:
 			return getUtil().convertToColdBox(argumentCollection=arguments);
 		</cfscript>
     </cffunction>
-	
+
 	<!--- isFamilyType --->
     <cffunction name="isFamilyType" output="false" access="public" returntype="boolean" hint="Checks if an object is of the passed in family type">
     	<cfargument name="family" type="string" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
 		<cfargument name="target" type="any" 	required="true" hint="The target object"/>
 		<cfscript>
 			return getUtil().isFamilyType(argumentCollection=arguments);
-		</cfscript>		
+		</cfscript>
     </cffunction>
 
 	<!--- Get Controller --->
 	<cffunction name="getController" access="public" output="false" returntype="any" hint="Get controller">
 		<cfreturn controller/>
 	</cffunction>
-	
+
 	<!--- Set Controller --->
 	<cffunction name="setController" access="public" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>
-	
-	<!--- Get OCM Facade --->	
+
+	<!--- Get OCM Facade --->
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers">
 		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
 		<cfreturn controller.getColdboxOCM(arguments.cacheName)/>
 	</cffunction>
-	
-<!------------------------------------------- INTERNAL EVENTS ------------------------------------------>	
-	
+
+<!------------------------------------------- INTERNAL EVENTS ------------------------------------------>
+
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<!--- Implemented by Concrete Services --->
     </cffunction>
-	
+
 	<!--- onShutdown --->
     <cffunction name="onShutdown" output="false" access="public" returntype="void" hint="Called by bootstrapper, whenever the application shuts down">
     	<!--- Implemented by Concrete Services --->
     </cffunction>
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- getUtil --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
 		<cfreturn util/>
 	</cffunction>
-	
+
 </cfcomponent>

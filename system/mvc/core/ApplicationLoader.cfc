@@ -21,7 +21,7 @@ component accessors="true"{
 		return this;
 	}
 	/************************************** PUBLIC *********************************************/
-	
+
 	/**
 	* Load a ColdBox Configuration File
 	* @overrideAppMapping.hint The direct location of the application in the web server.
@@ -107,7 +107,7 @@ component accessors="true"{
 
 		// Store config object
 		configStruct.coldboxConfig = oConfig;
-		
+
 		// Store the settings back in the controller.
 		controller.setConfigSettings( configStruct );
 	}
@@ -157,7 +157,7 @@ component accessors="true"{
 		configStruct.layoutsRefMap 	= structnew();
 		configStruct.viewsRefMap	= structnew();
 
-		/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
+		/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 
 		//Check for AppName or throw
 		if ( not StructKeyExists(configStruct, "AppName") )
@@ -218,7 +218,7 @@ component accessors="true"{
 		//append it
 		structAppend(configStruct,settings,true);
 	}
-	
+
 	function parseInvocationPaths(required oConfig, required config){
 		var configStruct 		= arguments.config;
 		var appMappingAsDots 	= "";
@@ -307,7 +307,7 @@ component accessors="true"{
 		configStruct.ViewLayouts   = LayoutViewStruct;
 		configStruct.FolderLayouts = LayoutFolderStruct;
 	}
-	
+
 	function parseWireBox(required oConfig, required config){
 		var wireBoxDSL = structnew();
 
@@ -339,7 +339,7 @@ component accessors="true"{
 	}
 
 	/************************************** PRIVATE *********************************************/
-	
+
 	private function detectEnvironment(required oConfig, required config){
 		var environments = arguments.oConfig.getPropertyMixin( "environments", "variables", structnew() );
 		var configStruct = arguments.config;
@@ -376,5 +376,5 @@ component accessors="true"{
 	private function getAppMappingAsDots(required appMapping){
 		return reReplace( arguments.appMapping, "(/|\\)", ".", "all" );
 	}
-	
+
 }

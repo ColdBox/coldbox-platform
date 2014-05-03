@@ -11,9 +11,10 @@ and make it follow more of an Active Record pattern, but not really :)
 It just allows you to operate on entity and related entity objects much much more easily.
 
 If you have enabled WireBox entity injection, then you will get an added validation features:
+Just make sure you have the ColdBox Validation module installed ( box install validation )
 
 boolean function isValid(fields="*",constraints="",locale=""){}
-coldbox.system.validation.result.IValidationResult function getValidationResults(){}
+cbvalidation.model.result.IValidationResult function getValidationResults(){}
 
 These methods are only active if WireBox entity injection is available.
 
@@ -171,7 +172,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 						  boolean composeRelationships=true){
 		return beanPopulator.populateFromStruct( argumentCollection=arguments );
 	}
-	
+
 	/**
     * Simple map to property population for entities with structure key prefixes
 	* @memento.hint	The map/struct to populate the entity with
@@ -179,7 +180,7 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
-	* @prefix.hint The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id' 
+	* @prefix.hint The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
     */
 	any function populateWithPrefix(any target=this,
 						  required struct memento,
@@ -296,11 +297,11 @@ component extends="coldbox.system.orm.hibernate.VirtualEntityService" accessors=
 	/**
 	* Get the validation results object.  This will be an empty validation object if isValid() has not being called yet.
 	*/
-	coldbox.system.validation.result.IValidationResult function getValidationResults(){
+	cbvalidation.model.result.IValidationResult function getValidationResults(){
 		if( structKeyExists(variables,"validationResults") ){
 			return validationResults;
 		}
-		return new coldbox.system.validation.result.ValidationResult();
+		return new cbvalidation.model.result.ValidationResult();
 	}
 
 }

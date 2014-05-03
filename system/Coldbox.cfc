@@ -170,6 +170,9 @@ Description :
 			<!--- set request time --->
 			<cfset request.fwExecTime = getTickCount()>
 
+			<!--- Load Module mappings, stupid CF --->
+			<cfset cbController.getModuleService().loadMappings()>
+
 			<!--- Create Request Context & Capture Request --->
 			<cfset event = cbController.getRequestService().requestCapture()>
 

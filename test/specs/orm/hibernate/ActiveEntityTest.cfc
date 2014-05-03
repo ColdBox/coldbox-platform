@@ -1,12 +1,12 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdBox = false;
-	
+
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
 		new coldbox.system.ioc.Injector(binder="coldbox.test.specs.orm.hibernate.WireBox");
 	}
-	
+
 	function setup(){
 		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
 
@@ -14,12 +14,12 @@
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 	}
-	
+
 	function testCountByDynamically(){
 		// Test simple Equals
 		t = activeUser.countByLastName("majano");
 		assert( 1 eq t, "CountBylastName" );
-		
+
 	}
 	function testFindByDynamically(){
 		// Test simple Equals
@@ -57,13 +57,13 @@
 		assert( arrayLen( t ) , "Conditionals inList");
 		t = activeUser.findAllByLastNameNotInList( listToArray(  "Majano,Fernando" ));
 		assert( arrayLen( t ) , "Conditionals NotinList");
-	}	
-	
+	}
+
 	function testFindByDynamicallyBadProperty(){
 		expectException("BaseORMService.InvalidEntityProperty");
 		t = activeUser.findByLastAndFirst();
-	}	
-	
+	}
+
 	function testFindByDynamicallyFailure(){
 		expectException("BaseORMService.HQLQueryException");
 		t = activeUser.findByLastName();
@@ -71,7 +71,7 @@
 
 	function testIsValid(){
 		mockWireBox = getMockBox().createMock("coldbox.system.ioc.Injector").init();
-		mockValidationManager = new coldbox.system.validation.ValidationManager();
+		mockValidationManager = new cbvalidation.model.ValidationManager();
 		mockValidationManager.setResourceBundle('');
 		mockValidationManager.setWireBox( mockWireBox );
 		mockWireBox.getBinder().map("WireBoxValidationManager").toValue( mockValidationManager );
@@ -90,7 +90,7 @@
 
 	function testValidationResults(){
 		r = activeUser.getValidationResults();
-		assertTrue( isInstanceOf(r, "coldbox.system.validation.result.IValidationResult") );
+		assertTrue( isInstanceOf(r, "cbvalidation.model.result.IValidationResult") );
 	}
 
 	function testNew(){
