@@ -179,7 +179,6 @@ Description :
 				<cfrethrow>
 			</cfcatch>
 		</cftry>
-		<cfset pushTimers()>
 		<cfreturn true>
 	</cffunction>
 
@@ -189,19 +188,13 @@ Description :
 		<cfscript>
 			var cbController = "";
 			var interceptData = structnew();
-
 			// Locate ColdBox Controller
 			cbController = getController();
-
 			// Intercept Exception
 			interceptData.exception = arguments.exceptionObject;
 			cbController.getInterceptorService().processState("onException",interceptData);
-
 			// Log Exception
 			cbController.getExceptionService().ExceptionHandler(arguments.exceptionObject,"ColdboxProxy","ColdBox Proxy Exception");
-
-			// Request Profilers
-			pushTimers();
 		</cfscript>
 	</cffunction>
 

@@ -186,6 +186,7 @@ I oversee and manage ColdBox modules
 				entryPoint 			= "",
 				cfmapping			= "",
 				modelNamespace		= modName,
+				autoMapModels		= true,
 				loadTime 			= now(),
 				activated 			= false,
 				// Module Configurations
@@ -344,9 +345,7 @@ I oversee and manage ColdBox modules
 					     		  targetID=mConfig.interceptors[ y ].class );
 			}
 			// Register Models if it exists
-			if( directoryExists( mconfig.modelsPhysicalPath ) ){
-				// Add as scan locations
-				wirebox.getBinder().scanLocations( mConfig.modelsInvocationPath );
+			if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
 				// Add as a mapped directory with module name as the namespace with correct mapping path
 				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
 				wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
@@ -472,11 +471,6 @@ I oversee and manage ColdBox modules
 				interceptorService.getInterceptor( "SES", true ).removeModuleRoutes( arguments.moduleName );
 			}
 
-			//Remove Model Mapping Location
-			controller.getWirebox()
-				.getBinder()
-				.removeScanLocations( appConfig.modules[ arguments.moduleName ].invocationPath & "." & "model" );
-
 			// Remove configuration
 			structDelete( appConfig.modules, arguments.moduleName );
 
@@ -571,6 +565,10 @@ I oversee and manage ColdBox modules
 			// model namespace override
 			if( structKeyExists( oConfig, "modelNamespace" ) ){
 				mConfig.modelNamespace = oConfig.modelNamespace;
+			}
+			// Auto map models
+			if( structKeyExists( oConfig, "autoMapModels" ) ){
+				mConfig.autoMapModels = oConfig.autoMapModels;
 			}
 
 			// Optional Properties

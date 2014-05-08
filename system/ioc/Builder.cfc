@@ -343,8 +343,6 @@ TODO: update dsl consistency, so it is faster.
 				case "provider"			 : { refLocal.dependency = getProviderDSL(argumentCollection=arguments); break; }
 				// wirebox injection DSL always available
 				case "wirebox"			 : { refLocal.dependency = getWireBoxDSL(argumentCollection=arguments); break;}
-				// wirebox entity services
-				case "entityService"	 : { refLocal.dependency = getEntityServiceDSL(argumentCollection=arguments); break;}
 				// java class
 				case "java"				 : { refLocal.dependency = getJavaDSL(argumentCollection=arguments); break; }
 
@@ -392,23 +390,6 @@ TODO: update dsl consistency, so it is faster.
 			var javaClass  = getToken( arguments.definition.dsl, 2, ":" );
 
 			return createObject("java", javaClass);
-		</cfscript>
-	</cffunction>
-
-	<!--- getEntityServiceDSL --->
-	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var entityName  = getToken(arguments.definition.dsl,2,":");
-
-			// Do we have an entity name? If we do create virtual entity service
-			if( len(entityName) ){
-				return createObject("component","coldbox.system.orm.hibernate.VirtualEntityService").init( entityName );
-			}
-
-			// else Return Base ORM Service
-			return createObject("component","coldbox.system.orm.hibernate.BaseORMService").init();
 		</cfscript>
 	</cffunction>
 

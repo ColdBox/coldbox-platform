@@ -34,11 +34,8 @@ Description :
 				// Layout-View Events
 				"preLayout", "preRender", "postRender", "preViewRender", "postViewRender", "preLayoutRender", "postLayoutRender",
 				// Module Events
-				"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload",
-				// CriteriaBuilder
-				"onCriteriaBuilderAddition", "beforeCriteriaBuilderList", "afterCriteriaBuilderList", "beforeCriteriaBuilderCount", "afterCriteriaBuilderCount",
-				// ORM Bridge Events
-				"ORMPostNew", "ORMPreLoad", "ORMPostLoad", "ORMPostDelete", "ORMPreDelete", "ORMPreUpdate", "ORMPostUpdate", "ORMPreInsert", "ORMPostInsert", "ORMPreSave", "ORMPostSave" ];
+				"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload"
+			];
 
 			// Init Container of interception states
 			instance.interceptionStates = {};
