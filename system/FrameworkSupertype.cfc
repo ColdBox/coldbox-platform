@@ -285,36 +285,39 @@ Description :
 	<cffunction name="includeUDF" access="public" hint="Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally." output="false" returntype="void">
 		<cfargument name="udflibrary" required="true" type="any" hint="The UDF library to inject.">
 		<cfscript>
-			var appMapping		= controller.getSetting("AppMapping");
-			var UDFFullPath 	= ExpandPath( arguments.udflibrary );
-			var UDFRelativePath = ExpandPath("/" & appMapping & "/" & arguments.udflibrary);
+			var appMapping		= controller.getSetting( "AppMapping" );
+			var UDFFullPath 	= expandPath( arguments.udflibrary );
+			var UDFRelativePath = expandPath( "/" & appMapping & "/" & arguments.udflibrary );
+
+			var targetLocation = "";
 
 			// Relative Checks First
 			if( fileExists( UDFRelativePath ) ){
-				include ("/" & appMapping & "/" & arguments.udflibrary);
+				targetLocation = "/" & appMapping & "/" & arguments.udflibrary;
 			}
 			// checks if no .cfc or .cfm where sent
 			else if( fileExists(UDFRelativePath & ".cfc") ){
-				include ("/" & appMapping & "/" & arguments.udflibrary & ".cfc");
+				targetLocation = "/" & appMapping & "/" & arguments.udflibrary & ".cfc";
 			}
 			else if( fileExists(UDFRelativePath & ".cfm") ){
-				include ("/" & appMapping & "/" & arguments.udflibrary & ".cfm");
+				targetLocation = "/" & appMapping & "/" & arguments.udflibrary & ".cfm";
 			}
 			// Absolute Checks
 			else if( fileExists( UDFFullPath ) ){
-				include "#udflibrary#";
+				targetLocation = "#udflibrary#";
 			}
 			else if( fileExists(UDFFullPath & ".cfc") ){
-				include "#udflibrary#.cfc";
+				targetLocation = "#udflibrary#.cfc";
 			}
 			else if( fileExists(UDFFullPath & ".cfm") ){
-				include "#udflibrary#.cfm";
-			}
-			else{
+				targetLocation = "#udflibrary#.cfm";
+			}else {
 				throw(message="Error loading UDFLibraryFile: #arguments.udflibrary#",
 					  detail="The UDF library was not found.  Please make sure you verify the file location.",
 					  type="FrameworkSupertype.UDFLibraryNotFoundException");
 			}
+
+			include targetLocation;
 		</cfscript>
 	</cffunction>
 
