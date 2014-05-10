@@ -657,6 +657,54 @@ Only one instance of a specific ColdBox application exists.
 		</cfscript>
 	</cffunction>
 
+	<!--- locateFilePath --->
+	<cffunction name="locateFilePath" output="false" access="public" returntype="string" hint="Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path">
+		<cfargument name="pathToCheck" type="any"  required="true" hint="The path to check"/>
+		<cfscript>
+			var foundPath 	= "";
+
+			//Check 1: Inside of App Root
+			if ( fileExists( instance.appRootPath & arguments.pathToCheck) ){
+				foundPath = instance.appRootPath & arguments.pathToCheck;
+			}
+			//Check 2: Expand the Path
+			else if( fileExists( expandPath( arguments.pathToCheck ) ) ){
+				foundPath = expandPath( arguments.pathToCheck );
+			}
+			//Check 3: Absolute Path
+			else if( fileExists( arguments.pathToCheck ) ){
+				foundPath = arguments.pathToCheck;
+			}
+
+			//Return
+			return foundPath;
+		</cfscript>
+	</cffunction>
+
+	<!--- locateDirectoryPath --->
+	<cffunction name="locateDirectoryPath" output="false" access="public" returntype="string" hint="Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path">
+		<cfargument name="pathToCheck" type="any"  required="true" hint="The path to check"/>
+		<cfscript>
+			var foundPath = "";
+
+			//Check 1: Inside of App Root
+			if ( directoryExists( instance.appRootPath & arguments.pathToCheck) ){
+				foundPath = instance.appRootPath & arguments.pathToCheck;
+			}
+			//Check 2: Expand the Path
+			else if( directoryExists( expandPath(arguments.pathToCheck) ) ){
+				foundPath = expandPath( arguments.pathToCheck );
+			}
+			//Check 3: Absolute Path
+			else if( directoryExists( arguments.pathToCheck ) ){
+				foundPath = arguments.pathToCheck;
+			}
+
+			//Return
+			return foundPath;
+		</cfscript>
+	</cffunction>
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- validateAction --->

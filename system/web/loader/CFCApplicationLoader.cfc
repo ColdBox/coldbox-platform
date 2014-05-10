@@ -117,9 +117,6 @@ Loads a coldbox cfc configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL LAYOUTS/VIEWS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */
 		parseExternalLocations(oConfig,configStruct);
 
-		/* ::::::::::::::::::::::::::::::::::::::::: I18N SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseLocalization(oConfig,configStruct);
-
 		/* ::::::::::::::::::::::::::::::::::::::::: DATASOURCES SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseDatasources(oConfig,configStruct);
 
@@ -439,68 +436,6 @@ Loads a coldbox cfc configuration file
 			}
 			else{
 				configStruct[ "LayoutsExternalLocation" ] = "";
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- parseLocalization --->
-	<cffunction name="parseLocalization" output="false" access="public" returntype="void" hint="Parse localization">
-		<cfargument name="oConfig" 	  type="any" 	  required="true" hint="The config object"/>
-		<cfargument name="config" 	  type="any"   required="true" hint="The config struct"/>
-		<cfscript>
-			var configStruct	= arguments.config;
-			var i18n 			= arguments.oConfig.getPropertyMixin( "i18N", "variables", structnew() );
-
-
-			// Defaults
-			configStruct[ "defaultResourceBundle" ] 	= "";
-			configStruct[ "defaultLocale" ] 			= "";
-			configStruct[ "localeStorage" ] 			= "";
-			configStruct[ "unknownTranslation" ] 		= "";
-			configStruct[ "using_i18N" ] 				= false;
-			configStruct[ "resourceBundles" ]			= structNew();
-			configStruct[ "RBundles" ]					= structNew();
-
-			// Check if empty
-			if ( NOT structIsEmpty(i18n) ){
-
-				// Check for DefaultResourceBundle
-				if ( structKeyExists( i18n, "DefaultResourceBundle" ) AND len(i18n.defaultResourceBundle) ){
-					configStruct[ "DefaultResourceBundle" ] = i18n.defaultResourceBundle;
-				}
-
-				// Check for DefaultLocale
-				if ( structKeyExists( i18n, "DefaultLocale" ) AND len(i18n.DefaultLocale) ){
-					if( find( "_", i18n.defaultLocale) ){
-						configStruct[ "DefaultLocale" ] = lcase(listFirst(i18n.defaultLocale,"_" )) & "_" & ucase(listLast(i18n.defaultLocale,"_" ));
-					}
-					else{
-						configStruct[ "DefaultLocale" ] = i18n.defaultLocale;
-					}
-				}
-
-				// Check for LocaleStorage
-				if ( structKeyExists( i18n, "LocaleStorage" ) AND len(i18n.LocaleStorage) ){
-					configStruct[ "LocaleStorage" ] = i18n.LocaleStorage;
-					if( NOT reFindNoCase( "^(session|cookie|client|request)$",configStruct[ "LocaleStorage" ]) ){
-						instance.util.throwit(message="Invalid local storage scope: #configStruct[ "localeStorage" ]#",
-							   			  detail="Valid scopes are session,client, cookie, or request",
-							   			  type="CFCApplicationLoader.InvalidLocaleStorage" );
-					}
-				}
-
-				// Check for UnknownTranslation
-				if ( structKeyExists( i18n, "UnknownTranslation" ) AND len(i18n.UnknownTranslation) ){
-					configStruct[ "UnknownTranslation" ] = i18n.UnknownTranslation;
-				}
-
-				// Check for ResourceBundles
-				if ( structKeyExists( i18n, "resourceBundles" ) AND isStruct( i18n.resourceBundles ) ){
-					configStruct[ "resourceBundles" ] = i18n.resourceBundles;
-				}
-
-				// set i18n being used
-				configStruct[ "using_i18N" ] = true;
 			}
 		</cfscript>
 	</cffunction>

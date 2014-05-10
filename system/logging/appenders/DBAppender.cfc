@@ -58,10 +58,10 @@ If you are building a mapper, the map must have the above keys in it.
 			
 			// Verify properties
 			if( NOT propertyExists('dsn') ){ 
-				$throw(message="No dsn property defined",type="DBAppender.InvalidProperty"); 
+				throw(message="No dsn property defined",type="DBAppender.InvalidProperty"); 
 			}
 			if( NOT propertyExists('table') ){ 
-				$throw(message="No table property defined",type="DBAppender.InvalidProperty"); 
+				throw(message="No table property defined",type="DBAppender.InvalidProperty"); 
 			}
 			if( NOT propertyExists('autoCreate') OR NOT isBoolean(getProperty('autoCreate')) ){ 
 				setProperty('autoCreate',false); 
@@ -245,7 +245,7 @@ If you are building a mapper, the map must have the above keys in it.
 			
 			for(key in map){
 				if( NOT listFindNoCase(instance.columns,key) ){
-					$throw(message="Invalid column map key: #key#",detail="The available keys are #instance.columns#",type="DBAppender.InvalidColumnMapException");
+					throw(message="Invalid column map key: #key#",detail="The available keys are #instance.columns#",type="DBAppender.InvalidColumnMapException");
 				}
 			}
 		</cfscript>

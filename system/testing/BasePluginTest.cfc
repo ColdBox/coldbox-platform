@@ -22,7 +22,7 @@ Description :
 			
 			// Check for plugin else throw exception
 			if( NOT structKeyExists(md, "plugin") ){
-				$throw("plugin annotation not found on component tag","Please declare a 'plugin=path' annotation","BasePluginTest.InvalidStateException");
+				throw("plugin annotation not found on component tag","Please declare a 'plugin=path' annotation","BasePluginTest.InvalidStateException");
 			}
 			
 			// Create plugin with Mocking capabilities

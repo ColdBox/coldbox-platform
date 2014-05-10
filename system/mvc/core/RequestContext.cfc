@@ -133,7 +133,7 @@ component serializable=false{
 			return arguments.defaultValue;
 		}
 
-		$throw("The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
+		throw("The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
 			   "Keys Found: #structKeyList(collection)#",
 			   "RequestContext.ValueNotFound");
 	}
@@ -404,7 +404,7 @@ component serializable=false{
 		
 		// Validate rendering type
 		if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type) ){
-			$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF","RequestContext.InvalidRenderTypeException");
+			throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF","RequestContext.InvalidRenderTypeException");
 		}
 
 		// Default Values for incoming variables

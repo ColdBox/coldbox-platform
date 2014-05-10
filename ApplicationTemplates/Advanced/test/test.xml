@@ -19,11 +19,11 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 <project name="testbox-ant-runner" default="run" basedir=".">
 	
 	<!-- THE URL TO THE RUNNER, PLEASE CHANGE ACCORDINGLY-->
-	<property name="url.runner"			value="http://cf10cboxdev.jfetmac/coldbox/ApplicationTemplates/Advanced/test/runner.cfm?"/>
+	<property name="url.runner"			value="http://cf10cboxdev.jfetmac/coldbox/ApplicationTemplates/Advanced/tests/runner.cfm?"/>
 	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
 	<property name="test.bundles"		value="" />
 	<!-- FILL OUT THE DIRECTORY MAPPING TO TEST -->
-	<property name="test.directory"		value="test.specs" />
+	<property name="test.directory"		value="tests.specs" />
 	<!-- FILL OUT IF YOU WANT THE DIRECTORY RUNNER TO RECURSE OR NOT -->
 	<property name="test.recurse"		value="true" />
 	<!-- FILL OUT THE LABELS YOU WANT TO APPLY TO THE TESTS -->

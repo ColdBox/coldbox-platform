@@ -23,7 +23,7 @@ Description :
 			
 			// Check for handler path else throw exception
 			if( NOT structKeyExists(md, "handler") ){
-				$throw("handler annotation not found on component tag","Please declare a 'handler=path' annotation","BaseHandlerTest.InvalidStateException");
+				throw("handler annotation not found on component tag","Please declare a 'handler=path' annotation","BaseHandlerTest.InvalidStateException");
 			}
 			// Check for UDF Library File
 			if( structKeyExists(md, "UDFLibraryFile") ){

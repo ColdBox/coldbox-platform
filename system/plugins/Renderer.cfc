@@ -135,7 +135,7 @@ Description :
 
 			// Do we have a view To render? Else throw exception
 			if( NOT len(arguments.view) ){
-				$throw(message="The ""currentview"" variable has not been set, therefore there is no view to render.",
+				throw(message="The ""currentview"" variable has not been set, therefore there is no view to render.",
 					   detail="Please remember to use the 'event.setView()' method in your handler or pass in a view to render.",
 					   type="Renderer.ViewNotSetException");
 			}

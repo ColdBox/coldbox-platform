@@ -99,20 +99,6 @@
 		];
 
 		/*
-
-		// ORM services, injection, etc
-		orm = {
-			// entity injection
-			injection = {
-				// enable it
-				enabled = true,
-				// the include list for injection
-				include = "",
-				// the exclude list for injection
-				exclude = ""
-			}
-		};
-
 		// flash scope configuration
 		flash = {
 			scope = "session,client,cluster,ColdboxCache,or full path",
@@ -140,34 +126,6 @@
 			layoutsLocation  = "layouts",
 			modelsLocation 	 = "model",
 			eventAction 	 = "index"
-		};
-
-		//IOC Integration
-		ioc = {
-			framework 		= "lightwire",
-			reload 	  	  	= true,
-			objectCaching 	= false,
-			definitionFile  = "config/coldspring.xml.cfm",
-			parentFactory 	= {
-				framework = "coldspring",
-				definitionFile = "config/parent.xml.cfm"
-			}
-		};
-
-		//Mailsettings
-		mailSettings = {
-			server = "",
-			username = "",
-			password = "",
-			port = 25
-		};
-
-		//i18n & Localization
-		i18n = {
-			defaultResourceBundle = "includes/i18n/main",
-			defaultLocale = "en_US",
-			localeStorage = "session",
-			unknownTranslation = "**NOT FOUND**"
 		};
 
 		//Datasources

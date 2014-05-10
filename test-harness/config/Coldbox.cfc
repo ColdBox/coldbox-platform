@@ -113,17 +113,6 @@
 			}
 		};
 
-		//i18n & Localization
-		i18n = {
-			defaultResourceBundle = "includes/i18n/main",
-			resourceBundles = {
-				"support" = "includes/i18n/support"
-			},
-			defaultLocale = "en_US",
-			localeStorage = "cookie",
-			unknownTranslation = "**NOT FOUND**"
-		};
-
 		//Datasources
 		datasources = {
 			mysite   = {name="mySite", dbType="mysql", username="root", password="pass"},

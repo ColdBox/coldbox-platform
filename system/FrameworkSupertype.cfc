@@ -25,28 +25,6 @@ Description :
 		<cfreturn instance>
 	</cffunction>
 
-	<!--- Discover fw Locale --->
-	<cffunction name="getfwLocale" access="public" output="false" returnType="any" hint="Get the user's currently set locale or default locale">
-		<cfscript>
-			if(NOT structKeyExists(variables,"cbox18n") ){
-				variables.cbox18n = controller.getPlugin("i18n");
-			}
-			return variables.cbox18n.getfwLocale();
-		</cfscript>
-	</cffunction>
-
-	<!--- set the fw locale for a user --->
-	<cffunction name="setfwLocale" access="public" output="false" returnType="any" hint="Set the default locale to use in the framework for a specific user. Utility Method">
-		<cfargument name="locale"     		type="any"  required="false"  hint="The locale to change and set. Must be Java Style: en_US">
-		<cfargument name="dontloadRBFlag" 	type="any" 	required="false"  hint="Flag to load the resource bundle for the specified locale (If not already loaded) or just change the framework's locale. Boolean" colddoc:generic="Boolean">
-		<cfscript>
-			if(NOT structKeyExists(variables,"cbox18n") ){
-				variables.cbox18n = controller.getPlugin("i18n");
-			}
-			return variables.cbox18n.setfwLocale(argumentCollection=arguments);
-		</cfscript>
-	</cffunction>
-
 <!------------------------------------------- Private RESOURCE METHODS ------------------------------------------->
 
 	<!--- Get a Datasource Object --->
@@ -56,7 +34,7 @@ Description :
 		var datasources = controller.getSetting("Datasources");
 		//Check for datasources structure
 		if ( structIsEmpty(datasources) ){
-			$throw("There are no datasources defined for this application.","","FrameworkSupertype.DatasourceStructureEmptyException");
+			throw("There are no datasources defined for this application.","","FrameworkSupertype.DatasourceStructureEmptyException");
 		}
 
 		//Try to get the correct datasource.
@@ -64,24 +42,11 @@ Description :
 			return CreateObject("component","coldbox.system.core.db.DatasourceBean").init(datasources[arguments.alias]);
 		}
 
-		$throw("The datasource: #arguments.alias# is not defined.","Datasources: #structKeyList(datasources)#","FrameworkSupertype.DatasourceNotFoundException");
+		throw("The datasource: #arguments.alias# is not defined.","Datasources: #structKeyList(datasources)#","FrameworkSupertype.DatasourceNotFoundException");
 		</cfscript>
 	</cffunction>
 
-	<!--- Get a Resource --->
-	<cffunction name="getResource" access="public" output="false" returnType="any" hint="Facade to i18n.getResource. Returns a string.">
-		<cfargument name="resource" type="any" required="true"  hint="The resource (key) to retrieve from the main loaded bundle.">
-		<cfargument name="default"  type="any" required="false" hint="A default value to send back if the resource (key) not found" >
-		<cfargument name="locale"   type="any" required="false" hint="Pass in which locale to take the resource from. By default it uses the user's current set locale" >
-		<cfargument name="values" 	type="any" required="false" hint="An array, struct or simple string of value replacements to use on the resource string"/>
-		<cfargument name="bundle" 	type="any" required="false"	hint="The bundle alias to use to get the resource from when using multiple resource bundles. By default the bundle name used is 'default'">
-		<cfscript>
-			if( NOT structKeyExists( variables, "cboxResourceBundle" ) ){
-				variables.cboxResourceBundle = controller.getPlugin( "ResourceBundle" );
-			}
-			return variables.cboxResourceBundle.getResource( argumentCollection=arguments );
-		</cfscript>
-	</cffunction>
+
 
 	<!--- Get a Settings Bean --->
 	<cffunction name="getSettingsBean"  hint="Returns a configBean with all the configuration structure." access="public"  returntype="coldbox.system.core.collections.ConfigBean"   output="false">
@@ -244,7 +209,7 @@ Description :
 			if( structKeyExists(mConfig,arguments.module) ){
 				return mConfig[arguments.module];
 			}
-			$throw(message="The module you passed #arguments.module# is invalid.",detail="The loaded modules are #structKeyList(mConfig)#",type="FrameworkSuperType.InvalidModuleException");
+			throw(message="The module you passed #arguments.module# is invalid.",detail="The loaded modules are #structKeyList(mConfig)#",type="FrameworkSuperType.InvalidModuleException");
 		</cfscript>
 	</cffunction>
 
@@ -262,19 +227,6 @@ Description :
 		<cfargument name="URI"  				required="false" type="string"  hint="The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'"/>
 		<cfargument name="statusCode" 			required="false" type="numeric" hint="The status code to use in the relocation"/>
 		<cfset controller.setNextEvent(argumentCollection=arguments)>
-	</cffunction>
-
-	<!--- setNextRoute --->
-	<cffunction name="setNextRoute" access="public" returntype="void" hint="This method is now deprecated, please use setNextEvent(). This method will be removed later on"  output="false">
-		<cfargument name="route"  			required="true"	 type="string" hint="The route to relocate to, do not prepend the baseURL or /.">
-		<cfargument name="persist" 			required="false" type="string" default="" hint="What request collection keys to persist in the relocation">
-		<cfargument name="persistStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist.">
-		<cfargument name="addToken"			required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
-		<cfargument name="ssl"				required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
-		<cfscript>
-			arguments.event = arguments.route;
-			controller.setNextEvent(argumentCollection=arguments);
-		</cfscript>
 	</cffunction>
 
 	<!--- runEvent --->
@@ -309,24 +261,7 @@ Description :
 	<cffunction name="locateFilePath" output="false" access="public" returntype="string" hint="Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path">
 		<cfargument name="pathToCheck" type="any"  required="true" hint="The path to check"/>
 		<cfscript>
-			var foundPath = "";
-			var appRoot = controller.getAppRootPath();
-
-			//Check 1: Inside of App Root
-			if ( fileExists(appRoot & arguments.pathToCheck) ){
-				foundPath = appRoot & arguments.pathToCheck;
-			}
-			//Check 2: Expand the Path
-			else if( fileExists( ExpandPath(arguments.pathToCheck) ) ){
-				foundPath = ExpandPath( arguments.pathToCheck );
-			}
-			//Check 3: Absolute Path
-			else if( fileExists( arguments.pathToCheck ) ){
-				foundPath = arguments.pathToCheck;
-			}
-
-			//Return
-			return foundPath;
+			return controller.locateFilePath( argumentCollection=arguments );
 		</cfscript>
 	</cffunction>
 
@@ -334,24 +269,7 @@ Description :
 	<cffunction name="locateDirectoryPath" output="false" access="public" returntype="string" hint="Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path">
 		<cfargument name="pathToCheck" type="any"  required="true" hint="The path to check"/>
 		<cfscript>
-			var foundPath = "";
-			var appRoot = controller.getAppRootPath();
-
-			//Check 1: Inside of App Root
-			if ( directoryExists(appRoot & arguments.pathToCheck) ){
-				foundPath = appRoot & arguments.pathToCheck;
-			}
-			//Check 2: Expand the Path
-			else if( directoryExists( ExpandPath(arguments.pathToCheck) ) ){
-				foundPath = ExpandPath( arguments.pathToCheck );
-			}
-			//Check 3: Absolute Path
-			else if( directoryExists( arguments.pathToCheck ) ){
-				foundPath = arguments.pathToCheck;
-			}
-
-			//Return
-			return foundPath;
+			return controller.locateDirectoryPath( argumentCollection=arguments );
 		</cfscript>
 	</cffunction>
 
@@ -373,27 +291,27 @@ Description :
 
 			// Relative Checks First
 			if( fileExists( UDFRelativePath ) ){
-				$include( "/" & appMapping & "/" & arguments.udflibrary );
+				include ("/" & appMapping & "/" & arguments.udflibrary);
 			}
 			// checks if no .cfc or .cfm where sent
 			else if( fileExists(UDFRelativePath & ".cfc") ){
-				$include( "/" & appMapping & "/" & arguments.udflibrary & ".cfc" );
+				include ("/" & appMapping & "/" & arguments.udflibrary & ".cfc");
 			}
 			else if( fileExists(UDFRelativePath & ".cfm") ){
-				$include( "/" & appMapping & "/" & arguments.udflibrary & ".cfm" );
+				include ("/" & appMapping & "/" & arguments.udflibrary & ".cfm");
 			}
 			// Absolute Checks
 			else if( fileExists( UDFFullPath ) ){
-				$include("#udflibrary#");
+				include "#udflibrary#";
 			}
 			else if( fileExists(UDFFullPath & ".cfc") ){
-				$include("#udflibrary#.cfc");
+				include "#udflibrary#.cfc";
 			}
 			else if( fileExists(UDFFullPath & ".cfm") ){
-				$include("#udflibrary#.cfm");
+				include "#udflibrary#.cfm";
 			}
 			else{
-				$throw(message="Error loading UDFLibraryFile: #arguments.udflibrary#",
+				throw(message="Error loading UDFLibraryFile: #arguments.udflibrary#",
 					  detail="The UDF library was not found.  Please make sure you verify the file location.",
 					  type="FrameworkSupertype.UDFLibraryNotFoundException");
 			}
@@ -416,50 +334,10 @@ Description :
     	</cfscript>
     </cffunction>
 
-	<!--- CFLOCATION Facade --->
-	<cffunction name="relocate" access="public" hint="This method will be deprecated, please use setNextEvent() instead." returntype="void" output="false">
-		<cfargument name="url" 		required="true" 	type="string">
-		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
-		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
-		<cfset controller.setNextEvent(argumentCollection=arguments)>
-	</cffunction>
-
 	<!--- cfhtml head facade --->
 	<cffunction name="$htmlhead" access="public" returntype="void" hint="Facade to cfhtmlhead" output="false" >
 		<cfargument name="content" required="true" type="string" hint="The content to send to the head">
 		<cfhtmlhead text="#arguments.content#">
-	</cffunction>
-
-	<!--- Throw Facade --->
-	<cffunction name="$throw" access="public" hint="Facade for cfthrow" output="false">
-		<cfargument name="message" 	type="string" 	required="yes">
-		<cfargument name="detail" 	type="string" 	required="no" default="">
-		<cfargument name="type"  	type="string" 	required="no" default="Framework">
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-
-	<!--- Dump facade --->
-	<cffunction name="$dump" access="public" hint="Facade for cfmx dump" returntype="void" output="true">
-		<cfargument name="var" required="yes" type="any">
-		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
-		<cfdump var="#arguments.var#">
-		<cfif arguments.isAbort><cfabort></cfif>
-	</cffunction>
-
-	<!--- Rethrow Facade --->
-	<cffunction name="$rethrow" access="public" returntype="void" hint="Rethrow facade" output="false" >
-		<cfargument name="throwObject" required="true" type="any" hint="The cfcatch object">
-		<cfthrow object="#arguments.throwObject#">
-	</cffunction>
-
-	<!--- Abort Facade --->
-	<cffunction name="$abort" access="public" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
-
-	<!--- Include Facade --->
-	<cffunction name="$include" access="public" hint="Facade for cfinclude" returntype="void" output="true">
-		<cfargument name="template" type="string"><cfinclude template="#arguments.template#">
 	</cffunction>
 
 </cfcomponent>

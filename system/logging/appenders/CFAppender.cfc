@@ -38,7 +38,7 @@ Properties:
 			else{
 				// Check types
 				if( NOT reFindNoCase("^(file|application)$", getProperty("logType")) ){
-					$throw(message="Invalid logtype choosen #getProperty("logType")#",
+					throw(message="Invalid logtype choosen #getProperty("logType")#",
 						   detail="Valid types are file or application",
 						   type="CFAppender.InvalidLogTypeException");
 				}

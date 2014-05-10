@@ -228,7 +228,7 @@ Description :
 
 			// Verify module exists and loaded
 			if( NOT structKeyExists(mConfig,arguments.module) ){
-				$throw(message="Error loading module routes as the module requested '#arguments.module#' is not loaded.",
+				throw(message="Error loading module routes as the module requested '#arguments.module#' is not loaded.",
 					   detail="The loaded modules are: #structKeyList(mConfig)#",
 					   type="SES.InvalidModuleName");
 			}
@@ -363,10 +363,10 @@ Description :
 				structdelete(variables,"pathInfoProvider");
 				structdelete(this,"pathInfoProvider");
 				// Import configuration
-				$include( arguments.location );
+				include arguments.location;
 			}
 			catch(Any e){
-				$throw("Error importing routes configuration file: #e.message# #e.detail#",e.tagContext.toString(),"SES.IncludeRoutingConfig");
+				throw("Error importing routes configuration file: #e.message# #e.detail#",e.tagContext.toString(),"SES.IncludeRoutingConfig");
 			}
 			return this;
     	</cfscript>
@@ -667,7 +667,7 @@ Description :
 			if( structKeyExists(instance.namespaceRoutingTable, arguments.namespace) ){
 				return instance.namespaceRoutingTable[ arguments.namespace ];
 			}
-			$throw(message="Namespace routes for #arguments.namespace# do not exists",
+			throw(message="Namespace routes for #arguments.namespace# do not exists",
 				  detail="Loaded namespace routes are #structKeyList(instance.namespaceRoutingTable)#",
 				  type="SES.InvalidNamespaceException");
 		</cfscript>
@@ -722,7 +722,7 @@ Description :
 			if( structKeyExists(instance.moduleRoutingTable, arguments.module) ){
 				return instance.moduleRoutingTable[ arguments.module ];
 			}
-			$throw(message="Module routes for #arguments.module# do not exists", detail="Loaded module routes are #structKeyList(instance.moduleRoutingTable)#",type="SES.InvalidModuleException");
+			throw(message="Module routes for #arguments.module# do not exists", detail="Loaded module routes are #structKeyList(instance.moduleRoutingTable)#",type="SES.InvalidModuleException");
 		</cfscript>
 	</cffunction>
 
@@ -1316,7 +1316,7 @@ Description :
 				//Check absolute location as not found inside our app
 				configFilePath = getProperty('ConfigFile');
 				if( NOT fileExists(expandPath(configFilePath)) ){
-					$throw(message="Error locating routes file: #configFilePath#",type="SES.ConfigFileNotFound");
+					throw(message="Error locating routes file: #configFilePath#",type="SES.ConfigFileNotFound");
 				}
 			}
 
@@ -1325,7 +1325,7 @@ Description :
 
 			// Validate the base URL
 			if ( len( getBaseURL() ) eq 0 ){
-				$throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
+				throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
 			}
 		</cfscript>
 	</cffunction>

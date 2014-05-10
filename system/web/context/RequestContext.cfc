@@ -137,7 +137,7 @@ Description :
 				return arguments.defaultValue;
 			}
 
-			$throw("The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
+			throw("The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
 				   "Keys Found: #structKeyList(collection)#",
 				   "RequestContext.ValueNotFound");
 		</cfscript>
@@ -674,7 +674,7 @@ Description :
 
 			// Validate rendering type
 			if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type) ){
-				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF","RequestContext.InvalidRenderTypeException");
+				throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF","RequestContext.InvalidRenderTypeException");
 			}
 
 			// Default Values for incoming variables
@@ -761,7 +761,7 @@ Description :
 			if( structKeyExists(arguments,"default") ){
 				return arguments.default;
 			}
-			$throw(message="Header #arguments.header# not found in HTTP headers",detail="Headers found: #structKeyList(headers)#",type="RequestContext.InvalidHTTPHeader");
+			throw(message="Header #arguments.header# not found in HTTP headers",detail="Headers found: #structKeyList(headers)#",type="RequestContext.InvalidHTTPHeader");
 		</cfscript>
 	</cffunction>
 
@@ -880,7 +880,7 @@ Description :
     	</cfscript>    
     </cffunction>
 
-	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
+	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
 		<cfargument name="message" 	type="string" 	required="yes">
 		<cfargument name="detail" 	type="string" 	required="no" default="">
 		<cfargument name="type"  	type="string" 	required="no" default="Framework">

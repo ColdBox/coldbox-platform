@@ -213,13 +213,6 @@ I oversee and manage ColdBox modules
 					viewsLocation 		= "views",
 					pluginsLocation     = "plugins",
 					modelsLocation       = "model"
-				},
-				i18n = {
-					defaultResourceBundle = "",
-					defaultLocale = "",
-					localeStorage = "",
-					unknownTranslation = "",
-					resourceBundles = {}
 				}
 			};
 
@@ -298,8 +291,6 @@ I oversee and manage ColdBox modules
 			var key					= "";
 			var interceptorService  = controller.getInterceptorService();
 			var wirebox				= controller.getWireBox();
-			var flagi18n			= false;
-			var thisBundle			= "";
 
 			// If module not registered, throw exception
 			if( NOT structKeyExists( modules, arguments.moduleName ) ){
@@ -314,7 +305,6 @@ I oversee and manage ColdBox modules
 				if( instance.logger.canDebug() ){
 					instance.logger.debug("Module #arguments.moduleName# already activated, skipping activation.");
 				}
-				writeDump( var="Module #arguments.moduleName# already activated, skipping activation.", output="console" );
 				return this;
 			}
 		</cfscript>
@@ -364,31 +354,6 @@ I oversee and manage ColdBox modules
 			// postModuleLoad interception
 			iData = { moduleLocation=mConfig.path, moduleName=arguments.moduleName, moduleConfig=mConfig };
 			interceptorService.processState( "postModuleLoad", iData );
-
-			// process i18n settings and register if found, registerAspects() in loader service processes these aspect settings
-			if( len( mConfig.i18n.defaultResourceBundle ) AND NOT len( controller.getSetting( "defaultResourceBundle" ) ) ){
-				controller.setSetting( "defaultResourceBundle", mConfig.i18n.defaultResourceBundle );
-				flagi18n = true;
-			}
-			if( len( mConfig.i18n.unknownTranslation ) AND NOT len( controller.getSetting( "unknownTranslation" ) ) ){
-				controller.setSetting( "unknownTranslation", mConfig.i18n.unknownTranslation );
-				flagi18n = true;
-			}
-			if( len( mConfig.i18n.defaultLocale ) AND NOT len( controller.getSetting( "defaultLocale" ) ) ){
-				controller.setSetting( "defaultLocale", mConfig.i18n.defaultLocale );
-				flagi18n = true;
-			}
-			if( len( mConfig.i18n.localeStorage ) AND NOT len( controller.getSetting( "localeStorage" ) ) ){
-				controller.setSetting( "localeStorage", mConfig.i18n.localeStorage );
-				flagi18n = true;
-			}
-			if( structCount( mConfig.i18n.resourceBundles ) ){
-				structAppend( controller.getSetting( "resourceBundles" ), mConfig.i18n.resourceBundles, true );
-				flagi18n = true;
-			}
-			if( flagi18n ){
-				controller.setSetting( "using_i18N", true );
-			}
 
 			// Mark it as loaded as it is now activated
 			mConfig.activated = true;
@@ -621,9 +586,6 @@ I oversee and manage ColdBox modules
 
 			// Get Module Layout Settings
 			structAppend( mConfig.layoutSettings, oConfig.getPropertyMixin( "layoutSettings", "variables", structnew() ), true );
-
-			// Get i18n Settings
-			structAppend( mConfig.i18n, oConfig.getPropertyMixin( "i18n", "variables", structnew() ), true );
 
 			return oConfig;
 		</cfscript>

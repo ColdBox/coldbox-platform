@@ -22,7 +22,7 @@ Description :
 			
 			// Check for plugin else throw exception
 			if( NOT structKeyExists(md, "interceptor") ){
-				$throw("interceptor annotation not found on component tag","Please declare a 'interceptor=path' annotation","BaseInterceptorTest.InvalidStateException");
+				throw("interceptor annotation not found on component tag","Please declare a 'interceptor=path' annotation","BaseInterceptorTest.InvalidStateException");
 			}
 			
 			// Check if user setup interceptor properties on scope

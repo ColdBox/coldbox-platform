@@ -40,13 +40,13 @@ Properties:
 
 			// Property Checks
 			if( NOT propertyExists("from") ){
-				$throw(message="from email is required",type="EmailAppender.PropertyNotFound");
+				throw(message="from email is required",type="EmailAppender.PropertyNotFound");
 			}
 			if( NOT propertyExists("to") ){
-				$throw(message="to email(s) is required",type="EmailAppender.PropertyNotFound");
+				throw(message="to email(s) is required",type="EmailAppender.PropertyNotFound");
 			}
 			if( NOT propertyExists("subject") ){
-				$throw(message="subject is required",type="EmailAppender.PropertyNotFound");
+				throw(message="subject is required",type="EmailAppender.PropertyNotFound");
 			}
 			if( NOT propertyExists("cc") ){
 				setProperty("cc","");

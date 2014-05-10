@@ -39,11 +39,6 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				setup();
 			});
 
-			it( "can load i18n resources", function(){
-				var event = execute( event="test1:test.i18n", renderResults=true );
-				expect(	event.getValue( "cbox_rendered_content" ) ).toInclude( "Welcome to my awesome multi-lingual module" );
-			});
-
 			it( "can load models in a namespace", function(){
 				var event = execute( event="test1:test.namespaceModel", renderResults=true );
 				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "Hola Brother!" );

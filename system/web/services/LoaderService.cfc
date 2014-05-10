@@ -115,12 +115,6 @@ Modification History:
 		// Rebuild flash if modules changed settings.
 		controller.getRequestService().rebuildFlashScope();
 
-		// Load i18N if application is using it.
-		if ( controller.getSetting("using_i18N") ){
-			//Create i18n Plugin and configure it.
-			controller.getPlugin("i18n").init_i18N();
-		}
-
 		// Flag the aspects inited
 		controller.setAspectsInitiated(true);
 		</cfscript>

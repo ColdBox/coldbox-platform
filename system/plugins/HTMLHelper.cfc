@@ -1238,7 +1238,7 @@ Description :
 						if( structKeyExists(arguments.manytomany, prop.name) ){
 							if( structKeyExists(arguments.manytomany[prop.name],"valueColumn") ){ loc.column = arguments.manytomany[prop.name].valueColumn; }
 							else{
-								$throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory", 
+								throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory", 
 									   detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}",
 									   type="EntityFieldsInvalidRelationData");
 							}
@@ -1251,7 +1251,7 @@ Description :
 							if( structKeyExists(arguments.manytomany[prop.name],"selectColumn") ){ loc.selectColumn = arguments.manytomany[prop.name].selectColumn; }
 						}
 						else{ 
-							$throw(message="There is no many to many information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one", 
+							throw(message="There is no many to many information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one", 
 								  detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}",
 								  type="EntityFieldsInvalidRelationData"); 
 						}
@@ -1359,7 +1359,7 @@ Description :
 							// Verify the valueColumn which is mandatory
 							if( structKeyExists(arguments.manytoone[prop.name],"valueColumn") ){ loc.column = arguments.manytoone[prop.name].valueColumn; }
 							else{ 
-								$throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory", 
+								throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory", 
 									   detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}",
 									   type="EntityFieldsInvalidRelationData"); 
 							}
@@ -1369,7 +1369,7 @@ Description :
 							if( structKeyExists(arguments.manytoone[prop.name],"sortorder") ){ loc.sortorder = arguments.manytoone[prop.name].sortorder; }
 						}
 						else{ 
-							$throw(message="There is no many to one information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one", 
+							throw(message="There is no many to one information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one", 
 								  detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}",
 								  type="EntityFieldsInvalidRelationData"); 
 						}
@@ -1562,7 +1562,7 @@ Description :
 
 					// check if name exists else throw exception
 					if( NOT structKeyExists( arguments.args, "name" ) OR NOT len( arguments.args.name ) ){
-						$throw( type="HTMLHelper.NameBindingException", message="The 'name' argument was not passed and not binding property was passed, so we can't bind dude!" );
+						throw( type="HTMLHelper.NameBindingException", message="The 'name' argument was not passed and not binding property was passed, so we can't bind dude!" );
 					}
 
 					// bind name property

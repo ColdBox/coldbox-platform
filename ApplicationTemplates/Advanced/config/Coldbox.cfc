@@ -8,10 +8,6 @@ structures/arrays to create for configuration
 - conventions (struct)
 - environments (struct)
 - wirebox (struct)
-- ioc (struct)
-- debugger (struct)
-- mailSettings (struct)
-- i18n (struct)
 - datasources (struct)
 - layoutSettings (struct)
 - layouts (array of structs)
@@ -21,7 +17,6 @@ structures/arrays to create for configuration
 - modules (struct)
 - logBox (struct)
 - flash (struct)
-- orm (struct)
 
 Available objects in variable scope
 - controller
@@ -136,19 +131,6 @@ Optional Methods
 
 		/*
 
-		// ORM services, injection, etc
-		orm = {
-			// entity injection
-			injection = {
-				// enable it
-				enabled = true,
-				// the include list for injection
-				include = "",
-				// the exclude list for injection
-				exclude = ""
-			}
-		};
-
 		// flash scope configuration
 		flash = {
 			scope = "session,client,cluster,ColdboxCache,or full path",
@@ -176,34 +158,6 @@ Optional Methods
 			layoutsLocation  = "layouts",
 			modelsLocation 	 = "model",
 			eventAction 	 = "index"
-		};
-
-		//IOC Integration
-		ioc = {
-			framework 		= "lightwire",
-			reload 	  	  	= true,
-			objectCaching 	= false,
-			definitionFile  = "config/coldspring.xml.cfm",
-			parentFactory 	= {
-				framework = "coldspring",
-				definitionFile = "config/parent.xml.cfm"
-			}
-		};
-
-		//Mailsettings
-		mailSettings = {
-			server = "",
-			username = "",
-			password = "",
-			port = 25
-		};
-
-		//i18n & Localization
-		i18n = {
-			defaultResourceBundle = "includes/i18n/main",
-			defaultLocale = "en_US",
-			localeStorage = "session",
-			unknownTranslation = "**NOT FOUND**"
 		};
 
 		//Datasources
