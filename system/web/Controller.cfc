@@ -28,7 +28,6 @@ Only one instance of a specific ColdBox application exists.
 			instance.CFMLEngine = CreateObject("component","coldbox.system.core.util.CFMLEngine").init();
 			// Set Main Application Properties
 			instance.coldboxInitiated 		= false;
-			instance.aspectsInitiated 		= false;
 			instance.appKey					= arguments.appKey;
 			//Fix Application Path to last / standard.
 			if( NOT reFind("(/|\\)$",arguments.appRootPath) ){
@@ -240,16 +239,6 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="setColdboxInitiated" access="public" output="false" returntype="any" hint="Set ColdboxInitiated">
 		<cfargument name="coldboxInitiated" required="true"/>
 		<cfset instance.coldboxInitiated = arguments.coldboxInitiated/>
-		<cfreturn this>
-	</cffunction>
-
-	<!--- Aspects Initiated Flag --->
-	<cffunction name="getAspectsInitiated" access="public" output="false" returntype="any" hint="Get AspectsInitiated" colddoc:generic="boolean">
-		<cfreturn instance.aspectsInitiated/>
-	</cffunction>
-	<cffunction name="setAspectsInitiated" access="public" output="false" returntype="any" hint="Set AspectsInitiated">
-		<cfargument name="aspectsInitiated" required="true"/>
-		<cfset instance.aspectsInitiated = arguments.aspectsInitiated/>
 		<cfreturn this>
 	</cffunction>
 

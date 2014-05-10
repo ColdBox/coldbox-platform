@@ -43,7 +43,6 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 		var coldBoxSettings = controller.getColdBoxSettings();
-		var key 			= "";
 		var services 		= controller.getServices();
 
 		// Load application configuration file
@@ -73,19 +72,17 @@ Modification History:
 		// Create WireBox Container
 		createWireBox();
 		// Execute onConfigurationLoad for coldbox internal services()
-		for(key in services){
-			services[key].onConfigurationLoad();
+		for( var key in services ){
+			services[ key ].onConfigurationLoad();
 		}
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-		controller.setColdboxInitiated(true);
-		// Activate Modules
+		controller.setColdboxInitiated( true );
+		// Activate All Modules
 		controller.getModuleService().activateAllModules();
 		// Execute afterConfigurationLoad
 		controller.getInterceptorService().processState("afterConfigurationLoad");
-		// Register Aspects
-		registerAspects();
-		// Execute afterAspectsLoad
-		controller.getInterceptorService().processState("afterAspectsLoad");
+		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
+		controller.getRequestService().rebuildFlashScope();
 		// We are now done, rock and roll!!
 		</cfscript>
 	</cffunction>
@@ -96,46 +93,34 @@ Modification History:
 			// create decorator
     		var decorator 	= createObject("component", controller.getSetting("ControllerDecorator") ).init( controller );
     		var services  	= controller.getServices();
-    		var key			= "";
 
     		// Call configuration on it
     		decorator.configure();
     		// Override in persistence scope
     		application[ controller.getAppKey() ] = decorator;
     		// Override locally now in all services
-    		for( key in services ){
+    		for( var key in services ){
     			services[ key ].setController( decorator );
     		}
     	</cfscript>
     </cffunction>
-
-	<!--- Register the Aspects --->
-	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
-		<cfscript>
-		// Rebuild flash if modules changed settings.
-		controller.getRequestService().rebuildFlashScope();
-
-		// Flag the aspects inited
-		controller.setAspectsInitiated(true);
-		</cfscript>
-	</cffunction>
 
 	<!--- createDefaultLogBox --->
     <cffunction name="createDefaultLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Create a running LogBox instance configured using ColdBox's default config">
     	<cfscript>
    		var logBoxConfig = "";
 
-		logBoxConfig = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(CFCConfigPath="coldbox.system.web.config.LogBox");
+		logBoxConfig = createObject( "component", "coldbox.system.logging.config.LogBoxConfig").init( CFCConfigPath="coldbox.system.web.config.LogBox" );
 
-		return createObject("component","coldbox.system.logging.LogBox").init(logBoxConfig,controller);
+		return createObject( "component", "coldbox.system.logging.LogBox").init( logBoxConfig, controller );
     	</cfscript>
     </cffunction>
 
 	<!--- createWireBox --->
     <cffunction name="createWireBox" output="false" access="public" returntype="void" hint="Create WireBox DI Framework with config settings.">
     	<cfscript>
-    		var wireboxData = controller.getSetting("WireBox");
-			controller.getWireBox().init(wireboxData.binderPath, controller.getConfigSettings(), controller);
+    		var wireboxData = controller.getSetting( "WireBox" );
+			controller.getWireBox().init( wireboxData.binderPath, controller.getConfigSettings(), controller );
     	</cfscript>
     </cffunction>
 
@@ -174,20 +159,19 @@ Modification History:
 	<!--- processShutdown --->
     <cffunction name="processShutdown" output="false" access="public" returntype="void" hint="Process the shutdown of the application">
     	<cfscript>
-    		var key 	 = "";
 			var services = controller.getServices();
 			var cacheBox = controller.getCacheBox();
-			var wireBox = controller.getWireBox();
+			var wireBox  = controller.getWireBox();
 
     		// Process services reinit
-			for(key in services){
-				services[key].onShutdown();
+			for( var key in services ){
+				services[ key ].onShutdown();
 			}
 			// Shutdown any services like cache engine, etc.
 			cacheBox.shutdown();
 
 			// Shutdown WireBox
-			if( isObject(wireBox) ){
+			if( isObject( wireBox ) ){
 				wireBox.shutdown();
 			}
 		</cfscript>
