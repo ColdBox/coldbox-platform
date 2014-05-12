@@ -29,20 +29,6 @@ component{
 	// Mappings
 	this.mappings[ "/cbtestharness" ] = COLDBOX_APP_ROOT_PATH;
 
-	// ORM
-	this.datasource = "coolblog";
-	this.ormSettings = {
-		cfclocation = [ "/model" ],
-		skipCFCWithError = true,
-		eventHandling=true,
-		logSQL = true,
-		eventhandling = true,
-		eventhandler = "cbtestharness.model.EventHandler",
-		secondarycacheenabled = false,
-		cacheProvider = "ehcache",
-		flushAtRequestEnd = false
-	};
-
 	// application start
 	public boolean function onApplicationStart(){
 		var start = getTickCount();

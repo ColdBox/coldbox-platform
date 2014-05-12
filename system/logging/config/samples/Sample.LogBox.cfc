@@ -1,5 +1,11 @@
-﻿<cfcomponent output="false" hint="A LogBox Configuration Data Object">
-<cfscript>
+﻿/********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+* The default LogBox configuration object
+**/
+component{
+
 	/**
 	* Configure LogBox, that's it!
 	*/
@@ -8,7 +14,7 @@
 			// Define Appenders
 			appenders = {
 				coldboxTracer = { 
-					class="coldbox.system.logging.appenders.ColdboxTracerAppender",
+					class="coldbox.system.logging.appenders.ConsoleAppender",
 					layout="coldbox.testing.cases.logging.MockLayout", 
 					properties = {
 						name = "awesome"
@@ -31,5 +37,5 @@
 			OFF = [ "hello.model", "yes.wow.wow" ] 
 		};
 	}
-</cfscript>
-</cfcomponent>
+
+}
