@@ -9,12 +9,12 @@ Date        :	3/13/2009
 Description :
 	A File Rotator
 ----------------------------------------------------------------------->
-<cfcomponent name="FileRotator" 
+<cfcomponent name="FileRotator"
 			 output="false"
 			 hint="This is a simple file rotator">
-			 
+
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<!--- Constructor --->
 	<cffunction name="init" access="public" returntype="FileRotator" hint="Constructor" output="false">
 		<cfreturn this>
@@ -28,20 +28,19 @@ Description :
 		<cfset var oAppender = arguments.appender>
 		<cfset var zipFileName = "">
 		<cfset var qArchivedLogs = "">
-		<cfset var ArchiveToDelete = "">
-		<cfset var oZip = createObject("component","coldbox.system.core.util.Zip").init()>
+		<cfset var archiveToDelete = "">
 		<cfset var fileName = oAppender.getProperty("fileName")>
 		<cfset var logFullPath = oAppender.getLogFullPath()>
-		
+
 		<!--- Verify FileSize --->
 		<cfif getFileSize(logFullPath) gt (oAppender.getProperty("fileMaxSize") * 1024)>
 			<!--- How Many Log Files Do we Have --->
-			<cfdirectory action="list" 
-				 filter="#fileName#*.zip" 
-				 name="qArchivedLogs" 
-				 directory="#getDirectoryFromPath(logFullPath)#" 
+			<cfdirectory action="list"
+				 filter="#fileName#*.zip"
+				 name="qArchivedLogs"
+				 directory="#getDirectoryFromPath(logFullPath)#"
 				 sort="DATELASTMODIFIED" >
-			
+
 			<!--- Zip Log File --->
 			<cflock name="#oAppender.getlockName()#" type="exclusive" timeout="#oAppender.getlockTimeout()#" throwontimeout="true">
 				<!--- Should I remove log Files --->
@@ -51,19 +50,24 @@ Description :
 					<cffile action="delete" file="#ArchiveToDelete#">
 				</cfif>
 				<!--- Set the name of the archive --->
-				<cfset zipFileName =  getDirectoryFromPath(logFullPath) & fileName & "." & dateformat(now(),"yyyymmdd") & "." & timeformat(now(),"HHmmss") & ".zip">
+				<cfset zipFileName = getDirectoryFromPath(logFullPath) & fileName & "." & dateformat(now(),"yyyymmdd") & "." & timeformat(now(),"HHmmss") & ".zip">
 				<!--- Zip it --->
-				<cfset oZip.AddFiles(zipFileName,logFullPath,"","",false,9,false )>
+				<cfzip action="zip"
+					   file="#zipFileName#"
+					   overwrite="true"
+					   storepath="false"
+					   recurse="false"
+					   source="#logFullPath#">
 			</cflock>
-			
+
 			<!--- Clean & reinit Log File --->
 			<cfset oAppender.removeLogFile()>
-			
+
 			<!--- Reinit The log File --->
 			<cfset oAppender.initLoglocation()>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- Check File Size --->
 	<cffunction name="getFileSize" access="public" returntype="string" output="false" hint="Get the filesize of a file.">
 		<!--- ************************************************************* --->
@@ -82,5 +86,5 @@ Description :
 			return (objFile.length()/1073741824);
 		</cfscript>
 	</cffunction>
-	
+
 </cfcomponent>
