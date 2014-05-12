@@ -46,20 +46,6 @@ Description :
 		</cfscript>
 	</cffunction>
 
-
-
-	<!--- Get a Settings Bean --->
-	<cffunction name="getSettingsBean"  hint="Returns a configBean with all the configuration structure." access="public"  returntype="coldbox.system.core.collections.ConfigBean"   output="false">
-		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  default="false" hint="Whether to build the config bean with coldbox settings or config settings">
-		<cfscript>
-			var config = createObject("component","coldbox.system.core.collections.ConfigBean");
-			if( arguments.FWSetting ){
-				return config.init( controller.getColdboxSettings() );
-			}
-			return config.init( controller.getConfigSettings() );
-		</cfscript>
-	</cffunction>
-
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>

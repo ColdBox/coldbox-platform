@@ -75,16 +75,6 @@
 		assertEquals(mockColdbox, c);
 
 		// stage 2
-		mockColdbox.$("getColdboxSettings", {});
-		def = {name="configBean", dsl="coldbox:fwConfigBean"};
-		c = builder.getColdBoxDSL(def);
-		assertTrue( isInstanceOf(c, "coldbox.system.core.collections.ConfigBean") );
-
-		mockColdbox.$("getConfigSettings", {});
-		def = {name="configBean", dsl="coldbox:configBean"};
-		c = builder.getColdBoxDSL(def);
-		assertTrue( isInstanceOf(c, "coldbox.system.core.collections.ConfigBean") );
-
 		mockColdbox.$("getSetting","MailStuff");
 		def = {name="configBean", dsl="coldbox:mailSettingsBean"};
 		c = builder.getColdBoxDSL(def);

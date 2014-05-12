@@ -141,14 +141,6 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		</cfscript>
 	</cffunction>
 
-	<!--- getMockConfigBean --->
-	<cffunction name="getMockConfigBean" access="private" output="false" returnType="coldbox.system.core.collections.ConfigBean" hint="I will return to you a configBean according to the mocking configuration structure you send in">
-		<cfargument name="configStruct" type="struct" required="false" default="#structnew()#" hint="A memento of name-value pairs to init">
-	    <cfscript>
-			return getMockBox().createMock("coldbox.system.core.collections.ConfigBean").init(arguments.configStruct);
-		</cfscript>
-	</cffunction>
-
 	<!--- getMockRequestBuffer --->
 	<cffunction name="getMockRequestBuffer" access="private" output="false" returnType="coldbox.system.core.util.RequestBuffer" hint="I will return to you a mock request buffer object used mostly in interceptor calls">
 	    <cfscript>

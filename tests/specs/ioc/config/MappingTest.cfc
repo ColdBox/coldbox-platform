@@ -1,17 +1,17 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	this.loadColdBox = false;
-	
+
 	function setup(){
 		super.setup();
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("UnitTest");
 	}
-	
+
 	function testInit(){
 		assertEquals( "UnitTest", mapping.getName() );
 	}
 
-	
+
 	function testProcessMemento(){
 		var data = {
 			alias=["funky"],
@@ -26,7 +26,6 @@
 				{name="transfer", ref="transfer"}
 			],
 			DIProperties = [
-				{name="configBean", dsl="coldbox:configBean"},
 				{name="user", dsl="provider:User"},
 				{name="nonRequired", dsl="provider:User", required=false}
 			],
@@ -61,7 +60,7 @@
 		props = mapping.getDIProperties();
 		assertEquals( 3, arrayLen(props));
 		assertFalse( props[ 3 ].required );
-		
+
 		setters = mapping.getDISetters();
 		assertEquals( 2, arrayLen(setters));
 		assertEquals("Joke", setters[1].argName );
@@ -96,7 +95,6 @@
 				{name="transfer", ref="transfer"}
 			],
 			DIProperties = [
-				{name="configBean", dsl="coldbox:configBean"},
 				{name="user", dsl="provider:User"}
 			],
 			DISetters = [

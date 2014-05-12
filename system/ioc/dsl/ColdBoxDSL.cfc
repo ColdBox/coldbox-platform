@@ -82,8 +82,6 @@ Description :
 					thisLocationKey = getToken(thisType,2,":");
 					switch( thisLocationKey ){
 						case "flash"		 		: { return instance.coldbox.getRequestService().getFlashScope(); }
-						case "fwconfigbean" 		: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getColdboxSettings() ); }
-						case "configbean" 			: { return createObject("component","coldbox.system.core.collections.ConfigBean").init( instance.coldbox.getConfigSettings() ); }
 						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
 						case "requestService"		: { return instance.coldbox.getrequestService(); }
 						case "pluginService"		: { return instance.coldbox.getPluginService(); }
