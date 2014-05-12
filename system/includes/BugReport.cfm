@@ -14,6 +14,11 @@ Description :
 	// Detect Session Scope
 	sessionScopeExists = true;
 	try { structKeyExists(session ,'x'); } catch (any e) { sessionScopeExists = false; }
+	try{
+		thisInetHost = createObject("java", "java.net.InetAddress").getLocalHost().getHostName();
+	} catch( any e ){
+		thisInetHost = "localhost";
+	}
 </cfscript>
 <cfoutput>
 <!--- Param Form Scope --->
@@ -132,7 +137,7 @@ Description :
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles"> Host &amp; Server: </td>
-	   <td >#htmlEditFormat(cgi.http_host)# #controller.getPlugin("JVMUtils").getInetHost()#</td>
+	   <td >#htmlEditFormat(cgi.http_host)# #thisInetHost#</td>
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Query String: </td>

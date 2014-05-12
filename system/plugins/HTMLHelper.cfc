@@ -207,7 +207,7 @@ Description :
 
 			// Check if we have a base URL
 			arguments.href = prepareBaseLink(arguments.noBaseURL,arguments.href);
-			
+
 			//exclusions
 			local.excludes = "noBaseURL";
 			if(structKeyExists(arguments,'rel')){
@@ -215,10 +215,10 @@ Description :
 					local.excludes &= ",type,title,media,charset";
 				}
 			}
-			
+
 			// build link
 			flattenAttributes(arguments,local.excludes,buffer).append('/>');
-			
+
 			//Load it
 			if( arguments.sendToHeader AND len(buffer.toString())){
 				$htmlhead(buffer.toString());
@@ -338,7 +338,7 @@ Description :
 			if( isSimpleValue(arguments.name) ){
 				buffer.append('<meta #arguments.type#="#arguments.name#" content="#arguments.content#" />');
 			}
-			
+
 			if(isArray(arguments.name)){
 				for(x=1; x lte arrayLen(arguments.name); x=x+1 ){
 					if( NOT structKeyExists(arguments.name[x], "type") ){
@@ -347,11 +347,11 @@ Description :
 					if(	arguments.name[x].type eq "equiv" ){
 						arguments.name[x].type = "http-equiv";
 					}
-	
+
 					buffer.append('<meta #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
 				}
 			}
-			
+
 			//Load it
 			if( arguments.sendToHeader AND len(buffer.toString())){
 				$htmlhead(buffer.toString());
@@ -715,7 +715,7 @@ Description :
 			return inputField(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- urlfield --->
 	<cffunction name="urlfield" access="public" returntype="any" output="false" hint="Render out a URL field. Remember that any extra arguments are passed as tag attributes">
 		<cfargument name="name" 		type="string" 	required="false" default="" hint="The name of the field"/>
@@ -734,7 +734,7 @@ Description :
 			return inputField(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- emailField --->
 	<cffunction name="emailField" access="public" returntype="any" output="false" hint="Render out an email field. Remember that any extra arguments are passed as tag attributes">
 		<cfargument name="name" 		type="string" 	required="false" default="" hint="The name of the field"/>
@@ -947,7 +947,6 @@ Description :
 			var nameVal		= "";
 			var x	 		= 1;
 			var qColumns 	= "";
-			var qHelper		= getPlugin("QueryHelper");
 			var thisName	= "";
 			var thisValue	= "";
 
@@ -976,11 +975,11 @@ Description :
 					arguments.column = qColumns[1];
 				}
 				// column for values
-				val 	= qHelper.getColumnArray(arguments.values,arguments.column);
+				val 	= getColumnArray(arguments.values,arguments.column);
 				nameVal = val;
 				// name column values
 				if( len(arguments.nameColumn) ){
-					nameVal = qHelper.getColumnArray(arguments.values,arguments.nameColumn);
+					nameVal = getColumnArray(arguments.values,arguments.nameColumn);
 				}
 			}
 
@@ -994,22 +993,22 @@ Description :
 				if( isStruct( val[x] ) ){
 					// Default
 					thisName = thisValue;
-					 
+
 					// check for value?
 					if( structKeyExists(val[x], "value") ){ thisValue = val[x].value; }
 					if( structKeyExists(val[x], "name") ){ thisName = val[x].name; }
-					
+
 					// Check if we have a column to use for the default value
 					if( structKeyExists( val[x], arguments.column ) ){ thisValue = val[x][column]; }
-					
+
 					// Do we have name column
 					if( len( arguments.nameColumn ) ){
-						if( structKeyExists( val[x], arguments.nameColumn ) ){ thisName = val[x][nameColumn]; }	
+						if( structKeyExists( val[x], arguments.nameColumn ) ){ thisName = val[x][nameColumn]; }
 					}
 					else{
 						if( structKeyExists( val[x], arguments.column ) ){ thisName = val[x][column]; }
 					}
-					
+
 				}
 
 				// create option
@@ -1238,7 +1237,7 @@ Description :
 						if( structKeyExists(arguments.manytomany, prop.name) ){
 							if( structKeyExists(arguments.manytomany[prop.name],"valueColumn") ){ loc.column = arguments.manytomany[prop.name].valueColumn; }
 							else{
-								throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory", 
+								throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory",
 									   detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}",
 									   type="EntityFieldsInvalidRelationData");
 							}
@@ -1250,10 +1249,10 @@ Description :
 							if( structKeyExists(arguments.manytomany[prop.name],"sortorder") ){ loc.sortorder = arguments.manytomany[prop.name].sortorder; }
 							if( structKeyExists(arguments.manytomany[prop.name],"selectColumn") ){ loc.selectColumn = arguments.manytomany[prop.name].selectColumn; }
 						}
-						else{ 
-							throw(message="There is no many to many information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one", 
+						else{
+							throw(message="There is no many to many information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one",
 								  detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}",
-								  type="EntityFieldsInvalidRelationData"); 
+								  type="EntityFieldsInvalidRelationData");
 						}
 
 						// values should be an array of objects, so let's convert them
@@ -1270,7 +1269,7 @@ Description :
 						// generation args
 						args = {
 							name=prop.name, options=entityLoad( prop.cfc, loc.criteria, loc.sortorder ), column=loc.column, nameColumn=loc.nameColumn,
-							multiple=true, label=prop.name, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass, wrapper=arguments.fieldwrapper, 
+							multiple=true, label=prop.name, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass, wrapper=arguments.fieldwrapper,
 							groupWrapper=arguments.groupWrapper, selectedValue=arrayToList( loc.values )
 						};
 						structAppend(args,arguments);
@@ -1358,20 +1357,20 @@ Description :
 						if( structKeyExists(arguments.manytoone, prop.name) ){
 							// Verify the valueColumn which is mandatory
 							if( structKeyExists(arguments.manytoone[prop.name],"valueColumn") ){ loc.column = arguments.manytoone[prop.name].valueColumn; }
-							else{ 
-								throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory", 
+							else{
+								throw(message="The 'valueColumn' property is missing from the '#prop.name#' relationship data, which is mandatory",
 									   detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}",
-									   type="EntityFieldsInvalidRelationData"); 
+									   type="EntityFieldsInvalidRelationData");
 							}
 							if( structKeyExists(arguments.manytoone[prop.name],"nameColumn") ){ loc.nameColumn = arguments.manytoone[prop.name].nameColumn; }
 							else { loc.nameColumn = arguments.manytoone[prop.name].valueColumn; }
 							if( structKeyExists(arguments.manytoone[prop.name],"criteria") ){ loc.criteria = arguments.manytoone[prop.name].criteria; }
 							if( structKeyExists(arguments.manytoone[prop.name],"sortorder") ){ loc.sortorder = arguments.manytoone[prop.name].sortorder; }
 						}
-						else{ 
-							throw(message="There is no many to one information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one", 
+						else{
+							throw(message="There is no many to one information for the '#prop.name#' relationship in the entityFields() arguments.  Please make sure you create one",
 								  detail="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}",
-								  type="EntityFieldsInvalidRelationData"); 
+								  type="EntityFieldsInvalidRelationData");
 						}
 						// generation args
 						args = {
@@ -1400,7 +1399,7 @@ Description :
 							}
 							else{
 								args = {
-									name=prop.name, value="true", label="True", bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass, 
+									name=prop.name, value="true", label="True", bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass,
 									groupWrapper=arguments.groupWrapper, wrapper=arguments.fieldWrapper
 								};
 								structAppend(args,arguments);
@@ -1413,7 +1412,7 @@ Description :
 						}
 						// text args
 						args = {
-							name=prop.name, label=prop.name, bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass, 
+							name=prop.name, label=prop.name, bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelClass=arguments.labelClass,
 							wrapper=arguments.fieldwrapper, groupWrapper=arguments.groupWrapper
 						};
 						structAppend(args,arguments);
@@ -1435,7 +1434,7 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
+
 	<!--- arrayToTable --->
 	<cffunction name="arrayToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array">
 		<cfargument name="data" 		type="any"			 required="true"	hint="The array to convert into a table"/>
@@ -1473,7 +1472,7 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- queryToTable --->
 	<cffunction name="queryToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array of structures">
 		<cfargument name="data" 		type="any"			 required="true"	hint="The query to convert into a table"/>
@@ -1509,7 +1508,7 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- toHTMLList --->
 	<cffunction name="toHTMLList" output="false" access="private" returntype="any" hint="Convert a sent in tag type to an HTML list">
 		<cfargument name="tag"	 		type="string" required="true" hint="The list tag type"/>
@@ -1548,7 +1547,7 @@ Description :
 			return str.toString();
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- bindValue --->
 	<cffunction name="bindValue" output="false" access="private" returntype="any" hint="Bind entity values">
 		<cfargument name="args">
@@ -1579,7 +1578,7 @@ Description :
 				if( structKeyExists( arguments.args, "type" ) AND listFindNoCase( "radio,checkbox", arguments.args.type ) ){
 					// is incoming value eq to property value with boolean aspects
 					if( structKeyExists( arguments.args, "value" ) and
-					    isBoolean( arguments.args.value ) and 
+					    isBoolean( arguments.args.value ) and
 					    yesNoFormat( arguments.args.value ) EQ yesNoFormat( entityValue ) ){
 						arguments.args.checked = true;
 					}
@@ -1695,19 +1694,19 @@ Description :
 				}
 
 			}
-			
+
 			return arguments.buffer;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- onMissingMethod --->
     <cffunction name="onMissingMethod" output="false" access="public" returntype="any" hint="Proxy calls to provided element">
     	<cfargument	name="missingMethodName"		required="true"	hint="missing method name"	/>
 		<cfargument	name="missingMethodArguments" 	required="true"	hint="missing method arguments"/>
-    	
+
     	<!---Incorporate tag to args --->
     	<cfset missingMethodArguments.tag = arguments.missingMethodName>
-		
+
 		<!--- Do Content --->
 		<cfif structKeyExists(arguments.missingMethodArguments, 1)>
 			<cfset arguments.missingMethodArguments.content = arguments.missingMethodArguments.1>
@@ -1716,7 +1715,23 @@ Description :
 
 		<!--- Execute Tag --->
     	<cfreturn tag( argumentCollection=arguments.missingMethodArguments )>
-		
+
+    </cffunction>
+
+    <cffunction name="getColumnArray" access="private" returntype="any" output="false" hint="Returns an array of the values">
+        <cfargument name="qry"			type="query"	required="true" hint="cf query" />
+        <cfargument name="columnName"	type="string"	required="true" hint="column name" />
+        <cfscript>
+            var arValues = [];
+
+            if( arguments.qry.recordcount ){
+                for( var i = 1; i LTE arguments.qry.recordcount; i++){
+                    ArrayAppend( arValues, arguments.qry[ arguments.columnName ][ i ] );
+                }
+            }
+
+            return arValues;
+        </cfscript>
     </cffunction>
 
 </cfcomponent>
