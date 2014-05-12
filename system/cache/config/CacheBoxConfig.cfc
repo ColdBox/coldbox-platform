@@ -37,24 +37,18 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="CacheBoxConfig" hint="Constructor">
-		<cfargument name="XMLConfig" 		type="string"   required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
 		<cfargument name="CFCConfig" 		type="any" 		required="false" hint="The cacheBox Data Configuration CFC"/>
 		<cfargument name="CFCConfigPath" 	type="string" 	required="false" hint="The cacheBox Data Configuration CFC path to use"/>
 		<cfscript>
 			var cacheBoxDSL = "";
 			
-			// Test and load via XML
-			if( len(trim(arguments.XMLConfig)) ){
-				parseAndLoad(xmlParse(arguments.XMLConfig));
-			}
-			
 			// Test and load via Data CFC Path
-			if( structKeyExists(arguments, "CFCConfigPath") ){
-				arguments.CFCConfig = createObject("component",arguments.CFCConfigPath);
+			if( structKeyExists( arguments, "CFCConfigPath" ) ){
+				arguments.CFCConfig = createObject( "component", arguments.CFCConfigPath );
 			}
 			
 			// Test and load via Data CFC
-			if( structKeyExists(arguments,"CFCConfig") and isObject(arguments.CFCConfig) ){
+			if( structKeyExists( arguments, "CFCConfig" ) and isObject( arguments.CFCConfig ) ){
 				// Decorate our data CFC
 				arguments.CFCConfig.getPropertyMixin = utility.getMixerUtil().getPropertyMixin;
 				// Execute the configuration
@@ -285,65 +279,6 @@ Description :
 	<!--- getListeners --->
 	<cffunction name="getListeners" output="false" access="public" returntype="array" hint="Get the configured listeners">
 		<cfreturn instance.listeners>
-	</cffunction>
-	
-	<!--- parseAndLoad --->
-	<cffunction name="parseAndLoad" output="false" access="public" returntype="void" hint="Parse and load a config xml object">
-		<cfargument name="xmlDoc" type="any" required="true" hint="The xml document object to use for parsing."/>
-		<cfscript>
-			var xml 		 = arguments.xmlDoc;
-			var logBoxXML	 = xmlSearch(xml,"//LogBoxConfig");
-			var scopeXML	 = xmlSearch(xml,"//ScopeRegistration");
-			var defaultXML	 = xmlSearch(xml,"//DefaultConfiguration");
-			var cachesXML	 = xmlSearch(xml,"//CacheBox/Cache");
-			var listenersXML = xmlSearch(xml,"//Listener");
-			var args = structnew();
-			var x =1;
-			var y =1;
-			
-			// Default Cache Config Check
-			if( NOT arrayLen(defaultXML) ){
-				utility.throwIt(message="The defaultcache configuration cannot be found and it is mandatory",type="CacheBoxConfig.DefaultCacheConfigurationNotFound");
-			}
-			// Register Default Cache
-			defaultCache(argumentCollection=defaultXML[1].XMLAttributes);
-			
-			// Register LogBox Configuration
-			logBoxConfig( variables.DEFAULTS.logBoxConfig );
-			if( arrayLen(logBoxXML) ){
-				logBoxConfig( trim(logBoxXML[1].XMLText) );
-			}
-			
-			// Register ScopeRegistrations
-			if( arrayLen(scopeXML) ){
-				scopeRegistration(argumentCollection=scopeXML[1].XMLAttributes);
-			}
-			
-			// Register Caches
-			for(x=1; x lte arrayLen( cachesXML ); x++){
-				// Add arguments
-				args = {};
-				structAppend(args,cachesXML[x].XMLAttributes);
-				// Check if properties exist
-				if( structKeyExists(cachesXML[x],"Properties") ){
-					args.properties = cachesXML[x].properties.XMLAttributes;
-				}
-				cache(argumentCollection=args);
-			}
-			
-			// Register listeners
-			for(x=1; x lte arrayLen( listenersXML ); x++){
-				// Add arguments
-				args = {};
-				structAppend(args,listenersXML[x].XMLAttributes);
-				
-				// Check if properties exist
-				if( structKeyExists(listenersXML[x],"Properties") ){
-					args.properties = listenersXML[x].properties.XMLAttributes;
-				}
-				listener(argumentCollection=args);
-			}		
-		</cfscript>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
