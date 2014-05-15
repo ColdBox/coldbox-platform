@@ -347,7 +347,7 @@ TODO: update dsl consistency, so it is faster.
 					}
 					
 					// If no custom DSL's found, let's try to use the name as the empty namespace
-					if( NOT find( ":", arguments.definition.dsl ) ){
+					else if( NOT find( ":", arguments.definition.dsl ) ){
 						arguments.definition.dsl = "id:#arguments.definition.dsl#";
 						refLocal.dependency = getModelDSL(argumentCollection=arguments);
 					}
