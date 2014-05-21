@@ -281,8 +281,14 @@ Description :
 
 		<!--- Loop and Register --->
 		<cfloop query="qObjects">
+
+			<!--- Skip hidden dirs (like .Appledouble) --->
+ 			<cfif left( qObjects.name ,1 ) eq ".">
+ 				<cfcontinue />
+ 			</cfif>
+
 			<!--- Remove .cfc and /\ with . notation--->
-			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase(qObjects.name,".cfc","") ,"(/|\\)",".","all")>
+			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase( qObjects.name, ".cfc", ""), "(/|\\)", ".", "all")>
 
 			<!--- Include/Exclude --->
 			<cfif ( len( arguments.include ) AND reFindNoCase( arguments.include, thisTargetPath ) )
