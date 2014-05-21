@@ -16,8 +16,8 @@ ColdBox Default Configuration
 	this.author			= "Ortus Solutions";
 	this.authorEmail 	= "coldbox@ortussolutions.com";
 	this.authorWebsite	= "http://www.ortussolutions.com";
-	this.suffix			= "1 John 5:12-13";
-	this.version		= "3.8.1.@build.number@";
+	this.suffix			= "Gideon";
+	this.version		= "4.0.0.@build.number@";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
 	// Operation Defaults
