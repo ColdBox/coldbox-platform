@@ -48,7 +48,19 @@
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}"/>
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
-		<chmod file="${dir.build}/**" perm="e+wrs" type="both" />
+		<chmod file="${dir.build}/**" perm="o+wrs" type="both" />
+		
+		<if>
+			<equals arg1="${environment}" arg2="auto" />
+			<then>
+				<chown owner="stg-ortus">
+					<fileset dir="${dir.build}" />
+				</chown>
+			</then>
+			<else>
+			</else>
+		</if>
+
 	</target>
 	
 	<!-- Build test reports -->
