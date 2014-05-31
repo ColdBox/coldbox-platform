@@ -48,6 +48,7 @@
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}"/>
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+		<chmod file="${dir.build}/**" perm="e+wrs" type="both" />
 	</target>
 	
 	<!-- Build test reports -->
