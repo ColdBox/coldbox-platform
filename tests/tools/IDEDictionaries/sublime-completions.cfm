@@ -14,7 +14,7 @@
 */
 function arrayOfStructsSort(aOfS,key){
         //by default we'll use an ascending sort
-        var sortOrder = "asc";        
+        var sortOrder = "asc";
         //by default, we'll use a textnocase sort
         var sortType = "textnocase";
         //by default, use ascii character 30 as the delim
@@ -61,7 +61,6 @@ out.append('{
 functions = {
 	"FrameworkSuperType" = "coldbox.system.FrameworkSuperType",
 	"EventHandler" = "coldbox.system.EventHandler",
-	"Plugin" = "coldbox.system.Plugin",
 	"Interceptor" = "coldbox.system.Interceptor",
 	"BaseSpec" = "testbox.system.BaseSpec"
 };
@@ -70,9 +69,9 @@ ignoreMethods = "init,configure";
 
 fncIdx = 1;
 for( key in functions ){
-	
+
 	md = getComponentMetaData( functions[key] );
-	
+
 	out.append('#tab#// Functions for: #md.name# #br#');
 
 	sortedFunctions = arrayOfStructsSort( md.functions, "name" );
@@ -83,15 +82,15 @@ for( key in functions ){
 
 		// ignoreMethods
 		if( listFindNoCase(ignoreMethods, sortedFunctions[x].name) ){ continue; }
-		
+
 		out.append('#tab#{ "trigger": "#sortedFunctions[x].name#\tfn. (ColdBox #key#)", "contents": "#sortedFunctions[x].name#(');
-		
+
 		// Parameters
 		for( y=1; y lte arrayLen( sortedFunctions[x].parameters ); y++){
 			if(NOT structKeyExists(sortedFunctions[x].parameters[y],"required") ){	sortedFunctions[x].parameters[y].required = false;	}
 			if(NOT structKeyExists(sortedFunctions[x].parameters[y],"hint") ){	sortedFunctions[x].parameters[y].hint = "";	}
 			if(NOT structKeyExists(sortedFunctions[x].parameters[y],"type") ){	sortedFunctions[x].parameters[y].type = "any";	}
-			
+
 
 			out.append( ' #sortedFunctions[x].parameters[y].name#=' );
 
@@ -115,7 +114,7 @@ for( key in functions ){
 				out.append(',');
 			}
 			else{
-				out.append(' ');	
+				out.append(' ');
 			}
 
 			/**out.append('<parameter name="#md.functions[x].parameters[y].name#" required="#md.functions[x].parameters[y].required#" type="#md.functions[x].parameters[y].type#">
@@ -123,14 +122,14 @@ for( key in functions ){
 			</parameter>
 			');**/
 		}
-		
+
 		out.append(')" }');
 
 		if( x lt arrayLen( sortedFunctions ) OR fncIdx lt structCount( functions ) ){
 			out.append(',#br#');
 		}
 		else{
-			out.append(',#br#');	
+			out.append(',#br#');
 		}
 	}
 
@@ -153,7 +152,7 @@ scopes = {
 };
 fncIdx = 1;
 for( key in scopes ){
-	
+
 	md = getComponentMetaData( scopes[key] );
 	out.append('#tab#// Functions for Scope: #key# #br#');
 	sortedFunctions = arrayOfStructsSort( md.functions, "name" );
@@ -164,15 +163,15 @@ for( key in scopes ){
 
 		// ignoreMethods
 		if( listFindNoCase(ignoreMethods, sortedFunctions[x].name) ){ continue; }
-		
+
 		out.append('#tab#{ "trigger": "#key#.#sortedFunctions[x].name#\tfn. (ColdBox #key#)", "contents": "#sortedFunctions[x].name#(');
-		
+
 		// Parameters
 		for( y=1; y lte arrayLen( sortedFunctions[x].parameters ); y++){
 			if(NOT structKeyExists(sortedFunctions[x].parameters[y],"required") ){	sortedFunctions[x].parameters[y].required = false;	}
 			if(NOT structKeyExists(sortedFunctions[x].parameters[y],"hint") ){	sortedFunctions[x].parameters[y].hint = "";	}
 			if(NOT structKeyExists(sortedFunctions[x].parameters[y],"type") ){	sortedFunctions[x].parameters[y].type = "any";	}
-			
+
 
 			out.append( ' #sortedFunctions[x].parameters[y].name#=' );
 
@@ -196,7 +195,7 @@ for( key in scopes ){
 				out.append(',');
 			}
 			else{
-				out.append(' ');	
+				out.append(' ');
 			}
 
 			/**out.append('<parameter name="#md.functions[x].parameters[y].name#" required="#md.functions[x].parameters[y].required#" type="#md.functions[x].parameters[y].type#">
@@ -204,14 +203,14 @@ for( key in scopes ){
 			</parameter>
 			');**/
 		}
-		
+
 		out.append(')" }');
 
 		if( x lt arrayLen( sortedFunctions ) OR fncIdx lt structCount( scopes ) ){
 			out.append(',#br#');
 		}
 		else{
-			out.append('#br#');	
+			out.append('#br#');
 		}
 	}
 
@@ -226,7 +225,7 @@ out.append('    ]
 ');
 
 
-fileWrite(expandPath('/coldbox/testing/tools/IDEDictionaries/ColdBox.sublime-completions'), out.toString());
+fileWrite(expandPath('/coldbox/tests/tools/IDEDictionaries/ColdBox.sublime-completions'), out.toString());
 </cfscript>
 
 <textarea rows="30" cols="160">

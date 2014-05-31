@@ -69,71 +69,7 @@
 	<function name="getBufferString" returns="any">
 			<help><![CDATA[ Get the string representation of the buffer (Context: Interceptor) ]]></help>
 		</function>
-<!-- Functions for: coldbox.system.Plugin -->
-	<function name="getPluginDescription" returns="string">
-			<help><![CDATA[ Get the instance's pluginDescription (Context: Plugin) ]]></help>
-		</function>
-	<function name="getpluginPath" returns="string">
-			<help><![CDATA[ Get the instance's pluginPath (Context: Plugin) ]]></help>
-		</function>
-	<function name="setPluginVersion" returns="string">
-			<help><![CDATA[ Set the instance's pluginVersion (Context: Plugin) ]]></help>
-		<parameter name="pluginVersion" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="setPluginDescription" returns="string">
-			<help><![CDATA[ Set the instance's pluginDescription (Context: Plugin) ]]></help>
-		<parameter name="pluginDescription" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="getPluginName" returns="string">
-			<help><![CDATA[ Get the instance's pluginName (Context: Plugin) ]]></help>
-		</function>
-	<function name="getRequestContext" returns="any">
-			<help><![CDATA[ Retrieve the request context object (Context: Plugin) ]]></help>
-		</function>
-	<function name="getpluginAuthor" returns="string">
-			<help><![CDATA[ Get the instance's pluginAuthor (Context: Plugin) ]]></help>
-		</function>
-	<function name="getPluginVersion" returns="string">
-			<help><![CDATA[ Get the instance's pluginVersion (Context: Plugin) ]]></help>
-		</function>
-	<function name="setPluginName" returns="string">
-			<help><![CDATA[ Set the instance's pluginName (Context: Plugin) ]]></help>
-		<parameter name="pluginName" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="getRequestCollection" returns="any">
-			<help><![CDATA[ Get a reference to the request collection (Context: Plugin) ]]></help>
-		<parameter name="private" required="false" type="boolean">
-				<help><![CDATA[ Get the request collection or private request collection ]]></help>
-			</parameter>
-			</function>
-	<function name="setpluginAuthor" returns="void">
-			<help><![CDATA[ Set the instance's pluginAuthor (Context: Plugin) ]]></help>
-		<parameter name="pluginAuthor" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="setpluginAuthorURL" returns="void">
-			<help><![CDATA[ Set the instance's pluginAuthorURL (Context: Plugin) ]]></help>
-		<parameter name="pluginAuthorURL" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="init" returns="any">
-			<help><![CDATA[ The plugin constructor. (Context: Plugin) ]]></help>
-		<parameter name="controller" required="true" type="any">
-				<help><![CDATA[ coldbox.system.web.Controller ]]></help>
-			</parameter>
-			</function>
-	<function name="getpluginAuthorURL" returns="string">
-			<help><![CDATA[ Get the instance's pluginAuthorURL (Context: Plugin) ]]></help>
-		</function>
-<!-- Functions for: coldbox.system.EventHandler -->
+<!-- Functions for: EventHandler -->
 	<function name="_privateInvoker" returns="any">
 			<help><![CDATA[ calls private/packaged/public methods. Used internally by coldbox to execute private events (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
@@ -156,111 +92,6 @@
 			</parameter>
 			</function>
 <!-- Functions for: coldbox.system.FrameworkSupertype -->
-	<function name="loadGlobalUDFLibraries" returns="any">
-			<help><![CDATA[ Load the global UDF libraries defined in the UDFLibraryFile Setting (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="$rethrow" returns="void">
-			<help><![CDATA[ Rethrow facade (Context: FrameworkSupertype) ]]></help>
-		<parameter name="throwObject" required="true" type="any">
-				<help><![CDATA[ The cfcatch object ]]></help>
-			</parameter>
-			</function>
-	<function name="getInterceptor" returns="any">
-			<help><![CDATA[ Get an interceptor (Context: FrameworkSupertype) ]]></help>
-		<parameter name="interceptorName" required="false" type="any">
-				<help><![CDATA[ The name of the interceptor to search for ]]></help>
-			</parameter>
-			<parameter name="deepSearch" required="false" type="any">
-				<help><![CDATA[ By default we search the cache for the interceptor reference. If true, we search all the registered interceptor states for a match. ]]></help>
-			</parameter>
-			</function>
-	<function name="relocate" returns="void">
-			<help><![CDATA[ This method will be deprecated, please use setNextEvent() instead. (Context: FrameworkSupertype) ]]></help>
-		<parameter name="url" required="true" type="string">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="addtoken" required="false" type="boolean">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="postProcessExempt" required="false" type="boolean">
-				<help><![CDATA[ Do not fire the postProcess interceptors ]]></help>
-			</parameter>
-			</function>
-	<function name="getModuleSettings" returns="any">
-			<help><![CDATA[ Get a module's setting structure if it exists (Context: FrameworkSupertype) ]]></help>
-		<parameter name="module" required="true" type="any">
-				<help><![CDATA[ The module name ]]></help>
-			</parameter>
-			</function>
-	<function name="getColdboxOCM" returns="any">
-			<help><![CDATA[ Get a CacheBox Cache of type: coldbox.system.cache.IColdboxApplicationCache (Context: FrameworkSupertype) ]]></help>
-		<parameter name="cacheName" required="false" type="any">
-				<help><![CDATA[ The cache name to retrieve ]]></help>
-			</parameter>
-			</function>
-	<function name="$abort" returns="void">
-			<help><![CDATA[ Facade for cfabort (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="setfwLocale" returns="any">
-			<help><![CDATA[ Set the default locale to use in the framework for a specific user. Utility Method (Context: FrameworkSupertype) ]]></help>
-		<parameter name="locale" required="false" type="any">
-				<help><![CDATA[ The locale to change and set. Must be Java Style: en_US ]]></help>
-			</parameter>
-			<parameter name="dontloadRBFlag" required="false" type="any">
-				<help><![CDATA[ Flag to load the resource bundle for the specified locale (If not already loaded) or just change the framework's locale. Boolean ]]></help>
-			</parameter>
-			</function>
-	<function name="getNewMail" returns="any">
-			<help><![CDATA[ Get a new mail payload object ready for sending email through our mail service.  This function's arguments match the cfmail tag, so send whatever you like (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="getDatasource" returns="any">
-			<help><![CDATA[ I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct (Context: FrameworkSupertype) ]]></help>
-		<parameter name="alias" required="false" type="any">
-				<help><![CDATA[ The alias of the datasource to get from the configstruct (alias property in the config file) ]]></help>
-			</parameter>
-			</function>
-	<function name="getController" returns="any">
-			<help><![CDATA[ Get controller: coldbox.system.web.Controller (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="getMailService" returns="any">
-			<help><![CDATA[ Get a reference to our Mail Service plugin (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="$dump" returns="void">
-			<help><![CDATA[ Facade for cfmx dump (Context: FrameworkSupertype) ]]></help>
-		<parameter name="var" required="yes" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="isAbort" required="false" type="boolean">
-				<help><![CDATA[ Abort also ]]></help>
-			</parameter>
-			</function>
-	<function name="getModel" returns="any">
-			<help><![CDATA[ Create or retrieve model objects by convention (Context: FrameworkSupertype) ]]></help>
-		<parameter name="name" required="false" type="any">
-				<help><![CDATA[ The mapping name or CFC instance path to try to build up ]]></help>
-			</parameter>
-			<parameter name="dsl" required="false" type="any">
-				<help><![CDATA[ The dsl string to use to retrieve the instance model object, mutually exclusive with 'name' ]]></help>
-			</parameter>
-			<parameter name="initArguments" required="false" type="any">
-				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance ]]></help>
-			</parameter>
-			</function>
-	<function name="renderLayout" returns="any">
-			<help><![CDATA[ Renders a layout with view combinations (Context: FrameworkSupertype) ]]></help>
-		<parameter name="layout" required="false" type="any">
-				<help><![CDATA[ The explicit layout to use in rendering. ]]></help>
-			</parameter>
-			<parameter name="view" required="false" type="any">
-				<help><![CDATA[ The name of the view to passthrough as an argument so you can refer to it as arguments.view ]]></help>
-			</parameter>
-			<parameter name="module" required="false" type="any">
-				<help><![CDATA[ Explicitly render a layout from this module ]]></help>
-			</parameter>
-			<parameter name="args" required="false" type="struct">
-				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
-			</parameter>
-			</function>
 	<function name="renderView" returns="Any">
 			<help><![CDATA[ Renders all kinds of views (Context: FrameworkSupertype) ]]></help>
 		<parameter name="view" required="true" type="any">
@@ -291,32 +122,77 @@
 				<help><![CDATA[ The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention ]]></help>
 			</parameter>
 			</function>
-	<function name="locateFilePath" returns="string">
-			<help><![CDATA[ Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSupertype) ]]></help>
-		<parameter name="pathToCheck" required="true" type="any">
-				<help><![CDATA[ The path to check ]]></help>
+	<function name="getMyPlugin" returns="any">
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+		<parameter name="plugin" required="true" type="any">
+				<help><![CDATA[ The plugin name as a string ]]></help>
+			</parameter>
+			<parameter name="newInstance" required="false" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			<parameter name="module" required="false" type="any">
+				<help><![CDATA[ The module to retrieve the plugin from ]]></help>
+			</parameter>
+			<parameter name="init" required="false" type="any">
+				<help><![CDATA[ Auto init() the plugin upon construction ]]></help>
 			</parameter>
 			</function>
-	<function name="$include" returns="void">
-			<help><![CDATA[ Facade for cfinclude (Context: FrameworkSupertype) ]]></help>
-		<parameter name="template" required="false" type="string">
+	<function name="getColdboxOCM" returns="any">
+			<help><![CDATA[ Get a CacheBox Cache of type: coldbox.system.cache.IColdboxApplicationCache (Context: FrameworkSupertype) ]]></help>
+		<parameter name="cacheName" required="false" type="any">
+				<help><![CDATA[ The cache name to retrieve ]]></help>
+			</parameter>
+			</function>
+	<function name="renderExternalView" returns="Any">
+			<help><![CDATA[ Renders external views (Context: FrameworkSupertype) ]]></help>
+		<parameter name="view" required="true" type="any">
+				<help><![CDATA[ The full path to the view. This can be an expanded path or relative. Include extension. ]]></help>
+			</parameter>
+			<parameter name="cache" required="false" type="any">
+				<help><![CDATA[ True if you want to cache the view. ]]></help>
+			</parameter>
+			<parameter name="cacheTimeout" required="false" type="any">
+				<help><![CDATA[ The cache timeout ]]></help>
+			</parameter>
+			<parameter name="cacheLastAccessTimeout" required="false" type="any">
+				<help><![CDATA[ The last access timeout ]]></help>
+			</parameter>
+			<parameter name="cacheSuffix" required="false" type="any">
+				<help><![CDATA[ Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching. ]]></help>
+			</parameter>
+			<parameter name="args" required="false" type="struct">
+				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
+			</parameter>
+			</function>
+	<function name="getSettingStructure" returns="struct">
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+		<parameter name="FWSetting" required="false" type="boolean">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			<parameter name="DeepCopyFlag" required="false" type="boolean">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
-	<function name="getSetting" returns="any">
+	<function name="includeUDF" returns="void">
+			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally. (Context: FrameworkSupertype) ]]></help>
+		<parameter name="udflibrary" required="true" type="any">
+				<help><![CDATA[ The UDF library to inject. ]]></help>
+			</parameter>
+			</function>
+	<function name="getController" returns="any">
+			<help><![CDATA[ Get controller: coldbox.system.web.Controller (Context: FrameworkSupertype) ]]></help>
+		</function>
+	<function name="setSetting" returns="void">
 			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
 		<parameter name="name" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
-			<parameter name="FWSetting" required="false" type="boolean">
+			<parameter name="value" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
-			<parameter name="defaultValue" required="false" type="any">
-				<help><![CDATA[ Default value to return if not found. ]]></help>
-			</parameter>
 			</function>
-	<function name="getDebugMode" returns="boolean">
-			<help><![CDATA[ Facade to get your current debug mode (Context: FrameworkSupertype) ]]></help>
+	<function name="getMemento" returns="any">
+			<help><![CDATA[ Get the memento of this object (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="getPlugin" returns="any">
 			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
@@ -336,46 +212,64 @@
 				<help><![CDATA[ Auto init() the plugin upon construction ]]></help>
 			</parameter>
 			</function>
-	<function name="settingExists" returns="boolean">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
-		<parameter name="name" required="true" type="any">
-				<help><![CDATA[  ]]></help>
+	<function name="getInterceptor" returns="any">
+			<help><![CDATA[ Get an interceptor (Context: FrameworkSupertype) ]]></help>
+		<parameter name="interceptorName" required="false" type="any">
+				<help><![CDATA[ The name of the interceptor to search for ]]></help>
 			</parameter>
-			<parameter name="FWSetting" required="false" type="boolean">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="getValidationManager" returns="coldbox.system.validation.IValidationManager">
-			<help><![CDATA[ Retrieve the application's configured Validation Manager (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="getSettingStructure" returns="struct">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
-		<parameter name="FWSetting" required="false" type="boolean">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="DeepCopyFlag" required="false" type="boolean">
-				<help><![CDATA[  ]]></help>
+			<parameter name="deepSearch" required="false" type="any">
+				<help><![CDATA[ By default we search the cache for the interceptor reference. If true, we search all the registered interceptor states for a match. ]]></help>
 			</parameter>
 			</function>
-	<function name="getMemento" returns="any">
-			<help><![CDATA[ Get the memento of this object (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="setNextRoute" returns="void">
-			<help><![CDATA[ This method is now deprecated, please use setNextEvent(). This method will be removed later on (Context: FrameworkSupertype) ]]></help>
-		<parameter name="route" required="true" type="string">
-				<help><![CDATA[ The route to relocate to, do not prepend the baseURL or /. ]]></help>
+	<function name="getModel" returns="any">
+			<help><![CDATA[ Create or retrieve model objects by convention (Context: FrameworkSupertype) ]]></help>
+		<parameter name="name" required="false" type="any">
+				<help><![CDATA[ The mapping name or CFC instance path to try to build up ]]></help>
 			</parameter>
-			<parameter name="persist" required="false" type="string">
-				<help><![CDATA[ What request collection keys to persist in the relocation ]]></help>
+			<parameter name="dsl" required="false" type="any">
+				<help><![CDATA[ The dsl string to use to retrieve the instance model object, mutually exclusive with 'name' ]]></help>
 			</parameter>
-			<parameter name="persistStruct" required="false" type="struct">
-				<help><![CDATA[ A structure key-value pairs to persist. ]]></help>
+			<parameter name="initArguments" required="false" type="any">
+				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance ]]></help>
 			</parameter>
-			<parameter name="addToken" required="false" type="boolean">
-				<help><![CDATA[ Wether to add the tokens or not. Default is false ]]></help>
+			</function>
+	<function name="renderLayout" returns="any">
+			<help><![CDATA[ Renders a layout with view combinations (Context: FrameworkSupertype) ]]></help>
+		<parameter name="layout" required="false" type="any">
+				<help><![CDATA[ The explicit layout to use in rendering. ]]></help>
 			</parameter>
-			<parameter name="ssl" required="false" type="boolean">
-				<help><![CDATA[ Whether to relocate in SSL or not ]]></help>
+			<parameter name="view" required="false" type="any">
+				<help><![CDATA[ The name of the view to passthrough as an argument so you can refer to it as arguments.view ]]></help>
+			</parameter>
+			<parameter name="module" required="false" type="any">
+				<help><![CDATA[ Explicitly render a layout from this module ]]></help>
+			</parameter>
+			<parameter name="args" required="false" type="struct">
+				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
+			</parameter>
+			</function>
+	<function name="getModuleSettings" returns="any">
+			<help><![CDATA[ Get a module's setting structure if it exists (Context: FrameworkSupertype) ]]></help>
+		<parameter name="module" required="true" type="any">
+				<help><![CDATA[ The module name ]]></help>
+			</parameter>
+			</function>
+	<function name="getInstance" returns="any">
+			<help><![CDATA[ Create or retrieve an object from WireBox (Context: FrameworkSupertype) ]]></help>
+		<parameter name="name" required="false" type="any">
+				<help><![CDATA[ The mapping name or CFC instance path to try to build up ]]></help>
+			</parameter>
+			<parameter name="dsl" required="false" type="any">
+				<help><![CDATA[ The dsl string to use to retrieve the instance model object, mutually exclusive with 'name' ]]></help>
+			</parameter>
+			<parameter name="initArguments" required="false" type="any">
+				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance ]]></help>
+			</parameter>
+			</function>
+	<function name="$htmlhead" returns="void">
+			<help><![CDATA[ Facade to cfhtmlhead (Context: FrameworkSupertype) ]]></help>
+		<parameter name="content" required="true" type="string">
+				<help><![CDATA[ The content to send to the head ]]></help>
 			</parameter>
 			</function>
 	<function name="setNextEvent" returns="void">
@@ -414,24 +308,90 @@
 				<help><![CDATA[ The status code to use in the relocation ]]></help>
 			</parameter>
 			</function>
+	<function name="settingExists" returns="boolean">
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+		<parameter name="name" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			<parameter name="FWSetting" required="false" type="boolean">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="announceInterception" returns="any">
+			<help><![CDATA[ Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result. (Context: FrameworkSupertype) ]]></help>
+		<parameter name="state" required="true" type="any">
+				<help><![CDATA[ The interception state to execute ]]></help>
+			</parameter>
+			<parameter name="interceptData" required="false" type="any">
+				<help><![CDATA[ A data structure used to pass intercepted information. ]]></help>
+			</parameter>
+			<parameter name="async" required="false" type="boolean">
+				<help><![CDATA[ If true, the entire interception chain will be ran in a separate thread. ]]></help>
+			</parameter>
+			<parameter name="asyncAll" required="false" type="boolean">
+				<help><![CDATA[ If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end. ]]></help>
+			</parameter>
+			<parameter name="asyncAllJoin" required="false" type="boolean">
+				<help><![CDATA[ If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize. ]]></help>
+			</parameter>
+			<parameter name="asyncPriority" required="false" type="string">
+				<help><![CDATA[ The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL ]]></help>
+			</parameter>
+			<parameter name="asyncJoinTimeout" required="false" type="numeric">
+				<help><![CDATA[ The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout. ]]></help>
+			</parameter>
+			</function>
+	<function name="locateDirectoryPath" returns="string">
+			<help><![CDATA[ Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSupertype) ]]></help>
+		<parameter name="pathToCheck" required="true" type="any">
+				<help><![CDATA[ The path to check ]]></help>
+			</parameter>
+			</function>
+	<function name="locateFilePath" returns="string">
+			<help><![CDATA[ Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSupertype) ]]></help>
+		<parameter name="pathToCheck" required="true" type="any">
+				<help><![CDATA[ The path to check ]]></help>
+			</parameter>
+			</function>
+	<function name="runEvent" returns="any">
+			<help><![CDATA[ Facade to controller's runEvent() method. (Context: FrameworkSupertype) ]]></help>
+		<parameter name="event" required="false" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			<parameter name="prepostExempt" required="false" type="any">
+				<help><![CDATA[ If true, pre/post handlers will not be fired. Boolean ]]></help>
+			</parameter>
+			<parameter name="private" required="false" type="any">
+				<help><![CDATA[ Execute a private event or not, default is false ]]></help>
+			</parameter>
+			<parameter name="default" required="false" type="any">
+				<help><![CDATA[ The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY ]]></help>
+			</parameter>
+			<parameter name="eventArguments" required="false" type="any">
+				<help><![CDATA[ A collection of arguments to passthrough to the calling event handler method. struct ]]></help>
+			</parameter>
+			</function>
 	<function name="addAsset" returns="any">
 			<help><![CDATA[ Add a js/css asset(s) to the html head section. You can also pass in a list of assets. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="asset" required="true" type="any">
 				<help><![CDATA[ The asset to load, only js or css files. This can also be a comma delimmited list. ]]></help>
 			</parameter>
 			</function>
-	<function name="getSettingsBean" returns="coldbox.system.core.collections.ConfigBean">
-			<help><![CDATA[ Returns a configBean with all the configuration structure. (Context: FrameworkSupertype) ]]></help>
-		<parameter name="FWSetting" required="false" type="boolean">
-				<help><![CDATA[ Whether to build the config bean with coldbox settings or config settings ]]></help>
+	<function name="getSetting" returns="any">
+			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
+		<parameter name="name" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			<parameter name="FWSetting" required="false" type="boolean">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			<parameter name="defaultValue" required="false" type="any">
+				<help><![CDATA[ Default value to return if not found. ]]></help>
 			</parameter>
 			</function>
-	<function name="includeUDF" returns="void">
-			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally. (Context: FrameworkSupertype) ]]></help>
-		<parameter name="udflibrary" required="true" type="any">
-				<help><![CDATA[ The UDF library to inject. ]]></help>
-			</parameter>
-			</function>
+	<function name="loadGlobalUDFLibraries" returns="any">
+			<help><![CDATA[ Load the global UDF libraries defined in the UDFLibraryFile Setting (Context: FrameworkSupertype) ]]></help>
+		</function>
 	<function name="populateModel" returns="Any">
 			<help><![CDATA[ Populate a named or instantiated model (java/cfc) from the request collection items (Context: FrameworkSupertype) ]]></help>
 		<parameter name="model" required="true" type="any">
@@ -462,76 +422,10 @@
 				<help><![CDATA[ Automatically attempt to compose relationships from memento ]]></help>
 			</parameter>
 			</function>
-	<function name="validateModel" returns="coldbox.system.validation.result.IValidationResult">
-			<help><![CDATA[ Validate a target object (Context: FrameworkSupertype) ]]></help>
-		<parameter name="target" required="true" type="any">
-				<help><![CDATA[ The target object to validate or a structure of name-value paris to validate. ]]></help>
-			</parameter>
-			<parameter name="fields" required="false" type="string">
-				<help><![CDATA[ Validate on all or one or a list of fields (properties) on the target, by default we validate all fields declared in its constraints ]]></help>
-			</parameter>
-			<parameter name="constraints" required="false" type="any">
-				<help><![CDATA[ The shared constraint name to use, or an actual constraints structure ]]></help>
-			</parameter>
-			<parameter name="locale" required="false" type="string">
-				<help><![CDATA[ The locale to validate in ]]></help>
-			</parameter>
-			<parameter name="excludeFields" required="false" type="string">
-				<help><![CDATA[ The fields to exclude in the validation ]]></help>
-			</parameter>
-			</function>
-	<function name="getResource" returns="any">
-			<help><![CDATA[ Facade to i18n.getResource. Returns a string. (Context: FrameworkSupertype) ]]></help>
-		<parameter name="resource" required="true" type="any">
-				<help><![CDATA[ The resource (key) to retrieve from the main loaded bundle. ]]></help>
-			</parameter>
-			<parameter name="default" required="false" type="any">
-				<help><![CDATA[ A default value to send back if the resource (key) not found ]]></help>
-			</parameter>
-			<parameter name="locale" required="false" type="any">
-				<help><![CDATA[ Pass in which locale to take the resource from. By default it uses the user's current set locale ]]></help>
-			</parameter>
-			<parameter name="values" required="false" type="any">
-				<help><![CDATA[ An array, struct or simple string of value replacements to use on the resource string ]]></help>
-			</parameter>
-			<parameter name="bundle" required="false" type="any">
-				<help><![CDATA[ The bundle alias to use to get the resource from when using multiple resource bundles. By default the bundle name used is 'default' ]]></help>
-			</parameter>
-			</function>
-	<function name="$htmlhead" returns="void">
-			<help><![CDATA[ Facade to cfhtmlhead (Context: FrameworkSupertype) ]]></help>
-		<parameter name="content" required="true" type="string">
-				<help><![CDATA[ The content to send to the head ]]></help>
-			</parameter>
-			</function>
-	<function name="announceInterception" returns="any">
-			<help><![CDATA[ Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result. (Context: FrameworkSupertype) ]]></help>
-		<parameter name="state" required="true" type="any">
-				<help><![CDATA[ The interception state to execute ]]></help>
-			</parameter>
-			<parameter name="interceptData" required="false" type="any">
-				<help><![CDATA[ A data structure used to pass intercepted information. ]]></help>
-			</parameter>
-			<parameter name="async" required="false" type="boolean">
-				<help><![CDATA[ If true, the entire interception chain will be ran in a separate thread. ]]></help>
-			</parameter>
-			<parameter name="asyncAll" required="false" type="boolean">
-				<help><![CDATA[ If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end. ]]></help>
-			</parameter>
-			<parameter name="asyncAllJoin" required="false" type="boolean">
-				<help><![CDATA[ If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize. ]]></help>
-			</parameter>
-			<parameter name="asyncPriority" required="false" type="string">
-				<help><![CDATA[ The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL ]]></help>
-			</parameter>
-			<parameter name="asyncJoinTimeout" required="false" type="numeric">
-				<help><![CDATA[ The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout. ]]></help>
-			</parameter>
-			</function>
-	<function name="setDebugMode" returns="void">
-			<help><![CDATA[ Facade to set your debug mode (Context: FrameworkSupertype) ]]></help>
-		<parameter name="mode" required="true" type="boolean">
-				<help><![CDATA[  ]]></help>
+	<function name="getDatasource" returns="any">
+			<help><![CDATA[ I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct (Context: FrameworkSupertype) ]]></help>
+		<parameter name="alias" required="false" type="any">
+				<help><![CDATA[ The alias of the datasource to get from the configstruct (alias property in the config file) ]]></help>
 			</parameter>
 			</function>
 	<function name="persistVariables" returns="void">
@@ -541,93 +435,6 @@
 			</parameter>
 			<parameter name="persistStruct" required="false" type="struct">
 				<help><![CDATA[ A structure key-value pairs to persist. ]]></help>
-			</parameter>
-			</function>
-	<function name="setSetting" returns="void">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
-		<parameter name="name" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="value" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="getfwLocale" returns="any">
-			<help><![CDATA[ Get the user's currently set locale or default locale (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="renderExternalView" returns="Any">
-			<help><![CDATA[ Renders external views (Context: FrameworkSupertype) ]]></help>
-		<parameter name="view" required="true" type="any">
-				<help><![CDATA[ The full path to the view. This can be an expanded path or relative. Include extension. ]]></help>
-			</parameter>
-			<parameter name="cache" required="false" type="any">
-				<help><![CDATA[ True if you want to cache the view. ]]></help>
-			</parameter>
-			<parameter name="cacheTimeout" required="false" type="any">
-				<help><![CDATA[ The cache timeout ]]></help>
-			</parameter>
-			<parameter name="cacheLastAccessTimeout" required="false" type="any">
-				<help><![CDATA[ The last access timeout ]]></help>
-			</parameter>
-			<parameter name="cacheSuffix" required="false" type="any">
-				<help><![CDATA[ Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching. ]]></help>
-			</parameter>
-			<parameter name="args" required="false" type="struct">
-				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
-			</parameter>
-			</function>
-	<function name="getMyPlugin" returns="any">
-			<help><![CDATA[ Facade (Context: FrameworkSupertype) ]]></help>
-		<parameter name="plugin" required="true" type="any">
-				<help><![CDATA[ The plugin name as a string ]]></help>
-			</parameter>
-			<parameter name="newInstance" required="false" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="module" required="false" type="any">
-				<help><![CDATA[ The module to retrieve the plugin from ]]></help>
-			</parameter>
-			<parameter name="init" required="false" type="any">
-				<help><![CDATA[ Auto init() the plugin upon construction ]]></help>
-			</parameter>
-			</function>
-	<function name="$throw" returns="any">
-			<help><![CDATA[ Facade for cfthrow (Context: FrameworkSupertype) ]]></help>
-		<parameter name="message" required="yes" type="string">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="detail" required="no" type="string">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="type" required="no" type="string">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="getMailSettings" returns="any">
-			<help><![CDATA[ I will return to you a mailsettingsBean modeled after your mail settings in your config file. (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="runEvent" returns="any">
-			<help><![CDATA[ Facade to controller's runEvent() method. (Context: FrameworkSupertype) ]]></help>
-		<parameter name="event" required="false" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="prepostExempt" required="false" type="any">
-				<help><![CDATA[ If true, pre/post handlers will not be fired. Boolean ]]></help>
-			</parameter>
-			<parameter name="private" required="false" type="any">
-				<help><![CDATA[ Execute a private event or not, default is false ]]></help>
-			</parameter>
-			<parameter name="default" required="false" type="any">
-				<help><![CDATA[ The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY ]]></help>
-			</parameter>
-			<parameter name="eventArguments" required="false" type="any">
-				<help><![CDATA[ A collection of arguments to passthrough to the calling event handler method. struct ]]></help>
-			</parameter>
-			</function>
-	<function name="locateDirectoryPath" returns="string">
-			<help><![CDATA[ Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path (Context: FrameworkSupertype) ]]></help>
-		<parameter name="pathToCheck" required="true" type="any">
-				<help><![CDATA[ The path to check ]]></help>
 			</parameter>
 			</function>
 	</functions>
@@ -1041,6 +848,9 @@
 	<scopevar name="getFolderLayouts()">
 			<help><![CDATA[Get the registered folder layout associations map]]></help>
 		</scopevar>
+	<scopevar name="throw(message,[detail],[type])">
+			<help><![CDATA[Facade for cfthrow]]></help>
+		</scopevar>
 	<scopevar name="getEventCacheableEntry()">
 			<help><![CDATA[Get the event cacheable entry]]></help>
 		</scopevar>
@@ -1185,9 +995,6 @@
 	<scopevar name="isNoExecution()">
 			<help><![CDATA[Determine if we need to execute an incoming event or not.]]></help>
 		</scopevar>
-	<scopevar name="$throw(message,[detail],[type])">
-			<help><![CDATA[Facade for cfthrow]]></help>
-		</scopevar>
 	<scopevar name="isViewCacheable()">
 			<help><![CDATA[Check wether the incoming view has been flagged for caching]]></help>
 		</scopevar>
@@ -1287,6 +1094,9 @@
 	<scopevar name="getScopeStorage()">
 			<help><![CDATA[Get the scope storage utility]]></help>
 		</scopevar>
+	<scopevar name="registerDSL(namespace,path)">
+			<help><![CDATA[A direct way of registering custom DSL namespaces]]></help>
+		</scopevar>
 	<scopevar name="getBinder()">
 			<help><![CDATA[Get the Injector's configuration binder object]]></help>
 		</scopevar>
@@ -1295,6 +1105,9 @@
 		</scopevar>
 	<scopevar name="configureCacheBox(config)">
 			<help><![CDATA[Configure a standalone version of cacheBox for persistence]]></help>
+		</scopevar>
+	<scopevar name="getBuilder()">
+			<help><![CDATA[Get the Injector's builder object]]></help>
 		</scopevar>
 	<scopevar name="containsInstance(name)">
 			<help><![CDATA[Checks if this injector can locate a model instance or not]]></help>
@@ -1391,9 +1204,6 @@
 		</scopevar>
 	<scopevar name="canFatal()">
 			<help><![CDATA[Can log fatal messages]]></help>
-		</scopevar>
-	<scopevar name="$throw(message,[detail],[type])">
-			<help><![CDATA[Facade for cfthrow]]></help>
 		</scopevar>
 	<scopevar name="logMessage(message,severity,[extraInfo])">
 			<help><![CDATA[Write an entry into the loggers registered with this LogBox instance.]]></help>
@@ -1557,9 +1367,6 @@
 	<scopevar name="getExceptionService()">
 			<help><![CDATA[Get ExceptionService: coldbox.system.web.services.ExceptionService]]></help>
 		</scopevar>
-	<scopevar name="setValidationManager(validationManager)">
-			<help><![CDATA[Store the validation manager for the application]]></help>
-		</scopevar>
 	<scopevar name="getWireBox()">
 			<help><![CDATA[Get the application's LogBox instance]]></help>
 		</scopevar>
@@ -1577,6 +1384,9 @@
 		</scopevar>
 	<scopevar name="getLogBox()">
 			<help><![CDATA[Get the application's LogBox instance]]></help>
+		</scopevar>
+	<scopevar name="locateFilePath(pathToCheck)">
+			<help><![CDATA[Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
 		</scopevar>
 	<scopevar name="getInterceptorService()">
 			<help><![CDATA[Get interceptorService: coldbox.system.web.services.InterceptorService]]></help>
@@ -1602,9 +1412,6 @@
 	<scopevar name="getColdboxSettings()">
 			<help><![CDATA[I retrieve the ColdBox Settings Structure by Reference]]></help>
 		</scopevar>
-	<scopevar name="getDebuggerService()">
-			<help><![CDATA[Get DebuggerService: coldbox.system.web.services.DebuggerService]]></help>
-		</scopevar>
 	<scopevar name="getCacheBox()">
 			<help><![CDATA[Get the application's CacheBox instance as coldbox.system.cache.CacheFactory]]></help>
 		</scopevar>
@@ -1625,9 +1432,6 @@
 		</scopevar>
 	<scopevar name="getAppHash()">
 			<help><![CDATA[Get AppHash]]></help>
-		</scopevar>
-	<scopevar name="getValidationManager()">
-			<help><![CDATA[Get the validation manager for the application]]></help>
 		</scopevar>
 	<scopevar name="setColdboxOCM(coldboxOCM)">
 			<help><![CDATA[Set ColdboxOCM]]></help>
@@ -1659,14 +1463,8 @@
 	<scopevar name="setWireBox(wireBox)">
 			<help><![CDATA[Set the WireBox instance]]></help>
 		</scopevar>
-	<scopevar name="setDebuggerService(debuggerService)">
-			<help><![CDATA[Set DebuggerService]]></help>
-		</scopevar>
 	<scopevar name="getHandlerService()">
 			<help><![CDATA[Get HandlerService: coldbox.system.web.services.HandlerService]]></help>
-		</scopevar>
-	<scopevar name="setAspectsInitiated(aspectsInitiated)">
-			<help><![CDATA[Set AspectsInitiated]]></help>
 		</scopevar>
 	<scopevar name="setAppRootPath(appRootPath)">
 			<help><![CDATA[Set this application's physical path.]]></help>
@@ -1677,14 +1475,8 @@
 	<scopevar name="getConfigSettings()">
 			<help><![CDATA[I retrieve the Config Settings Structure by Reference]]></help>
 		</scopevar>
-	<scopevar name="getAspectsInitiated()">
-			<help><![CDATA[Get AspectsInitiated]]></help>
-		</scopevar>
 	<scopevar name="setSetting([name],[value])">
 			<help><![CDATA[I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct]]></help>
-		</scopevar>
-	<scopevar name="pushTimers()">
-			<help><![CDATA[Push timers into stack]]></help>
 		</scopevar>
 	<scopevar name="setInterceptorService(interceptorService)">
 			<help><![CDATA[Set interceptorService]]></help>
@@ -1703,6 +1495,9 @@
 		</scopevar>
 	<scopevar name="setPluginService(pluginService)">
 			<help><![CDATA[Set PluginService]]></help>
+		</scopevar>
+	<scopevar name="locateDirectoryPath(pathToCheck)">
+			<help><![CDATA[Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
 		</scopevar>
 	<scopevar name="getModuleService()">
 			<help><![CDATA[Get ModuleService: coldbox.system.web.services.ModuleService]]></help>

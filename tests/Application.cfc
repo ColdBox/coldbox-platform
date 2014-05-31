@@ -19,21 +19,6 @@ component{
 	// harness path
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
-	this.datasource = "coolblog";
-	this.ormEnabled = "true";
-
-	this.ormSettings = {
-		cfclocation = [ "/cbtestharness/model" ],
-		logSQL = true,
-		dbcreate = "update",
-		secondarycacheenabled = false,
-		cacheProvider = "ehcache",
-		flushAtRequestEnd = false,
-		eventhandling = true,
-		eventHandler = "coldbox.system.orm.hibernate.WBEventHandler",
-		skipcfcWithError = true
-	};
-
 	function onRequestStart( required targetPage ){
 
 		if( structKeyExists(URL,"reinit") ){

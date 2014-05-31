@@ -2,13 +2,13 @@
 <!-- ====================================================================== 
      ColdBox Platform Build (www.coldbox.org)                                                               
      ====================================================================== -->
-<project name="coldbox-build" default="build" basedir="../../">
-
+<project name="coldbox-build" default="build" basedir="../">
 	<description>
     	Build a new distribution of ColdBox Platform
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="coldbox.version"	value="3.8.1"/>
+	<property name="coldbox.version"	value="4.0.0"/>
+	<property name="coldbox.slug"		value="coldbox"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
@@ -21,32 +21,27 @@
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	
 	<!--External Ant Tasks-->
-	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
+	<property name="ant.compilechecks"  value="ant/ant_compile.xml" />
 	
 	<!-- Init -->
-	<target name="init" description="Init">
-		<input addproperty="doCompile" message="Compile?" defaultvalue="true" validargs="true,false" />
-		<condition property="compile.true">
-			<istrue value="${doCompile}"/>
-		</condition>
-
+	<target name="init" description="Init Build">
 		<!-- Default environment check, if not passed via -Denvironment -->
     	<condition property="environment" value="local">
     		<not><isset property="environment" /></not>
     	</condition>
     	<echo>Loading from environment: ${environment}</echo>
 		<!-- Load env properties -->
-		<loadproperties srcFile="ant/framework/coldbox-${environment}.properties"/>
+		<loadproperties srcFile="ant/coldbox-${environment}.properties"/>
 
 		<!-- Build Number -->
-		<propertyfile file="ant/framework/build.number" comment="Build Number for ANT. Edit not!">
+		<propertyfile file="ant/build.number" comment="Build Number for ANT. Edit not!">
 			<entry key="build.number" 
 					type="int" 
 			     	operation="+"
 					pattern="00000"
 			     	default="1" />
 		</propertyfile>
-		<property file="ant/framework/build.number"/>
+		<property file="ant/build.number"/>
 		<!-- Build Label -->
 		<property name="build.label" value="coldbox-${coldbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Cleanup + Init -->
@@ -55,17 +50,22 @@
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 	</target>
 	
-	<!--Framework Compile Checks -->
-	<target name="compilechecks" description="Compile framework checks." depends="init" if="compile.true">
-		<!--Need Compile Checks First -->
-		<ant antfile="${ant.compilechecks}" target="compile.checks" />		
-	</target>
+	<!-- Build test reports -->
+    <target name="run-tests">
+        <subant target="run-junit">
+          	<fileset dir="tests" includes="automation/test.xml"/>
+    		<property name="environment" value="${environment}" />
+        </subant>
+    </target>
 	
-	<!--BUild-->
-	<target name="build" description="Build a new ColdBox Platform distribution" depends="compilechecks">
+	<!--build-->
+	<target name="build" description="Build a new ColdBox Platform distribution" depends="init">
       	
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		
+		<!-- Create API Docs -->
+		<mkdir dir="${dir.build}/coldbox/apidocs" />
 		
 		<!-- Copy src -->	
       	<copy todir="${dir.build}/coldbox/system">
@@ -73,27 +73,6 @@
         	</fileset>
         </copy>
 
-        <!-- Copy TestBox Runner -->	
-      	<copy todir="${dir.build}/coldbox/test-runner">
-        	<fileset dir="test-runner">
-        	</fileset>
-        </copy>
-
-        <!-- Copy TestBox Browser -->	
-      	<copy todir="${dir.build}/coldbox/test-browser">
-        	<fileset dir="test-browser">
-        	</fileset>
-        </copy>
-		
-		<!-- Samples -->
-		<copy todir="${dir.build}/coldbox/samples">
-			<fileset dir="${dir.samples}">
-				<exclude name="settings.xml" />
-				<exclude name=".project" />
-				<exclude name="ant/*" />
-        	</fileset>
-        </copy>
-		
 		<!-- Install folder -->
 		<copy todir="${dir.build}/coldbox/install">
         	<fileset dir="install">
@@ -107,10 +86,13 @@
         </copy>
 		
 		<!--Copy text files to install folder-->
-		<copy todir="${dir.build}/coldbox/install">
+		<copy todir="${dir.build}/coldbox">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />						
 		</copy>
+		
+		<!-- Copy box.json -->
+		<copy file="box.json" toFile="${dir.build}/box.json" />
 
 		<!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
@@ -121,8 +103,6 @@
 		<!-- Execute IDE Dictionaries -->
 		<get dest="${dir.build}/cfbuilder.html" src="${url.dictionaries}/builderDictionary.cfm" verbose="true"/>
 		<delete file="${dir.build}/cfbuilder.html" />
-		<get dest="${dir.build}/cfeclipse.html" src="${url.dictionaries}/cfeclipseDictionary.cfm" verbose="true"/>
-		<delete file="${dir.build}/cfeclipse.html" />
 		<get dest="${dir.build}/sublime.html" src="${url.dictionaries}/sublime-completions.cfm" verbose="true"/>
 		<delete file="${dir.build}/sublime.html" />
 
@@ -131,33 +111,37 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
+		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/coldbox/apidocs"></zip>
 				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		
-		<!-- Perms for automated builds 
-		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />-->
+		<!-- Perms for automated builds -->
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+		
+		<!-- Bleeding edge, always stored in root of integration server -->
 		<if>
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
-				<move file="${dir.exports}/coldbox_${coldbox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+				<move file="${dir.exports}/coldbox_${coldbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />	
 			</else>
 		</if>
 
 		<!-- Cleanup for StandAlone Build -->
 		<delete dir="${dir.build}/coldbox/ApplicationTemplates"/>
-		<delete dir="${dir.build}/apidocs" />
+		<delete dir="${dir.build}/coldbox/apidocs" />
 		<delete dir="${dir.build}/coldbox/test-runner" />
 		<delete dir="${dir.build}/coldbox/test-browser" />
 		<delete dir="${dir.build}/coldbox/install" />
-		<delete dir="${dir.build}/coldbox/samples" />
-		<copy todir="${dir.build}/">
+		<copy todir="${dir.build}/coldbox">
 			<fileset file="license.txt" />
-			<fileset file="readme.txt" />		
+			<fileset file="readme.txt" />
 		</copy>	
-			
+		<copy todir="${dir.build}">
+			<fileset file="box.json" />
+		</copy>
+		
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 
@@ -166,13 +150,12 @@
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
-				<move file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" tofile="${dir.exports}/${be.name}_standalone.zip" />	
+				<move file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" tofile="${be.exports}/${be.name}_standalone.zip" />	
 			</else>
 		</if>
 		
 		<!-- Cleanup -->
 		<delete dir="${dir.build}" />
-		
     </target>
 	
 	<target name="docs" depends="init" description="Generate docs only">
@@ -188,7 +171,7 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
+		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/coldbox/apidocs"></zip>
 		
 		<!-- Cleanup -->
 		<delete dir="${dir.build}" />
