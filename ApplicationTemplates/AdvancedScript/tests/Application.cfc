@@ -22,7 +22,7 @@ Description :
 	<cfset this.setClientCookies = true>
 
 	<!--- Create testing mapping --->
-	<cfset this.mappings[ "/test" ] = getDirectoryFromPath( getCurrentTemplatePath() )>
+	<cfset this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() )>
 	<!--- Map back to its root --->
 	<cfset rootPath = REReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)", "" )>
 	<cfset this.mappings["/root"]   = rootPath>
