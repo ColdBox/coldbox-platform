@@ -142,8 +142,8 @@
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
-				<move file="${dir.exports}/cachebox_${cachebox.version}.zip" tofile="${be.exports}/${be.name}.zip" />
-				<move file="${dir.exports}/cachebox_${cachebox.version}.zip.md5" tofile="${be.exports}/${be.name}.zip.md5" />
+				<copy file="${dir.exports}/cachebox_${cachebox.version}.zip" tofile="${be.exports}/${be.name}.zip" />
+				<copy file="${dir.exports}/cachebox_${cachebox.version}.zip.md5" tofile="${be.exports}/${be.name}.zip.md5" />
 			</else>
 		</if>
 		
