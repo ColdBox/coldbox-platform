@@ -3,10 +3,14 @@
      CacheBox Standalone Build (www.coldbox.org)                                                          
      ====================================================================== -->
 <project name="cachebox-build" default="build" basedir="../">
-
 	<description>
     	Build a new distribution of CacheBox Standalone
     </description>
+	
+	<!-- UPDATE ON EACH VERSION -->
+	<property name="cachebox.version" value="2.0.0" />
+	<property name="cachebox.slug"	 value="cachebox"/>
+
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->

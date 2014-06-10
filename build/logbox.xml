@@ -6,6 +6,10 @@
 	<description>
     	Build a new distribution of LogBox Standalone
     </description>
+	<!-- UPDATE ON EACH VERSION -->
+	<property name="logbox.version" value="2.0.0" />
+	<property name="logbox.slug"	 value="logbox"/>
+
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->

@@ -6,6 +6,11 @@
 	<description>
     	Build a new distribution of ColdBox Platform
     </description>
+	
+	<!-- UPDATE ON EACH VERSION -->
+	<property name="coldbox.version" value="4.0.0" />
+	<property name="coldbox.slug"	 value="coldbox"/>
+	
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->

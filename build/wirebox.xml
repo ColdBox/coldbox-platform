@@ -7,6 +7,10 @@
     	Build a new distribution of WireBox Standalone
     </description>
 	
+	<!-- UPDATE ON EACH VERSION -->
+	<property name="wirebox.version" value="2.0.0" />
+	<property name="wirebox.slug"	 value="wirebox"/>
+	
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
