@@ -2,18 +2,16 @@
 <!-- ====================================================================== 
      CacheBox Standalone Build (www.coldbox.org)                                                          
      ====================================================================== -->
-<project name="cachebox-build" default="build" basedir="../../">
+<project name="cachebox-build" default="build" basedir="../">
 
 	<description>
     	Build a new distribution of CacheBox Standalone
     </description>
-	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="cachebox.version"	value="1.6.0"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
 	<path id="cp">
-		<fileset dir="ant/lib">
+		<fileset dir="build/lib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -23,35 +21,53 @@
 	<!-- Init -->
 	<target name="init" description="Init">
 		<!-- Default environment check, if not passed via -Denvironment -->
-    	<condition property="environment" value="local">
-    		<not><isset property="environment" /></not>
-    	</condition>
-    	<echo>Loading from environment: ${environment}</echo>
-		<!-- Load env properties -->
-		<loadproperties srcFile="ant/framework/cachebox-${environment}.properties"/>
+		<condition property="environment" value="local">
+			<not><isset property="environment" /></not>
+		</condition>
+		<if>
+			<available file="build/cachebox-${environment}.properties" />
+			<then>
+				<!-- Load env properties -->
+				<echo>Loading properties from environment: ${environment}</echo>
+				<loadproperties srcFile="build/cachebox-${environment}.properties"/>
+			</then>
+		</if>
+		<!-- Load root properties -->
+		<echo>Loading base properties</echo>
+		<loadproperties srcFile="build/cachebox.properties"/>
 
 		<!-- Build Number -->
-		<propertyfile file="ant/framework/build.number" comment="Build Number for ANT. Edit not!">
+		<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
 			<entry key="build.number" 
 					type="int" 
 			     	operation="+"
 					pattern="00000"
 			     	default="1" />
 		</propertyfile>
-		<property file="ant/framework/build.number"/>
+		<property file="build/build.number"/>
 		<!-- Build Label -->
 		<property name="build.label" value="testbox-${cachebox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
-		<mkdir dir="${dir.build}"/>
+		<mkdir dir="${dir.build}/cachebox/apidocs"/>
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+		<!-- If stg, change perms and owners -->
+		<if>
+			<equals arg1="${environment}" arg2="auto" />
+			<then>
+				<chmod file="${dir.build}/**" perm="o+wrs" type="both" verbose="true" />
+				<chown owner="stg-ortus" verbose="true">
+					<fileset dir="${dir.build}" />
+				</chown>
+			</then>
+		</if>
 	</target>
 	
 	<!--build-->
 	<target name="build" description="Build a new CacheBox distribution" depends="init">
 		
 		<!-- Copy build ID -->
-		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		<concat destfile="${dir.build}/cachebox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to cachebox namespace-->	
       	<copy todir="${dir.build}/cachebox/system/cache">
@@ -68,10 +84,13 @@
         </copy>
 		
 		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}/">
+		<copy todir="${dir.build}/cachebox">
 			<fileset file="license.txt" />
 			<fileset file="system/cache/readme.txt" />						
 		</copy>
+		
+		<!--Copy box.json to root -->
+		<copy toFile="${dir.build}/box.json" file="box-cachebox.json" />
 
 		<!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
@@ -102,23 +121,29 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/CacheBoxDocs-${cachebox.version}.zip" basedir="${dir.build}/apidocs"></zip>
-				
+		<zip destfile="${dir.exports}/CacheBoxDocs-${cachebox.version}.zip" basedir="${dir.build}/cachebox/apidocs"></zip>
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/cachebox_${cachebox.version}.zip" basedir="${dir.build}"></zip>
+		<!-- Build Checksum -->
+		<checksum forceoverwrite="true" fileext=".md5">
+			<fileset dir="${dir.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
 
 		<!-- Perms for automated builds -->
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
-
+		<!-- Move BE to root -->
 		<if>
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
-				<move file="${dir.exports}/cachebox_${cachebox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+				<move file="${dir.exports}/cachebox_${cachebox.version}.zip" tofile="${be.exports}/${be.name}.zip" />
+				<move file="${dir.exports}/cachebox_${cachebox.version}.zip.md5" tofile="${be.exports}/${be.name}.zip.md5" />
 			</else>
 		</if>
-
-		<delete dir="${dir.build}" />
 		
+		<!-- Cleanup -->
+		<delete dir="${dir.build}" />
     </target>
 </project>

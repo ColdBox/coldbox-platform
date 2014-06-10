@@ -1,0 +1,32 @@
+{
+	"name" 				: "LogBox Logging Library",
+	"version"			: "2.0.0",
+	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
+	"slug"				: "logbox",
+	"type"				: "logging",
+	"keywords"			: "logging, messaging",
+	"directory"			: "/",
+	"homepage"			: "http://www.coldbox.org",
+	"documentation"		: "http://wiki.coldbox.org/wiki/LogBox.cfm",
+	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
+	"bugs"				: "https://ortussolutions.atlassian.net/browse/LOGBOX",
+	"shortDescription"	: "LogBox is an enterprise ColdFusion logging library designed to give you flexibility and scalability.",
+	"engines"			: [
+		{ "type" : "railo", "version" : ">4.1" },
+		{ "type" : "adobe", "version" : ">9.0.2" }
+	],
+	"license"			: [ 
+		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" } 
+	],
+	"contributors"		: [
+		"Brad Wood <bdw429s@gmail.com>", "Curt Gratz <gratz@computerknowhow.com>"
+	],
+	"ignore"			: [],
+	"testbox"			: {
+		"runner" : [
+			{ "cf10" 	: "http://cf10cboxdev.jfetmac/coldbox/tests/runner.cfm" },
+			{ "cf11" 	: "http://cf11cboxdev.jfetmac/coldbox/tests/runner.cfm" },
+			{ "railo" 	: "http://railocboxdev.jfetmac/coldbox/tests/runner.cfm" }
+		]
+	}
+}

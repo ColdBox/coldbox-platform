@@ -16,10 +16,10 @@
 	{ "trigger": "unregister\tfn. (ColdBox Interceptor)", "contents": "unregister( state=${1:any} )" },
 	// END Functions for: coldbox.system.Interceptor 
 
-	// Functions for: EventHandler 
+	// Functions for: coldbox.system.EventHandler 
 	{ "trigger": "_actionExists\tfn. (ColdBox EventHandler)", "contents": "_actionExists( action=${1:any} )" },
 	{ "trigger": "_privateInvoker\tfn. (ColdBox EventHandler)", "contents": "_privateInvoker( method=${1:any}, argCollection=${2:any} )" },
-	// END Functions for: EventHandler 
+	// END Functions for: coldbox.system.EventHandler 
 
 	// Functions for: testbox.system.BaseSpec 
 	{ "trigger": "addAssertions\tfn. (ColdBox BaseSpec)", "contents": "addAssertions( assertions=${1:any} )" },

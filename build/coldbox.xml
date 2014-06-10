@@ -6,14 +6,11 @@
 	<description>
     	Build a new distribution of ColdBox Platform
     </description>
-	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="coldbox.version"	value="4.0.0"/>
-	<property name="coldbox.slug"		value="coldbox"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
 	<path id="cp">
-		<fileset dir="ant/lib">
+		<fileset dir="build/lib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -21,33 +18,42 @@
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	
 	<!--External Ant Tasks-->
-	<property name="ant.compilechecks"  value="ant/ant_compile.xml" />
+	<property name="ant.compilechecks"  value="build/ant_compile.xml" />
 	
 	<!-- Init -->
 	<target name="init" description="Init Build">
 		<!-- Default environment check, if not passed via -Denvironment -->
-    	<condition property="environment" value="local">
-    		<not><isset property="environment" /></not>
-    	</condition>
-    	<echo>Loading from environment: ${environment}</echo>
-		<!-- Load env properties -->
-		<loadproperties srcFile="ant/coldbox-${environment}.properties"/>
+		<condition property="environment" value="local">
+			<not><isset property="environment" /></not>
+		</condition>
+		<if>
+			<available file="build/coldbox-${environment}.properties" />
+			<then>
+				<!-- Load env properties -->
+				<echo>Loading properties from environment: ${environment}</echo>
+				<loadproperties srcFile="build/coldbox-${environment}.properties"/>
+			</then>
+		</if>
+		<!-- Load root properties -->
+		<echo>Loading base properties</echo>
+		<loadproperties srcFile="build/coldbox.properties"/>
 
 		<!-- Build Number -->
-		<propertyfile file="ant/build.number" comment="Build Number for ANT. Edit not!">
+		<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
 			<entry key="build.number" 
 					type="int" 
 			     	operation="+"
 					pattern="00000"
 			     	default="1" />
 		</propertyfile>
-		<property file="ant/build.number"/>
+		<property file="build/build.number"/>
 		<!-- Build Label -->
 		<property name="build.label" value="coldbox-${coldbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}/coldbox/apidocs"/>
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+		<!-- Integration permissions -->
 		<if>
 			<equals arg1="${environment}" arg2="auto" />
 			<then>
@@ -59,7 +65,6 @@
 			<else>
 			</else>
 		</if>
-
 	</target>
 	
 	<!-- Build test reports -->
@@ -74,7 +79,7 @@
 	<target name="build" description="Build a new ColdBox Platform distribution" depends="init">
       	
 		<!-- Copy build ID -->
-		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		<concat destfile="${dir.build}/coldbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src -->	
       	<copy todir="${dir.build}/coldbox/system">
@@ -121,9 +126,14 @@
 		
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/coldbox/apidocs"></zip>
-				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
+		<!-- Build Checksum -->
+		<checksum forceoverwrite="true" fileext=".md5">
+			<fileset dir="${dir.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
 		
 		<!-- Perms for automated builds -->
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
@@ -133,7 +143,8 @@
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
-				<move file="${dir.exports}/coldbox_${coldbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />	
+				<copy file="${dir.exports}/coldbox_${coldbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />
+				<copy file="${dir.exports}/coldbox_${coldbox.version}.zip.md5" tofile="${be.exports}/${be.name}.zip.md5" />
 			</else>
 		</if>
 
@@ -151,15 +162,18 @@
 			<fileset file="box.json" />
 		</copy>
 		
-		<!-- Zip Bundle -->
+		<!-- Zip Standalone -->
 		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}"></zip>
-
+		<!-- Build Checksum -->
+		<checksum forceoverwrite="true" fileext=".md5" file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" />
+				
 		<!-- Perms for automated builds -->
 		<if>
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
-				<move file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" tofile="${be.exports}/${be.name}_standalone.zip" />	
+				<copy file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" tofile="${be.exports}/${be.name}_standalone.zip" />
+				<copy file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip.md5" tofile="${be.exports}/${be.name}_standalone.zip.md5" />
 			</else>
 		</if>
 		
