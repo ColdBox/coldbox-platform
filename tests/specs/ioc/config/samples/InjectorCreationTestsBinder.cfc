@@ -36,7 +36,7 @@ Description :
 		// map to constant value, no need for scope
 		map("jsonProperty").toValue("[{name:'luis'},{name:'Jose'}]");
 		// map to ws
-		map("coldboxWS").toWebservice("http://coldbox.jfetmac/distribution/test.cfc?wsdl");
+		map("coldboxWS").toWebservice("http://coldbox.org/distribution/test.cfc?wsdl");
 		// map to rss feed
 		map("googleNews")
 			.toRSS("http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&output=rss")
