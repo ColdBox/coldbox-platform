@@ -33,17 +33,6 @@
 		assertTrue( isInstanceOf(e, "java.util.LinkedHashMap") );	
 	}
 	
-	function testGetEntityServiceDSL(){
-		makePublic(builder, "getEntityServiceDSL");
-		def = {dsl="entityService"};
-		e = builder.getentityServiceDSL(def);
-		assertTrue( isInstanceOf(e, "coldbox.system.orm.hibernate.BaseORMService") );	
-		
-		def = {dsl="entityService:User"};
-		e = builder.getentityServiceDSL(def);
-		assertTrue( isInstanceOf(e, "coldbox.system.orm.hibernate.VirtualEntityService") );	
-	}
-	
 	function testbuildJavaClass(){
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("Buffer");
 		mapping.setPath("java.util.LinkedHashMap")
@@ -54,27 +43,27 @@
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("Buffer");
 		mapping.setPath("java.util.LinkedHashMap");
 		r = builder.buildJavaClass(mapping);
-		debug(r);
+		//debug(r);
 	}
 	
 	function testbuildWebservice(){
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("Buffer");
 		mapping.setPath("http://www.coldbox.org/distribution/updatews.cfc?wsdl");
 		r = builder.buildwebservice(mapping);
-		debug(r);
+		//debug(r);
 	}
 	
 	function testbuildcfc(){
 		// simple cfc
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyCFC");
-		mapping.setPath("coldbox.tests.testmodel.ioc.Simple");
+		mapping.setPath("coldbox.test-harness.model.ioc.Simple");
 		r = builder.buildCFC(mapping);
-		debug(r);
+		//debug(r);
 	}
 	
 	function testBuildCFCWithArguments(){
 		//mocks
-		mockObject = getMockBox().createMock("coldbox.tests.testmodel.ioc.Simple");
+		mockObject = getMockBox().createMock("coldbox.test-harness.model.ioc.Simple");
 		builder.$("buildDSLDependency", mockObject);
 		mockInjector.$("getInstance", mockObject )
 			.$("containsInstance").$args("myBean").$results("path.found")
@@ -82,7 +71,7 @@
 		
 		// With constructor args
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyCFC");
-		mapping.setPath("coldbox.tests.testmodel.ioc.SimpleConstructors")
+		mapping.setPath("coldbox.test-harness.model.ioc.SimpleConstructors")
 			.addDIConstructorArgument(name="constant",value=45)
 			.addDIConstructorArgument(name="dslVar",dsl="logbox")
 			.addDIConstructorArgument(name="modelVar",ref="myBean")
@@ -94,13 +83,13 @@
 	
 	function testBuildCFCException(){
 		//mocks
-		mockObject = getMockBox().createMock("coldbox.tests.testmodel.ioc.Simple");
+		mockObject = getMockBox().createMock("coldbox.test-harness.model.ioc.Simple");
 		builder.$("buildDSLDependency", mockObject);
 		mockInjector.$("containsInstance").$results("");
 		
 		// With constructor args
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyCFC");
-		mapping.setPath("coldbox.tests.testmodel.ioc.SimpleConstructors")
+		mapping.setPath("coldbox.test-harness.model.ioc.SimpleConstructors")
 			.addDIConstructorArgument(name="constant",value=45)
 			.addDIConstructorArgument(name="dslVar",dsl="logbox")
 			.addDIConstructorArgument(name="modelVar",ref="myBean");
@@ -198,9 +187,9 @@
 		builder.$("buildDSLDependency", mockStub );
 		
 		// build it
-		r = builder.buildSimpleDSL(dsl="logbox:logger:test", targetID="unit", targetObject=this);
+		r = builder.buildSimpleDSL( dsl="logbox:logger:test", targetID="unit", targetObject=this );
 		assertEquals( "unit", builder.$callLog().buildDSLDependency[ 1 ].targetID );
-		assertEquals( this, builder.$callLog().buildDSLDependency[ 1 ].targetObject );
+		expect( builder.$callLog().buildDSLDependency[ 1 ].targetObject ).toBe( this );
 		assertEquals( "logbox:logger:test", builder.$callLog().buildDSLDependency[ 1 ].definition.dsl );
 		assertEquals( "", builder.$callLog().buildDSLDependency[ 1 ].definition.name );
 		

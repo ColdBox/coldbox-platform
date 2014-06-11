@@ -71,16 +71,17 @@
 	}
 
 	function testParentInjector(){
-		config.parentInjector( this );
-		assertEquals( this, config.getParentInjector() );
+		var mockInjector = createStub();
+		config.parentInjector( mockInjector );
+		expect(	config.getParentInjector() ).toBe( mockInjector );
 	}
 
 	// MAPPING Tests
 	function testMappings(){
-		mappings = config.getMappings();
-		assertEquals(false, config.mappingExists("xx") );
-		mappings["test"] = this;
-		assertEquals( this, config.getMapping("test"));
+		var mappings = config.getMappings();
+		assertEquals( false, config.mappingExists("xx") );
+		config.map( "test" );
+		expect(	config.getMapping( "test" ).getName() ).toBe( "test" );
 	}
 
 	function testMap(){
@@ -430,7 +431,8 @@
 	}
 
 	function testLoadDataDSL(){
-		raw = {
+		var mockInjector = createStub();
+		var raw = {
 			logBoxConfig = "test.logbox",
 			scopeRegistration = {
 				enabled = true, scope = "application"
@@ -442,7 +444,7 @@
 			customScopes = {
 				AwesomeScope = "my.awesome.scope"
 			},
-			parentInjector = this,
+			parentInjector = mockInjector,
 			scanLocations = ["coldbox.system"],
 			stopRecursions = ["coldbox.system.EventHandler"],
 			listeners = [
@@ -455,7 +457,7 @@
 		};
 		config.loadDataDSL( raw );
 		
-		assertEquals( this, config.getParentInjector() );
+		assertEquals( mockInjector, config.getParentInjector() );
 	}
 
 	function testInto(){

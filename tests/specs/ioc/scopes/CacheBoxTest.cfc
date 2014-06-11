@@ -14,32 +14,37 @@
 			.$("getLogBox", mockLogBox );
 		super.setup();
 		scope = model.init( mockInjector );
+		mockStub = createStub();
 	}
 
 	function testGetFromScopeExistsAlready(){
 
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CacheTest");
+		var mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CacheTest");
 		mapping.setCacheProperties(key="CacheTest",timeout="",provider="default");
+		mapping.setThreadSafe( true );
+		mockCache.$("get", mockStub);
+		
+		var o = scope.getFromScope( mapping, {} );
 
-		mockCache.$("get", this);
-		o = scope.getFromScope( mapping, {} );
-
-		assertEquals( this, o );
+		assertEquals( mockStub, o );
 	}
 
 	function testGetFromScope(){
 		// 1: Default construction
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CacheTest");
+		var mapping = createMock("coldbox.system.ioc.config.Mapping").init(name="CacheTest");
+
 		mapping.setCacheProperties(key="CacheTest",timeout="",provider="default");
+		mapping.setThreadSafe( false );
 		mockCache.$("get").$("set",true);
-		mockInjector.$("buildInstance", this).$("autowire", this);
-		o = scope.getFromScope( mapping, {} );
-		assertEquals( this, o );
+		mockInjector.$("buildInstance", mockStub).$("autowire", mockStub);
+
+		var o = scope.getFromScope( mapping, {} );
+		assertEquals( mockStub, o );
 
 		// 2: ThreadSafe singleton creations
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="singletontest");
 		mapping.setThreadSafe( true );
-		mockInjector.$("buildInstance", this).$("autowire", this);
+		mockInjector.$("buildInstance", mockStub).$("autowire", mockStub);
 		o = scope.getFromScope( mapping, {} );
 	}
 

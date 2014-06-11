@@ -1,4 +1,4 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" cool="true">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest" cool="true">
 <cfscript>
 	
 	function setup(){
@@ -23,11 +23,11 @@
 		assertFalse( matcher.matchClass(this,mockMapping) );
 		
 		// regex
-		matcher.reset().regex("^cold");
+		matcher.reset().regex("\.aop");
 		assertTrue( matcher.matchClass(this,mockMapping) );
 		
 		// instanceOf
-		matcher.reset().instanceOf("mxunit.framework.TestCase");
+		matcher.reset().instanceOf("testbox.system.BaseSpec");
 		assertTrue( matcher.matchClass( createObject("component","MatcherTest") ,mockMapping) );
 		
 		// annotation

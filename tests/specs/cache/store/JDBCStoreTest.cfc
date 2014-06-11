@@ -87,7 +87,7 @@ Description :
 		assertEquals("123", store.get("test") );
 
 		//3 complex
-		complex = createObject("component", "coldbox.tests.testmodel.formBean").init();
+		complex = createObject("component", "coldbox.test-harness.model.formBean").init();
 		store.set('test', complex, 20);
 		results = store.get("test");
 		assertEquals(complex, results );

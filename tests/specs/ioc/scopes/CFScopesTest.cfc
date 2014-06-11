@@ -10,32 +10,35 @@
 			.$("getLogBox", mockLogBox );
 		super.setup();
 		scope = model.init( mockInjector );
+		mockStub = createStub();
 	}
 
 	function testGetFromScopeExistsAlready(){
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CFScopeTest");
+		var mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CFScopeTest");
 		mapping.setScope( "session" );
-		session["wirebox:CFScopeTest"] = this;
-		o = scope.getFromScope( mapping, {} );
-		assertEquals( this, o );
+		mapping.setThreadSafe( true );
+		session["wirebox:CFScopeTest"] = mockStub;
+		var o = scope.getFromScope( mapping, {} );
+		assertEquals( mockStub, o );
 	}
 
 	function testGetFromScope(){
 		// 1: Default construction
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CFScopeTest");
+		var mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CFScopeTest");
 		mapping.setScope( "session" );
-		mockInjector.$("buildInstance", this).$("autowire", this);
-		o = scope.getFromScope( mapping, {} );
-		assertEquals( this, o );
-		assertEquals( this, session["wirebox:CFScopeTest"] );
+		mapping.setThreadSafe( true );
+		mockInjector.$("buildInstance", mockStub).$("autowire", mockStub);
+		var o = scope.getFromScope( mapping, {} );
+		assertEquals( mockStub, o );
+		assertEquals( mockStub, session["wirebox:CFScopeTest"] );
 
 		// 2: ThreadSafe singleton creations
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="CFScopeTest");
 		mapping.setScope( "session" );
 		mapping.setThreadSafe( true );
-		mockInjector.$("buildInstance", this).$("autowire", this);
+		mockInjector.$("buildInstance", mockStub).$("autowire", mockStub);
 		o = scope.getFromScope( mapping, {} );
-		assertEquals( this, session["wirebox:CFScopeTest"] );
+		assertEquals( mockStub, session["wirebox:CFScopeTest"] );
 	}
 
 </cfscript>

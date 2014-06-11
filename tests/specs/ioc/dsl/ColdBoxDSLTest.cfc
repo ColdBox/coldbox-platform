@@ -1,4 +1,4 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 
 	function setup(){
@@ -75,11 +75,6 @@
 		assertEquals(mockColdbox, c);
 
 		// stage 2
-		mockColdbox.$("getSetting","MailStuff");
-		def = {name="configBean", dsl="coldbox:mailSettingsBean"};
-		c = builder.getColdBoxDSL(def);
-		assertTrue( isInstanceOf(c, "coldbox.system.core.mail.MailSettingsBean") );
-
 		mockColdbox.$("getLoaderService",this);
 		def = {name="configBean", dsl="coldbox:loaderService"};
 		c = builder.getColdBoxDSL(def);
@@ -95,16 +90,6 @@
 		def = {name="flash", dsl="coldbox:flash"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( mockFlash, c);
-
-		mockColdbox.$("getDebuggerService",this);
-		def = {name="configBean", dsl="coldbox:debuggerService"};
-		c = builder.getColdBoxDSL(def);
-		assertEquals( this, c);
-
-		mockColdbox.$("getPluginService",this);
-		def = {name="configBean", dsl="coldbox:pluginService"};
-		c = builder.getColdBoxDSL(def);
-		assertEquals( this, c);
 
 		mockColdbox.$("getHandlerService",this);
 		def = {name="configBean", dsl="coldbox:handlerService"};

@@ -10,25 +10,23 @@
 			.$("getLogBox", mockLogBox );
 
 		scope = getMockBox().createMock("coldbox.system.ioc.scopes.RequestScope").init( mockInjector );
+		mockStub = createStub();
 	}
 
 	function testGetFromScopeExistsAlready(){
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="RequestTest");
-		mockStub = getMockBox().createStub();
+		var mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="RequestTest");
+		mapping.setThreadSafe( true );
 		request["wirebox:RequestTest"] = mockStub;
-		o = scope.getFromScope( mapping, {} );
-
+		var o = scope.getFromScope( mapping, {} );
 		assertEquals( mockStub, o );
 
 	}
 
 	function testGetFromScope(){
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="RequestTest");
-		mockStub = getMockBox().createStub();
+		var mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="RequestTest");
+		mapping.setThreadSafe( true );
 		mockInjector.$("buildInstance", mockStub).$("autowire", mockStub);
-
-		o = scope.getFromScope( mapping, {} );
-
+		var o = scope.getFromScope( mapping, {} );
 		assertEquals( request["wirebox:RequestTest"], o );
 
 	}

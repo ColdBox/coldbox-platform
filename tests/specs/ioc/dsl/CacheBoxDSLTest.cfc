@@ -1,6 +1,6 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
-	
+  	
 	function setup(){
 		mockCacheBox = getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory")
 			.$("getCacheNames", ["test","default"]);

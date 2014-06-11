@@ -10,45 +10,43 @@
 			.$("getLogBox", mockLogBox );
 		super.setup();
 		scope = model.init( mockInjector );
+		mockStub = createStub();
 	}
 
 	function testGetFromScopeExistsAlready(){
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="SingletonTest");
+		var mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="SingletonTest");
 		var singletons = scope.getSingletons();
-		singletons["singletontest"] = this;
-		o = scope.getFromScope( mapping, {} );
-		assertEquals( this, o );
+		singletons["singletontest"] = mockStub;
+		var o = scope.getFromScope( mapping, {} );
+		assertEquals( mockStub, o );
 	}
 
 	function testGetFromScope(){
 		// 1: Default construction
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="singletontest");
-		mockInjector.$("buildInstance", this).$("autowire", this);
-		o = scope.getFromScope( mapping, {} );
+		var mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="singletontest");
+		mapping.setThreadSafe( true );
+		mockInjector.$("buildInstance", mockStub).$("autowire", mockStub);
+		var o = scope.getFromScope( mapping, {} );
 
 		// 2: ThreadSafe singleton creations
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init(name="singletontest");
 		mapping.setThreadSafe( true );
-		mockInjector.$("buildInstance", this).$("autowire", this);
+		mockInjector.$("buildInstance", mockStub).$("autowire", mockStub);
 		o = scope.getFromScope( mapping, {} );
 	}
 
 	function testgetSingletons(){
 		assertTrue( structCount( scope.getSingletons() ) eq 0 );
-		scope.getSingletons().test = this;
+		scope.getSingletons().test = mockStub;
 		assertTrue( structCount( scope.getSingletons() ) eq 1 );
 	}
 
 	function testClear(){
 		assertTrue( structCount( scope.getSingletons() ) eq 0 );
-		scope.getSingletons().test = this;
+		scope.getSingletons().test = mockStub;
 		assertTrue( structCount( scope.getSingletons() ) eq 1 );
 		scope.clear();
 		assertTrue( structCount( scope.getSingletons() ) eq 0 );
 	}
-
-
-
-
 </cfscript>
 </cfcomponent>

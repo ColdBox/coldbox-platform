@@ -1,4 +1,4 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	
 	function setup(){
@@ -15,8 +15,6 @@
 		assertEquals( true, structKeyExists(eventContainers,"afterInjectorConfiguration") );
 		assertEquals( true, structKeyExists(eventContainers,"afterInstanceCreation") );
 		assertEquals( true, structKeyExists(eventContainers,"beforeInstanceCreation") );
-		
-		
 	}
 	
 </cfscript>

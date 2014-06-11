@@ -32,7 +32,7 @@
 	function testLocateInstance(){
 		// Locate by package scan
 		r = injector.locateInstance("ioc.category.CategoryBean");
-		assertEquals("coldbox.tests.testmodel.ioc.category.CategoryBean", r);
+		assertEquals("coldbox.test-harness.model.ioc.category.CategoryBean", r);
 
 		// Locate Not Found
 		r = injector.locateInstance("com.com.com.Whatever");
@@ -95,7 +95,7 @@
 	}
 	
 	function providerUDF(){
-		return new coldbox.system.testing.MockBox().createStub().$("verify", true);
+		return new testbox.system.MockBox().createStub().$("verify", true);
 	}
 
 	function testProviderMethods(){
@@ -138,7 +138,7 @@
 		}
 		// adobe
 		else{
-			assertEquals( "coldfusion.xml.rpc.ServiceProxy", getMetadata(ws).name );
+			expect( getMetadata( ws ).name ).toMatch( "ServiceProxy" );
 		}
 	}
 
@@ -191,12 +191,6 @@
 		assertEquals( injector.getInstance("WireBoxURL"), r.getData() );
 	}
 
-	function testInheritedMetadataWithORM(){
-		c = entityLoad("Category")[1];
-		debug( c.getData() );
-		assertEquals( injector.getInstance("WireBoxURL"), c.getData() );
-	}
-	
 	function testImplicitSetters(){
 		c = injector.getInstance("implicitTest");
 		debug( c );
