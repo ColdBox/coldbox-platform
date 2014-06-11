@@ -2,7 +2,7 @@
 <!--- CPU Integration --->
 <cfparam name="url.cpu" default="false">
 <!--- SETUP THE ROOTS OF THE BROWSER RIGHT HERE --->
-<cfset rootMapping 	= "/coldbox/test/specs">
+<cfset rootMapping 	= "/coldbox/tests/specs">
 <cfif directoryExists( rootMapping )>
 	<cfset rootPath = rootMapping>
 <cfelse>
@@ -19,7 +19,7 @@
 </cfif>
 
 <!--- Prepare TestBox --->
-<cfset testbox = new coldbox.system.testing.TestBox()>
+<cfset testbox = new testbox.system.TestBox()>
 
 <!--- Run Tests Action?--->
 <cfif structKeyExists( url, "action")>
@@ -49,7 +49,7 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>TestBox Global Runner</title>
-	<script><cfinclude template="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
+	<script><cfinclude template="/testbox/system//reports/assets/js/jquery.js"></script>
 	<script>
 	$(document).ready(function() {
 

@@ -89,13 +89,13 @@
 		assertTrue( isObject(mapping) );
 		assertEquals( "MyService", mapping.getName() );
 
-		config.map("MyService,TestService");
+		config.map( alias="MyService,TestService", force=true );
 		mapping1 = config.getMapping("TestService");
 		mapping2 = config.getMapping("MyService");
 		assertEquals(mapping1, mapping2);
 		assertEquals(2, arrayLen(mapping1.getAlias()));
 
-		config.map(["MyService","TestService"]);
+		config.map( alias=["MyService","TestService"], force=true );
 		mapping1 = config.getMapping("TestService");
 		mapping2 = config.getMapping("MyService");
 		assertEquals(mapping1, mapping2);
@@ -214,7 +214,7 @@
 		mapping = config.getMapping("Test");
 		assertEquals( "init2", mapping.getConstructor() );
 
-		config.mapPath("Test");
+		config.mapPath( path="Test", force=true );
 		mapping = config.getMapping("Test");
 		assertEquals( "init", mapping.getConstructor() );
 	}
@@ -475,28 +475,27 @@
 	}
 
 	function testMapDirectory(){
-		config.mapDirectory("coldbox.tests.testModel");
-		assertTrue( structCount(config.getMappings()) gte 18 );
+		config.mapDirectory("coldbox.test-harness.model");
+		assertTrue( structCount(config.getMappings()) gt 0 );
 
 		config.reset();
 
-		config.mapDirectory(packagePath="coldbox.tests.testModel",include="ioc.*");
-		assertTrue( structCount(config.getMappings) gte 10 );
+		config.mapDirectory(packagePath="coldbox.test-harness.model", include="ioc.*");
+		assertTrue( structCount(config.getMappings) gte 2 );
 
 		config.reset();
 
-		config.mapDirectory(packagePath="coldbox.tests.testModel",exclude="ioc.*");
-		//debug( config.getMappings() );
+		config.mapDirectory(packagePath="coldbox.test-harness.model",exclude="ioc.*");
 		assertTrue( structCount(config.getMappings()) gt 5 );
 		
 		// with influence
 		config.reset();
-		config.mapDirectory(packagePath="coldbox.tests.testModel.ioc", influence=influenceUDF);
+		config.mapDirectory(packagePath="coldbox.test-harness.model", influence=influenceUDF);
 		assertEquals( "singleton", config.getMapping("Simple").getScope() );
 		
 		// with filters
 		config.reset();
-		config.mapDirectory(packagePath="coldbox.tests.testModel.ioc", filter=filterUDF);
+		config.mapDirectory(packagePath="coldbox.test-harness.model", filter=filterUDF);
 		assertFalse( config.mappingExists("Simple") );
 	}
 	
@@ -505,6 +504,7 @@
 			arguments.binder.asSingleton();
 		}
 	}
+
 	private boolean function filterUDF(path){
 		return ( findNoCase( "simple", arguments.path ) ? false : true );
 	}

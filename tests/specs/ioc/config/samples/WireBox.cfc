@@ -18,9 +18,6 @@ Description :
 		
 		// The WireBox configuration structure DSL
 		wireBox = {
-			// LogBox Configuration file
-			logBoxConfig 	= "coldbox.system.ioc.config.LogBox", 
-			
 			// CacheBox Integration
 			cacheBox = {
 				enabled = true 

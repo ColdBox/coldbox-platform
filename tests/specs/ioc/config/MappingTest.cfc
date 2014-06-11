@@ -58,8 +58,8 @@
 		assertEquals( 2, arrayLen(args));
 
 		props = mapping.getDIProperties();
-		assertEquals( 3, arrayLen(props));
-		assertFalse( props[ 3 ].required );
+		assertEquals( 2, arrayLen(props));
+		assertFalse( props[ 2 ].required );
 
 		setters = mapping.getDISetters();
 		assertEquals( 2, arrayLen(setters));
@@ -130,7 +130,7 @@
 		assertEquals( "default", mapping.getCacheProperties().provider );
 		assertEquals( "data", mapping.getCacheProperties().key );
 		assertEquals( 2, arrayLen(mapping.getDIConstructorArguments()));
-		assertEquals( 2, arrayLen(mapping.getDIProperties()));
+		assertEquals( 1, arrayLen(mapping.getDIProperties()));
 
 		setters = mapping.getDISetters();
 		assertEquals( 2, arrayLen(setters));

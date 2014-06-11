@@ -242,6 +242,7 @@ Description :
     	<cfargument name="path" 		required="true" hint="The class path to the object to map"/>
 		<cfargument name="namespace"	required="false"	default=""		hint="Provide namespace to merge it in"/>
     	<cfargument name="prepend"		required="false"	default="false" hint="Where to attach the namespace"/>	
+    	<cfargument name="force" 		required="false" 	default="false" hint="Forces the registration of the mapping in case it already exists"/>
 		<cfscript>
 			var cName = listlast( arguments.path, "." );
 			
@@ -252,7 +253,7 @@ Description :
 			}
 			
 			// directly map to a path
-			return map( cName ).to( arguments.path );
+			return map( cName, arguments.force ).to( arguments.path );
 		</cfscript>
     </cffunction>
 
@@ -314,6 +315,7 @@ Description :
 	<!--- map --->
     <cffunction name="map" output="false" access="public" returntype="any" hint="Create a mapping to an object">
     	<cfargument name="alias" required="true" hint="A single alias or a list or an array of aliases for this mapping. Remember an object can be refered by many names"/>
+    	<cfargument name="force" required="false" default="false" hint="Forces the registration of the mapping in case it already exists"/>
 		<cfscript>
 			// generate mapping entry for this dude.
 			var name 	= "";
@@ -327,7 +329,7 @@ Description :
 			name = arguments.alias[1];
 			
 			// check if mapping exists, if so, just use and return.
-			if( structKeyExists( instance.mappings, name) ){
+			if( structKeyExists( instance.mappings, name) and !arguments.force ){
 				currentMapping = instance.mappings[ name ];
 				return this;
 			} 
