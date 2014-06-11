@@ -107,7 +107,7 @@
 		binder = injector.getBinder();
 		getMockBox().prepareMock( binder ).$("getScopeRegistration", scopeReg);
 		injector.doScopeRegistration();
-		assertEquals( injector, application["wirebox"] );
+		structKeyExists( application, "wirebox" ); 
 		structDelete( application, "wirebox");
 	}
 

@@ -321,7 +321,7 @@ Description :
 
 			// log data
 			if( instance.log.canDebug() ){
-				instance.log.debug("Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath()#");
+				instance.log.debug("Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath().toString()#");
 			}
 
 			// announce afterInstanceInitialized

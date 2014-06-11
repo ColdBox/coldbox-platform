@@ -18,6 +18,7 @@
 			.$("getCacheBox",mockCacheBox );
 		
 		builder = getMockBox().createMock("coldbox.system.ioc.Builder").init( mockInjector );
+		mockStub = createStub();
 	}
 
 	function testCacheboxLinkOff(){
@@ -187,9 +188,9 @@
 		builder.$("buildDSLDependency", mockStub );
 		
 		// build it
-		r = builder.buildSimpleDSL( dsl="logbox:logger:test", targetID="unit", targetObject=this );
+		r = builder.buildSimpleDSL( dsl="logbox:logger:test", targetID="unit", targetObject=mockStub );
 		assertEquals( "unit", builder.$callLog().buildDSLDependency[ 1 ].targetID );
-		expect( builder.$callLog().buildDSLDependency[ 1 ].targetObject ).toBe( this );
+		expect( builder.$callLog().buildDSLDependency[ 1 ].targetObject ).toBe( mockStub );
 		assertEquals( "logbox:logger:test", builder.$callLog().buildDSLDependency[ 1 ].definition.dsl );
 		assertEquals( "", builder.$callLog().buildDSLDependency[ 1 ].definition.name );
 		
@@ -197,11 +198,11 @@
 	
 	function testgetWireBoxDSL(){
 		makePublic(builder,"getWireBoxDSL");
-		data = {name="luis", dsl="wirebox"};
+		var data = {name="luis", dsl="wirebox"};
 		
 		// wirebox
-		p = builder.getWireBoxDSL(data);
-		assertEquals(mockInjector, p);
+		var p = builder.getWireBoxDSL(data);
+		expect(	getMetadata( p ).name ).toMatch( "Injector" );
 		
 		// wirebox:parent
 		data = {name="luis", dsl="wirebox:parent"};

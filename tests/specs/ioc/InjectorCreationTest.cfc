@@ -11,6 +11,7 @@
 		injector.$property("log","instance",mockLogger);
 		// mock event manager
 		getMockBox().prepareMock( injector.getEventManager() );
+		mockStub = createStub();
 	}
 	
 	function teardown(){
@@ -88,7 +89,7 @@
 		val = injector.buildInstance( mapping );
 		assertEquals(mockStub, val);
 		// Provider closure
-		mapping.setType("provider").setPath( providerUDF );
+		mapping.setType("provider").setPath( variables.providerUDF );
 		val = injector.buildInstance( mapping );
 		assertTrue( val.verify() );
 		
@@ -134,7 +135,7 @@
 		
 		// Railo
 		if( structKeyExists( server, "railo" ) ){
-			assertEquals( "railo.runtime.net.rpc.client.rpcclient", getMetadata(ws).name );
+			expect(	getMetadata(ws).name  ).toMatch( "rpc" );
 		}
 		// adobe
 		else{
@@ -186,19 +187,19 @@
 	}
 
 	function testInheritedMetadata(){
-		r = injector.getInstance("ConcreteMetadata");
-		debug( r.getData() );
+		var r = injector.getInstance("ConcreteMetadata");
+		//debug( r.getData() );
 		assertEquals( injector.getInstance("WireBoxURL"), r.getData() );
 	}
 
 	function testImplicitSetters(){
-		c = injector.getInstance("implicitTest");
-		debug( c );
+		var c = injector.getInstance("implicitTest");
+		//debug( c );
 	}
 	
 	function testDSLCreation(){
-		c = injector.getInstance(dsl="wirebox");
-		assertEquals( c, injector );
+		var c = injector.getInstance(dsl="wirebox");
+		expect(	getMetadata( c ).name ).toMatch( "Injector" );
 	}
 	
 </cfscript>
