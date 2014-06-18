@@ -19,14 +19,21 @@ Description :
 
 		// Remote proxies are created by the CFML engine without calling init(),
 		// so autowire in here in the pseduo constructor
-		//selfAutowire();
+		selfAutowire();
 	</cfscript>
 
 	<!--- selfAutowire --->
     <cffunction name="selfAutowire" output="false" access="private" hint="Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path.">
 		<cfscript>
+			var script_name = cgi.script_name;
+			
+			// Only process this logic if hitting a remote proxy CFC directly
+			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' ) {
+				return;
+			}
+			
 			// Find the path of the proxy component being called
-			var componentpath = replaceNoCase(mid( cgi.script_name, 2, len( cgi.script_name ) -5 ),'/','.');
+			var componentpath = replaceNoCase(mid( script_name, 2, len( script_name ) -5 ),'/','.');
 			var injector = getWirebox();
 			var binder = injector.getBinder();
 			var mapping = '';
