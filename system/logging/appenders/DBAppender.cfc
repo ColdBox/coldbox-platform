@@ -142,7 +142,7 @@ If you are building a mapper, the map must have the above keys in it.
 			INSERT INTO #getTable()# (#cols#) VALUES (
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#instance.uuid.randomUUID().toString()#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#severityToString(loge.getseverity())#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" value="#category#">,
+				<cfqueryparam cfsqltype="cf_sql_varchar" value="#left(category,100)#">,
 				<cfqueryparam cfsqltype="cf_sql_timestamp" value="#loge.getTimestamp()#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#left(getName(),100)#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#loge.getMessage()#">,
