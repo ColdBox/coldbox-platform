@@ -39,7 +39,7 @@
 
 			//Application Aspects
 			handlerCaching 			= false,
-			eventCaching			= false,
+			eventCaching			= true,
 			proxyReturnCollection 	= false
 		};
 
@@ -72,12 +72,12 @@
 				myConsole     = { class="coldbox.system.logging.appenders.ConsoleAppender" },
 				fileAppender  = { class="coldbox.system.logging.appenders.AsyncRollingFileAppender",
 								  properties = {
-								  	filePath="logs", fileName=coldbox.appName, autoExpand=true, fileMaxSize="100"
+								  	filePath="/cbTestHarness/logs", fileName=coldbox.appName, autoExpand=true, fileMaxSize="100"
 								 }}
 			},
 			// Root Logger
-			root = { levelmax="INFO", appenders="*" },
-			debug = [ "coldbox.system" ]
+			root = { levelmax="INFO", appenders="*" }
+			//,debug = [ "coldbox.system" ]
 		};
 
 		//Layout Settings
@@ -99,19 +99,6 @@
 			 properties={}
 			}
 		];
-
-		// ORM services, injection, etc
-		orm = {
-			// entity injection
-			injection = {
-				// enable it
-				enabled = true,
-				// the include list for injection
-				include = "",
-				// the exclude list for injection
-				exclude = ""
-			}
-		};
 
 		//Datasources
 		datasources = {
