@@ -45,10 +45,6 @@ component{
 	// request start
 	public boolean function onRequestStart(String targetPage){
 
-		if( structKeyExists( url, "fwreinit" ) ){
-			ormreload();
-		}
-
 		if( structKeyExists( url, "appstop" ) ){
 			applicationStop();abort;
 		}

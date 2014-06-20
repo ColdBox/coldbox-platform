@@ -192,16 +192,15 @@ Description :
 				<!--- Is this a renderdata type? --->
 				<cfif refResults.eventCaching.renderData>
 					<cfset renderDataSetup(argumentCollection=refResults.eventCaching)>
-					<cfset event.showDebugPanel(false)>
 				</cfif>
+				<!--- Authoritative Header --->
+				<cfheader statuscode="203" statustext="Non-Authoritative Information" />
 				<!--- Render Content as binary or just output --->
 				<cfif refResults.eventCaching.isBinary>
 					<cfcontent type="#refResults.eventCaching.contentType#" variable="#refResults.eventCaching.renderedContent#" />
 				<cfelse>
 					<cfoutput>#refResults.eventCaching.renderedContent#</cfoutput>
 				</cfif>
-				<!--- Authoritative Header --->
-				<cfheader statuscode="203" statustext="Non-Authoritative Information" />
 			<cfelse>
 				<!--- Run Default/Set Event not executing an event --->
 				<cfif NOT event.isNoExecution()>
@@ -277,7 +276,6 @@ Description :
 
 					<!--- Render Data? --->
 					<cfif isStruct(renderData) and not structisEmpty(renderData)>
-						<cfset event.showDebugPanel(false)>
 						<cfset renderDataSetup(argumentCollection=renderData)><!---
 						Binary
 						---><cfif renderData.isBinary><cfcontent type="#renderData.contentType#" variable="#renderedContent#" /><!---
