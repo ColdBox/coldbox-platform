@@ -130,7 +130,7 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/coldbox/apidocs"></zip>
+		<zip destfile="${dir.exports}/coldbox_apidocs_${coldbox.version}.zip" basedir="${dir.build}/coldbox/apidocs"></zip>
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		<!-- Build Checksum -->
@@ -177,6 +177,11 @@
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
+				<delete>
+					<fileset dir="${be.exports}">
+						<include name="${be.name}*" />
+					</fileset>
+				</delete>
 				<copy file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" tofile="${be.exports}/${be.name}_standalone.zip" />
 				<copy file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip.md5" tofile="${be.exports}/${be.name}_standalone.zip.md5" />
 			</else>
@@ -199,7 +204,7 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/ColdBoxDocs-${coldbox.version}.zip" basedir="${dir.build}/coldbox/apidocs"></zip>
+		<zip destfile="${dir.exports}/coldbox_apidocs_${coldbox.version}.zip" basedir="${dir.build}/coldbox/apidocs"></zip>
 		
 		<!-- Cleanup -->
 		<delete dir="${dir.build}" />

@@ -142,9 +142,9 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/WireBoxDocs-${wirebox.version}.zip" basedir="${dir.build}/wirebox/apidocs"></zip>
+		<zip destfile="${dir.exports}/wirebox_apidocs_${wirebox.version}.zip" basedir="${dir.build}/wirebox/apidocs"></zip>
 		<!-- Zip Bundle -->
-		<zip destfile="${dir.exports}/wirebox+cachebox_${wirebox.version}.zip" basedir="${dir.build}"></zip>
+		<zip destfile="${dir.exports}/wirebox_cachebox_${wirebox.version}.zip" basedir="${dir.build}"></zip>
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
 			<fileset dir="${dir.exports}">
@@ -172,10 +172,15 @@
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
+				<delete>
+					<fileset dir="${be.exports}">
+						<include name="${be.name}*" />
+					</fileset>
+				</delete>
 				<copy file="${dir.exports}/wirebox_${wirebox.version}.zip" tofile="${be.exports}/${be.name}.zip" />
 				<copy file="${dir.exports}/wirebox_${wirebox.version}.zip.md5" tofile="${be.exports}/${be.name}.zip.md5" />
-				<copy file="${dir.exports}/wirebox+cachebox_${wirebox.version}.zip" tofile="${be.exports}/${be.name}+cachebox.zip" />
-				<copy file="${dir.exports}/wirebox+cachebox_${wirebox.version}.zip.md5" tofile="${be.exports}/${be.name}+cachebox.zip.md5" />
+				<copy file="${dir.exports}/wirebox_cachebox_${wirebox.version}.zip" tofile="${be.exports}/${be.name}_cachebox.zip" />
+				<copy file="${dir.exports}/wirebox_cachebox_${wirebox.version}.zip.md5" tofile="${be.exports}/${be.name}_cachebox.zip.md5" />
 			</else>
 		</if>
 		

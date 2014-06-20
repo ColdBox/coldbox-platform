@@ -125,7 +125,7 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/CacheBoxDocs-${cachebox.version}.zip" basedir="${dir.build}/cachebox/apidocs"></zip>
+		<zip destfile="${dir.exports}/cachebox_apidocs_${cachebox.version}.zip" basedir="${dir.build}/cachebox/apidocs"></zip>
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/cachebox_${cachebox.version}.zip" basedir="${dir.build}"></zip>
 		<!-- Build Checksum -->
@@ -142,6 +142,11 @@
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
+				<delete>
+					<fileset dir="${be.exports}">
+						<include name="${be.name}*" />
+					</fileset>
+				</delete>
 				<copy file="${dir.exports}/cachebox_${cachebox.version}.zip" tofile="${be.exports}/${be.name}.zip" />
 				<copy file="${dir.exports}/cachebox_${cachebox.version}.zip.md5" tofile="${be.exports}/${be.name}.zip.md5" />
 			</else>
