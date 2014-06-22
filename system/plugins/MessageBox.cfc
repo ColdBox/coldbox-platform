@@ -93,10 +93,12 @@ Description :
 				// Populate message
 				msg.type 	= arguments.type;
 				msg.message = arguments.message;
+				msg.messageArray = arrayNew(1);
 
 				// Do we have a message array to flatten?
 				if( structKeyExists(arguments,"messageArray") AND arrayLen(arguments.messageArray) ){
 					msg.message = flattenMessageArray(arguments.messageArray);
+					msg.messageArray = arguments.messageArray;
 				}
 
 				// Flash it
@@ -303,7 +305,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="type"     	required="true"   type="string" hint="The message type.Available types [error][warning][info]">
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
-		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
+		<cfargument name="messageArray" required="false"  type="Array"  default="#arrayNew(1)#" hint="You can also send in an array of messages to render separated by a <br />">
 		<cfargument name="template" 	required="false"  type="string" default="" 	hint="An optional template to use for rendering instead of core or setting"/>
 		<!--- ************************************************************* --->
 		<cfset var msgStruct = structnew()>
@@ -318,6 +320,7 @@ Description :
 			<!--- Populate message struct --->
 			<cfset msgStruct.type = arguments.type>
 			<cfset msgStruct.message = arguments.message>
+			<cfset msgStruct.messageArray = arguments.messageArray>
 		<cfelse>
 			<cfthrow message="Invalid message type: #arguments.type#" detail="Valid types are info,warning,error" type="Messagebox.InvalidMessageType">
 		</cfif>
