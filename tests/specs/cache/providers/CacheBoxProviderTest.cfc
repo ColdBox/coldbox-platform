@@ -100,17 +100,17 @@ Description :
 	}
 
 	function testGet(){
-		testVal = {name="luis", age=32};
-		cache.getObjectStore().set("test",testVal,20);
+		var testVal = {name="luis", age=32};
+		cache.getObjectStore().set( "test", testVal, 20 );
 		cache.clearStatistics();
 
-		var results = cache.get("test");
+		var results = cache.get( "test" );
 		assertEquals( results, testval );
-		assertEquals( 0, cache.getStats().getMisses() );
-		assertEquals( 1, cache.getStats().getHits() );
+		assertEquals( 0, cache.getStats().getMisses(), "Actual: #cache.getStats().getMisses()#");
+		assertEquals( 1, cache.getStats().getHits(), "Actual: #cache.getStats().getHits()#" );
 
 		var results = cache.get("test-bogus-#createUUID()#");
-		assertFalse( isDefined("results") );
+		assertTrue( isNull( results ) );
 	}
 
 	function testGetOrSet(){

@@ -2,7 +2,7 @@
 <!--
 Executes the entire ColdBox Platform Test Suite
 -->
-<project name="cachebox-testbox-runner" default="run" basedir=".">
+<project name="coldbox-platform-runner" default="run" basedir=".">
 	
 	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
 	<property name="test.bundles"		value="" />
