@@ -10,9 +10,6 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		super.setup();
 		application.wirebox = createObject("component","coldbox.system.ioc.Injector").init(binder="coldbox.tests.resources.WireBox");
 	}
-	function teardown(){
-		super.teardown();
-	}
 
 	function testaddAssetJS(){
 		var mockEvent = getMockRequestContext();

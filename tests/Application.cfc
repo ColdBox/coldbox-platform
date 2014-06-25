@@ -33,7 +33,7 @@ component{
 
 	function onRequestStart( required targetPage ){
 
-		ORMReload();
+		//ORMReload();
 
 		return true;
 	}
