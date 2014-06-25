@@ -148,7 +148,7 @@
 
 	}
 
-	function testProcessInterceptionWithBuffer(){
+	function testProcessInterceptionWithBuffer() skip="true"{
 		var md = structnew();
 
 		md.test = "UNIT TESTING";
