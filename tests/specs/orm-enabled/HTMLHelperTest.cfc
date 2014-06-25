@@ -8,7 +8,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 <cfscript>
 	function setup(){
 		super.setup();
-		application.wirebox = createObject("component","coldbox.system.ioc.Injector").init(binder="coldbox.tests.resources.WireBox");
+		//application.wirebox = createObject("component","coldbox.system.ioc.Injector").init(binder="coldbox.tests.resources.WireBox");
 	}
 
 	function testaddAssetJS(){
