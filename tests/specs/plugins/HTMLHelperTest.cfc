@@ -12,7 +12,6 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 	function teardown(){
 		super.teardown();
-		structClear( application );
 	}
 
 	function testaddAssetJS(){
