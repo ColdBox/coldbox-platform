@@ -103,7 +103,9 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		-->
 		<get dest="${report.dir}/results.html" 
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true&amp;reportpath=${report.dir}" 
-			 verbose="true"/>
+			 verbose="true"
+			 maxtime="0"
+			 retries="0"/>
 		
 		<!-- Bundles Runner
 			You can also run tests for specific bundles by using the runner with the bundles params
@@ -115,7 +117,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 
 		<get dest="${report.dir}/results.html" 
 			 src="${url.runner}&amp;bundles=${test.bundles}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true" 
-			 verbose="true"/>
+			 verbose="true" maxtime="0"/>
 		 -->
 		
         <!-- Read Result Properties -->
@@ -143,7 +145,9 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		<get dest="${report.dir}/results.xml" 
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=ANTJunit&amp;labels=${test.labels}&amp;reportPath=${report.dir}&amp;propertiesSummary=true" 
 			 verbose="true" 
-			 ignoreerrors="true"/>
+			 ignoreerrors="true"
+		     maxtime="0"
+			 retries="0"/>
 		
 		<!-- Check if file was created -->
 		<if>
@@ -154,9 +158,6 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 				<fail message="Build failed as ${report.dir}/TEST.properties was not found!" />
 			</else>
 		</if>
-		
-		<!-- update permissions -->
-		<antcall target="update.permissions" /> 
 		
 		<!-- Create fancy junit reports -->
 		<junitreport todir="${junitreport.dir}">  
