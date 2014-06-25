@@ -75,7 +75,7 @@
 	<!-- Build test reports -->
     <target name="run-tests">
         <subant target="run-junit">
-          	<fileset dir="tests" includes="automation/test.xml"/>
+          	<fileset dir="tests" includes="automation/test-coldbox.xml"/>
     		<property name="environment" value="${environment}" />
         </subant>
     </target>
