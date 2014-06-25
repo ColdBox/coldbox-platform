@@ -136,19 +136,6 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=ANTJunit&amp;labels=${test.labels}&amp;reportPath=${report.dir}&amp;propertiesSummary=true" 
 			 verbose="true"/>
 		
-		<!-- Bundles Runner
-			You can also run tests for specific bundles by using the runner with the bundles params
-
-			Available params for runner:
-			 - Reporter
-			 - Bundles
-			 - Labels
-
-		<get dest="${report.dir}/results.html" 
-			 src="${url.runner}&amp;bundles=${test.bundles}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true" 
-			 verbose="true"/>
-		 -->
-
 		 <!-- Create fancy junit reports -->
 		<junitreport todir="${junitreport.dir}">  
 			<fileset dir="${report.dir}">  
