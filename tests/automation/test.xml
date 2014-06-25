@@ -16,26 +16,38 @@ ant -f test.xml run-junit
 
 PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 -->
-<project name="testbox-ant-runner" default="run" basedir=".">
+<project name="coldbox-testbox-runner" default="run" basedir=".">
 	
-	<!-- THE URL TO THE RUNNER, PLEASE CHANGE ACCORDINGLY-->
-	<property name="url.runner"			value="http://cf10cboxdev.jfetmac/coldbox/ApplicationTemplates/testbox-runner/runner.cfm?"/>
-	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
-	<property name="test.bundles"		value="" />
-	<!-- FILL OUT THE DIRECTORY MAPPING TO TEST -->
-	<property name="test.directory"		value="tests.specs" />
-	<!-- FILL OUT IF YOU WANT THE DIRECTORY RUNNER TO RECURSE OR NOT -->
-	<property name="test.recurse"		value="true" />
-	<!-- FILL OUT THE LABELS YOU WANT TO APPLY TO THE TESTS -->
-	<property name="test.labels"		value="" />
-	<!-- FILL OUT THE TEST REPORTER YOU WANT, AVAILABLE REPORTERS ARE: ANTJunit, Codexwiki, console, dot, doc, json, junit, min, raw, simple, tap, text, xml -->
-	<property name="test.reporter"		value="simple" />
-	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED --> 
-	<property name="report.dir"  		value="${basedir}/results" />
-	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="../../build/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 
 	<target name="init" description="Init the tests">
+		<!-- Default environment check, if not passed via -Denvironment -->
+		<condition property="environment" value="local">
+			<not><isset property="environment" /></not>
+		</condition>
+		<if>
+			<available file="test-${environment}.properties" />
+			<then>
+				<!-- Load env properties -->
+				<echo>Loading properties from environment: ${environment}</echo>
+				<loadproperties srcFile="test-${environment}.properties"/>
+			</then>
+		</if>
+		<!-- Load root properties -->
+		<echo>Loading base properties</echo>
+		<loadproperties srcFile="test.properties"/>
+		<!-- Start Init -->
 		<mkdir dir="${junitreport.dir}" />
+		<delete>
+			<fileset dir="${report.dir}" />
+		</delete>
 		<tstamp prefix="start">
 			<format property="TODAY" pattern="MM-dd-YYYY hh:mm:ss aa"/>
 		</tstamp>
@@ -55,7 +67,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 - Labels
 		-->
 		<get dest="${report.dir}/results.html" 
-			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true" 
+			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true&amp;reportpath=${report.dir}" 
 			 verbose="true"/>
 		
 		<!-- Bundles Runner
@@ -114,10 +126,12 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			<fileset dir="${report.dir}">  
 				<include name="TEST-*.xml"/>  
 			</fileset>
-			<report format="frames" todir="${junitreport.dir}">
+			<report format="noframes" todir="${junitreport.dir}">
 				<param name="TITLE" expression="My Awesome TestBox Results"/>
 			</report>
 		</junitreport> 
+		<!-- Rename report -->
+		<move file="${junitreport.dir}/junit-noframes.html" tofile="${junitreport.dir}/index.html" />
 		
         <!-- Read Result Properties -->
         <property file="${report.dir}/TEST.properties"/>

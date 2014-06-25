@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	object pool test
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 
 	function setup(){

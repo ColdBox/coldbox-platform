@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	object pool test
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 
 	function setup(){
@@ -87,11 +87,11 @@ Description :
 		assertEquals("123", store.get("test") );
 
 		//3 complex
-		complex = createObject("component", "coldbox.test-harness.model.formBean").init();
-		store.set('test', complex, 20);
+		var complex = createObject("component", "coldbox.test-harness.model.formBean").init();
+		store.set( 'test', complex, 20 );
 		results = store.get("test");
-		assertEquals(complex, results );
-		debug(results);
+
+		assertEquals( results.getFname(), complex.getFname() );
 	}
 
 	function testClear(){

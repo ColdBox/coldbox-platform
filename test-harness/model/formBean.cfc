@@ -11,7 +11,7 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" output="false" hint="I return a form bean instance" returntype="any">
-		<cfargument name="AppName" type="string" inject="coldbox:setting:AppName" hint="My setting name"/>
+		<cfargument name="appName" type="string" default="ColdBox" inject="coldbox:setting:AppName" hint="My setting name"/>
 		<cfscript>
 		instance.initDate = now();
 		instance.fname = arguments.appName;
@@ -25,14 +25,14 @@
 		<cfreturn variables.instance >
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="setInstance" access="public" returntype="void" output="false">
 		<cfargument name="instance" type="struct" required="true">
 		<cfset variables.instance = arguments.instance>
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="setfname" access="public" return="void" output="false" hint="Set fname">
 	  <cfargument name="fname" type="string" >
@@ -45,7 +45,7 @@
 	  <cfreturn variables.instance.fname >
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="setlname" access="public" return="void" output="false" hint="Set lname">
 	  <cfargument name="lname" type="string" >
@@ -58,7 +58,7 @@
 	  <cfreturn variables.instance.lname >
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="setemail" access="public" return="void" output="false" hint="Set email">
 	  <cfargument name="email" type="string" >
@@ -71,7 +71,7 @@
 	  <cfreturn variables.instance.email >
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="setinitDate" access="public" return="void" output="false" hint="Set initDate">
 	  <cfargument name="initDate" type="string" >
@@ -84,5 +84,5 @@
 	  <cfreturn variables.instance.initDate >
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 </cfcomponent>
