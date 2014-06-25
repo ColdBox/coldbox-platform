@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheTest" extends="CFProviderTest" output="false">
+<cfcomponent name="cacheTest" extends="CFProviderTest" output="false" skip="isAdobe">
 <cfscript>
 
 	function setup(){

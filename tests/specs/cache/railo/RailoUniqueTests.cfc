@@ -9,8 +9,12 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseModelTest" output="false" skip="isRailo">
 <cfscript>
+
+	boolean function isRailo(){
+		return structKeyExists( server, "railo" ) ? false : true;
+	}
 
 	function setup(){
 
@@ -23,12 +27,12 @@ Description :
 		// Mock Methods
 		mockFactory.$("getLogBox",mockLogBox);
 		mockLogBox.$("getLogger", mockLogger);
-		mockLogger.$("error").$("debug").$("info");
+		mockLogger.$("error").$("debug").$("info").$("canDebug","false");
 		mockEventManager.$("processState");
 
 		// Config
 		config = {
-			cacheName = "cachelite"
+			cacheName = "default"
 		};
 
 		// Create Provider
@@ -58,11 +62,11 @@ Description :
 		assertEquals( 600*1000, md.timespan );
 		assertEquals( 60*1000, md.idleTime );
 		cache.clearAll();
-		
+
 		cache.set("test", testVal );
 		assertEquals( testVal, cache.get("test") );
 		cache.clearAll();
-		
+
 		cache.set("test", testVal, "" );
 		assertEquals( testVal, cache.get("test") );
 		cache.clearAll();

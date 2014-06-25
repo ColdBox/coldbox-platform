@@ -9,36 +9,32 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheTest" extends="RailoProviderTest" output="false">
+<cfcomponent name="cacheTest" extends="RailoProviderTest" output="false" skip="isRailo">
 <cfscript>
 
 	function setup(){
 		super.setup();
 		// Mock Controller
 		mockController = getMockBox().createEmptyMock("coldbox.system.web.Controller");
-		
+
 		// Create Provider
 		cache = getMockBox().createMock("coldbox.system.cache.providers.RailoColdBoxProvider").init();
-		
+
 		// Decorate it
 		cache.setConfiguration( config );
 		cache.setCacheFactory( mockFactory );
 		cache.setEventManager( mockEventManager );
 		cache.setColdbox( mockController );
-		
+
 		// Configure the provider
-		cache.configure();		
+		cache.configure();
 	}
-	
+
 	function testPrefixes(){
 		assertTrue( len(cache.getEventCacheKeyPrefix()) );
 		assertTrue( len(cache.getViewCacheKeyPrefix()) );
-		assertTrue( len(cache.getHandlerCacheKeyPrefix()) );
-		assertTrue( len(cache.getInterceptorCacheKeyPrefix()) );
-		assertTrue( len(cache.getPluginCacheKeyPrefix()) );
-		assertTrue( len(cache.getCustomPluginCacheKeyPrefix()) );
 	}
-	
+
 	function testgetEventURLFacade(){
 		assertEquals(true, isInstanceOf(cache.getEventURLFacade(),"coldbox.system.cache.util.EventURLFacade") );
 	}
