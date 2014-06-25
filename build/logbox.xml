@@ -75,7 +75,7 @@
     </target>
 		
 	<!--build-->
-	<target name="build" description="Build a new LogBox distribution" depends="init">
+	<target name="build" description="Build a new LogBox distribution" depends="init,run-tests">
 		
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/logbox/${build.label}">Built on ${start.TODAY}</concat>

@@ -76,7 +76,7 @@
     </target>
 	
 	<!--build-->
-	<target name="build" description="Build a new WireBox distribution" depends="init">
+	<target name="build" description="Build a new WireBox distribution" depends="init,run-tests">
 		
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/wirebox/${build.label}">Built on ${start.TODAY}</concat>
