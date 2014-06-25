@@ -3,18 +3,17 @@
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-
 Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/test-harness">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/cbtestharness">
 	<cfscript>
 		function setup(){
-			// load virtual aplication.
 			super.setup();
-			proxy = CreateObject("component","coldbox.test-harness.coldboxproxy");
+			proxy = CreateObject("component","cbtestharness.remote.MyProxy");
+		}
+
+		function teardown(){
+			structDelete( application, "testApp" );
 		}
 
 		function testRemotingUtil(){
@@ -25,7 +24,8 @@ Description :
 
 		function testNoEvent(){
 			//Test With default ProxyReturnCollection = false
-			expectException("ColdBoxProxy.NoEventDetected");
+			expectException( "ColdBoxProxy.NoEventDetected" );
+			makePublic( proxy, "process" );
 			results = proxy.process();
 		}
 
@@ -33,11 +33,12 @@ Description :
 			var results = "";
 
 			//Test With default ProxyReturnCollection = false
-			results = proxy.process(event='ehProxy.getIntroArrays');
+			makePublic( proxy, "process" );
+			results = proxy.process(event='proxy.getIntroArrays');
 			AssertTrue( isArray(results), "Getting Array");
 
 			//test other process
-			results = proxy.process(event='ehProxy.getIntroStructure');
+			results = proxy.process(event='proxy.getIntroStructure');
 			AssertTrue( isStruct(results), "Getting Structure");
 		}
 
@@ -48,7 +49,8 @@ Description :
 			application.cbController.setSetting("ProxyReturnCollection",true);
 
 			//Test With default ProxyReturnCollection = false
-			results = proxy.process(event='ehProxy.getIntroArraysCollection');
+			makePublic( proxy, "process" );
+			results = proxy.process(event='proxy.getIntroArraysCollection');
 			AssertTrue( isStruct(results), "Collection Test");
 			AssertTrue( isArray(results.myArray), "Getting Array From Collection");
 
@@ -62,14 +64,6 @@ Description :
 			makePublic(proxy,"announceInterception");
 			results = proxy.announceInterception(state='onLog');
 			AssertTrue(results,"onLog intercepted");
-		}
-
-		function testTracer(){
-			getController().getDebuggerService().resetTracers();
-			makePublic(proxy, "tracer");
-			proxy.tracer("ProxyTest",{});
-			//debug( getController().getDebuggerService().getDebugMode() );
-			assertTrue( arrayLen(getController().getDebuggerService().getTracers()) );
 		}
 
 		function testVerifyColdBox(){
@@ -98,21 +92,14 @@ Description :
 		}
 
 		function testProxyAppLoading(){
-			var local = structnew();
-
-			createObject("component","coldbox.system.core.dynamic.MixerUtil").init().start(proxy);
-
 			local.load = structnew();
-			local.load.appMapping = "/coldbox/test-harness";
-			local.load.configLocation = "coldbox.test-harness.config.Coldbox";
-			local.load.reloadApp = true;
-			proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
+			local.load.appMapping 		= "/coldbox/test-harness";
+			local.load.configLocation	= "coldbox.test-harness.config.Coldbox";
+			local.load.reloadApp 		= true;
+			local.load.appKey 			= "testApp";
 
-			local.load = structnew();
-			local.load.appMapping = "/coldbox/test-harness";
-			local.load.reloadApp = true;
-
-			proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
+			makePublic( proxy, "loadColdBox" );
+			proxy.loadColdBox( argumentCollection=local.load );
 		}
 
 		function testLogBox(){
@@ -122,13 +109,6 @@ Description :
 			assertEquals(getController().getLogBox(), proxy.getLogBox());
 			assertEquals(getController().getLogBox().getRootLogger(), proxy.getRootLogger());
 			assertEquals(getController().getLogBox().getLogger('unittest'), proxy.getLogger('unittest'));
-		}
-
-		function testGetPlugin(){
-			makePublic(proxy,"getPlugin");
-			assertTrue( isObject( proxy.getPlugin("Renderer") ) );
-			assertTrue( isObject( proxy.getPlugin("date", true) ) );
-			assertTrue( isObject( proxy.getPlugin(plugin="ModPlugin",module="test1") ) );
 		}
 
 		function testGetInterceptor(){

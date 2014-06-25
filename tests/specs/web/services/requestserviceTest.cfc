@@ -55,39 +55,6 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testDebugModesRequestCaptures" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getRequestService();
-		var context = "";
-
-		/* Setup test variables */
-		url.debugmode = true;
-		url.debugpass = "invalid";
-
-		/* Catpure the request */
-		context = service.requestCapture();
-
-		/* Set debugmode to false to tests */
-		getcontroller().getDebuggerService().setDebugMode(false);
-
-		/* Tests */
-		AssertFalse(getcontroller().getDebuggerService().getDebugMode(), "Debug Mode test invalid password");
-
-		/* Now test with right password. */
-		structClear(url);
-		structClear(request);
-		url.debugmode = true;
-		url.debugpass = "coldbox";
-		getController().setSetting('debugPassword',"coldbox");
-
-		/* Catpure the request */
-		context = service.requestCapture();
-
-		/* Tests */
-		AssertTrue(getcontroller().getDebuggerService().getDebugMode(), "Debug Mode test good password: #getcontroller().getDebuggerService().getDebugMode()#");
-		</cfscript>
-	</cffunction>
-
 	<cffunction name="testDefaultEvent" access="public" returntype="void" output="false">
 		<cfscript>
 		var service = getController().getRequestService();
@@ -101,8 +68,7 @@ Description :
 
 		/* Tests */
 		AssertTrue( isObject(context), "Context Creation");
-		AssertTrue( url.event neq context.getCurrentEvent(), "Event mismatch");
-		AssertEquals( context.getCurrentEvent(), url.event & "." & getController().getSetting("EventAction",1) );
+		AssertTrue( url.event eq context.getCurrentEvent(), "Event mismatch: #context.getCurrentEvent()#");
 		</cfscript>
 	</cffunction>
 

@@ -8,7 +8,7 @@ Author      :	Sana Ullah
 Date        :	November 10, 2008
 Description :
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/test-harness">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/cbtestharness">
 
 	<cfscript>
 		function setup(){
@@ -25,33 +25,29 @@ Description :
 
 		function testRenderViewWithCacheProviders(){
 			var r = getController().getPlugin("Renderer");
-			results = r.renderView(view="navigation",cache=true,cacheTimeout="5", cacheProvider="default");
-			debug( results );
-			results2 = r.renderView(view="navigation",cache=true,cacheTimeout="5", cacheProvider="default");
+			results 	= r.renderView( view="simpleView", cache=true, cacheTimeout="5", cacheProvider="default" );
+			results2 	= r.renderView( view="simpleView", cache=true, cacheTimeout="5", cacheProvider="default" );
 			assertEquals( results, results2 );
-			assertTrue( getCacheBox().getCache("default").lookup("cbox_view-:navigation") );
 		}
 
 		function testRenderExternalView(){
 			var r = getController().getPlugin("Renderer");
-			results = r.renderExternalView("/coldbox/testing/testviews/externalview");
+			results = r.renderExternalView("/cbtestharness/external/testViews/externalview");
 			assertTrue( findnocase("external",results) );
 		}
 
 		function testRenderExternalViewWithCaching(){
 			var r = getController().getPlugin("Renderer");
-			results = r.renderExternalView(view="/coldbox/testing/testviews/externalview",cache="true",cacheTimeout="5");
-			results2 = r.renderExternalView(view="/coldbox/testing/testviews/externalview",cache="true",cacheTimeout="5");
+			results = r.renderExternalView(view="/cbtestharness/external/testViews/externalview",cache="true",cacheTimeout="5");
+			results2 = r.renderExternalView(view="/cbtestharness/external/testViews/externalview",cache="true",cacheTimeout="5");
 			assertEquals( results, results2 );
 		}
 
 		function testRenderExternalViewWithCachingProviders(){
 			var r = getController().getPlugin("Renderer");
-			results = r.renderExternalView(view="/coldbox/testing/testviews/externalview", cache="true", cacheTimeout="5", cacheProvider="default");
-			results2 = r.renderExternalView(view="/coldbox/testing/testviews/externalview", cache="true", cacheTimeout="5", cacheProvider="default");
+			results = r.renderExternalView(view="/cbtestharness/external/testViews/externalview", cache="true", cacheTimeout="5", cacheProvider="default");
+			results2 = r.renderExternalView(view="/cbtestharness/external/testViews/externalview", cache="true", cacheTimeout="5", cacheProvider="default");
 			assertEquals( results, results2 );
-			debug( getCacheBox().getCache("default").getKeys() );
-			assertTrue( getCacheBox().getCache("default").lookup("cbox_view-external-/coldbox/testing/testviews/externalView") );
 		}
 
 	</cfscript>

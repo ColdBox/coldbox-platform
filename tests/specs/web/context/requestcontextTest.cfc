@@ -1,10 +1,7 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
-	<cfset this.loadColdBox = false>
-	
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
+
 	<cffunction name="setUp">
 		<cfscript>
-			super.init();
-			
 			oRC = createObject("component","coldbox.system.web.context.RequestContext");
 
 			/* Properties */
@@ -432,7 +429,7 @@
 			/* query string transformation */
 			event.setisSES(true);
 			event.setsesBaseURL(base);
-			testurl = event.buildLink(linkTo='general/index',queryString="page=2&test=4");
+			testurl = event.buildLink(linkTo='general/index',queryString="page=2&tests=4");
 			AssertEquals(testurl, base & "/general/index/page/2/tests/4" );
 
 			/* ssl test */

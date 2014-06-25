@@ -16,8 +16,22 @@ ant -f test.xml run-junit
 
 PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 -->
-<project name="coldbox-testbox-runner" default="run" basedir=".">
+<project name="base-test-runner" default="run" basedir=".">
 	
+	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
+	<property name="test.bundles"		value="" />
+	<!-- FILL OUT THE DIRECTORY MAPPING TO TEST -->
+	<property name="test.directory"		value="" />
+	<!-- FILL OUT IF YOU WANT THE DIRECTORY RUNNER TO RECURSE OR NOT -->
+	<property name="test.recurse"		value="" />
+	<!-- FILL OUT THE LABELS YOU WANT TO APPLY TO THE TESTS -->
+	<property name="test.labels"		value="" />
+	<!-- FILL OUT THE TEST REPORTER YOU WANT, AVAILABLE REPORTERS ARE: ANTJunit, Codexwiki, console, dot, doc, json, junit, min, raw, simple, tap, text, xml -->
+	<property name="test.reporter"		value="simple" />
+	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED --> 
+	<property name="report.dir"  		value="${basedir}/results" />
+	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
+
 	<!-- Load Contrib Tasks -->
 	<path id="cp">
 		<fileset dir="../../build/lib">

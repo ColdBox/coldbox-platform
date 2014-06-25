@@ -19,6 +19,17 @@ component{
 	// harness path
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
+    // ORM Settings
+    this.ormEnabled 	  = true;
+    this.datasource		  = "coolblog";
+    this.ormSettings	  = {
+    	cfclocation = "/cbtestharness/model/entities",
+    	logSQL 		= false,
+    	flushAtRequestEnd = false,
+    	autoManageSession = false,
+    	eventHandling 	  =  false
+    };
+
 	function onRequestStart( required targetPage ){
 
 		if( structKeyExists(URL,"reinit") ){

@@ -26,12 +26,12 @@ Description :
     <cffunction name="selfAutowire" output="false" access="private" hint="Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path.">
 		<cfscript>
 			var script_name = cgi.script_name;
-			
+
 			// Only process this logic if hitting a remote proxy CFC directly
 			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' ) {
 				return;
 			}
-			
+
 			// Find the path of the proxy component being called
 			var componentpath = replaceNoCase(mid( script_name, 2, len( script_name ) -5 ),'/','.');
 			var injector = getWirebox();
@@ -317,27 +317,26 @@ Description :
 		<cfargument name="appMapping" 		type="string"  required="true" hint="The absolute location of the root of the coldbox application. This is usually where the Application.cfc is and where the conventions are read from."/>
 		<cfargument name="configLocation" 	type="string"  required="false" default="" 		hint="The absolute location of the config file to override, if not passed, it will try to locate it by convention."/>
 		<cfargument name="reloadApp" 		type="boolean" required="false" default="false" hint="Flag to reload the application or not"/>
+		<cfargument name="appKey" 			type="string" 	required="true" default="#COLDBOX_APP_KEY#" hint="The application key name to use, defaults to 'cbController'"/>
 		<!--- ************************************************************* --->
 		<cfset var cbController = "">
-		<cfset var appHash = hash(getBaseTemplatePath())>
+		<cfset var appHash = hash( getBaseTemplatePath() )>
 
 		<!--- Reload Checks --->
-		<cfif not structKeyExists(application,COLDBOX_APP_KEY) or not application[COLDBOX_APP_KEY].getColdboxInitiated() or arguments.reloadApp>
+		<cfif not structKeyExists( application, arguments.appKey ) or not application[ arguments.appKey ].getColdboxInitiated() or arguments.reloadApp>
 			<cflock type="exclusive" name="#appHash#" timeout="30" throwontimeout="true">
 				<cfscript>
-				if ( not structkeyExists(application,COLDBOX_APP_KEY) OR NOT
-					 application[COLDBOX_APP_KEY].getColdboxInitiated() OR
+				if ( not structkeyExists( application, arguments.appKey ) OR NOT
+					 application[ arguments.appKey ].getColdboxInitiated() OR
 					 arguments.reloadApp ){
 					// Cleanup, Just in Case
-					if( structKeyExists(application,COLDBOX_APP_KEY) ){
-						structDelete(application,COLDBOX_APP_KEY);
-					}
+					structDelete( application, arguments.appKey );
 					// Load it Up baby!!
-					cbController = CreateObject("component", "coldbox.system.web.Controller").init( expandPath(arguments.appMapping) );
+					cbController = CreateObject( "component", "coldbox.system.web.Controller" ).init( expandPath(arguments.appMapping), arguments.appKey );
 					// Put in Scope
-					application[COLDBOX_APP_KEY] = cbController;
+					application[ arguments.appKey ] = cbController;
 					// Setup Calls
-					cbController.getLoaderService().loadApplication(arguments.configLocation,arguments.appMapping);
+					cbController.getLoaderService().loadApplication( arguments.configLocation, arguments.appMapping );
 				}
 				</cfscript>
 			</cflock>
