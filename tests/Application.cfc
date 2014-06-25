@@ -32,9 +32,7 @@ component{
 
 	function onRequestStart( required targetPage ){
 
-		if( structKeyExists(URL,"reinit") ){
-			ORMReload();
-		}
+		ORMReload();
 
 		return true;
 	}
