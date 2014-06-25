@@ -59,10 +59,23 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		<loadproperties srcFile="test.properties"/>
 		<!-- Start Init -->
 		<mkdir dir="${junitreport.dir}" />
-		<chmod file="${report.dir}/**" perm="g+wxrs" type="both" />
 		<delete>
 			<fileset dir="${report.dir}" />
 		</delete>
+		<!-- Integration permissions -->
+		<if>
+			<equals arg1="${environment}" arg2="auto" />
+			<then>
+				<chmod file="${report.dir}/**" perm="g+wxrs" type="both" verbose="true"/>
+				<chmod file="${report.dir}/**" perm="o+wrs" type="both" verbose="true" />
+				<chown owner="stg-ortus" verbose="true">
+					<fileset dir="${report.dir}" />
+				</chown>
+			</then>
+			<else>
+			</else>
+		</if>
+		<!-- Timestamp and latest run -->
 		<tstamp prefix="start">
 			<format property="TODAY" pattern="MM-dd-YYYY hh:mm:ss aa"/>
 		</tstamp>
