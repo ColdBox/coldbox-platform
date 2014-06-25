@@ -10,7 +10,8 @@ component{
 	this.sessionManagement = true;
 	this.setClientCookies = true;
 	this.clientManagement = true;
-	this.sessionTimeout = createTimeSpan(0,0,5,0);
+	this.sessionTimeout = createTimeSpan(0,0,10,0);
+	this.applicationTimeout = createTimeSpan(0,0,10,0);
 
 	// setup test path
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
