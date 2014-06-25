@@ -8,3 +8,5 @@ test-harness/logs
 test-harness/test/logs
 test-harness/test/specs/integration/logs
 testing/cases/logging/tmp
+tests/automation/results
+tests/automation/results-*
