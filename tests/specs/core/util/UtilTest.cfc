@@ -1,8 +1,8 @@
-﻿<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
 		util = CreateObject("component","coldbox.system.core.util.Util");
-		class1 = CreateObject("component","coldbox.tests.specs.core.util.class1");
+		class1 = CreateObject("component","tests.resources.Class1");
 	}
 
 	function isInstanceCheck(){
@@ -28,18 +28,18 @@
 		md = util.getInheritedMetaData(class1);
 		testGetInheritedMetaDataHelper(md);
 
-		md = util.getInheritedMetaData("coldbox.tests.specs.core.util.class1");
+		md = util.getInheritedMetaData("tests.resources.Class1");
 		testGetInheritedMetaDataHelper(md);
 
 	}
 
 	function testGetInheritedMetaDataStopRecursion(){
-		stopRecursions = ["coldbox.tests.specs.core.util.class2"];
+		stopRecursions = ["tests.resources.Class2"];
 
 		md = util.getInheritedMetaData(class1,stopRecursions);
 		testGetInheritedMetaDataStopRecursionHelper(md);
 
-		md = util.getInheritedMetaData("coldbox.tests.specs.core.util.class1",stopRecursions);
+		md = util.getInheritedMetaData("tests.resources.Class1",stopRecursions);
 		testGetInheritedMetaDataStopRecursionHelper(md);
 
 	}
@@ -48,9 +48,9 @@
 
 		assertTrue( structKeyExists( md, "inheritanceTrail") );
 		assertEquals( arrayLen(md.inheritanceTrail), 4 );
-		assertEquals( md.inheritanceTrail[1], "coldbox.tests.specs.core.util.class1" );
-		assertEquals( md.inheritanceTrail[2], "coldbox.tests.specs.core.util.class2" );
-		assertEquals( md.inheritanceTrail[3], "coldbox.tests.specs.core.util.class3" );
+		assertEquals( md.inheritanceTrail[1], "tests.resources.Class1" );
+		assertEquals( md.inheritanceTrail[2], "tests.resources.Class2" );
+		assertEquals( md.inheritanceTrail[3], "tests.resources.Class3" );
 		assertTrue( listFindNoCase("WEB-INF.cftags.component,railo-context.component", md.inheritanceTrail[4]) );
 
 		assertEquals( md.output, true );
@@ -92,7 +92,7 @@
 
 		assertTrue( structKeyExists( md, "inheritanceTrail") );
 		assertEquals( arrayLen(md.inheritanceTrail), 1 );
-		assertEquals( md.inheritanceTrail[1], "coldbox.tests.specs.core.util.class1" );
+		assertEquals( md.inheritanceTrail[1], "tests.resources.Class1" );
 
 		assertEquals( md.output, true );
 		assertEquals( md.scope, "server" );

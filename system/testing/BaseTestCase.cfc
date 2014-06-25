@@ -100,6 +100,11 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<cfscript>
 			// Are we doing integration tests
 			if( this.loadColdbox ){
+				// verify ColdBox still exists, else load it again:
+				if( !structKeyExists( application, getColdboxAppKey() ) ){
+					beforeTests();
+				}
+				// remove context
 				getController().getRequestService().removeContext();
 			}
 		</cfscript>

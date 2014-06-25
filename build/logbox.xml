@@ -65,6 +65,14 @@
 			</then>
 		</if>
 	</target>
+	
+	<!-- Build test reports -->
+    <target name="run-tests">
+        <subant target="run-junit">
+          	<fileset dir="tests/automation" includes="test-logbox.xml"/>
+    		<property name="environment" value="${environment}" />
+        </subant>
+    </target>
 		
 	<!--build-->
 	<target name="build" description="Build a new LogBox distribution" depends="init">

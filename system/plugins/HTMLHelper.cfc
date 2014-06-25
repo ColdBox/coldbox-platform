@@ -1524,7 +1524,7 @@ Description :
 
 			// list or array or query?
 			if( isSimpleValue(val) ){ val = listToArray(val); }
-			if( isQuery(val) ){ val = getPlugin("QueryHelper").getColumnArray(val,arguments.column); }
+			if( isQuery(val) ){ val = getColumnArray(val,arguments.column); }
 
 			// start tag
 			str.append("<#arguments.tag#");

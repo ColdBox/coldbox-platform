@@ -7,9 +7,9 @@
 		logBox = {
 			// Define Appenders
 			appenders = {
-				coldboxTracer = { 
-					class="coldbox.system.logging.appenders.ColdboxTracerAppender",
-					layout="coldbox.tests.specs.logging.MockLayout", 
+				coldboxTracer = {
+					class="coldbox.system.logging.appenders.ConsoleAppender",
+					layout="coldbox.tests.specs.logging.MockLayout",
 					properties = {
 						name = "awesome"
 					}
@@ -28,7 +28,7 @@
 			warn = [ "hello.model", "yes.wow.wow" ],
 			error = [ "hello.model", "yes.wow.wow" ],
 			fatal = [ "hello.model", "yes.wow.wow" ],
-			OFF = [ "hello.model", "yes.wow.wow" ] 
+			OFF = [ "hello.model", "yes.wow.wow" ]
 		};
 	}
 </cfscript>

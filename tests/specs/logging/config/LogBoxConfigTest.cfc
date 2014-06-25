@@ -1,4 +1,4 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
 		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init();

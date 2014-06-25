@@ -5,19 +5,21 @@
 		flash = getMockBox().createMock("coldbox.system.web.flash.ClientFlash");
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
 		converter = getMockBox().createMock(className="coldbox.system.core.conversion.ObjectMarshaller").init();
-		
+
 		flash.init(mockController);
-		
+
+		system = createObject( "java","java.lang.System" );
 		obj = createObject("component","coldbox.system.core.util.CFMLEngine").init();
-		
+		test = converter.deserializeObject( converter.serializeObject( obj ) );
+
 		//test scope
 		testscope = {
 			test={content="luis",autoPurge=true,keep=true},
 			date={content=now(),autoPurge=true,keep=true},
 			obj={content=obj,autoPurge=true,keep=true}
 		};
-	}	
-	function teardown(){ 
+	}
+	function teardown(){
 		structClear(client);
 	}
 	function testClearFlash(){
@@ -36,11 +38,13 @@
 		assertTrue( flash.flashExists() );
 	}
 	function testgetFlash(){
-		assertEquals( flash.getFlash(), structNew());
-		
-		client[flash.getFlashKey()] = converter.serializeObject( testscope );
-		
-		assertEquals( flash.getFlash(), testScope);
+		//assertEquals( flash.getFlash(), structNew() );
+
+		client[ flash.getFlashKey() ] = converter.serializeObject( testscope );
+
+		assertTrue( structKeyExists( flash.getFlash(), "obj" ) );
+		assertTrue( structKeyExists( flash.getFlash(), "date" ) );
+		assertTrue( structKeyExists( flash.getFlash(), "test" ) );
 	}
 </cfscript>
 </cfcomponent>
