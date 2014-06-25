@@ -62,19 +62,8 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		<delete>
 			<fileset dir="${report.dir}" />
 		</delete>
-		<!-- Integration permissions -->
-		<if>
-			<equals arg1="${environment}" arg2="auto" />
-			<then>
-				<chmod file="${report.dir}/**" perm="g+wxrs" type="both" verbose="true"/>
-				<chmod file="${report.dir}/**" perm="o+wrs" type="both" verbose="true" />
-				<chown owner="stg-ortus" verbose="true">
-					<fileset dir="${report.dir}" />
-				</chown>
-			</then>
-			<else>
-			</else>
-		</if>
+		<!-- update permissions -->
+		<antcall target="update.permissions" /> 
 		<!-- Timestamp and latest run -->
 		<tstamp prefix="start">
 			<format property="TODAY" pattern="MM-dd-YYYY hh:mm:ss aa"/>
@@ -82,6 +71,24 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		<concat destfile="${report.dir}/latestrun.log">Tests ran at ${start.TODAY}</concat>
 	</target>
 	
+	<!-- update permissions on reports -->
+	<target name="update.permissions" description="Update staging server permissions">
+		<!-- Integration permissions -->
+		<if>
+			<equals arg1="${environment}" arg2="auto" />
+			<then>
+				<chmod file="${report.dir}/**" perm="g+wxrs" type="both" verbose="true"  />
+				<chmod file="${report.dir}/**" perm="o+wrs"  type="both" verbose="true" />
+				<chown owner="stg-ortus" verbose="true">
+					<fileset dir="${report.dir}" />
+				</chown>
+			</then>
+			<else>
+			</else>
+		</if>
+	</target>
+	
+	<!-- run tests -->
 	<target name="run" depends="init" description="Run our tests and produce awesome results">  
 
 		<!-- Directory Runner 
@@ -119,6 +126,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
         <fail if="test.failed"/>
 	</target>
 
+	<!-- run junit reports -->
 	<target name="run-junit" depends="init" description="Run our tests and produce ANT JUnit reports">  
 
 		<!-- Directory Runner 
@@ -147,6 +155,9 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			</else>
 		</if>
 		
+		<!-- update permissions -->
+		<antcall target="update.permissions" /> 
+		
 		<!-- Create fancy junit reports -->
 		<junitreport todir="${junitreport.dir}">  
 			<fileset dir="${report.dir}">  
@@ -158,11 +169,12 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		</junitreport> 
 		<!-- Rename report -->
 		<move file="${junitreport.dir}/junit-noframes.html" tofile="${junitreport.dir}/index.html" />
-		
         <!-- Read Result Properties -->
         <property file="${report.dir}/TEST.properties"/>
         <!-- Echo them out -->
         <echoproperties regex="^(test|total).*"/>
+		<!-- update permissions again -->
+		<antcall target="update.permissions" /> 
         <!-- Fail build if they failed -->
         <fail if="test.failed"/>
 	</target>
