@@ -134,9 +134,20 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		-->
 		<get dest="${report.dir}/results.xml" 
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=ANTJunit&amp;labels=${test.labels}&amp;reportPath=${report.dir}&amp;propertiesSummary=true" 
-			 verbose="true"/>
+			 verbose="true"
+			 ignoreerrors="true"/>
 		
-		 <!-- Create fancy junit reports -->
+		<!-- Check if file was created -->
+		<if>
+			<available file="${report.dir}/TEST.properties" />
+			<then>
+			</then>
+			<else>
+				<fail message="Build failed as ${report.dir}/TEST.properties was not found!" />
+			</else>
+		</if>
+		
+		<!-- Create fancy junit reports -->
 		<junitreport todir="${junitreport.dir}">  
 			<fileset dir="${report.dir}">  
 				<include name="TEST-*.xml"/>  
