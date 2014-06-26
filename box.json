@@ -1,6 +1,6 @@
 {
 	"name" 				: "ColdBox Platform",
-	"version"			: "4.0.0",
+	"version"			: "4.0.0.@build.number@",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "coldbox-platform",
 	"type"				: "mvc",

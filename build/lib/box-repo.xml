@@ -1,0 +1,45 @@
+<project name="box-repo-tasks">
+	<!-- Create Box Repo Task -->
+	<macrodef name="box-repo">
+	<attribute name="location" />
+	<attribute name="artifactID"/>
+	<attribute name="groupID"/>
+	<attribute name="latest"/>
+	<attribute name="classifiers" default=""/>
+	<sequential>
+		<tstamp prefix="repo.timestamp"/>
+		<!-- Get repo versions -->
+		<var name="versions" value="" />
+		<for param="directory">
+			<dirset dir="@{location}">
+				<include name="*" />
+			</dirset>
+			<sequential>
+				<propertyregex input="@{directory}" select="\1" regexp=".*/(.*)$"  property="tmpDirName" override="true"></propertyregex>
+				<if>
+					<equals arg1="${versions}" arg2=""/>
+					<then>
+						<var name="versions" value="${tmpDirName}" />
+					</then>
+					<else>
+						<var name="versions" value="${versions},${tmpDirName}" />
+					</else>
+				</if>
+			</sequential>
+		</for>
+<!-- Setup Box-Repo -->
+<echo file="@{location}/box-repo.json">
+{
+	"artifactID" : "@{artifactID}",
+	"groupID" : "@{groupID}",
+	"versioning" : {
+		"latest" : "@{latest}",
+		"latestUpdated" : "${repo.timestamp.DSTAMP}${repo.timestamp.TSTAMP}",
+		"versions" : "${versions}",
+		"classifiers" : "@{classifiers}"
+	}
+}
+</echo>
+	</sequential>
+	</macrodef>
+</project>
