@@ -1,7 +1,7 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
-		props = {filePath=expandPath("/coldbox/testing/cases/logging/tmp"),autoExpand=false,
+		props = {filePath=expandPath("/tests/logs"),autoExpand=false,
 				 fileMaxArchives=1,fileMaxSize=3};
 		//debug(props);
 		fileappender = getMockBox().createMock(className="coldbox.system.logging.appenders.RollingFileAppender");
