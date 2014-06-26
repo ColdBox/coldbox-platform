@@ -1,6 +1,6 @@
 {
 	"name" 				: "WireBox DI/AOP",
-	"version"			: "2.0.0",
+	"version"			: "2.0.0.@build.number@",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "wirebox",
 	"type"				: "di",

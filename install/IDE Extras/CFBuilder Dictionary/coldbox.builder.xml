@@ -665,7 +665,7 @@
 	<scopevar name="removeScanLocations(locations)">
 			<help><![CDATA[Try to remove all the scan locations passed in]]></help>
 		</scopevar>
-	<scopevar name="mapPath(path,[namespace],[prepend])">
+	<scopevar name="mapPath(path,[namespace],[prepend],[force])">
 			<help><![CDATA[Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.]]></help>
 		</scopevar>
 	<scopevar name="into(scope)">
@@ -701,7 +701,7 @@
 	<scopevar name="getColdBox()">
 			<help><![CDATA[Get the bounded ColdBox context for this binder, if any]]></help>
 		</scopevar>
-	<scopevar name="map(alias)">
+	<scopevar name="map(alias,[force])">
 			<help><![CDATA[Create a mapping to an object]]></help>
 		</scopevar>
 	<scopevar name="unMap(name)">

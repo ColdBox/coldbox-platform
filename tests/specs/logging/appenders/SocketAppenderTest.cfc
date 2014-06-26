@@ -5,7 +5,7 @@
 		var prop = {host="localhost",timeout="3",port=localPort,persistConnection=false};
 
 		socketAppender = createMock( className="coldbox.system.logging.appenders.SocketAppender" )
-			.init( 'MyScoketAppender', prop )
+			.init( 'MyScoketAppender', prop );
 
 		loge = createMock( "coldbox.system.logging.LogEvent" )
 			.init( "Unit Test Sample", 0, structnew(), "UnitTest" );
