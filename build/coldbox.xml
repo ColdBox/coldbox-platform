@@ -67,7 +67,12 @@
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}" />
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
-		
+		<!-- Mark as init -->
+		<property name="src.isInit" value="true" />
+	</target>
+	
+	<!-- update permissions on reports -->
+	<target name="update.permissions" description="Update staging server permissions">
 		<!-- Integration permissions -->
 		<if>
 			<equals arg1="${environment}" arg2="auto" />
@@ -80,8 +85,6 @@
 			<else>
 			</else>
 		</if>
-		<!-- Mark as init -->
-		<property name="src.isInit" value="true" />
 	</target>
 	
 	<!-- Run Tests For Platform -->
@@ -120,7 +123,9 @@
 		<mkdir dir="${dir.build}/coldbox/apidocs"/>
 		<property name="dir.coldbox.exports"	value="${dir.exports}/${coldbox.slug}/${coldbox.version}" />
 		<property name="be.coldbox.exports" 	value="${be.exports}/${coldbox.slug}" />
-		
+		<!-- Update Permissions -->
+		<antcall target="update.permissions" />
+				
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/coldbox/${build.label}">Built on ${start.TODAY}</concat>
 		
@@ -218,7 +223,9 @@
 		<mkdir dir="${dir.build}/cachebox/apidocs"/>
 		<property name="dir.cachebox.exports"	value="${dir.exports}/${cachebox.slug}/${cachebox.version}" />
 		<property name="be.cachebox.exports" 	value="${be.exports}/${cachebox.slug}" />
-		
+		<!-- Update Permissions -->
+		<antcall target="update.permissions" />
+				
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/cachebox/${build.label}">Built on ${start.TODAY}</concat>
 		
@@ -308,7 +315,9 @@
 		<mkdir dir="${dir.build}/logbox/apidocs"/>
 		<property name="dir.logbox.exports"	value="${dir.exports}/${logbox.slug}/${logbox.version}" />
 		<property name="be.logbox.exports" 	value="${be.exports}/${logbox.slug}" />
-		
+		<!-- Update Permissions -->
+		<antcall target="update.permissions" />
+				
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/logbox/${build.label}">Built on ${start.TODAY}</concat>
 		
@@ -393,7 +402,9 @@
 		<mkdir dir="${dir.build}/wirebox/apidocs"/>
 		<property name="dir.wirebox.exports"	value="${dir.exports}/${wirebox.slug}/${wirebox.version}" />
 		<property name="be.wirebox.exports" 	value="${be.exports}/${wirebox.slug}" />
-		
+		<!-- Update Permissions -->
+		<antcall target="update.permissions" />
+				
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/wirebox/${build.label}">Built on ${start.TODAY}</concat>
 		
