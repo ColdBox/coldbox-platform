@@ -145,7 +145,7 @@ Description :
 			refLocal.marshalData = event.getRenderData();
 			if ( not structisEmpty(refLocal.marshalData) ){
 				// Marshal Data
-				refLocal.results = getPlugin("Utilities").marshallData(argumentCollection=refLocal.marshalData);
+				refLocal.results = cbController.getDataMarshaller().marshallData( argumentCollection=refLocal.marshalData );
 
 				// Set Return Format according to Marshalling Type if not incoming
 				if( not structKeyExists(arguments, "returnFormat") ){

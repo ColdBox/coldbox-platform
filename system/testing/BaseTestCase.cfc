@@ -392,7 +392,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 						// Render Data?
 						renderData = requestContext.getRenderData();
 						if( isStruct( renderData ) and NOT structIsEmpty( renderData ) ){
-							renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=renderData);
+							renderedContent = cbController.getDataMarshaller().marshallData(argumentCollection=renderData);
 						}
 						// If we have handler results save them in our context for assertions
 						else if ( isDefined("handlerResults") ){

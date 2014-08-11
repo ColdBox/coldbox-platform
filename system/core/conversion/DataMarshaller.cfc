@@ -40,7 +40,7 @@ Description :
 
 		<!--- Validate Type --->
 		<cfif not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type)>
-			<cfthrow message="Invalid type" detail="The type you sent: #arguments.type# is invalid. Valid types are JSON, JSONP, WDDX, XML, TEXT, PDF and PLAIN" type="Utilities.InvalidType">
+			<cfthrow message="Invalid type" detail="The type you sent: #arguments.type# is invalid. Valid types are JSON, JSONP, WDDX, XML, TEXT, PDF and PLAIN" type="InvalidMarshallingType">
 		</cfif>
 
 		<!--- $renderdata convention --->
