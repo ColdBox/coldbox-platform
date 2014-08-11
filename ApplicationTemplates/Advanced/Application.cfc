@@ -3,15 +3,8 @@
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-
-Author     :	Luis Majano
-Date        :	10/16/2007
 Description :
 	This is the Application.cfc for usage withing the ColdBox Framework.
-	Make sure that it extends the coldbox object:
-	coldbox.system.Coldbox
-
-	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent output="false">
 	<cfsetting enablecfoutputonly="yes">
@@ -39,7 +32,7 @@ Description :
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfscript>
 			//Load ColdBox Bootstrap
-			application.cbBootstrap = new coldbox.system.Coldbox( COLDBOX_CONFIG_FILE, COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING );
+			application.cbBootstrap = new coldbox.system.Bootstrap( COLDBOX_CONFIG_FILE, COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING );
 			application.cbBootstrap.loadColdbox();
 			return true;
 		</cfscript>

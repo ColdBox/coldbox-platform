@@ -11,7 +11,10 @@ This is the ColdBox Front Controller that dispatches events and manages your Col
 Only one instance of a specific ColdBox application exists.
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="This is the ColdBox Front Controller that dispatches events and manages your ColdBox application." output="false" serializable="false">
+<cfcomponent hint="This is the ColdBox Front Controller that dispatches events and manages your ColdBox application." output="false" serializable="false" accessors="true">
+
+	<cfproperty name="dataMarshaller">
+	<cfproperty name="testing">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -60,6 +63,10 @@ Only one instance of a specific ColdBox application exists.
 			// WireBox Instance
 			instance.wireBox	= createObject("component","coldbox.system.ioc.Injector");
 
+			// Create Data Marshaller
+			variables.dataMarshaller = new coldbox.system.core.conversion.DataMarshaller();
+			variables.testing = "luis";
+
 			return this;
 		</cfscript>
 	</cffunction>
@@ -69,7 +76,7 @@ Only one instance of a specific ColdBox application exists.
 	<!--- Get instance memento --->
 	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the controller's internal state">
 		<cfset var memento = {
-			instance = instance, services = services
+			instance = instance, services = services, variables = variables
 		}>
 		<cfreturn memento>
 	</cffunction>

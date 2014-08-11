@@ -28,26 +28,26 @@ Description :
 <style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.css.cfm"></style>
 
 <div class="fw_errorDiv">
-	<h1>Oops! exception Encountered</h1>
+	<h1>Oopsy! An Exception Was Encountered</h1>
 
 	<div class="fw_errorNotice">
 	<!--- CUSTOM SET MESSAGE --->
-	<h3>#exception.getExtramessage()#</h3>
+	<h3>#oException.getExtramessage()#</h3>
 
 	<!--- ERROR TYPE --->
-	<cfif exception.getType() neq "">
-	<strong>Error Type: </strong> #exception.gettype()# : <cfif exception.geterrorCode() eq "">[N/A]<cfelse>#exception.getErrorCode()#</cfif><br />
+	<cfif oException.getType() neq "">
+	<strong>Error Type: </strong> #oException.gettype()# : <cfif oException.geterrorCode() eq "">[N/A]<cfelse>#oException.getErrorCode()#</cfif><br />
 	</cfif>
 
-	<!--- ERROR exceptionS --->
-	<cfif isStruct(exception.getexceptionStruct()) >
+	<!--- ERROR oExceptionS --->
+	<cfif isStruct(oException.getExceptionStruct()) >
 		<strong>Error Messages:</strong>
-		#exception.getmessage()#<br />
-		<cfif exception.getExtendedINfo() neq "">
-			#exception.getExtendedInfo()#<br />
+		#oException.getmessage()#<br />
+		<cfif oException.getExtendedINfo() neq "">
+			#oException.getExtendedInfo()#<br />
 	 	</cfif>
-	 	<cfif len(exception.getDetail()) neq 0>
-		 	#exception.getDetail()#
+	 	<cfif len(oException.getDetail()) neq 0>
+		 	#oException.getDetail()#
 		 </cfif>
 	</cfif>
 
@@ -57,8 +57,8 @@ Description :
 <table border="0" cellpadding="0" cellspacing="3" class="fw_errorTables" align="center">
 
 	<!--- TAG CONTEXT --->
-	<cfif ArrayLen(exception.getTagContext()) >
-		  <cfset arrayTagContext = exception.getTagContext()>
+	<cfif ArrayLen(oException.getTagContext()) >
+		  <cfset arrayTagContext = oException.getTagContext()>
 		  <tr >
 			<th colspan="2" >Tag Context:</th>
 		  </tr>
@@ -82,7 +82,7 @@ Description :
 	   <th colspan="2" >Framework Snapshot</th>
 	</tr>
 
-	<cfif exception.getErrorType() eq "Application">
+	<cfif oException.getErrorType() eq "Application">
 		<tr>
 		  <td width="75" align="right" class="fw_errorTablesTitles">Current Event: </td>
 		  <td width="463" ><cfif Event.getCurrentEvent() neq "">#Event.getCurrentEvent()#<cfelse>N/A</cfif></td>
@@ -158,47 +158,47 @@ Description :
 	   <td align="right" class="fw_errorTablesTitles"> Remote Address: </td>
 	   <td >#htmlEditFormat(cgi.remote_addr)#</td>
 	 </tr>
-	 <cfif isStruct(exception.getexceptionStruct()) >
+	 <cfif isStruct(oException.getExceptionStruct()) >
 
-	  <cfif exception.getmissingFileName() neq  "">
+	  <cfif oException.getmissingFileName() neq  "">
 		  <tr>
-		   <th colspan="2" >Missing Include exception</th>
+		   <th colspan="2" >Missing Include oException</th>
 		  </tr>
 		  <tr >
 			<td colspan="2" class="fw_errorTablesTitles">Missing File Name:</td>
 		  </tr>
 		  <tr>
-			<td colspan="2" >#exception.getmissingFileName()#</td>
+			<td colspan="2" >#oException.getmissingFileName()#</td>
 		  </tr>
 	  </cfif>
 
-	  <cfif findnocase("database", exception.getType() )>
+	  <cfif findnocase("database", oException.getType() )>
 		  <tr >
-			<th colspan="2" >Database exception Information:</th>
+			<th colspan="2" >Database oException Information:</th>
 		  </tr>
 		  <tr >
 			<td colspan="2" class="fw_errorTablesTitles">NativeErrorCode & SQL State:</td>
 		  </tr>
 		  <tr>
-			<td colspan="2" >#exception.getNativeErrorCode()# : #exception.getSQLState()#</td>
+			<td colspan="2" >#oException.getNativeErrorCode()# : #oException.getSQLState()#</td>
 		  </tr>
 		  <tr >
 			<td colspan="2" class="fw_errorTablesTitles">SQL Sent:</td>
 		  </tr>
 		  <tr>
-			<td colspan="2" >#exception.getSQL()#</td>
+			<td colspan="2" >#oException.getSQL()#</td>
 		  </tr>
 		  <tr >
 			<td colspan="2" class="fw_errorTablesTitles">Database Driver Error Message:</td>
 		  </tr>
 		  <tr>
-			<td colspan="2" >#exception.getqueryError()#</td>
+			<td colspan="2" >#oException.getqueryError()#</td>
 		  </tr>
 		  <tr >
 			<td colspan="2" class="fw_errorTablesTitles">Name-Value Pairs:</td>
 		  </tr>
 		  <tr>
-			<td colspan="2" >#exception.getWhere()#</td>
+			<td colspan="2" >#oException.getWhere()#</td>
 		  </tr>
 	  </cfif>
 	</cfif>
@@ -248,7 +248,7 @@ Description :
 	 </tr>
 	 <tr>
 		<td colspan="2" >
-			<div class="fw_stacktrace"><pre>#exception.getstackTrace()#</pre></div>
+			<div class="fw_stacktrace"><pre>#oException.getstackTrace()#</pre></div>
 		</td>
 	 </tr>
 
@@ -258,10 +258,10 @@ Description :
 
 	 <tr>
 	    <td colspan="2" >
-	    <cfif isSimpleValue( exception.getExtraInfo() )>
-	   		<cfif not len(exception.getExtraInfo())>[N/A]<cfelse>#exception.getExtraInfo()#</cfif>
+	    <cfif isSimpleValue( oException.getExtraInfo() )>
+	   		<cfif not len(oException.getExtraInfo())>[N/A]<cfelse>#oException.getExtraInfo()#</cfif>
 	   	<cfelse>
-	   		<cfdump var="#exception.getExtraInfo()#" expand="false">
+	   		<cfdump var="#oException.getExtraInfo()#" expand="false">
 		</cfif>
 	    </td>
 	 </tr>

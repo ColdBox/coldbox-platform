@@ -1,0 +1,1 @@
+﻿component output="false" singleton{	data = [		{ id = createUUID(), name = "luis" },		{ id = createUUID(), name = "lucas" },		{ id = createUUID(), name = "fernando" }	];	// Default Action	function index( event, rc, prc ){		prc.data = variables.data;		event.renderData( data=prc.data, formats="json,xml,wddx,pdf,html" );	}}
