@@ -38,8 +38,8 @@
 		makePublic(builder,"getDatasource");
 
 		d = builder.getDatasource('test');
-		assertEquals( "test", d.getName() );
-		assertEquals( "mysql", d.getDBType() );
+		assertEquals( "test", d.name );
+		assertEquals( "mysql", d.dbtype );
 	}
 
 	function testGetOCMDSL(){

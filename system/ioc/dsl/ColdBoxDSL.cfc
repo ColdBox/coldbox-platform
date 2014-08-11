@@ -44,10 +44,10 @@ Description :
 	<cffunction name="getDatasource" access="private" output="false" returnType="any" hint="I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct" colddoc:generic="coldbox.system.core.db.DatasourceBean">
 		<cfargument name="alias" type="any" hint="The alias of the datasource to get from the configstruct (alias property in the config file)">
 		<cfscript>
-		var datasources = instance.coldbox.getSetting("Datasources");
+		var datasources = instance.coldbox.getSetting( "Datasources" );
 		//Try to get the correct datasource.
-		if ( structKeyExists(datasources, arguments.alias) ){
-			return createObject("component","coldbox.system.core.db.DatasourceBean").init(datasources[arguments.alias]);
+		if ( structKeyExists( datasources, arguments.alias ) ){
+			return datasources[ arguments.alias ];
 		}
 		</cfscript>
 	</cffunction>
