@@ -41,7 +41,7 @@ component serializable="false" accessors="true"{
 	* @dsl.hint The DSL string to use to retrieve an instance
 	* @initArguments.hint The constructor structure of arguments to passthrough when initializing the instance
 	*/
-	function getIntance( name, dsl, initArguments={} ){
+	function getInstance( name, dsl, initArguments={} ){
 		return controller.getWirebox().getInstance( argumentCollection=arguments );
 	}
 
