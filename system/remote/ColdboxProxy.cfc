@@ -190,18 +190,19 @@ Description :
 	</cffunction>
 
 	<!--- handleException --->
-	<cffunction name="handleException" output="false" access="private" returntype="void" hint="Handle a ColdBox request Exception">
+	<cffunction name="handleException" output="false" access="private" returntype="void" hint="Handle a ColdBox Proxy Exception">
 		<cfargument name="exceptionObject" type="any" required="true" hint="The exception object"/>
 		<cfscript>
 			var cbController = "";
-			var interceptData = structnew();
+			var interceptData = { exception = arguments.exceptionObject };
 			// Locate ColdBox Controller
 			cbController = getController();
 			// Intercept Exception
-			interceptData.exception = arguments.exceptionObject;
-			cbController.getInterceptorService().processState("onException",interceptData);
+			cbController.getInterceptorService().processState( "onException", interceptData );
 			// Log Exception
-			cbController.getExceptionService().ExceptionHandler(arguments.exceptionObject,"ColdboxProxy","ColdBox Proxy Exception");
+			cbController.getLogBox()
+				.getLogger( this )
+				.error( "ColdBox Proxy Exception: #arguments.exceptionObject.message# #arguments.exceptionObject.detail#", arguments.exceptionObject );
 		</cfscript>
 	</cffunction>
 

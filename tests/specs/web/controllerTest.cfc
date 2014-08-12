@@ -21,7 +21,6 @@
 	<cffunction name="testDependencies" access="public" returntype="any" hint="" output="false" >
 		<cfscript>
 			AssertTrue( isObject(controller.getLoaderService()) );
-			AssertTrue( isObject(controller.getExceptionService()) );
 			AssertTrue( isObject(controller.getRequestService()) );
 			AssertTrue( isObject(controller.getinterceptorService()) );
 			AssertTrue( isObject(controller.getHandlerService()) );
