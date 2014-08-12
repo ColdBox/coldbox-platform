@@ -41,8 +41,12 @@ Description :
 				instance.flashKey = "cbox_flash_" & session.sessionid;
 			}
 			// Check normal cfid and cftoken in cookie
-			else if( structKeyExists(cookie,"CFID") AND structKeyExists(cookie,"CFTOKEN") ){
+			else if( structKeyExists( cookie, "CFID" ) AND structKeyExists( cookie,"CFTOKEN" ) ){
 				instance.flashKey = "cbox_flash_" & hash(cookie.cfid & cookie.cftoken);
+			}
+			// Check normal cfid and cftoken in URL
+			else if( structKeyExists( URL, "CFID" ) AND structKeyExists( URL,"CFTOKEN" ) ){
+				instance.flashKey = "cbox_flash_" & hash( URL.cfid & URL.cftoken );
 			}
 			// check session URL Token
 			else if( isDefined( "session" ) and structKeyExists( session, "URLToken" ) ){
