@@ -443,4 +443,13 @@ component serializable="false" accessors="true"{
 		return this;
 	}
 
+	/**** REMOVE THE FOLLOWING: JUST LEFT UNTIL COMPLETELY REMOVED ****/
+	function getPlugin(){
+		return controller.getPlugin( argumentCollection=arguments );
+	}
+	function getMyPlugin(){
+		arguments.customPlugin = true;
+		return getPlugin( argumentCollection=arguments );
+	}
+
 }
