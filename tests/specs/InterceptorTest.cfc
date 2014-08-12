@@ -1,5 +1,6 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest" output="false">
 <cfscript>
+
 	function setup(){
 		interceptor 	= getMockBox().createMock(className="coldbox.system.Interceptor");
 		mockIService 	= getMockBox().createMock(className="coldbox.system.web.services.InterceptorService",clearMethods=true);
@@ -15,7 +16,8 @@
 			.$("getRequestService",mockRS)
 			.$("getCacheBox", mockCacheBox)
 			.$("getWireBox", mockWireBox)
-			.$("getInterceptorService", mockIService);
+			.$("getInterceptorService", mockIService)
+			.$("getSetting").$args( "UDFLibraryFile" ).$results( [] );
 
 		mockRS.$("getFlashScope",flashScope);
 		mockLogBox.$("getLogger",mockLogger);
@@ -52,7 +54,5 @@
 		assertEquals( interceptor.getBufferString(), "" );
 
 	}
-
-
 </cfscript>
 </cfcomponent>
