@@ -37,15 +37,19 @@ Description :
 			instance.cache = arguments.controller.getColdboxOCM(cacheName);
 			
 			// Check jsession id First
-			if( isDefined("session") and structKeyExists(session,"sessionid") ){
+			if( isDefined( "session" ) and structKeyExists( session, "sessionid" ) ){
 				instance.flashKey = "cbox_flash_" & session.sessionid;
 			}
 			// Check normal cfid and cftoken in cookie
 			else if( structKeyExists(cookie,"CFID") AND structKeyExists(cookie,"CFTOKEN") ){
 				instance.flashKey = "cbox_flash_" & hash(cookie.cfid & cookie.cftoken);
 			}
-			else{
-				getUtil().throwit(message="Cannot find a jsessionid, or cfid/cftoken in the cookie scope. Please verify",type="ColdboxCacheFlash.CFIDException");
+			// check session URL Token
+			else if( isDefined( "session" ) and structKeyExists( session, "URLToken" ) ){
+				instance.flashKey = "cbox_flash_" & session.URLToken;
+			} else {
+				throw( message="Cannot find a jsessionid, URLToken or cfid/cftoken in the cookie scope. Please verify",
+					   type="ColdboxCacheFlash.CFIDException");
 			}
 			
 			return this;
