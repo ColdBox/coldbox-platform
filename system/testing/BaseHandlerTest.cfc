@@ -19,7 +19,7 @@ Description :
     	<cfscript>
     		var md 			= getMetadata(this);
 			var mockBox 	= getMockBox();
-			var UDFLibrary  = "";
+			var UDFLibrary  = [];
 			
 			// Check for handler path else throw exception
 			if( NOT structKeyExists(md, "handler") ){

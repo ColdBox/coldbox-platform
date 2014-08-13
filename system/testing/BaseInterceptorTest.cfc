@@ -17,14 +17,19 @@ Description :
 	<!--- setupTest --->
     <cffunction name="setup" output="false" access="public" returntype="void" hint="Prepare for testing">
     	<cfscript>
-    		var md 		= getMetadata(this);
-			var mockBox = getMockBox();
-			
+    		var md 			= getMetadata(this);
+			var mockBox 	= getMockBox();
+			var UDFLibrary  = [];
+
 			// Check for plugin else throw exception
-			if( NOT structKeyExists(md, "interceptor") ){
-				throw("interceptor annotation not found on component tag","Please declare a 'interceptor=path' annotation","BaseInterceptorTest.InvalidStateException");
+			if( NOT structKeyExists( md, "interceptor" ) ){
+				throw( "interceptor annotation not found on component tag", "Please declare a 'interceptor=path' annotation", "BaseInterceptorTest.InvalidStateException" );
 			}
-			
+			// Check for UDF Library File
+			if( structKeyExists(md, "UDFLibraryFile") ){
+				// inflate it, since it can't be an array in metadata
+				UDFLibrary = listToArray( md.UDFLibraryFile );
+			}
 			// Check if user setup interceptor properties on scope
 			if( NOT structKeyExists(variables,"configProperties") ){
 				variables.configProperties = structnew();
@@ -34,22 +39,25 @@ Description :
 			variables.interceptor = mockBox.createMock(md.interceptor);
 			
 			// Create Mock Objects
-			variables.mockController 	 = mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
-			variables.mockRequestContext = getMockRequestContext();
-			variables.mockRequestService = mockBox.createEmptyMock("coldbox.system.web.services.RequestService").$("getContext", variables.mockRequestContext);
-			variables.mockLogBox	 	 = mockBox.createEmptyMock("coldbox.system.logging.LogBox");
-			variables.mockLogger	 	 = mockBox.createEmptyMock("coldbox.system.logging.Logger");
-			variables.mockFlash		 	 = mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
-			variables.mockCacheBox   	 = mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
-			variables.mockWireBox		 = mockBox.createEmptyMock("coldbox.system.ioc.Injector");
+			variables.mockController 	 		= mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
+			variables.mockInterceptorService 	= mockbox.createEmptyMock( "coldbox.system.web.services.InterceptorService" );
+			variables.mockRequestContext 		= getMockRequestContext();
+			variables.mockRequestService 		= mockBox.createEmptyMock("coldbox.system.web.services.RequestService").$("getContext", variables.mockRequestContext);
+			variables.mockLogBox	 	 		= mockBox.createEmptyMock("coldbox.system.logging.LogBox");
+			variables.mockLogger	 	 		= mockBox.createEmptyMock("coldbox.system.logging.Logger");
+			variables.mockFlash		 	 		= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
+			variables.mockCacheBox   	 		= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
+			variables.mockWireBox		 		= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
 			
 			// Mock Plugin Dependencies
-			variables.mockController.$("getLogBox",variables.mockLogBox)
-				.$("getCacheBox",variables.mockCacheBox)
-				.$("getWireBox",variables.mockWireBox)
-				.$("getRequestService",variables.mockRequestService);
-			variables.mockRequestService.$("getFlashScope",variables.mockFlash);
-			variables.mockLogBox.$("getLogger",variables.mockLogger);
+			variables.mockController.$( "getLogBox", variables.mockLogBox )
+				.$( "getCacheBox",variables.mockCacheBox )
+				.$( "getWireBox",variables.mockWireBox )
+				.$( "getSetting").$args("UDFLibraryFile").$results( UDFLibrary )
+				.$( "getRequestService",variables.mockRequestService )
+				.$( "getInterceptorService", variables.mockInterceptorService );
+			variables.mockRequestService.$( "getFlashScope", variables.mockFlash );
+			variables.mockLogBox.$( "getLogger", variables.mockLogger );
 			
 			// Decorate interceptor?
 			if( NOT getUtil().isFamilyType("interceptor",variables.interceptor) ){
