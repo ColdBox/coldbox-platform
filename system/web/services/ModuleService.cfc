@@ -421,7 +421,11 @@ I oversee and manage ColdBox modules
 
 			// Call on module configuration object onLoad() if found
 			if( structKeyExists(instance.mConfigCache[ arguments.moduleName ],"onUnload") ){
-				instance.mConfigCache[ arguments.moduleName ].onUnload();
+				try{
+					instance.mConfigCache[ arguments.moduleName ].onUnload();
+				} catch( Any e ){
+					instance.logger.error( "Error unloading module: #arguments.moduleName#. #e.message# #e.detail#", e );
+				}
 			}
 
 			// Unregister all interceptors
