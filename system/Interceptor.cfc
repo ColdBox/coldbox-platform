@@ -8,6 +8,18 @@
 */
 component extends="coldbox.system.FrameworkSupertype" serializable="false" accessors="true"{
 
+	// Controller Reference
+	property name="controller";
+	// LogBox reference
+	property name="logBox";
+	// Pre-Configured Log Object
+	property name="log";
+	// Flash Reference
+	property name="flash";
+	// CacheBox Reference
+	property name="cachebox";
+	// WireBox Reference
+	property name="wirebox";
 	// The interceptor properties structure
 	property name="properties" 			type="struct";
 	// The interceptor service
@@ -21,8 +33,20 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	* @result Interceptor
 	*/
 	function init( required controller, struct properties={} ){
-		// super init
-		super.init( arguments.controller );
+		// Register Controller
+		variables.controller = arguments.controller;
+		// Register LogBox
+		variables.logBox = arguments.controller.getLogBox();
+		// Register Log object
+		variables.log = variables.logBox.getLogger( this );
+		// Register Flash RAM
+		variables.flash = arguments.controller.getRequestService().getFlashScope();
+		// Register CacheBox
+		variables.cacheBox = arguments.controller.getCacheBox();
+		// Register WireBox
+		variables.wireBox = arguments.controller.getWireBox();
+		// Load global UDF Libraries into target
+		loadGlobalUDFLibraries();
 		// store properties
 		variables.properties = arguments.properties;
 		// setup interceptor service

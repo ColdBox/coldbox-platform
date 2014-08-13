@@ -8,42 +8,6 @@
 */
 component serializable="false" accessors="true"{
 
-	// Controller Reference
-	property name="controller";
-	// LogBox reference
-	property name="logBox";
-	// Pre-Configured Log Object
-	property name="log";
-	// Flash Reference
-	property name="flash";
-	// CacheBox Reference
-	property name="cachebox";
-	// WireBox Reference
-	property name="wirebox";
-
-	/**
-	* Constructor
-	* @controller.hint The ColdBox controller
-	*/
-	function init( required controller ){
-		// Register Controller
-		variables.controller = arguments.controller;
-		// Register LogBox
-		variables.logBox = arguments.controller.getLogBox();
-		// Register Log object
-		variables.log = variables.logBox.getLogger( this );
-		// Register Flash RAM
-		variables.flash = arguments.controller.getRequestService().getFlashScope();
-		// Register CacheBox
-		variables.cacheBox = arguments.controller.getCacheBox();
-		// Register WireBox
-		variables.wireBox = arguments.controller.getWireBox();
-		// Load global UDF Libraries into target
-		loadGlobalUDFLibraries();
-		
-		return this;
-	}
-
 	/**
 	* Get a datasource structure representation
 	* @alias.hint The alias of the datasource to get from the config structures

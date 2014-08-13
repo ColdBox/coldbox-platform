@@ -528,7 +528,6 @@ TODO: update dsl consistency, so it is faster.
 		<cfscript>
 			var baseObject 		= "";
 			var familyPath 		= "";
-			var key 	   		= "";
 			var constructorArgs = "";
 			var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS";
 
@@ -539,26 +538,25 @@ TODO: update dsl consistency, so it is faster.
 			baseObject = instance.injector.getInstance( arguments.mapping.getName() );
 
 			// Check if init already exists in target and base?
-			if( structKeyExists(arguments.target, "init") AND structKeyExists(baseObject,"init") ){
+			if( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject,"init" ) ){
 				arguments.target.$superInit = baseObject.init;
 			}
-
+			
 			// Mix in methods
-			for(key in baseObject){
+			for( var key in baseObject ){
 				// If target has overriden method, then don't override it with mixin, simulated inheritance
-				if( NOT structKeyExists(arguments.target, key) AND NOT listFindNoCase(excludedProperties, key) ){
-					arguments.target.injectMixin( key, baseObject[key] );
+				if( NOT structKeyExists( arguments.target, key ) AND NOT listFindNoCase( excludedProperties, key ) ){
+					arguments.target.injectMixin( key, baseObject[ key ] );
 				}
 			}
-
 			// Mix in virtual super class
 			arguments.target.$super = baseObject;
 			// Verify if we need to init the virtualized object
-			if( structKeyExists(arguments.target, "$superInit") ){
+			if( structKeyExists( arguments.target, "$superInit" ) ){
 				// get super constructor arguments.
 				constructorArgs = buildArgumentCollection( arguments.mapping, arguments.mapping.getDIConstructorArguments(), baseObject );
 				// Init the virtualized inheritance
-				arguments.target.$superInit(argumentCollection=constructorArgs);
+				arguments.target.$superInit( argumentCollection=constructorArgs );
 			}
 		</cfscript>
     </cffunction>
