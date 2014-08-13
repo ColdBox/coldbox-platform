@@ -104,12 +104,12 @@ Description :
 					isHandler	= true
 				};
 				// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				mapping = wirebox.registerNewInstance(name=invocationPath, instancePath=invocationPath)
+				mapping = wirebox.registerNewInstance( name=invocationPath, instancePath=invocationPath )
 					.setVirtualInheritance( "coldbox.system.EventHandler" )
-					.addDIConstructorArgument(name="controller", value=controller)
+					.addDIConstructorArgument( name="controller", value=controller )
 					.setThreadSafe( true )
-					.setScope( wirebox.getBinder().SCOPES.CACHEBOX )
-					.setCacheProperties(key="handlers-#invocationPath#")
+					.setScope( wirebox.getBinder().SCOPES.SINGLETON )
+					.setCacheProperties( key="handlers-#invocationPath#" )
 					.setExtraAttributes( attribs );
 				// Are we caching or not handlers?
 				if ( NOT instance.handlerCaching ){ 
@@ -504,10 +504,10 @@ Description :
 			// Check if handler mapped?
 			if( NOT wirebox.getBinder().mappingExists( instance.HANDLER_BASE_CLASS ) ){
 				// feed the base class
-				wirebox.registerNewInstance(name=instance.HANDLER_BASE_CLASS,instancePath=instance.HANDLER_BASE_CLASS)
-					.addDIConstructorArgument(name="controller", value=controller);
+				wirebox.registerNewInstance( name=instance.HANDLER_BASE_CLASS, instancePath=instance.HANDLER_BASE_CLASS )
+					.addDIConstructorArgument( name="controller", value=controller );
 				// register ourselves to listen for autowirings
-				instance.interceptorService.registerInterceptionPoint("HandlerService","afterInstanceAutowire",this);
+				instance.interceptorService.registerInterceptionPoint( "HandlerService", "afterInstanceAutowire", this );
 			}
     	</cfscript>
     </cffunction>
