@@ -84,13 +84,12 @@ for( key in scopes ){
 		}
 
 		out.append(')">
-		#tab#<help><![CDATA[#md.functions[x].hint#]]></help>
+		#tab#<help><![CDATA[#md.functions[x].hint ?: ''#]]></help>
 		</scopevar>#br#');
 	}
 
 	out.append('</scopevar>#br#');
 }
-
 out.append('
 	</cfscopes>
 </dictionary>');
