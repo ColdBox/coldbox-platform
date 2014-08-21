@@ -101,11 +101,6 @@
 		c = builder.getColdBoxDSL(def);
 		assertEquals( this, c);
 
-		mockColdbox.$("getColdBoxOCM",this);
-		def = {name="configBean", dsl="coldbox:cacheManager"};
-		c = builder.getColdBoxDSL(def);
-		assertEquals( this, c);
-
 		mockColdbox.$("getModuleService",this);
 		def = {name="configBean", dsl="coldbox:moduleService"};
 		c = builder.getColdBoxDSL(def);

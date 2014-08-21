@@ -87,7 +87,6 @@ Description :
 						case "pluginService"		: { return instance.coldbox.getPluginService(); }
 						case "handlerService"		: { return instance.coldbox.gethandlerService(); }
 						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }
-						case "cacheManager"			: { return instance.coldbox.getColdboxOCM(); }
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
 					} // end of services
 
