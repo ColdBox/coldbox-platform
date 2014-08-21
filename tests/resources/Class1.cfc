@@ -1,4 +1,4 @@
-<cfcomponent extends="class2" displayName="class1" output="true" scope="server" annotationClass1Only="Class1Value" annotationClass1and2and3="class1Value">
+<cfcomponent extends="Class2" displayName="class1" output="true" scope="server" annotationClass1Only="Class1Value" annotationClass1and2and3="class1Value">
 	<cfproperty name="propClass1Only" default="class1Value">
 	<cfproperty name="propClass1and2and3" default="class1Value">
 
