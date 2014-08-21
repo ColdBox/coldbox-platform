@@ -17,7 +17,7 @@
 	}
 
 	function testStopClassRecursion(){
-		stopRecursions = ["com.foo.bar","com.foobar","coldbox.system.coldbox"];
+		var stopRecursions = ["com.foo.bar","com.foobar","coldbox.system.coldbox"];
 
 		makePublic(util,"stopClassRecursion");
 		assertFalse( util.stopClassRecursion( "com.google", stopRecursions ) );
@@ -25,21 +25,21 @@
 	}
 
 	function testGetInheritedMetaData(){
-		md = util.getInheritedMetaData(class1);
+		var md = util.getInheritedMetaData(class1);
 		testGetInheritedMetaDataHelper(md);
 
-		md = util.getInheritedMetaData("tests.resources.Class1");
+		var md = util.getInheritedMetaData("tests.resources.Class1");
 		testGetInheritedMetaDataHelper(md);
 
 	}
 
 	function testGetInheritedMetaDataStopRecursion(){
-		stopRecursions = ["tests.resources.Class2"];
+		var stopRecursions = ["tests.resources.Class2"];
 
-		md = util.getInheritedMetaData(class1,stopRecursions);
+		var md = util.getInheritedMetaData(class1,stopRecursions);
 		testGetInheritedMetaDataStopRecursionHelper(md);
 
-		md = util.getInheritedMetaData("tests.resources.Class1",stopRecursions);
+		var md = util.getInheritedMetaData("tests.resources.Class1",stopRecursions);
 		testGetInheritedMetaDataStopRecursionHelper(md);
 
 	}
@@ -124,7 +124,7 @@
 
 
 	private function itemExists(itemArray, itemName){
-		for(i=1; i<=arrayLen(itemArray); i++){
+		for(var i=1; i<=arrayLen(itemArray); i++){
 			if(itemArray[i].name == itemName){
 				return true;
 			}
@@ -133,7 +133,7 @@
 	}
 
 	private function getItemKey(itemArray, itemName, key){
-		for(i=1; i<=arrayLen(itemArray); i++){
+		for(var i=1; i<=arrayLen(itemArray); i++){
 			if(itemArray[i].name == itemName){
 				return itemArray[i][key];
 			}
