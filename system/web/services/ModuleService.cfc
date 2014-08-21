@@ -195,9 +195,7 @@ I oversee and manage ColdBox modules
 				mapping 				= modulesLocation & "/" & modName,
 				handlerInvocationPath 	= modulesInvocationPath & "." & modName,
 				handlerPhysicalPath     = modLocation,
-				pluginInvocationPath  	= modulesInvocationPath & "." & modName,
-				pluginsPhysicalPath		= modLocation,
-				modelsInvocationPath     = modulesInvocationPath & "." & modName,
+				modelsInvocationPath    = modulesInvocationPath & "." & modName,
 				modelsPhysicalPath		= modLocation,
 				registeredHandlers 		= '',
 				datasources				= {},
@@ -211,7 +209,6 @@ I oversee and manage ColdBox modules
 					handlersLocation 	= "handlers",
 					layoutsLocation 	= "layouts",
 					viewsLocation 		= "views",
-					pluginsLocation     = "plugins",
 					modelsLocation       = "models"
 				}
 			};
@@ -228,8 +225,6 @@ I oversee and manage ColdBox modules
 			// Update the paths according to conventions
 			mConfig.handlerInvocationPath 	&= ".#replace( mConfig.conventions.handlersLocation, "/", ".", "all" )#";
 			mConfig.handlerPhysicalPath     &= "/#mConfig.conventions.handlersLocation#";
-			mConfig.pluginInvocationPath  	&= ".#replace( mConfig.conventions.pluginsLocation, "/", ".", "all" )#";
-			mConfig.pluginsPhysicalPath		&= "/#mConfig.conventions.pluginsLocation#";
 			mConfig.modelsInvocationPath    &= ".#replace( mConfig.conventions.modelsLocation, "/", ".", "all" )#";
 			mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
 			// Register CFML Mapping if it exists, for loading purposes

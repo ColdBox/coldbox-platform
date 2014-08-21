@@ -57,7 +57,6 @@ Optional Methods
 			//Extension Points
 			coldboxExtensionsLocation 	= "",
 			modulesExternalLocation		= [],
-			pluginsExternalLocation 	= "",
 			viewsExternalLocation		= "",
 			layoutsExternalLocation 	= "",
 			handlersExternalLocation  	= "",

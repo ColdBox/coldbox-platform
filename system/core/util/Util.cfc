@@ -226,14 +226,13 @@ Description :
 
 	<!--- isFamilyType --->
     <cffunction name="isFamilyType" output="false" access="public" returntype="boolean" hint="Checks if an object is of the passed in family type">
-    	<cfargument name="family" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
+    	<cfargument name="family" required="true" hint="The family to covert it to: handler, interceptor"/>
 		<cfargument name="target" required="true" hint="The target object"/>
 		<cfscript>
 			var familyPath = "";
 
 			switch(arguments.family){
 				case "handler" 		: { familyPath = "coldbox.system.EventHandler"; break; }
-				case "plugin" 		: { familyPath = "coldbox.system.Plugin"; break; }
 				case "interceptor"  : { familyPath = "coldbox.system.Interceptor"; break; }
 				default:{
 					throwit('Invalid family sent #arguments.family#');
@@ -251,7 +250,7 @@ Description :
 
 	<!--- convertToColdBox --->
     <cffunction name="convertToColdBox" output="false" access="public" returntype="void" hint="Decorate an object as a ColdBox Family object">
-    	<cfargument name="family" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
+    	<cfargument name="family" required="true" hint="The family to covert it to: handler, interceptor"/>
 		<cfargument name="target" required="true" hint="The target object"/>
 		<cfscript>
 			var baseObject = "";
@@ -260,7 +259,6 @@ Description :
 
 			switch(arguments.family){
 				case "handler" 		: { familyPath = "coldbox.system.EventHandler"; break; }
-				case "plugin" 		: { familyPath = "coldbox.system.Plugin"; break; }
 				case "interceptor"  : { familyPath = "coldbox.system.Interceptor"; break; }
 				default:{
 					throwit('Invalid family sent #arguments.family#');

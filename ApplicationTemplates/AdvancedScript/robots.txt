@@ -27,6 +27,5 @@ Disallow: /interceptors/
 Disallow: /layouts/
 Disallow: /logs/
 Disallow: /models/
-Disallow: /plugins/
 Disallow: /views/
 Allow: /

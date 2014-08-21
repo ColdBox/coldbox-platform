@@ -67,8 +67,6 @@ Modification History:
 		controller.getInterceptorService().configure();
 		// Create CacheBox
 		createCacheBox();
-		// Configure plugins for operation from the configuration file, we need caching enabled first
-		controller.getPluginService().configure();
 		// Create WireBox Container
 		createWireBox();
 		// Execute onConfigurationLoad for coldbox internal services()

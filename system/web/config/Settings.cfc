@@ -37,7 +37,6 @@ ColdBox Default Configuration
 
     // Conventions
     this.handlersConvention	= "handlers";
-	this.pluginsConvention	= "plugins";
 	this.layoutsConvention	= "layouts";
 	this.viewsConvention	= "views";
 	this.eventAction		= "index";

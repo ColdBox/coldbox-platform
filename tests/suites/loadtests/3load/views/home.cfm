@@ -13,7 +13,7 @@
         <td valign="top">
             <div id="cse" style="width: 100%;"></div>
 			<link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
-			
+
 			<h3>Registered Event Handlers</h3>
 			<p>You can click on the following event handlers to execute their default action.</p>
 			<ul>
@@ -21,7 +21,7 @@
 				<li><a href="#event.buildLink(handler)#">#handler#</a></li>
 				</cfloop>
 			</ul>
-            
+
             <h3>Registered Modules</h3>
 			<p>You can click on the following modules to visit them (If they have an entry point defined)</p>
 			<ul>
@@ -29,8 +29,8 @@
 				<li><a href="#event.buildLink(getModuleSettings(thisModule).entryPoint)#">#thisModule#</a></li>
 				</cfloop>
 			</ul>
-           
-           
+
+
            <h4>ColdBox URL Actions</h4>
 			<p>ColdBox can use some very important URL actions to interact with your application. You can try them out below:</p>
 				<ol>
@@ -48,7 +48,7 @@
 			<h4>Customizing your Application</h4>
             <p>
                 You can now start editing your application and building great ColdBox enabled apps. Important files & locations:
-            </p>   
+            </p>
 			 <ol>
                     <li>
                         <b>/config/coldbox.xml.cfm</b>: Your application configuration file
@@ -76,9 +76,6 @@
                     </li>
 					<li>
                         <b>/model</b>: The meat of your app, your business logic objects
-                    </li>
-					<li>
-                        <b>/plugins</b>: Where you place custom plugins built by you!
                     </li>
 					<li>
                         <b>/test</b>: Your unit testing folder (Just DO IT!!)
@@ -128,7 +125,7 @@
 					<a href="http://www.coldbox.org/support/training">Training & Courses</a>
 				</li>
             </ul>
-		
+
 		<div style="margin:auto;text-align:center">
 			<img src="http://www.coldbox.org/includes/images/logos/poweredby.gif" alt="ColdBox" />
 		</div>

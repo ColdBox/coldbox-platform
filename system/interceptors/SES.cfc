@@ -17,7 +17,7 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="configure" access="public" returntype="void" hint="This is where the ses plugin configures itself." output="false" >
+	<cffunction name="configure" access="public" returntype="void" hint="This is where the ses service configures itself." output="false" >
 		<cfscript>
 			// with closure
 			instance.withClosure = {};

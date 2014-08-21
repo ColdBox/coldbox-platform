@@ -156,24 +156,6 @@
 		c = builder.getColdBoxDSL(def);
 		assertEquals("unitTest", c);
 
-		// plugin
-		def = {name="myPlugin", dsl="coldbox:plugin"};
-		mockColdBox.$("getPlugin").$args("myPlugin").$results(this);
-		c = builder.getColdBoxDSL(def);
-		assertEquals(this, c);
-
-		// myplugin
-		def = {name="myPlugin", dsl="coldbox:myplugin"};
-		mockColdBox.$("getPlugin").$args(plugin="myPlugin",customPlugin=true).$results(this);
-		c = builder.getColdBoxDSL(def);
-		assertEquals(this, c);
-
-		// myplugin@module
-		def = {name="myPlugin", dsl="coldbox:myplugin:myPlugin@testModule"};
-		mockColdBox.$("getPlugin").$args(plugin="myPlugin",customPlugin=true,module="testModule").$results(this);
-		c = builder.getColdBoxDSL(def);
-		assertEquals(this, c);
-
 		// datasource
 		def = {name="ds", dsl="coldbox:datasource:coolAlias"};
 		builder.$("getDatasource").$args("coolAlias").$results( this );

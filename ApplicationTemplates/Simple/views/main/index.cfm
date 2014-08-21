@@ -261,7 +261,7 @@
 					<a href="http://apidocs.coldbox.org">Quick API Docs</a>
 				</li>
 				<li>
-					<a href="http://www.coldbox.org/forgebox" rel="tooltip" title="Community for plugins, interceptors, modules, etc.">ForgeBox</a>
+					<a href="http://www.coldbox.org/forgebox" rel="tooltip" title="Community for interceptors, modules, etc.">ForgeBox</a>
 				</li>
 				<li><strong>Training</strong></li>
 	            <li>

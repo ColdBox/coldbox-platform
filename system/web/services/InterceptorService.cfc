@@ -28,7 +28,7 @@ Description :
 				// On Actions
 				"onException", "onRequestCapture", "onInvalidEvent",
 				// After FW Object Creations
-				"afterHandlerCreation", "afterInstanceCreation", "afterPluginCreation",
+				"afterHandlerCreation", "afterInstanceCreation",
 				// Life-cycle
 				"applicationEnd" , "sessionStart", "sessionEnd", "preProcess", "preEvent", "postEvent", "postProcess", "preProxyResults",
 				// Layout-View Events
@@ -453,7 +453,7 @@ Description :
 						currentList = arrayToList( appendInterceptionPoints( arguments.metadata.functions[ x ].name ) );
 					}
 
-					// verify its a plugin point by comparing it to the local defined interception points
+					// verify its an interception point by comparing it to the local defined interception points
 					// Also verify it has not been found already
 					if ( listFindNoCase( currentList, arguments.metadata.functions[ x ].name ) AND
 						 NOT structKeyExists( pointsFound, arguments.metadata.functions[ x ].name ) ){
@@ -473,7 +473,6 @@ Description :
 			// Start Registering inheritances
 			if ( structKeyExists( arguments.metadata, "extends" ) and
 				 (arguments.metadata.extends.name neq "coldbox.system.Interceptor" and
-				  arguments.metadata.extends.name neq "coldbox.system.Plugin" and
 				  arguments.metadata.extends.name neq "coldbox.system.EventHandler" )
 			){
 				// Recursive lookup

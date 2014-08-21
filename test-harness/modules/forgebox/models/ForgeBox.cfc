@@ -10,19 +10,13 @@ Connects to forgebox for operations.  This plugin also uses logbox for debugging
 and logging.  You must enable logbox for DEBUG level with the correct class name
 if you want to add logging for this category only.
 
-Example:
-<Category name="myApp.plugins.ForgeBox" levelMax="DEBUG" />
-or just add DEBUG to the root logger
-<Root levelMax="DEBUG" />
-
-
 Settings:
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="ForgeBox API REST Wrapper" output="false" extends="coldbox.system.Plugin" cache="false">
+<cfcomponent hint="ForgeBox API REST Wrapper" output="false" singleton>
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
-	
+
 	<cfscript>
 		this.ORDER = {
 			POPULAR = "popular",
@@ -32,24 +26,15 @@ Settings:
 	</cfscript>
 
 	<cffunction name="init" access="public" returnType="ForgeBox" output="false" hint="Constructor">
-		<cfargument name="controller" type="any"/>
+		<cfargument name="controller" type="any" inject="coldbox"/>
 		<cfscript>
-			// Setup Plugin
-			super.init(arguments.controller);
-			
-			setPluginName("ForgeBox API REST Wrapper");
-			setPluginVersion("2.0");
-			setPluginDescription("A REST wrapper to the ForgeBox API service");
-			setPluginAuthor("Luis Majano");
-			setPluginAuthorURL("http://www.luismajano.com");
-			
 			// Setup Properties
 			instance.APIURL = "http://www.coldbox.org/index.cfm/api/forgebox";
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Get/set API URL --->
 	<cffunction name="getAPIURL" access="public" returntype="string" output="false" hint="Get the API URL endpoint">
 		<cfreturn instance.APIURL>
@@ -58,26 +43,26 @@ Settings:
 		<cfargument name="APIURL" type="string" required="true">
 		<cfset instance.APIURL = arguments.APIURL>
 	</cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------>
-	
+
 	<!--- getTypes --->
 	<cffunction name="getTypes" output="false" access="public" returntype="query" hint="Get an array of entry types">
 		<cfscript>
 		var results = "";
-		
+
 		// Invoke call
 		results = makeRequest(resource="types");
-		
-		// error 
+
+		// error
 		if( results.error ){
 			$throw("Error making ForgeBox REST Call",results.message);
 		}
-		
-		return results.response.data;				
-		</cfscript>	
+
+		return results.response.data;
+		</cfscript>
 	</cffunction>
-	
+
 	<!--- getEntries --->
 	<cffunction name="getEntries" output="false" access="public" returntype="query" hint="Get entries">
 		<cfargument name="orderBy"  type="string"  required="false" default="#this.ORDER.POPULAR#" hint="The type to order by, look at this.ORDERBY"/>
@@ -90,40 +75,40 @@ Settings:
 				orderBY = arguments.orderby,
 				maxrows = arguments.maxrows,
 				startrow = arguments.startrow,
-				typeSlug = arguments.typeSlug	
+				typeSlug = arguments.typeSlug
 			};
-			
+
 			// Invoke call
 			results = makeRequest(resource="entries",parameters=params);
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making ForgeBox REST Call",results.message);
 			}
-			
-			return results.response.data;				
-		</cfscript>	
+
+			return results.response.data;
+		</cfscript>
 	</cffunction>
-	
+
 	<!--- getEntry --->
 	<cffunction name="getEntry" output="false" access="public" returntype="struct" hint="Get an entry from forgebox by slug">
 		<cfargument name="slug" type="string" required="true" default="" hint="The entry slug to retreive"/>
 		<cfscript>
 			var results = "";
-			
+
 			// Invoke call
 			results = makeRequest(resource="entry/#arguments.slug#");
-			
-			// error 
+
+			// error
 			if( results.error ){
 				$throw("Error making ForgeBox REST Call",results.message);
 			}
-			
-			return results.response.data;				
-		</cfscript>	
+
+			return results.response.data;
+		</cfscript>
 	</cffunction>
-	
-	
+
+
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
 	<!--- S3Request --->
@@ -139,53 +124,53 @@ Settings:
 			var HTTPResults = "";
 			var param = "";
 			var jsonRegex = "^(\{|\[)(.)*(\}|\])$";
-			
+
 			// Default Content Type
 			if( NOT structKeyExists(arguments.headers,"content-type") ){
 				arguments.headers["content-type"] = "";
 			}
 		</cfscript>
-		
+
 		<!--- REST CAll --->
-		<cfhttp method="#arguments.method#" 
-				url="#getAPIURL()#/json/#arguments.resource#" 
-				charset="utf-8" 
-				result="HTTPResults" 
+		<cfhttp method="#arguments.method#"
+				url="#getAPIURL()#/json/#arguments.resource#"
+				charset="utf-8"
+				result="HTTPResults"
 				timeout="#arguments.timeout#">
-			
+
 			<!--- Headers --->
 			<cfloop collection="#arguments.headers#" item="param">
 				<cfhttpparam type="header" name="#param#" value="#arguments.headers[param]#" >
-			</cfloop>	
-			
+			</cfloop>
+
 			<!--- URL Parameters: encoded automatically by CF --->
 			<cfloop collection="#arguments.parameters#" item="param">
 				<cfhttpparam type="URL" name="#param#" value="#arguments.parameters[param]#" >
-			</cfloop>	
-			
+			</cfloop>
+
 			<!--- Body --->
 			<cfif len(arguments.body) >
 				<cfhttpparam type="body" value="#arguments.body#" >
-			</cfif>	
+			</cfif>
 		</cfhttp>
-		
+
 		<cfscript>
 			// Log
 			log.debug("ForgeBox Rest Call ->Arguments: #arguments.toString()#",HTTPResults);
-			
+
 			// Set Results
 			results.responseHeader 	= HTTPResults.responseHeader;
 			results.rawResponse 	= HTTPResults.fileContent.toString();
-			
+
 			// Error Details found?
 			results.message = HTTPResults.errorDetail;
 			if( len(HTTPResults.errorDetail) ){ results.error = true; }
-			
+
 			// Try to inflate JSON
 			results.response = deserializeJSON(results.rawResponse,false);
-			
+
 			return results;
-		</cfscript>	
+		</cfscript>
 	</cffunction>
-	
+
 </cfcomponent>

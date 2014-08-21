@@ -332,30 +332,28 @@
 
 	function testScanLocations(){
 		// array
-		locs = ["coldbox","mxunit","coldbox.system.plugins"];
+		locs = ["coldbox","mxunit"];
 		config.scanLocations(locs);
 
 		assertEquals(4, structCount(config.getScanLocations() ) );
 		locations = config.getScanLocations();
 		assertEquals( expandPath("/coldbox/")  , locations["coldbox"]);
 		assertEquals( expandPath("/mxunit/")  , locations["mxunit"]);
-		assertEquals( expandPath("/coldbox/system/plugins/")  , locations["coldbox.system.plugins"]);
 
 		// Try with a list now
 		config.reset();
-		locs = "coldbox,mxunit,coldbox.system.plugins";
+		locs = "coldbox,mxunit";
 		config.scanLocations(locs);
 		assertEquals(3, structCount(config.getScanLocations() ) );
 		locations = config.getScanLocations();
 		assertEquals( expandPath("/coldbox/")  , locations["coldbox"]);
 		assertEquals( expandPath("/mxunit/")  , locations["mxunit"]);
-		assertEquals( expandPath("/coldbox/system/plugins/")  , locations["coldbox.system.plugins"]);
 
 	}
 
 	function testRemoveScanLocations(){
 		// array
-		locs = ["coldbox","mxunit","coldbox.system.plugins"];
+		locs = ["coldbox","mxunit"];
 		config.scanLocations(locs);
 
 		assertEquals(4, structCount(config.getScanLocations() ) );
@@ -568,18 +566,18 @@
 	}
 
 	function testVirtualInheritance(){
-		config.mapAspect("MyPlugin").to("plugin.path").virtualInheritance("coldbox.system.Plugin");
-		mapping = config.getMapping("MyPlugin");
+		config.mapAspect("MyObject").to("object.path").virtualInheritance("coldbox.system.EventHandler");
+		mapping = config.getMapping("MyObject");
 		b = mapping.getvirtualInheritance();
 
-		assertEquals("coldbox.system.Plugin", b );
+		assertEquals("coldbox.system.EventHandler", b );
 
 	}
 
 	function testExtraAttributes(){
-		var data = {plugin=true,path="hello.path"};
-		config.mapAspect("MyPlugin").to("plugin.path").virtualInheritance("coldbox.system.Plugin").extraAttributes(data);
-		mapping = config.getMapping("MyPlugin");
+		var data = {handler=true,path="object.path"};
+		config.mapAspect("MyObject").to("object.path").virtualInheritance("coldbox.system.EventHandler").extraAttributes(data);
+		mapping = config.getMapping("MyObject");
 		b = mapping.getExtraAttributes();
 
 		assertEquals( data, b);

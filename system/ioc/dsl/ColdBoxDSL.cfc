@@ -66,7 +66,7 @@ Description :
 
 			// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
 			if(	thisTypeLen eq 2
-				and listFindNoCase("setting,fwSetting,plugin,myplugin,datasource,interceptor",listLast(thisType,":"))
+				and listFindNoCase("setting,fwSetting,datasource,interceptor",listLast(thisType,":"))
 				and len(thisName)){
 				// Add the additional alias to the DSL
 				thisType = thisType & ":" & thisName;
@@ -84,7 +84,6 @@ Description :
 						case "flash"		 		: { return instance.coldbox.getRequestService().getFlashScope(); }
 						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
 						case "requestService"		: { return instance.coldbox.getrequestService(); }
-						case "pluginService"		: { return instance.coldbox.getPluginService(); }
 						case "handlerService"		: { return instance.coldbox.gethandlerService(); }
 						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
@@ -108,8 +107,8 @@ Description :
 									instance.log.debug("The module requested: #listlast(thisLocationKey,"@")# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
 								}
 							}
-							// normal custom plugin
-							return instance.coldbox.getSetting(thisLocationKey);
+							// just get setting
+							return instance.coldbox.getSetting( thisLocationKey );
 						}
 						case "modulesettings"		: {
 							moduleSettings = instance.coldbox.getSetting("modules");
@@ -130,15 +129,6 @@ Description :
 							}
 						}
 						case "fwSetting" 			: { return instance.coldbox.getSetting(thisLocationKey,true); }
-						case "plugin" 				: { return instance.coldbox.getPlugin(thisLocationKey);}
-						case "myplugin" 			: {
-							// module plugin
-							if( find("@",thisLocationKey) ){
-								return instance.coldbox.getPlugin(plugin=listFirst(thisLocationKey,"@"),customPlugin=true,module=listLast(thisLocationKey,"@"));
-							}
-							// normal custom plugin
-							return instance.coldbox.getPlugin(plugin=thisLocationKey,customPlugin=true);
-						}
 						case "datasource" 			: { return getDatasource(thisLocationKey); }
 						case "interceptor" 			: { return instance.coldbox.getInterceptorService().getInterceptor(thisLocationKey,true); }
 					}//end of services

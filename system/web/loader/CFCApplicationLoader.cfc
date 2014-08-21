@@ -111,7 +111,7 @@ Loads a coldbox cfc configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: MODULE SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseModules(oConfig,configStruct);
 
-		/* ::::::::::::::::::::::::::::::::::::::::: HANDLER-MODELS-PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
+		/* ::::::::::::::::::::::::::::::::::::::::: HANDLER-MODELS INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseInvocationPaths(oConfig,configStruct);
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL LAYOUTS/VIEWS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */
@@ -259,9 +259,6 @@ Loads a coldbox cfc configuration file
 			//Check for ExceptionHandler if found
 			if ( not structKeyExists( configStruct, "ExceptionHandler" ) )
 				configStruct[ "ExceptionHandler" ] = "";
-			//Check for PluginsExternalLocation if found
-			if ( not structKeyExists( configStruct, "PluginsExternalLocation" ) )
-				configStruct[ "PluginsExternalLocation" ] = "";
 			//Check for Handler Caching
 			if ( not structKeyExists( configStruct, "HandlerCaching" ) or not isBoolean(configStruct.HandlerCaching) )
 				configStruct[ "HandlerCaching" ] = true;
@@ -326,7 +323,6 @@ Loads a coldbox cfc configuration file
 
 			// Override conventions on a per found basis.
 			if( structKeyExists( conventions,"handlersLocation" ) ){ fwSettingsStruct[ "handlersConvention" ] = trim(conventions.handlersLocation); }
-			if( structKeyExists( conventions,"pluginsLocation" ) ){ fwSettingsStruct[ "pluginsConvention" ] = trim(conventions.pluginsLocation); }
 			if( structKeyExists( conventions,"layoutsLocation" ) ){ fwSettingsStruct[ "LayoutsConvention" ] = trim(conventions.layoutsLocation); }
 			if( structKeyExists( conventions,"viewsLocation" ) ){ fwSettingsStruct[ "ViewsConvention" ] = trim(conventions.viewsLocation); }
 			if( structKeyExists( conventions,"eventAction" ) ){ fwSettingsStruct[ "eventAction" ] = trim(conventions.eventAction); }
@@ -347,24 +343,17 @@ Loads a coldbox cfc configuration file
 			// Handler Registration
 			configStruct[ "HandlersInvocationPath" ] = reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all" );
 			configStruct[ "HandlersPath" ] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.handlersConvention;
-			// Custom Plugins Registration
-			configStruct[ "MyPluginsInvocationPath" ] = reReplace(fwSettingsStruct.pluginsConvention,"(/|\\)",".","all" );
-			configStruct[ "MyPluginsPath" ] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.pluginsConvention;
 			// Models Registration
 			configStruct[ "ModelsInvocationPath" ] = reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all" );
 			configStruct[ "ModelsPath" ] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModelsConvention;
 
-			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
+			//Set the Handlers, Models Invocation & Physical Path for this Application
 			if( len(configStruct[ "AppMapping" ]) ){
 				appMappingAsDots = reReplace(configStruct[ "AppMapping" ],"(/|\\)",".","all" );
 				// Handler Path Registrations
 				configStruct[ "HandlersInvocationPath" ] = appMappingAsDots & ".#reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all" )#";
 				configStruct[ "HandlersPath" ] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.handlersConvention#";
 				configStruct[ "HandlersPath" ] = expandPath(configStruct[ "HandlersPath" ]);
-				// Custom Plugins Registrations
-				configStruct[ "MyPluginsInvocationPath" ] = appMappingAsDots & ".#reReplace(fwSettingsStruct.pluginsConvention,"(/|\\)",".","all" )#";
-				configStruct[ "MyPluginsPath" ] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.pluginsConvention#";
-				configStruct[ "MyPluginsPath" ] = expandPath(configStruct[ "MyPluginsPath" ]);
 				// Model Registrations
 				configStruct[ "ModelsInvocationPath" ] = appMappingAsDots & ".#reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all" )#";
 				configStruct[ "ModelsPath" ] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.ModelsConvention#";

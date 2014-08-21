@@ -13,7 +13,7 @@ The forgebox module service layer
 <cfcomponent outut="false" hint="The forgebox module service layer">
 
 	<!--- Dependencies --->
-	<cfproperty name="forgeBoxAPI" inject="coldbox:myplugin:ForgeBox@forgebox">
+	<cfproperty name="forgeBoxAPI" inject="forgebox@forgebox">
 	<cfproperty name="cache"	   inject="cachebox:default">
 	<cfproperty name="appRoot"	   inject="coldbox:setting:applicationPath">
 

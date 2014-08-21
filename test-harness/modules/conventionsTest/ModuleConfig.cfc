@@ -25,7 +25,6 @@
 		conventions = {
 			handlersLocation = "system/handlers",
 			viewsLocation = "system/views",
-			pluginsLocation = "system/plugins",
 			modelsLocation = "system/model"
 		};
 

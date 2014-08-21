@@ -66,7 +66,6 @@ Optional Methods
 			UDFLibraryFile 				= "includes/helpers/ApplicationHelper.cfm",
 			coldboxExtensionsLocation 	= "",
 			modulesExternalLocation		= [],
-			pluginsExternalLocation 	= "",
 			viewsExternalLocation		= "",
 			layoutsExternalLocation 	= "",
 			handlersExternalLocation  	= "",
@@ -157,7 +156,6 @@ Optional Methods
 		//Conventions
 		conventions = {
 			handlersLocation = "handlers",
-			pluginsLocation  = "plugins",
 			viewsLocation 	 = "views",
 			layoutsLocation  = "layouts",
 			modelsLocation 	 = "model",

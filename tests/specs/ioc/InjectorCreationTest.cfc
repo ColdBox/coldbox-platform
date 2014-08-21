@@ -1,7 +1,7 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	this.loadColdBox = false;
-	
+
 	function setup(){
 		// init with defaults
 		injector = getMockBox().createMock("coldbox.system.ioc.Injector").init("coldbox.tests.specs.ioc.config.samples.InjectorCreationTestsBinder");
@@ -13,7 +13,7 @@
 		getMockBox().prepareMock( injector.getEventManager() );
 		mockStub = createStub();
 	}
-	
+
 	function teardown(){
 		structDelete(application, "wirebox");
 		super.teardown();
@@ -40,8 +40,8 @@
 		assertEquals('', r);
 
 		// Locate by Full Path
-		r = injector.locateInstance("coldbox.system.Plugin");
-		assertEquals("coldbox.system.Plugin", r);
+		r = injector.locateInstance("coldbox.system.EventHandler");
+		assertEquals("coldbox.system.EventHandler", r);
 	}
 
 	function testbuildInstance(){
@@ -92,9 +92,9 @@
 		mapping.setType("provider").setPath( variables.providerUDF );
 		val = injector.buildInstance( mapping );
 		assertTrue( val.verify() );
-		
+
 	}
-	
+
 	function providerUDF(){
 		return new testbox.system.MockBox().createStub().$("verify", true);
 	}
@@ -102,7 +102,7 @@
 	function testProviderMethods(){
 		// skip for railo as they don't have the context method
 		if( structKeyExists( server, "railo" ) ){ return; }
-		
+
 		providerTest = injector.getInstance("ProviderTest");
 		assertEquals( true, isObject(providerTest.getPizza()) );
 		assertEquals( true, structKeyExists(session,"wirebox:pizza") );
@@ -132,7 +132,7 @@
 
 	function testWebService(){
 		ws = injector.getInstance("coldboxWS");
-		
+
 		// Railo
 		if( structKeyExists( server, "railo" ) ){
 			expect(	getMetadata(ws).name  ).toMatch( "rpc" );
@@ -196,11 +196,11 @@
 		var c = injector.getInstance("implicitTest");
 		//debug( c );
 	}
-	
+
 	function testDSLCreation(){
 		var c = injector.getInstance(dsl="wirebox");
 		expect(	getMetadata( c ).name ).toMatch( "Injector" );
 	}
-	
+
 </cfscript>
 </cfcomponent>

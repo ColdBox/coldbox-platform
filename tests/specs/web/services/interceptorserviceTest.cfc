@@ -15,7 +15,7 @@
 		mockCache   	 	= mockBox.createEmptyMock("coldbox.system.cache.providers.CacheBoxColdBoxProvider");
 		mockWireBox		 	= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
 
-		// Mock Plugin Dependencies
+		// Mock model Dependencies
 		mockController.$("getLogBox",mockLogBox)
 			.$("getCacheBox",mockCacheBox)
 			.$("getWireBox",mockWireBox)

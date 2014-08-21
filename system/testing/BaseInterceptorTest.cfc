@@ -11,7 +11,7 @@ Description :
 <cfcomponent output="false" extends="coldbox.system.testing.BaseTestCase" hint="A base test for testing interceptors">
 
 	<cfscript>
-		this.loadColdbox = false;	
+		this.loadColdbox = false;
 	</cfscript>
 
 	<!--- setupTest --->
@@ -21,7 +21,7 @@ Description :
 			var mockBox 	= getMockBox();
 			var UDFLibrary  = [];
 
-			// Check for plugin else throw exception
+			// Check for interceptor else throw exception
 			if( NOT structKeyExists( md, "interceptor" ) ){
 				throw( "interceptor annotation not found on component tag", "Please declare a 'interceptor=path' annotation", "BaseInterceptorTest.InvalidStateException" );
 			}
@@ -34,10 +34,10 @@ Description :
 			if( NOT structKeyExists(variables,"configProperties") ){
 				variables.configProperties = structnew();
 			}
-			
+
 			// Create interceptor with Mocking capabilities
 			variables.interceptor = mockBox.createMock(md.interceptor);
-			
+
 			// Create Mock Objects
 			variables.mockController 	 		= mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
 			variables.mockInterceptorService 	= mockbox.createEmptyMock( "coldbox.system.web.services.InterceptorService" );
@@ -48,8 +48,8 @@ Description :
 			variables.mockFlash		 	 		= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
 			variables.mockCacheBox   	 		= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
 			variables.mockWireBox		 		= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
-			
-			// Mock Plugin Dependencies
+
+			// Mock interceptor Dependencies
 			variables.mockController.$( "getLogBox", variables.mockLogBox )
 				.$( "getCacheBox",variables.mockCacheBox )
 				.$( "getWireBox",variables.mockWireBox )
@@ -58,10 +58,10 @@ Description :
 				.$( "getInterceptorService", variables.mockInterceptorService );
 			variables.mockRequestService.$( "getFlashScope", variables.mockFlash );
 			variables.mockLogBox.$( "getLogger", variables.mockLogger );
-			
+
 			// Decorate interceptor?
 			if( NOT getUtil().isFamilyType("interceptor",variables.interceptor) ){
-				getUtil().convertToColdBox( "interceptor", variables.interceptor );	
+				getUtil().convertToColdBox( "interceptor", variables.interceptor );
 				// Check if doing cbInit()
 				if( structKeyExists(variables.interceptor, "$cbInit") ){ variables.interceptor.$cbInit( mockController, configProperties ); }
 			}

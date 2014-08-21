@@ -25,7 +25,7 @@ Description :
 			instance.handlerCacheDictionary = {};
 			// Setup the Event Cache Dictionary
 			instance.eventCacheDictionary = {};
-			// Plugin base class
+			// Handler base class
 			instance.HANDLER_BASE_CLASS = "coldbox.system.EventHandler";
 
 			return this;

@@ -195,7 +195,7 @@ Description :
 	<cffunction name="invokerMixin" hint="Calls private/packaged/public methods" access="public" returntype="any" output="false">
 		<cfargument name="method" 		 required="true" 	hint="Name of the private method to call">
 		<cfargument name="argCollection" required="false"  	hint="Can be called with an argument collection struct">
-		<cfargument name="argList" 		 required="false"  	hint="Can be called with an argument list, for simple values only: ex: 'plugin=logger,number=1'">
+		<cfargument name="argList" 		 required="false"  	hint="Can be called with an argument list, for simple values only: ex: 'object=logger,number=1'">
 
 		<cfset var key 		= "">
 		<cfset var refLocal = structnew()>

@@ -54,7 +54,6 @@ Only one instance of a specific ColdBox application exists.
 			// Setup the ColdBox Services
 			services.requestService 	= CreateObject("component","coldbox.system.web.services.RequestService").init( this );
 			services.handlerService 	= CreateObject("component", "coldbox.system.web.services.HandlerService").init( this );
-			services.pluginService 		= CreateObject("component","coldbox.system.web.services.PluginService").init( this );
 			services.moduleService 		= CreateObject("component", "coldbox.system.web.services.ModuleService").init( this );
 			services.interceptorService = CreateObject("component", "coldbox.system.web.services.InterceptorService").init( this );
 
@@ -193,16 +192,6 @@ Only one instance of a specific ColdBox application exists.
 		<cfreturn this>
 	</cffunction>
 
-	<!--- Plugin Service --->
-	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService: coldbox.system.web.services.PluginService">
-		<cfreturn services.pluginService/>
-	</cffunction>
-	<cffunction name="setPluginService" access="public" output="false" returntype="any" hint="Set PluginService">
-		<cfargument name="pluginService" type="Any" required="true"/>
-		<cfset services.pluginService = arguments.pluginService/>
-		<cfreturn this>
-	</cffunction>
-
 	<!--- Interceptor Service --->
 	<cffunction name="getInterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.web.services.InterceptorService">
 		<cfreturn services.interceptorService/>
@@ -331,20 +320,8 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Plugin Factories --->
-	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="plugin" 		type="any"  required="true"  hint="The Plugin object's name to instantiate" >
-		<cfargument name="customPlugin" type="any"  required="false" default="false" hint="Used internally to create custom plugins. Boolean">
-		<cfargument name="newInstance"  type="any"  required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
-		<cfargument name="module" 		type="any" 	required="false" default="" hint="The module to retrieve the plugin from"/>
-		<cfargument name="init" 		type="any"  required="false" default="true" hint="Auto init() the plugin upon construction, Boolean"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-		if ( arguments.newInstance ){
-			return services.pluginService.new(arguments.plugin,arguments.customPlugin,arguments.module,arguments.init);
-		}
-		return services.pluginService.get(arguments.plugin,arguments.customPlugin,arguments.module,arguments.init);
-		</cfscript>
+	<cffunction name="getPlugin" access="Public" returntype="any" hint="DEPRECATED: I am the Plugin cfc object factory." output="false">
+		<cfthrow message="This method has been deprecated, please use getInstance() instead">
 	</cffunction>
 
 	<!--- Set Next Event --->

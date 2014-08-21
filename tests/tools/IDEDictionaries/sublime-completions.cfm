@@ -148,7 +148,7 @@ scopes = {
 	"binder" = "coldbox.system.ioc.config.Binder",
 	"wirebox" = "coldbox.system.ioc.Injector",
 	"cachebox" = "coldbox.system.cache.CacheFactory",
-	"html" = "coldbox.system.plugins.HTMLHelper"
+	"html" = "coldbox.system.core.dynamic.HTMLHelper"
 };
 fncIdx = 1;
 for( key in scopes ){

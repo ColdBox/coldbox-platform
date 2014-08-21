@@ -63,6 +63,18 @@
 				<help><![CDATA[ Automatically attempt to compose relationships from memento ]]></help>
 			</parameter>
 			</function>
+	<function name="getRenderer" returns="any">
+			<help><![CDATA[ Retrieve the system web renderer (Context: FrameworkSupertype) ]]></help>
+		</function>
+	<function name="getRequestContext" returns="any">
+			<help><![CDATA[ Retrieve the request context object (Context: FrameworkSupertype) ]]></help>
+		</function>
+	<function name="getRequestCollection" returns="struct">
+			<help><![CDATA[ Get the RC or PRC collection reference (Context: FrameworkSupertype) ]]></help>
+		<parameter name="private" required="false" type="boolean">
+				<help><![CDATA[ The boolean bit that says give me the RC by default or true for the private collection (PRC) ]]></help>
+			</parameter>
+			</function>
 	<function name="renderView" returns="any">
 			<help><![CDATA[ Renders views in your application (Context: FrameworkSupertype) ]]></help>
 		<parameter name="view" required="true" type="any">
@@ -320,6 +332,15 @@ This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 	<function name="getMyPlugin" returns="any">
 			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
 		</function>
+	<function name="setController" returns="any">
+			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
+		<parameter name="controller" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="getController" returns="string">
+			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
+		</function>
 <!-- Functions for: coldbox.system.Interceptor -->
 	<function name="init" returns="any">
 			<help><![CDATA[ Constructor (Context: Interceptor) ]]></help>
@@ -390,18 +411,12 @@ This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 	<function name="getLogBox" returns="string">
 			<help><![CDATA[  (Context: Interceptor) ]]></help>
 		</function>
-	<function name="getLog" returns="string">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
 	<function name="getWirebox" returns="string">
 			<help><![CDATA[  (Context: Interceptor) ]]></help>
 		</function>
-	<function name="setController" returns="any">
+	<function name="getLog" returns="string">
 			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="controller" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
+		</function>
 	<function name="setCachebox" returns="any">
 			<help><![CDATA[  (Context: Interceptor) ]]></help>
 		<parameter name="cachebox" required="true" type="any">
@@ -429,9 +444,6 @@ This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
-	<function name="getController" returns="string">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
 	<function name="getInterceptorService" returns="string">
 			<help><![CDATA[  (Context: Interceptor) ]]></help>
 		</function>
@@ -499,15 +511,6 @@ This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
-	<function name="setController" returns="any">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		<parameter name="controller" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="getController" returns="string">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		</function>
 	<function name="setCachebox" returns="any">
 			<help><![CDATA[  (Context: EventHandler) ]]></help>
 		<parameter name="cachebox" required="true" type="any">
@@ -1441,6 +1444,9 @@ This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 	<scopevar name="getMemento()">
 			<help><![CDATA[Get the controller's internal state]]></help>
 		</scopevar>
+	<scopevar name="getRenderer()">
+			<help><![CDATA[Get the system web renderer]]></help>
+		</scopevar>
 	<scopevar name="getCFMLEngine()">
 			<help><![CDATA[Get the CFMLEngine utility(coldbox.system.core.util.CFMLEngine)]]></help>
 		</scopevar>
@@ -1477,11 +1483,8 @@ This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 	<scopevar name="setAppRootPath(appRootPath)">
 			<help><![CDATA[Set this application's physical path.]]></help>
 		</scopevar>
-	<scopevar name="getColdboxOCM([cacheName])">
-			<help><![CDATA[Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache]]></help>
-		</scopevar>
-	<scopevar name="setColdboxOCM(coldboxOCM)">
-			<help><![CDATA[Set ColdboxOCM]]></help>
+	<scopevar name="getCache([cacheName])">
+			<help><![CDATA[Get a Cache provider from CacheBox]]></help>
 		</scopevar>
 	<scopevar name="getLoaderService()">
 			<help><![CDATA[Get LoaderService: coldbox.system.web.services.LoaderService]]></help>
@@ -1503,12 +1506,6 @@ This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 		</scopevar>
 	<scopevar name="setRequestService(requestService)">
 			<help><![CDATA[Set RequestService]]></help>
-		</scopevar>
-	<scopevar name="getPluginService()">
-			<help><![CDATA[Get PluginService: coldbox.system.web.services.PluginService]]></help>
-		</scopevar>
-	<scopevar name="setPluginService(pluginService)">
-			<help><![CDATA[Set PluginService]]></help>
 		</scopevar>
 	<scopevar name="getInterceptorService()">
 			<help><![CDATA[Get interceptorService: coldbox.system.web.services.InterceptorService]]></help>
@@ -1558,8 +1555,8 @@ This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 	<scopevar name="setSetting([name],[value])">
 			<help><![CDATA[I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct]]></help>
 		</scopevar>
-	<scopevar name="getPlugin(plugin,[customPlugin],[newInstance],[module],[init])">
-			<help><![CDATA[I am the Plugin cfc object factory.]]></help>
+	<scopevar name="getPlugin()">
+			<help><![CDATA[DEPRECATED: I am the Plugin cfc object factory.]]></help>
 		</scopevar>
 	<scopevar name="setNextEvent([event],[queryString],[addToken],[persist],[persistStruct],[ssl],[baseURL],[postProcessExempt],[URL],[URI],[statusCode])">
 			<help><![CDATA[I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI]]></help>

@@ -436,11 +436,10 @@ component serializable="false" accessors="true"{
 
 	/**** REMOVE THE FOLLOWING: JUST LEFT UNTIL COMPLETELY REMOVED ****/
 	function getPlugin(){
-		return controller.getPlugin( argumentCollection=arguments );
+		throw( "This method has been deprecated, please use getInstance() instead" );
 	}
 	function getMyPlugin(){
-		arguments.customPlugin = true;
-		return getPlugin( argumentCollection=arguments );
+		throw( "This method has been deprecated, please use getInstance() instead" );
 	}
 
 }
