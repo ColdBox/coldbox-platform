@@ -24,14 +24,14 @@ Description :
 			scopeRegistration = { enabled = true},
 			// Package scan locations
 			scanLocations = [
-				"coldbox.test-harness.model"
+				"coldbox.test-harness.models"
 			],
 			// Stop recursions
 			stopRecursions = [ "coldbox.system.Interceptor"	]
 		};
 
 		// WireBox Object Mappings
-		var modelPath = "coldbox.test-harness.model";
+		var modelPath = "coldbox.test-harness.models";
 
 		// map to constant value, no need for scope
 		map("jsonProperty").toValue("[{name:'luis'},{name:'Jose'}]");

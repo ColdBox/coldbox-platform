@@ -13,7 +13,7 @@
 			.$("getCacheBox", mockCacheBox)
 			.$("getLogBox", mockLogBox );
 		super.setup();
-		scope = models.init( mockInjector );
+		scope = model.init( mockInjector );
 		mockStub = createStub();
 	}
 

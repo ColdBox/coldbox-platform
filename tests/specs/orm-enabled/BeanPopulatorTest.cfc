@@ -2,7 +2,7 @@
 
 	<cffunction name="setup">
 		<cfset super.setup()>
-		<cfset populator = models.init()>
+		<cfset populator = model.init()>
 	</cffunction>
 
 	<cffunction name="testGetRelationshipMetaData" access="public" returntype="void" output="false">
