@@ -41,8 +41,8 @@ Modification History:
 			instance.interceptorService = controller.getInterceptorService();
 			instance.handlerService		= controller.getHandlerService();
 			instance.cacheBox			= controller.getCacheBox();
-			instance.cache				= controller.getColdBoxOCM();
-			instance.templateCache		= controller.getColdBoxOCM( "template" );
+			instance.cache				= controller.getCache();
+			instance.templateCache		= controller.getCache( "template" );
 			instance.flashData 			= controller.getSetting( "flash" );
 			instance.flashDataHash		= hash( instance.flashData.toString() );
 

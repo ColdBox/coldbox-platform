@@ -53,7 +53,7 @@ Description :
 			instance.eventCaching				= controller.getSetting("EventCaching");
 			instance.handlersInvocationPath		= controller.getSetting("HandlersInvocationPath");
 			instance.handlersExternalLocation	= controller.getSetting("HandlersExternalLocation");
-			instance.templateCache				= getColdboxOCM("template");
+			instance.templateCache				= controller.getCache( "template" );
 			instance.modules					= controller.getSetting("modules");
 			instance.interceptorService			= controller.getInterceptorService();
     	</cfscript>
@@ -112,8 +112,8 @@ Description :
 					.setCacheProperties( key="handlers-#invocationPath#" )
 					.setExtraAttributes( attribs );
 				// Are we caching or not handlers?
-				if ( NOT instance.handlerCaching ){ 
-					mapping.setScope( wirebox.getBinder().SCOPES.NOSCOPE ); 
+				if ( NOT instance.handlerCaching ){
+					mapping.setScope( wirebox.getBinder().SCOPES.NOSCOPE );
 				}
 			}
 			// retrieve, build and wire from wirebox

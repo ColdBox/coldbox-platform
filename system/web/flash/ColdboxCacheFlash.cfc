@@ -8,22 +8,22 @@ Author     :	Luis Majano
 Date        :	10/2/2007
 Description :
 	An abstract flash scope that can be used to build ColdBox Flash scopes.
-	
+
 	This flash scope uses the coldbox cache
 ----------------------------------------------------------------------->
 <cfcomponent output="false" extends="coldbox.system.web.flash.AbstractFlashScope" hint="A ColdBox cache flash scope">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
-	
+
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="ColdboxCacheFlash" hint="Constructor">
     	<cfargument name="controller" 	type="any" required="true" hint="The ColdBox Controller" colddoc:generic="coldbox.system.web.Controller"/>
 		<cfargument name="defaults" 	type="any" required="false" default="#structNew()#" hint="Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]" colddoc:generic="struct"/>
     	<cfscript>
     		var cacheName = "default";
-			
+
 			super.init(argumentCollection=arguments);
-			
+
     		// get the cacheName from the custom settings: left for compatibility
 			if( arguments.controller.settingExists("flashRAM_cacheName") ){
 				cacheName = arguments.controller.getSetting("flashRAM_cacheName");
@@ -31,11 +31,11 @@ Description :
 			// check via properties
 			if( propertyExists("cacheName") ){
 				cacheName = getProperty("cacheName");
-			}			
-			
+			}
+
 			// Setup the cache
-			instance.cache = arguments.controller.getColdboxOCM(cacheName);
-			
+			instance.cache = arguments.controller.getCache( cacheName );
+
 			// Check jsession id First
 			if( isDefined( "session" ) and structKeyExists( session, "sessionid" ) ){
 				instance.flashKey = "cbox_flash_" & session.sessionid;
@@ -55,7 +55,7 @@ Description :
 				throw( message="Cannot find a jsessionid, URLToken or cfid/cftoken in the cookie scope. Please verify",
 					   type="ColdboxCacheFlash.CFIDException");
 			}
-			
+
 			return this;
     	</cfscript>
     </cffunction>
@@ -85,10 +85,10 @@ Description :
 		<cfif flashExists()>
 			<cfreturn instance.cache.get(getFlashKey())>
 		</cfif>
-		
+
 		<cfreturn structnew()>
 	</cffunction>
-	
+
 	<!--- removeFlash --->
     <cffunction name="removeFlash" output="false" access="public" returntype="any" hint="Remove the entire flash storage">
     	<cfset instance.cache.clear(getFlashKey())>

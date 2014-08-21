@@ -54,10 +54,10 @@ Modification History:
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>
 
-	<!--- Get OCM Facade --->
-	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers">
+	<!--- Get Cache Facade --->
+	<cffunction name="getCache" access="public" output="false" returntype="any" hint="Get a CacheBox Cache">
 		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
-		<cfreturn controller.getColdboxOCM(arguments.cacheName)/>
+		<cfreturn controller.getCache( arguments.cacheName )/>
 	</cffunction>
 
 <!------------------------------------------- INTERNAL EVENTS ------------------------------------------>

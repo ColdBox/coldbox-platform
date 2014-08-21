@@ -313,10 +313,10 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
     	<cfreturn instance.controller.getLogBox()>
     </cffunction>
 
-	<!--- getColdboxOCM --->
-    <cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
+	<!--- getCache --->
+    <cffunction name="getCache" access="private" output="false" returntype="any" hint="Get a CacheBox Cache Provider" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
 		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
-		<cfreturn getController().getColdboxOCM(arguments.cacheName)/>
+		<cfreturn getController().getCache( arguments.cacheName )/>
 	</cffunction>
 
 	<!--- Get current request context --->

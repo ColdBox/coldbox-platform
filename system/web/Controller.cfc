@@ -143,17 +143,12 @@ Only one instance of a specific ColdBox application exists.
 		<cfreturn this>
 	</cffunction>
 
-	<!--- ColdBox Cache Manager --->
-	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
+	<!--- Get Cache --->
+	<cffunction name="getCache" access="public" output="false" returntype="any" hint="Get a Cache provider from CacheBox" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
 		<cfargument name="cacheName" type="any" required="false" default="default" hint="The cache name to retrieve"/>
 		<cfscript>
 			return instance.cacheBox.getCache( arguments.cacheName );
 		</cfscript>
-	</cffunction>
-	<cffunction name="setColdboxOCM" access="public" output="false" returntype="any" hint="Set ColdboxOCM">
-		<cfargument name="coldboxOCM" type="any" required="true" hint="coldbox.system.cache.CacheManager"/>
-		<cfset instance.coldboxOCM = arguments.coldboxOCM/>
-		<cfreturn this>
 	</cffunction>
 
 	<!--- Loader Service --->

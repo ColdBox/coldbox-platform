@@ -116,10 +116,10 @@ Author     :	Luis Majano
 			assertTrue( isObject( proxy.getInterceptor("SES") ) );
 		}
 
-		function testGetColdBoxOCM(){
-			makePublic(proxy,"getColdBoxOCM");
-			assertTrue( isObject( proxy.getColdBoxOCM() ) );
-			assertTrue( isObject( proxy.getColdBoxOCM("template") ) );
+		function testGetCache(){
+			makePublic(proxy,"getCache");
+			assertTrue( isObject( proxy.getCache() ) );
+			assertTrue( isObject( proxy.getCache("template") ) );
 
 		}
 	</cfscript>

@@ -43,7 +43,7 @@ Description :
 			}
 
 			// Template Cache & Caching Maps
-			instance.templateCache 				= controller.getColdboxOCM( "template" );
+			instance.templateCache 				= controller.getCache( "template" );
 			instance.renderedHelpers			= {};
 			instance.lockName					= "rendering.#controller.getAppHash()#";
 
@@ -155,7 +155,7 @@ Description :
 				arguments.cacheSuffix 				= viewCacheEntry.cacheSuffix;
 				arguments.cacheProvider				= viewCacheEntry.cacheProvider;
 			}
-			
+
 			// Prepare caching key
 			viewCacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX;
 			// If we have a module, incorporate it
