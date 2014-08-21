@@ -105,6 +105,12 @@
 		def = {name="configBean", dsl="coldbox:moduleService"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( this, c);
+
+		mockRenderer = createEmptyMock( "coldbox.system.web.Renderer" );
+		mockColdbox.$("getRenderer",  mockrenderer);
+		def = {name="renderer", dsl="coldbox:renderer"};
+		c = builder.getColdBoxDSL(def);
+		assertEquals( mockrenderer, c);
 	}
 
 	function testgetColdboxDSLStage3(){
