@@ -3,7 +3,7 @@
 	this.loadColdBox = false;
 	function setup(){
 		super.setup();
-		
+
 		dataConfigPath = "coldbox.tests.specs.ioc.config.samples.SampleWireBox";
 		// Available WireBox public scopes
 		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
@@ -160,14 +160,14 @@
 		assertEquals( this.TYPES.CFC, mapping.getType() );
 		assertEquals( "models.TestService", mapping.getPath() );
 	}
-	
+
 	function testMapPathToNamespace(){
 		config.mapPath( namespace="@wb", path="models.TestService" );
 		mapping = config.getMapping("TestService@wb");
 		assertEquals( "TestService@wb", mapping.getName() );
 		assertEquals( this.TYPES.CFC, mapping.getType() );
 		assertEquals( "models.TestService", mapping.getPath() );
-		
+
 		config.mapPath( namespace="wb@", path="models.TestService", prepend=true );
 		mapping = config.getMapping("wb@TestService");
 		assertEquals( "wb@TestService", mapping.getName() );
@@ -456,7 +456,7 @@
 			}
 		};
 		config.loadDataDSL( raw );
-		
+
 		assertEquals( mockInjector, config.getParentInjector() );
 	}
 
@@ -477,30 +477,30 @@
 	}
 
 	function testMapDirectory(){
-		config.mapDirectory("coldbox.test-harness.model");
+		config.mapDirectory("coldbox.test-harness.models");
 		assertTrue( structCount(config.getMappings()) gt 0 );
 
 		config.reset();
 
-		config.mapDirectory(packagePath="coldbox.test-harness.model", include="ioc.*");
+		config.mapDirectory(packagePath="coldbox.test-harness.models", include="ioc.*");
 		assertTrue( structCount(config.getMappings) gte 2 );
 
 		config.reset();
 
-		config.mapDirectory(packagePath="coldbox.test-harness.model",exclude="ioc.*");
+		config.mapDirectory(packagePath="coldbox.test-harness.models",exclude="ioc.*");
 		assertTrue( structCount(config.getMappings()) gt 5 );
-		
+
 		// with influence
 		config.reset();
-		config.mapDirectory(packagePath="coldbox.test-harness.model", influence=influenceUDF);
+		config.mapDirectory(packagePath="coldbox.test-harness.models", influence=influenceUDF);
 		assertEquals( "singleton", config.getMapping("Simple").getScope() );
-		
+
 		// with filters
 		config.reset();
-		config.mapDirectory(packagePath="coldbox.test-harness.model", filter=filterUDF);
+		config.mapDirectory(packagePath="coldbox.test-harness.models", filter=filterUDF);
 		assertFalse( config.mappingExists("Simple") );
 	}
-	
+
 	private function influenceUDF(binder, path){
 		if( findNoCase( "simple", arguments.path) ){
 			arguments.binder.asSingleton();
