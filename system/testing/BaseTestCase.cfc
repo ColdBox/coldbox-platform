@@ -401,7 +401,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 						}
 						// render layout/view pair
 						else{
-							renderedContent = cbController.getPlugin("Renderer")
+							renderedContent = cbcontroller.getRenderer()
 								.renderLayout(module=requestContext.getCurrentLayoutModule(),
 										     viewModule=requestContext.getCurrentViewModule());
 						}

@@ -7,19 +7,16 @@ Description :
 	A cool utility that helps you when working with HTML
 ----------------------------------------------------------------------->
 <cfcomponent hint="A cool utility that helps you when working with HTML, from creating doc types, to managing your js/css assets, to rendering tables and lists from data"
+       		 extends="coldbox.system.FrameworkSupertype"
        		 output="false"
        		 singleton>
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="HTMLHelper" output="false">
+		<cfargument name="controller" required="true" inject="coldbox">
 		<cfscript>
-
-			setpluginName("HTMLHelper");
-			setpluginVersion("2.0");
-			setpluginDescription("A cool utility that helps you when working with HTML");
-			setpluginAuthor("Ortus Solutions");
-			setpluginAuthorURL("http://www.coldbox.org");
+			variables.controller = arguments.controller;
 
 			return this;
 		</cfscript>
@@ -1733,5 +1730,11 @@ Description :
             return arValues;
         </cfscript>
     </cffunction>
+
+    <!--- cfhtml head facade --->
+	<cffunction name="$htmlhead" access="public" returntype="void" hint="Facade to cfhtmlhead" output="false" >
+		<cfargument name="content" required="true" type="string" hint="The content to send to the head">
+		<cfhtmlhead text="#arguments.content#">
+	</cffunction>
 
 </cfcomponent>

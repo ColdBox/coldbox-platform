@@ -81,6 +81,13 @@ Only one instance of a specific ColdBox application exists.
 		<cfreturn memento>
 	</cffunction>
 
+	<!--- getRenderer --->
+    <cffunction name="getRenderer" output="false" access="public" returntype="any" hint="Get the system web renderer">
+    	<cfscript>
+    		return instance.wirebox.getInstance( "coldbox.system.web.Renderer" );
+    	</cfscript>
+    </cffunction>
+
 	<!--- Get The CFMLEngine object --->
 	<cffunction name="getCFMLEngine" access="public" returntype="any" output="false" hint="Get the CFMLEngine utility(coldbox.system.core.util.CFMLEngine)" coldoc:generic="coldbox.system.core.util.CFMLEngine">
 		<cfreturn instance.CFMLEngine>

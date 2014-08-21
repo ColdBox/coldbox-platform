@@ -317,7 +317,7 @@ Description :
 		<cfscript>
     		// Cleanup for modules
 			var cEvent     		= reReplaceNoCase(arguments.event,"^([^:.]*):","");
-			var renderer 		= controller.getPlugin("Renderer");
+			var renderer 		= controller.getRenderer();
 			var targetView		= "";
 			var targetModule	= getToken(arguments.event,1,":");
 

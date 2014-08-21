@@ -10,18 +10,19 @@ Description :
 	This is ColdBox's Renderer plugin.
 ----------------------------------------------------------------------->
 <cfcomponent hint="This service renders layouts, views, framework includes, etc."
-			 extends="coldbox.system.Plugin"
+			 extends="coldbox.system.FrameworkSupertype"
 			 output="false"
-			 cache="false">
+			 scope="request">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="Renderer" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true">
+		<cfargument name="controller" required="true" inject="coldbox">
 		<!--- ************************************************************* --->
 		<cfscript>
-			super.init(arguments.controller);
+			// setup controller
+			variables.controller = arguments.controller;
 
 			// Set Conventions, Settings and Properties
 			instance.layoutsConvention 			= controller.getSetting( "layoutsConvention", true );
@@ -51,14 +52,14 @@ Description :
 			instance.isDiscoveryCaching			= controller.getSetting( "handlerCaching" );
 
 			// Set event scope, we are not caching, so it is threadsafe.
-			event 	= getRequestContext();
+			variables.event 	= getRequestContext();
 
 			// Create View Scopes
-			rc 		= event.getCollection();
-			prc 	= event.getCollection(private=true);
+			variables.rc 		= event.getCollection();
+			variables.prc 		= event.getCollection(private=true);
 
 			// Set the HTML Helper Plugin Scope
-			html	= getPlugin("HTMLHelper");
+			variables.html	= getInstance( "coldbox.system.core.dynamic.HTMLHelper" );
 
 			// Load global UDF Libraries into target
 			loadGlobalUDFLibraries();

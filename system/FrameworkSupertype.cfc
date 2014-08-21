@@ -8,6 +8,9 @@
 */
 component serializable="false" accessors="true"{
 
+	// Controller Reference
+	property name="controller";
+
 	/**
 	* Get a datasource structure representation
 	* @alias.hint The alias of the datasource to get from the config structures
@@ -55,7 +58,7 @@ component serializable="false" accessors="true"{
 	* @composeRelationships.hint Automatically attempt to compose relationships from memento
 	*/
 	function populateModel(
-		required model, 
+		required model,
 		scope="",
 		boolean trustedSetter=false,
 		include="",
@@ -78,6 +81,22 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
+	* Retrieve the request context object
+	* @return coldbox.system.web.context.RequestContext
+	*/
+	function getRequestContext(){
+		return controller.getRequestService().getContext();
+	}
+
+	/**
+	* Get the RC or PRC collection reference
+	* @private.hint The boolean bit that says give me the RC by default or true for the private collection (PRC)
+	*/
+	struct function getRequestCollection( boolean private=false ){
+		return getRequestContext().getCollection( private=arguments.private );
+	}
+
+	/**
 	* Renders views in your application
 	* @view.hint The view to render
 	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
@@ -91,16 +110,16 @@ component serializable="false" accessors="true"{
 	*/
 	function renderView(
 		required view,
-		struct args={}, 
+		struct args={},
 		module,
-		collection, 
+		collection,
 		collectionAs,
 		boolean cache,
 		cacheTimeout,
 		cacheLastAccessTimeout,
 		cacheSuffix
 	){
-		return controller.getPlugin("Renderer").renderView( argumentCollection=arguments );
+		return controller.getRenderer().renderView( argumentCollection=arguments );
 	}
 
 	/**
@@ -117,13 +136,13 @@ component serializable="false" accessors="true"{
 	*/
 	function renderExternalView(
 		required view,
-		struct args={}, 
+		struct args={},
 		boolean cache,
 		cacheTimeout,
 		cacheLastAccessTimeout,
 		cacheSuffix
 	){
-		return controller.getPlugin("Renderer").renderExternalView( argumentCollection=arguments );
+		return controller.getRenderer().renderExternalView( argumentCollection=arguments );
 	}
 
 	/**
@@ -134,18 +153,18 @@ component serializable="false" accessors="true"{
 	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
 	*/
 	function renderLayout(
-		layout, 
-		view, 
+		layout,
+		view,
 		module,
 		args={}
 	){
-		return controller.getPlugin("Renderer").renderLayout( argumentCollection=arguments );
+		return controller.getRenderer().renderLayout( argumentCollection=arguments );
 	}
 
 	/**
 	* Get an interceptor reference
 	* @interceptorName.hint The name of the interceptor to retrieve
-	* 
+	*
 	* @return Interceptor
 	*/
 	function getInterceptor( required interceptorName ){
@@ -161,17 +180,17 @@ component serializable="false" accessors="true"{
 	* @asyncAllJoin.hint If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
 	* @asyncPriority.hint The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
 	* @asyncJoinTimeout.hint The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
-	* 
+	*
 	* @return struct of thread information or void
 	*/
-	any function announceInterception( 
+	any function announceInterception(
 		required state,
 		struct interceptData={},
 		boolean async=false,
 		boolean asyncAll=false,
 		boolean asyncAllJoin=true,
 		asyncPriority="NORMAL",
-		numeric asyncJoinTimeout=0 
+		numeric asyncJoinTimeout=0
 	){
 		return controller.getInterceptorService().processState( argumentCollection=arguments );
 	}
@@ -179,7 +198,7 @@ component serializable="false" accessors="true"{
 	/**
 	* Get a named CacheBox Cache
 	* @name.hint The name of the cache to retrieve, if not passed, it used the 'default' cache.
-	* 
+	*
 	* @return coldbox.system.cache.IColdboxApplicationCache
 	*/
 	function getCache( name = "default" ){
@@ -218,7 +237,7 @@ component serializable="false" accessors="true"{
 	* Set a new setting in the system
 	* @name.hint The key of the setting
 	* @value.hint The value of the setting
-	* 
+	*
 	* @return FrameworkSuperType
 	*/
 	any function setSetting( required name, required value ){
@@ -231,7 +250,7 @@ component serializable="false" accessors="true"{
 	* @module.hint The module to retrieve the configuration settings from
 	* @setting.hint The setting to retrieve if passed
 	* @defaultValue.hint The default value to return if setting does not exist
-	* 
+	*
 	* @return struct or any
 	*/
 	any function getModuleSettings( required module, setting, defaultValue ){
@@ -271,7 +290,7 @@ component serializable="false" accessors="true"{
 	* @postProcessExempt.hint Do not fire the postProcess interceptors
 	* @statusCode.hint The status code to use in the relocation
 	*/
-	void function setNextEvent( 
+	void function setNextEvent(
 		event,
 		URL,
 		URI,
@@ -295,7 +314,7 @@ component serializable="false" accessors="true"{
 	* @defaultEvent.hint The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY
 	* @postProcessExempt.hint If true, pre/post handlers will not be fired, defaults to false
 	*/
-	any function runEvent( 
+	any function runEvent(
 		required event,
 		boolean postProcessExempt=false,
 		boolean private="false",
@@ -343,7 +362,7 @@ component serializable="false" accessors="true"{
 	* @asset.hint The asset(s) to load, only js or css files. This can also be a comma delimmited list.
 	*/
 	string function addAsset( required asset ){
-		return controller.getPlugin( "HTMLHelper" ).addAsset( argumentCollection=arguments );
+		return getInstance( "coldbox.system.core.dynamic.HTMLHelper" ).addAsset( argumentCollection=arguments );
 	}
 
 	/**

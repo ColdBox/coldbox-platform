@@ -864,7 +864,7 @@ Description :
 					}
 					case "pdf" : {
 						arguments.type = "pdf";
-						arguments.data = instance.controller.getPlugin("Renderer").renderView( view=viewToRender);
+						arguments.data = instance.controller.getRenderer().renderView( view=viewToRender);
 						return renderData( argumentCollection=arguments );
 					}
 					case "html" : case "plain" : {
