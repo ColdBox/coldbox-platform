@@ -6,8 +6,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ----------------------------------------------------------------------->
 <cfcomponent hint="This service renders layouts, views, framework includes, etc."
 			 extends="coldbox.system.FrameworkSupertype"
-			 output="false"
-			 scope="request">
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
