@@ -350,7 +350,7 @@ TODO: Remove MXUnit compat for 4.0 and rely only on BaseSpec.
 		<cfscript>
 			var handlerResults  = "";
 			var requestContext  = "";
-			var relocationTypes = "TestController.setNextEvent,TestController.setNextRoute,TestController.relocate";
+			var relocationTypes = "TestController.setNextEvent,TestController.relocate";
 			var cbController    = getController();
 			var renderData		= "";
 			var renderedContent = "";
