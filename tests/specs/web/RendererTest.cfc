@@ -2,7 +2,7 @@
 
 	function setup(){
 		super.setup();
-		r = getController().getPlugin("Renderer");
+		r = getController().getRenderer();
 	}
 
 	function testRenderViewWithCache(){

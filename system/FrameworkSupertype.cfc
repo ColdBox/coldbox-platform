@@ -81,6 +81,14 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
+	* Retrieve the system web renderer
+	* @return coldbox.system.web.Renderer
+	*/
+	function getRenderer(){
+		return controller.getRenderer();
+	}
+
+	/**
 	* Retrieve the request context object
 	* @return coldbox.system.web.context.RequestContext
 	*/

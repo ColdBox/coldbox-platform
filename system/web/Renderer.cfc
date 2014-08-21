@@ -188,7 +188,7 @@ Description :
 			// Render View Composite or View Collection
 			if( structKeyExists(arguments,"collection") ){
 				// render collection in next context
-				iData.renderedView = getPlugin("Renderer").renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows, arguments.collectionDelim);
+				iData.renderedView = getRenderer().renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows, arguments.collectionDelim);
 			}
 			else{
 				// render simple composite view
@@ -424,7 +424,7 @@ Description :
 
 		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
 		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
-			<cfreturn getPlugin("Renderer").setExplicitView(arguments.view).renderLayout(argumentCollection=arguments)>
+			<cfreturn getRenderer().setExplicitView( arguments.view ).renderLayout(argumentCollection=arguments)>
 		</cfif>
 
 		<!--- If the layout has not been specified set it to the implicit value. --->
