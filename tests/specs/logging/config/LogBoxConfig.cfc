@@ -23,7 +23,7 @@
 				"coldbox.system.interceptors" = { levelMin=0, levelMax="DEBUG", appenders="*" },
 				"hello.model" = {levelMax=4, appenders="*" }
 			},
-			debug  = [ "coldbox.system", "model.system" ],
+			debug  = [ "coldbox.system", "models.system" ],
 			info = [ "hello.model", "yes.wow.wow" ],
 			warn = [ "hello.model", "yes.wow.wow" ],
 			error = [ "hello.model", "yes.wow.wow" ],

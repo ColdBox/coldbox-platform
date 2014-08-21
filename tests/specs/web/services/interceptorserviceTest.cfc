@@ -23,7 +23,7 @@
 		mockRequestService.$("getFlashScope",mockFlash);
 		mockLogBox.$("getLogger",mockLogger);
 
-		iService = model.init(mockController).$("getColdboxOCM", mockCache);
+		iService = models.init(mockController).$("getColdboxOCM", mockCache);
 
 	}
 

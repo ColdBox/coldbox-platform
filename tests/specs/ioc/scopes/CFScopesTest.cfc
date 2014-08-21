@@ -9,7 +9,7 @@
 			.$("getUtil", getMockBox().createMock("coldbox.system.core.util.Util"))
 			.$("getLogBox", mockLogBox );
 		super.setup();
-		scope = model.init( mockInjector );
+		scope = models.init( mockInjector );
 		mockStub = createStub();
 	}
 

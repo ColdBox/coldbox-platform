@@ -57,14 +57,14 @@
 	function testbuildcfc(){
 		// simple cfc
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyCFC");
-		mapping.setPath("coldbox.test-harness.model.ioc.Simple");
+		mapping.setPath("coldbox.test-harness.models.ioc.Simple");
 		r = builder.buildCFC(mapping);
 		//debug(r);
 	}
 	
 	function testBuildCFCWithArguments(){
 		//mocks
-		mockObject = getMockBox().createMock("coldbox.test-harness.model.ioc.Simple");
+		mockObject = getMockBox().createMock("coldbox.test-harness.models.ioc.Simple");
 		builder.$("buildDSLDependency", mockObject);
 		mockInjector.$("getInstance", mockObject )
 			.$("containsInstance").$args("myBean").$results("path.found")
@@ -72,7 +72,7 @@
 		
 		// With constructor args
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyCFC");
-		mapping.setPath("coldbox.test-harness.model.ioc.SimpleConstructors")
+		mapping.setPath("coldbox.test-harness.models.ioc.SimpleConstructors")
 			.addDIConstructorArgument(name="constant",value=45)
 			.addDIConstructorArgument(name="dslVar",dsl="logbox")
 			.addDIConstructorArgument(name="modelVar",ref="myBean")
@@ -84,13 +84,13 @@
 	
 	function testBuildCFCException(){
 		//mocks
-		mockObject = getMockBox().createMock("coldbox.test-harness.model.ioc.Simple");
+		mockObject = getMockBox().createMock("coldbox.test-harness.models.ioc.Simple");
 		builder.$("buildDSLDependency", mockObject);
 		mockInjector.$("containsInstance").$results("");
 		
 		// With constructor args
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyCFC");
-		mapping.setPath("coldbox.test-harness.model.ioc.SimpleConstructors")
+		mapping.setPath("coldbox.test-harness.models.ioc.SimpleConstructors")
 			.addDIConstructorArgument(name="constant",value=45)
 			.addDIConstructorArgument(name="dslVar",dsl="logbox")
 			.addDIConstructorArgument(name="modelVar",ref="myBean");

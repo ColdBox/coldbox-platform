@@ -104,10 +104,10 @@
 	}
 
 	function testTo(){
-		config.map("Test").to("model.TestService");
+		config.map("Test").to("models.TestService");
 		mapping = config.getMapping("Test");
 		assertEquals( this.TYPES.CFC, mapping.getType() );
-		assertEquals( "model.TestService", mapping.getPath() );
+		assertEquals( "models.TestService", mapping.getPath() );
 	}
 
 	function testParent(){
@@ -117,27 +117,27 @@
 		//
 
 		// alpha and bravo are in the abstract service
-		config.map("someAlphaDAO").to("model.parent.SomeAlphaDAO");
-		config.map("someBravoDAO").to("model.parent.SomeBravoDAO");
+		config.map("someAlphaDAO").to("models.parent.SomeAlphaDAO");
+		config.map("someBravoDAO").to("models.parent.SomeBravoDAO");
 
 		// charlie and delta are in the concrete service only that also inherits from  abstract service
-		config.map("someCharlieDAO").to("model.parent.SomeCharlieDAO");
-		config.map("someDeltaDAO").to("model.parent.SomeDeltaDAO");
+		config.map("someCharlieDAO").to("models.parent.SomeCharlieDAO");
+		config.map("someDeltaDAO").to("models.parent.SomeDeltaDAO");
 
 		// define abstract parent service with required dependencies (alpha and bravo)
-		config.map("abstractService").to("model.parent.AbstractService")
+		config.map("abstractService").to("models.parent.AbstractService")
 			.property(name:"someAlphaDAO", ref:"someAlphaDAO")
 			.property(name:"someBravoDAO", ref:"someBravoDAO");
 
 		// define concrete service that inherits the abstract parent service dependencies via the parent method
-		config.map("concreteService").to("model.parent.ConcreteService")
+		config.map("concreteService").to("models.parent.ConcreteService")
 			.parent("abstractService")
 			.property(name:"someCharlieDAO", ref:"someCharlieDAO")
 			.property(name:"someDeltaDAO", ref:"someDeltaDAO");
 
 		// test that both mappings still have their respective names and paths (processMemento excludes worked)
-		assertEquals( "model.parent.AbstractService", config.getMapping("abstractService").getPath() );
-		assertEquals( "model.parent.ConcreteService", config.getMapping("concreteService").getPath() );
+		assertEquals( "models.parent.AbstractService", config.getMapping("abstractService").getPath() );
+		assertEquals( "models.parent.ConcreteService", config.getMapping("concreteService").getPath() );
 
 		// test that concrete service now containstest that concrete service now containstest that concrete service now contains
 		// all 4 properties (alpha, bravo, charlie and delta) exists
@@ -154,25 +154,25 @@
 	}
 
 	function testMapPath(){
-		config.mapPath("model.TestService");
+		config.mapPath("models.TestService");
 		mapping = config.getMapping("TestService");
 		assertEquals( "TestService", mapping.getName() );
 		assertEquals( this.TYPES.CFC, mapping.getType() );
-		assertEquals( "model.TestService", mapping.getPath() );
+		assertEquals( "models.TestService", mapping.getPath() );
 	}
 	
 	function testMapPathToNamespace(){
-		config.mapPath( namespace="@wb", path="model.TestService" );
+		config.mapPath( namespace="@wb", path="models.TestService" );
 		mapping = config.getMapping("TestService@wb");
 		assertEquals( "TestService@wb", mapping.getName() );
 		assertEquals( this.TYPES.CFC, mapping.getType() );
-		assertEquals( "model.TestService", mapping.getPath() );
+		assertEquals( "models.TestService", mapping.getPath() );
 		
-		config.mapPath( namespace="wb@", path="model.TestService", prepend=true );
+		config.mapPath( namespace="wb@", path="models.TestService", prepend=true );
 		mapping = config.getMapping("wb@TestService");
 		assertEquals( "wb@TestService", mapping.getName() );
 		assertEquals( this.TYPES.CFC, mapping.getType() );
-		assertEquals( "model.TestService", mapping.getPath() );
+		assertEquals( "models.TestService", mapping.getPath() );
 	}
 
 	function testToJava(){
@@ -418,12 +418,12 @@
 		debug( config.getListeners() );
 		assertEquals(1, arrayLen(config.getListeners()));
 
-		config.listener("model.listener",{},"configListner");
+		config.listener("models.listener",{},"configListner");
 		assertEquals(2, arrayLen(config.getListeners()));
 		listeners = config.getListeners();
 		assertEquals( "configListner", listeners[2].name);
 
-		config.listener("model.FunkyTown");
+		config.listener("models.FunkyTown");
 		assertEquals(3, arrayLen(config.getListeners()));
 		listeners = config.getListeners();
 		assertEquals( "FunkyTown", listeners[3].name);
@@ -451,7 +451,7 @@
 				{class="my.listener",properties={}}
 			],
 			mappings = {
-				obj1 = {path="my.model.path",eagerInit=true},
+				obj1 = {path="my.models.path",eagerInit=true},
 				groovyLib = {path="groovy.path.lib",dsl="groovy"}
 			}
 		};
@@ -540,15 +540,15 @@
 	}
 
 	function testMapAspect(){
-		config.mapAspect("Transaction").to("model.Transactional");
+		config.mapAspect("Transaction").to("models.Transactional");
 		mapping = config.getMapping("Transaction");
 		assertEquals( true, mapping.isAspect() );
 		assertEquals( "singleton", mapping.getScope() );
 		assertEquals( true, mapping.isEagerInit() );
-		assertEquals( "model.Transactional", mapping.getPath() );
+		assertEquals( "models.Transactional", mapping.getPath() );
 		assertEquals( true, mapping.isAspectAutoBinding() );
 
-		config.mapAspect("Transaction",false).to("model.Transactional");
+		config.mapAspect("Transaction",false).to("models.Transactional");
 		mapping = config.getMapping("Transaction");
 		assertEquals( false, mapping.isAspectAutoBinding() );
 

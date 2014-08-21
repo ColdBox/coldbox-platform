@@ -2,7 +2,7 @@
 
 	<cffunction name="setup">
 		<cfset super.setup()>
-		<cfset populator = model.init()>
+		<cfset populator = models.init()>
 	</cffunction>
 
 	<cffunction name="testGetRelationshipMetaData" access="public" returntype="void" output="false">
@@ -38,7 +38,7 @@
 
 			/* Populate From Struct - populate role */
 			user = populator.populateFromStruct(target=obj,memento=myStruct,composeRelationships=true);
-			assertTrue( getMetaData( user.getRole() ).name == "cbtestharness.model.entities.Role" );
+			assertTrue( getMetaData( user.getRole() ).name == "cbtestharness.models.entities.Role" );
 
 			/* Struct */
 			roleArgs = {
@@ -158,7 +158,7 @@
 			stime = getTickCount();
 
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = getMockBox().createMock('coldbox.test-harness.model.formBean');
+			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
 
 			/* Struct */
 			myStruct = structnew();
@@ -179,7 +179,7 @@
 			}
 
 			/* populate using scope now */
-			obj = getMockBox().createMock('coldbox.test-harness.model.formBean');
+			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
 			obj = populator.populateFromStruct(obj,myStruct,"variables.instance");
 			objInstance = obj.getInstance();
 			/* Assert Population */
@@ -188,7 +188,7 @@
 			}
 
 			/* Populate using onMissingMethod */
-			obj = getMockBox().createMock('coldbox.test-harness.model.formImplicitBean');
+			obj = getMockBox().createMock('coldbox.test-harness.models.formImplicitBean');
 			obj = populator.populateFromStruct(target=obj,memento=myStruct,trustedSetter=true);
 			objInstance = obj.getInstance();
 			/* Assert Population */
@@ -204,7 +204,7 @@
 			stime = getTickCount();
 
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = getMockBox().createMock('coldbox.test-harness.model.formBean');
+			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
 
 			/* Struct */
 			myStruct = structnew();
@@ -230,7 +230,7 @@
 	<cffunction name="testpopulateFromJSON" output="false" access="public" returntype="any" hint="">
 		<cfscript>
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = getMockBox().createMock('coldbox.test-harness.model.formBean');
+			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
 
 			/* Struct */
 			myStruct = structnew();
@@ -257,7 +257,7 @@
 	<cffunction name="testPopulateFromXML" output="false" access="public" returntype="any" hint="">
 		<cfscript>
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = getMockBox().createMock('coldbox.test-harness.model.formBean');
+			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
 
 			/* Struct */
 			xml = "<root>
@@ -283,7 +283,7 @@
 		<cfscript>
 
 			// We are using the formBean object: fname,lname,email,initDate
-			obj = getMockBox().createMock('coldbox.test-harness.model.formBean');
+			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
 
 			// Query
 			myQuery = QueryNew('fname,lname,email,initDate');

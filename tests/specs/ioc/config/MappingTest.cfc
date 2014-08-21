@@ -16,7 +16,7 @@
 		var data = {
 			alias=["funky"],
 			type="CFC",
-			path="my.model.Funky",
+			path="my.models.Funky",
 			eagerInit = true,
 			threadSafe = true,
 			scope="singleton",

@@ -33,7 +33,7 @@
 	function testLocateInstance(){
 		// Locate by package scan
 		r = injector.locateInstance("ioc.category.CategoryBean");
-		assertEquals("coldbox.test-harness.model.ioc.category.CategoryBean", r);
+		assertEquals("coldbox.test-harness.models.ioc.category.CategoryBean", r);
 
 		// Locate Not Found
 		r = injector.locateInstance("com.com.com.Whatever");

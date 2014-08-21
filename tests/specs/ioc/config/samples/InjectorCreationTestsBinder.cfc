@@ -91,7 +91,7 @@ Description :
         // Mixins Beans
         map("MixinTest")
         	.to("#modelPath#.ioc.Simple")
-        	.mixins( ["/coldbox/test-harness/model/ioc/mixins/mixin1.cfm", "/coldbox/test-harness/model/ioc/mixins/mixin2.cfm" ] );
+        	.mixins( ["/coldbox/test-harness/models/ioc/mixins/mixin1.cfm", "/coldbox/test-harness/models/ioc/mixins/mixin2.cfm" ] );
 
 		// PARENT Mappings
 		// alpha and bravo are in the abstract service
@@ -112,7 +112,7 @@ Description :
 
 		// Inherited metadata
 		map("WireBoxURL").toValue("http://www.coldbox.org");
-		map("ConcreteMetadata").to("coldbox.test-harness.model.ioc.inheritance.Concrete");
+		map("ConcreteMetadata").to("coldbox.test-harness.models.ioc.inheritance.Concrete");
 
 		// Implicit properties
 		map("implicitTest").to("#modelPath#.ioc.ImplicitTest").setter(name="testProperty",value=123);

@@ -51,7 +51,7 @@ Description :
 		};
 		
 		// Map Bindings below
-		mapPath( "coldbox.test-harness.model.TestService" );
+		mapPath( "coldbox.test-harness.models.TestService" );
 		
 		map("WireBoxURL").toValue("www.coldbox.org");
 	}	
