@@ -5,7 +5,6 @@
 	"slug"				: "wirebox-with-cachebox",
 	"type"				: "di",
 	"keywords"			: "di,aop,dependeny injection,ioc,caching",
-	"directory"			: "/",
 	"homepage"			: "http://www.coldbox.org",
 	"documentation"		: "http://wiki.coldbox.org/wiki/WireBox.cfm",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },

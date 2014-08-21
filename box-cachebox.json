@@ -5,7 +5,6 @@
 	"slug"				: "cachebox",
 	"type"				: "caching",
 	"keywords"			: "caching,aggregator,cache",
-	"directory"			: "/",
 	"homepage"			: "http://www.coldbox.org",
 	"documentation"		: "http://wiki.coldbox.org/wiki/CacheBox.cfm",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },

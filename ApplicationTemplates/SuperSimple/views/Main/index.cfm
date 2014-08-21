@@ -222,7 +222,7 @@
 		        <b>/lib</b>: Where Jar files can be integrated
 		    </li>
 			<li>
-		        <b>/model</b>: Your model layer
+		        <b>/models</b>: Your model layer
 		    </li>
 			<li>
 		        <b>/modules</b>: Your application modules

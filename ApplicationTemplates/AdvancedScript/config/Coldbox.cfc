@@ -124,7 +124,7 @@
 			pluginsLocation  = "plugins",
 			viewsLocation 	 = "views",
 			layoutsLocation  = "layouts",
-			modelsLocation 	 = "model",
+			modelsLocation 	 = "models",
 			eventAction 	 = "index"
 		};
 

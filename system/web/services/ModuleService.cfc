@@ -212,7 +212,7 @@ I oversee and manage ColdBox modules
 					layoutsLocation 	= "layouts",
 					viewsLocation 		= "views",
 					pluginsLocation     = "plugins",
-					modelsLocation       = "model"
+					modelsLocation       = "models"
 				}
 			};
 

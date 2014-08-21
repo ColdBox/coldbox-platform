@@ -5,7 +5,6 @@
 	"slug"				: "logbox",
 	"type"				: "logging",
 	"keywords"			: "logging, messaging",
-	"directory"			: "/",
 	"homepage"			: "http://www.coldbox.org",
 	"documentation"		: "http://wiki.coldbox.org/wiki/LogBox.cfm",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },

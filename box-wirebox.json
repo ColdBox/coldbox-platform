@@ -5,7 +5,6 @@
 	"slug"				: "wirebox",
 	"type"				: "di",
 	"keywords"			: "di,aop,dependeny injection,ioc",
-	"directory"			: "/",
 	"homepage"			: "http://www.coldbox.org",
 	"documentation"		: "http://wiki.coldbox.org/wiki/WireBox.cfm",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },

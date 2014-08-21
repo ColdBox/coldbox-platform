@@ -21,9 +21,9 @@ ColdBox Default Configuration
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
 	// Operation Defaults
-	this.eventName 	= "event";
-	this.defaultEvent = "main.index";
-	this.defaultLayout = "Main.cfm";
+	this.eventName 		= "event";
+	this.defaultEvent 	= "main.index";
+	this.defaultLayout 	= "Main.cfm";
 
 	// flash scope defaults
 	this.flash = {
@@ -41,7 +41,7 @@ ColdBox Default Configuration
 	this.layoutsConvention	= "layouts";
 	this.viewsConvention	= "views";
 	this.eventAction		= "index";
-	this.modelsConvention	= "model";
+	this.modelsConvention	= "models";
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
 
