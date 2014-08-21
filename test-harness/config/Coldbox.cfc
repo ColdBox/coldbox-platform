@@ -29,8 +29,8 @@
 			viewsExternalLocation		= "/cbtestharness/external/testViews",
 			layoutsExternalLocation 	= "/cbtestharness/external/testLayouts",
 			handlersExternalLocation  	= "cbtestharness.external.testHandlers",
-			requestContextDecorator 	= "cbtestharness.model.myRequestContextDecorator",
-			controllerDecorator			= "cbtestharness.model.ControllerDecorator",
+			requestContextDecorator 	= "cbtestharness.models.myRequestContextDecorator",
+			controllerDecorator			= "cbtestharness.models.ControllerDecorator",
 
 			//Error/Exception Handling
 			exceptionHandler		= "main.onException",

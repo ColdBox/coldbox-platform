@@ -33,7 +33,7 @@ component{
     this.ormEnabled 	  = true;
     this.datasource		  = "coolblog";
     this.ormSettings	  = {
-    	cfclocation = "/cbtestharness/model/entities",
+    	cfclocation = "/cbtestharness/models/entities",
     	logSQL 		= false,
     	flushAtRequestEnd = false,
     	autoManageSession = false,

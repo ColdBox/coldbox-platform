@@ -83,7 +83,7 @@ Optional Methods
 		];
 
 		// WireBox Binder configuration
-		binder.map("forgeService@forgebox").to("#moduleMapping#.model.ForgeService");
+		binder.map("forgeService@forgebox").to("#moduleMapping#.models.ForgeService");
 	}
 
 	/**
