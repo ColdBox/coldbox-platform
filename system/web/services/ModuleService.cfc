@@ -400,6 +400,7 @@ I oversee and manage ColdBox modules
 			var iData = {moduleName=arguments.moduleName};
 			var interceptorService = controller.getInterceptorService();
 			var x = 1;
+			var exceptionUnloading = "";
 
 			// Check if module is loaded?
 			if( NOT structKeyExists(appConfig.modules,arguments.moduleName) ){ return false; }
@@ -420,6 +421,7 @@ I oversee and manage ColdBox modules
 					instance.mConfigCache[ arguments.moduleName ].onUnload();
 				} catch( Any e ){
 					instance.logger.error( "Error unloading module: #arguments.moduleName#. #e.message# #e.detail#", e );
+					exceptionUnloading = e;
 				}
 			}
 
@@ -447,6 +449,11 @@ I oversee and manage ColdBox modules
 			// Log it
 			if( instance.logger.canDebug() ){
 				instance.logger.debug("Module #arguments.moduleName# unloaded successfully.");
+			}
+
+			// Do we need to throw exception?
+			if( !isSimpleValue( exceptionUnloading ) ){
+				throw( exceptionUnloading );
 			}
 		</cfscript>
 		</cflock>
