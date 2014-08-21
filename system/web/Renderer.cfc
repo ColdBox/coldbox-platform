@@ -163,7 +163,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 			if (arguments.cache){
 				// Which provider you want to use?
 				if( arguments.cacheProvider neq "template" ){
-					viewCacheProvider = cacheBox.getCache( arguments.cacheProvider );
+					viewCacheProvider = getCache( arguments.cacheProvider );
 				}
 				// Try to get from cache
 				iData.renderedView = viewCacheProvider.get( viewCacheKey );
@@ -380,7 +380,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 			// Setup the cache key
 			cbox_cacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
 			// Setup the cache provider
-			if( arguments.cacheProvider neq "template" ){ cbox_cacheProvider = cacheBox.getCache( arguments.cacheProvider ); }
+			if( arguments.cacheProvider neq "template" ){ cbox_cacheProvider = getCache( arguments.cacheProvider ); }
 			// Try to get from cache
 			cbox_renderedView 	= cbox_cacheProvider.get(cbox_cacheKey);
 			if( isDefined("cbox_renderedView") ){

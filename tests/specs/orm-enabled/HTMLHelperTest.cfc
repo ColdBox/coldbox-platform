@@ -8,7 +8,13 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 <cfscript>
 	function setup(){
 		super.setup();
-		//application.wirebox = createObject("component","coldbox.system.ioc.Injector").init(binder="coldbox.tests.resources.WireBox");
+		mockRequestContext 	= getMockRequestContext();
+		mockRequestService 	= createEmptyMock("coldbox.system.web.services.RequestService")
+			.$("getContext", mockRequestContext);
+		mockController 		= createEmptyMock("coldbox.system.testing.mock.web.MockController")
+			.$("getRequestService", mockRequestService );
+
+		model.init( mockController );
 	}
 
 	function testaddAssetJS(){

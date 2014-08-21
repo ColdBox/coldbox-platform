@@ -335,7 +335,7 @@
 		locs = ["coldbox","mxunit"];
 		config.scanLocations(locs);
 
-		assertEquals(4, structCount(config.getScanLocations() ) );
+		assertEquals(3, structCount(config.getScanLocations() ) );
 		locations = config.getScanLocations();
 		assertEquals( expandPath("/coldbox/")  , locations["coldbox"]);
 		assertEquals( expandPath("/mxunit/")  , locations["mxunit"]);
@@ -344,7 +344,7 @@
 		config.reset();
 		locs = "coldbox,mxunit";
 		config.scanLocations(locs);
-		assertEquals(3, structCount(config.getScanLocations() ) );
+		assertEquals(2, structCount(config.getScanLocations() ) );
 		locations = config.getScanLocations();
 		assertEquals( expandPath("/coldbox/")  , locations["coldbox"]);
 		assertEquals( expandPath("/mxunit/")  , locations["mxunit"]);
@@ -356,9 +356,9 @@
 		locs = ["coldbox","mxunit"];
 		config.scanLocations(locs);
 
-		assertEquals(4, structCount(config.getScanLocations() ) );
-		config.removeScanLocations("mxunit");
 		assertEquals(3, structCount(config.getScanLocations() ) );
+		config.removeScanLocations("mxunit");
+		assertEquals(2, structCount(config.getScanLocations() ) );
 		assertFalse( structKeyExists( config.getScanLocations(), "mxunit") );
 	}
 

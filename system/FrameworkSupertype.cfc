@@ -210,7 +210,7 @@ component serializable="false" accessors="true"{
 	* @return coldbox.system.cache.IColdboxApplicationCache
 	*/
 	function getCache( name = "default" ){
-		return cachebox.getCache( arguments.name );
+		return controller.getCache( arguments.name );
 	}
 
 	/**
