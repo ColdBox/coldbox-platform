@@ -11,3 +11,4 @@ testing/cases/logging/tmp
 tests/automation/results
 tests/automation/results-*
 tests/logs
+build-coldbox

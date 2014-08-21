@@ -83,9 +83,16 @@ for( key in scopes ){
 			}
 		}
 
-		out.append(')">
-		#tab#<help><![CDATA[#md.functions[x].hint ?: ''#]]></help>
-		</scopevar>#br#');
+		if( structkeyExists( md.functions[ x ], "hint") ){
+			out.append(')">
+			#tab#<help><![CDATA[#md.functions[x].hint#]]></help>
+			</scopevar>#br#');
+		} else {
+			out.append(')">
+			#tab#<help><![CDATA['']]></help>
+			</scopevar>#br#');
+		}
+
 	}
 
 	out.append('</scopevar>#br#');

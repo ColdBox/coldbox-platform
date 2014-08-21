@@ -5,7 +5,7 @@
 <head>
 	<title> #arguments.package# </title>
 	<meta name="keywords" content="#arguments.package# package">
-	<cfmodule template="inc/common.html" rootPath="#assetPath#">
+	<cfmodule template="inc/common.cfm" rootPath="#assetPath#">
 </head>
 <body>
 	

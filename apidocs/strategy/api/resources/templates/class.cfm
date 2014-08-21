@@ -6,7 +6,7 @@
 	<title>#arguments.name#</title>
 	<meta name="keywords" content="#arguments.package#.concurrent.Callable interface">
 	<!-- common assets -->
-	<cfmodule template="inc/common.html" rootPath="#instance.class.root#">
+	<cfmodule template="inc/common.cfm" rootPath="#instance.class.root#">
 	<!-- syntax highlighter -->
 	<link type="text/css" rel="stylesheet" href="#instance.class.root#highlighter/styles/shCoreDefault.css">
 	<script src="#instance.class.root#highlighter/scripts/shCore.js"></script>
@@ -21,7 +21,7 @@
 
 <body class="withNavbar">
 
-<cfmodule template="inc/nav.html"
+<cfmodule template="inc/nav.cfm"
 			page="Class"
 			projectTitle= "#arguments.projectTitle#"
 			package = "#arguments.package#"

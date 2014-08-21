@@ -37,7 +37,7 @@
 
 			  	<cfif attributes.page eq "class">
 					<li class="dropdown active">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-flash"></i> class <b class="caret"></b></a>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-file"></i> class <b class="caret"></b></a>
 
 						<ul class="dropdown-menu">
 							<li><a href="#class">Class Definition</a></li>

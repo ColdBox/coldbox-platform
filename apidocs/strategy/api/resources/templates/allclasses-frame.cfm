@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<title>	all classes	</title>
-	<cfmodule template="inc/common.html" rootPath="">
+	<cfmodule template="inc/common.cfm" rootPath="">
 </head>
 <body>
 	<div class="label label-info">all classes</div>
