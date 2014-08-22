@@ -6,7 +6,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 */
 component{
 	// Application properties
-	this.name = hash( getCurrentTemplatePath() );
+	this.name = "4Load" & hash( getCurrentTemplatePath() );
 	this.sessionManagement = true;
 	this.sessionTimeout = createTimeSpan(0,0,30,0);
 	this.setClientCookies = true;
@@ -27,7 +27,7 @@ component{
 
 	// application start
 	public boolean function onApplicationStart(){
-		application.cbBootstrap = new coldbox.system.Coldbox( COLDBOX_CONFIG_FILE, COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING );
+		application.cbBootstrap = new coldbox.system.Bootstrap( COLDBOX_CONFIG_FILE, COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING );
 		application.cbBootstrap.loadColdbox();
 		return true;
 	}

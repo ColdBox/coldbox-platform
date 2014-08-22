@@ -16,22 +16,23 @@ Description :
 <cfcomponent output="false">
 	<cfsetting enablecfoutputonly="yes">
 	<cfsetting showdebugoutput="false" >
+
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = "3.8Load" & hash(getCurrentTemplatePath())>
 	<cfset this.sessionManagement = true>
 	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 	<cfset this.setClientCookies = true>
-
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
 	<!--- The web server mapping to this application. Used for remote purposes or static purposes --->
-	<cfset COLDBOX_APP_MAPPING   = "">
+	<cfset COLDBOX_APP_MAPPING   = "3load">
 	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE 	 = "">
 	<!--- COLDBOX APPLICATION KEY OVERRIDE --->
 	<cfset COLDBOX_APP_KEY 		 = "">
 
-	<cfset this.mappings["/coldbox"] 	= "/Users/lmajano/Sites/MyDevelopment/Frameworks/coldbox.3.8.1/">
+	<cfset this.mappings[ "/3load" ] = getDirectoryFromPath(getCurrentTemplatePath())>
+	<cfset this.mappings[ "/coldbox" ] 	= "/Users/lmajano/Sites/MyDevelopment/Frameworks/coldbox.3.8.1">
 
 
 	<!--- on Application Start --->
