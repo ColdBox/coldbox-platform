@@ -77,7 +77,11 @@
 
         <cfloop query="qFiles">
             <cfscript>
-                currentPath = replace(directory, arguments.inputSource[i].inputDir, "");
+
+            	// skip Application.cfc
+            	if( qFiles.name == "Application.cfc" ){ continue; }
+
+               	var currentPath = replace(directory, arguments.inputSource[i].inputDir, "");
                 currentPath = reReplace(currentPath, "[/\\]", "");
                 currentPath = reReplace(currentPath, "[/\\]", ".", "all");
 
