@@ -464,7 +464,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="linkto" 		required="true" 	type="string"  hint="The event or route you want to create the link to">
 	    <cfargument name="translate"  	required="false" 	type="boolean" default="true" hint="Translate between . and / depending on the ses mode. So you can just use dot notation."/>
-	    <cfargument name="ssl" 			required="false"    type="boolean" default="false" hint="If true, it will change http to https if found in the ses base url."/>
+	    <cfargument name="ssl" 			required="false"    type="boolean" hint="If true, uses SSL, else builds without SSL"/>
 	    <cfargument name="baseURL" 		required="false" 	type="string"  default="" hint="If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm"/>
 	    <cfargument name="queryString"  required="false" 	type="string"  default="" hint="The query string to append, if needed.">
 		<!--- ************************************************************* --->
@@ -478,9 +478,13 @@ Description :
 		}
 
 		if( isSES() ){
-			/* SSL */
-			if( arguments.ssl OR isSSL() ){
+			/* SSL ON OR TURN IT ON */
+			if( isSSL() OR structKeyExists( arguments, ssl ) and arguments.ssl ){
 				sesBaseURL = replacenocase(sesBaseURL,"http:","https:");
+			}
+			// SSL Turn Off
+			if( structKeyExists( arguments, "ssl" ) and arguments.ssl eq false ){
+				sesBaseURL = replacenocase(sesBaseURL,"https:","http:");
 			}
 			/* Translate link */
 			if( arguments.translate ){
