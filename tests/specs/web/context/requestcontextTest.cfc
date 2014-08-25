@@ -437,6 +437,10 @@
 			event.setsesBaseURL(base);
 			testurl = event.buildLink(linkto='general/index',ssl=true);
 			AssertEquals(testurl, basessl & "/general/index" );
+			// SSL OFF
+			event.setsesBaseURL(basessl);
+			testurl = event.buildLink(linkto='general/index',ssl=false);
+			AssertEquals(testurl, base & "/general/index" );
 
 			/* translate */
 			event.setisSES(true);

@@ -479,7 +479,7 @@ Description :
 
 		if( isSES() ){
 			/* SSL ON OR TURN IT ON */
-			if( isSSL() OR structKeyExists( arguments, ssl ) and arguments.ssl ){
+			if( isSSL() OR ( structKeyExists( arguments, "ssl" ) and arguments.ssl ) ){
 				sesBaseURL = replacenocase(sesBaseURL,"http:","https:");
 			}
 			// SSL Turn Off
