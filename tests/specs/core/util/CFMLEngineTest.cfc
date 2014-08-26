@@ -26,9 +26,6 @@
 
 			AssertTrue( isNumeric(cfmlengine.getVersion()) , "Version Test");
 
-			AssertEquals( cfmlengine.isMT(), (enginetype eq "adobe" and version gte 8) OR (enginetype eq "bd" and version gte 7) OR (enginetype eq "railo" ) );
-
-
 		</cfscript>
 	</cffunction>
 

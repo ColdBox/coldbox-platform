@@ -1,4 +1,11 @@
-﻿component{
+﻿/**
+********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+* Allows you to maninpulate CF mappings
+*/
+component{
 
 	/**
 	* For Adobe CF, Slight difference in older versions

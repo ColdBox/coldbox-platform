@@ -1,4 +1,11 @@
-﻿component{
+﻿/**
+********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+* Creation of mappings via Railo
+*/
+component{
 
 	/**
 	* Railo caches app mappings, but gives us a method to update them via the application "tag"
