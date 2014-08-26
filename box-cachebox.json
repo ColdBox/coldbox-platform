@@ -4,6 +4,7 @@
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "cachebox",
 	"type"				: "caching",
+	"packageDirectory"	: "cachebox",
 	"keywords"			: "caching,aggregator,cache",
 	"homepage"			: "http://www.coldbox.org",
 	"documentation"		: "http://wiki.coldbox.org/wiki/CacheBox.cfm",

@@ -4,6 +4,7 @@
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "logbox",
 	"type"				: "logging",
+	"packageDirectory"	: "logbox",
 	"keywords"			: "logging, messaging",
 	"homepage"			: "http://www.coldbox.org",
 	"documentation"		: "http://wiki.coldbox.org/wiki/LogBox.cfm",

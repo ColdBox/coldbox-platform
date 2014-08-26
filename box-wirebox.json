@@ -4,6 +4,7 @@
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "wirebox",
 	"type"				: "di",
+	"packageDirectory"	: "wirebox",
 	"keywords"			: "di,aop,dependeny injection,ioc",
 	"homepage"			: "http://www.coldbox.org",
 	"documentation"		: "http://wiki.coldbox.org/wiki/WireBox.cfm",
