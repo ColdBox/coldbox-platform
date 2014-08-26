@@ -1,569 +1,564 @@
-<!-----------------------------------------------------------------------
+/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
------------------------------------------------------------------------>
-<cfcomponent hint="This service renders layouts, views, framework includes, etc."
-			 extends="coldbox.system.FrameworkSupertype"
-			 output="false">
+* The system web renderer
+* @author Luis Majano <lmajano@ortussolutions.com>
+*/
+component accessors="true" serializable="false" extends="coldbox.system.FrameworkSupertype"{
+	
+	/************************************** DI *********************************************/
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	property name="templateCache" 	inject="cachebox:template";
+	property name="html"			inject="coldbox.system.core.dynamic.HTMLHelper";
 
-	<cffunction name="init" access="public" returntype="Renderer" output="false" hint="Constructor">
-		<!--- ************************************************************* --->
-		<cfargument name="controller" required="true" inject="coldbox">
-		<!--- ************************************************************* --->
-		<cfscript>
-			// setup controller
-			variables.controller = arguments.controller;
+	/************************************** PROPERTIES *********************************************/
 
-			// Set Conventions, Settings and Properties
-			instance.layoutsConvention 			= controller.getSetting( "layoutsConvention", true );
-			instance.viewsConvention 			= controller.getSetting( "viewsConvention", true );
-			instance.appMapping 				= controller.getSetting( "AppMapping" );
-			instance.viewsExternalLocation 		= controller.getSetting( "ViewsExternalLocation" );
-			instance.layoutsExternalLocation 	= controller.getSetting( "LayoutsExternalLocation" );
-			instance.modulesConfig				= controller.getSetting( "modules" );
-			instance.viewsHelper				= controller.getSetting( "viewsHelper" );
-			instance.isViewsHelperIncluded		= false;
-			instance.explicitView 				= "";
+	// Location of layouts
+	property name="layoutsConvention";
+	// Location of external layouts
+	property name="LayoutsExternalLocation";
+	// Location of views
+	property name="viewsConvention";
+	// Location of external views
+	property name="ViewsExternalLocation";
+	// Location of application
+	property name="appMapping";
+	// Modules configuration 
+	property name="moduleConfig" type="struct";
+	// Views Helper Setting
+	property name="viewsHelper";
+	// View helper include bit
+	property name="isViewsHelperIncluded" default="false" type="boolean";
+	// Are we rendering a layout+view combination
+	property name="explicitView";
+	// Rendered helpers metadata
+	property name="renderedHelpers" type="struct";
+	// Internal locking name
+	property name="lockName";
+	// Discovery caching is tied to handlers for discovery.
+	property name="isDiscoveryCaching";
 
-			// Verify View Helper Template extension + location
-			if( len( instance.viewsHelper ) ){
-				// extension detection
-				instance.viewsHelper = ( listLast( instance.viewsHelper, "." ) eq "cfm" ? instance.viewsHelper : instance.viewsHelper & ".cfm" );
-				// Append mapping to it.
-				instance.viewsHelper = "/#instance.appMapping#/#instance.viewsHelper#";
-			}
+	// View/Layout Properties
+	property name="event";
+	property name="rc";
+	property name="prc";
+	
+	/************************************** CONSTRUCTOR *********************************************/
+	
+	/**
+	* Constructor
+	* @controller.inject coldbox
+	*/
+	function init( required controller ){
+		// setup controller
+		variables.controller = arguments.controller;
 
-			// Template Cache & Caching Maps
-			instance.templateCache 				= controller.getCache( "template" );
-			instance.renderedHelpers			= {};
-			instance.lockName					= "rendering.#controller.getAppHash()#";
+		// Set Conventions, Settings and Properties
+		variables.layoutsConvention 		= variables.controller.getSetting( "layoutsConvention", true );
+		variables.viewsConvention 			= variables.controller.getSetting( "viewsConvention", true );
+		variables.appMapping 				= variables.controller.getSetting( "AppMapping" );
+		variables.viewsExternalLocation 	= variables.controller.getSetting( "ViewsExternalLocation" );
+		variables.layoutsExternalLocation 	= variables.controller.getSetting( "LayoutsExternalLocation" );
+		variables.modulesConfig				= variables.controller.getSetting( "modules" );
+		variables.viewsHelper				= variables.controller.getSetting( "viewsHelper" );
+		variables.isViewsHelperIncluded		= false;
+		variables.explicitView 				= "";
 
-			// Discovery caching is tied to handlers for discovery.
-			instance.isDiscoveryCaching			= controller.getSetting( "handlerCaching" );
+		// Verify View Helper Template extension + location
+		if( len( variables.viewsHelper ) ){
+			// extension detection
+			variables.viewsHelper = ( listLast( variables.viewsHelper, "." ) eq "cfm" ? variables.viewsHelper : variables.viewsHelper & ".cfm" );
+			// Append mapping to it.
+			variables.viewsHelper = "/#variables.appMapping#/#variables.viewsHelper#";
+		}
 
-			// Set event scope, we are not caching, so it is threadsafe.
-			variables.event 	= getRequestContext();
+		// Template Cache & Caching Maps
+		variables.renderedHelpers	= {};
+		variables.lockName			= "rendering.#variables.controller.getAppHash()#";
 
-			// Create View Scopes
-			variables.rc 		= event.getCollection();
-			variables.prc 		= event.getCollection(private=true);
+		// Discovery caching is tied to handlers for discovery.
+		variables.isDiscoveryCaching = controller.getSetting( "handlerCaching" );
 
-			// Set the HTML Helper Plugin Scope
-			variables.html	= getInstance( "coldbox.system.core.dynamic.HTMLHelper" );
+		// Set event scope, we are not caching, so it is threadsafe.
+		variables.event = getRequestContext();
 
-			// Load global UDF Libraries into target
-			loadGlobalUDFLibraries();
+		// Create View Scopes
+		variables.rc 	= event.getCollection();
+		variables.prc 	= event.getCollection( private=true );
 
-			return this;
-		</cfscript>
-	</cffunction>
+		// Load global UDF Libraries into target
+		loadGlobalUDFLibraries();
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+		return this;
+	}
 
-	<!--- setExplicitView --->
-    <cffunction name="setExplicitView" output="false" access="public" returntype="any" hint="Set the explicit view to render, usually called to create new rendering contexts">
-    	<cfargument name="view" required="true" hint="The view to explicitly set">
-		<cfscript>
-			instance.explicitView = arguments.view;
-			return this;
-		</cfscript>
-    </cffunction>
+	/************************************** VIEW METHODS *********************************************/
+	
+	/**
+	* set the explicit view bit, used mostly internally
+	* @view.hint The name of the view to render
+	*/
+	function setExplicitView( required view ){
+		explicitView = arguments.view;
+		return this;
+	}
+	
+	/**
+	* Render out a view
+	* @view.hint The the view to render, if not passed, then we look in the request context for the current set view.
+	* @args.hint A struct of argumnets to pass into the view for rendering, will be available as 'args' in the view.
+	* @module.hint The module to render the view from explicitly
+	* @cache.hint Cached the view output or not, defaults to false
+	* @cacheTimeout.hint The time in minutes to cache the view
+	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested
+	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
+	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
+	* @collection.hint A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
+	* @collectionAs.hint The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
+	* @collectionStartRow.hint The start row to limit the collection rendering with
+	* @collectionMaxRows.hint The max rows to iterate over the collection rendering with
+	* @collectionDelim.hint  A string to delimit the collection renderings by
+	* @prePostExempt.hint If true, pre/post view interceptors will not be fired. By default they do fire
+	*/
+	function renderView(
+		view="",
+		struct args="#variables.event.getCurrentViewArgs()#",
+		module="",
+		boolean cache=false,
+		cacheTimeout="",
+		cacheLastAccessTimeout="",
+		cacheSuffix="",
+		cacheProvider="template",
+		collection,
+		collectionAs="",
+		numeric collectionStartRow="1",
+		numeric collectionMaxRows=0,
+		collectionDelim="",
+		boolean prePostExempt=false
+	){
+		var viewCacheKey 		= "";
+		var viewCacheEntry 		= "";
+		var viewCacheProvider 	= variables.templateCache;
+		var iData 				= arguments;
+		var explicitModule 		= false;
+		var viewLocations		= "";
 
-	<!--- Render the View --->
-	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
-		<!--- ************************************************************* --->
-		<cfargument name="view" 					required="false" type="any"  default=""			hint="If not passed in, the value in the currentView in the current RequestContext will be used">
-		<cfargument name="cache" 					required="false" type="any"  default="false" 	hint="Cache the rendered view or not">
-		<cfargument name="cacheTimeout" 			required="false" type="any"  default=""			hint="The cache timeout for the rendered view">
-		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  default="" 		hint="The last access timeout for the rendered view">
-		<cfargument name="cacheSuffix" 				required="false" type="any"  default=""     	hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
-		<cfargument name="cacheProvider" 			required="false" type="any"  default="template" hint="The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider">
-		<cfargument name="module" 					required="false" type="any"  default=""      	hint="Explicitly render a view from this module by passing the module name"/>
-		<cfargument name="args"   					required="false" type="any"  default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
-		<cfargument name="collection" 				required="false" type="any"  hint="A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)" colddoc:generic="collection"/>
-		<cfargument name="collectionAs" 			required="false" type="any"	 default=""  	    hint="The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention"/>
-		<cfargument name="collectionStartRow" 		required="false" type="any"	 default="1"  	    hint="The start row to limit the collection rendering with" colddoc:generic="numeric"/>
-		<cfargument name="collectionMaxRows" 		required="false" type="any"	 default="0"  	    hint="The max rows to iterate over the collection rendering with" colddoc:generic="numeric"/>
-		<cfargument name="collectionDelim" 			required="false" type="any"	 default=""  	    hint="A string to delimit the collection renderings by"/>
-		<cfargument name="prepostExempt" 			required="false" type="any"	 default="false" 	hint="If true, pre/post view interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var viewCacheKey 		= "";
-			var viewCacheEntry 		= "";
-			var viewCacheProvider 	= instance.templateCache;
-			var iData 				= arguments;
-			var explicitModule 		= false;
-			var viewLocations		= "";
+		// If no incoming explicit module call, default the value to the one in the request context for convenience
+		if( NOT len(arguments.module) ){
 
-			// If no incoming explicit module call, default the value to the one in the request context for convenience
+			// check for an explicit view module
+			arguments.module = event.getCurrentViewModule();
+
+			// if module is still empty check the event pattern
+			// if no module is execution, this will be empty anyways.
 			if( NOT len(arguments.module) ){
-
-				// check for an explicit view module
-				arguments.module = event.getCurrentViewModule();
-
-				// if module is still empty check the event pattern
-				// if no module is execution, this will be empty anyways.
-				if( NOT len(arguments.module) ){
-					arguments.module = event.getCurrentModule();
-				}
-
-			}
-			else{
-				explicitModule = true;
+				arguments.module = event.getCurrentModule();
 			}
 
-			// Rendering an explicit view or do we need to get the view from the context or explicit context?
-			if( NOT len(arguments.view) ){
-				// Rendering an explicit Renderer view/layout combo?
-				if( len(instance.explicitView) ){
-					arguments.view = instance.explicitView;
-					// clear the explicit view now that it has been used
-					setExplicitView("");
-				}
-				// Render the view in the context
-				else{ arguments.view = event.getCurrentView(); }
+		}
+		else{
+			explicitModule = true;
+		}
+
+		// Rendering an explicit view or do we need to get the view from the context or explicit context?
+		if( NOT len(arguments.view) ){
+			// Rendering an explicit Renderer view/layout combo?
+			if( len(variables.explicitView) ){
+				arguments.view = variables.explicitView;
+				// clear the explicit view now that it has been used
+				setExplicitView("");
 			}
+			// Render the view in the context
+			else{ arguments.view = event.getCurrentView(); }
+		}
 
-			// Do we have a view To render? Else throw exception
-			if( NOT len(arguments.view) ){
-				throw(message="The ""currentview"" variable has not been set, therefore there is no view to render.",
-					   detail="Please remember to use the 'event.setView()' method in your handler or pass in a view to render.",
-					   type="Renderer.ViewNotSetException");
+		// Do we have a view To render? Else throw exception
+		if( NOT len(arguments.view) ){
+			throw(message="The ""currentview"" variable has not been set, therefore there is no view to render.",
+				   detail="Please remember to use the 'event.setView()' method in your handler or pass in a view to render.",
+				   type="Renderer.ViewNotSetException");
+		}
+
+		// Cleanup leading / in views, just in case
+		arguments.view = reReplace( arguments.view, "^(\\|/)", "" );
+
+		// Announce preViewRender interception
+		if( NOT arguments.prepostExempt ){ announceInterception("preViewRender", iData); }
+
+		// Prepare caching arguments if doing implicit caching, and the view to render is the same as the implicitly cached.
+		viewCacheEntry = event.getViewCacheableEntry();
+		if( event.isViewCacheable() AND (arguments.view EQ viewCacheEntry.view) ){
+			arguments.cache						= true;
+			arguments.cacheTimeout				= viewCacheEntry.timeout;
+			arguments.cacheLastAccessTimeout	= viewCacheEntry.lastAccessTimeout;
+			arguments.cacheSuffix 				= viewCacheEntry.cacheSuffix;
+			arguments.cacheProvider				= viewCacheEntry.cacheProvider;
+		}
+
+		// Prepare caching key
+		viewCacheKey = variables.templateCache.VIEW_CACHEKEY_PREFIX;
+		// If we have a module, incorporate it
+		if( len( arguments.module ) ){ viewCacheKey &= arguments.module & ":"; }
+		// Incorporate view and suffix
+		viewCacheKey &= arguments.view & arguments.cacheSuffix;
+
+		// Are we caching?
+		if (arguments.cache){
+			// Which provider you want to use?
+			if( arguments.cacheProvider neq "template" ){
+				viewCacheProvider = getCache( arguments.cacheProvider );
 			}
-
-			// Cleanup leading / in views, just in case
-			arguments.view = reReplace( arguments.view, "^(\\|/)", "" );
-
-			// Announce preViewRender interception
-			if( NOT arguments.prepostExempt ){ announceInterception("preViewRender", iData); }
-
-			// Prepare caching arguments if doing implicit caching, and the view to render is the same as the implicitly cached.
-			viewCacheEntry = event.getViewCacheableEntry();
-			if( event.isViewCacheable() AND (arguments.view EQ viewCacheEntry.view) ){
-				arguments.cache						= true;
-				arguments.cacheTimeout				= viewCacheEntry.timeout;
-				arguments.cacheLastAccessTimeout	= viewCacheEntry.lastAccessTimeout;
-				arguments.cacheSuffix 				= viewCacheEntry.cacheSuffix;
-				arguments.cacheProvider				= viewCacheEntry.cacheProvider;
-			}
-
-			// Prepare caching key
-			viewCacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX;
-			// If we have a module, incorporate it
-			if( len( arguments.module ) ){ viewCacheKey &= arguments.module & ":"; }
-			// Incorporate view and suffix
-			viewCacheKey &= arguments.view & arguments.cacheSuffix;
-
-			// Are we caching?
-			if (arguments.cache){
-				// Which provider you want to use?
-				if( arguments.cacheProvider neq "template" ){
-					viewCacheProvider = getCache( arguments.cacheProvider );
-				}
-				// Try to get from cache
-				iData.renderedView = viewCacheProvider.get( viewCacheKey );
-				// Verify it existed
-				if( structKeyExists(iData, "renderedView") ){
-					// Post View Render Interception
-					if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
-					// Return it
-					return iData.renderedView;
-				}
-			}
-
-			// No caching, just render
-			// Discover and cache view/helper locations
-			viewLocations = discoverViewPaths(arguments.view,arguments.module,explicitModule);
-
-			// Render View Composite or View Collection
-			if( structKeyExists(arguments,"collection") ){
-				// render collection in next context
-				iData.renderedView = getRenderer().renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows, arguments.collectionDelim);
-			}
-			else{
-				// render simple composite view
-				iData.renderedView = renderViewComposite(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args);
-			}
-
-			// Post View Render Interception point
-			if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
-
-			// Are we caching view
-			if ( arguments.cache ){
-				viewCacheProvider.set(viewCacheKey, iData.renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout);
-			}
-
-			// Return view content
-			return iData.renderedView;
-		</cfscript>
-	</cffunction>
-
-	<!--- discoverViewPaths --->
-    <cffunction name="discoverViewPaths" output="false" access="private" returntype="any" hint="Discover view paths and cache if necessary and return its locations">
-    	<cfargument name="view">
-    	<cfargument name="module">
-    	<cfargument name="explicitModule">
-
-    	<cfscript>
-    		var locationKey 	= arguments.view & arguments.module & arguments.explicitModule;
-			var locationUDF 	= variables.locateView;
-			var dPath			= "";
-			var refMap			= "";
-		</cfscript>
-
-		<!--- Check cached paths first --->
-		<cflock name="#locationKey#.#instance.lockName#" type="readonly" timeout="15" throwontimeout="true">
-			<cfif structkeyExists( controller.getSetting("viewsRefMap") ,locationKey) AND instance.isDiscoveryCaching>
-				<cfreturn structFind( controller.getSetting("viewsRefMap"), locationKey)>
-			</cfif>
-		</cflock>
-
-		<cfscript>
-			if (left(arguments.view, 1) EQ "/") {
-
-				refMap = {
-					viewPath = arguments.view,
-					viewHelperPath = ""
-				};
-
-			} else { // view discovery based on relative path
-
-				// module change mode
-				if( len(arguments.module) ){ locationUDF = variables.locateModuleView; }
-
-				// Locate the view to render according to discovery algorithm and create cache map
-				refMap = {
-					viewPath = locationUDF(arguments.view,arguments.module,arguments.explicitModule),
-					viewHelperPath = ""
-				};
-
-			}
-
-			// Check for view helper convention
-			dPath = getDirectoryFromPath( refMap.viewPath );
-			if( fileExists(expandPath( refMap.viewPath & "Helper.cfm")) ){
-				refMap.viewHelperPath = refMap.viewPath & "Helper.cfm";
-			}
-			// Check for directory helper convention
-			else if( fileExists( expandPath( dPath & listLast(dPath,"/") & "Helper.cfm" ) ) ){
-				refMap.viewHelperPath = dPath & listLast(dPath,"/") & "Helper.cfm";
-			}
-		</cfscript>
-
-		<!--- Lock and create view entry --->
-		<cfif NOT structkeyExists( controller.getSetting("viewsRefMap") ,locationKey) >
-			<cflock name="#locationKey#.#instance.lockName#" type="exclusive" timeout="15" throwontimeout="true">
-				<cfset structInsert( controller.getSetting("viewsRefMap"), locationKey, refMap, true)>
-			</cflock>
-		</cfif>
-
-		<cfreturn refMap>
-    </cffunction>
-
-	<!--- renderViewComposite --->
-    <cffunction name="renderViewCollection" output="false" access="public" returntype="any" hint="Render a view composed of collections">
-    	<cfargument name="view">
-		<cfargument name="viewpath">
-		<cfargument name="viewHelperPath">
-		<cfargument name="args"/>
-		<cfargument name="collection">
-		<cfargument name="collectionAs">
-		<cfargument name="collectionStartRow" default="1"/>
-		<cfargument name="collectionMaxRows"  default="0"/>
-		<cfargument name="collectionDelim"  default=""/>
-
-		<cfscript>
-			var buffer 	= createObject("java","java.lang.StringBuffer").init();
-			var x 		= 1;
-			var recLen 	= 0;
-
-			// Determine the collectionAs key
-			if( NOT len(arguments.collectionAs) ){
-				arguments.collectionAs = listLast(arguments.view,"/");
-			}
-
-			// Array Rendering
-			if( isArray(arguments.collection) ){
-				recLen = arrayLen(arguments.collection);
-				// is max rows passed?
-				if( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE recLen){ recLen = arguments.collectionMaxRows; }
-				// Create local marker
-				variables._items	= recLen;
-				// iterate and present
-				for(x=arguments.collectionStartRow; x lte recLen; x++){
-					// setup local cvariables
-					variables._counter  = x;
-					variables[ arguments.collectionAs ] = arguments.collection[x];
-					// prepend the delim
-					if ( x NEQ arguments.collectionStartRow ) {
-						buffer.append( arguments.collectionDelim );
-					}
-					// render item composite
-					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
-				}
-				return buffer.toString();
-			}
-		</cfscript>
-
-			<!--- Query Rendering --->
-			<cfset variables._items	= arguments.collection.recordCount>
-			<!--- Max Rows --->
-			<cfif arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount>
-				<cfset variables._items	= arguments.collectionMaxRows>
-			</cfif>
-			<cfloop query="arguments.collection" startrow="#arguments.collectionStartRow#" endrow="#(arguments.collectionStartRow+variables._items)-1#">
-				<cfscript>
-					// setup local cvariables
-					variables._counter  = arguments.collection.currentRow;
-					variables[ arguments.collectionAs ] = arguments.collection;
-					// prepend the delim
-					if ( variables._counter NEQ 1 ) {
-						buffer.append( arguments.collectionDelim );
-					}
-					// render item composite
-					buffer.append( renderViewComposite(arguments.view,arguments.viewPath,arguments.viewHelperPath,arguments.args) );
-				</cfscript>
-			</cfloop>
-			<cfreturn buffer.toString()>
-    </cffunction>
-
-	<!--- renderViewComposite --->
-    <cffunction name="renderViewComposite" output="false" access="public" returntype="any" hint="Render a view composite">
-    	<cfargument name="view">
-		<cfargument name="viewpath">
-		<cfargument name="viewHelperPath">
-		<cfargument name="args"/>
-
-    	<cfset var cbox_renderedView = "">
-		<!--- Nasty CF Whitespace --->
-		<cfsavecontent variable="cbox_renderedView"><!---
-			This is the global views helper
-		---><cfif ( len( instance.viewsHelper ) AND ! instance.isViewsHelperIncluded )><!---
-			---><cfoutput><cfinclude template="#instance.viewsHelper#"></cfoutput><!---
-			---><cfset instance.isViewsHelperIncluded = true><!---
-		---></cfif><!---
-			This is the internal helper + view
-		---><cfif len( arguments.viewHelperPath ) AND NOT structKeyExists( instance.renderedHelpers, arguments.viewHelperPath )><!---
-			---><cfoutput><cfinclude template="#arguments.viewHelperPath#"><!---
-			---><cfset instance.renderedHelpers[ arguments.viewHelperPath ] = true></cfoutput><!---
-		---></cfif><!---
-		---><cfoutput><cfinclude template="#arguments.viewPath#.cfm"></cfoutput><!---
-		---></cfsavecontent>
-
-    	<cfreturn cbox_renderedView>
-    </cffunction>
-
-	<!--- Render an external View --->
-	<cffunction name="renderExternalView"	access="Public" hint="Renders an external view." output="false" returntype="Any">
-		<!--- ************************************************************* --->
-		<cfargument name="view" 					required="true"  type="any" 	hint="The full path to the view. This can be an expanded path or relative. Include extension.">
-		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
-		<cfargument name="cacheTimeout" 			required="false" type="any"  	default=""		hint="The cache timeout">
-		<cfargument name="cacheLastAccessTimeout" 	required="false" type="any"  	default="" 		hint="The last access timeout">
-		<cfargument name="cacheSuffix" 				required="false" type="any"  	default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
-		<cfargument name="cacheProvider" 			required="false" type="any"  	default="template" hint="The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider">
-		<cfargument name="args"   					required="false" type="any"  	default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var cbox_renderedView = "";
-			// Cache Entries
-			var cbox_cacheKey 		= "";
-			var cbox_cacheEntry 	= "";
-			var cbox_cacheProvider 	= instance.templateCache;
-			var viewLocations 		= "";
-
-			// Setup the cache key
-			cbox_cacheKey = instance.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
-			// Setup the cache provider
-			if( arguments.cacheProvider neq "template" ){ cbox_cacheProvider = getCache( arguments.cacheProvider ); }
 			// Try to get from cache
-			cbox_renderedView 	= cbox_cacheProvider.get(cbox_cacheKey);
-			if( isDefined("cbox_renderedView") ){
-				return cbox_renderedView;
+			iData.renderedView = viewCacheProvider.get( viewCacheKey );
+			// Verify it existed
+			if( structKeyExists(iData, "renderedView") ){
+				// Post View Render Interception
+				if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
+				// Return it
+				return iData.renderedView;
 			}
-			// Not in cache, render it
-			// Get view locations
-			viewLocations = discoverViewPaths( arguments.view,"",false);
-			// Render External View
-			cbox_renderedView = renderViewComposite(view, viewLocations.viewPath, viewLocations.viewHelperPath, args);
- 			// Are we caching it
- 			if( arguments.cache ){
- 				cbox_cacheProvider.set(cbox_cacheKey, cbox_renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout);
- 			}
- 			return cbox_renderedView;
-		</cfscript>
-	</cffunction>
+		}
 
-	<!--- Render the layout --->
-	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
-		<cfargument name="layout" 		type="any" 	required="false" hint="The explicit layout to use in rendering"/>
-		<cfargument name="view"   		type="any" 	required="false" default="" hint="The view to render within this layout explicitly"/>
-		<cfargument name="module" 		type="any"  required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
-		<cfargument name="args"   		type="any" 	required="false" default="#event.getCurrentViewArgs()#" hint="An optional set of arguments that will be available to this layouts/view rendering ONLY"/>
-		<cfargument name="viewModule"   type="any" 	required="false" default="" hint="Explicitly render a view from this module"/>
-		<cfargument name="prepostExempt" type="any"	required="false" default="false" 	hint="If true, pre/post layout interceptors will not be fired. By default they do fire" colddoc:generic="boolean">
+		// No caching, just render
+		// Discover and cache view/helper locations
+		viewLocations = discoverViewPaths( view=arguments.view, module=arguments.module, explicitModule=explicitModule );
 
-		<cfset var cbox_implicitLayout 		= implicitViewChecks()>
-		<cfset var cbox_currentLayout 		= cbox_implicitLayout>
-		<cfset var cbox_locateUDF 			= variables.locateLayout>
-		<cfset var cbox_explicitModule  	= false>
-		<cfset var cbox_layoutLocationKey 	= "">
-		<cfset var cbox_layoutLocation		= "">
-		<cfset var iData					= arguments>
-		<cfset var viewLocations = "" />
+		// Render View Composite or View Collection
+		if( structKeyExists(arguments,"collection") ){
+			// render collection in next context
+			iData.renderedView = getRenderer().renderViewCollection(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args, arguments.collection, arguments.collectionAs, arguments.collectionStartRow, arguments.collectionMaxRows, arguments.collectionDelim);
+		}
+		else{
+			// render simple composite view
+			iData.renderedView = renderViewComposite(arguments.view, viewLocations.viewPath, viewLocations.viewHelperPath, arguments.args);
+		}
 
-		<!--- Are we doing a nested view/layout explicit combo or already in its rendering algorithm? --->
-		<cfif len(trim(arguments.view)) AND arguments.view neq instance.explicitView>
-			<cfreturn getRenderer().setExplicitView( arguments.view ).renderLayout(argumentCollection=arguments)>
-		</cfif>
+		// Post View Render Interception point
+		if( NOT arguments.prepostExempt ){ announceInterception("postViewRender", iData); }
 
-		<!--- If the layout has not been specified set it to the implicit value. --->
-		<cfif NOT structKeyExists(arguments,"layout")>
-			<!--- Strip off the .cfm extension if it is set. --->
-			<cfif len(cbox_implicitLayout) gt 4 AND right(cbox_implicitLayout,4) eq '.cfm'>
-				<cfset cbox_implicitLayout = left(cbox_implicitLayout,len(cbox_implicitLayout)-4) />
-			</cfif>
-			<cfset arguments.layout = cbox_implicitLayout />
-		</cfif>
+		// Are we caching view
+		if ( arguments.cache ){
+			viewCacheProvider.set(viewCacheKey, iData.renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout);
+		}
 
-		<!--- Module Default Value --->
-		<cfif NOT len(arguments.module)>
-			<cfset arguments.module = event.getCurrentModule()>
-		<cfelse>
-			<cfset cbox_explicitModule = true>
-		</cfif>
+		// Return view content
+		return iData.renderedView;
+	}
 
-		<!--- Announce preLayoutRender interception --->
-		<cfif NOT arguments.prepostExempt>
-			<cfset announceInterception("preLayoutRender", iData)>
-		</cfif>
+	
+    
+    /**
+    * Render a view composed of collections, mostly used internally, use at your own risk.
+    */
+	function renderViewCollection(
+		view,
+		viewPath,
+		viewHelperPath,
+		args,
+		collection,
+		collectionAs,
+		numeric collectionStartRow=1,
+		numeric collectionMaxRows=0,
+		collectionDelim=""
+	){
+		var buffer 	= createObject("java","java.lang.StringBuilder").init();
+		var x 		= 1;
+		var recLen 	= 0;
 
-		<!--- Check explicit layout rendering --->
-		<cfif structKeyExists(arguments,"layout")>
-			<!--- Check if any length on incoming layout --->
-			<cfif len ( arguments.layout )>
-				<!--- Cleanup leading / in views, just in case --->
-				<cfset arguments.layout = reReplace( arguments.layout, "^(\\|/)", "" )>
-				<cfset cbox_currentLayout = arguments.layout & ".cfm">
-			<cfelse>
-				<cfset cbox_currentLayout = "">
-			</cfif>
-		</cfif>
+		// Determine the collectionAs key
+		if( NOT len( arguments.collectionAs ) ){
+			arguments.collectionAs = listLast( arguments.view, "/" );
+		}
 
-		<!--- Choose location algorithm if in module mode --->
-		<cfif len(arguments.module)>
-			<cfset cbox_locateUDF = variables.locateModuleLayout>
-		</cfif>
+		// Array Rendering
+		if( isArray( arguments.collection ) ){
+			recLen = arrayLen( arguments.collection );
+			// is max rows passed?
+			if( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE recLen ){ recLen = arguments.collectionMaxRows; }
+			// Create local marker
+			variables._items	= recLen;
+			// iterate and present
+			for(x=arguments.collectionStartRow; x lte recLen; x++){
+				// setup local cvariables
+				variables._counter  = x;
+				variables[ arguments.collectionAs ] = arguments.collection[ x ];
+				// prepend the delim
+				if ( x NEQ arguments.collectionStartRow ) {
+					buffer.append( arguments.collectionDelim );
+				}
+				// render item composite
+				buffer.append( renderViewComposite( arguments.view, arguments.viewPath, arguments.viewHelperPath, arguments.args ) );
+			}
+			return buffer.toString();
+		}
 
-		<!--- If Layout is blank, then just delegate to the view --->
-		<cfif len(cbox_currentLayout) eq 0>
-			<cfset iData.renderedLayout = renderView( module = arguments.viewModule )>
-		<cfelse>
-			<!--- Layout location key --->
-			<cfset cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule>
+		// Query Rendering
+		variables._items = arguments.collection.recordCount;
+		// Max Rows
+		if( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount){
+			variables._items = arguments.collectionMaxRows;
+		}
+		
+		for(x=arguments.collectionStartRow; x lte ( arguments.collectionStartRow+variables._items )-1; x++){
+			// setup local cvariables
+			variables._counter  = arguments.collection.currentRow;
+			variables[ arguments.collectionAs ] = arguments.collection;
+			// prepend the delim
+			if ( variables._counter NEQ 1 ) {
+				buffer.append( arguments.collectionDelim );
+			}
+			// render item composite
+			buffer.append( renderViewComposite( arguments.view, arguments.viewPath, arguments.viewHelperPath, arguments.args) );
+		}
+				
+		return buffer.toString();
+    }
+    
+    /**
+    * Render a view alongside its helpers, used mostly internally, use at your own risk.
+    */
+    private function renderViewComposite( 
+    	view,
+    	viewPath,
+    	viewHelperPath,
+    	args
+    ){
+    	var cbox_renderedView = "";
+		
+		savecontent variable="cbox_renderedView"{
+			// global views helper
+			if( len( variables.viewsHelper ) AND ! variables.isViewsHelperIncluded  ){
+				include "#variables.viewsHelper#";
+				variables.isViewsHelperIncluded = true;
+			}
+			// view helper
+			if( len( arguments.viewHelperPath ) AND NOT structKeyExists( renderedHelpers,arguments.viewHelperPath ) ){
+				include "#arguments.viewHelperPath#";
+				renderedHelpers[arguments.viewHelperPath] = true;
+			}
+			//writeOutput( include "#arguments.viewPath#.cfm" );
+			include "#arguments.viewPath#.cfm";
+		}
 
-			<!--- Check cached paths first --->
-			<cfif structkeyExists( controller.getSetting("layoutsRefMap") ,cbox_layoutLocationKey) AND instance.isDiscoveryCaching>
-				<cflock name="#cbox_layoutLocationKey#.#instance.lockName#" type="readonly" timeout="15" throwontimeout="true">
-					<cfset cbox_layoutLocation = structFind( controller.getSetting("layoutsRefMap"), cbox_layoutLocationKey)>
-				</cflock>
-			<cfelse>
-				<!--- Not found, cache it --->
-				<cflock name="#cbox_layoutLocationKey#.#instance.lockname#" type="exclusive" timeout="15" throwontimeout="true">
-					<cfset cbox_layoutLocation = cbox_locateUDF(cbox_currentLayout,arguments.module,cbox_explicitModule)>
-					<cfset structInsert( controller.getSetting("layoutsRefMap"), cbox_layoutLocationKey, cbox_layoutLocation, true)>
-				</cflock>
-			</cfif>
+    	return cbox_renderedView;
+    }
+    
+    /**
+    * Renders an external view anywhere that cfinclude works.
+    * @view.hint The the view to render
+	* @args.hint A struct of argumnets to pass into the view for rendering, will be available as 'args' in the view.
+	* @cache.hint Cached the view output or not, defaults to false
+	* @cacheTimeout.hint The time in minutes to cache the view
+	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested
+	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
+	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
+	*/
+    function renderExternalView( 
+    	required view,
+    	struct args=event.getCurrentViewArgs(),
+    	boolean cache=false,
+    	cacheTimeout="",
+    	cacheLastAccessTimeout="",
+    	cacheSuffix="",
+    	cacheProvider="template"
+    ){
+		var cbox_renderedView = "";
+		// Cache Entries
+		var cbox_cacheKey 		= "";
+		var cbox_cacheEntry 	= "";
+		var cbox_cacheProvider 	= variables.templateCache;
+		var viewLocations 		= "";
 
-			<cfset viewLocations = discoverViewPaths( reverse ( listRest( reverse( cbox_layoutLocation ), ".")),arguments.module,cbox_explicitModule) />
-			<!--- RenderLayout --->
-			<cfset iData.renderedLayout = renderViewComposite(cbox_currentLayout, viewLocations.viewPath, viewLocations.viewHelperPath, args) />
-		</cfif>
+		// Setup the cache key
+		cbox_cacheKey = variables.templateCache.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix;
+		// Setup the cache provider
+		if( arguments.cacheProvider neq "template" ){ cbox_cacheProvider = getCache( arguments.cacheProvider ); }
+		// Try to get from cache
+		cbox_renderedView 	= cbox_cacheProvider.get( cbox_cacheKey );
+		if( !isNull( "cbox_renderedView" ) ){
+			return cbox_renderedView;
+		}
+		// Not in cache, render it
+		// Get view locations
+		viewLocations = discoverViewPaths( view=arguments.view, module="", explicitModule=false );
+		// Render External View
+		cbox_renderedView = renderViewComposite( view, viewLocations.viewPath, viewLocations.viewHelperPath, args );
+		// Are we caching it
+		if( arguments.cache ){
+			cbox_cacheProvider.set(cbox_cacheKey, cbox_renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout);
+		}
+		return cbox_renderedView;
+	}
+	
+	/************************************** LAYOUT METHODS *********************************************/
+	
+	/**
+	* Render a layout or a layout + view combo
+	* @layout.hint The layout to render out
+	* @module.hint The module to explicitly render this layout from
+	* @view.hint The view to render within this layout
+	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
+	* @viewModule.hint The module to explicitly render the view from
+	* @prePostExempt.hint If true, pre/post layout interceptors will not be fired. By default they do fire
+	*/
+	function renderLayout(
+		layout,
+		module="",
+		view="",
+		struct args=event.getCurrentViewArgs(),
+		viewModule="",
+		boolean prePostExempt=false
+	){
+		var cbox_implicitLayout 	= implicitViewChecks();
+		var cbox_currentLayout 		= cbox_implicitLayout;
+		var cbox_locateUDF			= variables.locateLayout;
+		var cbox_explicitModule 	= false;
+		var cbox_layoutLocationKey 	= "";
+		var cbox_layoutLocation		= "";
+		var iData 					= arguments;
+		var viewLocations			= "";
 
-		<!--- Post Layout Render Interception point --->
-		<cfif NOT arguments.prepostExempt>
-			<cfset announceInterception("postLayoutRender", iData)>
-		</cfif>
+		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
+		if( len( trim( arguments.view ) ) AND arguments.view neq explicitView ){
+			return controller.getRenderer()
+				.setExplicitView( arguments.view )
+				.renderLayout( argumentCollection=arguments );
+		}
 
-		<!--- Return Rendered Layout --->
-		<cfreturn iData.renderedLayout>
-	</cffunction>
+		// If no passed layout, then get it from implicit values
+		if( not structKeyExists( arguments, "layout" ) ){
+			//Strip off the .cfm extension if it is set
+			if( len( cbox_implicitLayout ) gt 4 AND right( cbox_implicitLayout, 4 ) eq '.cfm' ){
+				cbox_implicitLayout = left( cbox_implicitLayout, len( cbox_implicitLayout ) - 4 );
+			}
+			arguments.layout = cbox_implicitLayout;
+		}
 
-	<!--- locateLayout --->
-	<cffunction name="locateLayout" output="false" access="public" returntype="any" hint="Locate the layout to render">
-		<cfargument name="layout" type="any" required="true" hint="The layout name"/>
-		<cfscript>
-			// Default path is the conventions
-			var layoutPath 	  		= "/#instance.appMapping#/#instance.layoutsConvention#/#arguments.layout#";
-			var extLayoutPath 		= "#instance.layoutsExternalLocation#/#arguments.layout#";
-			var moduleName 			= event.getCurrentModule();
-			var moduleLayoutPath 	= "";
+		// module default value
+		if( not len( arguments.module ) ){
+			arguments.module = event.getCurrentModule();
+		} else {
+			cbox_explicitModule = true;
+		}
 
-			// If layout exists in module and this is a module call, then use module layout.
-			if( len(moduleName) ){
-				moduleLayoutPath 	= "#instance.modulesConfig[moduleName].mapping#/#instance.layoutsConvention#/#arguments.layout#";
-				if( fileExists(expandPath(moduleLayoutPath)) ){
-					return moduleLayoutPath;
+		// Announce
+		if( not arguments.prePostExempt ){
+			announceInterception( "preLayoutRender", iData );
+		}
+
+		// Check explicit layout rendering
+		if( structKeyExists( arguments, "layout" ) ){
+			// Check if any length on incoming layout
+			if( len ( arguments.layout ) ){
+				// Cleanup leading / in views, just in case
+				arguments.layout = reReplace( arguments.layout, "^(\\|/)", "" );
+				cbox_currentLayout = arguments.layout & ".cfm";
+			} else {
+				cbox_currentLayout = "";
+			}
+		}
+
+		// Choose location algorithm if in module mode
+		if( len( arguments.module ) ){
+			cbox_locateUDF = variables.locateModuleLayout;
+		}
+
+		// If Layout is blank, then just delegate to the view
+		if( len( cbox_currentLayout ) eq 0 ){
+			var renderedLayout = renderView();
+		}
+		else{
+			// Layout location key
+			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
+
+			// Check cached paths first
+			if( structkeyExists( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey ) AND variables.isDiscoveryCaching ){
+				lock name="#cbox_layoutLocationKey#.#lockName#" type="readonly" timeout="15" throwontimeout="true"{
+					cbox_layoutLocation = structFind( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey );
+				}
+			} else {
+				lock name="#cbox_layoutLocationKey#.#lockname#" type="exclusive" timeout="15" throwontimeout="true"{
+					cbox_layoutLocation = cbox_locateUDF( layout=cbox_currentLayout, module=arguments.module, explicitModule=cbox_explicitModule );
+					structInsert( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey, cbox_layoutLocation, true);
 				}
 			}
+			// Get the view locations
+			var viewLocations = discoverViewPaths( view=reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ), 
+												   module=arguments.module, 
+												   explicitModule=cbox_explicitModule );
+			// RenderLayout
+			iData.renderedLayout = renderViewComposite( view=cbox_currentLayout, 
+														viewPath=viewLocations.viewPath, 
+														viewHelperPath=viewLocations.viewHelperPath, 
+														args=args );
+		}
 
-			// Check if layout does not exists in Conventions, but in the ext location
-			if( NOT fileExists(expandPath(layoutPath)) AND fileExists(expandPath(extLayoutPath)) ){
-				return extLayoutPath;
-			}
+		// Announce
+		if( not arguments.prePostExempt ){
+			announceInterception( "postLayoutRender", iData );
+		}
 
-			return layoutPath;
-		</cfscript>
-	</cffunction>
+		return iData.renderedLayout;
+	}
 
-	<!--- locateModuleLayout --->
-	<cffunction name="locateModuleLayout" output="false" access="public" returntype="any" hint="Locate the view to render using module logic">
-		<cfargument name="layout" 			type="any" 		required="true"  hint="The layout name to discover" >
-		<cfargument name="module" 			type="any" 		required="false" default="" hint="The name of the module we are searching for"/>
-		<cfargument name="explicitModule" 	type="boolean" 	required="false" default="false" hint="Are we locating explicitly or implicitly for a module layout"/>
-		<cfscript>
-			var parentModuleLayoutPath 	= "";
-			var parentCommonLayoutPath 	= "";
-			var moduleLayoutPath 		= "";
-			var moduleName 		 		= "";
+	/**
+	* Locate a layout in the conventions system
+	* @layout.hint The layout name
+	*/
+	function locateLayout(required layout){
+		// Default path is the conventions
+		var layoutPath 	  		= "/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#";
+		var extLayoutPath 		= "#variables.layoutsExternalLocation#/#arguments.layout#";
+		var moduleName 			= event.getCurrentModule();
+		var moduleLayoutPath 	= "";
 
-			// Explicit Module layout lookup?
-			if( len(arguments.module) and arguments.explicitModule ){
-				return "#instance.modulesConfig[arguments.module].mapping#/#instance.modulesConfig[arguments.module].conventions.layoutsLocation#/#arguments.layout#";
-			}
-
-			// Declare Locations
-			moduleName 	     		= event.getCurrentModule();
-			parentModuleLayoutPath 	= "/#instance.appMapping#/#instance.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
-			parentCommonLayoutPath 	= "/#instance.appMapping#/#instance.layoutsConvention#/modules/#arguments.layout#";
-			moduleLayoutPath 		= "#instance.modulesConfig[moduleName].mapping#/#instance.modulesConfig[moduleName].conventions.layoutsLocation#/#arguments.layout#";
-
-			// Check parent view order setup
-			if( instance.modulesConfig[moduleName].layoutParentLookup ){
-				// We check if layout is overriden in parent first.
-				if( fileExists(expandPath(parentModuleLayoutPath)) ){
-					return parentModuleLayoutPath;
-				}
-				// Check if parent has a common layout override
-				if( fileExists(expandPath(parentCommonLayoutPath)) ){
-					return parentCommonLayoutPath;
-				}
-				// Check module
-				if( fileExists(expandPath(moduleLayoutPath)) ){
-					return moduleLayoutPath;
-				}
-				// Return normal layout lookup
-				return locateLayout(arguments.layout);
-			}
-
-			// If we reach here then we are doing module lookup first then if not parent.
-			if( fileExists(expandPath(moduleLayoutPath)) ){
+		// If layout exists in module and this is a module call, then use module layout.
+		if( len( moduleName ) ){
+			moduleLayoutPath 	= "#variables.modulesConfig[ moduleName ].mapping#/#variables.layoutsConvention#/#arguments.layout#";
+			if( fileExists( expandPath( moduleLayoutPath ) ) ){
 				return moduleLayoutPath;
 			}
+		}
+
+		// Check if layout does not exists in Conventions, but in the ext location
+		if( NOT fileExists( expandPath( layoutPath ) ) AND fileExists( expandPath( extLayoutPath ) ) ){
+			return extLayoutPath;
+		}
+
+		return layoutPath;
+	}
+
+	/**
+	* Locate a layout in the conventions system
+	* @layout.hint The layout name
+	* @module.hint The name of the module we are searching for
+	* @explicitModule.hint Are we locating explicitly or implicitly for a module layout
+	*/
+	function locateModuleLayout(
+		required layout,
+		module="",
+		boolean explicitModule=false
+	){
+		var parentModuleLayoutPath 	= "";
+		var parentCommonLayoutPath 	= "";
+		var moduleLayoutPath 		= "";
+		var moduleName 		 		= "";
+
+		// Explicit Module layout lookup?
+		if( len(arguments.module) and arguments.explicitModule ){
+			return "#variables.modulesConfig[arguments.module].mapping#/#variables.modulesConfig[arguments.module].conventions.layoutsLocation#/#arguments.layout#";
+		}
+
+		// Declare Locations
+		moduleName 	     		= event.getCurrentModule();
+		parentModuleLayoutPath 	= "/#variables.appMapping#/#variables.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
+		parentCommonLayoutPath 	= "/#variables.appMapping#/#variables.layoutsConvention#/modules/#arguments.layout#";
+		moduleLayoutPath 		= "#variables.modulesConfig[moduleName].mapping#/#variables.modulesConfig[moduleName].conventions.layoutsLocation#/#arguments.layout#";
+
+		// Check parent view order setup
+		if( variables.modulesConfig[moduleName].layoutParentLookup ){
 			// We check if layout is overriden in parent first.
 			if( fileExists(expandPath(parentModuleLayoutPath)) ){
 				return parentModuleLayoutPath;
@@ -572,72 +567,76 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 			if( fileExists(expandPath(parentCommonLayoutPath)) ){
 				return parentCommonLayoutPath;
 			}
+			// Check module
+			if( fileExists(expandPath(moduleLayoutPath)) ){
+				return moduleLayoutPath;
+			}
 			// Return normal layout lookup
 			return locateLayout(arguments.layout);
-		</cfscript>
-	</cffunction>
+		}
 
-	<!--- locateView --->
-	<cffunction name="locateView" output="false" access="public" returntype="any" hint="Locate the view to render">
-		<cfargument name="view" 		type="any" 		required="true" 	hint="The view name" >
-		<cfscript>
-			// Default path is the conventions
-			var viewPath 	= "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#";
-			var extViewPath = "#instance.viewsExternalLocation#/#arguments.view#";
+		// If we reach here then we are doing module lookup first then if not parent.
+		if( fileExists(expandPath(moduleLayoutPath)) ){
+			return moduleLayoutPath;
+		}
+		// We check if layout is overriden in parent first.
+		if( fileExists(expandPath(parentModuleLayoutPath)) ){
+			return parentModuleLayoutPath;
+		}
+		// Check if parent has a common layout override
+		if( fileExists(expandPath(parentCommonLayoutPath)) ){
+			return parentCommonLayoutPath;
+		}
+		// Return normal layout lookup
+		return locateLayout(arguments.layout);
+	}
 
-			// Check if view does not exists in Conventions
-			if( NOT fileExists(expandPath(viewPath & ".cfm")) AND fileExists(expandPath(extViewPath & ".cfm")) ){
-				return extViewPath;
-			}
+	/**
+	* Locate a view in the conventions or external paths
+	* @view.hint The view to locate
+	*/
+	function locateView(required view){
+		// Default path is the conventions
+		var viewPath 	= "/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#";
+		var extViewPath = "#variables.viewsExternalLocation#/#arguments.view#";
 
-			return viewPath;
-		</cfscript>
-	</cffunction>
+		// Check if view does not exists in Conventions
+		if( NOT fileExists(expandPath(viewPath & ".cfm")) AND fileExists(expandPath(extViewPath & ".cfm")) ){
+			return extViewPath;
+		}
 
-	<!--- locateModuleView --->
-	<cffunction name="locateModuleView" output="false" access="public" returntype="any" hint="Locate the view to render using module logic">
-		<cfargument name="view" 			type="any" 		required="true"  hint="The view name" >
-		<cfargument name="module" 			type="any"	    required="false" default="" hint="The name of the module to explicity look for a view"/>
-		<cfargument name="explicitModule" 	type="boolean" 	required="false" default="false" hint="Are we locating explicitly or implicitly for a module layout"/>
-		<cfscript>
-			var parentModuleViewPath = "";
-			var parentCommonViewPath = "";
-			var moduleViewPath = "";
-			var moduleName     = "";
+		return viewPath;
+	}
 
-			// Explicit Module view lookup?
-			if( len(arguments.module) and arguments.explicitModule){
-				return "#instance.modulesConfig[arguments.module].mapping#/#instance.modulesConfig[arguments.module].conventions.viewsLocation#/#arguments.view#";
-			}
+	/**
+	* Locate a view in the conventions system
+	* @view.hint The view name
+	* @module.hint The name of the module we are searching for
+	* @explicitModule.hint Are we locating explicitly or implicitly for a module layout
+	*/
+	function locateModuleView(
+		required view,
+		module="",
+		boolean explicitModule=false
+	){
+		var parentModuleViewPath = "";
+		var parentCommonViewPath = "";
+		var moduleViewPath = "";
+		var moduleName     = "";
 
-			// Declare Locations
-			moduleName     = arguments.module;
-			parentModuleViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
-			parentCommonViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#arguments.view#";
-			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/#instance.modulesConfig[moduleName].conventions.viewsLocation#/#arguments.view#";
+		// Explicit Module view lookup?
+		if( len(arguments.module) and arguments.explicitModule){
+			return "#variables.modulesConfig[arguments.module].mapping#/#variables.modulesConfig[arguments.module].conventions.viewsLocation#/#arguments.view#";
+		}
 
-			// Check parent view order setup
-			if( instance.modulesConfig[moduleName].viewParentLookup ){
-				// We check if view is overriden in parent first.
-				if( fileExists(expandPath(parentModuleViewPath & ".cfm")) ){
-					return parentModuleViewPath;
-				}
-				// Check if parent has a common view override
-				if( fileExists(expandPath(parentCommonViewPath & ".cfm")) ){
-					return parentCommonViewPath;
-				}
-				// Check module for view
-				if( fileExists(expandPath(moduleViewPath & ".cfm")) ){
-					return moduleViewPath;
-				}
-				// Return normal view lookup
-				return locateView(arguments.view);
-			}
+		// Declare Locations
+		moduleName     = arguments.module;
+		parentModuleViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#moduleName#/#arguments.view#";
+		parentCommonViewPath = "/#variables.appMapping#/#variables.viewsConvention#/modules/#arguments.view#";
+		moduleViewPath = "#variables.modulesConfig[moduleName].mapping#/#variables.modulesConfig[moduleName].conventions.viewsLocation#/#arguments.view#";
 
-			// If we reach here then we are doing module lookup first then if not parent.
-			if( fileExists(expandPath(moduleViewPath & ".cfm")) ){
-				return moduleViewPath;
-			}
+		// Check parent view order setup
+		if( variables.modulesConfig[moduleName].viewParentLookup ){
 			// We check if view is overriden in parent first.
 			if( fileExists(expandPath(parentModuleViewPath & ".cfm")) ){
 				return parentModuleViewPath;
@@ -646,69 +645,121 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 			if( fileExists(expandPath(parentCommonViewPath & ".cfm")) ){
 				return parentCommonViewPath;
 			}
-
+			// Check module for view
+			if( fileExists(expandPath(moduleViewPath & ".cfm")) ){
+				return moduleViewPath;
+			}
 			// Return normal view lookup
 			return locateView(arguments.view);
-		</cfscript>
-	</cffunction>
+		}
 
-<!------------------------------------------- PRIVATE ------------------------------------------->
+		// If we reach here then we are doing module lookup first then if not parent.
+		if( fileExists(expandPath(moduleViewPath & ".cfm")) ){
+			return moduleViewPath;
+		}
+		// We check if view is overriden in parent first.
+		if( fileExists(expandPath(parentModuleViewPath & ".cfm")) ){
+			return parentModuleViewPath;
+		}
+		// Check if parent has a common view override
+		if( fileExists(expandPath(parentCommonViewPath & ".cfm")) ){
+			return parentCommonViewPath;
+		}
 
-	<!--- implicitViewChecks --->
-	<cffunction name="implicitViewChecks" output="false" access="private" returntype="any" hint="Does implicit view rendering checks">
-		<cfscript>
-			var layout = event.getCurrentLayout();
-			var cEvent = event.getCurrentEvent();
+		// Return normal view lookup
+		return locateView(arguments.view);
+	}
 
-			// Is implicit views enabled?
-			if( not controller.getSetting(name="ImplicitViews") ){ return layout; }
+	/************************************** PRIVATE *********************************************/
+	
+	/**
+	* Discover view+helper path locations
+	* @view.hint The view to discover
+	* @module.hint The module address
+	* @explicitModule.hint Is the module explicit or discoverable.
+	*/
+	private function discoverViewPaths( required view, module, boolean explicitModule=false ){
+		var locationKey 	= arguments.view & arguments.module & arguments.explicitModule;
+		var locationUDF 	= variables.locateView;
+		var dPath			= "";
+		var refMap			= "";
 
-			// Cleanup for modules
-			cEvent     = reReplaceNoCase(cEvent,"^([^:.]*):","");
+		// Check cached paths first --->
+		lock name="#locationKey#.#lockName#" type="readonly" timeout="15" throwontimeout="true"{
+			if( structkeyExists( controller.getSetting("viewsRefMap") ,locationKey ) AND variables.isDiscoveryCaching ){
+				return structFind( controller.getSetting("viewsRefMap"), locationKey);
+			}
+		}
+			
+		if( left( arguments.view, 1 ) EQ "/" ){
 
-			//Check if no view set?
-			if( NOT len( event.getCurrentView() ) ){
+			refMap = {
+				viewPath = arguments.view,
+				viewHelperPath = ""
+			};
 
-				// check if default view is set?
-				if( len( event.getDefaultView() ) ){
-					event.setView(event.getDefaultView());
-				}
-				else{
-					// Implicit views
-					if( getSetting(name="caseSensitiveImplicitViews",defaultValue=false) ){
-						event.setView( replace(cEvent,".","/","all") );
-					}
-					else{
-						event.setView( lcase(replace(cEvent,".","/","all")) );
-					}
-				}
+		} else { // view discovery based on relative path
 
-				// reset layout according to newly set views;
-				layout = event.getCurrentLayout();
+			// module change mode
+			if( len( arguments.module ) ){ locationUDF = variables.locateModuleView; }
+
+			// Locate the view to render according to discovery algorithm and create cache map
+			refMap = {
+				viewPath = locationUDF( arguments.view, arguments.module, arguments.explicitModule ),
+				viewHelperPath = ""
+			};
+
+		}
+
+		// Check for view helper convention
+		dPath = getDirectoryFromPath( refMap.viewPath );
+		if( fileExists(expandPath( refMap.viewPath & "Helper.cfm")) ){
+			refMap.viewHelperPath = refMap.viewPath & "Helper.cfm";
+		}
+		// Check for directory helper convention
+		else if( fileExists( expandPath( dPath & listLast(dPath,"/") & "Helper.cfm" ) ) ){
+			refMap.viewHelperPath = dPath & listLast(dPath,"/") & "Helper.cfm";
+		}
+
+		// Lock and create view entry
+		if( NOT structkeyExists( controller.getSetting("viewsRefMap") ,locationKey) ){
+			lock name="#locationKey#.#lockName#" type="exclusive" timeout="15" throwontimeout="true"{
+				structInsert( controller.getSetting("viewsRefMap"), locationKey, refMap, true);
+			}
+		}
+
+		return refMap;
+    }
+
+	/**
+	* Checks if implicit views are turned on and if so, calculate view according to event.
+	*/
+	private function implicitViewChecks(){
+		var layout = event.getCurrentLayout();
+		var cEvent = event.getCurrentEvent();
+
+		// Is implicit views enabled?
+		if( not controller.getSetting(name="ImplicitViews") ){ return layout; }
+
+		// Cleanup for modules
+		cEvent = reReplaceNoCase(cEvent,"^([^:.]*):","");
+
+		//Check if no view set?
+		if( NOT len( event.getCurrentView() ) ){
+
+			// Implicit views
+			if( controller.getSetting(name="caseSensitiveImplicitViews", defaultValue=false) ){
+				event.setView( replace(cEvent,".","/","all") );
+			}
+			else{
+				event.setView( lcase(replace(cEvent,".","/","all")) );
 			}
 
-			return layout;
-		</cfscript>
-	</cffunction>
+			// reset layout according to newly set views;
+			layout = event.getCurrentLayout();
+		}
 
-	<!--- Get Modules Convention --->
-	<cffunction name="getModulesConvention" access="private" output="false" returntype="string" hint="Get layoutsConvention">
-		<cfreturn instance.modulesConvention/>
-	</cffunction>
-
-	<!--- Get Layouts Convention --->
-	<cffunction name="getLayoutsConvention" access="private" output="false" returntype="string" hint="Get layoutsConvention">
-		<cfreturn instance.layoutsConvention/>
-	</cffunction>
-
-	<!--- Get Views Convention --->
-	<cffunction name="getViewsConvention" access="private" output="false" returntype="string" hint="Get viewsConvention">
-		<cfreturn instance.viewsConvention/>
-	</cffunction>
-
-	<!--- Get App Mapping --->
-	<cffunction name="getAppMapping" access="private" output="false" returntype="string" hint="Get appMapping">
-		<cfreturn instance.appMapping/>
-	</cffunction>
-
-</cfcomponent>
+		return layout;
+	}
+   
+}
