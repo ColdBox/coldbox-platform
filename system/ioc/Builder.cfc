@@ -345,6 +345,8 @@ TODO: update dsl consistency, so it is faster.
 				case "wirebox"			 : { refLocal.dependency = getWireBoxDSL(argumentCollection=arguments); break;}
 				// java class
 				case "java"				 : { refLocal.dependency = getJavaDSL(argumentCollection=arguments); break; }
+				// coldfusion type annotation
+				case "bytype"			 : { refLocal.dependency = getByTypeDSL(argumentCollection=arguments); break; }
 
 				// No internal DSL's found, then check custom DSL's
 				default : {
@@ -521,6 +523,19 @@ TODO: update dsl consistency, so it is faster.
 		</cfscript>
 	</cffunction>
 
+	<!--- getByTypeDSL --->
+	<cffunction name="getByTypeDSL" access="private" returntype="any" hint="Get dependencies using the mapped type" output="false" >
+		<cfargument name="definition" 	required="true"  hint="The dependency definition structure">
+		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
+		<cfscript>
+			var injectType 	=  arguments.definition.type;
+
+			if( instance.injector.containsInstance( injectType ) ){
+				return instance.injector.getInstance( injectType );
+			}
+		</cfscript>
+	</cffunction>
+
 	<!--- toVirtualInheritance --->
     <cffunction name="toVirtualInheritance" output="false" access="public" returntype="void" hint="Do our virtual inheritance magic">
     	<cfargument name="mapping" 	required="true" hint="The mapping to convert to"/>
@@ -541,7 +556,7 @@ TODO: update dsl consistency, so it is faster.
 			if( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject,"init" ) ){
 				arguments.target.$superInit = baseObject.init;
 			}
-			
+
 			// Mix in methods
 			for( var key in baseObject ){
 				// If target has overriden method, then don't override it with mixin, simulated inheritance
