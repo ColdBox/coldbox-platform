@@ -1,15 +1,11 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-
-Author     :	Luis Majano
-Description :
-ColdBox Default Configuration
------------------------------------------------------------------------>
-<cfcomponent output=false hint="ColdBox Default Configuration">
-<cfscript>
+* ColdBox Main Configuration Defaults
+*/
+component{
 
 	// Release Metadata
 	this.codename 		= "ColdBox SEEK";
@@ -44,5 +40,4 @@ ColdBox Default Configuration
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
 
-</cfscript>
-</cfcomponent>
+}

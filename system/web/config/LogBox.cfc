@@ -1,17 +1,12 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
+* The default ColdBox LogBox configuration object for ColdBox Applications
+*/
+component{
 
-Author     :	Luis Majano
-Description :
-This is the Default ColdBox LogBox Configuration for immediate operation 
-of ColdBox once it loads.  Once the configuration file is read then the
-LogBox instance is reconfigured with the user settings, if used at all.
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="The default ColdBox LogBox Configuration Data Object">
-<cfscript>
 	/**
 	* Configure LogBox, that's it!
 	*/
@@ -30,5 +25,5 @@ LogBox instance is reconfigured with the user settings, if used at all.
 			appenders="*"
 		};
 	}
-</cfscript>
-</cfcomponent>
+
+}
