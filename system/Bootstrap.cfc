@@ -488,12 +488,18 @@ component serializable="false" accessors="true"{
 		// Render out error via CustomErrorTemplate or Core
 		var customErrorTemplate = arguments.controller.getSetting( "CustomErrorTemplate" );
 		if( len( customErrorTemplate ) ){
-			var appLocation = "/";
-			if( len( arguments.controller.getSetting( "AppMapping" ) ) ){
-				appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/";
+			
+			// Do we have right path already, test by expanding
+			if( fileExists( expandPath( customErrorTemplate ) ) ){
+				bugReportTemplatePath = customErrorTemplate;	
+			} else {
+				var appLocation = "/";
+				if( len( arguments.controller.getSetting( "AppMapping" ) ) ){
+					appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/";
+				}
+				// Bug report path
+				var bugReportTemplatePath = appLocation & reReplace( customErrorTemplate, "^/", "" );
 			}
-			// Bug report path
-			var bugReportTemplatePath = appLocation & reReplace( customErrorTemplate, "^/", "" );
 			// Show Bug Report
 			savecontent variable="local.exceptionReport"{
 				include "#bugReportTemplatePath#";
@@ -501,7 +507,7 @@ component serializable="false" accessors="true"{
 		} else {
 			// Default ColdBox Error Template
 			savecontent variable="local.exceptionReport"{
-				include "/coldbox/system/includes/BugReport.cfm";
+				include "/coldbox/system/includes/BugReport-Public.cfm";
 			}
 		}
 

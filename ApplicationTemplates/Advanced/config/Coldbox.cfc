@@ -1,5 +1,4 @@
-﻿<cfcomponent output="false" hint="My App Configuration">
-<cfscript>
+﻿component{
 /**
 structures/arrays to create for configuration
 
@@ -167,5 +166,11 @@ Optional Methods
 
 	}
 
-</cfscript>
-</cfcomponent>
+	/**
+	* Development environment
+	*/
+	function development(){
+		coldbox.customErrorTemplate = "/coldbox/system/includes/BugReport.cfm";
+	}
+
+}

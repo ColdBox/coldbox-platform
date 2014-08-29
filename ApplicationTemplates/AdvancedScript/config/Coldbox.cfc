@@ -52,7 +52,7 @@
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the cgi.http_host.
 		environments = {
-			//development = "^cf8.,^railo."
+			development = "localhost"
 		};
 
 		// Module Directives
@@ -133,6 +133,13 @@
 		};
 		*/
 
+	}
+
+	/**
+	* Development environment
+	*/
+	function development(){
+		coldbox.customErrorTemplate = "/coldbox/system/includes/BugReport.cfm";
 	}
 
 }
