@@ -1,14 +1,11 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author 	 :	Luis Majano
-Description :
-	The default ColdBox CacheBox configuration object for ColdBox Applications
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="The default ColdBox CacheBox configuration object for ColdBox Applications">
-<cfscript>
+* The default ColdBox CacheBox configuration object for ColdBox Applications
+*/
+component{
 
 	/**
 	* Configure CacheBox for ColdBox Application Operation
@@ -56,5 +53,5 @@ Description :
 			}
 		};
 	}
-</cfscript>
-</cfcomponent>
+
+}

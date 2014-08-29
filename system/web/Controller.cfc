@@ -508,11 +508,19 @@ Only one instance of a specific ColdBox application exists.
 					structKeyExists(oHandler.allowedMethods,ehBean.getMethod()) AND
 					NOT listFindNoCase(oHandler.allowedMethods[ehBean.getMethod()],oRequestContext.getHTTPMethod()) ){
 
-					// Throw Exceptions
-					getUtil().throwInvalidHTTP(className="Controller",
-											   detail="The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
-											   statusText="Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
-											   statusCode="405");
+					// Do we have a local handler for this exception, if so, call it
+					if( oHandler._actionExists( "onInvalidHTTPMethod" ) ){
+						return oHandler.onInvalidHTTPMethod( event=oRequestContext,
+															 rc=loc.args.rc,
+															 prc=loc.args.prc,
+															 faultAction=ehBean.getmethod(),
+															 eventArguments=arguments.eventArguments );
+					}
+					// Throw Exception
+					getUtil().throwInvalidHTTP( className="Controller",
+											    detail="The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
+											    statusText="Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
+											    statusCode="405" );
 				}
 
 				// PRE ACTIONS

@@ -32,13 +32,33 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 	function run(){
 
-		describe( "ColdBox Rendering", function(){
+		describe( "ColdBox REST", function(){
 
 			beforeEach(function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
 			});
 
+			xit( "can handle onInvalidHTTPMethod exceptions", function(){
+				prepareMock( getRequestContext() ).$( "getHTTPMethod", "GET" );
+				var event = execute( event="rendering.testHTTPMethod", renderResults=true );
+				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "Yep, onInvalidHTTPMethod works!" );
+			});
+
+			
+			var formats = [ "json" ];
+			//var formats = [ "json", "xml", "pdf", "wddx", "html" ];
+			it( "can do #formats.toString()# data renderings", function(){
+
+				for( var thisFormat in formats ){
+					getRequestContext().setValue( "format", thisFormat );
+					var event = execute( event="rendering.index", renderResults=true );
+					var prc = event.getCollection( private=true );
+					expect( prc.cbox_renderData ).toBeStruct();
+					expect( prc.cbox_renderData.contenttype ).toMatch( thisFormat );
+				}
+				
+			});
 
 		});
 
