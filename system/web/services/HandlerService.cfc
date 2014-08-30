@@ -365,9 +365,9 @@ Description :
 
 				// Test for invalid Event Error
 				if ( compareNoCase( instance.onInvalidEvent, arguments.event ) eq 0 ){
-					getUtil().throwit(message="The onInvalid event is also invalid",
-									  detail="The onInvalidEvent setting is also invalid: #instance.onInvalidEvent#. Please check your settings",
-									  type="HandlerService.onInValidEventSettingException");
+					throw( message="The onInvalid event is also invalid",
+						   detail="The onInvalidEvent setting is also invalid: #instance.onInvalidEvent#. Please check your settings",
+						   type="HandlerService.onInValidEventSettingException");
 				}
 
 				// Store Invalid Event in PRC
@@ -387,7 +387,7 @@ Description :
 			instance.log.error( "Invalid Event detected: #arguments.event#. Path info: #cgi.path_info#, query string: #cgi.query_string#" );
 
 			// Throw Exception
-			getUtil().throwit(message="The event: #arguments.event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
+			throw( message="The event: #arguments.event# is not valid registered event.", type="HandlerService.EventHandlerNotRegisteredException" );
 		</cfscript>
 	</cffunction>
 
@@ -413,7 +413,7 @@ Description :
 
 			//Check for Handlers Directory Location
 			if ( not directoryExists(HandlersExternalLocationPath) ){
-				getUtil().throwit("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","HandlerService.HandlersDirectoryNotFoundException");
+				throw("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","HandlerService.HandlersDirectoryNotFoundException");
 			}
 
 			//Get recursive Array listing
@@ -422,7 +422,7 @@ Description :
 
 		//Verify it
 		if ( ArrayLen(HandlerArray) eq 0 AND ArrayLen(HandlersExternalArray) eq 0){
-			getUtil().throwit("No handlers were found in: #HandlersPath# or in #HandlersExternalLocationPath#. So I have no clue how you are going to run this application.","","HandlerService.NoHandlersFoundException");
+			throw("No handlers were found in: #HandlersPath# or in #HandlersExternalLocationPath#. So I have no clue how you are going to run this application.","","HandlerService.NoHandlersFoundException");
 		}
 
 		//Set registered External Handlers

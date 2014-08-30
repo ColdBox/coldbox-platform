@@ -232,7 +232,7 @@ Description :
 				// If Empty Throw Exception
 				if( NOT len(instancePath) ){
 					instance.log.error("Requested instance:#arguments.name# was not located in any declared scan location(s): #structKeyList(instance.binder.getScanLocations())# or full CFC path");
-					getUtil().throwit(message="Requested instance not found: '#arguments.name#'",
+					throw(message="Requested instance not found: '#arguments.name#'",
 									  detail="The instance could not be located in any declared scan location(s) (#structKeyList(instance.binder.getScanLocations())#) or full path location",
 									  type="Injector.InstanceNotFoundException");
 				}
@@ -252,7 +252,7 @@ Description :
 			// scope persistence check
 			if( NOT structKeyExists(instance.scopes, mapping.getScope()) ){
 				instance.log.error("The mapping scope: #mapping.getScope()# is invalid and not registered in the valid scopes: #structKeyList(instance.scopes)#");
-				getUtil().throwit(message="Requested mapping scope: #mapping.getScope()# is invalid for #mapping.getName()#",
+				throw(message="Requested mapping scope: #mapping.getScope()# is invalid for #mapping.getName()#",
 								  detail="The registered valid object scopes are #structKeyList(instance.scopes)#",
 								  type="Injector.InvalidScopeException");
 			}
@@ -316,7 +316,7 @@ Description :
 					}
 					break;
 				}
-				default: { getUtil().throwit(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
+				default: { throw(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}
 
 			// log data
@@ -777,7 +777,7 @@ Description :
 				return instance.scopeStorage.get(scopeInfo.key, scopeInfo.scope);
 			}
 
-			instance.utility.throwit(message="The injector has not be registered in any scope",detail="The scope info is: #scopeInfo.toString()#",type="Injector.InvalidScopeRegistration");
+			throw(message="The injector has not be registered in any scope",detail="The scope info is: #scopeInfo.toString()#",type="Injector.InvalidScopeRegistration");
 		</cfscript>
     </cffunction>
 
@@ -838,7 +838,7 @@ Description :
 				}
 				catch(Any e){
 					instance.log.error("Error creating listener: #listeners[x].toString()#", e);
-					getUtil().throwit(message="Error creating listener: #listeners[x].toString()#",
+					throw(message="Error creating listener: #listeners[x].toString()#",
 									  detail="#e.message# #e.detail# #e.stackTrace#",
 									  type="Injector.ListenerCreationException");
 				}
@@ -988,7 +988,7 @@ Description :
 			}
 
 			// Check if data CFC or binder family
-			if( NOT instance.utility.isInstanceCheck(arguments.binder, "coldbox.system.ioc.config.Binder") ){
+			if( NOT isInstanceOf( arguments.binder, "coldbox.system.ioc.config.Binder" ) ){
 				// simple data cfc, create native binder and decorate data CFC
 				nativeBinder = createObject("component","coldbox.system.ioc.config.Binder").init(injector=this,config=arguments.binder,properties=arguments.properties);
 			}

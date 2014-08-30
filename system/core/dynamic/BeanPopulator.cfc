@@ -321,7 +321,7 @@ Description :
 										targetEntityName = getComponentMetaData( relationalMeta[ key ].cfc ).entityName;
 									}
 									catch( any e ) {
-										getUtil().throwIt(type="BeanPopulator.PopulateBeanException",
+										throw(type="BeanPopulator.PopulateBeanException",
 							  			  message="Error populating bean #getMetaData(beanInstance).name# relationship of #key#. The component #relationalMeta[ key ].cfc# could not be found.",
 							  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
 									}
@@ -358,7 +358,7 @@ Description :
 															keyValue = evaluate("item.get#structKeyColumn#()");
 														}
 														catch( Any e ) {
-															getUtil().throwIt(type="BeanPopulator.PopulateBeanException",
+															throw(type="BeanPopulator.PopulateBeanException",
                     							  			  message="Error populating bean #getMetaData(beanInstance).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
                     							  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
 														}
@@ -407,9 +407,9 @@ Description :
 				else{
 		        	arguments.keyTypeAsString = propertyValue.getClass().toString();
 				}
-				getUtil().throwIt(type="BeanPopulator.PopulateBeanException",
-					  			  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
-					  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
+				throw(type="BeanPopulator.PopulateBeanException",
+					  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
+					  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
 			}
 		</cfscript>
 	</cffunction>

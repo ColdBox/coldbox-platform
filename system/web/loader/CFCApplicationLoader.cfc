@@ -192,7 +192,7 @@ Loads a coldbox cfc configuration file
 
 			// check if settings are available
 			if( structIsEmpty(coldboxSettings) ){
-				instance.util.throwit(message="ColdBox settings empty, cannot continue",type="CFCApplicationLoader.ColdBoxSettingsEmpty" );
+				throw(message="ColdBox settings empty, cannot continue",type="CFCApplicationLoader.ColdBoxSettingsEmpty" );
 			}
 
 			// collection append
@@ -206,7 +206,7 @@ Loads a coldbox cfc configuration file
 
 			//Check for AppName or throw
 			if ( not structKeyExists( configStruct, "AppName" ) )
-				instance.util.throwit( "There was no 'AppName' setting defined. This is required by the framework.","","MissingSetting" );
+				throw( "There was no 'AppName' setting defined. This is required by the framework.","","MissingSetting" );
 			//Check for Default Event
 			if ( not structKeyExists( configStruct, "DefaultEvent" ) OR NOT len( configStruct[ "DefaultEvent" ] ) )
 				configStruct[ "DefaultEvent" ] = fwSettingsStruct[ "DefaultEvent" ];
@@ -395,7 +395,7 @@ Loads a coldbox cfc configuration file
 					configStruct[ "ViewsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "ViewsExternalLocation" ];
 				}
 				else if( not directoryExists(expandPath(configStruct[ "ViewsExternalLocation" ])) ){
-					instance.util.throwIt( "ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
+					throw( "ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
 				}
 				// Cleanup
 				if ( right(configStruct[ "ViewsExternalLocation" ],1) eq "/" ){
@@ -413,7 +413,7 @@ Loads a coldbox cfc configuration file
 					configStruct[ "LayoutsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "LayoutsExternalLocation" ];
 				}
 				else if( not directoryExists(expandPath(configStruct[ "LayoutsExternalLocation" ])) ){
-					instance.util.throwIt( "LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
+					throw( "LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
 				}
 				// Cleanup
 				if ( right(configStruct[ "LayoutsExternalLocation" ],1) eq "/" ){
@@ -442,7 +442,7 @@ Loads a coldbox cfc configuration file
 			for( key in datasources ){
 
 				if( NOT structKeyExists(datasources[key],"name" ) ){
-					instance.util.throwit( "This datasource #key# entry's name cannot be blank","","CFCApplicationLoader.DatasourceException" );
+					throw( "This datasource #key# entry's name cannot be blank","","CFCApplicationLoader.DatasourceException" );
 				}
 				// defaults
 				if( NOT structKeyExists(datasources[key],"username" ) ){

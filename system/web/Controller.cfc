@@ -24,6 +24,8 @@ Only one instance of a specific ColdBox application exists.
 		<cfscript>
 			// local members scope
 			instance = structnew();
+			// Create Utility
+			variables.util 	= new coldbox.system.core.util.Util();
 			// services scope
 			services = createObject("java","java.util.LinkedHashMap").init( 7 );
 
@@ -291,7 +293,7 @@ Only one instance of a specific ColdBox application exists.
 				return arguments.defaultValue;
 			}
 
-			getUtil().throwit(message="The setting #arguments.name# does not exist.",
+			throw(message="The setting #arguments.name# does not exist.",
 							  detail="FWSetting flag is #arguments.FWSetting#",
 							  type="Controller.SettingNotFoundException");
 			</cfscript>
@@ -712,8 +714,8 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Get the util object --->
-	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" colddoc:generic="coldbox.system.core.util.Util">
-		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
+	<cffunction name="getUtil" access="public" output="false" returntype="any" hint="Returns the system utility object" colddoc:generic="coldbox.system.core.util.Util">
+		<cfreturn variables.util/>
 	</cffunction>
 
 	<!--- invoker --->

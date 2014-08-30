@@ -201,7 +201,7 @@ Modification History:
 
 		// If no config file location throw exception
 		if( NOT len( coldboxSettings["ConfigFileLocation"] ) ){
-			getUtil().throwit(message="Config file not located in conventions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
+			throw(message="Config file not located in conventions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
 		}
 
 		// Create it and return it now that config file location is set in the location settings

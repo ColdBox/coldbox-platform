@@ -126,7 +126,7 @@ Description :
 		<cfscript>
 		// Validate Incoming State
 		if( instance.interceptorConfig.throwOnInvalidStates AND NOT listFindNoCase( arrayToList( instance.interceptionPoints ), arguments.state ) ){
-			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#", "Valid states are #instance.interceptionPoints.toString()#", "InterceptorService.InvalidInterceptionState");
+			throw("The interception state sent in to process is not valid: #arguments.state#", "Valid states are #instance.interceptionPoints.toString()#", "InterceptorService.InvalidInterceptionState");
 		}
 
 		// Process The State if it exists, else just exit out
@@ -177,9 +177,9 @@ Description :
 				oInterceptor = arguments.interceptorObject;
 			}
 			else{
-				getUtil().throwit(message="Invalid registration.",
-								  detail="You did not send in an interceptorClass or interceptorObject argument for registration",
-					  			  type="InterceptorService.InvalidRegistration");
+				throw( message="Invalid registration.",
+				 	   detail="You did not send in an interceptorClass or interceptorObject argument for registration",
+					   type="InterceptorService.InvalidRegistration" );
 			}
 		</cfscript>
 
@@ -194,7 +194,7 @@ Description :
 					}
 					catch(Any e){
 						instance.log.error("Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",e.tagContext);
-						getUtil().rethrowit( e );
+						rethrow;
 					}
 
 					// Configure the Interceptor
@@ -276,8 +276,8 @@ Description :
 			}
 
 			// Throw Exception
-			getUtil().throwit(message="Interceptor: #arguments.interceptorName# not found in any state: #structKeyList(states)#.",
-				  			  type="InterceptorService.InterceptorNotFound");
+			throw( message="Interceptor: #arguments.interceptorName# not found in any state: #structKeyList(states)#.",
+				   type="InterceptorService.InterceptorNotFound");
 
 		</cfscript>
 	</cffunction>

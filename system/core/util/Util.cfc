@@ -154,75 +154,7 @@ Description :
 
     </cffunction>
 
-<!------------------------------------------- CF Facades ------------------------------------------>
-
-	<!--- throw it --->
-	<cffunction name="throwit" access="public" hint="Facade for cfthrow" output="false">
-		<cfargument name="message" 	required="true">
-		<cfargument name="detail" 	required="false" default="">
-		<cfargument name="type"  	required="false" default="Framework">
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-
-	<!--- rethrowit --->
-	<cffunction name="rethrowit" access="public" returntype="void" hint="Rethrow an exception" output="false" >
-		<cfargument name="throwObject" required="true" hint="The exception object">
-		<cfthrow object="#arguments.throwObject#">
-	</cffunction>
-
-	<!--- dump it --->
-	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void" output="true">
-		<cfargument name="var" 		required="true">
-		<cfargument name="isAbort"  type="boolean" default="false" required="false" hint="Abort also"/>
-		<cfdump var="#var#"><cfif arguments.isAbort><cfabort></cfif>
-	</cffunction>
-
-	<!--- abort it --->
-	<cffunction name="abortit" access="public" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
-
-	<!--- include it --->
-	<cffunction name="includeit" access="public" hint="Facade for cfinclude" returntype="void" output="true">
-		<cfargument name="template" required="true">
-		<cfinclude template="#template#">
-	</cffunction>
-
 <!------------------------------------------- Taxonomy Utility Methods ------------------------------------------>
-
-	<!--- isInstanceCheck --->
-    <cffunction name="isInstanceCheck" output="false" access="public" returntype="boolean" hint="Checks if an object is of a certain type of family via inheritance">
-    	<cfargument name="obj"    required="true" hint="The object to evaluate"/>
-		<cfargument name="family" required="true" default="" hint="The family string to check"/>
-    	<cfscript>
-    		var md 			= "";
-			var moreChecks  = true;
-
-    		// Get cf7 nasty metadata, remove by 3.1
-			md = getMetadata(arguments.obj);
-			if( NOT structKeyExists(md, "extends") ){
-				return false;
-			}
-			md = md.extends;
-
-			while(moreChecks){
-				// Check inheritance family?
-				if( md.name eq arguments.family){
-					return true;
-				}
-				// Else check further inheritance?
-				else if ( structKeyExists(md, "extends") ){
-					md = md.extends;
-				}
-				else{
-					return false;
-				}
-			}
-
-			return false;
-    	</cfscript>
-    </cffunction>
-
 
 	<!--- isFamilyType --->
     <cffunction name="isFamilyType" output="false" access="public" returntype="boolean" hint="Checks if an object is of the passed in family type">
@@ -235,16 +167,11 @@ Description :
 				case "handler" 		: { familyPath = "coldbox.system.EventHandler"; break; }
 				case "interceptor"  : { familyPath = "coldbox.system.Interceptor"; break; }
 				default:{
-					throwit('Invalid family sent #arguments.family#');
+					throw('Invalid family sent #arguments.family#');
 				}
 			}
 
-			if( structKeyExists(getFunctionList(), "isInstanceOf") ){
-				return isInstanceOf(arguments.target,familyPath);
-			}
-			else{
-				return isInstanceCheck(arguments.target,familyPath);
-			}
+			return isInstanceOf( arguments.target, familyPath );
 		</cfscript>
     </cffunction>
 
@@ -261,7 +188,7 @@ Description :
 				case "handler" 		: { familyPath = "coldbox.system.EventHandler"; break; }
 				case "interceptor"  : { familyPath = "coldbox.system.Interceptor"; break; }
 				default:{
-					throwit('Invalid family sent #arguments.family#');
+					throw('Invalid family sent #arguments.family#');
 				}
 			}
 

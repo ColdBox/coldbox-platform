@@ -139,8 +139,8 @@ I oversee and manage ColdBox modules
 			if( len(arguments.invocationPath) ){
 				// Check if passed module name is already registered
 				if( structKeyExists(instance.moduleRegistry, arguments.moduleName) ){
-					getUtil().throwit(message="The module #arguments.moduleName# has already been loaded",
-									  type="ModuleService.DuplicateModuleFound");
+					throw( message="The module #arguments.moduleName# has already been loaded",
+						   type="ModuleService.DuplicateModuleFound");
 				}
 				// register new incoming location
 				instance.moduleRegistry[ arguments.moduleName ] = {
@@ -152,9 +152,9 @@ I oversee and manage ColdBox modules
 
 			// Check if passed module name is not loaded into the registry
 			if( NOT structKeyExists(instance.moduleRegistry, arguments.moduleName) ){
-				getUtil().throwit(message="The module #arguments.moduleName# is not valid",
-								  detail="Valid module names are: #structKeyList(instance.moduleRegistry)#",
-								  type="ModuleService.InvalidModuleName");
+				throw( message="The module #arguments.moduleName# is not valid",
+					   detail="Valid module names are: #structKeyList(instance.moduleRegistry)#",
+					   type="ModuleService.InvalidModuleName");
 			}
 
 			// Setup locations with registry information
@@ -289,9 +289,9 @@ I oversee and manage ColdBox modules
 
 			// If module not registered, throw exception
 			if( NOT structKeyExists( modules, arguments.moduleName ) ){
-				getUtil().throwit( message="Cannot activate module: #arguments.moduleName#",
-								   detail="The module has not been registered, register the module first and then activate it.",
-								   type="ModuleService.IllegalModuleState" );
+				throw( message="Cannot activate module: #arguments.moduleName#",
+					   detail="The module has not been registered, register the module first and then activate it.",
+					   type="ModuleService.IllegalModuleState" );
 			}
 
 			// Check if module already activated

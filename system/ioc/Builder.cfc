@@ -151,7 +151,7 @@ TODO: update dsl consistency, so it is faster.
 
 			// check if factory exists, else throw exception
 			if( NOT instance.injector.containsInstance( factoryName ) ){
-				instance.utility.throwIt(message="The factory mapping: #factoryName# is not registered with the injector",type="Builder.InvalidFactoryMappingException");
+				throw(message="The factory mapping: #factoryName# is not registered with the injector",type="Builder.InvalidFactoryMappingException");
 			}
     		// get Factory mapping
 			oFactory = instance.injector.getInstance( factoryName );
@@ -245,7 +245,7 @@ TODO: update dsl consistency, so it is faster.
 					// Log the error
 					instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
 					// not found but required, then throw exception
-					instance.utility.throwIt(message="Argument reference not located: #DIArgs[x].name#",
+					throw(message="Argument reference not located: #DIArgs[x].name#",
 									  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #DIArgs[x].toString()#.",
 									  		 type="Injector.ArgumentNotFoundException");
 				}
@@ -330,7 +330,7 @@ TODO: update dsl consistency, so it is faster.
 				case "cacheBox"			 : {
 					// check if linked
 					if( !instance.injector.isCacheBoxLinked() AND !instance.injector.isColdBoxLinked() ){
-						instance.utility.throwIt(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",type="Builder.IllegalDSLException");
+						throw(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",type="Builder.IllegalDSLException");
 					}
 					// retrieve it
 					refLocal.dependency = instance.cacheBoxDSL.process(argumentCollection=arguments); break;
@@ -374,7 +374,7 @@ TODO: update dsl consistency, so it is faster.
 				}
 
 				// Throw exception as DSL Dependency requested was not located
-				instance.utility.throwit(message="The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
+				throw(message="The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
 										 detail="The target requesting the dependency is: '#arguments.targetID#'",
 										 type="Builder.DSLDependencyNotFoundException");
 			}

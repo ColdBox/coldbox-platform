@@ -122,9 +122,9 @@ Description :
 					thisListener.configure( this, listeners[x].properties);
 				}
 				catch(Any e){
-					getUtil().throwit(message="Error creating listener: #listeners[x].toString()#",
-									  detail="#e.message# #e.detail# #e.stackTrace#",
-									  type="CacheBox.ListenerCreationException");
+					throw(message="Error creating listener: #listeners[x].toString()#",
+						  detail="#e.message# #e.detail# #e.stackTrace#",
+						  type="CacheBox.ListenerCreationException");
 				}
 
 				// Now register listener
@@ -210,16 +210,16 @@ Description :
 
 			// Check length
 			if( len(arguments.name) eq 0 ){
-				getUtil().throwit(message="Invalid Cache Name",
-								  detail="The name you sent in is invalid as it was blank, please send in a name",
-								  type="CacheFactory.InvalidNameException");
+				throw(message="Invalid Cache Name",
+					  detail="The name you sent in is invalid as it was blank, please send in a name",
+					  type="CacheFactory.InvalidNameException");
 			}
 
 			// Check it does not exist already
 			if( cacheExists( arguments.name ) ){
-				getUtil().throwit(message="Cache #arguments.name# already exists",
-								  detail="Cannot register named cache as it already exists in the registry",
-								  type="CacheFactory.CacheExistsException");
+				throw(message="Cache #arguments.name# already exists",
+					  detail="Cannot register named cache as it already exists in the registry",
+					  type="CacheFactory.CacheExistsException");
 			}
 
 			// Create default cache instance

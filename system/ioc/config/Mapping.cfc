@@ -744,9 +744,9 @@ Description :
 				case "regex" : { classMatcher = arguments.binder.match().regex( getToken(arguments.metadata.classMatcher,2,":") ); break; }
 				default: {
 					// throw, no matching matchers
-					arguments.binder.utility.throwIt(message="Invalid Class Matcher: #classes#",
-													type="Mapping.InvalidAOPClassMatcher",
-													detail="Valid matchers are 'any,annotatedWith:annotation,annotatedWith:annotation:value,mappings:XXX,instanceOf:XXX,regex:XXX'");
+					throw(message="Invalid Class Matcher: #classes#",
+						  type="Mapping.InvalidAOPClassMatcher",
+						  detail="Valid matchers are 'any,annotatedWith:annotation,annotatedWith:annotation:value,mappings:XXX,instanceOf:XXX,regex:XXX'");
 				}
 			}
 
@@ -769,9 +769,9 @@ Description :
 				case "regex" : { methodMatcher = arguments.binder.match().regex( getToken(arguments.metadata.methodMatcher,2,":") ); break; }
 				default: {
 					// throw, no matching matchers
-					arguments.binder.utility.throwIt(message="Invalid Method Matcher: #classes#",
-													type="Mapping.InvalidAOPMethodMatcher",
-													detail="Valid matchers are 'any,annotatedWith:annotation,annotatedWith:annotation:value,methods:XXX,instanceOf:XXX,regex:XXX'");
+					throw(message="Invalid Method Matcher: #classes#",
+						  type="Mapping.InvalidAOPMethodMatcher",
+						  detail="Valid matchers are 'any,annotatedWith:annotation,annotatedWith:annotation:value,methods:XXX,instanceOf:XXX,regex:XXX'");
 				}
 			}
 

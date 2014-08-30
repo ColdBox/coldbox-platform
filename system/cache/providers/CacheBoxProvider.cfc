@@ -91,7 +91,7 @@ Properties
 
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
-			
+
 			if( instance.logger.canDebug() )
 				instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
 
@@ -108,7 +108,7 @@ Properties
 			}
 			catch(Any e){
 				instance.logger.error("Error creating eviction policy: #evictionPolicy#", e);
-				getUtil().throwit('Error creating eviction policy: #evictionPolicy#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.EvictionPolicyCreationException');
+				throw('Error creating eviction policy: #evictionPolicy#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.EvictionPolicyCreationException');
 			}
 
 			// Create the object store the configuration mandated
@@ -118,7 +118,7 @@ Properties
 			}
 			catch(Any e){
 				instance.logger.error("Error creating object store: #objectStore#", e);
-				getUtil().throwit('Error creating object store #objectStore#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.ObjectStoreCreationException');
+				throw('Error creating object store #objectStore#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.ObjectStoreCreationException');
 			}
 
 			// Enable cache
@@ -354,7 +354,7 @@ Properties
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getOrSet --->
 	<cffunction name="getOrSet" access="public" output="false" returntype="any" hint="Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it.">
 		<!--- ************************************************************* --->
@@ -380,15 +380,15 @@ Properties
 					// produce it
 					refLocal.object = arguments.produce();
 					// store it
-					set( objectKey=arguments.objectKey, 
-						 object=refLocal.object, 
+					set( objectKey=arguments.objectKey,
+						 object=refLocal.object,
 						 timeout=arguments.timeout,
 						 lastAccessTimeout=arguments.lastAccessTimeout,
 						 extra=arguments.extra );
 				}
 			</cfscript>
 		</cflock>
-		
+
 		<cfreturn refLocal.object>
 	</cffunction>
 
