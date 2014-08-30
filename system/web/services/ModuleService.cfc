@@ -22,7 +22,7 @@ I oversee and manage ColdBox modules
 			// service properties
 			instance.logger 			= "";
 			instance.mConfigCache 		= {};
-			instance.moduleRegistry 	= createObject("java","java.util.LinkedHashMap").init();
+			instance.moduleRegistry 	= createObject( "java", "java.util.LinkedHashMap" ).init();
 			instance.cfmappingRegistry 	= {};
 
 			return this;
@@ -74,15 +74,13 @@ I oversee and manage ColdBox modules
     </cffunction>
 
 	<!--- registerAllModules --->
-	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all modules for the application. Usually called by framework to load configuration data.">
+	<cffunction name="registerAllModules" output="false" access="public" returntype="ModuleService" hint="Register all modules for the application. Usually called by framework to load configuration data.">
 		<cfscript>
 			var foundModules   = "";
-			var x 			   = 1;
-			var key			   = "";
-			var includeModules = controller.getSetting("ModulesInclude");
+			var includeModules = controller.getSetting( "ModulesInclude" );
 
 			// Register the initial empty module configuration holder structure
-			structClear( controller.getSetting("modules") );
+			structClear( controller.getSetting( "modules" ) );
 
 			// clean the registry as we are registering all modules
 			instance.moduleRegistry = createObject("java","java.util.LinkedHashMap").init();
@@ -90,23 +88,25 @@ I oversee and manage ColdBox modules
 			rebuildModuleRegistry();
 
 			// Are we using an include list?
-			if( arrayLen(includeModules) ){
+			if( arrayLen( includeModules ) ){
 				// use this instead
-				for(x=1; x lte arrayLen(includeModules); x++){
+				for( var x=1; x lte arrayLen( includeModules ); x++){
 					// does module exists in the registry? We only register what is found
-					if( structKeyExists(instance.moduleRegistry, includeModules[x] ) ){
+					if( structKeyExists( instance.moduleRegistry, includeModules[ x ] ) ){
 						registerModule( includeModules[x] );
 					}
 				}
-				return;
+				return this;
 			}
 
 			// Iterate through registry and register each module's configuration data
-			for(key in instance.moduleRegistry){
-				if( canLoad( key ) ){
-					registerModule( key );
+			for( var thisModule in instance.moduleRegistry ){
+				if( canLoad( thisModule ) ){
+					registerModule( thisModule );
 				}
 			}
+
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -124,6 +124,7 @@ I oversee and manage ColdBox modules
 	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and config object">
 		<cfargument name="moduleName" 		type="string" required="true" hint="The name of the module to load."/>
 		<cfargument name="invocationPath" 	type="string" required="false" default="" hint="The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry location, if not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right"/>
+		<cfargument name="parent"			type="string" required="false" default="" hint="The name of the parent module">
 		<cfscript>
 			var modulesLocation 		= "";
 			var modulesPath 			= "";
@@ -134,6 +135,7 @@ I oversee and manage ColdBox modules
 			var mConfig 				= "";
 			var modulesConfiguration	= controller.getSetting("modules");
 			var appSettings 			= controller.getConfigSettings();
+
 
 			// Check if incoming invocation path is sent
 			if( len(arguments.invocationPath) ){
@@ -209,8 +211,10 @@ I oversee and manage ColdBox modules
 					handlersLocation 	= "handlers",
 					layoutsLocation 	= "layouts",
 					viewsLocation 		= "views",
-					modelsLocation       = "models"
-				}
+					modelsLocation      = "models"
+				},
+				childModules			= [],
+				parent 					= arguments.parent
 			};
 
 			// Load Module configuration from cfc and store it in module Config Cache
@@ -238,10 +242,24 @@ I oversee and manage ColdBox modules
 			structAppend( appSettings, mConfig.parentSettings, true );
 			// Register Module Datasources
 			structAppend( appSettings.datasources, mConfig.datasources, true );
+			// Inception?
+			if( directoryExists( mConfig.path & "/modules" ) ){
+				// register the children
+				var childModules = directoryList( mConfig.path & "/modules", false, "array" );
+				for( var thisChild in childModules ){
+					var childName = listLast( thisChild, "/\" );
+					arrayAppend( mConfig.childModules, childname );
+					registerModule( moduleName=childName,
+									invocationPath=mConfig.invocationPath & ".modules",
+									parent=modName );
+				}
+			}
+
 			// Log registration
 			if( instance.logger.canDebug() ){
 				instance.logger.debug( "Module #arguments.moduleName# registered successfully." );
 			}
+
 			</cfscript>
 		</cflock>
 
@@ -352,6 +370,11 @@ I oversee and manage ColdBox modules
 
 			// Mark it as loaded as it is now activated
 			mConfig.activated = true;
+
+			// Now activate any children
+			for( var thisChild in mConfig.childModules ){
+				activateModule( moduleName=thisChild );
+			}
 
 			// Log it
 			if( instance.logger.canDebug() ){
@@ -604,13 +627,12 @@ I oversee and manage ColdBox modules
     <cffunction name="buildRegistry" output="false" access="private" returntype="void" hint="Build the modules registry">
     	<cfargument name="locations" type="array" 	required="true" hint="The array of locations to register"/>
 		<cfscript>
-    		var x	   = 1;
-			var locLen = arrayLen(arguments.locations);
+			var locLen = arrayLen( arguments.locations );
 
-			for(x=1; x lte locLen; x++){
-				if( len(trim(arguments.locations[x])) ){
+			for(var x=1; x lte locLen; x++){
+				if( len( trim( arguments.locations[ x ] ) ) ){
 					// Get all modules found in the module location and append to module registry, only new ones are added
-					scanModulesDirectory( arguments.locations[x] );
+					scanModulesDirectory( arguments.locations[ x ] );
 				}
 			}
 		</cfscript>
@@ -620,12 +642,12 @@ I oversee and manage ColdBox modules
 	<cffunction name="scanModulesDirectory" output="false" access="private" returntype="void" hint="Get an array of modules found and add to the registry structure">
 		<cfargument name="dirPath" 			type="string" required="true" hint="Path to scan"/>
 		<cfset var q = "">
-		<cfset var expandedPath = expandPath(arguments.dirpath)>
+		<cfset var expandedPath = expandPath( arguments.dirpath )>
 
 		<cfdirectory action="list" directory="#expandedPath#" name="q" type="dir" sort="asc">
 
 		<cfloop query="q">
-			<cfif NOT find(".", q.name)>
+			<cfif NOT find( ".", q.name )>
 				<!--- Add only if it does not exist, so location preference kicks in --->
 				<cfif  NOT structKeyExists(instance.moduleRegistry, q.name)>
 					<cfset instance.moduleRegistry[q.name] = {
