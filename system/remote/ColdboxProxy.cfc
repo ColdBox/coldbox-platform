@@ -98,7 +98,9 @@ Description :
 
 			// Test event Name in the arguemnts.
 			if( not structKeyExists(arguments,event.getEventName()) ){
-				throw("Event not detected","The #event.geteventName()# variable does not exist in the arguments.","ColdBoxProxy.NoEventDetected");
+				throw( message="Event not detected",
+					   detail="The #event.geteventName()# variable does not exist in the arguments.",
+					   type="ColdBoxProxy.NoEventDetected" );
 			}
 
 			//Append the arguments to the collection
@@ -211,7 +213,9 @@ Description :
 		<cfscript>
 			//Verify the coldbox app is ok, else throw
 			if ( not structKeyExists(application,COLDBOX_APP_KEY) ){
-				throw("ColdBox Controller Not Found", "The coldbox main controller has not been initialized","ColdBoxProxy.ControllerIllegalState");
+				throw( message="ColdBox Controller Not Found", 
+					   detail="The coldbox main controller has not been initialized",
+					   type="ColdBoxProxy.ControllerIllegalState");
 			}
 			else{
 				return true;

@@ -14,7 +14,10 @@
 			this.instance.module = "";
 
 			this.ehbean.init(this.instance.invocationPath);
-			this.ehbean.setMemento(this.instance);
+
+			for( var thisKey in this.instance ){
+				evaluate( "this.ehBean.set#thisKey#( this.instance[ thisKey ] )" );
+			}
 
 		</cfscript>
 	</cffunction>
@@ -24,29 +27,6 @@
 	</cffunction>
 
 	<!--- Begin specific tests --->
-
-	<cffunction name="testSetters" access="public" returnType="void">
-		<cfscript>
-			for(key in this.instance){
-				evaluate("this.ehBean.set#key#( this.instance[key] )");
-			}
-			assertEquals( this.instance, this.ehBean.getMemento() );
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testgetmemento" access="public" returnType="void">
-		<cfscript>
-			this.ehbean.setMemento(this.instance);
-			assertEquals( this.ehbean.getMemento(), this.instance);
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testsetmemento" access="public" returnType="void">
-		<cfscript>
-			this.ehbean.setMemento(this.instance);
-			assertEquals( this.ehbean.getMemento(), this.instance);
-		</cfscript>
-	</cffunction>
 
 	<cffunction name="testgetFullEvent" access="public" returnType="void">
 		<cfscript>

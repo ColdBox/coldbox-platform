@@ -126,7 +126,9 @@ Description :
 		<cfscript>
 		// Validate Incoming State
 		if( instance.interceptorConfig.throwOnInvalidStates AND NOT listFindNoCase( arrayToList( instance.interceptionPoints ), arguments.state ) ){
-			throw("The interception state sent in to process is not valid: #arguments.state#", "Valid states are #instance.interceptionPoints.toString()#", "InterceptorService.InvalidInterceptionState");
+			throw( message="The interception state sent in to process is not valid: #arguments.state#", 
+				   detail="Valid states are #instance.interceptionPoints.toString()#", 
+				   type="InterceptorService.InvalidInterceptionState");
 		}
 
 		// Process The State if it exists, else just exit out
