@@ -17,10 +17,10 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfargument name="appRootPath" 	type="string" 	required="true" hint="The app Root Path"/>
 		<cfargument name="appKey"		type="any" 		required="true" hint="The application registered application key"/>
 		<cfscript>
-			super.init(argumentCollection=arguments);
+			super.init( argumentCollection=arguments );
 
 			// Override mocks
-			setRequestService( CreateObject("component","coldbox.system.testing.mock.services.MockRequestService").init(this) );
+			setRequestService( new coldbox.system.testing.mock.services.MockRequestService( this ) );
 
 			return this;
 		</cfscript>
@@ -42,25 +42,14 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfargument name="statusCode" 			required="false" type="numeric" default="0" hint="The status code to use in the relocation"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var context = getRequestService().getContext();
+			var rc = getRequestService().getContext().getCollection();
 
-			context.setValue("setNextEvent","#arguments.event#");
-			context.setValue("setNextEvent_queryString","#arguments.queryString#");
-			context.setValue("setNextEvent_addToken","#arguments.addToken#");
-			context.setValue("setNextEvent_persistKeys","#arguments.persist#");
-			context.setValue("setNextEvent_persistStruct","#arguments.persistStruct#");
-			if( structKeyExists(arguments, "ssl") ){
-				context.setValue("setNextEvent_ssl","#arguments.ssl#");
+			// copy over to rc
+			for( var thisArg in arguments ){
+				if( structKeyExists( arguments, thisArg ) ){
+					rc[ "setNextEvent_#thisArg#" ] = arguments[ thisArg ];
+				}
 			}
-			context.setValue("setNextEvent_baseURL","#arguments.baseURL#");
-			context.setValue("setNextEvent_postProcessExempt","#arguments.postProcessExempt#");
-			if( structKeyExists(arguments, "URL") ){
-				context.setValue("setNextEvent_URL","#arguments.URL#");
-			}
-			if( structKeyExists(arguments, "URI") ){
-				context.setValue("setNextEvent_URI","#arguments.URI#");
-			}
-			context.setValue("setNextEvent_statusCode","#arguments.statusCode#");
 
 			// Post Process
 			if( arguments.postProcessExempt ){
@@ -76,7 +65,7 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfargument name="url" 		required="true" 	type="string">
 		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
 		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
-		<cfset setNextEvent(argumentCollection=arguments)>
+		<cfset setNextEvent( argumentCollection=arguments )>
 	</cffunction>
 
 </cfcomponent>
