@@ -131,34 +131,34 @@
 		<concat destfile="${dir.build}/coldbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy Src -->	
-      	<copy todir="${dir.build}/coldbox/system">
+      	<copy todir="${dir.build}/coldbox/system" encoding="UTF-8">
         	<fileset dir="system">
         	</fileset>
         </copy>
 
 		<!-- Move Install folder -->
-		<copy todir="${dir.build}/coldbox/install">
+		<copy todir="${dir.build}/coldbox/install" encoding="UTF-8">
         	<fileset dir="install">
         		<exclude name="ColdboxCheatSheet.pages" />
         	</fileset>
         </copy>
 		
 		<!--AppTemplate-->
-		<copy todir="${dir.build}/coldbox/ApplicationTemplates">
+		<copy todir="${dir.build}/coldbox/ApplicationTemplates" encoding="UTF-8">
         	<fileset dir="ApplicationTemplates" />
         </copy>
 		
 		<!--Copy text files to install folder-->
-		<copy todir="${dir.build}/coldbox">
+		<copy todir="${dir.build}/coldbox" encoding="UTF-8">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />						
 		</copy>
 		
 		<!-- Copy box.json to build -->
-		<copy file="box.json" toFile="${dir.build}/box.json" />
+		<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
 		
 		<!-- Replace Build Numbers -->
-		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
@@ -185,7 +185,7 @@
 		<delete dir="${dir.build}/coldbox/test-runner" />
 		<delete dir="${dir.build}/coldbox/test-browser" />
 		<delete dir="${dir.build}/coldbox/install" />
-		<copy todir="${dir.build}/coldbox">
+		<copy todir="${dir.build}/coldbox" encoding="UTF-8">
 			<fileset file="license.txt" />
 			<fileset file="readme.txt" />
 		</copy>
@@ -201,11 +201,26 @@
 		</checksum>
 		
 		<!-- Move Bleeding Edge to Root -->
-		<copy file="${dir.coldbox.exports}/box.json" 										toFile="${be.coldbox.exports}/box.json" overwrite="true" />
-		<copy file="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" 					tofile="${be.coldbox.exports}/${coldbox.slug}-be.zip" overwrite="true"/>
-		<copy file="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip.md5" 				tofile="${be.coldbox.exports}/${coldbox.slug}-be.zip.md5" overwrite="true"/>
-		<copy file="${dir.coldbox.exports}/coldbox-standalone-${coldbox.version}.zip" 		tofile="${be.coldbox.exports}/${coldbox.slug}-be-standalone.zip" overwrite="true"/>
-		<copy file="${dir.coldbox.exports}/coldbox-standalone-${coldbox.version}.zip.md5" 	tofile="${be.coldbox.exports}/${coldbox.slug}-be-standalone.zip.md5" overwrite="true"/>
+		<copy file="${dir.coldbox.exports}/box.json" 										
+			  toFile="${be.coldbox.exports}/box.json" 
+			  overwrite="true" 
+			  encoding="UTF-8"/>
+		<copy file="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" 					
+			  tofile="${be.coldbox.exports}/${coldbox.slug}-be.zip" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
+		<copy file="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip.md5" 				
+			  tofile="${be.coldbox.exports}/${coldbox.slug}-be.zip.md5" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
+		<copy file="${dir.coldbox.exports}/coldbox-standalone-${coldbox.version}.zip" 		
+			  tofile="${be.coldbox.exports}/${coldbox.slug}-be-standalone.zip" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
+		<copy file="${dir.coldbox.exports}/coldbox-standalone-${coldbox.version}.zip.md5" 	
+			  tofile="${be.coldbox.exports}/${coldbox.slug}-be-standalone.zip.md5" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
 		
 		<!-- Create Box Repo From macrodef -->
 		<box-repo location="${dir.exports}/${coldbox.slug}" 
@@ -232,36 +247,36 @@
 		<concat destfile="${dir.build}/cachebox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to cachebox namespace-->	
-      	<copy todir="${dir.build}/cachebox/system/cache">
+      	<copy todir="${dir.build}/cachebox/system/cache" encoding="UTF-8">
         	<fileset dir="system/cache" />
         </copy>
-		<copy todir="${dir.build}/cachebox/system/core">
+		<copy todir="${dir.build}/cachebox/system/core" encoding="UTF-8">
         	<fileset dir="system/core">
         		<exclude name="mail/*" />
         		<exclude name="db/*" />
         	</fileset>
         </copy>
-		<copy todir="${dir.build}/cachebox/system/logging">
+		<copy todir="${dir.build}/cachebox/system/logging" encoding="UTF-8">
         	<fileset dir="system/logging" />
         </copy>
 		
 		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}/cachebox">
+		<copy todir="${dir.build}/cachebox" encoding="UTF-8">
 			<fileset file="license.txt" />
 			<fileset file="system/cache/readme.txt" />						
 		</copy>
 		
 		<!--Copy box.json to root -->
-		<copy toFile="${dir.build}/box.json" file="box-cachebox.json" />
+		<copy toFile="${dir.build}/box.json" file="box-cachebox.json"  encoding="UTF-8"/>
 
 		<!-- Replace Build Numbers -->
-		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 
 		<!-- Refactor cachebox namespace -->
 		<echo>Refactoring for coldbox absolute paths</echo>
-		<replace dir="${dir.build}" value="/cachebox/system/" summary="yes">
+		<replace dir="${dir.build}" value="/cachebox/system/" summary="yes" encoding="UTF-8">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
@@ -269,7 +284,7 @@
 			<replacetoken>/coldbox/system/</replacetoken>
 		</replace>
 		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
-		<replace dir="${dir.build}" value="cachebox.system." summary="yes">
+		<replace dir="${dir.build}" value="cachebox.system." summary="yes" encoding="UTF-8">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
@@ -286,7 +301,7 @@
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip" basedir="${dir.build}" />
 		<!-- Copy box.json to exports -->
-		<copy file="${dir.build}/box.json" toFile="${dir.cachebox.exports}/box.json" />
+		<copy file="${dir.build}/box.json" toFile="${dir.cachebox.exports}/box.json" encoding="UTF-8" />
 				
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
@@ -296,9 +311,18 @@
 		</checksum>
 		
 		<!-- Move BE to root -->
-		<copy file="${dir.cachebox.exports}/box.json" 								toFile="${be.cachebox.exports}/box.json" overwrite="true" />
-		<copy file="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip" 		tofile="${be.cachebox.exports}/${cachebox.slug}-be.zip" overwrite="true"/>
-		<copy file="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip.md5" 	tofile="${be.cachebox.exports}/${cachebox.slug}-be.zip.md5" overwrite="true"/>
+		<copy file="${dir.cachebox.exports}/box.json" 								
+			  toFile="${be.cachebox.exports}/box.json" 
+			  overwrite="true" 
+			  encoding="UTF-8"/>
+		<copy file="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip" 		
+			  tofile="${be.cachebox.exports}/${cachebox.slug}-be.zip" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
+		<copy file="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip.md5" 	
+			  tofile="${be.cachebox.exports}/${cachebox.slug}-be.zip.md5" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
 		
 		<!-- Create Box Repo From macrodef -->
 		<box-repo location="${dir.exports}/${cachebox.slug}" 
@@ -324,10 +348,10 @@
 		<concat destfile="${dir.build}/logbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to logbox namespace-->	
-      	<copy todir="${dir.build}/logbox/system/logging">
+      	<copy todir="${dir.build}/logbox/system/logging" encoding="UTF-8">
         	<fileset dir="system/logging" />
         </copy>
-		<copy todir="${dir.build}/logbox/system/core">
+		<copy todir="${dir.build}/logbox/system/core" encoding="UTF-8">
         	<fileset dir="system/core">
         		<include name="util/*" />
         		<include name="dynamic/*" />
@@ -336,28 +360,28 @@
         	</fileset>
         </copy>
         <!--Copy text files to root folder-->
-		<copy todir="${dir.build}/logbox">
+		<copy todir="${dir.build}/logbox" encoding="UTF-8">
 			<fileset file="license.txt" />
 			<fileset file="system/logging/readme.txt" />						
 		</copy>
 		<!--Copy box.json to root -->
-		<copy toFile="${dir.build}/box.json" file="box-logbox.json" />
+		<copy toFile="${dir.build}/box.json" file="box-logbox.json"  encoding="UTF-8"/>
 
         <!-- Replace Build Numbers -->
-		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
 		<!-- Refactor logbox namespace -->
 		<echo>Refactoring for coldbox absolute paths</echo>
-		<replace dir="${dir.build}" value="/logbox/system/" summary="yes">
+		<replace dir="${dir.build}" value="/logbox/system/" summary="yes" encoding="UTF-8">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
 			<replacetoken>/coldbox/system/</replacetoken>
 		</replace>
 		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
-		<replace dir="${dir.build}" value="logbox.system." summary="yes">
+		<replace dir="${dir.build}" value="logbox.system." summary="yes" encoding="UTF-8">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
@@ -374,7 +398,7 @@
 		<zip destfile="${dir.logbox.exports}/logbox-${logbox.version}.zip" basedir="${dir.build}" />
 		
 		<!-- Copy box.json to exports -->
-		<copy file="${dir.build}/box.json" toFile="${dir.logbox.exports}/box.json" />
+		<copy file="${dir.build}/box.json" toFile="${dir.logbox.exports}/box.json"  encoding="UTF-8"/>
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
 			<fileset dir="${dir.logbox.exports}">
@@ -383,9 +407,18 @@
 		</checksum>
 		
 		<!-- Move BE to root -->
-		<copy file="${dir.logbox.exports}/box.json" 							toFile="${be.logbox.exports}/box.json" overwrite="true" />
-		<copy file="${dir.logbox.exports}/logbox-${logbox.version}.zip" 		tofile="${be.logbox.exports}/${logbox.slug}-be.zip" overwrite="true"/>
-		<copy file="${dir.logbox.exports}/logbox-${logbox.version}.zip.md5" 	tofile="${be.logbox.exports}/${logbox.slug}-be.zip.md5" overwrite="true"/>
+		<copy file="${dir.logbox.exports}/box.json" 							
+			  toFile="${be.logbox.exports}/box.json" 
+			  overwrite="true" 
+			  encoding="UTF-8"/>
+		<copy file="${dir.logbox.exports}/logbox-${logbox.version}.zip" 		
+			  tofile="${be.logbox.exports}/${logbox.slug}-be.zip" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
+		<copy file="${dir.logbox.exports}/logbox-${logbox.version}.zip.md5" 	
+			  tofile="${be.logbox.exports}/${logbox.slug}-be.zip.md5" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
 		
 		<!-- Create Box Repo From macrodef -->
 		<box-repo location="${dir.exports}/${logbox.slug}" 
@@ -411,16 +444,16 @@
 		<concat destfile="${dir.build}/wirebox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to WireBox namespace-->	
-      	<copy todir="${dir.build}/wirebox/system/ioc">
+      	<copy todir="${dir.build}/wirebox/system/ioc" encoding="UTF-8">
         	<fileset dir="system/ioc" />
         </copy>
-		<copy todir="${dir.build}/wirebox/system/aop">
+		<copy todir="${dir.build}/wirebox/system/aop" encoding="UTF-8">
 			 <fileset dir="system/aop" />
 		</copy>
-		<copy todir="${dir.build}/wirebox/system/cache">
+		<copy todir="${dir.build}/wirebox/system/cache" encoding="UTF-8">
         	<fileset dir="system/cache" />
         </copy>
-		<copy todir="${dir.build}/wirebox/system/core">
+		<copy todir="${dir.build}/wirebox/system/core" encoding="UTF-8">
         	<fileset dir="system/core">
         		<include name="collections/"/>
         		<include name="conversion/"/>
@@ -429,24 +462,24 @@
         		<include name="events/"/>
         	</fileset>
         </copy>
-		<copy todir="${dir.build}/wirebox/system/logging">
+		<copy todir="${dir.build}/wirebox/system/logging" encoding="UTF-8">
         	<fileset dir="system/logging" />
         </copy>
 		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}/wirebox">
+		<copy todir="${dir.build}/wirebox" encoding="UTF-8">
 			<fileset file="license.txt" />
 			<fileset file="system/ioc/readme.txt" />						
 		</copy>
 		<!--Copy box.json to root -->
-		<copy toFile="${dir.build}/box.json" file="box-wirebox-cachebox.json" />
+		<copy toFile="${dir.build}/box.json" file="box-wirebox-cachebox.json"  encoding="UTF-8"/>
 		<!-- Replace Build Numbers -->
-		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
 		<!-- Refactor cachebox namespace -->
 		<echo>Refactoring for coldbox absolute paths</echo>
-		<replace dir="${dir.build}" value="/wirebox/system/" summary="yes">
+		<replace dir="${dir.build}" value="/wirebox/system/" summary="yes" encoding="UTF-8">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
@@ -454,7 +487,7 @@
 			<replacetoken>/coldbox/system/</replacetoken>
 		</replace>
 		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
-		<replace dir="${dir.build}" value="wirebox.system." summary="yes">
+		<replace dir="${dir.build}" value="wirebox.system." summary="yes" encoding="UTF-8">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
@@ -471,13 +504,13 @@
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip" basedir="${dir.build}"></zip>
 		<!-- Copy box.json to exports -->
-		<copy file="${dir.build}/box.json" toFile="${dir.wirebox.exports}/box.json" overwrite="true" />
-		<copy file="${dir.build}/box.json" toFile="${be.wirebox.exports}/box.json"  overwrite="true" />
+		<copy file="${dir.build}/box.json" toFile="${dir.wirebox.exports}/box.json" overwrite="true"  encoding="UTF-8"/>
+		<copy file="${dir.build}/box.json" toFile="${be.wirebox.exports}/box.json"  overwrite="true"  encoding="UTF-8"/>
 		
 		<!-- No CacheBox NOW -->
 		<delete dir="${dir.build}/wirebox/system/cache" />
 		<!--Copy box.json to root -->
-		<copy toFile="${dir.build}/box.json" file="box-wirebox.json" overwrite="true" />
+		<copy toFile="${dir.build}/box.json" file="box-wirebox.json" overwrite="true"  encoding="UTF-8"/>
 		<!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
 		  <fileset dir="${dir.build}" />
@@ -497,10 +530,22 @@
 		</checksum>
 		
 		<!-- Move BE to root -->
-		<copy file="${dir.wirebox.exports}/wirebox-${wirebox.version}.zip"				tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip" />
-		<copy file="${dir.wirebox.exports}/wirebox-${wirebox.version}.zip.md5" 			tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip.md5" />
-		<copy file="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip" 	tofile="${be.wirebox.exports}/${wirebox.slug}-cachebox-be.zip" />
-		<copy file="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip.md5" tofile="${be.wirebox.exports}/${wirebox.slug}-cachebox-be.zip.md5" />
+		<copy file="${dir.wirebox.exports}/wirebox-${wirebox.version}.zip"				
+			  tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
+		<copy file="${dir.wirebox.exports}/wirebox-${wirebox.version}.zip.md5" 			
+			  tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip.md5" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
+		<copy file="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip" 	
+			  tofile="${be.wirebox.exports}/${wirebox.slug}-cachebox-be.zip" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
+		<copy file="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip.md5" 
+			  tofile="${be.wirebox.exports}/${wirebox.slug}-cachebox-be.zip.md5" 
+			  overwrite="true"
+			  encoding="UTF-8"/>
 		
 		<!-- Create Box Repo From macrodef -->
 		<box-repo location="${dir.exports}/${wirebox.slug}" 
