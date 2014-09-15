@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
@@ -338,6 +338,14 @@ I oversee and manage ColdBox modules
 			// Register the Config as an observable also.
 			interceptorService.registerInterceptor( interceptorObject=instance.mConfigCache[ arguments.moduleName ], interceptorName="ModuleConfig:#arguments.moduleName#" );
 
+			// Register Models if it exists
+			if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
+				// Add as a mapped directory with module name as the namespace with correct mapping path
+				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
+				wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
+			}
+
+
 			// Register Interceptors with Announcement service
 			for( y=1; y lte arrayLen( mConfig.interceptors ); y++ ){
 				interceptorService.registerInterceptor( interceptorClass=mConfig.interceptors[ y ].class,
@@ -346,12 +354,6 @@ I oversee and manage ColdBox modules
 				// Loop over module interceptors to autowire them
 				wirebox.autowire( target=interceptorService.getInterceptor( mConfig.interceptors[ y ].name, true ),
 					     		  targetID=mConfig.interceptors[ y ].class );
-			}
-			// Register Models if it exists
-			if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
-				// Add as a mapped directory with module name as the namespace with correct mapping path
-				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
-				wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
 			}
 
 			// Register module routing entry point pre-pended to routes
