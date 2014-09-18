@@ -7,7 +7,7 @@
 * @author Luis Majano <lmajano@ortussolutions.com>
 */
 component accessors="true" serializable="false" extends="coldbox.system.FrameworkSupertype"{
-	
+
 	/************************************** DI *********************************************/
 
 	property name="templateCache" 	inject="cachebox:template";
@@ -25,7 +25,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	property name="ViewsExternalLocation";
 	// Location of application
 	property name="appMapping";
-	// Modules configuration 
+	// Modules configuration
 	property name="moduleConfig" type="struct";
 	// Views Helper Setting
 	property name="viewsHelper";
@@ -44,9 +44,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	property name="event";
 	property name="rc";
 	property name="prc";
-	
+
 	/************************************** CONSTRUCTOR *********************************************/
-	
+
 	/**
 	* Constructor
 	* @controller.inject coldbox
@@ -95,7 +95,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	}
 
 	/************************************** VIEW METHODS *********************************************/
-	
+
 	/**
 	* set the explicit view bit, used mostly internally
 	* @view.hint The name of the view to render
@@ -104,7 +104,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		explicitView = arguments.view;
 		return this;
 	}
-	
+
 	/**
 	* Render out a view
 	* @view.hint The the view to render, if not passed, then we look in the request context for the current set view.
@@ -294,7 +294,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		if( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount){
 			variables._items = arguments.collectionMaxRows;
 		}
-		
+
 		for( x=arguments.collectionStartRow; x lte ( arguments.collectionStartRow+variables._items )-1; x++){
 			// setup local cvariables
 			variables._counter  = arguments.collection.currentRow;
@@ -306,14 +306,14 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			// render item composite
 			buffer.append( renderViewComposite( arguments.view, arguments.viewPath, arguments.viewHelperPath, arguments.args) );
 		}
-				
+
 		return buffer.toString();
     }
-    
+
     /**
     * Render a view alongside its helpers, used mostly internally, use at your own risk.
     */
-    private function renderViewComposite( 
+    private function renderViewComposite(
     	view,
     	viewPath,
     	viewHelperPath,
@@ -338,7 +338,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
     	return cbox_renderedView;
     }
-    
+
     /**
     * Renders an external view anywhere that cfinclude works.
     * @view.hint The the view to render
@@ -349,7 +349,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
 	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
 	*/
-    function renderExternalView( 
+    function renderExternalView(
     	required view,
     	struct args=event.getCurrentViewArgs(),
     	boolean cache=false,
@@ -378,9 +378,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		// Get view locations
 		viewLocations = discoverViewPaths( view=arguments.view, module="", explicitModule=false );
 		// Render External View
-		cbox_renderedView = renderViewComposite( view=view, 
-												 viewPath=viewLocations.viewPath, 
-												 viewHelperPath=viewLocations.viewHelperPath, 
+		cbox_renderedView = renderViewComposite( view=view,
+												 viewPath=viewLocations.viewPath,
+												 viewHelperPath=viewLocations.viewHelperPath,
 												 args=args,
 												 renderer=this );
 		// Are we caching it
@@ -391,7 +391,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	}
 
 	/************************************** LAYOUT METHODS *********************************************/
-	
+
 	/**
 	* Render a layout or a layout + view combo
 	* @layout.hint The layout to render out
@@ -465,7 +465,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		// If Layout is blank, then just delegate to the view
 		if( len( cbox_currentLayout ) eq 0 ){
-			var renderedLayout = renderView();
+			iData.renderedLayout = renderView();
 		}
 		else{
 			// Layout location key
@@ -483,13 +483,13 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 				}
 			}
 			// Get the view locations
-			var viewLocations = discoverViewPaths( view=reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ), 
-												   module=arguments.module, 
+			var viewLocations = discoverViewPaths( view=reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ),
+												   module=arguments.module,
 												   explicitModule=cbox_explicitModule );
 			// RenderLayout
-			iData.renderedLayout = renderViewComposite( view=cbox_currentLayout, 
-														viewPath=viewLocations.viewPath, 
-														viewHelperPath=viewLocations.viewHelperPath, 
+			iData.renderedLayout = renderViewComposite( view=cbox_currentLayout,
+														viewPath=viewLocations.viewPath,
+														viewHelperPath=viewLocations.viewHelperPath,
 														args=args );
 		}
 
@@ -669,7 +669,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	}
 
 	/************************************** PRIVATE *********************************************/
-	
+
 	/**
 	* Discover view+helper path locations
 	* @view.hint The view to discover
@@ -688,7 +688,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 				return structFind( controller.getSetting("viewsRefMap"), locationKey);
 			}
 		}
-			
+
 		if( left( arguments.view, 1 ) EQ "/" ){
 
 			refMap = {
@@ -758,5 +758,5 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		return layout;
 	}
-   
+
 }
