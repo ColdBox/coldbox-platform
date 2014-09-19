@@ -54,6 +54,16 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	function init( required controller ){
 		// setup controller
 		variables.controller = arguments.controller;
+		// Register LogBox
+		variables.logBox = arguments.controller.getLogBox();
+		// Register Log object
+		variables.log = variables.logBox.getLogger( this );
+		// Register Flash RAM
+		variables.flash = arguments.controller.getRequestService().getFlashScope();
+		// Register CacheBox
+		variables.cacheBox = arguments.controller.getCacheBox();
+		// Register WireBox
+		variables.wireBox = arguments.controller.getWireBox();
 
 		// Set Conventions, Settings and Properties
 		variables.layoutsConvention 		= variables.controller.getSetting( "layoutsConvention", true );
