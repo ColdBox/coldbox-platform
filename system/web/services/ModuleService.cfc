@@ -191,7 +191,6 @@ I oversee and manage ColdBox modules
 				autoMapModels		= true,
 				loadTime 			= now(),
 				activated 			= false,
-				dependencies		= [],
 				// Module Configurations
 				path				 	= modLocation,
 				invocationPath 			= modulesInvocationPath & "." & modName,
@@ -200,6 +199,7 @@ I oversee and manage ColdBox modules
 				handlerPhysicalPath     = modLocation,
 				modelsInvocationPath    = modulesInvocationPath & "." & modName,
 				modelsPhysicalPath		= modLocation,
+				modules					= {},
 				registeredHandlers 		= '',
 				datasources				= {},
 				parentSettings			= {},
@@ -280,14 +280,16 @@ I oversee and manage ColdBox modules
 	<!--- activateModules --->
 	<cffunction name="activateAllModules" output="false" access="public" returntype="void" hint="Go over all the loaded module configurations and activate them for usage within the application">
 		<cfscript>
-			var modules = controller.getSetting("modules");
+			var modules 			= controller.getSetting("modules");
 
 			// Iterate through module configuration and activate each module
 			for( var moduleName in modules ){
+
 				// Verify the exception and inclusion lists
 				if( canLoad( moduleName ) ){
 					activateModule( moduleName );
 				}
+
 			}
 		</cfscript>
 	</cffunction>
@@ -297,6 +299,7 @@ I oversee and manage ColdBox modules
 		<cfargument name="moduleName" type="string" required="true" hint="The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning and returning false."/>
 		<cfscript>
 			var modules 			= controller.getSetting( "modules" );
+			var mConfig				= "";
 			var iData       		= {};
 			var y					= 1;
 			var key					= "";
@@ -318,84 +321,80 @@ I oversee and manage ColdBox modules
 				}
 				return this;
 			}
+		</cfscript>
 
+		<cflock name="module.activation.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true">
+		<cfscript>
 			// Get module settings
-			var mConfig = modules[ arguments.moduleName ];
+			mConfig = modules[ arguments.moduleName ];
 
-			// Do we have dependencies to activate first
-			if( arrayLen( mConfig.dependencies ) ){
-				for( var thisDependency in mConfig.dependencies ){
-					if( instance.logger.canDebug() ){
-						instance.logger.debug( "Activating #arguments.moduleName# requests dependency activation: #thisDependency#" );
-					}
-					// Activate dependency first
-					activateModule( thisDependency );
+			// Preload required modules first
+			if ( structKeyExists(mConfig, 'modules') && structKeyExists(mConfig['modules'], 'preload') ) {
+				var module = '';
+				loop array=mConfig.modules['preload'] item='module' {
+					controller.getModuleService().activateModule( module );
 				}
 			}
 
-			// lock and load baby
-			lock name="module.activation.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true"{
+			// preModuleLoad interception
+			iData = { moduleLocation=mConfig.path,moduleName=arguments.moduleName };
+			interceptorService.processState( "preModuleLoad", iData );
 
-				// preModuleLoad interception
-				iData = { moduleLocation=mConfig.path,moduleName=arguments.moduleName };
-				interceptorService.processState( "preModuleLoad", iData );
+			// Register handlers
+			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mconfig.handlerPhysicalPath );
+			mConfig.registeredHandlers = arrayToList( mConfig.registeredHandlers );
 
-				// Register handlers
-				mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mconfig.handlerPhysicalPath );
-				mConfig.registeredHandlers = arrayToList( mConfig.registeredHandlers );
+			// Register the Config as an observable also.
+			interceptorService.registerInterceptor( interceptorObject=instance.mConfigCache[ arguments.moduleName ], interceptorName="ModuleConfig:#arguments.moduleName#" );
 
-				// Register the Config as an observable also.
-				interceptorService.registerInterceptor( interceptorObject=instance.mConfigCache[ arguments.moduleName ], interceptorName="ModuleConfig:#arguments.moduleName#" );
-
-				// Register Models if it exists
-				if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
-					// Add as a mapped directory with module name as the namespace with correct mapping path
-					var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
-					wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
-				}
+			// Register Models if it exists
+			if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
+				// Add as a mapped directory with module name as the namespace with correct mapping path
+				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
+				wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
+			}
 
 
-				// Register Interceptors with Announcement service
-				for( y=1; y lte arrayLen( mConfig.interceptors ); y++ ){
-					interceptorService.registerInterceptor( interceptorClass=mConfig.interceptors[ y ].class,
-														    interceptorProperties=mConfig.interceptors[ y ].properties,
-														    interceptorName=mConfig.interceptors[ y ].name);
-					// Loop over module interceptors to autowire them
-					wirebox.autowire( target=interceptorService.getInterceptor( mConfig.interceptors[ y ].name, true ),
-						     		  targetID=mConfig.interceptors[ y ].class );
-				}
+			// Register Interceptors with Announcement service
+			for( y=1; y lte arrayLen( mConfig.interceptors ); y++ ){
+				interceptorService.registerInterceptor( interceptorClass=mConfig.interceptors[ y ].class,
+													    interceptorProperties=mConfig.interceptors[ y ].properties,
+													    interceptorName=mConfig.interceptors[ y ].name);
+				// Loop over module interceptors to autowire them
+				wirebox.autowire( target=interceptorService.getInterceptor( mConfig.interceptors[ y ].name, true ),
+					     		  targetID=mConfig.interceptors[ y ].class );
+			}
 
-				// Register module routing entry point pre-pended to routes
-				if( controller.settingExists( 'sesBaseURL' ) AND len( mConfig.entryPoint ) AND NOT find( ":", mConfig.entryPoint ) ){
-					interceptorService.getInterceptor( "SES", true ).addModuleRoutes( pattern=mConfig.entryPoint, module=arguments.moduleName, append=false );
-				}
+			// Register module routing entry point pre-pended to routes
+			if( controller.settingExists( 'sesBaseURL' ) AND len( mConfig.entryPoint ) AND NOT find( ":", mConfig.entryPoint ) ){
+				interceptorService.getInterceptor( "SES", true ).addModuleRoutes( pattern=mConfig.entryPoint, module=arguments.moduleName, append=false );
+			}
 
-				// Call on module configuration object onLoad() if found
-				if( structKeyExists( instance.mConfigCache[ arguments.moduleName ], "onLoad" ) ){
-					instance.mConfigCache[ arguments.moduleName ].onLoad();
-				}
+			// Call on module configuration object onLoad() if found
+			if( structKeyExists( instance.mConfigCache[ arguments.moduleName ], "onLoad" ) ){
+				instance.mConfigCache[ arguments.moduleName ].onLoad();
+			}
 
-				// postModuleLoad interception
-				iData = { moduleLocation=mConfig.path, moduleName=arguments.moduleName, moduleConfig=mConfig };
-				interceptorService.processState( "postModuleLoad", iData );
+			// postModuleLoad interception
+			iData = { moduleLocation=mConfig.path, moduleName=arguments.moduleName, moduleConfig=mConfig };
+			interceptorService.processState( "postModuleLoad", iData );
 
-				// Mark it as loaded as it is now activated
-				mConfig.activated = true;
+			// Mark it as loaded as it is now activated
+			mConfig.activated = true;
 
-				// Now activate any children
-				for( var thisChild in mConfig.childModules ){
-					activateModule( moduleName=thisChild );
-				}
+			// Now activate any children
+			for( var thisChild in mConfig.childModules ){
+				activateModule( moduleName=thisChild );
+			}
 
-				// Log it
-				if( instance.logger.canDebug() ){
-					instance.logger.debug("Module #arguments.moduleName# activated sucessfully.");
-				}
-
-			} // end lock
-
-			return this;
+			// Log it
+			if( instance.logger.canDebug() ){
+				instance.logger.debug("Module #arguments.moduleName# activated sucessfully.");
+			}
 		</cfscript>
+		</cflock>
+
+		<cfreturn this>
 	</cffunction>
 
 	<!--- reload --->
@@ -576,11 +575,6 @@ I oversee and manage ColdBox modules
 			if( structKeyExists( oConfig, "autoMapModels" ) ){
 				mConfig.autoMapModels = oConfig.autoMapModels;
 			}
-			// Dependencies
-			if( structKeyExists( oConfig, "dependencies" ) ){
-				// set it always as an array
-				mConfig.dependencies = isSimpleValue( oConfig.dependencies ) ? listToArray( oConfig.dependencies ) : oConfig.dependencies;
-			}
 
 			// Optional Properties
 			mConfig.viewParentLookup 	= true;
@@ -626,6 +620,10 @@ I oversee and manage ColdBox modules
 
 			//Get SES Routes
 			mConfig.routes = oConfig.getPropertyMixin( "routes", "variables", arrayNew(1) );
+
+			//Get module activation directives
+			mConfig.modules = oConfig.getPropertyMixin("modules","variables",structnew());
+
 
 			// Get and Append Module conventions
 			structAppend( mConfig.conventions, oConfig.getPropertyMixin( "conventions", "variables", structnew() ), true );
