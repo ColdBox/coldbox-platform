@@ -166,8 +166,30 @@ I oversee and manage ColdBox modules
 		<cflock name="module.registration.#arguments.modulename#" type="exclusive" throwontimeout="true" timeout="20">
 			<cfscript>
 			//Check if module config exists, else skip and exit and log
-			if( NOT fileExists(modLocation & "/ModuleConfig.cfc") ){
+			if( NOT fileExists(modLocation & "/ModuleConfig.cfc") && NOT listLast(modLocation,'-') == 'package' ){
 				instance.logger.WARN("The module (#modName#) cannot be loaded as it does not have a ModuleConfig.cfc in its root. Path Checked: #modLocation#");
+				return false;
+			}
+
+			// Register modules in packages
+			if( listLast(modLocation,'-') == 'package' ){
+				mConfig = {};
+				mConfig.childModules = [];
+				mConfig.invocationPath = modLocation;
+
+				// Inception?
+				if( directoryExists( mConfig.invocationPath ) ){
+					// register the package modules
+					var childModules = directoryList( mConfig.invocationPath, false, "array" );
+					for( var thisChild in childModules ){
+						var childName = listLast( thisChild, "/\" );
+
+						arrayAppend( mConfig.childModules, childname );
+						registerModule( moduleName=childName,
+										invocationPath=modulesInvocationPath & "." & modName ,
+										parent=modName );
+					}
+				}
 				return false;
 			}
 			
