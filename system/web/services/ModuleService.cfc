@@ -77,30 +77,29 @@ I oversee and manage ColdBox modules
 	<cffunction name="registerAllModules" output="false" access="public" returntype="ModuleService" hint="Register all modules for the application. Usually called by framework to load configuration data.">
 		<cfscript>
 			var foundModules   = "";
-			var includeModules = controller.getSetting( "ModulesInclude" );
+			var includeModules = controller.getSetting( "modulesInclude" );
 
 			// Register the initial empty module configuration holder structure
 			structClear( controller.getSetting( "modules" ) );
-
 			// clean the registry as we are registering all modules
-			instance.moduleRegistry = createObject("java","java.util.LinkedHashMap").init();
+			instance.moduleRegistry = createObject( "java", "java.util.LinkedHashMap" ).init();
 			// Now rebuild it
 			rebuildModuleRegistry();
 
 			// Are we using an include list?
 			if( arrayLen( includeModules ) ){
-				// use this instead
-				for( var x=1; x lte arrayLen( includeModules ); x++){
+				for( var thisModule in includeModules ){
 					// does module exists in the registry? We only register what is found
 					if( structKeyExists( instance.moduleRegistry, includeModules[ x ] ) ){
-						registerModule( includeModules[x] );
+						registerModule( includeModules[ x ] );
 					}
 				}
 				return this;
 			}
 
-			// Iterate through registry and register each module's configuration data
-			for( var thisModule in instance.moduleRegistry ){
+			// Iterate through registry and register each module
+			var aModules = structKeyArray( instance.moduleRegistry );
+			for( var thisModule in aModules ){
 				if( canLoad( thisModule ) ){
 					registerModule( thisModule );
 				}
@@ -122,27 +121,23 @@ I oversee and manage ColdBox modules
 
 	<!--- registerModule --->
 	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and config object">
-		<cfargument name="moduleName" 		type="string" required="true" hint="The name of the module to load."/>
-		<cfargument name="invocationPath" 	type="string" required="false" default="" hint="The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry location, if not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right"/>
-		<cfargument name="parent"			type="string" required="false" default="" hint="The name of the parent module">
+		<cfargument name="moduleName" 		type="string" 	required="true" hint="The name of the module to load."/>
+		<cfargument name="invocationPath" 	type="string" 	required="false" default="" hint="The module's invocation path to its root from the webroot (the instantiation path,ex:myapp.myCustomModules), if empty we use registry location, if not we are doing a explicit name+path registration. Do not include the module name, you passed that in the first argument right"/>
+		<cfargument name="parent"			type="string" 	required="false" default="" hint="The name of the parent module">
+		<cfargument name="force" 			type="boolean" 	required="false" default="false" hint="Force a registration"/>
 		<cfscript>
-			var modulesLocation 		= "";
-			var modulesPath 			= "";
-			var modulesInvocationPath 	= "";
 			// Module To Load
 			var modName 				= arguments.moduleName;
-			var modLocation 			= "";
-			var mConfig 				= "";
-			var modulesConfiguration	= controller.getSetting("modules");
+			var modulesConfiguration	= controller.getSetting( "modules" );
 			var appSettings 			= controller.getConfigSettings();
 
 
 			// Check if incoming invocation path is sent
-			if( len(arguments.invocationPath) ){
+			if( len( arguments.invocationPath ) ){
 				// Check if passed module name is already registered
-				if( structKeyExists(instance.moduleRegistry, arguments.moduleName) ){
-					throw( message="The module #arguments.moduleName# has already been loaded",
-						   type="ModuleService.DuplicateModuleFound");
+				if( structKeyExists( instance.moduleRegistry, arguments.moduleName ) AND !arguments.force ){
+					throw( message="The module #arguments.moduleName# has already been registered",
+						   type="ModuleService.DuplicateModuleFound" );
 				}
 				// register new incoming location
 				instance.moduleRegistry[ arguments.moduleName ] = {
@@ -153,118 +148,134 @@ I oversee and manage ColdBox modules
 			}
 
 			// Check if passed module name is not loaded into the registry
-			if( NOT structKeyExists(instance.moduleRegistry, arguments.moduleName) ){
+			if( NOT structKeyExists( instance.moduleRegistry, arguments.moduleName ) ){
 				throw( message="The module #arguments.moduleName# is not valid",
-					   detail="Valid module names are: #structKeyList(instance.moduleRegistry)#",
-					   type="ModuleService.InvalidModuleName");
+					   detail="Valid module names are: #structKeyList( instance.moduleRegistry )#",
+					   type="ModuleService.InvalidModuleName" );
 			}
 
-			// Setup locations with registry information
-			modulesLocation 		= instance.moduleRegistry[modName].locationPath;
-			modulesPath 			= instance.moduleRegistry[modName].physicalPath;
-			modulesInvocationPath	= instance.moduleRegistry[modName].invocationPath;
-			modLocation				= modulesPath & "/" & modName;
-		</cfscript>
+			// Setup module metadata info
+			var modulesLocation 		= instance.moduleRegistry[ modName ].locationPath;
+			var modulesPath 			= instance.moduleRegistry[ modName ].physicalPath;
+			var modulesInvocationPath	= instance.moduleRegistry[ modName ].invocationPath;
+			var modLocation				= modulesPath & "/" & modName;
+			var isBundle				= listLast( modLocation, "-" ) eq "bundle";
 
-		<cflock name="module.registration.#arguments.modulename#" type="exclusive" throwontimeout="true" timeout="20">
-			<cfscript>
-			//Check if module config exists, else skip and exit and log
-			if( NOT fileExists(modLocation & "/ModuleConfig.cfc") ){
+			// Check if module config exists, or we have a module.
+			if( NOT fileExists( modLocation & "/ModuleConfig.cfc" ) && NOT isBundle ){
 				instance.logger.WARN("The module (#modName#) cannot be loaded as it does not have a ModuleConfig.cfc in its root. Path Checked: #modLocation#");
 				return false;
 			}
 
-			// Setup Vanilla Config information for module
-			mConfig = {
-				// Module MetaData and Directives
-				title				= "",
-				aliases				= [],
-				author				="",
-				webURL				="",
-				description			="",
-				version				="",
-				viewParentLookup 	= "true",
-				layoutParentLookup 	= "true",
-				entryPoint 			= "",
-				cfmapping			= "",
-				modelNamespace		= modName,
-				autoMapModels		= true,
-				loadTime 			= now(),
-				activated 			= false,
-				dependencies		= [],
-				// Module Configurations
-				path				 	= modLocation,
-				invocationPath 			= modulesInvocationPath & "." & modName,
-				mapping 				= modulesLocation & "/" & modName,
-				handlerInvocationPath 	= modulesInvocationPath & "." & modName,
-				handlerPhysicalPath     = modLocation,
-				modelsInvocationPath    = modulesInvocationPath & "." & modName,
-				modelsPhysicalPath		= modLocation,
-				registeredHandlers 		= '',
-				datasources				= {},
-				parentSettings			= {},
-				settings 				= {},
-				interceptors 			= [],
-				interceptorSettings     = { customInterceptionPoints = "" },
-				layoutSettings			= { defaultLayout = ""},
-				routes 					= [],
-				conventions = {
-					handlersLocation 	= "handlers",
-					layoutsLocation 	= "layouts",
-					viewsLocation 		= "views",
-					modelsLocation      = "models"
-				},
-				childModules			= [],
-				parent 					= arguments.parent
-			};
-
-			// Load Module configuration from cfc and store it in module Config Cache
-			instance.mConfigCache[ modName ] = loadModuleConfiguration( mConfig, arguments.moduleName );
-			// Store module configuration in main modules configuration
-			modulesConfiguration[ modName ] = mConfig;
-			// Link aliases by reference in both modules list and config cache
-			for( var thisAlias in mConfig.aliases ){
-				modulesConfiguration[ thisAlias ] 	= modulesConfiguration[ modName ];
-				instance.mConfigCache[ thisAlias ]  = instance.mConfigCache[ modName ];
-			}
-			// Update the paths according to conventions
-			mConfig.handlerInvocationPath 	&= ".#replace( mConfig.conventions.handlersLocation, "/", ".", "all" )#";
-			mConfig.handlerPhysicalPath     &= "/#mConfig.conventions.handlersLocation#";
-			mConfig.modelsInvocationPath    &= ".#replace( mConfig.conventions.modelsLocation, "/", ".", "all" )#";
-			mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
-			// Register CFML Mapping if it exists, for loading purposes
-			if( len( trim( mConfig.cfMapping ) ) ){
-				getUtil().addMapping( name=mConfig.cfMapping, path=mConfig.path );
-				instance.cfmappingRegistry[ mConfig.cfMapping ] = mConfig.path;
-			}
-			// Register Custom Interception Points
-			controller.getInterceptorService().appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
-			// Register Parent Settings
-			structAppend( appSettings, mConfig.parentSettings, true );
-			// Register Module Datasources
-			structAppend( appSettings.datasources, mConfig.datasources, true );
-			// Inception?
-			if( directoryExists( mConfig.path & "/modules" ) ){
-				// register the children
-				var childModules = directoryList( mConfig.path & "/modules", false, "array" );
-				for( var thisChild in childModules ){
-					var childName = listLast( thisChild, "/\" );
-					arrayAppend( mConfig.childModules, childname );
-					registerModule( moduleName=childName,
-									invocationPath=mConfig.invocationPath & ".modules",
-									parent=modName );
+			// Module Bundle Registration
+			if( isBundle ){
+				// Bundle Loading
+				var aBundleModules = directoryList( modLocation, false, "array" );
+				for( var thisModule in aBundleModules ){
+					var bundleModuleName = listLast( thisModule, "/\" );
+					// register the bundle module
+					registerModule( moduleName=bundleModuleName,
+									invocationPath=modulesInvocationPath & "." & modName,
+									parent=modName,
+									force=true );
 				}
+				// the bundle has loaded, it needs no config data
+				return true;
 			}
 
-			// Log registration
-			if( instance.logger.canDebug() ){
-				instance.logger.debug( "Module #arguments.moduleName# registered successfully." );
-			}
+			// lock registration
+			lock name="module.registration.#arguments.modulename#" type="exclusive" throwontimeout="true" timeout="20"{
 
-			</cfscript>
-		</cflock>
+				// Setup Vanilla Config information for module
+				var mConfig = {
+					// Module MetaData and Directives
+					title				= "",
+					aliases				= [],
+					author				="",
+					webURL				="",
+					description			="",
+					version				="",
+					viewParentLookup 	= "true",
+					layoutParentLookup 	= "true",
+					entryPoint 			= "",
+					cfmapping			= "",
+					modelNamespace		= modName,
+					autoMapModels		= true,
+					loadTime 			= now(),
+					activated 			= false,
+					dependencies		= [],
+					// Module Configurations
+					path				 	= modLocation,
+					invocationPath 			= modulesInvocationPath & "." & modName,
+					mapping 				= modulesLocation & "/" & modName,
+					handlerInvocationPath 	= modulesInvocationPath & "." & modName,
+					handlerPhysicalPath     = modLocation,
+					modelsInvocationPath    = modulesInvocationPath & "." & modName,
+					modelsPhysicalPath		= modLocation,
+					registeredHandlers 		= '',
+					datasources				= {},
+					parentSettings			= {},
+					settings 				= {},
+					interceptors 			= [],
+					interceptorSettings     = { customInterceptionPoints = "" },
+					layoutSettings			= { defaultLayout = ""},
+					routes 					= [],
+					conventions = {
+						handlersLocation 	= "handlers",
+						layoutsLocation 	= "layouts",
+						viewsLocation 		= "views",
+						modelsLocation      = "models"
+					},
+					childModules			= [],
+					parent 					= arguments.parent
+				};
 
-		<cfreturn true>
+				// Load Module configuration from cfc and store it in module Config Cache
+				instance.mConfigCache[ modName ] = loadModuleConfiguration( mConfig, arguments.moduleName );
+				// Store module configuration in main modules configuration
+				modulesConfiguration[ modName ] = mConfig;
+				// Link aliases by reference in both modules list and config cache
+				for( var thisAlias in mConfig.aliases ){
+					modulesConfiguration[ thisAlias ] 	= modulesConfiguration[ modName ];
+					instance.mConfigCache[ thisAlias ]  = instance.mConfigCache[ modName ];
+				}
+				// Update the paths according to conventions
+				mConfig.handlerInvocationPath 	&= ".#replace( mConfig.conventions.handlersLocation, "/", ".", "all" )#";
+				mConfig.handlerPhysicalPath     &= "/#mConfig.conventions.handlersLocation#";
+				mConfig.modelsInvocationPath    &= ".#replace( mConfig.conventions.modelsLocation, "/", ".", "all" )#";
+				mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
+				// Register CFML Mapping if it exists, for loading purposes
+				if( len( trim( mConfig.cfMapping ) ) ){
+					getUtil().addMapping( name=mConfig.cfMapping, path=mConfig.path );
+					instance.cfmappingRegistry[ mConfig.cfMapping ] = mConfig.path;
+				}
+				// Register Custom Interception Points
+				controller.getInterceptorService().appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
+				// Register Parent Settings
+				structAppend( appSettings, mConfig.parentSettings, true );
+				// Register Module Datasources
+				structAppend( appSettings.datasources, mConfig.datasources, true );
+				// Inception?
+				if( directoryExists( mConfig.path & "/modules" ) ){
+					// register the children
+					var childModules = directoryList( mConfig.path & "/modules", false, "array" );
+					for( var thisChild in childModules ){
+						var childName = listLast( thisChild, "/\" );
+						arrayAppend( mConfig.childModules, childname );
+						registerModule( moduleName=childName,
+										invocationPath=mConfig.invocationPath & ".modules",
+										parent=modName );
+					}
+				}
+
+				// Log registration
+				if( instance.logger.canDebug() ){
+					instance.logger.debug( "Module #arguments.moduleName# registered successfully." );
+				}
+			} // end lock
+
+			return true;
+		</cfscript>
 	</cffunction>
 
 	<!--- loadMappings --->
@@ -280,8 +291,7 @@ I oversee and manage ColdBox modules
 	<!--- activateModules --->
 	<cffunction name="activateAllModules" output="false" access="public" returntype="void" hint="Go over all the loaded module configurations and activate them for usage within the application">
 		<cfscript>
-			var modules = controller.getSetting("modules");
-
+			var modules = controller.getSetting( "modules" );
 			// Iterate through module configuration and activate each module
 			for( var moduleName in modules ){
 				// Verify the exception and inclusion lists
