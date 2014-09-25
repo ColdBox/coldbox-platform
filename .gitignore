@@ -12,3 +12,4 @@ tests/automation/results
 tests/automation/results-*
 tests/logs
 build-coldbox
+build/build.number
