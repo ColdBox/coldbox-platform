@@ -44,7 +44,7 @@ Description :
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
 		<!--- BootStrap Reinit Check --->
-		<cfif not structKeyExists( application, "cbBootstrap" ) or application.cbBootStrap.isfwReinit()>
+		<cfif not structKeyExists( application, "cbBootstrap" ) >
 			<cflock name="coldbox.bootstrap_#hash( getCurrentTemplatePath() )#" type="exclusive" timeout="5" throwontimeout="true">
 				<cfset structDelete( application, "cbBootStrap" )>
 				<cfset onApplicationStart()>
