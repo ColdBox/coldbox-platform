@@ -1,6 +1,6 @@
 {
 	"name" 				: "WireBox DI/AOP With CacheBox",
-	"version"			: "2.0.0.@build.number@",
+	"version"			: "2.0.0-rc+@build.number@",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "wirebox-with-cachebox",
 	"type"				: "di",

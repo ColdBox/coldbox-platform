@@ -34,11 +34,8 @@
 		assertTrue(flash.flashExists());
 	}
 	function testgetFlash(){
-		flash.$("flashExists",false);
-		assertEquals( flash.getFlash(), structnew());
-
-		flash.$("flashExists",true);
 		mockCache.$("get",testScope);
+		flash.$("flashExists",true);
 		assertEquals( flash.getFlash(), testScope);
 
 	}

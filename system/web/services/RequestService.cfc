@@ -45,7 +45,7 @@ Modification History:
 			instance.templateCache		= controller.getCache( "template" );
 			instance.flashData 			= controller.getSetting( "flash" );
 			instance.flashDataHash		= hash( instance.flashData.toString() );
-
+			
 			// build out Flash RAM
 			buildFlashScope();
 		</cfscript>
