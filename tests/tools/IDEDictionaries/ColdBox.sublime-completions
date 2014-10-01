@@ -102,7 +102,7 @@
 	{ "trigger": "getSetting\tfn. (ColdBox FrameworkSuperType)", "contents": "getSetting( name=${1:any}, fwSetting=${2:true,false}, defaultValue=${3:any} )" },
 	{ "trigger": "getSettingStructure\tfn. (ColdBox FrameworkSuperType)", "contents": "getSettingStructure( fwSetting=${1:true,false}, deepCopy=${2:true,false} )" },
 	{ "trigger": "includeUDF\tfn. (ColdBox FrameworkSuperType)", "contents": "includeUDF( udflibrary=${1:any} )" },
-	{ "trigger": "loadGlobalUDFLibraries\tfn. (ColdBox FrameworkSuperType)", "contents": "loadGlobalUDFLibraries()" },
+	{ "trigger": "loadApplicationHelpers\tfn. (ColdBox FrameworkSuperType)", "contents": "loadApplicationHelpers()" },
 	{ "trigger": "locateDirectoryPath\tfn. (ColdBox FrameworkSuperType)", "contents": "locateDirectoryPath( pathToCheck=${1:any} )" },
 	{ "trigger": "locateFilePath\tfn. (ColdBox FrameworkSuperType)", "contents": "locateFilePath( pathToCheck=${1:any} )" },
 	{ "trigger": "persistVariables\tfn. (ColdBox FrameworkSuperType)", "contents": "persistVariables( persist=${1:any}, persistStruct=${2:{}} )" },

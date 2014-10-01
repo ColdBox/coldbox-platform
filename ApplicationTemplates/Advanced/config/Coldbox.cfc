@@ -1,35 +1,4 @@
 ﻿component{
-/**
-structures/arrays to create for configuration
-
-- coldbox (struct)
-- settings (struct)
-- conventions (struct)
-- environments (struct)
-- wirebox (struct)
-- datasources (struct)
-- layoutSettings (struct)
-- layouts (array of structs)
-- cacheBox (struct)
-- interceptorSettings (struct)
-- interceptors (array of structs)
-- modules (struct)
-- logBox (struct)
-- flash (struct)
-
-Available objects in variable scope
-- controller
-- logBoxConfig
-- appMapping (auto calculated by ColdBox)
-
-Required Methods
-- configure() : The method ColdBox calls to configure the application.
-Optional Methods
-- detectEnvironment() : If declared the framework will call it and it must return the name of the environment you are on.
-- {environment}() : The name of the environment found and called by the framework.
-
-*/
-
 	// Configure ColdBox Application
 	function configure(){
 
@@ -54,7 +23,8 @@ Optional Methods
 			missingTemplateHandler	= "",
 
 			//Extension Points
-			UDFLibraryFile 				= "includes/helpers/ApplicationHelper.cfm",
+			applicationHelper 			= "includes/helpers/ApplicationHelper.cfm",
+			viewsHelper					= "",
 			coldboxExtensionsLocation 	= "",
 			modulesExternalLocation		= [],
 			viewsExternalLocation		= "",

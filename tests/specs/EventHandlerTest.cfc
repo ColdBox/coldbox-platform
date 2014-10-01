@@ -16,7 +16,7 @@
 			.$("getRequestService",mockRS)
 			.$("getCacheBox", mockCacheBox)
 			.$("getWireBox", mockWireBox);
-		mockController.$("getSetting").$args("UDFLibraryFile").$results( ["/tests/resources/mixins.cfm","/tests/resources/mixins2"] )
+		mockController.$("getSetting").$args("applicationHelper").$results( ["/tests/resources/mixins.cfm","/tests/resources/mixins2"] )
 			.$("getSetting").$args("AppMapping").$results( "/coldbox/testing" );
 
 		handler.init( mockController );

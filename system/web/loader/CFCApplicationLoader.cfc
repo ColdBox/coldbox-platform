@@ -240,12 +240,12 @@ Loads a coldbox cfc configuration file
 			//Check for ReinitPassword
 			if ( not structKeyExists( configStruct, "ReinitPassword" ) ){ configStruct[ "ReinitPassword" ] = hash( createUUID() ); }
 			else if( len(configStruct[ "ReinitPassword" ]) ){ configStruct[ "ReinitPassword" ] = hash( configStruct[ "ReinitPassword" ] ); }
-			//Check For UDFLibraryFile
-			if ( not structKeyExists( configStruct, "UDFLibraryFile" ) )
-				configStruct[ "UDFLibraryFile" ] = "";
+			//Check For ApplicationHelper
+			if ( not structKeyExists( configStruct, "applicationHelper" ) )
+				configStruct[ "applicationHelper" ] = [];
 			// inflate if needed to array
-			if( isSimpleValue( configStruct[ "UDFLibraryFile" ] ) ){
-				configStruct[ "UDFLibraryFile" ] = listToArray( configStruct[ "UDFLibraryFile" ] );
+			if( isSimpleValue( configStruct[ "applicationHelper" ] ) ){
+				configStruct[ "applicationHelper" ] = listToArray( configStruct[ "applicationHelper" ] );
 			}
 			//Check For viewsHelper
 			if ( not structKeyExists( configStruct, "viewsHelper" ) )

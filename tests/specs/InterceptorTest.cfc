@@ -17,7 +17,7 @@
 			.$("getCacheBox", mockCacheBox)
 			.$("getWireBox", mockWireBox)
 			.$("getInterceptorService", mockIService)
-			.$("getSetting").$args( "UDFLibraryFile" ).$results( [] );
+			.$("getSetting").$args( "applicationHelper" ).$results( [] );
 
 		mockRS.$("getFlashScope",flashScope);
 		mockLogBox.$("getLogger",mockLogger);

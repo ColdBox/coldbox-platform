@@ -406,7 +406,7 @@ component serializable="false" accessors="true"{
 		else if( fileExists(UDFFullPath & ".cfm") ){
 			targetLocation = "#udflibrary#.cfm";
 		}else {
-			throw( message="Error loading UDFLibraryFile: #arguments.udflibrary#",
+			throw( message="Error loading UDF library: #arguments.udflibrary#",
 				   detail="The UDF library was not found.  Please make sure you verify the file location.",
 				   type="FrameworkSupertype.UDFLibraryNotFoundException");
 		}
@@ -418,17 +418,16 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Load the global UDF libraries defined in the UDFLibraryFile Setting of your application.
-	* This is called by the framework ONLY!
+	* Load the global application helper libraries defined in the applicationHelper Setting of your application.
+	* This is called by the framework ONLY! Use at your own risk
 	* @return FrameworkSuperType
 	*/
-	any function loadGlobalUDFLibraries(){
+	any function loadApplicationHelpers(){
 		// Inject global helpers
-		var udfs	= controller.getSetting( "UDFLibraryFile" );
-		var udfLen 	= arrayLen( udfs );
+		var helpers	= controller.getSetting( "applicationHelper" );
 
-		for( var x=1; x lte udfLen; x++){
-			includeUDF( udfs[ x ] );
+		for( var thisHelper in helpers ){
+			includeUDF( thisHelper );
 		}
 
 		return this;

@@ -29,7 +29,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	* Constructor
 	* @controller.hint The ColdBox controller
 	* @properties.hint The properties to init the Interceptor with
-	* 
+	*
 	* @result Interceptor
 	*/
 	function init( required controller, struct properties={} ){
@@ -46,7 +46,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 		// Register WireBox
 		variables.wireBox = arguments.controller.getWireBox();
 		// Load global UDF Libraries into target
-		loadGlobalUDFLibraries();
+		loadApplicationHelpers();
 		// store properties
 		variables.properties = arguments.properties;
 		// setup interceptor service
@@ -54,7 +54,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 
 		return this;
 	}
-	
+
 	/**
 	* Configuration method for the interceptor
 	*/
@@ -68,12 +68,12 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	any function getProperty( required property, defaultValue ){
 		return ( structKeyExists( variables.properties, arguments.property ) ? variables.properties[ arguments.property ] : arguments.defaultValue );
 	}
-	
+
 	/**
 	* Store an interceptor property
 	* @property.hint The property to store
 	* @value.hint The value to store
-	* 
+	*
 	* @return Interceptor instance
 	*/
 	any function setProperty( required property, required value ){
@@ -92,12 +92,12 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	/**
 	* Unregister the interceptor
 	* @state.hint The named state to unregister this interceptor from
-	* 
+	*
 	* @return Interceptor
 	*/
 	function unregister( required state ){
 		var interceptorClass = listLast( getMetadata( this ).name, "." );
-		variables.controller.getInterceptorService().unregister( interceptorClass, arguments.state );	
+		variables.controller.getInterceptorService().unregister( interceptorClass, arguments.state );
 		return this;
 	}
 
@@ -115,7 +115,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	/**
 	* Append to the interceptor buffer
 	* @str.hint The string to append to the buffer
-	* 
+	*
 	* @return Interceptor
 	*/
 	function appendToBuffer( required str ){

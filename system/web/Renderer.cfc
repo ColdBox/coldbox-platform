@@ -99,7 +99,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.prc 	= event.getCollection( private=true );
 
 		// Load global UDF Libraries into target
-		loadGlobalUDFLibraries();
+		loadApplicationHelpers();
 
 		return this;
 	}

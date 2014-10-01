@@ -24,7 +24,8 @@
 			missingTemplateHandler	= "",
 
 			//Extension Points
-			UDFLibraryFile 				= "includes/helpers/ApplicationHelper.cfm",
+			applicationHelper 			= "includes/helpers/ApplicationHelper.cfm",
+			viewsHelper					= "",
 			coldboxExtensionsLocation 	= "",
 			modulesExternalLocation		= [],
 			viewsExternalLocation		= "",

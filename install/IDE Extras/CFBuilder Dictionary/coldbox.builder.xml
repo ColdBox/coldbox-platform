@@ -449,8 +449,8 @@
 				<help><![CDATA[ The file path to check ]]></help>
 			</parameter>
 			</function>
-	<function name="loadGlobalUDFLibraries" returns="any">
-			<help><![CDATA[ Load the global UDF libraries defined in the UDFLibraryFile Setting of your application. This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
+	<function name="loadApplicationHelpers" returns="any">
+			<help><![CDATA[ Load the global UDF libraries defined in the applicationHelper Setting of your application. This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="getInterceptor" returns="any">
 			<help><![CDATA[ Get an interceptor reference (Context: FrameworkSupertype) ]]></help>

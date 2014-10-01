@@ -24,14 +24,14 @@
 			missingTemplateHandler	= "main.onMissingTemplate",
 
 			//Extension Points
-			UDFLibraryFile 				= "includes/helpers/ApplicationHelper.cfm",
+			applicationHelper 			= "includes/helpers/ApplicationHelper.cfm",
+			viewsHelper					= "includes/helpers/ViewsHelper",
 			modulesExternalLocation		= [ "/cbtestharness/external/testModules", "/cbtestharness/external/testModules2" ],
 			viewsExternalLocation		= "/cbtestharness/external/testViews",
 			layoutsExternalLocation 	= "/cbtestharness/external/testLayouts",
 			handlersExternalLocation  	= "cbtestharness.external.testHandlers",
 			requestContextDecorator 	= "cbtestharness.models.myRequestContextDecorator",
 			controllerDecorator			= "cbtestharness.models.ControllerDecorator",
-			viewsHelper					= "includes/helpers/ViewsHelper",
 
 			//Error/Exception Handling
 			exceptionHandler		= "main.onException",
