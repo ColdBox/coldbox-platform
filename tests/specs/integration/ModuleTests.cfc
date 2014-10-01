@@ -59,6 +59,10 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				expect(	event.getValue( "cbox_rendered_content" ) ).toMatch( "welcome" );
 			});
 
+			it( "should not load disabled modules", function(){
+				expect(	getController().getSetting( "modules" ) ).notToHaveKey( "disabledModule" );
+			});
+
 		});
 
 	}

@@ -205,6 +205,7 @@ I oversee and manage ColdBox modules
 					loadTime 			= now(),
 					activated 			= false,
 					dependencies		= [],
+					disabled			= false,
 					// Module Configurations
 					path				 	= modLocation,
 					invocationPath 			= modulesInvocationPath & "." & modName,
@@ -232,7 +233,16 @@ I oversee and manage ColdBox modules
 				};
 
 				// Load Module configuration from cfc and store it in module Config Cache
-				instance.mConfigCache[ modName ] = loadModuleConfiguration( mConfig, arguments.moduleName );
+				var oConfig = loadModuleConfiguration( mConfig, arguments.moduleName );
+				// Verify if module has been disabled
+				if( mConfig.disabled ){
+					if( instance.logger.canDebug() ){
+						instance.logger.debug( "Skipping module: #arguments.moduleName# as it has been disabled!" );
+					}
+					return false;
+				} else {
+					instance.mConfigCache[ modName ] = oConfig;
+				}
 				// Store module configuration in main modules configuration
 				modulesConfiguration[ modName ] = mConfig;
 				// Link aliases by reference in both modules list and config cache
@@ -530,7 +540,7 @@ I oversee and manage ColdBox modules
 	</cffunction>
 
 	<!--- loadModuleConfiguration --->
-	<cffunction name="loadModuleConfiguration" output="false" access="public" returntype="any" hint="Load the module configuration object">
+	<cffunction name="loadModuleConfiguration" output="false" access="public" returntype="any" hint="Load the module configuration object and return it">
 		<cfargument name="config" 		type="struct" required="true" hint="The module config structure">
 		<cfargument name="moduleName"	type="string" required="true" hint="The module name">
 		<cfscript>
@@ -613,6 +623,10 @@ I oversee and manage ColdBox modules
 			mConfig.entryPoint  = "";
 			if( structKeyExists(oConfig,"entryPoint") ){
 				mConfig.entryPoint 	= oConfig.entryPoint;
+			}
+			mConfig.disabled  = false;
+			if( structKeyExists(oConfig,"disabled") ){
+				mConfig.disabled 	= oConfig.disabled;
 			}
 
 			//Get the parent settings
