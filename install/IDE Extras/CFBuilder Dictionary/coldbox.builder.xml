@@ -589,93 +589,99 @@
 			</scopevar>
 </scopevar>
 	<scopevar name="flash">
-		<help><![CDATA[An abstract flash scope that can be used to build ColdBox Flash scopes]]></help>
-		<scopevar name="getProperty(property)">
-				<help><![CDATA[Get a flash scope property, throws exception if not found.]]></help>
+		<help><![CDATA[******************************************************************************** Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* An abstract flash scope that can be used to build ColdBox Flash scopes. In order to build scopes you must implement the following methods:  - clearFlash() A method that will destroy the flash storage - saveFlash() A method that will be called before relocating so the storage can be saved - flashExists() A method that tells ColdBox if the storage exists and if it has content to inflate - getFlash() A method that returns the flash storage  All these methds can use any of the concrete methods below. The most important one is the getScope() method which will most likely be called by the saveFlash() method in order to persist the flashed map.]]></help>
+		<scopevar name="inflateFlash()">
+				<help><![CDATA[]]></help>
 			</scopevar>
-	<scopevar name="propertyExists(property)">
-				<help><![CDATA[Checks wether a given flash scope property exists or not.]]></help>
-			</scopevar>
-	<scopevar name="init(controller,[defaults])">
-				<help><![CDATA[Constructor]]></help>
-			</scopevar>
-	<scopevar name="keep([keys])">
-				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation.]]></help>
-			</scopevar>
-	<scopevar name="statusMarks([keys],keep)">
-				<help><![CDATA[Change the status marks of the temp scope entries]]></help>
-			</scopevar>
-	<scopevar name="getDefaults()">
-				<help><![CDATA[Get flash scope default data packet]]></help>
-			</scopevar>
-	<scopevar name="removeFlash()">
-				<help><![CDATA[Remove the entire flash storage]]></help>
-			</scopevar>
-	<scopevar name="flashExists()">
-				<help><![CDATA[Checks if the flash storage exists and IT HAS DATA to inflate.]]></help>
-			</scopevar>
-	<scopevar name="getController()">
-				<help><![CDATA[Get the controller reference]]></help>
-			</scopevar>
-	<scopevar name="setProperty(property,value)">
-				<help><![CDATA[Set a flash scope property]]></help>
-			</scopevar>
-	<scopevar name="clear()">
-				<help><![CDATA[Clear the temp flash scope and remove all data]]></help>
-			</scopevar>
-	<scopevar name="saveFlash()">
-				<help><![CDATA[Save the flash storage in preparing to go to the next request]]></help>
-			</scopevar>
-	<scopevar name="isEmpty()">
-				<help><![CDATA[Check if the flash scope is empty or not]]></help>
-			</scopevar>
-	<scopevar name="getScope()">
-				<help><![CDATA[Get the flash temp request storage used throughout a request until flashed at the end of a request.]]></help>
-			</scopevar>
-	<scopevar name="getUtil()">
-				<help><![CDATA[Get the coldbox utility class]]></help>
-			</scopevar>
-	<scopevar name="put(name,value,[saveNow],[keep],[inflateToRC],[inflateToPRC],[autoPurge])">
-				<help><![CDATA[Put an object in temp flash scope]]></help>
-			</scopevar>
-	<scopevar name="remove(name,[saveNow])">
-				<help><![CDATA[Remove an object from flash scope]]></help>
-			</scopevar>
-	<scopevar name="setProperties(properties)">
-				<help><![CDATA[Set flash scope properties]]></help>
-			</scopevar>
-	<scopevar name="persistRC([include],[exclude],[saveNow])">
-				<help><![CDATA[Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed.]]></help>
-			</scopevar>
-	<scopevar name="inflateFlash()">
-				<help><![CDATA[Inflate the flash storage into the request collection and request temp storage]]></help>
-			</scopevar>
-	<scopevar name="exists(name)">
-				<help><![CDATA[Check if an object exists in flash scope]]></help>
-			</scopevar>
-	<scopevar name="putAll(map,[saveNow],[keep],[inflateToRC],[inflateToPRC],[autoPurge])">
-				<help><![CDATA[Put a map of name-value pairs into the flash scope]]></help>
+	<scopevar name="getProperty(property)">
+				<help><![CDATA[Get a named property]]></help>
 			</scopevar>
 	<scopevar name="getFlash()">
 				<help><![CDATA[Get the flash storage structure to inflate it.]]></help>
 			</scopevar>
+	<scopevar name="statusMarks([keys],[keep])">
+				<help><![CDATA[Change the status marks of the temp scope entries]]></help>
+			</scopevar>
+	<scopevar name="remove(name,[saveNow])">
+				<help><![CDATA[Remove an object from flash scope]]></help>
+			</scopevar>
+	<scopevar name="saveFlash()">
+				<help><![CDATA[Save the flash storage in preparing to go to the next request]]></help>
+			</scopevar>
+	<scopevar name="persistRC([include],[exclude],[saveNow])">
+				<help><![CDATA[Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed]]></help>
+			</scopevar>
+	<scopevar name="putAll(map,[saveNow],[keep],[inflateToRC],[inflateToPRC],[autoPurge])">
+				<help><![CDATA[Put a map of name-value pairs into the flash scope]]></help>
+			</scopevar>
+	<scopevar name="SETPROPERTIES(properties)">
+				<help><![CDATA[]]></help>
+			</scopevar>
+	<scopevar name="removeFlash()">
+				<help><![CDATA[Remove the entire flash storage]]></help>
+			</scopevar>
+	<scopevar name="SETCONTROLLER(controller)">
+				<help><![CDATA[]]></help>
+			</scopevar>
+	<scopevar name="GETCONTROLLER()">
+				<help><![CDATA[]]></help>
+			</scopevar>
+	<scopevar name="clear()">
+				<help><![CDATA[Clear the temp flash scope and remove all data]]></help>
+			</scopevar>
+	<scopevar name="SETDEFAULTS(defaults)">
+				<help><![CDATA[]]></help>
+			</scopevar>
+	<scopevar name="propertyExists(property)">
+				<help><![CDATA[Check a named property]]></help>
+			</scopevar>
+	<scopevar name="discard(keys)">
+				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
+			</scopevar>
+	<scopevar name="flashExists()">
+				<help><![CDATA[Checks if the flash storage exists and IT HAS DATA to inflate.]]></help>
+			</scopevar>
 	<scopevar name="clearFlash()">
 				<help><![CDATA[Clear the flash storage]]></help>
+			</scopevar>
+	<scopevar name="setProperty(property,value)">
+				<help><![CDATA[Set a named property]]></help>
+			</scopevar>
+	<scopevar name="keep(keys)">
+				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
+			</scopevar>
+	<scopevar name="GETDEFAULTS()">
+				<help><![CDATA[]]></help>
+			</scopevar>
+	<scopevar name="getScope()">
+				<help><![CDATA[Get the flash temp request storage used throughout a request until flashed at the end of a request.]]></help>
+			</scopevar>
+	<scopevar name="GETPROPERTIES()">
+				<help><![CDATA[]]></help>
+			</scopevar>
+	<scopevar name="get(name,[defaultValue])">
+				<help><![CDATA[Get an object from flash scope]]></help>
+			</scopevar>
+	<scopevar name="getUtil()">
+				<help><![CDATA[Get utility object]]></help>
+			</scopevar>
+	<scopevar name="exists(name)">
+				<help><![CDATA[Check if an object exists in flash scope]]></help>
 			</scopevar>
 	<scopevar name="getKeys()">
 				<help><![CDATA[Get a list of all the objects in the temp flash scope]]></help>
 			</scopevar>
+	<scopevar name="init(controller,defaults)">
+				<help><![CDATA[Constructor]]></help>
+			</scopevar>
 	<scopevar name="size()">
 				<help><![CDATA[Get the size of the items in flash scope]]></help>
 			</scopevar>
-	<scopevar name="getProperties()">
-				<help><![CDATA[Get flash scope properties]]></help>
+	<scopevar name="put(name,value,[saveNow],[keep],[inflateToRC],[inflateToPRC],[autoPurge])">
+				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
 			</scopevar>
-	<scopevar name="get(name,[default])">
-				<help><![CDATA[Get an object from flash scope]]></help>
-			</scopevar>
-	<scopevar name="discard([keys])">
-				<help><![CDATA[Mark for discard all or a single flash temp variable for another relocation. You can also remove them if you like.]]></help>
+	<scopevar name="isEmpty()">
+				<help><![CDATA[Check if the flash scope is empty or not]]></help>
 			</scopevar>
 </scopevar>
 	<scopevar name="binder">
@@ -1467,13 +1473,13 @@
 				<help><![CDATA[Get the application's LogBox instance]]></help>
 			</scopevar>
 	<scopevar name="GETDATAMARSHALLER()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[]]></help>
 			</scopevar>
 	<scopevar name="setNextEvent([event],[queryString],[addToken],[persist],[persistStruct],[ssl],[baseURL],[postProcessExempt],[URL],[URI],[statusCode])">
 				<help><![CDATA[I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI]]></help>
 			</scopevar>
 	<scopevar name="SETDATAMARSHALLER(dataMarshaller)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[]]></help>
 			</scopevar>
 	<scopevar name="getColdboxSettings()">
 				<help><![CDATA[I retrieve the ColdBox Settings Structure by Reference]]></help>
@@ -1515,7 +1521,7 @@
 				<help><![CDATA[Get ModuleService: coldbox.system.web.services.ModuleService]]></help>
 			</scopevar>
 	<scopevar name="getUtil()">
-				<help><![CDATA[Create and return a util object]]></help>
+				<help><![CDATA[Returns the system utility object]]></help>
 			</scopevar>
 	<scopevar name="getColdboxInitiated()">
 				<help><![CDATA[Get ColdboxInitiated: Boolean]]></help>
@@ -1539,7 +1545,7 @@
 				<help><![CDATA[DEPRECATED: I am the Plugin cfc object factory.]]></help>
 			</scopevar>
 	<scopevar name="GETTESTING()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[]]></help>
 			</scopevar>
 	<scopevar name="getMemento()">
 				<help><![CDATA[Get the controller's internal state]]></help>
@@ -1566,7 +1572,7 @@
 				<help><![CDATA[Get LoaderService: coldbox.system.web.services.LoaderService]]></help>
 			</scopevar>
 	<scopevar name="SETTESTING(testing)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[]]></help>
 			</scopevar>
 	<scopevar name="getCache([cacheName])">
 				<help><![CDATA[Get a Cache provider from CacheBox]]></help>
