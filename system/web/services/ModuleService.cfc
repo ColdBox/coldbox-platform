@@ -132,7 +132,7 @@ I oversee and manage ColdBox modules
 			var appSettings 			= controller.getConfigSettings();
 
 
-			// Check if incoming invocation path is sent
+			// Check if incoming invocation path is sent, if so, register as new module
 			if( len( arguments.invocationPath ) ){
 				// Check if passed module name is already registered
 				if( structKeyExists( instance.moduleRegistry, arguments.moduleName ) AND !arguments.force ){
@@ -172,6 +172,7 @@ I oversee and manage ColdBox modules
 				// Bundle Loading
 				var aBundleModules = directoryList( modLocation, false, "array" );
 				for( var thisModule in aBundleModules ){
+					// cleanup module name
 					var bundleModuleName = listLast( thisModule, "/\" );
 					// register the bundle module
 					registerModule( moduleName=bundleModuleName,
@@ -260,11 +261,19 @@ I oversee and manage ColdBox modules
 					// register the children
 					var childModules = directoryList( mConfig.path & "/modules", false, "array" );
 					for( var thisChild in childModules ){
+						// cleanup module name
 						var childName = listLast( thisChild, "/\" );
-						arrayAppend( mConfig.childModules, childname );
-						registerModule( moduleName=childName,
-										invocationPath=mConfig.invocationPath & ".modules",
-										parent=modName );
+						// verify ModuleConfig exists, else skip
+						if( fileExists( thisChild & "/ModuleConfig.cfc" ) ){
+							// add to parent children
+							arrayAppend( mConfig.childModules, childname );
+							// register it
+							registerModule( moduleName=childName,
+											invocationPath=mConfig.invocationPath & ".modules",
+											parent=modName );
+						} else if( instance.logger.canDebug() ){
+							instance.logger.debug( "Inception Module #childName# does not have a valid ModuleConfig.cfc in its root, so skipping registration" );
+						}
 					}
 				}
 
