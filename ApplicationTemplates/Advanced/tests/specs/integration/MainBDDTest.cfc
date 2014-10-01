@@ -3,8 +3,8 @@
 *
 *	Extends the integration class: coldbox.system.testing.BaseTestCase
 *
-*	so you can test your ColdBox application headlessly. The 'appMapping' points by default to 
-*	the '/root' mapping created in the test folder Application.cfc.  Please note that this 
+*	so you can test your ColdBox application headlessly. The 'appMapping' points by default to
+*	the '/root' mapping created in the test folder Application.cfc.  Please note that this
 *	Application.cfc must mimic the real one in your root, including ORM settings if needed.
 *
 *	The 'execute()' method is used to execute a ColdBox event, with the following arguments
@@ -15,7 +15,7 @@
 *	* renderResults : Render back the results of the event
 *******************************************************************************/
 component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
-	
+
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
@@ -29,7 +29,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 	}
 
 /*********************************** BDD SUITES ***********************************/
-	
+
 	function run(){
 
 		describe( "Main Handler", function(){
@@ -38,7 +38,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
 			});
-		
+
 			it( "+homepage renders", function(){
 				var event = execute( event="main.index", renderResults=true );
 				expect(	event.getValue( name="welcomemessage", private=true ) ).toBe( "Welcome to ColdBox!" );
@@ -57,16 +57,16 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 				//You need to create an exception bean first and place it on the request context FIRST as a setup.
 				var exceptionBean = createMock( "coldbox.system.web.context.ExceptionBean" )
 					.init( erroStruct=structnew(), extramessage="My unit test exception", extraInfo="Any extra info, simple or complex" );
-				
-				// Place it on form or url scope to attach it to request
-				URL.exceptionBean = exceptionBean;
-				
+
+				// Attach to request
+				getRequestContext().setValue( name="exception", value=exceptionBean, private=true );
+
 				//TEST EVENT EXECUTION
 				var event = execute( "main.onException" );
 			});
 
 			describe( "Request Events", function(){
-				
+
 				it( "+fires on start", function(){
 					var event = execute( "main.onRequestStart" );
 				});
@@ -74,11 +74,11 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 				it( "+fires on end", function(){
 					var event = execute( "main.onRequestEnd" );
 				});
-			
+
 			});
 
 			describe( "Session Events", function(){
-				
+
 				it( "+fires on start", function(){
 					var event = execute( "main.onSessionStart" );
 				});
@@ -89,12 +89,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 					URL.applicationReference = structnew();
 					var event = execute( "main.onSessionEnd" );
 				});
-			
+
 			});
 
-		
+
 		});
 
 	}
-	
+
 }
