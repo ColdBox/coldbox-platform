@@ -111,7 +111,7 @@ Description :
 		<cfargument name="reset" 	required="false" default="false" type="boolean" hint="Reset the conten or not" >
 
    	   	<cfif structKeyExists( arguments, "variable")>
-			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" variable="#renderedContent#" reset="#arguments.reset#"/>
+			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" variable="#arguments.variable#" reset="#arguments.reset#"/>
 		<cfelse>
 			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" reset="#arguments.reset#">
 		</cfif>
