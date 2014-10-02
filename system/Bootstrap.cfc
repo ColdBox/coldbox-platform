@@ -176,6 +176,7 @@ component serializable="false" accessors="true"{
 			if ( structKeyExists( refResults, "eventCaching" ) ){
 				// check renderdata
 				if( refResults.eventCaching.renderData ){
+					refResults.eventCaching.controller = cbController;
 					renderDataSetup( argumentCollection=refResults.eventCaching );
 				}
 				// Authoritative Header
@@ -488,10 +489,10 @@ component serializable="false" accessors="true"{
 		// Render out error via CustomErrorTemplate or Core
 		var customErrorTemplate = arguments.controller.getSetting( "CustomErrorTemplate" );
 		if( len( customErrorTemplate ) ){
-			
+
 			// Do we have right path already, test by expanding
 			if( fileExists( expandPath( customErrorTemplate ) ) ){
-				bugReportTemplatePath = customErrorTemplate;	
+				bugReportTemplatePath = customErrorTemplate;
 			} else {
 				var appLocation = "/";
 				if( len( arguments.controller.getSetting( "AppMapping" ) ) ){
