@@ -69,7 +69,7 @@ component serializable="false" accessors="true"{
 		boolean composeRelationships=false
 	){
 		// Get memento
-		arguments.memento = controller.getContext().getCollection();
+		arguments.memento = getRequestCollection();
 		// Do we have a model or name
 		if( isSimpleValue( arguments.model ) ){
 			arguments.target = getModel( model );
