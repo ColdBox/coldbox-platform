@@ -5,12 +5,12 @@
 ********************************************************************************
 * An abstract flash scope that can be used to build ColdBox Flash scopes.
 * In order to build scopes you must implement the following methods:
-* 
+*
 * - clearFlash() A method that will destroy the flash storage
 * - saveFlash() A method that will be called before relocating so the storage can be saved
 * - flashExists() A method that tells ColdBox if the storage exists and if it has content to inflate
 * - getFlash() A method that returns the flash storage
-* 
+*
 * All these methds can use any of the concrete methods below. The most important one is the getScope()
 * method which will most likely be called by the saveFlash() method in order to persist the flashed map.
 * @author Luis Majano <lmajano@ortussolutions.com>
@@ -115,7 +115,7 @@ component accessors="true"{
 
 
 	/**
-	* 
+	*
 	* @return AbstractFlashScope
 	*/
 	function inflateFlash(){
@@ -131,10 +131,10 @@ component accessors="true"{
 			if( structKeyExists( flash, scopeKeys[ x ] ) AND flash[ scopeKeys[ x ] ].keep ){
 				var thisKey = flash[ scopeKeys[ x ] ];
 				// Keep = true if autoPurge is false, because we need to keep it around.
-				if( NOT thisKey.autoPurge ){ 
-					keep = true; 
-				} else { 
-					keep = false; 
+				if( NOT thisKey.autoPurge ){
+					keep = true;
+				} else {
+					keep = false;
 				}
 				// Save and mark for cleaning if content exists
 				if( structKeyExists( thisKey, "content") ){
@@ -145,7 +145,7 @@ component accessors="true"{
 					// Inflate into PRC?
 					if( thisKey.inflateToPRC ){
 						event.setValue( name=scopeKeys[ x ], value=thisKey.content, private=true );
-					}	
+					}
 					put(
 						name			= scopeKeys[x],
 						value			= thisKey.content,
@@ -194,10 +194,10 @@ component accessors="true"{
 	/**
 	* Keep all or a single flash temp variable alive for another relocation
 	* @keys.hint The keys in the flash RAM that you want to mark to be kept until the next request
-	* 
+	*
 	* @return AbstractFlashScope
 	*/
-	function keep( required keys ){
+	function keep( string keys="" ){
 		statusMarks( arguments.keys, true );
 		saveFlash();
 		return this;
@@ -206,10 +206,10 @@ component accessors="true"{
 	/**
 	* Keep all or a single flash temp variable alive for another relocation
 	* @keys.hint The keys in the flash RAM that you want to mark to be kept until the next request
-	* 
+	*
 	* @return AbstractFlashScope
 	*/
-	function discard( required keys ){
+	function discard( string keys="" ){
 		statusMarks( arguments.keys, false );
 		return this;
 	}
@@ -223,7 +223,7 @@ component accessors="true"{
 	* @inflateToRC.hint Whether this flash variable is inflated to the Request Collection or not
 	* @inflateToPRC.hint Whether this flash variable is inflated to the Private Request Collection or not
 	* @autoPurge.hint Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
-	* 
+	*
 	* @return AbstractFlashScope
 	*/
 	function put(
@@ -262,7 +262,7 @@ component accessors="true"{
 	* @inflateToRC.hint Whether this flash variable is inflated to the Request Collection or not
 	* @inflateToPRC.hint Whether this flash variable is inflated to the Private Request Collection or not
 	* @autoPurge.hint Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
-	* 
+	*
 	* @return AbstractFlashScope
 	*/
 	function putAll(
@@ -292,7 +292,7 @@ component accessors="true"{
 	* Remove an object from flash scope
 	* @name.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
 	* @saveNow.hint
-	* 
+	*
 	* @return AbstractFlashScope
 	*/
 	function remove( required name, boolean saveNow=false ){
@@ -347,7 +347,7 @@ component accessors="true"{
 	* @include.hint MUTEX: A list of request collection keys you want to persist
 	* @exclude.hint MUTEX: A list of request collection keys you want to exclude from persisting. If sent, then we inspect all rc keys.
 	* @saveNow.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
-	* 
+	*
 	* @return AbstractFlashScope
 	*/
 	function persistRC( include="", exclude="", boolean saveNow=false ){
@@ -401,7 +401,7 @@ component accessors="true"{
 	* Set a named property
 	* @property.hint The property name
 	* @value.hint The value
-	* 
+	*
 	* @return AbstractFlashScope
 	*/
 	function setProperty( required property, required value ){
@@ -421,7 +421,7 @@ component accessors="true"{
 	/**
 	* Change the status marks of the temp scope entries
 	*/
-	private function statusMarks( keys="", boolean keep=true ){
+	private function statusMarks( string keys="", boolean keep=true ){
 		var scope		= getScope();
 		var targetKeys 	= structKeyArray( scope );
 
