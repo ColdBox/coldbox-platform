@@ -63,6 +63,11 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				expect(	getController().getSetting( "modules" ) ).notToHaveKey( "disabledModule" );
 			});
 
+			it( "should not activate non-actavatable modules", function(){
+				var config = getController().getSetting( "modules" );
+				expect( config[ "notActivatedModule" ].activated ).toBeFalse();
+			});
+
 		});
 
 	}

@@ -65,9 +65,9 @@ I oversee and manage ColdBox modules
 	<!--- rebuildRegistry --->
     <cffunction name="rebuildModuleRegistry" output="false" access="public" returntype="any" hint="Rescan the module locations directories and re-register all located modules, this method does NOT register or activate any modules, it just reloads the found registry">
     	<cfscript>
-    		var modLocations   = [ controller.getSetting("ModulesLocation") ];
+    		var modLocations   = [ controller.getSetting( "ModulesLocation" ) ];
 			// construct our locations array, conventions first.
-			modLocations.addAll( controller.getSetting("ModulesExternalLocation") );
+			modLocations.addAll( controller.getSetting( "ModulesExternalLocation" ) );
 			// iterate through locations and build the module registry in order
 			buildRegistry(modLocations);
 		</cfscript>
@@ -141,8 +141,8 @@ I oversee and manage ColdBox modules
 				}
 				// register new incoming location
 				instance.moduleRegistry[ arguments.moduleName ] = {
-					locationPath 	= "/" & replace( arguments.invocationPath,".","/","all"),
-					physicalPath 	= expandPath( "/" & replace( arguments.invocationPath,".","/","all") ),
+					locationPath 	= "/" & replace( arguments.invocationPath,".","/","all" ),
+					physicalPath 	= expandPath( "/" & replace( arguments.invocationPath,".","/","all" ) ),
 					invocationPath 	= arguments.invocationPath
 				};
 			}
@@ -163,7 +163,7 @@ I oversee and manage ColdBox modules
 
 			// Check if module config exists, or we have a module.
 			if( NOT fileExists( modLocation & "/ModuleConfig.cfc" ) && NOT isBundle ){
-				instance.logger.WARN("The module (#modName#) cannot be loaded as it does not have a ModuleConfig.cfc in its root. Path Checked: #modLocation#");
+				instance.logger.WARN( "The module (#modName#) cannot be loaded as it does not have a ModuleConfig.cfc in its root. Path Checked: #modLocation#" );
 				return false;
 			}
 
@@ -191,21 +191,34 @@ I oversee and manage ColdBox modules
 				var mConfig = {
 					// Module MetaData and Directives
 					title				= "",
+					// execution aliases
 					aliases				= [],
 					author				="",
 					webURL				="",
 					description			="",
 					version				="",
+					// view check in parent first
 					viewParentLookup 	= "true",
+					// layout check in parent first
 					layoutParentLookup 	= "true",
+					// SES entry point
 					entryPoint 			= "",
+					// ColdFusion mapping
 					cfmapping			= "",
+					// Models namespsace
 					modelNamespace		= modName,
+					// Auto map models flag
 					autoMapModels		= true,
+					// when this registration ocurred
 					loadTime 			= now(),
+					// Flag that denotes if the module has been activated or not
 					activated 			= false,
+					// Any dependencies this module requires to be loaded first
 					dependencies		= [],
+					// Flag that says if this module should NOT be loaded
 					disabled			= false,
+					// flag that says if this module can be activated or not
+					activate			= true,
 					// Module Configurations
 					path				 	= modLocation,
 					invocationPath 			= modulesInvocationPath & "." & modName,
@@ -343,7 +356,16 @@ I oversee and manage ColdBox modules
 			if( modules[ arguments.moduleName ].activated ){
 				// Log it
 				if( instance.logger.canDebug() ){
-					instance.logger.debug("Module #arguments.moduleName# already activated, skipping activation.");
+					instance.logger.debug( "Module #arguments.moduleName# already activated, skipping activation." );
+				}
+				return this;
+			}
+
+			// Check if module CAN be activated
+			if( !modules[ arguments.moduleName ].activate ){
+				// Log it
+				if( instance.logger.canDebug() ){
+					instance.logger.debug( "Module #arguments.moduleName# cannot be activated as it is flagged to not activate, skipping activation." );
 				}
 				return this;
 			}
@@ -418,7 +440,7 @@ I oversee and manage ColdBox modules
 
 				// Log it
 				if( instance.logger.canDebug() ){
-					instance.logger.debug("Module #arguments.moduleName# activated sucessfully.");
+					instance.logger.debug( "Module #arguments.moduleName# activated sucessfully." );
 				}
 
 			} // end lock
@@ -449,7 +471,7 @@ I oversee and manage ColdBox modules
 	<!--- getLoadedModules --->
 	<cffunction name="getLoadedModules" output="false" access="public" returntype="array" hint="Get a listing of all loaded modules">
 		<cfscript>
-			var modules = structKeyList(controller.getSetting("modules"));
+			var modules = structKeyList(controller.getSetting( "modules" ));
 
 			return listToArray(modules);
 		</cfscript>
@@ -477,10 +499,10 @@ I oversee and manage ColdBox modules
 			if( NOT structKeyExists(appConfig.modules,arguments.moduleName) ){ return false; }
 
 			// Before unloading a module interception
-			interceptorService.processState("preModuleUnload",iData);
+			interceptorService.processState( "preModuleUnload",iData);
 
 			// Call on module configuration object onLoad() if found
-			if( structKeyExists(instance.mConfigCache[ arguments.moduleName ],"onUnload") ){
+			if( structKeyExists(instance.mConfigCache[ arguments.moduleName ],"onUnload" ) ){
 				try{
 					instance.mConfigCache[ arguments.moduleName ].onUnload();
 				} catch( Any e ){
@@ -512,7 +534,7 @@ I oversee and manage ColdBox modules
 
 			// Log it
 			if( instance.logger.canDebug() ){
-				instance.logger.debug("Module #arguments.moduleName# unloaded successfully.");
+				instance.logger.debug( "Module #arguments.moduleName# unloaded successfully." );
 			}
 
 			// Do we need to throw exception?
@@ -529,7 +551,7 @@ I oversee and manage ColdBox modules
 	<cffunction name="unloadAll" output="false" access="public" returntype="void" hint="Unload all registered modules">
 		<cfscript>
 			// This method basically unregisters the module configuration
-			var modules = controller.getSetting("modules");
+			var modules = controller.getSetting( "modules" );
 			var key = "";
 
 			// Unload all modules
@@ -548,24 +570,24 @@ I oversee and manage ColdBox modules
 			var oConfig 	= createObject( "component", mConfig.invocationPath & ".ModuleConfig" );
 			var toLoad 		= "";
 			var appSettings = controller.getConfigSettings();
-			var x			= 1;
+			var mixerUtil	= getUtil().getMixerUtil();
 
-			//Decorate It
-			oConfig.injectPropertyMixin = getUtil().getMixerUtil().injectPropertyMixin;
-			oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
+			// Decorate It
+			oConfig.injectPropertyMixin = mixerUtil.injectPropertyMixin;
+			oConfig.getPropertyMixin 	= mixerUtil.getPropertyMixin;
 
-			//MixIn Variables
+			// MixIn Variables
 			oConfig.injectPropertyMixin( "controller", 		controller );
-			oConfig.injectPropertyMixin( "appMapping", 		controller.getSetting("appMapping") );
+			oConfig.injectPropertyMixin( "appMapping", 		controller.getSetting( "appMapping" ) );
 			oConfig.injectPropertyMixin( "moduleMapping", 	mConfig.mapping );
 			oConfig.injectPropertyMixin( "modulePath", 		mConfig.path );
 			oConfig.injectPropertyMixin( "logBox", 			controller.getLogBox() );
-			oConfig.injectPropertyMixin( "log", 			controller.getLogBox().getLogger(oConfig) );
+			oConfig.injectPropertyMixin( "log", 			controller.getLogBox().getLogger( oConfig) );
 			oConfig.injectPropertyMixin( "wirebox", 		controller.getWireBox() );
 			oConfig.injectPropertyMixin( "binder", 			controller.getWireBox().getBinder() );
 			oConfig.injectPropertyMixin( "cachebox", 		controller.getCacheBox() );
 
-			//Configure the module
+			// Configure the module
 			oConfig.configure();
 
 			// Get parent environment settings and if same convention of 'environment'() found, execute it.
@@ -575,7 +597,7 @@ I oversee and manage ColdBox modules
 
 			// title
 			if( !structKeyExists( oConfig, "title" ) ){ oConfig.title = arguments.moduleName; }
-			mConfig.title 				= oConfig.title;
+			mConfig.title = oConfig.title;
 			// aliases
 			if( structKeyExists( oConfig, "aliases" ) ){
 				// inflate list to array
@@ -584,19 +606,19 @@ I oversee and manage ColdBox modules
 			}
 			// author
 			if( !structKeyExists( oConfig, "author" ) ){ oConfig.author = ""; }
-			mConfig.author 				= oConfig.author;
+			mConfig.author = oConfig.author;
 			// web url
 			if( !structKeyExists( oConfig, "webURL" ) ){ oConfig.webURL = ""; }
-			mConfig.webURL				= oConfig.webURL;
+			mConfig.webURL = oConfig.webURL;
 			// description
 			if( !structKeyExists( oConfig, "description" ) ){ oConfig.description = ""; }
-			mConfig.description 		= oConfig.description;
+			mConfig.description	= oConfig.description;
 			// version
 			if( !structKeyExists( oConfig, "version" ) ){ oConfig.version = ""; }
-			mConfig.version				= oConfig.version;
+			mConfig.version	= oConfig.version;
 			// cf mapping
 			if( !structKeyExists( oConfig, "cfmapping" ) ){ oConfig.cfmapping = ""; }
-			mConfig.cfmapping			= oConfig.cfmapping;
+			mConfig.cfmapping = oConfig.cfmapping;
 			// model namespace override
 			if( structKeyExists( oConfig, "modelNamespace" ) ){
 				mConfig.modelNamespace = oConfig.modelNamespace;
@@ -610,61 +632,62 @@ I oversee and manage ColdBox modules
 				// set it always as an array
 				mConfig.dependencies = isSimpleValue( oConfig.dependencies ) ? listToArray( oConfig.dependencies ) : oConfig.dependencies;
 			}
-
-			// Optional Properties
-			mConfig.viewParentLookup 	= true;
-			if( structKeyExists(oConfig,"viewParentLookup") ){
-				mConfig.viewParentLookup 	= oConfig.viewParentLookup;
+			// Parent Lookups
+			mConfig.viewParentLookup = true;
+			if( structKeyExists( oConfig,"viewParentLookup" ) ){
+				mConfig.viewParentLookup = oConfig.viewParentLookup;
 			}
 			mConfig.layoutParentLookup  = true;
-			if( structKeyExists(oConfig,"layoutParentLookup") ){
-				mConfig.layoutParentLookup 	= oConfig.layoutParentLookup;
+			if( structKeyExists( oConfig,"layoutParentLookup" ) ){
+				mConfig.layoutParentLookup = oConfig.layoutParentLookup;
 			}
-			mConfig.entryPoint  = "";
-			if( structKeyExists(oConfig,"entryPoint") ){
-				mConfig.entryPoint 	= oConfig.entryPoint;
+			// Entry Point
+			mConfig.entryPoint = "";
+			if( structKeyExists( oConfig,"entryPoint" ) ){
+				mConfig.entryPoint= oConfig.entryPoint;
 			}
-			mConfig.disabled  = false;
-			if( structKeyExists(oConfig,"disabled") ){
-				mConfig.disabled 	= oConfig.disabled;
+			// Disabled
+			mConfig.disabled = false;
+			if( structKeyExists( oConfig,"disabled" ) ){
+				mConfig.disabled = oConfig.disabled;
+			}
+			// Activated
+			mConfig.activate = true;
+			if( structKeyExists( oConfig,"activate" ) ){
+				mConfig.activate = oConfig.activate;
 			}
 
 			//Get the parent settings
-			mConfig.parentSettings = oConfig.getPropertyMixin("parentSettings","variables",structnew());
-
+			mConfig.parentSettings = oConfig.getPropertyMixin( "parentSettings", "variables", {} );
 			//Get the module settings
-			mConfig.settings = oConfig.getPropertyMixin("settings","variables",structnew());
-
+			mConfig.settings = oConfig.getPropertyMixin( "settings", "variables", {} );
 			//Get module datasources
-			mConfig.datasources = oConfig.getPropertyMixin("datasources","variables",structnew());
-
+			mConfig.datasources = oConfig.getPropertyMixin( "datasources", "variables", {} );
 			//Get Interceptors
-			mConfig.interceptors = oConfig.getPropertyMixin("interceptors","variables",arrayNew(1));
-			for(x=1; x lte arrayLen(mConfig.interceptors); x=x+1){
+			mConfig.interceptors = oConfig.getPropertyMixin( "interceptors", "variables", [] );
+			for(var x=1; x lte arrayLen( mConfig.interceptors ); x=x+1){
 				//Name check
-				if( NOT structKeyExists(mConfig.interceptors[x],"name") ){
-					mConfig.interceptors[x].name = listLast(mConfig.interceptors[x].class,".");
+				if( NOT structKeyExists(mConfig.interceptors[x],"name" ) ){
+					mConfig.interceptors[x].name = listLast(mConfig.interceptors[x].class,"." );
 				}
 				//Properties check
-				if( NOT structKeyExists(mConfig.interceptors[x],"properties") ){
+				if( NOT structKeyExists(mConfig.interceptors[x],"properties" ) ){
 					mConfig.interceptors[x].properties = structnew();
 				}
 			}
 
 			//Get custom interception points
-			mConfig.interceptorSettings = oConfig.getPropertyMixin("interceptorSettings","variables",structnew());
-			if( NOT structKeyExists(mConfig.interceptorSettings,"customInterceptionPoints") ){
+			mConfig.interceptorSettings = oConfig.getPropertyMixin( "interceptorSettings","variables",structnew());
+			if( NOT structKeyExists(mConfig.interceptorSettings,"customInterceptionPoints" ) ){
 				mConfig.interceptorSettings.customInterceptionPoints = "";
 			}
 
 			//Get SES Routes
-			mConfig.routes = oConfig.getPropertyMixin( "routes", "variables", arrayNew(1) );
-
+			mConfig.routes = oConfig.getPropertyMixin( "routes", "variables", [] );
 			// Get and Append Module conventions
-			structAppend( mConfig.conventions, oConfig.getPropertyMixin( "conventions", "variables", structnew() ), true );
-
+			structAppend( mConfig.conventions, oConfig.getPropertyMixin( "conventions", "variables", {} ), true );
 			// Get Module Layout Settings
-			structAppend( mConfig.layoutSettings, oConfig.getPropertyMixin( "layoutSettings", "variables", structnew() ), true );
+			structAppend( mConfig.layoutSettings, oConfig.getPropertyMixin( "layoutSettings", "variables", {} ), true );
 
 			return oConfig;
 		</cfscript>
@@ -703,10 +726,10 @@ I oversee and manage ColdBox modules
 					<cfset instance.moduleRegistry[q.name] = {
 						locationPath 	= arguments.dirPath,
 						physicalPath 	= expandedPath,
-						invocationPath 	= replace( reReplace(arguments.dirPath,"^/",""), "/", ".","all")
+						invocationPath 	= replace( reReplace(arguments.dirPath,"^/","" ), "/", ".","all" )
 					}>
 				<cfelse>
-					<cfset instance.logger.debug("Found duplicate module: #q.name# in #arguments.dirPath#. Skipping its registration in our module registry, order of preference given.") >
+					<cfset instance.logger.debug( "Found duplicate module: #q.name# in #arguments.dirPath#. Skipping its registration in our module registry, order of preference given." ) >
 				</cfif>
 			</cfif>
 		</cfloop>
