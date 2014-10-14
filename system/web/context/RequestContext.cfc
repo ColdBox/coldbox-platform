@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -17,17 +17,20 @@ Description :
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContext">
 		<cfargument name="properties" type="any" required="true" hint="The context properties struct">
 		<cfargument name="controller"  type="any" required="true" hint="The ColdBox Controller">
-		
+
 		<cfscript>
 			instance = structnew();
-			
+
 			// Store controller;
 			instance.controller = arguments.controller;
-			
+
 			// Create the Collections
 			instance.context		= structnew();
 			instance.privateContext = structnew();
+			instance.threadContext	= structNew();
 
+			// flag if using requestcontext per thread
+			instance.threadDuplication = controller.getSetting( name="RequestContextThreadDuplication", defaultValue=false );
 			// flag if using SES
 			instance.isSES 				= false;
 			// routed SES structures
@@ -80,6 +83,11 @@ Description :
 		<cfscript>
 			// Private Collection
 			if( arguments.private ){
+				if ( !isNull(thread) &&  instance.threadDuplication ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) { instance.threadContext[thread.name] = {}; }
+					return instance.threadContext[thread.name];
+				}
+
 				if( arguments.deepCopyFlag ){ return duplicate(instance.privateContext); }
 				return instance.privateContext;
 			}
@@ -92,7 +100,13 @@ Description :
 	<cffunction name="clearCollection" access="public" returntype="any" output="false" hint="Clears the entire collection">
 		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if( arguments.private ) { structClear(instance.privateContext); }
+			if( arguments.private ) {
+				if ( !isNull(thread) &&  instance.threadDuplication ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) { instance.threadContext[thread.name] = {}; }
+					return this;
+				}
+				else { structClear(instance.privateContext); }
+			}
 			else { structClear(instance.context); }
 			return this;
 		</cfscript>
@@ -103,7 +117,14 @@ Description :
 		<cfargument name="overwrite"  	type="boolean" 	required="false" default="false" hint="If you need to override data in the collection, set this to true.">
 		<cfargument name="private" 		type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if( arguments.private ) { structAppend(instance.privateContext,arguments.collection, arguments.overwrite); }
+			if( arguments.private ) {
+				if ( !isNull(thread) &&  instance.threadDuplication ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) { structAppend(instance.threadContext[thread.name],arguments.collection, arguments.overwrite); }
+					return this;
+				}
+
+				structAppend(instance.privateContext,arguments.collection, arguments.overwrite);
+			}
 			else { structAppend(instance.context,arguments.collection, arguments.overwrite); }
 			return this;
 		</cfscript>
@@ -112,7 +133,11 @@ Description :
 	<cffunction name="getSize" access="public" returntype="numeric" output="false" hint="Returns the number of elements in the collection">
 		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if( arguments.private ){ return structCount(instance.privateContext); }
+			if( arguments.private ){
+				if ( !isNull(thread) && instance.threadDuplication ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) { return structCount(instance.threadContext[thread.name]); }
+				}
+				return structCount(instance.privateContext); }
 			return structCount(instance.context);
 		</cfscript>
 	</cffunction>
@@ -125,7 +150,12 @@ Description :
 			var collection = instance.context;
 
 			// private context switch
-			if( arguments.private ){ collection = instance.privateContext; }
+			if( arguments.private ){
+				if ( !isNull(thread) && instance.threadDuplication ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) 	{ collection = instance.threadContext[thread.name]; }
+				}
+				else { collection = instance.privateContext; }
+			}
 
 			// Check if key exists
 			if( structKeyExists(collection, arguments.name) ){
@@ -163,7 +193,12 @@ Description :
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			var collection = instance.context;
-			if( arguments.private ) { collection = instance.privateContext; }
+			if( arguments.private ){
+				if ( !isNull(thread) && instance.threadDuplication ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) { collection = instance.threadContext[thread.name]; }
+				}
+				else { collection = instance.privateContext; }
+			}
 
 			collection[arguments.name] = arguments.value;
 			return this;
@@ -175,7 +210,12 @@ Description :
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			var collection = instance.context;
-			if( arguments.private ){ collection = instance.privateContext; }
+			if( arguments.private ){
+				if ( !isNull(thread) && instance.threadDuplication ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) { collection = instance.threadContext[thread.name]; }
+				}
+				else { collection = instance.privateContext; }
+			}
 
 			structDelete(collection,arguments.name);
 
@@ -188,7 +228,12 @@ Description :
 		<cfargument name="private" 	type="boolean" 	required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			var collection = instance.context;
-			if( arguments.private ){ collection = instance.privateContext; }
+			if( arguments.private ){
+				if ( !isNull(thread) && instance.threadDuplication ) {
+					if ( !structKeyExists(instance.threadContext, thread.name) ) { collection = instance.threadContext[thread.name]; }
+				}
+				else { collection = instance.privateContext; }
+			}
 			return structKeyExists(collection, arguments.name);
 		</cfscript>
 	</cffunction>
@@ -328,7 +373,7 @@ Description :
 	<cffunction name="getCurrentRoutedURL" output="false" access="public" returntype="any" hint="Get the current routed URL that matched the SES route">
     	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
-    
+
     <cffunction name="getCurrentRoutedNamespace" output="false" access="public" returntype="any" hint="Get the current routed namespace that matched the SES route, if any">
     	<cfreturn getValue("currentRoutedNamespace","",true)>
     </cffunction>
@@ -643,7 +688,7 @@ Description :
 		return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="renderData" access="public" returntype="any" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="type" 		required="false"  type="string" default="HTML" hint="The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error">
@@ -670,7 +715,7 @@ Description :
 		<cfargument name="isBinary" 		type="boolean" 	required="false" default="false" hint="Bit that determines if the data being set for rendering is binary or not."/>
 		<cfscript>
 			var rd = structnew();
-			
+
 			// With Formats?
 			if( isArray( arguments.formats ) OR len( arguments.formats ) ){
 				return renderWithFormats( argumentCollection=arguments );
@@ -838,12 +883,12 @@ Description :
     </cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
-		<!--- renderWithFormats --->    
-    <cffunction name="renderWithFormats" output="false" access="private" returntype="any" hint="Render With Formats">    
-    	<cfscript>	    
+
+		<!--- renderWithFormats --->
+    <cffunction name="renderWithFormats" output="false" access="private" returntype="any" hint="Render With Formats">
+    	<cfscript>
 			var viewToRender = "";
-			
+
 			// inflate list to array if found
 			if( isSimpleValue( arguments.formats ) ){ arguments.formats = listToArray( arguments.formats ); }
 			// param incoming rc.format to "html"
@@ -875,13 +920,13 @@ Description :
 						return setView( view=viewToRender);
 					}
 				}
-			}					
+			}
 			else{
-				throw(message="The incoming format #instance.context.format# is not a valid registered format", 
-						  detail="Valid incoming formats are #arguments.formats.toString()#", 
+				throw(message="The incoming format #instance.context.format# is not a valid registered format",
+						  detail="Valid incoming formats are #arguments.formats.toString()#",
 						  type="RequestContext.InvalidFormat");
 			}
-    	</cfscript>    
+    	</cfscript>
     </cffunction>
 
 	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
