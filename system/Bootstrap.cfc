@@ -516,6 +516,28 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
+	* Process Stack trace for errors
+	*/
+	private function processStackTrace( str ){
+		var aMatches = REMatchNoCase( "\(([^\)]+)\)", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
+		}
+		var aMatches = REMatchNoCase( "\[([^\]]+)\]", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
+		}
+		var aMatches = REMatchNoCase( "\$([^(\(|\:)]+)(\:|\()", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='method'>#aString#</span>", "all" );
+		}
+		arguments.str = replaceNoCase( arguments.str, chr(13), "<br>", "all" );
+		arguments.str = replaceNoCase( arguments.str, chr(10), "<br>", "all" );
+		arguments.str = replaceNoCase( arguments.str, chr(9), repeatString( "&nbsp;", 4 ), "all" );
+		return arguments.str;
+	}
+
+	/**
 	* Process render data setup
 	* @controller.hint The ColdBox controller
 	* @statusCode.hint The status code to send

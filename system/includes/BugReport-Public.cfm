@@ -8,31 +8,33 @@ A public error template that just shows that an exception ocurred.
 <cfoutput>
 <!--- StyleSheets --->
 <style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.css.cfm"></style>
-<div class="fw_errorDiv">
-	<h1>Oopsy! An Exception Was Encountered</h1>
+<div class="cb-container">
+	<h1>
+		<cfif oException.geterrorCode() neq "" AND oException.getErrorCode() neq 0>
+			#oException.getErrorCode()# :
+		</cfif>
+		Oopsy! Something went wrong!</h1>
 
-	<div class="fw_errorNotice">
+	<div class="notice">
+		<cfif oException.getExtraMessage() neq "">
 		<!--- CUSTOM SET MESSAGE --->
 		<h3>#oException.getExtramessage()#</h3>
+		</cfif>
 
 		<!--- ERROR TYPE --->
 		<cfif oException.getType() neq "">
-			<strong>Error Type: </strong> #oException.gettype()# : 
-			<cfif oException.geterrorCode() neq "">
-				<strong>Error Code:</strong> #oException.getErrorCode()#
-			</cfif>
-			<br />
+			<strong>Type: </strong> #oException.gettype()# <br>
 		</cfif>
 
 		<!--- ERROR oExceptionS --->
 		<cfif isStruct(oException.getExceptionStruct()) >
-			<strong>Error Messages:</strong>
+			<strong>Messages:</strong>
 			#oException.getmessage()#
 		</cfif>
 	</div>
 
-	<div style="margin:10px;color:gray">
-		<em>* The full robust errors can be seen by switching the error template in your configuration.</em>
+	<div style="margin:10px; color:gray">
+		<em>* The full robust errors can be seen by switching the error template in your configuration file (ColdBox.cfc).</em>
 	</div>
 </div>
 </cfoutput>
