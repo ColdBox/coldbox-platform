@@ -179,14 +179,14 @@
 
 			event.clearCollection();
 
-			event.setView(view);
+			event.setView( view=view );
 			assertEquals( view, event.getCurrentView() );
 
 			event.clearCollection();
 
-			event.setView(view, true);
-			assertEquals(view, event.getCurrentView() );
-			assertEquals('', event.getCurrentLayout() );
+			event.setView(view=view, cache=true);
+			assertEquals( view, event.getCurrentView() );
+			assertEquals( 'Main.cfm', event.getCurrentLayout() );
 
 			// set view with caching
 			event.setView(view="home", cache="True", cacheProvider="luis", cacheTimeout="20", cacheLastAccessTimeout="1", cacheSuffix="test");
@@ -259,21 +259,6 @@
 			event.overrideEvent(newEvent);
 
 			assertEquals( newEvent , event.getCurrentEvent() );
-		</cfscript>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="testshowdebugpanel">
-		<cfscript>
-			var event = getRequestContext();
-
-			event.showDebugPanel(true);
-			AssertTrue( event.getDebugPanelFlag() );
-
-			event.showDebugPanel(false);
-			AssertFalse( event.getDebugPanelFlag() );
-
 		</cfscript>
 	</cffunction>
 
