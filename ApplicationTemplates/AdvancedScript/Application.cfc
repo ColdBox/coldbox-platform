@@ -32,15 +32,6 @@ component{
 
 	// request start
 	public boolean function onRequestStart(String targetPage){
-
-		// Bootstrap Reinit
-		if( not structKeyExists(application,"cbBootstrap") ){
-			lock name="coldbox.bootstrap.#this.name#" type="exclusive" timeout="5" throwonTimeout=true{
-				structDelete( application, "cbBootStrap" );
-				onApplicationStart();
-			}
-		}
-
 		// Process ColdBox Request
 		application.cbBootstrap.onRequestStart( arguments.targetPage );
 

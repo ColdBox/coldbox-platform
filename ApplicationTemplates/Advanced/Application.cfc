@@ -43,13 +43,6 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
-		<!--- BootStrap Reinit Check --->
-		<cfif not structKeyExists( application, "cbBootstrap" ) >
-			<cflock name="coldbox.bootstrap_#hash( getCurrentTemplatePath() )#" type="exclusive" timeout="5" throwontimeout="true">
-				<cfset structDelete( application, "cbBootStrap" )>
-				<cfset onApplicationStart()>
-			</cflock>
-		</cfif>
 		<!--- On Request Start via ColdBox --->
 		<cfset application.cbBootstrap.onRequestStart( arguments.targetPage )>
 
