@@ -22,14 +22,14 @@ component serializable=false accessors="true"{
 	* ColdBox Controller
 	*/
 	property name="controller";
-	
+
 	/**
 	* ColdBox System Properties
 	*/
 	property name="properties";
 
 	/************************************** CONSTRUCTOR *********************************************/
-	
+
 	/**
 	* Constructor
 	* @properties.hint The ColdBox application settings
@@ -38,10 +38,10 @@ component serializable=false accessors="true"{
 	function init( required struct properties={}, required any controller ){
 
 		instance = structnew();
-			
+
 		// Store controller;
 		instance.controller = arguments.controller;
-		
+
 		// Create the Collections
 		instance.context		= structnew();
 		instance.privateContext = structnew();
@@ -88,16 +88,16 @@ component serializable=false accessors="true"{
 
 		return this;
 	}
-	
+
 	/************************************** COLLECTION METHODS *********************************************/
-	
+
 	/**
 	* Get a representation of this instance
 	*/
 	struct function getMemento(){
 		return instance;
 	}
-	
+
 	/**
 	* Override the instance
 	*/
@@ -105,7 +105,7 @@ component serializable=false accessors="true"{
 		variables.instance = arguments.memento;
 		return this;
 	}
-	
+
 	/**
 	* I Get a reference or deep copy of the public or private request Collection
 	* @deepCopy.hint Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
@@ -131,7 +131,7 @@ component serializable=false accessors="true"{
 		arguments.private = true;
 		return getCollection( argumentCollection=arguments );
 	}
-	
+
 	/**
 	* Clears the entire collection
 	* @private.hint Use public or private request collection
@@ -148,7 +148,7 @@ component serializable=false accessors="true"{
 	function clearPrivateCollection(){
 		return clearCollection( private=true );
 	}
-	
+
 	/**
 	* Append a structure to the collection, with overwrite or not. Overwrite = false by default
 	* @collection.hint The collection to incorporate
@@ -170,7 +170,7 @@ component serializable=false accessors="true"{
 		arguments.private = true;
 		return collectionAppend( argumentCollection=arguments );
 	}
-	
+
 	/**
 	* Get the collection Size
 	* @private.hint Private or public, defaults public.
@@ -186,9 +186,9 @@ component serializable=false accessors="true"{
 	numeric function getPrivateSize(){
 		return getSize( private=true );
 	}
-	
+
 	/************************************** KEY METHODS *********************************************/
-	
+
 	/**
 	* Get a value from the public or private request collection.
 	* @name.hint The key name
@@ -225,7 +225,7 @@ component serializable=false accessors="true"{
 		arguments.private = true;
 		return getValue( argumentCollection=arguments );
 	}
-	
+
 	/**
 	* Get a value from the request collection and if simple value, I will trim it.
 	* @name.hint The key name
@@ -250,13 +250,13 @@ component serializable=false accessors="true"{
 		arguments.private = true;
 		return getTrimValue( argumentCollection=arguments );
 	}
-	
+
 	/**
 	* Set a value in the request collection
 	* @name.hint The key name
 	* @value.hint The value
 	* @private.hint Private or public, defaults public.
-	* 
+	*
 	* @return RequestContext
 	*/
 	function setValue( required name, required value, boolean private=false ){
@@ -271,19 +271,19 @@ component serializable=false accessors="true"{
 	* Set a value in the private request collection
 	* @name.hint The key name
 	* @value.hint The value
-	* 
+	*
 	* @return RequestContext
 	*/
 	function setPrivateValue( required name, required value ){
 		arguments.private = true;
 		return setValue( argumentCollection=arguments );
 	}
-	
+
 	/**
 	* remove a value in the request collection
 	* @name.hint The key name
 	* @private.hint Private or public, defaults public.
-	* 
+	*
 	* @return RequestContext
 	*/
 	function removeValue( required name, boolean private=false ){
@@ -298,14 +298,14 @@ component serializable=false accessors="true"{
 	/**
 	* remove a value in the private request collection
 	* @name.hint The key name
-	* 
+	*
 	* @return RequestContext
 	*/
 	function removePrivateValue( required name, boolean private=false ){
 		arguments.private = true;
 		return removeValue( argumentCollection=arguments );
 	}
-	
+
 	/**
 	* Check if a value exists in the request collection
 	* @name.hint The key name
@@ -325,13 +325,13 @@ component serializable=false accessors="true"{
 		arguments.private = true;
 		return valueExists( argumentCollection=arguments );
 	}
-	
+
 	/**
 	* Just like cfparam, but for the request collection
 	* @name.hint The key name
 	* @value.hint The value
 	* @private.hint Private or public, defaults public.
-	* 
+	*
 	* @return RequestContext
 	*/
 	function paramValue( required name, required value, boolean private=false ){
@@ -345,22 +345,22 @@ component serializable=false accessors="true"{
 	* Just like cfparam, but for the private request collection
 	* @name.hint The key name
 	* @value.hint The value
-	* 
+	*
 	* @return RequestContext
 	*/
 	function paramPrivateValue( required name, required value ){
 		arguments.private = true;
 		return paramValue( argumentCollection=arguments );
 	}
-	
+
 	/************************************** CURRENT CONTEXT METHODS *********************************************/
-	
+
 	/**
 	* Gets the current set view the framework will try to render for this request
 	*/
 	string function getCurrentView(){
 		return getPrivateValue( "currentView", "" );
-	}	
+	}
 
 	/**
 	* Gets the current set view the framework will try to render for this request
@@ -368,7 +368,7 @@ component serializable=false accessors="true"{
 	struct function getCurrentViewArgs(){
 		return getPrivateValue( "currentViewArgs", structNew() );
 	}
-	
+
 	/**
 	* Gets the current set views's module for rendering
 	*/
@@ -416,7 +416,7 @@ component serializable=false accessors="true"{
 	string function getCurrentEvent(){
 		return getValue( getEventName(), "" );
 	}
-	
+
 	/**
 	* Gets the current handler requested in the current event
 	*/
@@ -428,7 +428,7 @@ component serializable=false accessors="true"{
 
 		return listLast(testHandler,".");
 	}
-	
+
 	/**
 	* Gets the current action requested in the current event
 	*/
@@ -471,7 +471,7 @@ component serializable=false accessors="true"{
 	}
 
 	/************************************** VIEW-LAYOUT METHODS *********************************************/
-	
+
 	/**
 	* Set the view to render in this request. Private Request Collection Name: currentView, currentLayout
 	* @view.hint The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please
@@ -484,7 +484,7 @@ component serializable=false accessors="true"{
 	* @cacheLastAccessTimeout.hint The last access timeout in minutes
 	* @cacheSuffix.hint Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
 	* @cacheProvider.hint The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider
-	* 
+	*
 	* @return RequestContext
 	*/
 	function setView(
@@ -611,14 +611,14 @@ component serializable=false accessors="true"{
 		instance.privateContext["layoutmodule"] = arguments.module;
 		return this;
 	}
-	
+
 	/**
 	* Get's the default layout of the application
 	*/
 	string function getDefaultLayout(){
 		return instance.defaultLayout;
 	}
-	
+
 	/**
 	* Override the default layout for a request
 	* @return RequestContext
@@ -634,7 +634,7 @@ component serializable=false accessors="true"{
 	string function getDefaultView(){
 		return instance.defaultView;
 	}
-	
+
 	/**
 	* Override the default view for a request
 	* @return RequestContext
@@ -650,27 +650,27 @@ component serializable=false accessors="true"{
 	struct function getViewLayouts(){
 		return instance.viewLayouts;
 	}
-	
+
 	/**
 	* Get all the registered layouts in the configuration file
 	*/
 	struct function getRegisteredLayouts(){
     	return instance.registeredLayouts;
 	}
-	
+
 	/**
 	* Get the registered folder layout associations map
 	*/
 	struct function getFolderLayouts(){
 		return instance.folderLayouts;
 	}
-	
+
 	/************************************** EVENT METHODS *********************************************/
 
 	/**
 	* Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method
 	* @event.hint The event to override with
-	* 
+	*
 	* @return RequestContext
 	*/
 	function overrideEvent( required event ){
@@ -696,7 +696,7 @@ component serializable=false accessors="true"{
 	/**
 	* Set the flag that tells the framework not to render, just execute
 	* @remove.hint Remove the flag completely
-	* 
+	*
 	* @return RequestContext
 	*/
 	function noRender( boolean remove=false ){
@@ -712,24 +712,24 @@ component serializable=false accessors="true"{
 	boolean function isNoRender(){
 		return getPrivateValue( name="coldbox_norender", defaultValue=false );
 	}
-	
+
 	/**
 	* Get the event name
 	*/
 	function getEventName(){
 		return instance.eventName;
 	}
-	
+
 	/**
 	* Determine if we need to execute an incoming event or not
 	*/
 	boolean function isNoExecution(){
 		return instance.isNoExecution;
-	}	
-	
+	}
+
 	/**
 	* Set that the request will not execute an incoming event. Most likely simulating a servlet call
-	* 
+	*
 	* @return RequestContext
 	*/
 	function noExecution(){
@@ -737,7 +737,7 @@ component serializable=false accessors="true"{
    		return this;
 	}
 
-	/************************************** URL METHODS *********************************************/	
+	/************************************** URL METHODS *********************************************/
 
 	/**
 	* Is this request in SES mode
@@ -840,9 +840,9 @@ component serializable=false accessors="true"{
 				return "#frontController#?#getEventName()#=#arguments.linkto#&#arguments.queryString#";
 			}
 		}
-		
+
 	}
-	
+
 	/************************************** CACHING *********************************************/
 
 	/**
@@ -887,7 +887,7 @@ component serializable=false accessors="true"{
 	/**
 	* Set the view cacheable entry
 	* @cacheEntry.hint The md entry for caching
-	* 
+	*
 	* @return RequestContext
 	*/
 	function setViewCacheableEntry( required struct cacheEntry ){
@@ -903,7 +903,7 @@ component serializable=false accessors="true"{
 
 
 	/************************************** RESTFUL *********************************************/
-	
+
 	/**
 	* Get the routed structure of key-value pairs. What the ses interceptor could match.
 	*/
@@ -924,7 +924,7 @@ component serializable=false accessors="true"{
 	* Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you
 	* @type.hint The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
 	* @data.hint The data you would like to marshall and return by the framework
-	* @contentType.hint The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. 
+	* @contentType.hint The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you.
 	* @encoding.hint The default character encoding to use.  The default encoding is utf-8
 	* @statusCode.hint The HTTP status code to send to the browser. Defaults to 200
 	* @statusText.hint Explains the HTTP status code sent to the browser.
@@ -951,11 +951,11 @@ component serializable=false accessors="true"{
 		location="",
 		jsonCallback="",
 	 	jsonQueryFormat="query",
-		boolean jsonAsText=false,	 
-		xmlColumnList="",	  
-		boolean xmlUseCDATA=false,  
-		xmlListDelimiter=",",		 
-		xmlRootName="", 
+		boolean jsonAsText=false,
+		xmlColumnList="",
+		boolean xmlUseCDATA=false,
+		xmlListDelimiter=",",
+		xmlRootName="",
 		struct pdfArgs={},
 		formats="",
 		formatsView="",
@@ -963,7 +963,7 @@ component serializable=false accessors="true"{
 	){
 
 		var rd = structnew();
-			
+
 		// With Formats?
 		if( isArray( arguments.formats ) OR len( arguments.formats ) ){
 			return renderWithFormats( argumentCollection=arguments );
@@ -1032,7 +1032,7 @@ component serializable=false accessors="true"{
 
 		return this;
 	}
-	
+
 	/**
 	* Get the renderData structure
 	*/
@@ -1050,7 +1050,7 @@ component serializable=false accessors="true"{
 	/**
 	* Get the raw HTTP content
 	* @json.hint Try to return the content as deserialized json
-	* @xml.hint Try to return the content as an XML object 
+	* @xml.hint Try to return the content as an XML object
 	*/
 	any function getHTTPContent( boolean json=false, boolean xml=false ){
 		var content = getHTTPRequestData().content;
@@ -1068,19 +1068,21 @@ component serializable=false accessors="true"{
 	* @header.name The header to get
 	* @defaultValue.hint The default value if not found
 	*/
-	function getHTTPHeader(required header, defaultValue=""){
+	function getHTTPHeader( required header, defaultValue="" ){
 		var headers = getHttpRequestData().headers;
 
-		if( structKeyExists(headers, arguments.header) ){
-			return headers[arguments.header];
+		if( structKeyExists( headers, arguments.header ) ){
+			return headers[ arguments.header ];
 		}
-		if( structKeyExists(arguments,"default") ){
-			return arguments.default;
+		if( structKeyExists( arguments, "defaultValue" ) ){
+			return arguments.defaultValue;
 		}
 
-		throw(message="Header #arguments.header# not found in HTTP headers",detail="Headers found: #structKeyList(headers)#",type="RequestContext.InvalidHTTPHeader");
+		throw( message="Header #arguments.header# not found in HTTP headers",
+			   detail="Headers found: #structKeyList( headers )#",
+			   type="RequestContext.InvalidHTTPHeader");
 	}
-	
+
 	/**
 	* Set an HTTP Header
 	* @statusCode.hint the status code
@@ -1088,16 +1090,16 @@ component serializable=false accessors="true"{
 	* @name.hint The header name
 	* @value.hint The header value
 	* @charset.hint The charset to use, defaults to UTF-8
-	* 
+	*
 	* return RequestContext
 	*/
 	function setHTTPHeader(
-		statusCode, 
-		statusText="", 
-		name, 
+		statusCode,
+		statusText="",
+		name,
 		value=""
 	){
-		
+
 		// status code?
 		if( structKeyExists( arguments, "statusCode" ) ){
 			getPageContext().getResponse().setStatus( javaCast( "int", arguments.statusCode ), javaCast( "string", arguments.statusText ) );
@@ -1106,14 +1108,14 @@ component serializable=false accessors="true"{
 		else if( structKeyExists( arguments, "name" ) ){
 			getPageContext().getResponse().addHeader( javaCast( "string", arguments.name ), javaCast( "string", arguments.value ) );
 		} else {
-			throw( message="Invalid header arguments", 
-				  detail="Pass in either a statusCode or name argument", 
+			throw( message="Invalid header arguments",
+				  detail="Pass in either a statusCode or name argument",
 				  type="RequestContext.InvalidHTTPHeaderParameters" );
 		}
 
 		return this;
 	}
-	
+
 	/**
 	* Returns the username and password sent via HTTP basic authentication
 	*/
@@ -1137,7 +1139,7 @@ component serializable=false accessors="true"{
 
 		return results;
     }
-	
+
 	/**
 	* Determines if in an Ajax call or not by looking at the request headers
 	*/
@@ -1152,7 +1154,7 @@ component serializable=false accessors="true"{
 	*/
 	private function renderWithFormats(){
 		var viewToRender = "";
-			
+
 		// inflate list to array if found
 		if( isSimpleValue( arguments.formats ) ){ arguments.formats = listToArray( arguments.formats ); }
 		// param incoming rc.format to "html"
@@ -1185,8 +1187,8 @@ component serializable=false accessors="true"{
 				}
 			}
 		} else {
-			throw( message="The incoming format #instance.context.format# is not a valid registered format", 
-				   detail="Valid incoming formats are #arguments.formats.toString()#", 
+			throw( message="The incoming format #instance.context.format# is not a valid registered format",
+				   detail="Valid incoming formats are #arguments.formats.toString()#",
 				   type="RequestContext.InvalidFormat" );
 		}
 	}
