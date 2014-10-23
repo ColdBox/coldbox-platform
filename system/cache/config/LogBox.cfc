@@ -15,12 +15,8 @@ component{
 		variables.logBox = {
 			// Define Appenders
 			appenders = {
-				console = { 
+				console = {
 					class="coldbox.system.logging.appenders.ConsoleAppender"
-				},
-				cflogs = {
-					class="coldbox.system.logging.appenders.CFAppender",
-					properties = { fileName="ColdBox-CacheBox"}
 				}
 			},
 			// Root Logger
