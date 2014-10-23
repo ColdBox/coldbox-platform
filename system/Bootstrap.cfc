@@ -465,6 +465,10 @@ component serializable="false" accessors="true"{
 		var appLogger  	= arguments.controller.getLogBox().getLogger( this );
 		var event		= arguments.controller.getRequestService().getContext();
 
+		// Announce interception
+		arguments.controller.getInterceptorService()
+			.processState( "onException", { exception = arguments.exception } );
+
 		// Store exception in private context
 		event.setValue( "exception", oException, true );
 
