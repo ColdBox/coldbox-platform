@@ -118,7 +118,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	/**
 	* Render out a view
 	* @view.hint The the view to render, if not passed, then we look in the request context for the current set view.
-	* @args.hint A struct of argumnets to pass into the view for rendering, will be available as 'args' in the view.
+	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	* @module.hint The module to render the view from explicitly
 	* @cache.hint Cached the view output or not, defaults to false
 	* @cacheTimeout.hint The time in minutes to cache the view
@@ -352,7 +352,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
     /**
     * Renders an external view anywhere that cfinclude works.
     * @view.hint The the view to render
-	* @args.hint A struct of argumnets to pass into the view for rendering, will be available as 'args' in the view.
+	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	* @cache.hint Cached the view output or not, defaults to false
 	* @cacheTimeout.hint The time in minutes to cache the view
 	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested

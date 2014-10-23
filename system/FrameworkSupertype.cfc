@@ -105,66 +105,79 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Renders views in your application
-	* @view.hint The view to render
-	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
-	* @module.hint The module to render the view from
-	* @collection.hint A collection to use by this Renderer to render the view as many times as the items in the collection
+	* Render out a view
+	* @view.hint The the view to render, if not passed, then we look in the request context for the current set view.
+	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	* @module.hint The module to render the view from explicitly
+	* @cache.hint Cached the view output or not, defaults to false
+	* @cacheTimeout.hint The time in minutes to cache the view
+	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested
+	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
+	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
+	* @collection.hint A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
 	* @collectionAs.hint The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	* @cache.hint Boolean bit to cache or not the view rendered, defaults to false
-	* @cacheTimeout.hint How long the view (in minutes) should be cached for
-	* @cacheLastAccessTimeout.hint How long (in minutes) should the view remain in cache if not used
-	* @cacheSuffix.hint Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
+	* @collectionStartRow.hint The start row to limit the collection rendering with
+	* @collectionMaxRows.hint The max rows to iterate over the collection rendering with
+	* @collectionDelim.hint  A string to delimit the collection renderings by
+	* @prePostExempt.hint If true, pre/post view interceptors will not be fired. By default they do fire
 	*/
 	function renderView(
-		required view,
+		view="",
 		struct args={},
-		module,
+		module="",
+		boolean cache=false,
+		cacheTimeout="",
+		cacheLastAccessTimeout="",
+		cacheSuffix="",
+		cacheProvider="template",
 		collection,
-		collectionAs,
-		boolean cache,
-		cacheTimeout,
-		cacheLastAccessTimeout,
-		cacheSuffix
+		collectionAs="",
+		numeric collectionStartRow="1",
+		numeric collectionMaxRows=0,
+		collectionDelim="",
+		boolean prePostExempt=false
 	){
 		return controller.getRenderer().renderView( argumentCollection=arguments );
 	}
 
 	/**
-	* Renders views outside of your conventions
-	* @view.hint The view to render
-	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
-	* @module.hint The module to render the view from
-	* @collection.hint A collection to use by this Renderer to render the view as many times as the items in the collection
-	* @collectionAs.hint The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	* @cache.hint Boolean bit to cache or not the view rendered, defaults to false
-	* @cacheTimeout.hint How long the view (in minutes) should be cached for
-	* @cacheLastAccessTimeout.hint How long (in minutes) should the view remain in cache if not used
-	* @cacheSuffix.hint Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
+    * Renders an external view anywhere that cfinclude works.
+    * @view.hint The the view to render
+	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	* @cache.hint Cached the view output or not, defaults to false
+	* @cacheTimeout.hint The time in minutes to cache the view
+	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested
+	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
+	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
 	*/
-	function renderExternalView(
-		required view,
-		struct args={},
-		boolean cache,
-		cacheTimeout,
-		cacheLastAccessTimeout,
-		cacheSuffix
-	){
+    function renderExternalView(
+    	required view,
+    	struct args={},
+    	boolean cache=false,
+    	cacheTimeout="",
+    	cacheLastAccessTimeout="",
+    	cacheSuffix="",
+    	cacheProvider="template"
+    ){
 		return controller.getRenderer().renderExternalView( argumentCollection=arguments );
 	}
 
 	/**
-	* Renders layouts or layout+view combinations for you
-	* @layout.hint The explicit layout to use in rendering
-	* @view.hint The name of the view to passthrough as an argument so you can refer to it as arguments.view
-	* @module.hint Explicitly render a layout from this module
+	* Render a layout or a layout + view combo
+	* @layout.hint The layout to render out
+	* @module.hint The module to explicitly render this layout from
+	* @view.hint The view to render within this layout
 	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
+	* @viewModule.hint The module to explicitly render the view from
+	* @prePostExempt.hint If true, pre/post layout interceptors will not be fired. By default they do fire
 	*/
 	function renderLayout(
 		layout,
-		view,
-		module,
-		args={}
+		module="",
+		view="",
+		struct args={},
+		viewModule="",
+		boolean prePostExempt=false
 	){
 		return controller.getRenderer().renderLayout( argumentCollection=arguments );
 	}
