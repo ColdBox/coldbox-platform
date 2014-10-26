@@ -193,7 +193,7 @@ Description :
 		<cfargument name="properties" 	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with." colddoc:generic="struct"/>
 		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
 		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
-		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
+		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
 		<!--- ************************************************************* --->
 		<cfset var appenders = instance.appenderRegistry>
 		<cfset var oAppender = "">
