@@ -89,6 +89,7 @@ Description :
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
 						case "renderer"				: { return instance.coldbox.getRenderer(); }
 						case "configSettings"		: { return instance.coldbox.getConfigSettings(); }
+						case "fwSettings"			: { return instance.coldbox.getColdboxSettings(); }
 					} // end of services
 
 					break;
