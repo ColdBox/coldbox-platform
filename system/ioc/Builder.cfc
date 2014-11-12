@@ -318,7 +318,12 @@ TODO: update dsl consistency, so it is faster.
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
 
-			// Determine Type of Injection according to Internal Types first
+			// Check if Custom DSL exists, if it does, execute it
+			if( structKeyExists( instance.customDSL, DSLNamespace ) ){
+				return instance.customDSL[ DSLNamespace ].process(argumentCollection=arguments);
+			}
+
+			// Determine Type of Injection according to type
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch( DSLNamespace ){
 				// ColdBox Context DSL
@@ -349,13 +354,9 @@ TODO: update dsl consistency, so it is faster.
 
 				// No internal DSL's found, then check custom DSL's
 				default : {
-					// Check if Custom DSL exists, if it does, execute it
-					if( structKeyExists( instance.customDSL, DSLNamespace ) ){
-						refLocal.dependency = instance.customDSL[ DSLNamespace ].process(argumentCollection=arguments);
-					}
 
-					// If no custom DSL's found, let's try to use the name as the empty namespace
-					else if( NOT find( ":", arguments.definition.dsl ) ){
+					// If no DSL's found, let's try to use the name as the empty namespace
+					if( NOT find( ":", arguments.definition.dsl ) ){
 						arguments.definition.dsl = "id:#arguments.definition.dsl#";
 						refLocal.dependency = getModelDSL(argumentCollection=arguments);
 					}
