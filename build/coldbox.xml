@@ -10,13 +10,13 @@
 	
 	<!-- UPDATE ON EACH VERSION CYCLE -->
 	<property name="groupID"			value="ortussolutions" />
-	<property name="coldbox.version" 	value="4.0.0-rc" />
+	<property name="coldbox.version" 	value="4.0.0" />
 	<property name="coldbox.slug"	 	value="coldbox"/>
-	<property name="cachebox.version" 	value="2.0.0-rc" />
+	<property name="cachebox.version" 	value="2.0.0" />
 	<property name="cachebox.slug"	 	value="cachebox"/>
-	<property name="logbox.version" 	value="2.0.0-rc" />
+	<property name="logbox.version" 	value="2.0.0" />
 	<property name="logbox.slug"	 	value="logbox"/>
-	<property name="wirebox.version" 	value="2.0.0-rc" />
+	<property name="wirebox.version" 	value="2.0.0" />
 	<property name="wirebox.slug"	 	value="wirebox"/>
 	
 	<!-- Build Labels -->
