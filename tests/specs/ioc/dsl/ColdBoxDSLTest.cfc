@@ -42,30 +42,6 @@
 		assertEquals( "mysql", d.dbtype );
 	}
 
-	function testGetOCMDSL(){
-		mockCache = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider");
-		mockCacheBox.$("getCache", mockCache);
-		makePublic(builder, "getOCMDSL");
-
-		//ocm only
-		def = {name="key", dsl="ocm"};
-		mockCache.$("get",this);
-		e = builder.getOCMDSL(def);
-		assertEquals( this, e);
-
-		//ocm only
-		mockCache.$("get", javaCast("null",""));
-		results.e = builder.getOCMDSL(def);
-		assertFalse( structKeyExists(results,"e")  );
-
-		// ocm:MyKey
-		def = {name="key", dsl="ocm:myKey"};
-		mockCache.$("get",this);
-		e = builder.getOCMDSL(def);
-		assertEquals( this, e);
-		assertEquals( "myKey", mockCache.$callLog().get[1][1] );
-	}
-
 	function testgetColdboxDSLStage1AndStage2(){
 		makePublic(builder, "getColdboxDSL");
 
