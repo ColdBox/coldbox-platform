@@ -150,27 +150,7 @@ Description :
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
 		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
-			var thisTypeLen = listLen(arguments.definition.dsl,":");
-			var cacheKey 	= "";
-			var cache		= instance.cacheBox.getCache('default');
-			var refLocal	= {};
-
-			// DSL stages
-			switch(thisTypeLen){
-				// ocm only
-				case 1: { cacheKey = arguments.definition.name; break;}
-				// ocm:objectKey
-				case 2: { cacheKey = getToken(arguments.definition.dsl,2,":"); break;}
-			}
-
-			// Verify that dependency exists in the Cache container
-			refLocal.target = cache.get( cacheKey );
-			if( structKeyExists(refLocal, "target") ){
-				return refLocal.target;
-			}
-			else if( instance.log.canDebug() ){
-				instance.log.debug("getOCMDSL() cannot find cache Key: #cacheKey# using definition: #arguments.definition.toString()#");
-			}
+			throw( "This DSL has been deprecated in favor of the 'cachebox' Namespace." );
 		</cfscript>
 	</cffunction>
 

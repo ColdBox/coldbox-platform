@@ -317,7 +317,6 @@ TODO: update dsl consistency, so it is faster.
 		<cfscript>
 			var refLocal 			= {};
 			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
-			var coldboxDSLRegex		= "^(ocm|coldbox|cachebox)$";
 
 			// Determine Type of Injection according to Internal Types first
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
