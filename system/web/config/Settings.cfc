@@ -13,7 +13,7 @@ component{
 	this.authorEmail 	= "coldbox@ortussolutions.com";
 	this.authorWebsite	= "http://www.ortussolutions.com";
 	this.suffix			= "Gideon Beta";
-	this.version		= "4.0.0-rc+@build.number@";
+	this.version		= "4.0.0+@build.number@";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
 	// Operation Defaults
