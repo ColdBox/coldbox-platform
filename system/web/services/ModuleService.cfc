@@ -69,7 +69,7 @@ I oversee and manage ColdBox modules
 			// construct our locations array, conventions first.
 			modLocations.addAll( controller.getSetting( "ModulesExternalLocation" ) );
 			// iterate through locations and build the module registry in order
-			buildRegistry(modLocations);
+			buildRegistry( modLocations );
 		</cfscript>
     </cffunction>
 
@@ -474,6 +474,22 @@ I oversee and manage ColdBox modules
 			var modules = structKeyList(controller.getSetting( "modules" ));
 
 			return listToArray(modules);
+		</cfscript>
+	</cffunction>
+
+	<!--- isModuleRegistered --->
+	<cffunction name="isModuleRegistered" output="false" access="public" returntype="boolean" hint="Check and see if a module has been registered">
+		<cfargument name="moduleName" required="true" type="string">
+		<!--- Verify it in the main settings --->
+		<cfreturn structKeyExists( controller.getSetting( "modules" ), arguments.moduleName )>
+	</cffunction>
+
+	<!--- isModuleActive --->
+	<cffunction name="isModuleActive" output="false" access="public" returntype="boolean" hint="Check and see if a module has been activated">
+		<cfargument name="moduleName" required="true" type="string">
+		<cfscript>
+			var modules = controller.getSetting( "modules" );
+			return ( isModuleRegistered( arguments.moduleName ) and modules[ arguments.moduleName ].activated ? true : false );
 		</cfscript>
 	</cffunction>
 
