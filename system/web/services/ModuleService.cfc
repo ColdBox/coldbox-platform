@@ -402,9 +402,13 @@ I oversee and manage ColdBox modules
 				if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
 					// Add as a mapped directory with module name as the namespace with correct mapping path
 					var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
-					wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
+					if( len( mConfig.modelNamespace ) ){
+						wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
+					} else {
+						// just register with no namespace
+						wirebox.getBinder().mapDirectory( packagePath=packagePath );
+					}
 				}
-
 
 				// Register Interceptors with Announcement service
 				for( y=1; y lte arrayLen( mConfig.interceptors ); y++ ){
