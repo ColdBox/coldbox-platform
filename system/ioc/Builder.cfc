@@ -302,6 +302,7 @@ TODO: update dsl consistency, so it is faster.
 		<cfargument name="targetObject" required="false"	default="" 	hint="The target object we are building the DSL dependency for"/>
 		<cfscript>
 			var definition = {
+				required=true,
 				name = "",
 				dsl = arguments.dsl
 			};
