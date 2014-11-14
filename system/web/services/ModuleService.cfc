@@ -56,13 +56,6 @@ I oversee and manage ColdBox modules
     <cffunction name="getModuleRegistry" output="false" access="public" returntype="struct" hint="Get the discovered module's registry structure">
     	<cfreturn instance.moduleRegistry>
     </cffunction>
-    
-	<!--- isModuleRegistered --->
-    <cffunction name="isModuleRegistered" output="false" access="public" returntype="boolean" hint="Check and see if a module has been registered">
-    	<cfargument name="moduleName" required="true" type="string">
-    	
-    	<cfreturn structKeyExists( getModuleRegistry(), arguments.moduleName )>
-    </cffunction>
 
     <!--- getModuleConfigCache  --->
     <cffunction name="getModuleConfigCache" access="public" returntype="struct" output="false" hint="Return the loaded module's configuration objects">
@@ -481,14 +474,6 @@ I oversee and manage ColdBox modules
 			var modules = structKeyList(controller.getSetting( "modules" ));
 
 			return listToArray(modules);
-		</cfscript>
-	</cffunction>
-	
-	<!--- isModuleLoaded --->
-	<cffunction name="isModuleLoaded" output="false" access="public" returntype="boolean" hint="Check and see if a module has been loaded.">
-    	<cfargument name="moduleName" required="true" type="string">
-		<cfscript>
-			return arrayFind( getLoadedModules(), arguments.moduleName ) > 0;
 		</cfscript>
 	</cffunction>
 
