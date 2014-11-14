@@ -66,7 +66,6 @@ Only one instance of a specific ColdBox application exists.
 
 			// Create Data Marshaller
 			variables.dataMarshaller = new coldbox.system.core.conversion.DataMarshaller();
-			variables.testing = "luis";
 
 			return this;
 		</cfscript>
