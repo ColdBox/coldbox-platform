@@ -34,7 +34,7 @@ A public error template that just shows that an exception ocurred.
 	</div>
 
 	<div style="margin:10px; color:gray">
-		<em>* The full robust errors can be seen by switching the error template in your configuration file (ColdBox.cfc).</em>
+		<em>* The full robust errors can be seen by switching the <strong>coldbox.customErrorTemplate</strong> in your configuration file (/config/ColdBox.cfc) to "/coldbox/system/includes/BugReport.cfm" and reloading the application.</em>
 	</div>
 </div>
 </cfoutput>

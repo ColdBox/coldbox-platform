@@ -70,22 +70,32 @@ A reporting template about exceptions in your ColdBox Apps
 	<div class="extended">
 		<!--- TAG CONTEXT --->
 		<h2>Tag Context:</h2>
-		<table class="table" align="center">
+		<table class="table" align="center" cellspacing="0">
 		<cfif ArrayLen( oException.getTagContext() )>
 			  <cfset arrayTagContext = oException.getTagContext()>
 			  <cfloop from="1" to="#arrayLen(arrayTagContext)#" index="i">
+				  <!--- Don't clutter the screen with this information unless it's actually useful --->
+			  	  <cfif structKeyExists( arrayTagContext[i], "ID" ) and len( arrayTagContext[i].ID ) and arrayTagContext[i].ID neq "??">
 			  <tr >
-				<td align="right" class="info">ID:</td>
-			    <td ><cfif not structKeyExists(arrayTagContext[i], "ID")>??<cfelse>#arrayTagContext[i].ID#</cfif></td>
+						<td align="right" class="info">Tag:</td>
+					    <td>#arrayTagContext[i].ID#</td>
 			  </tr>
+				  </cfif>
 			   <tr >
+					<td align="right" class="info">Template:</td>
+				    <td style="color:green;"><strong>#arrayTagContext[i].Template#</strong></td>
+				   </tr>
+			  	  <cfif structKeyExists( arrayTagContext[i], "codePrintHTML" )>
+					  <tr class="tablebreak">
 				<td align="right" class="info">LINE:</td>
-			    <td ><strong>#arrayTagContext[i].LINE#</strong></td>
+					    <td>#arrayTagContext[i].codePrintHTML#</td>
 			   </tr>
+				  <cfelse>
 			   <tr class="tablebreak">
-				<td align="right" class="info">Template:</td>
-			    <td style="color:green;"><strong>#arrayTagContext[i].Template#</strong></td>
+						<td align="right" class="info">Line:</td>
+					    <td ><strong>#arrayTagContext[i].LINE#</strong></td>
 			   </tr>
+				  </cfif>
 			  </cfloop>
 		</cfif>
 		</table>

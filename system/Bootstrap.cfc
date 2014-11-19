@@ -535,8 +535,9 @@ component serializable="false" accessors="true"{
 		for( var aString in aMatches ){
 			arguments.str = replacenocase( arguments.str, aString, "<span class='method'>#aString#</span>", "all" );
 		}
-		arguments.str = replaceNoCase( arguments.str, chr(13), "<br>", "all" );
-		arguments.str = replaceNoCase( arguments.str, chr(10), "<br>", "all" );
+		arguments.str = replace( arguments.str, chr( 13 ) & chr( 10 ), chr( 13 ) , 'all' );
+		arguments.str = replace( arguments.str, chr( 10 ), chr( 13 ) , 'all' );
+		arguments.str = replace( arguments.str, chr( 13 ), '<br>' , 'all' );
 		arguments.str = replaceNoCase( arguments.str, chr(9), repeatString( "&nbsp;", 4 ), "all" );
 		return arguments.str;
 	}
