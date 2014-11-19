@@ -90,8 +90,8 @@ I oversee and manage ColdBox modules
 			if( arrayLen( includeModules ) ){
 				for( var thisModule in includeModules ){
 					// does module exists in the registry? We only register what is found
-					if( structKeyExists( instance.moduleRegistry, includeModules[ x ] ) ){
-						registerModule( includeModules[ x ] );
+					if( structKeyExists( instance.moduleRegistry, thisModule ) ){
+						registerModule( thisModule );
 					}
 				}
 				return this;
