@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
@@ -324,7 +324,25 @@ Description :
 					thisAppender = appenders[key];
 					// Log the message in the appender if the appender allows it
 					if( thisAppender.canLog(arguments.severity) ){
-						thisAppender.logMessage(logEvent);
+						
+						// check to see if the async property was passed during definition 
+						if( thisAppender.propertyExists('async') && thisAppender.getProperty('async') eq true ) {
+							var uuid = createobject("java", "java.util.UUID").randomUUID();
+							var threadName = "#thisAppender.getname()#_logMessage_#replace(uuid,"-","","all")#";
+
+							// Are we in a thread already?
+							if( getUtil().inThread() ) {
+								thisAppender.logMessage(logEvent);
+							} else {
+								// Thread this puppy
+								thread action="run" name="#threadName#" logEvent="#logEvent#" {
+			 						thisAppender.logMessage(attributes.logEvent);
+			 					}
+							}
+							
+						} else {
+							thisAppender.logMessage(logEvent);
+						}
 					}
 				}
 			}
@@ -363,6 +381,11 @@ Description :
     <cffunction name="canDebug" output="false" access="public" returntype="any" hint="Can log debug messages" colddoc:generic="Boolean">
     	<cfreturn canLog( this.logLevels.DEBUG )>
     </cffunction>
+
+	<!--- Get ColdBox Util --->
+	<cffunction name="getUtil" access="public" output="false" returntype="any" hint="Create and return a util object" colddoc:generic="coldbox.system.core.util.Util">
+		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
