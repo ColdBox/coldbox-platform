@@ -1,16 +1,13 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
+* The different logging levels available in LogBox. Log levels available in the this scope: OFF=-1, FATAL=0, ERROR=1, WARN=2, INFO=3, DEBUG=4
+* @author Luis Majano <lmajano@ortussolutions.com>
+*/
+component{
 
-Author      :	Luis Majano
-Date        :	3/13/2009
-Description :
-	The log levels enum
------------------------------------------------------------------------>
-<cfcomponent hint="The available log levels in LogBox.  Log levels available in the this scope: OFF=-1, FATAL=0, ERROR=1, WARN=2, INFO=3, DEBUG=4" output="false">
-<cfscript>
 	// All Available Logging Levels for LogBox
 	this.OFF 	= -1;
 	this.FATAL 	= 0;
@@ -66,6 +63,4 @@ Description :
 	function isLevelValid(level){
 		return ( arguments.level gte this.MINLEVEL AND arguments.level lte this.MAXLEVEL );
 	}
-
-</cfscript>
-</cfcomponent>
+}

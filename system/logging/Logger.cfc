@@ -15,16 +15,18 @@ Description :
 
 	<cfscript>
 		// The log levels enum as a public property
-		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
+		this.logLevels  = createObject( "component", "coldbox.system.logging.LogLevels" );
+		this.util 		= createObject( "component", "coldbox.system.core.util.Util" );
 
 		// private instance scope
 		instance 				= structnew();
-		instance._hash 			= createObject('java','java.lang.System').identityHashCode(this);
+		instance._hash 			= createObject( 'java','java.lang.System').identityHashCode( this );
 		instance.rootLogger 	= "";
 		instance.category 		= "";
 		instance.appenders 		= "";
 		instance.lockName 		= instance._hash & "LoggerOperation";
 		instance.lockTimeout 	= 20;
+		
 		// Logger Logging Level defaults, which is wideeeee open!
 		instance.levelMin 		= this.logLevels.FATAL;
 		instance.levelMax 		= this.logLevels.DEBUG;
@@ -39,8 +41,8 @@ Description :
 		<cfscript>
 
 			// Save Properties
-			instance.category = arguments.category;
-			instance.appenders = arguments.appenders;
+			instance.category 	= arguments.category;
+			instance.appenders 	= arguments.appenders;
 
 			// Set logging levels
 			setLevelMin( arguments.levelMin );
@@ -310,7 +312,7 @@ Description :
 			if( canLog(arguments.severity) ){
 				// Create Logging Event
 				arguments.category = target.getCategory();
-				logEvent = createobject("component","coldbox.system.logging.LogEvent").init(argumentCollection=arguments);
+				logEvent = createobject( "component", "coldbox.system.logging.LogEvent" ).init( argumentCollection=arguments );
 
 				// Do we have appenders locally? or go to root Logger
 				if( NOT hasAppenders() ){
@@ -319,12 +321,28 @@ Description :
 				// Get appenders
 				appenders = target.getAppenders();
 				// Delegate Calls to appenders
-				for(key in appenders){
+				for( key in appenders ){
 					// Get Appender
-					thisAppender = appenders[key];
+					thisAppender = appenders[ key ];
 					// Log the message in the appender if the appender allows it
-					if( thisAppender.canLog(arguments.severity) ){
-						thisAppender.logMessage(logEvent);
+					if( thisAppender.canLog( arguments.severity ) ){
+						
+						// check to see if the async property was passed during definition 
+						if( thisAppender.propertyExists( 'async' ) && thisAppender.getProperty( 'async' ) ) {
+							// prepare threading variables.
+							var threadName 	= "logMessage_#replace( createUUID(), "-", "", "all" )#";
+							// Are we in a thread already?
+							if( getUtil().inThread() ) {
+								thisAppender.logMessage( logEvent );
+							} else {
+								// Thread this puppy
+								thread action="run" name="#threadName#" logEvent="#logEvent#" {
+			 						thisAppender.logMessage( attributes.logEvent );
+			 					}
+							}
+						} else {
+							thisAppender.logMessage( logEvent );
+						}
 					}
 				}
 			}
