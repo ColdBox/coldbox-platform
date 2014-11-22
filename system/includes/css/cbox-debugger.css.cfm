@@ -46,7 +46,7 @@ body{ margin: 0px; }
 .cb-container table td{
 	background-color: #ffffff;
 	border: 1px dotted #eaeaea;
-	padding: 10px
+	padding: 5px
 }
 .cb-container table td.info{
 	background-color: #f5f5f5;
