@@ -104,6 +104,7 @@ Description :
 	<!--- methodProxy --->
 	<cffunction name="methodProxy" access="public" hint="a method proxy" returntype="any" output="false">
 		<cfscript>
+			var method = 0;
 			var methodName = getFunctionCalledName();
 
 			if( !structKeyExists( this.$exposedMethods, methodName ) ){
@@ -112,7 +113,7 @@ Description :
 					   type="ExposedMethodProxy" );
 			}
 
-			var method = this.$exposedMethods[ methodName ];
+			method = this.$exposedMethods[ methodName ];
 			return method( argumentCollection=arguments );
 		</cfscript>
 	</cffunction>
