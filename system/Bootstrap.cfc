@@ -406,7 +406,7 @@ component serializable="false" accessors="true"{
 
 		if( not isSimpleValue( cbController ) ){
 			// Get Context
-			var event = cbController.getContext();
+			var event = cbController.getRequestService().getContext();
 
 			// Execute interceptors
 			var iData = {
