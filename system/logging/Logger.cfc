@@ -16,11 +16,11 @@ Description :
 	<cfscript>
 		// The log levels enum as a public property
 		this.logLevels  = createObject( "component", "coldbox.system.logging.LogLevels" );
-		this.util 		= createObject( "component", "coldbox.system.core.util.Util" );
 
 		// private instance scope
 		instance 				= structnew();
 		instance._hash 			= createObject( 'java','java.lang.System').identityHashCode( this );
+		instance.util 			= createObject( "component", "coldbox.system.core.util.Util" );
 		instance.rootLogger 	= "";
 		instance.category 		= "";
 		instance.appenders 		= "";
@@ -332,7 +332,7 @@ Description :
 							// prepare threading variables.
 							var threadName 	= "logMessage_#replace( createUUID(), "-", "", "all" )#";
 							// Are we in a thread already?
-							if( getUtil().inThread() ) {
+							if( instance.util.inThread() ) {
 								thisAppender.logMessage( logEvent );
 							} else {
 								// Thread this puppy
