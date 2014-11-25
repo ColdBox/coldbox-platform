@@ -92,7 +92,7 @@
 		mockColdbox.$("getDataMarshaller",  mockMarshaller);
 		def = {name="marshaller", dsl="coldbox:dataMarshaller"};
 		c = builder.getColdBoxDSL(def);
-		assertEquals( mockrenderer, c);
+		assertEquals( mockMarshaller, c);
 	}
 
 	function testgetColdboxDSLStage3(){
