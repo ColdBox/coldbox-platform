@@ -270,7 +270,7 @@ I oversee and manage ColdBox modules
 				mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
 				// Register CFML Mapping if it exists, for loading purposes
 				if( len( trim( mConfig.cfMapping ) ) ){
-					getUtil().addMapping( name=mConfig.cfMapping, path=mConfig.path );
+					controller.getUtil().addMapping( name=mConfig.cfMapping, path=mConfig.path );
 					instance.cfmappingRegistry[ mConfig.cfMapping ] = mConfig.path;
 				}
 				// Register Custom Interception Points
@@ -315,7 +315,7 @@ I oversee and manage ColdBox modules
     	<cfscript>
 			// Iterate through cfmapping registry and load them
 			for( var thisMapping in instance.cfmappingRegistry ){
-				getUtil().addMapping( name=thisMapping, path=instance.cfmappingRegistry[ thisMapping ] );
+				controller.getUtil().addMapping( name=thisMapping, path=instance.cfmappingRegistry[ thisMapping ] );
 			}
     	</cfscript>
     </cffunction>
@@ -590,7 +590,7 @@ I oversee and manage ColdBox modules
 			var oConfig 	= createObject( "component", mConfig.invocationPath & ".ModuleConfig" );
 			var toLoad 		= "";
 			var appSettings = controller.getConfigSettings();
-			var mixerUtil	= getUtil().getMixerUtil();
+			var mixerUtil	= controller.getUtil().getMixerUtil();
 
 			// Decorate It
 			oConfig.injectPropertyMixin = mixerUtil.injectPropertyMixin;

@@ -485,7 +485,7 @@ Description :
 				cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
 
 				//Clean Extension
-				cleanHandler = getUtil().ripExtension(cleanhandler);
+				cleanHandler = controller.getUtil().ripExtension(cleanhandler);
 
 				//Add data to array
 				ArrayAppend(fileArray,cleanHandler);

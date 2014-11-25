@@ -88,6 +88,7 @@ Description :
 						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
 						case "renderer"				: { return instance.coldbox.getRenderer(); }
+						case "dataMarshaller"		: { return instance.coldbox.getDataMarshaller(); }
 						case "configSettings"		: { return instance.coldbox.getConfigSettings(); }
 						case "fwSettings"			: { return instance.coldbox.getColdboxSettings(); }
 					} // end of services

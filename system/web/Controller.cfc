@@ -13,9 +13,6 @@ Only one instance of a specific ColdBox application exists.
 ----------------------------------------------------------------------->
 <cfcomponent hint="This is the ColdBox Front Controller that dispatches events and manages your ColdBox application." output="false" serializable="false" accessors="true">
 
-	<cfproperty name="dataMarshaller">
-	<cfproperty name="testing">
-
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" returntype="any" access="public" hint="Constructor" output="false" colddoc:generic="coldbox.system.web.Controller">
@@ -64,9 +61,6 @@ Only one instance of a specific ColdBox application exists.
 			// WireBox Instance
 			instance.wireBox	= createObject("component","coldbox.system.ioc.Injector");
 
-			// Create Data Marshaller
-			variables.dataMarshaller = new coldbox.system.core.conversion.DataMarshaller();
-
 			return this;
 		</cfscript>
 	</cffunction>
@@ -84,7 +78,14 @@ Only one instance of a specific ColdBox application exists.
 	<!--- getRenderer --->
     <cffunction name="getRenderer" output="false" access="public" returntype="any" hint="Get the system web renderer">
     	<cfscript>
-    		return instance.wirebox.getInstance( "coldbox.system.web.Renderer" );
+    		return instance.wirebox.getInstance( "Renderer@coldbox" );
+    	</cfscript>
+    </cffunction>
+
+    <!--- getDataMarshaller --->
+    <cffunction name="getDataMarshaller" output="false" access="public" returntype="any" hint="Get the system data marshaller">
+    	<cfscript>
+    		return instance.wirebox.getInstance( "DataMarshaller@coldbox" );
     	</cfscript>
     </cffunction>
 

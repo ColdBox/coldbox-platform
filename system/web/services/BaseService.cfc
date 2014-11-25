@@ -10,10 +10,6 @@ component accessors="true"{
 	// controller reference
 	property name="controller";
 
-	function getUtil(){
-		return controller.getUtil();
-	}
-
 	// ************************ INTERNAL EVENTS ************************//
 
 	function onConfigurationLoad(){}

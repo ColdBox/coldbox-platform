@@ -11,7 +11,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	/************************************** DI *********************************************/
 
 	property name="templateCache" 	inject="cachebox:template";
-	property name="html"			inject="coldbox.system.core.dynamic.HTMLHelper";
+	property name="html"			inject="HTMLHelper@coldbox";
 
 	/************************************** PROPERTIES *********************************************/
 

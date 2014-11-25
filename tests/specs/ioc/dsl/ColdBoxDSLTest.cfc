@@ -87,6 +87,12 @@
 		def = {name="renderer", dsl="coldbox:renderer"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( mockrenderer, c);
+
+		mockMarshaller = createEmptyMock( "coldbox.system.core.conversion.DataMarshaller" );
+		mockColdbox.$("getDataMarshaller",  mockMarshaller);
+		def = {name="marshaller", dsl="coldbox:dataMarshaller"};
+		c = builder.getColdBoxDSL(def);
+		assertEquals( mockrenderer, c);
 	}
 
 	function testgetColdboxDSLStage3(){
