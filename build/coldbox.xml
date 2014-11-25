@@ -31,7 +31,6 @@
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	<!-- Import Box-Repo Tasks -->
 	<import><url url="https://raw.githubusercontent.com/Ortus-Solutions/box-tasks/master/box-repo.xml"/></import>
-	 	
 	
 	<!-- Init -->
 	<target name="init" description="Init the build" unless="src.isInit">

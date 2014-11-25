@@ -19,7 +19,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Setup The Controller.
-			setController(arguments.controller);
+			variables.controller = arguments.controller;
 
 			// Setup the Event Handler Cache Dictionary
 			instance.handlerCacheDictionary = {};

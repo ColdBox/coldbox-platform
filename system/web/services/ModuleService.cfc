@@ -17,7 +17,7 @@ I oversee and manage ColdBox modules
 	<cffunction name="init" access="public" output="false" returntype="ModuleService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			setController(arguments.controller);
+			variables.controller = arguments.controller;
 
 			// service properties
 			instance.logger 			= "";
@@ -65,9 +65,12 @@ I oversee and manage ColdBox modules
 	<!--- rebuildRegistry --->
     <cffunction name="rebuildModuleRegistry" output="false" access="public" returntype="any" hint="Rescan the module locations directories and re-register all located modules, this method does NOT register or activate any modules, it just reloads the found registry">
     	<cfscript>
+    		// Add the application's module's location and the system core modules
     		var modLocations   = [ controller.getSetting( "ModulesLocation" ) ];
-			// construct our locations array, conventions first.
+			// Add the application's external locations array.
 			modLocations.addAll( controller.getSetting( "ModulesExternalLocation" ) );
+			// Add the ColdBox Core Modules Location
+			arrayAppend( modLocations, "/coldbox/system/modules" );
 			// iterate through locations and build the module registry in order
 			buildRegistry( modLocations );
 		</cfscript>
