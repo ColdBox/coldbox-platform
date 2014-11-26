@@ -434,47 +434,47 @@ component serializable="false" accessors="true"{
 		}
 
 		// Setup Invoker args
-		loc.args 			= structnew();
-		loc.args.event 		= oRequestContext;
-		loc.args.rc			= oRequestContext.getCollection();
-		loc.args.prc		= oRequestContext.getCollection(private=true);
-		loc.args.eventArguments = arguments.eventArguments;
+		var args = {
+			event 			= oRequestContext,
+			rc 				= oRequestContext.getCollection(),
+			prc 			= oRequestContext.getCollection(private=true),
+			eventArguments  = arguments.eventArguments
+		};
 
-		// Setup Main Invoker Args
-		loc.argsMain 			= structnew();
-		loc.argsMain.event		= oRequestContext;
-		loc.argsMain.rc			= loc.args.rc;
-		loc.argsMain.prc		= loc.args.prc;
-		structAppend(loc.argsMain, arguments.eventArguments);
+		// Setup Main Invoker Args with event arguments
+		var argsMain = {
+			event 			= oRequestContext,
+			rc 				= args.rc,
+			prc 			= args.prc
+		};
+		structAppend( argsMain, arguments.eventArguments );
 
 		// Setup interception data
 		iData.processedEvent 	= arguments.event;
 		iData.eventArguments	= arguments.eventArguments;
 
 		// Validate the incoming event and get a handler bean to continue execution
-		ehBean = services.handlerService.getRegisteredHandler(arguments.event);
-
+		ehBean = services.handlerService.getRegisteredHandler( arguments.event );
 		// Validate this is not a view dispatch, else return for rendering
 		if( ehBean.getViewDispatch() ){	return;	}
-
 		// Is this a private event execution?
-		ehBean.setIsPrivate(arguments.private);
+		ehBean.setIsPrivate( arguments.private );
 		// Now get the correct handler to execute
-		oHandler = services.handlerService.getHandler(ehBean,oRequestContext);
+		oHandler = services.handlerService.getHandler( ehBean, oRequestContext );
 		// Validate again this is not a view dispatch as the handler might exist but not the action
 		if( ehBean.getViewDispatch() ){	return;	}
 
 		try{
 			// Determine if it is An allowed HTTP method to execute, else throw error
-			if( NOT structIsEmpty(oHandler.allowedMethods) AND
-				structKeyExists(oHandler.allowedMethods,ehBean.getMethod()) AND
-				NOT listFindNoCase(oHandler.allowedMethods[ehBean.getMethod()],oRequestContext.getHTTPMethod()) ){
+			if( NOT structIsEmpty( oHandler.allowedMethods ) AND
+				structKeyExists( oHandler.allowedMethods,ehBean.getMethod() ) AND
+				NOT listFindNoCase( oHandler.allowedMethods[ ehBean.getMethod() ],oRequestContext.getHTTPMethod() ) ){
 
 				// Do we have a local handler for this exception, if so, call it
 				if( oHandler._actionExists( "onInvalidHTTPMethod" ) ){
 					return oHandler.onInvalidHTTPMethod( event=oRequestContext,
-														 rc=loc.args.rc,
-														 prc=loc.args.prc,
+														 rc=args.rc,
+														 prc=args.prc,
 														 faultAction=ehBean.getmethod(),
 														 eventArguments=arguments.eventArguments );
 				}
@@ -501,7 +501,7 @@ component serializable="false" accessors="true"{
 
 				// Execute Pre Handler if it exists and valid?
 				if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
-					oHandler.preHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
+					oHandler.preHandler(event=oRequestContext,rc=args.rc,prc=args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
 				}
 
 				// Execute pre{Action}? if it exists and valid?
@@ -520,7 +520,7 @@ component serializable="false" accessors="true"{
 
 			// Invoke onMissingAction event
 			if( ehBean.isMissingAction() ){
-				loc.results	= oHandler.onMissingAction(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,missingAction=ehBean.getMissingAction(),eventArguments=arguments.eventArguments);
+				loc.results	= oHandler.onMissingAction(event=oRequestContext,rc=args.rc,prc=args.prc,missingAction=ehBean.getMissingAction(),eventArguments=arguments.eventArguments);
 			}
 			// Invoke main event
 			else{
@@ -528,18 +528,18 @@ component serializable="false" accessors="true"{
 				// Around {Action} Advice Check?
 				if( oHandler._actionExists("around#ehBean.getMethod()#") ){
 					// Add target Action to loc.args
-					loc.args.targetAction  	= oHandler[ehBean.getMethod()];
+					args.targetAction  	= oHandler[ehBean.getMethod()];
 					loc.results = invoker(oHandler, "around#ehBean.getMethod()#", loc.args);
 					// Cleanup: Remove target action from loc.args for post events
 					structDelete(loc.args, "targetAction");
 				}
 				// Around Handler Advice Check?
 				else if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
-					loc.results = oHandler.aroundHandler(event=oRequestContext,rc=loc.args.rc,prc=loc.args.prc,targetAction=oHandler[ehBean.getMethod()],eventArguments=arguments.eventArguments);
+					loc.results = oHandler.aroundHandler(event=oRequestContext,rc=args.rc,prc=loc.args.prc,targetAction=oHandler[ehBean.getMethod()],eventArguments=arguments.eventArguments);
 				}
 				else{
 					// Normal execution
-					loc.results = invoker(oHandler, ehBean.getMethod(), loc.argsMain, arguments.private);
+					loc.results = invoker(oHandler, ehBean.getMethod(), argsMain, arguments.private);
 				}
 			}
 
@@ -681,21 +681,16 @@ component serializable="false" accessors="true"{
 		return false;
 	}
 
+	/**
+	* Invoke private/public event handler methods
+	*/
 	private function invoker( 
 		required any target, 
 		required method,
 		struct argCollection={},
 		boolean private=false
 	){
-		// private runner first
-		if( arguments.private ){
-			return arguments.target._privateInvoker( method=arguments.method, argCollection=arguments.argCollection );
-		}
-		// public runner
-		var results = evaluate( "arguments.target.#arguments.method#( argumentCollection=arguments.argCollection )" );
-		if( !isNull( results ) ){
-			return results;
-		}
+		return arguments.target._privateInvoker( method=arguments.method, argCollection=arguments.argCollection );
 	}
 
 	/**

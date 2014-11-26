@@ -43,6 +43,7 @@ component accessors="true"{
 	function setModule( required module ){ variables.module = arguments.module; return this; }
 	function setMissingAction( required missingAction ){ variables.missingAction = arguments.missingAction; return this; }
 	function setViewDispatch( required viewDispatch ){ variables.viewDispatch = arguments.viewDispatch; return this; }
+	function setInvocationPath( required invocationPath ){ variables.invocationPath = arguments.invocationPath; return this; }
 	
 	/************************************** UTILITY METHODS *********************************************/
 	
