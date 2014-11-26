@@ -12,19 +12,21 @@
 		mockCacheBox    = getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
 		mockWireBox     = getMockBox().createEmptyMock("coldbox.system.ioc.Injector");
 
-		mockController.$("getLogBox",mockLogBox)
-			.$("getRequestService",mockRS)
-			.$("getCacheBox", mockCacheBox)
-			.$("getWireBox", mockWireBox)
-			.$("getInterceptorService", mockIService)
-			.$("getSetting").$args( "applicationHelper" ).$results( [] );
+		mockController
+			.$( "getRequestService", mockRS )
+			.$( "getInterceptorService", mockIService )
+			.$( "getSetting").$args( "applicationHelper" ).$results( [] );
 
-		mockRS.$("getFlashScope",flashScope);
-		mockLogBox.$("getLogger",mockLogger);
+		mockController.setLogBox( mockLogBox );
+		mockController.setWireBox( mockWireBox );
+		mockController.setCacheBox( mockCacheBox );
 
-		properties = {debugmode=true,configFile='config/routes.cfm'};
-		interceptor.init(mockController,properties)
-			.$("getInterceptorService",mockIService);
+		mockRS.$( "getFlashScope", flashScope);
+		mockLogBox.$( "getLogger", mockLogger);
+
+		properties = { debugmode=true, configFile='config/routes.cfm' };
+		interceptor.init( mockController, properties )
+			.$( "getInterceptorService", mockIService);
 	}
 
 	function testProperties(){

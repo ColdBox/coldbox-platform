@@ -105,12 +105,14 @@
 			controller.getRequestService().$("getFlashScope",mockFlash);
 			mockFlash.$("persistRC").$("putAll");
 
-			controller.persistVariables("hello,test");
+			makePublic( target=controller, method="persistVariables" );
+
+			controller.persistVariables( "hello,test" );
 			assertEquals( "hello,test", mockFlash.$callLog().persistRC[1].include  );
 
  			persistStruct = { hello="test", name="luis"};
-			controller.persistVariables(persistStruct=persistStruct);
-			assertEquals( persistStruct, mockFlash.$callLog().putAll[1].map  );
+			controller.persistVariables( persistStruct=persistStruct );
+			assertEquals( persistStruct, mockFlash.$callLog().putAll[2].map  );
 		}
 
 		function testsetNextEvent(){

@@ -5,7 +5,7 @@
 		super.setup();
 		// Create Mock Objects
 		mockbox = getMockBox();
-		mockController 	 	= mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
+		mockController 	 	= mockBox.createMock("coldbox.system.testing.mock.web.MockController");
 		mockRequestContext 	= getMockRequestContext();
 		mockRequestService 	= mockBox.createEmptyMock("coldbox.system.web.services.RequestService").$("getContext", mockRequestContext);
 		mockLogBox	 	 	= mockBox.createEmptyMock("coldbox.system.logging.LogBox");
@@ -16,10 +16,13 @@
 		mockWireBox		 	= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
 
 		// Mock model Dependencies
-		mockController.$("getLogBox",mockLogBox)
-			.$("getCacheBox",mockCacheBox)
-			.$("getWireBox",mockWireBox)
+		mockController
 			.$("getRequestService",mockRequestService);
+
+		mockController.setLogBox( mockLogBox );
+		mockController.setWireBox( mockWireBox );
+		mockController.setCacheBox( mockCacheBox );
+
 		mockRequestService.$("getFlashScope",mockFlash);
 		mockLogBox.$("getLogger",mockLogger);
 

@@ -227,7 +227,7 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Get all the settings structure
+	* DEPRECATED: Get all the settings structure
 	* @fwsetting.hint Retrieve from the config or fw settings, defaults to config
 	* @deepCopy.hint Do a deep or shallow copy, shallow is default
 	*/

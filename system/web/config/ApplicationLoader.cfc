@@ -762,18 +762,9 @@ Loads a coldbox cfc configuration file
 
 			// call environment method if exists
 			if( structKeyExists(arguments.oConfig,configStruct.environment) ){
-				invoker(arguments.oConfig,configStruct.environment);
+				evaluate( "arguments.oConfig.#configStruct.environment#()" );
 			}
 		</cfscript>
-	</cffunction>
-
-	<!--- invoker --->
-	<cffunction name="invoker" access="private" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
-		<cfargument name="method" 		type="any"  required="true" hint="Name of the method to call">
-		<!--- ************************************************************* --->
-		<cfinvoke component="#arguments.oConfig#" method="#arguments.method#" />
 	</cffunction>
 
 	<!--- loadLogBoxByConvention --->

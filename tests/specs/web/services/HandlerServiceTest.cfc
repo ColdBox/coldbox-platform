@@ -11,8 +11,8 @@ Description :
 <cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
-		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
-		mockController.$( "getUtil", new coldbox.system.core.util.Util() );
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
+		mockController.setUtil( new coldbox.system.core.util.Util() );
 
 		mockInterceptorService = getMockBox().createMock(className="coldbox.system.web.services.InterceptorService",clearMethods=true);
 		mockEngine     = getMockBox().createEmptyMock(className="coldbox.system.core.util.CFMLEngine");

@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		handler 		= getMockBox().createMock("coldbox.system.EventHandler");
-		mockController  = getMockBox().createEmptyMock("coldbox.system.web.Controller");
+		mockController  = getMockBox().createMock("coldbox.system.web.Controller");
 		flashScope 		= getMockBox().createEmptyMock("coldbox.system.web.flash.MockFlash");
 		mockRS 			= getMockBox().createEmptyMock("coldbox.system.web.services.RequestService")
 			.$("getFlashScope",flashScope);
@@ -12,10 +12,13 @@
 		mockCacheBox    = getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
 		mockWireBox     = getMockBox().createEmptyMock("coldbox.system.ioc.Injector");
 
-		mockController.$("getLogBox",mockLogBox)
-			.$("getRequestService",mockRS)
-			.$("getCacheBox", mockCacheBox)
-			.$("getWireBox", mockWireBox);
+		mockController
+			.$("getRequestService",mockRS);
+
+		mockController.setLogBox( mockLogBox );
+		mockController.setWireBox( mockWireBox );
+		mockController.setCacheBox( mockCacheBox );
+
 		mockController.$("getSetting").$args("applicationHelper").$results( ["/tests/resources/mixins.cfm","/tests/resources/mixins2"] )
 			.$("getSetting").$args("AppMapping").$results( "/coldbox/testing" );
 

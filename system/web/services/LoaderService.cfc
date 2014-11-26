@@ -205,9 +205,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		}
 
 		// Create it and return it now that config file location is set in the location settings
-		instance.appLoader = createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init( controller );
-
-		return instance.appLoader;
+		return new coldbox.system.web.config.ApplicationLoader( controller );
 	}
 
 }
