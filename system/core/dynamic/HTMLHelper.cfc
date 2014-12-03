@@ -1013,14 +1013,13 @@ Description :
 
 				// selected
 				if( listfindNoCase( arguments.selectedIndex, x ) ){
-					buffer.append('selected="selected"');
+					buffer.append(' selected="selected"');
 				}
 				// selected value
 				if( listfindNoCase( arguments.selectedValue, thisValue ) ){
-					buffer.append('selected="selected"');
+					buffer.append(' selected="selected"');
 				}
 				buffer.append(">#thisName#</option>");
-
 
 			}
 
