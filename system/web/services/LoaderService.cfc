@@ -115,6 +115,12 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Map Data Marshaller
 		binder.map( "DataMarshaller@coldbox" )
 			.to( "coldbox.system.core.conversion.DataMarshaller" );
+		// Map XML Converter
+		binder.map( "XMLConverter@coldbox" )
+			.to( "coldbox.system.core.conversion.XMLConverter" );
+		// Map Object Converter
+		binder.map( "ObjectMarshaller@coldbox" )
+			.to( "coldbox.system.core.conversion.ObjectMarshaller" );
 
 		return this;
 	}

@@ -10,12 +10,12 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="Ability to serialize/deserialize data.">
 
+	<!--- DI --->
+	<cfproperty name="xmlConverter" inject="xmlConverter@coldbox">
+
 	<!---Init --->
 	<cffunction name="init" output="false" access="public" returntype="DataMarshaller" hint="Constructor">
-    	<cfscript>
-			variables.xmlConverter = new coldbox.system.core.conversion.XMLConverter();
-			return this;
-    	</cfscript>
+    	<cfreturn this>
     </cffunction>
 
 	<!--- marshallData --->
