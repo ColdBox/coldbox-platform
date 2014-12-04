@@ -73,10 +73,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 		// Load ColdBox Application for testing?
 		if( this.loadColdbox ){
 			// Check on Scope First
-			if( structKeyExists(application,getColdboxAppKey()) ){
-				variables.controller = application[getColdboxAppKey()];
-			}
-			else{
+			if( structKeyExists( application, getColdboxAppKey() ) ){
+				variables.controller = application[ getColdboxAppKey() ];
+			} else {
 				// Verify App Root Path
 				if( NOT len( variables.appMapping ) ){ variables.appMapping = "/"; }
 				appRootPath = expandPath( variables.appMapping );
@@ -94,7 +93,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 					}
 				}
 				//Initialize mock Controller
-				variables.controller = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( appRootPath=appRootPath, appKey=variables.coldboxAppKey );
+				variables.controller = new coldbox.system.testing.mock.web.MockController( appRootPath=appRootPath, appKey=variables.coldboxAppKey );
 				// persist for mock testing in right name
 				application[ getColdboxAppKey() ] = variables.controller;
 				// Setup
@@ -114,6 +113,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 			// verify ColdBox still exists, else load it again:
 			if( !structKeyExists( application, getColdboxAppKey() ) ){
 				beforeTests();
+			} else {
+				variables.controller = application[ getColdBoxAppKey() ];
 			}
 			// remove context
 			getController().getRequestService().removeContext();
