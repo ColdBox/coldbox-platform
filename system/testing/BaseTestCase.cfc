@@ -294,7 +294,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	*/
 	function setupRequest( required event ){
 		// Setup the incoming event
-		URL[getController().getSetting("EventName")] = arguments.event;
+		URL[ getController().getSetting( "EventName" ) ] = arguments.event;
 		// Capture the request
 		getController().getRequestService().requestCapture();
 		return this;
@@ -325,9 +325,15 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 		var renderedContent = "";
 		var iData			= {};
 
-		//Setup the request Context with setup FORM/URL variables set in the unit test.
-		setupRequest(arguments.event);
-
+		// Remove routing, not needed in integration mode.
+		try{
+			getInterceptor( 'SES' ).setEnabled( false );
+		}catch( "InterceptorService.InterceptorNotFound" e ){
+			// ignore it, not used.
+		}
+		
+		// Setup the request Context with setup FORM/URL variables set in the unit test.
+		setupRequest( arguments.event );
 		try{
 
 			// App Start Handler
@@ -344,7 +350,6 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 			// grab the latest event in the context, in case overrides occur
 			requestContext  = getRequestContext();
 			arguments.event = requestContext.getCurrentEvent();
-
 			// TEST EVENT EXECUTION
 			if( NOT requestContext.isNoExecution() ){
 				// execute the event
