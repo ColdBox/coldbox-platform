@@ -1,157 +1,97 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
+* Allows you to serialize/deserialize objects
+*/
+component accessors="true"{
 
-Author     :	Luis Majano
-Date        :	10/2/2007
-Description :
-	Ability to serialize/deserialize data.
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="Ability to serialize/deserialize objects.">
+	/**
+	* Constructor
+	*/
+	function init(){
+		return this;
+	}
 
-	<cffunction name="init" output="false" access="public" returntype="ObjectMarshaller" hint="Constructor">
-    	<cfscript>
-			var engine = "";
-			var version = "";
-			var CFMLEngine = createObject("component","coldbox.system.core.util.CFMLEngine").init();
+	/**
+	* Serialize an object and optionally save it into a file.
+	* @target The complex object, such as a query or CFC, that will be serialized.
+	* @filePath The path of the file in which to save the serialized data.
+	*/
+	function serializeObject( required any target, string filePath ){
+		var binaryData = serializeWithObjectSave( arguments.target );
 
-			engine  = CFMLEngine.getEngine();
-			version = CFMLEngine.getVersion();
+		// Save to File?
+		if( structKeyExists( arguments,"filePath" ) ){
+			fileWrite( arguments.filePath, binaryData );
+		}
 
-			// Algorithm detection
-			instance = structnew();
-			instance.algorithm = "generic";
-			if( engine eq CFMLEngine.RAILO ){ instance.algorithm = "objectSave"; }
-			if( engine eq CFMLEngine.ADOBE and version GTE 9 ){ instance.algorithm = "objectSave"; }
+		return binaryData;
+	}
 
-			return this;
-    	</cfscript>
-    </cffunction>
 
-	<cffunction name="serializeObject" output="false" access="public" returntype="any" hint="Serialize an object and optionally save it into a file.">
-		<cfargument name="target"   type="any" 		required="true" 	hint="The complex object, such as a query or CFC, that will be serialized."/>
-	   	<cfargument name="filePath" type="string" 	required="false" 	hint="The path of the file in which to save the serialized data."/>
-		<cfscript>
-			var binaryData = "";
+	/**
+	* Deserialize an object using a binary object or a filepath
+	* @target The binary object to inflate
+	* @filePath The location of the file that has the binary object to inflate
+	*/
+	function deserializeObject( any binaryObject, string filePath ){
+		// Read From File?
+		if( structKeyExists( arguments,"filePath" ) ){
+			arguments.binaryObject = fileRead( arguments.filePath );
+		}
 
-			// Which algorithm to use?
-			switch(instance.algorithm){
-				case "generic" : {
-					binaryData = serializeGeneric(arguments.target);
-					break;
-				}
-				case "objectSave" : {
-					binaryData = serializeWithObjectSave(arguments.target);
-					break;
-				}
-			}
+		return deserializeWithObjectLoad(arguments.binaryObject);
+	}
 
-			// Save to File?
-			if( structKeyExists(arguments,"filePath") ){
-				saveToFile(arguments.filePath,binaryData);
-			}
+	/**
+	* Serialize via objectSave()
+	* @target The complex object, such as a query or CFC, that will be serialized.
+	*/
+	function serializeWithObjectSave( any target ){
+		return toBase64( objectSave( arguments.target ) );
+	}
 
-			return binaryData;
-		</cfscript>
-	</cffunction>
+	/**
+	* Deserialize via ObjectLoad
+	* @binaryObject The binary object to inflate
+	*/
+	function deserializeWithObjectLoad( any binaryObject ){
+		// check if string
+		if( not isBinary( arguments.binaryObject ) ){ arguments.binaryObject = toBinary( arguments.binaryObject ); }
 
-	<!--- deserializeObject --->
-	<cffunction name="deserializeObject" output="false" access="public" returntype="any" hint="Deserialize an object using a binary object or a filepath">
-		<cfargument name="binaryObject" type="any" 		required="false" hint="The binary object to inflate"/>
-		<cfargument name="filepath" 	type="string" 	required="false" hint="The location of the file that has the binary object to inflate"/>
-		<cfscript>
-			var obj = "";
+		return objectLoad( arguments.binaryObject );
+	}
 
-			// Read From File?
-			if( structKeyExists(arguments,"filePath") ){
-				arguments.binaryObject = readFile(arguments.filePath);
-			}
+	/**
+	* Serialize via generic Java
+	* @target The binary object to inflate
+	*/
+	function serializeGeneric( any target ){
+		var byteArrayOutput = createObject( "java", "java.io.ByteArrayOutputStream").init();
+        var objectOutput    = createObject( "java", "java.io.ObjectOutputStream").init( byteArrayOutput );
 
-			// Which algorithm to use?
-			switch(instance.algorithm){
-				case "generic" : {
-					obj = deserializeGeneric(arguments.binaryObject);
-					break;
-				}
-				case "objectSave" : {
-					obj = deserializeWithObjectLoad(arguments.binaryObject);
-					break;
-				}
-			}
+        // Serialize the incoming object.
+        objectOutput.writeObject( arguments.target );
+        objectOutput.close();
 
-			return obj;
-		</cfscript>
-	</cffunction>
+        return toBase64( byteArrayOutput.toByteArray() );
+	}
 
-<!------------------------------------------- PRIVATE ------------------------------------------>
+	/**
+	* Serialize via generic Java
+	* @target The binary object to inflate
+	*/
+	function deserializeGeneric( any binaryObject ){
+		var byteArrayInput = createObject( "java", "java.io.ByteArrayInputStream").init( toBinary( arguments.binaryObject ) );
+		var ObjectInput    = createObject( "java", "java.io.ObjectInputStream").init( byteArrayInput );
+        var obj = "";
 
-	<!--- serializeWithObjectLoad --->
-	<cffunction name="serializeWithObjectSave" output="false" access="public" returntype="any" hint="Serialize using new object save method">
-		<cfargument name="target"   type="any" 		required="true" 	hint="The complex object, such as a query or CFC, that will be serialized."/>
-	   	<cfreturn toBase64(objectSave(arguments.target))>
-	</cffunction>
+       	obj = objectInput.readObject();
+        objectInput.close();
 
-	<!--- deserializeWithObjectLoad --->
-	<cffunction name="deserializeWithObjectLoad" output="false" access="public" returntype="any" hint="deserialize using the new object load method">
-		<cfargument name="binaryObject" type="any" 		required="false" hint="The binary object to inflate"/>
-		<cfscript>
-			// check if string
-			if( not isBinary(arguments.binaryObject) ){ arguments.binaryObject = toBinary(arguments.binaryObject); }
+        return obj;
+	}
 
-			return objectLoad(arguments.binaryObject);
-		</cfscript>
-	</cffunction>
-
-	<!--- serializeGeneric --->
-	<cffunction name="serializeGeneric" output="false" access="public" returntype="any" hint="Serialize generic way">
-		<cfargument name="target"   type="any" 		required="true" 	hint="The complex object, such as a query or CFC, that will be serialized."/>
-	   	<cfscript>
-			var ByteArrayOutput = CreateObject("java", "java.io.ByteArrayOutputStream").init();
-            var ObjectOutput    = CreateObject("java", "java.io.ObjectOutputStream").init(ByteArrayOutput);
-
-            // Serialize the incoming object.
-            ObjectOutput.writeObject(arguments.target);
-            ObjectOutput.close();
-
-            return toBase64(ByteArrayOutput.toByteArray());
-		</cfscript>
-	</cffunction>
-
-	<!--- deserializeGeneric --->
-	<cffunction name="deserializeGeneric" output="false" access="public" returntype="any" hint="deserialize generic way">
-		<cfargument name="binaryObject" type="any" 		required="false" hint="The binary object to inflate"/>
-		<cfscript>
-			var ByteArrayInput = CreateObject("java", "java.io.ByteArrayInputStream").init(toBinary(arguments.binaryObject));
-    		var ObjectInput    = CreateObject("java", "java.io.ObjectInputStream").init(ByteArrayInput);
-	        var obj = "";
-
-           	obj = ObjectInput.readObject();
-            objectInput.close();
-
-            return obj;
-		</cfscript>
-	</cffunction>
-
-	<!--- Save To File --->
-	<cffunction name="saveToFile" access="private" hint="Facade to save a file's content" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="fileToSave"	 	type="any"  	required="yes" 	 hint="The absolute path to the file.">
-		<cfargument name="fileContents" 	type="any"  	required="yes"   hint="The file contents">
-		<cfargument name="charSet"			type="string"   required="false" default="utf-8" hint="CF File CharSet Encoding to use.">
-		<!--- ************************************************************* --->
-		<cffile action="write" file="#arguments.fileToSave#" output="#arguments.fileContents#" charset="#arguments.charset#">
-	</cffunction>
-
-	<!--- Read File --->
-	<cffunction name="readFile" access="private" hint="Facade to Read a file's content" returntype="Any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="fileToRead"	 		type="String"  required="yes" 	 hint="The absolute path to the file.">
-		<!--- ************************************************************* --->
-		<cfset var fileContents = "">
-		<cffile action="read" file="#arguments.fileToRead#" variable="fileContents">
-		<cfreturn fileContents>
-	</cffunction>
-
-</cfcomponent>
+}
