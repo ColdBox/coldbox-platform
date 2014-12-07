@@ -73,6 +73,10 @@ component serializable="false" accessors="true"{
 		if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ){
 			application[ appKey ].runEvent( event=application[ appKey ].getSetting( "ApplicationStartHandler" ) );
 		}
+		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
+		if( structKeyExists( url, "fwreinit" ) ){
+			structDelete( url, "fwreinit" );
+		}
 
 		return this;
 	}
