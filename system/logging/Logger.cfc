@@ -335,9 +335,11 @@ Description :
 							if( instance.util.inThread() ) {
 								thisAppender.logMessage( logEvent );
 							} else {
-								// Thread this puppy
-								thread action="run" name="#threadName#" logEvent="#logEvent#" thisAppender="#thisAppender#" {
-			 						attributes.thisAppender.logMessage( attributes.logEvent );
+								if( !appenderExists(thisAppender.getName()) ) {
+									addAppender(thisAppender);
+								}
+								thread action="run" name="#threadName#" logEvent="#logEvent#" appenderName="#thisAppender.getName()#" {
+			 						getAppender( attributes.appenderName ).logMessage( attributes.logEvent );
 			 					}
 							}
 						} else {
