@@ -336,8 +336,8 @@ Description :
 								thisAppender.logMessage( logEvent );
 							} else {
 								// Thread this puppy
-								thread action="run" name="#threadName#" logEvent="#logEvent#" {
-			 						thisAppender.logMessage( attributes.logEvent );
+								thread action="run" name="#threadName#" logEvent="#logEvent#" thisAppender="#thisAppender#" {
+			 						attributes.thisAppender.logMessage( attributes.logEvent );
 			 					}
 							}
 						} else {
