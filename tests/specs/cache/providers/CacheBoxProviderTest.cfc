@@ -43,7 +43,7 @@ Description :
 		};
 
 		// Create Provider
-		cache = getMockBox().createMock("coldbox.system.cache.providers.CacheBoxProvider").init();
+		cache = createMock( "coldbox.system.cache.providers.CacheBoxProvider" ).init();
 		// Decorate it
 		cache.setConfiguration( config );
 		cache.setCacheFactory( mockFactory );
@@ -105,12 +105,10 @@ Description :
 		cache.clearStatistics();
 
 		var results = cache.get( "test" );
+
 		assertEquals( results, testval );
 		assertEquals( 0, cache.getStats().getMisses(), "Actual: #cache.getStats().getMisses()#");
 		assertEquals( 1, cache.getStats().getHits(), "Actual: #cache.getStats().getHits()#" );
-
-		var results = cache.get("test-bogus-#createUUID()#");
-		assertTrue( isNull( results ) );
 	}
 
 	function testGetOrSet(){
