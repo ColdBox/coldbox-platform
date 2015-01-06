@@ -176,13 +176,6 @@ component serializable="false" accessors="true"{
 		return services.requestService;
 	}
 
-	/**
-	* Get an instance of the Exception service
-	*/
-	function getExceptionService(){
-		return new coldbox.system.web.services.ExceptionService( this );
-	}
-
 	/****************************************** SETTING METHODS *************************************************/
 
 	/**
