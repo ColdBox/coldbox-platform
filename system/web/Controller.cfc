@@ -1,4 +1,4 @@
-﻿/********************************************************************************
+/********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
@@ -415,16 +415,62 @@ component serializable="false" accessors="true"{
 		cacheSuffix="",
 		cacheProvider="template"
 	){
+		// Check if event empty, if empty then use default event
+		if( NOT len( trim( arguments.event ) ) ){
+			arguments.event = services.requestService.getContext().getCurrentEvent();
+		}
+
+		// relay if no event caching activated or no caching needed
+		if( !getSetting( "eventCaching" ) OR !arguments.cache ){
+			return _runEvent( argumentCollection=arguments );
+		}
+
+		// Build cache references
+		var cache 			= variables.cachebox.getCache( arguments.cacheProvider );
+		var oEventURLFacade = cache.getEventURLFacade();
+		var cacheKey 		= oEventURLFacade.buildBasicCacheKey(
+			keySuffix 	= arguments.cacheSuffix,
+			targetEvent = arguments.event
+		) & hash( arguments.eventArguments.toString() );
+
+		// Test if entry found and return
+		var data = cache.get( cacheKey );
+		if( !isNull( data ) ){ return data; }
+
+		// else produce and cache
+		data = _runEvent( argumentCollection=arguments );
+		if( !isNull( data ) ){
+			cache.set( 
+				objectKey			= cacheKey,
+				object 				= data,
+				timeout 			= arguments.cacheTimeout,
+				lastAccessTimeout 	= arguments.cacheLastAccessTimeout
+			);
+		}
+
+		return data;
+	}
+
+	/**
+	* Executes events with full life-cycle methods and returns the event results if any were returned
+	* @event The event string to execute, if nothing is passed we will execute the application's default event.
+	* @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
+	* @private Execute a private event if set, else defaults to public events
+	* @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
+	* @eventArguments A collection of arguments to passthrough to the calling event handler method
+	*/
+	private function _runEvent(
+		event="",
+		boolean prePostExempt=false,
+		boolean private=false,
+		boolean defaultEvent=false,
+		struct eventArguments={}
+	){
 		var oRequestContext 	= services.requestService.getContext();
 		var ehBean 				= "";
 		var oHandler 			= "";
 		var iData				= structnew();
 		var loc					= structnew();
-
-		// Check if event empty, if empty then use default event
-		if( NOT len( trim( arguments.event ) ) ){
-			arguments.event = oRequestContext.getCurrentEvent();
-		}
 
 		// Setup Invoker args
 		var args = {

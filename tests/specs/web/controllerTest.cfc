@@ -1,163 +1,145 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
+﻿component extends="coldbox.system.testing.BaseModelTest"{
 
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
+	function setUp(){
+		controller = createMock( "coldbox.system.web.Controller" ).init( expandPath('/coldbox/test-harness'), "cbController" );
+		prepareMock( controller.getRequestService() );
+		prepareMock( controller.getInterceptorService() ).$("processState");
+	}
 
-			controller = getMockBox().createMock("coldbox.system.web.Controller").init(ExpandPath('/coldbox/test-harness'), "cbController");
-			getMockBox().prepareMock( controller.getRequestService() );
-			getMockBox().prepareMock( controller.getInterceptorService() ).$("processState");
+	function testAppRoots(){
+		AssertTrue( controller.getAppRootPath() eq expandPath('/coldbox/test-harness') & "/");
+		controller.setAppRootPath('nothing');
+		AssertTrue( controller.getAppRootPath() eq "nothing");
+	}
 
-		</cfscript>
-	</cffunction>
+	function testDependencies(){
+		AssertTrue( isObject(controller.getLoaderService()) );
+		AssertTrue( isObject(controller.getRequestService()) );
+		AssertTrue( isObject(controller.getinterceptorService()) );
+		AssertTrue( isObject(controller.getHandlerService()) );
+		AssertTrue( isObject(controller.getModuleService()) );
+	}
 
-	<cffunction name="testAppRoots" returntype="void" access="public" output="false">
-		<cfscript>
-			AssertTrue( controller.getAppRootPath() eq expandPath('/coldbox/test-harness') & "/");
-			controller.setAppRootPath('nothing');
-			AssertTrue( controller.getAppRootPath() eq "nothing");
-		</cfscript>
-	</cffunction>
+	function testSettings(){
+		//Populate
+		config = {handlerCaching=true, mysetting='nothing', eventCaching=true};
+		fwsettings = {Author="Luis Majano"};
 
-	<cffunction name="testDependencies" access="public" returntype="any" hint="" output="false" >
-		<cfscript>
-			AssertTrue( isObject(controller.getLoaderService()) );
-			AssertTrue( isObject(controller.getRequestService()) );
-			AssertTrue( isObject(controller.getinterceptorService()) );
-			AssertTrue( isObject(controller.getHandlerService()) );
-			AssertTrue( isObject(controller.getModuleService()) );
-		</cfscript>
-	</cffunction>
+		controller.setConfigSettings(config);
+		controller.setColdboxSettings(fwsettings);
 
-	<cffunction name="testSettings" access="public" returntype="void" hint="" output="false" >
-		<cfscript>
-			//Populate
-			config = {handlerCaching=true, mysetting='nothing', eventCaching=true};
-			fwsettings = {Author="Luis Majano"};
+		obj = controller.getConfigSettings();
+		AssertFalse( structIsEmpty(obj) , "Structure populated");
 
-			controller.setConfigSettings(config);
-			controller.setColdboxSettings(fwsettings);
+		obj = controller.getsettingStructure();
+		AssertFalse( structIsEmpty(obj) , "Config Structure populated");
 
-			obj = controller.getConfigSettings();
-			AssertFalse( structIsEmpty(obj) , "Structure populated");
+		obj = controller.getsettingStructure(false,true);
+		AssertFalse( structIsEmpty(obj) , "Config Structure populated, deep copy");
 
-			obj = controller.getsettingStructure();
-			AssertFalse( structIsEmpty(obj) , "Config Structure populated");
+		obj = controller.getsettingStructure(true);
+		AssertFalse( structIsEmpty(obj) , "FW Structure populated");
 
-			obj = controller.getsettingStructure(false,true);
-			AssertFalse( structIsEmpty(obj) , "Config Structure populated, deep copy");
+		obj = controller.getsettingStructure(true, false);
+		AssertFalse( structIsEmpty(obj) , "FW Structure populated, deep copy");
+	}
 
-			obj = controller.getsettingStructure(true);
-			AssertFalse( structIsEmpty(obj) , "FW Structure populated");
+	function testSettingProcedures(){
+		//Populate
+		config = {handlerCaching=true, mysetting='nothing', eventCaching=true};
+		fwsettings = {Author="Luis Majano"};
 
-			obj = controller.getsettingStructure(true, false);
-			AssertFalse( structIsEmpty(obj) , "FW Structure populated, deep copy");
+		controller.setConfigSettings(config);
+		controller.setColdboxSettings(fwsettings);
 
-		</cfscript>
-	</cffunction>
+		obj = controller.getSetting('HandlerCaching');
+		AssertTrue( isBoolean(obj), "get test");
 
-	<cffunction name="testSettingProcedures" access="public" returntype="void" hint="" output="false" >
-		<cfscript>
-			//Populate
-			config = {handlerCaching=true, mysetting='nothing', eventCaching=true};
-			fwsettings = {Author="Luis Majano"};
+		obj = controller.settingExists('nada');
+		AssertFalse(obj, "config exists check");
 
-			controller.setConfigSettings(config);
-			controller.setColdboxSettings(fwsettings);
+		obj = controller.settingExists('HandlerCaching');
+		AssertTrue(obj, "config exists check");
 
-			obj = controller.getSetting('HandlerCaching');
-			AssertTrue( isBoolean(obj), "get test");
+		obj = controller.settingExists('nada',true);
+		AssertFalse(obj, "fw exists check");
 
-			obj = controller.settingExists('nada');
-			AssertFalse(obj, "config exists check");
+		obj = "test_#createUUID()#";
+		controller.setSetting(obj,obj);
+		AssertEquals( obj, controller.getSetting(obj) );
+	}
 
-			obj = controller.settingExists('HandlerCaching');
-			AssertTrue(obj, "config exists check");
-
-			obj = controller.settingExists('nada',true);
-			AssertFalse(obj, "fw exists check");
-
-			obj = "test_#createUUID()#";
-			controller.setSetting(obj,obj);
-			AssertEquals( obj, controller.getSetting(obj) );
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testColdboxInit" access="public" returntype="any" hint="" output="false" >
-		<cfscript>
+	function testColdboxInit(){
 			AssertFalse(controller.getColdboxInitiated());
 			controller.setColdboxInitiated(true);
 			AssertTrue(controller.getColdboxInitiated());
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="appstarthandlerFired" access="public" returntype="any" hint="" output="false" >
-		<cfscript>
-			AssertFalse(controller.getAppStartHandlerFired());
-			controller.setAppStartHandlerFired(true);
-			AssertTrue(controller.getAppStartHandlerFired());
-		</cfscript>
-	</cffunction>
-
-	<cfscript>
-
-		function testPersistVariables(){
-			mockFlash = getMockBox().createMock("coldbox.system.web.flash.MockFlash").init(controller);
-			controller.getRequestService().$("getFlashScope",mockFlash);
-			mockFlash.$("persistRC").$("putAll");
-
-			makePublic( target=controller, method="persistVariables" );
-
-			controller.persistVariables( "hello,test" );
-			assertEquals( "hello,test", mockFlash.$callLog().persistRC[1].include  );
-
- 			persistStruct = { hello="test", name="luis"};
-			controller.persistVariables( persistStruct=persistStruct );
-			assertEquals( persistStruct, mockFlash.$callLog().putAll[2].map  );
-		}
-
-		function testsetNextEvent(){
-			// mock data
-			mockFlash = getMockBox().createMock("coldbox.system.web.flash.MockFlash").init(controller);
-			mockContext = getMockRequestContext();
-
-			mockFlash.$("saveFlash");
-
-			controller.setConfigSettings( {
-				eventName = "event",
-				defaultEvent = "main.index",
-				flash = {
-					autoSave = true
-				}
-			} );
-			controller.$("persistVariables").$("pushTimers").$("sendRelocation");
-			controller.getRequestService().$("getContext", mockContext );
-			controller.getRequestService().$("getFlashScope",mockFlash);
-			controller.getRequestService().$("processState");
-
-			// Test Full URL
-			controller.setNextEvent(URL="http://www.coldbox.org",addToken=true);
-			assertEquals( "http://www.coldbox.org", controller.$callLog().sendRelocation[1].URL );
-			assertEquals( true, controller.$callLog().sendRelocation[1].addToken );
-			assertEquals( 0, controller.$callLog().sendRelocation[1].statusCode );
-
-			// Full URL with more stuff
-			controller.setNextEvent(URL="http://www.coldbox.org",statusCode=301,queryString="page=2&test=1");
-			assertEquals( "http://www.coldbox.org?page=2&test=1", controller.$callLog().sendRelocation[2].URL );
-			assertEquals( false, controller.$callLog().sendRelocation[2].addToken );
-			assertEquals( 301, controller.$callLog().sendRelocation[2].statusCode );
-
-			// Test relative URI with query strings
-			controller.setNextEvent(URI="/route/path/two",queryString="page=2&test=1");
-			assertEquals( "/route/path/two?page=2&test=1", controller.$callLog().sendRelocation[3].URL );
-
-			// Test normal event
-			controller.setNextEvent(event="general.page",querystring="page=2&test=1");
-			//assertEquals( "", controller.$callLog().sendRelocation[4].URL );
-
-			debug( controller.$calllog() );
-		}
-
-	</cfscript>
+	}
 
 
-</cfcomponent>
+
+
+
+	function appstarthandlerFired(){
+		AssertFalse(controller.getAppStartHandlerFired());
+		controller.setAppStartHandlerFired(true);
+		AssertTrue(controller.getAppStartHandlerFired());
+	}
+
+	function testPersistVariables(){
+		mockFlash = getMockBox().createMock("coldbox.system.web.flash.MockFlash").init(controller);
+		controller.getRequestService().$("getFlashScope",mockFlash);
+		mockFlash.$("persistRC").$("putAll");
+
+		makePublic( target=controller, method="persistVariables" );
+
+		controller.persistVariables( "hello,test" );
+		assertEquals( "hello,test", mockFlash.$callLog().persistRC[1].include  );
+
+			persistStruct = { hello="test", name="luis"};
+		controller.persistVariables( persistStruct=persistStruct );
+		assertEquals( persistStruct, mockFlash.$callLog().putAll[2].map  );
+	}
+
+	function testsetNextEvent(){
+		// mock data
+		mockFlash = getMockBox().createMock("coldbox.system.web.flash.MockFlash").init(controller);
+		mockContext = getMockRequestContext();
+
+		mockFlash.$("saveFlash");
+
+		controller.setConfigSettings( {
+			eventName = "event",
+			defaultEvent = "main.index",
+			flash = {
+				autoSave = true
+			}
+		} );
+		controller.$("persistVariables").$("pushTimers").$("sendRelocation");
+		controller.getRequestService().$("getContext", mockContext );
+		controller.getRequestService().$("getFlashScope",mockFlash);
+		controller.getRequestService().$("processState");
+
+		// Test Full URL
+		controller.setNextEvent(URL="http://www.coldbox.org",addToken=true);
+		assertEquals( "http://www.coldbox.org", controller.$callLog().sendRelocation[1].URL );
+		assertEquals( true, controller.$callLog().sendRelocation[1].addToken );
+		assertEquals( 0, controller.$callLog().sendRelocation[1].statusCode );
+
+		// Full URL with more stuff
+		controller.setNextEvent(URL="http://www.coldbox.org",statusCode=301,queryString="page=2&test=1");
+		assertEquals( "http://www.coldbox.org?page=2&test=1", controller.$callLog().sendRelocation[2].URL );
+		assertEquals( false, controller.$callLog().sendRelocation[2].addToken );
+		assertEquals( 301, controller.$callLog().sendRelocation[2].statusCode );
+
+		// Test relative URI with query strings
+		controller.setNextEvent(URI="/route/path/two",queryString="page=2&test=1");
+		assertEquals( "/route/path/two?page=2&test=1", controller.$callLog().sendRelocation[3].URL );
+
+		// Test normal event
+		controller.setNextEvent(event="general.page",querystring="page=2&test=1");
+		//assertEquals( "", controller.$callLog().sendRelocation[4].URL );
+
+		debug( controller.$calllog() );
+	}
+
+}

@@ -21,6 +21,19 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 	function beforeAll(){
 		super.beforeAll();
 		// do your own stuff here
+
+		// add custom matchers
+		addMatchers({
+			toHavePartialKey : function( expectation, args={} ){
+				// iterate over actual to find key
+				for( var thisKey in arguments.expectation.actual ){
+					if( findNoCase( arguments.args[ 1 ], thisKey ) ){
+						return true;
+					}
+				}
+				return false;
+			}
+		});
 	}
 
 	function afterAll(){
@@ -38,11 +51,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
 			});
+
 			afterEach(function( currentSpec ){
 				structDelete( url, "format" );
 			});
 
-			it( "can do cached events", function(){
+			it( "can do basic cached events", function(){
 				var event = execute( event="eventcaching", renderResults=true );
 				var prc = event.getCollection(private=true);
 
@@ -60,6 +74,59 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 					expect( prc.cbox_renderData.contenttype ).toMatch( thisFormat );
 				});
 			}
+
+			describe( "via runEvent()", function(){
+					
+				beforeEach(function( currentSpec ){
+					cache = prepareMock( getCache( "template" ) );
+					cache.clearAllEvents( async=false );
+				});
+
+				it( "can cache with defaults", function(){
+					// should not be there, so should be cached now
+					var data = controller.runEvent( event="eventcaching.widget", cache=true );
+					// run again, and get cached data.
+					var data2 = controller.runEvent( event="eventcaching.widget", cache=true );
+					// Make sure they match
+					expect(	data2 ).toBe( data );
+				});
+
+				it( "can cache with suffixes", function(){
+					// should not be there, so should be cached now
+					var data = controller.runEvent( event="eventcaching.widget", cache=true, cacheSuffix="bddtesting" );
+					// run again, and get cached data.
+					var data2 = controller.runEvent( event="eventcaching.widget", cache=true, cacheSuffix="bddtesting" );
+					// Make sure they match
+					expect(	data2 ).toBe( data );
+					
+					// find key
+					var keys = cache.getKeys();
+					expect(	keys ).toHavePartialKey( "bddtesting" );
+				});
+
+				it( "can cache with provider", function(){
+					// should not be there, so should be cached now
+					var data = controller.runEvent( event="eventcaching.widget", cache=true, cacheProvider="default" );
+					// run again, and get cached data.
+					var data2 = controller.runEvent( event="eventcaching.widget", cache=true, cacheProvider="default" );
+					// Make sure they match
+					expect(	data2 ).toBe( data );
+					
+					// find key
+					var keys = getCache( "default" ).getKeys();
+					expect(	keys ).toHavePartialKey( "eventcaching.widget" );
+				});
+
+				it( "can cache differently with event arguments", function(){
+					// should not be there, so should be cached now
+					var data = controller.runEvent( event="eventcaching.widget", cache=true, eventArguments={ widget=true } );
+					// run again, and get cached data.
+					var data2 = controller.runEvent( event="eventcaching.widget", cache=true, cacheProvider="default" );
+					// Make sure they match
+					expect(	data2 ).notToBe( data );
+				});
+			
+			});
 
 		});
 
