@@ -121,6 +121,7 @@
 		<mkdir dir="${dir.build}/apidocs"/>
 		<property name="dir.coldbox.exports"	value="${dir.exports}/${coldbox.slug}/${coldbox.version}" />
 		<property name="be.coldbox.exports" 	value="${be.exports}/${coldbox.slug}" />
+		
 		<!-- Cleanup Old Code -->
 		<delete verbose="true" failonerror="false">
 			<fileset dir="${dir.coldbox.exports}" />
@@ -128,6 +129,7 @@
 				<include name="coldbox-be*" />
 			</fileset>
 		</delete>
+		
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 				
@@ -144,7 +146,7 @@
 		<!-- Move Install folder -->
 		<copy todir="${dir.build}/install" encoding="UTF-8">
         	<fileset dir="install">
-        		<exclude name="ColdboxCheatSheet.pages" />
+        		<exclude name="ColdboxCheatSheet.*" />
         	</fileset>
         </copy>
 		
@@ -156,7 +158,7 @@
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}" encoding="UTF-8">
 			<fileset file="license.txt" />
-			<fileset file="readme.txt" />						
+			<fileset file="readme.md" />						
 		</copy>
 		
 		<!-- Copy box.json to build -->
@@ -178,7 +180,8 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.coldbox.exports}/coldbox-apidocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
+		<zip destfile="${dir.coldbox.exports}/coldbox-apidocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs" />
+		
 		<!-- Zip ColdBox Bundle -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" basedir="${dir.build}" />
 		
@@ -266,7 +269,7 @@
 		<!--Copy text files to root folder-->
 		<copy todir="${dir.build}" encoding="UTF-8">
 			<fileset file="license.txt" />
-			<fileset file="system/cache/readme.txt" />						
+			<fileset file="system/cache/readme.md" />						
 		</copy>
 		
 		<!--Copy box.json to root -->
@@ -370,7 +373,7 @@
         <!--Copy text files to root folder-->
 		<copy todir="${dir.build}" encoding="UTF-8">
 			<fileset file="license.txt" />
-			<fileset file="system/logging/readme.txt" />						
+			<fileset file="system/logging/readme.md" />						
 		</copy>
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-logbox.json"  encoding="UTF-8"/>
@@ -481,7 +484,7 @@
 		<!--Copy text files to root folder-->
 		<copy todir="${dir.build}" encoding="UTF-8">
 			<fileset file="license.txt" />
-			<fileset file="system/ioc/readme.txt" />						
+			<fileset file="system/ioc/readme.md" />						
 		</copy>
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-wirebox-cachebox.json"  encoding="UTF-8"/>
