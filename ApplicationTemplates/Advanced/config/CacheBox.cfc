@@ -27,7 +27,7 @@ Description :
 				objectDefaultTimeout = 120, //two hours default
 				objectDefaultLastAccessTimeout = 30, //30 minutes idle time
 				useLastAccessTimeouts = true,
-				reapFrequency = 2,
+				reapFrequency = 5,
 				freeMemoryPercentageThreshold = 0,
 				evictionPolicy = "LRU",
 				evictCount = 1,
@@ -46,7 +46,7 @@ Description :
 						objectDefaultLastAccessTimeout = 30,
 						useLastAccessTimeouts = true,
 						freeMemoryPercentageThreshold = 0,
-						reapFrequency = 2,
+						reapFrequency = 5,
 						evictionPolicy = "LRU",
 						evictCount = 2,
 						maxObjects = 300,

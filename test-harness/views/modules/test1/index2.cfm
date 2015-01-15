@@ -1,1 +1,0 @@
-﻿<h1>Parent Inherited View</h1>

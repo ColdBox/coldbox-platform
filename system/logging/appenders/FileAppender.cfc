@@ -37,7 +37,7 @@ Properties:
 
 			// Setup Properties
 			if( NOT propertyExists("filepath") ){
-				$throw(message="Filepath property not defined",type="FileAppender.PropertyNotFound");
+				throw(message="Filepath property not defined",type="FileAppender.PropertyNotFound");
 			}
 			if( NOT propertyExists("autoExpand") ){
 				setProperty("autoExpand",true);

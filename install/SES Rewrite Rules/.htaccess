@@ -37,4 +37,4 @@ RewriteRule ^(.*)$ - [NC,L]
 RewriteRule ^$ index.cfm [QSA,NS]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.cfm/%{REQUEST_URI} [QSA,L,NS]
+RewriteRule ^(.*)$ index.cfm/%{PATH_INFO} [QSA,L,NS]

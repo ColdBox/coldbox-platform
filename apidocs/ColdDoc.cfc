@@ -61,8 +61,8 @@
 	<cfargument name="inputSource" hint="an array of structs containing inputDir and inputMapping" type="array" required="yes"> <!--- of struct --->
 
 	<cfscript>
-		var qFile = 0;
-		var qMetaData = QueryNew("package,name,extends,metadata,type,implements,fullextends");
+		var qFiles = 0;
+		var qMetaData = QueryNew("package,name,extends,metadata,type,implements,fullextends,currentMapping");
 		var cfcPath = 0;
 		var packagePath = 0;
 		var cfcName = 0;
@@ -73,12 +73,15 @@
 	</cfscript>
 
     <cfloop index="i" from="1" to="#ArrayLen(arguments.inputSource)#">
-
         <cfdirectory action="list" directory="#arguments.inputSource[i].inputDir#" recurse="true" name="qFiles" filter="*.cfc">
 
         <cfloop query="qFiles">
             <cfscript>
-                currentPath = replace(directory, arguments.inputSource[i].inputDir, "");
+
+            	// skip Application.cfc
+            	if( qFiles.name == "Application.cfc" ){ continue; }
+
+               	var currentPath = replace(directory, arguments.inputSource[i].inputDir, "");
                 currentPath = reReplace(currentPath, "[/\\]", "");
                 currentPath = reReplace(currentPath, "[/\\]", ".", "all");
 
@@ -113,6 +116,7 @@
 	                QuerySetCell(qMetaData, "name", cfcName);
 	                QuerySetCell(qMetaData, "metadata", meta);
 					QuerySetCell(qMetaData, "type", meta.type);
+					QuerySetCell(qMetaData, "currentMapping", arguments.inputSource[i].inputMapping);
 
 					implements = getImplements(meta);
 					implements = listQualify(arrayToList(implements), ':');

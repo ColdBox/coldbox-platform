@@ -15,10 +15,10 @@ Description :
 	<cfscript>
 		// Utility class
 		utility  = createObject("component","coldbox.system.core.util.Util");
-		
+
 		// Instance private scope
 		instance = structnew();
-		
+
 		// CacheBox Provider Defaults
 		DEFAULTS = {
 			logBoxConfig = "coldbox.system.cache.config.LogBox",
@@ -30,31 +30,25 @@ Description :
 				key = "cachebox"
 			}
 		};
-		
+
 		// Startup the configuration
 		reset();
 	</cfscript>
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="CacheBoxConfig" hint="Constructor">
-		<cfargument name="XMLConfig" 		type="string"   required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
 		<cfargument name="CFCConfig" 		type="any" 		required="false" hint="The cacheBox Data Configuration CFC"/>
 		<cfargument name="CFCConfigPath" 	type="string" 	required="false" hint="The cacheBox Data Configuration CFC path to use"/>
 		<cfscript>
 			var cacheBoxDSL = "";
-			
-			// Test and load via XML
-			if( len(trim(arguments.XMLConfig)) ){
-				parseAndLoad(xmlParse(arguments.XMLConfig));
-			}
-			
+
 			// Test and load via Data CFC Path
-			if( structKeyExists(arguments, "CFCConfigPath") ){
-				arguments.CFCConfig = createObject("component",arguments.CFCConfigPath);
+			if( structKeyExists( arguments, "CFCConfigPath" ) ){
+				arguments.CFCConfig = createObject( "component", arguments.CFCConfigPath );
 			}
-			
+
 			// Test and load via Data CFC
-			if( structKeyExists(arguments,"CFCConfig") and isObject(arguments.CFCConfig) ){
+			if( structKeyExists( arguments, "CFCConfig" ) and isObject( arguments.CFCConfig ) ){
 				// Decorate our data CFC
 				arguments.CFCConfig.getPropertyMixin = utility.getMixerUtil().getPropertyMixin;
 				// Execute the configuration
@@ -64,55 +58,55 @@ Description :
 				// Load the DSL
 				loadDataDSL( cacheBoxDSL );
 			}
-			
+
 			// Just return, most likely programmatic config
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getDefaults --->
     <cffunction name="getDefaults" output="false" access="public" returntype="struct" hint="Get the default CacheBox settings">
     	<cfreturn variables.DEFAULTS>
     </cffunction>
-	
+
 	<!--- logBoxConfig --->
     <cffunction name="logBoxConfig" output="false" access="public" returntype="any" hint="Set the logBox Configuration to use">
     	<cfargument name="config" type="string" required="true" hint="The configuration file to use"/>
 		<cfset instance.logBoxConfig = arguments.config>
 		<cfreturn this>
     </cffunction>
-	
+
 	<!--- getLogBoxConfig --->
     <cffunction name="getLogBoxConfig" output="false" access="public" returntype="string" hint="Get the logBox Configuration file to use">
     	<cfreturn instance.logBoxConfig>
     </cffunction>
-	
+
 	<!--- loadDataCFC --->
     <cffunction name="loadDataDSL" output="false" access="public" returntype="void" hint="Load a data configuration CFC data DSL">
     	<cfargument name="rawDSL" type="struct" required="true" hint="The data configuration DSL structure"/>
     	<cfscript>
 			var cacheBoxDSL  = arguments.rawDSL;
 			var key 		= "";
-			
+
 			// Is default configuration defined
 			if( NOT structKeyExists( cacheBoxDSL, "defaultCache" ) ){
-				utility.throwIt("No default cache defined","Please define the 'defaultCache'","CacheBoxConfig.NoDefaultCacheFound");
+				throw("No default cache defined","Please define the 'defaultCache'","CacheBoxConfig.NoDefaultCacheFound");
 			}
-			
+
 			// Register Default Cache
 			defaultCache(argumentCollection=cacheBoxDSL.defaultCache);
-			
+
 			// Register LogBox Configuration
 			logBoxConfig( variables.DEFAULTS.logBoxConfig );
 			if( structKeyExists( cacheBoxDSL, "logBoxConfig") ){
 				logBoxConfig(cacheBoxDSL.logBoxConfig);
 			}
-			
+
 			// Register Server Scope Registration
 			if( structKeyExists( cacheBoxDSL, "scopeRegistration") ){
 				scopeRegistration(argumentCollection=cacheBoxDSL.scopeRegistration);
 			}
-			
+
 			// Register Caches
 			if( structKeyExists( cacheBoxDSL, "caches") ){
 				for( key in cacheBoxDSL.caches ){
@@ -120,16 +114,16 @@ Description :
 					cache(argumentCollection=cacheBoxDSL.caches[key]);
 				}
 			}
-			
+
 			// Register listeners
 			if( structKeyExists( cacheBoxDSL, "listeners") ){
 				for(key=1; key lte arrayLen(cacheBoxDSL.listeners); key++ ){
 					listener(argumentCollection=cacheBoxDSL.listeners[key]);
 				}
-			}		
+			}
 		</cfscript>
     </cffunction>
-	
+
 	<!--- reset --->
 	<cffunction name="reset" output="false" access="public" returntype="void" hint="Reset the configuration">
 		<cfscript>
@@ -149,37 +143,37 @@ Description :
 			};
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- resetDefaultCache --->
     <cffunction name="resetDefaultCache" output="false" access="public" returntype="void" hint="Reset the default cache configurations">
     	<cfset instance.defaultCache = {}>
     </cffunction>
-	
+
 	<!--- resetCaches --->
     <cffunction name="resetCaches" output="false" access="public" returntype="void" hint="Reset the set caches">
     	<cfset instance.caches = {}>
     </cffunction>
-	
+
 	<!--- resetListeners --->
     <cffunction name="resetListeners" output="false" access="public" returntype="void" hint="Reset the cache listeners">
     	<cfset instance.listeners = []>
     </cffunction>
-	
+
 	<!--- Get Memento --->
 	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the instance data">
 		<cfreturn instance>
 	</cffunction>
-	
+
 	<!--- validate --->
 	<cffunction name="validate" output="false" access="public" returntype="void" hint="Validates the configuration. If not valid, it will throw an appropriate exception.">
 		<cfscript>
 			// Is the default cache defined
 			if( structIsEmpty(instance.defaultCache) ){
-				utility.throwIt(message="Invalid Configuration. No default cache defined",type="CacheBoxConfig.NoDefaultCacheFound");
-			}			
+				throw(message="Invalid Configuration. No default cache defined",type="CacheBoxConfig.NoDefaultCacheFound");
+			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- scopeRegistration --->
     <cffunction name="scopeRegistration" output="false" access="public" returntype="any" hint="Use to define cachebox factory scope registration">
     	<cfargument name="enabled" 	type="boolean" 	required="false" default="#DEFAULTS.scopeRegistration.enabled#" hint="Enable registration"/>
@@ -189,7 +183,7 @@ Description :
 			instance.scopeRegistration.enabled 	= arguments.enabled;
 			instance.scopeRegistration.key 		= arguments.key;
 			instance.scopeRegistration.scope 	= arguments.scope;
-			
+
 			return this;
 		</cfscript>
     </cffunction>
@@ -198,7 +192,7 @@ Description :
     <cffunction name="getScopeRegistration" output="false" access="public" returntype="struct" hint="Get the scope registration details">
     	<cfreturn instance.scopeRegistration>
     </cffunction>
-	
+
 	<!--- defaultCache --->
 	<cffunction name="defaultCache" output="false" access="public" returntype="any" hint="Add a default cache configuration.">
 		<cfargument name="objectDefaultTimeout" 			type="numeric" required="false">
@@ -211,12 +205,12 @@ Description :
 	    <cfargument name="evictCount"						type="numeric" required="false">
 	    <cfargument name="objectStore" 						type="string"  required="false">
 	    <cfargument name="coldboxEnabled" 					type="boolean" required="false"/>
-	    <cfscript>			
+	    <cfscript>
 	    	var cacheConfig = getDefaultCache();
-			
+
 			// Append all incoming arguments to configuration, just in case using non-default arguments, maybe for stores
 			structAppend(cacheConfig, arguments);
-			
+
 			// coldbox enabled context
 			if( structKeyExists(arguments,"coldboxEnabled") AND arguments.coldboxEnabled ){
 				cacheConfig.provider = variables.DEFAULTS.coldboxAppProvider;
@@ -224,16 +218,16 @@ Description :
 			else{
 				cacheConfig.provider = variables.DEFAULTS.cacheboxProvider;
 			}
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- defaultCache --->
 	<cffunction name="getDefaultCache" access="public" returntype="struct" output="false" hint="Get the defaultCache definition.">
 		<cfreturn instance.defaultCache>
 	</cffunction>
-	
+
 	<!--- cache --->
 	<cffunction name="cache" output="false" access="public" returntype="any" hint="Add a new cache configuration.">
 		<cfargument name="name" 		type="string" required="true"   hint="The name of the cache"/>
@@ -247,24 +241,24 @@ Description :
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getCache --->
 	<cffunction name="getCache" output="false" access="public" returntype="struct" hint="Get a specifed cache definition">
 		<cfargument name="name" type="string" required="true" hint="The cache configuration to retrieve"/>
 		<cfreturn instance.caches[arguments.name]>
 	</cffunction>
-	
+
 	<!--- cacheExists --->
 	<cffunction name="cacheExists" output="false" access="public" returntype="boolean" hint="Check if a cache definition exists">
 		<cfargument name="name" type="string" required="true" hint="The cache to check"/>
 		<cfreturn structKeyExists(instance.caches, arguments.name)>
 	</cffunction>
-	
+
 	<!--- getCaches --->
 	<cffunction name="getCaches" output="false" access="public" returntype="struct" hint="Get the configured caches">
 		<cfreturn instance.caches>
 	</cffunction>
-	
+
 	<!--- listener --->
 	<cffunction name="listener" output="false" access="public" returntype="any" hint="Add a new listener configuration.">
 		<cfargument name="class" 		type="string" required="true"  hint="The class of the listener"/>
@@ -277,75 +271,16 @@ Description :
 			}
 			// add listener
 			arrayAppend(instance.listeners, arguments);
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
-		
+
 	<!--- getListeners --->
 	<cffunction name="getListeners" output="false" access="public" returntype="array" hint="Get the configured listeners">
 		<cfreturn instance.listeners>
 	</cffunction>
-	
-	<!--- parseAndLoad --->
-	<cffunction name="parseAndLoad" output="false" access="public" returntype="void" hint="Parse and load a config xml object">
-		<cfargument name="xmlDoc" type="any" required="true" hint="The xml document object to use for parsing."/>
-		<cfscript>
-			var xml 		 = arguments.xmlDoc;
-			var logBoxXML	 = xmlSearch(xml,"//LogBoxConfig");
-			var scopeXML	 = xmlSearch(xml,"//ScopeRegistration");
-			var defaultXML	 = xmlSearch(xml,"//DefaultConfiguration");
-			var cachesXML	 = xmlSearch(xml,"//CacheBox/Cache");
-			var listenersXML = xmlSearch(xml,"//Listener");
-			var args = structnew();
-			var x =1;
-			var y =1;
-			
-			// Default Cache Config Check
-			if( NOT arrayLen(defaultXML) ){
-				utility.throwIt(message="The defaultcache configuration cannot be found and it is mandatory",type="CacheBoxConfig.DefaultCacheConfigurationNotFound");
-			}
-			// Register Default Cache
-			defaultCache(argumentCollection=defaultXML[1].XMLAttributes);
-			
-			// Register LogBox Configuration
-			logBoxConfig( variables.DEFAULTS.logBoxConfig );
-			if( arrayLen(logBoxXML) ){
-				logBoxConfig( trim(logBoxXML[1].XMLText) );
-			}
-			
-			// Register ScopeRegistrations
-			if( arrayLen(scopeXML) ){
-				scopeRegistration(argumentCollection=scopeXML[1].XMLAttributes);
-			}
-			
-			// Register Caches
-			for(x=1; x lte arrayLen( cachesXML ); x++){
-				// Add arguments
-				args = {};
-				structAppend(args,cachesXML[x].XMLAttributes);
-				// Check if properties exist
-				if( structKeyExists(cachesXML[x],"Properties") ){
-					args.properties = cachesXML[x].properties.XMLAttributes;
-				}
-				cache(argumentCollection=args);
-			}
-			
-			// Register listeners
-			for(x=1; x lte arrayLen( listenersXML ); x++){
-				// Add arguments
-				args = {};
-				structAppend(args,listenersXML[x].XMLAttributes);
-				
-				// Check if properties exist
-				if( structKeyExists(listenersXML[x],"Properties") ){
-					args.properties = listenersXML[x].properties.XMLAttributes;
-				}
-				listener(argumentCollection=args);
-			}		
-		</cfscript>
-	</cffunction>
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
+
 </cfcomponent>

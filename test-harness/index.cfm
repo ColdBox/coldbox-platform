@@ -1,6 +1,10 @@
-﻿<cfsetting enablecfoutputonly="true">
-<cfset event = application.cbController.getRequestService().getContext()>
-<cfif structisEmpty(event.getRenderData())>
-	<cfoutput>FW Startup Time: #request.fwLoadTIme# ms   #request.fwLoadTime/1000# s<br></cfoutput>
-</cfif>
-<cfsetting enablecfoutputonly="false">
+﻿<cfsetting enablecfoutputonly="yes">
+<cfsetting showdebugoutput="false">
+<!-----------------------------------------------------------------------
+Template :  index.cfm
+Author 	 :	Luis Majano
+Date     :	October 15, 2005
+Description :
+	This is only a place holder since everything occurs in application.cfc now.
+----------------------------------------------------------------------->
+<cfsetting enablecfoutputonly="no">

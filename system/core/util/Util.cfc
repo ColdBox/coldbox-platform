@@ -154,104 +154,30 @@ Description :
 
     </cffunction>
 
-<!------------------------------------------- CF Facades ------------------------------------------>
-
-	<!--- throw it --->
-	<cffunction name="throwit" access="public" hint="Facade for cfthrow" output="false">
-		<cfargument name="message" 	required="true">
-		<cfargument name="detail" 	required="false" default="">
-		<cfargument name="type"  	required="false" default="Framework">
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-
-	<!--- rethrowit --->
-	<cffunction name="rethrowit" access="public" returntype="void" hint="Rethrow an exception" output="false" >
-		<cfargument name="throwObject" required="true" hint="The exception object">
-		<cfthrow object="#arguments.throwObject#">
-	</cffunction>
-
-	<!--- dump it --->
-	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void" output="true">
-		<cfargument name="var" 		required="true">
-		<cfargument name="isAbort"  type="boolean" default="false" required="false" hint="Abort also"/>
-		<cfdump var="#var#"><cfif arguments.isAbort><cfabort></cfif>
-	</cffunction>
-
-	<!--- abort it --->
-	<cffunction name="abortit" access="public" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
-
-	<!--- include it --->
-	<cffunction name="includeit" access="public" hint="Facade for cfinclude" returntype="void" output="true">
-		<cfargument name="template" required="true">
-		<cfinclude template="#template#">
-	</cffunction>
-
 <!------------------------------------------- Taxonomy Utility Methods ------------------------------------------>
-
-	<!--- isInstanceCheck --->
-    <cffunction name="isInstanceCheck" output="false" access="public" returntype="boolean" hint="Checks if an object is of a certain type of family via inheritance">
-    	<cfargument name="obj"    required="true" hint="The object to evaluate"/>
-		<cfargument name="family" required="true" default="" hint="The family string to check"/>
-    	<cfscript>
-    		var md 			= "";
-			var moreChecks  = true;
-
-    		// Get cf7 nasty metadata, remove by 3.1
-			md = getMetadata(arguments.obj);
-			if( NOT structKeyExists(md, "extends") ){
-				return false;
-			}
-			md = md.extends;
-
-			while(moreChecks){
-				// Check inheritance family?
-				if( md.name eq arguments.family){
-					return true;
-				}
-				// Else check further inheritance?
-				else if ( structKeyExists(md, "extends") ){
-					md = md.extends;
-				}
-				else{
-					return false;
-				}
-			}
-
-			return false;
-    	</cfscript>
-    </cffunction>
-
 
 	<!--- isFamilyType --->
     <cffunction name="isFamilyType" output="false" access="public" returntype="boolean" hint="Checks if an object is of the passed in family type">
-    	<cfargument name="family" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
+    	<cfargument name="family" required="true" hint="The family to covert it to: handler, interceptor"/>
 		<cfargument name="target" required="true" hint="The target object"/>
 		<cfscript>
 			var familyPath = "";
 
 			switch(arguments.family){
 				case "handler" 		: { familyPath = "coldbox.system.EventHandler"; break; }
-				case "plugin" 		: { familyPath = "coldbox.system.Plugin"; break; }
 				case "interceptor"  : { familyPath = "coldbox.system.Interceptor"; break; }
 				default:{
-					throwit('Invalid family sent #arguments.family#');
+					throw('Invalid family sent #arguments.family#');
 				}
 			}
 
-			if( structKeyExists(getFunctionList(), "isInstanceOf") ){
-				return isInstanceOf(arguments.target,familyPath);
-			}
-			else{
-				return isInstanceCheck(arguments.target,familyPath);
-			}
+			return isInstanceOf( arguments.target, familyPath );
 		</cfscript>
     </cffunction>
 
 	<!--- convertToColdBox --->
     <cffunction name="convertToColdBox" output="false" access="public" returntype="void" hint="Decorate an object as a ColdBox Family object">
-    	<cfargument name="family" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
+    	<cfargument name="family" required="true" hint="The family to covert it to: handler, interceptor"/>
 		<cfargument name="target" required="true" hint="The target object"/>
 		<cfscript>
 			var baseObject = "";
@@ -260,10 +186,9 @@ Description :
 
 			switch(arguments.family){
 				case "handler" 		: { familyPath = "coldbox.system.EventHandler"; break; }
-				case "plugin" 		: { familyPath = "coldbox.system.Plugin"; break; }
 				case "interceptor"  : { familyPath = "coldbox.system.Interceptor"; break; }
 				default:{
-					throwit('Invalid family sent #arguments.family#');
+					throw('Invalid family sent #arguments.family#');
 				}
 			}
 
@@ -307,7 +232,7 @@ Description :
 		</cfif>
 
 		<!--- If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into. --->
-			
+
 		<cfif structKeyExists(md,"extends") AND md.type eq "component" AND stopClassRecursion(md.extends.name,arguments.stopRecursions) EQ FALSE>
 			<cfset loc.parent = getInheritedMetaData(component=component, stopRecursions=stopRecursions, md=md.extends)>
 		<!--- If we're at the end of the line, it's time to start working backwards so start with an empty struct to hold our condensesd metadata. --->
@@ -368,5 +293,31 @@ Description :
 			return false;
 		</cfscript>
 	</cffunction>
+
+	<!--- addMapping --->
+    <cffunction name="addMapping" output="false" access="public" returntype="Util" hint="Add a CFML Mapping">
+    	<cfargument name="name" type="string" required="true" hint="The name of the mapping"/>
+    	<cfargument name="path" type="string" required="true" hint="The path to the mapping"/>
+    	<cfscript>
+    		var mappingHelper = "";
+
+    		// Detect server
+			if( structKeyExists( server, 'railo' ) ) {
+				mappingHelper = new RailoMappingHelper();
+			} else {
+				mappingHelper = new CFMappingHelper();
+			}
+
+			// Add / registration
+			if( left( arguments.name, 1 ) != "/" ){
+				arguments.name = "/#arguments.name#";
+			}
+
+			// Add mapping
+			mappingHelper.addMapping( arguments.name, arguments.path );
+
+			return this;
+    	</cfscript>
+    </cffunction>
 
 </cfcomponent>

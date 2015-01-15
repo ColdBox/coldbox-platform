@@ -15,10 +15,11 @@ Description :
 	<cfscript>
 		// The log levels enum as a public property
 		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
-		
+		// Utility object
+		variables.utility  = createObject("component","coldbox.system.core.util.Util");
+
 		// Instance private scope
-		instance 		  = structnew();
-		instance.utility  = createObject("component","coldbox.system.core.util.Util");
+		instance = structnew();
 		
 		// Startup the configuration
 		reset();
@@ -26,16 +27,10 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="LogBoxConfig" hint="Constructor">
-		<cfargument name="XMLConfig" 		required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
 		<cfargument name="CFCConfig" 		required="false" hint="The logBox Data Configuration CFC"/>
 		<cfargument name="CFCConfigPath" 	required="false" hint="The logBox Data Configuration CFC path to use"/>
 		<cfscript>
 			var logBoxDSL = "";
-			
-			// Test and load via XML
-			if( len(trim(arguments.XMLConfig)) ){
-				parseAndLoad(xmlParse(arguments.XMLConfig));
-			}
 			
 			// Test and load via Data CFC Path
 			if( structKeyExists(arguments, "CFCConfigPath") ){
@@ -45,7 +40,7 @@ Description :
 			// Test and load via Data CFC
 			if( structKeyExists(arguments,"CFCConfig") and isObject(arguments.CFCConfig) ){
 				// Decorate our data CFC
-				arguments.CFCConfig.getPropertyMixin = instance.utility.getMixerUtil().getPropertyMixin;
+				arguments.CFCConfig.getPropertyMixin = variables.utility.getMixerUtil().getPropertyMixin;
 				// Execute the configuration
 				arguments.CFCConfig.configure();
 				// Get Data
@@ -68,7 +63,7 @@ Description :
 			
 			// Are appenders defined?
 			if( NOT structKeyExists( logBoxDSL, "appenders" ) ){
-				instance.utility.throwit("No appenders defined","Please define at least one appender","#getMetadata(this).name#.NoAppendersFound");
+				throw("No appenders defined","Please define at least one appender","#getMetadata(this).name#.NoAppendersFound");
 			}
 			// Register Appenders
 			for( key in logBoxDSL.appenders ){
@@ -78,7 +73,7 @@ Description :
 			
 			// Register Root Logger
 			if( NOT structKeyExists( logBoxDSL, "root" ) ){
-				instance.utility.throwit("No Root Logger Defined","Please define the root logger","#getMetadata(this).name#.NoRootLoggerException");
+				throw("No Root Logger Defined","Please define the root logger","#getMetadata(this).name#.NoRootLoggerException");
 			}
 			root(argumentCollection=logBoxDSL.root);
 			
@@ -92,22 +87,22 @@ Description :
 			
 			// Register Level Categories
 			if( structKeyExists( logBoxDSL, "debug" ) ){ 
-				DEBUG(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.debug) );
+				DEBUG(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.debug) );
 			}
 			if( structKeyExists( logBoxDSL, "info" ) ){ 
-				INFO(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.info) );
+				INFO(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.info) );
 			}
 			if( structKeyExists( logBoxDSL, "warn" ) ){ 
-				WARN(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.warn) );
+				WARN(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.warn) );
 			}
 			if( structKeyExists( logBoxDSL, "error" ) ){ 
-				ERROR(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.error) );
+				ERROR(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.error) );
 			}
 			if( structKeyExists( logBoxDSL, "fatal" ) ){ 
-				FATAL(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.fatal) );
+				FATAL(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.fatal) );
 			}
 			if( structKeyExists( logBoxDSL, "off" ) ){ 
-				OFF(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.off) );
+				OFF(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.off) );
 			}			
 		</cfscript>
     </cffunction>
@@ -152,11 +147,11 @@ Description :
 			
 			// Are appenders defined
 			if( structIsEmpty(instance.appenders) ){
-				instance.utility.throwit(message="Invalid Configuration. No appenders defined.",type="#getMetadata(this).name#.NoAppendersFound");
+				throw(message="Invalid Configuration. No appenders defined.",type="#getMetadata(this).name#.NoAppendersFound");
 			}
 			// Check root logger definition
 			if( structIsEmpty(instance.rootLogger) ){
-				instance.utility.throwit(message="Invalid Configuration. No root logger defined.",type="#getMetadata(this).name#.RootLoggerNotFound");
+				throw(message="Invalid Configuration. No root logger defined.",type="#getMetadata(this).name#.RootLoggerNotFound");
 			}
 			
 			// All root appenders?
@@ -166,7 +161,7 @@ Description :
 			// Check root's appenders
 			for(x=1; x lte listlen(instance.rootLogger.appenders); x=x+1){
 				if( NOT structKeyExists(instance.appenders, listGetAt(instance.rootLogger.appenders,x)) ){
-					instance.utility.throwit(message="Invalid appender in Root Logger",
+					throw(message="Invalid appender in Root Logger",
 						   					 detail="The appender #listGetAt(instance.rootLogger.appenders,x)# has not been defined yet. Please define it first.",
 						   					 type="#getMetadata(this).name#.AppenderNotFound");
 				}
@@ -182,7 +177,7 @@ Description :
 				
 				for(x=1; x lte listlen(instance.categories[key].appenders); x=x+1){
 					if( NOT structKeyExists(instance.appenders, listGetAt(instance.categories[key].appenders,x)) ){
-						instance.utility.throwit(message="Invalid appender in Category: #key#",
+						throw(message="Invalid appender in Category: #key#",
 							   					 detail="The appender #listGetAt(instance.categories[key].appenders,x)# has not been defined yet. Please define it first.",
 							   					 type="#getMetadata(this).name#.AppenderNotFound");
 					}
@@ -228,7 +223,7 @@ Description :
 			
 			//Verify appender list
 			if( NOT listLen(arguments.appenders) ){
-				instance.utility.throwit("Invalid Appenders","Please send in at least one appender for the root logger","#getMetadata(this).name#.InvalidAppenders");
+				throw("Invalid Appenders","Please send in at least one appender for the root logger","#getMetadata(this).name#.InvalidAppenders");
 			}
 
 			// Add definition
@@ -353,144 +348,6 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<!--- parseAndLoad --->
-	<cffunction name="parseAndLoad" output="false" access="public" returntype="void" hint="Parse and load a config xml object">
-		<cfargument name="xmlDoc" required="true" hint="The xml document object to use for parsing."/>
-		<cfscript>
-			// Get All Appenders
-			var xml = arguments.xmlDoc;
-			var appendersXML = xmlSearch(xml,"//Appender");
-			var rootXML = xmlSearch(xml,"//Root");
-			var categoriesXML = xmlSearch(xml,"//Category");
-			var args = structnew();
-			var x =1;
-			var y =1;
-			
-			//Register all appenders
-			for(x=1; x lte arrayLen(appendersXML); x=x+1){
-				args = structnew();
-				args.properties = structnew();
-				thisAppender = appendersXML[x];
-				// Error
-				if( NOT structKeyExists(thisAppender.XMLAttributes,"name") OR NOT 
-				        structKeyExists(thisAppender.XMLAttributes,"class") ){
-					instance.utility.throwit(message="An appender must have a name and class attribute",type="#getMetadata(this).name#.InvalidAppenderDefinition");
-				}
-				// Construct appender Properties
-				args.name = trim(thisAppender.XMLAttributes.name);
-				args.class = trim(thisAppender.XMLAttributes.class);
-				
-				//Appender layout?
-				if( structKeyExists(thisAppender.XMLAttributes,"layout") ){
-					args.layout = trim(thisAppender.XMLAttributes.layout);
-				}
-				//Appender Levels?
-				if( structKeyExists(thisAppender.XMLAttributes,"levelMin") ){
-					args.levelMin = trim(thisAppender.XMLAttributes.levelMin);
-					// Numeric Check
-					if( NOT isNumeric(args.levelMin) ){
-						args.levelMin = this.logLevels.lookupAsInt(args.levelMin);
-					}
-				}
-				if( structKeyExists(thisAppender.XMLAttributes,"levelMax") ){
-					args.levelMax = trim(thisAppender.XMLAttributes.levelMax);
-					// Numeric Check
-					if( NOT isNumeric(args.levelMax) ){
-						args.levelMax = this.logLevels.lookupAsInt(args.levelMax);
-					}
-				}
-				
-				// Check Properties Out
-				for(y=1; y lte arrayLen(thisAppender.xmlChildren); y=y+1 ){
-					args.properties[trim(thisAppender.xmlChildren[y].xmlAttributes.name)] = trim(thisAppender.xmlChildren[y].xmlText);
-				}
-				// Register appender
-				appender(argumentCollection=args);
-			}
-			
-			//Register Root Logger
-			if( NOT arrayLen(rootXML) ){
-				instance.utility.throwit(message="The root element cannot be found and it is mandatory",type="#getMetadata(this).name#.RootLoggerNotFound");
-			}
-			args = structnew();
-			if( structKeyExists(rootXML[1].xmlAttributes,"levelMin") ){
-				args.levelMin = trim(rootXML[1].xmlAttributes.levelMin);
-				// Numeric Check
-				if( NOT isNumeric(args.levelMin) ){
-					args.levelMin = this.logLevels.lookupAsInt(args.levelMin);
-				}
-			}
-			if( structKeyExists(rootXML[1].xmlAttributes,"levelMax") ){
-				args.levelMax = trim(rootXML[1].xmlAttributes.levelMax);
-				// Numeric Check
-				if( NOT isNumeric(args.levelMax) ){
-					args.levelMax = this.logLevels.lookupAsInt(args.levelMax);
-				}
-			}
-			
-			//Root Appenders
-			if( structKeyExists(rootXML[1].xmlAttributes,"appenders") ){
-				args.appenders = trim(rootXML[1].xmlAttributes.appenders);
-			}
-			else{
-				args.appenders = "";
-				for( x=1; x lte arrayLen(rootXML[1].xmlChildren); x=x+1){
-					if( rootXML[1].xmlChildren[x].XMLName eq "Appender-ref" ){
-						args.appenders = listAppend(args.appenders, trim(rootXML[1].xmlChildren[x].XMLAttributes.ref) );
-					}
-				}
-			}
-			root(argumentCollection=args);
-			
-			//Categories
-			for( x=1; x lte arrayLen(categoriesXML); x=x+1){
-				args = structnew();
-				
-				// Category Name
-				if( NOT structKeyExists(categoriesXML[x].XMLAttributes,"name") ){
-					instance.utility.throwit(message="A category definition must have a name attribute",type="#getMetadata(this).name#.InvalidCategoryDefinition");
-				}
-				args.name = trim(categoriesXML[x].XMLAttributes.name);
-				
-				// Level Min
-				if( structKeyExists(categoriesXML[x].XMLAttributes,"levelMin") ){
-					args.levelMin = trim(categoriesXML[x].XMLAttributes.levelMin);
-					if( NOT isNumeric(args.levelMin) ){
-						args.levelMin = this.logLevels.lookupAsInt(args.levelMin);
-					}
-				}
-				
-				// Level Max
-				if( structKeyExists(categoriesXML[x].XMLAttributes,"levelMax") ){
-					args.levelMax = trim(categoriesXML[x].XMLAttributes.levelMax);
-					if( NOT isNumeric(args.levelMax) ){
-						args.levelMax = this.logLevels.lookupAsInt(args.levelMax);
-					}
-				}
-				
-				//Category Appenders
-				if( structKeyExists(categoriesXML[x].XMLAttributes,"appenders") ){
-					args.appenders = trim(categoriesXML[x].XMLAttributes.appenders);
-				}
-				else{
-					args.appenders = "";
-					// Find xml appender references
-					for( y=1; y lte arrayLen(categoriesXML[x].xmlChildren); y=y+1){
-						if( categoriesXML[x].xmlChildren[y].XMLName eq "Appender-ref" ){
-							args.appenders = listAppend(args.appenders, trim(categoriesXML[x].xmlChildren[y].XMLAttributes.ref) );
-						}
-					}
-					// check if we have appenders else default to *
-					if(NOT len(args.appenders) ){
-						args.appenders = "*";
-					}
-				}
-				// Register category
-				category(argumentCollection=args);
-			}
-		</cfscript>
-	</cffunction>
-	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
 	<!--- convertLevels --->

@@ -36,10 +36,10 @@ Properties:
 			
 			// Verify properties
 			if( NOT propertyExists('host') ){
-				$throw(message="The host must be provided",type="SocketAppender.HostNotFound");
+				throw(message="The host must be provided",type="SocketAppender.HostNotFound");
 			}
 			if( NOT propertyExists('port') ){
-				$throw(message="The port must be provided",type="SocketAppender.PortNotFound");
+				throw(message="The port must be provided",type="SocketAppender.PortNotFound");
 			}
 			if( NOT propertyExists('timeout') OR NOT isNumeric(getProperty("timeout"))){
 				setProperty("timeout",5);
@@ -124,7 +124,7 @@ Properties:
 				instance.socket = createObject("java", "java.net.Socket").init(getProperty("host"), javaCast("int",getProperty("port")));
 			}
 			catch(Any e){
-				$throw(message="Error opening socket to #getProperty("host")#:#getProperty("port")#",
+				throw(message="Error opening socket to #getProperty("host")#:#getProperty("port")#",
 					   detail=e.message & e.detail & e.stacktrace,
 					   type="SocketAppender.ConnectionException");
 			}

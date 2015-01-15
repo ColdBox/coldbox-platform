@@ -1,43 +1,4 @@
-﻿<cfcomponent output="false" hint="My App Configuration">
-<cfscript>
-/**
-structures/arrays to create for configuration
-
-- coldbox (struct)
-- settings (struct)
-- conventions (struct)
-- environments (struct)
-- wirebox (struct)
-- ioc (struct)
-- debugger (struct)
-- mailSettings (struct)
-- i18n (struct)
-- webservices (struct)
-- datasources (struct)
-- layoutSettings (struct)
-- layouts (array of structs)
-- cacheBox (struct)
-- interceptorSettings (struct)
-- interceptors (array of structs)
-- modules (struct)
-- logBox (struct)
-- flash (struct)
-- orm (struct)
-- validation (struct)
-
-Available objects in variable scope
-- controller
-- logBoxConfig
-- appMapping (auto calculated by ColdBox)
-
-Required Methods
-- configure() : The method ColdBox calls to configure the application.
-Optional Methods
-- detectEnvironment() : If declared the framework will call it and it must return the name of the environment you are on.
-- {environment}() : The name of the environment found and called by the framework.
-
-*/
-
+﻿component{
 	// Configure ColdBox Application
 	function configure(){
 
@@ -48,8 +9,6 @@ Optional Methods
 			eventName 				= "event",
 
 			//Development Settings
-			debugMode				= true,
-			debugPassword			= "",
 			reinitPassword			= "",
 			handlersIndexAutoReload = true,
 
@@ -64,10 +23,10 @@ Optional Methods
 			missingTemplateHandler	= "",
 
 			//Extension Points
-			UDFLibraryFile 				= "includes/helpers/ApplicationHelper.cfm",
+			applicationHelper 			= "includes/helpers/ApplicationHelper.cfm",
+			viewsHelper					= "",
 			coldboxExtensionsLocation 	= "",
 			modulesExternalLocation		= [],
-			pluginsExternalLocation 	= "",
 			viewsExternalLocation		= "",
 			layoutsExternalLocation 	= "",
 			handlersExternalLocation  	= "",
@@ -93,7 +52,7 @@ Optional Methods
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the cgi.http_host.
 		environments = {
-			//development = "^cf8.,^railo."
+			development = "localhost"
 		};
 
 		// Module Directives
@@ -110,7 +69,7 @@ Optional Methods
 		logBox = {
 			// Define Appenders
 			appenders = {
-				coldboxTracer = { class="coldbox.system.logging.appenders.ColdboxTracerAppender" }
+				coldboxTracer = { class="coldbox.system.logging.appenders.ConsoleAppender" }
 			},
 			// Root Logger
 			root = { levelmax="INFO", appenders="*" },
@@ -138,31 +97,7 @@ Optional Methods
 			}
 		];
 
-		// Object & Form Validation
-		validation = {
-			// manager = "class path" or none at all to use ColdBox as the validation manager
-			// The shared constraints for your application.
-			sharedConstraints = {
-				// EX
-				// myForm = { name={required=true}, age={type="numeric",min="18"} }
-			}
-		};
-
-
 		/*
-
-		// ORM services, injection, etc
-		orm = {
-			// entity injection
-			injection = {
-				// enable it
-				enabled = true,
-				// the include list for injection
-				include = "",
-				// the exclude list for injection
-				exclude = ""
-			}
-		};
 
 		// flash scope configuration
 		flash = {
@@ -186,65 +121,10 @@ Optional Methods
 		//Conventions
 		conventions = {
 			handlersLocation = "handlers",
-			pluginsLocation  = "plugins",
 			viewsLocation 	 = "views",
 			layoutsLocation  = "layouts",
-			modelsLocation 	 = "model",
+			modelsLocation 	 = "models",
 			eventAction 	 = "index"
-		};
-
-		//IOC Integration
-		ioc = {
-			framework 		= "lightwire",
-			reload 	  	  	= true,
-			objectCaching 	= false,
-			definitionFile  = "config/coldspring.xml.cfm",
-			parentFactory 	= {
-				framework = "coldspring",
-				definitionFile = "config/parent.xml.cfm"
-			}
-		};
-
-		//Debugger Settings
-		debugger = {
-			enableDumpVar = false,
-			persistentRequestProfilers = true,
-			maxPersistentRequestProfilers = 10,
-			maxRCPanelQueryRows = 50,
-			showRCSnapshots = false,
-			//Panels
-			showTracerPanel = true,
-			expandedTracerPanel = true,
-			showInfoPanel = true,
-			expandedInfoPanel = true,
-			showCachePanel = true,
-			expandedCachePanel = true,
-			showRCPanel = true,
-			expandedRCPanel = true,
-			showModulesPanel = true,
-			expandedModulesPanel = false
-		};
-
-		//Mailsettings
-		mailSettings = {
-			server = "",
-			username = "",
-			password = "",
-			port = 25
-		};
-
-		//i18n & Localization
-		i18n = {
-			defaultResourceBundle = "includes/i18n/main",
-			defaultLocale = "en_US",
-			localeStorage = "session",
-			unknownTranslation = "**NOT FOUND**"
-		};
-
-		//webservices
-		webservices = {
-			testWS = "http://www.test.com/test.cfc?wsdl",
-			AnotherTestWS = "http://www.coldbox.org/distribution/updatews.cfc?wsdl"
 		};
 
 		//Datasources
@@ -256,5 +136,11 @@ Optional Methods
 
 	}
 
-</cfscript>
-</cfcomponent>
+	/**
+	* Development environment
+	*/
+	function development(){
+		coldbox.customErrorTemplate = "/coldbox/system/includes/BugReport.cfm";
+	}
+
+}

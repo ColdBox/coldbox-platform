@@ -1,30 +1,1 @@
-﻿<cfcomponent name="main" 
-			 hint="main" 
-			 output="false">
-
-	<cffunction name="onApplicationStart" access="public" output="false" returntype="void">
-		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
-		<cfset getColdboxOCM().set("mysiteDSNBean", getDatasource("mysite"), 0 )>
-		<cfset getPlugin("Logger").logEntry("information","AppStart Fired")>
-		<!--- A-La-Carte loading --->
-		<cfset controller.getModuleService().registerAndActivateModule(moduleName="ExternalTest",invocationPath="coldbox.test-harness.extmodules")>
-		
-	</cffunction>
-	
-	<cffunction name="onSessionStart" access="public" output="false" returntype="void">
-		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
-		<cfscript>
-		var logger = getPlugin("Logger");
-		logger.logEntry("information","I am in the onSessionStart baby.");
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="onSessionEnd" access="public" output="false" returntype="void">
-		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
-		<cfscript>
-		var logger = getPlugin("Logger");
-		logger.logEntry("information","I am in the onSessionEnd baby.");
-		</cfscript>
-	</cffunction>
-	
-</cfcomponent>
+﻿component output="false" singleton{	// Default Action	function index( event, rc, prc ){		prc.welcomeMessage = "Welcome to ColdBox!";		event.setView("main/index");	}	// Do something	function doSomething( event, rc, prc ){		setNextEvent("main.index");	}	/************************************** IMPLICIT ACTIONS *********************************************/	function onAppInit( event, rc, prc ){	}	function onInvalidEvent( event, rc, prc ){		event.setHTTPHeader( statusCode="404", statusText="InvalidPage")			.renderData( data="<h1>Invalid Page</h1>" );	}	function onRequestStart( event, rc, prc ){	}	function onRequestEnd( event, rc, prc ){	}	function onSessionStart( event, rc, prc ){	}	function onSessionEnd( event, rc, prc ){		var sessionScope = event.getValue("sessionReference");		var applicationScope = event.getValue("applicationReference");	}	function onException( event, rc, prc ){		//Grab Exception From request collection, placed by ColdBox		var exceptionBean = event.getValue( name="exception", private=true );		//Place exception handler below:	}	function onMissingTemplate( event, rc, prc ){		//Grab missingTemplate From request collection, placed by ColdBox		var missingTemplate = event.getValue("missingTemplate");	}}

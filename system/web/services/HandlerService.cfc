@@ -19,13 +19,13 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Setup The Controller.
-			setController(arguments.controller);
+			variables.controller = arguments.controller;
 
 			// Setup the Event Handler Cache Dictionary
 			instance.handlerCacheDictionary = {};
 			// Setup the Event Cache Dictionary
 			instance.eventCacheDictionary = {};
-			// Plugin base class
+			// Handler base class
 			instance.HANDLER_BASE_CLASS = "coldbox.system.EventHandler";
 
 			return this;
@@ -53,7 +53,7 @@ Description :
 			instance.eventCaching				= controller.getSetting("EventCaching");
 			instance.handlersInvocationPath		= controller.getSetting("HandlersInvocationPath");
 			instance.handlersExternalLocation	= controller.getSetting("HandlersExternalLocation");
-			instance.templateCache				= getColdboxOCM("template");
+			instance.templateCache				= controller.getCache( "template" );
 			instance.modules					= controller.getSetting("modules");
 			instance.interceptorService			= controller.getInterceptorService();
     	</cfscript>
@@ -104,16 +104,16 @@ Description :
 					isHandler	= true
 				};
 				// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				mapping = wirebox.registerNewInstance(name=invocationPath, instancePath=invocationPath)
+				mapping = wirebox.registerNewInstance( name=invocationPath, instancePath=invocationPath )
 					.setVirtualInheritance( "coldbox.system.EventHandler" )
-					.addDIConstructorArgument(name="controller", value=controller)
+					.addDIConstructorArgument( name="controller", value=controller )
 					.setThreadSafe( true )
-					.setScope( wirebox.getBinder().SCOPES.CACHEBOX )
-					.setCacheProperties(key="handlers-#invocationPath#")
+					.setScope( wirebox.getBinder().SCOPES.SINGLETON )
+					.setCacheProperties( key="handlers-#invocationPath#" )
 					.setExtraAttributes( attribs );
 				// Are we caching or not handlers?
-				if ( NOT instance.handlerCaching ){ 
-					mapping.setScope( wirebox.getBinder().SCOPES.NOSCOPE ); 
+				if ( NOT instance.handlerCaching ){
+					mapping.setScope( wirebox.getBinder().SCOPES.NOSCOPE );
 				}
 			}
 			// retrieve, build and wire from wirebox
@@ -274,7 +274,7 @@ Description :
 				}
 			}
 			// log it as application log
-			controller.getPlugin("Logger").error("Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList(moduleSettings)#");
+			instance.log.error( "Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList(moduleSettings)#" );
 		}
 		else{
 			// Try to do list localization in the registry for full event string.
@@ -317,7 +317,7 @@ Description :
 		<cfscript>
     		// Cleanup for modules
 			var cEvent     		= reReplaceNoCase(arguments.event,"^([^:.]*):","");
-			var renderer 		= controller.getPlugin("Renderer");
+			var renderer 		= controller.getRenderer();
 			var targetView		= "";
 			var targetModule	= getToken(arguments.event,1,":");
 
@@ -353,7 +353,7 @@ Description :
 			iData.invalidEvent 	= arguments.event;
 			iData.ehBean 		= arguments.ehBean;
 			iData.override 		= false;
-			instance.interceptorService.processState("onInvalidEvent",iData);
+			instance.interceptorService.processState( "onInvalidEvent", iData );
 
 			//If the override was changed by the interceptors then they updated the ehBean of execution
 			if( iData.override ){
@@ -364,10 +364,10 @@ Description :
 			if ( len(trim(instance.onInvalidEvent)) ){
 
 				// Test for invalid Event Error
-				if ( compareNoCase(instance.onInvalidEvent,arguments.event) eq 0 ){
-					getUtil().throwit(message="The onInvalid event is also invalid",
-									  detail="The onInvalidEvent setting is also invalid: #instance.onInvalidEvent#. Please check your settings",
-									  type="HandlerService.onInValidEventSettingException");
+				if ( compareNoCase( instance.onInvalidEvent, arguments.event ) eq 0 ){
+					throw( message="The onInvalid event is also invalid",
+						   detail="The onInvalidEvent setting is also invalid: #instance.onInvalidEvent#. Please check your settings",
+						   type="HandlerService.onInValidEventSettingException");
 				}
 
 				// Store Invalid Event in PRC
@@ -384,10 +384,10 @@ Description :
 			}
 
 			// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
-			controller.getPlugin("Logger").error("Invalid Event detected: #arguments.event#. Path info: #cgi.path_info# , query string: #cgi.query_string#");
+			instance.log.error( "Invalid Event detected: #arguments.event#. Path info: #cgi.path_info#, query string: #cgi.query_string#" );
 
 			// Throw Exception
-			getUtil().throwit(message="The event: #arguments.event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
+			throw( message="The event: #arguments.event# is not valid registered event.", type="HandlerService.EventHandlerNotRegisteredException" );
 		</cfscript>
 	</cffunction>
 
@@ -413,7 +413,7 @@ Description :
 
 			//Check for Handlers Directory Location
 			if ( not directoryExists(HandlersExternalLocationPath) ){
-				getUtil().throwit("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","HandlerService.HandlersDirectoryNotFoundException");
+				throw("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","HandlerService.HandlersDirectoryNotFoundException");
 			}
 
 			//Get recursive Array listing
@@ -422,7 +422,7 @@ Description :
 
 		//Verify it
 		if ( ArrayLen(HandlerArray) eq 0 AND ArrayLen(HandlersExternalArray) eq 0){
-			getUtil().throwit("No handlers were found in: #HandlersPath# or in #HandlersExternalLocationPath#. So I have no clue how you are going to run this application.","","HandlerService.NoHandlersFoundException");
+			throw("No handlers were found in: #HandlersPath# or in #HandlersExternalLocationPath#. So I have no clue how you are going to run this application.","","HandlerService.NoHandlersFoundException");
 		}
 
 		//Set registered External Handlers
@@ -485,7 +485,7 @@ Description :
 				cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
 
 				//Clean Extension
-				cleanHandler = getUtil().ripExtension(cleanhandler);
+				cleanHandler = controller.getUtil().ripExtension(cleanhandler);
 
 				//Add data to array
 				ArrayAppend(fileArray,cleanHandler);
@@ -504,10 +504,10 @@ Description :
 			// Check if handler mapped?
 			if( NOT wirebox.getBinder().mappingExists( instance.HANDLER_BASE_CLASS ) ){
 				// feed the base class
-				wirebox.registerNewInstance(name=instance.HANDLER_BASE_CLASS,instancePath=instance.HANDLER_BASE_CLASS)
-					.addDIConstructorArgument(name="controller", value=controller);
+				wirebox.registerNewInstance( name=instance.HANDLER_BASE_CLASS, instancePath=instance.HANDLER_BASE_CLASS )
+					.addDIConstructorArgument( name="controller", value=controller );
 				// register ourselves to listen for autowirings
-				instance.interceptorService.registerInterceptionPoint("HandlerService","afterInstanceAutowire",this);
+				instance.interceptorService.registerInterceptionPoint( "HandlerService", "afterInstanceAutowire", this );
 			}
     	</cfscript>
     </cffunction>

@@ -1,6 +1,13 @@
+<cfsetting showdebugoutput="false" >
+<!--- CPU Integration --->
+<cfparam name="url.cpu" default="false">
 <!--- SETUP THE ROOTS OF THE BROWSER RIGHT HERE --->
-<cfset rootMapping 	= "/coldbox/testing">
-<cfset rootPath 	= expandPath( rootMapping )>
+<cfset rootMapping 	= "/coldbox/tests/specs">
+<cfif directoryExists( rootMapping )>
+	<cfset rootPath = rootMapping>
+<cfelse>
+	<cfset rootPath = expandPath( rootMapping )>
+</cfif>
 
 <!--- param incoming --->
 <cfparam name="url.path" default="/">
@@ -12,7 +19,7 @@
 </cfif>
 
 <!--- Prepare TestBox --->
-<cfset testbox = new coldbox.system.testing.TestBox()>
+<cfset testbox = new testbox.system.TestBox()>
 
 <!--- Run Tests Action?--->
 <cfif structKeyExists( url, "action")>
@@ -22,7 +29,7 @@
 		<cfoutput><h1>Invalid incoming directory: #rootMapping & url.path#</h1></cfoutput>
 	</cfif>
 	<cfabort>
-	
+
 </cfif>
 
 <!--- Get list of files --->
@@ -42,10 +49,10 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>TestBox Global Runner</title>
-	<script src="/coldbox/system/testing/reports/assets/js/jquery.js"></script>
+	<script><cfinclude template="/testbox/system//reports/assets/js/jquery.js"></script>
 	<script>
 	$(document).ready(function() {
-		
+
 	});
 	function runTests(){
 		$("#btn-run").html( 'Running...' ).css( "opacity", "0.5" );
@@ -112,8 +119,8 @@
 		color:#ffffff;
 		font-weight:bold;
 		font-style:normal;
-		height:25px;
-		width:71px;
+		padding: 2px 5px;
+		margin: 2px 0px;
 		text-decoration:none;
 		text-align:center;
 		cursor: pointer;
@@ -152,7 +159,7 @@
 			Below is a listing of the files and folders starting from your root <code>#rootPath#</code>.  You can click on individual tests in order to execute them
 			or click on the <strong>Run All</strong> button on your left and it will execute a directory runner from the visible folder.
 		</p>
-		
+
 		<fieldset><legend>Contents: #executePath#</legend>
 		<cfif url.path neq "/">
 			<a href="index.cfm?path=#URLEncodedFormat( backPath )#"><button type="button" class="btn-red">&lt;&lt; Back</button></a><br><hr>
@@ -166,13 +173,13 @@
 			<cfif qResults.type eq "Dir">
 				+<a href="index.cfm?path=#dirPath#">#qResults.name#</a><br/>
 			<cfelseif listLast( qresults.name, ".") eq "cfm">
-				<a href="#executePath & qResults.name#" target="_blank">#qResults.name#</a><br/>
-			<cfelseif listLast( qresults.name, ".") eq "cfc" and findNoCase( "Test", qResults.name )>
-				<a class="test" href="#executePath & qResults.name#?method=runRemote" target="_blank"><button type="button">#qResults.name#</button></a><br/>
+				<a class="btn-red" href="#executePath & qResults.name#" <cfif !url.cpu>target="_blank"</cfif>>#qResults.name#</a><br/>
+			<cfelseif listLast( qresults.name, ".") eq "cfc" and qresults.name neq "Application.cfc">
+				<a class="test btn-red" href="#executePath & qResults.name#?method=runRemote" <cfif !url.cpu>target="_blank"</cfif>>#qResults.name#</a><br/>
 			<cfelse>
 				#qResults.name#<br/>
 			</cfif>
-				
+
 		</cfloop>
 		</fieldset>
 

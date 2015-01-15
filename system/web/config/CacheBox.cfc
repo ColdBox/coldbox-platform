@@ -1,25 +1,22 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author 	 :	Luis Majano
-Description :
-	The default ColdBox CacheBox configuration object for ColdBox Applications
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="The default ColdBox CacheBox configuration object for ColdBox Applications">
-<cfscript>
-	
+* The default ColdBox CacheBox configuration object for ColdBox Applications
+*/
+component{
+
 	/**
 	* Configure CacheBox for ColdBox Application Operation
 	*/
 	function configure(){
-		
+
 		// The CacheBox configuration structure DSL
 		cacheBox = {
 			// LogBox config already in coldbox app, not needed
-			// logBoxConfig = "coldbox.system.web.config.LogBox", 
-			
+			// logBoxConfig = "coldbox.system.web.config.LogBox",
+
 			// The defaultCache has an implicit name "default" which is a reserved cache name
 			// It also has a default provider of cachebox which cannot be changed.
 			// All timeouts are in minutes
@@ -27,7 +24,7 @@ Description :
 				objectDefaultTimeout = 120, //two hours default
 				objectDefaultLastAccessTimeout = 30, //30 minutes idle time
 				useLastAccessTimeouts = true,
-				reapFrequency = 2,
+				reapFrequency = 5,
 				freeMemoryPercentageThreshold = 0,
 				evictionPolicy = "LRU",
 				evictCount = 1,
@@ -35,7 +32,7 @@ Description :
 				objectStore = "ConcurrentStore", //guaranteed objects
 				coldboxEnabled = true
 			},
-			
+
 			// Register all the custom named caches you like here
 			caches = {
 				// Named cache for all coldbox event and view template caching
@@ -45,16 +42,16 @@ Description :
 						objectDefaultTimeout = 120,
 						objectDefaultLastAccessTimeout = 30,
 						useLastAccessTimeouts = true,
-						reapFrequency = 2,
+						reapFrequency = 5,
 						freeMemoryPercentageThreshold = 0,
 						evictionPolicy = "LRU",
 						evictCount = 2,
 						maxObjects = 300,
 						objectStore = "ConcurrentSoftReferenceStore" //memory sensitive
 					}
-				}		
-			}		
+				}
+			}
 		};
-	}	
-</cfscript>
-</cfcomponent>
+	}
+
+}

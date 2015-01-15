@@ -27,6 +27,7 @@ Description :
 			instance.mixins[ "includeitMixin" ] 			= variables.includeitMixin;
 			instance.mixins[ "getPropertyMixin" ]			= variables.getPropertyMixin;
 			instance.mixins[ "exposeMixin" ]				= variables.exposeMixin;
+			instance.mixins[ "methodProxy" ]				= variables.methodProxy;
 
 			instance.system = createObject('java','java.lang.System');
 
@@ -73,16 +74,46 @@ Description :
 <!------------------------------------------- MIXINS ------------------------------------------>
 
 	<!--- exposeMixin --->
-	<cffunction name="exposeMixin" access="public" hint="Exposes a private function publicly" returntype="void" output="true">
+	<cffunction name="exposeMixin" access="public" hint="Exposes a private function publicly" returntype="any" output="false">
 		<cfargument name="method" 	required="true">
 		<cfargument name="newName" 	required="false" default="">
-
 		<cfscript>
+			// get new name
 			if( !len( arguments.newName ) ){
 				arguments.newName = arguments.method;
 			}
-			// expose it
-			this[ arguments.newName ] = variables[ arguments.method ];
+
+			// stash it away
+			if( !structKeyExists( this, "$exposedMethods") ){
+				this.$exposedMethods = {};
+			}
+			this.$exposedMethods[ arguments.method ] = variables[ arguments.method ];
+
+			// replace with proxy.
+			this[ arguments.newName ] = this.methodProxy;
+
+			// Create alias if needed
+			if( arguments.newName != arguments.method ){
+				this.$exposedMethods[ arguments.newName ] = this.$exposedMethods[ arguments.method ];
+			}
+
+			return this;
+		</cfscript>
+	</cffunction>
+
+	<!--- methodProxy --->
+	<cffunction name="methodProxy" access="public" hint="a method proxy" returntype="any" output="false">
+		<cfscript>
+			var methodName = getFunctionCalledName();
+
+			if( !structKeyExists( this.$exposedMethods, methodName ) ){
+				throw( message="The exposed method you are calling: #methodName# does not exist",
+					   detail="Exposed methods are #structKeyList( this.$exposedMethods )#",
+					   type="ExposedMethodProxy" );
+			}
+
+			var method = this.$exposedMethods[ methodName ];
+			return method( argumentCollection=arguments );
 		</cfscript>
 	</cffunction>
 
@@ -164,7 +195,7 @@ Description :
 	<cffunction name="invokerMixin" hint="Calls private/packaged/public methods" access="public" returntype="any" output="false">
 		<cfargument name="method" 		 required="true" 	hint="Name of the private method to call">
 		<cfargument name="argCollection" required="false"  	hint="Can be called with an argument collection struct">
-		<cfargument name="argList" 		 required="false"  	hint="Can be called with an argument list, for simple values only: ex: 'plugin=logger,number=1'">
+		<cfargument name="argList" 		 required="false"  	hint="Can be called with an argument list, for simple values only: ex: 'object=logger,number=1'">
 
 		<cfset var key 		= "">
 		<cfset var refLocal = structnew()>

@@ -1,29 +1,25 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-
-Author     :	Luis Majano
-Description :
-ColdBox Default Configuration
------------------------------------------------------------------------>
-<cfcomponent output=false hint="ColdBox Default Configuration">
-<cfscript>
+* ColdBox Main Configuration Defaults
+*/
+component{
 
 	// Release Metadata
 	this.codename 		= "ColdBox SEEK";
 	this.author			= "Ortus Solutions";
 	this.authorEmail 	= "coldbox@ortussolutions.com";
 	this.authorWebsite	= "http://www.ortussolutions.com";
-	this.suffix			= "1 John 5:12-13";
-	this.version		= "3.8.0.@build.number@";
+	this.suffix			= "Gideon Beta";
+	this.version		= "4.0.0+@build.number@";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
 	// Operation Defaults
-	this.eventName 	= "event";
-	this.defaultEvent = "main.index";
-	this.defaultLayout = "Main.cfm";
+	this.eventName 		= "event";
+	this.defaultEvent 	= "main.index";
+	this.defaultLayout 	= "Main.cfm";
 
 	// flash scope defaults
 	this.flash = {
@@ -35,34 +31,13 @@ ColdBox Default Configuration
 		autoSave = true
 	};
 
-	// Debugger Defaults
-	this.debuggerSettings = {
-		enableDumpVar = true,
-	    persistentRequestProfiler = true,
-	    maxPersistentRequestProfilers = 10,
-	    maxRCPanelQueryRows = 50,
-	    showTracerPanel = true,
-	    expandedTracerPanel = true,
-	    showInfoPanel = true,
-	    expandedInfoPanel = true,
-	    showCachePanel = true,
-	    expandedCachePanel = false,
-	    showRCPanel = true,
-	    expandedRCPanel = false,
-	    showModulesPanel = true,
-	    expandedModulesPanel = false,
-	    showRCSnapshots = false
-    };
-
     // Conventions
     this.handlersConvention	= "handlers";
-	this.pluginsConvention	= "plugins";
 	this.layoutsConvention	= "layouts";
 	this.viewsConvention	= "views";
 	this.eventAction		= "index";
-	this.modelsConvention	= "model";
+	this.modelsConvention	= "models";
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
 
-</cfscript>
-</cfcomponent>
+}

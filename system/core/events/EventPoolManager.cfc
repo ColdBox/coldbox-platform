@@ -109,8 +109,8 @@ Description :
 			}
 
 			// Throw Exception
-			getUtil().throwit(message="Object: #arguments.name# not found in any event pool state: #structKeyList(poolContainer)#.",
-				  			  type="EventPoolManager.ObjectNotFound");
+			throw(message="Object: #arguments.name# not found in any event pool state: #structKeyList(poolContainer)#.",
+				  type="EventPoolManager.ObjectNotFound");
 		</cfscript>
 	</cffunction>
 

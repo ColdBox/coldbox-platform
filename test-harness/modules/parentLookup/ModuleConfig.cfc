@@ -30,7 +30,6 @@ structures to create for configuration
 - parentSettings : struct (will append and override parent)
 - settings : struct
 - datasources : struct (will append and override parent)
-- webservices : struct (will append and override parent)
 - interceptorSettings : struct of the following keys ATM
 	- customInterceptionPoints : string list of custom interception points
 - interceptors : array

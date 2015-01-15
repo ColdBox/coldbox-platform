@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+Executes the entire ColdBox Platform Test Suite
+-->
+<project name="coldbox-platform-runner" default="run" basedir=".">
+	
+	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
+	<property name="test.bundles"		value="" />
+	<!-- FILL OUT THE DIRECTORY MAPPING TO TEST -->
+	<property name="test.directory"				value="tests.specs" />
+	<!-- Exclude logbox,cachebox,wirebox tests, also separate for timeout issues with ant -->
+	<property name="test.directoryExcludes"		value="/(cache|ioc|logging)" />
+	<!-- FILL OUT IF YOU WANT THE DIRECTORY RUNNER TO RECURSE OR NOT -->
+	<property name="test.recurse"		value="true" />
+	<!-- FILL OUT THE LABELS YOU WANT TO APPLY TO THE TESTS -->
+	<property name="test.labels"		value="" />
+	<!-- FILL OUT THE TEST REPORTER YOU WANT, AVAILABLE REPORTERS ARE: ANTJunit, Codexwiki, console, dot, doc, json, junit, min, raw, simple, tap, text, xml -->
+	<property name="test.reporter"		value="simple" />
+	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED --> 
+	<property name="report.dir"  		value="${basedir}/results" />
+	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
+	
+	<!-- Import Test File -->
+	<import file="base-test.xml"/>
+</project>

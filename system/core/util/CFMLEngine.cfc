@@ -1,210 +1,70 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
+* Allows you to maninpulate determine CFML engine capabilities
+*/
+component {
 
-Author     :	Luis Majano
-Date        :	10/2/2007
-Description :
-	A facade to server so I can determine CF Version and Type
------------------------------------------------------------------------>
-<cfcomponent name="CFMLEngine" output="false" hint="A facade to determine the current running CFML Version and Engine">
+	//setup the engine properties
+	this.ADOBE = "ADOBE";
+	this.RAILO = "RAILO";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	// JDK Version
+	this.JDK_VERSION = CreateObject("java", "java.lang.System").getProperty("java.version");
 
-	<cffunction name="init" access="public" returntype="CFMLEngine" output="false" hint="Constructor">
-		<cfscript>
-			//setup the engine properties
-			this.ADOBE = "ADOBE";
-			this.BLUEDRAGON = "BLUEDRAGON";
-			this.RAILO = "RAILO";
+	/**
+	* Constructor
+	*/
+	function init() {
+		// Engine Turn off/on features
+		instance = structnew();
+		// adobe features
+		instance.adobe = {};
+		// railo only features
+		instance.railo = {};
 
-			// JDK Version
-			this.JDK_VERSION = CreateObject("java", "java.lang.System").getProperty("java.version");
+		return this;
 
-			// Engine Turn off/on features
-			instance = structnew();
+	}
 
-			instance.adobe 				= structnew();
-			instance.adobe.mt 			= true;
-			instance.adobe.json 		= true;
-			instance.adobe.ramResource	= true;
-			instance.adobe.onmm			= true;
-			instance.adobe.validation	= true;
-			instance.adobe.instanceCheck = true;
+// ------------------------------------------- PUBLIC -------------------------------------------
 
-			instance.railo = structnew();
-			instance.railo.mt   		= true;
-			instance.railo.json 		= true;
-			instance.railo.ramResource 	= true;
-			instance.railo.onmm 		= true;
-			instance.railo.validation	= true;
-			instance.railo.instanceCheck = true;
+	/**
+	* Returns the current running CFML major version
+	*/
+	numeric function getVersion() {
+		return listfirst( server.coldfusion.productversion );
+	}
 
-			instance.bluedragon 			= structnew();
-			instance.bluedragon.mt 			= true;
-			instance.bluedragon.json 		= true;
-			instance.bluedragon.ramResource = false;
-			instance.bluedragon.onmm 		= true;
-			instance.bluedragon.validation		= false;
-			instance.bluedragon.instanceCheck = true;
+	/**
+	* Returns the current running CFML full version
+	*/
+	string function getFullVersion() {
+		return server.coldfusion.productversion;
+	}
 
-			return this;
-		</cfscript>
-	</cffunction>
+	/**
+	* Get the current CFML Engine
+	*/
+	string function getEngine() {
+		var engine = this.adobe;
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+		if ( server.coldfusion.productname eq "Railo" ){
+			engine = this.railo;
+		}
 
-	<!--- Get the current CFML Version --->
-	<cffunction name="getVersion" access="public" returntype="numeric" hint="Returns the current running CFML version" output="false" >
-		<cfscript>
-			if ( server.coldfusion.productname eq "BlueDragon" ){ return server.bluedragon.edition; }
-			return listfirst(server.coldfusion.productversion);
-		</cfscript>
-	</cffunction>
+		return engine;
+	}
 
-	<!--- Get the CFML Engine according to my standards --->
-	<cffunction name="getEngine" access="public" returntype="string" hint="Get the current CFML Engine" output="false" >
-		<cfscript>
-			var engine = "ADOBE";
+	/**
+	* Feature Active Check
+	* @feature.hint The feature to check
+	* @engine.hint The engine we are checking
+	*/
+	boolean function featureCheck( required string feature, required string engine ) {
+		return instance[ arguments.engine ][ arguments.feature ];
+	}
 
-			if ( server.coldfusion.productname eq "BlueDragon" ){
-				engine = "BLUEDRAGON";
-			}
-			else if ( server.coldfusion.productname eq "Railo" ){
-				engine = "RAILO";
-			}
-
-			return engine;
-		</cfscript>
-	</cffunction>
-
-	<!--- isRAMResource --->
-	<cffunction name="isRAMResource" output="false" access="public" returntype="boolean" hint="Check if the engine supports RAM writing">
-		<cfscript>
-			var version = getVersion();
-			var engine = getEngine();
-
-			if ( (engine eq this.ADOBE and version gte 9) or
-				 (engine eq this.RAILO) ){
-				return (true AND featureCheck("ramResource",engine));
-			}
-			else{
-				return false;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- Test if we can use onMissingMethod --->
-	<cffunction name="isOnMM" access="public" returntype="boolean" hint="Checks if the engine is onMissingMethod capable." output="false" >
-		<cfscript>
-			var version = getVersion();
-			var engine = getEngine();
-
-			if ( (engine eq this.ADOBE and version gte 8) or
-				 (engine eq this.BLUEDRAGON and version gte 7) or
-				 (engine eq this.RAILO) ){
-				return (true AND featureCheck("onmm",engine));
-			}
-			else{
-				return false;
-			}
-		</cfscript>
-	</cffunction>
-
-
-	<!--- Test if we can use our validation managers --->
-	<cffunction name="isValidationSupported" access="public" returntype="boolean" hint="Checks if the engine supports our validation engine capable." output="false" >
-		<cfscript>
-			var version = getVersion();
-			var engine = getEngine();
-
-			if ( (engine eq this.ADOBE and version gte 9 and getToken(server.coldfusion.productversion,3,",") gte 1) or
-				 (engine eq this.ADOBE and version gte 10) or
-				 (engine eq this.BLUEDRAGON and version gte 7) or
-				 (engine eq this.RAILO) ){
-				return (true AND featureCheck("validation",engine));
-			}
-			else{
-				return false;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- Test if we can use MT --->
-	<cffunction name="isMT" access="public" returntype="boolean" hint="Checks if the engine is MT." output="false" >
-		<cfscript>
-			var version = getVersion();
-			var engine = getEngine();
-
-			if ( (engine eq this.ADOBE and version gte 8) or
-				 (engine eq this.BLUEDRAGON and version gte 7) or
-				 (engine eq this.RAILO) ){
-				return (true AND featureCheck("mt",engine));
-			}
-			else{
-				return false;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- checks instance --->
-	<cffunction name="isInstanceCheck" access="public" returntype="boolean" hint="Checks if the engine can check instances." output="false" >
-		<cfscript>
-			var version = getVersion();
-			var engine  = getEngine();
-
-			if ( (engine eq this.ADOBE and version gte 8) or
-				 (engine eq this.BLUEDRAGON and version gte 7) or
-				 (engine eq this.RAILO) ){
-				return (true AND featureCheck("instanceCheck",engine));
-			}
-			else{
-				return false;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- Test if we can use JSON methods --->
-	<cffunction name="isJSONSupported" access="public" returntype="boolean" hint="Checks if the engine can use json methods." output="false" >
-		<cfscript>
-			var version = getVersion();
-			var engine = getEngine();
-
-			if ( (engine eq this.ADOBE and version gte 8) or
-				 (engine eq this.RAILO and version gte 8) ){
-				return (true AND featureCheck("json",engine));
-			}
-			else{
-				return false;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- Test if we can use component data methods --->
-	<cffunction name="isComponentData" access="public" returntype="boolean" hint="Checks if the engine can use component data." output="false" >
-		<cfscript>
-			var version = getVersion();
-			var engine = getEngine();
-
-			if ( (engine eq this.ADOBE and version gte 8) or
-				 (engine eq this.RAILO) ){
-				return true;
-			}
-			else{
-				return false;
-			}
-		</cfscript>
-	</cffunction>
-
-<!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<!--- featureCheck --->
-	<cffunction name="featureCheck" output="false" access="private" returntype="boolean" hint="Feature Active Check">
-		<cfargument name="feature" type="string" required="true"/>
-		<cfargument name="engine"  type="string" required="true"/>
-		<cfreturn instance[arguments.engine][arguments.feature]>
-	</cffunction>
-
-</cfcomponent>
+}

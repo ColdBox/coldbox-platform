@@ -10,12 +10,12 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="Ability to serialize/deserialize data.">
 
+	<!--- DI --->
+	<cfproperty name="xmlConverter" inject="xmlConverter@coldbox">
+
 	<!---Init --->
 	<cffunction name="init" output="false" access="public" returntype="DataMarshaller" hint="Constructor">
-    	<cfscript>
-			xmlConverter = createObject("component", "coldbox.system.core.conversion.XMLConverter");
-			return this;
-    	</cfscript>
+    	<cfreturn this>
     </cffunction>
 
 	<!--- marshallData --->
@@ -34,23 +34,23 @@ Description :
 		<cfargument name="xmlRootName"      type="string"   required="false" default="" hint="XML Only: The name of the initial root element of the XML packet">
 		<!--- ******************************************************************************** --->
 		<cfargument name="pdfArgs"      type="struct"   required="false" default="#structNew()#" hint="All the PDF arguments to pass along to the CFDocument tag.">
-	
-		<cfset var results = "">
-			<cfset var args = structnew()>
-	
+
+		<cfset var results	= "">
+		<cfset var args 	= {}>
+
 		<!--- Validate Type --->
 		<cfif not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type)>
-			<cfthrow message="Invalid type" detail="The type you sent: #arguments.type# is invalid. Valid types are JSON, JSONP, WDDX, XML, TEXT, PDF and PLAIN" type="Utilities.InvalidType">
+			<cfthrow message="Invalid type" detail="The type you sent: #arguments.type# is invalid. Valid types are JSON, JSONP, WDDX, XML, TEXT, PDF and PLAIN" type="InvalidMarshallingType">
 		</cfif>
-	
+
 		<!--- $renderdata convention --->
 		<cfif isObject( arguments.data ) AND structKeyExists( arguments.data, "$renderdata" )>
 			<cfreturn arguments.data.$renderdata(argumentCollection=arguments)>
 		</cfif>
-	
+
 		<!--- Switch on types --->
 		<cfswitch expression="#arguments.type#">
-	
+
 			<!--- JSON --->
 			<cfcase value="JSON,JSONP">
 				<cfscript>
@@ -60,12 +60,12 @@ Description :
 				if( len( arguments.jsonCallback ) > 0 ){ results = "#arguments.jsonCallback#(#results#)"; }
 				</cfscript>
 			</cfcase>
-	
+
 			<!--- WDDX --->
 			<cfcase value="WDDX">
 				<cfwddx action="cfml2wddx" input="#arguments.data#" output="results">
 			</cfcase>
-	
+
 			<!--- XML --->
 			<cfcase value="XML">
 				<cfscript>
@@ -76,10 +76,10 @@ Description :
 				args.rootName = arguments.xmlRootName;
 				if( len( trim( arguments.xmlColumnList ) ) ){ args.columnlist = arguments.xmlColumnList; }
 				// Marshal to xml
-				results = xmlConverter.toXML(argumentCollection=args);
+				results = xmlConverter.toXML( argumentCollection=args );
 				</cfscript>
 			</cfcase>
-	
+
 			<!--- PDF --->
 			<cfcase value="pdf">
 				<!--- Binary Set --->
@@ -92,34 +92,34 @@ Description :
 					<cfdocument attributeCollection=#pdfArgs#><cfoutput>#arguments.data#</cfoutput></cfdocument>
 				</cfif>
 			</cfcase>
-	
+
 			<!--- Plain, html, Custom --->
 			<cfdefaultCase>
 				<cfset results = arguments.data>
 			</cfdefaultCase>
 		</cfswitch>
-	
+
 		<!--- Return Marshalled data --->
 		<cfreturn results>
 	</cffunction>
-   
-   	<!--- renderContent --->   
-	<cffunction name="renderContent" output="false" access="public" returntype="any" hint="Facade to cfcontent as stupid CF does not allow via script">   
+
+   	<!--- renderContent --->
+	<cffunction name="renderContent" output="false" access="public" returntype="any" hint="Facade to cfcontent as stupid CF does not allow via script">
 		<cfargument name="type" 	required="true" hint="The content type"/>
 		<cfargument name="variable" required="false" hint="The variable to render content from"/>
 		<cfargument name="encoding" required="false" default="utf-8" hint="The encoding"/>
 		<cfargument name="reset" 	required="false" default="false" type="boolean" hint="Reset the conten or not" >
-   	   
+
    	   	<cfif structKeyExists( arguments, "variable")>
-			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" variable="#renderedContent#" reset="#arguments.reset#"/>
+			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" variable="#arguments.variable#" reset="#arguments.reset#"/>
 		<cfelse>
 			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" reset="#arguments.reset#">
 		</cfif>
 		<cfsetting showdebugoutput="false" >
    	</cffunction>
-   
-	<!--- resetContent --->   
-	<cffunction name="resetContent" output="false" access="public" returntype="any" hint="Reset the CF content">   
+
+	<!--- resetContent --->
+	<cffunction name="resetContent" output="false" access="public" returntype="any" hint="Reset the CF content">
 		<cfcontent reset="true">
 	</cffunction>
 

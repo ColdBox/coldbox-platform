@@ -29,7 +29,7 @@
 		recursiveCopy(basePath & "resources/static", getOutputDir());
 
 		//write the index template
-		args = {path=getOutputDir() & "/index.html", template="#instance.static.TEMPLATE_PATH#/index.html", projectTitle=getProjectTitle()};
+		args = {path=getOutputDir() & "/index.html", template="#instance.static.TEMPLATE_PATH#/index.cfm", projectTitle=getProjectTitle()};
 		writeTemplate(argumentCollection=args);
 
 		writeOverviewSummaryAndFrame(arguments.qMetaData);
@@ -62,14 +62,14 @@
 			qInterfaces = getMetaSubquery(qPackage, "type='interface'", "name asc");
 
 			writeTemplate(path=currentDir & "/package-summary.html",
-						template="#instance.static.TEMPLATE_PATH#/package-summary.html",
+						template="#instance.static.TEMPLATE_PATH#/package-summary.cfm",
 						projectTitle = getProjectTitle(),
 						package = package,
 						qClasses = qClasses,
 						qInterfaces = qInterfaces);
 
 			writeTemplate(path=currentDir & "/package-frame.html",
-						template="#instance.static.TEMPLATE_PATH#/package-frame.html",
+						template="#instance.static.TEMPLATE_PATH#/package-frame.cfm",
 						projectTitle = getProjectTitle(),
 						package = package,
 						qClasses = qClasses,
@@ -115,7 +115,7 @@
 			}
 
 			writeTemplate(path=currentDir & "/#name#.html",
-						template="#instance.static.TEMPLATE_PATH#/class.html",
+						template="#instance.static.TEMPLATE_PATH#/class.cfm",
 						projectTitle = getProjectTitle(),
 						package = arguments.qPackage.package,
 						name = arguments.qPackage.name,
@@ -145,16 +145,16 @@
 
 	<cfscript>
 		writeTemplate(path=getOutputDir() & "/overview-summary.html",
-					template="#instance.static.TEMPLATE_PATH#/overview-summary.html",
+					template="#instance.static.TEMPLATE_PATH#/overview-summary.cfm",
 					projectTitle = getProjectTitle(),
 					qPackages = qPackages);
 
 
 		//overview frame
 		writeTemplate(path=getOutputDir() & "/overview-frame.html",
-					template="#instance.static.TEMPLATE_PATH#/overview-frame.html",
+					template="#instance.static.TEMPLATE_PATH#/overview-frame.cfm",
 					projectTitle=getProjectTitle(),
-					qPackages = qPackages);
+					qMetaData = arguments.qMetaData);
 	</cfscript>
 </cffunction>
 
@@ -164,7 +164,7 @@
 		arguments.qMetadata = getMetaSubquery(query=arguments.qMetaData, orderby="name asc");
 
 		writeTemplate(path=getOutputDir() & "/allclasses-frame.html",
-					template="#instance.static.TEMPLATE_PATH#/allclasses-frame.html",
+					template="#instance.static.TEMPLATE_PATH#/allclasses-frame.cfm",
 					qMetaData = arguments.qMetaData);
 	</cfscript>
 </cffunction>
