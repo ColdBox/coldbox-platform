@@ -1,6 +1,6 @@
 {
 	"name" 				: "CacheBox",
-	"version"			: "2.0.0-rc+@build.number@",
+	"version"			: "2.0.0+@build.number@",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "cachebox",
 	"type"				: "caching",
