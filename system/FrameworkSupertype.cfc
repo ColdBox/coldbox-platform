@@ -328,24 +328,31 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Run an internal ColdBox event and get any results if any
-	* @event.hint The event string to execute
-	* @eventArguments.hint A collection of arguments to passthrough to the calling event handler method
-	* @private.hint Execute a private event or not, default is false
-	* @defaultEvent.hint The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY
-	* @postProcessExempt.hint If true, pre/post handlers will not be fired, defaults to false
+	* Executes events with full life-cycle methods and returns the event results if any were returned.
+	* @event The event string to execute, if nothing is passed we will execute the application's default event.
+	* @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
+	* @private Execute a private event if set, else defaults to public events
+	* @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
+	* @eventArguments A collection of arguments to passthrough to the calling event handler method
+	* @cache.hint Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	* @cacheTimeout.hint The time in minutes to cache the results
+	* @cacheLastAccessTimeout.hint The time in minutes the results will be removed from cache if idle or requested
+	* @cacheSuffix.hint The suffix to add into the cache entry for this event rendering
+	* @cacheProvider.hint The provider to cache this event rendering in, defaults to 'template'
 	*/
-	any function runEvent(
-		required event,
-		boolean postProcessExempt=false,
-		boolean private="false",
+	function runEvent(
+		event="",
+		boolean prePostExempt=false,
+		boolean private=false,
 		boolean defaultEvent=false,
-		struct eventArguments={}
+		struct eventArguments={},
+		boolean cache=false,
+		cacheTimeout="",
+		cacheLastAccessTimeout="",
+		cacheSuffix="",
+		cacheProvider="template"
 	){
-		var results = controller.runEvent( argumentCollection=arguments );
-		if( !isNull( results ) ){
-			return results;
-		}
+		return controller.runEvent( argumentCollection=arguments );
 	}
 
 	/**
