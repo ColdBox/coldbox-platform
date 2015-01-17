@@ -63,7 +63,6 @@ Optional Methods
 
 			//Extension Points
 			applicationHelper			= "includes/helpers/ApplicationHelper.cfm",
-			coldboxExtensionsLocation 	= "",
 			modulesExternalLocation		= [],
 			viewsExternalLocation		= "",
 			layoutsExternalLocation 	= "",

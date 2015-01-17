@@ -26,12 +26,12 @@
 			//Extension Points
 			applicationHelper 			= "includes/helpers/ApplicationHelper.cfm",
 			viewsHelper					= "",
-			coldboxExtensionsLocation 	= "",
 			modulesExternalLocation		= [],
 			viewsExternalLocation		= "",
 			layoutsExternalLocation 	= "",
 			handlersExternalLocation  	= "",
 			requestContextDecorator 	= "",
+			controllerDecorator			= "",
 
 			//Error/Exception Handling
 			exceptionHandler		= "",

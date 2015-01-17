@@ -284,11 +284,6 @@ Loads a coldbox cfc configuration file
 			if ( not structKeyExists( configStruct, "MissingTemplateHandler" ) )
 				configStruct[ "MissingTemplateHandler" ] = "";
 
-			// Check for ColdBox Extensions Location
-			if( not structKeyExists( configStruct, "ColdBoxExtensionsLocation" ) OR not len(configStruct.ColdBoxExtensionsLocation) ){
-				configStruct[ "ColdBoxExtensionsLocation" ] = "";
-			}
-
 			//Modules Configuration
 			if( not structKeyExists( configStruct,"ModulesExternalLocation" ) ){
 				configStruct.ModulesExternalLocation = arrayNew(1);

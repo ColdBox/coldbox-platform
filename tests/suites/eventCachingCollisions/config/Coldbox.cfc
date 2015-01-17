@@ -55,7 +55,6 @@ Optional Methods
 			missingTemplateHandler	= "",
 
 			//Extension Points
-			coldboxExtensionsLocation 	= "",
 			modulesExternalLocation		= [],
 			viewsExternalLocation		= "",
 			layoutsExternalLocation 	= "",
