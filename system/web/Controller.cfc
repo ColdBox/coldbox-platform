@@ -426,21 +426,21 @@ component serializable="false" accessors="true"{
 		}
 
 		// Build cache references
-		var cache 			= variables.cachebox.getCache( arguments.cacheProvider );
-		var oEventURLFacade = cache.getEventURLFacade();
+		var oCache 			= variables.cachebox.getCache( arguments.cacheProvider );
+		var oEventURLFacade = oCache.getEventURLFacade();
 		var cacheKey 		= oEventURLFacade.buildBasicCacheKey(
 			keySuffix 	= arguments.cacheSuffix,
 			targetEvent = arguments.event
 		) & hash( arguments.eventArguments.toString() );
 
 		// Test if entry found and return
-		var data = cache.get( cacheKey );
+		var data = oCache.get( cacheKey );
 		if( !isNull( data ) ){ return data; }
 
 		// else produce and cache
 		data = _runEvent( argumentCollection=arguments );
 		if( !isNull( data ) ){
-			cache.set( 
+			oCache.set( 
 				objectKey			= cacheKey,
 				object 				= data,
 				timeout 			= arguments.cacheTimeout,
