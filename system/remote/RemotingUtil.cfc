@@ -34,33 +34,8 @@ A cool remoting utililty component
 	
 			</cfcase>
 	
-			<cfcase value="BlueDragon">
 	
-				<cfset my.resp = getPageContext().getResponse() />
-	
-				<cfloop condition="true">
-					<cfset my.parentf = my.resp.getClass().getDeclaredField('parent') />
-					<cfset my.parentf.setAccessible(true) />
-					<cfset my.parent = my.parentf.get(my.resp) />
-	
-					<cfif isObject(my.parent) AND getMetaData(my.parent).getName() is 'com.naryx.tagfusion.cfm.engine.cfHttpServletResponse'>
-						<cfset my.resp = my.parent />
-					<cfelse>
-						<cfbreak />
-					</cfif>
-				</cfloop>
-	
-				<cfset my.writer = my.resp.getClass().getDeclaredField('writer') />
-				<cfset my.writer.setAccessible(true) />
-				<cfset my.writer = my.writer.get(my.resp) />
-	
-				<cfset my.headbuf = my.writer.getClass().getDeclaredField('headElement') />
-				<cfset my.headbuf.setAccessible(true) />
-				<cfset my.headbuf.get(my.writer).setLength(0) />
-	
-			</cfcase>
-	
-			<cfcase value="Railo">
+			<cfcase value="Railo,Lucee">
 	
 				<cfset my.out = getPageContext().getOut() />
 	

@@ -21,7 +21,7 @@
 
 	<rule>
 		<note>Generic Pretty URLs Pass-through</note>
-		<condition type="request-uri" operator="notequal">^/(index.cfm|robots.txt|osd.xml|flex2gateway|cfide|cfformgateway|railo-context|admin-context|files|images|js|javascripts|css|styles)</condition>
+		<condition type="request-uri" operator="notequal">^/(index.cfm|robots.txt|osd.xml|flex2gateway|cfide|cfformgateway|railo-context|admin-context|files|images|js|javascripts|css|styles|lucee)</condition>
 		<condition type="request-uri" operator="notequal">\.(bmp|gif|jpe?g|png|css|js|txt|pdf|doc|xls|ico)$</condition>
 		<from>^/(.*)$</from>
 		<to type="passthrough">/index.cfm/$1</to>
@@ -39,7 +39,6 @@
         <from>/rewrite-status</from>
         <to>/test/status/</to>
     </outbound-rule>
-
 	
     <!--
 
@@ -101,4 +100,3 @@
     -->
 
 </urlrewrite>
-

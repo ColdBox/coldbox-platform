@@ -13,7 +13,8 @@
 	"shortDescription"	: "AOP and Dependency Injection Framework with CacheBox Included",
 	"engines"			: [
 		{ "type" : "railo", "version" : ">4.1" },
-		{ "type" : "adobe", "version" : ">9.0.2" }
+		{ "type" : "adobe", "version" : ">9.0.2" },
+		{ "type" : "lucee", "version" : ">4.5" }
 	],
 	"license"			: [ 
 		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" } 
