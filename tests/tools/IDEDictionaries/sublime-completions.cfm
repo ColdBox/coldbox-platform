@@ -72,7 +72,7 @@ for( key in functions ){
 
 	md = getComponentMetaData( functions[key] );
 
-	out.append('#tab#// Functions for: #md.name# #br#');
+	//out.append('#tab#// Functions for: #md.name# #br#');
 
 	sortedFunctions = arrayOfStructsSort( md.functions, "name" );
 
@@ -133,7 +133,7 @@ for( key in functions ){
 		}
 	}
 
-	out.append('#tab#// END Functions for: #md.name# #br##br#');
+	//out.append('#tab#// END Functions for: #md.name# #br##br#');
 
 	fncIdx++;
 }

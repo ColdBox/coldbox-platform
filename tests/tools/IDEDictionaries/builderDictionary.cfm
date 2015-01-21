@@ -1,4 +1,5 @@
-﻿<cfscript>
+﻿<cfparam name="url.text" default="false">
+<cfscript>
 out = createObject("java","java.lang.StringBuffer").init('');
 tab = chr(9);
 br  = chr(10);
@@ -51,14 +52,15 @@ out.append('#tab#</functions>#br##br#
 ');
 
 scopes = {
-	controller = "coldbox.system.web.Controller",
-	event = "coldbox.system.web.context.RequestContext",
-	flash = "coldbox.system.web.flash.AbstractFlashScope",
-	log = "coldbox.system.logging.Logger",
-	logbox = "coldbox.system.logging.LogBox",
-	binder = "coldbox.system.ioc.config.Binder",
-	wirebox = "coldbox.system.ioc.Injector",
-	cachebox = "coldbox.system.cache.CacheFactory"
+	"controller" = "coldbox.system.web.Controller",
+	"event"		 = "coldbox.system.web.context.RequestContext",
+	"flash"		 = "coldbox.system.web.flash.AbstractFlashScope",
+	"log"		 = "coldbox.system.logging.Logger",
+	"logbox"	 = "coldbox.system.logging.LogBox",
+	"binder"	 = "coldbox.system.ioc.config.Binder",
+	"wirebox"	 = "coldbox.system.ioc.Injector",
+	"cachebox"	 = "coldbox.system.cache.CacheFactory",
+	"html"		 = "coldbox.system.core.dynamic.HTMLHelper"
 };
 for( key in scopes ){
 
@@ -104,7 +106,11 @@ out.append('
 fileWrite(expandPath('/coldbox/install/IDE Extras/CFBuilder Dictionary/coldbox.builder.xml'), out.toString());
 </cfscript>
 
+<cfif url.text>
+<cfcontent type="text/xml" reset="true"/>
+<cfoutput>#out.toString()#</cfoutput>
+<cfelse>
 <textarea rows="30" cols="160">
 <cfoutput>#out.toString()#</cfoutput>
 </textarea>
-
+</cfif>

@@ -9,15 +9,16 @@
     </description>
 	
 	<!-- UPDATE ON EACH VERSION CYCLE -->
-	<property name="groupID"			value="ortussolutions" />
-	<property name="coldbox.version" 	value="4.0.0" />
-	<property name="coldbox.slug"	 	value="coldbox"/>
-	<property name="cachebox.version" 	value="2.0.0" />
-	<property name="cachebox.slug"	 	value="cachebox"/>
-	<property name="logbox.version" 	value="2.0.0" />
-	<property name="logbox.slug"	 	value="logbox"/>
-	<property name="wirebox.version" 	value="2.0.0" />
-	<property name="wirebox.slug"	 	value="wirebox"/>
+	<property name="groupID"				value="ortussolutions" />
+	<property name="coldbox.version" 		value="4.0.0" />
+	<property name="coldbox.stableversion" 	value="4.0.0" />
+	<property name="coldbox.slug"	 		value="coldbox"/>
+	<property name="cachebox.version" 		value="2.0.0" />
+	<property name="cachebox.slug"	 		value="cachebox"/>
+	<property name="logbox.version" 		value="2.0.0" />
+	<property name="logbox.slug"	 		value="logbox"/>
+	<property name="wirebox.version" 		value="2.0.0" />
+	<property name="wirebox.slug"	 		value="wirebox"/>
 	
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
@@ -112,7 +113,6 @@
 	
 	<!-- Build All Releases -->
 	<target name="build.all" description="Builds ColdBox + Standalone Libraries" depends="run-tests,build.coldbox,build.cachebox,build.wirebox,build.logbox">
-		
 	</target>
 	
 	<!-- Build ColdBox Distribution -->
@@ -170,17 +170,17 @@
 		</replaceregexp>
 		
 		<!-- Execute IDE Dictionaries -->
-		<get dest="${dir.build}/cfbuilder.html" src="${url.dictionaries}/builderDictionary.cfm" verbose="true"/>
-		<delete file="${dir.build}/cfbuilder.html" />
-		<get dest="${dir.build}/sublime.html" src="${url.dictionaries}/sublime-completions.cfm" verbose="true"/>
-		<delete file="${dir.build}/sublime.html" />
+		<get dest="${dir.build}/install/IDE Extras/CFBuilder Dictionary/coldbox.builder.xml" src="${url.dictionaries}/builderDictionary.cfm?text=true" verbose="true"/>
 
-		<!-- Execute DocBox -->
+		<!-- Execute Api Docs -->
 		<get dest="${dir.build}/colddoc.html" src="${url.coldbox.api}${coldbox.version}&amp;path=${dir.build}/apidocs&amp;coldbox_root=${dir.build}/coldbox" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-apidocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs" />
+
+		<!-- Zip IDE Extras -->
+		<zip destfile="${dir.coldbox.exports}/coldbox-ide-${coldbox.version}.zip" basedir="${dir.build}/install/IDE Extras" />
 		
 		<!-- Zip ColdBox Bundle -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" basedir="${dir.build}" />
@@ -226,7 +226,8 @@
 				  buildID="${build.number}"
 				  groupID="${groupID}"
 				  latest="${coldbox.version}"
-				  classifiers="standalone,apidocs"/>
+				  stableVersion="${coldbox.stableversion}"
+				  classifiers="standalone,apidocs,ide"/>
 		
 		<!-- More Cleanup -->
 		<delete dir="${dir.build}" />

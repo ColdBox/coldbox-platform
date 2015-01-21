@@ -188,7 +188,7 @@
 			</parameter>
 			</function>
 	<function name="init" returns="any">
-			<help><![CDATA[ Constructor	* @controller.hint The ColdBox controller	* 	* @return EventHandler (Context: EventHandler) ]]></help>
+			<help><![CDATA[ Constructor	* @controller.hint The ColdBox controller	*	* @return EventHandler (Context: EventHandler) ]]></help>
 		<parameter name="controller" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -353,6 +353,12 @@
 				<help><![CDATA[ The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout. ]]></help>
 			</parameter>
 			</function>
+	<function name="getCache" returns="any">
+			<help><![CDATA[ Get a named CacheBox Cache (Context: FrameworkSupertype) ]]></help>
+		<parameter name="name" required="false" type="any">
+				<help><![CDATA[ The name of the cache to retrieve, if not passed, it used the 'default' cache. ]]></help>
+			</parameter>
+			</function>
 	<function name="setSetting" returns="any">
 			<help><![CDATA[ Set a new setting in the system (Context: FrameworkSupertype) ]]></help>
 		<parameter name="name" required="true" type="any">
@@ -363,60 +369,72 @@
 			</parameter>
 			</function>
 	<function name="renderExternalView" returns="any">
-			<help><![CDATA[ Renders views outside of your conventions (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Renders an external view anywhere that cfinclude works. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="view" required="true" type="any">
-				<help><![CDATA[ The view to render ]]></help>
+				<help><![CDATA[ The the view to render ]]></help>
 			</parameter>
 			<parameter name="args" required="false" type="struct">
-				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
+				<help><![CDATA[ A struct of arguments to pass into the view for rendering, will be available as 'args' in the view. ]]></help>
 			</parameter>
 			<parameter name="cache" required="false" type="boolean">
-				<help><![CDATA[ Boolean bit to cache or not the view rendered, defaults to false ]]></help>
+				<help><![CDATA[ Cached the view output or not, defaults to false ]]></help>
 			</parameter>
 			<parameter name="cacheTimeout" required="false" type="any">
-				<help><![CDATA[ How long the view (in minutes) should be cached for ]]></help>
+				<help><![CDATA[ The time in minutes to cache the view ]]></help>
 			</parameter>
 			<parameter name="cacheLastAccessTimeout" required="false" type="any">
-				<help><![CDATA[ How long (in minutes) should the view remain in cache if not used ]]></help>
+				<help><![CDATA[ The time in minutes the view will be removed from cache if idle or requested ]]></help>
 			</parameter>
 			<parameter name="cacheSuffix" required="false" type="any">
-				<help><![CDATA[ Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching. ]]></help>
+				<help><![CDATA[ The suffix to add into the cache entry for this view rendering ]]></help>
+			</parameter>
+			<parameter name="cacheProvider" required="false" type="any">
+				<help><![CDATA[ The provider to cache this view in, defaults to 'template ]]></help>
 			</parameter>
 			</function>
 	<function name="renderView" returns="any">
-			<help><![CDATA[ Renders views in your application (Context: FrameworkSupertype) ]]></help>
-		<parameter name="view" required="true" type="any">
-				<help><![CDATA[ The view to render ]]></help>
+			<help><![CDATA[ Render out a view (Context: FrameworkSupertype) ]]></help>
+		<parameter name="view" required="false" type="any">
+				<help><![CDATA[ The the view to render, if not passed, then we look in the request context for the current set view. ]]></help>
 			</parameter>
 			<parameter name="args" required="false" type="struct">
-				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
+				<help><![CDATA[ A struct of arguments to pass into the view for rendering, will be available as 'args' in the view. ]]></help>
 			</parameter>
 			<parameter name="module" required="false" type="any">
-				<help><![CDATA[ The module to render the view from ]]></help>
+				<help><![CDATA[ The module to render the view from explicitly ]]></help>
+			</parameter>
+			<parameter name="cache" required="false" type="boolean">
+				<help><![CDATA[ Cached the view output or not, defaults to false ]]></help>
+			</parameter>
+			<parameter name="cacheTimeout" required="false" type="any">
+				<help><![CDATA[ The time in minutes to cache the view ]]></help>
+			</parameter>
+			<parameter name="cacheLastAccessTimeout" required="false" type="any">
+				<help><![CDATA[ The time in minutes the view will be removed from cache if idle or requested ]]></help>
+			</parameter>
+			<parameter name="cacheSuffix" required="false" type="any">
+				<help><![CDATA[ The suffix to add into the cache entry for this view rendering ]]></help>
+			</parameter>
+			<parameter name="cacheProvider" required="false" type="any">
+				<help><![CDATA[ The provider to cache this view in, defaults to 'template ]]></help>
 			</parameter>
 			<parameter name="collection" required="false" type="any">
-				<help><![CDATA[ A collection to use by this Renderer to render the view as many times as the items in the collection ]]></help>
+				<help><![CDATA[ A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query) ]]></help>
 			</parameter>
 			<parameter name="collectionAs" required="false" type="any">
 				<help><![CDATA[ The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention ]]></help>
 			</parameter>
-			<parameter name="cache" required="false" type="boolean">
-				<help><![CDATA[ Boolean bit to cache or not the view rendered, defaults to false ]]></help>
+			<parameter name="collectionStartRow" required="false" type="numeric">
+				<help><![CDATA[ The start row to limit the collection rendering with ]]></help>
 			</parameter>
-			<parameter name="cacheTimeout" required="false" type="any">
-				<help><![CDATA[ How long the view (in minutes) should be cached for ]]></help>
+			<parameter name="collectionMaxRows" required="false" type="numeric">
+				<help><![CDATA[ The max rows to iterate over the collection rendering with ]]></help>
 			</parameter>
-			<parameter name="cacheLastAccessTimeout" required="false" type="any">
-				<help><![CDATA[ How long (in minutes) should the view remain in cache if not used ]]></help>
+			<parameter name="collectionDelim" required="false" type="any">
+				<help><![CDATA[ A string to delimit the collection renderings by ]]></help>
 			</parameter>
-			<parameter name="cacheSuffix" required="false" type="any">
-				<help><![CDATA[ Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching. ]]></help>
-			</parameter>
-			</function>
-	<function name="getCache" returns="any">
-			<help><![CDATA[ Get a named CacheBox Cache (Context: FrameworkSupertype) ]]></help>
-		<parameter name="name" required="false" type="any">
-				<help><![CDATA[ The name of the cache to retrieve, if not passed, it used the 'default' cache. ]]></help>
+			<parameter name="prePostExempt" required="false" type="boolean">
+				<help><![CDATA[ If true, pre/post view interceptors will not be fired. By default they do fire ]]></help>
 			</parameter>
 			</function>
 	<function name="addAsset" returns="string">
@@ -449,9 +467,6 @@
 				<help><![CDATA[ The file path to check ]]></help>
 			</parameter>
 			</function>
-	<function name="loadApplicationHelpers" returns="any">
-			<help><![CDATA[ Load the global UDF libraries defined in the applicationHelper Setting of your application. This is called by the framework ONLY! (Context: FrameworkSupertype) ]]></help>
-		</function>
 	<function name="getInterceptor" returns="any">
 			<help><![CDATA[ Get an interceptor reference (Context: FrameworkSupertype) ]]></help>
 		<parameter name="interceptorName" required="true" type="any">
@@ -474,7 +489,7 @@
 			</parameter>
 			</function>
 	<function name="getSettingStructure" returns="any">
-			<help><![CDATA[ Get all the settings structure (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ DEPRECATED: Get all the settings structure (Context: FrameworkSupertype) ]]></help>
 		<parameter name="fwSetting" required="false" type="boolean">
 				<help><![CDATA[ Retrieve from the config or fw settings, defaults to config ]]></help>
 			</parameter>
@@ -482,6 +497,9 @@
 				<help><![CDATA[ Do a deep or shallow copy, shallow is default ]]></help>
 			</parameter>
 			</function>
+	<function name="loadApplicationHelpers" returns="any">
+			<help><![CDATA[ Load the global application helper libraries defined in the applicationHelper Setting of your application. This is called by the framework ONLY! Use at your own risk (Context: FrameworkSupertype) ]]></help>
+		</function>
 	<function name="persistVariables" returns="any">
 			<help><![CDATA[ Persist variables into the Flash RAM (Context: FrameworkSupertype) ]]></help>
 		<parameter name="persist" required="false" type="any">
@@ -501,36 +519,57 @@
 			</parameter>
 			</function>
 	<function name="runEvent" returns="any">
-			<help><![CDATA[ Run an internal ColdBox event and get any results if any (Context: FrameworkSupertype) ]]></help>
-		<parameter name="event" required="true" type="any">
-				<help><![CDATA[ The event string to execute ]]></help>
+			<help><![CDATA[ Executes events with full life-cycle methods and returns the event results if any were returned. (Context: FrameworkSupertype) ]]></help>
+		<parameter name="event" required="false" type="any">
+				<help><![CDATA[ The event string to execute, if nothing is passed we will execute the application's default event. ]]></help>
 			</parameter>
-			<parameter name="postProcessExempt" required="false" type="boolean">
-				<help><![CDATA[ If true, pre/post handlers will not be fired, defaults to false ]]></help>
+			<parameter name="prePostExempt" required="false" type="boolean">
+				<help><![CDATA[ If true, pre/post handlers will not be fired. Defaults to false ]]></help>
 			</parameter>
 			<parameter name="private" required="false" type="boolean">
-				<help><![CDATA[ Execute a private event or not, default is false ]]></help>
+				<help><![CDATA[ Execute a private event if set, else defaults to public events ]]></help>
 			</parameter>
 			<parameter name="defaultEvent" required="false" type="boolean">
-				<help><![CDATA[ The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY ]]></help>
+				<help><![CDATA[ The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY ]]></help>
 			</parameter>
 			<parameter name="eventArguments" required="false" type="struct">
 				<help><![CDATA[ A collection of arguments to passthrough to the calling event handler method ]]></help>
 			</parameter>
+			<parameter name="cache" required="false" type="boolean">
+				<help><![CDATA[ Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments. ]]></help>
+			</parameter>
+			<parameter name="cacheTimeout" required="false" type="any">
+				<help><![CDATA[ The time in minutes to cache the results ]]></help>
+			</parameter>
+			<parameter name="cacheLastAccessTimeout" required="false" type="any">
+				<help><![CDATA[ The time in minutes the results will be removed from cache if idle or requested ]]></help>
+			</parameter>
+			<parameter name="cacheSuffix" required="false" type="any">
+				<help><![CDATA[ The suffix to add into the cache entry for this event rendering ]]></help>
+			</parameter>
+			<parameter name="cacheProvider" required="false" type="any">
+				<help><![CDATA[ The provider to cache this event rendering in, defaults to 'template ]]></help>
+			</parameter>
 			</function>
 	<function name="renderLayout" returns="any">
-			<help><![CDATA[ Renders layouts or layout+view combinations for you (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Render a layout or a layout + view combo (Context: FrameworkSupertype) ]]></help>
 		<parameter name="layout" required="false" type="any">
-				<help><![CDATA[ The explicit layout to use in rendering ]]></help>
-			</parameter>
-			<parameter name="view" required="false" type="any">
-				<help><![CDATA[ The name of the view to passthrough as an argument so you can refer to it as arguments.view ]]></help>
+				<help><![CDATA[ The layout to render out ]]></help>
 			</parameter>
 			<parameter name="module" required="false" type="any">
-				<help><![CDATA[ Explicitly render a layout from this module ]]></help>
+				<help><![CDATA[ The module to explicitly render this layout from ]]></help>
 			</parameter>
-			<parameter name="args" required="false" type="any">
+			<parameter name="view" required="false" type="any">
+				<help><![CDATA[ The view to render within this layout ]]></help>
+			</parameter>
+			<parameter name="args" required="false" type="struct">
 				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
+			</parameter>
+			<parameter name="viewModule" required="false" type="any">
+				<help><![CDATA[ The module to explicitly render the view from ]]></help>
+			</parameter>
+			<parameter name="prePostExempt" required="false" type="boolean">
+				<help><![CDATA[ If true, pre/post layout interceptors will not be fired. By default they do fire ]]></help>
 			</parameter>
 			</function>
 	<function name="getInstance" returns="any">
@@ -591,7 +630,7 @@
 	<scopevar name="flash">
 		<help><![CDATA[******************************************************************************** Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* An abstract flash scope that can be used to build ColdBox Flash scopes. In order to build scopes you must implement the following methods:  - clearFlash() A method that will destroy the flash storage - saveFlash() A method that will be called before relocating so the storage can be saved - flashExists() A method that tells ColdBox if the storage exists and if it has content to inflate - getFlash() A method that returns the flash storage  All these methds can use any of the concrete methods below. The most important one is the getScope() method which will most likely be called by the saveFlash() method in order to persist the flashed map.]]></help>
 		<scopevar name="inflateFlash()">
-				<help><![CDATA[]]></help>
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="getProperty(property)">
 				<help><![CDATA[Get a named property]]></help>
@@ -615,27 +654,27 @@
 				<help><![CDATA[Put a map of name-value pairs into the flash scope]]></help>
 			</scopevar>
 	<scopevar name="SETPROPERTIES(properties)">
-				<help><![CDATA[]]></help>
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="removeFlash()">
 				<help><![CDATA[Remove the entire flash storage]]></help>
 			</scopevar>
 	<scopevar name="SETCONTROLLER(controller)">
-				<help><![CDATA[]]></help>
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="GETCONTROLLER()">
-				<help><![CDATA[]]></help>
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="clear()">
 				<help><![CDATA[Clear the temp flash scope and remove all data]]></help>
 			</scopevar>
 	<scopevar name="SETDEFAULTS(defaults)">
-				<help><![CDATA[]]></help>
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="propertyExists(property)">
 				<help><![CDATA[Check a named property]]></help>
 			</scopevar>
-	<scopevar name="discard(keys)">
+	<scopevar name="discard([keys])">
 				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
 			</scopevar>
 	<scopevar name="flashExists()">
@@ -647,17 +686,17 @@
 	<scopevar name="setProperty(property,value)">
 				<help><![CDATA[Set a named property]]></help>
 			</scopevar>
-	<scopevar name="keep(keys)">
+	<scopevar name="keep([keys])">
 				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
 			</scopevar>
 	<scopevar name="GETDEFAULTS()">
-				<help><![CDATA[]]></help>
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="getScope()">
 				<help><![CDATA[Get the flash temp request storage used throughout a request until flashed at the end of a request.]]></help>
 			</scopevar>
 	<scopevar name="GETPROPERTIES()">
-				<help><![CDATA[]]></help>
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="get(name,[defaultValue])">
 				<help><![CDATA[Get an object from flash scope]]></help>
@@ -915,100 +954,187 @@
 				<help><![CDATA[Get the collection of aspect bindings for this binder]]></help>
 			</scopevar>
 </scopevar>
+	<scopevar name="html">
+		<help><![CDATA[A cool utility that helps you when working with HTML, from creating doc types, to managing your js/css assets, to rendering tables and lists from data]]></help>
+		<scopevar name="startFieldset([legend],[data])">
+				<help><![CDATA[Create a fieldset tag with or without a legend.]]></help>
+			</scopevar>
+	<scopevar name="arrayToTable(data,[includes],[excludes],buffer)">
+				<help><![CDATA[Convert a table out of an array]]></help>
+			</scopevar>
+	<scopevar name="resetButton([name],[value],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
+				<help><![CDATA[Render out a reset button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="textField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a text field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="slugify(str,[maxLength],[allow])">
+				<help><![CDATA[Create a URL safe slug from a string]]></help>
+			</scopevar>
+	<scopevar name="autoDiscoveryLink([type],[href],[rel],[title],[data])">
+				<help><![CDATA[Creates auto discovery links for RSS and ATOM feeds.]]></help>
+			</scopevar>
+	<scopevar name="checkBox([name],[value],[disabled],[checked],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a checkbox. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="textArea([name],[cols],[rows],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty],[data])">
+				<help><![CDATA[Render out a textarea. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="radioButton([name],[value],[disabled],[checked],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a radio button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="entityFields(entity,[groupWrapper],[fieldwrapper],[labelwrapper],[labelClass],[textareas],[booleanSelect],[showRelations],[manytoone],[manytomany])">
+				<help><![CDATA[Create fields based on entity properties]]></help>
+			</scopevar>
+	<scopevar name="submitButton([name],[value],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
+				<help><![CDATA[Render out a submit button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="video(src,[width],[height],[poster],[autoplay],[controls],[loop],[preload],[noBaseURL],[name],[data])">
+				<help><![CDATA[Create an HTML 5 video tag]]></help>
+			</scopevar>
+	<scopevar name="init(controller)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="normalizeID([args])">
+				<help><![CDATA[Normalize ID with name arguments]]></help>
+			</scopevar>
+	<scopevar name="imageButton(src,[name],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
+				<help><![CDATA[Render out a image button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="heading(title,[size])">
+				<help><![CDATA[Generate header tags]]></help>
+			</scopevar>
+	<scopevar name="tag(tag,[content],[data])">
+				<help><![CDATA[Surround content with a tag]]></help>
+			</scopevar>
+	<scopevar name="urlfield([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a URL field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="select([name],[options],[column],[nameColumn],[selectedIndex],[selectedValue],[bind],[bindProperty],[disabled],[multiple],[wrapper],[groupWrapper],[label],[labelwrapper],[data],[labelClass])">
+				<help><![CDATA[Render out a select tag. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="passwordField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a password field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="addStyleContent(content,[addToHeader])">
+				<help><![CDATA[Open and close xhtml style tags so you can easily just add content]]></help>
+			</scopevar>
+	<scopevar name="ol(values,[column])">
+				<help><![CDATA[Create ordered lists according to passed in values and arguments, compressed HTML]]></help>
+			</scopevar>
+	<scopevar name="startForm([action],[name],[method],[multipart],[ssl],[noBaseURL],[data])">
+				<help><![CDATA[Create cool form tags. Any extra argument will be passed as attributes to the form tag]]></help>
+			</scopevar>
+	<scopevar name="ul(values,[column])">
+				<help><![CDATA[Create un-ordered lists according to passed in values and arguments, compressed HTML]]></help>
+			</scopevar>
+	<scopevar name="queryToTable(data,[includes],[excludes],buffer)">
+				<help><![CDATA[Convert a table out of an array of structures]]></help>
+			</scopevar>
+	<scopevar name="inputField([type],[name],[value],[disabled],[checked],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty],[data])">
+				<help><![CDATA[Create an input field using some cool tags and features.	Any extra arguments are passed to the tag]]></help>
+			</scopevar>
+	<scopevar name="link(href,[rel],[type],[title],[media],[noBaseURL],[charset],[sendToHeader],[data])">
+				<help><![CDATA[Create link tags, using the SES base URL or not]]></help>
+			</scopevar>
+	<scopevar name="meta(name,[content],[type],[sendToHeader])">
+				<help><![CDATA[Helps you generate meta tags]]></help>
+			</scopevar>
+	<scopevar name="table(data,[includes],[excludes],[name])">
+				<help><![CDATA[Convert a table out of data (either a query or array of structures or array of entities)]]></help>
+			</scopevar>
+	<scopevar name="nbs([count])">
+				<help><![CDATA[Generate non-breaking spaces (&nbsp;)]]></help>
+			</scopevar>
+	<scopevar name="audio(src,[autoplay],[controls],[loop],[preLoad],[noBaseURL],[name],[data])">
+				<help><![CDATA[Create an HTML 5 audio tag]]></help>
+			</scopevar>
+	<scopevar name="addJSContent(content,[addToHeader])">
+				<help><![CDATA[Open and close HTML5 javascript tags so you can easily just add content]]></help>
+			</scopevar>
+	<scopevar name="br([count])">
+				<help><![CDATA[Generate line breaks]]></help>
+			</scopevar>
+	<scopevar name="addAsset(asset,[sendToHeader],[async],[defer])">
+				<help><![CDATA[Add a js/css asset(s) to the html head section. You can also pass in a list of assets via the asset argument to try to load all of them.	You can also make this method return the string that will be sent to the header instead.]]></help>
+			</scopevar>
+	<scopevar name="hiddenField([name],[value],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a hidden field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="fileField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
+				<help><![CDATA[Render out a file field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="endFieldset()">
+				<help><![CDATA[End a fieldset tag]]></help>
+			</scopevar>
+	<scopevar name="toHTMLList(tag,values,[column],[data])">
+				<help><![CDATA[Convert a sent in tag type to an HTML list]]></help>
+			</scopevar>
+	<scopevar name="img(src,[alt],[class],[width],[height],[title],[rel],[name],[noBaseURL],[data])">
+				<help><![CDATA[Create image tags using the SES base URL or not]]></help>
+			</scopevar>
+	<scopevar name="anchor(name,[text],[data])">
+				<help><![CDATA[Create an anchor tag]]></help>
+			</scopevar>
+	<scopevar name="passIncludeExclude(value,[includes],[excludes])">
+				<help><![CDATA[checks if a list include exclude check passes]]></help>
+			</scopevar>
+	<scopevar name="$htmlhead(content)">
+				<help><![CDATA[Facade to cfhtmlhead]]></help>
+			</scopevar>
+	<scopevar name="canvas(id,[width],[height],[data])">
+				<help><![CDATA[Create a canvas tag]]></help>
+			</scopevar>
+	<scopevar name="getColumnArray(qry,columnName)">
+				<help><![CDATA[Returns an array of the values]]></help>
+			</scopevar>
+	<scopevar name="prepareBaseLink([noBaseURL],[src])">
+				<help><![CDATA[Prepare a base link]]></help>
+			</scopevar>
+	<scopevar name="flattenAttributes(target,[excludes],buffer)">
+				<help><![CDATA[flatten a struct of attributes to strings]]></help>
+			</scopevar>
+	<scopevar name="makePretty([text])">
+				<help><![CDATA[make pretty text]]></help>
+			</scopevar>
+	<scopevar name="href([href],[text],[queryString],[title],[target],[ssl],[noBaseURL],[data])">
+				<help><![CDATA[Create href tags, using the SES base URL or not]]></help>
+			</scopevar>
+	<scopevar name="endForm()">
+				<help><![CDATA[End a form tag]]></help>
+			</scopevar>
+	<scopevar name="onMissingMethod(missingMethodName,missingMethodArguments)">
+				<help><![CDATA[Proxy calls to provided element]]></help>
+			</scopevar>
+	<scopevar name="wrapTag([buffer],[tag],[end])">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="emailField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out an email field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="label(field,[content],[wrapper],[data],[class])">
+				<help><![CDATA[Render a label tag. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="button([name],[value],[disabled],[type],[wrapper],[groupWrapper],[label],[labelwrapper],[data],[labelClass])">
+				<help><![CDATA[Render out a button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="docType([type])">
+				<help><![CDATA[Render a doctype by type name: xhtml11,xhtml1-strict,xhtml-trans,xthml-frame,html5,html4-strict,html4-trans,html4-frame]]></help>
+			</scopevar>
+	<scopevar name="options([values],[column],[nameColumn],[selectedIndex],[selectedValue])">
+				<help><![CDATA[Render out options. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="bindValue([args])">
+				<help><![CDATA[Bind entity values]]></help>
+			</scopevar>
+</scopevar>
 	<scopevar name="event">
-		<help><![CDATA[The request context object simulates a user request. It has two internal data collections: one public and one private.  You can also manipulate the request stream and contents from this object.]]></help>
-		<scopevar name="setProxyRequest()">
-				<help><![CDATA[Set that this is a proxy request]]></help>
-			</scopevar>
-	<scopevar name="setViewCacheableEntry(mdCacheEntry)">
-				<help><![CDATA[Set the view cacheable entry]]></help>
-			</scopevar>
-	<scopevar name="isAjax()">
-				<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
-			</scopevar>
-	<scopevar name="getHTTPBasicCredentials()">
-				<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
-			</scopevar>
-	<scopevar name="renderData([type],data,contentType,[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs],[formats],[formatsView],[isBinary])">
-				<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
-			</scopevar>
-	<scopevar name="getSESBaseURL()">
-				<help><![CDATA[Get the ses base URL for this request]]></help>
-			</scopevar>
-	<scopevar name="setSESBaseURL(sesBaseURL)">
-				<help><![CDATA[Set the ses base URL for this request]]></help>
-			</scopevar>
-	<scopevar name="getCurrentRoutedURL()">
-				<help><![CDATA[Get the current routed URL that matched the SES route]]></help>
-			</scopevar>
-	<scopevar name="getRenderData()">
-				<help><![CDATA[Get the renderData structure.]]></help>
-			</scopevar>
-	<scopevar name="getHTTPMethod()">
-				<help><![CDATA[Get the HTTP Request Method Type]]></help>
-			</scopevar>
-	<scopevar name="getSize([private])">
-				<help><![CDATA[Returns the number of elements in the collection]]></help>
-			</scopevar>
-	<scopevar name="init(properties,controller)">
-				<help><![CDATA[constructor]]></help>
-			</scopevar>
-	<scopevar name="isSES()">
-				<help><![CDATA[Determine if you are in SES mode.]]></help>
-			</scopevar>
-	<scopevar name="getCurrentHandler()">
-				<help><![CDATA[Gets the current handler requested in the current event: String]]></help>
-			</scopevar>
-	<scopevar name="getFolderLayouts()">
-				<help><![CDATA[Get the registered folder layout associations map]]></help>
-			</scopevar>
-	<scopevar name="throw(message,[detail],[type])">
-				<help><![CDATA[Facade for cfthrow]]></help>
-			</scopevar>
-	<scopevar name="getEventCacheableEntry()">
-				<help><![CDATA[Get the event cacheable entry]]></help>
-			</scopevar>
-	<scopevar name="getCollection([deepCopyFlag],[private])">
-				<help><![CDATA[I Get a reference or deep copy of the public or private request Collection]]></help>
-			</scopevar>
-	<scopevar name="isEventCacheable()">
-				<help><![CDATA[Check wether the incoming event has been flagged for caching. Boolean]]></help>
-			</scopevar>
-	<scopevar name="setMemento(memento)">
-				<help><![CDATA[Set the state of this request context]]></help>
-			</scopevar>
-	<scopevar name="removeValue(name,[private])">
-				<help><![CDATA[I remove a value in the request collection]]></help>
+		<help><![CDATA[******************************************************************************* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* Models a ColdBox request, stores the incoming request collection and private request collection. It is also used to determine metadata about a request and helps you build RESTFul responses.]]></help>
+		<scopevar name="paramPrivateValue(name,value)">
+				<help><![CDATA[Just like cfparam, but for the private request collection]]></help>
 			</scopevar>
 	<scopevar name="getEventName()">
-				<help><![CDATA[The event name used by the application: String]]></help>
-			</scopevar>
-	<scopevar name="getTrimValue(name,[defaultValue],[private])">
-				<help><![CDATA[I Get a value from the request collection and if simple value, I will trim it.]]></help>
-			</scopevar>
-	<scopevar name="getCurrentLayoutModule()">
-				<help><![CDATA[Gets the current set layout's module for rendering]]></help>
-			</scopevar>
-	<scopevar name="getHTTPContent()">
-				<help><![CDATA[Get the raw HTTP content]]></help>
-			</scopevar>
-	<scopevar name="buildLink(linkto,[translate],[ssl],[baseURL],[queryString])">
-				<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.]]></help>
-			</scopevar>
-	<scopevar name="getCurrentAction()">
-				<help><![CDATA[Gets the current action requested in the current event: String]]></help>
-			</scopevar>
-	<scopevar name="getRoutedStruct()">
-				<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
-			</scopevar>
-	<scopevar name="noRender([remove])">
-				<help><![CDATA[Set the flag that tells the framework not to render, just execute]]></help>
-			</scopevar>
-	<scopevar name="getCurrentViewArgs()">
-				<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
-			</scopevar>
-	<scopevar name="getCurrentLayout()">
-				<help><![CDATA[Gets the current set layout for rendering]]></help>
+				<help><![CDATA[Get the event name]]></help>
 			</scopevar>
 	<scopevar name="getCurrentRoutedNamespace()">
 				<help><![CDATA[Get the current routed namespace that matched the SES route, if any]]></help>
@@ -1016,125 +1142,254 @@
 	<scopevar name="getCurrentViewModule()">
 				<help><![CDATA[Gets the current set views's module for rendering]]></help>
 			</scopevar>
-	<scopevar name="setRoutedStruct(routedStruct)">
-				<help><![CDATA[Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.]]></help>
-			</scopevar>
-	<scopevar name="setLayout(name,[module])">
-				<help><![CDATA[I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name: currentLayout]]></help>
-			</scopevar>
-	<scopevar name="$dump(var,[isAbort])">
-				<help><![CDATA[Facade for cfmx dump]]></help>
-			</scopevar>
-	<scopevar name="paramValue(name,value,[private])">
-				<help><![CDATA[Just like cfparam, but for the request collection]]></help>
-			</scopevar>
-	<scopevar name="setView([view],[nolayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider],[layout],[module],[args])">
-				<help><![CDATA[I Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
-			</scopevar>
-	<scopevar name="clearCollection([private])">
-				<help><![CDATA[Clears the entire collection]]></help>
-			</scopevar>
 	<scopevar name="setValue(name,value,[private])">
-				<help><![CDATA[I Set a value in the request collection]]></help>
+				<help><![CDATA[Set a value in the request collection]]></help>
 			</scopevar>
-	<scopevar name="getCurrentView()">
-				<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
+	<scopevar name="removePrivateValue(name,[private])">
+				<help><![CDATA[remove a value in the private request collection]]></help>
 			</scopevar>
-	<scopevar name="removeEventCacheableEntry()">
-				<help><![CDATA[Remove the cacheable entry]]></help>
+	<scopevar name="setProxyRequest()">
+				<help><![CDATA[Set that this is a proxy request]]></help>
 			</scopevar>
-	<scopevar name="isProxyRequest()">
-				<help><![CDATA[Is this a coldbox proxy request]]></help>
-			</scopevar>
-	<scopevar name="getHTTPHeader(header,[default])">
-				<help><![CDATA[Get a HTTP header]]></help>
-			</scopevar>
-	<scopevar name="getViewCacheableEntry()">
-				<help><![CDATA[Get the event cacheable entry]]></help>
-			</scopevar>
-	<scopevar name="setHTTPHeader([statusCode],[statusText],[name],[value],[charset])">
-				<help><![CDATA[Set an HTTP Header]]></help>
-			</scopevar>
-	<scopevar name="getSelf()">
-				<help><![CDATA[Returns index.cfm?{eventName}= : String]]></help>
-			</scopevar>
-	<scopevar name="getCurrentRoute()">
-				<help><![CDATA[Get the current request's SES route that matched]]></help>
-			</scopevar>
-	<scopevar name="getCurrentEvent()">
-				<help><![CDATA[Gets the current incoming event]]></help>
+	<scopevar name="getDefaultLayout()">
+				<help><![CDATA[Get's the default layout of the application]]></help>
 			</scopevar>
 	<scopevar name="noLayout()">
 				<help><![CDATA[Mark this request to not use a layout for rendering]]></help>
 			</scopevar>
-	<scopevar name="getRegisteredLayouts()">
-				<help><![CDATA[Get all the registered layouts in the configuration file]]></help>
+	<scopevar name="removeValue(name,[private])">
+				<help><![CDATA[remove a value in the request collection]]></help>
 			</scopevar>
-	<scopevar name="setDefaultView(DefaultView)">
-				<help><![CDATA[Override the default view for a request]]></help>
-			</scopevar>
-	<scopevar name="getDebugPanelFlag()">
-				<help><![CDATA[I return the debugpanel flag for this request.]]></help>
-			</scopevar>
-	<scopevar name="getCurrentModule()">
-				<help><![CDATA[Gets the current module name, else returns empty string]]></help>
-			</scopevar>
-	<scopevar name="setisSES(isSES)">
-				<help><![CDATA[Set the isSES flag, usualy done by the SES interceptor]]></help>
-			</scopevar>
-	<scopevar name="getViewLayouts()">
-				<help><![CDATA[Get the registered view layout associations map]]></help>
-			</scopevar>
-	<scopevar name="getModuleRoot([module])">
-				<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.]]></help>
-			</scopevar>
-	<scopevar name="getDefaultLayout()">
-				<help><![CDATA[Get's the default layout of the application: String]]></help>
-			</scopevar>
-	<scopevar name="setDefaultLayout(DefaultLayout)">
+	<scopevar name="setDefaultLayout(defaultLayout)">
 				<help><![CDATA[Override the default layout for a request]]></help>
 			</scopevar>
-	<scopevar name="collectionAppend(collection,[overwrite],[private])">
-				<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+	<scopevar name="getHTTPContent([json],[xml])">
+				<help><![CDATA[Get the raw HTTP content]]></help>
 			</scopevar>
-	<scopevar name="getDefaultView()">
-				<help><![CDATA[Get's the default view of the application: String]]></help>
+	<scopevar name="GETCONTEXT()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="valueExists(name,[private])">
-				<help><![CDATA[I Check if a value exists in the request collection.]]></help>
+	<scopevar name="getFolderLayouts()">
+				<help><![CDATA[Get the registered folder layout associations map]]></help>
+			</scopevar>
+	<scopevar name="paramValue(name,value,[private])">
+				<help><![CDATA[Just like cfparam, but for the request collection]]></help>
+			</scopevar>
+	<scopevar name="getCurrentRoutedURL()">
+				<help><![CDATA[Get the current routed URL that matched the SES route]]></help>
+			</scopevar>
+	<scopevar name="getHTTPHeader(The header to get,[defaultValue])">
+				<help><![CDATA[Get an HTTP header]]></help>
+			</scopevar>
+	<scopevar name="getTrimValue(name,[defaultValue],[private])">
+				<help><![CDATA[Get a value from the request collection and if simple value, I will trim it.]]></help>
+			</scopevar>
+	<scopevar name="getCurrentLayoutModule()">
+				<help><![CDATA[Gets the current set layout's module for rendering]]></help>
+			</scopevar>
+	<scopevar name="setHTTPHeader([statusCode],[statusText],[name],[value])">
+				<help><![CDATA[Set an HTTP Header  return RequestContext]]></help>
+			</scopevar>
+	<scopevar name="getPrivateValue(name,[defaultValue])">
+				<help><![CDATA[Get a value from the private request collection.]]></help>
+			</scopevar>
+	<scopevar name="getCollection([deepCopy],[private])">
+				<help><![CDATA[I Get a reference or deep copy of the public or private request Collection]]></help>
+			</scopevar>
+	<scopevar name="privateValueExists(name)">
+				<help><![CDATA[Check if a value exists in the private request collection]]></help>
+			</scopevar>
+	<scopevar name="getCurrentRoute()">
+				<help><![CDATA[Get the current request's SES route that matched]]></help>
+			</scopevar>
+	<scopevar name="clearPrivateCollection()">
+				<help><![CDATA[Clears the private collection]]></help>
+			</scopevar>
+	<scopevar name="getSESBaseURL()">
+				<help><![CDATA[Get the SES base URL for this request]]></help>
+			</scopevar>
+	<scopevar name="SETCONTROLLER(controller)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="GETPRIVATECONTEXT()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="buildLink(linkTo,[translate],[ssl],[baseURL],[queryString])">
+				<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes]]></help>
+			</scopevar>
+	<scopevar name="getRoutedStruct()">
+				<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
+			</scopevar>
+	<scopevar name="getCurrentLayout()">
+				<help><![CDATA[Gets the current set layout for rendering]]></help>
+			</scopevar>
+	<scopevar name="getRenderData()">
+				<help><![CDATA[Get the renderData structure]]></help>
 			</scopevar>
 	<scopevar name="noExecution()">
-				<help><![CDATA[Set that the request will not execute an incoming event. Most likely simulating a servlet call.]]></help>
-			</scopevar>
-	<scopevar name="isNoExecution()">
-				<help><![CDATA[Determine if we need to execute an incoming event or not.]]></help>
+				<help><![CDATA[Set that the request will not execute an incoming event. Most likely simulating a servlet call]]></help>
 			</scopevar>
 	<scopevar name="isViewCacheable()">
 				<help><![CDATA[Check wether the incoming view has been flagged for caching]]></help>
 			</scopevar>
-	<scopevar name="getValue(name,[defaultValue],[private])">
-				<help><![CDATA[I Get a value from the public or private request collection.]]></help>
+	<scopevar name="getRegisteredLayouts()">
+				<help><![CDATA[Get all the registered layouts in the configuration file]]></help>
 			</scopevar>
-	<scopevar name="setEventCacheableEntry(mdCacheEntry)">
-				<help><![CDATA[Set the event cacheable entry]]></help>
+	<scopevar name="getHTTPBasicCredentials()">
+				<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
+			</scopevar>
+	<scopevar name="privateCollectionAppend(collection,[overwrite])">
+				<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+			</scopevar>
+	<scopevar name="overrideEvent(event)">
+				<help><![CDATA[Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method]]></help>
+			</scopevar>
+	<scopevar name="renderWithFormats()">
+				<help><![CDATA[Render data with formats]]></help>
+			</scopevar>
+	<scopevar name="SETCONTEXT(context)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="isSES()">
+				<help><![CDATA[Is this request in SES mode]]></help>
+			</scopevar>
+	<scopevar name="setRoutedStruct(routedStruct)">
+				<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
+			</scopevar>
+	<scopevar name="setPrivateValue(name,value)">
+				<help><![CDATA[Set a value in the private request collection]]></help>
+			</scopevar>
+	<scopevar name="isSSL()">
+				<help><![CDATA[Are we in SSL or not? This method looks at cgi.server_port_secure for indication]]></help>
+			</scopevar>
+	<scopevar name="collectionAppend(collection,[overwrite],[private])">
+				<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+			</scopevar>
+	<scopevar name="isNoExecution()">
+				<help><![CDATA[Determine if we need to execute an incoming event or not]]></help>
+			</scopevar>
+	<scopevar name="isEventCacheable()">
+				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
+			</scopevar>
+	<scopevar name="setLayout(name,[module])">
+				<help><![CDATA[Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name]]></help>
+			</scopevar>
+	<scopevar name="getCurrentEvent()">
+				<help><![CDATA[Gets the current incoming event]]></help>
+			</scopevar>
+	<scopevar name="noRender([remove])">
+				<help><![CDATA[Set the flag that tells the framework not to render, just execute]]></help>
+			</scopevar>
+	<scopevar name="renderData([type],data,[contentType],[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs],[formats],[formatsView],[isBinary])">
+				<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
+			</scopevar>
+	<scopevar name="getSelf()">
+				<help><![CDATA[Returns index.cfm?{eventName}=]]></help>
+			</scopevar>
+	<scopevar name="valueExists(name,[private])">
+				<help><![CDATA[Check if a value exists in the request collection]]></help>
+			</scopevar>
+	<scopevar name="getViewLayouts()">
+				<help><![CDATA[Get the registered view layout associations map]]></help>
+			</scopevar>
+	<scopevar name="getMemento()">
+				<help><![CDATA[Get a representation of this instance]]></help>
+			</scopevar>
+	<scopevar name="setDefaultView(defaultView)">
+				<help><![CDATA[Override the default view for a request]]></help>
+			</scopevar>
+	<scopevar name="setSESBaseURL(sesBaseURL)">
+				<help><![CDATA[Set the ses base URL for this request]]></help>
+			</scopevar>
+	<scopevar name="setIsSES(isSES)">
+				<help><![CDATA[Is this request in SES mode]]></help>
+			</scopevar>
+	<scopevar name="removeEventCacheableEntry()">
+				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
+			</scopevar>
+	<scopevar name="setEventCacheableEntry(cacheEntry)">
+				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
 			</scopevar>
 	<scopevar name="isNoRender()">
 				<help><![CDATA[Is this a no render request]]></help>
 			</scopevar>
-	<scopevar name="renderWithFormats()">
-				<help><![CDATA[Render With Formats]]></help>
+	<scopevar name="getCurrentHandler()">
+				<help><![CDATA[Gets the current handler requested in the current event]]></help>
 			</scopevar>
-	<scopevar name="getMemento()">
-				<help><![CDATA[Get the state of this request context]]></help>
+	<scopevar name="getModuleRoot([module])">
+				<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings]]></help>
 			</scopevar>
-	<scopevar name="isSSL()">
-				<help><![CDATA[Returns boolean result whether current request is in ssl or not]]></help>
+	<scopevar name="isProxyRequest()">
+				<help><![CDATA[Is this a coldbox proxy request]]></help>
 			</scopevar>
-	<scopevar name="overrideEvent([event])">
-				<help><![CDATA[I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.]]></help>
+	<scopevar name="getSize([private])">
+				<help><![CDATA[Get the collection Size]]></help>
 			</scopevar>
-	<scopevar name="showDebugPanel(show)">
-				<help><![CDATA[I can override to show or not the debug panel. Very useful in AJAX debugging]]></help>
+	<scopevar name="setViewCacheableEntry(cacheEntry)">
+				<help><![CDATA[Set the view cacheable entry]]></help>
+			</scopevar>
+	<scopevar name="getCurrentModule()">
+				<help><![CDATA[Gets the current module name, else returns empty string]]></help>
+			</scopevar>
+	<scopevar name="getCurrentViewArgs()">
+				<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
+			</scopevar>
+	<scopevar name="getValue(name,[defaultValue],[private])">
+				<help><![CDATA[Get a value from the public or private request collection.]]></help>
+			</scopevar>
+	<scopevar name="SETPROPERTIES(properties)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="clearCollection([private])">
+				<help><![CDATA[Clears the entire collection]]></help>
+			</scopevar>
+	<scopevar name="GETCONTROLLER()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getPrivateSize()">
+				<help><![CDATA[Get the private collection Size]]></help>
+			</scopevar>
+	<scopevar name="getHTTPMethod()">
+				<help><![CDATA[Get the HTTP Request Method Type]]></help>
+			</scopevar>
+	<scopevar name="getPrivateTrimValue(name,[defaultValue])">
+				<help><![CDATA[Get a trim value from the private request collection.]]></help>
+			</scopevar>
+	<scopevar name="setView([view],[args],[layout],[module],[noLayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider])">
+				<help><![CDATA[Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
+			</scopevar>
+	<scopevar name="getPrivateCollection([deepCopy])">
+				<help><![CDATA[I get a private collection]]></help>
+			</scopevar>
+	<scopevar name="getCurrentAction()">
+				<help><![CDATA[Gets the current action requested in the current event]]></help>
+			</scopevar>
+	<scopevar name="GETPROPERTIES()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getDefaultView()">
+				<help><![CDATA[Get's the default view of the application]]></help>
+			</scopevar>
+	<scopevar name="getEventCacheableEntry()">
+				<help><![CDATA[Get the event cacheable entry]]></help>
+			</scopevar>
+	<scopevar name="getViewCacheableEntry()">
+				<help><![CDATA[Get the event cacheable entry]]></help>
+			</scopevar>
+	<scopevar name="setMemento(memento)">
+				<help><![CDATA[Override the instance]]></help>
+			</scopevar>
+	<scopevar name="init(properties,controller)">
+				<help><![CDATA[Constructor]]></help>
+			</scopevar>
+	<scopevar name="SETPRIVATECONTEXT(privateContext)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="isAjax()">
+				<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
+			</scopevar>
+	<scopevar name="getCurrentView()">
+				<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
 			</scopevar>
 </scopevar>
 	<scopevar name="wirebox">
@@ -1273,6 +1528,9 @@
 		<help><![CDATA[This is a logging object that allows for all kinds of logging to occur within its appenders]]></help>
 		<scopevar name="getRootLogger()">
 				<help><![CDATA[Get the root logger]]></help>
+			</scopevar>
+	<scopevar name="_cffunccfthread_cfLogger2ecfc19328212181(ATTRIBUTES)">
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="init(category,[levelMin],[levelMax],[appenders])">
 				<help><![CDATA[Create a new logger object.]]></help>
@@ -1459,168 +1717,162 @@
 			</scopevar>
 </scopevar>
 	<scopevar name="controller">
-		<help><![CDATA[This is the ColdBox Front Controller that dispatches events and manages your ColdBox application.]]></help>
-		<scopevar name="getServices()">
-				<help><![CDATA[Get all the registered services structure]]></help>
+		<help><![CDATA[***************************************************************************** Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* Manages a ColdBox application, dispatches events and acts as an overall front controller.]]></help>
+		<scopevar name="GETSERVICES()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setColdboxSettings(coldboxSettings)">
-				<help><![CDATA[Set ColdboxSettings]]></help>
+	<scopevar name="SETCOLDBOXSETTINGS(coldboxSettings)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="getLogBox()">
-				<help><![CDATA[Get the application's LogBox instance]]></help>
+	<scopevar name="GETLOGBOX()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="getWireBox()">
-				<help><![CDATA[Get the application's LogBox instance]]></help>
+	<scopevar name="GETLOG()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="GETDATAMARSHALLER()">
-				<help><![CDATA[]]></help>
+	<scopevar name="SETSERVICES(services)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setNextEvent([event],[queryString],[addToken],[persist],[persistStruct],[ssl],[baseURL],[postProcessExempt],[URL],[URI],[statusCode])">
-				<help><![CDATA[I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI]]></help>
+	<scopevar name="GETWIREBOX()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="SETDATAMARSHALLER(dataMarshaller)">
-				<help><![CDATA[]]></help>
+	<scopevar name="getDataMarshaller()">
+				<help><![CDATA[Get the system data marshaller, you can also retreive it from wirebox via dataMarshaller@coldbox]]></help>
 			</scopevar>
-	<scopevar name="getColdboxSettings()">
-				<help><![CDATA[I retrieve the ColdBox Settings Structure by Reference]]></help>
+	<scopevar name="setNextEvent([event],[queryString],[addToken],[persist],[persistStruct],[baseURL],[postProcessExempt],[URL],[URI],[statusCode])">
+				<help><![CDATA[Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI]]></help>
 			</scopevar>
-	<scopevar name="sendRelocation(url,[addtoken],[statusCode])">
-				<help><![CDATA[Send a CF relocation via ColdBox]]></help>
+	<scopevar name="GETCOLDBOXSETTINGS()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="sendRelocation(URL,[addToken],[statusCode])">
+				<help><![CDATA[Send a CF relocation]]></help>
 			</scopevar>
 	<scopevar name="getRequestService()">
-				<help><![CDATA[Get RequestService: coldbox.system.web.services.RequestService]]></help>
+				<help><![CDATA[Get the request service]]></help>
 			</scopevar>
-	<scopevar name="setConfigSettings(configSettings)">
-				<help><![CDATA[Set ConfigSettings]]></help>
+	<scopevar name="SETCONFIGSETTINGS(configSettings)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setCacheBox(cacheBox)">
-				<help><![CDATA[Set the application's CacheBox instance]]></help>
+	<scopevar name="SETCACHEBOX(cachebox)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setSetting([name],[value])">
-				<help><![CDATA[I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct]]></help>
+	<scopevar name="setSetting(name,value)">
+				<help><![CDATA[Set a value in the application configuration settings]]></help>
+			</scopevar>
+	<scopevar name="GETAPPROOTPATH()">
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="invoker(target,method,[argCollection],[private])">
-				<help><![CDATA[Method Invoker]]></help>
-			</scopevar>
-	<scopevar name="getAppRootPath()">
-				<help><![CDATA[Get this application's physical path]]></help>
+				<help><![CDATA[Invoke private/public event handler methods]]></help>
 			</scopevar>
 	<scopevar name="getHandlerService()">
-				<help><![CDATA[Get HandlerService: coldbox.system.web.services.HandlerService]]></help>
+				<help><![CDATA[Get the handler service]]></help>
 			</scopevar>
 	<scopevar name="locateDirectoryPath(pathToCheck)">
 				<help><![CDATA[Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
 			</scopevar>
-	<scopevar name="getSettingStructure([FWSetting],[deepCopyFlag])">
-				<help><![CDATA[Compatability & Utility Method. By default I retrieve the Config Settings. You can change this by using the FWSetting flag.]]></help>
+	<scopevar name="SETWIREBOX(wirebox)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setWireBox(wireBox)">
-				<help><![CDATA[Set the WireBox instance]]></help>
+	<scopevar name="getSettingStructure([fwSetting],[deepCopyFlag])">
+				<help><![CDATA[DEPRECATED: Convenience method to retrieve the config or coldbox settings.]]></help>
 			</scopevar>
 	<scopevar name="getModuleService()">
-				<help><![CDATA[Get ModuleService: coldbox.system.web.services.ModuleService]]></help>
+				<help><![CDATA[Get the module service]]></help>
 			</scopevar>
-	<scopevar name="getUtil()">
-				<help><![CDATA[Returns the system utility object]]></help>
+	<scopevar name="GETUTIL()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="getColdboxInitiated()">
-				<help><![CDATA[Get ColdboxInitiated: Boolean]]></help>
+	<scopevar name="loadColdBoxSettings()">
+				<help><![CDATA[Load the internal ColdBox settings]]></help>
 			</scopevar>
-	<scopevar name="getAppHash()">
-				<help><![CDATA[Get AppHash]]></help>
+	<scopevar name="GETCOLDBOXINITIATED()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="settingExists(name,[FWSetting])">
-				<help><![CDATA[I Check if a value exists in the configstruct or the fwsettingsStruct.]]></help>
+	<scopevar name="GETAPPHASH()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="settingExists(name,[fwSetting])">
+				<help><![CDATA[Check if a value exists in a configuration structure]]></help>
 			</scopevar>
 	<scopevar name="updateSSL(inURL,ssl)">
 				<help><![CDATA[Update SSL or not on a request string]]></help>
 			</scopevar>
-	<scopevar name="setLoaderService(loaderService)">
-				<help><![CDATA[Set LoaderService]]></help>
-			</scopevar>
-	<scopevar name="setRequestService(requestService)">
-				<help><![CDATA[Set RequestService]]></help>
-			</scopevar>
 	<scopevar name="getPlugin()">
-				<help><![CDATA[DEPRECATED: I am the Plugin cfc object factory.]]></help>
+				<help><![CDATA[DEPRECATED]]></help>
 			</scopevar>
-	<scopevar name="GETTESTING()">
-				<help><![CDATA[]]></help>
+	<scopevar name="SETUTIL(util)">
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="getMemento()">
-				<help><![CDATA[Get the controller's internal state]]></help>
+				<help><![CDATA[Get controller memento, used only by decorator only.]]></help>
 			</scopevar>
-	<scopevar name="getCacheBox()">
-				<help><![CDATA[Get the application's CacheBox instance as coldbox.system.cache.CacheFactory]]></help>
+	<scopevar name="GETCACHEBOX()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setColdboxInitiated(coldboxInitiated)">
-				<help><![CDATA[Set ColdboxInitiated]]></help>
-			</scopevar>
-	<scopevar name="setHandlerService(handlerService)">
-				<help><![CDATA[Set HandlerService]]></help>
+	<scopevar name="SETCOLDBOXINITIATED(coldboxInitiated)">
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="getRenderer()">
-				<help><![CDATA[Get the system web renderer]]></help>
+				<help><![CDATA[Get the system web renderer, you can also retreive it from wirebox via renderer@coldbox]]></help>
 			</scopevar>
 	<scopevar name="validateAction(action,[inclusion],[exclusion])">
-				<help><![CDATA[Checks if an action can be executed according to inclusion/exclusion lists. Boolean]]></help>
+				<help><![CDATA[Checks if an action can be executed according to inclusion/exclusion lists]]></help>
 			</scopevar>
-	<scopevar name="setLogBox(logBox)">
-				<help><![CDATA[Set the logBox instance]]></help>
+	<scopevar name="SETLOGBOX(logbox)">
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="getLoaderService()">
-				<help><![CDATA[Get LoaderService: coldbox.system.web.services.LoaderService]]></help>
+				<help><![CDATA[Get the loader service]]></help>
 			</scopevar>
-	<scopevar name="SETTESTING(testing)">
-				<help><![CDATA[]]></help>
+	<scopevar name="SETCFMLENGINE(CFMLEngine)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="getCache([cacheName])">
+	<scopevar name="getCache(cacheName)">
 				<help><![CDATA[Get a Cache provider from CacheBox]]></help>
 			</scopevar>
-	<scopevar name="getSetting([name],[FWSetting],[defaultValue])">
-				<help><![CDATA[I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct.]]></help>
+	<scopevar name="getSetting(name,[fwSetting],[defaultValue])">
+				<help><![CDATA[Get a setting from a configuration structure]]></help>
+			</scopevar>
+	<scopevar name="SETAPPKEY(appKey)">
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="getInterceptorService()">
-				<help><![CDATA[Get interceptorService: coldbox.system.web.services.InterceptorService]]></help>
+				<help><![CDATA[Get the interceptor service]]></help>
 			</scopevar>
-	<scopevar name="getConfigSettings()">
-				<help><![CDATA[I retrieve the Config Settings Structure by Reference]]></help>
+	<scopevar name="GETCONFIGSETTINGS()">
+				<help><![CDATA[']]></help>
 			</scopevar>
 	<scopevar name="locateFilePath(pathToCheck)">
 				<help><![CDATA[Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
 			</scopevar>
-	<scopevar name="setModuleService(moduleService)">
-				<help><![CDATA[Set ModuleService]]></help>
+	<scopevar name="SETLOG(log)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setLog(logger)">
-				<help><![CDATA[Set the class logger object]]></help>
+	<scopevar name="GETAPPKEY()">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="getAppKey()">
-				<help><![CDATA[Get this application's key in memory space (application scope)]]></help>
+	<scopevar name="SETAPPROOTPATH(appRootPath)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setInterceptorService(interceptorService)">
-				<help><![CDATA[Set interceptorService]]></help>
-			</scopevar>
-	<scopevar name="setAppRootPath(appRootPath)">
-				<help><![CDATA[Set this application's physical path.]]></help>
-			</scopevar>
-	<scopevar name="init(appRootPath,appKey)">
+	<scopevar name="init(appRootPath,[appKey])">
 				<help><![CDATA[Constructor]]></help>
 			</scopevar>
-	<scopevar name="getExceptionService()">
-				<help><![CDATA[Get ExceptionService: coldbox.system.web.services.ExceptionService]]></help>
+	<scopevar name="SETAPPHASH(appHash)">
+				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="setAppHash(appHash)">
-				<help><![CDATA[Set AppHash]]></help>
-			</scopevar>
-	<scopevar name="runEvent([event],[prepostExempt],[private],[default],[eventArguments])">
-				<help><![CDATA[I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.]]></help>
-			</scopevar>
-	<scopevar name="getCFMLEngine()">
-				<help><![CDATA[Get the CFMLEngine utility(coldbox.system.core.util.CFMLEngine)]]></help>
+	<scopevar name="_runEvent([event],[prePostExempt],[private],[defaultEvent],[eventArguments])">
+				<help><![CDATA[Executes events with full life-cycle methods and returns the event results if any were returned]]></help>
 			</scopevar>
 	<scopevar name="persistVariables([persist],[persistStruct])">
-				<help><![CDATA[@deprecated DO NOT USE ANYMORE. Persist variables for flash redirections, it can use a structure of name-value pairs or keys from the request collection. Use the flash object instead, this method will auto-save all persistence automatically.]]></help>
+				<help><![CDATA[Internal helper to flash persist elements]]></help>
+			</scopevar>
+	<scopevar name="GETCFMLENGINE()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="runEvent([event],[prePostExempt],[private],[defaultEvent],[eventArguments],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider])">
+				<help><![CDATA[Executes events with full life-cycle methods and returns the event results if any were returned.]]></help>
 			</scopevar>
 </scopevar>
 
