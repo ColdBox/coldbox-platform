@@ -6,7 +6,7 @@
 	Helicon Isapi Rewrite
 3) web.config
 	IIS7 Microsoft Rewrite
-4) Railo (Resin)
+4) Railo/Lucee (Resin)
 	Copy WEB-INF/web.xml into your web-site folder (WEB-INF) 
     [Tested with Apache2 mod_rewrite]  	
 5) Tuckey Rewrite Filter

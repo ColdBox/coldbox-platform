@@ -10,9 +10,10 @@ component {
 	//setup the engine properties
 	this.ADOBE = "ADOBE";
 	this.RAILO = "RAILO";
+	this.LUCEE = "LUCEE";
 
 	// JDK Version
-	this.JDK_VERSION = CreateObject("java", "java.lang.System").getProperty("java.version");
+	this.JDK_VERSION = CreateObject( "java", "java.lang.System" ).getProperty( "java.version" );
 
 	/**
 	* Constructor
@@ -24,6 +25,8 @@ component {
 		instance.adobe = {};
 		// railo only features
 		instance.railo = {};
+		// lucee only features
+		instance.lucee = {};
 
 		return this;
 
@@ -53,6 +56,8 @@ component {
 
 		if ( server.coldfusion.productname eq "Railo" ){
 			engine = this.railo;
+		} else if ( server.coldfusion.productname eq "Lucee" ){
+			engine = this.lucee;
 		}
 
 		return engine;

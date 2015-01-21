@@ -1,12 +1,6 @@
 ﻿<cfscript>
-	if( structKeyExists(server,"railo") ){
-		show3d = false;	
-	}
-	else{
-		show3d = true;
-	}
+	show3d = false;	
 </cfscript>
-
 <div>
 <table align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="background:white">
 	<tr>

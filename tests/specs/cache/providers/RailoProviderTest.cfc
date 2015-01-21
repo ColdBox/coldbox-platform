@@ -15,7 +15,7 @@ Description :
 	this.loadColdBox = false;
 
 	boolean function isRailo(){
-		return structKeyExists( server, "railo" ) ? false : true;
+		return listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? false : true;
 	}
 
 	function setup(){

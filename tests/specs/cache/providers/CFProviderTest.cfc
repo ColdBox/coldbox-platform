@@ -15,7 +15,7 @@ Description :
 	this.loadColdBox = false;
 
 	boolean function isAdobe(){
-		return structKeyExists( server, "railo" ) ? true : false;
+		return listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? true : false;
 	}
 
 	function setup(){

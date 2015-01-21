@@ -24,11 +24,10 @@ Description :
 		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
 		<cfscript>
 			var results = structnew();
-			var x       = 1;
-			var inLen   = Arraylen(arguments.in);
+			var inLen   = arraylen( arguments.in );
 
-			for(x=1; x lte inLen; x=x+1){
-				results[x] = arguments.in[x];
+			for(var x=1; x lte inLen; x=x+1){
+				results[ x ] = arguments.in[ x ];
 			}
 
 			return results;
@@ -71,24 +70,17 @@ Description :
 			var engine = "ADOBE";
 
 			if ( server.coldfusion.productname eq "Railo" ){ engine = "RAILO"; }
-			if ( server.coldfusion.productname eq "BlueDragon" ){ engine = "BD"; }
+			if ( server.coldfusion.productname eq "Lucee" ){ engine = "LUCEE"; }
 
-			switch(engine){
+			switch( engine ){
 				case "ADOBE"	: {
-					if( findNoCase("cfthread",createObject("java","java.lang.Thread").currentThread().getThreadGroup().getName()) ){
+					if( findNoCase( "cfthread", createObject( "java", "java.lang.Thread" ).currentThread().getThreadGroup().getName() ) ){
 						return true;
 					}
 					break;
 				}
-
-				case "RAILO"	: {
+				case "RAILO" : case "LUCEE" : {
 					return getPageContext().hasFamily();
-				}
-
-				case "BD"		: {
-					if( findNoCase("cfthread",createObject("java","java.lang.Thread").currentThread().getThreadGroup().getName()) ){
-						return true;
-					}
 					break;
 				}
 			} //end switch statement.
@@ -302,7 +294,7 @@ Description :
     		var mappingHelper = "";
 
     		// Detect server
-			if( structKeyExists( server, 'railo' ) ) {
+			if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ) {
 				mappingHelper = new RailoMappingHelper();
 			} else {
 				mappingHelper = new CFMappingHelper();

@@ -71,7 +71,7 @@ Description :
 		};
 		
 		// cool thing about programmatic configuration
-		if( structKeyExists(server,"railo") ){
+		if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ){
 			cachebox.caches.railoCache = {
 				provider = "coldbox.system.cache.providers.RailoProvider"
 			};

@@ -101,7 +101,7 @@
 
 	function testProviderMethods(){
 		// skip for railo as they don't have the context method
-		if( structKeyExists( server, "railo" ) ){ return; }
+		if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ){ return; }
 
 		providerTest = injector.getInstance("ProviderTest");
 		assertEquals( true, isObject(providerTest.getPizza()) );
@@ -134,7 +134,7 @@
 		ws = injector.getInstance("coldboxWS");
 
 		// Railo
-		if( structKeyExists( server, "railo" ) ){
+		if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ){
 			expect(	getMetadata(ws).name  ).toMatch( "rpc" );
 		}
 		// adobe

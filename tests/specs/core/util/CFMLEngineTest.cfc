@@ -1,32 +1,24 @@
-﻿<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseModelTest">
+﻿component extends="coldbox.system.testing.BaseModelTest"{
 
-	<!--- setup --->
-	<cffunction name="setup" output="false" access="public" returntype="any" hint="">
-		<cfscript>
-			cfmlengine = CreateObject("component","coldbox.system.core.util.CFMLEngine").init();
-		</cfscript>
-	</cffunction>
+	function setup(){
+		cfmlengine = new coldbox.system.core.util.CFMLEngine();
+	}
 
-	<cffunction name="testCFMLEngine" access="public" returntype="void" output="false" >
-		<cfscript>
-			version = listfirst(server.coldfusion.productversion);
-			engine = server.coldfusion.productname;
+	function testCFMLEngine(){
+		version = listfirst(server.coldfusion.productversion);
+		engine = server.coldfusion.productname;
 
-			if( findnocase("coldfusion",engine) ){
-				enginetype = "adobe";
-			}
-			else if ( findnocase("railo",engine) ){
-				enginetype = "railo";
-			}
-			else if ( findnocase("dragon",engine)){
-				enginetype = "bd";
-			}
+		if( findnocase( "coldfusion", engine) ){
+			enginetype = "adobe";
+		} else if ( findnocase( "railo", engine ) ){
+			enginetype = "railo";
+		} else if ( findnocase( "lucee", engine ) ){
+			enginetype = "lucee";
+		}
 
-			AssertTrue( len(cfmlengine.getEngine()) gt 0, "Engine test" );
+		AssertTrue( len( cfmlengine.getEngine() ) gt 0, "Engine test" );
 
-			AssertTrue( isNumeric(cfmlengine.getVersion()) , "Version Test");
+		AssertTrue( isNumeric( cfmlengine.getVersion() ) , "Version Test");
 
-		</cfscript>
-	</cffunction>
-
-</cfcomponent>
+	}
+}

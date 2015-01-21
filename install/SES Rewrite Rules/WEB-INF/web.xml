@@ -5,6 +5,7 @@
   <dispatch regexp="^/resin-admin/"/>
   <dispatch regexp="^/resin-doc/"/>
   <dispatch regexp="^/railo-admin/"/>
+  <dispatch regexp="^/lucee/"/>
   <forward regexp="^(.*)$" target="/index.cfm$1"/>
 </rewrite-dispatch>
 
