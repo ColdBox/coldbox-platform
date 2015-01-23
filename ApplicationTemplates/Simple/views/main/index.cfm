@@ -1,15 +1,24 @@
 ﻿<cfoutput>
 <div class="jumbotron">
-	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
-	<h1>#prc.welcomeMessage#</h1>
-	<p>
-		You are now running <strong>#getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</strong>.
-		Welcome to the next generation of ColdFusion applications.  You can now start building your application with ease, we already did the hard work
-		for you.
-		<a class="btn btn-primary" href="http://wiki.coldbox.org/wiki/ColdBox.cfm" target="_blank" title="Read our ColdBox Overview Document" rel="tooltip">
-			<strong>ColdBox Overview</strong>
-		</a>
-	</p>
+	<div class="row">
+		<div class="col-md-5">
+			<img src="includes/images/ColdBoxLogo2015_300.png" class="pull-left margin10" alt="logo"/>
+			<p class="text-center">
+				<a class="btn btn-primary" href="http://coldbox.ortusbooks.com" target="_blank" title="Read our ColdBox Manual" rel="tooltip">
+					<strong>Read ColdBox Manual</strong>
+				</a>
+			</p>
+		</div>
+
+		<div class="col-md-7">
+			<h1>#prc.welcomeMessage#</h1>
+			<p>
+				You are now running <strong>#getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</strong>.
+				Welcome to the next generation of ColdFusion (CFML) applications.  You can now start building your application with ease, we already did the hard work
+				for you.
+			</p>
+		</div>
+	</div>
 </div>
 
 <div class="row">
@@ -20,19 +29,6 @@
 			<h2>
 				Registered Event Handlers
 			</h2>
-			<div class="btn-group pull-right">
-				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
-					<i class="icon-info-sign"></i> Related Docs
-					<span class="caret"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="http://wiki.coldbox.org/wiki/EventHandlers.cfm"><i class="icon-bookmark"></i> Event Handlers</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/layouts-views.cfm"><i class="icon-bookmark"></i> Layouts & Views</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/RequestContext.cfm"><i class="icon-bookmark"></i> Request Context</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/URLMappings.cfm"><i class="icon-bookmark"></i> URL Mappings</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/Validation.cfm"><i class="icon-bookmark"></i> Form-Object Validation</a></li>
-				</ul>
-			</div>
 		</div>
 		<p>
 			You can click on the following event handlers to execute their default action
@@ -50,16 +46,6 @@
 	        <h2>
 	        	Registered Modules
 			</h2>
-			<div class="btn-group pull-right">
-				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
-					<i class="icon-info-sign"></i> Related Docs
-					<span class="caret"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="http://wiki.coldbox.org/wiki/Modules.cfm"><i class="icon-bookmark"></i> ColdBox Modules</a></li>
-
-				</ul>
-			</div>
 		</div>
 		<p>Below are your application's loaded modules, click on them to visit them.</p>
 		<ul>
@@ -77,20 +63,9 @@
 			<h2>
 				Application Test Harness
 			</h2>
-			<div class="btn-group pull-right">
-				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
-					<i class="icon-info-sign"></i> Related Docs
-					<span class="caret"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="http://wiki.coldbox.org/wiki/Testing.cfm"><i class="icon-bookmark"></i> Unit & Integration Testing</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/MockBox.cfm"><i class="icon-bookmark"></i> MockBox: Mocking Framework</a></li>
-					<li><a href="http://www.mxunit.org"><i class="icon-bookmark"></i> MXUnit: Testing Framework</a></li>
-				</ul>
-			</div>
 		</div>
 		<p>
-			You can find your entire test harness in the following location: <code>#getSetting("ApplicationPath")#test</code>
+			You can find your entire test harness in the following location: <code>#getSetting("ApplicationPath")#tests</code>
 		</p>
 		<table class="table table-striped">
 			<thead>
@@ -143,16 +118,6 @@
 		<section id="urlActions">
 		<div class="page-header">
        		<h2>ColdBox URL Actions</h2>
-			<div class="btn-group pull-right">
-				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
-					<i class="icon-info-sign"></i> Related Docs
-					<span class="caret"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="http://wiki.coldbox.org/wiki/URLActions.cfm"><i class="icon-bookmark"></i> URL Actions</a></li>
-
-				</ul>
-			</div>
 	   	</div>
 		<p>ColdBox can use some very important URL actions to interact with your application. You can try them out below:</p>
 		<table class="table table-striped">
@@ -179,59 +144,46 @@
 		<section id="customize">
 		<div class="page-header">
 			<h2>Customizing your Application</h2>
-			<div class="btn-group pull-right">
-				<a class="btn btn-danger dropdown-toggle btn-sm" href="##" data-toggle="dropdown">
-					<i class="icon-info-sign"></i> Related Docs
-					<span class="caret"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="http://wiki.coldbox.org/wiki/DirectoryStructure-Conventions.cfm"><i class="icon-bookmark"></i> Directory Structure & Conventions</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/Bootstrapper.cfm"><i class="icon-bookmark"></i> Application Bootstrapper</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/ConfigurationCFC.cfm"><i class="icon-bookmark"></i> Configuration CFC</a></li>
-					<li><a href="http://wiki.coldbox.org/wiki/layouts-views.cfm"><i class="icon-bookmark"></i> Layouts & Views</a></li>
-
-				</ul>
-			</div>
         </div>
 		<p>
             You can now start editing your application and building great ColdBox enabled apps. Important files & locations:
         </p>
 		<ol>
 		    <li>
-		        <b>/config/ColdBox.cfc</b>: Your application configuration file
+		        <code>/config/ColdBox.cfc</code>: Your application configuration file
 		    </li>
 			<li>
-		        <b>/config/Routes.cfm</b>: Your URL Mappings
+		        <code>/config/Routes.cfm</code>: Your URL Mappings
 		    </li>
 		    <li>
-		        <b>/config/WireBox.cfc</b>: Your WireBox Binder
+		        <code>/config/WireBox.cfc</code>: Your WireBox Binder
 		    </li>
 		    <li>
-		        <b>/handlers</b>: Your application event handlers
+		        <code>/handlers</code>: Your application event handlers
 		    </li>
 		    <li>
-		        <b>/interceptors</b>: System interceptors
+		        <code>/interceptors</code>: System interceptors
 		    </li>
 			<li>
-		        <b>/includes</b>: Assets, Helpers, i18n, templates and more.
+		        <code>/includes</code>: Assets, Helpers, i18n, templates and more.
 		    </li>
 			<li>
-		        <b>/layouts</b>:Your application skin layouts
+		        <code>/layouts</code>:Your application skin layouts
 		    </li>
 		    <li>
-		        <b>/lib</b>: Where Jar files can be integrated
+		        <code>/lib</code>: Where Jar files can be integrated
 		    </li>
 			<li>
-		        <b>/models</b>: Your model layer
+		        <code>/models</code>: Your model layer
 		    </li>
 			<li>
-		        <b>/modules</b>: Your application modules
+		        <code>/modules</code>: Your application modules
 		    </li>
 			<li>
-		        <b>/test</b>: Your BDD testing harness (Just DO IT!!)
+		        <code>/tests</code>: Your BDD testing harness (Just DO IT!!)
 		    </li>
 			<li>
-		        <b>/views</b>: Your application views
+		        <code>/views</code>: Your application views
 		    </li>
 		</ol>
 		</section>
@@ -249,13 +201,13 @@
 	                <a href="http://blog.coldbox.org">Blog</a>
 	            </li>
 	            <li>
-	                <a href="https://ortussolutions.atlassian.net/browse/COLDBOX">Bug Tracker</a>
+	                <a href="https://ortussolutions.atlassian.net/browse/COLDBOX">Issue Tracker</a>
 	            </li>
 				<li>
 	                <a href="https://github.com/ColdBox/coldbox-platform">Source Code</a>
 	            </li>
 				<li>
-	                <a href="http://wiki.coldbox.org">Docs</a>
+	                <a href="http://coldbox.ortusbooks.com">Manual</a>
 	            </li>
 				<li>
 					<a href="http://apidocs.coldbox.org">Quick API Docs</a>
