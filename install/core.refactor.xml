@@ -1,0 +1,79 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+********************************************************************************
+Copyright 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+     Author: Luis Majano
+     Date  : Mar 15, 2007 12:23:55 PM                                                        
+
+     coldbox.refactoring
+     This ant task will copy the coldbox system folder to a destination of your
+     choice and it will refactor the cfc instantiation and absolute path references
+     to whatever prefixes you choose. 
+     
+     Just make sure that the basedir and paths coincide of where you run this task. 
+     Change your properties accordingly
+     
+     - My basedir is '../../' since I point it to the coldbox project root in eclipse.
+     - coldbox.system_path = The path where the coldbox system folder exists
+     - coldbox.destination = The destination path for the refactored code.
+     In Windows use \ as path dividers
+     In Mac-Unix use / as path dividers
+        
+                                                                     
+     ====================================================================== -->
+<project name="coldbox.refactoring" default="do.refactor" basedir="../">
+    <description>
+    	This ant task will copy the system folder here refactored with an
+    	installation prefix.
+    </description>
+	
+	<!-- Where the ColdBox system folder is -->
+	<property name="coldbox.system_path" value="${basedir}\system" />
+	<!-- Where to copy the refactored system folder -->
+	<property name="coldbox.destination" value="${basedir}\install\system" />
+		
+	<!--Prefix Target-->
+	<target name="do.prefix" description="Choose the new coldbox prefix">
+		<input message="Please enter a refactoring prefix for the coldbox cfc paths, use dot notation: 
+			   example=shared.frameworks.coldbox3 then it will translate to 'shared.frameworks.coldbox3.system' 
+			   instead of 'coldbox.system')?"
+			   addproperty="coldbox.install_prefix" />
+		<input message="Please enter a refactoring prefix for the coldbox absolute path for includes: 
+			   example=/shared/frameworks/coldbox3 then it will translate to '/shared/frameworks/coldbox3/system' 
+			   instead of '/coldbox/system'?"
+			   addproperty="coldbox.install_prefix_absolute" />
+    </target>
+	
+	<!-- Copy system folder to refactoring destination-->
+	<target name="do.copy" description="copy the system folder to destination">
+		<copy todir="${coldbox.destination}">
+			<fileset dir="${coldbox.system_path}" />
+		</copy>
+	</target>
+	
+	<!--Cleanup -->
+	<target name="do.cleanup" description="Utility for deleting" >
+		<delete dir="${coldbox.destination}" />
+	</target>
+	
+	<!-- Refactor the coldbox Code-->
+	<target name="do.refactor" depends="do.prefix,do.copy" description="refactor the code">
+		<echo>Refactoring for coldbox absolute paths</echo>
+		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix_absolute}/system" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<replacetoken>/coldbox/system</replacetoken>
+		</replace>
+		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
+		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix}.system" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="config/LogBox.xml" />
+			<include name="config/settings.xml" />
+			<replacetoken>coldbox.system</replacetoken>
+		</replace>
+	</target>
+
+</project>

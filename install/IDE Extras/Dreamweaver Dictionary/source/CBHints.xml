@@ -1,0 +1,554 @@
+﻿<codehints xmlns:MMString="http://www.macromedia.com/schemes/data/string/">
+
+<menugroup MMString:name="coldboxhints_0" enabled="true" id="ColdBoxHints_Functions">
+	<description>
+		<MMString:loadString id="coldboxhints_1" />
+	</description>
+
+	<!-- ColdBox Functions -->
+	<function pattern="$abort()" doctypes="ColdFusion,CFC" />
+	<function pattern="announceInterception(string:state ,[struct:interceptorData])" doctypes="ColdFusion,CFC" />
+	<function pattern="dump(var)" doctypes="ColdFusion,CFC" />
+	<function pattern="getColdboxOCM()" doctypes="ColdFusion,CFC" />
+	<function pattern="getController(var)" doctypes="ColdFusion,CFC" />
+	<function pattern="getDatasource(string:alias)" doctypes="ColdFusion,CFC" />
+	<function pattern="getDebugMode()" doctypes="ColdFusion,CFC" />
+	<function pattern="getfwLocale()" doctypes="ColdFusion,CFC" />
+	<function pattern="getInterceptor(string:interceptorClass)" doctypes="ColdFusion,CFC" />
+	<function pattern="getMailSettings()" doctypes="ColdFusion,CFC" />
+	<function pattern="getMyPlugin(string:plugin, [boolean:newInstance])" doctypes="ColdFusion,CFC" />
+	<function pattern="getPlugin(string:plugin, [boolean:customPlugin], [boolean:newInstance])" doctypes="ColdFusion,CFC" />
+	<function pattern="getResource(string:resource)" doctypes="ColdFusion,CFC" />
+	<function pattern="getSetting(string:name,[boolean:FWSetting])" doctypes="ColdFusion,CFC" />
+	<function pattern="getSettingsBean()" doctypes="ColdFusion,CFC" />
+	<function pattern="getSettingStructure([boolean:FWSetting],[boolean:DeepCopyFlag])" doctypes="ColdFusion,CFC" />
+	<function pattern="$htmlhead(content)" doctypes="ColdFusion,CFC" />
+	<function pattern="$include(string:template)" doctypes="ColdFusion,CFC" />
+	<function pattern="includeUDF(string:udflibrary)" doctypes="ColdFusion,CFC" />
+	<function pattern="persistVariables(string:persist)" doctypes="ColdFusion,CFC" />
+	<function pattern="relocate(string:url,[boolean:addtoken])" doctypes="ColdFusion,CFC" />
+	<function pattern="$rethrow(any:throwObject)" doctypes="ColdFusion,CFC" />
+	<function pattern="renderExternalView(string:view)" doctypes="ColdFusion,CFC" />
+	<function pattern="renderView(string:view,[boolean:cache],[numeric:cacheTimeout],[numeric:cacheLastAccessTimeout])" doctypes="ColdFusion,CFC" />
+	<function pattern="runEvent(string:event,[boolean:prepostExempt],[boolean:private])" doctypes="ColdFusion,CFC" />
+	<function pattern="setNextEvent(string:event,[string:queryString],[boolean:addToken],[string:persist])" doctypes="ColdFusion,CFC" />
+	<function pattern="setNextRoute(string:route,[string:persist])" doctypes="ColdFusion,CFC" />
+	<function pattern="setSetting(string:name,value)" doctypes="ColdFusion,CFC" />
+	<function pattern="settingExists(string:name,[boolean:FWSetting])" doctypes="ColdFusion,CFC" />
+	<function pattern="$throw(string:message,[string:detail],[string:type])" doctypes="ColdFusion,CFC" />
+
+	<!-- ColdBox Menues/Scopes: Event, Controller and Plugins -->
+	<menu pattern="Controller." doctypes="ColdFusion,CFC">
+		<menuitem label="getAppHash()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getAppRootPath()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getColdboxOCM()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getColdboxSettings()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getConfigSettings()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getDebuggerService()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getExceptionService()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getHandlerService()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getInterceptorService()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getPlugin()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getPluginService()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getRequestService()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getSetting()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getSettingStructure()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getUtil()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="persistVariables()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="runEvent()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setNextEvent()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setNextRoute()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setSetting()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="settingExists()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="Event." doctypes="ColdFusion,CFC">
+		<menuitem label="buildLink('event or route')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="clearCollection()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="collectionAppend(structure,false)" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getCollection()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getCollection(DeepCopyFlag=true)" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getCurrentAction()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getCurrentEvent()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getCurrentHandler()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getCurrentLayout()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getCurrentView()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getDebugPanelFlag()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getDefaultLayout()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getDefaultView()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getEventName()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getEventCacheableEntry()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getFolderLayouts()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getSelf()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getsesBaseURL()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getSize()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getTrimValue('name')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getValue('name')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getValue('name',default)" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="isEventCacheable()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="isProxyRequest()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="isNoRender()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="isSES()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="getViewLayouts()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="noRender(true|false)" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="overrideEvent('event')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="paramValue('name','value')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="removeValue('name')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setCollection(collection)" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setDefaultLayout('Layout')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setDefaultView('view')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setLayout('name')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setValue('name', value)" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="setView('view')" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="showDebugPanel(true|false)" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="valueExists('name')" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;" doctypes="ColdFusion,CFC">
+		<menuitem label="ApplicationStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="BeanFactory" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ClientStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="CookieStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="DateUtils" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FeedGenerator" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FeedReader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FileUtils" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="IOC" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ResourceBundle" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JavaLoader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JVMUtils" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="MTLogger" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="MessageBox" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Renderer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="SessionStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="StringBuffer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Timer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Utilities" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Webservices" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Zip" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('" doctypes="ColdFusion,CFC">
+		<menuitem label="ApplicationStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="BeanFactory" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ClientStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="CookieStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="DateUtils" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FeedGenerator" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FeedReader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FileUtils" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="IOC" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ResourceBundle" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JavaLoader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JVMUtils" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="MessageBox" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Renderer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="SessionStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="StringBuffer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Timer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Utilities" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Webservices" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Zip" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;ApplicationStorage&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".clearAll()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getStorage()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('ApplicationStorage')" doctypes="ColdFusion,CFC">
+		<menuitem label=".clearAll()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getStorage()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;BeanFactory&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".create()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".populateBean()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".populateFromJSON()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".populateFromStruct()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('BeanFactory')" doctypes="ColdFusion,CFC">
+		<menuitem label=".create()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".populateBean()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".populateFromJSON()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".populateFromStruct()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;ClientStorage&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('ClientStorage')" doctypes="ColdFusion,CFC">
+		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;CookieStorage&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".delete()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getEncryption()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setEncryption()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getEncryptionAlogrithm()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setEncryptionAlogrithm()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getEncryptionKey()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setEncryptionKey()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('CookieStorage')" doctypes="ColdFusion,CFC">
+		<menuitem label=".delete()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getEncryption()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setEncryption()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getEncryptionAlogrithm()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setEncryptionAlogrithm()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getEncryptionKey()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setEncryptionKey()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;FileUtils&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".appendFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".checkCharSet()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".createFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileCanRead()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileCanWrite()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileLastModified()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileSize()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getAbsolutePath()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getFileMimeType()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isDirectory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".readFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".removeFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".ripExtension()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".saveFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".sendFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".uploadFile()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>	
+	<menu pattern="getPlugin('FileUtils')" doctypes="ColdFusion,CFC">
+		<menuitem label=".appendFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".checkCharSet()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".createFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileCanRead()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileCanWrite()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileLastModified()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileSize()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getAbsolutePath()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getFileMimeType()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isDirectory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".readFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".removeFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".ripExtension()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".saveFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".sendFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".uploadFile()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>		
+	<menu pattern="getPlugin(&quot;IOC&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".configure()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getBean()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getExpandedIOCDefinitionFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getIOCDefinitionFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getIOCFactory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getIOCFramework()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".reloadDefinitionFile()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('IOC')" doctypes="ColdFusion,CFC">
+		<menuitem label=".configure()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getBean()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getExpandedIOCDefinitionFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getIOCDefinitionFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getIOCFactory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getIOCFramework()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".reloadDefinitionFile()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;ResourceBundle&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".formatRBString()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getRBkeys()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getRBString()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getResource()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getResourceBundle()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".loadBundle()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".messageFormat()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setupInstance()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".verifyPattern()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('ResourceBundle')" doctypes="ColdFusion,CFC">
+		<menuitem label=".formatRBString()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getRBkeys()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getRBString()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getResource()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getResourceBundle()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".loadBundle()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".messageFormat()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setupInstance()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".verifyPattern()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;JavaLoader&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".create()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getURLClassLoader()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('JavaLoader')" doctypes="ColdFusion,CFC">
+		<menuitem label=".create()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getURLClassLoader()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;JSON&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".decode()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".encode()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('JSON')" doctypes="ColdFusion,CFC">
+		<menuitem label=".decode()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".encode()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('JVMUtils')" doctypes="ColdFusion,CFC">
+		<menuitem label=".getIPAddress()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getInetHost()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSFileSeparator()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSName()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSPathSeparator()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJavaRuntime()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJavaVersion()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJVMFreeMemory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJVMTotalMemory()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;JVMUtils&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".getIPAddress()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getInetHost()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSFileSeparator()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSName()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSPathSeparator()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJavaRuntime()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJavaVersion()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJVMFreeMemory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJVMTotalMemory()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;Logger&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".debug()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".error()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fatal()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getLogger()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".info()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".logEntry()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".logError()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".logErrorWithBean()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".tracer()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".warn()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('Logger')" doctypes="ColdFusion,CFC">
+		<menuitem label=".debug()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".error()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fatal()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getLogger()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".info()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".logEntry()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".logError()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".logErrorWithBean()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".tracer()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".warn()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;MessageBox&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".append()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".appendArray()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".clearMessage()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getMessage()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isEmpty()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".renderIt()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setMessage()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('MessageBox')" doctypes="ColdFusion,CFC">
+		<menuitem label=".append()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".appendArray()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".clearMessage()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getMessage()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isEmpty()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".renderIt()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setMessage()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;QueryHelper&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".doInnerJoin()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".doLeftOuterJoin()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".doQueryAppend()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".filterQuery()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getColumnArray()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getCountDistinct()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getRowNumber()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".sortQuery()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('QueryHelper')" doctypes="ColdFusion,CFC">
+		<menuitem label=".doInnerJoin()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".doLeftOuterJoin()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".doQueryAppend()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".filterQuery()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getColumnArray()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getCountDistinct()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getRowNumber()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".sortQuery()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;Renderer&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".purgeView()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".renderExternalView()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".renderLayout()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".renderView()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('Renderer')" doctypes="ColdFusion,CFC">
+		<menuitem label=".purgeView()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".renderExternalView()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".renderLayout()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".renderView()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;SessionStorage&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".clearAll()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getStorage()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('SessionStorage')" doctypes="ColdFusion,CFC">
+		<menuitem label=".clearAll()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getStorage()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;StringBuffer&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".append()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".capacity()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".delete()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getString()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getStringBuffer()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".indexOf()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".insertStr()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".lastIndexOf()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".length()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".replaceStr()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".reverseStr()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setLength()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".subString()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('StringBuffer')" doctypes="ColdFusion,CFC">
+		<menuitem label=".append()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".capacity()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".delete()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getString()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getStringBuffer()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".indexOf()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".insertStr()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".lastIndexOf()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".length()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".replaceStr()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".reverseStr()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setLength()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".subString()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;Timer&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".getTimerScope()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".logTime()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".start()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".stop()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('Timer')" doctypes="ColdFusion,CFC">
+		<menuitem label=".getTimerScope()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".logTime()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".start()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".stop()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;Utilities&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".isCFUUID()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isEmail()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isURL()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".sleeper()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".createArray()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".createStruct()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".checkCharSet()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileLastModified()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".ripExtension()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".createFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileCanWrite()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileCanRead()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".appendFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileSize()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".readFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".saveFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".removeFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isDirectory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getAbsolutePath()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isSSL()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('Utilities')" doctypes="ColdFusion,CFC">
+		<menuitem label=".isCFUUID()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isEmail()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isURL()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".sleeper()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".createArray()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".createStruct()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".checkCharSet()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileLastModified()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".ripExtension()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".createFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileCanWrite()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileCanRead()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".appendFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileSize()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".readFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".saveFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".removeFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isDirectory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getAbsolutePath()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".isSSL()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;Webservices&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".getWS()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getWSObj()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".refreshWS()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('Webservices')" doctypes="ColdFusion,CFC">
+		<menuitem label=".getWS()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getWSObj()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".refreshWS()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;Zip&quot;)" doctypes="ColdFusion,CFC">
+		<menuitem label=".addFiles()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".deleteFiles()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".extract()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileList()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".gzipAddFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".gzipExtract()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".list()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".pathFormat()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('Zip')" doctypes="ColdFusion,CFC">
+		<menuitem label=".addFiles()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".deleteFiles()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".extract()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".fileList()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".gzipAddFile()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".gzipExtract()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".list()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".pathFormat()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+
+</menugroup>
+</codehints>

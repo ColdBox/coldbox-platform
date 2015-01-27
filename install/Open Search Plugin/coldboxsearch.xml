@@ -1,0 +1,14 @@
+﻿<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+<ShortName>ColdBoxDocs</ShortName>
+<Description>ColdBox Platform Documentation Search</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/jpeg;base64,%2F9j%2F4AAQSkZJRgABAQEASABIAAD%2F2wBDAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHCAgICAgICAgICD%2F2wBDAQcHBw0MDRgQEBgaFREVGiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICD%2FwAARCAAQABADAREAAhEBAxEB%2F8QAFgABAQEAAAAAAAAAAAAAAAAABgIE%2F8QAJBAAAQQABgMAAwAAAAAAAAAAAwECBQYABAcREyESIjEUQYH%2FxAAUAQEAAAAAAAAAAAAAAAAAAAAA%2F8QAFBEBAAAAAAAAAAAAAAAAAAAAAP%2FaAAwDAQACEQMRAD8AwR0TQ9IqFCyk1HikbHYGcymOPmaAat8k8Wf3AHLRUIe%2FwBrPXXC5QsI4jBh4HI4SeTmOanXz4uAWQc7R9XtPo6uzOa%2FBsEYFgF%2FTthdNINV6VFT6mAiczlJ0uoMjCREizNzOaCRAtcqdqT1cvrvuu3zAf%2F%2FZ</Image>
+	<Url type="text/html" method="get" template="http://www.google.com/cse">
+	<Param name="q" value="{searchTerms}"/>
+	<Param name="cx" value="016428578290111247219:83ttrlkrtrw" />
+	<Param name="ie" value="utf-8" />
+	<Param name="safe" value="active" />
+</Url>
+<moz:SearchForm>http://www.coldbox.org</moz:SearchForm>
+</OpenSearchDescription>

@@ -1,0 +1,21 @@
+﻿Dreamweaver Code Hints for the greatest MVC Framework - ColdBox.
+CBHints provided By Aaron Roberson & Massimo Foti from http://www.massimocorner.com/
+
+CBHints HISTORY:
+
+June 6, 2008 - Created
+June 6, 2008, several hours later - Added Plugins
+July 9, 2008 - MXP Extension manager
+
+CBHints TWO-STEP SIMPLE INSTRUCTIONS EVEN A 12 YEAR OLD CAN FOLLOW
+
+STEP 1:
+
+Execute the CBHints.mxp
+
+STEP 2:
+Click on Accept
+
+That is it! Simple, uh? Now restart Dreamweaver and you're ready to roll, baby, yeah!
+
+P.S.S. Please email any spelling errors, suggestions or your own Code Hints to be included in CBHints to aaronroberson@yahoo.com.

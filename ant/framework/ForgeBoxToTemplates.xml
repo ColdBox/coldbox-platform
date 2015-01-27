@@ -1,0 +1,32 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 18, 2007 1:30:20 AM                                                        
+
+     ForgeBox To Templates                                                                
+     ====================================================================== -->
+<project name="forgebox.to.templates" default="copy" basedir="../../">
+
+	<!--Build Properties-->
+	<property name="dir.forgebox"		value="testharness/modules/forgebox" />
+	<property name="dir.app1"			value="ApplicationTemplates/Advanced/modules" />
+	<property name="dir.app2"			value="ApplicationTemplates/Simple/modules" />
+	
+	<!--copy-->
+	<target name="copy" description="Copy forgebox module to templates">
+      	
+		<!-- Copy src -->	
+      	<copy todir="${dir.app1}/forgebox">
+        	<fileset dir="${dir.forgebox}">
+        		<exclude name="**/build.xml"/>
+        		<exclude name="**/*.zip"/>
+        	</fileset>
+        </copy>
+		<copy todir="${dir.app2}/forgebox">
+			<fileset dir="${dir.forgebox}">
+        		<exclude name="**/build.xml"/>
+        		<exclude name="**/*.zip"/>
+        	</fileset>
+        </copy>
+		
+    </target>
+</project>

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 18, 2007 1:30:20 AM                                                        
+
+     coldbox.deploy    
+     ColdBox Deployment
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.api-upload" default="ftp.deploy" basedir="../../">
+
+	<!--Build Properties-->
+	<property name="build.dir" 			value="_tmpbuild" />
+	<property name="src.dir"			value="system" />
+	<!-- FTP -->
+	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" 		value="/httpdocs/builds/" />
+	<property name="site.api" value="/Users/lmajano/sites/websites/coldbox.org/builds" />
+	
+	<!-- Init -->
+	<target name="init" description="Init">
+		<!-- Version -->
+		<input addproperty="coldbox.version" message="api upload version: (Ex: 2_6_0)" />
+		<delete dir="${build.dir}" />
+		<mkdir  dir="${build.dir}" />
+	</target>
+	
+	<!--Build-->
+	<target name="build" description="Build a new coldbox distribution" depends="init">
+      	<!-- Copy SRC -->	
+      	<copy todir="${build.dir}/coldbox_${coldbox.version}/coldbox/system">
+        	<fileset dir="${src.dir}">
+        		<include name="**/*.cfc" />
+        	</fileset>
+        </copy>
+		<!-- Copy to website -->
+		<copy todir="${site.api}/coldbox_${coldbox.version}/coldbox/system">
+        	<fileset dir="${src.dir}">
+        		<include name="**/*.cfc" />
+        	</fileset>
+        </copy>
+    </target>
+	
+	<!-- FTP Upload of new build -->
+	<target name="ftp.deploy" depends="build">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	
+		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		 remotedir="${ftp.remotedir}" passive="false" verbose="yes" newer="true" preservelastmodified="true">
+        	<fileset dir="${build.dir}" />
+       	</ftp>
+		
+		<delete dir="${build.dir}" />
+	</target>
+	
+</project>

@@ -1,0 +1,36 @@
+﻿<macromedia-extension
+	 name="ColdBox Code Hinting"
+	 version="1.5.0"
+	 type="CodeColoring"
+	 requires-restart="true">
+
+	<author name="Sana Ullah,Aaron Roberson" />
+
+	<products>
+		<product name="Dreamweaver" version="6" primary="true" />
+	</products>
+
+	<description>
+	<![CDATA[
+	Code Hints for the ColdBox Platform.
+	]]>
+	</description>
+
+	<ui-access>
+	<![CDATA[
+	Code hints available in Code View
+	]]>
+	</ui-access>
+
+	<license-agreement>
+	<![CDATA[
+	
+	]]>
+	</license-agreement>
+
+	<files>
+		<file source="hintCB.gif" destination="$dreamweaver\configuration\shared\CBHints\images" />
+		<file source="CBHints.xml" destination="$dreamweaver\configuration\codehints" />
+	</files>
+
+</macromedia-extension>

@@ -290,10 +290,7 @@ Description :
 		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var key 		 = "";
 			var thisAppender = "";
-			var appenders	 = "";
-			var logEvent     = "";
 			var target 		 = this;
 
 			// Verify severity, if invalid, default to INFO
@@ -309,19 +306,19 @@ Description :
 			if( getLevelMin() eq this.logLevels.OFF ){ return; }
 
 			// Can we log on target
-			if( canLog(arguments.severity) ){
+			if( canLog( arguments.severity ) ){
 				// Create Logging Event
 				arguments.category = target.getCategory();
-				logEvent = createobject( "component", "coldbox.system.logging.LogEvent" ).init( argumentCollection=arguments );
+				var logEvent = new coldbox.system.logging.LogEvent( argumentCollection=arguments );
 
 				// Do we have appenders locally? or go to root Logger
 				if( NOT hasAppenders() ){
 					target = getRootLogger();
 				}
 				// Get appenders
-				appenders = target.getAppenders();
+				var appenders = target.getAppenders();
 				// Delegate Calls to appenders
-				for( key in appenders ){
+				for( var key in appenders ){
 					// Get Appender
 					thisAppender = appenders[ key ];
 					// Log the message in the appender if the appender allows it
@@ -336,8 +333,8 @@ Description :
 								thisAppender.logMessage( logEvent );
 							} else {
 								// Thread this puppy
-								thread action="run" name="#threadName#" logEvent="#logEvent#" {
-			 						thisAppender.logMessage( attributes.logEvent );
+								thread action="run" name="#threadName#" logEvent="#logEvent#" thisAppender="#thisAppender#"{
+			 						attributes.thisAppender.logMessage( attributes.logEvent );
 			 					}
 							}
 						} else {
