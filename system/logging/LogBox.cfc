@@ -255,13 +255,12 @@ Description :
 	<cffunction name="getAppendersMap" output="false" access="private" returntype="any" hint="Get a map of appenders by list. Usually called to get a category of appenders." colddoc:generic="struct">
 		<cfargument name="appenders" required="true" hint="The list of appenders to get"/>
 		<cfscript>
-			var x =1;
 			var appendersMap = structnew();
 
 			// Go over appender's list and configure it
-			for(x=1; x lte listlen(arguments.appenders); x=x+1){
-				thisAppender = listGetAt(arguments.appenders,x);
-				appendersMap[thisAppender] = instance.appenderRegistry[thisAppender];
+			arguments.appenders = listToArray( arguments.appenders );
+			for( var thisAppender in arguments.appenders ){
+				appendersMap[ thisAppender ] = instance.appenderRegistry[ thisAppender ];
 			}
 
 			return appendersMap;
