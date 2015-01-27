@@ -31,8 +31,8 @@
 	addRoute( pattern="/luis2/:lname", response=fResponse, statusCode="202", statusText="What up from closure land");
 
 	// Views No Events
-	addRoute( pattern="contactus",view="simpleView");
-	addRoute( pattern="contactus2",view="simpleView",viewnoLayout=true);
+	addRoute( pattern="contactus",view="simpleview");
+	addRoute( pattern="contactus2",view="simpleview",viewnoLayout=true);
 
 	// Add Module Routing Here For Common-View Layout Testing
 	addModuleRoutes( pattern="/moduleLookup", module="moduleLookup");
@@ -43,8 +43,8 @@
 
 	// Sample namespace
 	with( namespace="luis" )
-		.addRoute( pattern="contactus",view="simpleView")
-		.addRoute( pattern="contactus2",view="simpleView",viewnoLayout=true)
+		.addRoute( pattern="contactus",view="simpleview")
+		.addRoute( pattern="contactus2",view="simpleview",viewnoLayout=true)
 	.endWith();
 
 	// Test Simple With

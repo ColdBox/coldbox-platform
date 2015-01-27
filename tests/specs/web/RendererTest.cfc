@@ -6,16 +6,16 @@
 	}
 
 	function testRenderViewWithCache(){
-		var results = r.renderView(view="simpleView",cache=true,cacheTimeout="5");
+		var results = r.renderView(view="simpleview",cache=true,cacheTimeout="5");
 		debug( results );
 
-		var results2 = r.renderView(view="simpleView",cache=true,cacheTimeout="5");
+		var results2 = r.renderView(view="simpleview",cache=true,cacheTimeout="5");
 		assertEquals( results, results2 );
 	}
 
 	function testRenderViewWithCacheProviders(){
-		var results 	= r.renderView( view="simpleView", cache=true, cacheTimeout="5", cacheProvider="default" );
-		var results2 	= r.renderView( view="simpleView", cache=true, cacheTimeout="5", cacheProvider="default" );
+		var results 	= r.renderView( view="simpleview", cache=true, cacheTimeout="5", cacheProvider="default" );
+		var results2 	= r.renderView( view="simpleview", cache=true, cacheTimeout="5", cacheProvider="default" );
 		assertEquals( results, results2 );
 	}
 
