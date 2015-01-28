@@ -528,7 +528,7 @@ component serializable="false" accessors="true"{
 			if( NOT arguments.prePostExempt ){
 
 				// PREEVENT Interceptor
-				services.interceptorService.processState("preEvent",iData);
+				services.interceptorService.processState( "preEvent", iData );
 
 				// Verify if event was overriden
 				if( arguments.event NEQ iData.processedEvent ){
@@ -539,27 +539,39 @@ component serializable="false" accessors="true"{
 				}
 
 				// Execute Pre Handler if it exists and valid?
-				if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
-					oHandler.preHandler(event=oRequestContext,rc=args.rc,prc=args.prc,action=ehBean.getMethod(),eventArguments=arguments.eventArguments);
+				if( oHandler._actionExists( "preHandler" ) AND validateAction( ehBean.getMethod(), oHandler.PREHANDLER_ONLY, oHandler.PREHANDLER_EXCEPT ) ){
+					oHandler.preHandler( 
+						event = oRequestContext,
+						rc = args.rc,
+						prc = args.prc,
+						action = ehBean.getMethod(),
+						eventArguments = arguments.eventArguments 
+					);
 				}
 
 				// Execute pre{Action}? if it exists and valid?
-				if( oHandler._actionExists("pre#ehBean.getMethod()#") ){
-					invoker(oHandler,"pre#ehBean.getMethod()#",loc.args);
+				if( oHandler._actionExists( "pre#ehBean.getMethod()#" ) ){
+					invoker( target=oHandler, method="pre#ehBean.getMethod()#", argCollection=args );
 				}
 			}
 
 			// Verify if event was overriden
 			if( arguments.defaultEvent and arguments.event NEQ oRequestContext.getCurrentEvent() ){
 				// Validate the overriden event
-				ehBean = services.handlerService.getRegisteredHandler(oRequestContext.getCurrentEvent());
+				ehBean = services.handlerService.getRegisteredHandler( oRequestContext.getCurrentEvent() );
 				// Get new handler to follow execution
-				oHandler = services.handlerService.getHandler(ehBean,oRequestContext);
+				oHandler = services.handlerService.getHandler( ehBean, oRequestContext );
 			}
 
 			// Invoke onMissingAction event
 			if( ehBean.isMissingAction() ){
-				loc.results	= oHandler.onMissingAction(event=oRequestContext,rc=args.rc,prc=args.prc,missingAction=ehBean.getMissingAction(),eventArguments=arguments.eventArguments);
+				loc.results	= oHandler.onMissingAction(
+					event = oRequestContext,
+					rc = args.rc,
+					prc = args.prc,
+					missingAction = ehBean.getMissingAction(),
+					eventArguments = arguments.eventArguments
+				);
 			}
 			// Invoke main event
 			else{
@@ -568,23 +580,23 @@ component serializable="false" accessors="true"{
 				if( oHandler._actionExists("around#ehBean.getMethod()#") ){
 					// Add target Action to loc.args
 					args.targetAction  	= oHandler[ehBean.getMethod()];
-					loc.results = invoker( oHandler, "around#ehBean.getMethod()#", args );
+					loc.results = invoker( target=oHandler, method="around#ehBean.getMethod()#", argCollection=args );
 					// Cleanup: Remove target action from args for post events
 					structDelete( args, "targetAction" );
 				}
 				// Around Handler Advice Check?
 				else if( oHandler._actionExists( "aroundHandler" ) AND validateAction( ehBean.getMethod(), oHandler.aroundHandler_only, oHandler.aroundHandler_except ) ){
 					loc.results = oHandler.aroundHandler(
-						event=oRequestContext,
-						rc=args.rc,
-						prc=args.prc,
-						targetAction=oHandler[ ehBean.getMethod() ],
-						eventArguments=arguments.eventArguments 
+						event = oRequestContext,
+						rc = args.rc,
+						prc = args.prc,
+						targetAction = oHandler[ ehBean.getMethod() ],
+						eventArguments = arguments.eventArguments 
 					);
 				}
 				else{
 					// Normal execution
-					loc.results = invoker( oHandler, ehBean.getMethod(), argsMain, arguments.private );
+					loc.results = invoker( target=oHandler, method=ehBean.getMethod(), argCollection=argsMain, private=arguments.private );
 				}
 			}
 
@@ -593,17 +605,17 @@ component serializable="false" accessors="true"{
 
 				// Execute post{Action}?
 				if( oHandler._actionExists( "post#ehBean.getMethod()#" ) ){
-					invoker( oHandler, "post#ehBean.getMethod()#", args );
+					invoker( target=oHandler, method="post#ehBean.getMethod()#", argCollection=args );
 				}
 
 				// Execute postHandler()?
 				if( oHandler._actionExists("postHandler") AND validateAction(ehBean.getMethod(),oHandler.POSTHANDLER_ONLY,oHandler.POSTHANDLER_EXCEPT) ){
 					oHandler.postHandler(
-						event=oRequestContext,
-						rc=args.rc,
-						prc=args.prc,
-						action=ehBean.getMethod(),
-						eventArguments=arguments.eventArguments);
+						event = oRequestContext,
+						rc = args.rc,
+						prc = args.prc,
+						action = ehBean.getMethod(),
+						eventArguments = arguments.eventArguments);
 				}
 
 				// Execute POSTEVENT interceptor
@@ -611,14 +623,14 @@ component serializable="false" accessors="true"{
 
 			}// end if prePostExempt
 		} catch( any e ){
-			if( oHandler._actionExists("onError") ){
+			if( oHandler._actionExists( "onError" ) ){
 				loc.results = oHandler.onError(
-					event=oRequestContext,
-					rc=args.rc,
-					prc=args.prc,
-					faultAction=ehBean.getmethod(),
-					exception=cfcatch,
-					eventArguments=arguments.eventArguments);
+					event = oRequestContext,
+					rc = args.rc,
+					prc = args.prc,
+					faultAction = ehBean.getmethod(),
+					exception = cfcatch,
+					eventArguments = arguments.eventArguments);
 			} else {
 				rethrow;
 			}
