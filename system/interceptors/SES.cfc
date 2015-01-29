@@ -1143,7 +1143,7 @@ Description :
 						log.debug("SES Package Resolved: #packagedRequestString#");
 					}
 					// Return found Route recursively.
-					return findRoute(action=packagedRequestString,event=arguments.event);
+					return findRoute( action=packagedRequestString, event=arguments.event, module=arguments.module );
 				}
 			}
 
