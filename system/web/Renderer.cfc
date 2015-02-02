@@ -146,7 +146,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		numeric collectionStartRow="1",
 		numeric collectionMaxRows=0,
 		collectionDelim="",
-		boolean prePostExempt=false
+		boolean prePostExempt=false,
+		boolean renderExplicitModuleView=true
 	){
 		var viewCacheKey 		= "";
 		var viewCacheEntry 		= "";
@@ -165,7 +166,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 				arguments.module = event.getCurrentModule();
 			}
 		} else {
-			explicitModule = true;
+			explicitModule = arguments.renderExplicitModuleView;
 		}
 
 		// Rendering an explicit view or do we need to get the view from the context or explicit context?
