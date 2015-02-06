@@ -1,11 +1,8 @@
-﻿<cfscript>
-	show3d = false;	
-</cfscript>
-<div>
+﻿<div>
 <table align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="background:white">
 	<tr>
 		<td align="center">
-			<cfchart format="png" show3d="#show3d#" title="JVM Memory Pie" backgroundcolor="##ffffff" chartheight="275" chartwidth="275">
+			<cfchart format="png" show3d="false" title="JVM Memory Pie" backgroundcolor="##ffffff" chartheight="275" chartwidth="275">
 				<cfchartseries type="pie" colorlist="00ff00, 0000ff, gray" >
 					<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
 					<cfchartdata item="Used Memory (KB)" value="#JVMMaxMemory-JVMFreeMemory#">
@@ -26,7 +23,7 @@
 		</td>
 		<td align="center">
 		<cfif structKeyExists( cacheConfig, "maxObjects" )>
-		<cfchart format="png" show3d="#show3d#" title="Cache Fullness" backgroundcolor="##ffffff" chartheight="250" chartwidth="250">
+		<cfchart format="png" show3d="false" title="Cache Fullness" backgroundcolor="##ffffff" chartheight="250" chartwidth="250">
 			<cfchartseries type="pie" colorlist="00ff00, 0000ff" >
 				<cfchartdata item="Max Size"  value="#cacheConfig.maxObjects#">
 				<cfchartdata item="Used Size" value="#cacheSize#">
@@ -34,7 +31,7 @@
 		</cfchart>
 		</cfif> 
 		
-		<cfchart format="png" show3d="#show3d#" backgroundcolor="##ffffff" 
+		<cfchart format="png" show3d="false" backgroundcolor="##ffffff" 
 				 chartwidth="275" chartheight="275" showlegend="true" title="Cache Performance Report">
 			<cfchartseries type="bar" colorlist="131cd7,ED2939,gray,d47f00">
 				<cfchartdata item="Hits" value="#cacheStats.getHits()#">
