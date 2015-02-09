@@ -629,7 +629,7 @@ component serializable="false" accessors="true"{
 					rc = args.rc,
 					prc = args.prc,
 					faultAction = ehBean.getmethod(),
-					exception = cfcatch,
+					exception = e,
 					eventArguments = arguments.eventArguments);
 			} else {
 				rethrow;
