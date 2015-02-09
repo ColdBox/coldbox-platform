@@ -202,7 +202,7 @@ Optional Methods
 		//webservices
 		webservices = {
 			testWS = "http://www.test.com/test.cfc?wsdl",
-			AnotherTestWS = "http://www.coldbox.org/distribution/updatews.cfc?wsdl"
+			AnotherTestWS = "http://railo.stg.ortussolutions.com/ExtensionProvider.cfc?wsdl"
 		};
 
 		//Datasources

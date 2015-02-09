@@ -49,7 +49,7 @@
 	
 	function testbuildWebservice(){
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("Buffer");
-		mapping.setPath("http://www.coldbox.org/distribution/updatews.cfc?wsdl");
+		mapping.setPath("http://railo.stg.ortussolutions.com/ExtensionProvider.cfc?wsdl");
 		r = builder.buildwebservice(mapping);
 		//debug(r);
 	}
