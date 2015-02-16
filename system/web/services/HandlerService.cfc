@@ -538,7 +538,7 @@ Description :
 		<cfset var mdEntry  = 0>
 
 		<cfif NOT structKeyExists( instance.eventCacheDictionary, arguments.cacheKey)>
-			<cflock name="handlerservice.eventcachingmd.#arguments.cacheKey#" type="exclusive" throwontimeout="true" timeout="10">
+			<cflock name="handlerservice.#getController().getAppHash()#.eventcachingmd.#arguments.cacheKey#" type="exclusive" throwontimeout="true" timeout="10">
 			<cfscript>
 			// Determine if we have md for the event to execute in the md dictionary, else set it
 			if ( NOT structKeyExists( instance.eventCacheDictionary, arguments.cacheKey) ){

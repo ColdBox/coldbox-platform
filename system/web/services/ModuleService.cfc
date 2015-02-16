@@ -188,7 +188,7 @@ I oversee and manage ColdBox modules
 			}
 
 			// lock registration
-			lock name="module.registration.#arguments.modulename#" type="exclusive" throwontimeout="true" timeout="20"{
+			lock name="module.#getController().getAppHash()#.registration.#arguments.modulename#" type="exclusive" throwontimeout="true" timeout="20"{
 
 				// Setup Vanilla Config information for module
 				var mConfig = {
@@ -388,7 +388,7 @@ I oversee and manage ColdBox modules
 			}
 
 			// lock and load baby
-			lock name="module.activation.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true"{
+			lock name="module.#getController().getAppHash()#.activation.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true"{
 
 				// preModuleLoad interception
 				iData = { moduleLocation=mConfig.path,moduleName=arguments.moduleName };
@@ -516,7 +516,7 @@ I oversee and manage ColdBox modules
 
 		</cfscript>
 
-		<cflock name="module.unload.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true">
+		<cflock name="module.#getController().getAppHash()#.unload.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true">
 		<cfscript>
 			// Check if module is loaded?
 			if( NOT structKeyExists(appConfig.modules,arguments.moduleName) ){ return false; }

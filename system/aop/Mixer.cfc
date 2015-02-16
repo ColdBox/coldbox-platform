@@ -43,6 +43,9 @@ Description :
 				mixerUtil = createObject("component","coldbox.system.aop.MixerUtil").init()
 			};
 
+			// class id code
+			instance.classID = instance.system.identityHashCode( this );
+
 			// Default Generation Path?
 			if( NOT structKeyExists(instance.properties,"generationPath") ){
 				instance.properties.generationPath = "/coldbox/system/aop/tmp";
@@ -110,7 +113,7 @@ Description :
 		<cfset var matchedAspects	= []>
 
     	<!--- Lock --->
-    	<cflock name="aop.classMatchDictionary.for.#arguments.idCode#" type="exclusive" timeout="30" throwontimeout="true">
+    	<cflock name="aop.#instance.classID#.classMatchDictionary.for.#arguments.idCode#" type="exclusive" timeout="30" throwontimeout="true">
 		<cfscript>
 			// check again, double lock
 			if( NOT structKeyExists(instance.classMatchDictionary, mappingName ) ){
@@ -146,7 +149,7 @@ Description :
     	<cfargument name="idCode" 		type="any" required="true" hint="The incoming target identifier"/>
 
     	<!--- Lock --->
-    	<cflock name="aop.weaveAdvice.id.#arguments.idCode#" type="exclusive" timeout="30" throwOnTimeout="true">
+    	<cflock name="aop.#instance.classID#.weaveAdvice.id.#arguments.idCode#" type="exclusive" timeout="30" throwOnTimeout="true">
 		<cfscript>
 			// check if weaved already
 			if( structKeyExists(arguments.target,"$wbAOPMixed") ){ return; }

@@ -186,7 +186,7 @@ Description :
 		</cfscript>
 
 		<!--- Lock this registration --->
-		<cflock name="interceptorService.registerInterceptor.#objectName#" type="exclusive" throwontimeout="true" timeout="30">
+		<cflock name="interceptorService.#getController().getAppHash()#.registerInterceptor.#objectName#" type="exclusive" throwontimeout="true" timeout="30">
 			<cfscript>
 				// Did we send in a class to instantiate
 				if( structKeyExists( arguments, "interceptorClass" ) ){

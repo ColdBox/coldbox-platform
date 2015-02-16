@@ -35,7 +35,7 @@ Description :
 		<!--- Verify in Singleton Cache --->
 		<cfif NOT structKeyExists(instance.singletons, cacheKey)>
 			<!--- Lock it --->
-			<cflock name="WireBox.Singleton.#cacheKey#" type="exclusive" timeout="30" throwontimeout="true">
+			<cflock name="WireBox.#instance.injector.getInjectorID()#.Singleton.#cacheKey#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
 				// double lock it
 				if( NOT structKeyExists(instance.singletons, cacheKey) ){

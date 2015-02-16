@@ -38,7 +38,7 @@ Description :
 		<!--- Verify in CF Scope --->
 		<cfif NOT instance.scopeStorage.exists(cacheKey, CFScope)>
 			<!--- Lock it --->
-			<cflock name="WireBox.CFScopes-#CFScope#.#cacheKey#" type="exclusive" timeout="15" throwontimeout="true">
+			<cflock name="WireBox.#instance.injector.getInjectorID()#.CFScopes-#CFScope#.#cacheKey#" type="exclusive" timeout="15" throwontimeout="true">
 			<cfscript>
 				// double lock it
 				if( NOT instance.scopeStorage.exists(cacheKey, CFScope) ){

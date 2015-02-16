@@ -340,7 +340,7 @@ Description :
 		<cfset var mapping = "">
 
     	<!--- Register new instance mapping --->
-    	<cflock name="Injector.RegisterNewInstance.#hash(arguments.instancePath)#" type="exclusive" timeout="20" throwontimeout="true">
+    	<cflock name="Injector.#getInjectorID()#.RegisterNewInstance.#hash(arguments.instancePath)#" type="exclusive" timeout="20" throwontimeout="true">
     		<cfscript>
 				if( NOT instance.binder.mappingExists( arguments.name ) ){
 					// create a new mapping to be registered within the binder
