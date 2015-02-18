@@ -11,7 +11,8 @@
 			.$("getLogbox", getMockBox().createstub().$("getLogger", mockLogger) )
 			.$("getUtil", getMockBox().createMock("coldbox.system.core.util.Util"))
 			.$("getCacheBox", mockCacheBox)
-			.$("getLogBox", mockLogBox );
+			.$("getLogBox", mockLogBox )
+			.$("getInjectorID", createUUID() );
 		super.setup();
 		scope = model.init( mockInjector );
 		mockStub = createStub();

@@ -7,7 +7,8 @@
 		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
 			.$("getLogbox", getMockBox().createstub().$("getLogger", mockLogger) )
 			.$("getUtil", getMockBox().createMock("coldbox.system.core.util.Util"))
-			.$("getLogBox", mockLogBox );
+			.$("getLogBox", mockLogBox )
+			.$("getInjectorID", createUUID() );
 		super.setup();
 		scope = model.init( mockInjector );
 		mockStub = createStub();
