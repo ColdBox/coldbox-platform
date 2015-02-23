@@ -32,9 +32,19 @@
 		<!--- Last Access Timeout --->
 		<td align="center" >#cacheMetadata[thisKey][ cacheMDKeyLookup.lastAccessTimeout ]#</td>
 		<!--- Created --->
-		<td align="center" >#dateformat(cacheMetadata[thisKey][ cacheMDKeyLookup.Created ],"mmm-dd")# <Br/> #timeformat(cacheMetadata[thisKey][ cacheMDKeyLookup.created ],"hh:mm:ss tt")#</td>
+		<td align="center" >
+			<cfif !isNull( cacheMetadata[thisKey][ cacheMDKeyLookup.Created ] )>
+			#dateformat( cacheMetadata[thisKey][ cacheMDKeyLookup.Created ], "mmm-dd" )# <br/>
+			#timeformat( cacheMetadata[thisKey][ cacheMDKeyLookup.created ], "hh:mm:ss tt" )#
+			</cfif>
+		</td>
 		<!--- Last Accessed --->
-		<td align="center">#dateformat(cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ],"mmm-dd")# <br/> #timeformat(cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ],"hh:mm:ss tt")#</td>
+		<td align="center">
+			<cfif !isNull( cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ] )>
+			#dateformat(cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ],"mmm-dd")# <br/> 
+			#timeformat(cacheMetadata[thisKey][ cacheMDKeyLookup.LastAccessed ],"hh:mm:ss tt")#
+			</cfif>
+		</td>
 	 	<!--- isExpired --->
 		<td align="center">
 			<cfif structKeyExists(cacheMDKeyLookup,"isExpired") and cacheMetadata[thisKey][ cacheMDKeyLookup.isExpired ]>
