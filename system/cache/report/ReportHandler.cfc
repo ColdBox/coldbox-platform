@@ -48,6 +48,7 @@ Description :
 			switch(arguments.command){
 				// Cache Commands
 				case "expirecache"    		: { cacheBox.getCache(arguments.cacheName).expireAll(); break; }
+				case "clearcache"    		: { cacheBox.getCache(arguments.cacheName).clearAll(); break; }
 				case "reapcache"  	  		: { cacheBox.getCache(arguments.cacheName).reap(); break;}
 				case "delcacheentry"  		: { cacheBox.getCache(arguments.cacheName).clear( arguments.cacheEntry );break;}
 				case "expirecacheentry"  	: { cacheBox.getCache(arguments.cacheName).expireObject( arguments.cacheEntry );break;}

@@ -95,6 +95,13 @@
 		   title="Expire all the keys in the cache" 
 		   onclick="cachebox_cacheContentCommand('#URLBase#','expirecache', '#arguments.cacheName#')" />
 
+	<!--- Clear All Keys --->
+	<input type="button" value="Clear All Keys" 
+		   name="cboxbutton_clearkeys" id="cboxbutton_clearkeys"
+		   style="font-size:10px" 
+		   title="Clear all the keys in the cache" 
+		   onclick="cachebox_cacheContentCommand('#URLBase#','clearcache', '#arguments.cacheName#')" />
+
 	<!--- ColdBox Application Commands --->
 	<cfif cacheBox.isColdBoxLinked()>
 		<!--- Clear All Events --->
