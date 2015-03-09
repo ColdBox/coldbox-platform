@@ -18,7 +18,8 @@ Description :
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = "ColdBoxTestingSuite" & hash(getCurrentTemplatePath())>
 	<cfset this.sessionManagement = true>
-	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
+	<cfset this.sessionTimeout = createTimeSpan(0,0,15,0)>
+	<cfset this.applicationTimeout = createTimeSpan(0,0,15,0)>
 	<cfset this.setClientCookies = true>
 
 	<!--- Create testing mapping --->
