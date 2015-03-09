@@ -25,7 +25,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	property name="coldboxAppKey";
 
 	// Public Switch Properties
-	this.loadColdbox = true;
+	// TODO: Remove by ColdBox 4.2+ and move to variables scope.
+	this.loadColdbox 	= true;
+	this.unLoadColdBox 	= true;
 
 	// Internal Properties
 	variables.appMapping 	= "";
@@ -40,22 +42,26 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	* @return BaseTestCase
 	*/
 	function metadataInspection(){
-		var md = getMetadata(this);
+		var md = getMetadata( this );
 		// Inspect for appMapping annotation
-		if( structKeyExists(md,"appMapping") ){
+		if( structKeyExists( md, "appMapping" ) ){
 			variables.appMapping = md.appMapping;
 		}
 		// Configuration File mapping
-		if( structKeyExists(md,"configMapping") ){
+		if( structKeyExists( md, "configMapping" ) ){
 			variables.configMapping = md.configMapping;
 		}
 		// ColdBox App Key
-		if( structKeyExists(md,"coldboxAppKey") ){
+		if( structKeyExists( md, "coldboxAppKey" ) ){
 			variables.coldboxAppKey = md.coldboxAppKey;
 		}
 		// Load coldBox annotation
-		if( structKeyExists(md,"loadColdbox") ){
+		if( structKeyExists( md, "loadColdbox" ) ){
 			this.loadColdbox = md.loadColdbox;
+		}
+		// unLoad coldBox annotation
+		if( structKeyExists( md, "unLoadColdbox" ) ){
+			this.unLoadColdbox = md.unLoadColdbox;
 		}
 		return this;
 	}
@@ -125,7 +131,9 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	* xUnit: The main teardown for ColdBox enabled applications after all tests execute
 	*/
 	function afterTests(){
-		structDelete( application, getColdboxAppKey() );
+		if( this.unLoadColdbox ){
+			structDelete( application, getColdboxAppKey() );
+		}
 	}
 
 	/**
