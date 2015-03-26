@@ -179,7 +179,7 @@ component accessors="true"{
 	* Get a list of all the objects in the temp flash scope
 	*/
 	string function getKeys(){
-		structKeyList( getScope() );
+		return structKeyList( getScope() );
 	}
 
 	/**

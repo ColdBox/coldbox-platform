@@ -1,6 +1,7 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseTestCase"{
+
 	this.loadColdBox = false;
+
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.AbstractFlashScope");
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
@@ -91,6 +92,20 @@
 		assertTrue( structKeyExists(testScope,"t3") );
 		assertTrue( structKeyExists(testScope,"t5") );
 	}
+
+	function testGetKeys(){
+		var testScope = {
+			t1 = {content=createUUID(),keep=true,autoPurge=true},
+			t2 = {content=createUUID(),keep=true,autoPurge=true},
+			t3 = {content=createUUID(),keep=true,autoPurge=false},
+			t4 = {content=createUUID(),keep=true,autoPurge=true},
+			t5 = {content=createUUID(),keep=true,autoPurge=false}
+		};
+		flash.$( "getScope", testScope );
+		
+		var r = flash.getKeys();
+		
+		assertTrue( listLen( r ) == 5 );
+	}
 	
-</cfscript>
-</cfcomponent>
+}
