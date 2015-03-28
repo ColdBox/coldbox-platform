@@ -10,6 +10,10 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdbox = false;	
 	
 	function setup(){
+		if( this.loadColdbox ) {
+			super.setup();
+		}
+
 		var md 		= getMetadata(this);
 		var mockBox = getMockBox();
 		
