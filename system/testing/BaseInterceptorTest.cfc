@@ -9,22 +9,28 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	this.loadColdbox = false;
 
+	/**
+	* Setup an interceptor to test
+	*/
 	function setup(){
 		var md 					= getMetadata( this );
 		var mockBox 			= getMockBox();
 		var applicationHelper  	= [];
+
+		// Load ColdBox?
+		if( this.loadColdBox ){ super.setup(); }
 
 		// Check for interceptor else throw exception
 		if( NOT structKeyExists( md, "interceptor" ) ){
 			throw( "interceptor annotation not found on component tag", "Please declare a 'interceptor=path' annotation", "BaseInterceptorTest.InvalidStateException" );
 		}
 		// Check for application helper
-		if( structKeyExists(md, "applicationHelper" ) ){
+		if( structKeyExists( md, "applicationHelper" ) ){
 			// inflate it, since it can't be an array in metadata
 			applicationHelper = listToArray( md.applicationHelper );
 		}
 		// Check if user setup interceptor properties on scope
-		if( NOT structKeyExists(variables,"configProperties" ) ){
+		if( NOT structKeyExists( variables, "configProperties" ) ){
 			variables.configProperties = structnew();
 		}
 
