@@ -1,6 +1,6 @@
 {
 	"name" 				: "ColdBox Platform",
-	"version"			: "4.1.0+@build.number@",
+	"version"			: "4.2.0+@build.number@",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "coldbox",
 	"packageDirectory"	: "coldbox",
