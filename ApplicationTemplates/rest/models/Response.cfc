@@ -27,9 +27,22 @@ component accessors="true" {
 	* Constructor
 	*/
 	Response function init(){
-		// Init complex properties
-		variables.messages 	= [];
-		variables.headers 	= [];
+		// Init properties
+		variables.format 			= "json";
+		variables.data 				= "";
+		variables.error 			= false;
+		variables.binary 			= false;
+		variables.messages 			= [];
+		variables.location 			= "";
+		variables.jsonCallBack 		= "";
+		variables.jsonQueryFormat 	= "query";
+		variables.contentType 		= "";
+		variables.statusCode 		= 200;
+		variables.statusText 		=  "OK";
+		variables.errorCode			= 0;
+		variables.responsetime		= 0;
+		variables.cachedResponse 	= false;
+		variables.headers 			= [];
 
 		return this;
 	}
