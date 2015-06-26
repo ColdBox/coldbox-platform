@@ -30,6 +30,8 @@ component accessors="true" {
 		// Init complex properties
 		variables.messages 	= [];
 		variables.headers 	= [];
+		variables.error 	= getError();
+		variables.errorCode 	= javaCast('int', getErrorCode());
 
 		return this;
 	}
