@@ -15,8 +15,8 @@
 	<property name="dir.build" 			value="${dir.exports}/coldbox" />
 	<!-- <property name="dir.dashboard"	    value="${dir.userlocation}/sites/cboxdev/core/dashboard" /> -->
 	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
-	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/coldbox.cfm?version=" />
-	<property name="dictionaries.http"	value="http://cf9cboxdev.jfetmac/coldbox/testing/tools/IDEDictionaries/" />
+	<property name="colddoc.http"		value="http://cf9tools.local/ColdDoc/coldbox.cfm?version=" />
+	<property name="dictionaries.http"	value="http://cf9cboxdev.local/coldbox/testing/tools/IDEDictionaries/" />
 		
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>

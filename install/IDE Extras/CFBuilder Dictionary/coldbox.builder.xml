@@ -2,7 +2,7 @@
 <dictionary>
 	<tags></tags>
 	<functions>
-<!-- Functions for: coldbox.system.Interceptor -->
+<!-- Functions for: wirebox.system.Interceptor -->
 	<function name="getProperty" returns="any">
 			<help><![CDATA[ Get an interceptor property (Context: Interceptor) ]]></help>
 		<parameter name="property" required="true" type="any">
@@ -132,7 +132,7 @@
 				<help><![CDATA[ The properties to init the Interceptor with ]]></help>
 			</parameter>
 			</function>
-<!-- Functions for: coldbox.system.EventHandler -->
+<!-- Functions for: wirebox.system.EventHandler -->
 	<function name="SETCACHEBOX" returns="coldbox.system.EventHandler">
 			<help><![CDATA[  (Context: EventHandler) ]]></help>
 		<parameter name="cachebox" required="YES" type="any">
@@ -208,7 +208,7 @@
 	<function name="GETCONTROLLER" returns="any">
 			<help><![CDATA[  (Context: EventHandler) ]]></help>
 		</function>
-<!-- Functions for: coldbox.system.FrameworkSupertype -->
+<!-- Functions for: wirebox.system.FrameworkSupertype -->
 	<function name="getPlugin" returns="any">
 			<help><![CDATA[ * REMOVE THE FOLLOWING: JUST LEFT UNTIL COMPLETELY REMOVED *** (Context: FrameworkSupertype) ]]></help>
 		</function>
@@ -654,22 +654,22 @@
 				<help><![CDATA[Put a map of name-value pairs into the flash scope]]></help>
 			</scopevar>
 	<scopevar name="SETPROPERTIES(properties)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: Flash Properties]]></help>
 			</scopevar>
 	<scopevar name="removeFlash()">
 				<help><![CDATA[Remove the entire flash storage]]></help>
 			</scopevar>
 	<scopevar name="SETCONTROLLER(controller)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: ColdBox Controller]]></help>
 			</scopevar>
 	<scopevar name="GETCONTROLLER()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: ColdBox Controller]]></help>
 			</scopevar>
 	<scopevar name="clear()">
 				<help><![CDATA[Clear the temp flash scope and remove all data]]></help>
 			</scopevar>
 	<scopevar name="SETDEFAULTS(defaults)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: Flash Defaults]]></help>
 			</scopevar>
 	<scopevar name="propertyExists(property)">
 				<help><![CDATA[Check a named property]]></help>
@@ -690,13 +690,13 @@
 				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
 			</scopevar>
 	<scopevar name="GETDEFAULTS()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: Flash Defaults]]></help>
 			</scopevar>
 	<scopevar name="getScope()">
 				<help><![CDATA[Get the flash temp request storage used throughout a request until flashed at the end of a request.]]></help>
 			</scopevar>
 	<scopevar name="GETPROPERTIES()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: Flash Properties]]></help>
 			</scopevar>
 	<scopevar name="get(name,[defaultValue])">
 				<help><![CDATA[Get an object from flash scope]]></help>
@@ -1167,7 +1167,7 @@
 				<help><![CDATA[Get the raw HTTP content]]></help>
 			</scopevar>
 	<scopevar name="GETCONTEXT()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The request context]]></help>
 			</scopevar>
 	<scopevar name="getFolderLayouts()">
 				<help><![CDATA[Get the registered folder layout associations map]]></help>
@@ -1209,10 +1209,10 @@
 				<help><![CDATA[Get the SES base URL for this request]]></help>
 			</scopevar>
 	<scopevar name="SETCONTROLLER(controller)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: ColdBox Controller]]></help>
 			</scopevar>
 	<scopevar name="GETPRIVATECONTEXT()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The private request context]]></help>
 			</scopevar>
 	<scopevar name="buildLink(linkTo,[translate],[ssl],[baseURL],[queryString])">
 				<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes]]></help>
@@ -1248,7 +1248,7 @@
 				<help><![CDATA[Render data with formats]]></help>
 			</scopevar>
 	<scopevar name="SETCONTEXT(context)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The request context]]></help>
 			</scopevar>
 	<scopevar name="isSES()">
 				<help><![CDATA[Is this request in SES mode]]></help>
@@ -1338,13 +1338,13 @@
 				<help><![CDATA[Get a value from the public or private request collection.]]></help>
 			</scopevar>
 	<scopevar name="SETPROPERTIES(properties)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: ColdBox System Properties]]></help>
 			</scopevar>
 	<scopevar name="clearCollection([private])">
 				<help><![CDATA[Clears the entire collection]]></help>
 			</scopevar>
 	<scopevar name="GETCONTROLLER()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: ColdBox Controller]]></help>
 			</scopevar>
 	<scopevar name="getPrivateSize()">
 				<help><![CDATA[Get the private collection Size]]></help>
@@ -1365,7 +1365,7 @@
 				<help><![CDATA[Gets the current action requested in the current event]]></help>
 			</scopevar>
 	<scopevar name="GETPROPERTIES()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: ColdBox System Properties]]></help>
 			</scopevar>
 	<scopevar name="getDefaultView()">
 				<help><![CDATA[Get's the default view of the application]]></help>
@@ -1383,7 +1383,7 @@
 				<help><![CDATA[Constructor]]></help>
 			</scopevar>
 	<scopevar name="SETPRIVATECONTEXT(privateContext)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The private request context]]></help>
 			</scopevar>
 	<scopevar name="isAjax()">
 				<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
@@ -1719,22 +1719,22 @@
 	<scopevar name="controller">
 		<help><![CDATA[***************************************************************************** Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* Manages a ColdBox application, dispatches events and acts as an overall front controller.]]></help>
 		<scopevar name="GETSERVICES()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: Container for all internal services (LinkedHashMap)]]></help>
 			</scopevar>
 	<scopevar name="SETCOLDBOXSETTINGS(coldboxSettings)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The internal ColdBox settings structure]]></help>
 			</scopevar>
 	<scopevar name="GETLOGBOX()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The reference to LogBox]]></help>
 			</scopevar>
 	<scopevar name="GETLOG()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The controller logger object]]></help>
 			</scopevar>
 	<scopevar name="SETSERVICES(services)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: Container for all internal services (LinkedHashMap)]]></help>
 			</scopevar>
 	<scopevar name="GETWIREBOX()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The reference to WireBox]]></help>
 			</scopevar>
 	<scopevar name="getDataMarshaller()">
 				<help><![CDATA[Get the system data marshaller, you can also retreive it from wirebox via dataMarshaller@coldbox]]></help>
@@ -1743,7 +1743,7 @@
 				<help><![CDATA[Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI]]></help>
 			</scopevar>
 	<scopevar name="GETCOLDBOXSETTINGS()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The internal ColdBox settings structure]]></help>
 			</scopevar>
 	<scopevar name="sendRelocation(URL,[addToken],[statusCode])">
 				<help><![CDATA[Send a CF relocation]]></help>
@@ -1752,16 +1752,16 @@
 				<help><![CDATA[Get the request service]]></help>
 			</scopevar>
 	<scopevar name="SETCONFIGSETTINGS(configSettings)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The application configuration settings structure]]></help>
 			</scopevar>
 	<scopevar name="SETCACHEBOX(cachebox)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The reference to CacheBox]]></help>
 			</scopevar>
 	<scopevar name="setSetting(name,value)">
 				<help><![CDATA[Set a value in the application configuration settings]]></help>
 			</scopevar>
 	<scopevar name="GETAPPROOTPATH()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: ColdBox application root path]]></help>
 			</scopevar>
 	<scopevar name="invoker(target,method,[argCollection],[private])">
 				<help><![CDATA[Invoke private/public event handler methods]]></help>
@@ -1773,7 +1773,7 @@
 				<help><![CDATA[Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
 			</scopevar>
 	<scopevar name="SETWIREBOX(wirebox)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The reference to WireBox]]></help>
 			</scopevar>
 	<scopevar name="getSettingStructure([fwSetting],[deepCopyFlag])">
 				<help><![CDATA[DEPRECATED: Convenience method to retrieve the config or coldbox settings.]]></help>
@@ -1782,16 +1782,16 @@
 				<help><![CDATA[Get the module service]]></help>
 			</scopevar>
 	<scopevar name="GETUTIL()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The system utility object]]></help>
 			</scopevar>
 	<scopevar name="loadColdBoxSettings()">
 				<help><![CDATA[Load the internal ColdBox settings]]></help>
 			</scopevar>
 	<scopevar name="GETCOLDBOXINITIATED()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: ColdBox initiation flag]]></help>
 			</scopevar>
 	<scopevar name="GETAPPHASH()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: ColdBox application unique hash key]]></help>
 			</scopevar>
 	<scopevar name="settingExists(name,[fwSetting])">
 				<help><![CDATA[Check if a value exists in a configuration structure]]></help>
@@ -1803,16 +1803,16 @@
 				<help><![CDATA[DEPRECATED]]></help>
 			</scopevar>
 	<scopevar name="SETUTIL(util)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The system utility object]]></help>
 			</scopevar>
 	<scopevar name="getMemento()">
 				<help><![CDATA[Get controller memento, used only by decorator only.]]></help>
 			</scopevar>
 	<scopevar name="GETCACHEBOX()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The reference to CacheBox]]></help>
 			</scopevar>
 	<scopevar name="SETCOLDBOXINITIATED(coldboxInitiated)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: ColdBox initiation flag]]></help>
 			</scopevar>
 	<scopevar name="getRenderer()">
 				<help><![CDATA[Get the system web renderer, you can also retreive it from wirebox via renderer@coldbox]]></help>
@@ -1821,13 +1821,13 @@
 				<help><![CDATA[Checks if an action can be executed according to inclusion/exclusion lists]]></help>
 			</scopevar>
 	<scopevar name="SETLOGBOX(logbox)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The reference to LogBox]]></help>
 			</scopevar>
 	<scopevar name="getLoaderService()">
 				<help><![CDATA[Get the loader service]]></help>
 			</scopevar>
 	<scopevar name="SETCFMLENGINE(CFMLEngine)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The CFML engine helper]]></help>
 			</scopevar>
 	<scopevar name="getCache(cacheName)">
 				<help><![CDATA[Get a Cache provider from CacheBox]]></help>
@@ -1836,31 +1836,31 @@
 				<help><![CDATA[Get a setting from a configuration structure]]></help>
 			</scopevar>
 	<scopevar name="SETAPPKEY(appKey)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: ColdBox application key]]></help>
 			</scopevar>
 	<scopevar name="getInterceptorService()">
 				<help><![CDATA[Get the interceptor service]]></help>
 			</scopevar>
 	<scopevar name="GETCONFIGSETTINGS()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The application configuration settings structure]]></help>
 			</scopevar>
 	<scopevar name="locateFilePath(pathToCheck)">
 				<help><![CDATA[Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
 			</scopevar>
 	<scopevar name="SETLOG(log)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: The controller logger object]]></help>
 			</scopevar>
 	<scopevar name="GETAPPKEY()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: ColdBox application key]]></help>
 			</scopevar>
 	<scopevar name="SETAPPROOTPATH(appRootPath)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: ColdBox application root path]]></help>
 			</scopevar>
 	<scopevar name="init(appRootPath,[appKey])">
 				<help><![CDATA[Constructor]]></help>
 			</scopevar>
 	<scopevar name="SETAPPHASH(appHash)">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[set: ColdBox application unique hash key]]></help>
 			</scopevar>
 	<scopevar name="_runEvent([event],[prePostExempt],[private],[defaultEvent],[eventArguments])">
 				<help><![CDATA[Executes events with full life-cycle methods and returns the event results if any were returned]]></help>
@@ -1869,7 +1869,7 @@
 				<help><![CDATA[Internal helper to flash persist elements]]></help>
 			</scopevar>
 	<scopevar name="GETCFMLENGINE()">
-				<help><![CDATA[']]></help>
+				<help><![CDATA[get: The CFML engine helper]]></help>
 			</scopevar>
 	<scopevar name="runEvent([event],[prePostExempt],[private],[defaultEvent],[eventArguments],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider])">
 				<help><![CDATA[Executes events with full life-cycle methods and returns the event results if any were returned.]]></help>
