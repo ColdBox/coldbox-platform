@@ -86,7 +86,7 @@ Description :
 				if( NOT listFindNoCase(event.getValue(name="cbox_assets",private=true),thisAsset) ){
 
 					// Load Asset
-					if( listLast(thisAsset,".") eq "js" ){
+					if( findNoCase(".js", thisAsset) ){
 						sb.append('<script src="#jsPath##thisAsset#" type="text/javascript"#asyncStr##deferStr#></script>');
 					}
 					else{
