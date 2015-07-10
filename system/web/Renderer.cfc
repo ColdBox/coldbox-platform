@@ -586,7 +586,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var moduleName 		 		= "";
 
 		// Explicit Module layout lookup?
-		if( len(arguments.module) and arguments.explicitModule NOT arguments.doLookups ){
+		if( len(arguments.module) and arguments.explicitModule AND NOT arguments.doLookups ){
 			return "#variables.modulesConfig[arguments.module].mapping#/#variables.modulesConfig[arguments.module].conventions.layoutsLocation#/#arguments.layout#";
 		}
 
