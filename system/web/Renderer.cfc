@@ -75,7 +75,10 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.viewsHelper				= variables.controller.getSetting( "viewsHelper" );
 		variables.isViewsHelperIncluded		= false;
 		variables.explicitView 				= "";
-
+		// added by tom@ebiz.uk
+		variables.explicitViewModule	= "";
+		variables.doLookups						= false;
+		variables.viewArgs = {};
 		// Verify View Helper Template extension + location
 		if( len( variables.viewsHelper ) ){
 			// extension detection
@@ -110,8 +113,17 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* set the explicit view bit, used mostly internally
 	* @view.hint The name of the view to render
 	*/
-	function setExplicitView( required view ){
-		explicitView = arguments.view;
+	function setExplicitView(
+		required view,
+		required module="",
+		required boolean doLookups=false,
+		required struct viewArgs={}
+	){
+		variables.explicitView = arguments.view;
+		// added by tom@ebiz.uk
+		variables.explicitViewModule = arguments.module;
+		variables.doLookups = arguments.doLookups;
+		variables.viewArgs = arguments.viewArgs;
 		return this;
 	}
 
@@ -131,6 +143,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* @collectionMaxRows.hint The max rows to iterate over the collection rendering with
 	* @collectionDelim.hint  A string to delimit the collection renderings by
 	* @prePostExempt.hint If true, pre/post view interceptors will not be fired. By default they do fire
+	* @doLookups.hint If true, conventions will be used even if module if explicitly defined
 	*/
 	function renderView(
 		view="",
@@ -146,7 +159,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		numeric collectionStartRow="1",
 		numeric collectionMaxRows=0,
 		collectionDelim="",
-		boolean prePostExempt=false
+		boolean prePostExempt=false,
+		boolean renderExplicitModuleView=true
 	){
 		var viewCacheKey 		= "";
 		var viewCacheEntry 		= "";
@@ -155,17 +169,28 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var explicitModule 		= false;
 		var viewLocations		= "";
 
+		if (structIsEmpty(arguments.args) AND NOT structIsEmpty(variables.viewArgs)) {
+			// is there arguments propagated from a layout+view combo?
+			arguments.args = variables.viewArgs;
+		}
+
 		// If no incoming explicit module call, default the value to the one in the request context for convenience
 		if( NOT len( arguments.module ) ){
-			// check for an explicit view module
-			arguments.module = event.getCurrentViewModule();
-			// if module is still empty check the event pattern
-			// if no module is execution, this will be empty anyways.
-			if( NOT len(arguments.module) ){
-				arguments.module = event.getCurrentModule();
+			if ( NOT len( variables.explicitViewModule ) ) {
+				// check for an explicit view module
+				arguments.module = event.getCurrentViewModule();
+				// if module is still empty check the event pattern
+				// if no module is execution, this will be empty anyways.
+				if( NOT len(arguments.module) ){
+					arguments.module = event.getCurrentModule();
+				}
+			} else {
+				// the below fix correct incorrect behaviour when adding viewModule to a layout+view combo
+				arguments.module = variables.explicitViewModule;
+				explicitModule = true;
 			}
 		} else {
-			explicitModule = true;
+			explicitModule = arguments.renderExplicitModuleView;
 		}
 
 		// Rendering an explicit view or do we need to get the view from the context or explicit context?
@@ -173,6 +198,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			// Rendering an explicit Renderer view/layout combo?
 			if( len( variables.explicitView ) ){
 				arguments.view = variables.explicitView;
+				// This propagates view convention view lookups when using a layout+view combo and moduleView argument
+				arguments.doLookups = variables.doLookups;
 				// clear the explicit view now that it has been used
 				setExplicitView( "" );
 			}
@@ -229,7 +256,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		// No caching, just render
 		// Discover and cache view/helper locations
-		viewLocations = discoverViewPaths( view=arguments.view, module=arguments.module, explicitModule=explicitModule );
+		viewLocations = discoverViewPaths( view=arguments.view, module=arguments.module, explicitModule=explicitModule, doLookups=arguments.doLookups );
 
 		// Render collection views
 		if( structKeyExists( arguments, "collection" ) ){
@@ -410,6 +437,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
 	* @viewModule.hint The module to explicitly render the view from
 	* @prePostExempt.hint If true, pre/post layout interceptors will not be fired. By default they do fire
+	* @doLookups.hint If true, conventions will be used even if module if explicitly defined
 	*/
 	function renderLayout(
 		layout,
@@ -417,7 +445,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		view="",
 		struct args=event.getCurrentViewArgs(),
 		viewModule="",
-		boolean prePostExempt=false
+		boolean prePostExempt=false,
+		boolean doLookups=false
 	){
 		var cbox_implicitLayout 	= implicitViewChecks();
 		var cbox_currentLayout 		= cbox_implicitLayout;
@@ -431,7 +460,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
 		if( len( trim( arguments.view ) ) AND arguments.view neq explicitView ){
 			return controller.getRenderer()
-				.setExplicitView( arguments.view )
+				.setExplicitView( arguments.view, arguments.viewModule, arguments.doLookups, arguments.args  )
 				.renderLayout( argumentCollection=arguments );
 		}
 
@@ -479,7 +508,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		}
 		else{
 			// Layout location key
-			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule;
+			cbox_layoutLocationKey = cbox_currentLayout & arguments.module & cbox_explicitModule & arguments.doLookups;
 
 			// Check cached paths first
 			if( structkeyExists( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey ) AND variables.isDiscoveryCaching ){
@@ -488,14 +517,15 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 				}
 			} else {
 				lock name="#cbox_layoutLocationKey#.#lockname#" type="exclusive" timeout="15" throwontimeout="true"{
-					cbox_layoutLocation = cbox_locateUDF( layout=cbox_currentLayout, module=arguments.module, explicitModule=cbox_explicitModule );
+					cbox_layoutLocation = cbox_locateUDF( layout=cbox_currentLayout, module=arguments.module, explicitModule=cbox_explicitModule, doLookups=arguments.doLookups );
 					structInsert( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey, cbox_layoutLocation, true);
 				}
 			}
 			// Get the view locations
 			var viewLocations = discoverViewPaths( view=reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ),
-												   module=arguments.module,
-												   explicitModule=cbox_explicitModule );
+												  module=arguments.module,
+												  explicitModule=cbox_explicitModule,
+													doLookups=arguments.doLookups );
 			// RenderLayout
 			iData.renderedLayout = renderViewComposite( view=cbox_currentLayout,
 														viewPath=viewLocations.viewPath,
@@ -547,7 +577,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	function locateModuleLayout(
 		required layout,
 		module="",
-		boolean explicitModule=false
+		boolean explicitModule=false,
+		boolean doLookups=false
 	){
 		var parentModuleLayoutPath 	= "";
 		var parentCommonLayoutPath 	= "";
@@ -555,7 +586,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var moduleName 		 		= "";
 
 		// Explicit Module layout lookup?
-		if( len(arguments.module) and arguments.explicitModule ){
+		if( len(arguments.module) and arguments.explicitModule NOT arguments.doLookups ){
 			return "#variables.modulesConfig[arguments.module].mapping#/#variables.modulesConfig[arguments.module].conventions.layoutsLocation#/#arguments.layout#";
 		}
 
@@ -625,7 +656,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	function locateModuleView(
 		required view,
 		module="",
-		boolean explicitModule=false
+		boolean explicitModule=false,
+		boolean doLookups=false
 	){
 		var parentModuleViewPath = "";
 		var parentCommonViewPath = "";
@@ -633,7 +665,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var moduleName     = "";
 
 		// Explicit Module view lookup?
-		if( len(arguments.module) and arguments.explicitModule){
+		if( len(arguments.module) and arguments.explicitModule AND NOT arguments.doLookups ){
 			return "#variables.modulesConfig[arguments.module].mapping#/#variables.modulesConfig[arguments.module].conventions.viewsLocation#/#arguments.view#";
 		}
 
@@ -686,8 +718,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* @module.hint The module address
 	* @explicitModule.hint Is the module explicit or discoverable.
 	*/
-	private function discoverViewPaths( required view, module, boolean explicitModule=false ){
-		var locationKey 	= arguments.view & arguments.module & arguments.explicitModule;
+	private function discoverViewPaths( required view, module, boolean explicitModule=false, boolean doLookups=false ){
+		var locationKey 	= arguments.view & arguments.module & arguments.explicitModule & arguments.doLookups;
 		var locationUDF 	= variables.locateView;
 		var dPath			= "";
 		var refMap			= "";
@@ -713,7 +745,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 			// Locate the view to render according to discovery algorithm and create cache map
 			refMap = {
-				viewPath = locationUDF( arguments.view, arguments.module, arguments.explicitModule ),
+				viewPath = locationUDF( arguments.view, arguments.module, arguments.explicitModule, arguments.doLookups; ),
 				viewHelperPath = ""
 			};
 
