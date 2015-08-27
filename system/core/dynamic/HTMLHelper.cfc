@@ -164,7 +164,7 @@ Description :
 		<cfargument name="queryString"	type="any"		required="false"		default="" hint="The query string to append, if needed.">
 		<cfargument name="title"	 	type="any" 		required="false" 	default="" hint="The title attribute"/>
 		<cfargument name="target"	 	type="any" 		required="false" 	default="" hint="The target of the href link"/>
-		<cfargument name="ssl" 			type="boolean" 	required="false" 	default="false" hint="If true, it will change http to https if found in the ses base url ONLY"/>
+		<cfargument name="ssl" 			type="boolean" 	required="false" 	hint="If true, it will change http to https if found in the ses base url ONLY. If false, it will change https to http."/>
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
@@ -178,7 +178,9 @@ Description :
 
 			// Check if we have a base URL and if we need to build our link
 			if( arguments.noBaseURL eq FALSE and NOT find("://",arguments.href)){
-				arguments.href = event.buildLink(linkto=arguments.href,ssl=arguments.ssl,queryString=arguments.queryString);
+				// Only pass along the ssl argument if it was passed as an argument to this function
+				if( IsDefined("arguments.ssl") ){ arguments.href = event.buildLink(linkto=arguments.href,ssl=arguments.ssl,queryString=arguments.queryString); }
+				else{ arguments.href = event.buildLink(linkto=arguments.href,queryString=arguments.queryString); }
 			}
 
 			// build link
@@ -555,7 +557,7 @@ Description :
 		<cfargument name="name" 		type="string" 	required="false" 	default="" hint="The name of the form tag"/>
 		<cfargument name="method" 		type="string" 	required="false" 	default="POST" 	hint="The HTTP method of the form: POST or GET"/>
 		<cfargument name="multipart" 	type="boolean" 	required="false" 	default="false"	hint="Set the multipart encoding type on the form"/>
-		<cfargument name="ssl" 			type="boolean" 	required="false" 	default="false" hint="If true, it will change http to https if found in the ses base url ONLY"/>
+		<cfargument name="ssl" 			type="boolean" 	required="false" 	hint="If true, it will change http to https if found in the ses base url ONLY. If false, it will change https to http."/>
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
@@ -569,7 +571,9 @@ Description :
 
 			// Check if we have a base URL and if we need to build our link
 			if( arguments.noBaseURL eq FALSE and NOT find("://",arguments.action)){
-				arguments.action = event.buildLink(linkto=arguments.action,ssl=arguments.ssl);
+				// Only pass along the ssl argument if it was passed as an argument to this function
+				if( IsDefined("arguments.ssl") ){ arguments.action = event.buildLink(linkto=arguments.action,ssl=arguments.ssl); }
+				else{ arguments.action = event.buildLink(linkto=arguments.action); }
 			}
 
 			// ID Normalization
