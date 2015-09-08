@@ -7,7 +7,7 @@
 	"packageDirectory"	: "logbox",
 	"keywords"			: "logging, messaging",
 	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "http://logbox.ortusbooks.com",
+	"documentation"		: "http://wiki.coldbox.org",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/LOGBOX",
 	"shortDescription"	: "LogBox is an enterprise ColdFusion logging library designed to give you flexibility and scalability.",

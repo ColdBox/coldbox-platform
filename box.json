@@ -7,7 +7,7 @@
 	"type"				: "mvc",
 	"keywords"			: "mvc,conventions,coldbox",
 	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "http://coldbox.ortusbooks.com/",
+	"documentation"		: "http://wiki.coldbox.org",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/COLDBOX",
 	"shortDescription"	: "A conventions based MVC development framework",

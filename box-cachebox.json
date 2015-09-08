@@ -7,7 +7,7 @@
 	"packageDirectory"	: "cachebox",
 	"keywords"			: "caching,aggregator,cache",
 	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "http://cachebox.ortusbooks.com",
+	"documentation"		: "http://wiki.coldbox.org",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/CACHEBOX",
 	"shortDescription"	: " CacheBox is an enterprise caching engine, aggregator and API for ColdFusion applications. ",
