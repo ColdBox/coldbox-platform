@@ -168,21 +168,31 @@ Description :
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer 	= createObject("java","java.lang.StringBuffer").init("<a");
+			var buffer 	= createObject( "java", "java.lang.StringBuffer" ).init( "<a" );
 			var event	= controller.getRequestService().getContext();
 
 			// self-link?
-			if(NOT len(arguments.href) ){
+			if( NOT len( arguments.href ) ){
 				arguments.href = event.getCurrentEvent();
 			}
 
 			// Check if we have a base URL and if we need to build our link
-			if( arguments.noBaseURL eq FALSE and NOT find("://",arguments.href)){
-				arguments.href = event.buildLink(linkto=arguments.href,ssl=arguments.ssl,queryString=arguments.queryString);
+			if( arguments.noBaseURL eq FALSE and NOT find( "://", arguments.href ) ){
+				// Verify SSL Bit
+				if( structKeyExists( arguments, "ssl" ) ){ 
+					arguments.href = event.buildLink(
+						linkto 		= arguments.href,
+						ssl			= arguments.ssl,
+						queryString = arguments.queryString
+					); 
+				} else { 
+					arguments.href = event.buildLink( linkto=arguments.action, queryString=arguments.queryString ); 
+				}
 			}
 
 			// build link
-			flattenAttributes(arguments,"noBaseURL,text,querystring,ssl",buffer).append('>#arguments.text#</a>');
+			flattenAttributes( arguments, "noBaseURL,text,querystring,ssl", buffer )
+				.append( '>#arguments.text#</a>' );
 
 			return buffer.toString();
 		</cfscript>
@@ -555,32 +565,41 @@ Description :
 		<cfargument name="name" 		type="string" 	required="false" 	default="" hint="The name of the form tag"/>
 		<cfargument name="method" 		type="string" 	required="false" 	default="POST" 	hint="The HTTP method of the form: POST or GET"/>
 		<cfargument name="multipart" 	type="boolean" 	required="false" 	default="false"	hint="Set the multipart encoding type on the form"/>
-		<cfargument name="ssl" 			type="boolean" 	required="false" 	default="false" hint="If true, it will change http to https if found in the ses base url ONLY"/>
+		<cfargument name="ssl" 			type="boolean" 	required="false" 	hint="If true, it will change http to https if found in the ses base url ONLY, false will remove SSL"/>
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var formBuffer	= createObject("java","java.lang.StringBuffer").init("<form");
+			var formBuffer	= createObject( "java", "java.lang.StringBuffer" ).init( "<form" );
 			var event 		= controller.getRequestService().getContext();
 
 			// self-submitting?
-			if(NOT len(arguments.action) ){
+			if( NOT len( arguments.action ) ){
 				arguments.action = event.getCurrentEvent();
 			}
 
 			// Check if we have a base URL and if we need to build our link
-			if( arguments.noBaseURL eq FALSE and NOT find("://",arguments.action)){
-				arguments.action = event.buildLink(linkto=arguments.action,ssl=arguments.ssl);
+			if( arguments.noBaseURL eq FALSE and NOT find( "://", arguments.action ) ){
+				// Verify SSL Bit
+				if( structKeyExists( arguments, "ssl" ) ){ 
+					arguments.action = event.buildLink(
+						linkto 		= arguments.action,
+						ssl			= arguments.ssl
+					); 
+				} else { 
+					arguments.action = event.buildLink( linkto=arguments.action ); 
+				}
 			}
 
 			// ID Normalization
-			normalizeID(arguments);
+			normalizeID( arguments );
 
 			// Multipart Encoding Type
 			if( arguments.multipart ){ arguments.enctype = "multipart/form-data"; }
 			else{ arguments.enctype = "";}
 
 			// create tag
-			flattenAttributes(arguments,"noBaseURL,ssl,multipart",formBuffer).append(">");
+			flattenAttributes( arguments, "noBaseURL,ssl,multipart", formBuffer )
+				.append( ">" );
 
 			return formBuffer.toString();
 		</cfscript>

@@ -797,49 +797,46 @@ component serializable=false accessors="true"{
 		baseURL="",
 		queryString=""
 	){
-		var sesBaseURL = getSESbaseURL();
+		var sesBaseURL 		= getSESbaseURL();
 		var frontController = "index.cfm";
 
 		/* baseURL */
-		if( len(trim(arguments.baseURL)) neq 0 ){
+		if( len( trim( arguments.baseURL ) ) neq 0 ){
 			frontController = arguments.baseURL;
 		}
 
 		if( isSES() ){
 			/* SSL ON OR TURN IT ON */
 			if( isSSL() OR ( structKeyExists( arguments, "ssl" ) and arguments.ssl ) ){
-				sesBaseURL = replacenocase(sesBaseURL,"http:","https:");
+				sesBaseURL = replacenocase( sesBaseURL, "http:", "https:" );
 			}
 			// SSL Turn Off
 			if( structKeyExists( arguments, "ssl" ) and arguments.ssl eq false ){
-				sesBaseURL = replacenocase(sesBaseURL,"https:","http:");
+				sesBaseURL = replacenocase( sesBaseURL,"https:","http:" );
 			}
 			/* Translate link */
 			if( arguments.translate ){
-				arguments.linkto = replace(arguments.linkto,".","/","all");
+				arguments.linkto = replace( arguments.linkto, ".", "/", "all" );
 			}
 			/* Query String Append */
-			if ( len(trim(arguments.queryString)) ){
-				if (right(arguments.queryString,1) neq  "/") {
+			if( len( trim( arguments.queryString ) ) ){
+				if( right( arguments.queryString, 1 ) neq  "/" ){
 					arguments.linkto = arguments.linkto & "/";
 				}
-				arguments.linkto = arguments.linkto & replace(arguments.queryString,"&","/","all");
-				arguments.linkto = replace(arguments.linkto,"=","/","all");
+				arguments.linkto = arguments.linkto & replace( arguments.queryString, "&", "/", "all" );
+				arguments.linkto = replace( arguments.linkto, "=", "/", "all" );
 			}
 			/* Prepare link */
-			if( right(sesBaseURL,1) eq  "/"){
+			if( right( sesBaseURL, 1 ) eq  "/" ){
 				return sesBaseURL & arguments.linkto;
-			}
-			else{
+			} else {
 				return sesBaseURL & "/" & arguments.linkto;
 			}
-		}
-		else{
+		} else {
 			/* Check if sending in QUery String */
-			if( len(trim(arguments.queryString)) eq 0 ){
+			if( len( trim( arguments.queryString ) ) eq 0 ){
 				return "#frontController#?#getEventName()#=#arguments.linkto#";
-			}
-			else{
+			} else {
 				return "#frontController#?#getEventName()#=#arguments.linkto#&#arguments.queryString#";
 			}
 		}
