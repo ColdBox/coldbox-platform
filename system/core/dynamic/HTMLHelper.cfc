@@ -374,11 +374,11 @@ Description :
 		<cfargument name="type" type="string" required="false" default="html5" hint="The doctype to generate, we default to HTML 5"/>
 		<cfscript>
 			switch( arguments.type ){
+				case 'html5'		 : { return '<!DOCTYPE html>'; }
 				case 'xhtml11' 		 : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'; }
 				case 'xhtml1-strict' : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'; }
 				case 'xhtml1-trans'  : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'; }
 				case 'xhtml1-frame'	 : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">'; }
-				case 'html5'		 : default : { return '<!DOCTYPE html>'; }
 				case 'html4-strict'	 : { return '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">'; }
 				case 'html4-trans'	 : { return '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">'; }
 				case 'html4-frame'	 : { return '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">'; }
