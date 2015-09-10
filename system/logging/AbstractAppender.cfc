@@ -167,13 +167,11 @@ Description :
 		<cfscript>
 			loc={min=getLevelMin(),max=getLevelMax(),level=arguments.level};
 			keys=StructKeyList(loc);
-			try {
-				for (i=1;i<=ListLen(keys);i++) { // force integers regardless of config value and parameter value, such that logic does not fail
-					key=ListGetAt(keys,i);
-					if (!isNumeric(loc[key])) loc[key]=this.logLevels.lookupAsInt(loc[key]);
-				}
-				return (loc.level >= loc.min && loc.level <= loc.max );
-			} catch(Any e) {return false;} // in case user supplies a struct or other erroneous value.
+			for (i=1;i<=ListLen(keys);i++) { // force integers regardless of config value and parameter value, such that logic does not fail
+				key=ListGetAt(keys,i);
+				if (!isNumeric(loc[key])) loc[key]=this.logLevels.lookupAsInt(loc[key]);
+			}
+			return (loc.level >= loc.min && loc.level <= loc.max );
 		</cfscript>
 	</cffunction>
 
