@@ -163,9 +163,16 @@ Description :
 
 	<!--- canLog --->
 	<cffunction name="canLog" output="false" access="public" returntype="any" hint="Checks wether a log can be made on this appender using a passed in level" colddoc:generic="Boolean">
-		<cfargument name="level" required="true" hint="The level to check if it can be logged in this Appender" colddoc:generic="numeric"/>
+		<cfargument name="level" required="true" hint="The level to check if it can be logged in this Appender" colddoc:generic="text"/>
 		<cfscript>
-			return (arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
+			LOCAL.values={min=getLevelMin(),max=getLevelMax(),level=arguments.level};
+			LOCAL.keys=StructKeyList(LOCAL.values);
+			LOCAL.i=1;
+			for (;LOCAL.i<=ListLen(LOCAL.keys);LOCAL.i++) { // force integers regardless of config value and parameter value, such that logic does not fail
+				LOCAL.key=ListGetAt(LOCAL.keys,LOCAL.i);
+				if (!isNumeric(LOCAL.values[LOCAL.key])) LOCAL.values[LOCAL.key]=this.logLevels.lookupAsInt(LOCAL.values[LOCAL.key]);
+			}
+			return (LOCAL.values.level >= LOCAL.values.min && LOCAL.values.level <= LOCAL.values.max );
 		</cfscript>
 	</cffunction>
 
