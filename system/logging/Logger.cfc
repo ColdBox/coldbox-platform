@@ -26,7 +26,7 @@ Description :
 		instance.appenders 		= "";
 		instance.lockName 		= instance._hash & "LoggerOperation";
 		instance.lockTimeout 	= 20;
-		
+
 		// Logger Logging Level defaults, which is wideeeee open!
 		instance.levelMin 		= this.logLevels.FATAL;
 		instance.levelMax 		= this.logLevels.DEBUG;
@@ -323,8 +323,8 @@ Description :
 					thisAppender = appenders[ key ];
 					// Log the message in the appender if the appender allows it
 					if( thisAppender.canLog( arguments.severity ) ){
-						
-						// check to see if the async property was passed during definition 
+
+						// check to see if the async property was passed during definition
 						if( thisAppender.propertyExists( 'async' ) && thisAppender.getProperty( 'async' ) ) {
 							// prepare threading variables.
 							var threadName 	= "logMessage_#replace( createUUID(), "-", "", "all" )#";
@@ -350,7 +350,13 @@ Description :
 	<cffunction name="canLog" output="false" access="public" returntype="any" hint="Checks wether a log can be made on this Logger using a passed in level" colddoc:generic="Boolean">
 		<cfargument name="level" required="true" hint="The level to check if it can be logged in this Logger" colddoc:generic="numeric"/>
 		<cfscript>
-			return (arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
+			// If numeric, do a comparison immediately.
+			if( isNumeric( arguments.level ) ){
+				return ( arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
+			}
+			// Else it is a string
+			var targetLevel = this.LogLevels.lookupAsInt( arguments.level );
+			return ( canLog( targetLevel ) );
 		</cfscript>
 	</cffunction>
 
