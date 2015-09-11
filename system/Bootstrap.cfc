@@ -1,7 +1,7 @@
 ﻿/**
 *********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+* www.ortussolutions.com
 ********************************************************************************
 * Loads the framwork into memory and provides a ColdBox application.
 * @author Luis Majano <lmajano@ortussolutions.com>

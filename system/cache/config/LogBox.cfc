@@ -1,6 +1,6 @@
 ﻿/********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+* www.ortussolutions.com
 ********************************************************************************
 The logging configuration object for CacheBox Standalone version.
 You can make changes here to determine how CacheBox logs information.  For more

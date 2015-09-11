@@ -1,62 +1,52 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
+* Console Appender
+*/
+component extends="coldbox.system.logging.AbstractAppender"{
 
-Author     :	Luis Majano
-Date        :	04/12/2009
-Description :
-	A simple ConsoleAppender
-	
-Properties:
-- none
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
-			 output="false"
-			 hint="A simple Console Appender">
-	
-	<!--- Init --->
-	<cffunction name="init" access="public" returntype="ConsoleAppender" hint="Constructor" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="name" 		required="true" hint="The unique name for this appender."/>
-		<cfargument name="properties" 	required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
-		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			// Init supertype
-			super.init(argumentCollection=arguments);
-			
-			instance.out = createObject("java","java.lang.System").out;
-						
-			return this;
-		</cfscript>
-	</cffunction>	
-	
-	<!--- Log Message --->
-	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender.">
-		<!--- ************************************************************* --->
-		<cfargument name="logEvent" type="any" required="true" hint="The logging event"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var loge = arguments.logEvent;
-			var entry = "";
-			
-			if( hasCustomLayout() ){
-				entry = getCustomLayout().format(loge);
-			}
-			else{
-				entry = "#severityToString(loge.getseverity())# #loge.getCategory()# #loge.getmessage()# ExtraInfo: #loge.getextraInfoAsString()#";
-			}
-			
-			// Log message
-			instance.out.println(entry);
-		</cfscript>			   
-	</cffunction>
-	
-<!------------------------------------------- PRIVATE ------------------------------------------>
-	
-	
-</cfcomponent>
+	/**
+	* Constructor
+	*
+	* @name        The unique name for this appender.
+	* @properties  A map of configuration properties for the appender.
+	* @layout      The layout class to use in this appender for custom message rendering.
+	* @levelMin    The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	* @levelMax    The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN
+	*/
+	public ConsoleAppender function init(
+	  	required string name,
+		struct properties = {},
+		string layout     = "",
+		string levelMin   = 0,
+		string levelMax   = 4 
+	){
+		super.init( argumentCollection=arguments );
+		instance.out = createObject( "java", "java.lang.System" ).out;
+    	return this;
+	}
+
+	/**
+	* Write entry into the appender
+	*
+	* @logEvent The logging event.
+	*/
+	public void function logMessage( required any logEvent ) {
+		if( hasCustomLayout() ){
+		  var entry = getCustomLayout().format( logEvent );
+		} else {
+		  var entry = severityToString( logEvent.getseverity() ) & " " &
+		  	logEvent.getCategory() & " " &
+		  	logEvent.getmessage() & " ExtraInfo: " &
+		  	logEvent.getextraInfoAsString();
+		}
+		
+		// log message
+		instance.out.println( entry );
+		
+		return;
+	}
+
+}
