@@ -7,7 +7,7 @@
 	"type"				: "mvc",
 	"keywords"			: "mvc,conventions,coldbox",
 	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "http://wiki.coldbox.org",
+	"documentation"		: "http://coldbox.ortusbooks.com/",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/COLDBOX",
 	"shortDescription"	: "A conventions based MVC development framework",
@@ -16,8 +16,8 @@
 		{ "type" : "adobe", "version" : ">9.0.2" },
 		{ "type" : "lucee", "version" : ">4.5" }
 	],
-	"license"			: [ 
-		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" } 
+	"license"			: [
+		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" }
 	],
 	"contributors"		: [
 		"Brad Wood <bdw429s@gmail.com>", "Curt Gratz <gratz@computerknowhow.com>"
