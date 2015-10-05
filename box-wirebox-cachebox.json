@@ -7,7 +7,7 @@
 	"packageDirectory"	: "wirebox",
 	"keywords"			: "di,aop,dependeny injection,ioc,caching",
 	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "http://wiki.coldbox.org",
+	"documentation"		: "http://wirebox.ortusbooks.com",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/WIREBOX",
 	"shortDescription"	: "AOP and Dependency Injection Framework with CacheBox Included",
