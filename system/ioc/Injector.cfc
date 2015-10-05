@@ -312,7 +312,7 @@ Description :
 					}
 					else{
 						closure = thisMap.getPath();
-						oModel = closure();
+						oModel = closure( injector = this );
 					}
 					break;
 				}
