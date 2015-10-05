@@ -552,9 +552,14 @@ Description :
 		<cfset var iData	 	= "">
 		<cfset var eventManager	= arguments.injector.getEventManager()>
 		<cfset var cacheProperties = {}>
+		<cfif isSimpleValue( instance.path ) >
+			<cfset var lockToken  = instance.path>
+		<cfelse>
+			<cfset var lockToken = createUUID()>
+		</cfif>
 
 		<!--- Lock for discovery based on path location, only done once per instance of mapping. --->
-		<cflock name="Mapping.#arguments.injector.getInjectorID()#.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
+		<cflock name="Mapping.#arguments.injector.getInjectorID()#.MetadataProcessing.#lockToken#" type="exclusive" timeout="20" throwOnTimeout="true">
 		<cfscript>
 	    	if( NOT instance.discovered ){
 				// announce inspection
