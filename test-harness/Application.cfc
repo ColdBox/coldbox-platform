@@ -11,9 +11,6 @@ component{
 	this.sessionTimeout = createTimeSpan(0,0,30,0);
 	this.setClientCookies = true;
 
-	// Mappings Imports
-	import coldbox.system.*;
-
 	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
 	COLDBOX_APP_ROOT_PATH = getDirectoryFromPath( getCurrentTemplatePath() );
 	// The web server mapping to this application. Used for remote purposes or static purposes
@@ -27,7 +24,11 @@ component{
 	this.javaSettings = { loadPaths = [ "lib" ], reloadOnChange = false };
 
 	// Mappings
-	this.mappings[ "/cbtestharness" ] = COLDBOX_APP_ROOT_PATH;
+	rootPath = REReplaceNoCase( COLDBOX_APP_ROOT_PATH, "test-harness(\\|/)", "" );
+	// ColdBox Root path
+	this.mappings[ "/coldbox" ] 		= rootPath;
+	// Test Harness Path
+	this.mappings[ "/cbtestharness" ] 	= COLDBOX_APP_ROOT_PATH;
 
 	// ORM Settings
     this.ormEnabled 	  = true;
