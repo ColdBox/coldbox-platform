@@ -6,7 +6,7 @@ www.ortussolutions.com
 */
 component{
 
-	this.name = "ColdBox Testing Harness" & hash(getCurrentTemplatePath());
+	this.name = "ColdBox Testing Harness" & hash( getCurrentTemplatePath() );
 	this.sessionManagement = true;
 	this.setClientCookies = true;
 	this.clientManagement = true;
@@ -17,6 +17,8 @@ component{
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 	// setup root path
 	rootPath = REReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)", "" );
+	// ColdBox Root path
+	this.mappings[ "/coldbox" ] 		= rootPath;
 	// harness path
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
@@ -24,11 +26,11 @@ component{
     this.ormEnabled 	  = true;
     this.datasource		  = "coolblog";
     this.ormSettings	  = {
-    	cfclocation = "/cbtestharness/models/entities",
-    	logSQL 		= false,
-    	flushAtRequestEnd = false,
-    	autoManageSession = false,
-    	eventHandling 	  =  false
+    	cfclocation 		= "/cbtestharness/models/entities",
+    	logSQL 				= false,
+    	flushAtRequestEnd 	= false,
+    	autoManageSession 	= false,
+    	eventHandling 	  	=  false
     };
 
 	function onRequestStart( required targetPage ){
