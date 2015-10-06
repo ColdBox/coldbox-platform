@@ -615,6 +615,16 @@
 		assertfalse( len(mapping.getThreadSafe()) );
 	}
 
+	function testInfluenceClosure(){
+		config.map("brad")
+			.toValue( 'wood' )
+			.withInfluence( function() {
+			return reverse( instance ); 
+		});
+		mapping = config.getMapping("brad");
+		assertFalse( isSimpleValue( mapping.getInfluenceClosure() ) );
+	}
+
 	function testUnMap(){
 		config.map("MyService");
 		mapping = config.getMapping("MyService");

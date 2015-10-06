@@ -620,6 +620,15 @@ Description :
 		</cfscript>
     </cffunction>
 
+    <!--- withInfluence --->
+    <cffunction name="withInfluence" output="false" access="public" returntype="any" hint="This is a closure that will be able to influence the creation of the instance">
+    	<cfargument name="influenceClosure" type="any">
+    	<cfscript>
+			currentMapping.setInfluenceClosure( arguments.influenceClosure );
+    		return this;
+		</cfscript>
+    </cffunction>
+
 	<!--- extraAttributes --->
     <cffunction name="extraAttributes" output="false" access="public" returntype="any" hint="Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.">
     	<cfargument name="data" type="struct" required="true" hint="The data structure to store with the maping"/>
