@@ -1,23 +1,41 @@
 ﻿/**
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
 ********************************************************************************
-Author 	 :	Luis Majano
-Description :
-	I model a ColdBox Event Handler
+* I model a ColdBox Event Handler
 */
 component accessors="true"{ 
 
+	/**
+	* Invocation path
+	*/
 	property name="invocationPath";
+	/**
+	* The handler to execute
+	*/
 	property name="handler";
+	/**
+	* The method to execute
+	*/
 	property name="method";
+	/**
+	* The module assignment
+	*/
 	property name="module";
+	/**
+	* Missing action method
+	*/
 	property name="missingAction";
+	/**
+	* Private execution
+	*/
 	property name="isPrivate" 		type="boolean";
+	/**
+	* View dispatching
+	*/
 	property name="viewDispatch" 	type="boolean";
 	
-
 	/************************************** CONSTRUCTOR *********************************************/	
 
 	/**
