@@ -117,6 +117,16 @@ Description :
 		// Implicit properties
 		map("implicitTest").to("#modelPath#.ioc.ImplicitTest").setter(name="testProperty",value=123);
 
+		 
+		map("closureProvider").toProvider( function(){ 
+			return 'closureProviderInstance';
+		} );
+				 
+		map( 'instanceWithInfluence' )
+			.toValue( '123' )
+			.withInfluence( function() { 
+				return reverse( instance );
+			});
 
 	}
 </cfscript>
