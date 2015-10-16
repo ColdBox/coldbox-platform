@@ -1,39 +1,40 @@
-﻿<!-----------------------------------------------------------------------
+/** 
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Date        :	11/14/2007
+* Description :
+* 	This is a FIFO eviction Policy meaning that the first object placed on cache
+*	will be the first one to come out.
+*
+* More information can be found here:
+* http://en.wikipedia.org/wiki/FIFO
+* 
+* @author Luis Majano <lmajano@ortussolutions.com>
+*/
 
-Author     :	Luis Majano
-Date        :	11/14/2007
-Description :
-	This is a FIFO eviction Policy meaning that the first object placed on cache
-	will be the first one to come out.
+component output="false" extends="coldbox.system.cache.policies.AbstractEvictionPolicy" {
 
-More information can be found here:
-http://en.wikipedia.org/wiki/FIFO
------------------------------------------------------------------------>
-<cfcomponent output="false" 
-			 hint="FIFO Eviction Policy Command" 
-			 extends="coldbox.system.cache.policies.AbstractEvictionPolicy">
+	/** 
+	* Constructor
+	* @controller.hint FIFO Eviction Policy Command
+	* @cacheProvider.hint The associated cache provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider
+	*/
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	public FIFO function init ( required any cacheProvider  ) output="false" {
 
-	<!--- init --->
-	<cffunction name="init" output="false" access="public" returntype="FIFO" hint="Constructor">
-		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
-		<cfscript>
-			super.init(arguments.cacheProvider);
-			
-			return this;
-		</cfscript>
-	</cffunction>
+		super.init(arguments.cacheProvider);
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+		return this;
+	}
 
-	<!--- execute --->
-	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the policy">
-		<cfscript>
+//------------------------------------------- PUBLIC -------------------------------------------
+
+	/**
+	* Execute the policy
+	*/
+
+	public void function execute () output="false" {
 			var index 		= "";
 			
 			// Get searchable index
@@ -45,10 +46,9 @@ http://en.wikipedia.org/wiki/FIFO
 			catch(Any e){
 				getLogger().error("Error sorting via store indexer #e.message# #e.detail# #e.stackTrace#.");
 			}	
-		</cfscript>
-	</cffunction>
+	}
 
-<!------------------------------------------- PRIVATE ------------------------------------------->
+//------------------------------------------- PRIVATE --------------------------------------------
 
-
-</cfcomponent>
+}
+	
