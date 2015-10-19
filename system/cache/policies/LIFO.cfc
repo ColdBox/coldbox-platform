@@ -17,7 +17,7 @@ component extends="coldbox.system.cache.policies.AbstractEvictionPolicy"{
 	* This is the constructor
 	* @cacheProvider The associated cache provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider
 	*/
-	LIFO public function init( required any cacheProvider ){
+ 	public LIFO function init( required any cacheProvider ){
 		super.init( arguments.cacheProvider );
 			
 		return this;
@@ -26,12 +26,15 @@ component extends="coldbox.system.cache.policies.AbstractEvictionPolicy"{
 	/** 
 	* Execute the policy
 	*/
-	void public function execute(){
+	public void function execute(){
 		var index = "";
 		
 		// Get searchable index
 		try{
-			index = getAssociatedCache().getObjectStore().getIndexer().getSortedKeys( "Created", "numeric", "desc" );
+			index = getAssociatedCache()
+				.getObjectStore()
+				.getIndexer()
+				.getSortedKeys( "Created", "numeric", "desc" );
 			// process evictions
 			processEvictions( index );
 		} catch( Any e ) {

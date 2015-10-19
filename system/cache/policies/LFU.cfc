@@ -8,13 +8,11 @@
 * More information can be found here:
 * http://en.wikipedia.org/wiki/Least_Frequently_Used
 */
-component
-	name = "LFU"
-	extends = "coldbox.system.cache.policies.AbstractEvictionPolicy"{
+component extends = "coldbox.system.cache.policies.AbstractEvictionPolicy"{
 
 	/**
 	* Constructor
-	* @cacheprovider The associated cache provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider
+	* @cacheProvider The associated cache provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider
 	*/
 	public LFU function init( required any cacheProvider ){
 		super.init( arguments.cacheProvider );
