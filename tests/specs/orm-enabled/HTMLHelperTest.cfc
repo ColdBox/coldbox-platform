@@ -150,8 +150,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 	function testDocType(){
 		str = model.docType();
-
-		assertEquals('<!DOCTYPE html>',str);
+		assertEquals( '<!DOCTYPE html>', str );
 	}
 
 	function testtag(){

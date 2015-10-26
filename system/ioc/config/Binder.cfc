@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 
 Author     :	Luis Majano
@@ -616,6 +616,15 @@ Description :
     <cffunction name="notThreadSafe" output="false" access="public" returntype="any" hint="This is the default wiring of objects that allow circular dependencies.  By default all object's constructors are the only thread safe areas">
     	<cfscript>
 			currentMapping.setThreadSafe( false );
+    		return this;
+		</cfscript>
+    </cffunction>
+
+    <!--- withInfluence --->
+    <cffunction name="withInfluence" output="false" access="public" returntype="any" hint="This is a closure that will be able to influence the creation of the instance">
+    	<cfargument name="influenceClosure" type="any">
+    	<cfscript>
+			currentMapping.setInfluenceClosure( arguments.influenceClosure );
     		return this;
 		</cfscript>
     </cffunction>

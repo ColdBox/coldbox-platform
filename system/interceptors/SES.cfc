@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 
 Author     :	Luis Majano
@@ -106,16 +106,16 @@ Description :
 
 			// Check for invalid URLs if in strict mode via unique URLs
 			if( instance.uniqueURLs ){
-				checkForInvalidURL( cleanedPaths["pathInfo"] , cleanedPaths["scriptName"], arguments.event );
+				checkForInvalidURL( cleanedPaths[ "pathInfo" ] , cleanedPaths[ "scriptName" ], arguments.event );
 			}
 
 			// Extension detection if enabled, so we can do cool extension formats
 			if( instance.extensionDetection ){
-				cleanedPaths["pathInfo"] = detectExtension( cleanedPaths["pathInfo"], arguments.event );
+				cleanedPaths[ "pathInfo" ] = detectExtension( cleanedPaths[ "pathInfo" ], arguments.event );
 			}
 
 			// Find a route to dispatch
-			aRoute = findRoute(action=cleanedPaths["pathInfo"],event=arguments.event);
+			aRoute = findRoute(action=cleanedPaths[ "pathInfo" ],event=arguments.event);
 
 			// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 			for( key in aRoute ){
@@ -791,11 +791,10 @@ Description :
 		<cfscript>
 			// Allow a UDF to manipulate the CGI.PATH_INFO value
 			// in advance of route detection.
-			if (arguments.cgielement EQ 'path_info' AND structKeyExists(variables, 'PathInfoProvider'))
-			{
-				return PathInfoProvider(event=arguments.Event);
+			if( arguments.cgielement EQ 'path_info' AND structKeyExists( variables, 'PathInfoProvider' ) ){
+				return PathInfoProvider( event=arguments.Event );
 			}
-			return CGI[arguments.CGIElement];
+			return CGI[ arguments.CGIElement ];
 		</cfscript>
 	</cffunction>
 
@@ -989,17 +988,17 @@ Description :
 			var x = 1;
 
 			// Find a Matching position of IIS ?
-			varMatch = REFind("\?.*=",arguments.requestString,1,"TRUE");
-			if( varMatch.pos[1] ){
+			varMatch = REFind( "\?.*=", arguments.requestString, 1, "TRUE" );
+			if( varMatch.pos[ 1 ] ){
 				// Copy values to the RC
-				qsValues = REreplacenocase(arguments.requestString,"^.*\?","","all");
+				qsValues = REreplacenocase( arguments.requestString, "^.*\?", "", "all" );
 				// loop and create
-				for(x=1; x lte listLen(qsValues,"&"); x=x+1){
-					qsVal = listGetAt(qsValues,x,"&");
-					arguments.rc[listFirst(qsVal,"=")] = listLast(qsVal,"=");
+				for( x=1; x lte listLen( qsValues, "&" ); x=x+1 ){
+					qsVal = listGetAt( qsValues, x, "&" );
+					arguments.rc[ listFirst( qsVal, "=" ) ] = listLast( qsVal, "=" );
 				}
 				// Clean the request string
-				arguments.requestString = Mid(arguments.requestString, 1, (varMatch.pos[1]-1));
+				arguments.requestString = Mid( arguments.requestString, 1, ( varMatch.pos[ 1 ] -1 ) );
 			}
 
 			return arguments.requestString;
@@ -1227,27 +1226,28 @@ Description :
 			var items = structnew();
 
 			// Get path_info & script name
-			items["pathInfo"] 	= getCGIElement('path_info',arguments.event);
-			items["scriptName"] = trim( reReplacenocase(getCGIElement('script_name',arguments.event),"[/\\]index\.cfm","") );
+			// Replace any duplicate slashes with 1 just in case
+			items[ "pathInfo" ]		= trim( reReplace( getCGIElement( 'path_info', arguments.event ), "\/{2,}", "/", "all" ) );
+			items[ "scriptName" ] 	= trim( reReplacenocase( getCGIElement( 'script_name', arguments.event ), "[/\\]index\.cfm", "" ) );
 
 			// Clean ContextRoots
 			if( len( getContextRoot() ) ){
-				//items["pathInfo"] 	= replacenocase(items["pathInfo"],getContextRoot(),"");
-				items["scriptName"] = replacenocase(items["scriptName"],getContextRoot(),"");
+				//items[ "pathInfo" ] 	= replacenocase(items[ "pathInfo" ],getContextRoot(),"");
+				items[ "scriptName" ] = replacenocase( items[ "scriptName" ], getContextRoot(),"" );
 			}
 
 			// Clean up the path_info from index.cfm
-			items["pathInfo"] = trim(reReplacenocase(items["pathInfo"],"^[/\\]index\.cfm",""));
-			// Clean the scriptname from the pathinfo inccase this is a nested application
-			if( len( items["scriptName"] ) ){
-				items["pathInfo"] = replaceNocase(items["pathInfo"],items["scriptName"],'');
+			items[ "pathInfo" ] = trim( reReplacenocase( items[ "pathInfo" ], "^[/\\]index\.cfm", "" ) );
+			// Clean the scriptname from the pathinfo in case this is a nested application
+			if( len( items[ "scriptName" ] ) ){
+				items[ "pathInfo" ] = replaceNocase( items[ "pathInfo" ], items[ "scriptName" ], '' );
 			}
 
 			// clean 1 or > / in front of route in some cases, scope = one by default
-			items["pathInfo"] = reReplaceNoCase(items["pathInfo"], "^/+", "/");
+			items[ "pathInfo" ] = reReplaceNoCase( items[ "pathInfo" ], "^/+", "/" );
 
 			// fix URL vars after ?
-			items["pathInfo"] = fixIISURLVars(items["pathInfo"],arguments.rc);
+			items[ "pathInfo" ] = fixIISURLVars( items[ "pathInfo" ], arguments.rc );
 
 			return items;
 		</cfscript>

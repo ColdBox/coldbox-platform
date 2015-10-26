@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 
 Author 	    :	Luis Majano
@@ -48,7 +48,7 @@ Description :
 				// Scope Storages
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(),
 				// Version
-				version  = "2.0.0+@build.number@",
+				version  = "2.1.0+@build.number@",
 				// The Configuration Binder object
 				binder   = "",
 				// ColdBox Application Link
@@ -312,13 +312,24 @@ Description :
 					}
 					else{
 						closure = thisMap.getPath();
-						oModel = closure();
+						oModel = closure( injector = this );
 					}
 					break;
 				}
 				default: { throw(message="Invalid Construction Type: #thisMap.getType()#",type="Injector.InvalidConstructionType"); }
 			}
-
+			
+			// Check and see if this mapping as an influence closure
+			var influenceClosure = thisMap.getInfluenceClosure();
+			if( !isSimpleValue( influenceClosure ) ) {
+				// Influence the creation of the instance
+				local.result = influenceClosure( instance=oModel, injector=this );
+				// Allow the closure to override the entire instance if it wishes
+				if( structKeyExists( local, 'result' ) ) {
+					oModel = local.result;
+				}	
+			}
+			
 			// log data
 			if( instance.log.canDebug() ){
 				instance.log.debug("Instance object built: #arguments.mapping.getName()#:#arguments.mapping.getPath().toString()#");

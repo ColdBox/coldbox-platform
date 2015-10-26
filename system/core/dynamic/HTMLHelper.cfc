@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 Description :
 	A cool utility that helps you when working with HTML
@@ -86,7 +86,7 @@ Description :
 				if( NOT listFindNoCase(event.getValue(name="cbox_assets",private=true),thisAsset) ){
 
 					// Load Asset
-					if( listLast(thisAsset,".") eq "js" ){
+					if( findNoCase(".js", thisAsset) ){
 						sb.append('<script src="#jsPath##thisAsset#" type="text/javascript"#asyncStr##deferStr#></script>');
 					}
 					else{
@@ -168,21 +168,31 @@ Description :
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer 	= createObject("java","java.lang.StringBuffer").init("<a");
+			var buffer 	= createObject( "java", "java.lang.StringBuffer" ).init( "<a" );
 			var event	= controller.getRequestService().getContext();
 
 			// self-link?
-			if(NOT len(arguments.href) ){
+			if( NOT len( arguments.href ) ){
 				arguments.href = event.getCurrentEvent();
 			}
 
 			// Check if we have a base URL and if we need to build our link
-			if( arguments.noBaseURL eq FALSE and NOT find("://",arguments.href)){
-				arguments.href = event.buildLink(linkto=arguments.href,ssl=arguments.ssl,queryString=arguments.queryString);
+			if( arguments.noBaseURL eq FALSE and NOT find( "://", arguments.href ) ){
+				// Verify SSL Bit
+				if( structKeyExists( arguments, "ssl" ) ){ 
+					arguments.href = event.buildLink(
+						linkto 		= arguments.href,
+						ssl			= arguments.ssl,
+						queryString = arguments.queryString
+					); 
+				} else { 
+					arguments.href = event.buildLink( linkto=arguments.action, queryString=arguments.queryString ); 
+				}
 			}
 
 			// build link
-			flattenAttributes(arguments,"noBaseURL,text,querystring,ssl",buffer).append('>#arguments.text#</a>');
+			flattenAttributes( arguments, "noBaseURL,text,querystring,ssl", buffer )
+				.append( '>#arguments.text#</a>' );
 
 			return buffer.toString();
 		</cfscript>
@@ -364,11 +374,11 @@ Description :
 		<cfargument name="type" type="string" required="false" default="html5" hint="The doctype to generate, we default to HTML 5"/>
 		<cfscript>
 			switch( arguments.type ){
+				case 'html5'		 : { return '<!DOCTYPE html>'; }
 				case 'xhtml11' 		 : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'; }
 				case 'xhtml1-strict' : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'; }
-				case 'xhtml1-trans' : default	 : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'; }
+				case 'xhtml1-trans'  : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'; }
 				case 'xhtml1-frame'	 : { return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">'; }
-				case 'html5'		 : { return '<!DOCTYPE html>'; }
 				case 'html4-strict'	 : { return '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">'; }
 				case 'html4-trans'	 : { return '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">'; }
 				case 'html4-frame'	 : { return '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">'; }
@@ -555,32 +565,41 @@ Description :
 		<cfargument name="name" 		type="string" 	required="false" 	default="" hint="The name of the form tag"/>
 		<cfargument name="method" 		type="string" 	required="false" 	default="POST" 	hint="The HTTP method of the form: POST or GET"/>
 		<cfargument name="multipart" 	type="boolean" 	required="false" 	default="false"	hint="Set the multipart encoding type on the form"/>
-		<cfargument name="ssl" 			type="boolean" 	required="false" 	default="false" hint="If true, it will change http to https if found in the ses base url ONLY"/>
+		<cfargument name="ssl" 			type="boolean" 	required="false" 	hint="If true, it will change http to https if found in the ses base url ONLY, false will remove SSL"/>
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var formBuffer	= createObject("java","java.lang.StringBuffer").init("<form");
+			var formBuffer	= createObject( "java", "java.lang.StringBuffer" ).init( "<form" );
 			var event 		= controller.getRequestService().getContext();
 
 			// self-submitting?
-			if(NOT len(arguments.action) ){
+			if( NOT len( arguments.action ) ){
 				arguments.action = event.getCurrentEvent();
 			}
 
 			// Check if we have a base URL and if we need to build our link
-			if( arguments.noBaseURL eq FALSE and NOT find("://",arguments.action)){
-				arguments.action = event.buildLink(linkto=arguments.action,ssl=arguments.ssl);
+			if( arguments.noBaseURL eq FALSE and NOT find( "://", arguments.action ) ){
+				// Verify SSL Bit
+				if( structKeyExists( arguments, "ssl" ) ){ 
+					arguments.action = event.buildLink(
+						linkto 		= arguments.action,
+						ssl			= arguments.ssl
+					); 
+				} else { 
+					arguments.action = event.buildLink( linkto=arguments.action ); 
+				}
 			}
 
 			// ID Normalization
-			normalizeID(arguments);
+			normalizeID( arguments );
 
 			// Multipart Encoding Type
 			if( arguments.multipart ){ arguments.enctype = "multipart/form-data"; }
 			else{ arguments.enctype = "";}
 
 			// create tag
-			flattenAttributes(arguments,"noBaseURL,ssl,multipart",formBuffer).append(">");
+			flattenAttributes( arguments, "noBaseURL,ssl,multipart", formBuffer )
+				.append( ">" );
 
 			return formBuffer.toString();
 		</cfscript>

@@ -165,6 +165,16 @@
 		t = injector.getInstance("calendar2");
 	}
 
+	function testclosureProvider(){
+		var closureProvider = injector.getInstance("closureProvider");
+		assertEquals( "closureProviderInstance", closureProvider );
+	}
+
+	function testInstanceWithInfluence(){
+		var instanceWithInfluence = injector.getInstance("instanceWithInfluence");
+		assertEquals( "321", instanceWithInfluence );
+	}
+
 	function testParentMappings(){
 		//debug( injector.getBinder().getMapping("concreteService").getMemento() );
 		o = injector.getInstance("concreteService");

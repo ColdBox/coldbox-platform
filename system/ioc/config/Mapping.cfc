@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 
 Author 	    :	Luis Majano
@@ -74,7 +74,9 @@ Description :
 				// Mixins
 				mixins = [],
 				// Thread safety on wiring
-				threadSafe = ""
+				threadSafe = "",
+				// A closure that can influence the creation of the instance
+				influenceClosure = ""
 			};
 
 			// DI definition structure
@@ -196,6 +198,16 @@ Description :
     <cffunction name="setThreadSafe" access="public" returntype="any" output="false" hint="Set the thread safety for wiring bit">
     	<cfargument name="threadSafe" type="boolean" required="true">
     	<cfset instance.threadSafe = arguments.threadSafe>
+		<cfreturn this>
+    </cffunction>
+
+    <!--- Closure for influencing instance creation --->
+    <cffunction name="getInfluenceClosure" access="public" returntype="any" output="false" hint="Get the influence closure. Empty string if not exists">
+    	<cfreturn instance.influenceClosure>
+    </cffunction>
+    <cffunction name="setInfluenceClosure" access="public" returntype="any" output="false" hint="Set the influence closure.">
+    	<cfargument name="influenceClosure" type="any" required="true">
+    	<cfset instance.influenceClosure = arguments.influenceClosure>
 		<cfreturn this>
     </cffunction>
 
@@ -552,9 +564,14 @@ Description :
 		<cfset var iData	 	= "">
 		<cfset var eventManager	= arguments.injector.getEventManager()>
 		<cfset var cacheProperties = {}>
+		<cfif isSimpleValue( instance.path ) >
+			<cfset var lockToken  = instance.path>
+		<cfelse>
+			<cfset var lockToken = createUUID()>
+		</cfif>
 
 		<!--- Lock for discovery based on path location, only done once per instance of mapping. --->
-		<cflock name="Mapping.#arguments.injector.getInjectorID()#.MetadataProcessing.#instance.path#" type="exclusive" timeout="20" throwOnTimeout="true">
+		<cflock name="Mapping.#arguments.injector.getInjectorID()#.MetadataProcessing.#lockToken#" type="exclusive" timeout="20" throwOnTimeout="true">
 		<cfscript>
 	    	if( NOT instance.discovered ){
 				// announce inspection

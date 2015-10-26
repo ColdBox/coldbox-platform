@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 
 Author     :	Luis Majano
@@ -33,7 +33,7 @@ Description :
 		// Category Appenders
 		instance.categoryAppenders = "";
 		// Version
-		instance.version = "2.0.0+@build.number@";
+		instance.version = "2.1.0+@build.number@";
 		// Configuration object
 		instance.config = "";
 		// ColdBox Application Link

@@ -1,316 +1,286 @@
-﻿<!-----------------------------------------------------------------------
+﻿/**
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
 ********************************************************************************
-Author 	 :	Luis Majano
-Date     :	June 30, 2006
-Description :
-	I model an exception structure
+* I model an Exception
+*/
+component accessors="true"{
 
-Modification History:
-08/07/2006 - new method, getTagContextAsString(). Updated the return types.
------------------------------------------------------------------------>
-<cfcomponent name="ExceptionBean"
-			 hint="I model a Coldfusion/Coldbox Exception"
-			 output="false">
+	/**
+	* Exception Struct
+	*/
+	property name="exceptionStruct" type="struct";
+	/**
+	* Custom error messages
+	*/
+	property name="extraMessage";
+	/**
+	* Extra info for exception tracking
+	*/
+	property name="extraInfo";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cfscript>
-		variables.instance = structnew();
-		// CFMX Exception Structure ;
-		instance.exceptionStruct = structnew();
-		// Exception Message ;
-		instance.extramessage = "";
-		// Exception ExtraInformation variable, could be anything. ;
-		instance.extraInfo = "";
-		// Exception type, either application or framework ;
-		instance.errorType = "application";
-		// Null Declarations ;
-		variables.STRINGNULL = "";
-		variables.ARRAYNULL = ArrayNew(1);
-	</cfscript>
+	// STATIC Constructs
+	variables.STRINGNULL 	= "";
+	variables.ARRAYNULL 	= [];
 
-	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="ExceptionBean" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="errorStruct" 		type="any" 		required="false" hint="The CF error Structure" 		default="#structnew()#" />
-		<cfargument name="extramessage" 	type="string" 	required="false" hint="The custom error message" 	default="" />
-		<cfargument name="extraInfo" 		type="any" 		required="false" hint="Extra information" 			default="" />
-		<cfargument name="errorType" 		type="string" 	required="false" default="application" 				hint="application/framework">
-		<!--- ************************************************************* --->
-		<!--- Set instance for exception structure --->
-		<cfset instance.exceptionStruct = duplicate(arguments.errorStruct) />
-		<cfif not isStruct(instance.exceptionStruct)>
-			<cfset instance.exceptionStruct = structnew()>
-		</cfif>
-		<!--- Set extra exception messages --->
-		<cfset instance.extramessage = arguments.extramessage>
-		<cfset instance.extraInfo = arguments.extraInfo>
-		<!--- Verify errorType --->
-		<cfif not reFindnocase("^(application|framework)$",arguments.errorType)>
-			<cfset instance.errorType = "application">
-		<cfelse>
-			<cfset instance.errorType = arguments.errorType>
-		</cfif>
-		<cfreturn this >
-	</cffunction>
-	<!--- ************************************************************* --->
-<!------------------------------------------- PUBLIC ------------------------------------------->
+	/**
+	* Constructor
+	* @errorStruct The CFML error structure
+	* @extraMessage Custom error messages
+	* @extraInfo Extra info to store in the error
+	*/
+	ExceptionBean function init(
+		struct errorStruct = {},
+		any extraMessage = "",
+		any extraInfo = ""
+	){
+		variables.exceptionStruct = arguments.errorStruct;
+		if( !isStruct( variables.exceptionStruct ) ){
+			variables.exceptionStruct = {};
+		}
+		variables.extraMessage 	= arguments.extraMessage;
+		variables.extraInfo 	= arguments.extraInfo;
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the memento">
-		<cfreturn variables.instance >
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="setMemento" access="public" returntype="void" output="false" hint="Set the memento">
-		<cfargument name="memento" type="struct" required="true">
-		<cfset variables.instance = arguments.memento>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getErrorType" access="public" returntype="string" output="false">
-		<cfreturn instance.errorType >
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getExceptionStruct" access="public" returntype="struct" output="false">
-		<cfreturn instance.exceptionStruct >
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getExtraMessage" access="public" returntype="string" output="false">
-		<cfreturn instance.extramessage >
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getExtraInfo" access="public" returntype="any" output="false">
-		<cfreturn instance.extraInfo >
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getType" access="public" returntype="string" output="false">
-		<cfif structKeyExists(instance.exceptionStruct, "Type")>
-			<cfreturn instance.exceptionStruct.type >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getMessage" access="public" returntype="string" output="false">
-		<cfif structkeyExists(instance.exceptionStruct,"message")>
-			<cfreturn instance.exceptionStruct.message >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getDetail" access="public" returntype="string" output="false">
-		<cfif structkeyExists(instance.exceptionStruct,"detail")>
-			<cfreturn instance.exceptionStruct.detail >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getStackTrace" access="public" returntype="string" output="false">
-		<cfif structKeyExists(instance.exceptionStruct, 'StackTrace')>
-			<cfreturn instance.exceptionStruct.StackTrace >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getTagContext" access="public" returntype="array" output="false">
-		<cfif structkeyExists(instance.exceptionStruct, "TagContext")>
-			<cfreturn instance.exceptionStruct.tagContext >
-		<cfelse>
-			<cfreturn variables.ARRAYNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getTagContextAsString" access="public" returntype="string" output="false" hint="I return the tagcontext in string format.">
-		<cfset var arrayTagContext = getTagContext()>
-		<cfset var rtnString = "">
-		<cfset var i = 1>
-		<cfset var entry = "">
-		<cfset var tagContextLength = ArrayLen(arrayTagContext)>
-		<cfif structkeyExists(instance.exceptionStruct, "TagContext") and tagContextLength>
-			<cfloop from="1" to="#tagContextLength#" index="i">
-			  <cfsavecontent variable="entry"><cfoutput>ID: <cfif not structKeyExists(arrayTagContext[i], "ID")>N/A<cfelse>#arrayTagContext[i].ID#</cfif>; LINE: #arrayTagContext[i].LINE#; TEMPLATE: #arrayTagContext[i].Template# #chr(13)##chr(10)#</cfoutput></cfsavecontent>
-			  <cfset rtnString = rtnString & entry>
-			</cfloop>
-			<cfreturn rtnString>
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getNativeErrorCode" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'nativeErrorCode')>
-			<cfreturn instance.exceptionStruct.nativeErrorCode >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-
-	<!--- SQL Types --->
-	<!--- ************************************************************* --->
-	<cffunction name="getSqlState" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'sqlState')>
-			<cfreturn instance.exceptionStruct.sqlState >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getSql" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'sql')>
-			<cfreturn instance.exceptionStruct.sql >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getQueryError" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'queryError')>
-			<cfreturn instance.exceptionStruct.queryError >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getWhere" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'where')>
-			<cfreturn instance.exceptionStruct.where >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getErrNumber" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'errNumber')>
-			<cfreturn instance.exceptionStruct.errNumber >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getMissingFileName" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'missingFileName')>
-			<cfreturn instance.exceptionStruct.missingFileName >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getLockName" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'lockName')>
-			<cfreturn instance.exceptionStruct.lockName >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getLockOperation" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'lockOperation')>
-			<cfreturn instance.exceptionStruct.lockOperation >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getErrorCode" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'errorCode')>
-			<cfreturn instance.exceptionStruct.errorCode >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getExtendedInfo" access="public" returntype="string" output="false">
-		<cfif StructKeyExists(instance.exceptionStruct,'extendedInfo')>
-			<cfreturn instance.exceptionStruct.extendedInfo >
-		<cfelse>
-			<cfreturn variables.STRINGNULL>
-		</cfif>
-	</cffunction>
-
-	<!--- ************************************************************* --->	
+		return this;
+	}
 	
-	<cffunction name="$toString" access="public" returntype="string" output="false">
-		<cfscript>
-			var buffer = ""; 
+	/**
+	* Get memento representation
+	*/
+	struct function getMemento(){
+		return {
+			"exceptionStruct" 	= variables.exceptionStruct,
+			"extraMessage" 		= variables.extraMessage,
+			"extraInfo" 		= variables.extraInfo,
+		};
+	}
+
+	/**
+	* Set Memento
+	*/
+	ExceptionBean function setMemento( required memento ){
+		structAppend( variables, arguments.memento, true );
+		return this;
+	}
+
+	/**
+	* Get error type
+	*/
+	function getType(){
+		if( structKeyExists( variables.exceptionStruct, "type" ) ){
+			return variables.exceptionStruct.type;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get error message
+	*/
+	function getMessage(){
+		if( structKeyExists( variables.exceptionStruct, "message" ) ){
+			return variables.exceptionStruct.message;
+		}
+		return variables.STRINGNULL;
+	}
+	
+	/**
+	* Get error detail
+	*/
+	function getDetail(){
+		if( structKeyExists( variables.exceptionStruct, "detail" ) ){
+			return variables.exceptionStruct.detail;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get error stackTrace
+	*/
+	function getStackTrace(){
+		if( structKeyExists( variables.exceptionStruct, "StackTrace" ) ){
+			return variables.exceptionStruct.StackTrace;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get error tag context
+	*/
+	array function getTagContext(){
+		if( structKeyExists( variables.exceptionStruct, "TagContext" ) ){
+			return variables.exceptionStruct.TagContext;
+		}
+		return variables.ARRAYNULL;
+	}
+
+	/**
+	* Get tag context as string
+	*/
+	function getTagContextAsString(){
+		var thisTagContext = getTagContext();
+
+		if( arrayLen( thisTagContext ) ){
+			var entry 		= "";
+			var rtnString 	= "";
+			for( var thisRow in thisTagContext ){
+				savecontent variable="entry"{
+					writeOutput( " ID: " );
+					if( not structKeyExists( thisRow, "ID" ) ){
+						writeOutput( "N/A;" );
+					} else {
+						writeOutput( "#thisRow.id#;" );
+					}
+					writeOutput( " LINE: #thisRow.line#; TEMPLATE: #thisRow.template# #chr( 13 )##chr( 10 )#" );
+				}
+				rtnString &= entry;
+			}
+			return rtnString;
+		}
+
+		return variables.STRINGNULL;
+	}
+	
+	/**
+	* Get native error code
+	*/
+	function getNativeErrorCode(){
+		if( structKeyExists( variables.exceptionStruct, "nativeErrorCode" ) ){
+			return variables.exceptionStruct.nativeErrorCode;
+		}
+		return variables.STRINGNULL;
+	}
+	
+	/**
+	* Get SQL State
+	*/
+	function getSqlState(){
+		if( structKeyExists( variables.exceptionStruct, "sqlState" ) ){
+			return variables.exceptionStruct.sqlState;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get SQL 
+	*/
+	function getSql(){
+		if( structKeyExists( variables.exceptionStruct, "sql" ) ){
+			return variables.exceptionStruct.sql;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get queryError 
+	*/
+	function getQueryError(){
+		if( structKeyExists( variables.exceptionStruct, "queryError" ) ){
+			return variables.exceptionStruct.queryError;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get where portion 
+	*/
+	function getWhere(){
+		if( structKeyExists( variables.exceptionStruct, "where" ) ){
+			return variables.exceptionStruct.where;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get err number 
+	*/
+	function getErrNumber(){
+		if( structKeyExists( variables.exceptionStruct, "errNumber" ) ){
+			return variables.exceptionStruct.errNumber;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get missing file name
+	*/
+	function getMissingFileName(){
+		if( structKeyExists( variables.exceptionStruct, "missingFileName" ) ){
+			return variables.exceptionStruct.missingFileName;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get lock name
+	*/
+	function getLockName(){
+		if( structKeyExists( variables.exceptionStruct, "lockName" ) ){
+			return variables.exceptionStruct.lockName;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get lock operation
+	*/
+	function getLockOperation(){
+		if( structKeyExists( variables.exceptionStruct, "lockOperation" ) ){
+			return variables.exceptionStruct.lockOperation;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get error code
+	*/
+	function getErrorCode(){
+		if( structKeyExists( variables.exceptionStruct, "errorCode" ) ){
+			return variables.exceptionStruct.errorCode;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* Get error extended info
+	*/
+	function getExtendedInfo(){
+		if( structKeyExists( variables.exceptionStruct, "extendedInfo" ) ){
+			return variables.exceptionStruct.extendedInfo;
+		}
+		return variables.STRINGNULL;
+	}
+
+	/**
+	* String representation of this error
+	*/
+	function $toString(){
+		var buffer = ""; 
 			
-			// Prepare String Buffer
-			buffer = createObject("java","java.lang.StringBuffer").init( getExtraMessage() & chr(13));
-			
-			if ( getType() neq  "" ){
-				buffer.append("CFErrorType=" & getType() & chr(13) );
-			}
-			if ( getDetail() neq  "" ){
-				buffer.append("CFDetails=" & getDetail() & chr(13));
-			}
-			if ( getMessage() neq "" ){
-				buffer.append("CFMessage=" & getMessage() & chr(13));
-			}
-			if ( getStackTrace() neq "" ){
-				buffer.append("CFStackTrace=" & getStackTrace() & chr(13));
-			}
-			if ( getTagContextAsString() neq "" ){
-				buffer.append("CFTagContext=" & getTagContextAsString() & chr(13));
-			}
-			if ( isSimpleValue( getExtraInfo() ) ){
-				buffer.append("CFExtraInfo=" & getExtraInfo() & chr(13));
-			}
-			else{
-				buffer.append("CFExtraInfo=" & serializeJSON( getExtraInfo() ) & chr(13));
-			}
-			return buffer.toString();
+		// Prepare String Buffer
+		buffer = createObject( "java", "java.lang.StringBuffer" ).init( getExtraMessage() & chr( 13 ) );
 		
-		</cfscript>
-	</cffunction>
-	
-					
-	<!--- ************************************************************* --->
+		if ( getType() neq  "" ){
+			buffer.append( "CFErrorType=" & getType() & chr( 13 ) );
+		}
+		if ( getDetail() neq  "" ){
+			buffer.append( "CFDetails=" & getDetail() & chr( 13 ) );
+		}
+		if ( getMessage() neq "" ){
+			buffer.append( "CFMessage=" & getMessage() & chr( 13 ) );
+		}
+		if ( getStackTrace() neq "" ){
+			buffer.append( "CFStackTrace=" & getStackTrace() & chr( 13 ) );
+		}
+		if ( getTagContextAsString() neq "" ){
+			buffer.append( "CFTagContext=" & getTagContextAsString() & chr( 13 ) );
+		}
+		if ( isSimpleValue( getExtraInfo() ) ){
+			buffer.append( "CFExtraInfo=" & getExtraInfo() & chr( 13 ) );
+		} else {
+			buffer.append( "CFExtraInfo=" & serializeJSON( getExtraInfo() ) & chr( 13 ) );
+		}
+		return buffer.toString();
+	}	
 
-</cfcomponent>
+}

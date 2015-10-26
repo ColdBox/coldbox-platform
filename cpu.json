@@ -1,6 +1,6 @@
 {
-	"projectURL" : "http://cf10cboxdev.jfetmac/coldbox",
+	"projectURL" : "http://cf10cboxdev.local/coldbox",
 	"testbox" : {
-		"runnerURL" : "http://cf10cboxdev.jfetmac/coldbox/testing/runner.cfm"		
+		"runnerURL" : "http://cf10cboxdev.local/coldbox/testing/runner.cfm"
 	}
 }
