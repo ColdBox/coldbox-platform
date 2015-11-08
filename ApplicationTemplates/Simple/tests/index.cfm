@@ -148,7 +148,7 @@
 <input type="hidden" name="opt_run" id="opt_run" value="true">
 
 	<div id="tb-left" class="centered">
-		<img src="TestBoxLogo125.png" alt="TestBox" id="tb-logo"/><br>v#testbox.getVersion()#<br>
+		<img src="http://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo"/><br>v#testbox.getVersion()#<br>
 
 		<a href="index.cfm?action=runTestBox&path=#URLEncodedFormat( url.path )#" target="_blank"><button class="btn-red" type="button">Run All</button></a>
 	</div>
