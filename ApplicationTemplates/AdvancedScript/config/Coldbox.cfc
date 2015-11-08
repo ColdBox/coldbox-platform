@@ -34,7 +34,7 @@
 			controllerDecorator			= "",
 
 			//Error/Exception Handling
-			exceptionHandler		= "",
+			exceptionHandler		= "main.onException",
 			onInvalidEvent			= "",
 			customErrorTemplate		= "",
 
@@ -53,7 +53,7 @@
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the cgi.http_host.
 		environments = {
-			development = "localhost"
+			development = "localhost,^lucee"
 		};
 
 		// Module Directives
