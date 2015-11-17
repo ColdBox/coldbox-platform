@@ -420,7 +420,9 @@ Description :
 		<cfscript>
 			var meta = {};
 			// get array of properties
-			var properties = collectAllProperties( getMetaData(arguments.target) );
+			var stopRecursions= ["lucee.Component","railo.Component","WEB-INF.cftags.component"]
+			var properties = getUtil().getInheritedMetaData(arguments.target,stopRecursions).properties; 
+
 			// loop over properties
 			for( var i = 1; i <= arrayLen( properties ); i++ ) {
 				var property = properties[ i ];
@@ -434,34 +436,6 @@ Description :
 			return meta;
 		</cfscript>
 	</cffunction>
-
-	<!---FUNCTION ADDED because of inherited objects, see http://www.silverwareconsulting.com/index.cfm/2009/12/21/A-Recursive-Function-to-Gather-CFC-Metadata-for-Inherited-Properties --->
-	<cffunction name="collectAllProperties" access="private" output="false" returntype="Array" hint="Prepares a structure of target relational meta data">
-		<cfargument name="metadata" required="true" type="struct" />
-		<cfargument name="props" type="array" default="#ArrayNew(1)#" />
-		<cfscript>
-			//set baseclass name based on engine, necessary to find out where to stop recursuion
-			if ( server.coldfusion.productname eq "Lucee" ){
-				var BaseClassName = "lucee.Component";
-			} else if ( server.coldfusion.productname eq "Railo" ){
-				var BaseClassName = "railo.Component";
-			} else {
-				var BaseClassName = "WEB-INF.cftags.component";
-			}
-
-			if (structKeyExists(arguments.metadata,"properties")) {
-        		for (var i = 1; i <= ArrayLen(arguments.metadata.properties); i++) {
-            		if (not ArrayContains(arguments.props,arguments.metadata.properties[i].name)) {
-                		arrayAppend(arguments.props,arguments.metadata.properties[i]);
-            		}
-        		}
-    		} 
-    		if (arguments.metadata.extends.fullname neq BaseClassName) {
-        		arguments.props = collectAllProperties(arguments.metadata.extends,arguments.props);
-    		}
-    		return arguments.props;
-		</cfscript>	
-	</cffunction>	
 
 	<!--- Get ColdBox Util --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
