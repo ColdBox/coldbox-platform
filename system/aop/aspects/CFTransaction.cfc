@@ -32,7 +32,7 @@ component
 	* @hint 	Invoke an AOP method invocation
 	* @output 	false
 	*
-	* @invocation.hint	The method invocation object: coldbox.system.aop.MethodInvocation"
+	* @invocation.hint				The method invocation object: coldbox.system.aop.MethodInvocation
 	* @invokemethod.colddoc:generic	coldbox.system.aop.MethodInvocation
 	*/
 	public any function invokeMethod( required any invocation ) {
