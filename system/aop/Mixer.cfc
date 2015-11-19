@@ -4,7 +4,7 @@
 * www.ortussolutions.com
 ********************************************************************************
 * I am a WireBox listener that provides you with AOP capabilities in your objects.
-* 
+*
 * Listener Properties:
 *	- generationPath:path	- The include path used for code generation
 *	- dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
@@ -72,7 +72,7 @@ component accessors="true"{
 		// mixer util
 		variables.mixerUtil 			= new coldbox.system.aop.MixerUtil();
 		// class id code
-		variables..classID 				= variables.system.identityHashCode( this );
+		variables.classID 				= variables.system.identityHashCode( this );
 
 		// Default Generation Path?
 		if( NOT structKeyExists( variables.properties, "generationPath" ) ){
@@ -110,9 +110,9 @@ component accessors="true"{
 		// Now, we check if we have any aspects to apply to this class according to class matchers
 		if( arrayLen( variables.classMatchDictionary[ mappingName ] ) ){
 			AOPBuilder(
-				target 		= target, 
-				mapping 	= mapping, 
-				dictionary 	= variables.classMatchDictionary[ mappingName ], 
+				target 		= target,
+				mapping 	= mapping,
+				dictionary 	= variables.classMatchDictionary[ mappingName ],
 				idCode 		= idCode
 			);
 		}
@@ -123,7 +123,7 @@ component accessors="true"{
 	* @target The incoming target
 	* @mapping The incoming target mapping
 	* @idCode The incoming target identifier
-	* 
+	*
 	*/
 	private function buildClassMatchDictionary( required target, required mapping, required idCode ){
 		var aspectBindings 	= variables.binder.getAspectBindings();
@@ -157,20 +157,20 @@ component accessors="true"{
 			} // end if in dictionary
 		} // end lock
 	}
-	
+
 	/**
 	* Build and weave all necessary advices on an object via method matching
 	* @target The incoming target
 	* @mapping The incoming target mapping
 	* @dictionary The target aspect dictionary
 	* @idCode The incoming target identifier
-	* 
+	*
 	*/
-	private function AOPBuilder( 
-		required target, 
+	private function AOPBuilder(
+		required target,
 		required mapping,
 		required dictionary,
-		required idCode 
+		required idCode
 	){
 		lock name="aop.#variables.classID#.weaveAdvice.id.#arguments.idCode#" type="exclusive" timeout="30" throwOnTimeout="true"{
 			// check if weaved already
@@ -198,10 +198,10 @@ component accessors="true"{
 	* @mapping The incoming target mapping
 	* @metadata The incoming target metadata
 	* @dictionary The target aspect dictionary
-	* 
+	*
 	*/
-	private function processTargetMethods( 
-		required target, 
+	private function processTargetMethods(
+		required target,
 		required mapping,
 		required metadata,
 		required dictionary
@@ -251,9 +251,9 @@ component accessors="true"{
 		// Discover inheritance? Recursion
 		if( structKeyExists( arguments.metadata, "extends" ) ){
 			processTargetMethods(
-				target 		= arguments.target, 
-				mapping 	= arguments.mapping, 
-				metadata 	= arguments.metadata.extends, 
+				target 		= arguments.target,
+				mapping 	= arguments.mapping,
+				metadata 	= arguments.metadata.extends,
 				dictionary 	= arguments.dictionary
 			);
 		}
@@ -266,10 +266,10 @@ component accessors="true"{
 	* @jointPoint The jointpoint to proxy
 	* @jointPointMD The jointpoint metdata to proxy
 	* @aspects The aspects to weave into the jointpoint
-	* 
+	*
 	*/
-	private function weaveAdvice( 
-		required target, 
+	private function weaveAdvice(
+		required target,
 		required mapping,
 		required jointPoint,
 		required jointPointMD,
@@ -295,8 +295,8 @@ component accessors="true"{
 		if( fncMD.access eq "public" ){
 			udfOut.append( '<cfset this["#arguments.jointpoint#"] = variables["#arguments.jointpoint#"]>#lb#' );
 		}
-		udfOut.append('
-		<cffunction name="#arguments.jointpoint#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#" hint="WireBox AOP just rulez!">
+		var thisFNC = '
+		<:cffunction name="#arguments.jointpoint#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#" hint="WireBox AOP just rulez!">
 			<cfscript>
 				// create new method invocation for this execution
 				var invocation = createObject("component","coldbox.system.aop.MethodInvocation").init(
@@ -311,8 +311,10 @@ component accessors="true"{
 				// execute and return
 				return invocation.proceed();
 			</cfscript>
-		</cffunction>
-		');
+		<:/cffunction>
+		';
+		replace( thisFNC, "<:", "<", "all" );
+		udfOut.append( thisFNC );
 
 		try{
 			// Write it out to the generation space
@@ -337,10 +339,10 @@ component accessors="true"{
 				variables.log.error("Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#", e);
 			}
 			// throw the exception
-			throw( 
+			throw(
 				message = "Exception mixing in AOP aspect for (#mappingName#)",
 				detail  = e.message & e.detail & e.stacktrace,
-				type 	= "WireBox.aop.Mixer.MixinException" 
+				type 	= "WireBox.aop.Mixer.MixinException"
 			);
 		}
 	}
@@ -348,9 +350,9 @@ component accessors="true"{
     /**
 	* Build out interceptors according to their aspect names
 	* @aspects The aspects to construct
-	* 
+	*
 	*/
-	array private function buildInterceptors(){
+	private array function buildInterceptors(){
 		var interceptors 	= [];
 
 		// Get aspects from injector and add to our interceptor array
@@ -365,7 +367,7 @@ component accessors="true"{
 	* Decorate a target with AOP capabilities
 	* @target The incoming target
 	* @mapping The incoming target mapping
-	* 
+	*
 	*/
 	private function decorateAOPTarget( required target, required mapping ){
 		// Create targets struct for method proxing
