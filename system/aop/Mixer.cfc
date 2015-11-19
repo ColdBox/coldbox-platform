@@ -90,7 +90,7 @@ component accessors="true"{
 	/**
 	* Executes our AOP mixer after variabless are created and autowired
 	*/
-	function aftervariablesAutowire( interceptData ){
+	function afterInstanceAutowire( required interceptData ){
 		var mapping 	= arguments.interceptData.mapping;
 		var target 		= arguments.interceptData.target;
 
@@ -129,7 +129,6 @@ component accessors="true"{
 		var aspectBindings 	= variables.binder.getAspectBindings();
 		var bindingsLen 	= arrayLen( aspectBindings );
 		var mappingName		= lcase( arguments.mapping.getName() );
-    	var x			 	= 1;
 		var matchedAspects	= [];
 
     	lock name="aop.#variables.classID#.cmd.for.#arguments.idCode#" type="exclusive" timeout="30" throwontimeout="true"{
@@ -137,7 +136,7 @@ component accessors="true"{
 			if( NOT structKeyExists( variables.classMatchDictionary, mappingName ) ){
 
 				// Discover matching for the class via all aspect bindings
-				for( x=1; x LTE bindingsLen; x++ ){
+				for( var x=1; x LTE bindingsLen; x++ ){
 
 					// class match? If so, add to dictionary of matched aspects
 					if( aspectBindings[ x ].classes.matchClass( arguments.target, arguments.mapping ) ){
@@ -352,12 +351,12 @@ component accessors="true"{
 	* @aspects The aspects to construct
 	*
 	*/
-	private array function buildInterceptors(){
-		var interceptors 	= [];
+	private array function buildInterceptors( required aspects ){
+		var interceptors = [];
 
 		// Get aspects from injector and add to our interceptor array
 		for( var x=1; x lte arrayLen( arguments.aspects ); x++){
-			arrayAppend( interceptors, variables.injector.getvariables( arguments.aspects[ x ] ) );
+			arrayAppend( interceptors, variables.injector.getInstance( arguments.aspects[ x ] ) );
 		}
 
 		return interceptors;
