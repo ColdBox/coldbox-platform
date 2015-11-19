@@ -293,7 +293,11 @@ Description :
 					instance.log.error("Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#", e);
 				}
 				// throw the exception
-				throw("Exception mixing in AOP aspect for (#mappingName#)",e.message & e.detail & e.stacktrace,"WireBox.aop.Mixer.MixinException");
+				throw(
+                    message = "Exception mixing in AOP aspect for (#mappingName#)",
+                    type = "WireBox.aop.Mixer.MixinException",
+                    detail = e.message & e.detail & e.stacktrace
+                );
 			}
     	</cfscript>
     </cffunction>
