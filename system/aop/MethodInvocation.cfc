@@ -14,6 +14,7 @@ component
 
 	/*
 	* @hint		Constructor
+	* @output	false
 	*
 	* @method.hint						The method name that was intercepted	
 	* @args.hint						The argument collection that was intercepted
@@ -51,7 +52,8 @@ component
 	} // init()
 
 	/*
-	* @hint	Increment the interceptor index pointer
+	* @hint		Increment the interceptor index pointer
+	* @output	false
 	*/
 	public any function incrementInterceptorIndex(){
 		instance.interceptorIndex++;
@@ -60,6 +62,7 @@ component
 
 	/*
 	* @hint				Get the currently executing interceptor index
+	* @output			false
 	* @colddoc:generic	numeric
 	*/
 	public any function getInterceptorIndex(){
@@ -67,35 +70,40 @@ component
 	} // getInterceptorIndex()
 
 	/*
-	* @hint	Return the method name that was intercepted for this method invocation
+	* @hint		Return the method name that was intercepted for this method invocation
+	* @output	false
 	*/
 	public any function getMethod(){
 		return instance.method;    		
 	} // getMethod()
 
 	/*
-	* @hint	Return methods's metadata that was intercepted for this method invocation
+	* @hint		Return methods's metadata that was intercepted for this method invocation
+	* @output	false
 	*/
 	public any function getMethodMetadata(){
 		return instance.methodMetadata;    		
 	} // getMethodMetadata()
 
 	/*
-	* @hint	Get the original target object of this method invocation
+	* @hint		Get the original target object of this method invocation
+	* @output	false
 	*/
 	public any function getTarget(){
 		return instance.target;    		
 	} // getTarget()
 
 	/*
-	* @hint	Get the name of this target
+	* @hint		Get the name of this target
+	* @output	false
 	*/
 	public any function getTargetName(){
 		return instance.targetName;    		
 	} // getTargetName()
 
 	/*
-	* @hint	Get the wirebox mapping of this target
+	* @hint		Get the wirebox mapping of this target
+	* @output	false
 	*/
 	public any function getTargetMapping(){
 		return instance.targetMapping;    		
@@ -103,6 +111,7 @@ component
 
 	/*
 	* @hint				Get the argument collection of this method invocation
+	* @output			false
 	* @colddoc:generic	struct
 	*/
 	public any function getArgs(){
@@ -111,6 +120,7 @@ component
 
 	/*
 	* @hint				Set the argument collection of this method invocation, override orginal
+	* @output			false
 	*
 	* @args.hint		The argument collection that you want to now use
 	*/
@@ -121,6 +131,7 @@ component
 
 	/*
 	* @hint				Get the array of aspect interceptors for this method invocation
+	* @output			false
 	* @colddoc:generic	array
 	*/
 	public any function getInterceptors( required any args ){
@@ -128,7 +139,8 @@ component
 	} // getInterceptors()
 
 	/*
-	* @hint	Proceed execution of the method invocation
+	* @hint		Proceed execution of the method invocation
+	* @output	false
 	*/
 	public any function proceed(){
 		// We will now proceed with our interceptor execution chain or regular method pointer call
