@@ -260,14 +260,14 @@ component
 		required any jointPointMD,
 		required any aspects
 	){
-		var udfOut 			= createObject("java","java.lang.StringBuffer").init('');
+		var udfOut 			= createObject( "java", "java.lang.StringBuffer" ).init('');
 		var tmpFile 		= instance.properties.generationPath & "/" & instance.uuid.randomUUID().toString() & ".cfm";
 		var expandedFile 	= expandPath( tmpFile );
 		var lb				= "#chr(13)##chr(10)#";
 		var fncMD			= {
 			name       = "",
 			access     = "public",
-			output     = "false",
+			output     = false,
 			returnType = "any"
 		};
 		var mappingName 	= arguments.mapping.getName();
@@ -275,55 +275,57 @@ component
 
 		// MD proxy Defaults
 		fncMD.name = arguments.jointPointMD.name;
-		if( structKeyExists(arguments.jointPointMD,"access") ){ fncMD.access = arguments.jointPointMD.access; }
-		if( structKeyExists(arguments.jointPointMD,"output") ){ fncMD.output = arguments.jointPointMD.output; }
-		if( structKeyExists(arguments.jointPointMD,"returntype") ){ fncMD.returntype = arguments.jointPointMD.returnType; }
+		if( structKeyExists( arguments.jointPointMD, "access" )){ fncMD.access = arguments.jointPointMD.access; }
+		if( structKeyExists( arguments.jointPointMD, "output" )){ fncMD.output = arguments.jointPointMD.output; }
+		if( structKeyExists( arguments.jointPointMD, "returntype" )){ fncMD.returntype = arguments.jointPointMD.returnType; }
 
-		// Create Original Method Proxy Signature
+		// splitting the keyword due to aggresive lucee parser
+		udfOut.Append("<c" & "fscript>#lb#");
 		if( fncMD.access eq "public" ){
-			udfOut.append('<cfset this["#arguments.jointpoint#"] = variables["#arguments.jointpoint#"]>#lb#');
+			udfOut.append("this["#arguments.jointpoint#"] = variables["#arguments.jointpoint#"];#lb#");
 		}
-		udfOut.append('
-		<cffunction name="#arguments.jointpoint#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#" hint="WireBox AOP just rulez!">
-			<cfscript>
+		udfout.Append('
+			/*
+			* @hint 	WireBox AOP just rulez!
+			* @output 	false
+			*/
+			#fncMD.access# #fncMD.returntype# function #arguments.jointpoint#(){
 				// create new method invocation for this execution
-				var invocation = createObject("component","coldbox.system.aop.MethodInvocation").init(
+				var invocation = createObject( "component", "coldbox.system.aop.MethodInvocation" ).init(
 					method         = "#arguments.jointPoint#",
 					args           = arguments,
 					methodMetadata = "#mdJSON#",
 					target         = this,
 					targetName     = "#mappingName#",
 					targetMapping  = this.$wbAOPTargetMapping,
-					interceptors   = this.$wbAOPTargets["#arguments.jointPoint#"].interceptors);
-				// execute and return
+					interceptors   = this.$wbAOPTargets["#arguments.jointPoint#"].interceptors
+				);
+				// execute and return#
 				return invocation.proceed();
-			</cfscript>
-		</cffunction>
+			};
 		');
+		// splitting the keyword due to aggresive lucee parser
+		udfOut.Append( "</c" & "fscript>#lb#");
 
 		try{
 			// Write it out to the generation space
-			instance.mixerUtil.writeAspect( expandedFile, udfOUt.toString() );
+			instance.mixerUtil.writeAspect( expandedFile, udfOut.toString() );
 			// Save jointpoint in method targets alongside the interceptors
-			arguments.target.$wbAOPStoreJointPoint(arguments.jointpoint, buildInterceptors( arguments.aspects) );
+			arguments.target.$wbAOPStoreJointPoint( arguments.jointpoint, buildInterceptors( arguments.aspects ));
 			// Remove the old method to proxy it
-			arguments.target.$wbAOPRemove(arguments.jointpoint);
+			arguments.target.$wbAOPRemove( arguments.jointpoint );
 			// Mix In generated aspect
 			arguments.target.$wbAOPInclude( tmpFile );
 			// Remove Temp Aspect from disk
 			instance.mixerUtil.removeAspect( expandedFile );
 			// debug info
-			if( instance.log.canDebug() ){
-				instance.log.debug("Target (#mappingName#) weaved with new (#arguments.jointpoint#) method and with the following aspects: #arguments.aspects.toString()#");
-			}
+			if( instance.log.canDebug() ){ instance.log.debug("Target (#mappingName#) weaved with new (#arguments.jointpoint#) method and with the following aspects: #arguments.aspects.toString()#"); }
 		}
 		catch( Any var e ) {
 			// Remove Stub, just in case.
 			instance.mixerUtil.removeAspect( expandedFile );
 			// log it
-			if( instance.log.canError() ){
-				instance.log.error("Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#", e);
-			}
+			if( instance.log.canError() ){ instance.log.error("Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#", e); }
 			// throw the exception
 			throw("Exception mixing in AOP aspect for (#mappingName#)",e.message & e.detail & e.stacktrace,"WireBox.aop.Mixer.MixinException");
 		}
