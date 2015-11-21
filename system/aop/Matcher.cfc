@@ -124,7 +124,7 @@ component
 	*/
 	public any function annotatedWith(
 		required any annotation,
-		optional any value
+		any value
 	){
 		instance.annotation = arguments.annotation;
 		// the value of the annotation
@@ -212,7 +212,7 @@ component
 	public any function orMatch(
 		required any matcher,
 	){
-		instance.and = arguments.matcher;
+		instance.or = arguments.matcher;
 		return this;
 	} // orMatch()
 	
@@ -226,7 +226,7 @@ component
 	*
 	* @metadata.hint	The UDF metadata to use for matching
 	*/
-	private boolean function matchMethodRules( required any metdata ){
+	private boolean function matchMethodRules( required any metadata ){
 		// Some metadata defaults
 		var name 	= arguments.metadata.name;
 		var returns = "any";

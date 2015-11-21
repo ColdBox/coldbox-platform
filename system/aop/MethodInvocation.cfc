@@ -124,7 +124,7 @@ component
 	*
 	* @args.hint		The argument collection that you want to now use
 	*/
-	public any function getArgs( required any args ){
+	public any function setArgs( required any args ){
 		instance.args = arguments.args;
 		return this;
 	} // getArgs()
@@ -134,7 +134,7 @@ component
 	* @output			false
 	* @colddoc:generic	array
 	*/
-	public any function getInterceptors( required any args ){
+	public any function getInterceptors(){
 		return instance.interceptors;	    
 	} // getInterceptors()
 
