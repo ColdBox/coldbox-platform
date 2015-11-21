@@ -1,79 +1,104 @@
-﻿<!-----------------------------------------------------------------------
+﻿/*-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
 
-Author 	    :	Luis Majano
+Author 	    :	Luis Majano, cfscript: Ben Koshy
 Description :
 	I am an AOP mixer utility method
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="I am an AOP mixer utility method">
+-----------------------------------------------------------------------*/
+component
+    hint = "I am an AOP mixer utility method"
+    output = false
+{
+    /*
+    * @hint     Constructor
+    * @output   false
+    */
+    public any function init(){
+        return this;
+    } // init()
+    /*------------------------------------------- AOP UTILITY MIXINS ------------------------------------------*/
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------>
+    /*
+    * @hint     Store JointPoint information
+    * @output   false
+    *
+    * @jointpoint.hint      The jointpoint to proxy
+    * @interceptors.hint    The jointpoint interceptors
+    */
+    public any function $wbAOPStoreJointPoint(
+        required any jointpoint,
+        required any interceptors
+    ){
+        this.$wbAOPTargets[arguments.jointpoint] = {
+            udfPointer   = variables[ arguments.jointpoint ],
+            interceptors = arguments.interceptors
+        };
+    } // $wbAOPStoreJointPoint()
 
-	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">
-    	<cfscript>
-			return this;
-    	</cfscript>
-    </cffunction>
+   /*
+    * @hint     Invoke a mixed in proxy method
+    * @output   false
+    *
+    * @method.hint  The method to proxy execute
+    * @args.hint    The method args to proxy execute
+    */
+    public any function $wbAOPInvokeProxy(
+        required any method,
+        required any args
+    ){
+        return this.$wbAOPTargets[ arguments.method ].udfPointer( argumentCollection = arguments.args )
+    } // $wbAOPInvokeProxy()
 
-<!------------------------------------------- AOP UTILITY MIXINS ------------------------------------------>
+    /*
+    * @hint     Mix in a template on an injected target
+    * @output   false
+    *
+    * @templatePath.hint      The template to mix in
+    */
+    public any function $wbAOPInclude(
+        required any templatePath
+    ){
+        include template="#arguments.templatePath#";
+    } // $wbAOPInclude()
 
-     <!--- $wbAOPStoreJointPoint --->
-    <cffunction name="$wbAOPStoreJointPoint" output="false" access="public" returntype="any" hint="Store JointPoint information">
-    	<cfargument name="jointpoint" 	type="any" required="true" hint="The jointpoint to proxy"/>
-		<cfargument name="interceptors" type="any" required="true" hint="The jointpoint interceptors"/>
-		<cfscript>
-			this.$wbAOPTargets[arguments.jointpoint] = {
-				udfPointer 	 = variables[ arguments.jointpoint ],
-				interceptors = arguments.interceptors
-			};
-		</cfscript>
-    </cffunction>
+    /*
+    * @hint     Remove a method from this target mixin
+    * @output   false
+    *
+    * @methodName.hint      The method to poof away!
+    */
+    public any function $wbAOPRemove(
+        required any methodName
+    ){
+        structDelete( this, arguments.methodName );
+        structDelete( variables, arguments.methodName );
+    } // $wbAOPRemove()
+    
+    /*------------------------------------------- Utility Methods ------------------------------------------*/
 
-    <!--- $wbAOPInvokeProxy --->
-    <cffunction name="$wbAOPInvokeProxy" output="false" access="public" returntype="any" hint="Invoke a mixed in proxy method">
-    	<cfargument name="method" 	type="any" required="true" hint="The method to proxy execute"/>
-		<cfargument name="args" 	type="any" required="true" hint="The method args to proxy execute"/>
-    	<cfreturn this.$wbAOPTargets[ arguments.method ].udfPointer(argumentCollection=arguments.args)>
-    </cffunction>
+    /*
+    * @hint     Write an aspect to disk
+    * @output   false
+    */
+    public any function writeAspect(
+        required any genPath,
+        required any code
+    ){
+        fileWrite( arguments.genPath, arguments.code );
+    } // writeAspect()
 
-    <!--- $wbAOPInclude --->
-    <cffunction name="$wbAOPInclude" output="false" access="public" returntype="any" hint="Mix in a template on an injected target">
-    	<cfargument name="templatePath" type="any" required="true" hint="The template to mix in"/>
-    	<cfinclude template="#arguments.templatePath#" >
-    </cffunction>
-
-    <!--- $wbAOPRemove --->
-    <cffunction name="$wbAOPRemove" output="false" access="public" returntype="any" hint="Remove a method from this target mixin">
-    	<cfargument name="methodName" type="any" required="true" hint="The method to poof away!"/>
-    	<cfscript>
-			structDelete(this,arguments.methodName);
-			structDelete(variables,arguments.methodName);
-    	</cfscript>
-    </cffunction>
-
-<!------------------------------------------- Utility Methods ------------------------------------------>
-
-	<!--- writeAspect --->
-    <cffunction name="writeAspect" output="false" access="public" returntype="any" hint="Write an aspect to disk">
-    	<cfargument name="genPath"	required="True">
-		<cfargument name="code"		required="True">
-    	<cfscript>
-			fileWrite(arguments.genPath, arguments.code);
-    	</cfscript>
-    </cffunction>
-
-	<!--- writeAspect --->
-    <cffunction name="removeAspect" output="false" access="public" returntype="any" hint="Remove an aspect from disk">
-    	<cfargument name="filePath"	required="True">
-		<cfscript>
-			if( fileExists(arguments.filePath) ){
-				fileDelete( arguments.filePath );
-			}
-    	</cfscript>
-	</cffunction>
-
-</cfcomponent>
+    /*
+    * @hint     Remove an aspect from disk
+    * @output   false
+    */
+    public any function writeAspect(
+        required any filePath
+    ){
+        if( fileExists( arguments.filePath )){
+            fileDelete( arguments.filePath );
+        }
+    }
+}
