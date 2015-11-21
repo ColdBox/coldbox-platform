@@ -1,104 +1,94 @@
-﻿/*-----------------------------------------------------------------------
+/**
+*********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* I am an AOP mixer utility method
+* @author Luis Majano <lmajano@ortussolutions.com>
+*/
+component{
 
-Author 	    :	Luis Majano, cfscript: Ben Koshy
-Description :
-	I am an AOP mixer utility method
------------------------------------------------------------------------*/
-component
-    hint = "I am an AOP mixer utility method"
-    output = false
-{
-    /*
-    * @hint     Constructor
-    * @output   false
+    /**
+    * Constructor
     */
-    public any function init(){
+    function init(){
         return this;
-    } // init()
-    /*------------------------------------------- AOP UTILITY MIXINS ------------------------------------------*/
+    }
 
-    /*
-    * @hint     Store JointPoint information
-    * @output   false
-    *
-    * @jointpoint.hint      The jointpoint to proxy
-    * @interceptors.hint    The jointpoint interceptors
+    /****************************** AOP UTILITY MIXINS ******************************/
+
+    /**
+    * Store JointPoint information
+    * @jointpoint The jointpoint to proxy
+    * @interceptors The jointpoint interceptors
+    * 
+    * @return instance
     */
-    public any function $wbAOPStoreJointPoint(
-        required any jointpoint,
-        required any interceptors
-    ){
-        this.$wbAOPTargets[arguments.jointpoint] = {
+    function $wbAOPStoreJointPoint( required jointpoint, required interceptors ){
+        this.$wbAOPTargets[ arguments.jointpoint ] = {
             udfPointer   = variables[ arguments.jointpoint ],
             interceptors = arguments.interceptors
         };
-    } // $wbAOPStoreJointPoint()
+        return this;
+    }
 
-   /*
-    * @hint     Invoke a mixed in proxy method
-    * @output   false
-    *
-    * @method.hint  The method to proxy execute
-    * @args.hint    The method args to proxy execute
+    /**
+    * Invoke a mixed in proxy method
+    * @method The method to proxy execute
+    * @args The method args to proxy execute
     */
-    public any function $wbAOPInvokeProxy(
-        required any method,
-        required any args
-    ){
-        return this.$wbAOPTargets[ arguments.method ].udfPointer( argumentCollection = arguments.args )
-    } // $wbAOPInvokeProxy()
+    function $wbAOPInvokeProxy( required method, required args ){
+        return this.$wbAOPTargets[ arguments.method ].udfPointer( argumentCollection=arguments.args );
+    }
 
-    /*
-    * @hint     Mix in a template on an injected target
-    * @output   false
-    *
-    * @templatePath.hint      The template to mix in
+    /**
+    * Mix in a template on an injected target
+    * @templatePath The template to mix in
+    * 
+    * @return Instance
     */
-    public any function $wbAOPInclude(
-        required any templatePath
-    ){
+    function $wbAOPInclude( required templatePath ){
         include template="#arguments.templatePath#";
-    } // $wbAOPInclude()
+        return this;
+    }
 
-    /*
-    * @hint     Remove a method from this target mixin
-    * @output   false
-    *
-    * @methodName.hint      The method to poof away!
+    /**
+    * Remove a method from this target mixin
+    * @methodName The method to poof away!
+    * 
+    * @return Instance
     */
-    public any function $wbAOPRemove(
-        required any methodName
-    ){
+    function $wbAOPRemove( required methodName ){
         structDelete( this, arguments.methodName );
         structDelete( variables, arguments.methodName );
-    } // $wbAOPRemove()
-    
-    /*------------------------------------------- Utility Methods ------------------------------------------*/
+        return this;
+    }
 
-    /*
-    * @hint     Write an aspect to disk
-    * @output   false
+
+    /****************************** UTILITY Methods ******************************/
+
+    /**
+    * Write an aspect to disk
+    * @genPath The location path
+    * @code The code to write
+    * 
+    * @return Instance
     */
-    public any function writeAspect(
-        required any genPath,
-        required any code
-    ){
+    function writeAspect( required genPath, required code ){
         fileWrite( arguments.genPath, arguments.code );
-    } // writeAspect()
+        return this;
+    }
 
-    /*
-    * @hint     Remove an aspect from disk
-    * @output   false
+    /**
+    * Remove an aspect from disk
+    * @filePath The location path
+    * 
+    * @return Instance
     */
-    public any function writeAspect(
-        required any filePath
-    ){
-        if( fileExists( arguments.filePath )){
+    function removeAspect( required filePath ){
+        if( fileExists( arguments.filePath ) ){
             fileDelete( arguments.filePath );
         }
+        return this;
     }
 }
