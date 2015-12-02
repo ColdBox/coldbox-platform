@@ -394,7 +394,7 @@ Description :
 		<cfscript>
 			// Cleanup and slugify the string
 			var slug = lcase(trim(arguments.str));
-
+			slug = replaceList(slug,'#chr(228)#,#chr(252)#,#chr(246)#,#chr(223)#','ae,ue,oe,ss')
 			slug = reReplace(slug,"[^a-z0-9-\s#arguments.allow#]","","all");
 			slug = trim ( reReplace(slug,"[\s-]+", " ", "all") );
 			slug = reReplace(slug,"\s", "-", "all");
