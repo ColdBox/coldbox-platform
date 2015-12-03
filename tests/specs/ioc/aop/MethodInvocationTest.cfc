@@ -29,15 +29,7 @@
 		mockMD = URLEncodedFormat( serializeJSON( mockMDOriginal ) );
 				
 		// init the invocation
-		invocation.init(
-			method = "saveUser",
-			args = args,
-			methodMetadata = mockMD,
-			target = this,
-			targetName = "UnitTest",
-			targetMapping = mockMapping,
-			interceptors = interceptors
-		);
+		invocation.init(method="saveUser",args=args,methodMetadata=mockMD,target=this,targetName="UnitTest",targetMapping=mockMapping,interceptors=interceptors);
 	}
 	
 	function testInit(){
