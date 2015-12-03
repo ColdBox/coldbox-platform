@@ -48,7 +48,7 @@ component{
     * @return Instance
     */
     function $wbAOPInclude( required templatePath ){
-        include template="#arguments.templatePath#";
+        include "#arguments.templatePath#";
         return this;
     }
 

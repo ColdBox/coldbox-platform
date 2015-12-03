@@ -393,14 +393,14 @@ Description :
 		<cfargument name="allow" type="string" required="false" default="" hint="a regex safe list of additional characters to allow"/>
 		<cfscript>
 			// Cleanup and slugify the string
-			var slug = lcase(trim(arguments.str));
-			slug = replaceList(slug,'#chr(228)#,#chr(252)#,#chr(246)#,#chr(223)#','ae,ue,oe,ss')
-			slug = reReplace(slug,"[^a-z0-9-\s#arguments.allow#]","","all");
-			slug = trim ( reReplace(slug,"[\s-]+", " ", "all") );
-			slug = reReplace(slug,"\s", "-", "all");
+			var slug 	= lcase( trim( arguments.str ) );
+			slug 		= replaceList( slug, '#chr(228)#,#chr(252)#,#chr(246)#,#chr(223)#', 'ae,ue,oe,ss' );
+			slug 		= reReplace( slug, "[^a-z0-9-\s#arguments.allow#]", "", "all" );
+			slug 		= trim ( reReplace( slug, "[\s-]+", " ", "all" ) );
+			slug 		= reReplace( slug, "\s", "-", "all" );
 
 			// is there a max length restriction
-			if ( arguments.maxlength ) {slug = left ( slug, arguments.maxlength );}
+			if( arguments.maxlength ){ slug = left( slug, arguments.maxlength ); }
 
 			return slug;
 		</cfscript>
