@@ -1,4 +1,4 @@
-﻿/**
+/**
 *********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
@@ -11,7 +11,6 @@
 * @author Luis Majano <lmajano@ortussolutions.com>
 */
 component accessors="true"{
-
 	/**
 	* WireBox
 	*/
@@ -142,7 +141,6 @@ component accessors="true"{
 					if( aspectBindings[ x ].classes.matchClass( arguments.target, arguments.mapping ) ){
 						arrayAppend( matchedAspects, aspectBindings[ x ] );
 					}
-
 				}// end for discovery
 
 				// Log
@@ -286,6 +284,7 @@ component accessors="true"{
 
 		// MD proxy Defaults
 		fncMD.name = arguments.jointPointMD.name;
+
 		if( structKeyExists( arguments.jointPointMD, "access" ) ){ fncMD.access = arguments.jointPointMD.access; }
 		if( structKeyExists( arguments.jointPointMD, "output" ) ){ fncMD.output = arguments.jointPointMD.output; }
 		if( structKeyExists( arguments.jointPointMD, "returntype" ) ){ fncMD.returntype = arguments.jointPointMD.returnType; }
@@ -386,5 +385,4 @@ component accessors="true"{
 			variables.log.debug( "AOP Decoration finalized for Mapping: #arguments.mapping.getName()#" );
 		}
 	}
-
 }
