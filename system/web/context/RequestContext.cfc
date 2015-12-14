@@ -211,9 +211,9 @@ component serializable=false accessors="true"{
 			return arguments.defaultValue;
 		}
 
-		throw("The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
-			   "Keys Found: #structKeyList(collection)#",
-			   "RequestContext.ValueNotFound");
+		throw(  message="The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
+			detail="Keys Found: #structKeyList(collection)#",
+			type="RequestContext.ValueNotFound");
 	}
 
 	/**
