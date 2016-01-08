@@ -66,6 +66,12 @@ Description :
 			// Prepare Lock Info
 			instance.lockName = "CacheFactory.#instance.factoryID#";
 
+			// Passed in configuration?
+			if( NOT structKeyExists(arguments,"config") ){
+				// Create default configuration
+				arguments.config = createObject("component","coldbox.system.cache.config.CacheBoxConfig").init(CFCConfigPath=defaultConfigPath);
+			}
+
 			// Check if linking ColdBox
 			if( structKeyExists(arguments, "coldbox") ){
 				// Link ColdBox
@@ -79,16 +85,11 @@ Description :
 			}
 			else{
 				// Running standalone, so create our own logging first
-				configureLogBox();
+				configureLogBox(arguments.config.getLogboxConfig());
 				// Running standalone, so create our own event manager
 				configureEventManager();
 			}
 
-			// Passed in configuration?
-			if( NOT structKeyExists(arguments,"config") ){
-				// Create default configuration
-				arguments.config = createObject("component","coldbox.system.cache.config.CacheBoxConfig").init(CFCConfigPath=defaultConfigPath);
-			}
 
 			// Configure Logging for the Cache Factory
 			instance.log = instance.logBox.getLogger( this );
@@ -655,9 +656,11 @@ Description :
 
 	<!--- configureLogBox --->
     <cffunction name="configureLogBox" output="false" access="private" returntype="void" hint="Configure a standalone version of logBox for logging">
+    	<cfargument name="cfcConfig" type="string" required="true">
+
     	<cfscript>
     		// Config LogBox Configuration
-			var config = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(CFCConfigPath="coldbox.system.cache.config.LogBox");
+			var config = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(CFCConfigPath=arguments.cfcConfig);
 			// Create LogBox
 			instance.logBox = createObject("component","coldbox.system.logging.LogBox").init( config );
 		</cfscript>
