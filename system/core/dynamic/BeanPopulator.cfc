@@ -474,7 +474,9 @@ Description :
 		<cfargument name="target" required="true" type="any" />
 
 		<cfscript>
-			var properties = getMetaData( target ).properties;
+			// get array of properties
+			var stopRecursions= [ "lucee.Component", "railo.Component", "WEB-INF.cftags.component" ];
+			var properties = getUtil().getInheritedMetaData( arguments.target, stopRecursions ).properties; 
 			var stProps = {};
 			
 			for ( var p = 1; p <= arrayLen( properties ); p++ ) {
