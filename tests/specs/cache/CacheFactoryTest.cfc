@@ -23,7 +23,7 @@
 
 	function testconfigureLogBox(){
 		makePublic(cachefactory,"configureLogBox");
-		cacheFactory.configureLogBox();
+		cacheFactory.configureLogBox( "coldbox.system.cache.config.LogBox" );
 
 		assertTrue( isObject(cacheFactory.getLogBox()) );
 	}
