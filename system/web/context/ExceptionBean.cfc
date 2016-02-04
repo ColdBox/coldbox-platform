@@ -31,7 +31,7 @@ component accessors="true"{
 	* @extraInfo Extra info to store in the error
 	*/
 	ExceptionBean function init(
-		struct errorStruct = {},
+		any errorStruct = {},
 		any extraMessage = "",
 		any extraInfo = ""
 	){
@@ -44,7 +44,7 @@ component accessors="true"{
 
 		return this;
 	}
-	
+
 	/**
 	* Get memento representation
 	*/
@@ -52,7 +52,7 @@ component accessors="true"{
 		return {
 			"exceptionStruct" 	= variables.exceptionStruct,
 			"extraMessage" 		= variables.extraMessage,
-			"extraInfo" 		= variables.extraInfo,
+			"extraInfo" 		= variables.extraInfo
 		};
 	}
 
@@ -83,7 +83,7 @@ component accessors="true"{
 		}
 		return variables.STRINGNULL;
 	}
-	
+
 	/**
 	* Get error detail
 	*/
@@ -140,7 +140,7 @@ component accessors="true"{
 
 		return variables.STRINGNULL;
 	}
-	
+
 	/**
 	* Get native error code
 	*/
@@ -150,7 +150,7 @@ component accessors="true"{
 		}
 		return variables.STRINGNULL;
 	}
-	
+
 	/**
 	* Get SQL State
 	*/
@@ -162,7 +162,7 @@ component accessors="true"{
 	}
 
 	/**
-	* Get SQL 
+	* Get SQL
 	*/
 	function getSql(){
 		if( structKeyExists( variables.exceptionStruct, "sql" ) ){
@@ -172,7 +172,7 @@ component accessors="true"{
 	}
 
 	/**
-	* Get queryError 
+	* Get queryError
 	*/
 	function getQueryError(){
 		if( structKeyExists( variables.exceptionStruct, "queryError" ) ){
@@ -182,7 +182,7 @@ component accessors="true"{
 	}
 
 	/**
-	* Get where portion 
+	* Get where portion
 	*/
 	function getWhere(){
 		if( structKeyExists( variables.exceptionStruct, "where" ) ){
@@ -192,7 +192,7 @@ component accessors="true"{
 	}
 
 	/**
-	* Get err number 
+	* Get err number
 	*/
 	function getErrNumber(){
 		if( structKeyExists( variables.exceptionStruct, "errNumber" ) ){
@@ -255,11 +255,11 @@ component accessors="true"{
 	* String representation of this error
 	*/
 	function $toString(){
-		var buffer = ""; 
-			
+		var buffer = "";
+
 		// Prepare String Buffer
 		buffer = createObject( "java", "java.lang.StringBuffer" ).init( getExtraMessage() & chr( 13 ) );
-		
+
 		if ( getType() neq  "" ){
 			buffer.append( "CFErrorType=" & getType() & chr( 13 ) );
 		}
@@ -281,6 +281,6 @@ component accessors="true"{
 			buffer.append( "CFExtraInfo=" & serializeJSON( getExtraInfo() ) & chr( 13 ) );
 		}
 		return buffer.toString();
-	}	
+	}
 
 }
