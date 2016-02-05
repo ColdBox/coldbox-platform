@@ -210,8 +210,8 @@ I oversee and manage ColdBox modules
 					cfmapping			= "",
 					// Models namespsace
 					modelNamespace		= modName,
-					// Auto map models flag
-					autoMapModels		= true,
+					// Auto map models flag (by default it should not mapp model CFCs. let user decide)
+					autoMapModels		= false,
 					// when this registration ocurred
 					loadTime 			= now(),
 					// Flag that denotes if the module has been activated or not
