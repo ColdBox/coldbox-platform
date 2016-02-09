@@ -740,6 +740,15 @@ component serializable=false accessors="true"{
    		return this;
 	}
 
+    /**
+    * Get the rendered content from a ColdBox integration test
+    *
+    * @return cbox_rendered_content or an empty string
+    */
+    function getRenderedContent() {
+        return getValue( "cbox_rendered_content", "" );
+    }
+
 	/************************************** URL METHODS *********************************************/
 
 	/**
