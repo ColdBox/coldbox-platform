@@ -74,7 +74,7 @@ component extends="coldbox.system.EventHandler"{
 		
 		// Global Response Headers
 		prc.response.addHeader( "x-response-time", prc.response.getResponseTime() )
-				.addHeader( "x-cached-response", prc.response.getCachedResponse() )
+				.addHeader( "x-cached-response", prc.response.getCachedResponse() );
 		
 		// Response Headers
 		for( var thisHeader in prc.response.getHeaders() ){
