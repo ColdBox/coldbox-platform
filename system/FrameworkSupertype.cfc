@@ -57,6 +57,10 @@ component serializable="false" accessors="true"{
 	* @nullEmptyExclude.hint A list of keys to NOT NULL when empty
 	* @composeRelationships.hint Automatically attempt to compose relationships from memento
 	* @memento A structure to populate the model, if not passed it defaults to the request collection
+	* @jsonstring If you pass a json string, we will populate your model with it
+	* @xml If you pass an xml string, we will populate your model with it
+	* @qry If you pass a query, we will populate your model with it
+	* @rowNumber The row of the qry parameter to populate your model with
 	*/
 	function populateModel(
 		required model,
@@ -68,7 +72,10 @@ component serializable="false" accessors="true"{
 		nullEmptyInclude="",
 		nullEmptyExclude="",
 		boolean composeRelationships=false,
-		struct memento=getRequestCollection()
+		struct memento=getRequestCollection(),
+		string jsonstring,
+		string xml,
+		query qry
 	){
 		// Do we have a model or name
 		if( isSimpleValue( arguments.model ) ){
@@ -76,8 +83,24 @@ component serializable="false" accessors="true"{
 		} else {
 			arguments.target = arguments.model;
 		}
-		// populate
-		return wirebox.getObjectPopulator().populateFromStruct( argumentCollection=arguments );
+		
+		// json?
+		if( structKeyExists( arguments, "jsonstring" ) ){
+			return wirebox.getObjectPopulator().populateFromJSON( argumentCollection=arguments );
+		}
+		// XML
+		else if( structKeyExists( arguments, "xml" ) ){
+			return wirebox.getObjectPopulator().populateFromXML( argumentCollection=arguments );
+		} 
+		// Query
+		else if( structKeyExists( arguments, "qry" ) ){
+			return wirebox.getObjectPopulator().populateFromQuery( argumentCollection=arguments );
+		}
+		// Mementos
+		else {
+			// populate
+			return wirebox.getObjectPopulator().populateFromStruct( argumentCollection=arguments );
+		}
 	}
 
 	/**

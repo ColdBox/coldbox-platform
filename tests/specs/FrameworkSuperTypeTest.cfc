@@ -45,6 +45,37 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 					expect(	oBean.getFname() ).toBe( 'luis' );
 					expect(	oBean.getLname() ).toBe( 'majano' );
 				});
+
+				it( "from json", function(){
+					var test = serializeJSON( {
+						"fname" = "luis",
+						"lname" = "majano"
+					} );
+
+					var target = getInterceptor( "ses" );
+					var oBean = target.populateModel( model="formBean", jsonstring=test );
+					expect(	oBean.getFname() ).toBe( 'luis' );
+					expect(	oBean.getLname() ).toBe( 'majano' );
+				});
+
+				it( "from xml", function(){
+					var test = "<root><fname>luis</fname><lname>majano</lname></root>";
+
+					var target = getInterceptor( "ses" );
+					var oBean = target.populateModel( model="formBean", xml=test );
+					expect(	oBean.getFname() ).toBe( 'luis' );
+					expect(	oBean.getLname() ).toBe( 'majano' );
+				});
+
+				it( "from query", function(){
+					var test = querySim( "fname,lname
+						luis | majano" );
+
+					var target = getInterceptor( "ses" );
+					var oBean = target.populateModel( model="formBean", qry=test );
+					expect(	oBean.getFname() ).toBe( 'luis' );
+					expect(	oBean.getLname() ).toBe( 'majano' );
+				});
 			
 			});
 
