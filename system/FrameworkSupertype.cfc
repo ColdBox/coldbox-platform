@@ -46,7 +46,7 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Populate a model object from the request Collection
+	* Populate a model object from the request Collection or a passed in memento structure
 	* @model.hint The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
 	* @scope.hint Use scope injection instead of setters population. Ex: scope=variables.instance.
 	* @trustedSetter.hint If set to true, the setter method will be called even if it does not exist in the object
@@ -56,6 +56,7 @@ component serializable="false" accessors="true"{
 	* @nullEmptyInclude.hint A list of keys to NULL when empty
 	* @nullEmptyExclude.hint A list of keys to NOT NULL when empty
 	* @composeRelationships.hint Automatically attempt to compose relationships from memento
+	* @memento A structure to populate the model, if not passed it defaults to the request collection
 	*/
 	function populateModel(
 		required model,
@@ -66,10 +67,9 @@ component serializable="false" accessors="true"{
 		boolean ignoreEmpty=false,
 		nullEmptyInclude="",
 		nullEmptyExclude="",
-		boolean composeRelationships=false
+		boolean composeRelationships=false,
+		struct memento=getRequestCollection()
 	){
-		// Get memento
-		arguments.memento = getRequestCollection();
 		// Do we have a model or name
 		if( isSimpleValue( arguments.model ) ){
 			arguments.target = getModel( model );
