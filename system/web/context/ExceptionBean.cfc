@@ -35,7 +35,7 @@ component accessors="true"{
 		any extraMessage = "",
 		any extraInfo = ""
 	){
-		variables.exceptionStruct = duplicate(arguments.errorStruct);
+		variables.exceptionStruct = arguments.errorStruct;
 		if( !isStruct( variables.exceptionStruct ) ){
 			variables.exceptionStruct = {};
 		}
