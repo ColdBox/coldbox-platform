@@ -343,6 +343,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
         try{
             // if we were passed a route, parse it and prepare the SES interceptor for routing.
             if ( arguments.route != "" ){
+            	// enable the SES interceptor
+            	getInterceptor( "SES" ).setEnabled( true );
                 // separate the route into the route and the query string
                 var routeParts = explodeRoute( arguments.route );
 
@@ -352,11 +354,11 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
                 getRequestContext().collectionAppend( parseQueryString( arguments.queryString ) );
 
                 // mock the cleaned paths so SES routes will be recognized
-                prepareMock( getInterceptor( 'SES' ) ).$('getCleanedPaths', { pathInfo = routeParts.route, scriptName = '' });
+                prepareMock( getInterceptor( "SES" ) ).$( "getCleanedPaths", { pathInfo = routeParts.route, scriptName = "" } );
             }
             else{
                 // If we were passed just an event, remove routing since we don't need it
-                getInterceptor( 'SES' ).setEnabled( false );
+                getInterceptor( "SES" ).setEnabled( false );
             }
         }catch( "InterceptorService.InterceptorNotFound" e ){
         	// In either case, if the interceptor doesn't exists, just ignore it.

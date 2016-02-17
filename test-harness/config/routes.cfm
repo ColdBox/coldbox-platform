@@ -53,6 +53,8 @@
 		.addRoute( pattern="/:id/:name{4}?")
 	.endWith();
 
+	addRoute( pattern="/testroute", handler="main", action="index" );
+
 	// Default Application Routing
 	addRoute( pattern=":handler/:action?/:id-numeric?",matchVariables="isFound=true,testDate=#now()#");
 
