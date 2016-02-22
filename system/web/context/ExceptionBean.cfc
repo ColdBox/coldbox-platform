@@ -52,7 +52,7 @@ component accessors="true"{
 				variables.exceptionStruct["TagContext"] = tErrorStruct.TagContext;
 			}
 		}
-		catch(type e) {
+		catch(Any e) {
 			// suppress error (CF10,11 pass exception struct as object)
 		}
 
