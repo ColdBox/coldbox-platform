@@ -41,6 +41,20 @@ component accessors="true"{
 		}
 		variables.extraMessage 	= arguments.extraMessage;
 		variables.extraInfo 	= arguments.extraInfo;
+		
+		try {
+			if(structIsEmpty(variables.exceptionStruct) && isObject(arguments.errorStruct)){
+				var tErrorStruct = duplicate(arguments.errorStruct);
+				variables.exceptionStruct["type"] = tErrorStruct.Type;
+				variables.exceptionStruct["message"] = tErrorStruct.Message;
+				variables.exceptionStruct["detail"] = tErrorStruct.Detail;
+				variables.exceptionStruct["StackTrace"] = tErrorStruct.StackTrace;
+				variables.exceptionStruct["TagContext"] = tErrorStruct.TagContext;
+			}
+		}
+		catch(type e) {
+			// suppress error (CF10,11 pass exception struct as object)
+		}
 
 		return this;
 	}
