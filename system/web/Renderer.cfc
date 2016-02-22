@@ -305,16 +305,25 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			variables._items = arguments.collectionMaxRows;
 		}
 
+		//local counter when using startrow is greater than one and x values is reletive to lookup
+		var _localCounter = 1;
 		for( x=arguments.collectionStartRow; x lte ( arguments.collectionStartRow+variables._items )-1; x++){
 			// setup local cvariables
-			variables._counter  = arguments.collection.currentRow;
-			variables[ arguments.collectionAs ] = arguments.collection;
+			variables._counter  = _localCounter;
+
+			var columnList = arguments.collection.ColumnList;
+			for(var j=1; j <= ListLen(columnList); j++){
+				variables[ arguments.collectionAs ][ListGetAt(columnList,j)] = arguments.collection[ListGetAt(columnList,j)][x];
+			}
+			
 			// prepend the delim
 			if ( variables._counter NEQ 1 ) {
 				buffer.append( arguments.collectionDelim );
 			}
+			
 			// render item composite
 			buffer.append( renderViewComposite( arguments.view, arguments.viewPath, arguments.viewHelperPath, arguments.args) );
+			_localCounter++;
 		}
 
 		return buffer.toString();
