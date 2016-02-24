@@ -1,6 +1,6 @@
 {
 	"name" 				: "WireBox DI/AOP With CacheBox",
-	"version"			: "2.1.0+@build.number@",
+	"version"			: "@version.number@+@build.number@",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "wirebox-with-cachebox",
 	"type"				: "di",
@@ -12,7 +12,6 @@
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/WIREBOX",
 	"shortDescription"	: "AOP and Dependency Injection Framework with CacheBox Included",
 	"engines"			: [
-		{ "type" : "railo", "version" : ">4.1" },
 		{ "type" : "adobe", "version" : ">9.0.2" },
 		{ "type" : "lucee", "version" : ">4.5" }
 	],
@@ -30,7 +29,6 @@
     ],
 	"testbox"			: {
 		"runner" : [
-			{ "cf9" 	: "http://cf9cboxdev.local/coldbox/tests/runner.cfm" },
 			{ "cf10" 	: "http://cf10cboxdev.local/coldbox/tests/runner.cfm" },
 			{ "cf11" 	: "http://cf11cboxdev.local/coldbox/tests/runner.cfm" },
 			{ "lucee" 	: "http://luceecboxdev.local/coldbox/tests/runner.cfm" }

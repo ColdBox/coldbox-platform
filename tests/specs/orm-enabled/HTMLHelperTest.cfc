@@ -206,25 +206,22 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 	function testTableArrayofStructs(){
 		data = [
-		{id=1, name="luis"},
-		{id=2, name="peter"}
+			{id=1, name="luis"},
+			{id=2, name="peter"}
 		];
 
 		str = model.table(data=data);
-		assertEquals("<table><thead><tr><th>NAME</th><th>ID</th></tr></thead><tbody><tr><td>luis</td><td>1</td></tr><tr><td>peter</td><td>2</td></tr></tbody></table>",
-					 str);
+		expect(	str ).toInclude( '<th>NAME</th>' )
+			.toInclude( "<th>ID</th>");
 
 		str = model.table(data=data,class="test");
-		assertEquals('<table class="test"><thead><tr><th>NAME</th><th>ID</th></tr></thead><tbody><tr><td>luis</td><td>1</td></tr><tr><td>peter</td><td>2</td></tr></tbody></table>',
-					 str);
+		expect(	str ).toInclude( 'class="test' );
 
 		str = model.table(data=data,includes="name",class="test");
-		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
-					 str);
+		expect(	str ).NotToInclude( '<th>ID</th>' );
 
 		str = model.table(data=data,excludes="id",class="test");
-		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
-					 str);
+		expect(	str ).toInclude( '<th>NAME</th>' );
 	}
 
 	function testSlugify(){

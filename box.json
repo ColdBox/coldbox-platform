@@ -1,6 +1,6 @@
 {
     "name":"ColdBox Platform",
-    "version":"4.2.0+@build.number@",
+    "version":"@version.number@+@build.number@",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"coldbox",
     "packageDirectory":"coldbox",
@@ -42,9 +42,6 @@
     ],
     "testbox":{
         "runner":[
-            {
-                "cf9":"http://cf9cboxdev.local/coldbox/tests/runner.cfm"
-            },
             {
                 "cf10":"http://cf10cboxdev.local/coldbox/tests/runner.cfm"
             },
