@@ -1,8 +1,7 @@
 ﻿/**
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 */
 component{
 	// Application properties
@@ -27,8 +26,13 @@ component{
 		return true;
 	}
 
+	// application end
+	public boolean function onApplicationEnd( struct appScope ){
+		arguments.appScope.cbBootstrap.onApplicationEnd( arguments.appScope );
+	}
+
 	// request start
-	public boolean function onRequestStart(String targetPage){
+	public boolean function onRequestStart( string targetPage ){
 		// Process ColdBox Request
 		application.cbBootstrap.onRequestStart( arguments.targetPage );
 
