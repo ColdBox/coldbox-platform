@@ -19,6 +19,8 @@ component{
 	rootPath = REReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)", "" );
 	// ColdBox Root path
 	this.mappings[ "/coldbox" ] 		= rootPath;
+	// TestBox
+	this.mappings[ "/testbox" ] 		= rootPath & "testbox";
 	// harness path
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
@@ -39,4 +41,5 @@ component{
 
 		return true;
 	}
+
 }

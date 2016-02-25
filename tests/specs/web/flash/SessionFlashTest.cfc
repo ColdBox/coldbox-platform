@@ -13,7 +13,9 @@
 		};
 	}	
 	function teardown(){ 
-		structClear(session);
+		lock scope="session" timeout="10" throwOnTimeout="true"{
+			structClear(session);
+		}
 	}
 	function testClearFlash(){
 		session[flash.getFlashKey()] = testscope;

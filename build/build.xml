@@ -64,14 +64,21 @@
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}" />
+
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
- 		<!-- Make sure we start the embedded server -->
-		<exec executable="box" dir="${basedir}">
-			<arg line="server restart" />
-		</exec>
+		
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
+		
+		<!-- Make sure we start the embedded server -->
+		<exec executable="box" dir="${basedir}">
+			<arg line="server stop" />
+		</exec>
+		<exec executable="box" dir="${basedir}">
+			<arg line="server start" />
+		</exec>
+		
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
 	</target>

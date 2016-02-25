@@ -16,9 +16,11 @@
 		testScope = { name={content="luis majano",keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true}, 
 					  date={content=now(),keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true} };
 	}	
+
 	function teardown(){ 
-		structClear(request);
+
 	}
+
 	function testInflateFlash(){
 		testScope = { name={content="luis majano",keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true}, 
 					  date={content=now(),keep=true,inflateToRC=true,inflateToPRC=false,autoPurge=true},
@@ -33,6 +35,9 @@
 	}
 	
 	function testScopeMethods(){
+
+		flash.clear();
+		
 		assertEquals( flash.size(), 0);
 		assertEquals( flash.isEmpty(), true);
 		
