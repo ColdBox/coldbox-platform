@@ -40,4 +40,6 @@ component{
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
 
+
+	function configure(){}
 }
