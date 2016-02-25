@@ -99,12 +99,12 @@ Loads a coldbox cfc configuration file
 		// Setup Default Application Path from main controller
 		configStruct.applicationPath = instance.controller.getAppRootPath();
 		// Check for Override of AppMapping
-		if( len(trim(arguments.overrideAppMapping)) ){
-			configStruct.applicationPath = expandPath(arguments.overrideAppMapping) & "/";
+		if( len( trim( arguments.overrideAppMapping ) ) ){
+			configStruct.applicationPath = expandPath( arguments.overrideAppMapping ) & "/";
 		}
 
 		/* ::::::::::::::::::::::::::::::::::::::::: GET COLDBOX SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
-		parseColdboxSettings( oConfig, configStruct,arguments. overrideAppMapping );
+		parseColdboxSettings( oConfig, configStruct,arguments.overrideAppMapping );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: YOUR SETTINGS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
 		parseYourSettings( oConfig, configStruct );

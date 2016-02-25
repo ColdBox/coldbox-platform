@@ -66,6 +66,10 @@
 		<mkdir dir="${dir.build}" />
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
+ 		<!-- Make sure we start the embedded server -->
+		<exec executable="box" dir="${basedir}">
+			<arg line="server restart" />
+		</exec>
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 		<!-- Mark as init -->
@@ -587,6 +591,9 @@
 	<target name="getDependencies" description="Get all the necessary dependencies for the build process">
 		<!-- Install dependencies for project -->
 		<exec executable="box" dir="${basedir}">
+			<arg line="install" />
+		</exec>
+		<exec executable="box" dir="${basedir}/apidocs">
 			<arg line="install" />
 		</exec>
 	</target>

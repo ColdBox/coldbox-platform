@@ -1,9 +1,0 @@
-{
-    "force":true,
-    "openbrowser":"false",
-    "web":{
-        "http":{
-            "port":8511
-        }
-    }
-}
