@@ -1,14 +1,14 @@
 <cfparam name="url.version" default="0">
-<cfparam name="url.path" 	default="#expandPath( "./LogBox-APIDocs" )#">
+<cfparam name="url.path" 	default="#expandPath( "./logbox-APIDocs" )#">
 <cfscript>
-	docName = "LogBox-APIDocs";
+	docName = "logbox-APIDocs";
 	base = expandPath( "/logbox" );
 
-	colddoc 	= new ColdDoc();
-	strategy 	= new colddoc.strategy.api.HTMLAPIStrategy( url.path, "LogBox v#url.version#" );
-	colddoc.setStrategy( strategy );
-
-	colddoc.generate( inputSource=base, outputDir=url.path, inputMapping="logbox" );
+	docbox 	= new docbox.DocBox( properties = {
+		projectTitle 	= "logbox v#url.version#",
+		outputDir 		= url.path
+	} );
+	docbox.generate( source=base, mapping="logbox" );
 </cfscript>
 
 <!---

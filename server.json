@@ -1,0 +1,11 @@
+{
+    "force":true,
+    "web":{
+        "http":{
+            "port":"63928"
+        }
+    },
+    "JVM":{
+        "heapSize":"512"
+    }
+}

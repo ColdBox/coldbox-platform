@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
-     ColdBox Platform Build (www.coldbox.org)                                                               
+     ColdBox Platform Build
      ====================================================================== -->
 <project name="coldbox-platform-build" default="build.all" basedir="../">
 	<description>
@@ -40,16 +40,16 @@
 			<not><isset property="environment" /></not>
 		</condition>
 		<if>
-			<available file="build/coldbox-${environment}.properties" />
+			<available file="build/build-${environment}.properties" />
 			<then>
 				<!-- Load env properties -->
 				<echo>Loading properties from environment: ${environment}</echo>
-				<loadproperties srcFile="build/coldbox-${environment}.properties"/>
+				<loadproperties srcFile="build/build-${environment}.properties"/>
 			</then>
 		</if>
 		<!-- Load root properties -->
 		<echo>Loading base properties</echo>
-		<loadproperties srcFile="build/coldbox.properties"/>
+		<loadproperties srcFile="build/build.properties"/>
 
 		<!-- Build Number -->
 		<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
@@ -64,6 +64,12 @@
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}" />
+		<!-- Get Build Dependencies -->
+ 		<antcall target="getDependencies" />
+ 		<!-- Make sure we start the embedded server -->
+		<exec executable="box" dir="${basedir}">
+			<arg line="server restart" />
+		</exec>
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 		<!-- Mark as init -->
@@ -145,9 +151,7 @@
 
 		<!-- Move Install folder -->
 		<copy todir="${dir.build}/install" encoding="UTF-8">
-        	<fileset dir="install">
-        		<exclude name="ColdboxCheatSheet.*" />
-        	</fileset>
+        	<fileset dir="install" />
         </copy>
 		
 		<!--AppTemplate-->
@@ -164,8 +168,11 @@
 		<!-- Copy box.json to build -->
 		<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
 		
-		<!-- Replace Build Numbers -->
+		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+		  <fileset dir="${dir.build}" />
+		</replaceregexp>
+		<replaceregexp match='@version.number@' replace="${coldbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
@@ -173,8 +180,8 @@
 		<get dest="${dir.build}/install/IDE Extras/CFBuilder Dictionary/coldbox.builder.xml" src="${url.dictionaries}/builderDictionary.cfm?text=true" verbose="true"/>
 
 		<!-- Execute Api Docs -->
-		<get dest="${dir.build}/colddoc.html" src="${url.coldbox.api}${coldbox.version}&amp;path=${dir.build}/apidocs&amp;coldbox_root=${dir.build}" verbose="true"/>
-		<delete file="${dir.build}/colddoc.html" />
+		<get dest="${dir.build}/docbox.html" src="${url.coldbox.api}${coldbox.version}&amp;path=${dir.build}/apidocs&amp;coldbox_root=${dir.build}" verbose="true"/>
+		<delete file="${dir.build}/docbox.html" />
 		
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-apidocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs" />
@@ -201,22 +208,19 @@
 				<include name="*.zip" />
 			</fileset>
 		</checksum>
+		<checksum forceoverwrite="true" algorithm="SHA-512" fileext=".sha512">
+			<fileset dir="${dir.coldbox.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
 		
 		<!-- Move Bleeding Edge to Root -->
 		<copy file="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" 					
 			  tofile="${be.coldbox.exports}/${coldbox.slug}-be.zip" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
-		<copy file="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip.md5" 				
-			  tofile="${be.coldbox.exports}/${coldbox.slug}-be.zip.md5" 
-			  overwrite="true"
-			  encoding="UTF-8"/>
 		<copy file="${dir.coldbox.exports}/coldbox-standalone-${coldbox.version}.zip" 		
 			  tofile="${be.coldbox.exports}/${coldbox.slug}-be-standalone.zip" 
-			  overwrite="true"
-			  encoding="UTF-8"/>
-		<copy file="${dir.coldbox.exports}/coldbox-standalone-${coldbox.version}.zip.md5" 	
-			  tofile="${be.coldbox.exports}/${coldbox.slug}-be-standalone.zip.md5" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
 		
@@ -276,8 +280,11 @@
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-cachebox.json"  encoding="UTF-8"/>
 
-		<!-- Replace Build Numbers -->
+		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+		  <fileset dir="${dir.build}" />
+		</replaceregexp>
+		<replaceregexp match='@version.number@' replace="${cachebox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 
@@ -299,9 +306,9 @@
 			<replacetoken>coldbox.system.</replacetoken>
 		</replace>
 		
-		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${url.cachebox.api}${cachebox.version}&amp;path=${dir.build}/apidocs&amp;cachebox_root=${dir.build}" verbose="true"/>
-		<delete file="${dir.build}/colddoc.html" />
+		<!-- Execute API Docs -->
+		<get dest="${dir.build}/docbox.html" src="${url.cachebox.api}${cachebox.version}&amp;path=${dir.build}/apidocs&amp;cachebox_root=${dir.build}" verbose="true"/>
+		<delete file="${dir.build}/docbox.html" />
 		
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.cachebox.exports}/cachebox-apidocs-${cachebox.version}.zip" basedir="${dir.build}/apidocs" />
@@ -316,14 +323,15 @@
 				<include name="*.zip" />
 			</fileset>
 		</checksum>
+		<checksum forceoverwrite="true" algorithm="SHA-512" fileext=".sha512">
+			<fileset dir="${dir.cachebox.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
 		
 		<!-- Move BE to root -->
 		<copy file="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip" 		
 			  tofile="${be.cachebox.exports}/${cachebox.slug}-be.zip" 
-			  overwrite="true"
-			  encoding="UTF-8"/>
-		<copy file="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip.md5" 	
-			  tofile="${be.cachebox.exports}/${cachebox.slug}-be.zip.md5" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
 		
@@ -379,8 +387,11 @@
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-logbox.json"  encoding="UTF-8"/>
 
-        <!-- Replace Build Numbers -->
+        <!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+		  <fileset dir="${dir.build}" />
+		</replaceregexp>
+		<replaceregexp match='@version.number@' replace="${logbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
@@ -400,9 +411,9 @@
 			<replacetoken>coldbox.system.</replacetoken>
 		</replace>
 		
-		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${url.logbox.api}${logbox.version}&amp;path=${dir.build}/apidocs&amp;logbox_root=${dir.build}" verbose="true"/>
-		<delete file="${dir.build}/colddoc.html" />
+		<!-- Execute API Docs -->
+		<get dest="${dir.build}/docbox.html" src="${url.logbox.api}${logbox.version}&amp;path=${dir.build}/apidocs&amp;logbox_root=${dir.build}" verbose="true"/>
+		<delete file="${dir.build}/docbox.html" />
 		
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.logbox.exports}/logbox-apidocs-${logbox.version}.zip" basedir="${dir.build}/apidocs" />
@@ -417,14 +428,15 @@
 				<include name="*.zip" />
 			</fileset>
 		</checksum>
+		<checksum forceoverwrite="true" algorithm="SHA-512" fileext=".sha512">
+			<fileset dir="${dir.logbox.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
 		
 		<!-- Move BE to root -->
 		<copy file="${dir.logbox.exports}/logbox-${logbox.version}.zip" 		
 			  tofile="${be.logbox.exports}/${logbox.slug}-be.zip" 
-			  overwrite="true"
-			  encoding="UTF-8"/>
-		<copy file="${dir.logbox.exports}/logbox-${logbox.version}.zip.md5" 	
-			  tofile="${be.logbox.exports}/${logbox.slug}-be.zip.md5" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
 		
@@ -489,8 +501,11 @@
 		</copy>
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-wirebox-cachebox.json"  encoding="UTF-8"/>
-		<!-- Replace Build Numbers -->
+		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+		  <fileset dir="${dir.build}" />
+		</replaceregexp>
+		<replaceregexp match='@version.number@' replace="${wirebox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
@@ -513,8 +528,8 @@
 		</replace>
 
 		<!-- Execute ApiDocs -->
-		<get dest="${dir.build}/colddoc.html" src="${url.wirebox.api}${wirebox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
-		<delete file="${dir.build}/colddoc.html" />
+		<get dest="${dir.build}/docbox.html" src="${url.wirebox.api}${wirebox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
+		<delete file="${dir.build}/docbox.html" />
 		
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.wirebox.exports}/wirebox-apidocs-${wirebox.version}.zip" basedir="${dir.build}/apidocs"></zip>
@@ -532,14 +547,19 @@
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
-		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${url.wirebox.api}${wirebox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
-		<delete file="${dir.build}/colddoc.html" />
+		<!-- Execute docbox -->
+		<get dest="${dir.build}/docbox.html" src="${url.wirebox.api}${wirebox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
+		<delete file="${dir.build}/docbox.html" />
 		<!-- Zip Without CacheBox -->
 		<zip destfile="${dir.wirebox.exports}/wirebox-${wirebox.version}.zip" basedir="${dir.build}"></zip>
 		
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
+			<fileset dir="${dir.wirebox.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
+		<checksum forceoverwrite="true" algorithm="SHA-512" fileext=".sha512">
 			<fileset dir="${dir.wirebox.exports}">
 				<include name="*.zip" />
 			</fileset>
@@ -550,16 +570,8 @@
 			  tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
-		<copy file="${dir.wirebox.exports}/wirebox-${wirebox.version}.zip.md5" 			
-			  tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip.md5" 
-			  overwrite="true"
-			  encoding="UTF-8"/>
 		<copy file="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip" 	
 			  tofile="${be.wirebox.exports}/${wirebox.slug}-cachebox-be.zip" 
-			  overwrite="true"
-			  encoding="UTF-8"/>
-		<copy file="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip.md5" 
-			  tofile="${be.wirebox.exports}/${wirebox.slug}-cachebox-be.zip.md5" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
 		
@@ -573,6 +585,17 @@
 		
 		<!-- Cleanup -->
 		<delete dir="${dir.build}" />
+	</target>
+
+	<!-- Get Dependencies -->
+	<target name="getDependencies" description="Get all the necessary dependencies for the build process">
+		<!-- Install dependencies for project -->
+		<exec executable="box" dir="${basedir}">
+			<arg line="install" />
+		</exec>
+		<exec executable="box" dir="${basedir}/apidocs">
+			<arg line="install" />
+		</exec>
 	</target>
 	
 </project>
