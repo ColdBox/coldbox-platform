@@ -89,9 +89,13 @@
 		<if>
 			<equals arg1="${environment}" arg2="auto" />
 			<then>
-				<chmod file="${dir.build}/**" perm="go+wrs" type="both" verbose="true" />
+				<chmod perm="go+wrs" type="both" verbose="true">
+					<fileset dir="${dir.build}/**" />
+					<fileset dir="${basedir}/testbox/system/**" />
+				</chmod>
 				<chown owner="stg-ortus" verbose="true">
 					<fileset dir="${dir.build}" />
+					<fileset dir="${basedir}/testbox/system" />
 				</chown>
 			</then>
 			<else>
