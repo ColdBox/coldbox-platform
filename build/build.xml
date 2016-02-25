@@ -90,8 +90,8 @@
 			<equals arg1="${environment}" arg2="auto" />
 			<then>
 				<chmod perm="go+wrs" type="both" verbose="true">
-					<fileset dir="${dir.build}/**" />
-					<fileset dir="${basedir}/testbox/system/**" />
+					<fileset dir="${dir.build}"><include name="**/**" /></fileset>
+					<fileset dir="${basedir}/testbox/system"><include name="**/**" /></fileset>
 				</chmod>
 				<chown owner="stg-ortus" verbose="true">
 					<fileset dir="${dir.build}" />
