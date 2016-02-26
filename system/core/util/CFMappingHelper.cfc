@@ -14,7 +14,7 @@ component{
 
 		if ( listFirst( server.coldfusion.productVersion ) == 9 ) {
 			addMappingCF9( name, path);
-		} else if ( listFirst( server.coldfusion.productVersion ) == 10 ) {
+		} else if ( listFirst( server.coldfusion.productVersion ) > 9 ) {
 			addMappingCF10( name, path);
 		} else {
 			addMappingCF( name, path);
