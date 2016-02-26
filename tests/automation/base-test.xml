@@ -28,7 +28,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 	<!-- FILL OUT THE LABELS YOU WANT TO APPLY TO THE TESTS -->
 	<property name="test.labels"		value="" />
 	<!-- FILL OUT THE TEST REPORTER YOU WANT, AVAILABLE REPORTERS ARE: ANTJunit, Codexwiki, console, dot, doc, json, junit, min, raw, simple, tap, text, xml -->
-	<property name="test.reporter"		value="simple" />
+	<property name="test.reporter"		value="text" />
 	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED --> 
 	<property name="report.dir"  		value="${basedir}/results" />
 	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
@@ -102,12 +102,12 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 - Recurse
 			 - Labels
 		-->
-		<get dest="${report.dir}/results.html" 
-			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true&amp;reportpath=${report.dir}&amp;directoryExcludes=${test.directoryExcludes}" 
+		<get dest="${report.dir}/results.txt" 
+			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true&amp;reportpath=${report.dir}&amp;directoryExcludes=${test.directoryExcludes}&amp;cfid=123&amp;cftoken=123" 
 			 verbose="true"
 			 maxtime="0"
-			 retries="0"/>
-		
+			 retries="2"/>
+
 		<!-- Bundles Runner
 			You can also run tests for specific bundles by using the runner with the bundles params
 
@@ -125,6 +125,11 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
         <property file="${report.dir}/TEST.properties"/>
         <!-- Echo them out -->
         <echoproperties regex="^(test|total).*"/>
+        <!-- Echo actual results -->
+        <loadresource property="testresults">
+	       <file file="${report.dir}/results.txt"/>
+	    </loadresource>
+	    <echo message="${testresults}"/>
         <!-- Fail build if they failed -->
         <fail if="test.failed"/>
 	</target>

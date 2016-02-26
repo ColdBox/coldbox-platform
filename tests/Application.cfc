@@ -12,6 +12,9 @@ component{
 	this.sessionTimeout = createTimeSpan(0,0,10,0);
 	this.applicationTimeout = createTimeSpan(0,0,10,0);
 
+	// Turn on/off white space management
+	this.whiteSpaceManagement = "smart";
+
 	// setup test path
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 	// setup root path
