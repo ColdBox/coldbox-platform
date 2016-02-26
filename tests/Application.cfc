@@ -1,8 +1,7 @@
 ﻿/**
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 */
 component{
 
@@ -19,6 +18,8 @@ component{
 	rootPath = REReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)", "" );
 	// ColdBox Root path
 	this.mappings[ "/coldbox" ] 		= rootPath;
+	// TestBox
+	this.mappings[ "/testbox" ] 		= rootPath & "testbox";
 	// harness path
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
@@ -39,4 +40,5 @@ component{
 
 		return true;
 	}
+
 }

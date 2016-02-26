@@ -64,14 +64,21 @@
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}" />
+
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
- 		<!-- Make sure we start the embedded server -->
-		<exec executable="box" dir="${basedir}">
-			<arg line="server restart" />
-		</exec>
+		
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
+		
+		<!-- Make sure we start the embedded server -->
+		<exec executable="box" dir="${basedir}">
+			<arg line="server stop" />
+		</exec>
+		<exec executable="box" dir="${basedir}">
+			<arg line="server start" />
+		</exec>
+		
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
 	</target>
@@ -82,9 +89,13 @@
 		<if>
 			<equals arg1="${environment}" arg2="auto" />
 			<then>
-				<chmod file="${dir.build}/**" perm="go+wrs" type="both" verbose="true" />
+				<chmod perm="go+wrs" type="both" verbose="true">
+					<fileset dir="${dir.build}"><include name="**/**" /></fileset>
+					<fileset dir="${basedir}/testbox/system"><include name="**/**" /></fileset>
+				</chmod>
 				<chown owner="stg-ortus" verbose="true">
 					<fileset dir="${dir.build}" />
+					<fileset dir="${basedir}/testbox/system" />
 				</chown>
 			</then>
 			<else>

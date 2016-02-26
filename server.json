@@ -1,5 +1,6 @@
 {
     "force":true,
+    "openBrowser":false,
     "web":{
         "http":{
             "port":"63928"
