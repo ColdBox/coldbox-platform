@@ -820,7 +820,7 @@ component serializable=false accessors="true"{
 			}
 			/* Query String Append */
 			if( len( trim( arguments.queryString ) ) ){
-				if( right( arguments.queryString, 1 ) neq  "/" ){
+				if( right( arguments.linkTo, 1 ) neq  "/" ){
 					arguments.linkto = arguments.linkto & "/";
 				}
 				arguments.linkto = arguments.linkto & replace( arguments.queryString, "&", "/", "all" );

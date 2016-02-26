@@ -1,32 +1,39 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
-	<cfset this.loadColdBox = false>
+﻿/**
+* Request Context Decorator
+*/
+component extends="coldbox.system.testing.BaseTestCase"{
+	
+/*********************************** LIFE CYCLE Methods ***********************************/
 
-	<!--- setup and teardown --->
-	<cffunction name="setUp" returntype="void" access="public">
-		<cfscript>
-			mockDecorator 	= createObject("component","coldbox.system.web.context.RequestContextDecorator");
-			mockContext   	= getMockRequestContext();
-			mockController 	= getMockController();
+	// executes before all suites+specs in the run() method
+	function beforeAll(){
+	}
 
-			mockDecorator.init( mockContext, mockController );
-		</cfscript>
-	</cffunction>
+	// executes after all suites+specs in the run() method
+	function afterAll(){
+	}
 
+/*********************************** BDD SUITES ***********************************/
 
-	<!--- Begin specific tests --->
-	<cffunction name="testRC" access="public" returnType="void">
-		<cfscript>
-			assertEquals( mockContext, mockDecorator.getRequestContext() );
-		</cfscript>
-	</cffunction>
+	function run( testResults, testBox ){
+		// all your suites go here.
+		describe( "Request context decorator", function(){
+			beforeEach(function( currentSpec ){
+				mockContext   	= getMockRequestContext();
+				mockController 	= getMockController();
 
-	<cffunction name="testgetController" access="public" returnType="void">
-		<cfscript>
-			makePublic(mockDecorator,"getController","_getController");
-			mockDecorator.init(mockContext, mockController);
-			assertEquals( mockController, mockDecorator._getController() );
-		</cfscript>
-	</cffunction>
+				mockDecorator = new coldbox.system.web.context.RequestContextDecorator( mockContext, mockController );
+			});
 
+			it( "can be created", function(){
+				expect(	mockContext ).toBe( mockDecorator.getRequestContext() );
+			});
 
-</cfcomponent>
+			it( "can have a reference to its controller", function(){
+				makePublic( mockDecorator, "getController" );
+				expect( mockController ).toBe( mockDecorator.getController() );
+			});
+		});
+	}
+	
+}

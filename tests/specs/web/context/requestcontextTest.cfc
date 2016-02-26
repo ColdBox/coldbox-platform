@@ -1,576 +1,471 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-
-	<cffunction name="setUp">
-		<cfscript>
-			oRC = createObject("component","coldbox.system.web.context.RequestContext");
-
-			/* Properties */
-			props.DefaultLayout = "Main.cfm";
-			props.DefaultView = "";
-			props.FolderLayouts = structnew();
-			props.ViewLayouts = structnew();
-			props.EventName = "event";
-			props.isSES = false;
-			props.sesBaseURL = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
-			props.registeredLayouts = structnew();
-			props.modules = {
-				test1 = {
-					mapping = "/coldbox/test-harness"
-				}
-			};
+﻿component extends="coldbox.system.testing.BaseModelTest"{
+	
+	function setUp(){
+		oRC = createObject("component","coldbox.system.web.context.RequestContext");
 
-			/* Init it */
-			oRC.init(props, getMockController() );
-		</cfscript>
-	</cffunction>
+		/* Properties */
+		props.DefaultLayout = "Main.cfm";
+		props.DefaultView = "";
+		props.FolderLayouts = structnew();
+		props.ViewLayouts = structnew();
+		props.EventName = "event";
+		props.isSES = false;
+		props.sesBaseURL = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
+		props.registeredLayouts = structnew();
+		props.modules = {
+			test1 = {
+				mapping = "/coldbox/test-harness"
+			}
+		};
 
-	<cffunction name="getRequestContext" access="private">
-		<cfreturn oRC>
-	</cffunction>
+		/* Init it */
+		oRC.init(props, getMockController() );
+	}
 
-	<cffunction name="testgetCollection">
-		<cfscript>
-			var event = getRequestContext();
+	function getRequestContext(){
+		return prepareMock( oRC );
+	}
 
-			assertTrue( isStruct(event.getCollection()) );
-		</cfscript>
-	</cffunction>
+	function testgetCollection(){
+		var event = getRequestContext();
 
-	<cffunction name="testclearCollection">
-		<cfscript>
-			var event = getRequestContext();
-			var test = {today=now()};
+		assertTrue( isStruct(event.getCollection()) );
+	}
 
-			event.collectionAppend(test);
-			event.clearCollection();
+	function testclearCollection(){
+		var event = getRequestContext();
+		var test = {today=now()};
 
-			AssertEquals( structnew(), event.getCollection() );
-		</cfscript>
-	</cffunction>
+		event.collectionAppend(test);
+		event.clearCollection();
 
-	<!--- ************************************************************* --->
+		AssertEquals( structnew(), event.getCollection() );
+	}
 
-	<cffunction name="testcollectionAppend">
-		<cfscript>
-			var event = getRequestContext();
-			var test = structnew();
-			test.today = now();
+	function testcollectionAppend(){
+		var event = getRequestContext();
+		var test = structnew();
+		test.today = now();
 
-			event.clearCollection();
-			event.collectionAppend(test);
+		event.clearCollection();
+		event.collectionAppend(test);
 
-			AssertEquals( test, event.getCollection() );
-		</cfscript>
-	</cffunction>
+		AssertEquals( test, event.getCollection() );
+	}
 
-	<!--- ************************************************************* --->
+	function testgetSize(){
+		var event = getRequestContext();
+		var test = structnew();
+		test.today = now();
 
-	<cffunction name="testgetSize">
-		<cfscript>
-			var event = getRequestContext();
-			var test = structnew();
-			test.today = now();
+		event.clearCollection();
+		event.collectionAppend(test);
 
-			event.clearCollection();
-			event.collectionAppend(test);
+		AssertEquals( 1, event.getSize() );
+	}
 
-			AssertEquals( 1, event.getSize() );
-		</cfscript>
-	</cffunction>
+	function testgetValue(){
+		var event = getRequestContext();
+		var test = structnew();
+		test.today = now();
 
-	<!--- ************************************************************* --->
+		event.clearCollection();
+		event.collectionAppend(test);
 
-	<cffunction name="testgetValue">
-		<cfscript>
-			var event = getRequestContext();
-			var test = structnew();
-			test.today = now();
+		assertEquals( test.today , event.getValue("today") );
 
-			event.clearCollection();
-			event.collectionAppend(test);
+		assertEquals( "null", event.getValue("invalidVar", "null") );
 
-			assertEquals( test.today , event.getValue("today") );
+	}
 
-			assertEquals( "null", event.getValue("invalidVar", "null") );
+	function testsetValue(){
+		var event = getRequestContext();
+		var test = structnew();
+		test.today = now();
 
-		</cfscript>
-	</cffunction>
+		event.clearCollection();
 
-	<!--- ************************************************************* --->
+		event.setValue("test", test.today);
 
-	<cffunction name="testsetValue" >
-		<cfscript>
-			var event = getRequestContext();
-			var test = structnew();
-			test.today = now();
+		assertEquals(test.today, event.getValue("test") );
 
-			event.clearCollection();
+	}
 
-			event.setValue("test", test.today);
+	function testremoveValue(){
+		var event = getRequestContext();
+		var test = structnew();
+		test.today = now();
 
-			assertEquals(test.today, event.getValue("test") );
+		event.clearCollection();
 
-		</cfscript>
-	</cffunction>
+		event.setValue("test", test.today);
+		assertEquals(test.today, event.getValue("test") );
 
-	<!--- ************************************************************* --->
+		event.removeValue("test");
+		assertEquals( false, event.getValue("test", false) );
+	}
 
-	<cffunction name="testremoveValue">
-		<cfscript>
-			var event = getRequestContext();
-			var test = structnew();
-			test.today = now();
+	function testvalueExists(){
+		var event = getRequestContext();
+		var test = structnew();
+		test.today = now();
 
-			event.clearCollection();
+		event.clearCollection();
 
-			event.setValue("test", test.today);
-			assertEquals(test.today, event.getValue("test") );
+		event.setValue("test", test.today);
+		assertTrue( event.valueExists("test") );
 
-			event.removeValue("test");
-			assertEquals( false, event.getValue("test", false) );
+		event.removeValue("test");
+		assertFalse( event.valueExists("test") );
+	}
 
-		</cfscript>
-	</cffunction>
+	function testparamValue(){
+		var event = getRequestContext();
+		var test = structnew();
+		test.today = now();
 
-	<!--- ************************************************************* --->
+		event.clearCollection();
 
-	<cffunction name="testvalueExists">
-		<cfscript>
-			var event = getRequestContext();
-			var test = structnew();
-			test.today = now();
+		AssertFalse( event.valueExists("test") );
 
-			event.clearCollection();
+		event.paramValue("test", test.today);
 
-			event.setValue("test", test.today);
-			assertTrue( event.valueExists("test") );
+		assertTrue( event.valueExists("test") );
 
-			event.removeValue("test");
-			assertFalse( event.valueExists("test") );
+	}
 
-		</cfscript>
-	</cffunction>
+	function testCurrentView(){
+		var event = getRequestContext();
+		var view = "vwHome";
 
-	<!--- ************************************************************* --->
+		event.clearCollection();
 
-	<cffunction name="testparamValue"	output="false">
-		<cfscript>
-			var event = getRequestContext();
-			var test = structnew();
-			test.today = now();
+		event.setView( view=view );
+		assertEquals( view, event.getCurrentView() );
 
-			event.clearCollection();
+		event.clearCollection();
 
-			AssertFalse( event.valueExists("test") );
+		event.setView(view=view, cache=true);
+		assertEquals( view, event.getCurrentView() );
+		assertEquals( 'Main.cfm', event.getCurrentLayout() );
 
-			event.paramValue("test", test.today);
+		// set view with caching
+		event.setView(view="home", cache="True", cacheProvider="luis", cacheTimeout="20", cacheLastAccessTimeout="1", cacheSuffix="test");
+		r = event.getViewCacheableEntry();
+		//debug( r );
 
-			assertTrue( event.valueExists("test") );
+		assertEquals( "home", r.view );
+		assertEquals( "20", r.timeout );
+		assertEquals( "1", r.lastAccessTimeout );
+		assertEquals( "test", r.cacheSuffix );
+		assertEquals( "luis", r.cacheProvider );
+	}
 
-		</cfscript>
-	</cffunction>
+	function testCurrentLayout(){
+		var event = getRequestContext();
+		var layout = "layout.pdf";
 
-	<!--- ************************************************************* --->
+		event.clearCollection();
 
-	<cffunction name="testCurrentView" >
-		<cfscript>
-			var event = getRequestContext();
-			var view = "vwHome";
+		event.setLayout(layout);
+		assertEquals( layout & ".cfm", event.getCurrentLayout() );
+	}
 
-			event.clearCollection();
+	function testgetCurrentEventHandlerAction(){
+		var event = getRequestContext();
+		var defaultEvent = "ehTest.doSomething";
 
-			event.setView( view=view );
-			assertEquals( view, event.getCurrentView() );
+		event.setValue("event", defaultEvent);
 
-			event.clearCollection();
+		assertEquals( defaultEvent, event.getCurrentEvent() );
+		assertEquals( "ehTest", event.getCurrentHandler() );
+		assertEquals( "doSomething", event.getCurrentAction() );
 
-			event.setView(view=view, cache=true);
-			assertEquals( view, event.getCurrentView() );
-			assertEquals( 'Main.cfm', event.getCurrentLayout() );
+		defaultEvent = "blog.content.doSomething";
 
-			// set view with caching
-			event.setView(view="home", cache="True", cacheProvider="luis", cacheTimeout="20", cacheLastAccessTimeout="1", cacheSuffix="test");
-			r = event.getViewCacheableEntry();
-			//debug( r );
+		event.setValue("event", defaultEvent);
 
-			assertEquals( "home", r.view );
-			assertEquals( "20", r.timeout );
-			assertEquals( "1", r.lastAccessTimeout );
-			assertEquals( "test", r.cacheSuffix );
-			assertEquals( "luis", r.cacheProvider );
-		</cfscript>
-	</cffunction>
+		assertEquals( defaultEvent, event.getCurrentEvent() );
+		assertEquals( "content", event.getCurrentHandler() );
+		assertEquals( "doSomething", event.getCurrentAction() );
 
-	<!--- ************************************************************* --->
+		defaultEvent = "blog.content.security.doSomething";
 
-	<cffunction name="testCurrentLayout">
-		<cfscript>
-			var event = getRequestContext();
-			var layout = "layout.pdf";
+		event.setValue("event", defaultEvent);
 
-			event.clearCollection();
+		assertEquals( defaultEvent, event.getCurrentEvent() );
+		assertEquals( "security", event.getCurrentHandler() );
+		assertEquals( "doSomething", event.getCurrentAction() );
 
-			event.setLayout(layout);
-			assertEquals( layout & ".cfm", event.getCurrentLayout() );
-		</cfscript>
-	</cffunction>
+	}
 
-	<!--- ************************************************************* --->
+	function testoverrideEvent(){
+		var event = getRequestContext();
+		var newEvent = "pio.yea";
 
-	<cffunction name="testgetCurrentEventHandlerAction"returntype="void">
-		<cfscript>
-			var event = getRequestContext();
-			var defaultEvent = "ehTest.doSomething";
+		event.clearCollection();
+		event.setValue("event","blog.dspEntries");
+		event.overrideEvent(newEvent);
 
-			event.setValue("event", defaultEvent);
+		assertEquals( newEvent , event.getCurrentEvent() );
+	}
 
-			assertEquals( defaultEvent, event.getCurrentEvent() );
-			assertEquals( "ehTest", event.getCurrentHandler() );
-			assertEquals( "doSomething", event.getCurrentAction() );
+	function testProxyRequest(){
+		var event = getRequestContext();
 
-			defaultEvent = "blog.content.doSomething";
+		AssertFalse( event.isProxyRequest() );
 
-			event.setValue("event", defaultEvent);
+		event.setProxyRequest();
+		AssertTrue( event.isProxyRequest() );
+	}
 
-			assertEquals( defaultEvent, event.getCurrentEvent() );
-			assertEquals( "content", event.getCurrentHandler() );
-			assertEquals( "doSomething", event.getCurrentAction() );
+	function testNoRender(){
+		var event = getRequestContext();
 
-			defaultEvent = "blog.content.security.doSomething";
+		event.NoRender(remove=true);
+		AssertFalse( event.isNoRender() );
 
-			event.setValue("event", defaultEvent);
+		event.NoRender(remove=false);
+		AssertTrue( event.isNoRender() );
+	}
 
-			assertEquals( defaultEvent, event.getCurrentEvent() );
-			assertEquals( "security", event.getCurrentHandler() );
-			assertEquals( "doSomething", event.getCurrentAction() );
+	function testgetEventName(){
+		var event = getRequestContext();
+		var test = props.eventName;
 
-		</cfscript>
-	</cffunction>
+		assertEquals( test, event.getEventName() );
+	}
 
-	<!--- ************************************************************* --->
+	function testgetSelf(){
+		var event = getRequestContext();
+		var test = props.eventname;
 
-	<cffunction name="testoverrideEvent" >
-		<cfscript>
-			var event = getRequestContext();
-			var newEvent = "pio.yea";
+		assertEquals( "index.cfm?#test#=", event.getSelf() );
+	}
 
-			event.clearCollection();
-			event.setValue("event","blog.dspEntries");
-			event.overrideEvent(newEvent);
+	function testEventCacheableEntry(){
+		var event = getRequestContext();
+		var centry = structnew();
 
-			assertEquals( newEvent , event.getCurrentEvent() );
-		</cfscript>
-	</cffunction>
+		AssertFalse( event.isEventCacheable(), "event cacheable");
 
-	<!--- ************************************************************* --->
+		centry.cacheable = true;
+		centry.test = true;
 
-	<cffunction name="testProxyRequest" >
-		<cfscript>
-			var event = getRequestContext();
+		event.setEventCacheableEntry(centry);
+		AssertTrue( event.isEventCacheable(), "event cacheable 2");
+		AssertEquals(centry, event.getEventCacheableEntry() );
+	}
 
-			AssertFalse( event.isProxyRequest() );
+	function testViewCacheableEntry(){
+		var event = getRequestContext();
+		var centry = structnew();
 
-			event.setProxyRequest();
-			AssertTrue( event.isProxyRequest() );
-		</cfscript>
-	</cffunction>
+		AssertFalse( event.isViewCacheable(), "view cacheable");
 
-	<!--- ************************************************************* --->
+		centry.cacheable = true;
+		centry.test = true;
 
-	<cffunction name="testNoRender">
-		<cfscript>
-			var event = getRequestContext();
+		event.setViewCacheableEntry(centry);
+		AssertTrue( event.isViewCacheable(), "view cacheable 2");
+		AssertEquals(centry, event.getViewCacheableEntry() );
+	}
 
-			event.NoRender(remove=true);
-			AssertFalse( event.isNoRender() );
+	function testRoutedStruct(){
+		var event = getRequestContext();
+		var routedStruct = structnew();
 
-			event.NoRender(remove=false);
-			AssertTrue( event.isNoRender() );
+		routedStruct.page = "aboutus";
+		routedStruct.day = "13";
 
-		</cfscript>
-	</cffunction>
+		event.setRoutedStruct(routedStruct);
 
-	<!--- ************************************************************* --->
+		AssertEquals(event.getRoutedStruct(),routedStruct);
+	}
 
-	<cffunction name="testgetEventName">
-		<cfscript>
-			var event = getRequestContext();
-			var test = props.eventName;
+	function testSES(){
+		var event = getRequestContext();
+		base = "http://www.luismajano.com/index.cfm";
 
-			assertEquals( test, event.getEventName() );
+		event.setsesBaseURL(base);
+		assertEquals( event.getsesBaseURL(), base );
 
-		</cfscript>
-	</cffunction>
+		event.setisSES(true);
+		assertEquals( event.isSES(), true );
+	}
 
-	<!--- ************************************************************* --->
+	function testBuildLink(){
+		var event = getRequestContext();
+		base = "http://www.luismajano.com/index.cfm";
+		basessl = "https://www.luismajano.com/index.cfm";
 
-	<cffunction name="testgetSelf">
-		<cfscript>
-			var event = getRequestContext();
-			var test = props.eventname;
+		/* simple setup */
+		event.setisSES(false);
+		testurl = event.buildLink('general.index');
+		AssertEquals(testurl, "index.cfm?event=general.index" );
 
-			assertEquals( "index.cfm?#test#=", event.getSelf() );
+		/* simple qs */
+		event.setisSES(false);
+		testurl = event.buildLink(linkTo='general.index',queryString="page=2");
+		AssertEquals(testurl, "index.cfm?event=general.index&page=2" );
 
-		</cfscript>
-	</cffunction>
+		/* empty qs */
+		event.setisSES(false);
+		testurl = event.buildLink(linkTo='general.index',queryString="");
+		AssertEquals(testurl, "index.cfm?event=general.index" );
 
-	<!--- ************************************************************* --->
+		/* ses test */
+		event.setisSES(true);
+		event.setsesBaseURL(base);
+		testurl = event.buildLink('general/index');
+		AssertEquals(testurl, base & "/general/index" );
 
-	<cffunction name="testEventCacheableEntry">
-		<cfscript>
-			var event = getRequestContext();
-			var centry = structnew();
+		/* query string transformation */
+		event.setisSES(true);
+		event.setsesBaseURL(base);
+		testurl = event.buildLink(linkTo='general/index',queryString="page=2&tests=4");
+		AssertEquals(testurl, base & "/general/index/page/2/tests/4" );
 
-			AssertFalse( event.isEventCacheable(), "event cacheable");
+		/* ssl test */
+		event.setisSES(true);
+		event.setsesBaseURL(base);
+		testurl = event.buildLink(linkto='general/index',ssl=true);
+		AssertEquals(testurl, basessl & "/general/index" );
+		// SSL OFF
+		event.setsesBaseURL(basessl);
+		testurl = event.buildLink(linkto='general/index',ssl=false);
+		AssertEquals(testurl, base & "/general/index" );
 
-			centry.cacheable = true;
-			centry.test = true;
+		/* translate */
+		event.setisSES(true);
+		event.setsesBaseURL(base);
+		testurl = event.buildLink(linkto='general.index',translate=false);
+		AssertEquals(testurl, base & "/general.index" );
+	}
 
-			event.setEventCacheableEntry(centry);
-			AssertTrue( event.isEventCacheable(), "event cacheable 2");
-			AssertEquals(centry, event.getEventCacheableEntry() );
+	function testRenderData(){
+		var event = getRequestContext();
 
-		</cfscript>
-	</cffunction>
+		AssertEquals( event.getRenderData(), structnew());
 
-	<!--- ************************************************************* --->
+		// Test JSON
+		event.renderData(type='JSON',data="[1,2,3,4]");
+		rd = event.getRenderData();
+		assertEquals( rd.contenttype, "application/json");
+		assertEquals( rd.type, "json");
+		assertEquals( rd.jsonQueryFormat, "query");
+		assertEquals( rd.statusCode, "200");
+		assertEquals( rd.statusText, "");
 
-	<cffunction name="testViewCacheableEntry">
-		<cfscript>
-			var event = getRequestContext();
-			var centry = structnew();
 
-			AssertFalse( event.isViewCacheable(), "view cacheable");
+		event.renderData(type='JSON',data="[1,2,3,4]",jsonQueryFormat="array",jsonCase="upper");
+		rd = event.getRenderData();
+		assertEquals( rd.jsonQueryFormat, "array");
 
-			centry.cacheable = true;
-			centry.test = true;
+		//JSONP
+		event.renderData(type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
+		rd = event.getRenderData();
+		assertEquals( rd.type, "jsonp");
+		assertEquals( rd.jsonCallback, 'testCallback');
 
-			event.setViewCacheableEntry(centry);
-			AssertTrue( event.isViewCacheable(), "view cacheable 2");
-			AssertEquals(centry, event.getViewCacheableEntry() );
+		// Test WDDX
+		event.renderData(type="WDDX",data=arrayNew(1));
+		rd = event.getRenderData();
+		assertEquals( rd.contenttype, "text/xml");
+		assertEquals( rd.type, "wddx");
 
-		</cfscript>
-	</cffunction>
+		// Test PLAIN
+		event.renderData(data="Hello");
+		rd = event.getRenderData();
+		assertEquals( rd.type, "html");
+		assertEquals( rd.contenttype, "text/html");
 
-	<!--- ************************************************************* --->
+		// Test XML
+		event.renderData(data=structnew(),type="xml");
+		rd = event.getRenderData();
+		assertEquals( rd.type, "xml");
+		assertEquals( rd.contenttype, "text/xml");
+		assertEquals( rd.xmlListDelimiter, ",");
+		assertEquals( rd.xmlColumnList, "");
 
-	<cffunction name="testRoutedStruct">
-		<cfscript>
-			var event = getRequestContext();
-			var routedStruct = structnew();
+		// Test contenttype
+		event.renderData(data="Hello",contentType="application/ms-excel");
+		rd = event.getRenderData();
+		assertEquals( rd.type, "html");
+		assertEquals( rd.contenttype, "application/ms-excel");
 
-			routedStruct.page = "aboutus";
-			routedStruct.day = "13";
+		// Test StatusCodes
+		event.renderData(data="hello",statusCode="400",statusText="Invalid Call!");
+		rd = event.getRenderData();
+		assertEquals( rd.statusCode, "400");
+		assertEquals( rd.statusText, "Invalid Call!");
+	}
 
-			event.setRoutedStruct(routedStruct);
+	function testNoExecution(){
+		var event = getRequestContext();
 
-			AssertEquals(event.getRoutedStruct(),routedStruct);
+		assertFalse( event.isNoExecution() );
+		event.noExecution();
+		assertTrue( event.isNoExecution() );
+	}
 
-		</cfscript>
-	</cffunction>
+	function testCurrentModule(){
+		var event = getRequestContext();
 
-	<cffunction name="testSES">
-		<cfscript>
-			var event = getRequestContext();
-			base = "http://www.luismajano.com/index.cfm";
+		event.setValue("event","myModule:test.home");
 
-			event.setsesBaseURL(base);
-			assertEquals( event.getsesBaseURL(), base );
+		//debug(event.getCurrentEVent());
+		assertEquals("myModule", event.getCurrentModule());
 
-			event.setisSES(true);
-			assertEquals( event.isSES(), true );
+		event.setValue("event","test.home");
+		assertEquals("", event.getCurrentModule());
+	}
 
 
-		</cfscript>
-	</cffunction>
+	function testModuleRoot(){
+		var event = getRequestContext();
 
-	<cffunction name="testBuildLink">
-		<cfscript>
-			var event = getRequestContext();
-			base = "http://www.luismajano.com/index.cfm";
-			basessl = "https://www.luismajano.com/index.cfm";
 
-			/* simple setup */
-			event.setisSES(false);
-			testurl = event.buildLink('general.index');
-			AssertEquals(testurl, "index.cfm?event=general.index" );
+		//debug(event.getCurrentEVent());
+		assertEquals("", event.getmoduleRoot());
+		event.setValue("event","test1:test.home");
+		assertEquals(props.modules.test1.mapping, event.getmoduleRoot());
+	}
 
-			/* simple qs */
-			event.setisSES(false);
-			testurl = event.buildLink(linkTo='general.index',queryString="page=2");
-			AssertEquals(testurl, "index.cfm?event=general.index&page=2" );
 
-			/* empty qs */
-			event.setisSES(false);
-			testurl = event.buildLink(linkTo='general.index',queryString="");
-			AssertEquals(testurl, "index.cfm?event=general.index" );
+	function testsetHTTPHeader(){
+		var event = getRequestContext();
 
-			/* ses test */
-			event.setisSES(true);
-			event.setsesBaseURL(base);
-			testurl = event.buildLink('general/index');
-			AssertEquals(testurl, base & "/general/index" );
+		event.setHTTPHeader(statusCode="200",statusText="Hello");
 
-			/* query string transformation */
-			event.setisSES(true);
-			event.setsesBaseURL(base);
-			testurl = event.buildLink(linkTo='general/index',queryString="page=2&tests=4");
-			AssertEquals(testurl, base & "/general/index/page/2/tests/4" );
+		event.setHTTPHeader(name="expires",value="#now()#");
+	}
 
-			/* ssl test */
-			event.setisSES(true);
-			event.setsesBaseURL(base);
-			testurl = event.buildLink(linkto='general/index',ssl=true);
-			AssertEquals(testurl, basessl & "/general/index" );
-			// SSL OFF
-			event.setsesBaseURL(basessl);
-			testurl = event.buildLink(linkto='general/index',ssl=false);
-			AssertEquals(testurl, base & "/general/index" );
+	function testGetHTTPConetnt(){
+		var event = getRequestContext();
 
-			/* translate */
-			event.setisSES(true);
-			event.setsesBaseURL(base);
-			testurl = event.buildLink(linkto='general.index',translate=false);
-			AssertEquals(testurl, base & "/general.index" );
+		test = event.getHTTPContent();
 
-		</cfscript>
-	</cffunction>
+		assertTrue( isSimpleValue(test) );
+	}
 
-	<cffunction name="testRenderData">
-		<cfscript>
-			var event = getRequestContext();
+	function testNoLayout(){
+		var event = getRequestContext();
 
-			AssertEquals( event.getRenderData(), structnew());
+		event.noLayout().setView("test");
 
-			// Test JSON
-			event.renderData(type='JSON',data="[1,2,3,4]");
-			rd = event.getRenderData();
-			assertEquals( rd.contenttype, "application/json");
-			assertEquals( rd.type, "json");
-			assertEquals( rd.jsonQueryFormat, "query");
-			assertEquals( rd.statusCode, "200");
-			assertEquals( rd.statusText, "");
+		//debug( event.getCollection(private=true) );
+		assertEquals( true, event.getValue("layoutOverride",false,true) );
+	}
 
+	function testDoubleSlashInBuildLink(){
+		var event = getRequestContext();
 
-			event.renderData(type='JSON',data="[1,2,3,4]",jsonQueryFormat="array",jsonCase="upper");
-			rd = event.getRenderData();
-			assertEquals( rd.jsonQueryFormat, "array");
+		event.$( "isSES", true );
+		link = event.buildLink( linkTo='my/event/handler/', queryString='one=1&two=2' );
+		expect(	link ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/my/event/handler/one/1/two/2" );
+		
+		debug( link );
+	}
 
-			//JSONP
-			event.renderData(type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
-			rd = event.getRenderData();
-			assertEquals( rd.type, "jsonp");
-			assertEquals( rd.jsonCallback, 'testCallback');
-
-			// Test WDDX
-			event.renderData(type="WDDX",data=arrayNew(1));
-			rd = event.getRenderData();
-			assertEquals( rd.contenttype, "text/xml");
-			assertEquals( rd.type, "wddx");
-
-			// Test PLAIN
-			event.renderData(data="Hello");
-			rd = event.getRenderData();
-			assertEquals( rd.type, "html");
-			assertEquals( rd.contenttype, "text/html");
-
-			// Test XML
-			event.renderData(data=structnew(),type="xml");
-			rd = event.getRenderData();
-			assertEquals( rd.type, "xml");
-			assertEquals( rd.contenttype, "text/xml");
-			assertEquals( rd.xmlListDelimiter, ",");
-			assertEquals( rd.xmlColumnList, "");
-
-			// Test contenttype
-			event.renderData(data="Hello",contentType="application/ms-excel");
-			rd = event.getRenderData();
-			assertEquals( rd.type, "html");
-			assertEquals( rd.contenttype, "application/ms-excel");
-
-			// Test StatusCodes
-			event.renderData(data="hello",statusCode="400",statusText="Invalid Call!");
-			rd = event.getRenderData();
-			assertEquals( rd.statusCode, "400");
-			assertEquals( rd.statusText, "Invalid Call!");
-
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testNoExecution">
-		<cfscript>
-			var event = getRequestContext();
-
-			assertFalse( event.isNoExecution() );
-			event.noExecution();
-			assertTrue( event.isNoExecution() );
-
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testCurrentModule" >
-		<cfscript>
-			var event = getRequestContext();
-
-			event.setValue("event","myModule:test.home");
-
-			//debug(event.getCurrentEVent());
-			assertEquals("myModule", event.getCurrentModule());
-
-			event.setValue("event","test.home");
-			assertEquals("", event.getCurrentModule());
-
-		</cfscript>
-	</cffunction>
-
-
-	<cffunction name="testModuleRoot" >
-		<cfscript>
-			var event = getRequestContext();
-
-
-			//debug(event.getCurrentEVent());
-			assertEquals("", event.getmoduleRoot());
-			event.setValue("event","test1:test.home");
-			assertEquals(props.modules.test1.mapping, event.getmoduleRoot());
-
-
-		</cfscript>
-	</cffunction>
-
-
-	<cffunction name="testsetHTTPHeader" >
-		<cfscript>
-			var event = getRequestContext();
-
-			event.setHTTPHeader(statusCode="200",statusText="Hello");
-
-			event.setHTTPHeader(name="expires",value="#now()#");
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testGetHTTPConetnt" >
-		<cfscript>
-			var event = getRequestContext();
-
-			test = event.getHTTPContent();
-
-			assertTrue( isSimpleValue(test) );
-
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testNoLayout" >
-		<cfscript>
-			var event = getRequestContext();
-
-			event.noLayout().setView("test");
-
-			//debug( event.getCollection(private=true) );
-			assertEquals( true, event.getValue("layoutOverride",false,true) );
-
-		</cfscript>
-	</cffunction>
-
-
-</cfcomponent>
+}
