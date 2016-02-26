@@ -105,24 +105,33 @@
 	
 	<!-- Run Tests For Platform -->
     <target name="run-tests" description="Runs the tests for entire suite" depends="init" if="tests.execute">
-        <!-- Runs are chunked to avoid ANT timeouts -->
+        <!-- Determine Test target: Are we jenkins or local or travis -->
+        <if>
+			<not><equals arg1="${environment}" arg2="auto" /></not>
+			<then>
+				<property name="test.target" value="run" />
+			</then>
+			<else>
+				<property name="test.target" value="run-junit" />
+			</else>
+		</if>
     	<!-- Run for Core -->
-    	<subant target="run-junit">
+    	<subant target="${test.target}">
           	<fileset dir="tests" includes="automation/test-coldbox.xml"/>
     		<property name="environment" value="${environment}" />
         </subant>
     	<!-- Run for CacheBox -->
-    	<subant target="run-junit">
+    	<subant target="${test.target}">
           	<fileset dir="tests" includes="automation/test-cachebox.xml"/>
     		<property name="environment" value="${environment}" />
         </subant>
     	<!-- Run for LogBox -->
-    	<subant target="run-junit">
+    	<subant target="${test.target}">
           	<fileset dir="tests" includes="automation/test-logbox.xml"/>
     		<property name="environment" value="${environment}" />
         </subant>
     	<!-- Run for WireBox -->
-    	<subant target="run-junit">
+    	<subant target="${test.target}">
           	<fileset dir="tests" includes="automation/test-wirebox.xml"/>
     		<property name="environment" value="${environment}" />
         </subant>
