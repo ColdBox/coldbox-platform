@@ -445,8 +445,8 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 		// Return the correct event context.
 		requestContext = getRequestContext();
 
-        // Add in the getRenderedContent method
-        requestContext.getRenderedContent = getRenderedContent;
+        // Add in the getRenderedContent method for convenience
+        requestContext.getRenderedContent = variables.getRenderedContent;
 
 		return requestContext;
 	}
