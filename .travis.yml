@@ -33,6 +33,9 @@ before_script:
 # Ready for testing
 script:
   - ant -f build/build.xml
+  # Check status code, if there is an issue, run raw so we can see results.
+  - allGood=$?
+  - if allGood == 1; then curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt; cat /tmp/output.txt; fi
   # Debugging if needed
   #- box server start
   #- curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt
