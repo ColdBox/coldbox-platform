@@ -59,7 +59,7 @@ Description :
 		<cfargument name="async" 		type="boolean" 	required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)"/>
 		<cfargument name="defer" 		type="boolean" 	required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)"/>
 		<cfscript>
-			var sb = createObject("java","java.lang.StringBuffer").init('');
+			var sb = createObject("java","java.lang.StringBuilder").init('');
 			var x = 1;
 			var thisAsset = "";
 			var event = controller.getRequestService().getContext();
@@ -133,7 +133,7 @@ Description :
 		<cfargument name="content"		type="string" required="false" default=""	hint="The content of the tag"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer	= createObject("java","java.lang.StringBuffer").init( "<#arguments.tag#" );
+			var buffer	= createObject("java","java.lang.StringBuilder").init( "<#arguments.tag#" );
 
 			// append tag attributes
 			flattenAttributes( arguments, "tag,content", buffer ).append( '>#arguments.content#</#arguments.tag#>' );
@@ -148,7 +148,7 @@ Description :
 		<cfargument name="text" 	 	type="any" 		required="false" default="" 	hint="The text of the link"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer 		= createObject("java","java.lang.StringBuffer").init("<a");
+			var buffer 		= createObject("java","java.lang.StringBuilder").init("<a");
 
 			// build link
 			flattenAttributes( arguments, "text", buffer ).append( '>#arguments.text#</a>' );
@@ -168,7 +168,7 @@ Description :
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer 	= createObject( "java", "java.lang.StringBuffer" ).init( "<a" );
+			var buffer 	= createObject( "java", "java.lang.StringBuilder" ).init( "<a" );
 			var event	= controller.getRequestService().getContext();
 
 			// self-link?
@@ -210,7 +210,7 @@ Description :
 		<cfargument name="sendToHeader" type="boolean"	required="false" 	default="false" hint="Send to the header via htmlhead by default, else it returns the content"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer 		= createObject("java","java.lang.StringBuffer").init("<link");
+			var buffer 		= createObject("java","java.lang.StringBuilder").init("<link");
 
 			// Check if we have a base URL
 			arguments.href = prepareBaseLink(arguments.noBaseURL,arguments.href);
@@ -249,7 +249,7 @@ Description :
 		<cfargument name="noBaseURL" type="boolean" required="false" default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer = createObject("java","java.lang.StringBuffer").init("<img");
+			var buffer = createObject("java","java.lang.StringBuilder").init("<img");
 
 			// ID Normalization
 			normalizeID(arguments);
@@ -287,7 +287,7 @@ Description :
 		<cfargument name="excludes" 	type="string"		required="false" default=""	hint="The columns to exclude in the rendering"/>
 		<cfargument name="name" 		type="string"		 required="false" default="" hint="The name tag"/>
 		<cfscript>
-			var str		= createObject("java","java.lang.StringBuffer").init('');
+			var str		= createObject("java","java.lang.StringBuilder").init('');
 			var attrs	= "";
 			var key		= "";
 
@@ -335,7 +335,7 @@ Description :
 		<cfargument name="sendToHeader" type="boolean"	required="false" default="false" hint="Send to the header via htmlhead by default, else it returns the content"/>
 		<cfscript>
 			var x 		= 1;
-			var buffer	= createObject("java","java.lang.StringBuffer").init("");
+			var buffer	= createObject("java","java.lang.StringBuilder").init("");
 			var tmpType = "";
 
 			// prep type
@@ -414,7 +414,7 @@ Description :
 		<cfargument name="title"	 	type="any" 		required="false" default="" hint="The title attribute"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer	= createObject("java","java.lang.StringBuffer").init("<link");
+			var buffer	= createObject("java","java.lang.StringBuilder").init("<link");
 
 			// type: determination
 			switch(arguments.type){
@@ -444,7 +444,7 @@ Description :
 		<cfargument name="name" 	 type="string"	required="false" default="" hint="The name tag"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var video 		= createObject("java","java.lang.StringBuffer").init("<video");
+			var video 		= createObject("java","java.lang.StringBuilder").init("<video");
 			var x			= 1;
 
 			// autoplay diff
@@ -499,7 +499,7 @@ Description :
 		<cfargument name="name" 	 type="string"	required="false" default="" hint="The name tag"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var audio 		= createObject("java","java.lang.StringBuffer").init("<audio");
+			var audio 		= createObject("java","java.lang.StringBuilder").init("<audio");
 			var x			= 1;
 
 			// autoplay diff
@@ -550,7 +550,7 @@ Description :
 		<cfargument name="height"		type="string"	required="false" default="" hint="The height tag"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var canvas 		= createObject("java","java.lang.StringBuffer").init("<canvas");
+			var canvas 		= createObject("java","java.lang.StringBuilder").init("<canvas");
 
 			// create canvas tag
 			flattenAttributes(arguments,"",canvas).append("></canvas>");
@@ -569,7 +569,7 @@ Description :
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var formBuffer	= createObject( "java", "java.lang.StringBuffer" ).init( "<form" );
+			var formBuffer	= createObject( "java", "java.lang.StringBuilder" ).init( "<form" );
 			var event 		= controller.getRequestService().getContext();
 
 			// self-submitting?
@@ -615,7 +615,7 @@ Description :
 		<cfargument name="legend" 		type="string" 	required="false" 	default="" hint="The legend to use (if any)"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer = createObject("java","java.lang.StringBuffer").init('<fieldset');
+			var buffer = createObject("java","java.lang.StringBuilder").init('<fieldset');
 
 			// fieldset attributes
 			flattenAttributes(arguments,"legend",buffer).append(">");
@@ -642,7 +642,7 @@ Description :
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfargument name="class"		type="string" required="false" default="" hint="The class to be applied to the label">
 		<cfscript>
-			var buffer = createObject("java","java.lang.StringBuffer").init('');
+			var buffer = createObject("java","java.lang.StringBuilder").init('');
 
 			// wrapper?
 			wrapTag(buffer,arguments.wrapper);
@@ -679,7 +679,7 @@ Description :
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer = createObject("java","java.lang.StringBuffer").init('');
+			var buffer = createObject("java","java.lang.StringBuilder").init('');
 
 			// ID Normalization
 			normalizeID(arguments);
@@ -819,7 +819,7 @@ Description :
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 		<cfscript>
-			var buffer = createObject("java","java.lang.StringBuffer").init('');
+			var buffer = createObject("java","java.lang.StringBuilder").init('');
 
 			// ID Normalization
 			normalizeID(arguments);
@@ -958,7 +958,7 @@ Description :
 		<cfargument name="selectedIndex" 	type="any" 		required="false" default="0" hint="selected index(s) if any. So either one or a list of indexes"/>
 		<cfargument name="selectedValue" 	type="any" 		required="false" default=""	hint="selected value(s) if any. So either one or a list of values"/>
 		<cfscript>
-			var buffer 		= createObject("java","java.lang.StringBuffer").init('');
+			var buffer 		= createObject("java","java.lang.StringBuilder").init('');
 			var val 		= "";
 			var nameVal		= "";
 			var x	 		= 1;
@@ -1068,7 +1068,7 @@ Description :
 		<cfargument name="labelClass" 	type="string"	required="false" default="" hint="The class to be applied to the label"/>
 
 		<cfscript>
-			var buffer = createObject("java","java.lang.StringBuffer").init('');
+			var buffer = createObject("java","java.lang.StringBuilder").init('');
 
 			// ID Normalization
 			normalizeID(arguments);
@@ -1134,7 +1134,7 @@ Description :
 		<cfargument name="bindProperty" type="any" 		required="false" default="" hint="The property to use for the value, by convention we use the name attribute"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var buffer 		= createObject( "java", "java.lang.StringBuffer" ).init( '' );
+			var buffer 		= createObject( "java", "java.lang.StringBuilder" ).init( '' );
 			var excludeList = "label,wrapper,labelWrapper,groupWrapper,labelClass,bind,bindProperty";
 
 			// ID Normalization
@@ -1185,7 +1185,7 @@ Description :
 		<cfargument name="manytoone" 		type="struct" 	required="false" default="#structnew()#" hint="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}"/>
 		<cfargument name="manytomany" 		type="struct" 	required="false" default="#structnew()#" hint="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}"/>
 		<cfscript>
-			var buffer 	= createObject("java","java.lang.StringBuffer").init('');
+			var buffer 	= createObject("java","java.lang.StringBuilder").init('');
 			var md 		= getMetadata( arguments.entity );
 			var x		= 1;
 			var y		= 1;
@@ -1533,7 +1533,7 @@ Description :
 		<cfscript>
 			var val 	= arguments.values;
 			var x	 	= 1;
-			var str 	= createObject("java","java.lang.StringBuffer").init("");
+			var str 	= createObject("java","java.lang.StringBuilder").init("");
 			var br		= chr(13);
 			var args	= "";
 
