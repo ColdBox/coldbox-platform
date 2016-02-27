@@ -20,6 +20,7 @@ before_install:
 install:
 - sudo apt-get update && sudo apt-get --assume-yes install commandbox
 # startup server so we can get directory location first
+- box install
 - box server start
 - box server stop
 # Copy over special lucee settings for cache testing
