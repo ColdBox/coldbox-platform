@@ -28,4 +28,7 @@ before_script:
 - mysql -u root -e 'create database coolblog;'
 # Ready for testing
 script:
-  - ant -f build/build.xml
+#  - ant -f build/build.xml
+  - box server start
+  - curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt
+  - cat /tmp/output.txt
