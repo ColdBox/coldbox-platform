@@ -70,7 +70,7 @@ I oversee and manage ColdBox modules
 			// Add the application's external locations array.
 			modLocations.addAll( controller.getSetting( "ModulesExternalLocation" ) );
 			// Add the ColdBox Core Modules Location
-			arrayAppend( modLocations, "/coldbox/system/modules" );
+			arrayPrepend( modLocations, "/coldbox/system/modules" );
 			// iterate through locations and build the module registry in order
 			buildRegistry( modLocations );
 		</cfscript>

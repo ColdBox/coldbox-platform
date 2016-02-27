@@ -92,7 +92,7 @@ Description :
 			var key 		 = "";
 			var routedStruct = structnew();
 			var rc 			 = arguments.event.getCollection();
-			var cleanedPaths = getCleanedPaths( rc, arguments.event );
+            var cleanedPaths = getCleanedPaths( rc, arguments.event );
 			var HTTPMethod	 = arguments.event.getHTTPMethod();
 
 			// Check if disabled or in proxy mode, if it is, then exit out.
@@ -1006,7 +1006,7 @@ Description :
 	</cffunction>
 
 	<!--- Find a route --->
-	<cffunction name="findRoute" access="private" output="false" returntype="any" hint="Figures out which route matches this request and returns a routed structure">
+	<cffunction name="findRoute" access="public" output="false" returntype="any" hint="Figures out which route matches this request and returns a routed structure">
 		<!--- ************************************************************* --->
 		<cfargument name="action" 	 required="true"  hint="The action evaluated by the path_info">
 		<cfargument name="event" 	 required="true"  hint="The event object.">
