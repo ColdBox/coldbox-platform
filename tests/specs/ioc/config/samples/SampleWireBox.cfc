@@ -66,7 +66,7 @@ Description :
 		// WireBox Mappings
 		wirebox.mappings = {
 			myBean = {alias="jose",path="my.path.Sample"},
-			buffer = {path="java.lang.StringBuffer", type=binder.TYPES.JAVA,
+			buffer = {path="java.lang.StringBuilder", type=binder.TYPES.JAVA,
 					  DIConstructorArgs=[
 					  	{name="buffer", value="16", javaCast="int"}
 					  ]}

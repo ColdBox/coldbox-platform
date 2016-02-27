@@ -122,7 +122,7 @@
 
 	function testJava(){
 		buffer = injector.getInstance("stringBuffer");
-		assertEquals( "java.lang.StringBuffer", getMetadata(buffer).name );
+		assertEquals( "java.lang.StringBuilder", getMetadata(buffer).name );
 	}
 
 	function testConstant(){

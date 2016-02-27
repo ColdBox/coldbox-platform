@@ -1,6 +1,6 @@
 ﻿<cfparam name="url.text" default="false">
 <cfscript>
-out = createObject("java","java.lang.StringBuffer").init('');
+out = createObject("java","java.lang.StringBuilder").init('');
 tab = chr(9);
 br  = chr(10);
 

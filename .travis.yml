@@ -26,7 +26,10 @@ install:
 # Copy over special lucee settings for cache testing
 - box recipe build/setup-standalone.box
 before_script:
+# create test database
 - mysql -u root -e 'create database coolblog;'
+# import database
+- mysql -u root < tests/resources/coolblog.sql
 # Ready for testing
 script:
 #  - ant -f build/build.xml
