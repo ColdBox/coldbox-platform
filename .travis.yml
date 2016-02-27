@@ -32,7 +32,8 @@ before_script:
 - mysql -u root < tests/resources/coolblog.sql
 # Ready for testing
 script:
-#  - ant -f build/build.xml
-  - box server start
-  - curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt
-  - cat /tmp/output.txt
+  - ant -f build/build.xml
+  # Debugging if needed
+  #- box server start
+  #- curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt
+  #- cat /tmp/output.txt
