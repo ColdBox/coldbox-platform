@@ -307,13 +307,13 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		//local counter when using startrow is greater than one and x values is reletive to lookup
 		var _localCounter = 1;
-		for( x=arguments.collectionStartRow; x lte ( arguments.collectionStartRow+variables._items )-1; x++){
+		for( x=arguments.collectionStartRow; x lte ( arguments.collectionStartRow + variables._items ) - 1; x++ ){
 			// setup local cvariables
 			variables._counter  = _localCounter;
 
-			var columnList = arguments.collection.ColumnList;
-			for(var j=1; j <= ListLen(columnList); j++){
-				variables[ arguments.collectionAs ][ListGetAt(columnList,j)] = arguments.collection[ListGetAt(columnList,j)][x];
+			var columnList = arguments.collection.columnList;
+			for( var j=1; j <= listLen( columnList ); j++){
+				variables[ arguments.collectionAs ][ ListGetAt( columnList, j ) ] = arguments.collection[ ListGetAt( columnList, j ) ][ x ];
 			}
 			
 			// prepend the delim
