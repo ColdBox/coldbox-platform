@@ -47,7 +47,7 @@ Modifications
 		<cfargument name="delimiter" 	type="string" 	required="false" default="," hint="The delimiter in the list. Comma by default">
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
-			var buffer = createObject("java","java.lang.StringBuffer").init('');
+			var buffer = createObject("java","java.lang.StringBuilder").init('');
 
 			// Header
 			if( arguments.addHeader ){
@@ -86,7 +86,7 @@ Modifications
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 
 		<cfscript>
-		var buffer = createObject('java','java.lang.StringBuffer').init('');
+		var buffer = createObject('java','java.lang.StringBuilder').init('');
 		var target = arguments.data;
 		var x = 1;
 		var dataLen = arrayLen(target);
@@ -132,7 +132,7 @@ Modifications
 		<cfargument name="useCDATA"  	type="boolean" required="false" default="false" hint="Use CDATA content for ALL values">
 		<cfargument name="rootName"     type="string"  required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 
-		<cfset var buffer = createObject('java','java.lang.StringBuffer').init('')>
+		<cfset var buffer = createObject('java','java.lang.StringBuilder').init('')>
 		<cfset var col = "">
 		<cfset var columns = arguments.columnlist>
 		<cfset var value = "">
@@ -183,7 +183,7 @@ Modifications
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
 		var target = arguments.data;
-		var buffer = createObject("java","java.lang.StringBuffer").init('');
+		var buffer = createObject("java","java.lang.StringBuilder").init('');
 		var key = 0;
 		var thisValue = "";
 		var args = structnew();
@@ -231,7 +231,7 @@ Modifications
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
 		var target 			= arguments.data;
-		var buffer 			= createObject("java","java.lang.StringBuffer").init('');
+		var buffer 			= createObject("java","java.lang.StringBuilder").init('');
 		var md 				= getMetadata(target);
 		var rootElement		= lcase( safeText( listLast( md.name, "." ) ) );
 		var thisName 		= "";
