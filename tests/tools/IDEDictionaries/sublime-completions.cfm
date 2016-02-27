@@ -48,7 +48,7 @@ function arrayOfStructsSort(aOfS,key){
         return returnArray;
 }
 
-out = createObject("java","java.lang.StringBuffer").init('');
+out = createObject("java","java.lang.StringBuilder").init('');
 tab = chr(9);
 br  = chr(10);
 

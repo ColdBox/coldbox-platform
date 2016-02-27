@@ -176,10 +176,10 @@
 	}
 
 	function testToJava(){
-		config.map("Test").toJava("java.lang.StringBuffer");
+		config.map("Test").toJava("java.lang.StringBuilder");
 		mapping = config.getMapping("Test");
 		assertEquals( this.TYPES.java, mapping.getType() );
-		assertEquals( "java.lang.StringBuffer", mapping.getPath() );
+		assertEquals( "java.lang.StringBuilder", mapping.getPath() );
 	}
 
 	function testToWebservice(){

@@ -9,7 +9,7 @@ objects = [
 fncExclude  = "init,onMissingMethod";
 
 for( idx=1; idx lte arrayLen(objects); idx++){
-	out   = createObject("java","java.lang.StringBuffer").init('');
+	out   = createObject("java","java.lang.StringBuilder").init('');
 	md    = getComponentMetaData( objects[idx] );
 	title = "Exploring the #listLast(md.name,".")# Plugin";
 

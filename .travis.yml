@@ -20,15 +20,23 @@ before_install:
 install:
 - sudo apt-get update && sudo apt-get --assume-yes install commandbox
 # startup server so we can get directory location first
+- box install
 - box server start
 - box server stop
 # Copy over special lucee settings for cache testing
 - box recipe build/setup-standalone.box
 before_script:
+# create test database
 - mysql -u root -e 'create database coolblog;'
+# import database
+- mysql -u root < tests/resources/coolblog.sql
 # Ready for testing
 script:
-#  - ant -f build/build.xml
-  - box server start
-  - curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt
-  - cat /tmp/output.txt
+  - ant -f build/build.xml
+  # Check status code, if there is an issue, run raw so we can see results.
+  - allGood=$?
+  - if allGood == 1; then curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt; cat /tmp/output.txt; fi
+  # Debugging if needed
+  #- box server start
+  #- curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt
+  #- cat /tmp/output.txt

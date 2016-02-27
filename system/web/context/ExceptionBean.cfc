@@ -258,7 +258,7 @@ component accessors="true"{
 		var buffer = "";
 
 		// Prepare String Buffer
-		buffer = createObject( "java", "java.lang.StringBuffer" ).init( getExtraMessage() & chr( 13 ) );
+		buffer = createObject( "java", "java.lang.StringBuilder" ).init( getExtraMessage() & chr( 13 ) );
 
 		if ( getType() neq  "" ){
 			buffer.append( "CFErrorType=" & getType() & chr( 13 ) );

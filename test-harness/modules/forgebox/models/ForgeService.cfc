@@ -108,7 +108,7 @@ The forgebox module service layer
 		<cfargument name="destinationDir" type="string" required="true" />
 
 		<!--- Start Log --->
-		<cfset var log 			= createObject("java","java.lang.StringBuffer").init("Starting Download...<br />")>
+		<cfset var log 			= createObject("java","java.lang.StringBuilder").init("Starting Download...<br />")>
 		<cfset var destination  = appRoot & arguments.destinationDir>
 		<cfset var fileName		= getFileFromPath(arguments.downloadURL)>
 		<cfset var results 		= {error=true,logInfo=""}>

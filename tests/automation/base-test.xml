@@ -105,6 +105,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		<get dest="${report.dir}/results.txt" 
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true&amp;reportpath=${report.dir}&amp;directoryExcludes=${test.directoryExcludes}&amp;cfid=123&amp;cftoken=123" 
 			 verbose="true"
+			 ignoreerrors="true"
 			 maxtime="0"
 			 retries="2"/>
 
