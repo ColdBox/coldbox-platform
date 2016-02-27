@@ -3,7 +3,7 @@
     "openBrowser":false,
     "web":{
         "http":{
-            "port":"63928"
+            "port":"8599"
         }
     },
     "JVM":{
