@@ -307,7 +307,7 @@ Modifications
 		<cfargument name="useCDATA" type="boolean" required="false" default="false" hint="Use CDATA content for ALL values">
 		<cfset var newTxt = xmlFormat(unicodeWin1252(trim(arguments.txt)))>
 		<cfif arguments.useCDATA>
-			<cfreturn "<![CDATA[" & newTxt & "]]" & ">">
+			<cfreturn "<![CDATA[" & newTxt & "]]>">
 		<cfelse>
 			<cfreturn newTxt>
 		</cfif>
