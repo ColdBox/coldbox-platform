@@ -32,9 +32,6 @@ before_script:
 - mysql -u root < tests/resources/coolblog.sql
 # Ready for testing
 script: >
-  ant -f build/build.xml;
-  export exitCode=$?;
-  if [ $exitCode == 1 ]; then
-    curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt;
-    cat /tmp/output.txt;
-  fi;
+  testResults="$(box testbox run runner='http://localhost:8599/tests/runner.cfm' )";
+  echo "$testResults";
+  if grep -i "\[(Failures|Errors): [1-9][0-9]\?[0-9]\?\]\|\[Errors: [1-9][0-9]\?[0-9]\?\]\|<t[^>]*>\|<b[^>]*>" <<< $testResults;  then exit 1; fi
