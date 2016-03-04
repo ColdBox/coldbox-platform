@@ -32,6 +32,10 @@ component extends="coldbox.system.EventHandler"{
 			// prepare argument execution
 			var args = { event = arguments.event, rc = arguments.rc, prc = arguments.prc };
 			structAppend( args, arguments.eventArguments );
+			// Incoming Format Detection
+			if( structKeyExists( rc, "format") ){
+				prc.response.setFormat( rc.format );
+			}
 			// Execute action
 			arguments.targetAction( argumentCollection=args );
 		} catch( Any e ){
