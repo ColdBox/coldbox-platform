@@ -102,11 +102,11 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 - Recurse
 			 - Labels
 		-->
-		<get dest="${report.dir}/results.txt" 
+		<get dest="${report.dir}/results.txt"
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true&amp;reportpath=${report.dir}&amp;directoryExcludes=${test.directoryExcludes}&amp;cfid=123&amp;cftoken=123" 
 			 verbose="true"
 			 ignoreerrors="true"
-			 retries="3"/>
+			 maxtime="0"/>
 
 		<!-- Bundles Runner
 			You can also run tests for specific bundles by using the runner with the bundles params
