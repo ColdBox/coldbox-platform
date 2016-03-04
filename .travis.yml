@@ -31,6 +31,7 @@ before_script:
 # import database
 - mysql -u root < tests/resources/coolblog.sql
 # Ready for testing
+- box server start
 script: >
   testResults="$(box testbox run runner='http://localhost:8599/tests/runner.cfm' )";
   echo "$testResults";
