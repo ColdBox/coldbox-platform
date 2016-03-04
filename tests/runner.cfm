@@ -31,6 +31,11 @@ url.directory 			= URLDecode( url.directory );
 url.reportPath 			= URLDecode( url.reportPath );
 url.propertiesFilename 	= URLDecode( url.propertiesFilename );
 
+// Report Path
+if( !directoryExists( url.reportPath ) ){
+	directoryCreate( url.reportPath );
+}
+
 // prepare for tests for bundles or directories
 if( len( url.bundles ) ){
 	testbox = new testbox.system.TestBox( bundles=url.bundles, labels=url.labels );
