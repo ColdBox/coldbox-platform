@@ -32,7 +32,7 @@ before_script:
 - mysql -u root < tests/resources/coolblog.sql
 # Ready for testing
 script: >
-  ant -f workbench/build.xml;
+  ant -f build/build.xml;
   export exitCode=$?;
   if [ $exitCode == 1 ]; then
     curl http://localhost:49616/tests/runner.cfm?reporter=text -o /tmp/output.txt;
