@@ -27,12 +27,11 @@ component{
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
 	// Datasource definitions For Standalone mode/travis mode.
-	if( findNoCase( "localhost:8599", cgi.htt_host ) ){
+	if( directoryExists( "/home/travis" ) ){
 		this.datasources[ "coolblog" ] = {
 			  class 			: 'org.gjt.mm.mysql.Driver',
 			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true',
-			  username 			: 'travis',
-			  password 			: ''
+			  username 			: 'root'
 		};
 	
 	}

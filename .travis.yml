@@ -31,10 +31,10 @@ before_script:
 # import database
 - mysql -u root < tests/resources/coolblog.sql
 # Ready for testing
-script:
-  - ant -f build/build.xml
-  # Check status code, if there is an issue, run raw so we can see results.
-  - allGood=$?
-  - if allGood == 1; then curl http://localhost:8599/tests/runner.cfm?reporter=text -o /tmp/output.txt; cat /tmp/output.txt; fi
-  - echo "************************************************* SERVER LOG *************************************************"
-  - box server log
+script: >
+  ant -f workbench/build.xml;
+  export exitCode=$?;
+  if [ $exitCode == 1 ]; then
+    curl http://localhost:49616/tests/runner.cfm?reporter=text -o /tmp/output.txt;
+    cat /tmp/output.txt;
+  fi;

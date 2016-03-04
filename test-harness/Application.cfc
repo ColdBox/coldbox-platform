@@ -30,6 +30,16 @@ component{
 	// Test Harness Path
 	this.mappings[ "/cbtestharness" ] 	= COLDBOX_APP_ROOT_PATH;
 
+	// Datasource definitions For Standalone mode/travis mode.
+	if( directoryExists( "/home/travis" ) ){
+		this.datasources[ "coolblog" ] = {
+			  class 			: 'org.gjt.mm.mysql.Driver',
+			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true',
+			  username 			: 'root'
+		};
+	
+	}
+
 	// ORM Settings
     this.ormEnabled 	  = true;
     this.datasource		  = "coolblog";
