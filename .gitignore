@@ -15,3 +15,4 @@ build/build.number
 testbox/*
 apidocs/docbox/*
 artifacts/*
+ApplicationTemplates/*
