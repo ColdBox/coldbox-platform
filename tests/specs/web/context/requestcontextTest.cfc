@@ -26,6 +26,15 @@
 		return prepareMock( oRC );
 	}
 
+	function testGetHTMLBaseURL(){
+		var event = getRequestContext();
+		event.$( "isSES", true );
+		expect( event.getHTMLBaseURL() ).toinclude( "http://jfetmac/applications/coldbox/test-harness" );
+
+		event.$( "isSSL", true );
+		expect( event.getHTMLBaseURL() ).toinclude( "https://jfetmac/applications/coldbox/test-harness" );
+	}
+
 	function testgetCollection(){
 		var event = getRequestContext();
 

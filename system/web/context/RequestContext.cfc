@@ -767,6 +767,13 @@ component serializable=false accessors="true"{
 	}
 
 	/**
+	* Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.
+	*/
+	string function getHTMLBaseURL(){
+		return replacenocase( buildLink( linkTo='', ssl=isSSL() ), "index.cfm", "" );
+	}
+
+	/**
 	* Set the ses base URL for this request
 	* @return RequestContext
 	*/
