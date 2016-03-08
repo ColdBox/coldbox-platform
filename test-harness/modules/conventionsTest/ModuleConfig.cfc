@@ -1,5 +1,4 @@
-﻿<cfcomponent output="false" hint="My App Configuration">
-<cfscript>
+﻿component{
 
 	// Module Properties
 	this.title 				= "My Test Conventions module";
@@ -35,5 +34,5 @@
 			}
 		};
 	}
-</cfscript>
-</cfcomponent>
+
+}

@@ -63,7 +63,7 @@
 			// An array of modules names to load, empty means all of them
 			include = [],
 			// An array of modules names to NOT load, empty means none
-			exclude = []
+			exclude = [ "excludedmod" ]
 		};
 
 		//LogBox DSL
