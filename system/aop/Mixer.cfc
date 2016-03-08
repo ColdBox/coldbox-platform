@@ -79,6 +79,11 @@ component accessors="true"{
 			variables.properties.generationPath = "/coldbox/system/aop/tmp";
 		}
 
+		// Check if we can write to generation path
+		if( !getFileInfo( variables.properties.generationPath ).canWrite ){
+			throw( message="The AOP generation directory: '#variables.properties.generationPath#' is not writable, cannot continue." );
+		}
+
 		// Class Dictionary Reload
 		if( NOT structKeyExists( variables.properties, "classMatchReload" ) ){
 			variables.properties.classMatchReload = false;
