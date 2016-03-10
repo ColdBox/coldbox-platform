@@ -19,7 +19,9 @@ Description :
 
 		// Remote proxies are created by the CFML engine without calling init(),
 		// so autowire in here in the pseduo constructor
-		selfAutowire();
+		if( structKeyExists( this, "autowire" ) and this.autowire ){
+			selfAutowire();
+		}
 	</cfscript>
 
 	<!--- selfAutowire --->
