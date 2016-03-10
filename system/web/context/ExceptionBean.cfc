@@ -1,4 +1,4 @@
-﻿/**
+/**
 ********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
@@ -35,13 +35,13 @@ component accessors="true"{
 		any extraMessage = "",
 		any extraInfo = ""
 	){
-		variables.exceptionStruct = arguments.errorStruct;
+		variables.exceptionStruct = duplicate(arguments.errorStruct);
 		if( !isStruct( variables.exceptionStruct ) ){
 			variables.exceptionStruct = {};
 		}
 		variables.extraMessage 	= arguments.extraMessage;
 		variables.extraInfo 	= arguments.extraInfo;
-
+		
 		return this;
 	}
 
