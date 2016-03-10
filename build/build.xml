@@ -174,11 +174,6 @@
         	<fileset dir="install" />
         </copy>
 		
-		<!--AppTemplate-->
-		<copy todir="${dir.build}/cbapptemplates" encoding="UTF-8">
-        	<fileset dir="ApplicationTemplates" />
-        </copy>
-		
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}" encoding="UTF-8">
 			<fileset file="license.txt" />
