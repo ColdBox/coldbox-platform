@@ -1,4 +1,4 @@
-﻿/**
+/**
 ********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
@@ -35,27 +35,13 @@ component accessors="true"{
 		any extraMessage = "",
 		any extraInfo = ""
 	){
-		variables.exceptionStruct = arguments.errorStruct;
+		variables.exceptionStruct = duplicate(arguments.errorStruct);
 		if( !isStruct( variables.exceptionStruct ) ){
 			variables.exceptionStruct = {};
 		}
 		variables.extraMessage 	= arguments.extraMessage;
 		variables.extraInfo 	= arguments.extraInfo;
 		
-		try {
-			if(structIsEmpty(variables.exceptionStruct) && isObject(arguments.errorStruct)){
-				var tErrorStruct = duplicate(arguments.errorStruct);
-				variables.exceptionStruct["type"] = tErrorStruct.Type;
-				variables.exceptionStruct["message"] = tErrorStruct.Message;
-				variables.exceptionStruct["detail"] = tErrorStruct.Detail;
-				variables.exceptionStruct["StackTrace"] = tErrorStruct.StackTrace;
-				variables.exceptionStruct["TagContext"] = tErrorStruct.TagContext;
-			}
-		}
-		catch(Any e) {
-			// suppress error (CF10,11 pass exception struct as object)
-		}
-
 		return this;
 	}
 
