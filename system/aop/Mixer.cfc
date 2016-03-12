@@ -76,7 +76,7 @@ component accessors="true"{
 
 		// Default Generation Path?
 		if( NOT structKeyExists( variables.properties, "generationPath" ) ){
-			variables.properties.generationPath = "/coldbox/system/aop/tmp";
+			variables.properties.generationPath = expandPath("/coldbox/system/aop/tmp");
 		}
 
 		// Check if we can write to generation path
