@@ -1,8 +1,7 @@
 ﻿/**
-********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * I model an Exception
 */
 component accessors="true"{
@@ -10,7 +9,7 @@ component accessors="true"{
 	/**
 	* Exception Struct
 	*/
-	property name="exceptionStruct" type="struct";
+	property name="exceptionStruct";
 	/**
 	* Custom error messages
 	*/
@@ -35,9 +34,11 @@ component accessors="true"{
 		any extraMessage = "",
 		any extraInfo = ""
 	){
-		variables.exceptionStruct = arguments.errorStruct;
-		if( !isStruct( variables.exceptionStruct ) ){
-			variables.exceptionStruct = {};
+		// init exception to empty struct
+		variables.exceptionStruct = {};
+		// If valid arguments, then populate it.
+		if( isObject( arguments.errorStruct ) || isStruct( arguments.errorStruct ) ){
+			variables.exceptionStruct = arguments.errorStruct;
 		}
 		variables.extraMessage 	= arguments.extraMessage;
 		variables.extraInfo 	= arguments.extraInfo;
@@ -58,6 +59,7 @@ component accessors="true"{
 
 	/**
 	* Set Memento
+	* @memento The mento to set
 	*/
 	ExceptionBean function setMemento( required memento ){
 		structAppend( variables, arguments.memento, true );
