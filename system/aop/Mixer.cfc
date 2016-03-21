@@ -1,14 +1,12 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * I am a WireBox listener that provides you with AOP capabilities in your objects.
 *
 * Listener Properties:
 *	- generationPath:path	- The include path used for code generation
 *	- dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
-* @author Luis Majano <lmajano@ortussolutions.com>
 */
 component accessors="true"{
 
@@ -317,7 +315,8 @@ component accessors="true"{
 			</cfscript>
 		<:/cffunction>
 		';
-		replace( thisFNC, "<:", "<", "all" );
+		// Do : replacement, due to inline compilation avoidances
+		thisFNC = replace( thisFNC, "<:", "<", "all" );
 		udfOut.append( thisFNC );
 
 		try{
