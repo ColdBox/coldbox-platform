@@ -77,7 +77,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 			it( "should not load mdoules that have been excluded, even in bundles", function(){
 				var config = getController().getSetting( "modules" );
-				expect(	config ).notToHaveKey( 'excludedmod' )
+				expect(	config ).notToHaveKey( 'excludedmod' );
 			});
 
 		});
