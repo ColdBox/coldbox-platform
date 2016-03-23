@@ -78,7 +78,7 @@ component accessors="true"{
 		}
 
 		// Check if we can write to generation path
-		if( !getFileInfo( variables.properties.generationPath ).canWrite ){
+		if( !getFileInfo( expandPath(variables.properties.generationPath) ).canWrite ){
 			throw( message="The AOP generation directory: '#variables.properties.generationPath#' is not writable, cannot continue." );
 		}
 
