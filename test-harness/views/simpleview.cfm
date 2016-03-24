@@ -1,3 +1,3 @@
 <cfoutput>
-<h1>I am a simple view</h1>
+<h1>I am a simple view rendered at #now()# with #createUUID()#</h1>
 </cfoutput>

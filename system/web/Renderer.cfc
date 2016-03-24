@@ -1,8 +1,7 @@
 /**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * The system web renderer
 * @author Luis Majano <lmajano@ortussolutions.com>
 */
@@ -10,7 +9,13 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/************************************** DI *********************************************/
 
+	/**
+	* Template cache provider
+	*/
 	property name="templateCache" 	inject="cachebox:template";
+	/**
+	* HTML Helper
+	*/
 	property name="html"			inject="HTMLHelper@coldbox";
 
 	/************************************** PROPERTIES *********************************************/
@@ -49,6 +54,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* Constructor
+	* @controller The ColdBox main controller
 	* @controller.inject coldbox
 	*/
 	function init( required controller ){
@@ -73,6 +79,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.layoutsExternalLocation 	= variables.controller.getSetting( "LayoutsExternalLocation" );
 		variables.modulesConfig				= variables.controller.getSetting( "modules" );
 		variables.viewsHelper				= variables.controller.getSetting( "viewsHelper" );
+		variables.viewCaching				= variables.controller.getSetting( "viewCaching" );
 		variables.isViewsHelperIncluded		= false;
 		variables.explicitView 				= "";
 
@@ -108,7 +115,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* set the explicit view bit, used mostly internally
-	* @view.hint The name of the view to render
+	* @view The name of the view to render
 	*/
 	function setExplicitView( required view ){
 		explicitView = arguments.view;
@@ -117,20 +124,20 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* Render out a view
-	* @view.hint The the view to render, if not passed, then we look in the request context for the current set view.
-	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	* @module.hint The module to render the view from explicitly
-	* @cache.hint Cached the view output or not, defaults to false
-	* @cacheTimeout.hint The time in minutes to cache the view
-	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested
-	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
-	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
-	* @collection.hint A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	* @collectionAs.hint The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	* @collectionStartRow.hint The start row to limit the collection rendering with
-	* @collectionMaxRows.hint The max rows to iterate over the collection rendering with
-	* @collectionDelim.hint  A string to delimit the collection renderings by
-	* @prePostExempt.hint If true, pre/post view interceptors will not be fired. By default they do fire
+	* @view The the view to render, if not passed, then we look in the request context for the current set view.
+	* @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	* @module The module to render the view from explicitly
+	* @cache Cached the view output or not, defaults to false
+	* @cacheTimeout The time in minutes to cache the view
+	* @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
+	* @cacheSuffix The suffix to add into the cache entry for this view rendering
+	* @cacheProvider The provider to cache this view in, defaults to 'template'
+	* @collection A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
+	* @collectionAs The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
+	* @collectionStartRow The start row to limit the collection rendering with
+	* @collectionMaxRows The max rows to iterate over the collection rendering with
+	* @collectionDelim  A string to delimit the collection renderings by
+	* @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
 	*/
 	function renderView(
 		view="",
@@ -211,7 +218,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		viewCacheKey &= arguments.view & arguments.cacheSuffix;
 
 		// Are we caching?
-		if ( arguments.cache ){
+		if ( arguments.cache && variables.viewCaching){
 			// Which provider you want to use?
 			if( arguments.cacheProvider neq "template" ){
 				viewCacheProvider = getCache( arguments.cacheProvider );
@@ -245,7 +252,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		if( NOT arguments.prepostExempt ){ announceInterception( "postViewRender", iData ); }
 
 		// Are we caching view
-		if ( arguments.cache ){
+		if ( arguments.cache && variables.viewCaching){
 			viewCacheProvider.set( viewCacheKey, iData.renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout );
 		}
 
@@ -360,13 +367,13 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
     /**
     * Renders an external view anywhere that cfinclude works.
-    * @view.hint The the view to render
-	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	* @cache.hint Cached the view output or not, defaults to false
-	* @cacheTimeout.hint The time in minutes to cache the view
-	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested
-	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
-	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
+    * @view The the view to render
+	* @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	* @cache Cached the view output or not, defaults to false
+	* @cacheTimeout The time in minutes to cache the view
+	* @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
+	* @cacheSuffix The suffix to add into the cache entry for this view rendering
+	* @cacheProvider The provider to cache this view in, defaults to 'template'
 	*/
     function renderExternalView(
     	required view,
@@ -403,7 +410,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 												 args=args,
 												 renderer=this );
 		// Are we caching it
-		if( arguments.cache ){
+		if( arguments.cache && variables.viewCaching ){
 			cbox_cacheProvider.set( cbox_cacheKey, cbox_renderedView, arguments.cacheTimeout, arguments.cacheLastAccessTimeout );
 		}
 		return cbox_renderedView;
@@ -413,12 +420,12 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* Render a layout or a layout + view combo
-	* @layout.hint The layout to render out
-	* @module.hint The module to explicitly render this layout from
-	* @view.hint The view to render within this layout
-	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
-	* @viewModule.hint The module to explicitly render the view from
-	* @prePostExempt.hint If true, pre/post layout interceptors will not be fired. By default they do fire
+	* @layout The layout to render out
+	* @module The module to explicitly render this layout from
+	* @view The view to render within this layout
+	* @args An optional set of arguments that will be available to this layouts/view rendering ONLY
+	* @viewModule The module to explicitly render the view from
+	* @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
 	*/
 	function renderLayout(
 		layout,
@@ -522,7 +529,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* Locate a layout in the conventions system
-	* @layout.hint The layout name
+	* @layout The layout name
 	*/
 	function locateLayout( required layout ){
 		// Default path is the conventions
@@ -549,9 +556,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* Locate a layout in the conventions system
-	* @layout.hint The layout name
-	* @module.hint The name of the module we are searching for
-	* @explicitModule.hint Are we locating explicitly or implicitly for a module layout
+	* @layout The layout name
+	* @module The name of the module we are searching for
+	* @explicitModule Are we locating explicitly or implicitly for a module layout
 	*/
 	function locateModuleLayout(
 		required layout,
@@ -610,7 +617,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* Locate a view in the conventions or external paths
-	* @view.hint The view to locate
+	* @view The view to locate
 	*/
 	function locateView( required view ){
 		// Default path is the conventions
@@ -627,9 +634,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* Locate a view in the conventions system
-	* @view.hint The view name
-	* @module.hint The name of the module we are searching for
-	* @explicitModule.hint Are we locating explicitly or implicitly for a module layout
+	* @view The view name
+	* @module The name of the module we are searching for
+	* @explicitModule Are we locating explicitly or implicitly for a module layout
 	*/
 	function locateModuleView(
 		required view,
@@ -691,9 +698,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	* Discover view+helper path locations
-	* @view.hint The view to discover
-	* @module.hint The module address
-	* @explicitModule.hint Is the module explicit or discoverable.
+	* @view The view to discover
+	* @module The module address
+	* @explicitModule Is the module explicit or discoverable.
 	*/
 	private function discoverViewPaths( required view, module, boolean explicitModule=false ){
 		var locationKey 	= arguments.view & arguments.module & arguments.explicitModule;
