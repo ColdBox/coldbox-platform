@@ -38,6 +38,7 @@
         "**/.*",
         "tests",
         "apidocs",
+        "testbox",
         "*/.md"
     ],
     "testbox":{
