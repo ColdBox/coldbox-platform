@@ -43,6 +43,9 @@
     ],
     "testbox":{
         "runner":[
+        	{
+                "default":"http://localhost:8599/tests/runner.cfm"
+            },
             {
                 "cf10":"http://cf10cboxdev.local/coldbox/tests/runner.cfm"
             },
