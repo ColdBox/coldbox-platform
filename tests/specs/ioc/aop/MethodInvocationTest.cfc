@@ -1,101 +1,120 @@
-﻿<cfcomponent extends="coldbox.system.testing.baseModelTest">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest"{
 	
-	function setup(){
-		// create invocation
-		invocation = getMockBox().createMock("coldbox.system.aop.MethodInvocation");
-		
-		// mock execution arguments
-		args={
-			id = createUUID(),
-			createdDate = now()
-		};
-		
-		// mock aspect interceptors
-		interceptors = [
-			getMockBox().createStub(),
-			getMockBox().createStub()
-		];
-		
-		// mock aspect methods
-		interceptors[1].invokeMethod = variables.invokeMethod;
-		interceptors[1].callCounter = 0;
-		interceptors[2].invokeMethod = variables.invokeMethod2;
-		interceptors[2].callCounter = 0;
-		// mock mapping
-		mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init('UnitTest');
-		//mock md
-		mockMDOriginal = getMetadata(variables.saveUser);
-		mockMD = URLEncodedFormat( serializeJSON( mockMDOriginal ) );
+/*********************************** LIFE CYCLE Methods ***********************************/
+
+	// executes before all suites+specs in the run() method
+	function beforeAll(){
+		super.beforeAll();
+	}
+
+	// executes after all suites+specs in the run() method
+	function afterAll(){
+		super.afterAll();
+	}
+	
+/*********************************** BDD SUITES ***********************************/
+
+	function run( testResults, testBox ){
+		// all your suites go here.
+		describe( "A Method Invocation", function(){
+
+			beforeEach(function( currentSpec ){
+				// create invocation
+				invocation = createMock( "coldbox.system.aop.MethodInvocation" );
 				
-		// init the invocation
-		invocation.init(method="saveUser",args=args,methodMetadata=mockMD,target=this,targetName="UnitTest",targetMapping=mockMapping,interceptors=interceptors);
-	}
-	
-	function testInit(){
-		assertEquals( 1, invocation.getInterceptorIndex() );
-		assertEquals( 2, arrayLen( invocation.getInterceptors() ) );
-		assertEquals( "saveUser", invocation.getMethod() );
-		assertEquals( args, invocation.getArgs() );
-		assertEquals( this, invocation.getTarget() );
-		assertEquals( mockMapping, invocation.getTargetMapping() );
-		assertTrue( isStruct( invocation.getMethodMetadata()  ));
-	}
-	
-	function testIncrementInterceptorIndex(){
-		assertEquals( 1, invocation.getInterceptorIndex() );
-		invocation.incrementInterceptorIndex();		
-		assertEquals( 2, invocation.getInterceptorIndex() );
-	}
-	
-	function testProceed(){
-		// mock the proxied method
-		this.callCounter = 0;
-		this.$wbAOPTargets["saveUser"] = {
-			UDFPointer = variables.saveUser,
-			interceptors = interceptors
-		};
-		mixerUtil = createObject("component","coldbox.system.aop.MixerUtil");
-		this.$wbAOPInvokeProxy = mixerUtil.$wbAOPInvokeProxy;
-		
-		// proceed with AOP interception
-		results = invocation.proceed(); 
-		debug( results );
-		// Assert the crazyness
-		assertEquals(1, interceptors[1].callCounter );
-		assertEquals(1, interceptors[2].callCounter );
-		assertEquals("I am cool aspect2 aspect1", results );
-			
-	}	
-</cfscript>
+				// mock execution arguments
+				args={
+					id = createUUID(),
+					createdDate = now()
+				};
+				
+				// mock aspect interceptors
+				interceptors = [
+					createStub(),
+					createStub()
+				];
+				
+				// mock aspect methods
+				interceptors[ 1 ].invokeMethod = variables.invokeMethod;
+				interceptors[ 1 ].callCounter = 0;
+				interceptors[ 2 ].invokeMethod = variables.invokeMethod2;
+				interceptors[ 2 ].callCounter = 0;
+				// mock mapping
+				mockMapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( 'UnitTest' );
+				//mock md
+				mockMDOriginal = getMetadata( variables.saveUser );
+				mockMD = URLEncodedFormat( serializeJSON( mockMDOriginal ) );
+						
+				// init the invocation to test
+				invocation.init(
+					method="saveUser",
+					args=args,
+					methodMetadata=mockMD,
+					target=this,
+					targetName="UnitTest",
+					targetMapping=mockMapping,
+					interceptors=interceptors
+				);
+			});
 
-	<!--- saveUser --->    
-    <cffunction name="saveUser" output="false" access="private" returntype="any" hint="The method we will proxy and intercept on">    
-    	<cfscript>
-			return "I am cool";	    
-    	</cfscript>    
-    </cffunction>
+			it( "can be initialized", function(){
+				expect( 1 ).toBe( invocation.getInterceptorIndex() );
+				expect( 2 ).toBe( arrayLen( invocation.getInterceptors() ) );
+				expect( "saveUser" ).toBe(  invocation.getMethod() );
+				expect( args ).toBe( invocation.getArgs() );
+				expect( getMetadata( invocation.getTarget() ).name ).toInclude( "MethodInvocationTest" );
+				expect( mockMapping ).toBe( invocation.getTargetMapping() );
+				expect( invocation.getMethodMetadata() ).toBeStruct();
+			});
 
-	<!--- invokeMethod --->    
-    <cffunction name="invokeMethod" output="false" access="private" returntype="any" hint="invoke method mock, done in tags for cf8 testing">    
-    	<cfargument name="invocation">
-    	<cfscript>
-			// increment this aspect call counter
-			this.callCounter++;
-			// Go down the rabbit hole
-			return arguments.invocation.proceed() & " aspect1";
-    	</cfscript>    
-    </cffunction>
-    
-    <!--- invokeMethod2 --->    
-    <cffunction name="invokeMethod2" output="false" access="private" returntype="any" hint="invoke method mock, done in tags for cf8 testing">    
-    	<cfargument name="invocation">
-    	<cfscript>
-			// increment this aspect call counter
-			this.callCounter++;
-			// Go down the rabbit hole
-			return arguments.invocation.proceed() & " aspect2";
-    	</cfscript>    
-    </cffunction>
+			it( "can increment its interceptor index", function(){
+				expect( 1 ).toBe( invocation.getInterceptorIndex() );
+				invocation.incrementInterceptorIndex();		
+				expect( 2 ).toBe( invocation.getInterceptorIndex() );
+			});
 
-</cfcomponent>
+			it( "can proceed via proxies", function(){
+				// mock the proxied method, which in our case, we are the target as well.
+				this.callCounter = 0;
+				this.$wbAOPTargets[ "saveUser" ] = {
+					UDFPointer 		= variables.saveUser,
+					interceptors 	= interceptors
+				};
+				mixerUtil = createMock( "coldbox.system.aop.MixerUtil" );
+				this.$wbAOPInvokeProxy = mixerUtil.$wbAOPInvokeProxy;
+				
+				// proceed with AOP interception
+				results = invocation.proceed(); 
+				debug( results );
+
+				// Assert the crazyness
+				expect( 1 ).toBe( interceptors[ 1 ].callCounter );
+				expect( 1 ).toBe( interceptors[ 2 ].callCounter );
+				expect( "I am cool aspect2 aspect1" ).toBe( results );
+			});
+
+		});
+	}
+
+/*********************************** METHOD PROXIES ***********************************/
+
+	// method proxy
+	private function saveUser(){
+		return "I am cool";
+	}
+
+	private function invokeMethod( invocation ){
+		// increment this aspect call counter
+		this.callCounter++;
+		// Go down the rabbit hole
+		return arguments.invocation.proceed() & " aspect1";
+	}
+
+	private function invokeMethod2( invocation ){
+		// increment this aspect call counter
+		this.callCounter++;
+		// Go down the rabbit hole
+		return arguments.invocation.proceed() & " aspect2";
+	}
+
+}

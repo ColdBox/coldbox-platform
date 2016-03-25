@@ -31,13 +31,18 @@ component 	extends="coldbox.system.testing.BaseModelTest"
 		describe( "Method Logger aspect", function(){
 
 			it( "can log execution calls", function(){
-				var mockInvocation = createEmptyMock( "coldbox.system.aop.MethodInvocation" )
-					.$( "getTargetName", "MyMock" )
-					.$( "getMethod", "execute" )
-					.$( "getArgs", { name = "luis majano" } )
+				var mockInvocation = createMock( "coldbox.system.aop.MethodInvocation" )
+					.init(
+						method 	= "execute",
+						args 	= { name="luis majano" },
+						methodMetadata = "{}",
+						target = this,
+						targetname = "mymock",
+						targetMapping = "mymock",
+						interceptors = [] 
+					)
 					.$( "proceed", "called" );
-
-
+					
 				var results = model.invokeMethod( mockInvocation );
 				expect(	results ).toBe( "called" );
 				expect(	mockLogger.$times( 2, "debug" ) ).toBeTrue();
