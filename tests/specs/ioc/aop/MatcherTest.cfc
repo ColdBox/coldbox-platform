@@ -126,7 +126,7 @@
 		assertEquals( "transactional",  matcher.getMemento().annotation );
 		assertFalse( structKeyExists( matcher.getMemento(), "annotationValue") );
 		
-		matcher.annotatedWith("transactional",true);
+		matcher.annotatedWith( "transactional", true );
 		assertEquals( "transactional",  matcher.getMemento().annotation );
 		assertEquals( true, matcher.getMemento().annotationValue );
 	}
