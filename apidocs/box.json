@@ -3,7 +3,7 @@
     "version":"1.0.0",
     "slug":"module-apidocs",
     "dependencies":{
-        "docbox":"https://github.com/Ortus-Solutions/DocBox/archive/v2.0.4.zip"
+        "docbox":"2.0.5"
     },
     "devDependencies":{
         
