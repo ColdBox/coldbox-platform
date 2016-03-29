@@ -65,13 +65,13 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 			var formats = [ "json", "xml", "pdf" ];
 			for( var thisFormat in formats ){
-				it( "can do #thisFormat# cached events", function(){
-					url.format = "#thisFormat#";
+				it( title="can do #thisFormat# cached events", data={ format: thisFormat}, body=function( data ){
+					getRequestContext().setValue( "format", data.format );
 					var event = execute( event="eventcaching", renderResults=true );
 					var prc = event.getCollection(private=true);
 
 					expect( prc.cbox_eventCacheableEntry ).toBeStruct();
-					expect( prc.cbox_renderData.contenttype ).toMatch( thisFormat );
+					expect( prc.cbox_renderData.contenttype ).toMatch( data.format );
 				});
 			}
 

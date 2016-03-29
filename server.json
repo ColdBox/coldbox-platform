@@ -1,0 +1,12 @@
+{
+    "force":true,
+    "openBrowser":false,
+    "web":{
+        "http":{
+            "port":"8599"
+        }
+    },
+    "JVM":{
+        "heapSize":"512"
+    }
+}

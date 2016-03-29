@@ -38,7 +38,7 @@
 
 			/* Populate From Struct - populate role */
 			user = populator.populateFromStruct(target=obj,memento=myStruct,composeRelationships=true);
-			assertTrue( getMetaData( user.getRole() ).name == "cbtestharness.models.entities.Role" );
+			expect(	user.getRole() ).toBeComponent();
 
 			/* Struct */
 			roleArgs = {

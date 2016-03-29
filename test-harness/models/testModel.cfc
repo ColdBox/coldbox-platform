@@ -71,11 +71,11 @@
 
 
 	<cffunction name="getStringBuffer" access="public" output="false" returntype="any" hint="Get StringBuffer">
-		<cfreturn instance.StringBuffer/>
+		<cfreturn instance.StringBuilder/>
 	</cffunction>
 	<cffunction name="setStringBuffer" access="public" output="false" returntype="void" hint="Set StringBuffer">
 		<cfargument name="StringBuffer" type="any" required="true"/>
-		<cfset instance.StringBuffer = arguments.StringBuffer/>
+		<cfset instance.StringBuilder = arguments.StringBuilder/>
 	</cffunction>
 
 	<cffunction name="getupdateWS" access="public" output="false" returntype="any" hint="Get updateWS">

@@ -1,6 +1,4 @@
 .DS_Store
-testharness/logs/*
-testing/resources/logs/*.log
 /settings.xml
 .project
 test-harness/logs/*.log
@@ -8,8 +6,13 @@ test-harness/logs
 test-harness/test/logs
 test-harness/test/specs/integration/logs
 testing/cases/logging/tmp
+testing/resources/logs/*.log
 tests/automation/results
 tests/automation/results-*
 tests/logs
 build-coldbox
 build/build.number
+testbox/*
+apidocs/docbox/*
+artifacts/*
+ApplicationTemplates/*

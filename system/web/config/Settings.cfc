@@ -13,7 +13,7 @@ component{
 	this.authorEmail 	= "coldbox@ortussolutions.com";
 	this.authorWebsite	= "http://www.ortussolutions.com";
 	this.suffix			= "Gideon";
-	this.version		= "4.2.0+@build.number@";
+	this.version		= "@version.number@+@build.number@";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
 	// Operation Defaults
@@ -40,4 +40,6 @@ component{
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
 
+
+	function configure(){}
 }

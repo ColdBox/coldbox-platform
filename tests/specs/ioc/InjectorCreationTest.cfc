@@ -122,7 +122,7 @@
 
 	function testJava(){
 		buffer = injector.getInstance("stringBuffer");
-		assertEquals( "java.lang.StringBuffer", getMetadata(buffer).name );
+		assertEquals( "java.lang.StringBuilder", getMetadata(buffer).name );
 	}
 
 	function testConstant(){
@@ -163,6 +163,16 @@
 	function testTImeZone(){
 		t = injector.getInstance("calendar");
 		t = injector.getInstance("calendar2");
+	}
+
+	function testclosureProvider(){
+		var closureProvider = injector.getInstance("closureProvider");
+		assertEquals( "closureProviderInstance", closureProvider );
+	}
+
+	function testInstanceWithInfluence(){
+		var instanceWithInfluence = injector.getInstance("instanceWithInfluence");
+		assertEquals( "321", instanceWithInfluence );
 	}
 
 	function testParentMappings(){

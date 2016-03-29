@@ -70,7 +70,7 @@ I oversee and manage ColdBox modules
 			// Add the application's external locations array.
 			modLocations.addAll( controller.getSetting( "ModulesExternalLocation" ) );
 			// Add the ColdBox Core Modules Location
-			arrayAppend( modLocations, "/coldbox/system/modules" );
+			arrayPrepend( modLocations, "/coldbox/system/modules" );
 			// iterate through locations and build the module registry in order
 			buildRegistry( modLocations );
 		</cfscript>
@@ -177,11 +177,17 @@ I oversee and manage ColdBox modules
 				for( var thisModule in aBundleModules ){
 					// cleanup module name
 					var bundleModuleName = listLast( thisModule, "/\" );
-					// register the bundle module
-					registerModule( moduleName=bundleModuleName,
-									invocationPath=modulesInvocationPath & "." & modName,
-									parent=modName,
-									force=true );
+					// register the bundle module if not in exclude list
+					if( canLoad( bundleModuleName ) ){
+						registerModule( 
+							moduleName		= bundleModuleName,
+							invocationPath	= modulesInvocationPath & "." & modName,
+							parent			= modName,
+							force			= true 
+						);
+					} else {
+						instance.logger.warn( "The module (#bundleModuleName#) cannot load as it is in the excludes list" );
+					}
 				}
 				// the bundle has loaded, it needs no config data
 				return true;

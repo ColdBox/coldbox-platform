@@ -1,6 +1,6 @@
 {
     "name":"ColdBox Platform",
-    "version":"4.2.0+@build.number@",
+    "version":"@version.number@+@build.number@",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"coldbox",
     "packageDirectory":"coldbox",
@@ -38,12 +38,13 @@
         "**/.*",
         "tests",
         "apidocs",
+        "testbox",
         "*/.md"
     ],
     "testbox":{
         "runner":[
-            {
-                "cf9":"http://cf9cboxdev.local/coldbox/tests/runner.cfm"
+        	{
+                "default":"http://localhost:8599/tests/runner.cfm"
             },
             {
                 "cf10":"http://cf10cboxdev.local/coldbox/tests/runner.cfm"
@@ -57,7 +58,7 @@
         ]
     },
     "devDependencies":{
-        "testbox":"2.2.0"
+        "testbox":"2.3.0+00044"
     },
     "installPaths":{
         "testbox":"testbox"

@@ -1,6 +1,6 @@
 component{
 
-	this.name = "CBOX_APIDOCS" & hash( getCurrentTemplatePath() );
+	this.name = "APIDOCS" & hash( getCurrentTemplatePath() );
 	this.sessionManagement 	= true;
 	this.sessionTimeout 	= createTimeSpan( 0, 0, 1, 0 );
 	this.setClientCookies 	= true;
@@ -11,15 +11,12 @@ component{
 	COLDBOX_ROOT = REReplaceNoCase( API_ROOT, "apidocs(\\|\/)$", "" );
 
 	// Core Mappings
-	this.mappings[ "/colddoc" ]  = API_ROOT;
+	this.mappings[ "/docbox" ] 	= API_ROOT & "docbox";
 	
 	// Standlone mappings
 	this.mappings[ "/coldbox" ]  = ( structKeyExists( url, "coldbox_root" )  ? url.coldbox_root  : COLDBOX_ROOT );
 	this.mappings[ "/cachebox" ] = ( structKeyExists( url, "cachebox_root" ) ? url.cachebox_root : COLDBOX_ROOT );
 	this.mappings[ "/logbox" ] 	 = ( structKeyExists( url, "logbox_root" )   ? url.logbox_root   : COLDBOX_ROOT );
 	this.mappings[ "/wirebox" ]  = ( structKeyExists( url, "wirebox_root" )  ? url.wirebox_root  : COLDBOX_ROOT );
-
-	// Shared mapping
-	this.mappings[ "/shared" ] = expandPath( "shared" );
 
 }

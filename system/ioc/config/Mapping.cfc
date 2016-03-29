@@ -74,7 +74,9 @@ Description :
 				// Mixins
 				mixins = [],
 				// Thread safety on wiring
-				threadSafe = ""
+				threadSafe = "",
+				// A closure that can influence the creation of the instance
+				influenceClosure = ""
 			};
 
 			// DI definition structure
@@ -196,6 +198,16 @@ Description :
     <cffunction name="setThreadSafe" access="public" returntype="any" output="false" hint="Set the thread safety for wiring bit">
     	<cfargument name="threadSafe" type="boolean" required="true">
     	<cfset instance.threadSafe = arguments.threadSafe>
+		<cfreturn this>
+    </cffunction>
+
+    <!--- Closure for influencing instance creation --->
+    <cffunction name="getInfluenceClosure" access="public" returntype="any" output="false" hint="Get the influence closure. Empty string if not exists">
+    	<cfreturn instance.influenceClosure>
+    </cffunction>
+    <cffunction name="setInfluenceClosure" access="public" returntype="any" output="false" hint="Set the influence closure.">
+    	<cfargument name="influenceClosure" type="any" required="true">
+    	<cfset instance.influenceClosure = arguments.influenceClosure>
 		<cfreturn this>
     </cffunction>
 

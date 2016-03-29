@@ -211,9 +211,9 @@ component serializable=false accessors="true"{
 			return arguments.defaultValue;
 		}
 
-		throw("The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
-			   "Keys Found: #structKeyList(collection)#",
-			   "RequestContext.ValueNotFound");
+		throw(  message="The variable: #arguments.name# is undefined in the request collection (private=#arguments.private#)",
+			detail="Keys Found: #structKeyList(collection)#",
+			type="RequestContext.ValueNotFound");
 	}
 
 	/**
@@ -767,6 +767,13 @@ component serializable=false accessors="true"{
 	}
 
 	/**
+	* Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.
+	*/
+	string function getHTMLBaseURL(){
+		return replacenocase( buildLink( linkTo='', ssl=isSSL() ), "index.cfm", "" );
+	}
+
+	/**
 	* Set the ses base URL for this request
 	* @return RequestContext
 	*/
@@ -820,7 +827,7 @@ component serializable=false accessors="true"{
 			}
 			/* Query String Append */
 			if( len( trim( arguments.queryString ) ) ){
-				if( right( arguments.queryString, 1 ) neq  "/" ){
+				if( right( arguments.linkTo, 1 ) neq  "/" ){
 					arguments.linkto = arguments.linkto & "/";
 				}
 				arguments.linkto = arguments.linkto & replace( arguments.queryString, "&", "/", "all" );

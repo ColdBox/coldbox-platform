@@ -68,6 +68,18 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				expect( config[ "notActivatedModule" ].activated ).toBeFalse();
 			});
 
+			it( "should load modules in a bundle", function(){
+				var config = getController().getSetting( "modules" );
+
+				expect(	config ).toHaveKey( 'layouttest' )
+					.toHaveKey( 'test1' );
+			});
+
+			it( "should not load mdoules that have been excluded, even in bundles", function(){
+				var config = getController().getSetting( "modules" );
+				expect(	config ).notToHaveKey( 'excludedmod' );
+			});
+
 		});
 
 	}

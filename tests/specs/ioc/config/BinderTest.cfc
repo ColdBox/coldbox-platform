@@ -176,10 +176,10 @@
 	}
 
 	function testToJava(){
-		config.map("Test").toJava("java.lang.StringBuffer");
+		config.map("Test").toJava("java.lang.StringBuilder");
 		mapping = config.getMapping("Test");
 		assertEquals( this.TYPES.java, mapping.getType() );
-		assertEquals( "java.lang.StringBuffer", mapping.getPath() );
+		assertEquals( "java.lang.StringBuilder", mapping.getPath() );
 	}
 
 	function testToWebservice(){
@@ -613,6 +613,16 @@
 		config.map("NotThreadSafe").asSingleton();
 		mapping = config.getMapping("NotThreadSafe");
 		assertfalse( len(mapping.getThreadSafe()) );
+	}
+
+	function testInfluenceClosure(){
+		config.map("brad")
+			.toValue( 'wood' )
+			.withInfluence( function() {
+			return reverse( instance ); 
+		});
+		mapping = config.getMapping("brad");
+		assertFalse( isSimpleValue( mapping.getInfluenceClosure() ) );
 	}
 
 	function testUnMap(){

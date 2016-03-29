@@ -18,30 +18,37 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	function testafterInstanceAutowire(){
 		// mocks
-		mockMapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init('unitTest')
-			.$("getName","unitTest");
+		mockMapping = getMockBox()
+				.createMock( "coldbox.system.ioc.config.Mapping" )
+				.init( 'unitTest' )
+				.$( "getName", "unitTest" );
+		mockTarget = createStub();
 		// intercept data
 		data = {
 			mapping = mockMapping,
-			target = this
+			target = mockTarget
 		};
-		mixer.$("buildAspectDictionary");
+		mixer.$( "buildAspectDictionary" );
 
 		// 1: target already mixed
-		this.$wbAOPMixed = true;
-		mixer.afterInstanceAutowire(data);
+		mockTarget.$wbAOPMixed = true;
+		mixer.afterInstanceAutowire( data );
 		assertTrue( mixer.$never("buildAspectDictionary") );
 
 		// 2: target NOT mixed and we need dictionary and nothing matched
-		structDelete(this, "$wbAOPMixed");
-		dictionary = { "unittest" = [] };
-		mixer.$("AOPBuilder").$("buildClassMatchDictionary").$property("classMatchDictionary","instance",dictionary);
-		mixer.afterInstanceAutowire(data);
+		structDelete( mockTarget, "$wbAOPMixed" );
+		var dictionary = { "unittest" = [] };
+		mixer.$( "AOPBuilder" )
+			.$("buildClassMatchDictionary")
+			.$property( "classMatchDictionary", "variables", dictionary );
+		mixer.afterInstanceAutowire( data );
 		assertTrue( mixer.$never("AOPBuilder") );
 
 		// 3: target NOT mixed and we need dictionary and it matches with methods
 		dictionary = { "unitTest" = [{classes="",methods="",aspects="1,2"}] };
-		mixer.$("AOPBuilder").$("buildClassMatchDictionary").$property("classMatchDictionary","instance",dictionary);
+		mixer.$("AOPBuilder")
+			.$("buildClassMatchDictionary")
+			.$property("classMatchDictionary", "variables", dictionary );
 		mixer.afterInstanceAutowire(data);
 		assertTrue( mixer.$once("AOPBuilder") );
 		assertTrue( mixer.$never("buildClassMatchDictionary") );

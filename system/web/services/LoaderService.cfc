@@ -192,22 +192,17 @@ component extends="coldbox.system.web.services.BaseService"{
 		var configFileLocation 	= coldboxSettings.configConvention;
 
 		// Overriding Marker defaults to false
-		coldboxSettings["ConfigFileLocationOverride"] = false;
+		coldboxSettings[ "ConfigFileLocationOverride" ] = false;
 
 		// verify coldbox.cfc exists in convention: /app/config/Coldbox.cfc
-		if( fileExists( appRootPath & replace(configFileLocation,".","/","all") & ".cfc" ) ){
-			coldboxSettings["ConfigFileLocation"] = configFileLocation;
+		if( fileExists( appRootPath & replace( configFileLocation, ".", "/", "all" ) & ".cfc" ) ){
+			coldboxSettings[ "ConfigFileLocation" ] = configFileLocation;
 		}
 
 		// Overriding the config file location? Maybe unit testing?
 		if( len( arguments.overrideConfigFile ) ){
-			coldboxSettings["ConfigFileLocation"] 			= arguments.overrideConfigFile;
-			coldboxSettings["ConfigFileLocationOverride"] 	= true;
-		}
-
-		// If no config file location throw exception
-		if( NOT len( coldboxSettings["ConfigFileLocation"] ) ){
-			throw(message="Config file not located in conventions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
+			coldboxSettings[ "ConfigFileLocation" ] 			= arguments.overrideConfigFile;
+			coldboxSettings[ "ConfigFileLocationOverride" ] 	= true;
 		}
 
 		// Create it and return it now that config file location is set in the location settings

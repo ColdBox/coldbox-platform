@@ -248,8 +248,17 @@ Description :
 				for(key in arguments.memento){
 					// init population flag
 					pop = true;
-					// init nullValue flag
-					nullValue = false;
+					// init nullValue flag and shortcut to property value
+					// conditional with StructKeyExist, to prevent language issues with Null value checking of struct keys in ACF
+					if ( structKeyExists( arguments.memento, key) ){
+						nullValue = false;
+						propertyValue = arguments.memento[ key ];
+
+					} else {
+						nullValue = true;
+						propertyValue = JavaCast( "null", "" );
+					}
+
 					// Include List?
 					if( len(arguments.include) AND NOT listFindNoCase(arguments.include,key) ){
 						pop = false;
@@ -258,15 +267,13 @@ Description :
 					if( len(arguments.exclude) AND listFindNoCase(arguments.exclude,key) ){
 						pop = false;
 					}
-					// Ignore Empty?
-					if( arguments.ignoreEmpty and isSimpleValue(arguments.memento[key]) and not len( trim( arguments.memento[key] ) ) ){
+					// Ignore Empty? Check added for real Null value
+					if( arguments.ignoreEmpty and not IsNull(propertyValue) and isSimpleValue(arguments.memento[key]) and not len( trim( arguments.memento[key] ) ) ){
 						pop = false;
 					}
 
 					// Pop?
 					if( pop ){
-						// shortcut to property value
-						propertyValue = arguments.memento[ key ];
 						// Scope Injection?
 						if( scopeInjection ){
 							beanInstance.populatePropertyMixin(propertyName=key,propertyValue=propertyValue,scope=arguments.scope);
@@ -289,7 +296,8 @@ Description :
 								nullValue = false;
 							}
 							// Is value nullable (e.g., simple, empty string)? If so, set null...
-							if( isSimpleValue( propertyValue ) && !len( trim( propertyValue ) ) && nullValue ) {
+							// short circuit evealuaton of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
+							if( !IsNull(propertyValue) && isSimpleValue( propertyValue ) && !len( trim( propertyValue ) ) && nullValue ) {
 								propertyValue = JavaCast( "null", "" );
 							}
 
@@ -420,7 +428,9 @@ Description :
 		<cfscript>
 			var meta = {};
 			// get array of properties
-			var properties = getMetaData( arguments.target ).properties;
+			var stopRecursions= [ "lucee.Component", "railo.Component", "WEB-INF.cftags.component" ];
+			var properties = getUtil().getInheritedMetaData( arguments.target, stopRecursions ).properties; 
+
 			// loop over properties
 			for( var i = 1; i <= arrayLen( properties ); i++ ) {
 				var property = properties[ i ];

@@ -1,12 +1,11 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * Base testing component to intergrate TestBox with ColdBox
 */
-component extends="testbox.system.compat.framework.TestCase" accessors="true"{
-	
+component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
+
 	/**
 	* The application mapping this test links to
 	*/
@@ -182,7 +181,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	* Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it
 	* @clearMethods Clear methods on the object
 	* @decorator The class path to the decorator to build into the mock request context
-	* 
+	*
 	* @return coldbox.system.web.context.RequestContext
 	*/
 	function getMockRequestContext( boolean clearMethods=false, decorator ){
@@ -239,7 +238,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	}
 
 	/********************************************* APP RETRIEVAL METHODS *********************************************/
-	
+
 	/**
 	* Get the WireBox reference from the running application
 	* @return coldbox.system.ioc.Injector
@@ -259,7 +258,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	/**
 	* Get the CacheBox reference from the running application
 	* @cacheName The cache name to retrieve or returns the 'default' cache by default.
-	* 
+	*
 	* @return coldbox.system.cache.ICacheProvider
 	*/
 	function getCache( required cacheName="default" ){
@@ -276,7 +275,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 
 	/**
 	* Get the RequestContext reference from the running application
-	* 
+	*
 	* @return coldbox.system.web.context.RequestContext
 	*/
 	function getRequestContext(){
@@ -285,7 +284,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 
 	/**
 	* Get the RequestContext reference from the running application
-	* 
+	*
 	* @return coldbox.system.web.Flash.AbstractFlashScope
 	*/
 	function getFlashScope(){
@@ -297,7 +296,7 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	/**
 	* Setup an initial request capture.  I basically look at the FORM/URL scopes and create the request collection out of them.
 	* @event The event to setup the request context with, simulates the URL/FORM.event
-	* 
+	*
 	* @return BaseTestCase
 	*/
 	function setupRequest( required event ){
@@ -310,16 +309,19 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 
 	/**
 	* Executes a framework lifecycle by executing an event.  This method returns a request context object that can be used for assertions
-	* @event The event to execute
+	* @event The event to execute (e.g. 'main.index')
+    * @route The route to execute (e.g. '/login' which may route to 'sessions.new')
 	* @private Call a private event or not
 	* @prePostExempt If true, pre/post handlers will not be fired.
 	* @eventArguments A collection of arguments to passthrough to the calling event handler method
 	* @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
-	* 
+	*
 	* @return coldbox.system.context.RequestContext
 	*/
 	function execute(
-		required event,
+		string event = "",
+        string route = "",
+        string queryString = "",
 		boolean private=false,
 		boolean prePostExempt=false,
 		struct eventArguments={},
@@ -333,13 +335,34 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 		var renderedContent = "";
 		var iData			= {};
 
-		// Remove routing, not needed in integration mode.
-		try{
-			getInterceptor( 'SES' ).setEnabled( false );
-		}catch( "InterceptorService.InterceptorNotFound" e ){
-			// ignore it, not used.
-		}
-		
+        if ( arguments.event == "" && arguments.route == "" ){
+            throw( "Must provide either an event or a route to the execute() method." );
+        }
+
+        try{
+            // if we were passed a route, parse it and prepare the SES interceptor for routing.
+            if ( arguments.route != "" ){
+            	// enable the SES interceptor
+            	getInterceptor( "SES" ).setEnabled( true );
+                // separate the route into the route and the query string
+                var routeParts = explodeRoute( arguments.route );
+
+                // add the query string parameters from the route to the request context
+                getRequestContext().collectionAppend( routeParts.queryStringCollection );
+                // add the query string parameters from the arguments to the request context
+                getRequestContext().collectionAppend( parseQueryString( arguments.queryString ) );
+
+                // mock the cleaned paths so SES routes will be recognized
+                prepareMock( getInterceptor( "SES" ) ).$( "getCleanedPaths", { pathInfo = routeParts.route, scriptName = "" } );
+            }
+            else{
+                // If we were passed just an event, remove routing since we don't need it
+                getInterceptor( "SES" ).setEnabled( false );
+            }
+        }catch( "InterceptorService.InterceptorNotFound" e ){
+        	// In either case, if the interceptor doesn't exists, just ignore it.
+        }
+
 		// Setup the request Context with setup FORM/URL variables set in the unit test.
 		setupRequest( arguments.event );
 		try{
@@ -355,9 +378,10 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 				cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
 			}
 
-			// grab the latest event in the context, in case overrides occur
-			requestContext  = getRequestContext();
+            // grab the latest event in the context, in case overrides occur
+            requestContext  = getRequestContext();
 			arguments.event = requestContext.getCurrentEvent();
+
 			// TEST EVENT EXECUTION
 			if( NOT requestContext.isNoExecution() ){
 				// execute the event
@@ -420,9 +444,20 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 		// Return the correct event context.
 		requestContext = getRequestContext();
 
+        // Add in the getRenderedContent method for convenience
+        requestContext.getRenderedContent = variables.getRenderedContent;
+
 		return requestContext;
 	}
 
+    /**
+    * Get the rendered content from a ColdBox integration test
+    *
+    * @return cbox_rendered_content or an empty string
+    */
+    function getRenderedContent(){
+        return getValue( "cbox_rendered_content", "" );
+    }
 
 	/**
 	* Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
@@ -484,5 +519,53 @@ component extends="testbox.system.compat.framework.TestCase" accessors="true"{
 	function getUtil(){
 		return new coldbox.system.core.util.Util();
 	}
+
+    /**
+    * Separate a route into two parts: the base route, and a query string collection
+    *
+    * @route a string containing the route with an optional query string (e.g. '/posts?recent=true')
+    *
+    * @return a struct containing the base route and a struct of query string parameters
+    */
+    private struct function explodeRoute( required string route ){
+        var routeParts = ListToArray( URLDecode( arguments.route ), '?' );
+
+        var queryParams = {};
+        if ( ArrayLen( routeParts ) > 1 ){
+            queryParams = parseQueryString( routeParts[ 2 ] );
+        }
+
+        return { route = routeParts[1], queryStringCollection = queryParams };
+    }
+
+    /**
+    * Parses a query string into a struct
+    *
+    * @queryString a query string from a URI
+    *
+    * @return a struct of query string parameters
+    */
+    private struct function parseQueryString( required string queryString ){
+        var queryParams = {};
+
+        var queryParamsArray = ListToArray( URLDecode( arguments.queryString ), '&' );
+
+        for ( var queryStringPair in queryParamsArray ){
+            var pairParts = ListToArray( queryStringPair, '=' );
+
+            // If there is an empty value, set it to an empty string
+            if ( ArrayLen( pairParts ) < 2 ){
+                pairParts[ 2 ] = '';
+            }
+
+            if ( ! StructKeyExists( queryParams, pairParts[1] ) ){
+                queryParams[ pairParts[ 1 ] ] = '';
+            }
+
+            queryParams[ pairParts[ 1 ] ] = ListAppend( queryParams[ pairParts[ 1 ] ], pairParts[ 2 ] );
+        }
+
+        return queryParams;
+    }
 
 }

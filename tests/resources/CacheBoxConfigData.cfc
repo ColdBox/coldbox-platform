@@ -19,7 +19,7 @@ Description :
 		// The CacheBox configuration structure DSL
 		cacheBox = {
 			// LogBox Configuration file
-			logBoxConfig = "coldbox.system.cache.config.LogBoxConfig", 
+			logBoxConfig = "coldbox.system.cache.config.LogBox", 
 			
 			// Scope Registration
 			scopeRegistration = {
