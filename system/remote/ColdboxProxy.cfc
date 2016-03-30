@@ -19,18 +19,15 @@ Description :
 
 		// Remote proxies are created by the CFML engine without calling init(),
 		// so autowire in here in the pseduo constructor
-		if( structKeyExists( this, "autowire" ) and this.autowire ){
-			selfAutowire();
-		}
+		selfAutowire();
 	</cfscript>
 
 	<!--- selfAutowire --->
     <cffunction name="selfAutowire" output="false" access="private" hint="Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path.">
 		<cfscript>
 			var script_name = cgi.script_name;
-
-			// Only process this logic if hitting a remote proxy CFC directly
-			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' ) {
+			// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists. 
+			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' || !verifyColdBox( throwOnNotExist=false ) ) {
 				return;
 			}
 
@@ -212,12 +209,18 @@ Description :
 
 	<!--- verifyColdBox --->
 	<cffunction name="verifyColdBox" output="false" access="private" returntype="boolean" hint="Verify the coldbox app">
+		<cfargument name="throwOnNotExist" default="true">
 		<cfscript>
+			
 			//Verify the coldbox app is ok, else throw
 			if ( not structKeyExists(application,COLDBOX_APP_KEY) ){
-				throw( message="ColdBox Controller Not Found", 
-					   detail="The coldbox main controller has not been initialized",
-					   type="ColdBoxProxy.ControllerIllegalState");
+				if( arguments.throwOnNotExist ) {
+					throw( message="ColdBox Controller Not Found", 
+						   detail="The coldbox main controller has not been initialized",
+						   type="ColdBoxProxy.ControllerIllegalState");
+				} else {
+					return false;
+				}
 			}
 			else{
 				return true;
