@@ -993,9 +993,13 @@ Description :
 				// Copy values to the RC
 				qsValues = REreplacenocase( arguments.requestString, "^.*\?", "", "all" );
 				// loop and create
-				for( x=1; x lte listLen( qsValues, "&" ); x=x+1 ){
-					qsVal = listGetAt( qsValues, x, "&" );
-					arguments.rc[ listFirst( qsVal, "=" ) ] = listLast( qsVal, "=" );
+				for(x=1; x lte listLen(qsValues,"&"); x=x+1){
+					qsVal = listGetAt(qsValues,x,"&");
+					if( listlen( qsVal, '=' ) > 1 ) {
+						arguments.rc[ URLDecode( listFirst(qsVal,"=") ) ] = URLDecode( listLast(qsVal,"=") );
+					} else {
+						arguments.rc[ URLDecode( listFirst(qsVal,"=") ) ] = '';						
+					}
 				}
 				// Clean the request string
 				arguments.requestString = Mid( arguments.requestString, 1, ( varMatch.pos[ 1 ] -1 ) );
