@@ -548,7 +548,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     private struct function parseQueryString( required string queryString ){
         var queryParams = {};
 
-        var queryParamsArray = ListToArray( URLDecode( arguments.queryString ), '&' );
+        var queryParamsArray = ListToArray( arguments.queryString, '&' );
 
         for ( var queryStringPair in queryParamsArray ){
             var pairParts = ListToArray( queryStringPair, '=' );
@@ -557,6 +557,10 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
             if ( ArrayLen( pairParts ) < 2 ){
                 pairParts[ 2 ] = '';
             }
+			
+			// Decode query parameter name and value now that we're done parsing them.
+			pairParts[ 1 ] = URLDecode( pairParts[ 1 ] );
+			pairParts[ 2 ] = URLDecode( pairParts[ 2 ] ); 
 
             if ( ! StructKeyExists( queryParams, pairParts[1] ) ){
                 queryParams[ pairParts[ 1 ] ] = '';
