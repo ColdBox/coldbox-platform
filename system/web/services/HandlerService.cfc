@@ -394,39 +394,37 @@ Description :
 	<!--- Handler Registration System --->
 	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
 		<cfscript>
-		var HandlersPath = controller.getSetting("HandlersPath");
-		var HandlersExternalLocationPath = controller.getSetting("HandlersExternalLocationPath");
-		var HandlerArray = Arraynew(1);
-		var HandlersExternalArray = ArrayNew(1);
+		var handlersPath = controller.getSetting( "handlersPath" );
+		var handlersExternalLocationPath = controller.getSetting( "handlersExternalLocationPath" );
+		var handlerArray = [];
+		var handlersExternalArray = [];
 
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
 
-		//Get recursive Array listing
-		HandlerArray = getHandlerListing(HandlersPath);
+		// Get recursive Array listing
+		handlerArray = getHandlerListing( handlersPath );
 
-		//Set registered Handlers
-		controller.setSetting(name="RegisteredHandlers",value=arrayToList(HandlerArray));
+		// Set registered Handlers
+		controller.setSetting( name="registeredHandlers", value=arrayToList( handlerArray ) );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 
-		if( len(HandlersExternalLocationPath) ){
+		if( len( handlersExternalLocationPath ) ){
 
-			//Check for Handlers Directory Location
-			if ( not directoryExists(HandlersExternalLocationPath) ){
-				throw("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","HandlerService.HandlersDirectoryNotFoundException");
+			// Check for handlers Directory Location
+			if ( !directoryExists( handlersExternalLocationPath ) ){
+				throw(
+					message = "The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.",
+					type 	= "HandlerService.HandlersDirectoryNotFoundException"
+				);
 			}
 
-			//Get recursive Array listing
-			HandlersExternalArray = getHandlerListing(HandlersExternalLocationPath);
+			// Get recursive Array listing
+			handlersExternalArray = getHandlerListing( handlersExternalLocationPath );
 		}
 
-		//Verify it
-		if ( ArrayLen(HandlerArray) eq 0 AND ArrayLen(HandlersExternalArray) eq 0){
-			throw("No handlers were found in: #HandlersPath# or in #HandlersExternalLocationPath#. So I have no clue how you are going to run this application.","","HandlerService.NoHandlersFoundException");
-		}
-
-		//Set registered External Handlers
-		controller.setSetting(name="RegisteredExternalHandlers",value=arrayToList(HandlersExternalArray));
+		// Set registered External Handlers
+		controller.setSetting( name="registeredExternalHandlers", value=arrayToList( handlersExternalArray ) );
 		</cfscript>
 	</cffunction>
 
