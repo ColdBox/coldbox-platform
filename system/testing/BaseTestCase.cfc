@@ -40,8 +40,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* Inspect test case for annotations
 	* @return BaseTestCase
 	*/
-	function metadataInspection(){
-		var md = getMetadata( this );
+	function metadataInspection( metadataObj = this ){
+		var md = getMetadata( metadataObj );
 		// Inspect for appMapping annotation
 		if( structKeyExists( md, "appMapping" ) ){
 			variables.appMapping = md.appMapping;
@@ -68,12 +68,12 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	/**
 	* The main setup method for running ColdBox Integration enabled tests
 	*/
-	function beforeTests(){
+	function beforeTests( metadataObj = this ){
 		var appRootPath = "";
 		var context		= "";
 
 		// metadataInspection
-		metadataInspection();
+		metadataInspection( metadataObj );
 
 		// Load ColdBox Application for testing?
 		if( this.loadColdbox ){
@@ -112,12 +112,12 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	/**
 	* This executes before any test method for integration tests
 	*/
-	function setup(){
+	function setup( metadataObj = this ){
 		// Are we doing integration tests
 		if( this.loadColdbox ){
 			// verify ColdBox still exists, else load it again:
 			if( !structKeyExists( application, getColdboxAppKey() ) ){
-				beforeTests();
+				beforeTests( metadataObj );
 			} else {
 				variables.controller = application[ getColdBoxAppKey() ];
 			}
@@ -138,8 +138,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	/**
 	* BDD: The main setup method for running ColdBox Integration enabled tests
 	*/
-	function beforeAll(){
-		beforeTests();
+	function beforeAll( metadataObj = this ){
+		beforeTests( metadataObj );
 	}
 
 	/**
