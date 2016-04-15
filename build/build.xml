@@ -208,7 +208,6 @@
 		<zip destfile="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" basedir="${dir.build}" />
 		
 		<!-- Cleanup for StandAlone Build -->
-		<delete dir="${dir.build}/cbapptemplates"/>
 		<delete dir="${dir.build}/apidocs" />
 		<delete dir="${dir.build}/test-runner" />
 		<delete dir="${dir.build}/test-browser" />
@@ -610,10 +609,6 @@
 		</exec>
 		<exec executable="box" dir="${basedir}/apidocs">
 			<arg line="install" />
-		</exec>
-		<!-- App Templates -->
-		<exec executable="box" dir="${dir.build}">
-			<arg line="install id=cbapptemplates save=false" />
 		</exec>
 	</target>
 	
