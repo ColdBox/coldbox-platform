@@ -131,22 +131,22 @@ Description :
 		<cfargument name="requestContext"   type="any" required="true" hint="The request context"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var oEventHandler = "";
-			var oRequestContext = arguments.requestContext;
-			var eventCachingData = structnew();
-			var oEventURLFacade = instance.templateCache.getEventURLFacade();
-			var eventDictionaryEntry = "";
+			var oEventHandler 			= "";
+			var oRequestContext 		= arguments.requestContext;
+			var eventCachingData 		= {};
+			var oEventURLFacade 		= instance.templateCache.getEventURLFacade();
+			var eventDictionaryEntry 	= "";
 
-			// Create Runnable Object
+			// Create Runnable Object via WireBox
 			oEventHandler = newHandler( arguments.ehBean.getRunnable() );
 
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 
 			// Does requested method/action of execution exist in handler?
-			if ( NOT oEventHandler._actionExists(arguments.ehBean.getMethod()) ){
+			if( NOT oEventHandler._actionExists( arguments.ehBean.getMethod() ) ){
 
 				// Check if the handler has an onMissingAction() method, virtual Events
-				if( oEventHandler._actionExists("onMissingAction") ){
+				if( oEventHandler._actionExists( "onMissingAction" ) ){
 					// Override the method of execution
 					arguments.ehBean.setMissingAction( arguments.ehBean.getMethod() );
 					// Let's go execute our missing action
@@ -154,42 +154,56 @@ Description :
 				}
 
 				// Test for Implicit View Dispatch
-				if( controller.getSetting(name="ImplicitViews") AND isViewDispatch(arguments.ehBean.getFullEvent(),arguments.ehBean) ){
+				if( controller.getSetting( name="ImplicitViews" ) AND 
+					isViewDispatch( arguments.ehBean.getFullEvent(), arguments.ehBean ) 
+				){
 					return oEventHandler;
 				}
 
 				// Invalid Event procedures
-				invalidEvent(arguments.ehBean.getFullEvent(), arguments.ehBean);
+				invalidEvent( arguments.ehBean.getFullEvent(), arguments.ehBean );
 
 				// If we get here, then the invalid event kicked in and exists, else an exception is thrown
 				// Go retrieve the handler that will handle the invalid event so it can execute.
-				return getHandler( getRegisteredHandler(arguments.ehBean.getFullEvent()), oRequestContext);
+				return getHandler( 
+					getRegisteredHandler( arguments.ehBean.getFullEvent() ), 
+					oRequestContext
+				);
 				//return getHandler(arguments.ehBean,oRequestContext);
 
 			}//method check finalized.
 
+			// Store action metadata
+			arguments.ehBean.setActionMetadata( 
+				getMetadata( oEventHandler[ arguments.ehBean.getMethod() ] ) 
+			);
+
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 
 			// Event Caching Routines, if using caching and we are executing the main event
-			if ( instance.eventCaching and ehBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
+			if ( instance.eventCaching and arguments.ehBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
 
 				// Save Event Caching metadata
-				saveEventCachingMetadata(eventUDF=oEventHandler[ehBean.getMethod()],
-										 cacheKey=ehBean.getFullEvent(),
-										 cacheKeySuffix=oEventHandler.EVENT_CACHE_SUFFIX);
+				saveEventCachingMetadata(
+					eventUDF 	 	= oEventHandler[ arguments.ehBean.getMethod() ],
+					cacheKey 		= arguments.ehBean.getFullEvent(),
+					cacheKeySuffix 	= oEventHandler.EVENT_CACHE_SUFFIX
+				);
 
 				// get dictionary entry for operations, it is now guaranteed
-				eventDictionaryEntry = instance.eventCacheDictionary[ ehBean.getFullEvent() ];
+				eventDictionaryEntry = instance.eventCacheDictionary[ arguments.ehBean.getFullEvent() ];
 
 				// Do we need to cache this event's output after it executes??
 				if ( eventDictionaryEntry.cacheable ){
 					// Create caching data structure according to MD.
-					structAppend(eventCachingData,eventDictionaryEntry,true);
+					structAppend( eventCachingData, eventDictionaryEntry, true );
 
 					// Create the Cache Key to save
-					eventCachingData.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventCachingData.suffix,
-																		      targetEvent=ehBean.getFullEvent(),
-																		      targetContext=oRequestContext);
+					eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
+						keySuffix 		= eventCachingData.suffix,
+						targetEvent 	= arguments.ehBean.getFullEvent(),
+						targetContext 	= oRequestContext
+					);
 
 
 					// Event is cacheable and we need to flag it so the Renderer caches it
