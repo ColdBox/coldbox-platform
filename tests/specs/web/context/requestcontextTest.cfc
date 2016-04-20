@@ -28,7 +28,8 @@
 
 	function testGetHTMLBaseURL(){
 		var event = getRequestContext();
-		event.$( "isSES", true );
+		event.$( "isSES", true )
+			.$( "isSSL", false );
 		expect( event.getHTMLBaseURL() ).toinclude( "http://jfetmac/applications/coldbox/test-harness" );
 
 		event.$( "isSSL", true );
@@ -325,30 +326,30 @@
 
 		/* ses test */
 		event.setisSES(true);
-		event.setsesBaseURL(base);
-		testurl = event.buildLink('general/index');
+		event.setsesBaseURL( base );
+		testurl = event.buildLink( linkTo='general/index', ssl=false );
 		AssertEquals(testurl, base & "/general/index" );
 
 		/* query string transformation */
 		event.setisSES(true);
-		event.setsesBaseURL(base);
-		testurl = event.buildLink(linkTo='general/index',queryString="page=2&tests=4");
+		event.setsesBaseURL( base );
+		testurl = event.buildLink( linkTo='general/index', queryString="page=2&tests=4", ssl=false );
 		AssertEquals(testurl, base & "/general/index/page/2/tests/4" );
 
 		/* ssl test */
 		event.setisSES(true);
-		event.setsesBaseURL(base);
-		testurl = event.buildLink(linkto='general/index',ssl=true);
+		event.setsesBaseURL( base );
+		testurl = event.buildLink( linkto='general/index', ssl=true );
 		AssertEquals(testurl, basessl & "/general/index" );
 		// SSL OFF
 		event.setsesBaseURL(basessl);
-		testurl = event.buildLink(linkto='general/index',ssl=false);
+		testurl = event.buildLink( linkto='general/index', ssl=false );
 		AssertEquals(testurl, base & "/general/index" );
 
 		/* translate */
 		event.setisSES(true);
-		event.setsesBaseURL(base);
-		testurl = event.buildLink(linkto='general.index',translate=false);
+		event.setsesBaseURL( base );
+		testurl = event.buildLink( linkto='general.index', translate=false, ssl=false );
 		AssertEquals(testurl, base & "/general.index" );
 	}
 
@@ -472,7 +473,7 @@
 
 		event.$( "isSES", true );
 		link = event.buildLink( linkTo='my/event/handler/', queryString='one=1&two=2' );
-		expect(	link ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/my/event/handler/one/1/two/2" );
+		expect(	link ).toInclude( "jfetmac/applications/coldbox/test-harness/index.cfm/my/event/handler/one/1/two/2" );
 		
 		debug( link );
 	}
