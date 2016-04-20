@@ -36,7 +36,7 @@ Description :
 		// map to constant value, no need for scope
 		map("jsonProperty").toValue("[{name:'luis'},{name:'Jose'}]");
 		// map to ws
-		map("coldboxWS").toWebservice("http://railo.stg.ortussolutions.com/ExtensionProvider.cfc?wsdl");
+		map("coldboxWS").toWebservice( "https://lucee.stg.ortussolutions.com/ExtensionProvider.cfc?wsdl" );
 		// map to rss feed
 		map("googleNews")
 			.toRSS("http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&output=rss")
