@@ -694,6 +694,29 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		return locateView(arguments.view);
 	}
 
+	public string function elixir( required string fileName, string buildDirectory = 'build' ) {
+		var includesConvention = controller.getSetting( "includesConvention", true );
+		var filePath = expandPath("#variables.appMapping#/#includesConvention#/#arguments.buildDirectory#/rev-manifest.json");
+
+		var href = "#variables.appMapping#/#includesConvention#/#arguments.fileName#";
+		
+		if ( ! fileExists( filePath ) ) {
+			return href;
+		}
+
+		var fileContents = fileRead( filePath );
+		if ( ! isJSON( fileContents ) ) {
+			return href;
+		}
+
+		var json = deserializeJSON( fileContents );
+		if ( ! structKeyExists( json, arguments.fileName ) ) {
+			return href;
+		}
+
+		return "#variables.appMapping#/#includesConvention#/#arguments.buildDirectory#/#json[ arguments.fileName ]#";
+	}
+
 	/************************************** PRIVATE *********************************************/
 
 	/**
