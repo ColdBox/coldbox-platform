@@ -1448,6 +1448,35 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- elixir --->
+	<cffunction name="elixir" output="false" access="public" returntype="string" hint="Finds the versioned path for an asset">
+		<cfargument name="fileName" type="string" required="true" hint="The asset path to find relative to the includes convention directory"/>
+		<cfargument name="buildDirectory" type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
+		<cfscript>
+			var includesConvention = controller.getSetting( "includesConvention", true );
+			var appMapping = controller.getSetting( "appMapping" );
+			var filePath = expandPath("#appMapping#/#includesConvention#/#arguments.buildDirectory#/rev-manifest.json");
+
+			var href = "#appMapping#/#includesConvention#/#arguments.fileName#";
+			
+			if ( ! fileExists( filePath ) ) {
+				return href;
+			}
+
+			var fileContents = fileRead( filePath );
+			if ( ! isJSON( fileContents ) ) {
+				return href;
+			}
+
+			var json = deserializeJSON( fileContents );
+			if ( ! structKeyExists( json, arguments.fileName ) ) {
+				return href;
+			}
+
+			return "#appMapping#/#includesConvention#/#arguments.buildDirectory#/#json[ arguments.fileName ]#";
+		</cfscript>
+	</cffunction>
+
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
 	<!--- arrayToTable --->
