@@ -1238,9 +1238,9 @@ Description :
 
 			// Clean up the path_info from index.cfm
 			items[ "pathInfo" ] = trim( reReplacenocase( items[ "pathInfo" ], "^[/\\]index\.cfm", "" ) );
-			// Clean the scriptname from the pathinfo in case this is a nested application
+			// Clean the scriptname from the pathinfo if it is the first item in case this is a nested application
 			if( len( items[ "scriptName" ] ) ){
-				items[ "pathInfo" ] = replaceNocase( items[ "pathInfo" ], items[ "scriptName" ], '' );
+				items["pathInfo"] = reReplaceNocase(items["pathInfo"], "^#items["scriptName"]#","");
 			}
 
 			// clean 1 or > / in front of route in some cases, scope = one by default
