@@ -1449,7 +1449,24 @@ Description :
 	</cffunction>
 
 	<!--- elixir --->
-	<cffunction name="elixir" output="false" access="public" returntype="string" hint="Finds the versioned path for an asset">
+	<cffunction name="elixir" output="false" access="public" returntype="void" hint="Adds the versioned path for an asset to the view">
+		<cfargument name="fileName" type="string" required="true" hint="The asset path to find relative to the includes convention directory"/>
+		<cfargument name="buildDirectory" type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
+		<cfargument name="sendToHeader" type="boolean" required="false" default="true" hint="Send to the header via htmlhead by default, else it returns the content"/>
+		<cfargument name="async" type="boolean" required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)"/>
+		<cfargument name="defer" type="boolean" required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)"/>
+		<cfscript>
+			addAsset(
+				elixirPath( arguments.fileName, arguments.buildDirectory ),
+				arguments.sendToHeader,
+				arguments.async,
+				arguments.defer
+			);
+		</cfscript>
+	</cffunction>
+
+	<!--- elixirPath --->
+	<cffunction name="elixirPath" output="false" access="public" returntype="string" hint="Finds the versioned path for an asset">
 		<cfargument name="fileName" type="string" required="true" hint="The asset path to find relative to the includes convention directory"/>
 		<cfargument name="buildDirectory" type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
 		<cfscript>
