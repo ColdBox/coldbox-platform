@@ -1454,10 +1454,10 @@ Description :
 		<cfargument name="buildDirectory" type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
 		<cfscript>
 			var includesConvention = controller.getSetting( "includesConvention", true );
-			var appMapping = controller.getSetting( "appMapping" );
-			var filePath = expandPath("#appMapping#/#includesConvention#/#arguments.buildDirectory#/rev-manifest.json");
+			var mapping = event.getCurrentModule() != "" ? event.getModuleRoot() : controller.getSetting( "appMapping" );
+			var filePath = expandPath("#mapping#/#includesConvention#/#arguments.buildDirectory#/rev-manifest.json");
 
-			var href = "#appMapping#/#includesConvention#/#arguments.fileName#";
+			var href = "#mapping#/#includesConvention#/#arguments.fileName#";
 			
 			if ( ! fileExists( filePath ) ) {
 				return href;
@@ -1473,7 +1473,7 @@ Description :
 				return href;
 			}
 
-			return "#appMapping#/#includesConvention#/#arguments.buildDirectory#/#json[ arguments.fileName ]#";
+			return "#mapping#/#includesConvention#/#arguments.buildDirectory#/#json[ arguments.fileName ]#";
 		</cfscript>
 	</cffunction>
 
