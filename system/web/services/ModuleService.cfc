@@ -248,7 +248,8 @@ I oversee and manage ColdBox modules
 						handlersLocation 	= "handlers",
 						layoutsLocation 	= "layouts",
 						viewsLocation 		= "views",
-						modelsLocation      = "models"
+						modelsLocation      = "models",
+						includesLocation    = "includes"
 					},
 					childModules			= [],
 					parent 					= arguments.parent
