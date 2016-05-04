@@ -33,10 +33,10 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Constructor, called by your Application CFC
-	* @COLDBOX_CONFIG_FILE.hint The override location of the config file
-	* @COLDBOX_APP_ROOT_PATH.hint The location of the app on disk
-	* @COLDBOX_APP_KEY.hint The key used in application scope for this application
-	* @COLDBOX_APP_MAPPING.hint The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
+	* @COLDBOX_CONFIG_FILE The override location of the config file
+	* @COLDBOX_APP_ROOT_PATH The location of the app on disk
+	* @COLDBOX_APP_KEY The key used in application scope for this application
+	* @COLDBOX_APP_MAPPING The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
 	*/
 	function init(
 		required string COLDBOX_CONFIG_FILE,
@@ -460,8 +460,8 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Process an exception and returns a rendered bug report
-	* @controller.hint The ColdBox Controller
-	* @exception.hint The ColdFusion exception
+	* @controller The ColdBox Controller
+	* @exception The ColdFusion exception
 	*/
 	private string function processException( required controller, required exception ){
 		// prepare exception facade object + app logger
@@ -474,14 +474,13 @@ component serializable="false" accessors="true"{
 			.processState( "onException", { exception = arguments.exception } );
 
 		// Store exception in private context
-		event.setValue( "exception", oException, true );
+		event.setPrivateValue( "exception", oException );
 
 		//Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ){
 			try{
 				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) );
-			}
-			catch(Any e){
+			} catch( Any e ) {
 				// Log Original Error First
 				appLogger.error( "Original Error: #arguments.exception.message# #arguments.exception.detail# ", arguments.exception );
 				// Log Exception Handler Error
@@ -497,22 +496,24 @@ component serializable="false" accessors="true"{
 		// Render out error via CustomErrorTemplate or Core
 		var customErrorTemplate = arguments.controller.getSetting( "CustomErrorTemplate" );
 		if( len( customErrorTemplate ) ){
-
-			// Do we have right path already, test by expanding
-			if( fileExists( expandPath( customErrorTemplate ) ) ){
-				bugReportTemplatePath = customErrorTemplate;
-			} else {
-				var appLocation = "/";
-				if( len( arguments.controller.getSetting( "AppMapping" ) ) ){
-					appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/";
-				}
-				// Bug report path
-				var bugReportTemplatePath = appLocation & reReplace( customErrorTemplate, "^/", "" );
+			// Get app location path
+			var appLocation 			= "/";
+			if( len( arguments.controller.getSetting( "AppMapping" ) ) ){
+				appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/";
 			}
+			var bugReportRelativePath 	= appLocation & reReplace( customErrorTemplate, "^/", "" );
+			var bugReportAbsolutePath 	= customErrorTemplate;
+
 			// Show Bug Report
 			savecontent variable="local.exceptionReport"{
-				include "#bugReportTemplatePath#";
+				// Do we have right path already, test by expanding
+				if( fileExists( expandPath( bugReportRelativePath ) ) ){
+					include "#bugReportRelativePath#";
+				} else {
+					include "#bugReportAbsolutePath#";
+				}
 			}
+			
 		} else {
 			// Default ColdBox Error Template
 			savecontent variable="local.exceptionReport"{
@@ -548,11 +549,11 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Process render data setup
-	* @controller.hint The ColdBox controller
-	* @statusCode.hint The status code to send
-	* @statusText.hint The status text to send
-	* @contentType.hint The content type to send
-	* @encoding.hint The content encoding
+	* @controller The ColdBox controller
+	* @statusCode The status code to send
+	* @statusText The status text to send
+	* @contentType The content type to send
+	* @encoding The content encoding
 	*/
 	private Bootstrap function renderDataSetup(
 		required controller,
