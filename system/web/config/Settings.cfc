@@ -39,6 +39,7 @@ component{
 	this.modelsConvention	= "models";
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
+	this.includesConvention = "includes";
 
 
 	function configure(){}
