@@ -333,6 +333,7 @@ Description :
 		<cfargument name="content" 	type="any" 		required="false" default="" hint="The content attribute"/>
 		<cfargument name="type" 	type="string"	 required="false" default="name" hint="Either ''name'' or ''equiv'' which produces http-equiv instead of the name"/>
 		<cfargument name="sendToHeader" type="boolean"	required="false" default="false" hint="Send to the header via htmlhead by default, else it returns the content"/>
+		<cfargument name="property" type="any" 		required="false" default="" hint="The property attribute"/>
 		<cfscript>
 			var x 		= 1;
 			var buffer	= createObject("java","java.lang.StringBuilder").init("");
@@ -354,8 +355,11 @@ Description :
 					if(	arguments.name[x].type eq "equiv" ){
 						arguments.name[x].type = "http-equiv";
 					}
-
-					buffer.append('<meta #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
+					if ( structKeyExists(arguments.name[x], "property") ) {
+						buffer.append('<meta property=#arguments.name[x].property# #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
+					} else {
+						buffer.append('<meta #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
+					}
 				}
 			}
 
