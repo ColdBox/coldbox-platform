@@ -468,6 +468,8 @@ component serializable="false" accessors="true"{
 		var oException	= new coldbox.system.web.context.ExceptionBean( arguments.exception );
 		var appLogger  	= arguments.controller.getLogBox().getLogger( this );
 		var event		= arguments.controller.getRequestService().getContext();
+		var rc 			= event.getCollection();
+		var prc 		= event.getPrivateCollection();
 
 		// Announce interception
 		arguments.controller.getInterceptorService()
