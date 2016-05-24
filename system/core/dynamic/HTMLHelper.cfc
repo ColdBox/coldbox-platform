@@ -1475,6 +1475,7 @@ Description :
 		<cfargument name="buildDirectory" 	type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
 		<cfscript>
 			var includesLocation 	= controller.getSetting( "IncludesConvention", true );
+			var event 				= getRequestContext();
 			var mapping 			= event.getCurrentModule() != "" ? event.getModuleRoot() : controller.getSetting( "appMapping" );
 			var filePath 			= expandPath( "#mapping#/#includesLocation#/#arguments.buildDirectory#/rev-manifest.json" );
 			var href 				= "#mapping#/#includesLocation#/#arguments.fileName#";
