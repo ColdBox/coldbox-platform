@@ -1471,14 +1471,13 @@ Description :
 
 	<!--- elixirPath --->
 	<cffunction name="elixirPath" output="false" access="public" returntype="string" hint="Finds the versioned path for an asset">
-		<cfargument name="fileName" type="string" required="true" hint="The asset path to find relative to the includes convention directory"/>
-		<cfargument name="buildDirectory" type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
+		<cfargument name="fileName" 		type="string" required="true" hint="The asset path to find relative to the includes convention directory"/>
+		<cfargument name="buildDirectory" 	type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
 		<cfscript>
-			var includesLocation = controller.getSetting( "includesLocation", true );
-			var mapping = event.getCurrentModule() != "" ? event.getModuleRoot() : controller.getSetting( "appMapping" );
-			var filePath = expandPath("#mapping#/#includesLocation#/#arguments.buildDirectory#/rev-manifest.json");
-
-			var href = "#mapping#/#includesLocation#/#arguments.fileName#";
+			var includesLocation 	= controller.getSetting( "IncludesConvention", true );
+			var mapping 			= event.getCurrentModule() != "" ? event.getModuleRoot() : controller.getSetting( "appMapping" );
+			var filePath 			= expandPath( "#mapping#/#includesLocation#/#arguments.buildDirectory#/rev-manifest.json" );
+			var href 				= "#mapping#/#includesLocation#/#arguments.fileName#";
 			
 			if ( ! fileExists( filePath ) ) {
 				return href;
