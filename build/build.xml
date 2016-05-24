@@ -154,6 +154,7 @@
 			<fileset dir="${dir.exports}/${coldbox.slug}">
 				<include name="coldbox-be*" />
 			</fileset>
+			<fileset dir="${dir.build}/box.json" />
 		</delete>
 		
 		<!-- Update Permissions -->
