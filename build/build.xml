@@ -65,9 +65,11 @@
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}" />
 
+		<!-- Copy over original box.json as the getDependencies might update it -->
+		<copy file="box.json" toFile="box-original.json" encoding="UTF-8" overwrite="true"/>
+
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
-		
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 		
@@ -154,7 +156,6 @@
 			<fileset dir="${dir.exports}/${coldbox.slug}">
 				<include name="coldbox-be*" />
 			</fileset>
-			<fileset dir="${dir.build}/box.json" />
 		</delete>
 		
 		<!-- Update Permissions -->
@@ -182,7 +183,7 @@
 		</copy>
 		
 		<!-- Copy box.json to build -->
-		<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8" overwrite="true"/>
+		<copy file="box-original.json" toFile="${dir.build}/box.json" encoding="UTF-8" overwrite="true"/>
 		
 		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
