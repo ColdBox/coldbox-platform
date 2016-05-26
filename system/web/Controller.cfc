@@ -121,7 +121,7 @@ component serializable="false" accessors="true"{
 	* Get the system web renderer, you can also retreive it from wirebox via renderer@coldbox
 	*/
 	function getRenderer(){
-		return variables.wireBox.getInstance( "Renderer@coldbox" );
+		return variables.wireBox.getInstance( name = "Renderer@coldbox", initArguments = { controller = this } );
 	}
 
 	/**
