@@ -80,7 +80,7 @@ Description :
 			};
 
 			// DI definition structure
-			DIDefinition = { name="", value="", dsl="", scope="variables", javaCast="", ref="", required=false, argName="", type="any" };
+			DIDefinition = { name="", value=JavaCast("null", ""), dsl="", scope="variables", javaCast=JavaCast("null", ""), ref=JavaCast("null", ""), required=false, argName="", type="any" };
 
 			return this;
 		</cfscript>
