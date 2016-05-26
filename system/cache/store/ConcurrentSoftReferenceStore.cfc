@@ -102,7 +102,7 @@ Description :
 			
 			// Get via concurrent store
 			refLocal.target = super.get( arguments.objectKey );
-			if( structKeyExists(refLocal,"target") ){
+			if( structKeyExists(refLocal,"target") && ! isNull(refLocal.target) ){
 				
 				// Validate if SR or normal object
 				if( isInstanceOf(refLocal.target, "java.lang.ref.SoftReference") ){
