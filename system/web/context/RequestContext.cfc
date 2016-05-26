@@ -1051,7 +1051,7 @@ component serializable=false accessors="true"{
 	* Get the HTTP Request Method Type
 	*/
 	string function getHTTPMethod(){
-		return cgi.REQUEST_METHOD;
+		return getValue( "_method", cgi.REQUEST_METHOD );
 	}
 
 	/**
