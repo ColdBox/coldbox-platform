@@ -186,7 +186,7 @@ TODO: update dsl consistency, so it is faster.
 			// Loop Over Arguments
 			for(x = 1; x <= DIArgsLen; x++){
 				// do we have javacasting?
-				if( structKeyExists(DIArgs[x],"javaCast") ){
+				if( structKeyExists(DIArgs[x],"javaCast") && ! isNull(DIArgs[x].javaCast) ){
 					ArrayAppend(args, "javaCast(DIArgs[#x#].javaCast, DIArgs[#x#].value)");
 				}
 				else{
