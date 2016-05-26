@@ -7,19 +7,11 @@
 */
 component accessors="true" serializable="false" extends="coldbox.system.FrameworkSupertype"{
 
-	/************************************** DI *********************************************/
-
-	/**
-	* Template cache provider
-	*/
-	property name="templateCache" 	inject="cachebox:template";
-	/**
-	* HTML Helper
-	*/
-	property name="html"			inject="HTMLHelper@coldbox";
-
 	/************************************** PROPERTIES *********************************************/
-
+	// Template cache provider
+	property name="templateCache";
+	// HTML Helper
+	property name="html";
 	// Location of layouts
 	property name="layoutsConvention";
 	// Location of external layouts
@@ -70,6 +62,10 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.cacheBox = arguments.controller.getCacheBox();
 		// Register WireBox
 		variables.wireBox = arguments.controller.getWireBox();
+		// Initialize HTMLHelper
+		variables.html = wirebox.getInstance( name = "HTMLHelper@coldbox", initArguments = { controller = variables.controller });
+		// Initialize the Template Cache
+		variables.templateCache = wirebox.getInstance(dsl = "cachebox:template");
 
 		// Set Conventions, Settings and Properties
 		variables.layoutsConvention 		= variables.controller.getSetting( "layoutsConvention", true );
