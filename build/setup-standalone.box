@@ -1,1 +1,0 @@
-echo "build/lib/lucee-web.xml.cfm" | #fileCopy "`server status --verbose --json | #structFind webconfigdir`"

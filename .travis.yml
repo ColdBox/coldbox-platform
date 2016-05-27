@@ -9,11 +9,12 @@ dist: trusty
 sudo: required
 env:
   matrix:
-    - ENGINE=lucee@4.5
-    - ENGINE=lucee@5
-    - ENGINE=adobe@2016
-    - ENGINE=adobe@11
-    - ENGINE=adobe@10
+    - ENGINE=lucee@4.5 BOX=lucee CONFIG_FOLDER=lucee
+    - ENGINE=lucee@5 BOX=lucee CONFIG_FOLDER=lucee
+    - ENGINE=lucee@5 BOX=lucee CONFIG_FOLDER=lucee-fullnull
+    - ENGINE=adobe@2016 BOX=adobe CONFIG_FOLDER=lucee
+    - ENGINE=adobe@11 BOX=adobe CONFIG_FOLDER=lucee
+    - ENGINE=adobe@10 BOX=adobe CONFIG_FOLDER=lucee
 addons:
   apt:
     packages:
@@ -41,8 +42,8 @@ install:
 - box install
 - box server start cfengine=$ENGINE
 - box server stop
-# Copy over special lucee settings for cache testing
-- box recipe build/setup-standalone.box
+# Copy over special settings for testing
+- box recipe build/setup-$BOX-standalone.box $CONFIG_FOLDER
 before_script:
 # create test database
 - mysql -u root -e 'create database coolblog;'
