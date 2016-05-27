@@ -580,7 +580,7 @@ Description :
 			// Browsers can't support all the HTTP verbs, so if we passed in something
 			// besides GET or POST, we'll default to POST and save off
 			// the desired method to spoof later.
-			if (arguments.method != "GET" && arguments.method != "POST") {
+			if ( arguments.method != "GET" AND arguments.method != "POST" ) {
 				desiredMethod = arguments.method;
 				arguments.method = "POST";
 			}
@@ -616,8 +616,8 @@ Description :
 				
 			// If we wanted to use PUT, PATCH, or DELETE, spoof the HTTP method
 			// by including a hidden field in the form that ColdBox will look for.
-			if (len( desiredMethod )) {
-				formBuffer.append( "<input type=""hidden"" name=""_method"" value=""#desiredMethod#"" />");
+			if ( len( desiredMethod ) ) {
+				formBuffer.append( "<input type=""hidden"" name=""_method"" value=""#desiredMethod#"" />" );
 			}
 
 			return formBuffer.toString();
