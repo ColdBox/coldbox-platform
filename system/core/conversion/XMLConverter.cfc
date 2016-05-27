@@ -206,7 +206,7 @@ Modifications
 		// Content
 		for(key in target){
 			// Null Checks
-			if( NOT structKeyExists(target, key) || isNull(target[key]) ){
+			if( NOT structKeyExists( target, key ) OR isNull( target[key] ) ){
 				target[key] = 'NULL';
 			}
 			// Translate Value
@@ -231,7 +231,7 @@ Modifications
 		<cfargument name="useCDATA"  	type="boolean"  required="false"  default="false" hint="Use CDATA content for ALL values">
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
-		var target 			= isNull(arguments.data) ? "NULL" : arguments.data;
+		var target 			= isNull( arguments.data ) ? "NULL" : arguments.data;
 		var buffer 			= createObject("java","java.lang.StringBuilder").init('');
 		var md 				= getMetadata(target);
 		var rootElement		= lcase( safeText( listLast( md.name, "." ) ) );
