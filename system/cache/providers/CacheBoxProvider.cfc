@@ -218,7 +218,7 @@ Properties
 
 			// get quietly
 			refLocal.results = instance.objectStore.get( arguments.objectKey );
-			if( structKeyExists( refLocal, "results" ) && ! isNull(refLocal.results) ){
+			if( structKeyExists( refLocal, "results" ) AND NOT isNull( refLocal.results ) ){
 				getStats().hit();
 				return refLocal.results;
 			}
