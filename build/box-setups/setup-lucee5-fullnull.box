@@ -1,1 +1,3 @@
-echo "build/lib/lucee-fullnull/lucee-server.xml" | #fileCopy `server status --verbose --json | #structFind webconfigdir | #directoryList "true" "path" "lucee-server.xml" | #arrayFirst | #getDirectoryFromPath`
+echo "build/lib/lucee5/lucee-web.xml.cfm" | #fileCopy "`server status --verbose --json | #structFind webconfigdir`"
+
+echo "build/lib/lucee5-fullnull/lucee-server.xml" | #fileCopy `server status --verbose --json | #structFind webconfigdir | #directoryList "true" "path" "lucee-server.xml" | #arrayFirst | #getDirectoryFromPath`
