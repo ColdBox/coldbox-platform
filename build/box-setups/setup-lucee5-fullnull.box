@@ -1,0 +1,1 @@
+echo "build/lib/lucee-fullnull/lucee-server.xml" | #fileCopy `server status --verbose --json | #structFind webconfigdir | #directoryList "true" "path" "lucee-server.xml" | #arrayFirst | #getDirectoryFromPath`
