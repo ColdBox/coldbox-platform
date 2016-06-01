@@ -573,8 +573,17 @@ Description :
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var formBuffer	= createObject( "java", "java.lang.StringBuilder" ).init( "<form" );
-			var event 		= controller.getRequestService().getContext();
+			var formBuffer	  = createObject( "java", "java.lang.StringBuilder" ).init( "<form" );
+			var event         = controller.getRequestService().getContext();
+			var desiredMethod = '';
+
+			// Browsers can't support all the HTTP verbs, so if we passed in something
+			// besides GET or POST, we'll default to POST and save off
+			// the desired method to spoof later.
+			if ( arguments.method != "GET" AND arguments.method != "POST" ) {
+				desiredMethod = arguments.method;
+				arguments.method = "POST";
+			}
 
 			// self-submitting?
 			if( NOT len( arguments.action ) ){
@@ -604,6 +613,12 @@ Description :
 			// create tag
 			flattenAttributes( arguments, "noBaseURL,ssl,multipart", formBuffer )
 				.append( ">" );
+				
+			// If we wanted to use PUT, PATCH, or DELETE, spoof the HTTP method
+			// by including a hidden field in the form that ColdBox will look for.
+			if ( len( desiredMethod ) ) {
+				formBuffer.append( "<input type=""hidden"" name=""_method"" value=""#desiredMethod#"" />" );
+			}
 
 			return formBuffer.toString();
 		</cfscript>
