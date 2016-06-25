@@ -248,7 +248,7 @@ Description :
 					// prepare module pivot
 					instance.withModule = arguments.module;
 					// Include it via conventions using declared route
-					includeRoutes(location=mConfig[arguments.module].mapping & "/" & mConfig[arguments.module].routes[x]);
+					includeRoutes(location="/" & mConfig[arguments.module].mapping & "/" & mConfig[arguments.module].routes[x]);
 					// Remove pivot
 					instance.withModule = "";
 				}
