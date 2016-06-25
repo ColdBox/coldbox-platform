@@ -248,7 +248,14 @@ Description :
 					// prepare module pivot
 					instance.withModule = arguments.module;
 					// Include it via conventions using declared route
-					includeRoutes(location=mConfig[arguments.module].mapping & "/" & mConfig[arguments.module].routes[x]);
+
+					// add a slash to the beginning of the string if it doesn't already have one
+					var moduleMapping = mConfig[arguments.module].mapping;
+					if ( left( moduleMapping, 1 ) != "/" ) {
+						moduleMapping = "/" & moduleMapping;
+					}
+
+					includeRoutes(location=moduleMapping & "/" & mConfig[arguments.module].routes[x]);
 					// Remove pivot
 					instance.withModule = "";
 				}
