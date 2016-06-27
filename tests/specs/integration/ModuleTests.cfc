@@ -55,7 +55,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			});
 
 			it( "can register routes through a routes file", function(){
-				var event = execute( event="routesfile:test.index", renderResults=true );
+				var event = execute( event="routesFileModule:custom", renderResults=true );
 				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "Welcome to my test routes file module" );
 			});
 
