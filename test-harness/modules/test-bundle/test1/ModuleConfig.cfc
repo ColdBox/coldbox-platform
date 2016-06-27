@@ -35,7 +35,8 @@
 		// SES Routes
 		routes = [
 			{ pattern="/", handler="test",action="index" },
-			{ pattern="/:handler/:action?" }
+			{ pattern="/:handler/:action?" },
+			"config/routes"
 		];
 
 		// Interceptor Config
