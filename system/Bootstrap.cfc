@@ -189,6 +189,7 @@ component serializable="false" accessors="true"{
 				if( refResults.eventCaching.isBinary ){
 					cbController.getDataMarshaller().renderContent( type="#refResults.eventCaching.contentType#", variable="#refResults.eventCaching.renderedContent#" );
 				} else {
+					cbController.getDataMarshaller().renderContent( type="#refResults.eventCaching.contentType#");
 					writeOutput( refResults.eventCaching.renderedContent );
 				}
 			} else {
@@ -245,6 +246,8 @@ component serializable="false" accessors="true"{
 							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
 								cacheEntry.renderData = true;
 								structAppend( cacheEntry, renderData, true );
+							} else {
+								cacheEntry.contentType = getPageContext().getResponse().getContentType();
 							}
 							// Cache it
 							templateCache.set( eCacheEntry.cacheKey,
