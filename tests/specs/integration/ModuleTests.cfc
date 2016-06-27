@@ -54,6 +54,11 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "Hola Brother!" );
 			});
 
+			it( "can register routes through a routes file", function(){
+				var event = execute( event="routesfile:test.cfmlMapping", renderResults=true );
+				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "Hola Brother!" );
+			});
+
 			it( "can have aliases for execution", function(){
 				var event = execute( event="cbtest1:test.index", renderResults=true );
 				expect(	event.getValue( "cbox_rendered_content" ) ).toMatch( "welcome" );
