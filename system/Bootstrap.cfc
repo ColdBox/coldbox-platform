@@ -183,12 +183,16 @@ component serializable="false" accessors="true"{
 					refResults.eventCaching.controller = cbController;
 					renderDataSetup( argumentCollection=refResults.eventCaching );
 				}
+				
 				// Authoritative Header
 				getPageContext().getResponse().setStatus( 203, "Non-Authoritative Information" );
+				getPageContext().getResponse().setHeader( "x-coldbox-cache-response", "true" );
+				
 				// Render Content as binary or just output
 				if( refResults.eventCaching.isBinary ){
 					cbController.getDataMarshaller().renderContent( type="#refResults.eventCaching.contentType#", variable="#refResults.eventCaching.renderedContent#" );
 				} else {
+					cbController.getDataMarshaller().renderContent( type="#refResults.eventCaching.contentType#", reset=true );
 					writeOutput( refResults.eventCaching.renderedContent );
 				}
 			} else {
@@ -235,22 +239,26 @@ component serializable="false" accessors="true"{
 							var cacheEntry = {
 								renderedContent = renderedContent,
 								renderData		= false,
-								contentType 	= "",
+								contentType 	= getPageContext().getResponse().getContentType(),
 								encoding		= "",
 								statusCode		= "",
 								statusText		= "",
 								isBinary		= false
 							};
+							
 							// is this a render data entry? If So, append data
 							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
 								cacheEntry.renderData = true;
 								structAppend( cacheEntry, renderData, true );
 							}
+
 							// Cache it
-							templateCache.set( eCacheEntry.cacheKey,
-											   cacheEntry,
-											   eCacheEntry.timeout,
-											   eCacheEntry.lastAccessTimeout );
+							templateCache.set( 
+								eCacheEntry.cacheKey,
+								cacheEntry,
+								eCacheEntry.timeout,
+								eCacheEntry.lastAccessTimeout 
+							);
 						}
 
 					} // end event caching
