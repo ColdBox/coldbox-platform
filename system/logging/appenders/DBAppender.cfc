@@ -18,8 +18,6 @@ Properties:
  - columnMap : A column map for aliasing columns. (Optional)
  - autocreate : if true, then we will create the table. Defaults to false (Optional)
  - ensureChecks : if true, then we will check the dsn and table existence.  Defaults to true (Optional)
- - textDBType : Defaults to 'text'. This is used on the autocreate features of the appender for the
- 				   message and extended info fields.  This is the actual database type.
 				   
 The columns needed in the table are
 
@@ -74,9 +72,6 @@ If you are building a mapper, the map must have the above keys in it.
 			}
 			if( NOT propertyExists( "ensureChecks" ) ){
 				setProperty( "ensureChecks", true);
-			}
-			if( NOT propertyExists( "textDBType" ) ){
-				setProperty( "textDBType","text" );
 			}
 			if( NOT propertyExists( "rotate" ) ){
 				setProperty( "rotate", true );
@@ -223,8 +218,8 @@ If you are building a mapper, the map must have the above keys in it.
 						#listgetAt( cols, 3 )# VARCHAR(100) NOT NULL,
 						#listgetAt( cols, 4 )# #getDateTimeColumnType()# NOT NULL,
 						#listgetAt( cols, 5 )# VARCHAR(100) NOT NULL,
-						#listgetAt( cols, 6 )# #getProperty( "textDBType" )#,
-						#listgetAt( cols, 7 )# #getProperty( "textDBType" )#,
+						#listgetAt( cols, 6 )# #getTextColumnType()#,
+						#listgetAt( cols, 7 )# #getTextColumnType()#,
 						PRIMARY KEY (id)
 					)
 				</cfquery>
@@ -269,6 +264,30 @@ If you are building a mapper, the map must have the above keys in it.
 				}
 				default : {
 					return "cf_sql_timestamp";
+				}
+			}   
+    	</cfscript>    
+    </cffunction>
+
+    <cffunction name="getTextColumnType" output="false" access="private" returntype="any">    
+    	<cfset var qResults = "">
+    	<cfdbinfo type="Version" name="qResults" datasource="#getProperty( 'dsn' )#" >
+    	<cfscript>	 
+			switch( qResults.database_productName ){
+				case "PostgreSQL" : {
+					return "TEXT";
+				}
+				case "MySQL" : {
+					return "LONGTEXT";
+				}
+				case "Microsoft SQL Server" : {
+					return "TEXT";
+				}
+				case "Oracle" :{
+					return "LONGTEXT";
+				}
+				default : {
+					return "TEXT";
 				}
 			}   
     	</cfscript>    
