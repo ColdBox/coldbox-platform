@@ -57,9 +57,11 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Activate All Modules
 		controller.getModuleService().activateAllModules();
 		// Execute afterConfigurationLoad
-		controller.getInterceptorService().processState("afterConfigurationLoad");
+		controller.getInterceptorService().processState( "afterConfigurationLoad" );
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
 		controller.getRequestService().rebuildFlashScope();
+		// Execute afterAspectsLoad: Deprecate at one point, no more aspects as all are modules now.
+		controller.getInterceptorService().processState( "afterAspectsLoad" );
 		// We are now done, rock and roll!!
 		return this;
 	}

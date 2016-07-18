@@ -333,6 +333,7 @@ Description :
 		<cfargument name="content" 	type="any" 		required="false" default="" hint="The content attribute"/>
 		<cfargument name="type" 	type="string"	 required="false" default="name" hint="Either ''name'' or ''equiv'' which produces http-equiv instead of the name"/>
 		<cfargument name="sendToHeader" type="boolean"	required="false" default="false" hint="Send to the header via htmlhead by default, else it returns the content"/>
+		<cfargument name="property" type="any" 		required="false" default="" hint="The property attribute"/>
 		<cfscript>
 			var x 		= 1;
 			var buffer	= createObject("java","java.lang.StringBuilder").init("");
@@ -354,8 +355,11 @@ Description :
 					if(	arguments.name[x].type eq "equiv" ){
 						arguments.name[x].type = "http-equiv";
 					}
-
-					buffer.append('<meta #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
+					if ( structKeyExists(arguments.name[x], "property") ) {
+						buffer.append('<meta property=#arguments.name[x].property# #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
+					} else {
+						buffer.append('<meta #arguments.name[x].type#="#arguments.name[x].name#" content="#arguments.name[x].content#" />');
+					}
 				}
 			}
 
@@ -569,8 +573,17 @@ Description :
 		<cfargument name="noBaseURL" 	type="boolean" 	required="false" 	default="false" hint="Defaults to false. If you want to NOT append a request's ses or html base url then set this argument to true"/>
 		<cfargument name="data"			type="struct" required="false" default="#structNew()#"	hint="A structure that will add data-{key} elements to the HTML control"/>
 		<cfscript>
-			var formBuffer	= createObject( "java", "java.lang.StringBuilder" ).init( "<form" );
-			var event 		= controller.getRequestService().getContext();
+			var formBuffer	  = createObject( "java", "java.lang.StringBuilder" ).init( "<form" );
+			var event         = controller.getRequestService().getContext();
+			var desiredMethod = '';
+
+			// Browsers can't support all the HTTP verbs, so if we passed in something
+			// besides GET or POST, we'll default to POST and save off
+			// the desired method to spoof later.
+			if ( arguments.method != "GET" AND arguments.method != "POST" ) {
+				desiredMethod = arguments.method;
+				arguments.method = "POST";
+			}
 
 			// self-submitting?
 			if( NOT len( arguments.action ) ){
@@ -600,6 +613,12 @@ Description :
 			// create tag
 			flattenAttributes( arguments, "noBaseURL,ssl,multipart", formBuffer )
 				.append( ">" );
+				
+			// If we wanted to use PUT, PATCH, or DELETE, spoof the HTTP method
+			// by including a hidden field in the form that ColdBox will look for.
+			if ( len( desiredMethod ) ) {
+				formBuffer.append( "<input type=""hidden"" name=""_method"" value=""#desiredMethod#"" />" );
+			}
 
 			return formBuffer.toString();
 		</cfscript>
@@ -1445,6 +1464,52 @@ Description :
 			}// end for loop
 
 			return buffer.toString();
+		</cfscript>
+	</cffunction>
+
+	<!--- elixir --->
+	<cffunction name="elixir" output="false" access="public" returntype="void" hint="Adds the versioned path for an asset to the view">
+		<cfargument name="fileName" type="string" required="true" hint="The asset path to find relative to the includes convention directory"/>
+		<cfargument name="buildDirectory" type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
+		<cfargument name="sendToHeader" type="boolean" required="false" default="true" hint="Send to the header via htmlhead by default, else it returns the content"/>
+		<cfargument name="async" type="boolean" required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)"/>
+		<cfargument name="defer" type="boolean" required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)"/>
+		<cfscript>
+			addAsset(
+				elixirPath( arguments.fileName, arguments.buildDirectory ),
+				arguments.sendToHeader,
+				arguments.async,
+				arguments.defer
+			);
+		</cfscript>
+	</cffunction>
+
+	<!--- elixirPath --->
+	<cffunction name="elixirPath" output="false" access="public" returntype="string" hint="Finds the versioned path for an asset">
+		<cfargument name="fileName" 		type="string" required="true" hint="The asset path to find relative to the includes convention directory"/>
+		<cfargument name="buildDirectory" 	type="string" required="false" default="build" hint="The build directory inside the includes convention directory"/>
+		<cfscript>
+			var includesLocation 	= controller.getSetting( "IncludesConvention", true );
+			var event 				= getRequestContext();
+			var mapping 			= event.getCurrentModule() != "" ? event.getModuleRoot() : controller.getSetting( "appMapping" );
+			var filePath 			= expandPath( "#mapping#/#includesLocation#/#arguments.buildDirectory#/rev-manifest.json" );
+			var href 				= "#mapping#/#includesLocation#/#arguments.fileName#";
+			
+			if ( ! fileExists( filePath ) ) {
+				return href;
+			}
+
+			var fileContents = fileRead( filePath );
+			if ( ! isJSON( fileContents ) ) {
+				return href;
+			}
+
+			var json = deserializeJSON( fileContents );
+			if ( ! structKeyExists( json, arguments.fileName ) ) {
+				return href;
+			}
+
+			return "#mapping#/#includesLocation#/#arguments.buildDirectory#/#json[ arguments.fileName ]#";
 		</cfscript>
 	</cffunction>
 

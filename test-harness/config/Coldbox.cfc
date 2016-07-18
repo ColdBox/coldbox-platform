@@ -36,7 +36,8 @@
 			//Error/Exception Handling
 			exceptionHandler		= "main.onException",
 			onInvalidEvent			= "main.onInvalidEvent",
-			customErrorTemplate		= "/coldbox/system/includes/BugReport.cfm",
+			//customErrorTemplate		= "/coldbox/system/includes/BugReport.cfm",
+			customErrorTemplate		= "views/_templates/generic_error.cfm",
 
 			//Application Aspects
 			handlerCaching 			= false,

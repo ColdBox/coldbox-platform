@@ -349,6 +349,7 @@ Loads a coldbox cfc configuration file
 			if( structKeyExists( conventions,"eventAction" ) ){ fwSettingsStruct[ "eventAction" ] = trim( conventions.eventAction); }
 			if( structKeyExists( conventions,"modelsLocation" ) ){ fwSettingsStruct[ "ModelsConvention" ] = trim( conventions.modelsLocation); }
 			if( structKeyExists( conventions,"modulesLocation" ) ){ fwSettingsStruct[ "ModulesConvention" ] = trim( conventions.modulesLocation); }
+			if( structKeyExists( conventions,"includesLocation" ) ){ fwSettingsStruct[ "IncludesConvention" ] = trim( conventions.includesLocation); }
 		</cfscript>
 	</cffunction>
 

@@ -35,6 +35,10 @@ component accessors="true"{
 	* View dispatching
 	*/
 	property name="viewDispatch" 	type="boolean";
+	/**
+	* Action metadata
+	*/
+	property name="actionMetadata"	type="struct";
 	
 	/************************************** CONSTRUCTOR *********************************************/	
 
@@ -50,18 +54,41 @@ component accessors="true"{
 		isPrivate					= false;
 		missingAction				= "";
 		viewDispatch				= false;
+		actionMetadata 				= {};
 		
 		return this;
 	}
 
 	/************************************** PUBLIC RETURN BACK SETTERS *********************************************/
 	
-	function setHandler( required handler ){ variables.handler = arguments.handler; return this; }
-	function setMethod( required method ){ variables.method = arguments.method; return this; }
-	function setModule( required module ){ variables.module = arguments.module; return this; }
-	function setMissingAction( required missingAction ){ variables.missingAction = arguments.missingAction; return this; }
-	function setViewDispatch( required viewDispatch ){ variables.viewDispatch = arguments.viewDispatch; return this; }
-	function setInvocationPath( required invocationPath ){ variables.invocationPath = arguments.invocationPath; return this; }
+	function setHandler( required handler ){ 
+		variables.handler = arguments.handler;
+		return this; 
+	}
+	function setMethod( required method ){ 
+		variables.method = arguments.method;
+		return this; 
+	}
+	function setModule( required module ){ 
+		variables.module = arguments.module;
+		return this; 
+	}
+	function setMissingAction( required missingAction ){ 
+		variables.missingAction = arguments.missingAction;
+		return this; 
+	}
+	function setViewDispatch( required viewDispatch ){ 
+		variables.viewDispatch = arguments.viewDispatch;
+		return this; 
+	}
+	function setInvocationPath( required invocationPath ){ 
+		variables.invocationPath = arguments.invocationPath;
+		return this; 
+	}
+	function setActionMetadata( required actionMetadata ){ 
+		variables.actionMetadata = arguments.actionMetadata;
+		return this; 
+	}
 	
 	/************************************** UTILITY METHODS *********************************************/
 	

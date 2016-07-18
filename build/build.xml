@@ -10,14 +10,14 @@
 	
 	<!-- UPDATE ON EACH VERSION CYCLE -->
 	<property name="groupID"				value="ortussolutions" />
-	<property name="coldbox.version" 		value="4.2.0" />
-	<property name="coldbox.stableversion" 	value="4.1.0" />
+	<property name="coldbox.version" 		value="4.3.0" />
+	<property name="coldbox.stableversion" 	value="4.2.0" />
 	<property name="coldbox.slug"	 		value="coldbox"/>
-	<property name="cachebox.version" 		value="2.1.0" />
+	<property name="cachebox.version" 		value="2.2.0" />
 	<property name="cachebox.slug"	 		value="cachebox"/>
-	<property name="logbox.version" 		value="2.1.0" />
+	<property name="logbox.version" 		value="2.2.0" />
 	<property name="logbox.slug"	 		value="logbox"/>
-	<property name="wirebox.version" 		value="2.1.0" />
+	<property name="wirebox.version" 		value="2.2.0" />
 	<property name="wirebox.slug"	 		value="wirebox"/>
 	
 	<!-- Build Labels -->
@@ -65,9 +65,11 @@
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}" />
 
+		<!-- Copy over original box.json as the getDependencies might update it -->
+		<copy file="box.json" toFile="box-original.json" encoding="UTF-8" overwrite="true"/>
+
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
-		
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 		
@@ -164,24 +166,24 @@
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy Src -->	
-      	<copy todir="${dir.build}/system" encoding="UTF-8">
+      	<copy todir="${dir.build}/system" encoding="UTF-8" overwrite="true">
         	<fileset dir="system">
         	</fileset>
         </copy>
 
 		<!-- Move Install folder -->
-		<copy todir="${dir.build}/install" encoding="UTF-8">
+		<copy todir="${dir.build}/install" encoding="UTF-8" overwrite="true">
         	<fileset dir="install" />
         </copy>
 		
 		<!--Copy text files to install folder-->
-		<copy todir="${dir.build}" encoding="UTF-8">
+		<copy todir="${dir.build}" encoding="UTF-8" overwrite="true">
 			<fileset file="license.txt" />
 			<fileset file="readme.md" />						
 		</copy>
 		
 		<!-- Copy box.json to build -->
-		<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
+		<copy file="box-original.json" toFile="${dir.build}/box.json" encoding="UTF-8" overwrite="true"/>
 		
 		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
@@ -208,7 +210,6 @@
 		<zip destfile="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" basedir="${dir.build}" />
 		
 		<!-- Cleanup for StandAlone Build -->
-		<delete dir="${dir.build}/cbapptemplates"/>
 		<delete dir="${dir.build}/apidocs" />
 		<delete dir="${dir.build}/test-runner" />
 		<delete dir="${dir.build}/test-browser" />
@@ -273,27 +274,27 @@
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to cachebox namespace-->	
-      	<copy todir="${dir.build}/system/cache" encoding="UTF-8">
+      	<copy todir="${dir.build}/system/cache" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/cache" />
         </copy>
-		<copy todir="${dir.build}/system/core" encoding="UTF-8">
+		<copy todir="${dir.build}/system/core" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/core">
         		<exclude name="mail/*" />
         		<exclude name="db/*" />
         	</fileset>
         </copy>
-		<copy todir="${dir.build}/system/logging" encoding="UTF-8">
+		<copy todir="${dir.build}/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
         </copy>
 		
 		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}" encoding="UTF-8">
+		<copy todir="${dir.build}" encoding="UTF-8" overwrite="true">
 			<fileset file="license.txt" />
 			<fileset file="system/cache/readme.md" />						
 		</copy>
 		
 		<!--Copy box.json to root -->
-		<copy toFile="${dir.build}/box.json" file="box-cachebox.json"  encoding="UTF-8"/>
+		<copy toFile="${dir.build}/box.json" file="box-cachebox.json"  encoding="UTF-8" overwrite="true"/>
 
 		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
@@ -383,10 +384,10 @@
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to logbox namespace-->	
-      	<copy todir="${dir.build}/system/logging" encoding="UTF-8">
+      	<copy todir="${dir.build}/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
         </copy>
-		<copy todir="${dir.build}/system/core" encoding="UTF-8">
+		<copy todir="${dir.build}/system/core" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/core">
         		<include name="util/*" />
         		<include name="dynamic/*" />
@@ -395,12 +396,12 @@
         	</fileset>
         </copy>
         <!--Copy text files to root folder-->
-		<copy todir="${dir.build}" encoding="UTF-8">
+		<copy todir="${dir.build}" encoding="UTF-8" overwrite="true">
 			<fileset file="license.txt" />
 			<fileset file="system/logging/readme.md" />						
 		</copy>
 		<!--Copy box.json to root -->
-		<copy toFile="${dir.build}/box.json" file="box-logbox.json"  encoding="UTF-8"/>
+		<copy toFile="${dir.build}/box.json" file="box-logbox.json"  encoding="UTF-8" overwrite="true"/>
 
         <!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
@@ -488,16 +489,16 @@
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to WireBox namespace-->	
-      	<copy todir="${dir.build}/system/ioc" encoding="UTF-8">
+      	<copy todir="${dir.build}/system/ioc" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/ioc" />
         </copy>
-		<copy todir="${dir.build}/system/aop" encoding="UTF-8">
+		<copy todir="${dir.build}/system/aop" encoding="UTF-8" overwrite="true">
 			 <fileset dir="system/aop" />
 		</copy>
-		<copy todir="${dir.build}/system/cache" encoding="UTF-8">
+		<copy todir="${dir.build}/system/cache" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/cache" />
         </copy>
-		<copy todir="${dir.build}/system/core" encoding="UTF-8">
+		<copy todir="${dir.build}/system/core" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/core">
         		<include name="collections/"/>
         		<include name="conversion/"/>
@@ -506,16 +507,16 @@
         		<include name="events/"/>
         	</fileset>
         </copy>
-		<copy todir="${dir.build}/system/logging" encoding="UTF-8">
+		<copy todir="${dir.build}/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
         </copy>
 		<!--Copy text files to root folder-->
-		<copy todir="${dir.build}" encoding="UTF-8">
+		<copy todir="${dir.build}" encoding="UTF-8" overwrite="true">
 			<fileset file="license.txt" />
 			<fileset file="system/ioc/readme.md" />						
 		</copy>
 		<!--Copy box.json to root -->
-		<copy toFile="${dir.build}/box.json" file="box-wirebox-cachebox.json"  encoding="UTF-8"/>
+		<copy toFile="${dir.build}/box.json" file="box-wirebox-cachebox.json"  encoding="UTF-8" overwrite="true"/>
 		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
@@ -610,10 +611,6 @@
 		</exec>
 		<exec executable="box" dir="${basedir}/apidocs">
 			<arg line="install" />
-		</exec>
-		<!-- App Templates -->
-		<exec executable="box" dir="${dir.build}">
-			<arg line="install id=cbapptemplates save=false" />
 		</exec>
 	</target>
 	

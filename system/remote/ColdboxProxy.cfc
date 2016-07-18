@@ -165,9 +165,6 @@ Description :
 				// Return The results
 				return refLocal.results;
 			}
-
-			// Trace that no results where found, returns void or null
-			tracer('No outgoing results found in the local scope.');
 		</cfscript>
 	</cffunction>
 

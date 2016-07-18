@@ -504,24 +504,35 @@ component serializable="false" accessors="true"{
 		if( ehBean.getViewDispatch() ){	return;	}
 
 		try{
+			// Determine allowed methods in action metadata
+			if( structKeyExists( ehBean.getActionMetadata() , "allowedMethods" ) ){
+				// incorporate it to the handler
+				oHandler.allowedMethods[ ehBean.getMethod() ] = ehBean.getActionMetadata().allowedMethods;
+			}
 			// Determine if it is An allowed HTTP method to execute, else throw error
 			if( NOT structIsEmpty( oHandler.allowedMethods ) AND
-				structKeyExists( oHandler.allowedMethods,ehBean.getMethod() ) AND
-				NOT listFindNoCase( oHandler.allowedMethods[ ehBean.getMethod() ],oRequestContext.getHTTPMethod() ) ){
+				structKeyExists( oHandler.allowedMethods, ehBean.getMethod() ) AND
+				NOT listFindNoCase( oHandler.allowedMethods[ ehBean.getMethod() ], oRequestContext.getHTTPMethod() ) 
+			){
 
 				// Do we have a local handler for this exception, if so, call it
 				if( oHandler._actionExists( "onInvalidHTTPMethod" ) ){
-					return oHandler.onInvalidHTTPMethod( event=oRequestContext,
-														 rc=args.rc,
-														 prc=args.prc,
-														 faultAction=ehBean.getmethod(),
-														 eventArguments=arguments.eventArguments );
+					return oHandler.onInvalidHTTPMethod( 
+						event			= oRequestContext,
+						rc				= args.rc,
+						prc				= args.prc,
+						faultAction		= ehBean.getmethod(),
+						eventArguments	= arguments.eventArguments 
+					);
 				}
+
 				// Throw Exception
-				getUtil().throwInvalidHTTP( className="Controller",
-										    detail="The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
-										    statusText="Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
-										    statusCode="405" );
+				getUtil().throwInvalidHTTP( 
+					className	= "Controller",
+					detail		= "The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
+					statusText	= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
+					statusCode	= "405"
+				);
 			}
 
 			// PRE ACTIONS
