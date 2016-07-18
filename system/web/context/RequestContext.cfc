@@ -1062,10 +1062,11 @@ component serializable=false accessors="true"{
 	any function getHTTPContent( boolean json=false, boolean xml=false ){
 		var content = getHTTPRequestData().content;
 
-		if( arguments.json and isJSON( content ) )
-			return deserializeJSON( content );
-		if( arguments.xml and len( content ) and isXML( content ) )
-			return xmlParse( content );
+		// ToString() neccessary when body comes in as binary.
+		if( arguments.json and isJSON( toString( content ) ) )
+			return deserializeJSON( toString( content ) );
+		if( arguments.xml and len( toString( content ) ) and isXML( toString( content ) ) )
+			return xmlParse( toString( content ) );
 
 		return content;
 	}
