@@ -252,7 +252,7 @@ Description :
 	</cffunction>
 
 	<!--- getAppendersMap --->
-	<cffunction name="getAppendersMap" output="false" access="private" returntype="any" hint="Get a map of appenders by list. Usually called to get a category of appenders." colddoc:generic="struct">
+	<cffunction name="getAppendersMap" output="false" access="public" returntype="any" hint="Get a map of appenders by list. Usually called to get a category of appenders." colddoc:generic="struct">
 		<cfargument name="appenders" required="true" hint="The list of appenders to get"/>
 		<cfscript>
 			var appendersMap = structnew();
