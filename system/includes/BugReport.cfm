@@ -7,14 +7,16 @@ A reporting template about exceptions in your ColdBox Apps
 ----------------------------------------------------------------------->
 <cfscript>
 	// Detect Session Scope
-	sessionScopeExists = true;
+	local.sessionScopeExists = true;
 	try { structKeyExists( session ,'x' ); }
 	catch ( any e ) {
-		sessionScopeExists = false;
+		local.sessionScopeExists = false;
 	}
-	try{ thisInetHost = createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName(); }
+	try{ 
+		local.thisInetHost = createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName(); 
+	}
 	catch( any e ){
-		thisInetHost = "localhost";
+		local.thisInetHost = "localhost";
 	}
 </cfscript>
 <cfoutput>
@@ -72,28 +74,31 @@ A reporting template about exceptions in your ColdBox Apps
 		<h2>Tag Context:</h2>
 		<table class="table" align="center" cellspacing="0">
 		<cfif ArrayLen( oException.getTagContext() )>
-			  <cfset arrayTagContext = oException.getTagContext()>
-			  <cfloop from="1" to="#arrayLen(arrayTagContext)#" index="i">
+			  <cfset local.arrayTagContext = oException.getTagContext()>
+			  <cfloop from="1" to="#arrayLen( local.arrayTagContext )#" index="local.i">
 				  <!--- Don't clutter the screen with this information unless it's actually useful --->
-			  	  <cfif structKeyExists( arrayTagContext[i], "ID" ) and len( arrayTagContext[i].ID ) and arrayTagContext[i].ID neq "??">
+			  	  <cfif structKeyExists( local.arrayTagContext[ local.i ], "ID" ) and 
+			  	  		len( local.arrayTagContext[ local.i ].ID ) and 
+			  	  		local.arrayTagContext[ local.i ].ID neq "??"
+			  	  >
 			  <tr >
 						<td align="right" class="info">Tag:</td>
-					    <td>#arrayTagContext[i].ID#</td>
+					    <td>#local.arrayTagContext[ local.i ].ID#</td>
 			  </tr>
 				  </cfif>
 			   <tr >
 					<td align="right" class="info">Template:</td>
-				    <td style="color:green;"><strong>#arrayTagContext[i].Template#</strong></td>
+				    <td style="color:green;"><strong>#local.arrayTagContext[ local.i ].Template#</strong></td>
 				   </tr>
-			  	  <cfif structKeyExists( arrayTagContext[i], "codePrintHTML" )>
+			  	  <cfif structKeyExists( local.arrayTagContext[ local.i ], "codePrintHTML" )>
 					  <tr class="tablebreak">
 				<td align="right" class="info">LINE:</td>
-					    <td>#arrayTagContext[i].codePrintHTML#</td>
+					    <td>#local.arrayTagContext[ local.i ].codePrintHTML#</td>
 			   </tr>
 				  <cfelse>
 			   <tr class="tablebreak">
 						<td align="right" class="info">Line:</td>
-					    <td ><strong>#arrayTagContext[i].LINE#</strong></td>
+					    <td ><strong>#local.arrayTagContext[ local.i ].LINE#</strong></td>
 			   </tr>
 				  </cfif>
 			  </cfloop>
@@ -114,7 +119,7 @@ A reporting template about exceptions in your ColdBox Apps
 			 <tr>
 			   <td align="right" class="info">Coldfusion ID: </td>
 			   <td >
-			   	<cfif sessionScopeExists>
+			   	<cfif local.sessionScopeExists>
 					<cfif isDefined("session") and structkeyExists(session, "cfid")>
 					CFID=#session.CFID# ;
 					<cfelseif isDefined("client") and structkeyExists(client,"cfid")>
@@ -143,7 +148,7 @@ A reporting template about exceptions in your ColdBox Apps
 			 </tr>
 			 <tr>
 			   <td align="right" class="info"> Host &amp; Server: </td>
-			   <td >#htmlEditFormat(cgi.http_host)# #thisInetHost#</td>
+			   <td >#htmlEditFormat(cgi.http_host)# #local.thisInetHost#</td>
 			 </tr>
 			 <tr>
 			   <td align="right" class="info">Query String: </td>
@@ -214,7 +219,7 @@ A reporting template about exceptions in your ColdBox Apps
 			 <tr >
 				<th colspan="2" >Session Storage:</th>
 			 </tr>
-			 <cfif sessionScopeExists>
+			 <cfif local.sessionScopeExists>
 				 <cfloop collection="#session#" item="key">
 				 <tr>
 				   <td align="right" class="info"> #key#: </td>
