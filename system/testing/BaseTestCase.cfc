@@ -340,6 +340,12 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         }
 
         try{
+        	// If the route is for the home page, use the default event in the config/ColdBox.cfc
+        	if ( arguments.route == "/" ){
+        		arguments.event = getController().getSetting( "defaultEvent" );
+        		arguments.route = "";
+        	}
+
             // if we were passed a route, parse it and prepare the SES interceptor for routing.
             if ( arguments.route != "" ){
             	// enable the SES interceptor
