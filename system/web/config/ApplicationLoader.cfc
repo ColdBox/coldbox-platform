@@ -311,11 +311,15 @@ Loads a coldbox cfc configuration file
 				configStruct[ "MissingTemplateHandler" ] = "";
 			}
 			//Modules Configuration
-			if( not structKeyExists( configStruct,"ModulesExternalLocation" ) ){
+			if( not structKeyExists( configStruct, "ModulesExternalLocation" ) ){
 				configStruct.ModulesExternalLocation = arrayNew(1);
 			}
 			if( isSimpleValue( configStruct.ModulesExternalLocation) ){
 				configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
+			}
+			// Add modules_app convention
+			if( !arrayContainsNoCase( configStruct.ModulesExternalLocation, "modules_app" ) ){
+				arrayAppend( configStruct.ModulesExternalLocation, "modules_app" );
 			}
 		</cfscript>
 	</cffunction>
