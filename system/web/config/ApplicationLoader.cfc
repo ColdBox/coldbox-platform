@@ -318,7 +318,7 @@ Loads a coldbox cfc configuration file
 				configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
 			}
 			// Add modules_app convention
-			if( !arrayContainsNoCase( configStruct.ModulesExternalLocation, "/modules_app" ) ){
+			if( !listFindNoCase( arrayToList(configStruct.ModulesExternalLocation) , "/modules_app" ) ){
 				arrayAppend( configStruct.ModulesExternalLocation, "/modules_app" );
 			}
 		</cfscript>
