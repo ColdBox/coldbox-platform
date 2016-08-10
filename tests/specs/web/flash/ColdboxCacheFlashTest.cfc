@@ -1,7 +1,13 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseTestCase"{
+
 	this.loadColdBox = false;
+	
 	function setup(){
+
+		// mocks
+		url.cfid = 123;
+		url.cftoken = createUUID();
+
 		flash = getMockBox().createMock("coldbox.system.web.flash.ColdboxCacheFlash");
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
 		mockCache = getMockBox().createMock(className="coldbox.system.cache.providers.CacheBoxProvider",clearMethods=true);
@@ -39,5 +45,5 @@
 		assertEquals( flash.getFlash(), testScope);
 
 	}
-</cfscript>
-</cfcomponent>
+
+}
