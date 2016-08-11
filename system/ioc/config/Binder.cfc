@@ -20,8 +20,8 @@ Description :
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
 		// Utility class
 		this.UTILITY  = createObject("component","coldbox.system.core.util.Util");
-		// Temp Mapping positional mover
-		currentMapping = "";
+		// Contains the mappings currently being affected by the DSL.
+		currentMapping = [];
 		// Instance private scope
 		instance = {};
 		// WireBox Defaults
@@ -239,7 +239,7 @@ Description :
 
 	<!--- mapPath --->
     <cffunction name="mapPath" output="false" access="public" returntype="any" hint="Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.">
-    	<cfargument name="path" 		required="true" hint="The class path to the object to map"/>
+    	<cfargument name="path" 		required="true"						hint="The class path to the object to map"/>
 		<cfargument name="namespace"	required="false"	default=""		hint="Provide namespace to merge it in"/>
     	<cfargument name="prepend"		required="false"	default="false" hint="Where to attach the namespace"/>
     	<cfargument name="force" 		required="false" 	default="false" hint="Forces the registration of the mapping in case it already exists"/>
@@ -270,6 +270,10 @@ Description :
 			var directory 		= expandPath("/#replace(arguments.packagePath,".","/","all")#");
 			var qObjects		= "";
 			var thisTargetPath 	= "";
+			var tmpCurrentMapping = [];
+			
+			// Clear out any current mappings
+			currentMapping = [];
 		</cfscript>
 
 		<!--- check directory --->
@@ -297,6 +301,9 @@ Description :
 				  OR ( structKeyExists( arguments, "filter" ) AND arguments.filter( thisTargetPath ) )
 				  OR ( NOT len( arguments.include ) AND NOT len( arguments.exclude ) AND NOT structKeyExists( arguments, "filter") )>
 
+				<!--- Backup the current array of mappings --->
+				<cfset tmpCurrentMapping = currentMapping>
+
 				<!--- Map the Path --->
 				<cfset mapPath( path=thisTargetPath, namespace=arguments.namespace, prepend=arguments.prepend )>
 
@@ -305,6 +312,10 @@ Description :
 					<cfset arguments.influence( this, thisTargetPath )>
 				</cfif>
 
+				<!--- Merge the full array of mappings back together --->
+				<cfset arrayAppend( tmpCurrentMapping, currentMapping[ 1 ]  ) >
+				<cfset currentMapping = tmpCurrentMapping>
+				
 			</cfif>
 
 		</cfloop>
@@ -317,10 +328,12 @@ Description :
     	<cfargument name="alias" required="true" hint="A single alias or a list or an array of aliases for this mapping. Remember an object can be refered by many names"/>
     	<cfargument name="force" required="false" default="false" hint="Forces the registration of the mapping in case it already exists"/>
 		<cfscript>
+			// Clear out any current mappings
+			currentMapping = [];
+
 			// generate mapping entry for this dude.
 			var name 	= "";
 			var x		= 1;
-			var cAlias	= "";
 
 			// unflatten list
 			if( isSimpleValue( arguments.alias ) ){ arguments.alias = listToArray(arguments.alias); }
@@ -330,7 +343,7 @@ Description :
 
 			// check if mapping exists, if so, just use and return.
 			if( structKeyExists( instance.mappings, name) and !arguments.force ){
-				currentMapping = instance.mappings[ name ];
+				arrayAppend( currentMapping, instance.mappings[ name ] );
 				return this;
 			}
 
@@ -338,7 +351,7 @@ Description :
 			instance.mappings[ name ] = createObject("component","coldbox.system.ioc.config.Mapping").init( name );
 
 			// set the current mapping
-			currentMapping = instance.mappings[ name ];
+			arrayAppend( currentMapping, instance.mappings[ name ] );
 
 			// Set aliases, scopes and types
 			instance.mappings[ name ]
@@ -349,16 +362,18 @@ Description :
 			for(x=2;x lte arrayLen(arguments.alias); x++){
 				instance.mappings[ arguments.alias[x] ] = instance.mappings[ name ];
 			}
-
+			
 			return this;
 		</cfscript>
     </cffunction>
-
+    
 	<!--- to --->
     <cffunction name="to" output="false" access="public" returntype="any" hint="Map to a destination CFC class path.">
     	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
-			currentMapping.setPath( arguments.path ).setType( this.TYPES.CFC );
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setPath( arguments.path ).setType( this.TYPES.CFC );
+			}			
 			return this;
     	</cfscript>
     </cffunction>
@@ -368,7 +383,9 @@ Description :
 		<cfargument name="alias" required="true" hint="The parent class to copy dependencies and definitions from"/>
 		<cfscript>
 			// copy parent class's memento instance, exclude alias, name and path
-			getCurrentMapping().processMemento( getMapping( arguments.alias ).getMemento(), "alias,name,path" );
+			for( var mapping in getCurrentMapping() ) {
+				mapping.processMemento( getMapping( arguments.alias ).getMemento(), "alias,name,path" );
+			}
 			return this;
 		</cfscript>
 	</cffunction>
@@ -378,7 +395,9 @@ Description :
     	<cfargument name="factory" 	required="true" hint="The mapping factory reference name"/>
 		<cfargument name="method" 	required="true" hint="The method to execute"/>
 		<cfscript>
-			currentMapping.setType( this.TYPES.FACTORY ).setPath( arguments.factory ).setMethod( arguments.method );
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setType( this.TYPES.FACTORY ).setPath( arguments.factory ).setMethod( arguments.method );
+			}
 			return this;
     	</cfscript>
     </cffunction>
@@ -391,7 +410,9 @@ Description :
 		<cfargument name="value" 	required="false" hint="The value of the constructor argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfscript>
-    		currentMapping.addDIMethodArgument(argumentCollection=arguments);
+			for( var mapping in getCurrentMapping() ) {
+				mapping.addDIMethodArgument(argumentCollection=arguments);
+			}
     		return this;
     	</cfscript>
     </cffunction>
@@ -400,7 +421,9 @@ Description :
     <cffunction name="toJava" output="false" access="public" returntype="any" hint="Map to a java destination class path.">
     	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
-			currentMapping.setPath( arguments.path ).setType( this.TYPES.JAVA );
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setPath( arguments.path ).setType( this.TYPES.JAVA );
+			}			
 			return this;
     	</cfscript>
     </cffunction>
@@ -409,7 +432,9 @@ Description :
     <cffunction name="toWebservice" output="false" access="public" returntype="any" hint="Map to a webservice destination class path.">
     	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
-    		currentMapping.setPath( arguments.path ).setType( this.TYPES.WEBSERVICE );
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setPath( arguments.path ).setType( this.TYPES.WEBSERVICE );
+			}    		
 			return this;
     	</cfscript>
     </cffunction>
@@ -418,7 +443,9 @@ Description :
     <cffunction name="toRSS" output="false" access="public" returntype="any" hint="Map to a rss destination class path.">
     	<cfargument name="path" required="true" hint="The class path to the object to map"/>
 		<cfscript>
-    		currentMapping.setPath( arguments.path ).setType( this.TYPES.RSS );
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setPath( arguments.path ).setType( this.TYPES.RSS );
+			}    		
 			return this;
     	</cfscript>
     </cffunction>
@@ -427,7 +454,9 @@ Description :
     <cffunction name="toDSL" output="false" access="public" returntype="any" hint="Map to a dsl that will be used to create the mapped object">
     	<cfargument name="dsl" required="true" hint="The DSL string to use"/>
 		<cfscript>
-			currentMapping.setDSL( arguments.dsl ).setType( this.TYPES.DSL );
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setDSL( arguments.dsl ).setType( this.TYPES.DSL );
+			}
 			return this;
     	</cfscript>
     </cffunction>
@@ -436,7 +465,9 @@ Description :
     <cffunction name="toProvider" output="false" access="public" returntype="any" hint="Map to a provider object that must implement coldbox.system.ioc.IProvider or a closure or UDF">
     	<cfargument name="provider" required="true" hint="The provider to map to"/>
 		<cfscript>
-			currentMapping.setPath( arguments.provider ).setType( this.TYPES.PROVIDER );
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setPath( arguments.provider ).setType( this.TYPES.PROVIDER );
+			}			
 			return this;
     	</cfscript>
     </cffunction>
@@ -444,8 +475,10 @@ Description :
 	<!--- toValue --->
     <cffunction name="toValue" output="false" access="public" returntype="any" hint="Map to a constant value">
     	<cfargument name="value" required="true" hint="The value to bind to"/>
-		<cfscript>
-			currentMapping.setValue( arguments.value ).setType( this.TYPES.CONSTANT );
+		<cfscript>			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setValue( arguments.value ).setType( this.TYPES.CONSTANT );
+			}
 			return this;
     	</cfscript>
     </cffunction>
@@ -453,8 +486,10 @@ Description :
 	<!--- constructor --->
     <cffunction name="constructor" output="false" access="public" returntype="any" hint="You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.">
     	<cfargument name="constructor" required="true" hint="The constructor method to use for the mapped object"/>
-   		<cfscript>
-    		currentMapping.setConstructor( arguments.constructor );
+   		<cfscript>    		
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setConstructor( arguments.constructor );
+			}
 			return this;
     	</cfscript>
     </cffunction>
@@ -464,7 +499,9 @@ Description :
     	<cfscript>
     		var key = "";
     		for(key in arguments){
-				currentMapping.addDIConstructorArgument(name=key,value=arguments[key]);
+				for( var mapping in getCurrentMapping() ) {
+					mapping.addDIConstructorArgument(name=key,value=arguments[key]);
+				}
 			}
 			return this;
     	</cfscript>
@@ -472,8 +509,10 @@ Description :
 
 	<!--- noInit --->
     <cffunction name="noInit" output="false" access="public" returntype="any" hint="If you call this method on an object mapping, the object's constructor will not be called. By default all constructors are called.">
-    	<cfscript>
-    		currentMapping.setAutoInit( false );
+    	<cfscript>    		
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setAutoInit( false );
+			}
 			return this;
     	</cfscript>
     </cffunction>
@@ -481,24 +520,30 @@ Description :
     <!--- virtualInheritance --->
     <cffunction name="virtualInheritance" output="false" access="public" returntype="any" hint="Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping">
 		<cfargument name="mapping" required="true" hint="The mapping name of CFC to create the virtual inheritance from."/>
-    	<cfscript>
-    		currentMapping.setVirtualInheritance( mapping );
+    	<cfscript>    		
+			for( var thisMapping in getCurrentMapping() ) {
+				thisMapping.setVirtualInheritance( mapping );
+			}
 			return this;
     	</cfscript>
     </cffunction>
 
 	<!--- asEagerInit --->
     <cffunction name="asEagerInit" output="false" access="public" returntype="any" hint="If this method is called, the mapped object will be created once the injector starts up. Basically, not lazy loaded">
-    	<cfscript>
-    		currentMapping.setEagerInit( true );
+    	<cfscript>    		
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setEagerInit( true );
+			}
 			return this;
     	</cfscript>
     </cffunction>
 
 	<!--- noAutowire --->
     <cffunction name="noAutowire" output="false" access="public" returntype="any" hint="If you call this method on an object mapping, the object will NOT be inspected for injection/wiring metadata, it will use ONLY whatever you define in the mapping.">
-    	<cfscript>
-    		currentMapping.setAutowire( false );
+    	<cfscript>    		
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setAutowire( false );
+			}
 			return this;
     	</cfscript>
     </cffunction>
@@ -508,7 +553,8 @@ Description :
     	<cfargument name="alias" required="true" hint="The name of the maping to set as current for working with it via the mapping DSL"/>
 		<cfscript>
 			if( mappingExists(arguments.alias) ){
-				currentMapping = instance.mappings[arguments.alias];
+				currentMapping = [];
+				currentMapping[ 1 ] = instance.mappings[arguments.alias];
 				return this;
 			}
 			throw(message="The mapping '#arguments.alias# has not been initialized yet.'",
@@ -525,8 +571,10 @@ Description :
 		<cfargument name="value" 	required="false" hint="The value of the constructor argument, if passed."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfargument name="required" required="false" default="true" hint="If the argument is required or not, by default we assume required DI arguments."/>
-		<cfscript>
-    		currentMapping.addDIConstructorArgument(argumentCollection=arguments);
+		<cfscript>    		
+			for( var mapping in getCurrentMapping() ) {
+				mapping.addDIConstructorArgument(argumentCollection=arguments);
+			}
     		return this;
     	</cfscript>
     </cffunction>
@@ -539,8 +587,10 @@ Description :
 		<cfargument name="value" 	required="false" hint="The value to pass into the setter method."/>
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value. Only used if using dsl or ref arguments"/>
 		<cfargument name="argName" 	required="false" hint="The name of the argument to use, if not passed, we default it to the setter name"/>
-    	<cfscript>
-    		currentMapping.addDISetter(argumentCollection=arguments);
+    	<cfscript>    		
+			for( var mapping in getCurrentMapping() ) {
+				mapping.addDISetter(argumentCollection=arguments);
+			}
     		return this;
     	</cfscript>
     </cffunction>
@@ -554,8 +604,10 @@ Description :
     	<cfargument name="javaCast" required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
     	<cfargument name="scope" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
     	<cfargument name="required" required="false" default="true" hint="If the property is required or not, by default we assume required DI properties."/>
-		<cfscript>
-    		currentMapping.addDIProperty(argumentCollection=arguments);
+		<cfscript>    		
+			for( var mapping in getCurrentMapping() ) {
+				mapping.addDIProperty(argumentCollection=arguments);
+			}
     		return this;
     	</cfscript>
     </cffunction>
@@ -566,8 +618,10 @@ Description :
     	<cfscript>
     		//inflate list
 			if( isSimpleValue(arguments.methods) ){ arguments.methods = listToArray(arguments.methods); }
-			// store list
-			currentMapping.setOnDIComplete( arguments.methods );
+			// store list			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setOnDIComplete( arguments.methods );
+			}
 			return this;
 		</cfscript>
     </cffunction>
@@ -576,8 +630,10 @@ Description :
     <cffunction name="providerMethod" output="false" access="public" returntype="any" hint="Add a new provider method mapping">
     	<cfargument name="method" 	required="true" hint="The provided method to override or inject as a provider"/>
 		<cfargument name="mapping" 	required="true" hint="The mapping to provide via the selected method"/>
-		<cfscript>
-			currentMapping.addProviderMethod(argumentCollection=arguments);
+		<cfscript>			
+			for( var thisMapping in getCurrentMapping() ) {
+				thisMapping.addProviderMethod(argumentCollection=arguments);
+			}
 			return this;
 		</cfscript>
     </cffunction>
@@ -591,8 +647,10 @@ Description :
 				throw( message="Invalid WireBox Scope: '#arguments.scope#'",
 					   detail="Please make sure you are using a valid scope, valid scopes are: #arrayToList(this.SCOPES.getValidScopes())# AND custom scopes: #structKeyList(instance.customScopes)#",
 					   type="Binder.InvalidScopeMapping" );
+			}			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setScope( arguments.scope );
 			}
-			currentMapping.setScope( arguments.scope );
 			return this;
     	</cfscript>
     </cffunction>
@@ -606,16 +664,20 @@ Description :
 
     <!--- threadsafe --->
     <cffunction name="threadSafe" output="false" access="public" returntype="any" hint="Tells persistence scopes to build, wire, and do onDIComplete() on objects in an isolated lock. This will disallow circular references unless object providers are used.  By default all object's constructors are the only thread safe areas">
-    	<cfscript>
-			currentMapping.setThreadSafe( true );
+    	<cfscript>			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setThreadSafe( true );
+			}
     		return this;
 		</cfscript>
     </cffunction>
 
     <!--- notThreadSafe --->
     <cffunction name="notThreadSafe" output="false" access="public" returntype="any" hint="This is the default wiring of objects that allow circular dependencies.  By default all object's constructors are the only thread safe areas">
-    	<cfscript>
-			currentMapping.setThreadSafe( false );
+    	<cfscript>			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setThreadSafe( false );
+			}
     		return this;
 		</cfscript>
     </cffunction>
@@ -623,8 +685,10 @@ Description :
     <!--- withInfluence --->
     <cffunction name="withInfluence" output="false" access="public" returntype="any" hint="This is a closure that will be able to influence the creation of the instance">
     	<cfargument name="influenceClosure" type="any">
-    	<cfscript>
-			currentMapping.setInfluenceClosure( arguments.influenceClosure );
+    	<cfscript>			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setInfluenceClosure( arguments.influenceClosure );
+			}
     		return this;
 		</cfscript>
     </cffunction>
@@ -632,8 +696,10 @@ Description :
 	<!--- extraAttributes --->
     <cffunction name="extraAttributes" output="false" access="public" returntype="any" hint="Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.">
     	<cfargument name="data" type="struct" required="true" hint="The data structure to store with the maping"/>
-		<cfscript>
-			currentMapping.setExtraAttributes( arguments.data );
+		<cfscript>			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setExtraAttributes( arguments.data );
+			}
 			return this;
 		</cfscript>
     </cffunction>
@@ -642,8 +708,10 @@ Description :
     <cffunction name="mixins" output="false" access="public" returntype="any" hint="Adds one, a list or an array of UDF templates to mixin to a CFC">
     	<cfargument name="mixins" type="any" required="true" default="" hint="The udf include location(s) to mixin at runtime"/>
     	<cfscript>
-			if( isSimpleValue( arguments.mixins ) ){ arguments.mixins = listToArray( arguments.mixins ); }
-			currentMapping.setMixins( arguments.mixins );
+			if( isSimpleValue( arguments.mixins ) ){ arguments.mixins = listToArray( arguments.mixins ); }			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setMixins( arguments.mixins );
+			}
 			return this;
     	</cfscript>
     </cffunction>
@@ -753,19 +821,22 @@ Description :
 		<cfargument name="lastAccessTimeout" 	required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
 		<cfargument name="provider" 			required="false" default="default" hint="Uses the 'default' cache provider by default"/>
 		<cfscript>
-			// if key not passed, build a mapping name
-			if( NOT len(arguments.key) ){
-				if( len( currentMapping.getPath() ) ){
-					arguments.key = "wirebox-#currentMapping.getPath()#";
+			for( var mapping in getCurrentMapping() ) {
+				// if key not passed, build a mapping name
+				if( NOT len(arguments.key) ){
+					if( len( mapping.getPath() ) ){
+						arguments.key = "wirebox-#mapping.getPath()#";
+					}
+					else{
+						arguments.key = "wirebox-#mapping.getName()#";
+					}
 				}
-				else{
-					arguments.key = "wirebox-#currentMapping.getName()#";
-				}
+	
+				// store the mapping info.
+				mapping.setScope( this.SCOPES.CACHEBOX ).setCacheProperties(argumentCollection=arguments);
+
 			}
-
-			// store the mapping info.
-			currentMapping.setScope( this.SCOPES.CACHEBOX ).setCacheProperties(argumentCollection=arguments);
-
+			
 			return this;
     	</cfscript>
     </cffunction>
@@ -964,8 +1035,10 @@ Description :
 			// map eagerly
 			map(arguments.aspect).asEagerInit().asSingleton();
 
-			// register the aspect
-			currentMapping.setAspect( true ).setAspectAutoBinding( arguments.autoBinding );
+			// register the aspect			
+			for( var mapping in getCurrentMapping() ) {
+				mapping.setAspect( true ).setAspectAutoBinding( arguments.autoBinding );
+			}
 
 			return this;
 		</cfscript>
