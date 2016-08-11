@@ -310,17 +310,15 @@ Loads a coldbox cfc configuration file
 			if ( not structKeyExists( configStruct, "MissingTemplateHandler" ) ){
 				configStruct[ "MissingTemplateHandler" ] = "";
 			}
-			//Modules Configuration
+			//Modules External Locations
 			if( not structKeyExists( configStruct, "ModulesExternalLocation" ) ){
-				configStruct.ModulesExternalLocation = arrayNew(1);
+				configStruct.ModulesExternalLocation = [];
 			}
 			if( isSimpleValue( configStruct.ModulesExternalLocation) ){
 				configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
 			}
-			// Add modules_app convention
-			if( !listFindNoCase( arrayToList(configStruct.ModulesExternalLocation) , "/modules_app" ) ){
-				arrayAppend( configStruct.ModulesExternalLocation, "/modules_app" );
-			}
+			// Prepend Convention of modules_app
+			arrayPrepend( configStruct.ModulesExternalLocation, "/modules_app" );
 		</cfscript>
 	</cffunction>
 

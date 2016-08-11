@@ -1,10 +1,7 @@
-﻿
-
-/**
-*********************************************************************************
+﻿/**
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * This flash uses CacheBox
 * @author Luis Majano <lmajano@ortussolutions.com>
 */
@@ -14,8 +11,6 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 	property name="cacheName";
 	// The cache provider
 	property name="cache";
-	// The flash key
-	property name="flashKey";
 
 	/**
 	* Constructor
@@ -26,7 +21,7 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 		// default cache name
 		variables.cacheName = "default";
 		// super init
-		super.init(argumentCollection=arguments);
+		super.init( argumentCollection=arguments );
 
 		// Check if name exists in property
 		if( propertyExists( "cacheName" ) ){
@@ -36,27 +31,32 @@ component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true"
 		// Setup the cache
 		variables.cache = arguments.controller.getCache( variables.cacheName );
 
+		return this;
+	}
+
+	/**
+	* Build Flash Key according to standards
+	*/
+	function getFlashKey(){
 		// Check jsession id First
 		if( isDefined( "session" ) and structKeyExists( session, "sessionid" ) ){
-			variables.flashKey = "cbox_flash_" & session.sessionid;
+			return "cbox_flash_" & session.sessionid;
 		}
 		// Check normal cfid and cftoken in cookie
 		else if( structKeyExists( cookie, "CFID" ) AND structKeyExists( cookie,"CFTOKEN" ) ){
-			variables.flashKey = "cbox_flash_" & hash(cookie.cfid & cookie.cftoken);
+			return "cbox_flash_" & hash(cookie.cfid & cookie.cftoken);
 		}
 		// Check normal cfid and cftoken in URL
 		else if( structKeyExists( URL, "CFID" ) AND structKeyExists( URL,"CFTOKEN" ) ){
-			variables.flashKey = "cbox_flash_" & hash( URL.cfid & URL.cftoken );
+			return "cbox_flash_" & hash( URL.cfid & URL.cftoken );
 		}
 		// check session URL Token
 		else if( isDefined( "session" ) and structKeyExists( session, "URLToken" ) ){
-			variables.flashKey = "cbox_flash_" & session.URLToken;
+			return "cbox_flash_" & session.URLToken;
 		} else {
 			throw( message="Cannot find a jsessionid, URLToken or cfid/cftoken in the cookie scope. Please verify",
 				   type="ColdboxCacheFlash.CFIDException");
 		}
-
-		return this;
 	}
 
 	/**

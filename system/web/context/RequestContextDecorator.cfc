@@ -1,7 +1,7 @@
-﻿/********************************************************************************
+﻿/**
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * Base class used to decorate ColdBox MVC Application Controller
 */
 component extends="coldbox.system.web.context.RequestContext" accessors="true" serializable="false"{
