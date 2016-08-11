@@ -1,8 +1,7 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * The different logging levels available in LogBox. Log levels available in the this scope: OFF=-1, FATAL=0, ERROR=1, WARN=2, INFO=3, DEBUG=4
 * @author Luis Majano <lmajano@ortussolutions.com>
 */

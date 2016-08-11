@@ -1,8 +1,7 @@
 ﻿/**
-********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * Models a ColdBox request, stores the incoming request collection and private request collection.
 * It is also used to determine metadata about a request and helps you build RESTFul responses.
 **/
