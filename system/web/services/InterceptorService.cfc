@@ -111,43 +111,66 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<!--- Process a State's Interceptors --->
-	<cffunction name="processState" access="public" returntype="any" hint="Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result." output="true">
-		<!--- ************************************************************* --->
-		<cfargument name="state" 		 	required="true" 	type="any" hint="An interception state to process">
-		<cfargument name="interceptData" 	required="false" 	type="any" 		default="#structNew()#" hint="A data structure used to pass intercepted information.">
-		<cfargument name="async" 			required="false" 	type="boolean" 	default="false" hint="If true, the entire interception chain will be ran in a separate thread."/>
-		<cfargument name="asyncAll" 		required="false" 	type="boolean" 	default="false" hint="If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end."/>
-		<cfargument name="asyncAllJoin"		required="false" 	type="boolean" 	default="true" hint="If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize."/>
-		<cfargument name="asyncPriority" 	required="false" 	type="string"	default="NORMAL" hint="The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL"/>
-		<cfargument name="asyncJoinTimeout"	required="false" 	type="numeric"	default="0" hint="The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout."/>
-		<!--- ************************************************************* --->
-		<cfset var loc = {}><cfsilent>
-		<cfscript>
-		// Validate Incoming State
-		if( instance.interceptorConfig.throwOnInvalidStates AND NOT listFindNoCase( arrayToList( instance.interceptionPoints ), arguments.state ) ){
-			throw( message="The interception state sent in to process is not valid: #arguments.state#", 
-				   detail="Valid states are #instance.interceptionPoints.toString()#", 
-				   type="InterceptorService.InvalidInterceptionState");
+	<cfscript>
+		
+		/**
+		* Process a State's Interceptors
+		* Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
+		*
+		* This is needed so interceptors can write to the page output buffer 
+		* @output true
+		*
+		* @state An interception state to process
+		* @interceptData A data structure used to pass intercepted information.
+		* @async If true, the entire interception chain will be ran in a separate thread.
+		* @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
+		* @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
+		* @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
+		* @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout
+		*/
+		public any function processState( 
+			required any state,
+			any interceptData=structNew(),
+			boolean async=false,
+			boolean asyncAll=false,
+			boolean asyncAllJoin=true,
+			string asyncPriority='NORMAL',
+			numeric asyncJoinTimeout=0 
+		){
+				var loc = {};
+				
+				// Validate Incoming State
+				if( instance.interceptorConfig.throwOnInvalidStates AND NOT 
+					listFindNoCase( arrayToList( instance.interceptionPoints ), arguments.state ) 
+				){
+					throw( 
+						message = "The interception state sent in to process is not valid: #arguments.state#", 
+						detail 	= "Valid states are #instance.interceptionPoints.toString()#", 
+						type 	= "InterceptorService.InvalidInterceptionState"
+					);
+				}
+		
+				// Process The State if it exists, else just exit out
+				if( structKeyExists( instance.interceptionStates, arguments.state ) ){
+					// Execute Interception in the state object
+					arguments.event = controller.getRequestService().getContext();
+					arguments.buffer = instance.requestBuffer;
+					loc.results = structFind( instance.interceptionStates, arguments.state ).process( argumentCollection=arguments );
+				}
+
+				// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace
+				if( instance.requestBuffer.isBufferInScope() ) {
+					writeOutput( instance.requestBuffer.getString() );
+					instance.requestBuffer.clear();
+				}
+				// Any results
+				if( structKeyExists( loc, "results" ) ) {
+					return loc.results;
+				}
 		}
 
-		// Process The State if it exists, else just exit out
-		if( structKeyExists( instance.interceptionStates, arguments.state ) ){
-			// Execute Interception in the state object
-			arguments.event = controller.getRequestService().getContext();
-			arguments.buffer = instance.requestBuffer;
-			loc.results = structFind( instance.interceptionStates, arguments.state ).process(argumentCollection=arguments);
-		}
-		// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace
-		</cfscript>
-		</cfsilent><!---
-		---><cfif instance.requestBuffer.isBufferInScope()><!---
-			---><cfset writeOutput(instance.requestBuffer.getString())><!---
-			---><cfset instance.requestBuffer.clear()><!---
-		---></cfif><!--- Return results if any
-		---><cfif structKeyExists( loc, "results" )><cfreturn loc.results></cfif>
-	</cffunction>
-
+	</cfscript>
+	
 	<!--- Register an Interceptor --->
 	<cffunction name="registerInterceptor" access="public" output="false" returntype="any" hint="Register an interceptor. This method is here for runtime additions. If the interceptor is already in a state, it will not be added again. You can register an interceptor by class or with an already instantiated and configured object.">
 		<!--- ************************************************************* --->
