@@ -7,6 +7,14 @@ branches:
   - development
 dist: trusty
 sudo: required
+env:
+  matrix:
+    - ENGINE=lucee@4.5 BOX=lucee4
+    - ENGINE=lucee@5 BOX=lucee5
+    - ENGINE=lucee@5 BOX=lucee5-fullnull
+    - ENGINE=adobe@2016 BOX=adobe
+    - ENGINE=adobe@11 BOX=adobe
+    - ENGINE=adobe@10 BOX=adobe
 addons:
   apt:
     packages:
@@ -14,24 +22,35 @@ addons:
     - mysql-client-core-5.6
     - mysql-client-5.6
 before_install:
-- sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
-- sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
-  /etc/apt/sources.list.d/commandbox.list
+# Temporarily use the staging version of CommandBox for multi-engine support
+- mkdir /tmp/bin
+- export PATH=$PATH:/tmp/bin
+
+# Bring these lines back when CommandBox 3.1.0 is released.
+# - sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
+# - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
+#   /etc/apt/sources.list.d/commandbox.list
 install:
-- sudo apt-get update && sudo apt-get --assume-yes install commandbox
+# Temporarily use the staging version of CommandBox for multi-engine support
+- curl --location 'http://integration.stg.ortussolutions.com/artifacts/ortussolutions/commandbox/3.1.0/commandbox-bin-3.1.0.zip' -o /tmp/box.zip
+- unzip /tmp/box.zip -d /tmp/bin
+
+# Bring this line back when CommandBox 3.1.0 is released.
+# - sudo apt-get update && sudo apt-get --assume-yes install commandbox
+
 # startup server so we can get directory location first
 - box install
-- box server start
+- box server start cfengine=$ENGINE
 - box server stop
-# Copy over special lucee settings for cache testing
-- box recipe build/setup-standalone.box
+# Copy over special settings for testing
+- box recipe build/box-setups/setup-$BOX.box
 before_script:
 # create test database
 - mysql -u root -e 'create database coolblog;'
 # import database
 - mysql -u root < tests/resources/coolblog.sql
 # Ready for testing
-- box server start
+- box server start cfengine=$ENGINE
 script: >
   testResults="$(box testbox run runner='http://localhost:8599/tests/runner.cfm' )";
   echo "$testResults";
