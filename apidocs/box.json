@@ -3,7 +3,7 @@
     "version":"1.0.0",
     "slug":"module-apidocs",
     "dependencies":{
-        "docbox":"2.0.6"
+        "docbox":"^2.0.6"
     },
     "devDependencies":{
         
