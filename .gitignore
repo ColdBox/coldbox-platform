@@ -1,6 +1,7 @@
 .DS_Store
 /settings.xml
 .project
+.settings/
 test-harness/logs/*.log
 test-harness/logs
 test-harness/test/logs
