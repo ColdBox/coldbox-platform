@@ -1,8 +1,7 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * A mock controller used for integration testing via TestBox
 */
 component extends="coldbox.system.web.Controller" accessors="true"{

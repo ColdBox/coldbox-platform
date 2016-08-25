@@ -1,8 +1,7 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * The default ColdBox CacheBox configuration object for ColdBox Applications
 */
 component{
