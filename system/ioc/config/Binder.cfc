@@ -293,7 +293,7 @@ Description :
  			</cfif>
 
 			<!--- Remove .cfc and /\ with . notation--->
-			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase( qObjects.name, ".cfc", ""), "(/|\\)", ".", "all")>
+			<cfset thisTargetPath = reReplace( arguments.packagePath & "." & replaceNoCase( qObjects.name, ".cfc", ""), "(/|\\)", ".", "all")>
 
 			<!--- Include/Exclude --->
 			<cfif ( len( arguments.include ) AND reFindNoCase( arguments.include, thisTargetPath ) )
