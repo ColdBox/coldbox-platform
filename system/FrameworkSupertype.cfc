@@ -19,9 +19,11 @@ component serializable="false" accessors="true"{
 		if( structKeyExists( datasources, arguments.alias ) ){
 			return datasources[ arguments.alias ];
 		}
-		throw( message="Datasource #arguments.alias# has not been defined in your config",
-			   detail="Defined datasources are: #structKeyList( datasources )#",
-			   type="UndefinedDatasource");
+		throw( 
+			message = "Datasource #arguments.alias# has not been defined in your config",
+			detail 	= "Defined datasources are: #structKeyList( datasources )#",
+			type 	= "UndefinedDatasource"
+		);
 	}
 
 	/**

@@ -588,7 +588,7 @@ component serializable="false" accessors="true"{
 			else{
 
 				// Around {Action} Advice Check?
-				if( oHandler._actionExists("around#ehBean.getMethod()#") ){
+				if( oHandler._actionExists( "around#ehBean.getMethod()#" ) ){
 					// Add target Action to loc.args
 					args.targetAction  	= oHandler[ehBean.getMethod()];
 					loc.results = invoker( target=oHandler, method="around#ehBean.getMethod()#", argCollection=args );
