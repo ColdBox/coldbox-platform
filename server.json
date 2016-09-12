@@ -4,6 +4,9 @@
     "web":{
         "http":{
             "port":"8599"
+        },
+        "rewrites":{
+            "enable":true
         }
     },
     "JVM":{
