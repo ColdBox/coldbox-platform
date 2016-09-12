@@ -1,8 +1,7 @@
 ﻿/**
-********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * This service loads and configures a ColdBox application for operation
 */
 component extends="coldbox.system.web.services.BaseService"{

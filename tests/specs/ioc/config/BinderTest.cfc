@@ -267,7 +267,8 @@
 		config.mapPath("Test");
 		mapping = config.getMapping("Test");
 		config.with("Test");
-		assertEquals( mapping, config.getCurrentMapping() );
+		currentMapping = config.getCurrentMapping();
+		assertEquals( mapping, currentMapping[ 1 ] );
 	}
 
 	function testInitArg(){
@@ -497,6 +498,17 @@
 		config.reset();
 		config.mapDirectory(packagePath="coldbox.test-harness.models", filter=filterUDF);
 		assertFalse( config.mappingExists("Simple") );
+		
+		// Multiple mappings chaining
+		config.reset();
+		// Map entire directory as singletons
+		config.mapDirectory(packagePath="coldbox.test-harness.models" ).asSingleton();
+		var mappings = config.getMappings();
+		// Check them each and ensure they're all singletons
+		for( var thisMapping in mappings ) {
+			assertEquals( mappings[ thisMapping ].getScope(), "singleton" );	
+		}
+		
 	}
 
 	private function influenceUDF(binder, path){

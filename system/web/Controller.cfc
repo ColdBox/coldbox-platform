@@ -1,7 +1,7 @@
-/********************************************************************************
+/**
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * Manages a ColdBox application, dispatches events and acts as an overall front controller.
 */
 component serializable="false" accessors="true"{

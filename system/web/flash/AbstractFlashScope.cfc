@@ -1,8 +1,7 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * An abstract flash scope that can be used to build ColdBox Flash scopes.
 * In order to build scopes you must implement the following methods:
 *
