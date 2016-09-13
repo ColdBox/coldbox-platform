@@ -175,7 +175,7 @@ Description :
 
 			// Store action metadata
 			arguments.ehBean.setActionMetadata( 
-				getMetadata( oEventHandler[ arguments.ehBean.getMethod() ] ) 
+				oEventHandler._actionMetadata( arguments.ehBean.getMethod() )
 			);
 
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
