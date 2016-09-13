@@ -34,8 +34,9 @@
 			controllerDecorator			= "cbtestharness.models.ControllerDecorator",
 
 			//Error/Exception Handling
-			exceptionHandler		= "main.onException",
-			onInvalidEvent			= "main.onInvalidEvent",
+			invalidHTTPMethodHandler 	= "main.invalidHTTPMethod",
+			exceptionHandler			= "main.onException",
+			onInvalidEvent				= "main.onInvalidEvent",
 			//customErrorTemplate		= "/coldbox/system/includes/BugReport.cfm",
 			customErrorTemplate		= "views/_templates/generic_error.cfm",
 

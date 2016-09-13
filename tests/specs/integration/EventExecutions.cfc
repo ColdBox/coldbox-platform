@@ -45,9 +45,32 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 						var e = execute( event="main.testPrivateActions", renderResults=true );
 						expect(	e.getRenderedContent() ).toInclude( "Private actions rule" );
 					});
-				
 				});
 			} );
+
+			story( "I want to execute a localized onInvalidHTTPMethod", function(){
+				given( "an invalid HTTP method", function(){
+					then( "it should fire the localized onInvalidHTTPMethod", function(){
+						// Mock to invalid HTTP method
+						prepareMock( getRequestContext() ).$( "getHTTPMethod", "GET" );
+						// Execute
+						var e = execute( event="restful.index", renderResults=true );
+						expect(	e.getRenderedContent() ).toInclude( "invalid http" );
+					});
+				});
+			});
+
+			story( "I want to execute a global invalid http method", function(){
+				given( "an invalid HTTP Method with no localized onInvalidHTTPMethod action", function(){
+					then( "it should fire the global invalid http handler", function(){
+						// Mock to invalid HTTP method
+						prepareMock( getRequestContext() ).$( "getHTTPMethod", "DELETE" );
+						// Execute
+						var e = execute( event="main.index", renderResults=true );
+						expect(	e.getRenderedContent() ).toInclude( "invalid http: main.index" );
+					});
+				});
+			});
 		
 		});
 
