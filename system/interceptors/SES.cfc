@@ -139,10 +139,8 @@ Description :
 						}
 					}
 					else{
-						getUtil().throwInvalidHTTP(className="SES",
-												   detail="The HTTP method used: #HTTPMethod# is not valid for the current executing resource. Valid methods are: #aRoute.action.toString()#",
-										 		   statusText="Invalid HTTP method: #HTTPMethod#",
-										 		   statusCode="405");
+						// Bubble up the invalid to the controller
+						aRoute.action = "onInvalidHTTPMethod";
 					}
 				}
 				// Create routed event
