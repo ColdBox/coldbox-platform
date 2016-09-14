@@ -256,7 +256,8 @@ Description :
 							event 			= arguments.event, 
 							interceptData 	= arguments.interceptData, 
 							interceptorKey 	= key, 
-							asyncPriority 	= instance.metadataMap[ key ].asyncPriority
+							asyncPriority 	= instance.metadataMap[ key ].asyncPriority,
+							buffer			= arguments.buffer
 						);
 					}
 					// Invoke the execution point synchronously
@@ -322,6 +323,7 @@ Description :
 		<cfargument name="interceptData" 	required="true" 	type="any" 		hint="A metadata structure used to pass intercepted information.">
 		<cfargument name="interceptorKey" 	required="true" 	type="any" 		hint="The interceptor key to invoke">
 		<cfargument name="asyncPriority" 	required="false" 	type="any" default="normal"	hint="The thread priority for the execution">
+		<cfargument name="buffer" 		 	required="true" 	type="any"		hint="The request buffer object that can be used to produce output from interceptor chains">
 		<!--- ************************************************************* --->
 		
 		<!--- Prepare thread safe name --->
@@ -339,12 +341,14 @@ Description :
 				  event="#arguments.event#"
 				  interceptData="#arguments.interceptData#" 
 				  threadName="#thisThreadName#" 
-				  key="#arguments.interceptorKey#">
-			
+				  key="#arguments.interceptorKey#"
+				  buffer="#arguments.buffer#"
+		>
 			<!--- Invoke the interceptor --->
 			<cfinvoke component="#this.getInterceptors().get( attributes.key )#" method="#this.getstate()#">
 				<cfinvokeargument name="event" 			value="#attributes.event#">
 				<cfinvokeargument name="interceptData" 	value="#attributes.interceptData#">
+				<cfinvokeargument name="buffer" 		value="#attributes.buffer#">
 				<cfinvokeargument name="rc" 			value="#attributes.event.getCollection()#">
 				<cfinvokeargument name="prc" 			value="#attributes.event.getPrivateCollection()#">
 			</cfinvoke>

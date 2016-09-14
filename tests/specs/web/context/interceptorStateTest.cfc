@@ -112,19 +112,22 @@
 	
 	<cffunction name="testInvokerThreaded" access="public" returnType="void">
 		<cfscript>
-			//debug( this.state.getState() );
+			// Mocks
+			mockBuffer = getMockBox().createStub();
+			getMockRequestContext().$( "getCollection", {} )
+				.$( "getPrivateCollection", {} );
 			
 			// 1: Execute Threaded
 			//register one interceptor for testing
 			this.state.unregister( this.key );
 			mockMetadata = { async=true, asyncPriority = "high", eventPattern = "" };
 			mockInterceptor = getMockBox().createMock("coldbox.tests.resources.MockInterceptor").$("unittest");
-			this.state.register(this.key, mockInterceptor, mockMetadata );
+			this.state.register( this.key, mockInterceptor, mockMetadata );
 			
 			// Invoke
 			makepublic( this.state, "invokerAsync" );
 			assertTrue( mockInterceptor.$never("unittest") );
-			this.state.invokerAsync(mockInterceptor, getMockRequestContext(), this.key, "high" );
+			this.state.invokerAsync( getMockRequestContext(), {}, this.key, "high", mockBuffer );
 			sleep( 1000 );
 			assertTrue( mockInterceptor.$once("unittest") );
 			debug( cfthread );
