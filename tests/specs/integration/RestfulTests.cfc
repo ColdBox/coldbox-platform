@@ -41,11 +41,10 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 			it( "can handle allowed HTTP methods in action annotations", function(){
 				prepareMock( getRequestContext() ).$( "getHTTPMethod", "POST" );
-				expect(	function(){
-					execute( event="main.actionAllowedMethod", renderResults=true )
-				} ).toThrow(
-					type = "Controller.405"
-				);
+
+				var event = execute( event="main.actionAllowedMethod", renderResults=true )
+				//debug( event.getRenderedContent() );
+				expect(	event.getRenderedContent() ).toBe( "invalid http: main.actionAllowedMethod" );
 			});
 
 			it( "can handle onInvalidHTTPMethod exceptions", function(){
