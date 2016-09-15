@@ -3,18 +3,23 @@
 	<!--- setup and teardown --->
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			mockLogBox = getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
-			mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug", false);
+			// Prepare mocks
+			mockLogBox = createEmptyMock("coldbox.system.logging.LogBox");
+			mockLogger = createEmptyMock("coldbox.system.logging.Logger").$("canDebug", false);
 			mockLogBox.$("getLogger",mockLogger);
+			mockRequestService = createEmptyMock( "coldbox.system.web.services.RequestService" )
+				.$( "getContext", getMockRequestContext() );
+			mockController = createEmptyMock( "coldbox.system.web.Controller" )
+				.$( "getRequestService", mockRequestService );
 			
-			this.state = getMockBox().createMock("coldbox.system.web.context.InterceptorState");		
+			this.state = createMock("coldbox.system.web.context.InterceptorState");		
 			this.event = getMockRequestContext();
 			this.event.$("getEventName","event");
-			this.mock = getMockBox().createMock("coldbox.tests.resources.MockInterceptor");
-			this.mock2 = getMockBox().createMock("coldbox.tests.resources.MockInterceptor");
+			this.mock = createMock("coldbox.tests.resources.MockInterceptor");
+			this.mock2 = createMock("coldbox.tests.resources.MockInterceptor");
 			this.key = "cbox_interceptor_" & "mock";
 			
-			this.state.init('unittest', mockLogBox);
+			this.state.init( 'unittest', mockLogBox, mockController );
 			
 			//register one interceptor for testing
 			mockMetadata = { async=false, asyncPriority = "normal", eventPattern = "" };

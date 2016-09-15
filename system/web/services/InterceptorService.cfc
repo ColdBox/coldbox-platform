@@ -408,7 +408,11 @@ Description :
 
 			// Verify if state doesn't exist, create it
 			if ( NOT structKeyExists( instance.interceptionStates, arguments.state ) ){
-				oInterceptorState = CreateObject("component","coldbox.system.web.context.InterceptorState").init( arguments.state, controller.getLogBox() );
+				oInterceptorState = new coldbox.system.web.context.InterceptorState( 
+					state 		= arguments.state, 
+					logbox 		= controller.getLogBox(), 
+					controller 	= controller 
+				);
 				structInsert( instance.interceptionStates , arguments.state, oInterceptorState );
 			}
 			else{
@@ -419,9 +423,11 @@ Description :
 			// Verify if the interceptor is already in the state
 			if( NOT oInterceptorState.exists( arguments.interceptorKey ) ){
 				//Register it
-				oInterceptorState.register(interceptorKey=arguments.interceptorKey,
-										   interceptor=arguments.oInterceptor,
-										   interceptorMD=arguments.interceptorMD);
+				oInterceptorState.register(
+					interceptorKey 	= arguments.interceptorKey,
+					interceptor 	= arguments.oInterceptor,
+					interceptorMD 	= arguments.interceptorMD
+				);
 			}
 
 			return this;
