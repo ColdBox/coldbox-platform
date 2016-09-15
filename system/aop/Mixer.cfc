@@ -295,25 +295,33 @@ component accessors="true"{
 
 		// Create Original Method Proxy Signature
 		if( fncMD.access eq "public" ){
-			udfOut.append( '<cfset this["#arguments.jointpoint#"] = variables["#arguments.jointpoint#"]>#lb#' );
+			udfOut.append( '<cfset this[ "#arguments.jointpoint#" ] = variables["aop_#hash( arguments.jointpoint )#" ]>#lb#' );
 		}
 		var thisFNC = '
-		<:cffunction name="#arguments.jointpoint#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#" hint="WireBox AOP just rulez!">
+		<:cffunction name="aop_#hash( arguments.jointpoint )#" 
+					access="#fncMD.access#" 
+					output="#fncMD.output#" 
+					returntype="#fncMD.returntype#" 
+					hint="WireBox AOP just rulez!"
+		>
 			<cfscript>
 				// create new method invocation for this execution
-				var invocation = createObject("component","coldbox.system.aop.MethodInvocation").init(
+				var invocation = createObject( "component", "coldbox.system.aop.MethodInvocation" ).init(
 					method 			= "#arguments.jointPoint#",
 					args 			= arguments,
 					methodMetadata 	= "#mdJSON#",
 					target 			= this,
 					targetName 		= "#mappingName#",
 					targetMapping 	= this.$wbAOPTargetMapping,
-					interceptors 	= this.$wbAOPTargets["#arguments.jointPoint#"].interceptors
+					interceptors 	= this.$wbAOPTargets[ "#arguments.jointPoint#" ].interceptors
 				);
 				// execute and return
 				return invocation.proceed();
 			</cfscript>
 		<:/cffunction>
+
+		<cfset variables[ "#arguments.jointpoint#" ] = variables[ "aop_#hash( arguments.jointpoint )#" ]>
+		<cfset structDelete( variables, "aop_#hash( jointpoint )#" ) >
 		';
 		// Do : replacement, due to inline compilation avoidances
 		thisFNC = replace( thisFNC, "<:", "<", "all" );
