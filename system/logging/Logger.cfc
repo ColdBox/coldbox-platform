@@ -182,6 +182,10 @@ Description :
 	<cffunction name="setLevelMin" access="public" output="false" returntype="void" hint="Set the appender's default levelMin">
 		<cfargument name="levelMin" required="true"/>
 		<cfscript>
+			// convert to numeric, if passed in string like "INFO"
+			if ( ! isNumeric( levelMin ) ) {
+				levelMin = this.logLevels.lookupAsInt( levelMin );
+			}
 			// Verify level
 			if( this.logLevels.isLevelValid(arguments.levelMin) AND
 			    arguments.levelMin lte getLevelMax() ){
@@ -200,6 +204,10 @@ Description :
 	<cffunction name="setLevelMax" access="public" output="false" returntype="void" hint="Set the appender's default levelMax">
 		<cfargument name="levelMax" required="true"/>
 		<cfscript>
+			// convert to numeric, if passed in string like "INFO"
+			if ( ! isNumeric( levelMax ) ) {
+				levelMax = this.logLevels.lookupAsInt( levelMax );
+			}
 			// Verify level
 			if( this.logLevels.isLevelValid(arguments.levelMax) AND
 			    arguments.levelMax gte getLevelMin() ){
@@ -277,7 +285,7 @@ Description :
 		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			arguments.severity = this.logLevels.fatal;
+			arguments.severity = this.logLevels.FATAL;
 			logMessage(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
