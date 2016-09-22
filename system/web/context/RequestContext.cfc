@@ -85,6 +85,9 @@ component serializable=false accessors="true"{
 			instance.SESBaseURL = arguments.properties.SESBaseURL;
 		}
 
+		// Flag for Invalid HTTP Method
+		instance.invalidHTTPMethod = false;
+
 		return this;
 	}
 
@@ -470,6 +473,21 @@ component serializable=false accessors="true"{
 		if( getHTTPHeader( "x-forwarded-proto", "http" ) eq "https" ){ return true; }
 		if( getHTTPHeader( "x-scheme", "http" ) eq "https" ){ return true; }
 		return false;
+	}
+
+	/**
+	 * Check if the request was made with an invalid HTTP Method
+	 */
+	boolean function isInvalidHTTPMethod(){
+		return instance.invalidHTTPMethod;
+	}
+
+	/**
+	 * Set the invalid http method flag
+	 */
+	RequestContext function setIsInvalidHTTPMethod( boolean target=true ){
+		instance.invalidHTTPMethod = arguments.target;
+		return this;
 	}
 
 	/************************************** VIEW-LAYOUT METHODS *********************************************/

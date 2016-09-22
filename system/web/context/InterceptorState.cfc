@@ -16,12 +16,15 @@ Description :
 	<!--- init --->
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="InterceptorState">
 	    <!--- ************************************************************* --->
-	    <cfargument name="state" 	type="any" required="true" hint="The interception state I model">
-		<cfargument name="logbox" 	type="any" required="true" hint="An instance of logbox"/>
+	    <cfargument name="state" 		type="any" required="true" hint="The interception state I model">
+		<cfargument name="logbox" 		type="any" required="true" hint="An instance of logbox"/>
+		<cfargument name="controller" 	type="any" required="true" hint="An instance of controller"/>
 	    <!--- ************************************************************* --->
 		<cfscript>
-			super.init(argumentCollection=arguments);			
+			super.init( argumentCollection=arguments );			
 			
+			// Controller
+			instance.controller = arguments.controller;
 			// md ref map
 			instance.metadataMap = structnew();
 			// java system
@@ -139,15 +142,19 @@ Description :
 		<cfthread name="#threadName#" 
 				  action="run" 
 				  priority="#arguments.asyncPriority#" 
-				  event="#arguments.event#" 
 				  interceptData="#arguments.interceptData#" 
 				  threadName="#threadName#"
-				  buffer="#arguments.buffer#">
+				  buffer="#arguments.buffer#"
+		>
 			<!--- Process interception --->
-			<cfset variables.processSync( event=attributes.event, interceptData=attributes.interceptData, buffer=attributes.buffer )>
+			<cfset variables.processSync( 
+				event 			= instance.controller.getRequestService().getContext(), 
+				interceptData	= attributes.interceptData, 
+				buffer 			= attributes.buffer 
+			)>
 			<!--- Log It --->
 			<cfif instance.log.canDebug()>
-				<cfset instance.log.debug("Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#", thread)>
+				<cfset instance.log.debug( "Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#", thread )>
 			</cfif>
 		</cfthread>
 		<!---Return the thread information --->
@@ -186,21 +193,27 @@ Description :
 			<cfthread name="#thisThreadName#" 
 					  action="run" 
 					  priority="#arguments.asyncPriority#" 
-					  event="#arguments.event#" 
 					  interceptData="#arguments.interceptData#" 
 					  threadName="#thisThreadName#"
 					  buffer="#arguments.buffer#" 
-					  key="#key#">
+					  key="#key#"
+			>
 			<cfscript>
 				// Retrieve interceptor to fire.
 				var thisInterceptor = this.getInterceptors().get( attributes.key );
 				// Check if we can execute this Interceptor
 				if( variables.isExecutable( thisInterceptor, attributes.event, attributes.key ) ){
 					// Invoke the execution point
-					variables.invoker(interceptor=thisInterceptor, event=attributes.event, interceptData=attributes.interceptData, interceptorKey=attributes.key, buffer=attributes.buffer); 
+					variables.invoker(
+						interceptor 	= thisInterceptor, 
+						event 			= instance.controller.getRequestService().getContext(), 
+						interceptData 	= attributes.interceptData, 
+						interceptorKey 	= attributes.key, 
+						buffer 			= attributes.buffer
+					); 
 					// Debug interceptions
 					if( instance.log.canDebug() ){
-						instance.log.debug("Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'");
+						instance.log.debug( "Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'" );
 					} 
 				}	
 			</cfscript>				
@@ -235,29 +248,41 @@ Description :
 		<cfargument name="interceptData"		hint="A data structure used to pass intercepted information.">
 		<cfargument name="buffer" 		 		hint="The request buffer object that can be used to produce output from interceptor chains">
 		<cfscript>	
-			var key 			= "";
-			var interceptors 	= getInterceptors();
-			var thisInterceptor = "";
+			var interceptors = getInterceptors();
 			
 			// Debug interceptions
 			if( instance.log.canDebug() ){
-				instance.log.debug("Starting '#getState()#' chain with #structCount( interceptors )# interceptors");
+				instance.log.debug( "Starting '#getState()#' chain with #structCount( interceptors )# interceptors" );
 			}
 			
 			// Loop and execute each interceptor as registered in order
-			for( key in interceptors ){
+			for( var key in interceptors ){
 				// Retreive interceptor
-				thisInterceptor = interceptors.get( key );
+				var thisInterceptor = interceptors.get( key );
 				
 				// Check if we can execute this Interceptor
 				if( isExecutable( thisInterceptor, arguments.event, key ) ){
 					
 					// Async Execution only if not in a thread already, no buffer sent for async calls
 					if( instance.metadataMap[ key ].async AND NOT instance.utility.inThread() ){
-						invokerAsync(event=arguments.event, interceptData=arguments.interceptData, interceptorKey=key, asyncPriority=instance.metadataMap[ key ].asyncPriority);
+						invokerAsync(
+							event 			= arguments.event, 
+							interceptData 	= arguments.interceptData, 
+							interceptorKey 	= key, 
+							asyncPriority 	= instance.metadataMap[ key ].asyncPriority,
+							buffer			= arguments.buffer
+						);
 					}
 					// Invoke the execution point synchronously
-					else if( invoker(interceptor=thisInterceptor, event=arguments.event, interceptData=arguments.interceptData, interceptorKey=key, buffer=arguments.buffer) ){ 
+					else if( 
+						invoker(
+							interceptor		= thisInterceptor, 
+							event			= arguments.event, 
+							interceptData	= arguments.interceptData, 
+							interceptorKey	= key, 
+							buffer			= arguments.buffer
+						) 
+					){ 
 						break; 
 					}
 				}
@@ -266,7 +291,7 @@ Description :
 			
 			// Debug interceptions
 			if( instance.log.canDebug() ){
-				instance.log.debug("Finished '#getState()#' execution chain");
+				instance.log.debug( "Finished '#getState()#' execution chain" );
 			}    
     	</cfscript>    
     </cffunction>
@@ -311,6 +336,7 @@ Description :
 		<cfargument name="interceptData" 	required="true" 	type="any" 		hint="A metadata structure used to pass intercepted information.">
 		<cfargument name="interceptorKey" 	required="true" 	type="any" 		hint="The interceptor key to invoke">
 		<cfargument name="asyncPriority" 	required="false" 	type="any" default="normal"	hint="The thread priority for the execution">
+		<cfargument name="buffer" 		 	required="true" 	type="any"		hint="The request buffer object that can be used to produce output from interceptor chains">
 		<!--- ************************************************************* --->
 		
 		<!--- Prepare thread safe name --->
@@ -328,12 +354,16 @@ Description :
 				  event="#arguments.event#"
 				  interceptData="#arguments.interceptData#" 
 				  threadName="#thisThreadName#" 
-				  key="#arguments.interceptorKey#">
-			
+				  key="#arguments.interceptorKey#"
+				  buffer="#arguments.buffer#"
+		>
 			<!--- Invoke the interceptor --->
 			<cfinvoke component="#this.getInterceptors().get( attributes.key )#" method="#this.getstate()#">
-				<cfinvokeargument name="event" 				value="#attributes.event#">
+				<cfinvokeargument name="event" 			value="#attributes.event#">
 				<cfinvokeargument name="interceptData" 	value="#attributes.interceptData#">
+				<cfinvokeargument name="buffer" 		value="#attributes.buffer#">
+				<cfinvokeargument name="rc" 			value="#attributes.event.getCollection()#">
+				<cfinvokeargument name="prc" 			value="#attributes.event.getPrivateCollection()#">
 			</cfinvoke>
 			
 			<!--- Log It --->
@@ -359,19 +389,21 @@ Description :
 		
 		<!--- Log It --->
 		<cfif instance.log.canDebug()>
-			<cfset instance.log.debug("Interception started for: '#getState()#', key: #arguments.interceptorKey#")>
+			<cfset instance.log.debug( "Interception started for: '#getState()#', key: #arguments.interceptorKey#" )>
 		</cfif>
 		
 		<!--- Invoke the interceptor --->
 		<cfinvoke component="#arguments.interceptor#" method="#getstate()#" returnvariable="refLocal.results">
-			<cfinvokeargument name="event" 				value="#arguments.event#">
+			<cfinvokeargument name="event" 			value="#arguments.event#">
 			<cfinvokeargument name="interceptData" 	value="#arguments.interceptData#">
-			<cfinvokeargument name="buffer" 				value="#arguments.buffer#">
+			<cfinvokeargument name="buffer" 		value="#arguments.buffer#">
+			<cfinvokeargument name="rc" 			value="#arguments.event.getCollection()#">
+			<cfinvokeargument name="prc" 			value="#arguments.event.getPrivateCollection()#">
 		</cfinvoke>
 		
 		<!--- Log It --->
 		<cfif instance.log.canDebug()>
-			<cfset instance.log.debug("Interception ended for: '#getState()#', key: #arguments.interceptorKey#")>
+			<cfset instance.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" )>
 		</cfif>
 		
 		<!--- Check if we have results --->

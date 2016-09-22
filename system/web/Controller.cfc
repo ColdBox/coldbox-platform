@@ -494,6 +494,7 @@ component serializable="false" accessors="true"{
 
 		// Validate the incoming event and get a handler bean to continue execution
 		ehBean = services.handlerService.getRegisteredHandler( arguments.event );
+
 		// Validate this is not a view dispatch, else return for rendering
 		if( ehBean.getViewDispatch() ){	return;	}
 		// Is this a private event execution?
@@ -509,12 +510,14 @@ component serializable="false" accessors="true"{
 				// incorporate it to the handler
 				oHandler.allowedMethods[ ehBean.getMethod() ] = ehBean.getActionMetadata().allowedMethods;
 			}
+
 			// Determine if it is An allowed HTTP method to execute, else throw error
 			if( NOT structIsEmpty( oHandler.allowedMethods ) AND
 				structKeyExists( oHandler.allowedMethods, ehBean.getMethod() ) AND
 				NOT listFindNoCase( oHandler.allowedMethods[ ehBean.getMethod() ], oRequestContext.getHTTPMethod() ) 
 			){
-
+				// set Invalid HTTP method in context
+				oRequestContext.setIsInvalidHTTPMethod();
 				// Do we have a local handler for this exception, if so, call it
 				if( oHandler._actionExists( "onInvalidHTTPMethod" ) ){
 					return oHandler.onInvalidHTTPMethod( 
@@ -526,10 +529,30 @@ component serializable="false" accessors="true"{
 					);
 				}
 
-				// Throw Exception
+				// Do we have the invalidHTTPMethodHandler setting? If so, call it.
+				if( len( getSetting( "invalidHTTPMethodHandler" ) ) ){
+					return runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
+				}
+
+				// Throw Exception, no handlers defined
 				getUtil().throwInvalidHTTP( 
 					className	= "Controller",
 					detail		= "The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
+					statusText	= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
+					statusCode	= "405"
+				);
+			}
+
+			// SES Invalid HTTP Routing
+			if( arguments.defaultEvent && oRequestContext.isInvalidHTTPMethod() ){
+				// Do we have the invalidHTTPMethodHandler setting? If so, call it.
+				if( len( getSetting( "invalidHTTPMethodHandler" ) ) ){
+					return runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
+				}
+				// Throw Exception, no handlers defined
+				getUtil().throwInvalidHTTP( 
+					className	= "Controller",
+					detail		= "The requested URL: #oRequestContext.getCurrentRoutedURL()# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
 					statusText	= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
 					statusCode	= "405"
 				);

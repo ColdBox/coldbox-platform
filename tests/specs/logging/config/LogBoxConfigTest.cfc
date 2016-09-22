@@ -19,15 +19,7 @@
 			fail(e);
 		}
 	}
-	function testValidateCategories(){
-		config.category(name="ses",levelMin=0,levelMax=2,appenders="luis,2");
-		try{
-			config.validate();
-			fail("this should have failed.");
-		}
-		catch("coldbox.system.logging.config.LogBoxConfig.NoAppendersFound" e){}
-		catch(Any e){ fail(e.message); }
-	}
+	
 	function testAddCategory(){
 		config.appender("luis","coldbox.system.logging.AbstractAppender");
 		// Invalid appenders for category
@@ -43,21 +35,8 @@
 	}
 	
 	function testRoot(){
-		try{
-			config.validate();
-			fail("this should have failed.");
-		}
-		catch("coldbox.system.logging.config.LogBoxConfig.NoAppendersFound" e){}
-		catch(Any e){ fail(e.message); }
-		
-		//add appender, but still fails, no root logger
 		config.appender("luis2","coldbox.system.logging.AbstractAppender");
-		try{
-			config.validate();
-			fail("this should have failed.");
-		}
-		catch("coldbox.system.logging.config.LogBoxConfig.RootLoggerNotFound" e){}
-		catch(Any e){ fail(e.message); }
+		config.validate();
 		
 		//Add root
 		config.root(appenders="luis2");

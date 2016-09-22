@@ -127,22 +127,23 @@ Description :
 			}
 
 			// Create Event To Dispatch if handler key exists
-			if( structKeyExists( aRoute,"handler" ) ){
+			if( structKeyExists( aRoute, "handler" ) ){
 				// Check if using HTTP method actions via struct
-				if( structKeyExists(aRoute,"action") && isStruct(aRoute.action) ){
-					// Verify HTTP method used is valid, else throw exception and 403 error
-					if( structKeyExists(aRoute.action,HTTPMethod) ){
-						aRoute.action = aRoute.action[HTTPMethod];
+				if( structKeyExists( aRoute, "action" ) && isStruct( aRoute.action ) ){
+					// Verify HTTP method used is valid
+					if( structKeyExists( aRoute.action, HTTPMethod ) ){
+						aRoute.action = aRoute.action[ HTTPMethod ];
 						// Send for logging in debug mode
 						if( log.canDebug() ){
-							log.debug("Matched HTTP Method (#HTTPMethod#) to routed action: #aRoute.action#");
+							log.debug( "Matched HTTP Method (#HTTPMethod#) to routed action: #aRoute.action#" );
 						}
-					}
-					else{
-						getUtil().throwInvalidHTTP(className="SES",
-												   detail="The HTTP method used: #HTTPMethod# is not valid for the current executing resource. Valid methods are: #aRoute.action.toString()#",
-										 		   statusText="Invalid HTTP method: #HTTPMethod#",
-										 		   statusCode="405");
+					} else {
+						// Mark as invalid HTTP Exception
+						aRoute.action = "onInvalidHTTPMethod";
+						arguments.event.setIsInvalidHTTPMethod( true );
+						if( log.canDebug() ){
+							log.debug( "Invalid HTTP Method detected: #HTTPMethod#", aRoute );
+						}
 					}
 				}
 				// Create routed event
