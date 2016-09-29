@@ -347,7 +347,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         	}
 
             // if we were passed a route, parse it and prepare the SES interceptor for routing.
-            if ( arguments.route != "" ){
+            else if ( arguments.route != "" ){
             	// enable the SES interceptor
             	getInterceptor( "SES" ).setEnabled( true );
                 // separate the route into the route and the query string
