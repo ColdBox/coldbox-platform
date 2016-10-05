@@ -716,9 +716,16 @@ I oversee and manage ColdBox modules
 			// Add the module settings to the parent settings under the modules namespace
 			if ( mConfig.parseParentSettings ) {
 				// Merge the parent module settings into module settings
-				var coldboxConfigModuleSettings = controller.getSetting( "ColdBoxConfig" )
-					.getPropertyMixin( mConfig.modelNamespace, "variables", structnew() );
-				structAppend( mConfig.settings, coldboxConfigModuleSettings, true );
+				var parentModuleSettings = controller.getSetting( "ColdBoxConfig" )
+					.getPropertyMixin( "moduleSettings", "variables", structnew() );
+				if ( ! structKeyExists( parentModuleSettings, mConfig.modelNamespace ) ) {
+					parentModuleSettings[ mConfig.modelNamespace ] = {};
+				}
+				structAppend(
+					mConfig.settings,
+					parentModuleSettings[ mConfig.modelNamespace ],
+					true
+				);
 			}
 			appSettings[ mConfig.modelNamespace ] = mConfig.settings;
 			//Get module datasources
