@@ -92,41 +92,45 @@ Description :
 			// Locate ColdBox Controller
 			cbController = getController();
 
+			// Load Module CF Mappings
+			cbController.getModuleService().loadMappings();
 			// Create the request context
 			event = cbController.getRequestService().requestCapture();
 
 			// Test event Name in the arguemnts.
-			if( not structKeyExists(arguments,event.getEventName()) ){
-				throw( message="Event not detected",
-					   detail="The #event.geteventName()# variable does not exist in the arguments.",
-					   type="ColdBoxProxy.NoEventDetected" );
+			if( not structKeyExists( arguments, event.getEventName() ) ){
+				throw( 
+					message="Event not detected",
+					detail="The #event.geteventName()# variable does not exist in the arguments.",
+					type="ColdBoxProxy.NoEventDetected" 
+				);
 			}
 
 			//Append the arguments to the collection
-			event.collectionAppend(arguments,true);
+			event.collectionAppend( arguments, true );
 			//Set that this is a proxy request.
 			event.setProxyRequest();
 
 			//Execute a pre process interception.
-			cbController.getInterceptorService().processState("preProcess");
+			cbController.getInterceptorService().processState( "preProcess" );
 
 			//Request Start Handler if defined
-			if ( cbController.getSetting("RequestStartHandler") neq "" ){
-				cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
+			if ( cbController.getSetting( "RequestStartHandler" ) neq "" ){
+				cbController.runEvent(cbController.getSetting( "RequestStartHandler" ),true);
 			}
 
 			//Execute the Event if not demarcated to not execute
 			if( NOT event.isNoExecution() ){
-				refLocal.results = cbController.runEvent(default=true);
+				refLocal.results = cbController.runEvent( default=true );
 			}
 
 			//Request END Handler if defined
-			if ( cbController.getSetting("RequestEndHandler") neq "" ){
-				cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
+			if ( cbController.getSetting( "RequestEndHandler" ) neq "" ){
+				cbController.runEvent( cbController.getSetting( "RequestEndHandler" ), true );
 			}
 
 			//Execute the post process interceptor
-			cbController.getInterceptorService().processState("postProcess");
+			cbController.getInterceptorService().processState(" postProcess" );
 			</cfscript>
 
 			<cfcatch>
