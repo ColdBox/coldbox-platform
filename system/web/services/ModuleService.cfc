@@ -228,6 +228,10 @@ I oversee and manage ColdBox modules
 					disabled			= false,
 					// flag that says if this module can be activated or not
 					activate			= true,
+					// flag that determines if the module settings overrides any
+					// module settings in the parent config (ColdBox.cfc) or
+					// if the parent settings get merged (and overwrite the defaults).
+					parseParentSettings = true,
 					// Module Configurations
 					path				 	= modLocation,
 					invocationPath 			= modulesInvocationPath & "." & modName,
@@ -700,11 +704,30 @@ I oversee and manage ColdBox modules
 			if( structKeyExists( oConfig,"activate" ) ){
 				mConfig.activate = oConfig.activate;
 			}
+			// Merge the settings with the parent module settings 
+			if( structKeyExists( oConfig, "parseParentSettings" ) ){
+				mConfig.parseParentSettings = oConfig.parseParentSettings;
+			}
 
 			//Get the parent settings
 			mConfig.parentSettings = oConfig.getPropertyMixin( "parentSettings", "variables", {} );
 			//Get the module settings
 			mConfig.settings = oConfig.getPropertyMixin( "settings", "variables", {} );
+			// Add the module settings to the parent settings under the modules namespace
+			if ( mConfig.parseParentSettings ) {
+				// Merge the parent module settings into module settings
+				var parentModuleSettings = controller.getSetting( "ColdBoxConfig" )
+					.getPropertyMixin( "moduleSettings", "variables", structnew() );
+				if ( ! structKeyExists( parentModuleSettings, mConfig.modelNamespace ) ) {
+					parentModuleSettings[ mConfig.modelNamespace ] = {};
+				}
+				structAppend(
+					mConfig.settings,
+					parentModuleSettings[ mConfig.modelNamespace ],
+					true
+				);
+			}
+			appSettings[ mConfig.modelNamespace ] = mConfig.settings;
 			//Get module datasources
 			mConfig.datasources = oConfig.getPropertyMixin( "datasources", "variables", {} );
 			//Get Interceptors
