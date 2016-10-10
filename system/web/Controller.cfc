@@ -122,6 +122,7 @@ component serializable="false" accessors="true"{
 	*/
 	function getRenderer(){
 		return variables.wireBox.getInstance( "Renderer@coldbox" );
+		// Amazing code added here...
 	}
 
 	/**
