@@ -373,8 +373,47 @@ Description :
     	</cfscript>
     </cffunction>
 
-   	<!--- Add a new Route --->
+   	<!--- Add a new Route (create and persist to the routing table) --->
 	<cffunction name="addRoute" access="public" returntype="any" output="false" hint="Adds a route to dispatch and returns itself.">
+		<!--- ************************************************************* --->
+		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
+		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
+		<cfargument name="action"  				 type="any" 	required="false" hint="The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}">
+		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern">
+		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
+		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
+		<cfargument name="viewNoLayout"  		 type="boolean" required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
+		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations or not. Turned on by default">
+		<cfargument name="constraints" 			 type="any"  	required="false" default="" hint="A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
+		<cfargument name="module" 				 type="string"  required="false" default="" hint="The module to add this route to"/>
+		<cfargument name="moduleRouting" 		 type="string"  required="false" default="" hint="Called internally by addModuleRoutes to add a module routing route."/>
+		<cfargument name="namespace" 			 type="string"  required="false" default="" hint="The namespace to add this route to"/>
+		<cfargument name="namespaceRouting"		 type="string"  required="false" default="" hint="Called internally by addNamespaceRoutes to add a namespaced routing route."/>
+		<cfargument name="ssl" 					 type="boolean" required="false" default="false" hint="Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl"/>
+		<cfargument name="append"  				 type="boolean" required="false" default="true" hint="Whether the route should be appended or pre-pended to the array. By default we append to the end of the array"/>
+		<cfargument name="response" 			 type="any" 	required="false" hint="An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}"/>
+		<cfargument name="statusCode"   		 type="numeric" required="false" hint="The HTTP status code to send to the browser response." />
+		<cfargument name="statusText"   		 type="string"  required="false" hint="Explains the HTTP status code sent to the browser response." />
+		<cfargument name="condition"   		 	 type="any"  	required="false" hint="A closure or UDF to execute that MUST return true to use route if matched or false and continue." />
+		<!--- ************************************************************* --->
+		<cfscript>
+			var routeData = {};
+						
+			// Create the route
+			routeData = createRoute( argumentCollection = arguments );
+		
+			// module closure
+			if( len( instance.withModule ) ){ arguments.module = instance.withModule; }
+		
+			storeRouteData( routeData, arguments.module, arguments.namespace, arguments.append );
+				
+			return this;
+		</cfscript>
+	</cffunction>			
+
+
+   	<!--- Create a new Route and return it --->
+	<cffunction name="createRoute" access="private" returntype="any" output="false" hint="Creates a new route and returns it.">
 		<!--- ************************************************************* --->
 		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
 		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
@@ -431,8 +470,7 @@ Description :
 
 		// Check if we have optional args by looking for a ?
 		if( findnocase("?",thisRoute.pattern) AND NOT findNoCase("regex:",thisRoute.pattern) ){
-			processRouteOptionals(thisRoute);
-			return this;
+			return processRouteOptionals(thisRoute);
 		}
 
 		// Process json constraints?
@@ -542,27 +580,59 @@ Description :
 
 		} // end looping of pattern optionals
 
-		// Add it to the corresponding routing table
-		// MODULES
-		if( len( arguments.module ) ){
-			// Append or PrePend
-			if( arguments.append ){	ArrayAppend(getModuleRoutes( arguments.module ), thisRoute); }
-			else{ arrayPrePend(getModuleRoutes( arguments.module ), thisRoute); }
-		}
-		// NAMESPACES
-		else if( len( arguments.namespace ) ){
-			// Append or PrePend
-			if( arguments.append ){	arrayAppend( getNamespaceRoutes( arguments.namespace ), thisRoute); }
-			else{ arrayPrePend( getNamespaceRoutes(arguments.namespace), thisRoute); }
-		}
-		// Default Routing Table
-		else{
-			// Append or PrePend
-			if( arguments.append ){	ArrayAppend(instance.routes, thisRoute); }
-			else{ arrayPrePend(instance.routes, thisRoute); }
-		}
-
-		return this;
+		return thisRoute;
+		</cfscript>
+	</cffunction>
+	
+	<!--- Store route --->	
+	<cffunction name="storeRouteData" access="private" returntype="void" output="false" hint="Store a route or an array of routes">
+		<cfargument name="routeData" required="true" colddoc:generic="any" hint="A route struct, or an array of route structs">
+		<cfargument name="module" default="">
+		<cfargument name="namespace" default="">
+		<cfargument name="append" type="boolean" required="false" default="true" hint="Whether the route should be appended or pre-pended to the array. By default we append to the end of the array"/>
+		
+		<cfscript>
+			var thisRoute = {};
+			var routingTable = getRoutes();
+		
+			// This function can take a single route struct, or an array of route structs.
+			if( isStruct(arguments.routeData) ) {
+				arguments.routeData = [arguments.routeData];
+			}			
+			
+			// Find the corresponding routing table
+			if( len( arguments.module ) ){
+				routingTable = getModuleRoutes( arguments.module );
+			}
+			else if( len( arguments.namespace ) ){
+				routingTable = getNamespaceRoutes( arguments.namespace ); 
+			}
+				
+			// Append or PrePend. The array must be kept IN ORDER.
+			if( arguments.append ) {
+				for( thisRoute in arguments.routeData ) {
+					arrayAppend( routingTable, thisRoute );	
+				}
+			} else {
+				var i = arrayLen(arguments.routeData);
+				// Loop backwards if adding to the beginning
+				while( i > 0 ) {
+					arrayPrePend( routingTable, arguments.routeData[i--] );	
+				}
+			}
+			
+			
+			// Stupid arrays aren't passed by reference
+			if( len( arguments.module ) ){
+				setModuleRoutes( arguments.module, routingTable );
+			}
+			else if( len( arguments.namespace ) ){
+				setNamespaceRoutes( arguments.namespace, routingTable );
+			} else {
+				setRoutes(routingTable);
+			}
+			
+			
 		</cfscript>
 	</cffunction>
 
@@ -674,6 +744,15 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- setNamespaceRoutes --->
+	<cffunction name="setNamespaceRoutes" output="false" access="public" returntype="void" hint="Set a namespace routes array">
+		<cfargument name="namespace" required="true" hint="The name of the namespace"/>
+		<cfargument name="routingTable" required="true" hint="The routing array"/>
+		<cfscript>
+			instance.namespaceRoutingTable[ arguments.namespace ] = arguments.routingTable;
+		</cfscript>
+	</cffunction>
+
 	<!--- removeNamespaceRoutes --->
     <cffunction name="removeNamespaceRoutes" output="false" access="public" returntype="any" hint="Remove a namespace's routing table and registration points and return itself">
     	<cfargument name="namespace" required="true" hint="The name of the namespace to remove"/>
@@ -724,6 +803,15 @@ Description :
 				return instance.moduleRoutingTable[ arguments.module ];
 			}
 			throw(message="Module routes for #arguments.module# do not exists", detail="Loaded module routes are #structKeyList(instance.moduleRoutingTable)#",type="SES.InvalidModuleException");
+		</cfscript>
+	</cffunction>
+
+	<!--- setModuleRoutes --->
+	<cffunction name="setModuleRoutes" output="false" access="public" returntype="void" hint="Set a modules routes array">
+		<cfargument name="module" required="true" default="" hint="The name of the module"/>
+		<cfargument name="routingTable" required="true" hint="The routing array"/>
+		<cfscript>
+			instance.moduleRoutingTable[ arguments.module ] = arguments.routingTable;
 		</cfscript>
 	</cffunction>
 
@@ -1255,7 +1343,7 @@ Description :
 	</cffunction>
 
 	<!--- processRouteOptionals --->
-	<cffunction name="processRouteOptionals" access="private" returntype="void" hint="Process route optionals" output="false" >
+	<cffunction name="processRouteOptionals" access="private" returntype="array" hint="Process route optionals.  Returns an array of routes to be persisted." output="false" >
 		<cfargument name="thisRoute"  type="struct" required="true" hint="The route struct">
 		<cfscript>
 			var x=1;
@@ -1263,6 +1351,9 @@ Description :
 			var base = "";
 			var optionals = "";
 			var routeList = "";
+			// As we unwind the optional params, we'll store up the routes in this 
+			// array and wait to store them in the routing table until we're done.
+			var unwoundRoutes = [];
 
 			// Parse our base & optionals
 			for(x=1; x lte listLen(arguments.thisRoute.pattern,"/"); x=x+1){
@@ -1282,14 +1373,17 @@ Description :
 				// Create new route
 				arguments.thisRoute.pattern = routeList;
 				// Register route
-				addRoute(argumentCollection=arguments.thisRoute);
+				arrayAppend( unwoundRoutes, createRoute(argumentCollection=arguments.thisRoute) );
 				// Remove last bit
 				routeList = listDeleteat(routeList,listlen(routeList,"/"),"/");
 			}
 			// Setup the base route again
 			arguments.thisRoute.pattern = base;
 			// Register the final route
-			addRoute(argumentCollection=arguments.thisRoute);
+			arrayAppend( unwoundRoutes, createRoute(argumentCollection=arguments.thisRoute) );
+						
+			// Now that we have an array of all our "unwound" routes, return it so they can be appended/prepended IN THIS ORDER
+			return unwoundRoutes;
 		</cfscript>
 	</cffunction>
 
