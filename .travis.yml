@@ -20,26 +20,39 @@ addons:
     - mysql-client-5.6
 
 before_install:
-- sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
-- sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
-  /etc/apt/sources.list.d/commandbox.list
+  # CommandBox Keys
+  - sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
+  - sudo echo "deb http://integration.stg.ortussolutions.com/artifacts/debs/noarch /" | sudo tee -a
+    /etc/apt/sources.list.d/commandbox.list
 
 install:
-- sudo apt-get update && sudo apt-get --assume-yes install commandbox
-# startup server so we can get directory location first
-- box install
-- box server start
-- box server stop
-# Copy over special lucee settings for cache testing
-- box recipe build/setup-standalone.box
+  # Install Commandbox
+  - sudo apt-get update && sudo apt-get --assume-yes install commandbox
+  # Install dependencies
+  - box version && box install
+  # Store the Ortus API Key for forgebox publishing in `master`
+  - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN
+  # startup server so we can get directory location first
+  - box server start
+  - box server stop
+  # Copy over special lucee settings for cache testing
+  - box recipe build/setup-standalone.box
+
 before_script:
-# create test database
-- mysql -u root -e 'create database coolblog;'
-# import database
-- mysql -u root < tests/resources/coolblog.sql
-# Ready for testing
-- box server start
-script: >
-  testResults="$(box testbox run runner='http://localhost:8599/tests/runner.cfm' )";
-  echo "$testResults";
-  if grep -i "\[(Failures|Errors): [1-9][0-9]\?[0-9]\?\]\|\[Errors: [1-9][0-9]\?[0-9]\?\]\|<t[^>]*>\|<b[^>]*>" <<< $testResults;  then exit 1; fi
+  # create test database
+  - mysql -u root -e 'create database coolblog;'
+  # import database
+  - mysql -u root < tests/resources/coolblog.sql
+  # Ready for testing
+  - box server start
+
+script:
+  # Execute build via ANT
+  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml
+  # Spit out log just in case we need to debug
+  - box server log
+
+# Only executed when merging to master 
+before_deploy:
+  - mkdir s3deploy
+  - cp -r ./artifacts/* ./s3deploy/
