@@ -43,7 +43,7 @@
     ],
     "testbox":{
         "runner":[
-        	{
+            {
                 "default":"http://localhost:8599/tests/runner.cfm"
             },
             {
@@ -58,6 +58,6 @@
         ]
     },
     "devDependencies":{
-        "testbox":"2.3.0+00044"
+        "testbox":"be"
     }
 }
