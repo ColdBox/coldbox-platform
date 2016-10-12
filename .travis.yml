@@ -4,6 +4,9 @@ notifications:
   slack:
     secure: FIHlTn/YO7Wgumm1uIqmoEsqjQA7fV0AE94Rjc5yKzM3AquQa8HicgDVVk0d2GrKRnl0xt3j4ZJV//VJyIjlCd/QVKuj48R2ChjEY2im3+99HFPafCUI5/S2uyowKU6mJTFonH9v6p41eqxdbiAxJdDGOT0V2Gpt3UBSNuHz8ED9/aIHqv+P7M+VD6Xd2XYwctPniWlaSWx57sWcnG/VkFG45qFQAyha64uxOOe4M3ZmG/n5FfauZ8cBVLiRKEIr+CyNhh1ujfzi7+4uzMlSNL5t/BbZamAQuZzqGzGQ9RVvIlyPgUGNJtDEE/hWS09aagXF5T6EMj00szizErh4J1/x4qZwml5+TcBN31E0QmAhCtZe85sr3tYgic+hEz9XX1yymQzf/C7n4to2yNvq0r4g51xDk8IuP95WEh7zaqLlvFZvBFgxpHZBMYlRvhytjOYDeIFRMcGwHZcXosaG2ejqDwcGq/LC4oeG4sSwmg9sdRrtcmcanrNqrBka86WYO6LntI3JdZ86/1ACEUHzhCCwvrKELc9Ji1xxGAgS7QKH+s2/hnJuiMyv73gOVLKYC+wPMLt+fvOmPLSEl+PJiAIlToBq1KUBg03RSQLfPOLD7OrJ8VvDZsEPwejqlGDyc4wRglS9OTi7SnN5LYHSDNDdGdREegWqq9qDHEYEVLI=
 
+env:
+  - COLDBOX_VERSION=4.3.0
+
 branches:
   only:
   - development
@@ -52,7 +55,27 @@ script:
   # Spit out log just in case we need to debug
   - box server log
 
-# Only executed when merging to master 
-before_deploy:
-  - mkdir s3deploy
-  - cp -r ./artifacts/* ./s3deploy/
+deploy:
+  on:
+    branch: 
+      - master
+  skip_cleanup: true
+  provider: s3
+  #AWS Credentials need to be set in Travis
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_ACCESS_SECRET
+  bucket: "downloads.ortussolutions.com"
+  local-dir: artifacts
+  upload-dir: ortussolutions
+  acl: public_read
+
+after_deploy:
+  # publish ColdBox
+  - cd $TRAVIS_BUILD_DIR/artifacts/coldbox/$COLDBOX_VERSION && box forgebox publish
+  # publish CacheBox
+  - cd $TRAVIS_BUILD_DIR/artifacts/cachebox/$COLDBOX_VERSION && box forgebox publish
+  # publish WireBox
+  - cd $TRAVIS_BUILD_DIR/artifacts/wirebox/$COLDBOX_VERSION && box forgebox publish
+  # publish LogBox
+  - cd $TRAVIS_BUILD_DIR/artifacts/logbox/$COLDBOX_VERSION && box forgebox publish
+

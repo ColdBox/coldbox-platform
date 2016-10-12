@@ -225,6 +225,10 @@
 		<!-- Zip Standalone -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-standalone-${coldbox.version}.zip" basedir="${dir.build}" />
 		
+		<!-- Copy box.json to exports -->
+		<copy file="${dir.build}/box.json" toFile="${dir.coldbox.exports}/box.json" encoding="UTF-8" />
+		<copy file="readme.md" toFile="${dir.coldbox.exports}/readme.md" encoding="UTF-8" />
+
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
 			<fileset dir="${dir.coldbox.exports}">
@@ -344,6 +348,7 @@
 		<zip destfile="${dir.cachebox.exports}/cachebox-${coldbox.version}.zip" basedir="${dir.build}" />
 		<!-- Copy box.json to exports -->
 		<copy file="${dir.build}/box.json" toFile="${dir.cachebox.exports}/box.json" encoding="UTF-8" />
+		<copy file="system/cache/readme.md" toFile="${dir.cachebox.exports}/readme.md" encoding="UTF-8" />
 				
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
@@ -450,6 +455,8 @@
 		
 		<!-- Copy box.json to exports -->
 		<copy file="${dir.build}/box.json" toFile="${dir.logbox.exports}/box.json"  encoding="UTF-8"/>
+		<copy file="system/logging/readme.md" toFile="${dir.logbox.exports}/readme.md" encoding="UTF-8" />
+
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
 			<fileset dir="${dir.logbox.exports}">
@@ -486,6 +493,7 @@
 		<mkdir dir="${dir.build}/apidocs"/>
 		<property name="dir.wirebox.exports"	value="${dir.exports}/${wirebox.slug}/${coldbox.version}" />
 		<property name="be.wirebox.exports" 	value="${be.exports}/${wirebox.slug}" />
+		
 		<!-- Cleanup Old Code -->
 		<delete verbose="true" failonerror="false">
 			<fileset dir="${dir.wirebox.exports}" />
@@ -493,6 +501,7 @@
 				<include name="wirebox-be*" />
 			</fileset>
 		</delete>
+		
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 				
@@ -522,13 +531,16 @@
 		<copy todir="${dir.build}/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
         </copy>
+		
 		<!--Copy text files to root folder-->
 		<copy todir="${dir.build}" encoding="UTF-8" overwrite="true">
 			<fileset file="license.txt" />
 			<fileset file="system/ioc/readme.md" />						
 		</copy>
+		
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-wirebox-cachebox.json"  encoding="UTF-8" overwrite="true"/>
+		
 		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
@@ -568,8 +580,11 @@
 		
 		<!-- No CacheBox NOW -->
 		<delete dir="${dir.build}/system/cache" />
+		
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-wirebox.json" overwrite="true"  encoding="UTF-8"/>
+		<copy file="system/ioc/readme.md" toFile="${dir.wirebox.exports}/readme.md" encoding="UTF-8" />
+
 		<!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
 		  <fileset dir="${dir.build}" />
@@ -578,8 +593,12 @@
 		<!-- Execute docbox -->
 		<get dest="${dir.build}/docbox.html" src="${url.wirebox.api}${coldbox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
 		<delete file="${dir.build}/docbox.html" />
+		
 		<!-- Zip Without CacheBox -->
 		<zip destfile="${dir.wirebox.exports}/wirebox-${coldbox.version}.zip" basedir="${dir.build}"></zip>
+
+		<!-- Copy box.json to exports -->
+		<copy file="${dir.build}/box.json" toFile="${dir.wirebox.exports}/box.json" overwrite="true"  encoding="UTF-8"/>
 		
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
