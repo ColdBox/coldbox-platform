@@ -227,7 +227,7 @@
 		
 		<!-- Copy box.json to exports -->
 		<copy file="${dir.build}/box.json" toFile="${dir.coldbox.exports}/box.json" encoding="UTF-8" />
-		<copy file="readme.md" toFile="${dir.coldbox.exports}/readme.md" encoding="UTF-8" />
+		<copy file="${dir.build}/readme.md" toFile="${dir.coldbox.exports}/readme.md" encoding="UTF-8" />
 
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
