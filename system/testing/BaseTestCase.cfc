@@ -166,7 +166,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* @return coldbox.system.core.util.RequestBuffer
 	*/
 	function getMockRequestBuffer(){
-		return getMockBox().createMock("coldbox.system.core.util.RequestBuffer").init();
+		return getMockBox().createMock( "coldbox.system.core.util.RequestBuffer" ).init();
 	}
 
 	/**
@@ -174,7 +174,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* @return coldbox.system.testing.mock.web.MockController
 	*/
 	function getMockController(){
-		return CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( '/unittest', 'unitTest' );
+		return CreateObject( "component", "coldbox.system.testing.mock.web.MockController" ).init( '/unittest', 'unitTest' );
 	}
 
 	/**
@@ -190,15 +190,15 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 		var rcProps 		= structnew();
 
 		if( arguments.clearMethods ){
-			if( structKeyExists(arguments,"decorator") ){
+			if( structKeyExists(arguments,"decorator" ) ){
 				return getMockBox().createEmptyMock(arguments.decorator);
 			}
-			return getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
+			return getMockBox().createEmptyMock( "coldbox.system.web.context.RequestContext" );
 		}
 
 		// Create functioning request context
-		mockRC 			= getMockBox().createMock("coldbox.system.web.context.RequestContext");
-		mockController = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init('/unittest','unitTest');
+		mockRC 			= getMockBox().createMock( "coldbox.system.web.context.RequestContext" );
+		mockController = CreateObject( "component", "coldbox.system.testing.mock.web.MockController" ).init('/unittest','unitTest');
 
 		// Create mock properties
 		rcProps.DefaultLayout = "";
@@ -213,7 +213,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 		mockRC.init( properties=rcProps, controller=mockController );
 
 		// return decorator context
-		if( structKeyExists(arguments,"decorator") ){
+		if( structKeyExists(arguments,"decorator" ) ){
 			return getMockBox().createMock(arguments.decorator).init(mockRC, mockController);
 		}
 
@@ -371,17 +371,20 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 		// Setup the request Context with setup FORM/URL variables set in the unit test.
 		setupRequest( arguments.event );
+
 		try{
 
 			// App Start Handler
-			if ( len(cbController.getSetting("ApplicationStartHandler")) ){
-				cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true);
+			if ( len( cbController.getSetting( "ApplicationStartHandler" ) ) ){
+				cbController.runEvent( cbController.getSetting( "ApplicationStartHandler" ), true );
 			}
+			
 			// preProcess
-			cbController.getInterceptorService().processState("preProcess");
+			cbController.getInterceptorService().processState( "preProcess" );
+
 			// Request Start Handler
-			if ( len(cbController.getSetting("RequestStartHandler")) ){
-				cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
+			if ( len( cbController.getSetting( "RequestStartHandler" ) ) ){
+				cbController.runEvent( cbController.getSetting( "RequestStartHandler" ), true );
 			}
 
             // grab the latest event in the context, in case overrides occur
@@ -391,15 +394,17 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			// TEST EVENT EXECUTION
 			if( NOT requestContext.isNoExecution() ){
 				// execute the event
-				handlerResults = cbController.runEvent(event=arguments.event,
-												   private=arguments.private,
-												   prepostExempt=arguments.prepostExempt,
-												   eventArguments=arguments.eventArguments);
+				handlerResults = cbController.runEvent(
+					event 			= arguments.event,
+					private 		= arguments.private,
+					prepostExempt	= arguments.prepostExempt,
+					eventArguments 	= arguments.eventArguments
+				);
 
 				// Are we doing rendering procedures?
 				if( arguments.renderResults ){
 					// preLayout
-					cbController.getInterceptorService().processState("preLayout");
+					cbController.getInterceptorService().processState( "preLayout" );
 
 					// Render Data?
 					renderData = requestContext.getRenderData();
@@ -407,8 +412,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 						renderedContent = cbController.getDataMarshaller().marshallData(argumentCollection=renderData);
 					}
 					// If we have handler results save them in our context for assertions
-					else if ( isDefined("handlerResults") ){
-						requestContext.setValue("cbox_handler_results", handlerResults);
+					else if ( isDefined( "handlerResults" ) ){
+						requestContext.setValue( "cbox_handler_results", handlerResults);
 						renderedContent = handlerResults;
 					}
 					// render layout/view pair
@@ -420,24 +425,24 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 					// Pre Render
 					iData = { renderedContent = renderedContent };
-					cbController.getInterceptorService().processState("preRender", iData);
+					cbController.getInterceptorService().processState( "preRender", iData);
 					renderedContent = iData.renderedContent;
 
 					// Store in collection for assertions
 					requestContext.setValue( "cbox_rendered_content", renderedContent );
 
 					// postRender
-					cbController.getInterceptorService().processState("postRender");
+					cbController.getInterceptorService().processState( "postRender" );
 				}
 			}
 
 			// Request End Handler
-			if ( len(cbController.getSetting("RequestEndHandler")) ){
-				cbController.runEvent( cbController.getSetting("RequestEndHandler"), true );
+			if ( len(cbController.getSetting( "RequestEndHandler" )) ){
+				cbController.runEvent( cbController.getSetting( "RequestEndHandler" ), true );
 			}
 
 			// postProcess
-			cbController.getInterceptorService().processState("postProcess");
+			cbController.getInterceptorService().processState( "postProcess" );
 
 		}
 		catch(Any e){

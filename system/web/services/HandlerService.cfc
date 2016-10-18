@@ -180,8 +180,12 @@ Description :
 
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 
-			// Event Caching Routines, if using caching and we are executing the main event
-			if ( instance.eventCaching and arguments.ehBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
+			// Event Caching Routines, if using caching, NOT a private event and we are executing the main event
+			if ( 
+				instance.eventCaching AND 
+				!arguments.ehBean.getIsPrivate() AND
+				arguments.ehBean.getFullEvent() EQ oRequestContext.getCurrentEvent()
+			){
 
 				// Save Event Caching metadata
 				saveEventCachingMetadata(
