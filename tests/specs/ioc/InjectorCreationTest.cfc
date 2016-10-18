@@ -20,19 +20,19 @@
 	}
 
 	function testMixins(){
-		r = injector.getInstance("MixinTest");
+		var r = injector.getInstance("MixinTest");
 		assertEquals( "lui", r.myEcho("lui") );
 		assertEquals( "lui", r.myEcho2("lui") );
 	}
 
 	function testSetters(){
-		r = injector.getInstance("CategoryService");
+		var r = injector.getInstance("CategoryService");
 		debug( r );
 	}
 
 	function testLocateInstance(){
 		// Locate by package scan
-		r = injector.locateInstance("ioc.category.CategoryBean");
+		var r = injector.locateInstance("ioc.category.CategoryBean");
 		assertEquals("coldbox.test-harness.models.ioc.category.CategoryBean", r);
 
 		// Locate Not Found

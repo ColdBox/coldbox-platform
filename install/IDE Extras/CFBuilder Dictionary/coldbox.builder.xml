@@ -436,19 +436,19 @@ This is called by the framework ONLY! Use at your own risk (Context: FrameworkSu
 			</parameter>
 			</function>
 	<function name="clearBuffer" returns="any">
-			<help><![CDATA[ Clear the interceptor buffer (Context: Interceptor) ]]></help>
+			<help><![CDATA[ Clear the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe (Context: Interceptor) ]]></help>
 		</function>
 	<function name="appendToBuffer" returns="any">
-			<help><![CDATA[ Append to the interceptor buffer (Context: Interceptor) ]]></help>
+			<help><![CDATA[ Append to the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe (Context: Interceptor) ]]></help>
 		<parameter name="str" required="true" type="any">
 				<help><![CDATA[ The string to append to the buffer ]]></help>
 			</parameter>
 			</function>
 	<function name="getBufferString" returns="string">
-			<help><![CDATA[ Get the string representation of the buffer (Context: Interceptor) ]]></help>
+			<help><![CDATA[ Get the string representation of the buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe (Context: Interceptor) ]]></help>
 		</function>
 	<function name="getBufferObject" returns="any">
-			<help><![CDATA[ Get the request buffer object from scope. (Context: Interceptor) ]]></help>
+			<help><![CDATA[ Get the request buffer object from scope.: Deprecated, please use incoming buffer arguements instead, this is not thread safe (Context: Interceptor) ]]></help>
 		</function>
 	<function name="getFlash" returns="string">
 			<help><![CDATA[  (Context: Interceptor) ]]></help>
@@ -515,19 +515,25 @@ This is called by the framework ONLY! Use at your own risk (Context: FrameworkSu
 			</function>
 <!-- Functions for: coldbox.system.EventHandler -->
 	<function name="init" returns="any">
-			<help><![CDATA[ Constructor	* @controller.hint The ColdBox controller	*	* @return EventHandler (Context: EventHandler) ]]></help>
+			<help><![CDATA[ Constructor	* @controller The ColdBox controller	*	* @return EventHandler (Context: EventHandler) ]]></help>
 		<parameter name="controller" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function name="_actionExists" returns="boolean">
-			<help><![CDATA[ Action exists	* @action.hint The action to verify that it exists (Context: EventHandler) ]]></help>
+			<help><![CDATA[ Verifies if an action exists in the current event handler, public or private	* @action The action to verify that it exists (Context: EventHandler) ]]></help>
+		<parameter name="action" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="_actionMetadata" returns="struct">
+			<help><![CDATA[ Return action metadata in the current event handler, public or private	 * @action The action to get the metadata from (Context: EventHandler) ]]></help>
 		<parameter name="action" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	<function name="_privateInvoker" returns="any">
-			<help><![CDATA[ _privateInvoker for private events	* @method.hint The method to execute	* @argCollection.hint The arguments to execute the method with. (Context: EventHandler) ]]></help>
+			<help><![CDATA[ _privateInvoker for private events	* @method The method to execute	* @argCollection The arguments to execute the method with. (Context: EventHandler) ]]></help>
 		<parameter name="method" required="true" type="any">
 				<help><![CDATA[  ]]></help>
 			</parameter>
@@ -1181,6 +1187,7 @@ This is called by the framework ONLY! Use at your own risk (Context: FrameworkSu
 	<scopevar name="flash">
 		<help><![CDATA[Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
+---
 An abstract flash scope that can be used to build ColdBox Flash scopes.
 In order to build scopes you must implement the following methods:
 - clearFlash() A method that will destroy the flash storage
@@ -1286,6 +1293,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 	<scopevar name="event">
 		<help><![CDATA[Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
+---
 Models a ColdBox request, stores the incoming request collection and private request collection.
 It is also used to determine metadata about a request and helps you build RESTFul responses.]]></help>
 		<scopevar name="init(properties,controller)">
@@ -1399,6 +1407,12 @@ It is also used to determine metadata about a request and helps you build RESTFu
 	<scopevar name="isSSL()">
 				<help><![CDATA[Are we in SSL or not? This method looks at cgi.server_port_secure for indication]]></help>
 			</scopevar>
+	<scopevar name="isInvalidHTTPMethod()">
+				<help><![CDATA[Check if the request was made with an invalid HTTP Method]]></help>
+			</scopevar>
+	<scopevar name="setIsInvalidHTTPMethod([target])">
+				<help><![CDATA[Set the invalid http method flag]]></help>
+			</scopevar>
 	<scopevar name="setView([view],[args],[layout],[module],[noLayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider])">
 				<help><![CDATA[Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
 			</scopevar>
@@ -1461,6 +1475,9 @@ It is also used to determine metadata about a request and helps you build RESTFu
 			</scopevar>
 	<scopevar name="getSESBaseURL()">
 				<help><![CDATA[Get the SES base URL for this request]]></help>
+			</scopevar>
+	<scopevar name="getHTMLBaseURL()">
+				<help><![CDATA[Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.]]></help>
 			</scopevar>
 	<scopevar name="setSESBaseURL(sesBaseURL)">
 				<help><![CDATA[Set the ses base URL for this request]]></help>
@@ -1598,7 +1615,7 @@ return RequestContext]]></help>
 	<scopevar name="table(data,[includes],[excludes],[name])">
 				<help><![CDATA[Convert a table out of data (either a query or array of structures or array of entities)]]></help>
 			</scopevar>
-	<scopevar name="meta(name,[content],[type],[sendToHeader])">
+	<scopevar name="meta(name,[content],[type],[sendToHeader],[property])">
 				<help><![CDATA[Helps you generate meta tags]]></help>
 			</scopevar>
 	<scopevar name="docType([type])">
@@ -1685,6 +1702,12 @@ return RequestContext]]></help>
 	<scopevar name="entityFields(entity,[groupWrapper],[fieldwrapper],[labelwrapper],[labelClass],[textareas],[booleanSelect],[showRelations],[manytoone],[manytomany])">
 				<help><![CDATA[Create fields based on entity properties]]></help>
 			</scopevar>
+	<scopevar name="elixir(fileName,[buildDirectory],[sendToHeader],[async],[defer])">
+				<help><![CDATA[Adds the versioned path for an asset to the view]]></help>
+			</scopevar>
+	<scopevar name="elixirPath(fileName,[buildDirectory])">
+				<help><![CDATA[Finds the versioned path for an asset]]></help>
+			</scopevar>
 	<scopevar name="arrayToTable(data,[includes],[excludes],buffer)">
 				<help><![CDATA[Convert a table out of an array]]></help>
 			</scopevar>
@@ -1728,6 +1751,7 @@ return RequestContext]]></help>
 	<scopevar name="controller">
 		<help><![CDATA[Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
+---
 Manages a ColdBox application, dispatches events and acts as an overall front controller.]]></help>
 		<scopevar name="init(appRootPath,[appKey])">
 				<help><![CDATA[Constructor]]></help>

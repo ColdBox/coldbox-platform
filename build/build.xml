@@ -13,12 +13,13 @@
 	<property name="coldbox.version" 		value="4.3.0" />
 	<property name="coldbox.stableversion" 	value="4.2.0" />
 	<property name="coldbox.slug"	 		value="coldbox"/>
-	<property name="cachebox.version" 		value="2.2.0" />
 	<property name="cachebox.slug"	 		value="cachebox"/>
-	<property name="logbox.version" 		value="2.2.0" />
 	<property name="logbox.slug"	 		value="logbox"/>
-	<property name="wirebox.version" 		value="2.2.0" />
 	<property name="wirebox.slug"	 		value="wirebox"/>
+
+	<condition property="isTravis" else="false">
+      <isset property="isTravis"/>
+    </condition>
 	
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
@@ -52,14 +53,20 @@
 		<loadproperties srcFile="build/build.properties"/>
 
 		<!-- Build Number -->
-		<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
-			<entry key="build.number" 
-					type="int" 
-			     	operation="+"
-					pattern="00000"
-			     	default="1" />
-		</propertyfile>
-		<property file="build/build.number"/>
+		<if>
+			<not><isset property="build/build.number" /></not>
+			<then>
+				<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
+					<entry key="build.number" 
+							type="int" 
+					     	operation="+"
+							pattern="00000"
+					     	default="1" />
+				</propertyfile>
+
+				<property file="build/build.number"/>
+			</then>
+		</if>
 		
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
@@ -189,7 +196,7 @@
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
-		<replaceregexp match='@version.number@' replace="${coldbox.version}" flags="ig" byline="true" encoding="UTF-8">
+		<replaceregexp match='@build.version@' replace="${coldbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
@@ -218,6 +225,10 @@
 		<!-- Zip Standalone -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-standalone-${coldbox.version}.zip" basedir="${dir.build}" />
 		
+		<!-- Copy box.json to exports -->
+		<copy file="${dir.build}/box.json" toFile="${dir.coldbox.exports}/box.json" encoding="UTF-8" />
+		<copy file="${dir.build}/readme.md" toFile="${dir.coldbox.exports}/readme.md" encoding="UTF-8" />
+
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
 			<fileset dir="${dir.coldbox.exports}">
@@ -249,15 +260,20 @@
 				  stableVersion="${coldbox.stableversion}"
 				  classifiers="standalone,apidocs,ide"/>
 		
-		<!-- More Cleanup -->
-		<delete dir="${dir.build}" />
+		<!-- Cleanup -->	
+		<if>
+			<equals arg1="$isTravis" arg2="false" />
+			<then>
+				<delete dir="${dir.build}" />
+			</then>
+		</if>
     </target>
 	
 	<!-- Build CacheBox Distribution -->
 	<target name="build.cachebox" description="Builds a standalone version of CacheBox" depends="init">
 		<!-- Init Platform Dirs -->
 		<mkdir dir="${dir.build}/apidocs"/>
-		<property name="dir.cachebox.exports"	value="${dir.exports}/${cachebox.slug}/${cachebox.version}" />
+		<property name="dir.cachebox.exports"	value="${dir.exports}/${cachebox.slug}/${coldbox.version}" />
 		<property name="be.cachebox.exports" 	value="${be.exports}/${cachebox.slug}" />
 		<!-- Cleanup Old Code -->
 		<delete verbose="true" failonerror="false">
@@ -270,7 +286,7 @@
 		<antcall target="update.permissions" />
 				
 		<!-- Build Label -->
-		<property name="build.label" value="cachebox-${cachebox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="build.label" value="cachebox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to cachebox namespace-->	
@@ -300,7 +316,7 @@
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
-		<replaceregexp match='@version.number@' replace="${cachebox.version}" flags="ig" byline="true" encoding="UTF-8">
+		<replaceregexp match='@build.version@' replace="${coldbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 
@@ -323,15 +339,16 @@
 		</replace>
 		
 		<!-- Execute API Docs -->
-		<get dest="${dir.build}/docbox.html" src="${url.cachebox.api}${cachebox.version}&amp;path=${dir.build}/apidocs&amp;cachebox_root=${dir.build}" verbose="true"/>
+		<get dest="${dir.build}/docbox.html" src="${url.cachebox.api}${coldbox.version}&amp;path=${dir.build}/apidocs&amp;cachebox_root=${dir.build}" verbose="true"/>
 		<delete file="${dir.build}/docbox.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.cachebox.exports}/cachebox-apidocs-${cachebox.version}.zip" basedir="${dir.build}/apidocs" />
+		<zip destfile="${dir.cachebox.exports}/cachebox-apidocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs" />
 		<!-- Zip Bundle -->
-		<zip destfile="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip" basedir="${dir.build}" />
+		<zip destfile="${dir.cachebox.exports}/cachebox-${coldbox.version}.zip" basedir="${dir.build}" />
 		<!-- Copy box.json to exports -->
 		<copy file="${dir.build}/box.json" toFile="${dir.cachebox.exports}/box.json" encoding="UTF-8" />
+		<copy file="system/cache/readme.md" toFile="${dir.cachebox.exports}/readme.md" encoding="UTF-8" />
 				
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
@@ -346,7 +363,7 @@
 		</checksum>
 		
 		<!-- Move BE to root -->
-		<copy file="${dir.cachebox.exports}/cachebox-${cachebox.version}.zip" 		
+		<copy file="${dir.cachebox.exports}/cachebox-${coldbox.version}.zip" 		
 			  tofile="${be.cachebox.exports}/${cachebox.slug}-be.zip" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
@@ -356,7 +373,7 @@
 				  artifactID="${cachebox.slug}" 
 				  groupID="${groupID}"
 				  buildID="${build.number}"
-				  latest="${cachebox.version}"
+				  latest="${coldbox.version}"
 				  classifiers="apidocs"/>
 		
 		<!-- Cleanup -->
@@ -367,7 +384,7 @@
 	<target name="build.logbox" description="Builds a standalone version of LogBox" depends="init">
 		<!-- Init Platform Dirs -->
 		<mkdir dir="${dir.build}/apidocs"/>
-		<property name="dir.logbox.exports"	value="${dir.exports}/${logbox.slug}/${logbox.version}" />
+		<property name="dir.logbox.exports"	value="${dir.exports}/${logbox.slug}/${coldbox.version}" />
 		<property name="be.logbox.exports" 	value="${be.exports}/${logbox.slug}" />
 		<!-- Cleanup Old Code -->
 		<delete verbose="true" failonerror="false">
@@ -380,7 +397,7 @@
 		<antcall target="update.permissions" />
 				
 		<!-- Build Label -->
-		<property name="build.label" value="logbox-${logbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="build.label" value="logbox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to logbox namespace-->	
@@ -407,7 +424,7 @@
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
-		<replaceregexp match='@version.number@' replace="${logbox.version}" flags="ig" byline="true" encoding="UTF-8">
+		<replaceregexp match='@build.version@' replace="${coldbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
@@ -428,16 +445,18 @@
 		</replace>
 		
 		<!-- Execute API Docs -->
-		<get dest="${dir.build}/docbox.html" src="${url.logbox.api}${logbox.version}&amp;path=${dir.build}/apidocs&amp;logbox_root=${dir.build}" verbose="true"/>
+		<get dest="${dir.build}/docbox.html" src="${url.logbox.api}${coldbox.version}&amp;path=${dir.build}/apidocs&amp;logbox_root=${dir.build}" verbose="true"/>
 		<delete file="${dir.build}/docbox.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.logbox.exports}/logbox-apidocs-${logbox.version}.zip" basedir="${dir.build}/apidocs" />
+		<zip destfile="${dir.logbox.exports}/logbox-apidocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs" />
 		<!-- Zip Bundle -->
-		<zip destfile="${dir.logbox.exports}/logbox-${logbox.version}.zip" basedir="${dir.build}" />
+		<zip destfile="${dir.logbox.exports}/logbox-${coldbox.version}.zip" basedir="${dir.build}" />
 		
 		<!-- Copy box.json to exports -->
 		<copy file="${dir.build}/box.json" toFile="${dir.logbox.exports}/box.json"  encoding="UTF-8"/>
+		<copy file="system/logging/readme.md" toFile="${dir.logbox.exports}/readme.md" encoding="UTF-8" />
+
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
 			<fileset dir="${dir.logbox.exports}">
@@ -451,7 +470,7 @@
 		</checksum>
 		
 		<!-- Move BE to root -->
-		<copy file="${dir.logbox.exports}/logbox-${logbox.version}.zip" 		
+		<copy file="${dir.logbox.exports}/logbox-${coldbox.version}.zip" 		
 			  tofile="${be.logbox.exports}/${logbox.slug}-be.zip" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
@@ -461,7 +480,7 @@
 				  artifactID="${logbox.slug}" 
 				  groupID="${groupID}"
 				  buildID="${build.number}"
-				  latest="${logbox.version}"
+				  latest="${coldbox.version}"
 				  classifiers="apidocs"/>
 
 		<!-- Cleanup -->
@@ -472,8 +491,9 @@
 	<target name="build.wirebox" description="Builds a standalone version of WireBox" depends="init">
 		<!-- Init Platform Dirs -->
 		<mkdir dir="${dir.build}/apidocs"/>
-		<property name="dir.wirebox.exports"	value="${dir.exports}/${wirebox.slug}/${wirebox.version}" />
+		<property name="dir.wirebox.exports"	value="${dir.exports}/${wirebox.slug}/${coldbox.version}" />
 		<property name="be.wirebox.exports" 	value="${be.exports}/${wirebox.slug}" />
+		
 		<!-- Cleanup Old Code -->
 		<delete verbose="true" failonerror="false">
 			<fileset dir="${dir.wirebox.exports}" />
@@ -481,11 +501,12 @@
 				<include name="wirebox-be*" />
 			</fileset>
 		</delete>
+		
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 				
 		<!-- Build Label -->
-		<property name="build.label" value="wirebox-${wirebox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="build.label" value="wirebox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to WireBox namespace-->	
@@ -510,18 +531,21 @@
 		<copy todir="${dir.build}/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
         </copy>
+		
 		<!--Copy text files to root folder-->
 		<copy todir="${dir.build}" encoding="UTF-8" overwrite="true">
 			<fileset file="license.txt" />
 			<fileset file="system/ioc/readme.md" />						
 		</copy>
+		
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-wirebox-cachebox.json"  encoding="UTF-8" overwrite="true"/>
+		
 		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
-		<replaceregexp match='@version.number@' replace="${wirebox.version}" flags="ig" byline="true" encoding="UTF-8">
+		<replaceregexp match='@build.version@' replace="${coldbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
@@ -544,30 +568,37 @@
 		</replace>
 
 		<!-- Execute ApiDocs -->
-		<get dest="${dir.build}/docbox.html" src="${url.wirebox.api}${wirebox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
+		<get dest="${dir.build}/docbox.html" src="${url.wirebox.api}${coldbox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
 		<delete file="${dir.build}/docbox.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.wirebox.exports}/wirebox-apidocs-${wirebox.version}.zip" basedir="${dir.build}/apidocs"></zip>
+		<zip destfile="${dir.wirebox.exports}/wirebox-apidocs-${coldbox.version}.zip" basedir="${dir.build}/apidocs"></zip>
 		<!-- Zip Bundle -->
-		<zip destfile="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip" basedir="${dir.build}"></zip>
+		<zip destfile="${dir.wirebox.exports}/wirebox-cachebox-${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		<!-- Copy box.json to exports -->
 		<copy file="${dir.build}/box.json" toFile="${dir.wirebox.exports}/box.json" overwrite="true"  encoding="UTF-8"/>
 		
 		<!-- No CacheBox NOW -->
 		<delete dir="${dir.build}/system/cache" />
+		
 		<!--Copy box.json to root -->
 		<copy toFile="${dir.build}/box.json" file="box-wirebox.json" overwrite="true"  encoding="UTF-8"/>
+		<copy file="system/ioc/readme.md" toFile="${dir.wirebox.exports}/readme.md" encoding="UTF-8" />
+
 		<!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
 		<!-- Execute docbox -->
-		<get dest="${dir.build}/docbox.html" src="${url.wirebox.api}${wirebox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
+		<get dest="${dir.build}/docbox.html" src="${url.wirebox.api}${coldbox.version}&amp;path=${dir.build}/apidocs&amp;wirebox_root=${dir.build}" verbose="true"/>
 		<delete file="${dir.build}/docbox.html" />
+		
 		<!-- Zip Without CacheBox -->
-		<zip destfile="${dir.wirebox.exports}/wirebox-${wirebox.version}.zip" basedir="${dir.build}"></zip>
+		<zip destfile="${dir.wirebox.exports}/wirebox-${coldbox.version}.zip" basedir="${dir.build}"></zip>
+
+		<!-- Copy box.json to exports -->
+		<copy file="${dir.build}/box.json" toFile="${dir.wirebox.exports}/box.json" overwrite="true"  encoding="UTF-8"/>
 		
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
@@ -582,11 +613,11 @@
 		</checksum>
 		
 		<!-- Move BE to root -->
-		<copy file="${dir.wirebox.exports}/wirebox-${wirebox.version}.zip"				
+		<copy file="${dir.wirebox.exports}/wirebox-${coldbox.version}.zip"				
 			  tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
-		<copy file="${dir.wirebox.exports}/wirebox-cachebox-${wirebox.version}.zip" 	
+		<copy file="${dir.wirebox.exports}/wirebox-cachebox-${coldbox.version}.zip" 	
 			  tofile="${be.wirebox.exports}/${wirebox.slug}-cachebox-be.zip" 
 			  overwrite="true"
 			  encoding="UTF-8"/>
@@ -596,7 +627,7 @@
 				  artifactID="${wirebox.slug}" 
 				  groupID="${groupID}"
 				  buildID="${build.number}"
-				  latest="${wirebox.version}"
+				  latest="${coldbox.version}"
 				  classifiers="cachebox,apidocs"/>
 		
 		<!-- Cleanup -->

@@ -6,4 +6,8 @@ component output="false"{
 		return;
 	}
 
+	function expression( event, rc, prc ){
+		event.setView( "testerror/expression" );
+	}
+
 }	
