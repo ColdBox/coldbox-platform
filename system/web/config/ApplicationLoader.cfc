@@ -89,6 +89,10 @@ Loads a coldbox cfc configuration file
 		oConfig.injectPropertyMixin( "appMapping",configStruct.appMapping);
 		oConfig.injectPropertyMixin( "system", createObject( "java", "java.lang.System" ) );
 
+		if ( shouldCopyEnvToProperties( oConfig ) ) {
+			copyEnvToProperties();
+		}
+
 		//Configure it
 		oConfig.configure();
 
@@ -860,6 +864,23 @@ Loads a coldbox cfc configuration file
 		<cfscript>
 			return reReplace(arguments.appMapping,"(/|\\)",".","all" );
 		</cfscript>
+    </cffunction>
+
+    <!--- shouldCopyEnvToProperties --->
+    <cffunction name="shouldCopyEnvToProperties" output="false" access="private" returntype="boolean" hint="Returns true if env keys and values should be transferred to Java properties">
+    	<cfargument name="oConfig" type="any" required="true" />
+		<cfreturn ( NOT structKeyExists( oConfig, "copyEnvToProperties" ) OR oConfig.copyEnvToProperties EQ true ) />
+    </cffunction>
+
+    <!--- copyEnvToProperties --->
+    <cffunction name="copyEnvToProperties" output="false" access="private" returntype="void" hint="Copies env keys and values to Java properties">
+    	<cfscript>
+    		var system = createObject( "java", "java.lang.System" );
+			var envs = system.getEnv();
+			for ( var key in envs ) {
+			    system.setProperty( key, envs[ key ] );
+			}
+    	</cfscript>
     </cffunction>
 
 </cfcomponent>
