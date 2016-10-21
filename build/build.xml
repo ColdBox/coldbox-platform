@@ -586,7 +586,10 @@
 		<copy file="system/ioc/readme.md" toFile="${dir.wirebox.exports}/readme.md" encoding="UTF-8" />
 
 		<!-- Replace Build Numbers -->
-		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+		  <fileset dir="${dir.build}" />
+		</replaceregexp>
+		<replaceregexp match='@build.version@' replace="${coldbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		
