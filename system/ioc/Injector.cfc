@@ -838,36 +838,42 @@ Description :
     		var listeners 	= instance.binder.getListeners();
 			var regLen		= arrayLen(listeners);
 			var x			= 1;
-			var thisListener = "";
 
 			// iterate and register listeners
 			for(x=1; x lte regLen; x++){
-				// try to create it
-				try{
-					// create it
-					thisListener = createObject("component", listeners[x].class);
-					// configure it
-					thisListener.configure( this, listeners[x].properties);
-				}
-				catch(Any e){
-					instance.log.error("Error creating listener: #listeners[x].toString()#", e);
-					throw(message="Error creating listener: #listeners[x].toString()#",
-									  detail="#e.message# #e.detail# #e.stackTrace#",
-									  type="Injector.ListenerCreationException");
-				}
+				registerListener( listeners[x] );
+			}
+		</cfscript>
+    </cffunction>
 
-				// Now register listener
-				if( NOT isColdBoxLinked() ){
-					instance.eventManager.register(thisListener,listeners[x].name);
-				}
-				else{
-					instance.eventManager.registerInterceptor(interceptorObject=thisListener,interceptorName=listeners[x].name);
-				}
+	<!--- registerListener --->
+    <cffunction name="registerListener" output="false" access="public" returntype="void" hint="Register all the configured listeners in the configuration file">
+    	<cfargument name="listener" required="true" hint="The listener to register" />
+    	<cfscript>
+			try{
+				// create it
+				var thisListener = createObject("component", listener.class);
+				// configure it
+				thisListener.configure( this, listener.properties);
+			}
+			catch(Any e){
+				instance.log.error("Error creating listener: #listener.toString()#", e);
+				throw(message="Error creating listener: #listener.toString()#",
+								  detail="#e.message# #e.detail# #e.stackTrace#",
+								  type="Injector.ListenerCreationException");
+			}
 
-				// debugging
-				if( instance.log.canDebug() ){
-					instance.log.debug("Injector has just registered a new listener: #listeners[x].toString()#");
-				}
+			// Now register listener
+			if( NOT isColdBoxLinked() ){
+				instance.eventManager.register(thisListener,listener.name);
+			}
+			else{
+				instance.eventManager.registerInterceptor(interceptorObject=thisListener,interceptorName=listener.name);
+			}
+
+			// debugging
+			if( instance.log.canDebug() ){
+				instance.log.debug("Injector has just registered a new listener: #listener.toString()#");
 			}
 		</cfscript>
     </cffunction>
