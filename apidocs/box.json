@@ -1,0 +1,14 @@
+{
+    "name":"API Docs",
+    "version":"1.0.0",
+    "slug":"module-apidocs",
+    "dependencies":{
+        "docbox":"^2.0.7"
+    },
+    "devDependencies":{
+        
+    },
+    "installPaths":{
+        "docbox":"docbox"
+    }
+}

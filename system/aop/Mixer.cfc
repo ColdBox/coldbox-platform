@@ -1,14 +1,12 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * I am a WireBox listener that provides you with AOP capabilities in your objects.
 *
 * Listener Properties:
 *	- generationPath:path	- The include path used for code generation
 *	- dictionaryReload:boolean(false) - The flag to always reload aspect dictionary discover information, great for development
-* @author Luis Majano <lmajano@ortussolutions.com>
 */
 component accessors="true"{
 
@@ -77,6 +75,11 @@ component accessors="true"{
 		// Default Generation Path?
 		if( NOT structKeyExists( variables.properties, "generationPath" ) ){
 			variables.properties.generationPath = "/coldbox/system/aop/tmp";
+		}
+
+		// Check if we can write to generation path
+		if( !getFileInfo( expandPath(variables.properties.generationPath) ).canWrite ){
+			throw( message="The AOP generation directory: '#variables.properties.generationPath#' is not writable, cannot continue." );
 		}
 
 		// Class Dictionary Reload
@@ -292,27 +295,36 @@ component accessors="true"{
 
 		// Create Original Method Proxy Signature
 		if( fncMD.access eq "public" ){
-			udfOut.append( '<cfset this["#arguments.jointpoint#"] = variables["#arguments.jointpoint#"]>#lb#' );
+			udfOut.append( '<cfset this[ "#arguments.jointpoint#" ] = variables["aop_#hash( arguments.jointpoint )#" ]>#lb#' );
 		}
 		var thisFNC = '
-		<:cffunction name="#arguments.jointpoint#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#" hint="WireBox AOP just rulez!">
+		<:cffunction name="aop_#hash( arguments.jointpoint )#" 
+					access="#fncMD.access#" 
+					output="#fncMD.output#" 
+					returntype="#fncMD.returntype#" 
+					hint="WireBox AOP just rulez!"
+		>
 			<cfscript>
 				// create new method invocation for this execution
-				var invocation = createObject("component","coldbox.system.aop.MethodInvocation").init(
+				var invocation = createObject( "component", "coldbox.system.aop.MethodInvocation" ).init(
 					method 			= "#arguments.jointPoint#",
 					args 			= arguments,
 					methodMetadata 	= "#mdJSON#",
 					target 			= this,
 					targetName 		= "#mappingName#",
 					targetMapping 	= this.$wbAOPTargetMapping,
-					interceptors 	= this.$wbAOPTargets["#arguments.jointPoint#"].interceptors
+					interceptors 	= this.$wbAOPTargets[ "#arguments.jointPoint#" ].interceptors
 				);
 				// execute and return
 				return invocation.proceed();
 			</cfscript>
 		<:/cffunction>
+
+		<cfset variables[ "#arguments.jointpoint#" ] = variables[ "aop_#hash( arguments.jointpoint )#" ]>
+		<cfset structDelete( variables, "aop_#hash( jointpoint )#" ) >
 		';
-		replace( thisFNC, "<:", "<", "all" );
+		// Do : replacement, due to inline compilation avoidances
+		thisFNC = replace( thisFNC, "<:", "<", "all" );
 		udfOut.append( thisFNC );
 
 		try{

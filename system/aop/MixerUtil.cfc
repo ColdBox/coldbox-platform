@@ -1,10 +1,8 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * I am an AOP mixer utility method
-* @author Luis Majano <lmajano@ortussolutions.com>
 */
 component{
 
@@ -87,7 +85,7 @@ component{
     */
     function removeAspect( required filePath ){
         if( fileExists( arguments.filePath ) ){
-            fileDelete( arguments.filePath );
+        	fileDelete( arguments.filePath );
         }
         return this;
     }

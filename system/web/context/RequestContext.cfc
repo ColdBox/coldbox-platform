@@ -1,8 +1,7 @@
 ﻿/**
-********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * Models a ColdBox request, stores the incoming request collection and private request collection.
 * It is also used to determine metadata about a request and helps you build RESTFul responses.
 **/
@@ -85,6 +84,9 @@ component serializable=false accessors="true"{
 		if( structKeyExists( arguments.properties, "SESBaseURL" ) ){
 			instance.SESBaseURL = arguments.properties.SESBaseURL;
 		}
+
+		// Flag for Invalid HTTP Method
+		instance.invalidHTTPMethod = false;
 
 		return this;
 	}
@@ -473,6 +475,21 @@ component serializable=false accessors="true"{
 		return false;
 	}
 
+	/**
+	 * Check if the request was made with an invalid HTTP Method
+	 */
+	boolean function isInvalidHTTPMethod(){
+		return instance.invalidHTTPMethod;
+	}
+
+	/**
+	 * Set the invalid http method flag
+	 */
+	RequestContext function setIsInvalidHTTPMethod( boolean target=true ){
+		instance.invalidHTTPMethod = arguments.target;
+		return this;
+	}
+
 	/************************************** VIEW-LAYOUT METHODS *********************************************/
 
 	/**
@@ -767,6 +784,13 @@ component serializable=false accessors="true"{
 	}
 
 	/**
+	* Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.
+	*/
+	string function getHTMLBaseURL(){
+		return REReplaceNoCase( buildLink( linkTo='', ssl=isSSL() ), "index.cfm\/?", "" );
+	}
+
+	/**
 	* Set the ses base URL for this request
 	* @return RequestContext
 	*/
@@ -820,7 +844,7 @@ component serializable=false accessors="true"{
 			}
 			/* Query String Append */
 			if( len( trim( arguments.queryString ) ) ){
-				if( right( arguments.queryString, 1 ) neq  "/" ){
+				if( right( arguments.linkTo, 1 ) neq  "/" ){
 					arguments.linkto = arguments.linkto & "/";
 				}
 				arguments.linkto = arguments.linkto & replace( arguments.queryString, "&", "/", "all" );
@@ -1044,7 +1068,7 @@ component serializable=false accessors="true"{
 	* Get the HTTP Request Method Type
 	*/
 	string function getHTTPMethod(){
-		return cgi.REQUEST_METHOD;
+		return getValue( "_method", cgi.REQUEST_METHOD );
 	}
 
 	/**
@@ -1055,10 +1079,11 @@ component serializable=false accessors="true"{
 	any function getHTTPContent( boolean json=false, boolean xml=false ){
 		var content = getHTTPRequestData().content;
 
-		if( arguments.json and isJSON( content ) )
-			return deserializeJSON( content );
-		if( arguments.xml and len( content ) and isXML( content ) )
-			return xmlParse( content );
+		// ToString() neccessary when body comes in as binary.
+		if( arguments.json and isJSON( toString( content ) ) )
+			return deserializeJSON( toString( content ) );
+		if( arguments.xml and len( toString( content ) ) and isXML( toString( content ) ) )
+			return xmlParse( toString( content ) );
 
 		return content;
 	}

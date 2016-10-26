@@ -92,8 +92,9 @@ Properties
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
 
-			if( instance.logger.canDebug() )
+			if( instance.logger.canDebug() ){
 				instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
+			}
 
 			// Validate the configuration
 			validateConfiguration();
@@ -102,24 +103,12 @@ Properties
 			instance.stats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
 
 			// Setup the eviction Policy to use
-			try{
-				evictionPolicy = locateEvictionPolicy( cacheConfig.evictionPolicy );
-				instance.evictionPolicy = CreateObject("component", evictionPolicy).init(this);
-			}
-			catch(Any e){
-				instance.logger.error("Error creating eviction policy: #evictionPolicy#", e);
-				throw('Error creating eviction policy: #evictionPolicy#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.EvictionPolicyCreationException');
-			}
+			evictionPolicy 			= locateEvictionPolicy( cacheConfig.evictionPolicy );
+			instance.evictionPolicy = CreateObject("component", evictionPolicy).init(this);
 
 			// Create the object store the configuration mandated
-			try{
-				objectStore = locateObjectStore( cacheConfig.objectStore );
-				instance.objectStore = CreateObject("component", objectStore).init(this);
-			}
-			catch(Any e){
-				instance.logger.error("Error creating object store: #objectStore#", e);
-				throw('Error creating object store #objectStore#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.ObjectStoreCreationException');
-			}
+			objectStore 			= locateObjectStore( cacheConfig.objectStore );
+			instance.objectStore 	= CreateObject("component", objectStore).init(this);
 
 			// Enable cache
 			instance.enabled = true;
@@ -127,8 +116,9 @@ Properties
 			instance.reportingEnabled = true;
 
 			// startup message
-			if( instance.logger.canDebug() )
+			if( instance.logger.canDebug() ){
 				instance.logger.debug( "CacheBox Cache: #getName()# has been initialized successfully for operation" );
+			}
 		</cfscript>
 		</cflock>
 
@@ -228,7 +218,7 @@ Properties
 
 			// get quietly
 			refLocal.results = instance.objectStore.get( arguments.objectKey );
-			if( structKeyExists( refLocal, "results" ) ){
+			if( structKeyExists( refLocal, "results" ) AND NOT isNull( refLocal.results ) ){
 				getStats().hit();
 				return refLocal.results;
 			}

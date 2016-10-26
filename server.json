@@ -1,0 +1,15 @@
+{
+    "force":true,
+    "openBrowser":false,
+    "web":{
+        "http":{
+            "port":"8599"
+        },
+        "rewrites":{
+            "enable":true
+        }
+    },
+    "JVM":{
+        "heapSize":"512"
+    }
+}

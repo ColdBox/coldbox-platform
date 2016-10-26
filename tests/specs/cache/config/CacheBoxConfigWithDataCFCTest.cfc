@@ -22,7 +22,7 @@
 		assertTrue( arrayLen(memento.listeners) );
 		assertTrue( len(memento.logBoxConfig) );
 		assertEquals( "cacheBoxAwesome", memento.scopeRegistration.key );
-		assertEquals("coldbox.system.cache.config.LogBoxConfig", memento.logBoxConfig);
+		assertEquals("coldbox.system.cache.config.LogBox", memento.logBoxConfig);
 
 		config.validate();
 	}
@@ -42,7 +42,7 @@
 		assertTrue( arrayLen(memento.listeners) );
 		assertTrue( len(memento.logBoxConfig) );
 		assertEquals( "cacheBoxAwesome", memento.scopeRegistration.key );
-		assertEquals("coldbox.system.cache.config.LogBoxConfig", memento.logBoxConfig);
+		assertEquals("coldbox.system.cache.config.LogBox", memento.logBoxConfig);
 
 
 		config.validate();

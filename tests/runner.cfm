@@ -5,7 +5,7 @@
 <cfparam name="url.reporter" 			default="simple">
 <cfparam name="url.directory" 			default="tests.specs">
 <!--- Regex list of exclusions --->
-<cfparam name="url.directoryExcludes" 	default="">
+<cfparam name="url.directoryExcludes" 	default="/(cache|ioc|logging)">
 <cfparam name="url.recurse" 			default="true" type="boolean">
 <cfparam name="url.bundles" 			default="">
 <cfparam name="url.labels" 				default="">
@@ -30,6 +30,11 @@ url.bundles 			= URLDecode( url.bundles );
 url.directory 			= URLDecode( url.directory );
 url.reportPath 			= URLDecode( url.reportPath );
 url.propertiesFilename 	= URLDecode( url.propertiesFilename );
+
+// Report Path
+if( !directoryExists( url.reportPath ) ){
+	directoryCreate( url.reportPath );
+}
 
 // prepare for tests for bundles or directories
 if( len( url.bundles ) ){

@@ -1,18 +1,18 @@
 {
 	"name" 				: "WireBox DI/AOP",
-	"version"			: "2.1.0+@build.number@",
+	"version"			: "@build.version@+@build.number@",
+	"location"  		: "http://downloads.ortussolutions.com/ortussolutions/wirebox/@build.version@/wirebox-@build.version@.zip",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "wirebox",
 	"type"				: "di",
 	"packageDirectory"	: "wirebox",
 	"keywords"			: "di,aop,dependeny injection,ioc",
-	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "http://wirebox.ortusbooks.com",
+	"homepage"			: "https://www.coldbox.org",
+	"documentation"		: "https://wirebox.ortusbooks.com",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/WIREBOX",
 	"shortDescription"	: "AOP and Dependency Injection Framework",
 	"engines"			: [
-		{ "type" : "railo", "version" : ">4.1" },
 		{ "type" : "adobe", "version" : ">9.0.2" },
 		{ "type" : "lucee", "version" : ">4.5" }
 	],
@@ -27,13 +27,5 @@
         "tests",
         "apidocs",
         "*/.md"
-    ],
-	"testbox"			: {
-		"runner" : [
-			{ "cf9" 	: "http://cf9cboxdev.local/coldbox/tests/runner.cfm" },
-			{ "cf10" 	: "http://cf10cboxdev.local/coldbox/tests/runner.cfm" },
-			{ "cf11" 	: "http://cf11cboxdev.local/coldbox/tests/runner.cfm" },
-			{ "lucee" 	: "http://luceecboxdev.local/coldbox/tests/runner.cfm" }
-		]
-	}
+    ]
 }

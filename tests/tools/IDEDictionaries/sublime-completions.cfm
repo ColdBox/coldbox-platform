@@ -48,7 +48,7 @@ function arrayOfStructsSort(aOfS,key){
         return returnArray;
 }
 
-out = createObject("java","java.lang.StringBuffer").init('');
+out = createObject("java","java.lang.StringBuilder").init('');
 tab = chr(9);
 br  = chr(10);
 
@@ -148,12 +148,13 @@ scopes = {
 	"binder" = "coldbox.system.ioc.config.Binder",
 	"wirebox" = "coldbox.system.ioc.Injector",
 	"cachebox" = "coldbox.system.cache.CacheFactory",
-	"html" = "coldbox.system.core.dynamic.HTMLHelper"
+	"html" = "coldbox.system.core.dynamic.HTMLHelper",
+	"assert" = "testbox.system.Assertion"
 };
 fncIdx = 1;
 for( key in scopes ){
 
-	md = getComponentMetaData( scopes[key] );
+	md = getComponentMetaData( scopes[ key ] );
 	out.append('#tab#// Functions for Scope: #key# #br#');
 	sortedFunctions = arrayOfStructsSort( md.functions, "name" );
 
@@ -163,8 +164,14 @@ for( key in scopes ){
 
 		// ignoreMethods
 		if( listFindNoCase(ignoreMethods, sortedFunctions[x].name) ){ continue; }
+		
+		fwName = ( findNoCase( "coldbox.system", md.path ) ? "ColdBox" : "TestBox" );
+		triggerKey = key;
+		if( left( key, 1 ) == "$" ){
+			triggerKey = "\\#key#";
+		}
 
-		out.append('#tab#{ "trigger": "#key#.#sortedFunctions[x].name#\tfn. (ColdBox #key#)", "contents": "#sortedFunctions[x].name#(');
+		out.append('#tab#{ "trigger": "#triggerKey#.#sortedFunctions[x].name#\tfn. (#fwName# #key#)", "contents": "#key#.#sortedFunctions[x].name#(');
 
 		// Parameters
 		for( y=1; y lte arrayLen( sortedFunctions[x].parameters ); y++){

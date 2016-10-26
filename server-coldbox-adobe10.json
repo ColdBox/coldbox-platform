@@ -1,0 +1,18 @@
+{
+    "app":{
+        "cfengine":"adobe@10"
+    },
+    "name":"coldbox-adobe10",
+    "JVM":{
+        "heapSize":"512"
+    },
+    "web":{
+        "http":{
+            "port":"60338"
+        },
+        "rewrites":{
+            "enable":"true"
+        }
+    },
+    "openbrowser":"false"
+}

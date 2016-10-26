@@ -1,8 +1,7 @@
 ﻿/**
-********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * This service loads and configures a ColdBox application for operation
 */
 component extends="coldbox.system.web.services.BaseService"{
@@ -57,9 +56,11 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Activate All Modules
 		controller.getModuleService().activateAllModules();
 		// Execute afterConfigurationLoad
-		controller.getInterceptorService().processState("afterConfigurationLoad");
+		controller.getInterceptorService().processState( "afterConfigurationLoad" );
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
 		controller.getRequestService().rebuildFlashScope();
+		// Execute afterAspectsLoad: Deprecate at one point, no more aspects as all are modules now.
+		controller.getInterceptorService().processState( "afterAspectsLoad" );
 		// We are now done, rock and roll!!
 		return this;
 	}
@@ -192,22 +193,17 @@ component extends="coldbox.system.web.services.BaseService"{
 		var configFileLocation 	= coldboxSettings.configConvention;
 
 		// Overriding Marker defaults to false
-		coldboxSettings["ConfigFileLocationOverride"] = false;
+		coldboxSettings[ "ConfigFileLocationOverride" ] = false;
 
 		// verify coldbox.cfc exists in convention: /app/config/Coldbox.cfc
-		if( fileExists( appRootPath & replace(configFileLocation,".","/","all") & ".cfc" ) ){
-			coldboxSettings["ConfigFileLocation"] = configFileLocation;
+		if( fileExists( appRootPath & replace( configFileLocation, ".", "/", "all" ) & ".cfc" ) ){
+			coldboxSettings[ "ConfigFileLocation" ] = configFileLocation;
 		}
 
 		// Overriding the config file location? Maybe unit testing?
 		if( len( arguments.overrideConfigFile ) ){
-			coldboxSettings["ConfigFileLocation"] 			= arguments.overrideConfigFile;
-			coldboxSettings["ConfigFileLocationOverride"] 	= true;
-		}
-
-		// If no config file location throw exception
-		if( NOT len( coldboxSettings["ConfigFileLocation"] ) ){
-			throw(message="Config file not located in conventions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
+			coldboxSettings[ "ConfigFileLocation" ] 			= arguments.overrideConfigFile;
+			coldboxSettings[ "ConfigFileLocationOverride" ] 	= true;
 		}
 
 		// Create it and return it now that config file location is set in the location settings

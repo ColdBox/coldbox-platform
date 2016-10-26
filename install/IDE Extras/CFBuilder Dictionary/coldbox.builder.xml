@@ -2,272 +2,39 @@
 <dictionary>
 	<tags></tags>
 	<functions>
-<!-- Functions for: coldbox.system.Interceptor -->
-	<function name="getProperty" returns="any">
-			<help><![CDATA[ Get an interceptor property (Context: Interceptor) ]]></help>
-		<parameter name="property" required="true" type="any">
-				<help><![CDATA[ The property to retrieve ]]></help>
-			</parameter>
-			<parameter name="defaultValue" required="false" type="any">
-				<help><![CDATA[ The default value to return if property does not exist ]]></help>
-			</parameter>
-			</function>
-	<function name="GETFLASH" returns="any">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
-	<function name="SETFLASH" returns="coldbox.system.Interceptor">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="flash" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="GETLOGBOX" returns="any">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
-	<function name="getBufferObject" returns="any">
-			<help><![CDATA[ Get the request buffer object from scope. (Context: Interceptor) ]]></help>
-		</function>
-	<function name="GETCACHEBOX" returns="any">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
-	<function name="GETWIREBOX" returns="any">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
-	<function name="GETLOG" returns="any">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
-	<function name="unregister" returns="any">
-			<help><![CDATA[ Unregister the interceptor (Context: Interceptor) ]]></help>
-		<parameter name="state" required="true" type="any">
-				<help><![CDATA[ The named state to unregister this interceptor from ]]></help>
-			</parameter>
-			</function>
-	<function name="clearBuffer" returns="any">
-			<help><![CDATA[ Clear the interceptor buffer (Context: Interceptor) ]]></help>
-		</function>
-	<function name="SETPROPERTIES" returns="coldbox.system.Interceptor">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="properties" required="YES" type="struct">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="SETCONTROLLER" returns="coldbox.system.Interceptor">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="controller" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="SETLOGBOX" returns="coldbox.system.Interceptor">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="logBox" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="GETCONTROLLER" returns="any">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
-	<function name="SETCACHEBOX" returns="coldbox.system.Interceptor">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="cachebox" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="propertyExists" returns="boolean">
-			<help><![CDATA[ Verify an interceptor property (Context: Interceptor) ]]></help>
-		<parameter name="property" required="true" type="any">
-				<help><![CDATA[ The property to check ]]></help>
-			</parameter>
-			</function>
-	<function name="configure" returns="void">
-			<help><![CDATA[ Configuration method for the interceptor (Context: Interceptor) ]]></help>
-		</function>
-	<function name="setProperty" returns="any">
-			<help><![CDATA[ Store an interceptor property (Context: Interceptor) ]]></help>
-		<parameter name="property" required="true" type="any">
-				<help><![CDATA[ The property to store ]]></help>
-			</parameter>
-			<parameter name="value" required="true" type="any">
-				<help><![CDATA[ The value to store ]]></help>
-			</parameter>
-			</function>
-	<function name="getBufferString" returns="string">
-			<help><![CDATA[ Get the string representation of the buffer (Context: Interceptor) ]]></help>
-		</function>
-	<function name="GETINTERCEPTORSERVICE" returns="coldbox.system.services.InterceptorService">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
-	<function name="SETWIREBOX" returns="coldbox.system.Interceptor">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="wirebox" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="appendToBuffer" returns="any">
-			<help><![CDATA[ Append to the interceptor buffer (Context: Interceptor) ]]></help>
-		<parameter name="str" required="true" type="any">
-				<help><![CDATA[ The string to append to the buffer ]]></help>
-			</parameter>
-			</function>
-	<function name="GETPROPERTIES" returns="struct">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		</function>
-	<function name="SETLOG" returns="coldbox.system.Interceptor">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="log" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="SETINTERCEPTORSERVICE" returns="coldbox.system.Interceptor">
-			<help><![CDATA[  (Context: Interceptor) ]]></help>
-		<parameter name="interceptorService" required="YES" type="coldbox.system.services.InterceptorService">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="init" returns="any">
-			<help><![CDATA[ Constructor (Context: Interceptor) ]]></help>
-		<parameter name="controller" required="true" type="any">
-				<help><![CDATA[ The ColdBox controller ]]></help>
-			</parameter>
-			<parameter name="properties" required="false" type="struct">
-				<help><![CDATA[ The properties to init the Interceptor with ]]></help>
-			</parameter>
-			</function>
-<!-- Functions for: coldbox.system.EventHandler -->
-	<function name="SETCACHEBOX" returns="coldbox.system.EventHandler">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		<parameter name="cachebox" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="_actionExists" returns="boolean">
-			<help><![CDATA[ Action exists	* @action.hint The action to verify that it exists (Context: EventHandler) ]]></help>
-		<parameter name="action" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="GETFLASH" returns="any">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		</function>
-	<function name="SETFLASH" returns="coldbox.system.EventHandler">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		<parameter name="flash" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="GETLOGBOX" returns="any">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		</function>
-	<function name="GETCACHEBOX" returns="any">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		</function>
-	<function name="GETWIREBOX" returns="any">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		</function>
-	<function name="GETLOG" returns="any">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		</function>
-	<function name="_privateInvoker" returns="any">
-			<help><![CDATA[ _privateInvoker for private events	* @method.hint The method to execute	* @argCollection.hint The arguments to execute the method with. (Context: EventHandler) ]]></help>
-		<parameter name="method" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			<parameter name="argCollection" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="SETWIREBOX" returns="coldbox.system.EventHandler">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		<parameter name="wirebox" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="SETLOG" returns="coldbox.system.EventHandler">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		<parameter name="log" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="init" returns="any">
-			<help><![CDATA[ Constructor	* @controller.hint The ColdBox controller	*	* @return EventHandler (Context: EventHandler) ]]></help>
-		<parameter name="controller" required="true" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="SETLOGBOX" returns="coldbox.system.EventHandler">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		<parameter name="logBox" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="SETCONTROLLER" returns="coldbox.system.EventHandler">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		<parameter name="controller" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
-			</parameter>
-			</function>
-	<function name="GETCONTROLLER" returns="any">
-			<help><![CDATA[  (Context: EventHandler) ]]></help>
-		</function>
 <!-- Functions for: coldbox.system.FrameworkSupertype -->
-	<function name="getPlugin" returns="any">
-			<help><![CDATA[ * REMOVE THE FOLLOWING: JUST LEFT UNTIL COMPLETELY REMOVED *** (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="getModuleSettings" returns="any">
-			<help><![CDATA[ Get a module's settings structure or a specific setting if the setting key is passed (Context: FrameworkSupertype) ]]></help>
-		<parameter name="module" required="true" type="any">
-				<help><![CDATA[ The module to retrieve the configuration settings from ]]></help>
-			</parameter>
-			<parameter name="setting" required="false" type="any">
-				<help><![CDATA[ The setting to retrieve if passed ]]></help>
-			</parameter>
-			<parameter name="defaultValue" required="false" type="any">
-				<help><![CDATA[ The default value to return if setting does not exist ]]></help>
-			</parameter>
-			</function>
 	<function name="getDatasource" returns="struct">
 			<help><![CDATA[ Get a datasource structure representation (Context: FrameworkSupertype) ]]></help>
 		<parameter name="alias" required="true" type="any">
 				<help><![CDATA[ The alias of the datasource to get from the config structures ]]></help>
 			</parameter>
 			</function>
-	<function name="setNextEvent" returns="void">
-			<help><![CDATA[ Relocate the user to another location (Context: FrameworkSupertype) ]]></help>
-		<parameter name="event" required="false" type="any">
-				<help><![CDATA[ The name of the event to run, if not passed, then it will use the default event found in your configuration file ]]></help>
+	<function name="getModel" returns="any">
+			<help><![CDATA[ Get a model object (Context: FrameworkSupertype) ]]></help>
+		<parameter name="name" required="false" type="any">
+				<help><![CDATA[ The mapping name or CFC path to retrieve ]]></help>
 			</parameter>
-			<parameter name="URL" required="false" type="any">
-				<help><![CDATA[ The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com ]]></help>
+			<parameter name="dsl" required="false" type="any">
+				<help><![CDATA[ The DSL string to use to retrieve an instance ]]></help>
 			</parameter>
-			<parameter name="URI" required="false" type="any">
-				<help><![CDATA[ The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here ]]></help>
+			<parameter name="initArguments" required="false" type="any">
+				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance ]]></help>
 			</parameter>
-			<parameter name="queryString" required="false" type="any">
-				<help><![CDATA[ The query string to append, if needed. If in SES mode it will be translated to convention name value pairs ]]></help>
+			</function>
+	<function name="getInstance" returns="any">
+			<help><![CDATA[ Get a instance object from WireBox (Context: FrameworkSupertype) ]]></help>
+		<parameter name="name" required="false" type="any">
+				<help><![CDATA[ The mapping name or CFC path to retrieve ]]></help>
 			</parameter>
-			<parameter name="persist" required="false" type="any">
-				<help><![CDATA[ What request collection keys to persist in flash ram ]]></help>
+			<parameter name="dsl" required="false" type="any">
+				<help><![CDATA[ The DSL string to use to retrieve an instance ]]></help>
 			</parameter>
-			<parameter name="persistStruct" required="false" type="struct">
-				<help><![CDATA[ A structure key-value pairs to persist in flash ram ]]></help>
-			</parameter>
-			<parameter name="addToken" required="false" type="boolean">
-				<help><![CDATA[ Wether to add the tokens or not. Default is false ]]></help>
-			</parameter>
-			<parameter name="ssl" required="false" type="boolean">
-				<help><![CDATA[ Whether to relocate in SSL or not ]]></help>
-			</parameter>
-			<parameter name="baseURL" required="false" type="any">
-				<help><![CDATA[ Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm ]]></help>
-			</parameter>
-			<parameter name="postProcessExempt" required="false" type="boolean">
-				<help><![CDATA[ Do not fire the postProcess interceptors ]]></help>
-			</parameter>
-			<parameter name="statusCode" required="false" type="numeric">
-				<help><![CDATA[ The status code to use in the relocation ]]></help>
+			<parameter name="initArguments" required="false" type="any">
+				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance ]]></help>
 			</parameter>
 			</function>
 	<function name="populateModel" returns="any">
-			<help><![CDATA[ Populate a model object from the request Collection (Context: FrameworkSupertype) ]]></help>
+			<help><![CDATA[ Populate a model object from the request Collection or a passed in memento structure (Context: FrameworkSupertype) ]]></help>
 		<parameter name="model" required="true" type="any">
 				<help><![CDATA[ The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method ]]></help>
 			</parameter>
@@ -295,9 +62,24 @@
 			<parameter name="composeRelationships" required="false" type="boolean">
 				<help><![CDATA[ Automatically attempt to compose relationships from memento ]]></help>
 			</parameter>
+			<parameter name="memento" required="false" type="struct">
+				<help><![CDATA[ A structure to populate the model, if not passed it defaults to the request collection ]]></help>
+			</parameter>
+			<parameter name="jsonstring" required="false" type="string">
+				<help><![CDATA[ If you pass a json string, we will populate your model with it ]]></help>
+			</parameter>
+			<parameter name="xml" required="false" type="string">
+				<help><![CDATA[ If you pass an xml string, we will populate your model with it ]]></help>
+			</parameter>
+			<parameter name="qry" required="false" type="query">
+				<help><![CDATA[ If you pass a query, we will populate your model with it ]]></help>
+			</parameter>
 			</function>
 	<function name="getRenderer" returns="any">
 			<help><![CDATA[ Retrieve the system web renderer (Context: FrameworkSupertype) ]]></help>
+		</function>
+	<function name="getRequestContext" returns="any">
+			<help><![CDATA[ Retrieve the request context object (Context: FrameworkSupertype) ]]></help>
 		</function>
 	<function name="getRequestCollection" returns="struct">
 			<help><![CDATA[ Get the RC or PRC collection reference (Context: FrameworkSupertype) ]]></help>
@@ -305,30 +87,102 @@
 				<help><![CDATA[ The boolean bit that says give me the RC by default or true for the private collection (PRC) ]]></help>
 			</parameter>
 			</function>
-	<function name="SETCONTROLLER" returns="coldbox.system.FrameworkSupertype">
-			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
-		<parameter name="controller" required="YES" type="any">
-				<help><![CDATA[  ]]></help>
+	<function name="renderView" returns="any">
+			<help><![CDATA[ Render out a view (Context: FrameworkSupertype) ]]></help>
+		<parameter name="view" required="false" type="any">
+				<help><![CDATA[ The the view to render, if not passed, then we look in the request context for the current set view. ]]></help>
+			</parameter>
+			<parameter name="args" required="false" type="struct">
+				<help><![CDATA[ A struct of arguments to pass into the view for rendering, will be available as 'args' in the view. ]]></help>
+			</parameter>
+			<parameter name="module" required="false" type="any">
+				<help><![CDATA[ The module to render the view from explicitly ]]></help>
+			</parameter>
+			<parameter name="cache" required="false" type="boolean">
+				<help><![CDATA[ Cached the view output or not, defaults to false ]]></help>
+			</parameter>
+			<parameter name="cacheTimeout" required="false" type="any">
+				<help><![CDATA[ The time in minutes to cache the view ]]></help>
+			</parameter>
+			<parameter name="cacheLastAccessTimeout" required="false" type="any">
+				<help><![CDATA[ The time in minutes the view will be removed from cache if idle or requested ]]></help>
+			</parameter>
+			<parameter name="cacheSuffix" required="false" type="any">
+				<help><![CDATA[ The suffix to add into the cache entry for this view rendering ]]></help>
+			</parameter>
+			<parameter name="cacheProvider" required="false" type="any">
+				<help><![CDATA[ The provider to cache this view in, defaults to 'template' ]]></help>
+			</parameter>
+			<parameter name="collection" required="false" type="any">
+				<help><![CDATA[ A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query) ]]></help>
+			</parameter>
+			<parameter name="collectionAs" required="false" type="any">
+				<help><![CDATA[ The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention ]]></help>
+			</parameter>
+			<parameter name="collectionStartRow" required="false" type="numeric">
+				<help><![CDATA[ The start row to limit the collection rendering with ]]></help>
+			</parameter>
+			<parameter name="collectionMaxRows" required="false" type="numeric">
+				<help><![CDATA[ The max rows to iterate over the collection rendering with ]]></help>
+			</parameter>
+			<parameter name="collectionDelim" required="false" type="any">
+				<help><![CDATA[ A string to delimit the collection renderings by ]]></help>
+			</parameter>
+			<parameter name="prePostExempt" required="false" type="boolean">
+				<help><![CDATA[ If true, pre/post view interceptors will not be fired. By default they do fire ]]></help>
 			</parameter>
 			</function>
-	<function name="GETCONTROLLER" returns="any">
-			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="getModel" returns="any">
-			<help><![CDATA[ Get a model object (Context: FrameworkSupertype) ]]></help>
-		<parameter name="name" required="false" type="any">
-				<help><![CDATA[ The mapping name or CFC path to retrieve ]]></help>
+	<function name="renderExternalView" returns="any">
+			<help><![CDATA[ Renders an external view anywhere that cfinclude works. (Context: FrameworkSupertype) ]]></help>
+		<parameter name="view" required="true" type="any">
+				<help><![CDATA[ The the view to render ]]></help>
 			</parameter>
-			<parameter name="dsl" required="false" type="any">
-				<help><![CDATA[ The DSL string to use to retrieve an instance ]]></help>
+			<parameter name="args" required="false" type="struct">
+				<help><![CDATA[ A struct of arguments to pass into the view for rendering, will be available as 'args' in the view. ]]></help>
 			</parameter>
-			<parameter name="initArguments" required="false" type="any">
-				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance ]]></help>
+			<parameter name="cache" required="false" type="boolean">
+				<help><![CDATA[ Cached the view output or not, defaults to false ]]></help>
+			</parameter>
+			<parameter name="cacheTimeout" required="false" type="any">
+				<help><![CDATA[ The time in minutes to cache the view ]]></help>
+			</parameter>
+			<parameter name="cacheLastAccessTimeout" required="false" type="any">
+				<help><![CDATA[ The time in minutes the view will be removed from cache if idle or requested ]]></help>
+			</parameter>
+			<parameter name="cacheSuffix" required="false" type="any">
+				<help><![CDATA[ The suffix to add into the cache entry for this view rendering ]]></help>
+			</parameter>
+			<parameter name="cacheProvider" required="false" type="any">
+				<help><![CDATA[ The provider to cache this view in, defaults to 'template' ]]></help>
 			</parameter>
 			</function>
-	<function name="getRequestContext" returns="any">
-			<help><![CDATA[ Retrieve the request context object (Context: FrameworkSupertype) ]]></help>
-		</function>
+	<function name="renderLayout" returns="any">
+			<help><![CDATA[ Render a layout or a layout + view combo (Context: FrameworkSupertype) ]]></help>
+		<parameter name="layout" required="false" type="any">
+				<help><![CDATA[ The layout to render out ]]></help>
+			</parameter>
+			<parameter name="module" required="false" type="any">
+				<help><![CDATA[ The module to explicitly render this layout from ]]></help>
+			</parameter>
+			<parameter name="view" required="false" type="any">
+				<help><![CDATA[ The view to render within this layout ]]></help>
+			</parameter>
+			<parameter name="args" required="false" type="struct">
+				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
+			</parameter>
+			<parameter name="viewModule" required="false" type="any">
+				<help><![CDATA[ The module to explicitly render the view from ]]></help>
+			</parameter>
+			<parameter name="prePostExempt" required="false" type="boolean">
+				<help><![CDATA[ If true, pre/post layout interceptors will not be fired. By default they do fire ]]></help>
+			</parameter>
+			</function>
+	<function name="getInterceptor" returns="any">
+			<help><![CDATA[ Get an interceptor reference (Context: FrameworkSupertype) ]]></help>
+		<parameter name="interceptorName" required="true" type="any">
+				<help><![CDATA[ The name of the interceptor to retrieve ]]></help>
+			</parameter>
+			</function>
 	<function name="announceInterception" returns="any">
 			<help><![CDATA[ Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result. (Context: FrameworkSupertype) ]]></help>
 		<parameter name="state" required="true" type="any">
@@ -359,88 +213,13 @@
 				<help><![CDATA[ The name of the cache to retrieve, if not passed, it used the 'default' cache. ]]></help>
 			</parameter>
 			</function>
-	<function name="setSetting" returns="any">
-			<help><![CDATA[ Set a new setting in the system (Context: FrameworkSupertype) ]]></help>
-		<parameter name="name" required="true" type="any">
-				<help><![CDATA[ The key of the setting ]]></help>
+	<function name="getSettingStructure" returns="any">
+			<help><![CDATA[ DEPRECATED: Get all the settings structure (Context: FrameworkSupertype) ]]></help>
+		<parameter name="fwSetting" required="false" type="boolean">
+				<help><![CDATA[ Retrieve from the config or fw settings, defaults to config ]]></help>
 			</parameter>
-			<parameter name="value" required="true" type="any">
-				<help><![CDATA[ The value of the setting ]]></help>
-			</parameter>
-			</function>
-	<function name="renderExternalView" returns="any">
-			<help><![CDATA[ Renders an external view anywhere that cfinclude works. (Context: FrameworkSupertype) ]]></help>
-		<parameter name="view" required="true" type="any">
-				<help><![CDATA[ The the view to render ]]></help>
-			</parameter>
-			<parameter name="args" required="false" type="struct">
-				<help><![CDATA[ A struct of arguments to pass into the view for rendering, will be available as 'args' in the view. ]]></help>
-			</parameter>
-			<parameter name="cache" required="false" type="boolean">
-				<help><![CDATA[ Cached the view output or not, defaults to false ]]></help>
-			</parameter>
-			<parameter name="cacheTimeout" required="false" type="any">
-				<help><![CDATA[ The time in minutes to cache the view ]]></help>
-			</parameter>
-			<parameter name="cacheLastAccessTimeout" required="false" type="any">
-				<help><![CDATA[ The time in minutes the view will be removed from cache if idle or requested ]]></help>
-			</parameter>
-			<parameter name="cacheSuffix" required="false" type="any">
-				<help><![CDATA[ The suffix to add into the cache entry for this view rendering ]]></help>
-			</parameter>
-			<parameter name="cacheProvider" required="false" type="any">
-				<help><![CDATA[ The provider to cache this view in, defaults to 'template ]]></help>
-			</parameter>
-			</function>
-	<function name="renderView" returns="any">
-			<help><![CDATA[ Render out a view (Context: FrameworkSupertype) ]]></help>
-		<parameter name="view" required="false" type="any">
-				<help><![CDATA[ The the view to render, if not passed, then we look in the request context for the current set view. ]]></help>
-			</parameter>
-			<parameter name="args" required="false" type="struct">
-				<help><![CDATA[ A struct of arguments to pass into the view for rendering, will be available as 'args' in the view. ]]></help>
-			</parameter>
-			<parameter name="module" required="false" type="any">
-				<help><![CDATA[ The module to render the view from explicitly ]]></help>
-			</parameter>
-			<parameter name="cache" required="false" type="boolean">
-				<help><![CDATA[ Cached the view output or not, defaults to false ]]></help>
-			</parameter>
-			<parameter name="cacheTimeout" required="false" type="any">
-				<help><![CDATA[ The time in minutes to cache the view ]]></help>
-			</parameter>
-			<parameter name="cacheLastAccessTimeout" required="false" type="any">
-				<help><![CDATA[ The time in minutes the view will be removed from cache if idle or requested ]]></help>
-			</parameter>
-			<parameter name="cacheSuffix" required="false" type="any">
-				<help><![CDATA[ The suffix to add into the cache entry for this view rendering ]]></help>
-			</parameter>
-			<parameter name="cacheProvider" required="false" type="any">
-				<help><![CDATA[ The provider to cache this view in, defaults to 'template ]]></help>
-			</parameter>
-			<parameter name="collection" required="false" type="any">
-				<help><![CDATA[ A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query) ]]></help>
-			</parameter>
-			<parameter name="collectionAs" required="false" type="any">
-				<help><![CDATA[ The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention ]]></help>
-			</parameter>
-			<parameter name="collectionStartRow" required="false" type="numeric">
-				<help><![CDATA[ The start row to limit the collection rendering with ]]></help>
-			</parameter>
-			<parameter name="collectionMaxRows" required="false" type="numeric">
-				<help><![CDATA[ The max rows to iterate over the collection rendering with ]]></help>
-			</parameter>
-			<parameter name="collectionDelim" required="false" type="any">
-				<help><![CDATA[ A string to delimit the collection renderings by ]]></help>
-			</parameter>
-			<parameter name="prePostExempt" required="false" type="boolean">
-				<help><![CDATA[ If true, pre/post view interceptors will not be fired. By default they do fire ]]></help>
-			</parameter>
-			</function>
-	<function name="addAsset" returns="string">
-			<help><![CDATA[ Add a js/css asset(s) to the html head section. You can also pass in a list of assets. This method keeps track of the loaded assets so they are only loaded once (Context: FrameworkSupertype) ]]></help>
-		<parameter name="asset" required="true" type="any">
-				<help><![CDATA[ The asset(s) to load, only js or css files. This can also be a comma delimmited list. ]]></help>
+			<parameter name="deepCopy" required="false" type="boolean">
+				<help><![CDATA[ Do a deep or shallow copy, shallow is default ]]></help>
 			</parameter>
 			</function>
 	<function name="getSetting" returns="any">
@@ -455,60 +234,6 @@
 				<help><![CDATA[ If not found in config, default return value ]]></help>
 			</parameter>
 			</function>
-	<function name="getModuleConfig" returns="struct">
-			<help><![CDATA[ Get a module's configuration structure (Context: FrameworkSupertype) ]]></help>
-		<parameter name="module" required="true" type="any">
-				<help><![CDATA[ The module to retrieve the configuration structure from ]]></help>
-			</parameter>
-			</function>
-	<function name="locateDirectoryPath" returns="string">
-			<help><![CDATA[ Resolve a directory to be either relative or absolute in your application (Context: FrameworkSupertype) ]]></help>
-		<parameter name="pathToCheck" required="true" type="any">
-				<help><![CDATA[ The file path to check ]]></help>
-			</parameter>
-			</function>
-	<function name="getInterceptor" returns="any">
-			<help><![CDATA[ Get an interceptor reference (Context: FrameworkSupertype) ]]></help>
-		<parameter name="interceptorName" required="true" type="any">
-				<help><![CDATA[ The name of the interceptor to retrieve ]]></help>
-			</parameter>
-			</function>
-	<function name="getMyPlugin" returns="any">
-			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="locateFilePath" returns="string">
-			<help><![CDATA[ Resolve a file to be either relative or absolute in your application (Context: FrameworkSupertype) ]]></help>
-		<parameter name="pathToCheck" required="true" type="any">
-				<help><![CDATA[ The file path to check ]]></help>
-			</parameter>
-			</function>
-	<function name="includeUDF" returns="any">
-			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally (Context: FrameworkSupertype) ]]></help>
-		<parameter name="udflibrary" required="true" type="any">
-				<help><![CDATA[ The UDF library to inject ]]></help>
-			</parameter>
-			</function>
-	<function name="getSettingStructure" returns="any">
-			<help><![CDATA[ DEPRECATED: Get all the settings structure (Context: FrameworkSupertype) ]]></help>
-		<parameter name="fwSetting" required="false" type="boolean">
-				<help><![CDATA[ Retrieve from the config or fw settings, defaults to config ]]></help>
-			</parameter>
-			<parameter name="deepCopy" required="false" type="boolean">
-				<help><![CDATA[ Do a deep or shallow copy, shallow is default ]]></help>
-			</parameter>
-			</function>
-	<function name="loadApplicationHelpers" returns="any">
-			<help><![CDATA[ Load the global application helper libraries defined in the applicationHelper Setting of your application. This is called by the framework ONLY! Use at your own risk (Context: FrameworkSupertype) ]]></help>
-		</function>
-	<function name="persistVariables" returns="any">
-			<help><![CDATA[ Persist variables into the Flash RAM (Context: FrameworkSupertype) ]]></help>
-		<parameter name="persist" required="false" type="any">
-				<help><![CDATA[ A list of request collection keys to persist ]]></help>
-			</parameter>
-			<parameter name="persistStruct" required="false" type="struct">
-				<help><![CDATA[ A struct of key-value pairs to persist ]]></help>
-			</parameter>
-			</function>
 	<function name="settingExists" returns="boolean">
 			<help><![CDATA[ Verify a setting from the system (Context: FrameworkSupertype) ]]></help>
 		<parameter name="name" required="true" type="any">
@@ -516,6 +241,69 @@
 			</parameter>
 			<parameter name="fwSetting" required="false" type="boolean">
 				<help><![CDATA[ Retrieve from the config or fw settings, defaults to config ]]></help>
+			</parameter>
+			</function>
+	<function name="setSetting" returns="any">
+			<help><![CDATA[ Set a new setting in the system (Context: FrameworkSupertype) ]]></help>
+		<parameter name="name" required="true" type="any">
+				<help><![CDATA[ The key of the setting ]]></help>
+			</parameter>
+			<parameter name="value" required="true" type="any">
+				<help><![CDATA[ The value of the setting ]]></help>
+			</parameter>
+			</function>
+	<function name="getModuleSettings" returns="any">
+			<help><![CDATA[ Get a module's settings structure or a specific setting if the setting key is passed (Context: FrameworkSupertype) ]]></help>
+		<parameter name="module" required="true" type="any">
+				<help><![CDATA[ The module to retrieve the configuration settings from ]]></help>
+			</parameter>
+			<parameter name="setting" required="false" type="any">
+				<help><![CDATA[ The setting to retrieve if passed ]]></help>
+			</parameter>
+			<parameter name="defaultValue" required="false" type="any">
+				<help><![CDATA[ The default value to return if setting does not exist ]]></help>
+			</parameter>
+			</function>
+	<function name="getModuleConfig" returns="struct">
+			<help><![CDATA[ Get a module's configuration structure (Context: FrameworkSupertype) ]]></help>
+		<parameter name="module" required="true" type="any">
+				<help><![CDATA[ The module to retrieve the configuration structure from ]]></help>
+			</parameter>
+			</function>
+	<function name="setNextEvent" returns="void">
+			<help><![CDATA[ Relocate the user to another location (Context: FrameworkSupertype) ]]></help>
+		<parameter name="event" required="false" type="any">
+				<help><![CDATA[ The name of the event to run, if not passed, then it will use the default event found in your configuration file ]]></help>
+			</parameter>
+			<parameter name="URL" required="false" type="any">
+				<help><![CDATA[ The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com' ]]></help>
+			</parameter>
+			<parameter name="URI" required="false" type="any">
+				<help><![CDATA[ The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here' ]]></help>
+			</parameter>
+			<parameter name="queryString" required="false" type="any">
+				<help><![CDATA[ The query string to append, if needed. If in SES mode it will be translated to convention name value pairs ]]></help>
+			</parameter>
+			<parameter name="persist" required="false" type="any">
+				<help><![CDATA[ What request collection keys to persist in flash ram ]]></help>
+			</parameter>
+			<parameter name="persistStruct" required="false" type="struct">
+				<help><![CDATA[ A structure key-value pairs to persist in flash ram ]]></help>
+			</parameter>
+			<parameter name="addToken" required="false" type="boolean">
+				<help><![CDATA[ Wether to add the tokens or not. Default is false ]]></help>
+			</parameter>
+			<parameter name="ssl" required="false" type="boolean">
+				<help><![CDATA[ Whether to relocate in SSL or not ]]></help>
+			</parameter>
+			<parameter name="baseURL" required="false" type="any">
+				<help><![CDATA[ Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm ]]></help>
+			</parameter>
+			<parameter name="postProcessExempt" required="false" type="boolean">
+				<help><![CDATA[ Do not fire the postProcess interceptors ]]></help>
+			</parameter>
+			<parameter name="statusCode" required="false" type="numeric">
+				<help><![CDATA[ The status code to use in the relocation ]]></help>
 			</parameter>
 			</function>
 	<function name="runEvent" returns="any">
@@ -548,1142 +336,294 @@
 				<help><![CDATA[ The suffix to add into the cache entry for this event rendering ]]></help>
 			</parameter>
 			<parameter name="cacheProvider" required="false" type="any">
-				<help><![CDATA[ The provider to cache this event rendering in, defaults to 'template ]]></help>
+				<help><![CDATA[ The provider to cache this event rendering in, defaults to 'template' ]]></help>
 			</parameter>
 			</function>
-	<function name="renderLayout" returns="any">
-			<help><![CDATA[ Render a layout or a layout + view combo (Context: FrameworkSupertype) ]]></help>
-		<parameter name="layout" required="false" type="any">
-				<help><![CDATA[ The layout to render out ]]></help>
+	<function name="persistVariables" returns="any">
+			<help><![CDATA[ Persist variables into the Flash RAM (Context: FrameworkSupertype) ]]></help>
+		<parameter name="persist" required="false" type="any">
+				<help><![CDATA[ A list of request collection keys to persist ]]></help>
 			</parameter>
-			<parameter name="module" required="false" type="any">
-				<help><![CDATA[ The module to explicitly render this layout from ]]></help>
-			</parameter>
-			<parameter name="view" required="false" type="any">
-				<help><![CDATA[ The view to render within this layout ]]></help>
-			</parameter>
-			<parameter name="args" required="false" type="struct">
-				<help><![CDATA[ An optional set of arguments that will be available to this layouts/view rendering ONLY ]]></help>
-			</parameter>
-			<parameter name="viewModule" required="false" type="any">
-				<help><![CDATA[ The module to explicitly render the view from ]]></help>
-			</parameter>
-			<parameter name="prePostExempt" required="false" type="boolean">
-				<help><![CDATA[ If true, pre/post layout interceptors will not be fired. By default they do fire ]]></help>
+			<parameter name="persistStruct" required="false" type="struct">
+				<help><![CDATA[ A struct of key-value pairs to persist ]]></help>
 			</parameter>
 			</function>
-	<function name="getInstance" returns="any">
-			<help><![CDATA[ Get a instance object from WireBox (Context: FrameworkSupertype) ]]></help>
-		<parameter name="name" required="false" type="any">
-				<help><![CDATA[ The mapping name or CFC path to retrieve ]]></help>
+	<function name="locateFilePath" returns="string">
+			<help><![CDATA[ Resolve a file to be either relative or absolute in your application (Context: FrameworkSupertype) ]]></help>
+		<parameter name="pathToCheck" required="true" type="any">
+				<help><![CDATA[ The file path to check ]]></help>
 			</parameter>
-			<parameter name="dsl" required="false" type="any">
-				<help><![CDATA[ The DSL string to use to retrieve an instance ]]></help>
+			</function>
+	<function name="locateDirectoryPath" returns="string">
+			<help><![CDATA[ Resolve a directory to be either relative or absolute in your application (Context: FrameworkSupertype) ]]></help>
+		<parameter name="pathToCheck" required="true" type="any">
+				<help><![CDATA[ The file path to check ]]></help>
 			</parameter>
-			<parameter name="initArguments" required="false" type="any">
-				<help><![CDATA[ The constructor structure of arguments to passthrough when initializing the instance ]]></help>
+			</function>
+	<function name="addAsset" returns="string">
+			<help><![CDATA[ Add a js/css asset(s) to the html head section. You can also pass in a list of assets. This method
+keeps track of the loaded assets so they are only loaded once (Context: FrameworkSupertype) ]]></help>
+		<parameter name="asset" required="true" type="any">
+				<help><![CDATA[ The asset(s) to load, only js or css files. This can also be a comma delimmited list. ]]></help>
+			</parameter>
+			</function>
+	<function name="includeUDF" returns="any">
+			<help><![CDATA[ Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally (Context: FrameworkSupertype) ]]></help>
+		<parameter name="udflibrary" required="true" type="any">
+				<help><![CDATA[ The UDF library to inject ]]></help>
+			</parameter>
+			</function>
+	<function name="loadApplicationHelpers" returns="any">
+			<help><![CDATA[ Load the global application helper libraries defined in the applicationHelper Setting of your application.
+This is called by the framework ONLY! Use at your own risk (Context: FrameworkSupertype) ]]></help>
+		</function>
+	<function name="getPlugin" returns="any">
+			<help><![CDATA[ REMOVE THE FOLLOWING: JUST LEFT UNTIL COMPLETELY REMOVED *** (Context: FrameworkSupertype) ]]></help>
+		</function>
+	<function name="getMyPlugin" returns="any">
+			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
+		</function>
+	<function name="setController" returns="any">
+			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
+		<parameter name="controller" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="getController" returns="string">
+			<help><![CDATA[  (Context: FrameworkSupertype) ]]></help>
+		</function>
+<!-- Functions for: coldbox.system.Interceptor -->
+	<function name="init" returns="any">
+			<help><![CDATA[ Constructor (Context: Interceptor) ]]></help>
+		<parameter name="controller" required="true" type="any">
+				<help><![CDATA[ The ColdBox controller ]]></help>
+			</parameter>
+			<parameter name="properties" required="false" type="struct">
+				<help><![CDATA[ The properties to init the Interceptor with ]]></help>
+			</parameter>
+			</function>
+	<function name="configure" returns="void">
+			<help><![CDATA[ Configuration method for the interceptor (Context: Interceptor) ]]></help>
+		</function>
+	<function name="getProperty" returns="any">
+			<help><![CDATA[ Get an interceptor property (Context: Interceptor) ]]></help>
+		<parameter name="property" required="true" type="any">
+				<help><![CDATA[ The property to retrieve ]]></help>
+			</parameter>
+			<parameter name="defaultValue" required="false" type="any">
+				<help><![CDATA[ The default value to return if property does not exist ]]></help>
+			</parameter>
+			</function>
+	<function name="setProperty" returns="any">
+			<help><![CDATA[ Store an interceptor property (Context: Interceptor) ]]></help>
+		<parameter name="property" required="true" type="any">
+				<help><![CDATA[ The property to store ]]></help>
+			</parameter>
+			<parameter name="value" required="true" type="any">
+				<help><![CDATA[ The value to store ]]></help>
+			</parameter>
+			</function>
+	<function name="propertyExists" returns="boolean">
+			<help><![CDATA[ Verify an interceptor property (Context: Interceptor) ]]></help>
+		<parameter name="property" required="true" type="any">
+				<help><![CDATA[ The property to check ]]></help>
+			</parameter>
+			</function>
+	<function name="unregister" returns="any">
+			<help><![CDATA[ Unregister the interceptor (Context: Interceptor) ]]></help>
+		<parameter name="state" required="true" type="any">
+				<help><![CDATA[ The named state to unregister this interceptor from ]]></help>
+			</parameter>
+			</function>
+	<function name="clearBuffer" returns="any">
+			<help><![CDATA[ Clear the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe (Context: Interceptor) ]]></help>
+		</function>
+	<function name="appendToBuffer" returns="any">
+			<help><![CDATA[ Append to the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe (Context: Interceptor) ]]></help>
+		<parameter name="str" required="true" type="any">
+				<help><![CDATA[ The string to append to the buffer ]]></help>
+			</parameter>
+			</function>
+	<function name="getBufferString" returns="string">
+			<help><![CDATA[ Get the string representation of the buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe (Context: Interceptor) ]]></help>
+		</function>
+	<function name="getBufferObject" returns="any">
+			<help><![CDATA[ Get the request buffer object from scope.: Deprecated, please use incoming buffer arguements instead, this is not thread safe (Context: Interceptor) ]]></help>
+		</function>
+	<function name="getFlash" returns="string">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		</function>
+	<function name="setFlash" returns="any">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		<parameter name="flash" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="getLogBox" returns="string">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		</function>
+	<function name="getWirebox" returns="string">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		</function>
+	<function name="getLog" returns="string">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		</function>
+	<function name="setCachebox" returns="any">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		<parameter name="cachebox" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="setWirebox" returns="any">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		<parameter name="wirebox" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="getCachebox" returns="string">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		</function>
+	<function name="setProperties" returns="any">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		<parameter name="properties" required="true" type="struct">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="setLogBox" returns="any">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		<parameter name="logBox" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="getInterceptorService" returns="string">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		</function>
+	<function name="getProperties" returns="string">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		</function>
+	<function name="setLog" returns="any">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		<parameter name="log" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="setInterceptorService" returns="any">
+			<help><![CDATA[  (Context: Interceptor) ]]></help>
+		<parameter name="interceptorService" required="true" type="coldbox.system.services.InterceptorService">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+<!-- Functions for: coldbox.system.EventHandler -->
+	<function name="init" returns="any">
+			<help><![CDATA[ Constructor	* @controller The ColdBox controller	*	* @return EventHandler (Context: EventHandler) ]]></help>
+		<parameter name="controller" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="_actionExists" returns="boolean">
+			<help><![CDATA[ Verifies if an action exists in the current event handler, public or private	* @action The action to verify that it exists (Context: EventHandler) ]]></help>
+		<parameter name="action" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="_actionMetadata" returns="struct">
+			<help><![CDATA[ Return action metadata in the current event handler, public or private	 * @action The action to get the metadata from (Context: EventHandler) ]]></help>
+		<parameter name="action" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="_privateInvoker" returns="any">
+			<help><![CDATA[ _privateInvoker for private events	* @method The method to execute	* @argCollection The arguments to execute the method with. (Context: EventHandler) ]]></help>
+		<parameter name="method" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			<parameter name="argCollection" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="getFlash" returns="string">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		</function>
+	<function name="setFlash" returns="any">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		<parameter name="flash" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="getLogBox" returns="string">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		</function>
+	<function name="getCachebox" returns="string">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		</function>
+	<function name="getWirebox" returns="string">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		</function>
+	<function name="getLog" returns="string">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		</function>
+	<function name="setLogBox" returns="any">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		<parameter name="logBox" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="setCachebox" returns="any">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		<parameter name="cachebox" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="setWirebox" returns="any">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		<parameter name="wirebox" required="true" type="any">
+				<help><![CDATA[  ]]></help>
+			</parameter>
+			</function>
+	<function name="setLog" returns="any">
+			<help><![CDATA[  (Context: EventHandler) ]]></help>
+		<parameter name="log" required="true" type="any">
+				<help><![CDATA[  ]]></help>
 			</parameter>
 			</function>
 	</functions>
 
 
 <cfscopes>
-	<scopevar name="logbox">
-		<help><![CDATA[This is LogBox, an enterprise logger. Please remember to persist this factory once it has been created.]]></help>
-		<scopevar name="getVersion()">
-				<help><![CDATA[Get the LogBox version string.]]></help>
-			</scopevar>
-	<scopevar name="registerAppender(name,class,[properties],[layout],[levelMin],[levelMax])">
-				<help><![CDATA[Register a new appender object in the appender registry.]]></help>
-			</scopevar>
-	<scopevar name="getCurrentAppenders()">
-				<help><![CDATA[Get the list of currently registered appenders.]]></help>
-			</scopevar>
-	<scopevar name="locateCategoryParentLogger(category)">
-				<help><![CDATA[Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.]]></help>
-			</scopevar>
-	<scopevar name="configure(config)">
-				<help><![CDATA[Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories]]></help>
-			</scopevar>
-	<scopevar name="getAppendersMap(appenders)">
-				<help><![CDATA[Get a map of appenders by list. Usually called to get a category of appenders.]]></help>
-			</scopevar>
-	<scopevar name="getRootLogger()">
-				<help><![CDATA[Get the root logger]]></help>
-			</scopevar>
-	<scopevar name="getUtil()">
-				<help><![CDATA[Create and return a util object]]></help>
-			</scopevar>
-	<scopevar name="getLogger(category)">
-				<help><![CDATA[Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox]]></help>
-			</scopevar>
-	<scopevar name="getConfig()">
-				<help><![CDATA[Get this LogBox's configuration object.]]></help>
-			</scopevar>
-	<scopevar name="init(config,[coldbox])">
-				<help><![CDATA[Constructor]]></help>
-			</scopevar>
-	<scopevar name="getCurrentLoggers()">
-				<help><![CDATA[Get the list of currently instantiated loggers.]]></help>
-			</scopevar>
-</scopevar>
-	<scopevar name="flash">
-		<help><![CDATA[******************************************************************************** Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* An abstract flash scope that can be used to build ColdBox Flash scopes. In order to build scopes you must implement the following methods:  - clearFlash() A method that will destroy the flash storage - saveFlash() A method that will be called before relocating so the storage can be saved - flashExists() A method that tells ColdBox if the storage exists and if it has content to inflate - getFlash() A method that returns the flash storage  All these methds can use any of the concrete methods below. The most important one is the getScope() method which will most likely be called by the saveFlash() method in order to persist the flashed map.]]></help>
-		<scopevar name="inflateFlash()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="getProperty(property)">
-				<help><![CDATA[Get a named property]]></help>
-			</scopevar>
-	<scopevar name="getFlash()">
-				<help><![CDATA[Get the flash storage structure to inflate it.]]></help>
-			</scopevar>
-	<scopevar name="statusMarks([keys],[keep])">
-				<help><![CDATA[Change the status marks of the temp scope entries]]></help>
-			</scopevar>
-	<scopevar name="remove(name,[saveNow])">
-				<help><![CDATA[Remove an object from flash scope]]></help>
-			</scopevar>
-	<scopevar name="saveFlash()">
-				<help><![CDATA[Save the flash storage in preparing to go to the next request]]></help>
-			</scopevar>
-	<scopevar name="persistRC([include],[exclude],[saveNow])">
-				<help><![CDATA[Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed]]></help>
-			</scopevar>
-	<scopevar name="putAll(map,[saveNow],[keep],[inflateToRC],[inflateToPRC],[autoPurge])">
-				<help><![CDATA[Put a map of name-value pairs into the flash scope]]></help>
-			</scopevar>
-	<scopevar name="SETPROPERTIES(properties)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="removeFlash()">
-				<help><![CDATA[Remove the entire flash storage]]></help>
-			</scopevar>
-	<scopevar name="SETCONTROLLER(controller)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="GETCONTROLLER()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="clear()">
-				<help><![CDATA[Clear the temp flash scope and remove all data]]></help>
-			</scopevar>
-	<scopevar name="SETDEFAULTS(defaults)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="propertyExists(property)">
-				<help><![CDATA[Check a named property]]></help>
-			</scopevar>
-	<scopevar name="discard([keys])">
-				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
-			</scopevar>
-	<scopevar name="flashExists()">
-				<help><![CDATA[Checks if the flash storage exists and IT HAS DATA to inflate.]]></help>
-			</scopevar>
-	<scopevar name="clearFlash()">
-				<help><![CDATA[Clear the flash storage]]></help>
-			</scopevar>
-	<scopevar name="setProperty(property,value)">
-				<help><![CDATA[Set a named property]]></help>
-			</scopevar>
-	<scopevar name="keep([keys])">
-				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
-			</scopevar>
-	<scopevar name="GETDEFAULTS()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="getScope()">
-				<help><![CDATA[Get the flash temp request storage used throughout a request until flashed at the end of a request.]]></help>
-			</scopevar>
-	<scopevar name="GETPROPERTIES()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="get(name,[defaultValue])">
-				<help><![CDATA[Get an object from flash scope]]></help>
-			</scopevar>
-	<scopevar name="getUtil()">
-				<help><![CDATA[Get utility object]]></help>
-			</scopevar>
-	<scopevar name="exists(name)">
-				<help><![CDATA[Check if an object exists in flash scope]]></help>
-			</scopevar>
-	<scopevar name="getKeys()">
-				<help><![CDATA[Get a list of all the objects in the temp flash scope]]></help>
-			</scopevar>
-	<scopevar name="init(controller,defaults)">
-				<help><![CDATA[Constructor]]></help>
-			</scopevar>
-	<scopevar name="size()">
-				<help><![CDATA[Get the size of the items in flash scope]]></help>
-			</scopevar>
-	<scopevar name="put(name,value,[saveNow],[keep],[inflateToRC],[inflateToPRC],[autoPurge])">
-				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
-			</scopevar>
-	<scopevar name="isEmpty()">
-				<help><![CDATA[Check if the flash scope is empty or not]]></help>
-			</scopevar>
-</scopevar>
-	<scopevar name="binder">
-		<help><![CDATA[This is a WireBox configuration binder object.  You can use it to configure a WireBox injector instance using our WireBox Mapping DSL]]></help>
-		<scopevar name="getProperties()">
-				<help><![CDATA[Get the binded properties structure]]></help>
-			</scopevar>
-	<scopevar name="getScanLocations()">
-				<help><![CDATA[Get the linked map of package scan locations for CFCs]]></help>
-			</scopevar>
-	<scopevar name="getCustomScopes()">
-				<help><![CDATA[Get the registered custom scopes]]></help>
-			</scopevar>
-	<scopevar name="getLogBoxConfig()">
-				<help><![CDATA[Get the logBox Configuration file to use]]></help>
-			</scopevar>
-	<scopevar name="parent(alias)">
-				<help><![CDATA[this method lets you use an abstract or parent mapping as a template for other like objects]]></help>
-			</scopevar>
-	<scopevar name="getParentInjector()">
-				<help><![CDATA[Get the parent injector reference this binder is linked to]]></help>
-			</scopevar>
-	<scopevar name="getMappings()">
-				<help><![CDATA[Get all the registered object mappings structure]]></help>
-			</scopevar>
-	<scopevar name="configure()">
-				<help><![CDATA[The main configuration method that must be overriden by a specific WireBox Binder configuration object]]></help>
-			</scopevar>
-	<scopevar name="reset()">
-				<help><![CDATA[Reset the configuration back to the original binder defaults]]></help>
-			</scopevar>
-	<scopevar name="mapScope(annotation,path)">
-				<help><![CDATA[Register a new WireBox custom scope]]></help>
-			</scopevar>
-	<scopevar name="getStopRecursions()">
-				<help><![CDATA[Get all the stop recursion classes array]]></help>
-			</scopevar>
-	<scopevar name="asEagerInit()">
-				<help><![CDATA[If this method is called, the mapped object will be created once the injector starts up. Basically, not lazy loaded]]></help>
-			</scopevar>
-	<scopevar name="mixins(mixins)">
-				<help><![CDATA[Adds one, a list or an array of UDF templates to mixin to a CFC]]></help>
-			</scopevar>
-	<scopevar name="property(name,[ref],[dsl],[value],[javaCast],[scope],[required])">
-				<help><![CDATA[Map a cfproperty to a mapping]]></help>
-			</scopevar>
-	<scopevar name="scopeRegistration([enabled],[scope],[key])">
-				<help><![CDATA[Use to define injector scope registration]]></help>
-			</scopevar>
-	<scopevar name="constructor(constructor)">
-				<help><![CDATA[You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.]]></help>
-			</scopevar>
-	<scopevar name="init(injector,[config],[properties])">
-				<help><![CDATA[Constructor: You can pass a data CFC instance, data CFC path or nothing at all for purely programmatic configuration]]></help>
-			</scopevar>
-	<scopevar name="getMapping(name)">
-				<help><![CDATA[Get a specific object mapping: coldbox.system.ioc.config.Mapping]]></help>
-			</scopevar>
-	<scopevar name="getCustomDSL()">
-				<help><![CDATA[Get the custom dsl namespace registration structure]]></help>
-			</scopevar>
-	<scopevar name="notThreadSafe()">
-				<help><![CDATA[This is the default wiring of objects that allow circular dependencies.  By default all object's constructors are the only thread safe areas]]></help>
-			</scopevar>
-	<scopevar name="inCacheBox([key],[timeout],[lastAccessTimeout],[provider])">
-				<help><![CDATA[Map an object into CacheBox]]></help>
-			</scopevar>
-	<scopevar name="toDSL(dsl)">
-				<help><![CDATA[Map to a dsl that will be used to create the mapped object]]></help>
-			</scopevar>
-	<scopevar name="logBoxConfig(config)">
-				<help><![CDATA[Set the logBox Configuration to use]]></help>
-			</scopevar>
-	<scopevar name="match()">
-				<help><![CDATA[Create a new matcher class for usage in class or method matching]]></help>
-			</scopevar>
-	<scopevar name="processMappings()">
-				<help><![CDATA[Process all registered mappings, called by injector when ready to start serving requests]]></help>
-			</scopevar>
-	<scopevar name="mapAspect(aspect,autoBinding)">
-				<help><![CDATA[Map a new aspect]]></help>
-			</scopevar>
-	<scopevar name="toValue(value)">
-				<help><![CDATA[Map to a constant value]]></help>
-			</scopevar>
-	<scopevar name="asSingleton()">
-				<help><![CDATA[Map as a singleton, shortcut to using 'in( this.SCOPES.SINGLETON )']]></help>
-			</scopevar>
-	<scopevar name="listener(class,[properties],[name])">
-				<help><![CDATA[Add a new listener configuration.]]></help>
-			</scopevar>
-	<scopevar name="getAppMapping()">
-				<help><![CDATA[Get the ColdBox app mapping variable if context linked]]></help>
-			</scopevar>
-	<scopevar name="removeScanLocations(locations)">
-				<help><![CDATA[Try to remove all the scan locations passed in]]></help>
-			</scopevar>
-	<scopevar name="mapPath(path,[namespace],[prepend],[force])">
-				<help><![CDATA[Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.]]></help>
-			</scopevar>
-	<scopevar name="into(scope)">
-				<help><![CDATA[Map an object into a specific persistence scope]]></help>
-			</scopevar>
-	<scopevar name="getInjector()">
-				<help><![CDATA[Get the bounded injector for this binder]]></help>
-			</scopevar>
-	<scopevar name="noInit()">
-				<help><![CDATA[If you call this method on an object mapping, the object's constructor will not be called. By default all constructors are called.]]></help>
-			</scopevar>
-	<scopevar name="toProvider(provider)">
-				<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider or a closure or UDF]]></help>
-			</scopevar>
-	<scopevar name="providerMethod(method,mapping)">
-				<help><![CDATA[Add a new provider method mapping]]></help>
-			</scopevar>
-	<scopevar name="scanLocations(locations)">
-				<help><![CDATA[Register one or more package scan locations for CFC lookups]]></help>
-			</scopevar>
-	<scopevar name="setMapping(name,mapping)">
-				<help><![CDATA[Set a mapping object into the mappings map]]></help>
-			</scopevar>
-	<scopevar name="toFactoryMethod(factory,method)">
-				<help><![CDATA[Map to a factory and its executing method.]]></help>
-			</scopevar>
-	<scopevar name="getScopeRegistration()">
-				<help><![CDATA[Get the scope registration details structure]]></help>
-			</scopevar>
-	<scopevar name="bindAspect(classes,methods,aspects)">
-				<help><![CDATA[Bind a aspects to classes and methods]]></help>
-			</scopevar>
-	<scopevar name="getColdBox()">
-				<help><![CDATA[Get the bounded ColdBox context for this binder, if any]]></help>
-			</scopevar>
-	<scopevar name="map(alias,[force])">
-				<help><![CDATA[Create a mapping to an object]]></help>
-			</scopevar>
-	<scopevar name="unMap(name)">
-				<help><![CDATA[Destroys a mapping by name]]></help>
-			</scopevar>
-	<scopevar name="mappingExists(name)">
-				<help><![CDATA[Check if an object mapping exists]]></help>
-			</scopevar>
-	<scopevar name="getCacheBoxConfig()">
-				<help><![CDATA[Get the CacheBox Configuration Integration structure]]></help>
-			</scopevar>
-	<scopevar name="initWith()">
-				<help><![CDATA[Positional or named value arguments to use when initializing the mapping. (CFC-only)]]></help>
-			</scopevar>
-	<scopevar name="toWebservice(path)">
-				<help><![CDATA[Map to a webservice destination class path.]]></help>
-			</scopevar>
-	<scopevar name="setProperty(name,value)">
-				<help><![CDATA[Create a new binding property]]></help>
-			</scopevar>
-	<scopevar name="parentInjector(injector)">
-				<help><![CDATA[Link a parent injector to this configuration binder]]></help>
-			</scopevar>
-	<scopevar name="getDefaults()">
-				<help><![CDATA[Get the default WireBox settings structure]]></help>
-			</scopevar>
-	<scopevar name="toRSS(path)">
-				<help><![CDATA[Map to a rss destination class path.]]></help>
-			</scopevar>
-	<scopevar name="methodArg([name],[ref],[dsl],[value],[javaCast])">
-				<help><![CDATA[Map a method argument to a factory method]]></help>
-			</scopevar>
-	<scopevar name="getListeners()">
-				<help><![CDATA[Get the configured listeners array]]></help>
-			</scopevar>
-	<scopevar name="toJava(path)">
-				<help><![CDATA[Map to a java destination class path.]]></help>
-			</scopevar>
-	<scopevar name="mapDSL(namespace,path)">
-				<help><![CDATA[Register a new custom dsl namespace]]></help>
-			</scopevar>
-	<scopevar name="mapDirectory(packagePath,include,exclude,[influence],[filter],[namespace],[prepend])">
-				<help><![CDATA[Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection]]></help>
-			</scopevar>
-	<scopevar name="initArg([name],[ref],[dsl],[value],[javaCast],[required])">
-				<help><![CDATA[Map a constructor argument to a mapping]]></help>
-			</scopevar>
-	<scopevar name="setter(name,[ref],[dsl],[value],[javaCast],[argName])">
-				<help><![CDATA[Map a setter function to a mapping]]></help>
-			</scopevar>
-	<scopevar name="onDIComplete(methods)">
-				<help><![CDATA[The methods to execute once DI completes on the mapping]]></help>
-			</scopevar>
-	<scopevar name="stopRecursions(classes)">
-				<help><![CDATA[Configure the stop recursion classes]]></help>
-			</scopevar>
-	<scopevar name="extraAttributes(data)">
-				<help><![CDATA[Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.]]></help>
-			</scopevar>
-	<scopevar name="propertyExists(name)">
-				<help><![CDATA[Checks if a property exists]]></help>
-			</scopevar>
-	<scopevar name="loadDataDSL([rawDSL])">
-				<help><![CDATA[Load a data configuration CFC data DSL]]></help>
-			</scopevar>
-	<scopevar name="threadSafe()">
-				<help><![CDATA[Tells persistence scopes to build, wire, and do onDIComplete() on objects in an isolated lock. This will disallow circular references unless object providers are used.  By default all object's constructors are the only thread safe areas]]></help>
-			</scopevar>
-	<scopevar name="setProperties(properties)">
-				<help><![CDATA[Set the binded properties structure]]></help>
-			</scopevar>
-	<scopevar name="getMemento()">
-				<help><![CDATA[Get the instance data structure]]></help>
-			</scopevar>
-	<scopevar name="getCurrentMapping()">
-				<help><![CDATA[Get the current set mapping (UTILITY method)]]></help>
-			</scopevar>
-	<scopevar name="to(path)">
-				<help><![CDATA[Map to a destination CFC class path.]]></help>
-			</scopevar>
-	<scopevar name="virtualInheritance(mapping)">
-				<help><![CDATA[Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping]]></help>
-			</scopevar>
-	<scopevar name="noAutowire()">
-				<help><![CDATA[If you call this method on an object mapping, the object will NOT be inspected for injection/wiring metadata, it will use ONLY whatever you define in the mapping.]]></help>
-			</scopevar>
-	<scopevar name="with(alias)">
-				<help><![CDATA[Used to set the current working mapping name in place for the maping DSL. An exception is thrown if the mapping does not exist yet.]]></help>
-			</scopevar>
-	<scopevar name="getProperty(name,[default])">
-				<help><![CDATA[Get a binded property. If not found it will try to return the default value passed, else it returns an exception]]></help>
-			</scopevar>
-	<scopevar name="cacheBox([configFile],[cacheFactory],[enabled],[classNamespace])">
-				<help><![CDATA[Integrate with CacheBox]]></help>
-			</scopevar>
-	<scopevar name="getAspectBindings()">
-				<help><![CDATA[Get the collection of aspect bindings for this binder]]></help>
-			</scopevar>
-</scopevar>
-	<scopevar name="html">
-		<help><![CDATA[A cool utility that helps you when working with HTML, from creating doc types, to managing your js/css assets, to rendering tables and lists from data]]></help>
-		<scopevar name="startFieldset([legend],[data])">
-				<help><![CDATA[Create a fieldset tag with or without a legend.]]></help>
-			</scopevar>
-	<scopevar name="arrayToTable(data,[includes],[excludes],buffer)">
-				<help><![CDATA[Convert a table out of an array]]></help>
-			</scopevar>
-	<scopevar name="resetButton([name],[value],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
-				<help><![CDATA[Render out a reset button. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="textField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
-				<help><![CDATA[Render out a text field. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="slugify(str,[maxLength],[allow])">
-				<help><![CDATA[Create a URL safe slug from a string]]></help>
-			</scopevar>
-	<scopevar name="autoDiscoveryLink([type],[href],[rel],[title],[data])">
-				<help><![CDATA[Creates auto discovery links for RSS and ATOM feeds.]]></help>
-			</scopevar>
-	<scopevar name="checkBox([name],[value],[disabled],[checked],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
-				<help><![CDATA[Render out a checkbox. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="textArea([name],[cols],[rows],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty],[data])">
-				<help><![CDATA[Render out a textarea. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="radioButton([name],[value],[disabled],[checked],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
-				<help><![CDATA[Render out a radio button. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="entityFields(entity,[groupWrapper],[fieldwrapper],[labelwrapper],[labelClass],[textareas],[booleanSelect],[showRelations],[manytoone],[manytomany])">
-				<help><![CDATA[Create fields based on entity properties]]></help>
-			</scopevar>
-	<scopevar name="submitButton([name],[value],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
-				<help><![CDATA[Render out a submit button. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="video(src,[width],[height],[poster],[autoplay],[controls],[loop],[preload],[noBaseURL],[name],[data])">
-				<help><![CDATA[Create an HTML 5 video tag]]></help>
-			</scopevar>
-	<scopevar name="init(controller)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="normalizeID([args])">
-				<help><![CDATA[Normalize ID with name arguments]]></help>
-			</scopevar>
-	<scopevar name="imageButton(src,[name],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
-				<help><![CDATA[Render out a image button. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="heading(title,[size])">
-				<help><![CDATA[Generate header tags]]></help>
-			</scopevar>
-	<scopevar name="tag(tag,[content],[data])">
-				<help><![CDATA[Surround content with a tag]]></help>
-			</scopevar>
-	<scopevar name="urlfield([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
-				<help><![CDATA[Render out a URL field. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="select([name],[options],[column],[nameColumn],[selectedIndex],[selectedValue],[bind],[bindProperty],[disabled],[multiple],[wrapper],[groupWrapper],[label],[labelwrapper],[data],[labelClass])">
-				<help><![CDATA[Render out a select tag. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="passwordField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
-				<help><![CDATA[Render out a password field. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="addStyleContent(content,[addToHeader])">
-				<help><![CDATA[Open and close xhtml style tags so you can easily just add content]]></help>
-			</scopevar>
-	<scopevar name="ol(values,[column])">
-				<help><![CDATA[Create ordered lists according to passed in values and arguments, compressed HTML]]></help>
-			</scopevar>
-	<scopevar name="startForm([action],[name],[method],[multipart],[ssl],[noBaseURL],[data])">
-				<help><![CDATA[Create cool form tags. Any extra argument will be passed as attributes to the form tag]]></help>
-			</scopevar>
-	<scopevar name="ul(values,[column])">
-				<help><![CDATA[Create un-ordered lists according to passed in values and arguments, compressed HTML]]></help>
-			</scopevar>
-	<scopevar name="queryToTable(data,[includes],[excludes],buffer)">
-				<help><![CDATA[Convert a table out of an array of structures]]></help>
-			</scopevar>
-	<scopevar name="inputField([type],[name],[value],[disabled],[checked],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty],[data])">
-				<help><![CDATA[Create an input field using some cool tags and features.	Any extra arguments are passed to the tag]]></help>
-			</scopevar>
-	<scopevar name="link(href,[rel],[type],[title],[media],[noBaseURL],[charset],[sendToHeader],[data])">
-				<help><![CDATA[Create link tags, using the SES base URL or not]]></help>
-			</scopevar>
-	<scopevar name="meta(name,[content],[type],[sendToHeader])">
-				<help><![CDATA[Helps you generate meta tags]]></help>
-			</scopevar>
-	<scopevar name="table(data,[includes],[excludes],[name])">
-				<help><![CDATA[Convert a table out of data (either a query or array of structures or array of entities)]]></help>
-			</scopevar>
-	<scopevar name="nbs([count])">
-				<help><![CDATA[Generate non-breaking spaces (&nbsp;)]]></help>
-			</scopevar>
-	<scopevar name="audio(src,[autoplay],[controls],[loop],[preLoad],[noBaseURL],[name],[data])">
-				<help><![CDATA[Create an HTML 5 audio tag]]></help>
-			</scopevar>
-	<scopevar name="addJSContent(content,[addToHeader])">
-				<help><![CDATA[Open and close HTML5 javascript tags so you can easily just add content]]></help>
-			</scopevar>
-	<scopevar name="br([count])">
-				<help><![CDATA[Generate line breaks]]></help>
-			</scopevar>
-	<scopevar name="addAsset(asset,[sendToHeader],[async],[defer])">
-				<help><![CDATA[Add a js/css asset(s) to the html head section. You can also pass in a list of assets via the asset argument to try to load all of them.	You can also make this method return the string that will be sent to the header instead.]]></help>
-			</scopevar>
-	<scopevar name="hiddenField([name],[value],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
-				<help><![CDATA[Render out a hidden field. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="fileField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
-				<help><![CDATA[Render out a file field. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="endFieldset()">
-				<help><![CDATA[End a fieldset tag]]></help>
-			</scopevar>
-	<scopevar name="toHTMLList(tag,values,[column],[data])">
-				<help><![CDATA[Convert a sent in tag type to an HTML list]]></help>
-			</scopevar>
-	<scopevar name="img(src,[alt],[class],[width],[height],[title],[rel],[name],[noBaseURL],[data])">
-				<help><![CDATA[Create image tags using the SES base URL or not]]></help>
-			</scopevar>
-	<scopevar name="anchor(name,[text],[data])">
-				<help><![CDATA[Create an anchor tag]]></help>
-			</scopevar>
-	<scopevar name="passIncludeExclude(value,[includes],[excludes])">
-				<help><![CDATA[checks if a list include exclude check passes]]></help>
-			</scopevar>
-	<scopevar name="$htmlhead(content)">
-				<help><![CDATA[Facade to cfhtmlhead]]></help>
-			</scopevar>
-	<scopevar name="canvas(id,[width],[height],[data])">
-				<help><![CDATA[Create a canvas tag]]></help>
-			</scopevar>
-	<scopevar name="getColumnArray(qry,columnName)">
-				<help><![CDATA[Returns an array of the values]]></help>
-			</scopevar>
-	<scopevar name="prepareBaseLink([noBaseURL],[src])">
-				<help><![CDATA[Prepare a base link]]></help>
-			</scopevar>
-	<scopevar name="flattenAttributes(target,[excludes],buffer)">
-				<help><![CDATA[flatten a struct of attributes to strings]]></help>
-			</scopevar>
-	<scopevar name="makePretty([text])">
-				<help><![CDATA[make pretty text]]></help>
-			</scopevar>
-	<scopevar name="href([href],[text],[queryString],[title],[target],[ssl],[noBaseURL],[data])">
-				<help><![CDATA[Create href tags, using the SES base URL or not]]></help>
-			</scopevar>
-	<scopevar name="endForm()">
-				<help><![CDATA[End a form tag]]></help>
-			</scopevar>
-	<scopevar name="onMissingMethod(missingMethodName,missingMethodArguments)">
-				<help><![CDATA[Proxy calls to provided element]]></help>
-			</scopevar>
-	<scopevar name="wrapTag([buffer],[tag],[end])">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="emailField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
-				<help><![CDATA[Render out an email field. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="label(field,[content],[wrapper],[data],[class])">
-				<help><![CDATA[Render a label tag. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="button([name],[value],[disabled],[type],[wrapper],[groupWrapper],[label],[labelwrapper],[data],[labelClass])">
-				<help><![CDATA[Render out a button. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="docType([type])">
-				<help><![CDATA[Render a doctype by type name: xhtml11,xhtml1-strict,xhtml-trans,xthml-frame,html5,html4-strict,html4-trans,html4-frame]]></help>
-			</scopevar>
-	<scopevar name="options([values],[column],[nameColumn],[selectedIndex],[selectedValue])">
-				<help><![CDATA[Render out options. Remember that any extra arguments are passed as tag attributes]]></help>
-			</scopevar>
-	<scopevar name="bindValue([args])">
-				<help><![CDATA[Bind entity values]]></help>
-			</scopevar>
-</scopevar>
-	<scopevar name="event">
-		<help><![CDATA[******************************************************************************* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* Models a ColdBox request, stores the incoming request collection and private request collection. It is also used to determine metadata about a request and helps you build RESTFul responses.]]></help>
-		<scopevar name="paramPrivateValue(name,value)">
-				<help><![CDATA[Just like cfparam, but for the private request collection]]></help>
-			</scopevar>
-	<scopevar name="getEventName()">
-				<help><![CDATA[Get the event name]]></help>
-			</scopevar>
-	<scopevar name="getCurrentRoutedNamespace()">
-				<help><![CDATA[Get the current routed namespace that matched the SES route, if any]]></help>
-			</scopevar>
-	<scopevar name="getCurrentViewModule()">
-				<help><![CDATA[Gets the current set views's module for rendering]]></help>
-			</scopevar>
-	<scopevar name="setValue(name,value,[private])">
-				<help><![CDATA[Set a value in the request collection]]></help>
-			</scopevar>
-	<scopevar name="removePrivateValue(name,[private])">
-				<help><![CDATA[remove a value in the private request collection]]></help>
-			</scopevar>
-	<scopevar name="setProxyRequest()">
-				<help><![CDATA[Set that this is a proxy request]]></help>
-			</scopevar>
-	<scopevar name="getDefaultLayout()">
-				<help><![CDATA[Get's the default layout of the application]]></help>
-			</scopevar>
-	<scopevar name="noLayout()">
-				<help><![CDATA[Mark this request to not use a layout for rendering]]></help>
-			</scopevar>
-	<scopevar name="removeValue(name,[private])">
-				<help><![CDATA[remove a value in the request collection]]></help>
-			</scopevar>
-	<scopevar name="setDefaultLayout(defaultLayout)">
-				<help><![CDATA[Override the default layout for a request]]></help>
-			</scopevar>
-	<scopevar name="getHTTPContent([json],[xml])">
-				<help><![CDATA[Get the raw HTTP content]]></help>
-			</scopevar>
-	<scopevar name="GETCONTEXT()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="getFolderLayouts()">
-				<help><![CDATA[Get the registered folder layout associations map]]></help>
-			</scopevar>
-	<scopevar name="paramValue(name,value,[private])">
-				<help><![CDATA[Just like cfparam, but for the request collection]]></help>
-			</scopevar>
-	<scopevar name="getCurrentRoutedURL()">
-				<help><![CDATA[Get the current routed URL that matched the SES route]]></help>
-			</scopevar>
-	<scopevar name="getHTTPHeader(The header to get,[defaultValue])">
-				<help><![CDATA[Get an HTTP header]]></help>
-			</scopevar>
-	<scopevar name="getTrimValue(name,[defaultValue],[private])">
-				<help><![CDATA[Get a value from the request collection and if simple value, I will trim it.]]></help>
-			</scopevar>
-	<scopevar name="getCurrentLayoutModule()">
-				<help><![CDATA[Gets the current set layout's module for rendering]]></help>
-			</scopevar>
-	<scopevar name="setHTTPHeader([statusCode],[statusText],[name],[value])">
-				<help><![CDATA[Set an HTTP Header  return RequestContext]]></help>
-			</scopevar>
-	<scopevar name="getPrivateValue(name,[defaultValue])">
-				<help><![CDATA[Get a value from the private request collection.]]></help>
-			</scopevar>
-	<scopevar name="getCollection([deepCopy],[private])">
-				<help><![CDATA[I Get a reference or deep copy of the public or private request Collection]]></help>
-			</scopevar>
-	<scopevar name="privateValueExists(name)">
-				<help><![CDATA[Check if a value exists in the private request collection]]></help>
-			</scopevar>
-	<scopevar name="getCurrentRoute()">
-				<help><![CDATA[Get the current request's SES route that matched]]></help>
-			</scopevar>
-	<scopevar name="clearPrivateCollection()">
-				<help><![CDATA[Clears the private collection]]></help>
-			</scopevar>
-	<scopevar name="getSESBaseURL()">
-				<help><![CDATA[Get the SES base URL for this request]]></help>
-			</scopevar>
-	<scopevar name="SETCONTROLLER(controller)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="GETPRIVATECONTEXT()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="buildLink(linkTo,[translate],[ssl],[baseURL],[queryString])">
-				<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes]]></help>
-			</scopevar>
-	<scopevar name="getRoutedStruct()">
-				<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
-			</scopevar>
-	<scopevar name="getCurrentLayout()">
-				<help><![CDATA[Gets the current set layout for rendering]]></help>
-			</scopevar>
-	<scopevar name="getRenderData()">
-				<help><![CDATA[Get the renderData structure]]></help>
-			</scopevar>
-	<scopevar name="noExecution()">
-				<help><![CDATA[Set that the request will not execute an incoming event. Most likely simulating a servlet call]]></help>
-			</scopevar>
-	<scopevar name="isViewCacheable()">
-				<help><![CDATA[Check wether the incoming view has been flagged for caching]]></help>
-			</scopevar>
-	<scopevar name="getRegisteredLayouts()">
-				<help><![CDATA[Get all the registered layouts in the configuration file]]></help>
-			</scopevar>
-	<scopevar name="getHTTPBasicCredentials()">
-				<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
-			</scopevar>
-	<scopevar name="privateCollectionAppend(collection,[overwrite])">
-				<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
-			</scopevar>
-	<scopevar name="overrideEvent(event)">
-				<help><![CDATA[Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method]]></help>
-			</scopevar>
-	<scopevar name="renderWithFormats()">
-				<help><![CDATA[Render data with formats]]></help>
-			</scopevar>
-	<scopevar name="SETCONTEXT(context)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="isSES()">
-				<help><![CDATA[Is this request in SES mode]]></help>
-			</scopevar>
-	<scopevar name="setRoutedStruct(routedStruct)">
-				<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
-			</scopevar>
-	<scopevar name="setPrivateValue(name,value)">
-				<help><![CDATA[Set a value in the private request collection]]></help>
-			</scopevar>
-	<scopevar name="isSSL()">
-				<help><![CDATA[Are we in SSL or not? This method looks at cgi.server_port_secure for indication]]></help>
-			</scopevar>
-	<scopevar name="collectionAppend(collection,[overwrite],[private])">
-				<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
-			</scopevar>
-	<scopevar name="isNoExecution()">
-				<help><![CDATA[Determine if we need to execute an incoming event or not]]></help>
-			</scopevar>
-	<scopevar name="isEventCacheable()">
-				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
-			</scopevar>
-	<scopevar name="setLayout(name,[module])">
-				<help><![CDATA[Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name]]></help>
-			</scopevar>
-	<scopevar name="getCurrentEvent()">
-				<help><![CDATA[Gets the current incoming event]]></help>
-			</scopevar>
-	<scopevar name="noRender([remove])">
-				<help><![CDATA[Set the flag that tells the framework not to render, just execute]]></help>
-			</scopevar>
-	<scopevar name="renderData([type],data,[contentType],[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs],[formats],[formatsView],[isBinary])">
-				<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
-			</scopevar>
-	<scopevar name="getSelf()">
-				<help><![CDATA[Returns index.cfm?{eventName}=]]></help>
-			</scopevar>
-	<scopevar name="valueExists(name,[private])">
-				<help><![CDATA[Check if a value exists in the request collection]]></help>
-			</scopevar>
-	<scopevar name="getViewLayouts()">
-				<help><![CDATA[Get the registered view layout associations map]]></help>
-			</scopevar>
-	<scopevar name="getMemento()">
-				<help><![CDATA[Get a representation of this instance]]></help>
-			</scopevar>
-	<scopevar name="setDefaultView(defaultView)">
-				<help><![CDATA[Override the default view for a request]]></help>
-			</scopevar>
-	<scopevar name="setSESBaseURL(sesBaseURL)">
-				<help><![CDATA[Set the ses base URL for this request]]></help>
-			</scopevar>
-	<scopevar name="setIsSES(isSES)">
-				<help><![CDATA[Is this request in SES mode]]></help>
-			</scopevar>
-	<scopevar name="removeEventCacheableEntry()">
-				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
-			</scopevar>
-	<scopevar name="setEventCacheableEntry(cacheEntry)">
-				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
-			</scopevar>
-	<scopevar name="isNoRender()">
-				<help><![CDATA[Is this a no render request]]></help>
-			</scopevar>
-	<scopevar name="getCurrentHandler()">
-				<help><![CDATA[Gets the current handler requested in the current event]]></help>
-			</scopevar>
-	<scopevar name="getModuleRoot([module])">
-				<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings]]></help>
-			</scopevar>
-	<scopevar name="isProxyRequest()">
-				<help><![CDATA[Is this a coldbox proxy request]]></help>
-			</scopevar>
-	<scopevar name="getSize([private])">
-				<help><![CDATA[Get the collection Size]]></help>
-			</scopevar>
-	<scopevar name="setViewCacheableEntry(cacheEntry)">
-				<help><![CDATA[Set the view cacheable entry]]></help>
-			</scopevar>
-	<scopevar name="getCurrentModule()">
-				<help><![CDATA[Gets the current module name, else returns empty string]]></help>
-			</scopevar>
-	<scopevar name="getCurrentViewArgs()">
-				<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
-			</scopevar>
-	<scopevar name="getValue(name,[defaultValue],[private])">
-				<help><![CDATA[Get a value from the public or private request collection.]]></help>
-			</scopevar>
-	<scopevar name="SETPROPERTIES(properties)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="clearCollection([private])">
-				<help><![CDATA[Clears the entire collection]]></help>
-			</scopevar>
-	<scopevar name="GETCONTROLLER()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="getPrivateSize()">
-				<help><![CDATA[Get the private collection Size]]></help>
-			</scopevar>
-	<scopevar name="getHTTPMethod()">
-				<help><![CDATA[Get the HTTP Request Method Type]]></help>
-			</scopevar>
-	<scopevar name="getPrivateTrimValue(name,[defaultValue])">
-				<help><![CDATA[Get a trim value from the private request collection.]]></help>
-			</scopevar>
-	<scopevar name="setView([view],[args],[layout],[module],[noLayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider])">
-				<help><![CDATA[Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
-			</scopevar>
-	<scopevar name="getPrivateCollection([deepCopy])">
-				<help><![CDATA[I get a private collection]]></help>
-			</scopevar>
-	<scopevar name="getCurrentAction()">
-				<help><![CDATA[Gets the current action requested in the current event]]></help>
-			</scopevar>
-	<scopevar name="GETPROPERTIES()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="getDefaultView()">
-				<help><![CDATA[Get's the default view of the application]]></help>
-			</scopevar>
-	<scopevar name="getEventCacheableEntry()">
-				<help><![CDATA[Get the event cacheable entry]]></help>
-			</scopevar>
-	<scopevar name="getViewCacheableEntry()">
-				<help><![CDATA[Get the event cacheable entry]]></help>
-			</scopevar>
-	<scopevar name="setMemento(memento)">
-				<help><![CDATA[Override the instance]]></help>
-			</scopevar>
-	<scopevar name="init(properties,controller)">
-				<help><![CDATA[Constructor]]></help>
-			</scopevar>
-	<scopevar name="SETPRIVATECONTEXT(privateContext)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="isAjax()">
-				<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
-			</scopevar>
-	<scopevar name="getCurrentView()">
-				<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
-			</scopevar>
-</scopevar>
-	<scopevar name="wirebox">
-		<help><![CDATA[A WireBox Injector: Builds the graphs of objects that make up your application.]]></help>
-		<scopevar name="processProviderMethods(targetObject,mapping)">
-				<help><![CDATA[Process provider methods on the selected target]]></help>
-			</scopevar>
-	<scopevar name="configureEventManager()">
-				<help><![CDATA[Configure a standalone version of a WireBox Event Manager]]></help>
-			</scopevar>
-	<scopevar name="isCacheBoxLinked()">
-				<help><![CDATA[Checks if CacheBox is linked]]></help>
-			</scopevar>
-	<scopevar name="shutdown()">
-				<help><![CDATA[Shutdown the injector gracefully by calling the shutdown events internally.]]></help>
-			</scopevar>
-	<scopevar name="getVersion()">
-				<help><![CDATA[Get the Injector's version string.]]></help>
-			</scopevar>
-	<scopevar name="getScopes()">
-				<help><![CDATA[Get all the registered scopes structure in this injector]]></help>
-			</scopevar>
-	<scopevar name="injectTarget(target,propertyName,propertyObject,scope,argName)">
-				<help><![CDATA[Inject a model object with dependencies via setters or property injections]]></help>
-			</scopevar>
-	<scopevar name="registerScopes()">
-				<help><![CDATA[Register all internal and configured WireBox Scopes]]></help>
-			</scopevar>
-	<scopevar name="init([binder],[properties],[coldbox])">
-				<help><![CDATA[Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder]]></help>
-			</scopevar>
-	<scopevar name="getObjectPopulator()">
-				<help><![CDATA[Get an object populator useful for populating objects from JSON,XML, etc.]]></help>
-			</scopevar>
-	<scopevar name="getLogBox()">
-				<help><![CDATA[Get the instance of LogBox configured for this Injector]]></help>
-			</scopevar>
-	<scopevar name="getUtil()">
-				<help><![CDATA[Return the core util object]]></help>
-			</scopevar>
-	<scopevar name="processInjection(targetObject,DIData,targetID)">
-				<help><![CDATA[Process property and setter injection]]></help>
-			</scopevar>
-	<scopevar name="getCacheBox()">
-				<help><![CDATA[Get the instance of CacheBox linked in this Injector. Empty if using standalone version]]></help>
-			</scopevar>
-	<scopevar name="getScopeRegistration()">
-				<help><![CDATA[Get the structure of scope registration information]]></help>
-			</scopevar>
-	<scopevar name="registerListeners()">
-				<help><![CDATA[Register all the configured listeners in the configuration file]]></help>
-			</scopevar>
-	<scopevar name="getColdbox()">
-				<help><![CDATA[Get the instance of ColdBox linked in this Injector. Empty if using standalone version]]></help>
-			</scopevar>
-	<scopevar name="registerNewInstance(name,instancePath)">
-				<help><![CDATA[Register a new requested mapping object instance thread safely and returns the mapping configured for this instance]]></help>
-			</scopevar>
-	<scopevar name="doScopeRegistration()">
-				<help><![CDATA[Register this injector on a user specified scope]]></help>
-			</scopevar>
-	<scopevar name="buildInstance(mapping,[initArguments])">
-				<help><![CDATA[Build an instance, this is called from registered scopes only as they provide locking and transactions]]></help>
-			</scopevar>
-	<scopevar name="buildBinder(binder,properties)">
-				<help><![CDATA[Load a configuration binder object according to passed in type]]></help>
-			</scopevar>
-	<scopevar name="clearSingletons()">
-				<help><![CDATA[Clear the singleton cache]]></help>
-			</scopevar>
-	<scopevar name="getScopeStorage()">
-				<help><![CDATA[Get the scope storage utility]]></help>
-			</scopevar>
-	<scopevar name="registerDSL(namespace,path)">
-				<help><![CDATA[A direct way of registering custom DSL namespaces]]></help>
-			</scopevar>
-	<scopevar name="getBinder()">
-				<help><![CDATA[Get the Injector's configuration binder object]]></help>
-			</scopevar>
-	<scopevar name="getParent()">
-				<help><![CDATA[Get a reference to the parent injector instance, else an empty simple string meaning nothing is set]]></help>
-			</scopevar>
-	<scopevar name="configureCacheBox(config)">
-				<help><![CDATA[Configure a standalone version of cacheBox for persistence]]></help>
-			</scopevar>
-	<scopevar name="getBuilder()">
-				<help><![CDATA[Get the Injector's builder object]]></help>
-			</scopevar>
-	<scopevar name="containsInstance(name)">
-				<help><![CDATA[Checks if this injector can locate a model instance or not]]></help>
-			</scopevar>
-	<scopevar name="setParent(injector)">
-				<help><![CDATA[Link a parent Injector with this injector]]></help>
-			</scopevar>
-	<scopevar name="configureLogBox(configPath)">
-				<help><![CDATA[Configure a standalone version of logBox for logging]]></help>
-			</scopevar>
-	<scopevar name="autowire(target,[mapping],[targetID],[annotationCheck])">
-				<help><![CDATA[I wire up target objects with dependencies either by mappings or a-la-carte autowires]]></help>
-			</scopevar>
-	<scopevar name="configure(binder,properties)">
-				<help><![CDATA[Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.]]></help>
-			</scopevar>
-	<scopevar name="processMixins(targetObject,mapping)">
-				<help><![CDATA[Process mixins on the selected target]]></help>
-			</scopevar>
-	<scopevar name="removeFromScope()">
-				<help><![CDATA[Remove the Injector from scope registration if enabled, else does nothing]]></help>
-			</scopevar>
-	<scopevar name="locateScopedSelf()">
-				<help><![CDATA[Return a self reference using the scoped registration, mostly used by providers or scope widening objects]]></help>
-			</scopevar>
-	<scopevar name="isColdBoxLinked()">
-				<help><![CDATA[Checks if Coldbox application context is linked]]></help>
-			</scopevar>
-	<scopevar name="getScope(scope)">
-				<help><![CDATA[Get a registered scope in this injector by name]]></help>
-			</scopevar>
-	<scopevar name="locateInstance(name)">
-				<help><![CDATA[Tries to locate a specific instance by scanning all scan locations and returning the instantiation path. If model not found then the returned instantiation path will be empty]]></help>
-			</scopevar>
-	<scopevar name="getInstance([name],[dsl],[initArguments],[targetObject])">
-				<help><![CDATA[Locates, Creates, Injects and Configures an object model instance]]></help>
-			</scopevar>
-	<scopevar name="processAfterCompleteDI(targetObject,DICompleteMethods)">
-				<help><![CDATA[Process after DI completion routines]]></help>
-			</scopevar>
-	<scopevar name="getInjectorID()">
-				<help><![CDATA[Get the unique ID of this injector]]></help>
-			</scopevar>
-	<scopevar name="getEventManager()">
-				<help><![CDATA[Get the injector's event manager]]></help>
-			</scopevar>
-</scopevar>
-	<scopevar name="log">
-		<help><![CDATA[This is a logging object that allows for all kinds of logging to occur within its appenders]]></help>
-		<scopevar name="getRootLogger()">
-				<help><![CDATA[Get the root logger]]></help>
-			</scopevar>
-	<scopevar name="_cffunccfthread_cfLogger2ecfc19328212181(ATTRIBUTES)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="init(category,[levelMin],[levelMax],[appenders])">
-				<help><![CDATA[Create a new logger object.]]></help>
-			</scopevar>
-	<scopevar name="setCategory(category)">
-				<help><![CDATA[Set the category for this logger]]></help>
-			</scopevar>
-	<scopevar name="warn(message,[extraInfo])">
-				<help><![CDATA[I log a warning message.]]></help>
-			</scopevar>
-	<scopevar name="info(message,[extraInfo])">
-				<help><![CDATA[I log an information message.]]></help>
-			</scopevar>
-	<scopevar name="debug(message,[extraInfo])">
-				<help><![CDATA[I log a debug message.]]></help>
-			</scopevar>
-	<scopevar name="setRootLogger(RootLogger)">
-				<help><![CDATA[Set the root logger for this named logger.]]></help>
-			</scopevar>
-	<scopevar name="canInfo()">
-				<help><![CDATA[Can log info messages]]></help>
-			</scopevar>
-	<scopevar name="canWarn()">
-				<help><![CDATA[Can log warn messages]]></help>
-			</scopevar>
-	<scopevar name="getlevelMin()">
-				<help><![CDATA[Get the level min setting]]></help>
-			</scopevar>
-	<scopevar name="hasAppenders()">
-				<help><![CDATA[Checks to see if we have registered any appenders yet]]></help>
-			</scopevar>
-	<scopevar name="error(message,[extraInfo])">
-				<help><![CDATA[I log an error message.]]></help>
-			</scopevar>
-	<scopevar name="getlevelMax()">
-				<help><![CDATA[Get the level Max setting]]></help>
-			</scopevar>
-	<scopevar name="setLevelMin(levelMin)">
-				<help><![CDATA[Set the appender's default levelMin]]></help>
-			</scopevar>
-	<scopevar name="setLevelMax(levelMax)">
-				<help><![CDATA[Set the appender's default levelMax]]></help>
-			</scopevar>
-	<scopevar name="canFatal()">
-				<help><![CDATA[Can log fatal messages]]></help>
-			</scopevar>
-	<scopevar name="logMessage(message,severity,[extraInfo])">
-				<help><![CDATA[Write an entry into the loggers registered with this LogBox instance.]]></help>
-			</scopevar>
-	<scopevar name="removeAppender(name)">
-				<help><![CDATA[Unregister an appender from this Logger. True if successful or false otherwise.]]></help>
-			</scopevar>
-	<scopevar name="getAppender(name)">
-				<help><![CDATA[Get a named appender from this logger class. If the appender does not exists, it will throw an exception.]]></help>
-			</scopevar>
-	<scopevar name="canLog(level)">
-				<help><![CDATA[Checks wether a log can be made on this Logger using a passed in level]]></help>
-			</scopevar>
-	<scopevar name="getAppenders()">
-				<help><![CDATA[Get all the registered appenders for this logger. ]]></help>
-			</scopevar>
-	<scopevar name="appenderExists(name)">
-				<help><![CDATA[Checks to see if a specified appender exists by name.]]></help>
-			</scopevar>
-	<scopevar name="removeAllAppenders()">
-				<help><![CDATA[Removes all appenders registered]]></help>
-			</scopevar>
-	<scopevar name="canDebug()">
-				<help><![CDATA[Can log debug messages]]></help>
-			</scopevar>
-	<scopevar name="fatal(message,[extraInfo])">
-				<help><![CDATA[I log a fatal message.]]></help>
-			</scopevar>
-	<scopevar name="addAppender(newAppender)">
-				<help><![CDATA[Add a new appender to the list of appenders for this logger. If the appender already exists, then it will not be added.]]></help>
-			</scopevar>
-	<scopevar name="getCategory()">
-				<help><![CDATA[Get the configured category for this logger]]></help>
-			</scopevar>
-	<scopevar name="canError()">
-				<help><![CDATA[Can log error messages]]></help>
-			</scopevar>
-</scopevar>
 	<scopevar name="cachebox">
 		<help><![CDATA[The ColdBox CacheBox Factory]]></help>
 		<scopevar name="init([config],[coldbox],[factoryID])">
 				<help><![CDATA[Constructor]]></help>
 			</scopevar>
-	<scopevar name="removeCache(name)">
-				<help><![CDATA[Try to remove a named cache from this factory, returns Boolean if successfull or not]]></help>
-			</scopevar>
-	<scopevar name="replaceCache(cache,decoratedCache)">
-				<help><![CDATA[Replace a registered named cache with a new decorated cache of the same name.]]></help>
-			</scopevar>
-	<scopevar name="removeFromScope()">
-				<help><![CDATA[Remove the cache factory from scope registration if enabled, else does nothing]]></help>
-			</scopevar>
-	<scopevar name="shutdownCache(name)">
-				<help><![CDATA[Send a shutdown command to a specific cache provider to bring down gracefully. It also removes it from the cache factory]]></help>
-			</scopevar>
-	<scopevar name="getScopeRegistration()">
-				<help><![CDATA[Get the scope registration information]]></help>
-			</scopevar>
 	<scopevar name="registerListeners()">
 				<help><![CDATA[Register all the configured listeners in the configuration file]]></help>
-			</scopevar>
-	<scopevar name="expireAll()">
-				<help><![CDATA[Expires all the elements in all the registered caches without de-registrations]]></help>
-			</scopevar>
-	<scopevar name="getUtil()">
-				<help><![CDATA[Create and return a util object]]></help>
-			</scopevar>
-	<scopevar name="clearAll()">
-				<help><![CDATA[Clears all the elements in all the registered caches without de-registrations]]></help>
-			</scopevar>
-	<scopevar name="getFactoryID()">
-				<help><![CDATA[Get the unique ID of this cache factory]]></help>
-			</scopevar>
-	<scopevar name="createCache(name,provider,[properties])">
-				<help><![CDATA[Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.ICacheProvider]]></help>
-			</scopevar>
-	<scopevar name="getVersion()">
-				<help><![CDATA[Get the CacheBox version string.]]></help>
-			</scopevar>
-	<scopevar name="doScopeRegistration()">
-				<help><![CDATA[Register this cachefactory on a user specified scope]]></help>
-			</scopevar>
-	<scopevar name="removeAll()">
-				<help><![CDATA[Remove all the registered caches in this factory, this triggers individual cache shutdowns]]></help>
-			</scopevar>
-	<scopevar name="isColdBoxLinked()">
-				<help><![CDATA[Checks if Coldbox application controller is linked]]></help>
-			</scopevar>
-	<scopevar name="getConfig()">
-				<help><![CDATA[Get this LogBox's configuration object.]]></help>
 			</scopevar>
 	<scopevar name="configure(config)">
 				<help><![CDATA[Configure the cache factory for operation, called by the init(). You can also re-configure CacheBox programmatically.]]></help>
 			</scopevar>
-	<scopevar name="getLogBox()">
-				<help><![CDATA[Get the instance of LogBox configured for this cache factory]]></help>
+	<scopevar name="getCache(name)">
+				<help><![CDATA[Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception. Type: coldbox.system.cache.ICacheProvider]]></help>
+			</scopevar>
+	<scopevar name="addCache(cache)">
+				<help><![CDATA[Register a new instantiated cache with this cache factory]]></help>
 			</scopevar>
 	<scopevar name="addDefaultCache(name)">
 				<help><![CDATA[Add a default named cache to our registry, create it, config it, register it and return it of type: coldbox.system.cache.ICacheProvider]]></help>
 			</scopevar>
-	<scopevar name="configureEventManager()">
-				<help><![CDATA[Configure a standalone version of a ColdBox Event Manager]]></help>
-			</scopevar>
 	<scopevar name="shutdown()">
 				<help><![CDATA[Recursively sends shutdown commands to al registered caches and cleans up in preparation for shutdown]]></help>
 			</scopevar>
-	<scopevar name="getEventManager()">
-				<help><![CDATA[Get the cache factory's event manager]]></help>
+	<scopevar name="shutdownCache(name)">
+				<help><![CDATA[Send a shutdown command to a specific cache provider to bring down gracefully. It also removes it from the cache factory]]></help>
+			</scopevar>
+	<scopevar name="removeFromScope()">
+				<help><![CDATA[Remove the cache factory from scope registration if enabled, else does nothing]]></help>
+			</scopevar>
+	<scopevar name="removeCache(name)">
+				<help><![CDATA[Try to remove a named cache from this factory, returns Boolean if successfull or not]]></help>
+			</scopevar>
+	<scopevar name="removeAll()">
+				<help><![CDATA[Remove all the registered caches in this factory, this triggers individual cache shutdowns]]></help>
 			</scopevar>
 	<scopevar name="reapAll()">
 				<help><![CDATA[A nice way to call reap on all registered caches]]></help>
@@ -1691,188 +631,1283 @@
 	<scopevar name="cacheExists(name)">
 				<help><![CDATA[Check if the passed in named cache is already registered in this factory or not]]></help>
 			</scopevar>
-	<scopevar name="getCache(name)">
-				<help><![CDATA[Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception. Type: coldbox.system.cache.ICacheProvider]]></help>
+	<scopevar name="replaceCache(cache,decoratedCache)">
+				<help><![CDATA[Replace a registered named cache with a new decorated cache of the same name.]]></help>
 			</scopevar>
-	<scopevar name="getCaches()">
-				<help><![CDATA[Get a reference to all the registered caches in the cache factory as a structure]]></help>
+	<scopevar name="clearAll()">
+				<help><![CDATA[Clears all the elements in all the registered caches without de-registrations]]></help>
+			</scopevar>
+	<scopevar name="expireAll()">
+				<help><![CDATA[Expires all the elements in all the registered caches without de-registrations]]></help>
 			</scopevar>
 	<scopevar name="getCacheNames()">
 				<help><![CDATA[Get the array of caches registered with this factory]]></help>
 			</scopevar>
-	<scopevar name="addCache(cache)">
-				<help><![CDATA[Register a new instantiated cache with this cache factory]]></help>
-			</scopevar>
-	<scopevar name="configureLogBox()">
-				<help><![CDATA[Configure a standalone version of logBox for logging]]></help>
-			</scopevar>
-	<scopevar name="registerCache(cache)">
-				<help><![CDATA[Register a cache instance internaly]]></help>
-			</scopevar>
-	<scopevar name="getDefaultCache()">
-				<help><![CDATA[Get the default cache provider of type coldbox.system.cache.ICacheProvider]]></help>
+	<scopevar name="getCaches()">
+				<help><![CDATA[Get a reference to all the registered caches in the cache factory as a structure]]></help>
 			</scopevar>
 	<scopevar name="getColdbox()">
 				<help><![CDATA[Get the instance of ColdBox linked in this cache factory. Empty if using standalone version]]></help>
 			</scopevar>
+	<scopevar name="isColdBoxLinked()">
+				<help><![CDATA[Checks if Coldbox application controller is linked]]></help>
+			</scopevar>
+	<scopevar name="getLogBox()">
+				<help><![CDATA[Get the instance of LogBox configured for this cache factory]]></help>
+			</scopevar>
+	<scopevar name="getVersion()">
+				<help><![CDATA[Get the CacheBox version string.]]></help>
+			</scopevar>
+	<scopevar name="getConfig()">
+				<help><![CDATA[Get this LogBox's configuration object.]]></help>
+			</scopevar>
+	<scopevar name="getFactoryID()">
+				<help><![CDATA[Get the unique ID of this cache factory]]></help>
+			</scopevar>
+	<scopevar name="getDefaultCache()">
+				<help><![CDATA[Get the default cache provider of type coldbox.system.cache.ICacheProvider]]></help>
+			</scopevar>
+	<scopevar name="getEventManager()">
+				<help><![CDATA[Get the cache factory's event manager]]></help>
+			</scopevar>
+	<scopevar name="getScopeRegistration()">
+				<help><![CDATA[Get the scope registration information]]></help>
+			</scopevar>
+	<scopevar name="createCache(name,provider,[properties])">
+				<help><![CDATA[Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.ICacheProvider]]></help>
+			</scopevar>
+	<scopevar name="doScopeRegistration()">
+				<help><![CDATA[Register this cachefactory on a user specified scope]]></help>
+			</scopevar>
+	<scopevar name="registerCache(cache)">
+				<help><![CDATA[Register a cache instance internaly]]></help>
+			</scopevar>
+	<scopevar name="configureLogBox(configPath)">
+				<help><![CDATA[Configure a standalone version of logBox for logging]]></help>
+			</scopevar>
+	<scopevar name="configureEventManager()">
+				<help><![CDATA[Configure a standalone version of a ColdBox Event Manager]]></help>
+			</scopevar>
+	<scopevar name="getUtil()">
+				<help><![CDATA[Create and return a util object]]></help>
+			</scopevar>
+</scopevar>
+	<scopevar name="logbox">
+		<help><![CDATA[This is LogBox, an enterprise logger. Please remember to persist this factory once it has been created.]]></help>
+		<scopevar name="init(config,[coldbox])">
+				<help><![CDATA[Constructor]]></help>
+			</scopevar>
+	<scopevar name="configure(config)">
+				<help><![CDATA[Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories]]></help>
+			</scopevar>
+	<scopevar name="getVersion()">
+				<help><![CDATA[Get the LogBox version string.]]></help>
+			</scopevar>
+	<scopevar name="getConfig()">
+				<help><![CDATA[Get this LogBox's configuration object.]]></help>
+			</scopevar>
+	<scopevar name="getRootLogger()">
+				<help><![CDATA[Get the root logger]]></help>
+			</scopevar>
+	<scopevar name="getLogger(category)">
+				<help><![CDATA[Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox]]></help>
+			</scopevar>
+	<scopevar name="getCurrentLoggers()">
+				<help><![CDATA[Get the list of currently instantiated loggers.]]></help>
+			</scopevar>
+	<scopevar name="getCurrentAppenders()">
+				<help><![CDATA[Get the list of currently registered appenders.]]></help>
+			</scopevar>
+	<scopevar name="registerAppender(name,class,[properties],[layout],[levelMin],[levelMax])">
+				<help><![CDATA[Register a new appender object in the appender registry.]]></help>
+			</scopevar>
+	<scopevar name="locateCategoryParentLogger(category)">
+				<help><![CDATA[Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.]]></help>
+			</scopevar>
+	<scopevar name="getAppendersMap(appenders)">
+				<help><![CDATA[Get a map of appenders by list. Usually called to get a category of appenders.]]></help>
+			</scopevar>
+	<scopevar name="getUtil()">
+				<help><![CDATA[Create and return a util object]]></help>
+			</scopevar>
+</scopevar>
+	<scopevar name="binder">
+		<help><![CDATA[This is a WireBox configuration binder object.  You can use it to configure a WireBox injector instance using our WireBox Mapping DSL]]></help>
+		<scopevar name="init(injector,[config],[properties])">
+				<help><![CDATA[Constructor: You can pass a data CFC instance, data CFC path or nothing at all for purely programmatic configuration]]></help>
+			</scopevar>
+	<scopevar name="getInjector()">
+				<help><![CDATA[Get the bounded injector for this binder]]></help>
+			</scopevar>
+	<scopevar name="getColdBox()">
+				<help><![CDATA[Get the bounded ColdBox context for this binder, if any]]></help>
+			</scopevar>
+	<scopevar name="getAppMapping()">
+				<help><![CDATA[Get the ColdBox app mapping variable if context linked]]></help>
+			</scopevar>
+	<scopevar name="configure()">
+				<help><![CDATA[The main configuration method that must be overriden by a specific WireBox Binder configuration object]]></help>
+			</scopevar>
+	<scopevar name="reset()">
+				<help><![CDATA[Reset the configuration back to the original binder defaults]]></help>
+			</scopevar>
+	<scopevar name="getProperties()">
+				<help><![CDATA[Get the binded properties structure]]></help>
+			</scopevar>
+	<scopevar name="setProperties(properties)">
+				<help><![CDATA[Set the binded properties structure]]></help>
+			</scopevar>
+	<scopevar name="getProperty(name,[default])">
+				<help><![CDATA[Get a binded property. If not found it will try to return the default value passed, else it returns an exception]]></help>
+			</scopevar>
+	<scopevar name="setProperty(name,value)">
+				<help><![CDATA[Create a new binding property]]></help>
+			</scopevar>
+	<scopevar name="propertyExists(name)">
+				<help><![CDATA[Checks if a property exists]]></help>
+			</scopevar>
+	<scopevar name="getParentInjector()">
+				<help><![CDATA[Get the parent injector reference this binder is linked to]]></help>
+			</scopevar>
+	<scopevar name="parentInjector(injector)">
+				<help><![CDATA[Link a parent injector to this configuration binder]]></help>
+			</scopevar>
+	<scopevar name="getMappings()">
+				<help><![CDATA[Get all the registered object mappings structure]]></help>
+			</scopevar>
+	<scopevar name="getMapping(name)">
+				<help><![CDATA[Get a specific object mapping: coldbox.system.ioc.config.Mapping]]></help>
+			</scopevar>
+	<scopevar name="setMapping(name,mapping)">
+				<help><![CDATA[Set a mapping object into the mappings map]]></help>
+			</scopevar>
+	<scopevar name="unMap(name)">
+				<help><![CDATA[Destroys a mapping by name]]></help>
+			</scopevar>
+	<scopevar name="mappingExists(name)">
+				<help><![CDATA[Check if an object mapping exists]]></help>
+			</scopevar>
+	<scopevar name="mapPath(path,[namespace],[prepend],[force])">
+				<help><![CDATA[Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.]]></help>
+			</scopevar>
+	<scopevar name="mapDirectory(packagePath,include,exclude,[influence],[filter],[namespace],[prepend])">
+				<help><![CDATA[Maps an entire instantiation path directory, please note that the unique name of each file will be used and also processed for alias inspection]]></help>
+			</scopevar>
+	<scopevar name="map(alias,[force])">
+				<help><![CDATA[Create a mapping to an object]]></help>
+			</scopevar>
+	<scopevar name="to(path)">
+				<help><![CDATA[Map to a destination CFC class path.]]></help>
+			</scopevar>
+	<scopevar name="parent(alias)">
+				<help><![CDATA[this method lets you use an abstract or parent mapping as a template for other like objects]]></help>
+			</scopevar>
+	<scopevar name="toFactoryMethod(factory,method)">
+				<help><![CDATA[Map to a factory and its executing method.]]></help>
+			</scopevar>
+	<scopevar name="methodArg([name],[ref],[dsl],[value],[javaCast])">
+				<help><![CDATA[Map a method argument to a factory method]]></help>
+			</scopevar>
+	<scopevar name="toJava(path)">
+				<help><![CDATA[Map to a java destination class path.]]></help>
+			</scopevar>
+	<scopevar name="toWebservice(path)">
+				<help><![CDATA[Map to a webservice destination class path.]]></help>
+			</scopevar>
+	<scopevar name="toRSS(path)">
+				<help><![CDATA[Map to a rss destination class path.]]></help>
+			</scopevar>
+	<scopevar name="toDSL(dsl)">
+				<help><![CDATA[Map to a dsl that will be used to create the mapped object]]></help>
+			</scopevar>
+	<scopevar name="toProvider(provider)">
+				<help><![CDATA[Map to a provider object that must implement coldbox.system.ioc.IProvider or a closure or UDF]]></help>
+			</scopevar>
+	<scopevar name="toValue(value)">
+				<help><![CDATA[Map to a constant value]]></help>
+			</scopevar>
+	<scopevar name="constructor(constructor)">
+				<help><![CDATA[You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.]]></help>
+			</scopevar>
+	<scopevar name="initWith()">
+				<help><![CDATA[Positional or named value arguments to use when initializing the mapping. (CFC-only)]]></help>
+			</scopevar>
+	<scopevar name="noInit()">
+				<help><![CDATA[If you call this method on an object mapping, the object's constructor will not be called. By default all constructors are called.]]></help>
+			</scopevar>
+	<scopevar name="virtualInheritance(mapping)">
+				<help><![CDATA[Tells WireBox to do a virtual inheritance mixin of the target and this passed mapping]]></help>
+			</scopevar>
+	<scopevar name="asEagerInit()">
+				<help><![CDATA[If this method is called, the mapped object will be created once the injector starts up. Basically, not lazy loaded]]></help>
+			</scopevar>
+	<scopevar name="noAutowire()">
+				<help><![CDATA[If you call this method on an object mapping, the object will NOT be inspected for injection/wiring metadata, it will use ONLY whatever you define in the mapping.]]></help>
+			</scopevar>
+	<scopevar name="with(alias)">
+				<help><![CDATA[Used to set the current working mapping name in place for the maping DSL. An exception is thrown if the mapping does not exist yet.]]></help>
+			</scopevar>
+	<scopevar name="initArg([name],[ref],[dsl],[value],[javaCast],[required])">
+				<help><![CDATA[Map a constructor argument to a mapping]]></help>
+			</scopevar>
+	<scopevar name="setter(name,[ref],[dsl],[value],[javaCast],[argName])">
+				<help><![CDATA[Map a setter function to a mapping]]></help>
+			</scopevar>
+	<scopevar name="property(name,[ref],[dsl],[value],[javaCast],[scope],[required])">
+				<help><![CDATA[Map a cfproperty to a mapping]]></help>
+			</scopevar>
+	<scopevar name="onDIComplete(methods)">
+				<help><![CDATA[The methods to execute once DI completes on the mapping]]></help>
+			</scopevar>
+	<scopevar name="providerMethod(method,mapping)">
+				<help><![CDATA[Add a new provider method mapping]]></help>
+			</scopevar>
+	<scopevar name="into(scope)">
+				<help><![CDATA[Map an object into a specific persistence scope]]></help>
+			</scopevar>
+	<scopevar name="asSingleton()">
+				<help><![CDATA[Map as a singleton, shortcut to using 'in( this.SCOPES.SINGLETON )']]></help>
+			</scopevar>
+	<scopevar name="threadSafe()">
+				<help><![CDATA[Tells persistence scopes to build, wire, and do onDIComplete() on objects in an isolated lock. This will disallow circular references unless object providers are used.  By default all object's constructors are the only thread safe areas]]></help>
+			</scopevar>
+	<scopevar name="notThreadSafe()">
+				<help><![CDATA[This is the default wiring of objects that allow circular dependencies.  By default all object's constructors are the only thread safe areas]]></help>
+			</scopevar>
+	<scopevar name="withInfluence([influenceClosure])">
+				<help><![CDATA[This is a closure that will be able to influence the creation of the instance]]></help>
+			</scopevar>
+	<scopevar name="extraAttributes(data)">
+				<help><![CDATA[Adds a structure of metadata to be stored with the mapping for later retrieval by the developer in events, manually or builders.]]></help>
+			</scopevar>
+	<scopevar name="mixins(mixins)">
+				<help><![CDATA[Adds one, a list or an array of UDF templates to mixin to a CFC]]></help>
+			</scopevar>
+	<scopevar name="getStopRecursions()">
+				<help><![CDATA[Get all the stop recursion classes array]]></help>
+			</scopevar>
+	<scopevar name="stopRecursions(classes)">
+				<help><![CDATA[Configure the stop recursion classes]]></help>
+			</scopevar>
+	<scopevar name="scopeRegistration([enabled],[scope],[key])">
+				<help><![CDATA[Use to define injector scope registration]]></help>
+			</scopevar>
+	<scopevar name="getScopeRegistration()">
+				<help><![CDATA[Get the scope registration details structure]]></help>
+			</scopevar>
+	<scopevar name="getScanLocations()">
+				<help><![CDATA[Get the linked map of package scan locations for CFCs]]></help>
+			</scopevar>
+	<scopevar name="scanLocations(locations)">
+				<help><![CDATA[Register one or more package scan locations for CFC lookups]]></help>
+			</scopevar>
+	<scopevar name="removeScanLocations(locations)">
+				<help><![CDATA[Try to remove all the scan locations passed in]]></help>
+			</scopevar>
+	<scopevar name="cacheBox([configFile],[cacheFactory],[enabled],[classNamespace])">
+				<help><![CDATA[Integrate with CacheBox]]></help>
+			</scopevar>
+	<scopevar name="getCacheBoxConfig()">
+				<help><![CDATA[Get the CacheBox Configuration Integration structure]]></help>
+			</scopevar>
+	<scopevar name="inCacheBox([key],[timeout],[lastAccessTimeout],[provider])">
+				<help><![CDATA[Map an object into CacheBox]]></help>
+			</scopevar>
+	<scopevar name="mapDSL(namespace,path)">
+				<help><![CDATA[Register a new custom dsl namespace]]></help>
+			</scopevar>
+	<scopevar name="getCustomDSL()">
+				<help><![CDATA[Get the custom dsl namespace registration structure]]></help>
+			</scopevar>
+	<scopevar name="mapScope(annotation,path)">
+				<help><![CDATA[Register a new WireBox custom scope]]></help>
+			</scopevar>
+	<scopevar name="getCustomScopes()">
+				<help><![CDATA[Get the registered custom scopes]]></help>
+			</scopevar>
+	<scopevar name="logBoxConfig(config)">
+				<help><![CDATA[Set the logBox Configuration to use]]></help>
+			</scopevar>
+	<scopevar name="getLogBoxConfig()">
+				<help><![CDATA[Get the logBox Configuration file to use]]></help>
+			</scopevar>
+	<scopevar name="loadDataDSL([rawDSL])">
+				<help><![CDATA[Load a data configuration CFC data DSL]]></help>
+			</scopevar>
+	<scopevar name="getDefaults()">
+				<help><![CDATA[Get the default WireBox settings structure]]></help>
+			</scopevar>
+	<scopevar name="getMemento()">
+				<help><![CDATA[Get the instance data structure]]></help>
+			</scopevar>
+	<scopevar name="getCurrentMapping()">
+				<help><![CDATA[Get the current set mapping (UTILITY method)]]></help>
+			</scopevar>
+	<scopevar name="processMappings()">
+				<help><![CDATA[Process all registered mappings, called by injector when ready to start serving requests]]></help>
+			</scopevar>
+	<scopevar name="listener(class,[properties],[name])">
+				<help><![CDATA[Add a new listener configuration.]]></help>
+			</scopevar>
+	<scopevar name="getListeners()">
+				<help><![CDATA[Get the configured listeners array]]></help>
+			</scopevar>
+	<scopevar name="mapAspect(aspect,autoBinding)">
+				<help><![CDATA[Map a new aspect]]></help>
+			</scopevar>
+	<scopevar name="match()">
+				<help><![CDATA[Create a new matcher class for usage in class or method matching]]></help>
+			</scopevar>
+	<scopevar name="bindAspect(classes,methods,aspects)">
+				<help><![CDATA[Bind a aspects to classes and methods]]></help>
+			</scopevar>
+	<scopevar name="getAspectBindings()">
+				<help><![CDATA[Get the collection of aspect bindings for this binder]]></help>
+			</scopevar>
+</scopevar>
+	<scopevar name="log">
+		<help><![CDATA[This is a logging object that allows for all kinds of logging to occur within its appenders]]></help>
+		<scopevar name="init(category,[levelMin],[levelMax],[appenders])">
+				<help><![CDATA[Create a new logger object.]]></help>
+			</scopevar>
+	<scopevar name="getRootLogger()">
+				<help><![CDATA[Get the root logger]]></help>
+			</scopevar>
+	<scopevar name="setRootLogger(RootLogger)">
+				<help><![CDATA[Set the root logger for this named logger.]]></help>
+			</scopevar>
+	<scopevar name="hasAppenders()">
+				<help><![CDATA[Checks to see if we have registered any appenders yet]]></help>
+			</scopevar>
+	<scopevar name="getAppenders()">
+				<help><![CDATA[Get all the registered appenders for this logger. ]]></help>
+			</scopevar>
+	<scopevar name="getAppender(name)">
+				<help><![CDATA[Get a named appender from this logger class. If the appender does not exists, it will throw an exception.]]></help>
+			</scopevar>
+	<scopevar name="appenderExists(name)">
+				<help><![CDATA[Checks to see if a specified appender exists by name.]]></help>
+			</scopevar>
+	<scopevar name="addAppender(newAppender)">
+				<help><![CDATA[Add a new appender to the list of appenders for this logger. If the appender already exists, then it will not be added.]]></help>
+			</scopevar>
+	<scopevar name="removeAppender(name)">
+				<help><![CDATA[Unregister an appender from this Logger. True if successful or false otherwise.]]></help>
+			</scopevar>
+	<scopevar name="removeAllAppenders()">
+				<help><![CDATA[Removes all appenders registered]]></help>
+			</scopevar>
+	<scopevar name="getlevelMin()">
+				<help><![CDATA[Get the level min setting]]></help>
+			</scopevar>
+	<scopevar name="setLevelMin(levelMin)">
+				<help><![CDATA[Set the appender's default levelMin]]></help>
+			</scopevar>
+	<scopevar name="getlevelMax()">
+				<help><![CDATA[Get the level Max setting]]></help>
+			</scopevar>
+	<scopevar name="setLevelMax(levelMax)">
+				<help><![CDATA[Set the appender's default levelMax]]></help>
+			</scopevar>
+	<scopevar name="getCategory()">
+				<help><![CDATA[Get the configured category for this logger]]></help>
+			</scopevar>
+	<scopevar name="setCategory(category)">
+				<help><![CDATA[Set the category for this logger]]></help>
+			</scopevar>
+	<scopevar name="debug(message,[extraInfo])">
+				<help><![CDATA[I log a debug message.]]></help>
+			</scopevar>
+	<scopevar name="info(message,[extraInfo])">
+				<help><![CDATA[I log an information message.]]></help>
+			</scopevar>
+	<scopevar name="warn(message,[extraInfo])">
+				<help><![CDATA[I log a warning message.]]></help>
+			</scopevar>
+	<scopevar name="error(message,[extraInfo])">
+				<help><![CDATA[I log an error message.]]></help>
+			</scopevar>
+	<scopevar name="fatal(message,[extraInfo])">
+				<help><![CDATA[I log a fatal message.]]></help>
+			</scopevar>
+	<scopevar name="logMessage(message,severity,[extraInfo])">
+				<help><![CDATA[Write an entry into the loggers registered with this LogBox instance.]]></help>
+			</scopevar>
+	<scopevar name="canLog(level)">
+				<help><![CDATA[Checks wether a log can be made on this Logger using a passed in level]]></help>
+			</scopevar>
+	<scopevar name="canFatal()">
+				<help><![CDATA[Can log fatal messages]]></help>
+			</scopevar>
+	<scopevar name="canError()">
+				<help><![CDATA[Can log error messages]]></help>
+			</scopevar>
+	<scopevar name="canWarn()">
+				<help><![CDATA[Can log warn messages]]></help>
+			</scopevar>
+	<scopevar name="canInfo()">
+				<help><![CDATA[Can log info messages]]></help>
+			</scopevar>
+	<scopevar name="canDebug()">
+				<help><![CDATA[Can log debug messages]]></help>
+			</scopevar>
+</scopevar>
+	<scopevar name="wirebox">
+		<help><![CDATA[A WireBox Injector: Builds the graphs of objects that make up your application.]]></help>
+		<scopevar name="init([binder],[properties],[coldbox])">
+				<help><![CDATA[Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder]]></help>
+			</scopevar>
+	<scopevar name="configure(binder,properties)">
+				<help><![CDATA[Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.]]></help>
+			</scopevar>
+	<scopevar name="shutdown()">
+				<help><![CDATA[Shutdown the injector gracefully by calling the shutdown events internally.]]></help>
+			</scopevar>
+	<scopevar name="getInstance([name],[dsl],[initArguments],[targetObject])">
+				<help><![CDATA[Locates, Creates, Injects and Configures an object model instance]]></help>
+			</scopevar>
+	<scopevar name="buildInstance(mapping,[initArguments])">
+				<help><![CDATA[Build an instance, this is called from registered scopes only as they provide locking and transactions]]></help>
+			</scopevar>
+	<scopevar name="registerNewInstance(name,instancePath)">
+				<help><![CDATA[Register a new requested mapping object instance thread safely and returns the mapping configured for this instance]]></help>
+			</scopevar>
+	<scopevar name="registerDSL(namespace,path)">
+				<help><![CDATA[A direct way of registering custom DSL namespaces]]></help>
+			</scopevar>
+	<scopevar name="containsInstance(name)">
+				<help><![CDATA[Checks if this injector can locate a model instance or not]]></help>
+			</scopevar>
+	<scopevar name="locateInstance(name)">
+				<help><![CDATA[Tries to locate a specific instance by scanning all scan locations and returning the instantiation path. If model not found then the returned instantiation path will be empty]]></help>
+			</scopevar>
+	<scopevar name="autowire(target,[mapping],[targetID],[annotationCheck])">
+				<help><![CDATA[I wire up target objects with dependencies either by mappings or a-la-carte autowires]]></help>
+			</scopevar>
+	<scopevar name="processMixins(targetObject,mapping)">
+				<help><![CDATA[Process mixins on the selected target]]></help>
+			</scopevar>
+	<scopevar name="processProviderMethods(targetObject,mapping)">
+				<help><![CDATA[Process provider methods on the selected target]]></help>
+			</scopevar>
+	<scopevar name="processAfterCompleteDI(targetObject,DICompleteMethods)">
+				<help><![CDATA[Process after DI completion routines]]></help>
+			</scopevar>
+	<scopevar name="processInjection(targetObject,DIData,targetID)">
+				<help><![CDATA[Process property and setter injection]]></help>
+			</scopevar>
+	<scopevar name="injectTarget(target,propertyName,propertyObject,scope,argName)">
+				<help><![CDATA[Inject a model object with dependencies via setters or property injections]]></help>
+			</scopevar>
+	<scopevar name="setParent(injector)">
+				<help><![CDATA[Link a parent Injector with this injector]]></help>
+			</scopevar>
+	<scopevar name="getParent()">
+				<help><![CDATA[Get a reference to the parent injector instance, else an empty simple string meaning nothing is set]]></help>
+			</scopevar>
+	<scopevar name="getObjectPopulator()">
+				<help><![CDATA[Get an object populator useful for populating objects from JSON,XML, etc.]]></help>
+			</scopevar>
+	<scopevar name="getColdbox()">
+				<help><![CDATA[Get the instance of ColdBox linked in this Injector. Empty if using standalone version]]></help>
+			</scopevar>
+	<scopevar name="isColdBoxLinked()">
+				<help><![CDATA[Checks if Coldbox application context is linked]]></help>
+			</scopevar>
+	<scopevar name="getCacheBox()">
+				<help><![CDATA[Get the instance of CacheBox linked in this Injector. Empty if using standalone version]]></help>
+			</scopevar>
+	<scopevar name="isCacheBoxLinked()">
+				<help><![CDATA[Checks if CacheBox is linked]]></help>
+			</scopevar>
+	<scopevar name="getLogBox()">
+				<help><![CDATA[Get the instance of LogBox configured for this Injector]]></help>
+			</scopevar>
+	<scopevar name="getVersion()">
+				<help><![CDATA[Get the Injector's version string.]]></help>
+			</scopevar>
+	<scopevar name="getBinder()">
+				<help><![CDATA[Get the Injector's configuration binder object]]></help>
+			</scopevar>
+	<scopevar name="getBuilder()">
+				<help><![CDATA[Get the Injector's builder object]]></help>
+			</scopevar>
+	<scopevar name="getInjectorID()">
+				<help><![CDATA[Get the unique ID of this injector]]></help>
+			</scopevar>
+	<scopevar name="getEventManager()">
+				<help><![CDATA[Get the injector's event manager]]></help>
+			</scopevar>
+	<scopevar name="getScopeRegistration()">
+				<help><![CDATA[Get the structure of scope registration information]]></help>
+			</scopevar>
+	<scopevar name="getScopeStorage()">
+				<help><![CDATA[Get the scope storage utility]]></help>
+			</scopevar>
+	<scopevar name="removeFromScope()">
+				<help><![CDATA[Remove the Injector from scope registration if enabled, else does nothing]]></help>
+			</scopevar>
+	<scopevar name="getScopes()">
+				<help><![CDATA[Get all the registered scopes structure in this injector]]></help>
+			</scopevar>
+	<scopevar name="getScope(scope)">
+				<help><![CDATA[Get a registered scope in this injector by name]]></help>
+			</scopevar>
+	<scopevar name="clearSingletons()">
+				<help><![CDATA[Clear the singleton cache]]></help>
+			</scopevar>
+	<scopevar name="locateScopedSelf()">
+				<help><![CDATA[Return a self reference using the scoped registration, mostly used by providers or scope widening objects]]></help>
+			</scopevar>
+	<scopevar name="registerScopes()">
+				<help><![CDATA[Register all internal and configured WireBox Scopes]]></help>
+			</scopevar>
+	<scopevar name="registerListeners()">
+				<help><![CDATA[Register all the configured listeners in the configuration file]]></help>
+			</scopevar>
+	<scopevar name="doScopeRegistration()">
+				<help><![CDATA[Register this injector on a user specified scope]]></help>
+			</scopevar>
+	<scopevar name="configureCacheBox(config)">
+				<help><![CDATA[Configure a standalone version of cacheBox for persistence]]></help>
+			</scopevar>
+	<scopevar name="configureLogBox(configPath)">
+				<help><![CDATA[Configure a standalone version of logBox for logging]]></help>
+			</scopevar>
+	<scopevar name="configureEventManager()">
+				<help><![CDATA[Configure a standalone version of a WireBox Event Manager]]></help>
+			</scopevar>
+	<scopevar name="getUtil()">
+				<help><![CDATA[Return the core util object]]></help>
+			</scopevar>
+	<scopevar name="buildBinder(binder,properties)">
+				<help><![CDATA[Load a configuration binder object according to passed in type]]></help>
+			</scopevar>
+</scopevar>
+	<scopevar name="flash">
+		<help><![CDATA[Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.ortussolutions.com
+---
+An abstract flash scope that can be used to build ColdBox Flash scopes.
+In order to build scopes you must implement the following methods:
+- clearFlash() A method that will destroy the flash storage
+- saveFlash() A method that will be called before relocating so the storage can be saved
+- flashExists() A method that tells ColdBox if the storage exists and if it has content to inflate
+- getFlash() A method that returns the flash storage
+All these methds can use any of the concrete methods below. The most important one is the getScope()
+method which will most likely be called by the saveFlash() method in order to persist the flashed map.]]></help>
+		<scopevar name="init(controller,defaults)">
+				<help><![CDATA[Constructor]]></help>
+			</scopevar>
+	<scopevar name="saveFlash()">
+				<help><![CDATA[Save the flash storage in preparing to go to the next request]]></help>
+			</scopevar>
+	<scopevar name="flashExists()">
+				<help><![CDATA[Checks if the flash storage exists and IT HAS DATA to inflate.]]></help>
+			</scopevar>
+	<scopevar name="getFlash()">
+				<help><![CDATA[Get the flash storage structure to inflate it.]]></help>
+			</scopevar>
+	<scopevar name="removeFlash()">
+				<help><![CDATA[Remove the entire flash storage]]></help>
+			</scopevar>
+	<scopevar name="clearFlash()">
+				<help><![CDATA[Clear the flash storage]]></help>
+			</scopevar>
+	<scopevar name="inflateFlash()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getScope()">
+				<help><![CDATA[Get the flash temp request storage used throughout a request until flashed at the end of a request.]]></help>
+			</scopevar>
+	<scopevar name="getKeys()">
+				<help><![CDATA[Get a list of all the objects in the temp flash scope]]></help>
+			</scopevar>
+	<scopevar name="clear()">
+				<help><![CDATA[Clear the temp flash scope and remove all data]]></help>
+			</scopevar>
+	<scopevar name="keep([keys])">
+				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
+			</scopevar>
+	<scopevar name="discard([keys])">
+				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
+			</scopevar>
+	<scopevar name="put(name,value,[saveNow],[keep],[inflateToRC],[inflateToPRC],[autoPurge])">
+				<help><![CDATA[Keep all or a single flash temp variable alive for another relocation]]></help>
+			</scopevar>
+	<scopevar name="putAll(map,[saveNow],[keep],[inflateToRC],[inflateToPRC],[autoPurge])">
+				<help><![CDATA[Put a map of name-value pairs into the flash scope]]></help>
+			</scopevar>
+	<scopevar name="remove(name,[saveNow])">
+				<help><![CDATA[Remove an object from flash scope]]></help>
+			</scopevar>
+	<scopevar name="exists(name)">
+				<help><![CDATA[Check if an object exists in flash scope]]></help>
+			</scopevar>
+	<scopevar name="size()">
+				<help><![CDATA[Get the size of the items in flash scope]]></help>
+			</scopevar>
+	<scopevar name="isEmpty()">
+				<help><![CDATA[Check if the flash scope is empty or not]]></help>
+			</scopevar>
+	<scopevar name="get(name,[defaultValue])">
+				<help><![CDATA[Get an object from flash scope]]></help>
+			</scopevar>
+	<scopevar name="persistRC([include],[exclude],[saveNow])">
+				<help><![CDATA[Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed]]></help>
+			</scopevar>
+	<scopevar name="getProperty(property)">
+				<help><![CDATA[Get a named property]]></help>
+			</scopevar>
+	<scopevar name="setProperty(property,value)">
+				<help><![CDATA[Set a named property]]></help>
+			</scopevar>
+	<scopevar name="propertyExists(property)">
+				<help><![CDATA[Check a named property]]></help>
+			</scopevar>
+	<scopevar name="statusMarks([keys],[keep])">
+				<help><![CDATA[Change the status marks of the temp scope entries]]></help>
+			</scopevar>
+	<scopevar name="getUtil()">
+				<help><![CDATA[Get utility object]]></help>
+			</scopevar>
+	<scopevar name="setProperties(properties)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setController(controller)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getController()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setDefaults(defaults)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getDefaults()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getProperties()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+</scopevar>
+	<scopevar name="event">
+		<help><![CDATA[Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.ortussolutions.com
+---
+Models a ColdBox request, stores the incoming request collection and private request collection.
+It is also used to determine metadata about a request and helps you build RESTFul responses.]]></help>
+		<scopevar name="init(properties,controller)">
+				<help><![CDATA[Constructor]]></help>
+			</scopevar>
+	<scopevar name="getMemento()">
+				<help><![CDATA[Get a representation of this instance]]></help>
+			</scopevar>
+	<scopevar name="setMemento(memento)">
+				<help><![CDATA[Override the instance]]></help>
+			</scopevar>
+	<scopevar name="getCollection([deepCopy],[private])">
+				<help><![CDATA[I Get a reference or deep copy of the public or private request Collection]]></help>
+			</scopevar>
+	<scopevar name="getPrivateCollection([deepCopy])">
+				<help><![CDATA[I get a private collection]]></help>
+			</scopevar>
+	<scopevar name="clearCollection([private])">
+				<help><![CDATA[Clears the entire collection]]></help>
+			</scopevar>
+	<scopevar name="clearPrivateCollection()">
+				<help><![CDATA[Clears the private collection]]></help>
+			</scopevar>
+	<scopevar name="collectionAppend(collection,[overwrite],[private])">
+				<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+			</scopevar>
+	<scopevar name="privateCollectionAppend(collection,[overwrite])">
+				<help><![CDATA[Append a structure to the collection, with overwrite or not. Overwrite = false by default]]></help>
+			</scopevar>
+	<scopevar name="getSize([private])">
+				<help><![CDATA[Get the collection Size]]></help>
+			</scopevar>
+	<scopevar name="getPrivateSize()">
+				<help><![CDATA[Get the private collection Size]]></help>
+			</scopevar>
+	<scopevar name="getValue(name,[defaultValue],[private])">
+				<help><![CDATA[Get a value from the public or private request collection.]]></help>
+			</scopevar>
+	<scopevar name="getPrivateValue(name,[defaultValue])">
+				<help><![CDATA[Get a value from the private request collection.]]></help>
+			</scopevar>
+	<scopevar name="getTrimValue(name,[defaultValue],[private])">
+				<help><![CDATA[Get a value from the request collection and if simple value, I will trim it.]]></help>
+			</scopevar>
+	<scopevar name="getPrivateTrimValue(name,[defaultValue])">
+				<help><![CDATA[Get a trim value from the private request collection.]]></help>
+			</scopevar>
+	<scopevar name="setValue(name,value,[private])">
+				<help><![CDATA[Set a value in the request collection]]></help>
+			</scopevar>
+	<scopevar name="setPrivateValue(name,value)">
+				<help><![CDATA[Set a value in the private request collection]]></help>
+			</scopevar>
+	<scopevar name="removeValue(name,[private])">
+				<help><![CDATA[remove a value in the request collection]]></help>
+			</scopevar>
+	<scopevar name="removePrivateValue(name,[private])">
+				<help><![CDATA[remove a value in the private request collection]]></help>
+			</scopevar>
+	<scopevar name="valueExists(name,[private])">
+				<help><![CDATA[Check if a value exists in the request collection]]></help>
+			</scopevar>
+	<scopevar name="privateValueExists(name)">
+				<help><![CDATA[Check if a value exists in the private request collection]]></help>
+			</scopevar>
+	<scopevar name="paramValue(name,value,[private])">
+				<help><![CDATA[Just like cfparam, but for the request collection]]></help>
+			</scopevar>
+	<scopevar name="paramPrivateValue(name,value)">
+				<help><![CDATA[Just like cfparam, but for the private request collection]]></help>
+			</scopevar>
+	<scopevar name="getCurrentView()">
+				<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
+			</scopevar>
+	<scopevar name="getCurrentViewArgs()">
+				<help><![CDATA[Gets the current set view the framework will try to render for this request]]></help>
+			</scopevar>
+	<scopevar name="getCurrentViewModule()">
+				<help><![CDATA[Gets the current set views's module for rendering]]></help>
+			</scopevar>
+	<scopevar name="getCurrentLayout()">
+				<help><![CDATA[Gets the current set layout for rendering]]></help>
+			</scopevar>
+	<scopevar name="getCurrentLayoutModule()">
+				<help><![CDATA[Gets the current set layout's module for rendering]]></help>
+			</scopevar>
+	<scopevar name="getCurrentRoute()">
+				<help><![CDATA[Get the current request's SES route that matched]]></help>
+			</scopevar>
+	<scopevar name="getCurrentRoutedURL()">
+				<help><![CDATA[Get the current routed URL that matched the SES route]]></help>
+			</scopevar>
+	<scopevar name="getCurrentRoutedNamespace()">
+				<help><![CDATA[Get the current routed namespace that matched the SES route, if any]]></help>
+			</scopevar>
+	<scopevar name="getCurrentEvent()">
+				<help><![CDATA[Gets the current incoming event]]></help>
+			</scopevar>
+	<scopevar name="getCurrentHandler()">
+				<help><![CDATA[Gets the current handler requested in the current event]]></help>
+			</scopevar>
+	<scopevar name="getCurrentAction()">
+				<help><![CDATA[Gets the current action requested in the current event]]></help>
+			</scopevar>
+	<scopevar name="getCurrentModule()">
+				<help><![CDATA[Gets the current module name, else returns empty string]]></help>
+			</scopevar>
+	<scopevar name="getModuleRoot([module])">
+				<help><![CDATA[Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings]]></help>
+			</scopevar>
+	<scopevar name="isSSL()">
+				<help><![CDATA[Are we in SSL or not? This method looks at cgi.server_port_secure for indication]]></help>
+			</scopevar>
+	<scopevar name="isInvalidHTTPMethod()">
+				<help><![CDATA[Check if the request was made with an invalid HTTP Method]]></help>
+			</scopevar>
+	<scopevar name="setIsInvalidHTTPMethod([target])">
+				<help><![CDATA[Set the invalid http method flag]]></help>
+			</scopevar>
+	<scopevar name="setView([view],[args],[layout],[module],[noLayout],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider])">
+				<help><![CDATA[Set the view to render in this request. Private Request Collection Name: currentView, currentLayout]]></help>
+			</scopevar>
+	<scopevar name="noLayout()">
+				<help><![CDATA[Mark this request to not use a layout for rendering]]></help>
+			</scopevar>
+	<scopevar name="setLayout(name,[module])">
+				<help><![CDATA[Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name]]></help>
+			</scopevar>
+	<scopevar name="getDefaultLayout()">
+				<help><![CDATA[Get's the default layout of the application]]></help>
+			</scopevar>
+	<scopevar name="setDefaultLayout(defaultLayout)">
+				<help><![CDATA[Override the default layout for a request]]></help>
+			</scopevar>
+	<scopevar name="getDefaultView()">
+				<help><![CDATA[Get's the default view of the application]]></help>
+			</scopevar>
+	<scopevar name="setDefaultView(defaultView)">
+				<help><![CDATA[Override the default view for a request]]></help>
+			</scopevar>
+	<scopevar name="getViewLayouts()">
+				<help><![CDATA[Get the registered view layout associations map]]></help>
+			</scopevar>
+	<scopevar name="getRegisteredLayouts()">
+				<help><![CDATA[Get all the registered layouts in the configuration file]]></help>
+			</scopevar>
+	<scopevar name="getFolderLayouts()">
+				<help><![CDATA[Get the registered folder layout associations map]]></help>
+			</scopevar>
+	<scopevar name="overrideEvent(event)">
+				<help><![CDATA[Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method]]></help>
+			</scopevar>
+	<scopevar name="setProxyRequest()">
+				<help><![CDATA[Set that this is a proxy request]]></help>
+			</scopevar>
+	<scopevar name="isProxyRequest()">
+				<help><![CDATA[Is this a coldbox proxy request]]></help>
+			</scopevar>
+	<scopevar name="noRender([remove])">
+				<help><![CDATA[Set the flag that tells the framework not to render, just execute]]></help>
+			</scopevar>
+	<scopevar name="isNoRender()">
+				<help><![CDATA[Is this a no render request]]></help>
+			</scopevar>
+	<scopevar name="getEventName()">
+				<help><![CDATA[Get the event name]]></help>
+			</scopevar>
+	<scopevar name="isNoExecution()">
+				<help><![CDATA[Determine if we need to execute an incoming event or not]]></help>
+			</scopevar>
+	<scopevar name="noExecution()">
+				<help><![CDATA[Set that the request will not execute an incoming event. Most likely simulating a servlet call]]></help>
+			</scopevar>
+	<scopevar name="isSES()">
+				<help><![CDATA[Is this request in SES mode]]></help>
+			</scopevar>
+	<scopevar name="setIsSES(isSES)">
+				<help><![CDATA[Is this request in SES mode]]></help>
+			</scopevar>
+	<scopevar name="getSESBaseURL()">
+				<help><![CDATA[Get the SES base URL for this request]]></help>
+			</scopevar>
+	<scopevar name="getHTMLBaseURL()">
+				<help><![CDATA[Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.]]></help>
+			</scopevar>
+	<scopevar name="setSESBaseURL(sesBaseURL)">
+				<help><![CDATA[Set the ses base URL for this request]]></help>
+			</scopevar>
+	<scopevar name="getSelf()">
+				<help><![CDATA[Returns index.cfm?{eventName}=]]></help>
+			</scopevar>
+	<scopevar name="buildLink(linkTo,[translate],[ssl],[baseURL],[queryString])">
+				<help><![CDATA[Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes]]></help>
+			</scopevar>
+	<scopevar name="isEventCacheable()">
+				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
+			</scopevar>
+	<scopevar name="setEventCacheableEntry(cacheEntry)">
+				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
+			</scopevar>
+	<scopevar name="getEventCacheableEntry()">
+				<help><![CDATA[Get the event cacheable entry]]></help>
+			</scopevar>
+	<scopevar name="removeEventCacheableEntry()">
+				<help><![CDATA[Check wether the incoming event has been flagged for caching]]></help>
+			</scopevar>
+	<scopevar name="isViewCacheable()">
+				<help><![CDATA[Check wether the incoming view has been flagged for caching]]></help>
+			</scopevar>
+	<scopevar name="setViewCacheableEntry(cacheEntry)">
+				<help><![CDATA[Set the view cacheable entry]]></help>
+			</scopevar>
+	<scopevar name="getViewCacheableEntry()">
+				<help><![CDATA[Get the event cacheable entry]]></help>
+			</scopevar>
+	<scopevar name="getRoutedStruct()">
+				<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
+			</scopevar>
+	<scopevar name="setRoutedStruct(routedStruct)">
+				<help><![CDATA[Get the routed structure of key-value pairs. What the ses interceptor could match.]]></help>
+			</scopevar>
+	<scopevar name="renderData([type],data,[contentType],[encoding],[statusCode],[statusText],[location],[jsonCallback],[jsonQueryFormat],[jsonAsText],[xmlColumnList],[xmlUseCDATA],[xmlListDelimiter],[xmlRootName],[pdfArgs],[formats],[formatsView],[isBinary])">
+				<help><![CDATA[Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you]]></help>
+			</scopevar>
+	<scopevar name="getRenderData()">
+				<help><![CDATA[Get the renderData structure]]></help>
+			</scopevar>
+	<scopevar name="getHTTPMethod()">
+				<help><![CDATA[Get the HTTP Request Method Type]]></help>
+			</scopevar>
+	<scopevar name="getHTTPContent([json],[xml])">
+				<help><![CDATA[Get the raw HTTP content]]></help>
+			</scopevar>
+	<scopevar name="getHTTPHeader(The header to get,[defaultValue])">
+				<help><![CDATA[Get an HTTP header]]></help>
+			</scopevar>
+	<scopevar name="setHTTPHeader([statusCode],[statusText],[name],[value])">
+				<help><![CDATA[Set an HTTP Header
+return RequestContext]]></help>
+			</scopevar>
+	<scopevar name="getHTTPBasicCredentials()">
+				<help><![CDATA[Returns the username and password sent via HTTP basic authentication]]></help>
+			</scopevar>
+	<scopevar name="isAjax()">
+				<help><![CDATA[Determines if in an Ajax call or not by looking at the request headers]]></help>
+			</scopevar>
+	<scopevar name="renderWithFormats()">
+				<help><![CDATA[Render data with formats]]></help>
+			</scopevar>
+	<scopevar name="getContext()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setController(controller)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getPrivateContext()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setContext(context)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setProperties(properties)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getController()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getProperties()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setPrivateContext(privateContext)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+</scopevar>
+	<scopevar name="html">
+		<help><![CDATA[A cool utility that helps you when working with HTML, from creating doc types, to managing your js/css assets, to rendering tables and lists from data]]></help>
+		<scopevar name="init(controller)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="addJSContent(content,[addToHeader])">
+				<help><![CDATA[Open and close HTML5 javascript tags so you can easily just add content]]></help>
+			</scopevar>
+	<scopevar name="addStyleContent(content,[addToHeader])">
+				<help><![CDATA[Open and close xhtml style tags so you can easily just add content]]></help>
+			</scopevar>
+	<scopevar name="addAsset(asset,[sendToHeader],[async],[defer])">
+				<help><![CDATA[Add a js/css asset(s) to the html head section. You can also pass in a list of assets via the asset argument to try to load all of them.	You can also make this method return the string that will be sent to the header instead.]]></help>
+			</scopevar>
+	<scopevar name="br([count])">
+				<help><![CDATA[Generate line breaks]]></help>
+			</scopevar>
+	<scopevar name="nbs([count])">
+				<help><![CDATA[Generate non-breaking spaces (&nbsp;)]]></help>
+			</scopevar>
+	<scopevar name="heading(title,[size])">
+				<help><![CDATA[Generate header tags]]></help>
+			</scopevar>
+	<scopevar name="tag(tag,[content],[data])">
+				<help><![CDATA[Surround content with a tag]]></help>
+			</scopevar>
+	<scopevar name="anchor(name,[text],[data])">
+				<help><![CDATA[Create an anchor tag]]></help>
+			</scopevar>
+	<scopevar name="href([href],[text],[queryString],[title],[target],[ssl],[noBaseURL],[data])">
+				<help><![CDATA[Create href tags, using the SES base URL or not]]></help>
+			</scopevar>
+	<scopevar name="link(href,[rel],[type],[title],[media],[noBaseURL],[charset],[sendToHeader],[data])">
+				<help><![CDATA[Create link tags, using the SES base URL or not]]></help>
+			</scopevar>
+	<scopevar name="img(src,[alt],[class],[width],[height],[title],[rel],[name],[noBaseURL],[data])">
+				<help><![CDATA[Create image tags using the SES base URL or not]]></help>
+			</scopevar>
+	<scopevar name="ul(values,[column])">
+				<help><![CDATA[Create un-ordered lists according to passed in values and arguments, compressed HTML]]></help>
+			</scopevar>
+	<scopevar name="ol(values,[column])">
+				<help><![CDATA[Create ordered lists according to passed in values and arguments, compressed HTML]]></help>
+			</scopevar>
+	<scopevar name="table(data,[includes],[excludes],[name])">
+				<help><![CDATA[Convert a table out of data (either a query or array of structures or array of entities)]]></help>
+			</scopevar>
+	<scopevar name="meta(name,[content],[type],[sendToHeader],[property])">
+				<help><![CDATA[Helps you generate meta tags]]></help>
+			</scopevar>
+	<scopevar name="docType([type])">
+				<help><![CDATA[Render a doctype by type name: xhtml11,xhtml1-strict,xhtml-trans,xthml-frame,html5,html4-strict,html4-trans,html4-frame]]></help>
+			</scopevar>
+	<scopevar name="slugify(str,[maxLength],[allow])">
+				<help><![CDATA[Create a URL safe slug from a string]]></help>
+			</scopevar>
+	<scopevar name="autoDiscoveryLink([type],[href],[rel],[title],[data])">
+				<help><![CDATA[Creates auto discovery links for RSS and ATOM feeds.]]></help>
+			</scopevar>
+	<scopevar name="video(src,[width],[height],[poster],[autoplay],[controls],[loop],[preload],[noBaseURL],[name],[data])">
+				<help><![CDATA[Create an HTML 5 video tag]]></help>
+			</scopevar>
+	<scopevar name="audio(src,[autoplay],[controls],[loop],[preLoad],[noBaseURL],[name],[data])">
+				<help><![CDATA[Create an HTML 5 audio tag]]></help>
+			</scopevar>
+	<scopevar name="canvas(id,[width],[height],[data])">
+				<help><![CDATA[Create a canvas tag]]></help>
+			</scopevar>
+	<scopevar name="startForm([action],[name],[method],[multipart],[ssl],[noBaseURL],[data])">
+				<help><![CDATA[Create cool form tags. Any extra argument will be passed as attributes to the form tag]]></help>
+			</scopevar>
+	<scopevar name="endForm()">
+				<help><![CDATA[End a form tag]]></help>
+			</scopevar>
+	<scopevar name="startFieldset([legend],[data])">
+				<help><![CDATA[Create a fieldset tag with or without a legend.]]></help>
+			</scopevar>
+	<scopevar name="endFieldset()">
+				<help><![CDATA[End a fieldset tag]]></help>
+			</scopevar>
+	<scopevar name="label(field,[content],[wrapper],[data],[class])">
+				<help><![CDATA[Render a label tag. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="textArea([name],[cols],[rows],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty],[data])">
+				<help><![CDATA[Render out a textarea. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="passwordField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a password field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="urlfield([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a URL field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="emailField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out an email field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="hiddenField([name],[value],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a hidden field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="textField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a text field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="button([name],[value],[disabled],[type],[wrapper],[groupWrapper],[label],[labelwrapper],[data],[labelClass])">
+				<help><![CDATA[Render out a button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="fileField([name],[value],[disabled],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
+				<help><![CDATA[Render out a file field. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="checkBox([name],[value],[disabled],[checked],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a checkbox. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="radioButton([name],[value],[disabled],[checked],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty])">
+				<help><![CDATA[Render out a radio button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="submitButton([name],[value],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
+				<help><![CDATA[Render out a submit button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="resetButton([name],[value],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
+				<help><![CDATA[Render out a reset button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="imageButton(src,[name],[disabled],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass])">
+				<help><![CDATA[Render out a image button. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="options([values],[column],[nameColumn],[selectedIndex],[selectedValue])">
+				<help><![CDATA[Render out options. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="select([name],[options],[column],[nameColumn],[selectedIndex],[selectedValue],[bind],[bindProperty],[disabled],[multiple],[wrapper],[groupWrapper],[label],[labelwrapper],[data],[labelClass])">
+				<help><![CDATA[Render out a select tag. Remember that any extra arguments are passed as tag attributes]]></help>
+			</scopevar>
+	<scopevar name="inputField([type],[name],[value],[disabled],[checked],[readonly],[wrapper],[groupWrapper],[label],[labelwrapper],[labelClass],[bind],[bindProperty],[data])">
+				<help><![CDATA[Create an input field using some cool tags and features.	Any extra arguments are passed to the tag]]></help>
+			</scopevar>
+	<scopevar name="entityFields(entity,[groupWrapper],[fieldwrapper],[labelwrapper],[labelClass],[textareas],[booleanSelect],[showRelations],[manytoone],[manytomany])">
+				<help><![CDATA[Create fields based on entity properties]]></help>
+			</scopevar>
+	<scopevar name="elixir(fileName,[buildDirectory],[sendToHeader],[async],[defer])">
+				<help><![CDATA[Adds the versioned path for an asset to the view]]></help>
+			</scopevar>
+	<scopevar name="elixirPath(fileName,[buildDirectory])">
+				<help><![CDATA[Finds the versioned path for an asset]]></help>
+			</scopevar>
+	<scopevar name="arrayToTable(data,[includes],[excludes],buffer)">
+				<help><![CDATA[Convert a table out of an array]]></help>
+			</scopevar>
+	<scopevar name="queryToTable(data,[includes],[excludes],buffer)">
+				<help><![CDATA[Convert a table out of an array of structures]]></help>
+			</scopevar>
+	<scopevar name="toHTMLList(tag,values,[column],[data])">
+				<help><![CDATA[Convert a sent in tag type to an HTML list]]></help>
+			</scopevar>
+	<scopevar name="bindValue([args])">
+				<help><![CDATA[Bind entity values]]></help>
+			</scopevar>
+	<scopevar name="normalizeID([args])">
+				<help><![CDATA[Normalize ID with name arguments]]></help>
+			</scopevar>
+	<scopevar name="wrapTag([buffer],[tag],[end])">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="makePretty([text])">
+				<help><![CDATA[make pretty text]]></help>
+			</scopevar>
+	<scopevar name="prepareBaseLink([noBaseURL],[src])">
+				<help><![CDATA[Prepare a base link]]></help>
+			</scopevar>
+	<scopevar name="passIncludeExclude(value,[includes],[excludes])">
+				<help><![CDATA[checks if a list include exclude check passes]]></help>
+			</scopevar>
+	<scopevar name="flattenAttributes(target,[excludes],buffer)">
+				<help><![CDATA[flatten a struct of attributes to strings]]></help>
+			</scopevar>
+	<scopevar name="onMissingMethod(missingMethodName,missingMethodArguments)">
+				<help><![CDATA[Proxy calls to provided element]]></help>
+			</scopevar>
+	<scopevar name="getColumnArray(qry,columnName)">
+				<help><![CDATA[Returns an array of the values]]></help>
+			</scopevar>
+	<scopevar name="$htmlhead(content)">
+				<help><![CDATA[Facade to cfhtmlhead]]></help>
+			</scopevar>
 </scopevar>
 	<scopevar name="controller">
-		<help><![CDATA[***************************************************************************** Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* Manages a ColdBox application, dispatches events and acts as an overall front controller.]]></help>
-		<scopevar name="GETSERVICES()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="SETCOLDBOXSETTINGS(coldboxSettings)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="GETLOGBOX()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="GETLOG()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="SETSERVICES(services)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="GETWIREBOX()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="getDataMarshaller()">
-				<help><![CDATA[Get the system data marshaller, you can also retreive it from wirebox via dataMarshaller@coldbox]]></help>
-			</scopevar>
-	<scopevar name="setNextEvent([event],[queryString],[addToken],[persist],[persistStruct],[baseURL],[postProcessExempt],[URL],[URI],[statusCode])">
-				<help><![CDATA[Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI]]></help>
-			</scopevar>
-	<scopevar name="GETCOLDBOXSETTINGS()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="sendRelocation(URL,[addToken],[statusCode])">
-				<help><![CDATA[Send a CF relocation]]></help>
-			</scopevar>
-	<scopevar name="getRequestService()">
-				<help><![CDATA[Get the request service]]></help>
-			</scopevar>
-	<scopevar name="SETCONFIGSETTINGS(configSettings)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="SETCACHEBOX(cachebox)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="setSetting(name,value)">
-				<help><![CDATA[Set a value in the application configuration settings]]></help>
-			</scopevar>
-	<scopevar name="GETAPPROOTPATH()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="invoker(target,method,[argCollection],[private])">
-				<help><![CDATA[Invoke private/public event handler methods]]></help>
-			</scopevar>
-	<scopevar name="getHandlerService()">
-				<help><![CDATA[Get the handler service]]></help>
-			</scopevar>
-	<scopevar name="locateDirectoryPath(pathToCheck)">
-				<help><![CDATA[Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
-			</scopevar>
-	<scopevar name="SETWIREBOX(wirebox)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="getSettingStructure([fwSetting],[deepCopyFlag])">
-				<help><![CDATA[DEPRECATED: Convenience method to retrieve the config or coldbox settings.]]></help>
-			</scopevar>
-	<scopevar name="getModuleService()">
-				<help><![CDATA[Get the module service]]></help>
-			</scopevar>
-	<scopevar name="GETUTIL()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="loadColdBoxSettings()">
-				<help><![CDATA[Load the internal ColdBox settings]]></help>
-			</scopevar>
-	<scopevar name="GETCOLDBOXINITIATED()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="GETAPPHASH()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="settingExists(name,[fwSetting])">
-				<help><![CDATA[Check if a value exists in a configuration structure]]></help>
-			</scopevar>
-	<scopevar name="updateSSL(inURL,ssl)">
-				<help><![CDATA[Update SSL or not on a request string]]></help>
-			</scopevar>
-	<scopevar name="getPlugin()">
-				<help><![CDATA[DEPRECATED]]></help>
-			</scopevar>
-	<scopevar name="SETUTIL(util)">
-				<help><![CDATA[']]></help>
+		<help><![CDATA[Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.ortussolutions.com
+---
+Manages a ColdBox application, dispatches events and acts as an overall front controller.]]></help>
+		<scopevar name="init(appRootPath,[appKey])">
+				<help><![CDATA[Constructor]]></help>
 			</scopevar>
 	<scopevar name="getMemento()">
 				<help><![CDATA[Get controller memento, used only by decorator only.]]></help>
 			</scopevar>
-	<scopevar name="GETCACHEBOX()">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="SETCOLDBOXINITIATED(coldboxInitiated)">
-				<help><![CDATA[']]></help>
-			</scopevar>
 	<scopevar name="getRenderer()">
 				<help><![CDATA[Get the system web renderer, you can also retreive it from wirebox via renderer@coldbox]]></help>
 			</scopevar>
-	<scopevar name="validateAction(action,[inclusion],[exclusion])">
-				<help><![CDATA[Checks if an action can be executed according to inclusion/exclusion lists]]></help>
-			</scopevar>
-	<scopevar name="SETLOGBOX(logbox)">
-				<help><![CDATA[']]></help>
-			</scopevar>
-	<scopevar name="getLoaderService()">
-				<help><![CDATA[Get the loader service]]></help>
-			</scopevar>
-	<scopevar name="SETCFMLENGINE(CFMLEngine)">
-				<help><![CDATA[']]></help>
+	<scopevar name="getDataMarshaller()">
+				<help><![CDATA[Get the system data marshaller, you can also retreive it from wirebox via dataMarshaller@coldbox]]></help>
 			</scopevar>
 	<scopevar name="getCache(cacheName)">
 				<help><![CDATA[Get a Cache provider from CacheBox]]></help>
 			</scopevar>
-	<scopevar name="getSetting(name,[fwSetting],[defaultValue])">
-				<help><![CDATA[Get a setting from a configuration structure]]></help>
+	<scopevar name="getLoaderService()">
+				<help><![CDATA[Get the loader service]]></help>
 			</scopevar>
-	<scopevar name="SETAPPKEY(appKey)">
-				<help><![CDATA[']]></help>
+	<scopevar name="getModuleService()">
+				<help><![CDATA[Get the module service]]></help>
 			</scopevar>
 	<scopevar name="getInterceptorService()">
 				<help><![CDATA[Get the interceptor service]]></help>
 			</scopevar>
-	<scopevar name="GETCONFIGSETTINGS()">
-				<help><![CDATA[']]></help>
+	<scopevar name="getHandlerService()">
+				<help><![CDATA[Get the handler service]]></help>
 			</scopevar>
-	<scopevar name="locateFilePath(pathToCheck)">
-				<help><![CDATA[Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
+	<scopevar name="getRequestService()">
+				<help><![CDATA[Get the request service]]></help>
 			</scopevar>
-	<scopevar name="SETLOG(log)">
-				<help><![CDATA[']]></help>
+	<scopevar name="getSetting(name,[fwSetting],[defaultValue])">
+				<help><![CDATA[Get a setting from a configuration structure]]></help>
 			</scopevar>
-	<scopevar name="GETAPPKEY()">
-				<help><![CDATA[']]></help>
+	<scopevar name="settingExists(name,[fwSetting])">
+				<help><![CDATA[Check if a value exists in a configuration structure]]></help>
 			</scopevar>
-	<scopevar name="SETAPPROOTPATH(appRootPath)">
-				<help><![CDATA[']]></help>
+	<scopevar name="setSetting(name,value)">
+				<help><![CDATA[Set a value in the application configuration settings]]></help>
 			</scopevar>
-	<scopevar name="init(appRootPath,[appKey])">
-				<help><![CDATA[Constructor]]></help>
+	<scopevar name="getSettingStructure([fwSetting],[deepCopyFlag])">
+				<help><![CDATA[DEPRECATED: Convenience method to retrieve the config or coldbox settings.]]></help>
 			</scopevar>
-	<scopevar name="SETAPPHASH(appHash)">
-				<help><![CDATA[']]></help>
+	<scopevar name="getPlugin()">
+				<help><![CDATA[DEPRECATED]]></help>
+			</scopevar>
+	<scopevar name="setNextEvent([event],[queryString],[addToken],[persist],[persistStruct],[baseURL],[postProcessExempt],[URL],[URI],[statusCode])">
+				<help><![CDATA[Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI]]></help>
+			</scopevar>
+	<scopevar name="runEvent([event],[prePostExempt],[private],[defaultEvent],[eventArguments],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider])">
+				<help><![CDATA[Executes events with full life-cycle methods and returns the event results if any were returned.]]></help>
 			</scopevar>
 	<scopevar name="_runEvent([event],[prePostExempt],[private],[defaultEvent],[eventArguments])">
 				<help><![CDATA[Executes events with full life-cycle methods and returns the event results if any were returned]]></help>
 			</scopevar>
+	<scopevar name="locateFilePath(pathToCheck)">
+				<help><![CDATA[Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
+			</scopevar>
+	<scopevar name="locateDirectoryPath(pathToCheck)">
+				<help><![CDATA[Locate the real path location of a directory in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path]]></help>
+			</scopevar>
+	<scopevar name="loadColdBoxSettings()">
+				<help><![CDATA[Load the internal ColdBox settings]]></help>
+			</scopevar>
 	<scopevar name="persistVariables([persist],[persistStruct])">
 				<help><![CDATA[Internal helper to flash persist elements]]></help>
 			</scopevar>
-	<scopevar name="GETCFMLENGINE()">
+	<scopevar name="validateAction(action,[inclusion],[exclusion])">
+				<help><![CDATA[Checks if an action can be executed according to inclusion/exclusion lists]]></help>
+			</scopevar>
+	<scopevar name="invoker(target,method,[argCollection],[private])">
+				<help><![CDATA[Invoke private/public event handler methods]]></help>
+			</scopevar>
+	<scopevar name="sendRelocation(URL,[addToken],[statusCode])">
+				<help><![CDATA[Send a CF relocation]]></help>
+			</scopevar>
+	<scopevar name="updateSSL(inURL,ssl)">
+				<help><![CDATA[Update SSL or not on a request string]]></help>
+			</scopevar>
+	<scopevar name="getServices()">
 				<help><![CDATA[']]></help>
 			</scopevar>
-	<scopevar name="runEvent([event],[prePostExempt],[private],[defaultEvent],[eventArguments],[cache],[cacheTimeout],[cacheLastAccessTimeout],[cacheSuffix],[cacheProvider])">
-				<help><![CDATA[Executes events with full life-cycle methods and returns the event results if any were returned.]]></help>
+	<scopevar name="setColdboxSettings(coldboxSettings)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getLogbox()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getLog()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setServices(services)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getWirebox()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getColdboxSettings()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setConfigSettings(configSettings)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setCachebox(cachebox)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getAppRootPath()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setWirebox(wirebox)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getUtil()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getColdboxInitiated()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getAppHash()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setUtil(util)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getCachebox()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setColdboxInitiated(coldboxInitiated)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setLogbox(logbox)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setCFMLEngine(CFMLEngine)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setAppKey(appKey)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getConfigSettings()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setLog(log)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getAppKey()">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setAppRootPath(appRootPath)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="setAppHash(appHash)">
+				<help><![CDATA[']]></help>
+			</scopevar>
+	<scopevar name="getCFMLEngine()">
+				<help><![CDATA[']]></help>
 			</scopevar>
 </scopevar>
 

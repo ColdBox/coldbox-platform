@@ -34,9 +34,11 @@
 			controllerDecorator			= "cbtestharness.models.ControllerDecorator",
 
 			//Error/Exception Handling
-			exceptionHandler		= "main.onException",
-			onInvalidEvent			= "main.onInvalidEvent",
-			customErrorTemplate		= "/coldbox/system/includes/BugReport.cfm",
+			invalidHTTPMethodHandler 	= "main.invalidHTTPMethod",
+			exceptionHandler			= "main.onException",
+			onInvalidEvent				= "main.onInvalidEvent",
+			//customErrorTemplate		= "/coldbox/system/includes/BugReport.cfm",
+			customErrorTemplate		= "views/_templates/generic_error.cfm",
 
 			//Application Aspects
 			handlerCaching 			= false,
@@ -63,7 +65,7 @@
 			// An array of modules names to load, empty means all of them
 			include = [],
 			// An array of modules names to NOT load, empty means none
-			exclude = []
+			exclude = [ "excludedmod" ]
 		};
 
 		//LogBox DSL

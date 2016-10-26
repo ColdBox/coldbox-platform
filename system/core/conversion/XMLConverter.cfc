@@ -47,12 +47,13 @@ Modifications
 		<cfargument name="delimiter" 	type="string" 	required="false" default="," hint="The delimiter in the list. Comma by default">
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
-			var buffer = createObject("java","java.lang.StringBuffer").init('');
+			var buffer = createObject("java","java.lang.StringBuilder").init('');
 
 			// Header
 			if( arguments.addHeader ){
 				buffer.append('<?xml version="1.0" encoding="#arguments.encoding#"?>');
 			}
+
 
 			// Object Check
 			if( isObject(arguments.data) ){
@@ -86,7 +87,7 @@ Modifications
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 
 		<cfscript>
-		var buffer = createObject('java','java.lang.StringBuffer').init('');
+		var buffer = createObject('java','java.lang.StringBuilder').init('');
 		var target = arguments.data;
 		var x = 1;
 		var dataLen = arrayLen(target);
@@ -132,7 +133,7 @@ Modifications
 		<cfargument name="useCDATA"  	type="boolean" required="false" default="false" hint="Use CDATA content for ALL values">
 		<cfargument name="rootName"     type="string"  required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 
-		<cfset var buffer = createObject('java','java.lang.StringBuffer').init('')>
+		<cfset var buffer = createObject('java','java.lang.StringBuilder').init('')>
 		<cfset var col = "">
 		<cfset var columns = arguments.columnlist>
 		<cfset var value = "">
@@ -183,7 +184,7 @@ Modifications
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
 		var target = arguments.data;
-		var buffer = createObject("java","java.lang.StringBuffer").init('');
+		var buffer = createObject("java","java.lang.StringBuilder").init('');
 		var key = 0;
 		var thisValue = "";
 		var args = structnew();
@@ -205,7 +206,7 @@ Modifications
 		// Content
 		for(key in target){
 			// Null Checks
-			if( NOT structKeyExists(target, key) ){
+			if( NOT structKeyExists( target, key ) OR isNull( target[key] ) ){
 				target[key] = 'NULL';
 			}
 			// Translate Value
@@ -230,8 +231,8 @@ Modifications
 		<cfargument name="useCDATA"  	type="boolean"  required="false"  default="false" hint="Use CDATA content for ALL values">
 		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
-		var target 			= arguments.data;
-		var buffer 			= createObject("java","java.lang.StringBuffer").init('');
+		var target 			= isNull( arguments.data ) ? "NULL" : arguments.data;
+		var buffer 			= createObject("java","java.lang.StringBuilder").init('');
 		var md 				= getMetadata(target);
 		var rootElement		= lcase( safeText( listLast( md.name, "." ) ) );
 		var thisName 		= "";
@@ -307,7 +308,7 @@ Modifications
 		<cfargument name="useCDATA" type="boolean" required="false" default="false" hint="Use CDATA content for ALL values">
 		<cfset var newTxt = xmlFormat(unicodeWin1252(trim(arguments.txt)))>
 		<cfif arguments.useCDATA>
-			<cfreturn "<![CDATA[" & newTxt & "]]" & ">">
+			<cfreturn "<![CDATA[" & newTxt & "]]>">
 		<cfelse>
 			<cfreturn newTxt>
 		</cfif>

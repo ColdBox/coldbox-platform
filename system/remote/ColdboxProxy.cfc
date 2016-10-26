@@ -26,9 +26,8 @@ Description :
     <cffunction name="selfAutowire" output="false" access="private" hint="Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path.">
 		<cfscript>
 			var script_name = cgi.script_name;
-
-			// Only process this logic if hitting a remote proxy CFC directly
-			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' ) {
+			// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists. 
+			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' || !verifyColdBox( throwOnNotExist=false ) ) {
 				return;
 			}
 
@@ -93,41 +92,45 @@ Description :
 			// Locate ColdBox Controller
 			cbController = getController();
 
+			// Load Module CF Mappings
+			cbController.getModuleService().loadMappings();
 			// Create the request context
 			event = cbController.getRequestService().requestCapture();
 
 			// Test event Name in the arguemnts.
-			if( not structKeyExists(arguments,event.getEventName()) ){
-				throw( message="Event not detected",
-					   detail="The #event.geteventName()# variable does not exist in the arguments.",
-					   type="ColdBoxProxy.NoEventDetected" );
+			if( not structKeyExists( arguments, event.getEventName() ) ){
+				throw( 
+					message="Event not detected",
+					detail="The #event.geteventName()# variable does not exist in the arguments.",
+					type="ColdBoxProxy.NoEventDetected" 
+				);
 			}
 
 			//Append the arguments to the collection
-			event.collectionAppend(arguments,true);
+			event.collectionAppend( arguments, true );
 			//Set that this is a proxy request.
 			event.setProxyRequest();
 
 			//Execute a pre process interception.
-			cbController.getInterceptorService().processState("preProcess");
+			cbController.getInterceptorService().processState( "preProcess" );
 
 			//Request Start Handler if defined
-			if ( cbController.getSetting("RequestStartHandler") neq "" ){
-				cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
+			if ( cbController.getSetting( "RequestStartHandler" ) neq "" ){
+				cbController.runEvent(cbController.getSetting( "RequestStartHandler" ),true);
 			}
 
 			//Execute the Event if not demarcated to not execute
 			if( NOT event.isNoExecution() ){
-				refLocal.results = cbController.runEvent(default=true);
+				refLocal.results = cbController.runEvent( default=true );
 			}
 
 			//Request END Handler if defined
-			if ( cbController.getSetting("RequestEndHandler") neq "" ){
-				cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
+			if ( cbController.getSetting( "RequestEndHandler" ) neq "" ){
+				cbController.runEvent( cbController.getSetting( "RequestEndHandler" ), true );
 			}
 
 			//Execute the post process interceptor
-			cbController.getInterceptorService().processState("postProcess");
+			cbController.getInterceptorService().processState(" postProcess" );
 			</cfscript>
 
 			<cfcatch>
@@ -166,9 +169,6 @@ Description :
 				// Return The results
 				return refLocal.results;
 			}
-
-			// Trace that no results where found, returns void or null
-			tracer('No outgoing results found in the local scope.');
 		</cfscript>
 	</cffunction>
 
@@ -210,12 +210,18 @@ Description :
 
 	<!--- verifyColdBox --->
 	<cffunction name="verifyColdBox" output="false" access="private" returntype="boolean" hint="Verify the coldbox app">
+		<cfargument name="throwOnNotExist" default="true">
 		<cfscript>
+			
 			//Verify the coldbox app is ok, else throw
 			if ( not structKeyExists(application,COLDBOX_APP_KEY) ){
-				throw( message="ColdBox Controller Not Found", 
-					   detail="The coldbox main controller has not been initialized",
-					   type="ColdBoxProxy.ControllerIllegalState");
+				if( arguments.throwOnNotExist ) {
+					throw( message="ColdBox Controller Not Found", 
+						   detail="The coldbox main controller has not been initialized",
+						   type="ColdBoxProxy.ControllerIllegalState");
+				} else {
+					return false;
+				}
 			}
 			else{
 				return true;

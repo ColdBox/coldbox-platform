@@ -53,6 +53,13 @@
 		.addRoute( pattern="/:id/:name{4}?")
 	.endWith();
 
+	addRoute( pattern="/testroute", handler="main", action="index" );
+
+	// Should fire localized onInvalidHTTPMethod
+	addRoute( pattern="invalid-restful", handler="restful", action={ index = "post" } );
+	// 
+	addRoute( pattern="invalid-main-method", handler="main", action={ index = "post" } );
+	
 	// Default Application Routing
 	addRoute( pattern=":handler/:action?/:id-numeric?",matchVariables="isFound=true,testDate=#now()#");
 

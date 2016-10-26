@@ -37,7 +37,9 @@ Description :
 			this.TYPES = createObject("component","coldbox.system.ioc.Types");
 
 			// Do we have a binder?
-			if( NOT len(trim(arguments.binder)) ){ arguments.binder = "coldbox.system.ioc.config.DefaultBinder"; }
+			if( isSimpleValue( arguments.binder ) AND NOT len( trim( arguments.binder ) ) ){ 
+				arguments.binder = "coldbox.system.ioc.config.DefaultBinder"; 
+			}
 
 			// Prepare Injector instance
 			instance = {
@@ -48,7 +50,7 @@ Description :
 				// Scope Storages
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(),
 				// Version
-				version  = "2.1.0+@build.number@",
+				version  = "@build.version@+@build.number@",
 				// The Configuration Binder object
 				binder   = "",
 				// ColdBox Application Link
@@ -605,7 +607,7 @@ Description :
 				// Init the lookup structure
 				refLocal = {};
 				// Check if direct value has been placed.
-				if( structKeyExists(arguments.DIData[x],"value") ){
+				if( structKeyExists( arguments.DIData[x], "value" ) AND NOT isNull( arguments.DIData[x].value ) ){
 					refLocal.dependency = arguments.DIData[x].value;
 				}
 				// else check if dsl is used?
@@ -994,18 +996,19 @@ Description :
 			var dataCFC = "";
 
 			// Check if just a plain CFC path and build it
-			if( isSimpleValue(arguments.binder) ){
-				arguments.binder = createObject("component",arguments.binder);
+			if( isSimpleValue( arguments.binder ) ){
+				arguments.binder = createObject( "component", arguments.binder );
 			}
 
 			// Check if data CFC or binder family
 			if( NOT isInstanceOf( arguments.binder, "coldbox.system.ioc.config.Binder" ) ){
 				// simple data cfc, create native binder and decorate data CFC
-				nativeBinder = createObject("component","coldbox.system.ioc.config.Binder").init(injector=this,config=arguments.binder,properties=arguments.properties);
+				nativeBinder = createObject( "component", "coldbox.system.ioc.config.Binder" )
+					.init( injector=this, config=arguments.binder, properties=arguments.properties );
 			}
 			else{
 				// else init the binder and configur it
-				nativeBinder = arguments.binder.init(injector=this,properties=arguments.properties);
+				nativeBinder = arguments.binder.init( injector=this, properties=arguments.properties );
 				// Configure it
 				nativeBinder.configure();
 				// Load it

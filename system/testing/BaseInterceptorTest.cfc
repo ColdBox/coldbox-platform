@@ -1,8 +1,7 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * Standalone base test case for interceptors
 */
 component extends="coldbox.system.testing.BaseTestCase"{

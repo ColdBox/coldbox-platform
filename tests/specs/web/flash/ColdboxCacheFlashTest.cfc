@@ -1,43 +1,57 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-<cfscript>
-	this.loadColdBox = false;
-	function setup(){
-		flash = getMockBox().createMock("coldbox.system.web.flash.ColdboxCacheFlash");
-		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
-		mockCache = getMockBox().createMock(className="coldbox.system.cache.providers.CacheBoxProvider",clearMethods=true);
-		mockController.$("getCache",mockCache).$("settingExists",false);
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.flash.ColdBoxCacheFlash"{
+		
+	function run( testResults, testBox ){
+		// all your suites go here.
+		describe( "ColdBox Cache Flash", function(){
 
-		flash.init(mockController);
-		obj = createObject("component","coldbox.system.core.util.CFMLEngine").init();
+			beforeEach( function() {
+				super.setup();
+				flash = model;
 
-		//test scope
-		testscope = {
-			test={content="luis",autoPurge=true,keep=true},
-			date={content=now(),autoPurge=true,keep=true},
-			obj={content=obj,autoPurge=true,keep=true}
-		};
-	}
-	function testClearFlash(){
-		flash.$("flashExists",true);
-		mockCache.$("clear").$("get",testScope);
-		flash.clearFlash();
-		assertTrue( arrayLen(mockCache.$callLog().clear) );
-	}
-	function testSaveFlash(){
-		flash.$("getScope",testscope);
-		mockCache.$("set",true);
-		flash.saveFlash();
-		assertTrue( arrayLen(mockCache.$callLog().set) );
-	}
-	function testFlashExists(){
-		mockCache.$("lookup",true);
-		assertTrue(flash.flashExists());
-	}
-	function testgetFlash(){
-		mockCache.$("get",testScope);
-		flash.$("flashExists",true);
-		assertEquals( flash.getFlash(), testScope);
+				// mocks
+				session.sessionid = createUUID();
+				mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
+				mockCache = getMockBox().createMock(className="coldbox.system.cache.providers.CacheBoxProvider",clearMethods=true);
+				mockController.$("getCache",mockCache).$("settingExists",false);
 
+				// Init Flash
+				flash.init( mockController );
+				obj = new coldbox.system.core.util.CFMLEngine();
+
+				//test scope
+				testscope = {
+					test 	= {content="luis",autoPurge=true,keep=true},
+					date 	= {content=now(),autoPurge=true,keep=true},
+					obj 	= {content=obj,autoPurge=true,keep=true}
+				};
+			} );
+
+			it( "can clear the flash scope", function(){
+				flash.$( "flashExists", true );
+				mockCache.$( "clear" ).$( "get", testScope );
+				flash.clearFlash();
+				expect( arrayLen( mockCache.$callLog().clear ) ).toBeTrue();
+			});
+
+			it( "can save the flash scope", function(){
+				flash.$("getScope",testscope);
+				mockCache.$("set",true);
+				flash.saveFlash();
+				expect( arrayLen( mockCache.$callLog().set ) ).toBeTrue();
+			});
+
+			it( "can check if the flash scope exists", function(){
+				mockCache.$("lookup",true);
+				expect( flash.flashExists() ).toBeTrue();
+			});
+
+			it( "can get the flash scope", function(){
+				mockCache.$("get",testScope);
+				flash.$("flashExists",true);
+				expect( flash.getFlash() ).toBe( testScope );
+			});
+
+		});
 	}
-</cfscript>
-</cfcomponent>
+	
+}

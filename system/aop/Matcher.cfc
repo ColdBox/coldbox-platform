@@ -1,249 +1,310 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* I match class and method names to data in this matcher
+*/
+component accessors="true"{
 
-Author 	    :	Luis Majano
-Description :
-	I match class and method names to data in this matcher
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="I match class and method names to data in this matcher">
-	
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------>
+	/**
+	* Any matcher
+	*/
+	property name="any";
+	/**
+	* Matching returns
+	*/
+	property name="returns";
+	/**
+	* Matching annotations
+	*/
+	property name="annotation";
+	/**
+	* Matching annotation value
+	*/
+	property name="annotationValue";
+	/**
+	* Matching mapping names
+	*/
+	property name="mappings";
+	/**
+	* Matching instances
+	*/
+	property name="instanceOf";
+	/**
+	* Matchin regex
+	*/
+	property name="regex";
+	/**
+	* Mathching method names
+	*/
+	property name="methods";
+	/**
+	* And operator
+	*/
+	property name="and";
+	/**
+	* OR operator
+	*/
+	property name="or";
 
-	<!--- init --->    
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">    
-    	<cfscript>
-			reset();
-			
-			return this;
-		</cfscript>
-    </cffunction>
+	/**
+	* Constructor
+	*/
+    function init(){    
+		reset();
+		return this;
+    }
 
-<!------------------------------------------- PUBLIC ------------------------------------------>
+    /**
+    * Reset the matcher memento to defaults
+    */
+    function reset(){    
+		// prepare instance for this matcher
+		variables.any 				= false;
+		variables.returns 			= "";
+		variables.annotation 		= "";
+		variables.mappings 			= "";
+		variables.instanceOf 		= "";
+		variables.regex 			= "";
+		variables.methods 			= "";
+		
+		// Aggregators
+		variables.and 				= "";
+		variables.or  				= "";	
+		
+		return this;	    
+    }
 	
-	<!--- reset --->    
-    <cffunction name="reset" output="false" access="public" returntype="any" hint="Reset the matcher memento to defaults">    
-    	<cfscript>
-			// prepare instance for this matcher
-			instance = {
-				any = false,
-				returns = "",
-				annotation = "",
-				mappings = "",
-				instanceOf = "",
-				regex = "",
-				methods = ""
-			};
-			
-			// Aggregators
-			instance.and = "";
-			instance.or  = "";	
-			
-			return this;	    
-    	</cfscript>    
-    </cffunction>
+    /**
+    * Get the matcher memento
+    */
+    function getMemento(){
+		var props = listToArray( "and,or,any,returns,annotation,annotationValue,mappings,instanceOf,regex,methods" );
+		var memento = {};
+		for( var thisProp in props ){
+			if( structKeyExists( variables, thisProp) ){
+				memento[ thisProp ] = variables[ thisProp ];
+			}
+		}
+		return memento;
+    }
 	
-	<!--- getMemento --->    
-    <cffunction name="getMemento" output="false" access="public" returntype="any" hint="Get the matcher memento">    
-    	<cfscript>
-			return instance;	    
-    	</cfscript>    
-    </cffunction>
+    /**
+    * Matches a class to this matcher according to its criteria
+    * @target	The target to match against to
+	* @mapping	The target mapping to match against
+	* @mapping.doc_generic coldbox.system.ioc.config.Mapping
+    */
+    boolean function matchClass( required target, required mapping ){    
+		var results = matchClassRules( argumentCollection=arguments );
+		
+		// AND matcher set?
+		if( isObject( variables.and ) ){ 
+			return ( results AND variables.and.matchClass( argumentCollection=arguments ) ); 
+		}
+		// OR matcher set?
+		if( isObject( variables.or ) ){ 
+			return ( results OR variables.or.matchClass( argumentCollection=arguments ) ); 
+		}
+		
+		return results;			
+    }
+    
+    /**
+    * Matches a method to this matcher according to its criteria
+    * @metadata The UDF metadata to use for matching
+    */
+    boolean function matchMethod( required metadata ){    
+		var results = matchMethodRules( arguments.metadata );
+		
+		// AND matcher set?
+		if( isObject( variables.and ) ){ 
+			return ( results AND variables.and.matchMethod( arguments.metadata ) ); 
+		}
+		// OR matcher set?
+		if( isObject( variables.or ) ){ 
+			return ( results OR variables.or.matchMethod( arguments.metadata ) ); 
+		}
+		
+		return results;			
+    }
+    
+    /**
+    * Go through all the rules in this matcher and match
+    * @metadata The UDF metadata to use for matching
+    */
+    private boolean function matchMethodRules( required metadata ){    
+		// Some metadata defaults
+		var name 	= arguments.metadata.name;
+		var returns = "any";
+		
+		if( structKeyExists( arguments.metadata, "returntype" ) ){ 
+			returns = arguments.metadata.returntype; 
+		}
+		
+		// Start with any()
+		if( variables.any ){ return true; }
+		// Check explicit methods
+		if( len( variables.methods ) AND listFindNoCase( variables.methods, name ) ){
+			return true;
+		}
+		// regex
+		if( len( variables.regex ) AND reFindNoCase( variables.regex, name ) ){
+			return true;
+		}
+		// returns
+		if( len( variables.returns ) AND variables.returns EQ returns ){
+			return true;
+		}
+		// annotation
+		if( len( variables.annotation ) AND structKeyExists( arguments.metadata, variables.annotation ) ){
+			// No annotation value
+			if( NOT structKeyExists( variables, "annotationValue" ) ){ 
+				return true; 
+			}
+				
+			// check annotation value
+			if( structKeyExists( variables, "annotationValue" ) AND arguments.metadata[ variables.annotation ] EQ variables.annotationValue ){
+				return true;	
+			}
+		}
+		
+		return false;   
+    }
+    
+    /**
+    * Go through all the rules in this matcher and match
+    * @target	The target to match against to
+	* @mapping	The target mapping to match against
+	* @mapping.doc_generic coldbox.system.ioc.config.Mapping
+    */
+    private boolean function matchClassRules( required target, required mapping ){    
+		var md	  = arguments.mapping.getObjectMetadata();
+		var path  = reReplace( md.name, "(\/|\\)", ".", "all" );
+		
+		// Start with any()
+		if( variables.any ){ 
+			return true; 
+		}
+		// Check explicit mappings
+		if( len( variables.mappings ) AND listFindNoCase( variables.mappings, arguments.mapping.getName() ) ){
+			return true;
+		}
+		// regex
+		if( len( variables.regex ) AND reFindNoCase( variables.regex, path ) ){
+			return true;
+		}
+		// instanceOf
+		if( len( variables.instanceOf ) AND isInstanceOf( arguments.target,variables.instanceOf ) ){
+			return true;
+		}
+		// annotation
+		if( len( variables.annotation ) AND structKeyExists( md, variables.annotation ) ){
+			// No annotation value
+			if( NOT structKeyExists( variables, "annotationValue" ) ){ 
+				return true; 
+			}
+				
+			// check annotation value
+			if( structKeyExists( variables, "annotationValue" ) AND md[ variables.annotation ] EQ variables.annotationValue ){
+				return true;	
+			}
+		}
+		
+		return false;   
+    }
 	
-	<!--- matchClass --->    
-    <cffunction name="matchClass" output="false" access="public" returntype="boolean" hint="Matches a class to this matcher according to its criteria">    
-    	<cfargument name="target"  type="any" required="true" hint="The target to match against to"/>
-		<cfargument name="mapping" type="any" required="true" hint="The target mapping to match against to" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
-    	<cfscript>
-			var results = matchClassRules(argumentCollection=arguments);
-			
-			// AND matcher set?
-			if( isObject( instance.and ) ){ return (results AND instance.and.matchClass(argumentCollection=arguments) ); }
-			// OR matcher set?
-			if( isObject( instance.or ) ){ return (results OR instance.or.matchClass(argumentCollection=arguments) ); }
-			
-			return results;			
-    	</cfscript>    
-    </cffunction>
+    /**
+    * Match against any method name or class path
+    */
+    function any(){    
+		variables.any = true;
+		return this;
+    }
     
-    <!--- matchMethod --->    
-    <cffunction name="matchMethod" output="false" access="public" returntype="boolean" hint="Matches a method to this matcher according to its criteria">    
-    	<cfargument name="metadata"  type="any" required="true" hint="The UDF metadata to use for matching"/>
-		<cfscript>
-			var results = matchMethodRules(arguments.metadata);
-			
-			// AND matcher set?
-			if( isObject( instance.and ) ){ return (results AND instance.and.matchMethod(arguments.metadata) ); }
-			// OR matcher set?
-			if( isObject( instance.or ) ){ return (results OR instance.or.matchMethod(arguments.metadata) ); }
-			
-			return results;			
-    	</cfscript>    
-    </cffunction>
+    /**
+    * Match against return types in methods only
+    * @type The type of return to match against.  Only for method matching
+    */
+    function returns( required type ){    
+		variables.returns = arguments.type;
+		return this;
+    }
     
-     <!--- matchMethodRules --->    
-    <cffunction name="matchMethodRules" output="false" access="private" returntype="boolean" hint="Go through all the rules in this matcher and match">    
-    	<cfargument name="metadata"  type="any" required="true" hint="The UDF metadata to use for matching"/>
-		<cfscript>	 
-			// Some metadata defaults
-			var name 	= arguments.metadata.name;
-			var returns = "any";
-			
-			if( structKeyExists(arguments.metadata, "returntype") ){ returns = arguments.metadata.returntype; }
-			
-			// Start with any()
-			if( instance.any ){ return true; }
-			// Check explicit methods
-			if( len(instance.methods) AND listFindNoCase( instance.methods, name ) ){
-				return true;
-			}
-			// regex
-			if( len(instance.regex) AND reFindNoCase(instance.regex, name) ){
-				return true;
-			}
-			// returns
-			if( len(instance.returns) AND instance.returns EQ returns ){
-				return true;
-			}
-			// annotation
-			if( len(instance.annotation) AND structKeyExists(arguments.metadata, instance.annotation)){
-				// No annotation value
-				if( NOT structKeyExists(instance,"annotationValue") ){ return true; }
-					
-				// check annotation value
-				if( structKeyExists(instance,"annotationValue") AND arguments.metadata[instance.annotation] EQ instance.annotationValue ){
-					return true;	
-				}
-			}
-			
-			return false;   
-    	</cfscript>    
-    </cffunction>
-    
-    <!--- matchRules --->    
-    <cffunction name="matchClassRules" output="false" access="private" returntype="boolean" hint="Go through all the rules in this matcher and match">    
-    	<cfargument name="target"  type="any" required="true" hint="The target to match against to"/>
-		<cfargument name="mapping" type="any" required="true" hint="The target mapping to match against to" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
-    	<cfscript>	 
-			var md	  = arguments.mapping.getObjectMetadata();
-			var path  = reReplace(md.name, "(\/|\\)", ".","all");
-			
-			// Start with any()
-			if( instance.any ){ return true; }
-			// Check explicit mappings
-			if( len(instance.mappings) AND listFindNoCase( instance.mappings, arguments.mapping.getName() ) ){
-				return true;
-			}
-			// regex
-			if( len(instance.regex) AND reFindNoCase(instance.regex, path) ){
-				return true;
-			}
-			// instanceOf
-			if( len(instance.instanceOf) AND isInstanceOf(arguments.target,instance.instanceOf) ){
-				return true;
-			}
-			// annotation
-			if( len(instance.annotation) AND structKeyExists(md, instance.annotation)){
-				// No annotation value
-				if( NOT structKeyExists(instance,"annotationValue") ){ return true; }
-					
-				// check annotation value
-				if( structKeyExists(instance,"annotationValue") AND md[instance.annotation] EQ instance.annotationValue ){
-					return true;	
-				}
-			}
-			
-			return false;   
-    	</cfscript>    
-    </cffunction>
+    /**
+    * Matches annotations on components or methods with or without a value
+    * @annotation The annotation to discover
+    * @value The value of the annotation that must match. OPTIONAL
+    */
+    function annotatedWith( required annotation, value ){    
+		variables.annotation = arguments.annotation;
+		// the value of the annotation
+		if( structKeyExists( arguments, "value" ) ){
+			variables.annotationValue = arguments.value;
+		}
+		return this;
+    }
 	
-	<!--- any --->    
-    <cffunction name="any" output="false" access="public" returntype="any" hint="Match against any method name or class path">    
-    	<cfscript>
-			instance.any = true;
-			return this;
-		</cfscript>	
-    </cffunction>
+    /**
+    * Match one, list or array of mapping names. Class Matching Only.
+    * @mappings One, list or array of mappings to match
+    */
+    function mappings( required mappings ){    
+		if( isArray( arguments.mappings ) ){ 
+			arguments.mappings = arrayToList( arguments.mappings ); 
+		}
+		variables.mappings = arguments.mappings;
+		return this;
+    }
     
-    <!--- returns --->    
-    <cffunction name="returns" output="false" access="public" returntype="any" hint="Match against return types in methods only">    
-    	<cfargument name="type" type="any" required="true" hint="The type of return to match against.  Only for method matching"/>
-    	<cfscript>	
-			instance.returns = arguments.type;
-			return this;
-		</cfscript>    
-    </cffunction>
+    /**
+    * Matches against a family of components according to the passed classPath. Class Matching Only.
+    * @classPath The class path to verify instance of
+    */
+    function instanceOf( required classPath ){    
+		variables.instanceOf = arguments.classPath;
+		return this;
+    }
     
-    <!--- annotatedWith --->    
-    <cffunction name="annotatedWith" output="false" access="public" returntype="any" hint="Matches annotations on components or methods with or without a value">    
-    	<cfargument name="annotation" 	type="any" required="true" hint="The annotation to discover"/>
-		<cfargument name="value" 		type="any" required="false" hint="The value of the annotation that must match. OPTIONAL"/>
-    	<cfscript>
-			instance.annotation = arguments.annotation;
-			// the value of the annotation
-			if( structKeyExists(arguments, "value") ){
-				instance.annotationValue = arguments.value;
-			}
-			return this;
-    	</cfscript>    
-    </cffunction>
+    /**
+    * Matches a class path or method name to this regular expression
+    * @regex The regular expression to match against
+    */
+    function regex( required regex ){    
+		variables.regex = arguments.regex;
+		return this;	    
+    }
+    
+    /**
+    * A list, one or an array of methods to explicitly match
+    * @methods One, list or array of methods to match
+    */
+    function methods( required methods ){    
+		if( isArray( arguments.methods ) ){ 
+			arguments.methods = arrayToList( arguments.methods ); 
+		}
+		variables.methods = arguments.methods;
+		return this;
+    }
+    
+    /**
+    * AND this matcher with another matcher
+    * @matcher The matcher to AND this matcher with
+    * @matcher.doc_generic coldbox.system.aop.Matcher
+    */
+    function andMatch( required matcher ){    
+		variables.and = arguments.matcher;
+		return this;
+    }
 	
-	<!--- mappings --->    
-    <cffunction name="mappings" output="false" access="public" returntype="any" hint="Match one, list or array of mapping names. Class Matching Only.">    
-    	<cfargument name="mappings" type="any" required="true" hint="One, list or array of mappings to match"/>
-    	<cfscript>
-			if( isArray( arguments.mappings ) ){ arguments.mappings = arrayToList(arguments.mappings); }
-			instance.mappings = arguments.mappings;
-			return this;
-    	</cfscript>    
-    </cffunction>
-    
-    <!--- instanceOf --->    
-    <cffunction name="instanceOf" output="false" access="public" returntype="any" hint="Matches against a family of components according to the passed classPath. Class Matching Only.">    
-    	<cfargument name="classPath" type="any" required="true" hint="The class path to verify instance of"/>
-    	<cfscript>	    
-			instance.instanceOf = arguments.classPath;
-			return this;
-    	</cfscript>    
-    </cffunction>
-    
-    <!--- regex --->    
-    <cffunction name="regex" output="false" access="public" returntype="any" hint="Matches a class path or method name to this regular expression">    
-    	<cfargument name="regex" type="any" required="true" hint="The regular expression to match against"/>
-    	<cfscript>
-			instance.regex = arguments.regex;
-			return this;	    
-    	</cfscript>    
-    </cffunction>
-    
-    <!--- methods --->    
-    <cffunction name="methods" output="false" access="public" returntype="any" hint="A list, one or an array of methods to explicitly match">    
-    	<cfargument name="methods" type="any" required="true" hint="One, list or array of methods to match"/>
-    	<cfscript>
-			if( isArray( arguments.methods ) ){ arguments.methods = arrayToList(arguments.methods); }
-			instance.methods = arguments.methods;
-			return this;
-    	</cfscript> 
-    </cffunction>
-    
-    <!--- andMatch --->    
-    <cffunction name="andMatch" output="false" access="public" returntype="any" hint="AND this matcher with another matcher">    
-    	<cfargument name="matcher" type="any" required="true" hint="The matcher to AND this matcher with" colddoc:generci="coldbox.system.aop.Matcher"/>
-    	<cfscript>	    
-			instance.and = arguments.matcher;
-			return this;
-    	</cfscript>    
-    </cffunction>
+    /**
+    * OR this matcher with another matcher
+    * @matcher The matcher to AND this matcher with
+    * @matcher.doc_generic coldbox.system.aop.Matcher
+    */
+    function orMatch( required matcher ){    
+		variables.or = arguments.matcher;
+		return this;
+    }
 	
-	 <!--- orMatch --->    
-    <cffunction name="orMatch" output="false" access="public" returntype="any" hint="OR this matcher with another matcher">    
-    	<cfargument name="matcher" type="any" required="true" hint="The matcher to OR this matcher with" colddoc:generci="coldbox.system.aop.Matcher"/>
-    	<cfscript>	    
-			instance.or = arguments.matcher;
-			return this;
-    	</cfscript>    
-    </cffunction>
-	
-</cfcomponent>
+}

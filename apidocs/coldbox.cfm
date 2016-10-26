@@ -4,11 +4,11 @@
 	docName = "ColdBox-APIDocs";
 	base = expandPath( "/coldbox/system" );
 
-	colddoc 	= new ColdDoc();
-	strategy 	= new colddoc.strategy.api.HTMLAPIStrategy( url.path, "ColdBox Platform v#url.version#" );
-	colddoc.setStrategy( strategy );
-
-	colddoc.generate( inputSource=base, outputDir=url.path, inputMapping="coldbox.system" );
+	docbox 	= new docbox.DocBox( properties = {
+		projectTitle 	= "ColdBox v#url.version#",
+		outputDir 		= url.path
+	} );
+	docbox.generate( source=base, mapping="coldbox.system" );
 </cfscript>
 
 <!---

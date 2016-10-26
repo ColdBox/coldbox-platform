@@ -92,7 +92,7 @@ Description :
 			var key 		 = "";
 			var routedStruct = structnew();
 			var rc 			 = arguments.event.getCollection();
-			var cleanedPaths = getCleanedPaths( rc, arguments.event );
+            var cleanedPaths = getCleanedPaths( rc, arguments.event );
 			var HTTPMethod	 = arguments.event.getHTTPMethod();
 
 			// Check if disabled or in proxy mode, if it is, then exit out.
@@ -127,22 +127,23 @@ Description :
 			}
 
 			// Create Event To Dispatch if handler key exists
-			if( structKeyExists( aRoute,"handler" ) ){
+			if( structKeyExists( aRoute, "handler" ) ){
 				// Check if using HTTP method actions via struct
-				if( structKeyExists(aRoute,"action") && isStruct(aRoute.action) ){
-					// Verify HTTP method used is valid, else throw exception and 403 error
-					if( structKeyExists(aRoute.action,HTTPMethod) ){
-						aRoute.action = aRoute.action[HTTPMethod];
+				if( structKeyExists( aRoute, "action" ) && isStruct( aRoute.action ) ){
+					// Verify HTTP method used is valid
+					if( structKeyExists( aRoute.action, HTTPMethod ) ){
+						aRoute.action = aRoute.action[ HTTPMethod ];
 						// Send for logging in debug mode
 						if( log.canDebug() ){
-							log.debug("Matched HTTP Method (#HTTPMethod#) to routed action: #aRoute.action#");
+							log.debug( "Matched HTTP Method (#HTTPMethod#) to routed action: #aRoute.action#" );
 						}
-					}
-					else{
-						getUtil().throwInvalidHTTP(className="SES",
-												   detail="The HTTP method used: #HTTPMethod# is not valid for the current executing resource. Valid methods are: #aRoute.action.toString()#",
-										 		   statusText="Invalid HTTP method: #HTTPMethod#",
-										 		   statusCode="405");
+					} else {
+						// Mark as invalid HTTP Exception
+						aRoute.action = "onInvalidHTTPMethod";
+						arguments.event.setIsInvalidHTTPMethod( true );
+						if( log.canDebug() ){
+							log.debug( "Invalid HTTP Method detected: #HTTPMethod#", aRoute );
+						}
 					}
 				}
 				// Create routed event
@@ -982,20 +983,20 @@ Description :
 		<cfargument name="requestString"  required="true" hint="The request string">
 		<cfargument name="rc"  			  required="true" hint="The request collection">
 		<cfscript>
-			var varMatch = 0;
-			var qsValues = 0;
-			var qsVal = 0;
-			var x = 1;
-
 			// Find a Matching position of IIS ?
-			varMatch = REFind( "\?.*=", arguments.requestString, 1, "TRUE" );
+			var varMatch = REFind( "\?.*=", arguments.requestString, 1, "TRUE" );
 			if( varMatch.pos[ 1 ] ){
 				// Copy values to the RC
-				qsValues = REreplacenocase( arguments.requestString, "^.*\?", "", "all" );
+				var qsValues 	= REreplacenocase( arguments.requestString, "^.*\?", "", "all" );
+				var qsVal 		= 0;
 				// loop and create
-				for( x=1; x lte listLen( qsValues, "&" ); x=x+1 ){
+				for( var x=1; x lte listLen( qsValues, "&" ); x=x+1 ){
 					qsVal = listGetAt( qsValues, x, "&" );
-					arguments.rc[ listFirst( qsVal, "=" ) ] = listLast( qsVal, "=" );
+					if( listlen( qsVal, '=' ) > 1 ) {
+						arguments.rc[ URLDecode( listFirst( qsVal, "=" ) ) ] = URLDecode( listLast( qsVal, "=" ) );
+					} else {
+						arguments.rc[ URLDecode( listFirst( qsVal, "=" ) ) ] = '';
+					}
 				}
 				// Clean the request string
 				arguments.requestString = Mid( arguments.requestString, 1, ( varMatch.pos[ 1 ] -1 ) );
@@ -1006,7 +1007,7 @@ Description :
 	</cffunction>
 
 	<!--- Find a route --->
-	<cffunction name="findRoute" access="private" output="false" returntype="any" hint="Figures out which route matches this request and returns a routed structure">
+	<cffunction name="findRoute" access="public" output="false" returntype="any" hint="Figures out which route matches this request and returns a routed structure">
 		<!--- ************************************************************* --->
 		<cfargument name="action" 	 required="true"  hint="The action evaluated by the path_info">
 		<cfargument name="event" 	 required="true"  hint="The event object.">
@@ -1238,9 +1239,9 @@ Description :
 
 			// Clean up the path_info from index.cfm
 			items[ "pathInfo" ] = trim( reReplacenocase( items[ "pathInfo" ], "^[/\\]index\.cfm", "" ) );
-			// Clean the scriptname from the pathinfo in case this is a nested application
+			// Clean the scriptname from the pathinfo if it is the first item in case this is a nested application
 			if( len( items[ "scriptName" ] ) ){
-				items[ "pathInfo" ] = replaceNocase( items[ "pathInfo" ], items[ "scriptName" ], '' );
+				items["pathInfo"] = reReplaceNocase(items["pathInfo"], "^#items["scriptName"]#","");
 			}
 
 			// clean 1 or > / in front of route in some cases, scope = one by default

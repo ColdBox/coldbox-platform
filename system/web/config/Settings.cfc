@@ -1,8 +1,7 @@
 ﻿/**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 * ColdBox Main Configuration Defaults
 */
 component{
@@ -12,8 +11,8 @@ component{
 	this.author			= "Ortus Solutions";
 	this.authorEmail 	= "coldbox@ortussolutions.com";
 	this.authorWebsite	= "http://www.ortussolutions.com";
-	this.suffix			= "Gideon";
-	this.version		= "4.2.0+@build.number@";
+	this.suffix			= "Nehemiah";
+	this.version		= "@build.version@+@build.number@";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
 	// Operation Defaults
@@ -39,5 +38,8 @@ component{
 	this.modelsConvention	= "models";
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
+	this.includesConvention = "includes";
 
+
+	function configure(){}
 }

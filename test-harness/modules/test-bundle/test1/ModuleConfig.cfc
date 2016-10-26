@@ -1,5 +1,5 @@
-﻿<cfcomponent output="false" hint="My App Configuration">
-<cfscript>
+﻿component{
+	
 	// Module Properties
 	this.title 				= "My Test Module";
 	this.aliases			= "cbtest1";
@@ -69,5 +69,4 @@
 		controller.getLogBox().getLogger(this).info("I can now listen onPio");
 	}
 
-</cfscript>
-</cfcomponent>
+}

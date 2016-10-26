@@ -66,7 +66,7 @@ Description :
 			<cflock name="#instance.classID#.#instance.bufferkey#" type="exclusive" timeout="10" throwontimeout="true">
 				<cfif not isBufferInScope()>
 					<!--- Create Buffer --->
-					<cfset oBuffer = createObject("java","java.lang.StringBuffer").init('')>
+					<cfset oBuffer = createObject("java","java.lang.StringBuilder").init('')>
 					<!--- Place in Scope --->
 					<cfset request[instance.bufferKey] = oBuffer>
 				</cfif>
