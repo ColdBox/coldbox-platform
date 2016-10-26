@@ -26,7 +26,7 @@ addons:
 before_install:
   # CommandBox Keys
   - sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
-  - sudo echo "deb http://integration.stg.ortussolutions.com/artifacts/debs/noarch /" | sudo tee -a
+  - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
     /etc/apt/sources.list.d/commandbox.list
 
 install:
