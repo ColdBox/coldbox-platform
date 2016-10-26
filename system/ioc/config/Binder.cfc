@@ -1005,7 +1005,7 @@ Description :
 		<cfargument name="class" 		required="true"  hint="The class of the listener"/>
 		<cfargument name="properties" 	required="false" default="#structNew()#" hint="The structure of properties for the listner" colddoc:generic="Struct"/>
 		<cfargument name="name" 		required="false" default=""  hint="The name of the listener"/>
-        <cfargument name="registerListener" required="false" default="true"  hint="If ture, registers the listener right away"/>
+        <cfargument name="registerListener" required="false" default="false"  hint="If true, registers the listener right away"/>
 		<cfscript>
 			// Name check?
 			if( NOT len(arguments.name) ){
