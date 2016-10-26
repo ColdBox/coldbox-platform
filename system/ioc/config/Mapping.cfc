@@ -80,7 +80,7 @@ Description :
 			};
 
 			// DI definition structure
-			DIDefinition = { name="", value="", dsl="", scope="variables", javaCast="", ref="", required=false, argName="", type="any" };
+			DIDefinition = { name="", value=JavaCast( "null", "" ), dsl=JavaCast( "null", "" ), scope="variables", javaCast=JavaCast( "null", "" ), ref=JavaCast( "null", "" ), required=false, argName="", type="any" };
 
 			return this;
 		</cfscript>
@@ -389,7 +389,7 @@ Description :
 			var x   = 1;
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DIConstructorArgs); x++){
-				if( structKeyExists(instance.DIConstructorArgs[x],"name") AND
+				if( structKeyExists( arguments, "name" ) AND structKeyExists( instance.DIConstructorArgs[x], "name" ) AND
 					instance.DIConstructorArgs[x].name eq arguments.name ){ return this;}
 			}
 			// Register new constructor argument.
