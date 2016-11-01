@@ -342,11 +342,13 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         try{
         	// If the route is for the home page, use the default event in the config/ColdBox.cfc
         	if ( arguments.route == "/" ){
-			arguments.route = "";
         		arguments.event = getController().getSetting( "defaultEvent" );
 			getRequestContext().setValue( getRequestContext().getEventName(), arguments.event );
-			getInterceptor( "SES" ).setEnabled( false );
-
+			prepareMock( getInterceptor( "SES" ) ).$( "getCleanedPaths", {
+				pathInfo = arguments.route,
+				scriptName = ""
+			} );
+        		arguments.route = "";
         	}
 
             // if we were passed a route, parse it and prepare the SES interceptor for routing.
