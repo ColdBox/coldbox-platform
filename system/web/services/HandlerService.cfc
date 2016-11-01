@@ -405,7 +405,7 @@ Description :
 			instance.log.error( "Invalid Event detected: #arguments.event#. Path info: #cgi.path_info#, query string: #cgi.query_string#" );
 
 			// Throw Exception
-			throw( message="The event: #arguments.event# is not valid registered event.", type="HandlerService.EventHandlerNotRegisteredException" );
+			throw( message="The event: #arguments.event# is not a valid registered event.", type="HandlerService.EventHandlerNotRegisteredException" );
 		</cfscript>
 	</cffunction>
 
