@@ -180,8 +180,12 @@ Description :
 
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 
-			// Event Caching Routines, if using caching and we are executing the main event
-			if ( instance.eventCaching and arguments.ehBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
+			// Event Caching Routines, if using caching, NOT a private event and we are executing the main event
+			if ( 
+				instance.eventCaching AND 
+				!arguments.ehBean.getIsPrivate() AND
+				arguments.ehBean.getFullEvent() EQ oRequestContext.getCurrentEvent()
+			){
 
 				// Save Event Caching metadata
 				saveEventCachingMetadata(
@@ -401,7 +405,7 @@ Description :
 			instance.log.error( "Invalid Event detected: #arguments.event#. Path info: #cgi.path_info#, query string: #cgi.query_string#" );
 
 			// Throw Exception
-			throw( message="The event: #arguments.event# is not valid registered event.", type="HandlerService.EventHandlerNotRegisteredException" );
+			throw( message="The event: #arguments.event# is not a valid registered event.", type="HandlerService.EventHandlerNotRegisteredException" );
 		</cfscript>
 	</cffunction>
 

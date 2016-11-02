@@ -12,7 +12,10 @@
 	function testLogMessage(){
 		loge.setSeverity(3);
 		loge.setCategory("coldbox.system.EmailAppenderTest");
-		email.logMessage(loge);
+
+		if( !directoryExists( expandPath( "/home/travis/" ) ) ){
+			email.logMessage(loge);
+		}
 		
 	}	
 </cfscript>
