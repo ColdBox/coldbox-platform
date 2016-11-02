@@ -86,7 +86,7 @@
 		</exec>
 		<property environment="env" />
 		<exec executable="box" dir="${basedir}">
-			<arg line="server start cfengine=${env.ENGINE}" />
+			<arg line="server start name=${env.ENGINE} cfengine=${env.ENGINE}" />
 		</exec>
 		
 		<!-- Mark as init -->
