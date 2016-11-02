@@ -85,7 +85,7 @@
 			<arg line="server stop" />
 		</exec>
 		<exec executable="box" dir="${basedir}">
-			<arg line="server start" />
+			<arg line="server start cfengine=$ENGINE" />
 		</exec>
 		
 		<!-- Mark as init -->
