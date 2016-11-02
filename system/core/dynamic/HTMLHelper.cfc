@@ -1691,10 +1691,14 @@ Description :
 		<cfargument name="tag">
 		<cfargument name="end" required="false" default="false">
 		<cfscript>
-			var slash = "";
+			// Only do if we have length
 			if( len( arguments.tag ) ){
-				if( arguments.end ){ slash = "/"; }
-				arguments.buffer.append("<#slash##arguments.tag#>");
+				// Starting or ending?
+				if( arguments.end ){ 
+					arguments.buffer.append( "</#listFirst( arguments.tag, " " )#>" );
+				} else {
+					arguments.buffer.append("<#arguments.tag#>");
+				}
 			}
 		</cfscript>
 	</cffunction>
