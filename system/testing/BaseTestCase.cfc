@@ -343,6 +343,11 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         	// If the route is for the home page, use the default event in the config/ColdBox.cfc
         	if ( arguments.route == "/" ){
         		arguments.event = getController().getSetting( "defaultEvent" );
+			getRequestContext().setValue( getRequestContext().getEventName(), arguments.event );
+			prepareMock( getInterceptor( "SES" ) ).$( "getCleanedPaths", {
+				pathInfo = arguments.route,
+				scriptName = ""
+			} );
         		arguments.route = "";
         	}
 
