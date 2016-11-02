@@ -97,7 +97,7 @@ Description :
 		<cfscript>
 			// retrieve from map
 			refLocal.results = instance.pool.get( arguments.objectKey );
-			if( structKeyExists( refLocal, "results" ) AND NOT isNull( refLocal.results ) ){
+			if( !isNull( refLocal.results ) ){
 			
 				// Record Metadata Access
 				instance.indexer.setObjectMetadataProperty(arguments.objectKey,"hits", instance.indexer.getObjectMetadataProperty(arguments.objectKey,"hits")+1);
