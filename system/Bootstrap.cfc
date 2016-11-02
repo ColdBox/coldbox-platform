@@ -211,7 +211,7 @@ component serializable="false" accessors="true"{
 						renderedContent = cbController.getDataMarshaller().marshallData( argumentCollection=renderData );
 					}
 					// Check for Event Handler return results
-					else if( structKeyExists( refResults, "results" ) ){
+					else if( structKeyExists( refResults, "results" ) && ! isNull( refResults.results ) ){
 						renderedContent = refResults.results;
 					}
 					// Render Layout/View pair via set variable to eliminate whitespace
