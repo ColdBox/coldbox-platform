@@ -1697,7 +1697,7 @@ Description :
 				if( arguments.end ){ 
 					arguments.buffer.append( "</#listFirst( arguments.tag, " " )#>" );
 				} else {
-					arguments.buffer.append("<#arguments.tag#>");
+					arguments.buffer.append( "<#arguments.tag#>" );
 				}
 			}
 		</cfscript>
