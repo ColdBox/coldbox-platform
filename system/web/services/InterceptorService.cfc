@@ -24,7 +24,7 @@ Description :
 			// Register the interception points ENUM
 			instance.interceptionPoints = [
 				// Application startup points
-				"afterConfigurationLoad", "afterAspectsLoad", "preReinit",
+				"afterConfigurationLoad", "afterAspectsLoad", "preReinit", "postReinit",
 				// On Actions
 				"onException", "onRequestCapture", "onInvalidEvent",
 				// After FW Object Creations
