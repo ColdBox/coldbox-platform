@@ -35,7 +35,7 @@ install:
   # Install dependencies
   - box version && box install
   # Store the Ortus API Key for forgebox publishing in `master`
-  - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN
+  - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
   # startup server so we can get directory location first
   - box server start
   - box server stop
