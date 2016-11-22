@@ -1,2 +1,2 @@
 #fileCopy build/lib/lucee-web.xml.cfm `server status name\=$1 --json | #structFind webconfigdir`
-cat `server status name\=$1 --json | #structFind webconfigdir`/lucee-web.xml.cfm
+cat "`server status name\=$1 --json | #structFind webconfigdir`/lucee-web.xml.cfm"
