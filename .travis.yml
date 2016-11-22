@@ -53,7 +53,7 @@ before_script:
   # import database
   - mysql -u root < tests/resources/coolblog.sql
   # Ready for testing
-  - box server start name=$ENGINE cfengine=$ENGINE
+  - box server start name=$ENGINE cfengine=$ENGINE --debug
 
 script:
   # Execute build via ANT
