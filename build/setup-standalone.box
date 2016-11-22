@@ -1,1 +1,1 @@
-#fileCopy build/lib/lucee-web.xml.cfm "`server status name\=$1 --json | #structFind serverHome`/WEB-INF/lucee"
+#fileCopy build/lib/lucee-server.xml "`server status name\=$1 --json | #structFind serverHome`/WEB-INF/lib/lucee-server"
