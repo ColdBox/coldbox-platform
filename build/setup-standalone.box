@@ -1,8 +1,1 @@
-cat build/lib/lucee-server.xml
-ls "`server status name\=$1 --json | #structFind serverHome`"
-ls "`server status name\=$1 --json | #structFind serverHome`/WEB-INF/"
-ls "`server status name\=$1 --json | #structFind serverHome`/WEB-INF/lib"
-ls "`server status name\=$1 --json | #structFind serverHome`/WEB-INF/lib/lucee-server"
-ls "`server status name\=$1 --json | #structFind serverHome`/WEB-INF/lib/lucee-server/context"
-
-#fileCopy build/lib/lucee-server.xml "`server status name\=$1 --json | #structFind serverHome`/WEB-INF/lib/lucee-server/context/"
+#fileCopy build/lib/lucee-web.xml.cfm "`server status name\=$1 --json | #structFind serverHome`"
