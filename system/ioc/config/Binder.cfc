@@ -293,7 +293,7 @@ Description :
  			</cfif>
 
 			<!--- Remove .cfc and /\ with . notation--->
-			<cfset thisTargetPath = arguments.packagePath & "." & reReplace( replaceNoCase( qObjects.name, ".cfc", ""), "(/|\\)", ".", "all")>
+			<cfset thisTargetPath = reReplace( arguments.packagePath & "." & replaceNoCase( qObjects.name, ".cfc", ""), "(/|\\)", ".", "all")>
 
 			<!--- Include/Exclude --->
 			<cfif ( len( arguments.include ) AND reFindNoCase( arguments.include, thisTargetPath ) )
@@ -982,16 +982,13 @@ Description :
 	<!--- processMappings --->
     <cffunction name="processMappings" output="false" access="public" returntype="any" hint="Process all registered mappings, called by injector when ready to start serving requests">
     	<cfscript>
-			var key 			= "";
-			var thisMapping 	= "";
-
 			// iterate over declared mappings,process, announce, eager and the whole nine yards
-			for(key in instance.mappings){
-				thisMapping = instance.mappings[key];
+			for( var key in instance.mappings ){
+				var thisMapping = instance.mappings[ key ];
 				// has it been discovered yet?
 				if( NOT thisMapping.isDiscovered() ){
 					// process the metadata
-					thisMapping.process(binder=this,injector=instance.injector);
+					thisMapping.process( binder=this, injector=instance.injector );
 					// is it eager?
 					if( thisMapping.isEagerInit() ){
 						instance.injector.getInstance( thisMapping.getName() );

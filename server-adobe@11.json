@@ -1,4 +1,8 @@
 {
+    "app":{
+        "cfengine":"adobe@11"
+    },
+    "name":"adobe@11",
     "force":true,
     "openBrowser":false,
     "web":{

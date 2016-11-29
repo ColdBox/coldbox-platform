@@ -12,7 +12,7 @@ component{
 	this.authorEmail 	= "coldbox@ortussolutions.com";
 	this.authorWebsite	= "http://www.ortussolutions.com";
 	this.suffix			= "Nehemiah";
-	this.version		= "@version.number@+@build.number@";
+	this.version		= "@build.version@+@build.number@";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
 	// Operation Defaults

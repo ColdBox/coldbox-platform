@@ -1,4 +1,8 @@
 {
+    "app":{
+        "cfengine":"adobe@2016"
+    },
+    "name":"adobe@2016",
     "force":true,
     "openBrowser":false,
     "web":{

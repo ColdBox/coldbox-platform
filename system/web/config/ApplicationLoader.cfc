@@ -319,6 +319,10 @@ Loads a coldbox cfc configuration file
 			}
 			// Prepend Convention of modules_app
 			arrayPrepend( configStruct.ModulesExternalLocation, "/modules_app" );
+			//Check for invalidHTTPMethodHandler
+			if ( not structKeyExists( configStruct, "invalidHTTPMethodHandler" ) ){
+				configStruct[ "invalidHTTPMethodHandler" ] = "";
+			}
 		</cfscript>
 	</cffunction>
 

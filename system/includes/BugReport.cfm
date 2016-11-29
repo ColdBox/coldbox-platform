@@ -54,18 +54,18 @@ A reporting template about exceptions in your ColdBox Apps
 		<cfif oException.getType() neq "">
 			<strong>Type: </strong> #oException.gettype()# <br>
 		</cfif>
+	
 
-		<!--- ERROR oExceptionS --->
-		<cfif isStruct(oException.getExceptionStruct()) >
-			<strong>Messages:</strong>
-			#oException.getmessage()#
-			<cfif oException.getExtendedINfo() neq "">
-			#oException.getExtendedInfo()#<br />
-		 	</cfif>
-		 	<cfif len(oException.getDetail()) neq 0>
-			 	#oException.getDetail()#
-			 </cfif>
-		</cfif>
+		<!--- Message + Details --->
+		<strong>Messages:</strong>
+		#oException.getmessage()#
+		<cfif oException.getExtendedInfo() neq "">
+		#oException.getExtendedInfo()#<br />
+	 	</cfif>
+
+	 	<cfif len( oException.getDetail() ) neq 0>
+		 	#oException.getDetail()#
+		 </cfif>
 
 	</div>
 

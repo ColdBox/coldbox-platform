@@ -304,6 +304,17 @@
 		assertEquals( event.isSES(), true );
 	}
 
+	function testInvalidHTTPMethod(){
+		var event = getRequestContext();
+		assertEquals( event.isInvalidHTTPMethod(), false );
+
+		event.setIsInvalidHTTPMethod( true );
+		assertEquals( event.isInvalidHTTPMethod(), true );
+
+		event.setIsInvalidHTTPMethod( false );
+		assertEquals( event.isInvalidHTTPMethod(), false );
+	}
+
 	function testBuildLink(){
 		var event = getRequestContext();
 		base = "http://www.luismajano.com/index.cfm";

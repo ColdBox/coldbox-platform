@@ -103,7 +103,8 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	/**************************************** BUFFER METHODS ****************************************/
 
 	/**
-	* Clear the interceptor buffer
+	* Clear the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
+	* @deprecated
 	* @return Interceptor
 	*/
 	function clearBuffer(){
@@ -112,7 +113,8 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	}
 
 	/**
-	* Append to the interceptor buffer
+	* Append to the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
+	* @deprecated
 	* @str.hint The string to append to the buffer
 	*
 	* @return Interceptor
@@ -123,20 +125,20 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	}
 
 	/**
-	* Get the string representation of the buffer
+	* Get the string representation of the buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
+	* @deprecated
 	*/
 	string function getBufferString(){
 		return getBufferObject().getString();
 	}
 
 	/**
-	* Get the request buffer object from scope.
+	* Get the request buffer object from scope.: Deprecated, please use incoming buffer arguements instead, this is not thread safe
+	* @deprecated
 	* @return coldbox.system.core.util.RequestBuffer
 	*/
 	function getBufferObject(){
 		return variables.interceptorService.getRequestBuffer();
 	}
-
-
 
 }

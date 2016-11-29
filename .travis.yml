@@ -1,38 +1,88 @@
 language: java
+
 notifications:
   slack:
     secure: FIHlTn/YO7Wgumm1uIqmoEsqjQA7fV0AE94Rjc5yKzM3AquQa8HicgDVVk0d2GrKRnl0xt3j4ZJV//VJyIjlCd/QVKuj48R2ChjEY2im3+99HFPafCUI5/S2uyowKU6mJTFonH9v6p41eqxdbiAxJdDGOT0V2Gpt3UBSNuHz8ED9/aIHqv+P7M+VD6Xd2XYwctPniWlaSWx57sWcnG/VkFG45qFQAyha64uxOOe4M3ZmG/n5FfauZ8cBVLiRKEIr+CyNhh1ujfzi7+4uzMlSNL5t/BbZamAQuZzqGzGQ9RVvIlyPgUGNJtDEE/hWS09aagXF5T6EMj00szizErh4J1/x4qZwml5+TcBN31E0QmAhCtZe85sr3tYgic+hEz9XX1yymQzf/C7n4to2yNvq0r4g51xDk8IuP95WEh7zaqLlvFZvBFgxpHZBMYlRvhytjOYDeIFRMcGwHZcXosaG2ejqDwcGq/LC4oeG4sSwmg9sdRrtcmcanrNqrBka86WYO6LntI3JdZ86/1ACEUHzhCCwvrKELc9Ji1xxGAgS7QKH+s2/hnJuiMyv73gOVLKYC+wPMLt+fvOmPLSEl+PJiAIlToBq1KUBg03RSQLfPOLD7OrJ8VvDZsEPwejqlGDyc4wRglS9OTi7SnN5LYHSDNDdGdREegWqq9qDHEYEVLI=
+
+env:
+  matrix:
+    - ENGINE=lucee@4.5 COLDBOX_VERSION=5.0.0
+    #- ENGINE=lucee@5 COLDBOX_VERSION=5.0.0
+    #- ENGINE=adobe@10 COLDBOX_VERSION=5.0.0
+    #- ENGINE=adobe@11 COLDBOX_VERSION=5.0.0
+    #- ENGINE=adobe@2016 COLDBOX_VERSION=5.0.0
+
 branches:
   only:
   - development
+  - master
+
 dist: trusty
+
 sudo: required
+
 addons:
   apt:
     packages:
     - mysql-server-5.6
     - mysql-client-core-5.6
     - mysql-client-5.6
+
 before_install:
-- sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
-- sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
-  /etc/apt/sources.list.d/commandbox.list
+  # CommandBox Keys
+  - sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
+  - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
+    /etc/apt/sources.list.d/commandbox.list
+
 install:
-- sudo apt-get update && sudo apt-get --assume-yes install commandbox
-# startup server so we can get directory location first
-- box install
-- box server start
-- box server stop
-# Copy over special lucee settings for cache testing
-- box recipe build/setup-standalone.box
+  # Install Commandbox
+  - sudo apt-get update && sudo apt-get --assume-yes install haveged commandbox
+  # Install dependencies
+  - box version && box install
+  # Store the Ortus API Key for forgebox publishing in `master`
+  - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
+  # startup server so we can get directory location first
+  - box server start name=$ENGINE cfengine=$ENGINE
+  - box server stop name=$ENGINE
+  # Copy over special lucee settings for cache testing
+  - box recipe build/setup-standalone.box $ENGINE
+
 before_script:
-# create test database
-- mysql -u root -e 'create database coolblog;'
-# import database
-- mysql -u root < tests/resources/coolblog.sql
-# Ready for testing
-- box server start
-script: >
-  testResults="$(box testbox run runner='http://localhost:8599/tests/runner.cfm' )";
-  echo "$testResults";
-  if grep -i "\[(Failures|Errors): [1-9][0-9]\?[0-9]\?\]\|\[Errors: [1-9][0-9]\?[0-9]\?\]\|<t[^>]*>\|<b[^>]*>" <<< $testResults;  then exit 1; fi
+  # create test database
+  - mysql -u root -e 'create database coolblog;'
+  # import database
+  - mysql -u root < tests/resources/coolblog.sql
+  # Ready for testing
+  - box server start name=$ENGINE cfengine=$ENGINE --debug
+
+script:
+  # Execute build via ANT
+  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml
+  # Spit out log just in case we need to debug
+  - box server log name=$ENGINE
+  - cat `box system-log`
+
+deploy:
+  on:
+    branch: 
+      - master
+    condition: "$ENGINE = lucee@4.5"
+  skip_cleanup: true
+  provider: s3
+  #AWS Credentials need to be set in Travis
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_ACCESS_SECRET
+  bucket: "downloads.ortussolutions.com"
+  local-dir: artifacts
+  upload-dir: ortussolutions
+  acl: public_read
+
+after_deploy:
+  # publish ColdBox
+  - cd $TRAVIS_BUILD_DIR/artifacts/coldbox/$COLDBOX_VERSION && box forgebox publish
+  # publish CacheBox
+  - cd $TRAVIS_BUILD_DIR/artifacts/cachebox/$COLDBOX_VERSION && box forgebox publish
+  # publish WireBox
+  - cd $TRAVIS_BUILD_DIR/artifacts/wirebox/$COLDBOX_VERSION && box forgebox publish
+  # publish LogBox
+  - cd $TRAVIS_BUILD_DIR/artifacts/logbox/$COLDBOX_VERSION && box forgebox publish

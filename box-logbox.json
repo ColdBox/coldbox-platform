@@ -1,13 +1,14 @@
 {
 	"name" 				: "LogBox Logging Library",
-	"version"			: "@version.number@+@build.number@",
+	"version"			: "@build.version@+@build.number@",
+	"location"  		: "http://downloads.ortussolutions.com/ortussolutions/logbox/@build.version@/logbox-@build.version@.zip",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "logbox",
 	"type"				: "logging",
 	"packageDirectory"	: "logbox",
 	"keywords"			: "logging, messaging",
-	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "logbox.ortusbooks.com",
+	"homepage"			: "https://www.coldbox.org",
+	"documentation"		: "https://logbox.ortusbooks.com",
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/LOGBOX",
 	"shortDescription"	: "LogBox is an enterprise ColdFusion logging library designed to give you flexibility and scalability.",
@@ -26,12 +27,5 @@
         "tests",
         "apidocs",
         "*/.md"
-    ],
-	"testbox"			: {
-		"runner" : [
-			{ "cf10" 	: "http://cf10cboxdev.local/coldbox/tests/runner.cfm" },
-			{ "cf11" 	: "http://cf11cboxdev.local/coldbox/tests/runner.cfm" },
-			{ "lucee" 	: "http://luceecboxdev.local/coldbox/tests/runner.cfm" }
-		]
-	}
+    ]
 }

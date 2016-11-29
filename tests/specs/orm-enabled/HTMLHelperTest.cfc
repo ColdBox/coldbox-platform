@@ -533,6 +533,16 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		var xml = xmlParse( str );
 	}
 
+	function testComplexWrapperTags(){
+		var str = model.textField( 
+			name="luis", 
+			value='luis',
+			wrapper = "div class='form-control'",
+			groupWrapper = "div class='form-group'"
+		);
+		expect(	str ).toBe( '<div class=''form-group''><div class=''form-control''><input type="text" name="luis" value="luis" id="luis"/></div></div>' );
+	}
+
 
 </cfscript>
 

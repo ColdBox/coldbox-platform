@@ -228,6 +228,10 @@ I oversee and manage ColdBox modules
 					disabled			= false,
 					// flag that says if this module can be activated or not
 					activate			= true,
+					// flag that determines if the module settings overrides any
+					// module settings in the parent config (ColdBox.cfc) or
+					// if the parent settings get merged (and overwrite the defaults).
+					parseParentSettings = true,
 					// Module Configurations
 					path				 	= modLocation,
 					invocationPath 			= modulesInvocationPath & "." & modName,
@@ -350,16 +354,16 @@ I oversee and manage ColdBox modules
 		<cfscript>
 			var modules 			= controller.getSetting( "modules" );
 			var iData       		= {};
-			var y					= 1;
-			var key					= "";
 			var interceptorService  = controller.getInterceptorService();
 			var wirebox				= controller.getWireBox();
 
 			// If module not registered, throw exception
 			if( NOT structKeyExists( modules, arguments.moduleName ) ){
-				throw( message="Cannot activate module: #arguments.moduleName#",
-					   detail="The module has not been registered, register the module first and then activate it.",
-					   type="ModuleService.IllegalModuleState" );
+				throw( 
+					message = "Cannot activate module: #arguments.moduleName#",
+					detail 	= "The module has not been registered, register the module first and then activate it.",
+					type 	= "ModuleService.IllegalModuleState" 
+				);
 			}
 
 			// Check if module already activated
@@ -384,21 +388,23 @@ I oversee and manage ColdBox modules
 			var mConfig = modules[ arguments.moduleName ];
 
 			// Do we have dependencies to activate first
-			if( arrayLen( mConfig.dependencies ) ){
-				for( var thisDependency in mConfig.dependencies ){
-					if( instance.logger.canDebug() ){
-						instance.logger.debug( "Activating #arguments.moduleName# requests dependency activation: #thisDependency#" );
-					}
-					// Activate dependency first
-					activateModule( thisDependency );
+			for( var thisDependency in mConfig.dependencies ){
+				if( instance.logger.canDebug() ){
+					instance.logger.debug( "Activating #arguments.moduleName# requests dependency activation: #thisDependency#" );
 				}
+				// Activate dependency first
+				activateModule( thisDependency );
 			}
 
 			// lock and load baby
-			lock name="module.#getController().getAppHash()#.activation.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true"{
+			lock 	name="module.#getController().getAppHash()#.activation.#arguments.moduleName#" 
+					type="exclusive" 
+					timeout="20" 
+					throwontimeout="true"
+			{
 
 				// preModuleLoad interception
-				iData = { moduleLocation=mConfig.path,moduleName=arguments.moduleName };
+				var iData = { moduleLocation=mConfig.path, moduleName=arguments.moduleName };
 				interceptorService.processState( "preModuleLoad", iData );
 
 				// Register handlers
@@ -406,7 +412,10 @@ I oversee and manage ColdBox modules
 				mConfig.registeredHandlers = arrayToList( mConfig.registeredHandlers );
 
 				// Register the Config as an observable also.
-				interceptorService.registerInterceptor( interceptorObject=instance.mConfigCache[ arguments.moduleName ], interceptorName="ModuleConfig:#arguments.moduleName#" );
+				interceptorService.registerInterceptor( 
+					interceptorObject 	= instance.mConfigCache[ arguments.moduleName ], 
+					interceptorName 	= "ModuleConfig:#arguments.moduleName#" 
+				);
 
 				// Register Models if it exists
 				if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
@@ -418,21 +427,30 @@ I oversee and manage ColdBox modules
 						// just register with no namespace
 						wirebox.getBinder().mapDirectory( packagePath=packagePath );
 					}
+					wirebox.getBinder().processMappings();
 				}
 
 				// Register Interceptors with Announcement service
-				for( y=1; y lte arrayLen( mConfig.interceptors ); y++ ){
-					interceptorService.registerInterceptor( interceptorClass=mConfig.interceptors[ y ].class,
-														    interceptorProperties=mConfig.interceptors[ y ].properties,
-														    interceptorName=mConfig.interceptors[ y ].name);
+				for( var y=1; y lte arrayLen( mConfig.interceptors ); y++ ){
+					interceptorService.registerInterceptor( 
+						interceptorClass 		= mConfig.interceptors[ y ].class,
+						interceptorProperties 	= mConfig.interceptors[ y ].properties,
+						interceptorName 		= mConfig.interceptors[ y ].name
+					);
 					// Loop over module interceptors to autowire them
-					wirebox.autowire( target=interceptorService.getInterceptor( mConfig.interceptors[ y ].name, true ),
-						     		  targetID=mConfig.interceptors[ y ].class );
+					wirebox.autowire( 
+						target 	= interceptorService.getInterceptor( mConfig.interceptors[ y ].name, true ),
+						targetID= mConfig.interceptors[ y ].class 
+					);
 				}
 
 				// Register module routing entry point pre-pended to routes
-				if( controller.settingExists( 'sesBaseURL' ) AND len( mConfig.entryPoint ) AND NOT find( ":", mConfig.entryPoint ) ){
-					interceptorService.getInterceptor( "SES", true ).addModuleRoutes( pattern=mConfig.entryPoint, module=arguments.moduleName, append=false );
+				if( controller.settingExists( 'sesBaseURL' ) AND 
+					len( mConfig.entryPoint ) AND NOT 
+					find( ":", mConfig.entryPoint ) 
+				){
+					interceptorService.getInterceptor( "SES", true )
+						.addModuleRoutes( pattern=mConfig.entryPoint, module=arguments.moduleName, append=false );
 				}
 
 				// Call on module configuration object onLoad() if found
@@ -686,11 +704,30 @@ I oversee and manage ColdBox modules
 			if( structKeyExists( oConfig,"activate" ) ){
 				mConfig.activate = oConfig.activate;
 			}
+			// Merge the settings with the parent module settings 
+			if( structKeyExists( oConfig, "parseParentSettings" ) ){
+				mConfig.parseParentSettings = oConfig.parseParentSettings;
+			}
 
 			//Get the parent settings
 			mConfig.parentSettings = oConfig.getPropertyMixin( "parentSettings", "variables", {} );
 			//Get the module settings
 			mConfig.settings = oConfig.getPropertyMixin( "settings", "variables", {} );
+			// Add the module settings to the parent settings under the modules namespace
+			if ( mConfig.parseParentSettings ) {
+				// Merge the parent module settings into module settings
+				var parentModuleSettings = controller.getSetting( "ColdBoxConfig" )
+					.getPropertyMixin( "moduleSettings", "variables", structnew() );
+				if ( ! structKeyExists( parentModuleSettings, mConfig.modelNamespace ) ) {
+					parentModuleSettings[ mConfig.modelNamespace ] = {};
+				}
+				structAppend(
+					mConfig.settings,
+					parentModuleSettings[ mConfig.modelNamespace ],
+					true
+				);
+			}
+			appSettings[ mConfig.modelNamespace ] = mConfig.settings;
 			//Get module datasources
 			mConfig.datasources = oConfig.getPropertyMixin( "datasources", "variables", {} );
 			//Get Interceptors

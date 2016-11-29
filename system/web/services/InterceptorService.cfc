@@ -39,7 +39,7 @@ Description :
 
 			// Init Container of interception states
 			instance.interceptionStates = {};
-			// Init the Request Buffer
+			// Init the Request Buffer: DEPRECATED, left for compat
 			instance.requestBuffer = CreateObject("component","coldbox.system.core.util.RequestBuffer").init();
 			// Default Logging
 			instance.log = controller.getLogBox().getLogger( this );
@@ -149,16 +149,24 @@ Description :
 						type 	= "InterceptorService.InvalidInterceptionState"
 					);
 				}
+
+				// Init the Request Buffer
+				var requestBuffer = new coldbox.system.core.util.RequestBuffer();
 		
 				// Process The State if it exists, else just exit out
 				if( structKeyExists( instance.interceptionStates, arguments.state ) ){
 					// Execute Interception in the state object
-					arguments.event = controller.getRequestService().getContext();
-					arguments.buffer = instance.requestBuffer;
-					loc.results = structFind( instance.interceptionStates, arguments.state ).process( argumentCollection=arguments );
+					arguments.event 	= controller.getRequestService().getContext();
+					arguments.buffer 	= requestBuffer;
+					loc.results 		= structFind( instance.interceptionStates, arguments.state ).process( argumentCollection=arguments );
 				}
 
 				// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace
+				if( requestBuffer.isBufferInScope() ) {
+					writeOutput( requestBuffer.getString() );
+					requestBuffer.clear();
+				}
+				// Process DEPRECATED Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace
 				if( instance.requestBuffer.isBufferInScope() ) {
 					writeOutput( instance.requestBuffer.getString() );
 					instance.requestBuffer.clear();
@@ -408,7 +416,11 @@ Description :
 
 			// Verify if state doesn't exist, create it
 			if ( NOT structKeyExists( instance.interceptionStates, arguments.state ) ){
-				oInterceptorState = CreateObject("component","coldbox.system.web.context.InterceptorState").init( arguments.state, controller.getLogBox() );
+				oInterceptorState = new coldbox.system.web.context.InterceptorState( 
+					state 		= arguments.state, 
+					logbox 		= controller.getLogBox(), 
+					controller 	= controller 
+				);
 				structInsert( instance.interceptionStates , arguments.state, oInterceptorState );
 			}
 			else{
@@ -419,9 +431,11 @@ Description :
 			// Verify if the interceptor is already in the state
 			if( NOT oInterceptorState.exists( arguments.interceptorKey ) ){
 				//Register it
-				oInterceptorState.register(interceptorKey=arguments.interceptorKey,
-										   interceptor=arguments.oInterceptor,
-										   interceptorMD=arguments.interceptorMD);
+				oInterceptorState.register(
+					interceptorKey 	= arguments.interceptorKey,
+					interceptor 	= arguments.oInterceptor,
+					interceptorMD 	= arguments.interceptorMD
+				);
 			}
 
 			return this;

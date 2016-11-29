@@ -59,50 +59,45 @@ Description :
     	<cfargument name="rawDSL" required="true" hint="The data configuration DSL structure" colddoc:generic="struct"/>
     	<cfscript>
 			var logBoxDSL  = arguments.rawDSL;
-			var key 		= "";
-			
-			// Are appenders defined?
-			if( NOT structKeyExists( logBoxDSL, "appenders" ) ){
-				throw("No appenders defined","Please define at least one appender","#getMetadata(this).name#.NoAppendersFound");
-			}
+
 			// Register Appenders
-			for( key in logBoxDSL.appenders ){
-				logBoxDSL.appenders[key].name = key;
-				appender(argumentCollection=logBoxDSL.appenders[key]);
+			for( var key in logBoxDSL.appenders ){
+				logBoxDSL.appenders[ key ].name = key;
+				appender( argumentCollection=logBoxDSL.appenders[ key ] );
 			}
 			
 			// Register Root Logger
 			if( NOT structKeyExists( logBoxDSL, "root" ) ){
-				throw("No Root Logger Defined","Please define the root logger","#getMetadata(this).name#.NoRootLoggerException");
+				logBoxDSL.root = { appenders = "*" };
 			}
-			root(argumentCollection=logBoxDSL.root);
+			root( argumentCollection=logBoxDSL.root );
 			
 			// Register Categories
 			if( structKeyExists( logBoxDSL, "categories") ){
-				for( key in logBoxDSL.categories ){
-					logBoxDSL.categories[key].name = key;
-					category(argumentCollection=logBoxDSL.categories[key]);
+				for( var key in logBoxDSL.categories ){
+					logBoxDSL.categories[ key ].name = key;
+					category( argumentCollection=logBoxDSL.categories[ key ] );
 				}
 			}
 			
 			// Register Level Categories
 			if( structKeyExists( logBoxDSL, "debug" ) ){ 
-				DEBUG(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.debug) );
+				DEBUG( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.debug ) );
 			}
 			if( structKeyExists( logBoxDSL, "info" ) ){ 
-				INFO(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.info) );
+				INFO( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.info ) );
 			}
 			if( structKeyExists( logBoxDSL, "warn" ) ){ 
-				WARN(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.warn) );
+				WARN( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.warn ) );
 			}
 			if( structKeyExists( logBoxDSL, "error" ) ){ 
-				ERROR(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.error) );
+				ERROR( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.error ) );
 			}
 			if( structKeyExists( logBoxDSL, "fatal" ) ){ 
-				FATAL(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.fatal) );
+				FATAL( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.fatal ) );
 			}
 			if( structKeyExists( logBoxDSL, "off" ) ){ 
-				OFF(argumentCollection=variables.utility.arrayToStruct(logBoxDSL.off) );
+				OFF( argumentCollection=variables.utility.arrayToStruct( logBoxDSL.off ) );
 			}			
 		</cfscript>
     </cffunction>
@@ -145,13 +140,10 @@ Description :
 			var x=1;
 			var key ="";
 			
-			// Are appenders defined
-			if( structIsEmpty(instance.appenders) ){
-				throw(message="Invalid Configuration. No appenders defined.",type="#getMetadata(this).name#.NoAppendersFound");
-			}
 			// Check root logger definition
-			if( structIsEmpty(instance.rootLogger) ){
-				throw(message="Invalid Configuration. No root logger defined.",type="#getMetadata(this).name#.RootLoggerNotFound");
+			if( structIsEmpty( instance.rootLogger ) ){
+				// Auto register a root logger
+				root( appenders="*" );
 			}
 			
 			// All root appenders?
