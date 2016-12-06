@@ -48,7 +48,9 @@
 
 		// custom settings
 		settings = {
-
+			test1 = {
+				display = "not-core"
+			}
 		};
 
 		// environment settings, create a detectEnvironment() method to detect it yourself.
