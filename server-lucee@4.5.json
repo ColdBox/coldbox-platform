@@ -1,6 +1,6 @@
 {
 	"app":{
-        "cfengine":"lucee@4.5"
+        "cfengine":"lucee"
     },
     "name":"lucee@4.5",
     "force":true,
