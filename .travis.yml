@@ -42,7 +42,7 @@ install:
   # Store the Ortus API Key for forgebox publishing in `master`
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
   # startup server so we can get directory location first
-  - box server start name=$ENGINE cfengine=$ENGINE
+  - box server start name=$ENGINE 
   - box server stop name=$ENGINE
   # Copy over special lucee settings for cache testing
   - box recipe build/setup-standalone.box $ENGINE
@@ -53,7 +53,7 @@ before_script:
   # import database
   - mysql -u root < tests/resources/coolblog.sql
   # Ready for testing
-  - box server start name=$ENGINE cfengine=$ENGINE --debug
+  - box server start name=$ENGINE --debug
 
 script:
   # Execute build via ANT
