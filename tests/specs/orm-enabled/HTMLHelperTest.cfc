@@ -317,6 +317,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = model.label(field="name",content="My Name",wrapper="div");
 		//debug(str);
 		assertEquals('<div><label for="name">My Name</label></div>', str);
+
+		str = model.label(field="name",content="My Name", wrapper="div", wrapperAttrs= { "class" = "label-wrapper", "id" = "label-wrapper-id"});
+		debug(str);
+		assertEquals('<div id="label-wrapper-id" class="label-wrapper"><label for="name">My Name</label></div>',str);
 	}
 
 	function testTextArea(){
@@ -333,6 +337,26 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		debug(str);
 		assertEquals('<label for="Message">Message</label><div><textarea name="message" id="message">Hello</textarea></div>', str);
 
+		str = model.textarea(name="message",value="Hello",label="Message",wrapper="div",wrapperAttrs= {"class" = "wrapper-class", id = "wrapper-id"});
+		assertEquals('<label for="message">Message</label><div id="wrapper-id" class="wrapper-class"><textarea name="message" id="message">Hello</textarea></div>', str);
+
+		str = model.textarea(name="message",value="Hello",label="Message",groupWrapper="div");
+		assertEquals('<div><label for="message">Message</label><textarea name="message" id="message">Hello</textarea></div>', str);
+
+		str = model.textarea(name="message",value="Hello",label="Message",groupWrapper="div",groupWrapperAttrs= {"class" = "group-wrapper-class", "id" = "group-wrapper-id"});
+		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="message">Message</label><textarea name="message" id="message">Hello</textarea></div>', str);
+
+		str = model.textarea(name="message",value="Hello",label="Message",labelWrapper="div");
+		assertEquals('<div><label for="message">Message</label></div><textarea name="message" id="message">Hello</textarea>', str);
+
+		str = model.textarea(name="message",value="Hello",label="Message",labelWrapper="div",labelWrapperAttrs= {"class" = "label-wrapper-class", "id" = "label-wrapper-id"});
+		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></div><textarea name="message" id="message">Hello</textarea>', str);
+		debug(str);
+
+		// ALL THE WRAPPERS
+		str = model.textarea(name="message",value="Hello",label="Message",labelWrapper="span",labelWrapperAttrs= {"class" = "label-wrapper-class", "id" = "label-wrapper-id"}, groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id"}, wrapper="div",wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id"});
+		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><span id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></span><div id="wrapper-id" class="wrapper-class"><textarea name="message" id="message">Hello</textarea></div></div>', str);
+
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
 		str = model.textarea(name="lastName",bind=majano);
@@ -343,7 +367,29 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	function testPasswordField(){
 		str = model.passwordField(name="message",value="test");
 		assertEquals( xmlParse( '<input name="message" value="test" id="message" type="password"/>' ), xmlParse( str ) );
+
+		str = model.passwordField(name="message",value="test", wrapper='div');
+		assertEquals( xmlParse( '<div><input name="message" value="test" id="message" type="password"/></div>' ), xmlParse( str ) );
+
+		str = model.passwordField(name="message",value="test", wrapper='div', wrapperAttrs= { "class" = "wrapper-class", "id" = "wrapper-id"});
+		assertEquals( xmlParse( '<div class="wrapper-class" id="wrapper-id"><input name="message" value="test" id="message" type="password"/></div>' ), xmlParse( str ) );
+
+		str = model.passwordField(name="message",value="test", label="Message");
+		assertEquals( '<label for="message">Message</label><input type="password" name="message" value="test" id="message"/>',str );
+
+		str = model.passwordField(name="message",value="test", label="Message", labelWrapper='div');
+		assertEquals('<div><label for="message">Message</label></div><input type="password" name="message" value="test" id="message"/>',str);
+
+		str = model.passwordField(name="message",value="test", label="Message", labelWrapper='div', labelWrapperAttrs= { "class" = "label-wrapper-class", "id" = "label-wrapper-id"});
+		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></div><input type="password" name="message" value="test" id="message"/>', str );
+
+		str = model.passwordField(name="message",value="test", label="Message", groupWrapper='div',labelWrapper='span');
+		assertEquals('<div><span><label for="message">Message</label></span><input type="password" name="message" value="test" id="message"/></div>',str);
+
+		str = model.passwordField(name="message",value="test", label="Message", groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id"});
+		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="message">Message</label><input type="password" name="message" value="test" id="message"/></div>',str);
 	}
+
 
 	function testHiddenField(){
 		str = model.hiddenField(name="message");
@@ -370,7 +416,28 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 	function testButton(){
 		str = model.button(name="message",value="hello",type="submit");
-		assertEquals( xmlparse( '<button name="message" id="message" type="submit">hello</button>' ), xmlParse( str ) );
+		assertEquals('<button name="message" type="submit" id="message">hello</button>' ,str);
+
+		str = model.button(name="message",value="hello",type="submit",label="Message");
+		assertEquals('<label for="message">Message</label><button name="message" type="submit" id="message">hello</button>',str );
+
+		str = model.button(name="message",value="hello",type="submit",label="Message", labelWrapper="div");
+		assertEquals('<div><label for="message">Message</label></div><button name="message" type="submit" id="message">hello</button>', str );
+
+		str = model.button(name="message",value="hello",type="submit",label="Message", labelWrapper="div", labelWrapperAttrs= { "class" = "label-wrapper-class", "id" = "label-wrapper-id"});
+		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></div><button name="message" type="submit" id="message">hello</button>',str );
+
+		str = model.button(name="message",value="hello",type="submit",label="Message", wrapper="div");
+		assertEquals('<label for="message">Message</label><div><button name="message" type="submit" id="message">hello</button></div>', str );
+
+		str = model.button(name="message",value="hello",type="submit",label="Message", wrapper="div", wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id"});
+		assertEquals('<label for="message">Message</label><div id="wrapper-id" class="wrapper-class"><button name="message" type="submit" id="message">hello</button></div>', str );
+
+		str = model.button(name="message",value="hello",type="submit",label="Message", groupWrapper="div");
+		assertEquals('<div><label for="message">Message</label><button name="message" type="submit" id="message">hello</button></div>', str );
+
+		str = model.button(name="message",value="hello",type="submit",label="Message", groupWrapper="div", groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id"});
+		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="message">Message</label><button name="message" type="submit" id="message">hello</button></div>', str );
 	}
 
 	function testFileField(){
@@ -478,6 +545,39 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = model.select(name="users",options=[1,2,3]);
 		debug( str );
 		assertEquals('<select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
+
+		str = model.select(name="users",options=[1,2,3], label="Message");
+		debug( str );
+		assertEquals('<label for="users">Message</label><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
+
+		str = model.select(name="users",options=[1,2,3], label="Message", labelWrapper="div");
+		debug( str );
+		assertEquals('<div><label for="users">Message</label></div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
+
+		str = model.select(name="users",options=[1,2,3], label="Message", labelWrapper="div", labelWrapperAttrs={ "class" = "label-wrapper-class", "id" = "label-wrapper-id"});
+		debug( str );
+		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="users">Message</label></div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
+
+		str = model.select(name="users",options=[1,2,3], label="Message", wrapper='div');
+		debug( str );
+		assertEquals('<label for="users">Message</label><div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
+
+		str = model.select(name="users",options=[1,2,3], label="Message", wrapper='div', wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id"});
+		debug( str );
+		assertEquals('<label for="users">Message</label><div id="wrapper-id" class="wrapper-class"><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
+
+		str = model.select(name="users",options=[1,2,3], label="Message", groupWrapper='div');
+		debug( str );
+		assertEquals('<div><label for="users">Message</label><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
+
+		str = model.select(name="users",options=[1,2,3], label="Message", groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id"});
+		debug( str );
+		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="users">Message</label><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
+
+		str = model.select(name="users",options=[1,2,3], label="Message", labelWrapper='span', labelWrapperAttrs = { "class" = "label-wrapper-class", "id" = "label-wrapper-id"}, wrapper='div', wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id"}, groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id"});
+		debug( str );
+		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><span id="label-wrapper-id" class="label-wrapper-class"><label for="users">Message</label></span><div id="wrapper-id" class="wrapper-class"><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div>', str);
+
 	}
 
 	function testAnchor(){
