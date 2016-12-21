@@ -37,7 +37,13 @@ component{
 			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true',
 			  username 			: 'root'
 		};
-	
+	} else if( directoryExists( "/Users/lmajano" ) ){
+		this.datasources["coolblog"] = {
+			  class 			: 'org.gjt.mm.mysql.Driver', 
+			  connectionString 	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true', 
+			  username 			: 'root', 
+			  password 			: "encrypted:3031a52e56b7c2967e163cef97366ec50de07d115e97ceea"
+		};
 	}
 
 	// ORM Settings
