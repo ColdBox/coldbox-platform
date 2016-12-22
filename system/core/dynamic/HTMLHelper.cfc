@@ -1306,6 +1306,11 @@ Description :
 						break;
 					}
 					case "many-to-many" : {
+						// A new or persisted entity? If new, then skip out
+						if( NOT loc.orm.contains(arguments.entity) OR NOT arguments.showRelations){
+							break;
+						}
+						
 						// prepare lookup args
 						loc.criteria			= {};
 						loc.sortorder 		= "";
@@ -1361,7 +1366,6 @@ Description :
 					}
 					// one to many display
 					case "one-to-many" : {
-						loc.orm = ORMGetSession();
 						// A new or persisted entity? If new, then skip out
 						if( NOT loc.orm.contains(arguments.entity) OR NOT arguments.showRelations){
 							break;
@@ -1395,7 +1399,6 @@ Description :
 					}
 					// one to many display
 					case "one-to-one" : {
-						loc.orm = ORMGetSession();
 						// A new or persisted entity? If new, then skip out
 						if( NOT loc.orm.contains(arguments.entity) OR NOT arguments.showRelations){
 							break;
@@ -1430,6 +1433,10 @@ Description :
 					}
 					// many to one
 					case "many-to-one" : {
+						// A new or persisted entity? If new, then skip out
+						if( NOT loc.orm.contains(arguments.entity) OR NOT arguments.showRelations){
+							break;
+						}
 						arguments["data-ormtype"] 	= "many-to-one";
 						// prepare lookup args
 						loc.criteria	= {};
