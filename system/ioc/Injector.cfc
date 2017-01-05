@@ -840,8 +840,8 @@ Description :
 			var x			= 1;
 
 			// iterate and register listeners
-			for(x=1; x lte regLen; x++){
-				registerListener( listeners[x] );
+			for( x = 1; x lte regLen; x++ ){
+				registerListener( listeners[ x ] );
 			}
 		</cfscript>
     </cffunction>
