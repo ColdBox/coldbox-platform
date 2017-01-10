@@ -395,6 +395,13 @@ Loads a coldbox cfc configuration file
 				configStruct[ "HandlersExternalLocationPath" ] = ExpandPath( "/" & replace( configStruct[ "HandlersExternalLocation" ],".","/","all" ));
 			}
 
+			// Append the app mapping to each ModulesExternalLocation
+			if( len( configStruct.AppMapping) ){
+				for ( var i = 1; i LTE arrayLen( configStruct.ModulesExternalLocation ); i++ ){
+					configStruct.ModulesExternalLocation[i] = "/#configStruct.AppMapping#/#configStruct.ModulesExternalLocation[i]#";
+				}
+			}
+
 			//Configure the modules locations for the conventions not the external ones.
 			if( len( configStruct.AppMapping) ){
 				configStruct.ModulesLocation 		= "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
