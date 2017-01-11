@@ -95,21 +95,21 @@ Description :
 			var mapping		= "";
 
 			// Check if handler mapped?
-			if( NOT wirebox.getBinder().mappingExists( invocationPath ) ){
+			if( NOT wirebox.getBinder().mappingExists( arguments.invocationPath ) ){
 				// lazy load checks for wirebox
 				wireboxSetup();
 				// extra attributes
 				attribs = {
-					handlerPath = invocationPath,
+					handlerPath = arguments.invocationPath,
 					isHandler	= true
 				};
 				// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-				mapping = wirebox.registerNewInstance( name=invocationPath, instancePath=invocationPath )
+				mapping = wirebox.registerNewInstance( name=arguments.invocationPath, instancePath=arguments.invocationPath )
 					.setVirtualInheritance( "coldbox.system.EventHandler" )
 					.addDIConstructorArgument( name="controller", value=controller )
 					.setThreadSafe( true )
 					.setScope( wirebox.getBinder().SCOPES.SINGLETON )
-					.setCacheProperties( key="handlers-#invocationPath#" )
+					.setCacheProperties( key="handlers-#arguments.invocationPath#" )
 					.setExtraAttributes( attribs );
 				// Are we caching or not handlers?
 				if ( NOT instance.handlerCaching ){
@@ -117,7 +117,7 @@ Description :
 				}
 			}
 			// retrieve, build and wire from wirebox
-			oHandler = wirebox.getInstance( invocationPath );
+			oHandler = wirebox.getInstance( arguments.invocationPath );
 
 			//return handler
 			return oHandler;

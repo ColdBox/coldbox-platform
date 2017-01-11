@@ -434,25 +434,21 @@ component serializable="false" accessors="true"{
 			targetLocation = "/" & appMapping & "/" & arguments.udflibrary;
 		}
 		// checks if no .cfc or .cfm where sent
-		else if( fileExists(UDFRelativePath & ".cfc") ){
+		else if ( fileExists(UDFRelativePath & ".cfc") ){
 			targetLocation = "/" & appMapping & "/" & arguments.udflibrary & ".cfc";
-		}
-		else if( fileExists(UDFRelativePath & ".cfm") ){
+		} else if ( fileExists(UDFRelativePath & ".cfm") ){
 			targetLocation = "/" & appMapping & "/" & arguments.udflibrary & ".cfm";
-		}
-		// Absolute Checks
-		else if( fileExists( UDFFullPath ) ){
+		} else if ( fileExists( UDFFullPath ) ){
 			targetLocation = "#udflibrary#";
-		}
-		else if( fileExists(UDFFullPath & ".cfc") ){
+		} else if ( fileExists( UDFFullPath & ".cfc" ) ){
 			targetLocation = "#udflibrary#.cfc";
-		}
-		else if( fileExists(UDFFullPath & ".cfm") ){
+		} else if ( fileExists( UDFFullPath & ".cfm" ) ){
 			targetLocation = "#udflibrary#.cfm";
-		}else {
-			throw( message="Error loading UDF library: #arguments.udflibrary#",
-				   detail="The UDF library was not found.  Please make sure you verify the file location.",
-				   type="FrameworkSupertype.UDFLibraryNotFoundException");
+		} else {
+			throw( 
+				message = "Error loading UDF library: #arguments.udflibrary#",
+				detail 	= "The UDF library was not found.  Please make sure you verify the file location.",
+				type 	= "FrameworkSupertype.UDFLibraryNotFoundException");
 		}
 
 		// Include the UDF

@@ -426,7 +426,13 @@
 		assertEquals(3, arrayLen(config.getListeners()));
 		listeners = config.getListeners();
 		assertEquals( "FunkyTown", listeners[3].name);
+	}
 
+	function testActivateListener(){
+		mockInjector.$( "registerListener" ).$args( "models.listener", {}, "configListner", true );
+		config.listener( "models.listener", {}, "configListener", true );
+		config.listener( "models.listener", {}, "configListener2", false );
+		assertTrue( mockInjector.$once( "registerListener" ), "Injector should have only been called once." );
 	}
 
 	function testLoadDataDSL(){
