@@ -71,9 +71,27 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			it( "should load modules in a bundle", function(){
 				var config = getController().getSetting( "modules" );
 
+				debug( config );
+
 				expect(	config ).toHaveKey( 'layouttest' )
 					.toHaveKey( 'test1' );
 			});
+
+			it( "should merge module settings with framework moduleSettings by default", function() {
+				var config = getController().getSetting( "modules" );
+				var parentSettings = getController().getConfigSettings();
+
+				expect( parentSettings ).toHaveKey( "moduleSettings" );
+				expect( parentSettings.moduleSettings ).toHaveKey( "test1" );
+
+				expect(	config ).toHaveKey( 'test1' );
+				expect( config[ "test1" ] ).toHaveKey( "settings" );
+				
+				expect( config[ "test1" ].settings ).toBe( parentSettings.moduleSettings[ "test1" ] );
+
+				expect( parentSettings ).toHaveKey( "test1" );
+				expect( parentSettings[ "test1" ] ).notToBe( config[ "test1" ].settings );
+			} );
 
 			it( "should not load mdoules that have been excluded, even in bundles", function(){
 				var config = getController().getSetting( "modules" );

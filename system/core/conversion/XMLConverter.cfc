@@ -54,7 +54,6 @@ Modifications
 				buffer.append('<?xml version="1.0" encoding="#arguments.encoding#"?>');
 			}
 
-
 			// Object Check
 			if( isObject(arguments.data) ){
 				buffer.append( objectToXML(argumentCollection=arguments) );
@@ -206,7 +205,7 @@ Modifications
 		// Content
 		for(key in target){
 			// Null Checks
-			if( NOT structKeyExists( target, key ) OR isNull( target[key] ) ){
+			if( isNull( target[key] ) ){
 				target[key] = 'NULL';
 			}
 			// Translate Value

@@ -343,6 +343,11 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         	// If the route is for the home page, use the default event in the config/ColdBox.cfc
         	if ( arguments.route == "/" ){
         		arguments.event = getController().getSetting( "defaultEvent" );
+			getRequestContext().setValue( getRequestContext().getEventName(), arguments.event );
+			prepareMock( getInterceptor( "SES" ) ).$( "getCleanedPaths", {
+				pathInfo = arguments.route,
+				scriptName = ""
+			} );
         		arguments.route = "";
         	}
 
@@ -412,7 +417,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 						renderedContent = cbController.getDataMarshaller().marshallData(argumentCollection=renderData);
 					}
 					// If we have handler results save them in our context for assertions
-					else if ( isDefined( "handlerResults" ) AND NOT isNull( handlerResults ) ){
+					else if ( !isNull( handlerResults ) ){
 						requestContext.setValue("cbox_handler_results", handlerResults);
 						renderedContent = handlerResults;
 					}

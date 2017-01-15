@@ -727,7 +727,7 @@ I oversee and manage ColdBox modules
 					true
 				);
 			}
-			appSettings[ mConfig.modelNamespace ] = mConfig.settings;
+			appSettings.moduleSettings[ mConfig.modelNamespace ] = mConfig.settings;
 			//Get module datasources
 			mConfig.datasources = oConfig.getPropertyMixin( "datasources", "variables", {} );
 			//Get Interceptors
