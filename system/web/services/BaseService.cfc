@@ -4,7 +4,7 @@
 * ---
 * A ColdBox base internal service
 */
-component accessors="true" doc_abstract="true"{
+component accessors="true"{
 
 	/**
 	* ColdBox Controller
