@@ -75,6 +75,67 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals( "/somefolder/index",  results.pathInfo);
 	}
 
+	function testDetectFormat() {
+		var mockLog = getMockBox().createStub().$( "canDebug", false );
+		ses.$property( propertyName = "log", mock = mockLog );
+		ses.$("getSetting").$args("AppMapping").$results("/coldbox/test-harness")
+			.$("getSetting").$args("eventName").$results("event")
+			.$("importConfiguration")
+			.$("setSetting");
+		ses.setBaseURL("http://localhost");
+		ses.configure();
+		var mockController = getMockBox().createMock( "system.web.Controller" );
+		var mockEvent = getMockBox().createMock( "system.web.context.RequestContext" ).init( controller = mockController, properties = {
+				defaultLayout = "Main.cfm",
+				defaultView = "",
+				eventName = "event",
+				modules = {}
+			} );
+		var mockInterceptData = {};
+
+		// default format
+		ses.$( "getCleanedPaths", {
+			pathInfo = "/Main/index",
+			scriptName = ""
+		} );
+		ses.onRequestCapture( mockEvent, mockInterceptData );
+		expect( mockEvent.valueExists( "format" ) ).toBeTrue();
+		expect( mockEvent.getValue( "format" ) ).toBe( "html" );
+		mockEvent.removeValue( "format" );
+
+		// extension detection
+		ses.$( "getCleanedPaths", {
+			pathInfo = "/Main/index.xml",
+			scriptName = ""
+		} );
+		ses.onRequestCapture( mockEvent, mockInterceptData );
+		expect( mockEvent.valueExists( "format" ) ).toBeTrue();
+		expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
+		mockEvent.removeValue( "format" );
+
+		// Accept header parsing
+		mockEvent.$( "getHTTPHeader" ).$args( "Accept" ).$results( "application/json" );
+		ses.$( "getCleanedPaths", {
+			pathInfo = "/Main/index",
+			scriptName = ""
+		} );
+		ses.onRequestCapture( mockEvent, mockInterceptData );
+		expect( mockEvent.valueExists( "format" ) ).toBeTrue();
+		expect( mockEvent.getValue( "format" ) ).toBe( "json" );
+		mockEvent.removeValue( "format" );
+
+		// uses extension over Accept header
+		mockEvent.$( "getHTTPHeader" ).$args( "Accept" ).$results( "application/json" );
+		ses.$( "getCleanedPaths", {
+			pathInfo = "/Main/index.xml",
+			scriptName = ""
+		} );
+		ses.onRequestCapture( mockEvent, mockInterceptData );
+		expect( mockEvent.valueExists( "format" ) ).toBeTrue();
+		expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
+		mockEvent.removeValue( "format" );
+	}
+
 </cfscript>
 </cfcomponent>
 
