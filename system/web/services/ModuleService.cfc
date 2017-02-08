@@ -634,6 +634,7 @@ I oversee and manage ColdBox modules
 			oConfig.injectPropertyMixin( "wirebox", 		controller.getWireBox() );
 			oConfig.injectPropertyMixin( "binder", 			controller.getWireBox().getBinder() );
 			oConfig.injectPropertyMixin( "cachebox", 		controller.getCacheBox() );
+			oConfig.injectPropertyMixin( "system",          createObject( "java", "java.lang.System" ) );
 
 			// Configure the module
 			oConfig.configure();
