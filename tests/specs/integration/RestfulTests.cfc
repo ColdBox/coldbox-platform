@@ -68,6 +68,22 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				
 			});
 
+			it( "can redirect only for html formats with the `formatsRedirect` parameter", function() {
+				getRequestContext().setValue( "format", "json" );
+				var event = execute( event="rendering.redirect", renderResults=true );
+				var rc = event.getCollection();
+				var prc = event.getCollection( private=true );
+				expect( rc ).notToHaveKey( "setNextEvent_event" );
+				expect( prc.cbox_renderData ).toBeStruct();
+				expect( prc.cbox_renderData.contenttype ).toMatch( "json" );
+
+				getRequestContext().setValue( "format", "html" );
+				var event = execute( event="rendering.redirect", renderResults=true );
+				var rc = event.getCollection();
+				expect( rc ).toHaveKey( "setNextEvent_event" );
+				expect( rc[ "setNextEvent_event" ] ).toBe( "Main.index" );
+			} );
+
 		});
 
 	}

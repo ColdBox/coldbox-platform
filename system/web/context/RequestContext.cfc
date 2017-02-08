@@ -963,6 +963,7 @@ component serializable=false accessors="true"{
 	* @pdfArgs.hint All the PDF arguments to pass along to the CFDocument tag.
 	* @formats.hint The formats list or array that ColdBox should respond to using the passed in data argument. You can pass any of the valid types (JSON,JSONP,JSONT,XML,WDDX,PLAIN,HTML,TEXT,PDF). For PDF and HTML we will try to render the view by convention based on the incoming event
 	* @formatsView.hint The view that should be used for rendering HTML/PLAIN/PDF. By default ColdBox uses the name of the event as an implicit view
+	* @formatsRedirect.hint The arguments that should be passed to setNextEvent as part of a redirect for the HTML action.  If the format is HTML and this struct is not empty, ColdBox will call setNextEvent with these arguments.
 	* @isBinary.hint Bit that determines if the data being set for rendering is binary or not.
 	*/
 	function renderData(
@@ -983,6 +984,7 @@ component serializable=false accessors="true"{
 		struct pdfArgs={},
 		formats="",
 		formatsView="",
+		formatsRedirect={},
 		boolean isBinary=false
 	){
 
@@ -1208,6 +1210,10 @@ component serializable=false accessors="true"{
 					return renderData( argumentCollection=arguments );
 				}
 				case "html" : case "plain" : {
+					if( NOT structIsEmpty( arguments.formatsRedirect ) ){
+						instance.controller.setNextEvent( argumentCollection = arguments.formatsRedirect );
+						return this;
+					}
 					return setView( view=viewToRender);
 				}
 			}

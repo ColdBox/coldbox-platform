@@ -15,16 +15,6 @@
     },
     "bugs":"https://ortussolutions.atlassian.net/browse/COLDBOX",
     "shortDescription":"A conventions based MVC development framework",
-    "engines":[
-        {
-            "type":"adobe",
-            "version":">9.0.2"
-        },
-        {
-            "type":"lucee",
-            "version":">4.5"
-        }
-    ],
     "license":[
         {
             "type":"Apache2",
@@ -63,5 +53,8 @@
     },
     "installPaths":{
         "testbox":"testbox"
+    },
+    "scripts":{
+        "onServerInstall" : "cp build/lib/lucee-server.xml '`server info property=serverHomeDirectory`/WEB-INF/lucee-server/context/lucee-server.xml'"
     }
 }

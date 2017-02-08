@@ -32,7 +32,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 	function run(){
 
-		describe( "Modules", function(){
+		describe( "Module Features", function(){
 
 			beforeEach(function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
@@ -98,6 +98,24 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				expect(	config ).notToHaveKey( 'excludedmod' );
 			});
 
+		});
+
+		story( "Modules can support nested module inception", function(){
+			given( "A nested module: inception", function(){
+				then( "the nested module: inception-mod1 should load and be active", function(){
+					var config = getController().getSetting( "modules" );
+					expect(	config ).toHaveKey( "inception-mod1" );
+					expect(	config[ "inception-mod1" ].activated ).toBeTrue();
+				});
+			});
+
+			given( "A nested module: inception with a 'modules_app' convention", function(){
+				then( "it should load and activate its sub-modules", function(){
+					var config = getController().getSetting( "modules" );
+					expect(	config ).toHaveKey( "inception-app1" );
+					expect(	config[ "inception-app1" ].activated ).toBeTrue();
+				});
+			});
 		});
 
 	}
