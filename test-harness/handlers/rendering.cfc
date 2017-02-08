@@ -21,7 +21,7 @@ component output="false" singleton{
 		event.renderData(
 			data = prc.data,
 			formats = "json,html",
-			formatsRedirectEvent = { event = "Main.index" }
+			formatsRedirect = { event = "Main.index" }
 		);
 	}
 

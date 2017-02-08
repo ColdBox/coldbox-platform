@@ -68,7 +68,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				
 			});
 
-			it( "can redirect only for html formats with the `formatsRedirectEvent` parameter", function() {
+			it( "can redirect only for html formats with the `formatsRedirect` parameter", function() {
 				getRequestContext().setValue( "format", "json" );
 				var event = execute( event="rendering.redirect", renderResults=true );
 				var rc = event.getCollection();

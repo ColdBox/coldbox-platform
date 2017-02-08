@@ -770,7 +770,7 @@ Description :
 			// check accepts headers for the best match
 			else{
 				var match = "";
-				for( var accept in listToArray( event.getHTTPHeader( "Accept" ), "," ) ){
+				for( var accept in listToArray( event.getHTTPHeader( "Accept", "" ), "," ) ){
 					for( var extension in instance.validExtensions ){
 						if( findNoCase( extension, accept ) > 0 ){
 							match = extension;
