@@ -41,7 +41,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* @return BaseTestCase
 	*/
 	function metadataInspection(){
-		var md = getMetadata( this );
+		var md = new coldbox.system.core.util.Util().getInheritedMetadata( this );
+		
 		// Inspect for appMapping annotation
 		if( structKeyExists( md, "appMapping" ) ){
 			variables.appMapping = md.appMapping;
