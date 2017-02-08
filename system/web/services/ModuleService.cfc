@@ -658,15 +658,18 @@ component extends="coldbox.system.web.services.BaseService"{
 		oConfig.getPropertyMixin 	= mixerUtil.getPropertyMixin;
 
 		// MixIn Variables
-		oConfig.injectPropertyMixin( "controller", 		controller );
-		oConfig.injectPropertyMixin( "appMapping", 		controller.getSetting( "appMapping" ) );
-		oConfig.injectPropertyMixin( "moduleMapping", 	mConfig.mapping );
-		oConfig.injectPropertyMixin( "modulePath", 		mConfig.path );
-		oConfig.injectPropertyMixin( "logBox", 			controller.getLogBox() );
-		oConfig.injectPropertyMixin( "log", 			controller.getLogBox().getLogger( oConfig) );
-		oConfig.injectPropertyMixin( "wirebox", 		controller.getWireBox() );
-		oConfig.injectPropertyMixin( "binder", 			controller.getWireBox().getBinder() );
-		oConfig.injectPropertyMixin( "cachebox", 		controller.getCacheBox() );
+		oConfig.injectPropertyMixin( "controller", 		  controller );
+		oConfig.injectPropertyMixin( "appMapping", 		  controller.getSetting( "appMapping" ) );
+		oConfig.injectPropertyMixin( "moduleMapping", 	  mConfig.mapping );
+		oConfig.injectPropertyMixin( "modulePath", 		  mConfig.path );
+		oConfig.injectPropertyMixin( "logBox", 			  controller.getLogBox() );
+		oConfig.injectPropertyMixin( "log", 			  controller.getLogBox().getLogger( oConfig) );
+		oConfig.injectPropertyMixin( "wirebox", 		  controller.getWireBox() );
+		oConfig.injectPropertyMixin( "binder", 			  controller.getWireBox().getBinder() );
+		oConfig.injectPropertyMixin( "cachebox", 		  controller.getCacheBox() );
+		oConfig.injectPropertyMixin( "getSystemSetting",  controller.getUtil().getSystemSetting );
+		oConfig.injectPropertyMixin( "getSystemProperty", controller.getUtil().getSystemProperty );
+		oConfig.injectPropertyMixin( "getEnv",            controller.getUtil().getEnv );
 
 		// Configure the module
 		oConfig.configure();

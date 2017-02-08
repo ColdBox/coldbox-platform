@@ -87,6 +87,9 @@ Loads a coldbox cfc configuration file
 		oConfig.injectPropertyMixin( "controller",instance.controller);
 		oConfig.injectPropertyMixin( "logBoxConfig",instance.controller.getLogBox().getConfig());
 		oConfig.injectPropertyMixin( "appMapping",configStruct.appMapping);
+		oConfig.injectPropertyMixin( "getSystemSetting",instance.util.getSystemSetting );
+		oConfig.injectPropertyMixin( "getSystemProperty",instance.util.getSystemProperty );
+		oConfig.injectPropertyMixin( "getEnv",instance.util.getEnv );
 
 		//Configure it
 		oConfig.configure();
