@@ -301,8 +301,13 @@ component accessors="true"{
 		if( isSimpleValue( configStruct.ModulesExternalLocation) ){
 			configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
 		}
-		// Prepend Convention of modules_app
-		arrayPrepend( configStruct.ModulesExternalLocation, "/modules_app" );
+		// Prepend Convention of modules_app according to location
+		if( len( configStruct.appMapping ) ){
+			arrayPrepend( configStruct.ModulesExternalLocation, "/#configStruct.appMapping#/modules_app" );	
+		} else {
+			arrayPrepend( configStruct.ModulesExternalLocation, "/modules_app" );
+		}
+		
 		//Check for invalidHTTPMethodHandler
 		if ( not structKeyExists( configStruct, "invalidHTTPMethodHandler" ) ){
 			configStruct[ "invalidHTTPMethodHandler" ] = "";
