@@ -642,7 +642,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * Remove a module's routing table and registration points and return itself
 	 * @module The module to remove
 	 */
-	SES function removeModuleRoutes( required namespace ){
+	SES function removeModuleRoutes( required module ){
 		var routeLen = arrayLen( variables.routes );
 
 		// remove all module routes
