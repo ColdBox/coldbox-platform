@@ -304,9 +304,7 @@ component serializable="false" accessors="true"{
 	* Verify if a reinit is sent
 	*/
 	boolean function isFWReinit(){
-		var reinitPass 		= "";
-		var incomingPass 	= "";
-		var appKey 			= locateAppKey();
+		var appKey 	= locateAppKey();
 
 		// CF Parm Structures just in case
 		param name="FORM" 	default="#structNew()#";
@@ -321,9 +319,7 @@ component serializable="false" accessors="true"{
 		if ( structKeyExists( url, "fwreinit" ) or structKeyExists( form, "fwreinit" ) ){
 
 			// Check if we have a reinit password at hand.
-			if ( application[ appKey ].settingExists( "ReinitPassword" ) ){
-				reinitPass = application[ appKey ].getSetting( "ReinitPassword" );
-			}
+			var reinitPass = application[ appKey ].getSetting( name="ReinitPassword", defaultValue="" );
 
 			// pass Checks
 			if ( NOT len( reinitPass ) ){
@@ -331,6 +327,7 @@ component serializable="false" accessors="true"{
 			}
 
 			// Get the incoming pass from form or url
+			var incomingPass 	= "";
 			if( structKeyExists( form, "fwreinit" ) ){
 				incomingPass = form.fwreinit;
 			} else {
@@ -340,6 +337,8 @@ component serializable="false" accessors="true"{
 			// Compare the passwords
 			if( compare( reinitPass, hash( incomingPass ) ) eq 0 ){
 				return true;
+			} else {
+				application[ appKey ].getLog().warn( "The incoming reinit password is not valid." );
 			}
 
 		}//else if reinit found.

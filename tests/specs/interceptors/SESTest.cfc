@@ -1,11 +1,4 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseInterceptorTest" interceptor="coldbox.system.interceptors.SES">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="coldbox.system.interceptors.SES"{
 
 	function setup(){
 		super.setup();
@@ -28,7 +21,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 
 	function testAddNamespaceRoutes(){
-		ses.$property("namespaceroutingtable","instance",{})
+		ses.$property("namespaceroutingtable","variables",{})
 			.$("addRoute");
 
 		ses.addNamespace(pattern="/luis",namespace="luis");
@@ -84,8 +77,8 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 			.$("setSetting");
 		ses.setBaseURL("http://localhost");
 		ses.configure();
-		var mockController = getMockBox().createMock( "system.web.Controller" );
-		var mockEvent = getMockBox().createMock( "system.web.context.RequestContext" ).init( controller = mockController, properties = {
+		var mockController = getMockBox().createMock( "coldbox.system.web.Controller" );
+		var mockEvent = getMockBox().createMock( "coldbox.system.web.context.RequestContext" ).init( controller = mockController, properties = {
 				defaultLayout = "Main.cfm",
 				defaultView = "",
 				eventName = "event",
@@ -136,6 +129,4 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		mockEvent.removeValue( "format" );
 	}
 
-</cfscript>
-</cfcomponent>
-
+}
