@@ -54,5 +54,7 @@
     "installPaths":{
         "testbox":"testbox"
     },
-    "onServerInstall" : "cp build/lib/lucee-server.xml '`server info property=serverHomeDirectory`/WEB-INF/lucee-server/context/lucee-server.xml'"
+    "scripts":{
+        "onServerInstall" : "cp build/lib/lucee-server.xml '`server info property=serverHomeDirectory`/WEB-INF/lucee-server/context/lucee-server.xml'"
+    }
 }
