@@ -31,8 +31,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* Constructor
-	* @properties.hint The ColdBox application settings
-	* @controller.hint Acess to the system controller
+	* @properties The ColdBox application settings
+	* @controller Acess to the system controller
 	*/
 	function init( required struct properties={}, required any controller ){
 
@@ -45,10 +45,6 @@ component serializable=false accessors="true"{
 		instance.context		= structnew();
 		instance.privateContext = structnew();
 
-		// flag if using SES
-		instance.isSES 				= false;
-		// routed SES structures
-		instance.routedStruct 		= structnew();
 		// flag for no event execution
 		instance.isNoExecution  	= false;
 		// the name of the event via URL/FORM/REMOTE
@@ -76,17 +72,24 @@ component serializable=false accessors="true"{
 		instance.modules = arguments.properties.modules;
 
 		// Default layout + View
-		instance.defaultLayout = arguments.properties.defaultLayout;
-		instance.defaultView = arguments.properties.defaultView;
+		instance.defaultLayout 	= arguments.properties.defaultLayout;
+		instance.defaultView 	= arguments.properties.defaultView;
 
 		// SES Base URL
 		instance.SESBaseURL = "";
 		if( structKeyExists( arguments.properties, "SESBaseURL" ) ){
 			instance.SESBaseURL = arguments.properties.SESBaseURL;
 		}
+		// flag if using SES
+		instance.isSES 				= false;
+		// routed SES structures
+		instance.routedStruct 		= structnew();
 
 		// Flag for Invalid HTTP Method
-		instance.invalidHTTPMethod = false;
+		instance.invalidHTTPMethod 	= false;
+
+		// Rendering Regions
+		instance.renderingRegions 	= {};
 
 		return this;
 	}
@@ -110,8 +113,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* I Get a reference or deep copy of the public or private request Collection
-	* @deepCopy.hint Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
-	* @private.hint Use public or private request collection
+	* @deepCopy Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
+	* @private Use public or private request collection
 	*/
 	struct function getCollection( boolean deepCopy=false, boolean private=false ){
 		// Private Collection
@@ -126,8 +129,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* I get a private collection
-	* @deepCopy.hint Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
-	* @private.hint Use public or private request collection
+	* @deepCopy Default is false, gives a reference to the collection. True, creates a deep copy of the collection.
+	* @private Use public or private request collection
 	*/
 	struct function getPrivateCollection( boolean deepCopy=false ){
 		arguments.private = true;
@@ -136,7 +139,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Clears the entire collection
-	* @private.hint Use public or private request collection
+	* @private Use public or private request collection
 	*/
 	function clearCollection( boolean private=false ){
 		if( arguments.private ) { structClear(instance.privateContext); }
@@ -153,9 +156,9 @@ component serializable=false accessors="true"{
 
 	/**
 	* Append a structure to the collection, with overwrite or not. Overwrite = false by default
-	* @collection.hint The collection to incorporate
-	* @overwrite.hint Overwrite elements, defaults to false
-	* @private.hint Private or public, defaults public.
+	* @collection The collection to incorporate
+	* @overwrite Overwrite elements, defaults to false
+	* @private Private or public, defaults public.
 	*/
 	function collectionAppend( required struct collection, boolean overwrite=false, boolean private=false ){
 		if( arguments.private ) { structAppend(instance.privateContext,arguments.collection, arguments.overwrite); }
@@ -165,8 +168,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* Append a structure to the collection, with overwrite or not. Overwrite = false by default
-	* @collection.hint The collection to incorporate
-	* @overwrite.hint Overwrite elements, defaults to false
+	* @collection The collection to incorporate
+	* @overwrite Overwrite elements, defaults to false
 	*/
 	function privateCollectionAppend( required struct collection, boolean overwrite=false ){
 		arguments.private = true;
@@ -175,7 +178,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Get the collection Size
-	* @private.hint Private or public, defaults public.
+	* @private Private or public, defaults public.
 	*/
 	numeric function getSize( boolean private=false ){
 		if( arguments.private ){ return structCount(instance.privateContext); }
@@ -193,9 +196,9 @@ component serializable=false accessors="true"{
 
 	/**
 	* Get a value from the public or private request collection.
-	* @name.hint The key name
-	* @defaultValue.hint default value
-	* @private.hint Private or public, defaults public.
+	* @name The key name
+	* @defaultValue default value
+	* @private Private or public, defaults public.
 	*/
 	function getValue( required name, defaultValue, boolean private=false ){
 		var collection = instance.context;
@@ -220,8 +223,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* Get a value from the private request collection.
-	* @name.hint The key name
-	* @defaultValue.hint default value
+	* @name The key name
+	* @defaultValue default value
 	*/
 	function getPrivateValue( required name, defaultValue ){
 		arguments.private = true;
@@ -230,9 +233,9 @@ component serializable=false accessors="true"{
 
 	/**
 	* Get a value from the request collection and if simple value, I will trim it.
-	* @name.hint The key name
-	* @defaultValue.hint default value
-	* @private.hint Private or public, defaults public.
+	* @name The key name
+	* @defaultValue default value
+	* @private Private or public, defaults public.
 	*/
 	function getTrimValue( required name, defaultValue, boolean private=false ){
 		var value = getValue(argumentCollection=arguments);
@@ -245,8 +248,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* Get a trim value from the private request collection.
-	* @name.hint The key name
-	* @defaultValue.hint default value
+	* @name The key name
+	* @defaultValue default value
 	*/
 	function getPrivateTrimValue( required name, defaultValue ){
 		arguments.private = true;
@@ -255,9 +258,9 @@ component serializable=false accessors="true"{
 
 	/**
 	* Set a value in the request collection
-	* @name.hint The key name
-	* @value.hint The value
-	* @private.hint Private or public, defaults public.
+	* @name The key name
+	* @value The value
+	* @private Private or public, defaults public.
 	*
 	* @return RequestContext
 	*/
@@ -271,8 +274,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* Set a value in the private request collection
-	* @name.hint The key name
-	* @value.hint The value
+	* @name The key name
+	* @value The value
 	*
 	* @return RequestContext
 	*/
@@ -283,8 +286,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* remove a value in the request collection
-	* @name.hint The key name
-	* @private.hint Private or public, defaults public.
+	* @name The key name
+	* @private Private or public, defaults public.
 	*
 	* @return RequestContext
 	*/
@@ -299,7 +302,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* remove a value in the private request collection
-	* @name.hint The key name
+	* @name The key name
 	*
 	* @return RequestContext
 	*/
@@ -310,8 +313,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* Check if a value exists in the request collection
-	* @name.hint The key name
-	* @private.hint Private or public, defaults public.
+	* @name The key name
+	* @private Private or public, defaults public.
 	*/
 	boolean function valueExists( required name, boolean private=false ){
 		var collection = instance.context;
@@ -321,7 +324,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Check if a value exists in the private request collection
-	* @name.hint The key name
+	* @name The key name
 	*/
 	boolean function privateValueExists( required name ){
 		arguments.private = true;
@@ -330,9 +333,9 @@ component serializable=false accessors="true"{
 
 	/**
 	* Just like cfparam, but for the request collection
-	* @name.hint The key name
-	* @value.hint The value
-	* @private.hint Private or public, defaults public.
+	* @name The key name
+	* @value The value
+	* @private Private or public, defaults public.
 	*
 	* @return RequestContext
 	*/
@@ -345,8 +348,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* Just like cfparam, but for the private request collection
-	* @name.hint The key name
-	* @value.hint The value
+	* @name The key name
+	* @value The value
 	*
 	* @return RequestContext
 	*/
@@ -449,7 +452,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings
-	* @module.hint Optional name of the module you want the root for, defaults to the current running module
+	* @module Optional name of the module you want the root for, defaults to the current running module
 	*/
 	string function getModuleRoot( module="" ){
 		var theModule = "";
@@ -493,17 +496,25 @@ component serializable=false accessors="true"{
 	/************************************** VIEW-LAYOUT METHODS *********************************************/
 
 	/**
+	* Get the current rendering regions
+	*/
+	function getRenderingRegions(){
+		return instance.renderingRegions;
+	}
+
+	/**
 	* Set the view to render in this request. Private Request Collection Name: currentView, currentLayout
-	* @view.hint The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please
-	* @args.hint An optional set of arguments that will be available when the view is rendered
-	* @layout.hint You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.
-	* @module.hint The explicit module view
-	* @noLayout.hint Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.
-	* @cache.hint True if you want to cache the rendered view.
-	* @cacheTimeout.hint The cache timeout in minutes
-	* @cacheLastAccessTimeout.hint The last access timeout in minutes
-	* @cacheSuffix.hint Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
-	* @cacheProvider.hint The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider
+	* @view The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please
+	* @args An optional set of arguments that will be available when the view is rendered
+	* @layout You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.
+	* @module The explicit module view
+	* @noLayout Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.
+	* @cache True if you want to cache the rendered view.
+	* @cacheTimeout The cache timeout in minutes
+	* @cacheLastAccessTimeout The last access timeout in minutes
+	* @cacheSuffix Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching.
+	* @cacheProvider The cache provider you want to use for storing the rendered view. By default we use the 'template' cache provider
+	* @name This triggers a rendering region.  This will be the unique name in the request for specifying a rendering region, you can then render it by passing the unique name to renderView();
 	*
 	* @return RequestContext
 	*/
@@ -517,87 +528,88 @@ component serializable=false accessors="true"{
 		cacheTimeout="",
 		cacheLastAccessTimeout="",
 		cacheSuffix="",
-		cacheProvider="template"
+		cacheProvider="template",
+		name
 	){
-	    var key 		= "";
-		    var cacheEntry 	= structnew();
-			var cModule		= getCurrentModule();
-
-			// view and name mesh
-			if( structKeyExists(arguments,"name") ){ arguments.view = arguments.name; }
-
-			// stash the view module
- 			instance.privateContext["viewModule"] = arguments.module;
-
-			// Local Override
-			if( structKeyExists(arguments,"layout") ){
-				setLayout(arguments.layout);
-			}
-
-			// If we need a layout or we haven't overriden the current layout enter if...
-		    else if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false,true) ){
-
-		    	//Verify that the view has a layout in the viewLayouts structure.
-			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.view)) ){
-					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.view)],true);
-			    }
-				else{
-					//Check the folders structure
-					for( key in instance.FolderLayouts ){
-						if ( reFindnocase('^#key#', lcase(arguments.view)) ){
-							setValue("currentLayout",instance.FolderLayouts[key],true);
-							break;
-						}
-					}//end for loop
-				}//end else
-
-				//If not layout, then set default from main application
-				if( not valueExists("currentLayout",true) ){
-					setValue("currentLayout", instance.defaultLayout,true);
-				}
-
-				// Check for module integration
-				if( len(cModule)
-				    AND structKeyExists(instance.modules,cModule)
-					AND len(instance.modules[cModule].layoutSettings.defaultLayout) ){
-					setValue("currentLayout", instance.modules[getCurrentModule()].layoutSettings.defaultLayout,true);
-				}
-
-			}//end if overridding layout
-
-			// No Layout Rendering?
-			if( arguments.nolayout ){
-				removeValue('currentLayout',true);
-			}
-
-			// Do we need to cache the view
-			if( arguments.cache ){
-				// prepare the cache keys
-				cacheEntry.view = arguments.view;
-				// Argument cleanup
-				if ( not isNumeric(arguments.cacheTimeout) )
-					cacheEntry.Timeout = "";
-				else
-					cacheEntry.Timeout = arguments.CacheTimeout;
-				if ( not isNumeric(arguments.cacheLastAccessTimeout) )
-					cacheEntry.LastAccessTimeout = "";
-				else
-					cacheEntry.LastAccessTimeout = arguments.cacheLastAccessTimeout;
-				// Cache Suffix
-				cacheEntry.cacheSuffix 		= arguments.cacheSuffix;
-				// Cache Provider
-				cacheEntry.cacheProvider 	= arguments.cacheProvider;
-
-				//Save the view cache entry
-				setViewCacheableEntry(cacheEntry);
-			}
-
-			//Set the current view to render.
-			instance.privateContext["currentView"] = arguments.view;
-
-			// Record the optional arguments
-			setValue("currentViewArgs", arguments.args, true);
+		// Do we have an incoming rendering region definition? If we do, store it and return
+		if( structKeyExists( arguments, "name" ) ){
+			instance.renderingRegions[ arguments.name ] = arguments;
 			return this;
+		}
+
+		// stash the view module
+		instance.privateContext[ "viewModule" ] = arguments.module;
+
+		// Direct Layout Usage
+		if( structKeyExists( arguments, "layout" ) ){
+			setLayout( arguments.layout );
+		}
+		// Discover layout
+	    else if ( NOT arguments.nolayout AND NOT getPrivateValue( name="layoutoverride", defaultValue=false ) ){
+
+	    	//Verify that the view has a layout in the viewLayouts structure, static lookups
+		    if ( structKeyExists( instance.viewLayouts, lcase( arguments.view ) ) ){
+				setPrivateValue( "currentLayout", instance.viewLayouts[ lcase( arguments.view ) ] );
+		    } else {
+				//Check the folders structure
+				for( var key in instance.folderLayouts ){
+					if ( reFindnocase( '^#key#', lcase( arguments.view ) ) ){
+						setPrivateValue( "currentLayout", instance.folderLayouts[ key ] );
+						break;
+					}
+				}//end for loop
+			}//end else
+
+			// If not layout, then set default from main application
+			if( not privateValueExists( "currentLayout", true ) ){
+				setPrivateValue( "currentLayout", instance.defaultLayout );
+			}
+
+			// If in current module, check for a module default layout\
+			var cModule	= getCurrentModule();
+			if( len( cModule )
+			    AND structKeyExists( instance.modules, cModule )
+				AND len( instance.modules[ cModule ].layoutSettings.defaultLayout ) ){
+				setPrivateValue( "currentLayout", instance.modules[ cModule ].layoutSettings.defaultLayout );
+			}
+
+		} //end layout discover
+
+		// No Layout Rendering?
+		if( arguments.nolayout ){
+			removePrivateValue( 'currentLayout' );
+		}
+
+		// Do we need to cache the view
+		if( arguments.cache ){
+			// prepare the cache keys
+			var cacheEntry = {
+				view 				= arguments.view,
+				timeout 			= "",
+				lastAccessTimeout 	= "",
+				cacheSuffix 		= arguments.cacheSuffix,
+				cacheProvider 		= arguments.cacheProvider
+			};
+			
+			if ( isNumeric( arguments.cacheTimeout ) ){
+				cacheEntry.timeout = arguments.cacheTimeout;
+			}
+			
+			if ( isNumeric( arguments.cacheLastAccessTimeout ) ){
+				cacheEntry.lastAccessTimeout = arguments.cacheLastAccessTimeout;
+			}
+			
+			//Save the view cache entry
+			setViewCacheableEntry( cacheEntry );
+		}
+
+		// Set the current view to render.
+		instance.privateContext[ "currentView" ] = arguments.view;
+
+		// Record the optional arguments
+		setPrivateValue( "currentViewArgs", arguments.args, true );
+
+		return this;
 	}
 
 	/**
@@ -614,21 +626,21 @@ component serializable=false accessors="true"{
 
 	/**
 	* Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Private Request Collection name
-	* @name.hint The name of the layout to set
-	* @module.hint The module to use
+	* @name The name of the layout to set
+	* @module The module to use
 	*/
 	function setLayout( required name, module="" ){
-		var layouts = instance.registeredLayouts;
 		// Set direct layout first.
-		instance.privateContext["currentLayout"] = trim(arguments.name) & ".cfm";
+		instance.privateContext[ "currentLayout" ] = trim( arguments.name ) & ".cfm";
 		// Do an Alias Check and override if found.
-		if( structKeyExists(layouts,arguments.name) ){
-			instance.privateContext["currentLayout"] = layouts[arguments.name];
+		if( structKeyExists( instance.registeredLayouts, arguments.name ) ){
+			instance.privateContext[ "currentLayout" ] = instance.registeredLayouts[ arguments.name ];
 		}
 		// set layout overwritten flag.
-		instance.privateContext["layoutoverride"] = true;
+		instance.privateContext[ "layoutoverride" ] = true;
 		// module layout?
-		instance.privateContext["layoutmodule"] = arguments.module;
+		instance.privateContext[ "layoutmodule" ] = arguments.module;
+		
 		return this;
 	}
 
@@ -689,7 +701,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method
-	* @event.hint The event to override with
+	* @event The event to override with
 	*
 	* @return RequestContext
 	*/
@@ -715,7 +727,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Set the flag that tells the framework not to render, just execute
-	* @remove.hint Remove the flag completely
+	* @remove Remove the flag completely
 	*
 	* @return RequestContext
 	*/
@@ -808,11 +820,11 @@ component serializable=false accessors="true"{
 
 	/**
 	* Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes
-	* @linkTo.hint The event or route you want to create the link to
-	* @translate.hint Translate between . and / depending on the ses mode. So you can just use dot notation
-	* @ssl.hint Turn SSl on/off on URL creation
-	* @baseURL.hint If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm
-	* @queryString.hint The query string to append
+	* @linkTo The event or route you want to create the link to
+	* @translate Translate between . and / depending on the ses mode. So you can just use dot notation
+	* @ssl Turn SSl on/off on URL creation
+	* @baseURL If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm
+	* @queryString The query string to append
 	*/
 	string function buildLink(
 		required linkTo,
@@ -878,7 +890,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Check wether the incoming event has been flagged for caching
-	* @cacheEntry.hint The md entry for caching
+	* @cacheEntry The md entry for caching
 	*
 	* @return RequestContext
 	*/
@@ -910,7 +922,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Set the view cacheable entry
-	* @cacheEntry.hint The md entry for caching
+	* @cacheEntry The md entry for caching
 	*
 	* @return RequestContext
 	*/
@@ -946,25 +958,25 @@ component serializable=false accessors="true"{
 
 	/**
 	* Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you
-	* @type.hint The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
-	* @data.hint The data you would like to marshall and return by the framework
-	* @contentType.hint The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you.
-	* @encoding.hint The default character encoding to use.  The default encoding is utf-8
-	* @statusCode.hint The HTTP status code to send to the browser. Defaults to 200
-	* @statusText.hint Explains the HTTP status code sent to the browser.
-	* @location.hint Optional argument used to set the HTTP Location header
-	* @jsonCallback.hint Only needed when using JSONP, this is the callback to add to the JSON packet
-	* @jsonQueryFormat.hint JSON Only: query or array format for encoding. The default is CF query standard
-	* @jsonAsText.hint If set to false, defaults content mime-type to application/json, else will change encoding to plain/text
-	* @xmlColumnList.hint XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
-	* @xmlUseCDATA.hint XML Only: Use CDATA content for ALL values. The default is false
-	* @xmlListDelimiter.hint XML Only: The delimiter in the list. Comma by default
-	* @xmlRootName.hint XML Only: The name of the initial root element of the XML packet
-	* @pdfArgs.hint All the PDF arguments to pass along to the CFDocument tag.
-	* @formats.hint The formats list or array that ColdBox should respond to using the passed in data argument. You can pass any of the valid types (JSON,JSONP,JSONT,XML,WDDX,PLAIN,HTML,TEXT,PDF). For PDF and HTML we will try to render the view by convention based on the incoming event
-	* @formatsView.hint The view that should be used for rendering HTML/PLAIN/PDF. By default ColdBox uses the name of the event as an implicit view
-	* @formatsRedirect.hint The arguments that should be passed to setNextEvent as part of a redirect for the HTML action.  If the format is HTML and this struct is not empty, ColdBox will call setNextEvent with these arguments.
-	* @isBinary.hint Bit that determines if the data being set for rendering is binary or not.
+	* @type The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
+	* @data The data you would like to marshall and return by the framework
+	* @contentType The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you.
+	* @encoding The default character encoding to use.  The default encoding is utf-8
+	* @statusCode The HTTP status code to send to the browser. Defaults to 200
+	* @statusText Explains the HTTP status code sent to the browser.
+	* @location Optional argument used to set the HTTP Location header
+	* @jsonCallback Only needed when using JSONP, this is the callback to add to the JSON packet
+	* @jsonQueryFormat JSON Only: query or array format for encoding. The default is CF query standard
+	* @jsonAsText If set to false, defaults content mime-type to application/json, else will change encoding to plain/text
+	* @xmlColumnList XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query
+	* @xmlUseCDATA XML Only: Use CDATA content for ALL values. The default is false
+	* @xmlListDelimiter XML Only: The delimiter in the list. Comma by default
+	* @xmlRootName XML Only: The name of the initial root element of the XML packet
+	* @pdfArgs All the PDF arguments to pass along to the CFDocument tag.
+	* @formats The formats list or array that ColdBox should respond to using the passed in data argument. You can pass any of the valid types (JSON,JSONP,JSONT,XML,WDDX,PLAIN,HTML,TEXT,PDF). For PDF and HTML we will try to render the view by convention based on the incoming event
+	* @formatsView The view that should be used for rendering HTML/PLAIN/PDF. By default ColdBox uses the name of the event as an implicit view
+	* @formatsRedirect The arguments that should be passed to setNextEvent as part of a redirect for the HTML action.  If the format is HTML and this struct is not empty, ColdBox will call setNextEvent with these arguments.
+	* @isBinary Bit that determines if the data being set for rendering is binary or not.
 	*/
 	function renderData(
 		type="HTML",
@@ -1075,8 +1087,8 @@ component serializable=false accessors="true"{
 
 	/**
 	* Get the raw HTTP content
-	* @json.hint Try to return the content as deserialized json
-	* @xml.hint Try to return the content as an XML object
+	* @json Try to return the content as deserialized json
+	* @xml Try to return the content as an XML object
 	*/
 	any function getHTTPContent( boolean json=false, boolean xml=false ){
 		var content = getHTTPRequestData().content;
@@ -1093,7 +1105,7 @@ component serializable=false accessors="true"{
 	/**
 	* Get an HTTP header
 	* @header.name The header to get
-	* @defaultValue.hint The default value if not found
+	* @defaultValue The default value if not found
 	*/
 	function getHTTPHeader( required header, defaultValue="" ){
 		var headers = getHttpRequestData().headers;
@@ -1112,11 +1124,11 @@ component serializable=false accessors="true"{
 
 	/**
 	* Set an HTTP Header
-	* @statusCode.hint the status code
-	* @statusText.hint the status text
-	* @name.hint The header name
-	* @value.hint The header value
-	* @charset.hint The charset to use, defaults to UTF-8
+	* @statusCode the status code
+	* @statusText the status text
+	* @name The header name
+	* @value The header value
+	* @charset The charset to use, defaults to UTF-8
 	*
 	* return RequestContext
 	*/

@@ -32,7 +32,7 @@ Description :
 				// Life-cycle
 				"applicationEnd" , "sessionStart", "sessionEnd", "preProcess", "preEvent", "postEvent", "postProcess", "preProxyResults",
 				// Layout-View Events
-				"preLayout", "preRender", "postRender", "preViewRender", "postViewRender", "preLayoutRender", "postLayoutRender",
+				"preLayout", "preRender", "postRender", "preViewRender", "postViewRender", "preLayoutRender", "postLayoutRender", "afterRendererInit",
 				// Module Events
 				"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload"
 			];
