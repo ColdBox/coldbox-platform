@@ -265,7 +265,6 @@ component extends="coldbox.system.web.services.BaseService"{
 				modelsInvocationPath    = modulesInvocationPath & "." & modName,
 				modelsPhysicalPath		= modLocation,
 				registeredHandlers 		= '',
-				datasources				= {},
 				parentSettings			= {},
 				settings 				= {},
 				interceptors 			= [],
@@ -315,8 +314,6 @@ component extends="coldbox.system.web.services.BaseService"{
 			controller.getInterceptorService().appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
 			// Register Parent Settings
 			structAppend( appSettings, mConfig.parentSettings, true );
-			// Register Module Datasources
-			structAppend( appSettings.datasources, mConfig.datasources, true );
 			
 			// Inception?
 			var inceptionPaths = [ "modules", "modules_app" ];
@@ -761,8 +758,6 @@ component extends="coldbox.system.web.services.BaseService"{
 			);
 		}
 		appSettings.moduleSettings[ mConfig.modelNamespace ] = mConfig.settings;
-		//Get module datasources
-		mConfig.datasources = oConfig.getPropertyMixin( "datasources", "variables", {} );
 		//Get Interceptors
 		mConfig.interceptors = oConfig.getPropertyMixin( "interceptors", "variables", [] );
 		for(var x=1; x lte arrayLen( mConfig.interceptors ); x=x+1){

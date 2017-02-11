@@ -11,22 +11,6 @@ component serializable="false" accessors="true"{
 	property name="controller";
 
 	/**
-	* Get a datasource structure representation
-	* @alias The alias of the datasource to get from the config structures
-	*/
-	struct function getDatasource( required alias ){
-		var datasources = controller.getSetting( "datasources");
-		if( structKeyExists( datasources, arguments.alias ) ){
-			return datasources[ arguments.alias ];
-		}
-		throw( 
-			message = "Datasource #arguments.alias# has not been defined in your config",
-			detail 	= "Defined datasources are: #structKeyList( datasources )#",
-			type 	= "UndefinedDatasource"
-		);
-	}
-
-	/**
 	* Get a model object
 	* @name The mapping name or CFC path to retrieve
 	* @dsl The DSL string to use to retrieve an instance

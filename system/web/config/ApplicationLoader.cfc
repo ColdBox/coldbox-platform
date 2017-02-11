@@ -109,9 +109,6 @@ component accessors="true"{
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL LAYOUTS/VIEWS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */
 		parseExternalLocations( oConfig, configStruct );
 
-		/* ::::::::::::::::::::::::::::::::::::::::: DATASOURCES SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
-		parseDatasources( oConfig, configStruct );
-
 		/* ::::::::::::::::::::::::::::::::::::::::: LAYOUT VIEW FOLDER SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 		parseLayoutsViews( oConfig, configStruct );
 
@@ -428,37 +425,6 @@ component accessors="true"{
 			}
 		} else {
 			configStruct[ "LayoutsExternalLocation" ] = "";
-		}
-	}
-
-	/**
-	 * Parse data sources
-	 */
-	function parseDatasources( required oConfig, required config ){
-		var configStruct 	= arguments.config;
-		var datasources 	= arguments.oConfig.getPropertyMixin( "datasources", "variables", structnew() );
-
-		// Defaults
-		configStruct.datasources = structnew();
-
-		//loop over datasources
-		for( var key in datasources ){
-
-			if( NOT structKeyExists(datasources[ key ],"name" ) ){
-				throw( "This datasource #key# entry's name cannot be blank", "", "CFCApplicationLoader.DatasourceException" );
-			}
-			// defaults
-			if( NOT structKeyExists( datasources[ key ],"username" ) ){
-				datasources[ key ].username = "";
-			}
-			if( NOT structKeyExists( datasources[ key ],"password" ) ){
-				datasources[ key ].password = "";
-			}
-			if( NOT structKeyExists( datasources[ key ],"dbType" ) ){
-				datasources[ key ].dbType = "";
-			}
-			// save datasoure definition
-			configStruct.datasources[ key ] = datasources[ key ];
 		}
 	}
 

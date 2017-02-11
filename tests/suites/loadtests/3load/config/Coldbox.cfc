@@ -14,7 +14,6 @@ structures/arrays to create for configuration
 - mailSettings (struct)
 - i18n (struct)
 - webservices (struct)
-- datasources (struct)
 - layoutSettings (struct)
 - layouts (array of structs)
 - cacheBox (struct)
@@ -214,11 +213,6 @@ Optional Methods
 			AnotherTestWS = "http://railo.stg.ortussolutions.com/ExtensionProvider.cfc?wsdl"
 		};
 
-		//Datasources
-		datasources = {
-			mysite   = {name="mySite", dbType="mysql", username="root", password="pass"},
-			blog_dsn = {name="myBlog", dbType="oracle", username="root", password="pass"}
-		};
 		*/
 
 	}
