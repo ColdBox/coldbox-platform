@@ -10,7 +10,6 @@ structures/arrays to create for configuration
 - ioc (struct)
 - models (struct) DEPRECATED use Wirebox instead
 - wirebox (struct)
-- datasources (struct)
 - layoutSettings (struct)
 - layouts (array of structs)
 - cacheBox (struct)

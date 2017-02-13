@@ -16,6 +16,28 @@ component output="false" singleton{
 		event.renderData( data=prc.data, formats="json,xml,wddx,pdf,html" );
 	}
 
+	/**
+	* renderingRegions
+	*/
+	function renderingRegions( event, rc, prc ){
+		
+		// Normal Rendering
+		event.setView( 
+			view 	= "rendering/withargs",
+			args 	= { isWidget = true },
+			name 	= "hola"
+		);
+
+		// Module Rendering
+		event.setView( 
+			view 	= "home/index",
+			module 	= "inception",
+			name 	= "module"
+		);
+
+		event.setView( "rendering/renderingRegions" );
+	}
+
 	function redirect( event, rc, prc ) {
 		prc.data = variables.data;
 		event.renderData(

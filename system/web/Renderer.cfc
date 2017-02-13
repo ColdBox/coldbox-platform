@@ -108,6 +108,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
 
+		// Announce interception
+		announceInterception( "afterRendererInit", { variables = variables, this = this } );
+
 		return this;
 	}
 
@@ -138,6 +141,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* @collectionMaxRows The max rows to iterate over the collection rendering with
 	* @collectionDelim  A string to delimit the collection renderings by
 	* @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
+	* @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
 	*/
 	function renderView(
 		view="",
@@ -153,7 +157,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		numeric collectionStartRow="1",
 		numeric collectionMaxRows=0,
 		collectionDelim="",
-		boolean prePostExempt=false
+		boolean prePostExempt=false,
+		name
 	){
 		var viewCacheKey 		= "";
 		var viewCacheEntry 		= "";
@@ -161,6 +166,23 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var iData 				= arguments;
 		var explicitModule 		= false;
 		var viewLocations		= "";
+
+		// Rendering Region call?
+		if( structKeyExists( arguments, "name" ) ){
+			var regions = event.getRenderingRegions();
+			// Verify Region
+			if( !structKeyExists( regions, arguments.name ) ){
+				throw(
+					message = "Invalid rendering region: #arguments.name#",
+					detail 	= "Valid regions are: #structKeyList( regions )#",
+					type 	= "InvalidRenderingRegion" 
+				);
+			}
+			// Incorporate region data
+			structAppend( arguments, regions[  arguments.name ] );
+			// Clean yourself like a ninja
+			structDelete( arguments, 'name' );
+		}
 
 		// If no incoming explicit module call, default the value to the one in the request context for convenience
 		if( NOT len( arguments.module ) ){

@@ -40,18 +40,6 @@ Description :
 		</cfscript>
     </cffunction>
 
-	<!--- Get a ColdBox Datasource --->
-	<cffunction name="getDatasource" access="private" output="false" returnType="any" hint="I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct" colddoc:generic="coldbox.system.core.db.DatasourceBean">
-		<cfargument name="alias" type="any" hint="The alias of the datasource to get from the configstruct (alias property in the config file)">
-		<cfscript>
-		var datasources = instance.coldbox.getSetting( "Datasources" );
-		//Try to get the correct datasource.
-		if ( structKeyExists( datasources, arguments.alias ) ){
-			return datasources[ arguments.alias ];
-		}
-		</cfscript>
-	</cffunction>
-
 	<!--- getColdboxDSL --->
 	<cffunction name="getColdboxDSL" access="private" returntype="any" hint="Get dependencies using the coldbox dependency DSL" output="false" >
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
@@ -133,7 +121,6 @@ Description :
 							}
 						}
 						case "fwSetting" 			: { return instance.coldbox.getSetting(thisLocationKey,true); }
-						case "datasource" 			: { return getDatasource(thisLocationKey); }
 						case "interceptor" 			: { return instance.coldbox.getInterceptorService().getInterceptor(thisLocationKey,true); }
 					}//end of services
 					break;
