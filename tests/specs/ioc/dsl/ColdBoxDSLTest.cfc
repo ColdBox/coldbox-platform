@@ -32,16 +32,6 @@
 		assertTrue( builder.$once("getColdboxDSL") );
 	}
 
-	function testGetDatasource(){
-		data = {test={name='test',dbtype='mysql'}};
-		mockColdBox.$("getSetting", data);
-		makePublic(builder,"getDatasource");
-
-		d = builder.getDatasource('test');
-		assertEquals( "test", d.name );
-		assertEquals( "mysql", d.dbtype );
-	}
-
 	function testgetColdboxDSLStage1AndStage2(){
 		makePublic(builder, "getColdboxDSL");
 
@@ -143,12 +133,6 @@
 		mockColdBox.$("getSetting").$args("mySetting",true).$results("UnitTest");
 		c = builder.getColdBoxDSL(def);
 		assertEquals("unitTest", c);
-
-		// datasource
-		def = {name="ds", dsl="coldbox:datasource:coolAlias"};
-		builder.$("getDatasource").$args("coolAlias").$results( this );
-		c = builder.getColdBoxDSL(def);
-		assertEquals(this, c);
 
 		// interceptor
 		def = {name="ds", dsl="coldbox:interceptor:coolAlias"};
