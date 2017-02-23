@@ -21,3 +21,4 @@ artifacts/*
 testbox/*
 apidocs/docbox/*
 ApplicationTemplates/*
+tests/suites/loadtests/logs
