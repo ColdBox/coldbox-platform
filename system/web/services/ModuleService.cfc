@@ -831,7 +831,7 @@ component extends="coldbox.system.web.services.BaseService"{
 						invocationPath 	= replace( reReplace( arguments.dirPath, "^/", "" ), "/", ".", "all" )
 					};
 				} else {
-					variables.logger.debug( "Found duplicate module: #thisModule.name# in #arguments.dirPath#. Skipping its registration in our module registry, order of preference given." )
+					variables.logger.debug( "Found duplicate module: #thisModule.name# in #arguments.dirPath#. Skipping its registration in our module registry, order of preference given." );
 				}
 			}
 		}
