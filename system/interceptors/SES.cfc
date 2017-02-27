@@ -434,7 +434,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		any response,
 		numeric statusCode,
 		string statusText,
-		any condition,
+		any condition
 	){
 		var thisRoute = structNew();
 		var thisPattern = "";
