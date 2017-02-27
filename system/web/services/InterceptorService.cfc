@@ -421,11 +421,10 @@ Description :
 					logbox 		= controller.getLogBox(), 
 					controller 	= controller 
 				);
-				structInsert( instance.interceptionStates , arguments.state, oInterceptorState );
-			}
-			else{
+				instance.interceptionStates[ arguments.state ] = oInterceptorState;
+			} else {
 				// Get the State we need to register in
-				oInterceptorState = structFind( instance.interceptionStates, arguments.state );
+				oInterceptorState = instance.interceptionStates[  arguments.state ];
 			}
 
 			// Verify if the interceptor is already in the state
