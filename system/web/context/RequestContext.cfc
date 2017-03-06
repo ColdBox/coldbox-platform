@@ -821,7 +821,7 @@ component serializable=false accessors="true"{
 	/**
 	* Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes
 	* @linkTo The event or route you want to create the link to
-	* @translate Translate between . and / depending on the ses mode. So you can just use dot notation
+	* @translate Translate between . and / depending on the SES mode on linkTo and queryString arguments. Defaults to true.
 	* @ssl Turn SSl on/off on URL creation
 	* @baseURL If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm
 	* @queryString The query string to append
@@ -836,41 +836,52 @@ component serializable=false accessors="true"{
 		var sesBaseURL 		= getSESbaseURL();
 		var frontController = "index.cfm";
 
-		/* baseURL */
-		if( len( trim( arguments.baseURL ) ) neq 0 ){
+		// Cleanups
+		arguments.linkTo 		= trim( arguments.linkTo );
+		arguments.baseURL 		= trim( arguments.baseURL );
+		arguments.queryString 	= trim( arguments.queryString );
+
+		// Front Controller Base
+		if( len( arguments.baseURL ) neq 0 ){
 			frontController = arguments.baseURL;
 		}
 
+		// SES Mode
 		if( isSES() ){
-			/* SSL ON OR TURN IT ON */
+			// SSL ON OR TURN IT ON
 			if( isSSL() OR ( structKeyExists( arguments, "ssl" ) and arguments.ssl ) ){
 				sesBaseURL = replacenocase( sesBaseURL, "http:", "https:" );
 			}
+			
 			// SSL Turn Off
 			if( structKeyExists( arguments, "ssl" ) and arguments.ssl eq false ){
-				sesBaseURL = replacenocase( sesBaseURL,"https:","http:" );
+				sesBaseURL = replacenocase( sesBaseURL, "https:", "http:" );
 			}
-			/* Translate link */
+			
+			// Translate link or plain
 			if( arguments.translate ){
 				arguments.linkto = replace( arguments.linkto, ".", "/", "all" );
-			}
-			/* Query String Append */
-			if( len( trim( arguments.queryString ) ) ){
-				if( right( arguments.linkTo, 1 ) neq  "/" ){
-					arguments.linkto = arguments.linkto & "/";
+				// QuqeryString Conversions
+				if( len( arguments.queryString ) ){
+					if( right( arguments.linkTo, 1 ) neq  "/" ){
+						arguments.linkto = arguments.linkto & "/";
+					}
+					arguments.linkto = arguments.linkto & replace( arguments.queryString, "&", "/", "all" );
+					arguments.linkto = replace( arguments.linkto, "=", "/", "all" );
 				}
-				arguments.linkto = arguments.linkto & replace( arguments.queryString, "&", "/", "all" );
-				arguments.linkto = replace( arguments.linkto, "=", "/", "all" );
+			} else if( len( arguments.queryString ) ){
+				arguments.linkto = arguments.linkto & "?" & arguments.queryString;
 			}
-			/* Prepare link */
+			
+			// Prepare SES Base URL Link
 			if( right( sesBaseURL, 1 ) eq  "/" ){
 				return sesBaseURL & arguments.linkto;
 			} else {
 				return sesBaseURL & "/" & arguments.linkto;
 			}
 		} else {
-			/* Check if sending in QUery String */
-			if( len( trim( arguments.queryString ) ) eq 0 ){
+			// Check if sending in QUery String
+			if( len( arguments.queryString ) eq 0 ){
 				return "#frontController#?#getEventName()#=#arguments.linkto#";
 			} else {
 				return "#frontController#?#getEventName()#=#arguments.linkto#&#arguments.queryString#";
