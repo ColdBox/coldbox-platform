@@ -300,7 +300,7 @@
 		event.setsesBaseURL(base);
 		assertEquals( event.getsesBaseURL(), base );
 
-		event.setisSES(true);
+		event.setisSES( true );
 		assertEquals( event.isSES(), true );
 	}
 
@@ -336,32 +336,39 @@
 		AssertEquals(testurl, "index.cfm?event=general.index" );
 
 		/* ses test */
-		event.setisSES(true);
+		event.setisSES( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( linkTo='general/index', ssl=false );
 		AssertEquals(testurl, base & "/general/index" );
 
 		/* query string transformation */
-		event.setisSES(true);
+		event.setisSES( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( linkTo='general/index', queryString="page=2&tests=4", ssl=false );
 		AssertEquals(testurl, base & "/general/index/page/2/tests/4" );
 
 		/* ssl test */
-		event.setisSES(true);
+		event.setisSES( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( linkto='general/index', ssl=true );
 		AssertEquals(testurl, basessl & "/general/index" );
+		
 		// SSL OFF
-		event.setsesBaseURL(basessl);
-		testurl = event.buildLink( linkto='general/index', ssl=false );
-		AssertEquals(testurl, base & "/general/index" );
+		event.setsesBaseURL( basessl );
+		testurl = event.buildLink( linkto='general/index', ssl=false, queryString="name=luis&cool=false" );
+		AssertEquals(testurl, base & "/general/index/name/luis/cool/false" );
 
 		/* translate */
-		event.setisSES(true);
+		event.setisSES( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( linkto='general.index', translate=false, ssl=false );
-		AssertEquals(testurl, base & "/general.index" );
+		AssertEquals( testurl, base & "/general.index" );
+
+		/* translate with query string */
+		event.setisSES( true );
+		event.setsesBaseURL( base );
+		testurl = event.buildLink( linkto='general.index', queryString="name=luis&cool=false", translate=false, ssl=false );
+		AssertEquals( testurl, base & "/general.index?name=luis&cool=false" );
 	}
 
 	function testRenderData(){
