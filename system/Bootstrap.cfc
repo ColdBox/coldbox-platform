@@ -210,13 +210,18 @@ component serializable="false" accessors="true"{
 					if( isStruct( renderData ) and not structisEmpty( renderData ) ){
 						renderedContent = cbController.getDataMarshaller().marshallData( argumentCollection=renderData );
 					}
-					// Check for Event Handler return results
-					else if( !isNull( refResults.results ) ){
+					// Return HTML from handler
+					else if( 
+						!isNull( refResults.results ) 
+						&&
+						isSimpleValue( refResults.results )
+					){
 						renderedContent = refResults.results;
 					}
 					// Render Layout/View pair via set variable to eliminate whitespace
 					else {
-						renderedContent = cbcontroller.getRenderer().renderLayout( module=event.getCurrentLayoutModule(), viewModule=event.getCurrentViewModule() );
+						renderedContent = cbcontroller.getRenderer()
+							.renderLayout( module=event.getCurrentLayoutModule(), viewModule=event.getCurrentViewModule() );
 					}
 
 					//****** PRE-RENDER EVENTS *******/
