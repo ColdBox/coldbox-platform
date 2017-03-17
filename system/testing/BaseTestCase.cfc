@@ -417,7 +417,11 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 						renderedContent = cbController.getDataMarshaller().marshallData(argumentCollection=renderData);
 					}
 					// If we have handler results save them in our context for assertions
-					else if ( !isNull( handlerResults ) ){
+					else if ( 
+						!isNull( handlerResults ) 
+						&&
+						isSimpleValue( handlerResults )
+					){
 						requestContext.setValue("cbox_handler_results", handlerResults);
 						renderedContent = handlerResults;
 					}

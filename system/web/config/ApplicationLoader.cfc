@@ -75,6 +75,9 @@ component accessors="true"{
 		oConfig.injectPropertyMixin( "controller",variables.controller);
 		oConfig.injectPropertyMixin( "logBoxConfig",variables.controller.getLogBox().getConfig());
 		oConfig.injectPropertyMixin( "appMapping",configStruct.appMapping);
+		oConfig.injectPropertyMixin( "getSystemSetting",instance.util.getSystemSetting );
+		oConfig.injectPropertyMixin( "getSystemProperty",instance.util.getSystemProperty );
+		oConfig.injectPropertyMixin( "getEnv",instance.util.getEnv );
 
 		//Configure it
 		oConfig.configure();

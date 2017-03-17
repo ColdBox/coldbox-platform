@@ -17,6 +17,14 @@ component output="false" singleton{
 	}
 
 	/**
+	* Returning `event` should work, but ignored by ColdBox, since the data for the rendering is inside of it.
+	*/
+	function returnEvent( event, rc, prc ){
+		return event.setView( "main/index" )
+			.setPrivateValue( "welcomeMessage", "I can return the event!" );
+	}
+
+	/**
 	* renderingRegions
 	*/
 	function renderingRegions( event, rc, prc ){

@@ -19,6 +19,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
+		reset();
 		super.beforeAll();
 		// do your own stuff here
 	}
@@ -44,6 +45,18 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			beforeEach(function( currentSpec ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
+			});
+
+			story( "I want to return the `event` object in any handler", function(){
+				given( "You return the `event` object", function(){
+					then( "ColdBox should just ignore it as a return marshalling object", function(){
+						var e = execute( event="rendering.returnEvent", renderResults=true );
+						expect(	e.getRenderedContent() )
+							.toInclude( "I can return the event!" );
+					});
+				
+				});
+			
 			});
 
 			story( "I want to listen to when the renderer is created", function(){
