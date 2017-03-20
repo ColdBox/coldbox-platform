@@ -157,7 +157,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 		structDelete( application, getColdboxAppKey() );
 		
 		if( !structIsEmpty( request ) ){
-			lock type="exclusive" scope="request"{
+			lock type="exclusive" scope="request" timeout=10{
 				if( !structIsEmpty( request ) ){
 					structClear( request );
 				}
