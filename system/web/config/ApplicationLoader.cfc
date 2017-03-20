@@ -72,12 +72,12 @@ component accessors="true"{
 		oConfig.getPropertyMixin 	= variables.util.getMixerUtil().getPropertyMixin;
 
 		//MixIn Variables
-		oConfig.injectPropertyMixin( "controller",variables.controller);
-		oConfig.injectPropertyMixin( "logBoxConfig",variables.controller.getLogBox().getConfig());
-		oConfig.injectPropertyMixin( "appMapping",configStruct.appMapping);
-		oConfig.injectPropertyMixin( "getSystemSetting",instance.util.getSystemSetting );
-		oConfig.injectPropertyMixin( "getSystemProperty",instance.util.getSystemProperty );
-		oConfig.injectPropertyMixin( "getEnv",instance.util.getEnv );
+		oConfig.injectPropertyMixin( "controller",			variables.controller );
+		oConfig.injectPropertyMixin( "logBoxConfig",		variables.controller.getLogBox().getConfig() );
+		oConfig.injectPropertyMixin( "appMapping",			configStruct.appMapping );
+		oConfig.injectPropertyMixin( "getSystemSetting",	variables.util.getSystemSetting );
+		oConfig.injectPropertyMixin( "getSystemProperty",	variables.util.getSystemProperty );
+		oConfig.injectPropertyMixin( "getEnv",				variables.util.getEnv );
 
 		//Configure it
 		oConfig.configure();
