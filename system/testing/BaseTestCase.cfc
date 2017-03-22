@@ -155,7 +155,15 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	*/
 	function reset( boolean clearMethods=false, decorator ){
 		structDelete( application, getColdboxAppKey() );
-		structClear( request );
+		
+		if( !structIsEmpty( request ) ){
+			lock type="exclusive" scope="request" timeout=10{
+				if( !structIsEmpty( request ) ){
+					structClear( request );
+				}
+			}
+		}
+
 		return this;
 	}
 

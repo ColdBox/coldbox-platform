@@ -372,7 +372,7 @@ component accessors="true"{
 		// Include?
 		if( len( trim( arguments.include ) ) ){
 			for(var x=1; x lte listLen( arguments.include ); x=x+1){
-				thisKey = listGetAt( arguments.include, x );
+				var thisKey = listGetAt( arguments.include, x );
 				// Check if key exists in RC
 				if( structKeyExists( rc, thisKey ) ){
 					put( thisKey, rc[ thisKey ] );
