@@ -32,8 +32,11 @@ component{
 			  class 			: 'org.gjt.mm.mysql.Driver',
 			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true',
 			  username 			: 'root'
+			  // Adobe Specific
+			  database 			: "coolblog",
+			  driver 			: "MySQL",
+			  port 				: "3306"
 		};
-	
 	}
 
     // ORM Settings
