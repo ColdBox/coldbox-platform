@@ -57,7 +57,12 @@ before_script:
 script:
   # Execute build via ANT
   - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml
-  # Spit out log just in case we need to debug
+
+after_failure:
+  - cd $TRAVIS_BUILD_DIR
+  # Get response from test server to see what went wrong
+  - curl http://localhost:8599/tests/runner.cfm?reporter=text
+  # Spit out our Commandbox log in case we need to debug
   - box server log name=$ENGINE
   - cat `box system-log`
 
