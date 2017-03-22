@@ -31,7 +31,7 @@ component{
 		this.datasources[ "coolblog" ] = {
 			  class 			: 'org.gjt.mm.mysql.Driver',
 			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true',
-			  username 			: 'root'
+			  username 			: 'root',
 			  // Adobe Specific
 			  database 			: "coolblog",
 			  driver 			: "MySQL",
