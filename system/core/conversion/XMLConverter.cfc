@@ -205,7 +205,7 @@ Modifications
 		// Content
 		for(key in target){
 			// Null Checks
-			if( isNull( target[key] ) ){
+			if( !structKeyExists( target, key ) || isNull( target[key] ) ){
 				target[key] = 'NULL';
 			}
 			// Translate Value

@@ -42,8 +42,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			it( "can handle allowed HTTP methods in action annotations", function(){
 				prepareMock( getRequestContext() ).$( "getHTTPMethod", "POST" );
 
-				var event = execute( event="main.actionAllowedMethod", renderResults=true )
-				//debug( event.getRenderedContent() );
+				var event = execute( event="main.actionAllowedMethod", renderResults=true );
 				expect(	event.getRenderedContent() ).toBe( "invalid http: main.actionAllowedMethod" );
 			});
 

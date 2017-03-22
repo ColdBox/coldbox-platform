@@ -51,13 +51,13 @@
 		test = {name="luis",age="11", testVal=javaCast("null","")};		
 		
 		results = xml.structToXML(test);
-		assertTrue( isXML(results) );
 		debug(results);
+		assertTrue( isXML(results) );
 		
 		test = [javaCast("null",""),1,3,test];
 		results = xml.toXML(test);
-		assertTrue( isXML(results) );
 		debug(results);
+		assertTrue( isXML(results) );
 	}
 	
 	function testToXML(){
