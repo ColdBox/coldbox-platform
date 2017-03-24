@@ -31,11 +31,10 @@ Description :
 		<cfargument name="definition" 	required="true"  hint="The injection dsl definition structure to process. Keys: name, dsl"/>
 		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
-			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
+			var DSLNamespace 		= listFirst( arguments.definition.dsl, ":" );
 
 			switch( DSLNamespace ){
-				case "ocm" 				: { return getOCMDSL(argumentCollection=arguments);}
-				case "coldbox" 			: { return getColdboxDSL(argumentCollection=arguments); }
+				case "coldbox" 			: { return getColdboxDSL( argumentCollection=arguments ); }
 			}
 		</cfscript>
     </cffunction>
@@ -127,10 +126,11 @@ Description :
 				}
 			}
 
-			// debug info
-			if( instance.log.canDebug() ){
-				instance.log.debug("getColdboxDSL() cannot find dependency using definition: #arguments.definition.toString()#");
-			}
+			// If we get here we have a problem.
+			throw( 
+				type 	= "ColdBoxDSL.InvalidDSL",
+				message = "The DSL provided was not valid: #arguments.definition.toString()#"
+			);
 		</cfscript>
 	</cffunction>
 

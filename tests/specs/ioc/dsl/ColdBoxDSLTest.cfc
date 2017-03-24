@@ -17,7 +17,6 @@
 	}
 
 	function testProcess(){
-
 		// Mock spies
 		builder
 			.$("getEntityServiceDSL",true)
@@ -26,6 +25,22 @@
 		def = {dsl="coldbox"};
 		builder.process(def);
 		assertTrue( builder.$once("getColdboxDSL") );
+	}
+
+	function testInvalidDSL(){
+		makePublic( builder, "getColdboxDSL" );
+		try{
+			c = builder.getColdBoxDSL( { name="coldbox", dsl="coldbox:foobar" } );
+			c = builder.getColdBoxDSL( { name="coldbox", dsl="coldbox:foobar:testss" } );
+			c = builder.getColdBoxDSL( { name="coldbox", dsl="coldbox:foobar:testss:invalid:invliad" } );
+
+			fail( "Invalid Throw Type for DSL" );
+
+		} catch( "ColdBoxDSL.InvalidDSL" e ){
+			// The right catch
+		} catch( any e ){
+			fail( "Invalid Throw Type for DSL" );
+		}
 	}
 
 	function testgetColdboxDSLStage1AndStage2(){
