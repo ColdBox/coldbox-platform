@@ -328,7 +328,7 @@ TODO: update dsl consistency, so it is faster.
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch( DSLNamespace ){
 				// ColdBox Context DSL
-				case "ocm" : case "coldbox" : {
+				case "coldbox" : {
 					refLocal.dependency = instance.coldboxDSL.process(argumentCollection=arguments); break;
 				}
 				// CacheBox Context DSL

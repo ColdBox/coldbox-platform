@@ -19,13 +19,9 @@
 	function testProcess(){
 
 		// Mock spies
-		builder.$("getOCMDSL",true)
+		builder
 			.$("getEntityServiceDSL",true)
 			.$("getColdboxDSL",true);
-
-		def = {dsl="ocm"};
-		builder.process(def);
-		assertTrue( builder.$once("getOCMDSL") );
 
 		def = {dsl="coldbox"};
 		builder.process(def);

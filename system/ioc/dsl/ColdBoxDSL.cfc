@@ -134,13 +134,4 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<!--- getOCMDSL --->
-	<cffunction name="getOCMDSL" access="private" returntype="any" hint="Get OCM dependencies" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			throw( "This DSL has been deprecated in favor of the 'cachebox' Namespace." );
-		</cfscript>
-	</cffunction>
-
 </cfcomponent>
