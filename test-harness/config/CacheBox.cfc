@@ -53,7 +53,7 @@
 			};
 		} else {
 			cachebox.caches.cfCache = {
-				provider = "coldbox.system.cache.providers.CFColdboxProvider"
+				provider = "coldbox.system.cache.providers.CFColdBoxProvider"
 			};
 		}
 	}
