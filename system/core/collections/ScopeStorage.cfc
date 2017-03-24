@@ -122,7 +122,7 @@ component{
 	 * Check if a scope is valid, else throws exception
 	 * @scope The CF Scope
 	 */
-	any function getScope( required scope ){
+	any function scopeCheck( required scope ){
 		if( NOT reFindNoCase( "^(#variables.SCOPES#)$", arguments.scope ) ){
 			throw(
 				type 	= "ScopeStorage.InvalidScope",
