@@ -11,6 +11,7 @@
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
 	this.entrypoint			= "conventionsTest";
+	this.modelNamespace 	= "MyConventionsTest";
 
 	function configure(){
 
@@ -27,12 +28,6 @@
 			modelsLocation = "system/model"
 		};
 
-		// Model Mappings
-		modelMappings = {
-			"Simple@conventionsTest" = {
-				path = "Simple"
-			}
-		};
 	}
 
 }

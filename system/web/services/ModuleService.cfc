@@ -445,17 +445,28 @@ component extends="coldbox.system.web.services.BaseService"{
 				interceptorName 	= "ModuleConfig:#arguments.moduleName#" 
 			);
 
-			// Register Models if it exists
+			// Register Models
 			if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
+				
 				// Add as a mapped directory with module name as the namespace with correct mapping path
 				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
+				var binder 		= wirebox.getBinder();
+
 				if( len( mConfig.modelNamespace ) ){
-					wirebox.getBinder().mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
+					binder.mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
 				} else {
 					// just register with no namespace
-					wirebox.getBinder().mapDirectory( packagePath=packagePath );
+					binder.mapDirectory( packagePath=packagePath );
 				}
-				wirebox.getBinder().processMappings();
+
+				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
+				if( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) ){
+					binder.map( [ "@#arguments.moduleName#", "@#mConfig.modelNamespace#" ] )
+						.to( packagePath & ".#arguments.moduleName#" );
+				}
+
+				// Process mapped data
+				binder.processMappings();
 			}
 
 			// Register Interceptors with Announcement service

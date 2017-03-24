@@ -118,6 +118,20 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			});
 		});
 
+		story( "Modules can support default model export", function(){
+			given( "A module with a model of the same name", function(){
+				then( "You will be able to get the model via @moduleName", function(){
+					var oModel = getInstance( "@conventionsTest" );
+					oModel.echo();
+				});
+			});
+			given( "A model namespace", function(){
+				then( "You will be able to get the model via @modelNamespace", function(){
+					var oModel = getInstance( "@MyConventionsTest" );
+					oModel.echo();
+				});
+			});
+		});
 	}
 
 }
