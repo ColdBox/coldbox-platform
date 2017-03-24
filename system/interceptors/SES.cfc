@@ -120,7 +120,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// Configure Context, Just in case
 		controller.getRequestService().getContext()
-			.setIsSES( true )
+			.setIsSES( variables.enabled )
 			.setSESBaseURL( variables.baseURL );
 	}
 
