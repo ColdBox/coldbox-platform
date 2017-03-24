@@ -73,7 +73,7 @@ component{
 			
 		switch( arguments.scope ){
 			case "session" : { 
-				return ( !isNull( session ) ? session : {} );
+				return ( isDefined( "session" ) ? session : {} );
 			}
 			case "application"  : return application;
 			case "server"  		: return server;
