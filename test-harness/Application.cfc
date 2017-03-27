@@ -31,18 +31,30 @@ component{
 	this.mappings[ "/cbtestharness" ] 	= COLDBOX_APP_ROOT_PATH;
 
 	// Datasource definitions For Standalone mode/travis mode.
+	DBConnectionString = 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&autoConfigureForColdFusion=false';
 	if( directoryExists( "/home/travis" ) ){
 		this.datasources[ "coolblog" ] = {
-			  class 			: 'org.gjt.mm.mysql.Driver',
-			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true',
-			  username 			: 'root'
+			// Lucee specific
+			class 				: 'org.gjt.mm.mysql.Driver',
+			connectionString	: DBConnectionString,
+			username 			: 'root',
+			// Adobe Specific
+			database 			: "coolblog",
+			driver 				: "MySQL",
+			URL 				: DBConnectionString,
+			port 				: "3306"
 		};
 	} else if( directoryExists( "/Users/lmajano" ) ){
-		this.datasources["coolblog"] = {
-			  class 			: 'org.gjt.mm.mysql.Driver', 
-			  connectionString 	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true', 
-			  username 			: 'root', 
-			  password 			: "encrypted:3031a52e56b7c2967e163cef97366ec50de07d115e97ceea"
+		this.datasources[ "coolblog" ] = {
+			class 				: 'org.gjt.mm.mysql.Driver', 
+			connectionString	: DBConnectionString,
+			username 			: 'root', 
+			password 			: "encrypted:3031a52e56b7c2967e163cef97366ec50de07d115e97ceea",
+			// Adobe Specific
+			database 			: "coolblog",
+			driver 				: "MySQL",
+			URL 				: DBConnectionString,
+			port 				: "3306"
 		};
 	}
 
@@ -50,11 +62,11 @@ component{
     this.ormEnabled 	  = true;
     this.datasource		  = "coolblog";
     this.ormSettings	  = {
-    	cfclocation = "/cbtestharness/models/entities",
-    	logSQL 		= false,
-    	flushAtRequestEnd = false,
-    	autoManageSession = false,
-    	eventHandling 	  =  false
+    	cfclocation 		= "/cbtestharness/models/entities",
+    	logSQL 				= false,
+    	flushAtRequestEnd 	= false,
+    	autoManageSession 	= false,
+    	eventHandling 	  	=  false
     };
 
 	// application start
