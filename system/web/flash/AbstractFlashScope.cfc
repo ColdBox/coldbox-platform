@@ -41,9 +41,9 @@ component accessors="true"{
 		variables.defaults   = arguments.defaults;
 
 		// Defaults checks, just in case
-		if( NOT structKeyExists( variables.defaults,"inflateToRC") ){ variables.defaults.inflateToRC = true; }
-		if( NOT structKeyExists( variables.defaults,"inflateToPRC") ){ variables.defaults.inflateToPRC = false; }
-		if( NOT structKeyExists( variables.defaults,"autoPurge") ){ variables.defaults.autoPurge = true; }
+		if( ! structKeyExists( variables.defaults,"inflateToRC") ){ variables.defaults.inflateToRC = true; }
+		if( ! structKeyExists( variables.defaults,"inflateToPRC") ){ variables.defaults.inflateToPRC = false; }
+		if( ! structKeyExists( variables.defaults,"autoPurge") ){ variables.defaults.autoPurge = true; }
 
 		// check for properties
 		if( structKeyExists( arguments.defaults, "properties" ) ){
@@ -98,9 +98,9 @@ component accessors="true"{
 			scopeKeys 		= listToArray( structKeyList( scope ) );
 			scopeKeysLen 	= arrayLen( scopeKeys );
 			// iterate over keys and purge
-			for( var x=1; x lte scopeKeysLen; x++){
+			for( var x=1; x <= scopeKeysLen; x++){
 				// check if purging and remove
-				if( structKeyExists( scope, scopeKeys[ x ]) AND scope[ scopeKeys[ x ] ].autoPurge ){
+				if( structKeyExists( scope, scopeKeys[ x ]) && scope[ scopeKeys[ x ] ].autoPurge ){
 					structDelete( scope, scopeKeys[ x ] );
 				}
 			}
@@ -125,12 +125,12 @@ component accessors="true"{
 		var scopeKeysLen = arrayLen( scopeKeys );
 
 		// Inflate only kept flash variables, other ones are marked for discard.
-		for(var x=1; x lte scopeKeysLen; x++){
+		for(var x=1; x <= scopeKeysLen; x++){
 			// check if key exists and inflating
-			if( structKeyExists( flash, scopeKeys[ x ] ) AND flash[ scopeKeys[ x ] ].keep ){
+			if( structKeyExists( flash, scopeKeys[ x ] ) && flash[ scopeKeys[ x ] ].keep ){
 				var thisKey = flash[ scopeKeys[ x ] ];
 				// Keep = true if autoPurge is false, because we need to keep it around.
-				if( NOT thisKey.autoPurge ){
+				if( ! thisKey.autoPurge ){
 					keep = true;
 				} else {
 					keep = false;
@@ -167,7 +167,7 @@ component accessors="true"{
 	* Get the flash temp request storage used throughout a request until flashed at the end of a request.
 	*/
 	struct function getScope(){
-		if( NOT structKeyExists( request, "cbox_flash_temp_storage" ) ){
+		if( ! structKeyExists( request, "cbox_flash_temp_storage" ) ){
 			request[ "cbox_flash_temp_storage" ] = structnew();
 		}
 
@@ -351,7 +351,6 @@ component accessors="true"{
 	*/
 	function persistRC( include="", exclude="", boolean saveNow=false ){
 		var rc 	= getController().getRequestService().getContext().getCollection();
-		var key = "";
 		var somethingToSave = false;
 
 		// Cleanup
@@ -362,7 +361,7 @@ component accessors="true"{
 		if( len( trim( arguments.exclude ) ) ){
 			for( var thisKey in rc ){
 				// Only persist keys that are not Excluded.
-				if( NOT listFindNoCase( arguments.exclude, thisKey ) ){
+				if( ! listFindNoCase( arguments.exclude, thisKey ) ){
 					put( thisKey, rc[ thisKey ] );
 					somethingToSave = true;
 				}
@@ -371,7 +370,7 @@ component accessors="true"{
 
 		// Include?
 		if( len( trim( arguments.include ) ) ){
-			for(var x=1; x lte listLen( arguments.include ); x=x+1){
+			for(var x=1; x <= listLen( arguments.include ); x++){
 				var thisKey = listGetAt( arguments.include, x );
 				// Check if key exists in RC
 				if( structKeyExists( rc, thisKey ) ){
@@ -382,7 +381,7 @@ component accessors="true"{
 		}
 
 		// Save Now?
-		if( arguments.saveNow AND somethingToSave ){ saveFlash(); }
+		if( arguments.saveNow && somethingToSave ){ saveFlash(); }
 
 		return this;
 	}
