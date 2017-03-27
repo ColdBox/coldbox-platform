@@ -12,9 +12,9 @@ env:
     #- ENGINE=adobe@11 COLDBOX_VERSION=5.0.0
     #- ENGINE=adobe@2016 COLDBOX_VERSION=5.0.0
 
-cache:
-  directories:
-  - $HOME/.CommandBox
+#cache:
+#  directories:
+#  - $HOME/.CommandBox
 
 branches:
   only:
