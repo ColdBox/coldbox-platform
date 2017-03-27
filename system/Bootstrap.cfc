@@ -489,7 +489,10 @@ component serializable="false" accessors="true"{
 		// Store exception in private context
 		event.setPrivateValue( "exception", oException );
 
-		//Run custom Exception handler if Found, else run default exception routines
+		// Set Exception Header
+		getPageContext().getResponse().setStatus( 500, "Internal Server Error" );
+
+		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ){
 			try{
 				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) );
