@@ -46,6 +46,17 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				setup();
 			});
 
+			story( "I want to render jsonp", function(){
+				given( "A jsonp type and `callback`", function(){
+					then( "it should render with the appropriate application/javascript type", function(){
+						var e = execute( event="rendering.jsonprotected", renderResults=true );
+						expect(	e.getRenderedContent() )
+							.toInclude( "callback" );
+						expect(	e.getRenderData().contentType ).toBe( "application/javascript" );
+					});
+				});
+			});
+
 			story( "I want to return the `event` object in any handler", function(){
 				given( "You return the `event` object", function(){
 					then( "ColdBox should just ignore it as a return marshalling object", function(){

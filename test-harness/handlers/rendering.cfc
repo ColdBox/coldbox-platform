@@ -17,6 +17,14 @@ component output="false" singleton{
 	}
 
 	/**
+	* jsonprotected
+	*/
+	function jsonprotected( event, rc, prc ){
+		prc.data = variables.data;
+		event.renderData( data=prc.data, type="jsonp", jsonCallback="callback" );
+	}
+
+	/**
 	* Returning `event` should work, but ignored by ColdBox, since the data for the rendering is inside of it.
 	*/
 	function returnEvent( event, rc, prc ){

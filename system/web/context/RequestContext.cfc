@@ -1019,48 +1019,63 @@ component serializable=false accessors="true"{
 		}
 
 		// Validate rendering type
-		if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type) ){
-			throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF","RequestContext.InvalidRenderTypeException");
+		if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ){
+			throw(
+				message = "Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF",
+				type 	= "RequestContext.InvalidRenderTypeException"
+			);
 		}
 
 		// Default Values for incoming variables
-		rd.type = arguments.type;
-		rd.data = arguments.data;
-		rd.encoding = arguments.encoding;
-		rd.contentType = "text/html";
-		rd.isBinary = arguments.isBinary;
+		rd.type 			= arguments.type;
+		rd.data 			= arguments.data;
+		rd.encoding 		= arguments.encoding;
+		rd.contentType 		= "text/html";
+		rd.isBinary 		= arguments.isBinary;
 
 		// HTTP status
-		rd.statusCode = arguments.statusCode;
-		rd.statusText = arguments.statusText;
+		rd.statusCode 		= arguments.statusCode;
+		rd.statusText 		= arguments.statusText;
 
 		// XML Properties
-		rd.xmlColumnList = arguments.xmlColumnList;
-		rd.xmluseCDATA = arguments.xmlUseCDATA;
+		rd.xmlColumnList 	= arguments.xmlColumnList;
+		rd.xmluseCDATA 		= arguments.xmlUseCDATA;
 		rd.xmlListDelimiter = arguments.xmlListDelimiter;
-		rd.xmlRootName = arguments.xmlRootName;
+		rd.xmlRootName 		= arguments.xmlRootName;
 
 		// JSON Properties
 		rd.jsonQueryFormat 	= arguments.jsonQueryFormat;
 		rd.jsonCallBack 	= arguments.jsonCallBack;
 
 		// PDF properties
-		rd.pdfArgs = arguments.pdfArgs;
+		rd.pdfArgs 			= arguments.pdfArgs;
 
 		// Automatic Content Types by marshalling type
 		switch( rd.type ){
-			case "JSON" : case "JSONP" : {
+			case "JSON" : {
 				rd.contenttype = 'application/json';
-				if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
+				if( arguments.jsonAsText ){
+					rd.contentType = "text/plain"; 
+				}
 				break;
 			}
-			case "JSONT" :{
+			case "JSONP" : {
+				rd.contentType = "application/javascript";
+				break;
+			}
+			case "JSONT" : {
 				rd.contentType = "text/plain";
 				rd.type = "JSON";
 				break;
 			}
-			case "XML" : case "WDDX" : { rd.contentType = "text/xml"; break; }
-			case "TEXT" : { rd.contentType = "text/plain"; break; }
+			case "XML" : case "WDDX" : { 
+				rd.contentType = "text/xml"; 
+				break; 
+			}
+			case "TEXT" : { 
+				rd.contentType = "text/plain"; 
+				break; 
+			}
 			case "PDF" : {
 				rd.contentType = "application/pdf";
 				rd.isBinary = true;
@@ -1069,15 +1084,17 @@ component serializable=false accessors="true"{
 		}
 
 		// If contenttype passed, then override it?
-		if( len(trim(arguments.contentType)) ){
+		if( len( trim( arguments.contentType ) ) ){
 			rd.contentType = arguments.contentType;
 		}
 
 		// HTTP Location?
-		if( len(arguments.location) ){ setHTTPHeader(name="location",value=arguments.location); }
+		if( len( arguments.location ) ){ 
+			setHTTPHeader( name="location", value=arguments.location ); 
+		}
 
 		// Save Rendering data privately.
-		setValue(name='cbox_renderdata',value=rd,private=true);
+		setPrivateValue( name='cbox_renderdata', value=rd );
 
 		return this;
 	}
@@ -1217,14 +1234,13 @@ component serializable=false accessors="true"{
 			//viewToRender = ( len( arguments.formatsView ) ? arguments.formatsView : replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" ) );
 			if( len( arguments.formatsView ) ){
 				viewToRender = arguments.formatsView;
-			}
-			else{
+			} else {
 				viewToRender = replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" );
 			}
 			// Rendering switch
 			switch( instance.context.format ){
 				case "json" : case "jsonp" : case "jsont" : case "xml" : case "text" : case "wddx" : {
-					arguments.type=instance.context.format;
+					arguments.type = instance.context.format;
 					return renderData( argumentCollection=arguments );
 				}
 				case "pdf" : {
@@ -1241,9 +1257,11 @@ component serializable=false accessors="true"{
 				}
 			}
 		} else {
-			throw( message="The incoming format #instance.context.format# is not a valid registered format",
-				   detail="Valid incoming formats are #arguments.formats.toString()#",
-				   type="RequestContext.InvalidFormat" );
+			throw(
+				message = "The incoming format #instance.context.format# is not a valid registered format",
+				detail 	= "Valid incoming formats are #arguments.formats.toString()#",
+				type 	= "RequestContext.InvalidFormat" 
+			);
 		}
 	}
 
