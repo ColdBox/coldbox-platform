@@ -36,15 +36,6 @@
         "runner":[
             {
                 "default":"http://localhost:8599/tests/runner.cfm"
-            },
-            {
-                "cf10":"http://cf10cboxdev.local/coldbox/tests/runner.cfm"
-            },
-            {
-                "cf11":"http://cf11cboxdev.local/coldbox/tests/runner.cfm"
-            },
-            {
-                "lucee":"http://luceecboxdev.local/coldbox/tests/runner.cfm"
             }
         ]
     },
@@ -55,6 +46,5 @@
         "testbox":"testbox"
     },
     "scripts":{
-        "onServerInstall" : "cp build/lib/lucee-server.xml '`server info property=serverHomeDirectory`/WEB-INF/lucee-server/context/lucee-server.xml'"
     }
 }
