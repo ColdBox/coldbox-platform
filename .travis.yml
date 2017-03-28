@@ -53,8 +53,8 @@ before_script:
   - mysql -u root < tests/resources/coolblog.sql
   # Ready for testing
   - box server start name=$ENGINE --debug
-  # Copy over server config for Lucee 4 only
-  - if [ $ENGINE = 'lucee@4.5' ]; then cp build/lib/lucee-server.xml `box server info property=serverHomeDirectory`/WEB-INF/lucee-server/context/lucee-server.xml; fi
+  # Copy over custom server configs
+  - cp build/lib/lucee-server.xml `box server info property=serverHomeDirectory`/WEB-INF/lucee-server/context/lucee-server.xml
 
 script:
   # Execute build via ANT
