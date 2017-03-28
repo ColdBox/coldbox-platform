@@ -28,4 +28,3 @@ tests/suites/loadtests/logs
 
 # Custom Settings
 test-harness/config/runtime.properties.cfm
-install/IDE Extras/CFBuilder Dictionary
