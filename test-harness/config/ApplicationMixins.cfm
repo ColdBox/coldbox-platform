@@ -1,6 +1,8 @@
 <cfscript>
-	// Load local env properties
-	loadRuntimeProperties();
+	// Load local env properties, unless running in Ortus Jenkins
+	if( !findNoCase( "/integration", getCurrentTemplatePath() ) ){
+		loadRuntimeProperties();
+	}
 
 	// Lucee 5 Cache Definition
 	this.cache.connections[ "default" ] = {
