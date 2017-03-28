@@ -12,10 +12,6 @@
 	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox/coldbox-platform" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/LOGBOX",
 	"shortDescription"	: "LogBox is an enterprise ColdFusion logging library designed to give you flexibility and scalability.",
-	"engines"			: [
-		{ "type" : "adobe", "version" : ">9.0.2" },
-		{ "type" : "lucee", "version" : ">4.5" }
-	],
 	"license"			: [ 
 		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" } 
 	],

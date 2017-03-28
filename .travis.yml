@@ -49,8 +49,8 @@ before_script:
   - mysql -u root < tests/resources/coolblog.sql
   # Ready for testing
   - box server start name=$ENGINE --debug
-  # Copy over custom server configs
-  - cp build/lib/lucee-server.xml `box server info property=serverHomeDirectory`/WEB-INF/lucee-server/context/lucee-server.xml
+  # Copy over custom web server config
+  - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
 
 script:
   # Execute build via ANT
@@ -65,19 +65,36 @@ after_failure:
   - cat `box system-log`
 
 deploy:
-  on:
-    branch: 
-      - master
-    condition: "$ENGINE = lucee@4.5"
-  skip_cleanup: true
-  provider: s3
-  #AWS Credentials need to be set in Travis
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_ACCESS_SECRET
-  bucket: "downloads.ortussolutions.com"
-  local-dir: artifacts
-  upload-dir: ortussolutions
-  acl: public_read
+  # Binary Deployments
+  - provider: s3
+    on:
+      branch: 
+        - master
+        - development
+      condition: "$ENGINE = lucee@4.5"
+    skip_cleanup: true
+    #AWS Credentials need to be set in Travis
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_ACCESS_SECRET
+    bucket: "downloads.ortussolutions.com"
+    local-dir: artifacts
+    upload-dir: ortussolutions
+    acl: public_read
+  # API Docs Deployment
+  - provider: s3
+    on:
+      branch: 
+        - master
+        - development
+      condition: "$ENGINE = lucee@4.5"
+    skip_cleanup: true
+    #AWS Credentials need to be set in Travis
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_ACCESS_SECRET
+    bucket: "apidocs.ortussolutions.com"
+    local-dir: build-coldbox/apidocs
+    upload-dir: /
+    acl: public_read
 
 after_deploy:
   # publish ColdBox
