@@ -1,4 +1,5 @@
 ﻿<cfsetting showDebugOutput="false">
+<cfsetting enablecfoutputonly="true">
 <!--- Executes all tests in the 'specs' folder with simple reporter by default --->
 <cfparam name="url.reporter" 		default="simple">
 <cfparam name="url.directory" 		default="tests.specs.integration">
