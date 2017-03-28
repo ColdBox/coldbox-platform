@@ -26,32 +26,11 @@ component{
 	// harness path
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
-	// Datasource definitions For Standalone mode/travis mode.
-	if( directoryExists( "/home/travis" ) ){
-		DBConnectionString = 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&autoConfigureForColdFusion=false';
-		this.datasources[ "coolblog" ] = {
-			// Lucee specific
-			class 				: 'org.gjt.mm.mysql.Driver',
-			connectionString	: DBConnectionString,
-			username 			: 'root',
-			// Adobe Specific
-			database 			: "coolblog",
-			driver 				: "MySQL",
-			URL 				: DBConnectionString,
-			port 				: "3306"
-		};
-	}
+	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
+	COLDBOX_APP_ROOT_PATH = this.mappings[ "/cbtestharness" ];
 
-    // ORM Settings
-    this.ormEnabled 	  = true;
-    this.datasource		  = "coolblog";
-    this.ormSettings	  = {
-    	cfclocation 		= "/cbtestharness/models/entities",
-    	logSQL 				= false,
-    	flushAtRequestEnd 	= false,
-    	autoManageSession 	= false,
-    	eventHandling 	  	=  false
-    };
+	// Core Application.cfc mixins - ORM Settings, etc
+	include "/test-harness/config/ApplicationMixins.cfm";
 
 	function onRequestStart( required targetPage ){
 
