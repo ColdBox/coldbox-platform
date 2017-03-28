@@ -41,14 +41,20 @@ component{
 	 * Get a value in a scope
 	 * @key The key
 	 * @scope The CF Scope
-	 * @default The default value
+	 * @defaultValue The default value
 	 */
-	function get( required key, required scope, default ){
+	function get( required key, required scope, defaultValue ){
+		// Do stupid ACF Hack due to choking on `default` argument.
+		if( structKeyExists( arguments, "default" ) ){
+			arguments.defaultValue = arguments.default;
+		}
+
 		if( exists( arguments.key, arguments.scope ) ){
 			return structfind( getscope( arguments.scope ), arguments.key );
-		} else if ( structKeyExists( arguments, "default" ) ){
-			return arguments.default;
+		} else if ( structKeyExists( arguments, "defaultValue" ) ){
+			return arguments.defaultValue;
 		}
+		
 		throw(
 			type 	= "ScopeStorage.KeyNotFound",
 			message = "The key #arguments.key# does not exist in the #arguments.scope# scope."	
