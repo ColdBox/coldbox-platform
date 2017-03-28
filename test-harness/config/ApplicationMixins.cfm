@@ -2,6 +2,17 @@
 	// Load local env properties
 	loadRuntimeProperties();
 
+	// Lucee 5 Cache Definitions
+	this.cache.connections[ "default" ] = {
+		  class: 'lucee.runtime.cache.ram.RamCache'
+		, storage: false
+		, custom: {
+			"timeToIdleSeconds":"0",
+			"timeToLiveSeconds":"0"
+		}
+		, default: 'object'
+	};
+
 	// ORM Settings For Testing
     this.ormEnabled 	  = true;
     this.datasource		  = "coolblog";
