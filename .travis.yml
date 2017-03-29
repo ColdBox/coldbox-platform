@@ -93,7 +93,6 @@ deploy:
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "apidocs.ortussolutions.com"
     local-dir: build-coldbox/apidocs
-    upload-dir: /
     acl: public_read
 
 after_deploy:
