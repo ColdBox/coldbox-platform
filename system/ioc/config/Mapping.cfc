@@ -80,7 +80,9 @@ Description :
 			};
 
 			// DI definition structure
-			DIDefinition = { name="", value=JavaCast( "null", "" ), dsl=JavaCast( "null", "" ), scope="variables", javaCast=JavaCast( "null", "" ), ref=JavaCast( "null", "" ), required=false, argName="", type="any" };
+			DIDefinition = { name="", value="", dsl="", scope="variables", javaCast="", ref="", required=false, argName="", type="any" };
+			// stop implementing NULL as Adobe-CF is not ready yet to deal with null
+			// DIDefinition = { name="", value=JavaCast( "null", "" ), dsl=JavaCast( "null", "" ), scope="variables", javaCast=JavaCast( "null", "" ), ref=JavaCast( "null", "" ), required=false, argName="", type="any" };
 
 			return this;
 		</cfscript>

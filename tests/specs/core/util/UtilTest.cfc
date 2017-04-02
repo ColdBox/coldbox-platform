@@ -56,10 +56,10 @@
 
 		util.$property( propertyName = "system", mock = systemMock );
 
-		var setting = util.getSystemSetting( "foo" )
+		var setting = util.getSystemSetting( "foo" );
 		assertEquals( setting, "bar" );
 
-		setting = util.getSystemSetting( "bar" )
+		setting = util.getSystemSetting( "bar" );
 		assertEquals( setting, "baz" );
 
 		var exceptionThrown = false;
@@ -83,7 +83,7 @@
 		systemMock.setProperty( "foo", "bar" );
 		util.$property( propertyName = "system", mock = systemMock );
 
-		var setting = util.getSystemProperty( "foo" )
+		var setting = util.getSystemProperty( "foo" );
 		assertEquals( setting, "bar" );
 
 		var exceptionThrown = false;
@@ -108,7 +108,7 @@
 		systemMock.$( "getEnv" ).$args( "bar" ).$results( javacast( "null", "" ) );
 		util.$property( propertyName = "system", mock = systemMock );
 
-		var setting = util.getEnv( "foo" )
+		var setting = util.getEnv( "foo" );
 		assertEquals( setting, "bar" );
 
 		var exceptionThrown = false;

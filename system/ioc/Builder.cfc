@@ -186,7 +186,7 @@ TODO: update dsl consistency, so it is faster.
 			// Loop Over Arguments
 			for(x = 1; x <= DIArgsLen; x++){
 				// do we have javacasting?
-				if( !isNull( DIArgs[x].javaCast ) ){
+				if( structKeyExists( DIArgs[x], "javaCast" ) ){
 					ArrayAppend(args, "javaCast(DIArgs[#x#].javaCast, DIArgs[#x#].value)");
 				}
 				else{
@@ -223,13 +223,13 @@ TODO: update dsl consistency, so it is faster.
 			for(x=1;x lte DIArgsLen; x=x+1){
 
 				// Is value set in mapping? If so, add it and continue
-				if( !isNull( DIArgs[x].value ) ){
+				if( structKeyExists(DIArgs[x], "value") ){
 					args[ DIArgs[x].name ] = DIArgs[x].value;
 					continue;
 				}
 
 				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
-				if( !isNull( DIArgs[x].dsl ) ){
+				if( structKeyExists(DIArgs[x], "dsl") ){
 					args[ DIArgs[x].name ] = buildDSLDependency( definition=DIArgs[x], targetID=thisMap.getName(), targetObject=arguments.targetObject );
 					continue;
 				}
