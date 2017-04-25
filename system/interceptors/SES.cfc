@@ -226,40 +226,41 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 */
 	SES function addModuleRoutes( required pattern, required module, boolean append=true ){
 		var mConfig 	 = variables.modules;
-		var x 			 = 1;
 		var args		 = structnew();
 
 		// Verify module exists and loaded
-		if( NOT structKeyExists(mConfig,arguments.module) ){
-			throw(message="Error loading module routes as the module requested '#arguments.module#' is not loaded.",
-				   detail="The loaded modules are: #structKeyList(mConfig)#",
-				   type="SES.InvalidModuleName");
+		if( NOT structKeyExists( mConfig, arguments.module ) ){
+			throw(
+				message	= "Error loading module routes as the module requested '#arguments.module#' is not loaded.",
+				detail	= "The loaded modules are: #structKeyList( mConfig )#",
+				type	= "SES.InvalidModuleName"
+			);
 		}
 
 		// Create the module routes container if it does not exist already
-		if( NOT structKeyExists(variables.moduleRoutingTable, arguments.module) ){
-			variables.moduleRoutingTable[ arguments.module ] = arraynew(1);
+		if( NOT structKeyExists( variables.moduleRoutingTable, arguments.module ) ){
+			variables.moduleRoutingTable[ arguments.module ] = [];
 		}
 
 		// Store the entry point for the module routes.
-		addRoute(pattern=arguments.pattern,moduleRouting=arguments.module,append=arguments.append);
+		addRoute( pattern=arguments.pattern, moduleRouting=arguments.module, append=arguments.append );
 
 		// Iterate through module routes and process them
-		for(x=1; x lte ArrayLen(mConfig[arguments.module].routes); x=x+1){
+		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].routes ); x=x+1 ){
 			// Verify if simple value, then treat it as an include
-			if( isSimpleValue( mConfig[arguments.module].routes[x] ) ){
+			if( isSimpleValue( mConfig[ arguments.module ].routes[ x ] ) ){
 				// prepare module pivot
 				variables.withModule = arguments.module;
 				// Include it via conventions using declared route
-				includeRoutes(location=mConfig[arguments.module].mapping & "/" & mConfig[arguments.module].routes[x]);
+				includeRoutes( location=mConfig[ arguments.module ].mapping & "/" & mConfig[ arguments.module ].routes[ x ] );
 				// Remove pivot
 				variables.withModule = "";
 			}
 			// else, normal routing
 			else{
-				args = mConfig[arguments.module].routes[x];
+				args = mConfig[ arguments.module ].routes[ x ];
 				args.module = arguments.module;
-				addRoute(argumentCollection=args);
+				addRoute( argumentCollection=args );
 			}
 		}
 
@@ -300,7 +301,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation Activate convention name value pair translations or not. Turned on by default
 	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
-	 * @module The module to add this route to"/>
+	 * @module The module to add this route to
 	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
 	 * @namespace The namespace to add this route to
 	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
@@ -402,6 +403,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
      * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
      * @except 			Exclude routes with an except list or array of actions, e.g. "show"
      * @restful 		If true, then we will only create API based routes. It wil not create a /new and /edit route.
+     * @module 			If passed, the module these resources will be attached to.
      */
     function resources(
         required resource,
@@ -409,7 +411,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
         parameterName="id",
         only=[],
         except=[],
-        boolean restful=false
+        boolean restful=false,
+        string module="",
     ){
         if ( ! isArray( arguments.only ) ) {
             arguments.only = listToArray( arguments.only );
@@ -436,7 +439,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		            addRoute(
 		            	pattern = "/#thisResource#/:#arguments.parameterName#/edit",
 		            	handler = arguments.handler,
-		            	action 	= actionSet
+		            	action 	= actionSet,
+		            	module 	= arguments.module
 		            );
 		        }
 			}
@@ -448,7 +452,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		            addRoute(
 		            	pattern	= "/#thisResource#/new",
 		            	handler	= arguments.handler,
-		            	action	= actionSet
+		            	action	= actionSet,
+		            	module 	= arguments.module
 		            );
 		        }
 		    }
@@ -463,7 +468,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	            addRoute(
 	            	pattern = "/#thisResource#/:#arguments.parameterName#",
 	            	handler = arguments.handler,
-	            	action 	= actionSet
+	            	action 	= actionSet,
+		            module 	= arguments.module
 	            );
 	        }
 	        // Index + Creation
@@ -472,7 +478,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	            addRoute(
 	            	pattern = "/#thisResource#",
 	            	handler = arguments.handler,
-	            	action 	= actionSet
+	            	action 	= actionSet,
+		            module 	= arguments.module
 	            );
 	        }
         }
@@ -490,14 +497,14 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
 	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
-	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
-	 * @module The module to add this route to"/>
-	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route."/>
-	 * @namespace The namespace to add this route to"/>
-	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route."/>
-	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl"/>
-	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array"/>
-	 * @response An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}"/>
+	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 * @module The module to add this route to
+	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
+	 * @namespace The namespace to add this route to
+	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
+	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
+	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @response An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}
 	 * @statusCode The HTTP status code to send to the browser response.
 	 * @statusText Explains the HTTP status code sent to the browser response.
 	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
