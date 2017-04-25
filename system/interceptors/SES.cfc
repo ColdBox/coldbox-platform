@@ -393,6 +393,54 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		return this;
 	}
 
+    /**
+     * Create all RESTful routes for a resource
+     * @name The name of the resource.
+     * @handler The handler for the route. Defaults to the resource name.
+     * @parameterName The name of the id/parameter for the resource. Defaults to id.
+     * @only Limit routes created with only
+     * @except Exclude routes with except
+     */
+    function addResource(
+        required name,
+        handler=arguments.name,
+        parameterName="id",
+        only=[],
+        except=[]
+    ){
+        if ( ! isArray( only ) ) {
+            only = listToArray(only);
+        }
+
+        if ( ! isArray( except ) ) {
+            except = listToArray(except);
+        }
+
+        var actionSet = {};
+
+        actionSet = filterRouteActions( {GET = "edit"}, only, except );
+        if ( ! structIsEmpty( actionSet ) ) {
+            addRoute(pattern="/#name#/:#parameterName#/edit",handler=handler,action=actionSet);
+        }
+
+        actionSet = filterRouteActions( {GET = "new"}, only, except );
+        if ( ! structIsEmpty( actionSet ) ) {
+            addRoute(pattern="/#name#/new",handler=handler,action=actionSet);
+        }
+
+        actionSet = filterRouteActions( { PUT = "update", PATCH = "update", DELETE = "delete", GET = "show" }, only, except );
+        if ( ! structIsEmpty( actionSet ) ) {
+            addRoute(pattern="/#name#/:#parameterName#",handler=handler,action=actionSet);
+        }
+
+        actionSet = filterRouteActions( {GET = "index", POST = "create"}, only, except );
+        if ( ! structIsEmpty( actionSet ) ) {
+            addRoute(pattern="/#name#",handler=handler,action=actionSet);
+        }
+
+        return this;
+    }
+
 	/**
 	 * Adds a route to dispatch and returns itself.
 	 * @pattern  The pattern to match against the URL.
@@ -1347,5 +1395,41 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	private function getUtil(){
 		return new coldbox.system.core.util.Util();
 	}
+
+
+    /**
+     * Get the correct route actions based on only and except
+     * @initial The initial set of route actions
+     * @only Limit actions with only
+     * @except Exclude actions with except
+     */
+    private function filterRouteActions( required struct initial, array only = [], array except = [] ) {
+        var actionSet = initial;
+
+        if ( structKeyExists( arguments, "only" ) && ! isNull( arguments.only ) && ! arrayIsEmpty( arguments.only ) ) {
+            actionSet = {};
+            for ( var httpVerb in initial ) {
+                var methodName = initial[ httpVerb ];
+                for ( var onlyAction in only ) {
+                    if ( compareNoCase( methodName, onlyAction ) == 0 ) {
+                        structInsert( actionSet, httpVerb, onlyAction );
+                    }
+                }
+            }
+        }
+
+        if ( structKeyExists( arguments, "except" ) && ! isNull( arguments.except ) && ! arrayIsEmpty( arguments.except ) ) {
+            for ( var httpVerb in initial ) {
+                var methodName = initial[ httpVerb ];
+                for ( var exceptAction in except ) {
+                    if ( compareNoCase( methodName, exceptAction ) == 0 ) {
+                        structDelete( actionSet, httpVerb );
+                    }
+                }
+            }   
+        }
+
+        return actionSet;
+    }
 
 }
