@@ -13,6 +13,31 @@
                 ses.$("addRoute");
             } );
 
+            it( "can add routes with restful flags for API resources", function(){
+                ses.resources( resource="photos", restful=true );
+
+                var cl = ses.$callLog().addRoute;
+
+                expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times, but it was called: #cl.len()#" );
+
+                expect( cl[ 1 ] ).toBe( 
+                    { 
+                        pattern = "/photos/:id", 
+                        handler = "photos", 
+                        action = { GET = "show", PUT = "update", PATCH = "update", POST = "update", DELETE = "delete" } 
+                    }, 
+                    "The route did not match.  Remember that order matters.  Add the most specific routes first." 
+                );
+                expect( cl[ 2 ] ).toBe( 
+                    { 
+                        pattern = "/photos", 
+                        handler = "photos", 
+                        action = { GET = "index", POST = "create" } 
+                    }, 
+                    "The route did not match.  Remember that order matters.  Add the most specific routes first." 
+                );
+            });
+
             it( "can add RESTFul routes as a string list", function(){
                 ses.resources( "photos,users" );
 

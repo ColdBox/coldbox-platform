@@ -401,13 +401,15 @@ component extends="coldbox.system.Interceptor" accessors="true"{
      * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
      * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
      * @except 			Exclude routes with an except list or array of actions, e.g. "show"
+     * @restful 		If true, then we will only create API based routes. It wil not create a /new and /edit route.
      */
     function resources(
         required resource,
         handler=arguments.resource,
         parameterName="id",
         only=[],
-        except=[]
+        except=[],
+        boolean restful=false
     ){
         if ( ! isArray( arguments.only ) ) {
             arguments.only = listToArray( arguments.only );
@@ -426,24 +428,31 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
         // Register all resources
         for( var thisResource in arguments.resource ){
-        	// Edit Route
-	        actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
-	        if ( ! structIsEmpty( actionSet ) ) {
-	            addRoute(
-	            	pattern = "/#thisResource#/:#arguments.parameterName#/edit",
-	            	handler = arguments.handler,
-	            	action 	= actionSet
-	            );
-	        }
-	        // New Route
-	        actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
-	        if ( ! structIsEmpty( actionSet ) ) {
-	            addRoute(
-	            	pattern	= "/#thisResource#/new",
-	            	handler	= arguments.handler,
-	            	action	= actionSet
-	            );
-	        }
+        	
+        	// Edit Route, only if NON Restful
+	        if( !arguments.restful ){
+	        	actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
+		        if ( ! structIsEmpty( actionSet ) ) {
+		            addRoute(
+		            	pattern = "/#thisResource#/:#arguments.parameterName#/edit",
+		            	handler = arguments.handler,
+		            	action 	= actionSet
+		            );
+		        }
+			}
+
+	        // New Route, only if NON Restful
+	        if( !arguments.restful ){
+		        actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
+		        if ( ! structIsEmpty( actionSet ) ) {
+		            addRoute(
+		            	pattern	= "/#thisResource#/new",
+		            	handler	= arguments.handler,
+		            	action	= actionSet
+		            );
+		        }
+		    }
+
 	        // update, delete and show routes
 	        actionSet = filterRouteActions( 
 	        	{ PUT = "update", PATCH = "update", POST = "update", DELETE = "delete", GET = "show" }, 
