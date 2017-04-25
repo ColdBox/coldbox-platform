@@ -394,48 +394,78 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	}
 
     /**
-     * Create all RESTful routes for a resource
-     * @name The name of the resource.
-     * @handler The handler for the route. Defaults to the resource name.
-     * @parameterName The name of the id/parameter for the resource. Defaults to id.
-     * @only Limit routes created with only
-     * @except Exclude routes with except
+     * Create all RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
+     * By convention, the name of the resource maps to the name of the event handler.
+     * @resource 		The name of the resource, a list of resources or an array of resources
+     * @handler 		The handler for the route. Defaults to the resource name.
+     * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
+     * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
+     * @except 			Exclude routes with an except list or array of actions, e.g. "show"
      */
-    function addResource(
-        required name,
-        handler=arguments.name,
+    function resources(
+        required resource,
+        handler=arguments.resource,
         parameterName="id",
         only=[],
         except=[]
     ){
-        if ( ! isArray( only ) ) {
-            only = listToArray(only);
+        if ( ! isArray( arguments.only ) ) {
+            arguments.only = listToArray( arguments.only );
         }
 
-        if ( ! isArray( except ) ) {
-            except = listToArray(except);
+        if ( ! isArray( arguments.except ) ) {
+            arguments.except = listToArray( arguments.except );
+        }
+
+        // Inflate incoming resource if simple
+        if( isSimpleValue( arguments.resource ) ){
+        	arguments.resource = listToArray( arguments.resource );
         }
 
         var actionSet = {};
 
-        actionSet = filterRouteActions( {GET = "edit"}, only, except );
-        if ( ! structIsEmpty( actionSet ) ) {
-            addRoute(pattern="/#name#/:#parameterName#/edit",handler=handler,action=actionSet);
-        }
-
-        actionSet = filterRouteActions( {GET = "new"}, only, except );
-        if ( ! structIsEmpty( actionSet ) ) {
-            addRoute(pattern="/#name#/new",handler=handler,action=actionSet);
-        }
-
-        actionSet = filterRouteActions( { PUT = "update", PATCH = "update", DELETE = "delete", GET = "show" }, only, except );
-        if ( ! structIsEmpty( actionSet ) ) {
-            addRoute(pattern="/#name#/:#parameterName#",handler=handler,action=actionSet);
-        }
-
-        actionSet = filterRouteActions( {GET = "index", POST = "create"}, only, except );
-        if ( ! structIsEmpty( actionSet ) ) {
-            addRoute(pattern="/#name#",handler=handler,action=actionSet);
+        // Register all resources
+        for( var thisResource in arguments.resource ){
+        	// Edit Route
+	        actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
+	        if ( ! structIsEmpty( actionSet ) ) {
+	            addRoute(
+	            	pattern = "/#thisResource#/:#arguments.parameterName#/edit",
+	            	handler = arguments.handler,
+	            	action 	= actionSet
+	            );
+	        }
+	        // New Route
+	        actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
+	        if ( ! structIsEmpty( actionSet ) ) {
+	            addRoute(
+	            	pattern	= "/#thisResource#/new",
+	            	handler	= arguments.handler,
+	            	action	= actionSet
+	            );
+	        }
+	        // update, delete and show routes
+	        actionSet = filterRouteActions( 
+	        	{ PUT = "update", PATCH = "update", POST = "update", DELETE = "delete", GET = "show" }, 
+	        	arguments.only, 
+	        	arguments.except 
+	        );
+	        if ( ! structIsEmpty( actionSet ) ) {
+	            addRoute(
+	            	pattern = "/#thisResource#/:#arguments.parameterName#",
+	            	handler = arguments.handler,
+	            	action 	= actionSet
+	            );
+	        }
+	        // Index + Creation
+	        actionSet = filterRouteActions( { GET = "index", POST = "create" }, arguments.only, arguments.except );
+	        if ( ! structIsEmpty( actionSet ) ) {
+	            addRoute(
+	            	pattern = "/#thisResource#",
+	            	handler = arguments.handler,
+	            	action 	= actionSet
+	            );
+	        }
         }
 
         return this;
@@ -1398,32 +1428,32 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 
     /**
-     * Get the correct route actions based on only and except
+     * Get the correct route actions based on only and except lists
      * @initial The initial set of route actions
-     * @only Limit actions with only
-     * @except Exclude actions with except
+     * @only 	Limit actions with only
+     * @except 	Exclude actions with except
      */
-    private function filterRouteActions( required struct initial, array only = [], array except = [] ) {
-        var actionSet = initial;
+    private struct function filterRouteActions( required struct initial, array only = [], array except = [] ) {
+        var actionSet = arguments.initial;
 
         if ( structKeyExists( arguments, "only" ) && ! isNull( arguments.only ) && ! arrayIsEmpty( arguments.only ) ) {
             actionSet = {};
-            for ( var httpVerb in initial ) {
-                var methodName = initial[ httpVerb ];
-                for ( var onlyAction in only ) {
+            for( var HTTPVerb in arguments.initial ){
+                var methodName = arguments.initial[ HTTPVerb ];
+                for( var onlyAction in arguments.only ){
                     if ( compareNoCase( methodName, onlyAction ) == 0 ) {
-                        structInsert( actionSet, httpVerb, onlyAction );
+                        structInsert( actionSet, HTTPVerb, onlyAction );
                     }
                 }
             }
         }
 
         if ( structKeyExists( arguments, "except" ) && ! isNull( arguments.except ) && ! arrayIsEmpty( arguments.except ) ) {
-            for ( var httpVerb in initial ) {
-                var methodName = initial[ httpVerb ];
-                for ( var exceptAction in except ) {
+            for( var HTTPVerb in arguments.initial ){
+                var methodName = arguments.initial[ HTTPVerb ];
+                for( var exceptAction in arguments.except ){
                     if ( compareNoCase( methodName, exceptAction ) == 0 ) {
-                        structDelete( actionSet, httpVerb );
+                        structDelete( actionSet, HTTPVerb );
                     }
                 }
             }   
