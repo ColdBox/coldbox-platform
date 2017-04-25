@@ -404,6 +404,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
      * @except 			Exclude routes with an except list or array of actions, e.g. "show"
      * @restful 		If true, then we will only create API based routes. It wil not create a /new and /edit route.
      * @module 			If passed, the module these resources will be attached to.
+     * @namespace 		If passed, the namespace these resources will be attached to.
      */
     function resources(
         required resource,
@@ -413,6 +414,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
         except=[],
         boolean restful=false,
         string module="",
+        string namespace=""
     ){
         if ( ! isArray( arguments.only ) ) {
             arguments.only = listToArray( arguments.only );
@@ -437,10 +439,11 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	        	actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
 		        if ( ! structIsEmpty( actionSet ) ) {
 		            addRoute(
-		            	pattern = "/#thisResource#/:#arguments.parameterName#/edit",
-		            	handler = arguments.handler,
-		            	action 	= actionSet,
-		            	module 	= arguments.module
+		            	pattern		= "/#thisResource#/:#arguments.parameterName#/edit",
+		            	handler		= arguments.handler,
+		            	action 		= actionSet,
+		            	module 		= arguments.module,
+		            	namespace	= arguments.namespace
 		            );
 		        }
 			}
@@ -450,10 +453,11 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		        actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
 		        if ( ! structIsEmpty( actionSet ) ) {
 		            addRoute(
-		            	pattern	= "/#thisResource#/new",
-		            	handler	= arguments.handler,
-		            	action	= actionSet,
-		            	module 	= arguments.module
+		            	pattern		= "/#thisResource#/new",
+		            	handler		= arguments.handler,
+		            	action		= actionSet,
+		            	module 		= arguments.module,
+		            	namespace	= arguments.namespace
 		            );
 		        }
 		    }
@@ -466,20 +470,22 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	        );
 	        if ( ! structIsEmpty( actionSet ) ) {
 	            addRoute(
-	            	pattern = "/#thisResource#/:#arguments.parameterName#",
-	            	handler = arguments.handler,
-	            	action 	= actionSet,
-		            module 	= arguments.module
+	            	pattern		= "/#thisResource#/:#arguments.parameterName#",
+	            	handler		= arguments.handler,
+	            	action 		= actionSet,
+		            module 		= arguments.module,
+		            namespace	= arguments.namespace
 	            );
 	        }
 	        // Index + Creation
 	        actionSet = filterRouteActions( { GET = "index", POST = "create" }, arguments.only, arguments.except );
 	        if ( ! structIsEmpty( actionSet ) ) {
 	            addRoute(
-	            	pattern = "/#thisResource#",
-	            	handler = arguments.handler,
-	            	action 	= actionSet,
-		            module 	= arguments.module
+	            	pattern		= "/#thisResource#",
+	            	handler		= arguments.handler,
+	            	action 		= actionSet,
+		            module 		= arguments.module,
+		            namespace	= arguments.namespace
 	            );
 	        }
         }
