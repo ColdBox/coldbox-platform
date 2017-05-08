@@ -986,20 +986,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				}
 				// remove it from the string and return string for continued parsing.
 				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
-			} else {
-				// log invalid extension
-				if( log.canWarn() ){
-					log.warn( "Invalid Extension Detected: #extension# detected but it is not in the valid extension list: #variables.validExtensions#" );
-				}
-				// throw exception if enabled, else just continue
-				if( variables.throwOnInvalidExtension ){
-					getUtil().throwInvalidHTTP(
-						className 	= "SES",
-						detail 		= "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.validExtensions#",
-						statusText 	= "Invalid Requested Format Extension: #extension#",
-						statusCode 	= "406"
-					);
-				}
+			} else if( variables.throwOnInvalidExtension ){
+				getUtil().throwInvalidHTTP(
+					className 	= "SES",
+					detail 		= "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.validExtensions#",
+					statusText 	= "Invalid Requested Format Extension: #extension#",
+					statusCode 	= "406"
+				);
 			}
 		}
 		// check accepts headers for the best match
