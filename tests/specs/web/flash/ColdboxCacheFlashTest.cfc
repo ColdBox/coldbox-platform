@@ -5,7 +5,7 @@
 		describe( "ColdBox Cache Flash", function(){
 
 			beforeEach( function() {
-				setup();
+				super.setup();
 				flash = model;
 
 				// mocks

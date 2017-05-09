@@ -40,11 +40,11 @@ Properties
 			// Eviction Policy
 			instance.evictionPolicy = "";
 			// Element Cleaner Helper
-			instance.elementCleaner		= createObject("component","coldbox.system.cache.util.ElementCleaner").init(this);
+			instance.elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this);
 			// Utilities
 			instance.utility			= createObject("component","coldbox.system.core.util.Util");
 			// UUID Helper
-			instance.uuidHelper			= createObject("java", "java.util.UUID");
+			instance.uuidHelper			= createobject("java", "java.util.UUID");
 
 			// CacheBox Provider Property Defaults
 			instance.DEFAULTS = {
@@ -100,15 +100,15 @@ Properties
 			validateConfiguration();
 
 			// Prepare Statistics
-			instance.stats = createObject("component","coldbox.system.cache.util.CacheStats").init(this);
+			instance.stats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
 
 			// Setup the eviction Policy to use
 			evictionPolicy 			= locateEvictionPolicy( cacheConfig.evictionPolicy );
-			instance.evictionPolicy = createObject("component", evictionPolicy).init(this);
+			instance.evictionPolicy = CreateObject("component", evictionPolicy).init(this);
 
 			// Create the object store the configuration mandated
 			objectStore 			= locateObjectStore( cacheConfig.objectStore );
-			instance.objectStore 	= createObject("component", objectStore).init(this);
+			instance.objectStore 	= CreateObject("component", objectStore).init(this);
 
 			// Enable cache
 			instance.enabled = true;

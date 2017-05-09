@@ -1014,14 +1014,14 @@ component serializable=false accessors="true"{
 		var rd = structnew();
 
 		// With Formats?
-		if( isArray( arguments.formats ) || len( arguments.formats ) ){
+		if( isArray( arguments.formats ) OR len( arguments.formats ) ){
 			return renderWithFormats( argumentCollection=arguments );
 		}
 
 		// Validate rendering type
-		if( ! reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ){
+		if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ){
 			throw(
-				message = "Invalid rendering type , The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF",
+				message = "Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF",
 				type 	= "RequestContext.InvalidRenderTypeException"
 			);
 		}

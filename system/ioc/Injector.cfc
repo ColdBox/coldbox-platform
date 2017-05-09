@@ -607,7 +607,7 @@ Description :
 				// Init the lookup structure
 				refLocal = {};
 				// Check if direct value has been placed.
-				if( structKeyExists(arguments.DIData[x], "value" ) ){
+				if( !isNull( arguments.DIData[x].value ) ){
 					refLocal.dependency = arguments.DIData[x].value;
 				}
 				// else check if dsl is used?

@@ -124,22 +124,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			.setSESBaseURL( variables.baseURL );
 	}
 
-	// CF-11 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
-	function setBaseURL(string baseURL){
-		variables.baseURL = arguments.baseURL;
-	}
-
-	function getBaseURL(){
-		return variables.baseURL;
-	}
-
-	function setUniqueURLS(boolean uniqueURLS){
-		variables.uniqueURLS = arguments.uniqueURLS;
-	}
-
-	function getUniqueURLS(){
-		return variables.uniqueURLS;
-	}
 
 	/**
 	 * This is the route dispatch
@@ -404,7 +388,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			include arguments.location;
 		}
 		catch(Any e){
-			throw(message="Error importing routes configuration file: #e.message# #e.detail#",detail=e.tagContext.toString(),type="SES.IncludeRoutingConfig");
+			throw("Error importing routes configuration file: #e.message# #e.detail#",e.tagContext.toString(),"SES.IncludeRoutingConfig");
 		}
 		return this;
 	}
