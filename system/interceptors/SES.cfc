@@ -226,40 +226,41 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 */
 	SES function addModuleRoutes( required pattern, required module, boolean append=true ){
 		var mConfig 	 = variables.modules;
-		var x 			 = 1;
 		var args		 = structnew();
 
 		// Verify module exists and loaded
-		if( NOT structKeyExists(mConfig,arguments.module) ){
-			throw(message="Error loading module routes as the module requested '#arguments.module#' is not loaded.",
-				   detail="The loaded modules are: #structKeyList(mConfig)#",
-				   type="SES.InvalidModuleName");
+		if( NOT structKeyExists( mConfig, arguments.module ) ){
+			throw(
+				message	= "Error loading module routes as the module requested '#arguments.module#' is not loaded.",
+				detail	= "The loaded modules are: #structKeyList( mConfig )#",
+				type	= "SES.InvalidModuleName"
+			);
 		}
 
 		// Create the module routes container if it does not exist already
-		if( NOT structKeyExists(variables.moduleRoutingTable, arguments.module) ){
-			variables.moduleRoutingTable[ arguments.module ] = arraynew(1);
+		if( NOT structKeyExists( variables.moduleRoutingTable, arguments.module ) ){
+			variables.moduleRoutingTable[ arguments.module ] = [];
 		}
 
 		// Store the entry point for the module routes.
-		addRoute(pattern=arguments.pattern,moduleRouting=arguments.module,append=arguments.append);
+		addRoute( pattern=arguments.pattern, moduleRouting=arguments.module, append=arguments.append );
 
 		// Iterate through module routes and process them
-		for(x=1; x lte ArrayLen(mConfig[arguments.module].routes); x=x+1){
+		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].routes ); x=x+1 ){
 			// Verify if simple value, then treat it as an include
-			if( isSimpleValue( mConfig[arguments.module].routes[x] ) ){
+			if( isSimpleValue( mConfig[ arguments.module ].routes[ x ] ) ){
 				// prepare module pivot
 				variables.withModule = arguments.module;
 				// Include it via conventions using declared route
-				includeRoutes(location=mConfig[arguments.module].mapping & "/" & mConfig[arguments.module].routes[x]);
+				includeRoutes( location=mConfig[ arguments.module ].mapping & "/" & mConfig[ arguments.module ].routes[ x ] );
 				// Remove pivot
 				variables.withModule = "";
 			}
 			// else, normal routing
 			else{
-				args = mConfig[arguments.module].routes[x];
+				args = mConfig[ arguments.module ].routes[ x ];
 				args.module = arguments.module;
-				addRoute(argumentCollection=args);
+				addRoute( argumentCollection=args );
 			}
 		}
 
@@ -300,7 +301,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation Activate convention name value pair translations or not. Turned on by default
 	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
-	 * @module The module to add this route to"/>
+	 * @module The module to add this route to
 	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
 	 * @namespace The namespace to add this route to
 	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
@@ -393,6 +394,105 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		return this;
 	}
 
+    /**
+     * Create all RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
+     * By convention, the name of the resource maps to the name of the event handler.
+     * @resource 		The name of the resource, a list of resources or an array of resources
+     * @handler 		The handler for the route. Defaults to the resource name.
+     * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
+     * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
+     * @except 			Exclude routes with an except list or array of actions, e.g. "show"
+     * @restful 		If true, then we will only create API based routes. It wil not create a /new and /edit route.
+     * @module 			If passed, the module these resources will be attached to.
+     * @namespace 		If passed, the namespace these resources will be attached to.
+     */
+    function resources(
+        required resource,
+        handler=arguments.resource,
+        parameterName="id",
+        only=[],
+        except=[],
+        boolean restful=false,
+        string module="",
+        string namespace=""
+    ){
+        if ( ! isArray( arguments.only ) ) {
+            arguments.only = listToArray( arguments.only );
+        }
+
+        if ( ! isArray( arguments.except ) ) {
+            arguments.except = listToArray( arguments.except );
+        }
+
+        // Inflate incoming resource if simple
+        if( isSimpleValue( arguments.resource ) ){
+        	arguments.resource = listToArray( arguments.resource );
+        }
+
+        var actionSet = {};
+
+        // Register all resources
+        for( var thisResource in arguments.resource ){
+        	
+        	// Edit Route, only if NON Restful
+	        if( !arguments.restful ){
+	        	actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
+		        if ( ! structIsEmpty( actionSet ) ) {
+		            addRoute(
+		            	pattern		= "/#thisResource#/:#arguments.parameterName#/edit",
+		            	handler		= arguments.handler,
+		            	action 		= actionSet,
+		            	module 		= arguments.module,
+		            	namespace	= arguments.namespace
+		            );
+		        }
+			}
+
+	        // New Route, only if NON Restful
+	        if( !arguments.restful ){
+		        actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
+		        if ( ! structIsEmpty( actionSet ) ) {
+		            addRoute(
+		            	pattern		= "/#thisResource#/new",
+		            	handler		= arguments.handler,
+		            	action		= actionSet,
+		            	module 		= arguments.module,
+		            	namespace	= arguments.namespace
+		            );
+		        }
+		    }
+
+	        // update, delete and show routes
+	        actionSet = filterRouteActions( 
+	        	{ PUT = "update", PATCH = "update", POST = "update", DELETE = "delete", GET = "show" }, 
+	        	arguments.only, 
+	        	arguments.except 
+	        );
+	        if ( ! structIsEmpty( actionSet ) ) {
+	            addRoute(
+	            	pattern		= "/#thisResource#/:#arguments.parameterName#",
+	            	handler		= arguments.handler,
+	            	action 		= actionSet,
+		            module 		= arguments.module,
+		            namespace	= arguments.namespace
+	            );
+	        }
+	        // Index + Creation
+	        actionSet = filterRouteActions( { GET = "index", POST = "create" }, arguments.only, arguments.except );
+	        if ( ! structIsEmpty( actionSet ) ) {
+	            addRoute(
+	            	pattern		= "/#thisResource#",
+	            	handler		= arguments.handler,
+	            	action 		= actionSet,
+		            module 		= arguments.module,
+		            namespace	= arguments.namespace
+	            );
+	        }
+        }
+
+        return this;
+    }
+
 	/**
 	 * Adds a route to dispatch and returns itself.
 	 * @pattern  The pattern to match against the URL.
@@ -403,14 +503,14 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
 	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
-	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
-	 * @module The module to add this route to"/>
-	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route."/>
-	 * @namespace The namespace to add this route to"/>
-	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route."/>
-	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl"/>
-	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array"/>
-	 * @response An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}"/>
+	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 * @module The module to add this route to
+	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
+	 * @namespace The namespace to add this route to
+	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
+	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
+	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @response An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}
 	 * @statusCode The HTTP status code to send to the browser response.
 	 * @statusText Explains the HTTP status code sent to the browser response.
 	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
@@ -886,20 +986,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				}
 				// remove it from the string and return string for continued parsing.
 				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
-			} else {
-				// log invalid extension
-				if( log.canWarn() ){
-					log.warn( "Invalid Extension Detected: #extension# detected but it is not in the valid extension list: #variables.validExtensions#" );
-				}
-				// throw exception if enabled, else just continue
-				if( variables.throwOnInvalidExtension ){
-					getUtil().throwInvalidHTTP(
-						className 	= "SES",
-						detail 		= "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.validExtensions#",
-						statusText 	= "Invalid Requested Format Extension: #extension#",
-						statusCode 	= "406"
-					);
-				}
+			} else if( variables.throwOnInvalidExtension ){
+				getUtil().throwInvalidHTTP(
+					className 	= "SES",
+					detail 		= "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.validExtensions#",
+					statusText 	= "Invalid Requested Format Extension: #extension#",
+					statusCode 	= "406"
+				);
 			}
 		}
 		// check accepts headers for the best match
@@ -1347,5 +1440,41 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	private function getUtil(){
 		return new coldbox.system.core.util.Util();
 	}
+
+
+    /**
+     * Get the correct route actions based on only and except lists
+     * @initial The initial set of route actions
+     * @only 	Limit actions with only
+     * @except 	Exclude actions with except
+     */
+    private struct function filterRouteActions( required struct initial, array only = [], array except = [] ) {
+        var actionSet = arguments.initial;
+
+        if ( structKeyExists( arguments, "only" ) && ! isNull( arguments.only ) && ! arrayIsEmpty( arguments.only ) ) {
+            actionSet = {};
+            for( var HTTPVerb in arguments.initial ){
+                var methodName = arguments.initial[ HTTPVerb ];
+                for( var onlyAction in arguments.only ){
+                    if ( compareNoCase( methodName, onlyAction ) == 0 ) {
+                        structInsert( actionSet, HTTPVerb, onlyAction );
+                    }
+                }
+            }
+        }
+
+        if ( structKeyExists( arguments, "except" ) && ! isNull( arguments.except ) && ! arrayIsEmpty( arguments.except ) ) {
+            for( var HTTPVerb in arguments.initial ){
+                var methodName = arguments.initial[ HTTPVerb ];
+                for( var exceptAction in arguments.except ){
+                    if ( compareNoCase( methodName, exceptAction ) == 0 ) {
+                        structDelete( actionSet, HTTPVerb );
+                    }
+                }
+            }   
+        }
+
+        return actionSet;
+    }
 
 }
