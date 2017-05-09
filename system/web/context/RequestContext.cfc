@@ -1215,6 +1215,21 @@ component serializable=false accessors="true"{
     	return ( getHTTPHeader( "X-Requested-With", "" ) eq "XMLHttpRequest" );
 	}
 
+	struct function only( required keys ) {
+		if ( isSimpleValue( keys ) ) {
+			arguments.keys = listToArray( keys );
+		}
+
+		var returnStruct = {};
+		for ( var key in keys ) {
+			if ( valueExists( key ) ) {
+				returnStruct[ key ] = getValue( key );
+			}
+		}
+
+		return returnStruct;
+	}
+
 	/************************************** RESTFUL *********************************************/
 
 	/**
