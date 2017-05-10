@@ -604,16 +604,18 @@ Description :
 			var x			= 1;
 
 			for(x=1; x lte DILen; x++){
+				var thisDIData = arguments.DIData[x];
+
 				// Init the lookup structure
 				refLocal = {};
 				// Check if direct value has been placed.
-				if( !isNull( arguments.DIData[x].value ) ){
-					refLocal.dependency = arguments.DIData[x].value;
+				if( !isNull( thisDIData.value ) ){
+					refLocal.dependency = thisDIData.value;
 				}
 				// else check if dsl is used?
-				else if( structKeyExists(arguments.DIData[x], "dsl") ){
+				else if( !isNull(thisDIData.dsl) ){
 					// Get DSL dependency by sending entire DI structure to retrieve
-					refLocal.dependency = instance.builder.buildDSLDependency( definition=arguments.DIData[ x ], targetID=arguments.targetID, targetObject=arguments.targetObject );
+					refLocal.dependency = instance.builder.buildDSLDependency( definition=thisDIData, targetID=arguments.targetID, targetObject=arguments.targetObject );
 				}
 				// else we have to have a reference ID or a nasty bug has ocurred
 				else{

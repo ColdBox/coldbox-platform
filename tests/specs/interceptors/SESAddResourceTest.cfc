@@ -296,7 +296,7 @@
 
                 describe( "using both `only` and `except`", function() {
                     it( "can apply both the `only` and the `except` parameters", function() {
-                        ses.resources( resource = "photos", only = [ "index", "show" ], except = "show", module = "", namespace = "" )
+                        ses.resources( resource = "photos", only = [ "index", "show" ], except = "show", module = "", namespace = "" );
 
                         var cl = ses.$callLog().addRoute;
                         debug( cl );
