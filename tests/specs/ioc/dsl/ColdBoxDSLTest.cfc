@@ -147,6 +147,24 @@
 		c = builder.getColdBoxDSL(def);
 		assertEquals( modSettings.myModule , c);
 
+		// rc
+		var rc = { event = "main.index", format = "html" };
+		var mockEvent = getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
+		mockEvent.$( "getCollection", rc );
+		mockColdbox.$( "getRequestService", getMockBox().createStub().$( "getContext", mockEvent ) );
+		def = {name="rc", dsl="coldbox:requestContext:rc"};
+		c = builder.getColdBoxDSL(def);
+		assertEquals( rc , c);
+
+		// prc
+		var prc = { cbox_incomingContextHash = "E421429442BAC5178C6BE0CB3C9796E1" };
+		var mockEvent = getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
+		mockEvent.$( "getPrivateCollection", prc );
+		mockColdbox.$( "getRequestService", getMockBox().createStub().$( "getContext", mockEvent ) );
+		def = { name = "prc", dsl = "coldbox:requestContext:prc" };
+		c = builder.getColdBoxDSL( def );
+		assertEquals( prc , c );
+
 		// fwsetting
 		def = {name="mySetting", dsl="coldbox:fwSetting"};
 		mockColdBox.$("getSetting").$args("mySetting",true).$results("UnitTest");
