@@ -102,17 +102,6 @@ Description :
 							// just get setting
 							return instance.coldbox.getSetting( thisLocationKey );
 						}
-						case "requestContext"       : {
-							if ( thisLocationKey == "rc" ) {
-								return instance.coldbox.getRequestService().getContext().getCollection();
-							}
-							else if ( thisLocationKey == "prc" ) {
-								return instance.coldbox.getRequestService().getContext().getPrivateCollection();
-							}
-							else {
-								instance.log.debug( "The collection type requested: #thisLocationKey# does not exist in the request context. Valid collection types are [rc, prc]." );
-							}
-					    }
 						case "modulesettings"		: {
 							moduleSettings = instance.coldbox.getSetting("modules");
 							if( structKeyExists(moduleSettings, thisLocationKey ) ){
