@@ -6,4 +6,11 @@ component name="RequestContextProvider" implements="coldbox.system.ioc.IProvider
         return requestService.getContext();
     }
 
+    /**
+    * Proxy calls to provided element
+    */
+    public any function onMissingMethod( required missingMethodName, required missingMethodArguments ) {
+        return invoke( get(), arguments.missingMethodName, arguments.missingmethodArguments );
+    }
+
 }
