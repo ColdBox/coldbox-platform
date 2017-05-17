@@ -11,4 +11,4 @@
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 
 <!--- Include the TestBox HTML Runner --->
-<cfinclude template="runner.cfm" >
+<cfinclude template="/testbox/system/runners/HTMLRunner.cfm" >

@@ -8,10 +8,22 @@
 		mockCacheBox = getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
 		mockColdBox = getMockBox().createEmptyMock("coldbox.system.web.Controller");
 
-		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
+		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector");
+		
+		mockScopeStorage = getMockBox().createEmptyMock( "coldbox.system.core.collections.ScopeStorage" )
+			.$( "exists", true )
+			.$( "get", mockInjector );
+
+		mockInjector
 			.$("getLogBox", mockLogBox )
 			.$("getCacheBox", mockCacheBox)
-			.$("getColdBox", mockColdBox);
+			.$("getColdBox", mockColdBox)
+			.$( "getScopeRegistration", {
+				enabled = true,
+				scope = "application",
+				key = "wireBox"
+			} )
+			.$( "getScopeStorage", mockScopeStorage );
 
 		builder = getMockBox().createMock("coldbox.system.ioc.dsl.ColdBoxDSL").init( mockInjector );
 	}
@@ -69,10 +81,13 @@
 		assertEquals( mockFlash, c);
 
 		mockEvent = getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
-		mockColdbox.$("getRequestService", getMockBox().createStub().$("getContext", mockEvent) );
+		mockEventProvider = getMockBox().createEmptyMock("coldbox.system.ioc.providers.RequestContextProvider");
+		mockEventProvider.$( "get", mockEvent );
+		mockInjector.$( "getInstance", mockEventProvider );
 		def = {name="event", dsl="coldbox:requestContext"};
 		c = builder.getColdBoxDSL(def);
-		assertEquals( mockEvent, c);
+		assertTrue( isInstanceOf( c, "coldbox.system.ioc.providers.RequestContextProvider" ) );
+		assertEquals( mockEvent, c.get() );
 
 		mockColdbox.$("getHandlerService",this);
 		def = {name="configBean", dsl="coldbox:handlerService"};
@@ -149,21 +164,27 @@
 
 		// rc
 		var rc = { event = "main.index", format = "html" };
-		var mockEvent = getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
+		mockRCProvider = getMockBox().createEmptyMock("coldbox.system.ioc.providers.RCProvider");
+		mockRCProvider.$( "get", rc );
+		mockInjector.$( "getInstance", mockRCProvider );
 		mockEvent.$( "getCollection", rc );
 		mockColdbox.$( "getRequestService", getMockBox().createStub().$( "getContext", mockEvent ) );
 		def = {name="rc", dsl="coldbox:requestContext:rc"};
 		c = builder.getColdBoxDSL(def);
-		assertEquals( rc , c);
+		assertTrue( isInstanceOf( c, "coldbox.system.ioc.providers.RCProvider" ) );
+		assertEquals( rc , c.get() );
 
 		// prc
 		var prc = { cbox_incomingContextHash = "E421429442BAC5178C6BE0CB3C9796E1" };
-		var mockEvent = getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
-		mockEvent.$( "getPrivateCollection", prc );
+		mockPRCProvider = getMockBox().createEmptyMock("coldbox.system.ioc.providers.PRCProvider");
+		mockPRCProvider.$( "get", prc );
+		mockInjector.$( "getInstance", mockPRCProvider );
+		mockEvent.$( "getCollection", prc );
 		mockColdbox.$( "getRequestService", getMockBox().createStub().$( "getContext", mockEvent ) );
-		def = { name = "prc", dsl = "coldbox:requestContext:prc" };
-		c = builder.getColdBoxDSL( def );
-		assertEquals( prc , c );
+		def = {name="prc", dsl="coldbox:requestContext:prc"};
+		c = builder.getColdBoxDSL(def);
+		assertTrue( isInstanceOf( c, "coldbox.system.ioc.providers.PRCProvider" ) );
+		assertEquals( prc , c.get() );
 
 		// fwsetting
 		def = {name="mySetting", dsl="coldbox:fwSetting"};

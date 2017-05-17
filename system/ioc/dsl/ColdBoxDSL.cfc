@@ -71,7 +71,7 @@ Description :
 						case "flash"		 		: { return instance.coldbox.getRequestService().getFlashScope(); }
 						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
 						case "requestService"		: { return instance.coldbox.getRequestService(); }
-						case "requestContext"		: { return instance.coldbox.getRequestService().getContext(); }
+						case "requestContext"		: { return instance.injector.getInstance( "coldbox.system.ioc.providers.RequestContextProvider" ); }
 						case "handlerService"		: { return instance.coldbox.getHandlerService(); }
 						case "interceptorService"	: { return instance.coldbox.getInterceptorService(); }
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
@@ -104,10 +104,10 @@ Description :
 						}
 						case "requestContext"       : {
 							if ( thisLocationKey == "rc" ) {
-								return instance.coldbox.getRequestService().getContext().getCollection();
+								return instance.injector.getInstance( "coldbox.system.ioc.providers.RCProvider" );
 							}
 							else if ( thisLocationKey == "prc" ) {
-								return instance.coldbox.getRequestService().getContext().getPrivateCollection();
+								return instance.injector.getInstance( "coldbox.system.ioc.providers.PRCProvider" );
 							}
 							else {
 								instance.log.debug( "The collection type requested: #thisLocationKey# does not exist in the request context. Valid collection types are [rc, prc]." );
