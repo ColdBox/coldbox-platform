@@ -244,7 +244,7 @@ TODO: update dsl consistency, so it is faster.
 				// Not found, so check if it is required
 				if( thisDIArg.required ){
 					// Log the error
-					instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
+					instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[ x ].name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
 					// not found but required, then throw exception
 					throw(message="Argument reference not located: #thisDIArg.name#",
 									  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #thisDIArg.toString()#.",
@@ -268,11 +268,11 @@ TODO: update dsl consistency, so it is faster.
 		<cfscript>
     		var argStruct 	= {};
 			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
-			var DIArgsLen   = arraylen(DIArgs);
+			var DIArgsLen   = arraylen( DIArgs );
 
 			// Loop Over Arguments for wsdl args
-			for(x=1;x lte DIArgsLen; x=x+1){
-				argStruct[ DIArgs[x].name ] = DIArgs[x].value;
+			for(var x=1; x lte DIArgsLen; x++ ){
+				argStruct[ DIArgs[ x ].name ] = DIArgs[ x ].value;
 			}
 
 			// Do we ahve overrides
@@ -280,7 +280,7 @@ TODO: update dsl consistency, so it is faster.
 				structAppend(argStruct, arguments.initArguments,true);
 			}
 
-			return createObject("webservice", arguments.mapping.getPath(), argStruct );
+			return createObject( "webservice", arguments.mapping.getPath(), argStruct );
 		</cfscript>
     </cffunction>
 

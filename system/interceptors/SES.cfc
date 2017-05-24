@@ -125,18 +125,19 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	}
 
 	// CF-11 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
-	function setBaseURL(string baseURL){
+	// Remove this with new CFC approach. CFM files will have to upgrade to CFC capabilities once feature is complete.
+	function setBaseURL( string baseURL ){
 		variables.baseURL = arguments.baseURL;
+		return this;
 	}
-
 	function getBaseURL(){
 		return variables.baseURL;
 	}
 
-	function setUniqueURLS(boolean uniqueURLS){
+	function setUniqueURLS( boolean uniqueURLS ){
 		variables.uniqueURLS = arguments.uniqueURLS;
+		return this;
 	}
-
 	function getUniqueURLS(){
 		return variables.uniqueURLS;
 	}
