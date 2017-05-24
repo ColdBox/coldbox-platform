@@ -70,9 +70,10 @@ Description :
 					switch( thisLocationKey ){
 						case "flash"		 		: { return instance.coldbox.getRequestService().getFlashScope(); }
 						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
-						case "requestService"		: { return instance.coldbox.getrequestService(); }
-						case "handlerService"		: { return instance.coldbox.gethandlerService(); }
-						case "interceptorService"	: { return instance.coldbox.getinterceptorService(); }
+						case "requestService"		: { return instance.coldbox.getRequestService(); }
+						case "requestContext"		: { return instance.coldbox.getRequestService().getContext(); }
+						case "handlerService"		: { return instance.coldbox.getHandlerService(); }
+						case "interceptorService"	: { return instance.coldbox.getInterceptorService(); }
 						case "moduleService"		: { return instance.coldbox.getModuleService(); }
 						case "renderer"				: { return instance.coldbox.getRenderer(); }
 						case "dataMarshaller"		: { return instance.coldbox.getDataMarshaller(); }
@@ -82,7 +83,7 @@ Description :
 
 					break;
 				}
-				//coldobx:{key}:{target} Usually for named factories
+				//coldbox:{key}:{target} Usually for named factories
 				case 3: {
 					thisLocationType = getToken(thisType,2,":");
 					thisLocationKey  = getToken(thisType,3,":");
