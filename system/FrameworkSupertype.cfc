@@ -144,7 +144,8 @@ component serializable="false" accessors="true"{
 		numeric collectionStartRow="1",
 		numeric collectionMaxRows=0,
 		collectionDelim="",
-		boolean prePostExempt=false
+		boolean prePostExempt=false,
+		name=""
 	){
 		return controller.getRenderer().renderView( argumentCollection=arguments );
 	}

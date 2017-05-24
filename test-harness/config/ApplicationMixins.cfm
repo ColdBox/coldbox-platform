@@ -6,13 +6,13 @@
 
 	// Lucee 5 Cache Definition
 	this.cache.connections[ "default" ] = {
-		  class: 'lucee.runtime.cache.ram.RamCache'
-		, storage: false
-		, custom: {
-			"timeToIdleSeconds":"0",
-			"timeToLiveSeconds":"0"
+		  "class" = 'lucee.runtime.cache.ram.RamCache'
+		, "storage" = false
+		, "custom" = {
+			"timeToIdleSeconds" = "0",
+			"timeToLiveSeconds" = "0"
 		}
-		, default: 'object'
+		, "default" = 'object'
 	};
 	
 	// ORM Settings For Testing
@@ -28,8 +28,8 @@
 
 	private void function loadRuntimeProperties(){
     	//Load our Runtime Properties, which will dynamically create our datasource from config/runtime.properties, if it does not exist
-		var customProperties 	= expandPath( COLDBOX_APP_ROOT_PATH & '/config/runtime.properties.cfm' );
-		var ciProperties 		= expandPath( COLDBOX_APP_ROOT_PATH & '/config/runtime.ci.cfm' );
+		var customProperties 	= COLDBOX_APP_ROOT_PATH & '/config/runtime.properties.cfm';
+		var ciProperties 		= COLDBOX_APP_ROOT_PATH & '/config/runtime.ci.cfm';
 		
 		// Use ci or custom if found
 		var target = ciProperties;
@@ -42,15 +42,15 @@
 
 		this.datasources[ "coolblog" ] = {
 			// Lucee specific
-			class 				: props.getProperty( "DB_CLASS" ),
-			connectionString	: props.getProperty( 'DB_CONNECTIONSTRING' ),
-			username 			: props.getProperty( 'DB_USER' ),
-			password 			: props.getProperty( 'DB_PASSWORD' ),
+			class 				= props.getProperty( "DB_CLASS" ),
+			connectionString	= props.getProperty( 'DB_CONNECTIONSTRING' ),
+			username 			= props.getProperty( 'DB_USER' ),
+			password 			= props.getProperty( 'DB_PASSWORD' ),
 			// Adobe Specific
-			database 			: "coolblog",
-			driver 				: "MySQL",
-			URL 				: props.getProperty( 'DB_CONNECTIONSTRING' ),
-			port 				: "3306"
+			database 			= "coolblog",
+			driver 				= "MySQL",
+			URL 				= props.getProperty( 'DB_CONNECTIONSTRING' ),
+			port 				= "3306"
 		};
 
     }

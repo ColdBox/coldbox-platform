@@ -185,8 +185,9 @@ TODO: update dsl consistency, so it is faster.
 
 			// Loop Over Arguments
 			for(x = 1; x <= DIArgsLen; x++){
+				var thisDIArg = DIArgs[ x ];
 				// do we have javacasting?
-				if( !isNull( DIArgs[x].javaCast ) ){
+				if( !isNull( thisDIArg.javaCast ) ){
 					ArrayAppend(args, "javaCast(DIArgs[#x#].javaCast, DIArgs[#x#].value)");
 				}
 				else{
@@ -221,37 +222,37 @@ TODO: update dsl consistency, so it is faster.
 
 			// Loop Over Arguments
 			for(x=1;x lte DIArgsLen; x=x+1){
-
+				var thisDIArg = DIArgs[ x ];
 				// Is value set in mapping? If so, add it and continue
-				if( !isNull( DIArgs[x].value ) ){
-					args[ DIArgs[x].name ] = DIArgs[x].value;
+				if( !isNull( thisDIArg.value ) ){
+					args[ thisDIArg.name ] = thisDIArg.value;
 					continue;
 				}
 
 				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
-				if( !isNull( DIArgs[x].dsl ) ){
-					args[ DIArgs[x].name ] = buildDSLDependency( definition=DIArgs[x], targetID=thisMap.getName(), targetObject=arguments.targetObject );
+				if( !isNull( thisDIArg.dsl ) ){
+					args[ thisDIArg.name ] = buildDSLDependency( definition=thisDIArg, targetID=thisMap.getName(), targetObject=arguments.targetObject );
 					continue;
 				}
 
 				// If we get here then it is by ref id, so let's verify it exists and optional
-				if( len(instance.injector.containsInstance( DIArgs[x].ref )) ){
-					args[ DIArgs[x].name ] = instance.injector.getInstance(name=DIArgs[x].ref);
+				if( len(instance.injector.containsInstance( thisDIArg.ref )) ){
+					args[ thisDIArg.name ] = instance.injector.getInstance(name=thisDIArg.ref);
 					continue;
 				}
 
 				// Not found, so check if it is required
-				if( DIArgs[x].required ){
+				if( thisDIArg.required ){
 					// Log the error
-					instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+					instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
 					// not found but required, then throw exception
-					throw(message="Argument reference not located: #DIArgs[x].name#",
-									  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #DIArgs[x].toString()#.",
+					throw(message="Argument reference not located: #thisDIArg.name#",
+									  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #thisDIArg.toString()#.",
 									  		 type="Injector.ArgumentNotFoundException");
 				}
 				// else just log it via debug
 				else if( instance.log.canDebug() ){
-					instance.log.debug("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+					instance.log.debug("Target: #thisMap.getName()# -> Argument reference not located: #thisDIArg.name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
 				}
 
 			}

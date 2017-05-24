@@ -1021,7 +1021,8 @@ component serializable=false accessors="true"{
 		// Validate rendering type
 		if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ){
 			throw(
-				message = "Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF",
+				message = "Invalid rendering type",
+				detail = "The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF",
 				type 	= "RequestContext.InvalidRenderTypeException"
 			);
 		}
