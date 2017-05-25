@@ -496,4 +496,35 @@
 		debug( link );
 	}
 
+	function testOnlyArray() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "email", "john@example.com" );
+		event.setValue( "hackedField", "hacked!" );
+
+		expect( event.only( [ "name", "email", "field-that-does-not-exist" ] ) )
+			.toBe( { "name" = "John", "email" = "john@example.com" } );
+	}
+
+	function testOnlyList() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "email", "john@example.com" );
+		event.setValue( "hackedField", "hacked!" );
+
+		expect( event.only( "name,email,field-that-does-not-exist" ) )
+			.toBe( { "name" = "John", "email" = "john@example.com" } );
+	}
+
+	function testOnlyPrivate() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "hackedField", "hacked!" );
+		event.setValue( "name", "Jane", true );
+		event.setValue( "hackedField", "hacked as well!", true );
+
+		expect( event.only( keys = "name,field-that-does-not-exist", private = true ) )
+			.toBe( { "name" = "Jane" } );	
+	}
+
 }

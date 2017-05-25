@@ -1215,6 +1215,26 @@ component serializable=false accessors="true"{
     	return ( getHTTPHeader( "X-Requested-With", "" ) eq "XMLHttpRequest" );
 	}
 
+	/**
+	* Filters the collection or private collection down to only the provided keys.
+	* @keys A list or array of keys to bring back from the collection or private collection.
+	* @private Private or public, defaults public.
+	*/
+	struct function only( required keys, boolean private = false ){
+		if ( isSimpleValue( arguments.keys ) ){
+			arguments.keys = listToArray( arguments.keys );
+		}
+
+		var returnStruct = {};
+		for ( var key in arguments.keys ){
+			if ( valueExists( key, private ) ){
+				returnStruct[ key ] = getValue( name = key, private = private );
+			}
+		}
+
+		return returnStruct;
+	}
+
 	/************************************** RESTFUL *********************************************/
 
 	/**
