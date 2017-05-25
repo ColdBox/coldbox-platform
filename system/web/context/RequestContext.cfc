@@ -1221,14 +1221,16 @@ component serializable=false accessors="true"{
 	* @private Private or public, defaults public.
 	*/
 	struct function only( required keys, boolean private = false ){
-		if ( isSimpleValue( arguments.keys ) ){
+		if( isSimpleValue( arguments.keys ) ){
 			arguments.keys = listToArray( arguments.keys );
 		}
+		// determine target context
+		var thisContext = arguments.private ? instance.privateContext : instance.context;
 
 		var returnStruct = {};
-		for ( var key in arguments.keys ){
-			if ( valueExists( key, private ) ){
-				returnStruct[ key ] = getValue( name = key, private = private );
+		for( var key in arguments.keys ){
+			if( structKeyExists( thisContext, key) ){
+				returnStruct[ key ] = thisContext[ key ];
 			}
 		}
 
