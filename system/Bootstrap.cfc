@@ -104,6 +104,11 @@ component serializable="false" accessors="true"{
 
 					// Reload ColdBox
 					loadColdBox();
+					// If we are Reiniting, fire the postReinit interception point
+					if( structkeyExists( application, appKey ) AND application[ appKey ].getColdboxInitiated() AND needReinit ){
+						// process postReinit interceptors
+						application[ appKey ].getInterceptorService().processState( "postReinit" );
+					}
 					// Remove any context stragglers
 					structDelete( request, "cb_requestContext" );
 				}
