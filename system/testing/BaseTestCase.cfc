@@ -123,6 +123,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			}
 			// remove context
 			getController().getRequestService().removeContext();
+			getPageContext().getResponse().reset();
 		}
 	}
 
