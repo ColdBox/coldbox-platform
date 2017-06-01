@@ -287,41 +287,50 @@ Description :
 		<cfargument name="excludes" 	type="string"		required="false" default=""	hint="The columns to exclude in the rendering"/>
 		<cfargument name="name" 		type="string"		 required="false" default="" hint="The name tag"/>
 		<cfscript>
-			var str		= createObject("java","java.lang.StringBuilder").init('');
+			var str		= createObject( "java", "java.lang.StringBuilder" ).init( '' );
 			var attrs	= "";
 			var key		= "";
 
 			// ID Normalization
-			normalizeID(arguments);
+			normalizeID( arguments );
 
 			// Start Table
-			str.append("<table");
+			str.append( "<table" );
 
 			// flatten extra attributes via arguments
-			flattenAttributes(arguments,"data,includes,excludes",str).append("><thead><tr>");
+			flattenAttributes( arguments, "data,includes,excludes", str ).append( "><thead><tr>" );
 
 			// Buffer Reference
 			arguments.buffer = str;
 
 			// Convert Query To Table Body
-			if( isQuery(arguments.data) ){
-				queryToTable(argumentCollection=arguments);
+			if( isQuery( arguments.data ) ){
+				queryToTable( argumentCollection=arguments );
 			}
 			// Convert Array to Table Body
-			else if( isArray(arguments.data) and arrayLen(arguments.data) ){
-
-				// Check first element for an object, if it is then convert to query
-				if( isObject(arguments.data[1]) ){
-					arguments.data = entityToQuery(arguments.data);
-					queryToTable(argumentCollection=arguments);
+			else if( isArray( arguments.data ) and arrayLen( arguments.data ) ){
+				var firstMetadata = getMetadata( arguments.data[ 1 ] );
+				// Check for array of ORM Object
+				if( 
+					isObject( arguments.data[ 1 ] ) 
+					AND 
+					structKeyExists( firstMetadata, "persistent" ) && firstMetadata.persistent
+				){
+					arguments.data = entityToQuery( arguments.data );
+					queryToTable( argumentCollection=arguments );
 				}
+				// Array of objects, discover properties via metadata
+				else if ( isObject( arguments.data[ 1 ] ) ){
+					objectsToTable( argumentCollection = arguments );
+				}
+				// array of structs go here
 				else{
-					arrayToTable(argumentCollection=arguments);
+					arrayToTable( argumentCollection=arguments );
 				}
 			}
 
 			// Finalize table
-			str.append("</tbody></table>");
+			str.append( "</tbody></table>" );
 
 			return str.toString();
 		</cfscript>
@@ -1573,6 +1582,46 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
+	
+	<!--- objectsToTable --->
+	<cffunction name="objectsToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array of objects">
+		<cfargument name="data" 		type="any"			 required="true"	hint="The array to convert into a table"/>
+		<cfargument name="includes" 	type="string"		required="false" default=""	hint="The columns to include in the rendering"/>
+		<cfargument name="excludes" 	type="string"		required="false" default=""	hint="The columns to exclude in the rendering"/>
+		<cfargument name="buffer" 		type="any" 	 	 required="true"/>
+		<cfscript>
+			var str			= arguments.buffer;
+			var attrs		= "";
+			var x			= 1;
+			var y			= 1;
+			var key			= "";
+
+			var firstMetadata 	= getMetadata( arguments.data[ 1 ] );
+			var properties 		= structKeyExists( firstMetadata, "properties" ) ? firstMetadata.properties : [];
+
+			for( var thisProperty in properties ){
+				// Display headers?
+				if( passIncludeExclude( thisProperty.name, arguments.includes, arguments.excludes ) ){
+					str.append( "<th>#thisProperty.name#</th>" );
+				}
+			}
+			str.append( "</tr></thead>" );
+
+			// Render Body
+			str.append( "<tbody>" );
+
+			for( var thisRecord in arguments.data ){
+				str.append( "<tr>" );
+				for( var thisProperty in properties ){
+					// Display headers?
+					if( passIncludeExclude( thisProperty.name, arguments.includes, arguments.excludes ) ){
+						str.append( "<td>#evaluate( "thisRecord.get#thisProperty.name#()" )#</td>" );
+					}
+				}
+				str.append( "</tr>" );
+			}
+		</cfscript>
+	</cffunction>
 
 	<!--- arrayToTable --->
 	<cffunction name="arrayToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array">

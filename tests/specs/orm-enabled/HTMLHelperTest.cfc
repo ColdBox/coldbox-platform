@@ -224,6 +224,17 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		expect(	str ).toInclude( '<th>NAME</th>' );
 	}
 
+	function testTableArrayofObjects(){
+		var data = [ 
+			new tests.resources.Test(),
+			new tests.resources.Test( name="test", email="testing@testing.com" )
+		];
+		var str = model.table( data=data );
+		expect(	str ).toInclude( '<th>NAME</th>' )
+			.toInclude( "<th>EMAIL</th>")
+			.toInclude( "testing@testing.com" );
+	}
+
 	function testSlugify(){
 		data = {
 			title1 = "My Awesome Post",
