@@ -1021,7 +1021,8 @@ component serializable=false accessors="true"{
 		// Validate rendering type
 		if( not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type ) ){
 			throw(
-				message = "Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF",
+				message = "Invalid rendering type",
+				detail = "The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,JSONP,JSONT,XML,WDDX,TEXT,PLAIN,PDF",
 				type 	= "RequestContext.InvalidRenderTypeException"
 			);
 		}
@@ -1212,6 +1213,28 @@ component serializable=false accessors="true"{
 	*/
 	boolean function isAjax(){
     	return ( getHTTPHeader( "X-Requested-With", "" ) eq "XMLHttpRequest" );
+	}
+
+	/**
+	* Filters the collection or private collection down to only the provided keys.
+	* @keys A list or array of keys to bring back from the collection or private collection.
+	* @private Private or public, defaults public.
+	*/
+	struct function only( required keys, boolean private = false ){
+		if( isSimpleValue( arguments.keys ) ){
+			arguments.keys = listToArray( arguments.keys );
+		}
+		// determine target context
+		var thisContext = arguments.private ? instance.privateContext : instance.context;
+
+		var returnStruct = {};
+		for( var key in arguments.keys ){
+			if( structKeyExists( thisContext, key) ){
+				returnStruct[ key ] = thisContext[ key ];
+			}
+		}
+
+		return returnStruct;
 	}
 
 	/************************************** RESTFUL *********************************************/

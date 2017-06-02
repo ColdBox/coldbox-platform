@@ -558,9 +558,9 @@ Description :
 			// iterate and provide baby!
 			for(x=1; x lte providerLen; x++){
 				// add the provided method to the providers structure.
-				arguments.targetObject.$wbProviders[ providerMethods[x].method ] = providerMethods[x].mapping;
+				arguments.targetObject.$wbProviders[ providerMethods[ x ].method ] = providerMethods[ x ].mapping;
 				// Override the function by injecting it, this does private/public functions
-				arguments.targetObject.injectMixin(providerMethods[x].method, instance.builder.buildProviderMixer);
+				arguments.targetObject.injectMixin(providerMethods[ x ].method, instance.builder.buildProviderMixer);
 			}
 		</cfscript>
     </cffunction>
@@ -604,41 +604,43 @@ Description :
 			var x			= 1;
 
 			for(x=1; x lte DILen; x++){
+				var thisDIData = arguments.DIData[ x ];
+
 				// Init the lookup structure
 				refLocal = {};
 				// Check if direct value has been placed.
-				if( !isNull( arguments.DIData[x].value ) ){
-					refLocal.dependency = arguments.DIData[x].value;
+				if( !isNull( thisDIData.value ) ){
+					refLocal.dependency = thisDIData.value;
 				}
 				// else check if dsl is used?
-				else if( structKeyExists(arguments.DIData[x], "dsl") ){
+				else if( !isNull(thisDIData.dsl) ){
 					// Get DSL dependency by sending entire DI structure to retrieve
-					refLocal.dependency = instance.builder.buildDSLDependency( definition=arguments.DIData[ x ], targetID=arguments.targetID, targetObject=arguments.targetObject );
+					refLocal.dependency = instance.builder.buildDSLDependency( definition=thisDIData, targetID=arguments.targetID, targetObject=arguments.targetObject );
 				}
 				// else we have to have a reference ID or a nasty bug has ocurred
 				else{
-					refLocal.dependency = getInstance( arguments.DIData[x].ref );
+					refLocal.dependency = getInstance( arguments.DIData[ x ].ref );
 				}
 
 				// Check if dependency located, else log it and skip
-				if( structKeyExists(refLocal,"dependency") ){
+				if( structKeyExists( refLocal, "dependency" ) ){
 					// scope or setter determination
 					refLocal.scope = "";
-					if( structKeyExists(arguments.DIData[x],"scope") ){ refLocal.scope = arguments.DIData[x].scope; }
+					if( structKeyExists(arguments.DIData[ x ],"scope") ){ refLocal.scope = arguments.DIData[ x ].scope; }
 					// Inject dependency
 					injectTarget(target=targetObject,
-							     propertyName=arguments.DIData[x].name,
+							     propertyName=arguments.DIData[ x ].name,
 							     propertyObject=refLocal.dependency,
 							     scope=refLocal.scope,
-							     argName=arguments.DIData[x].argName);
+							     argName=arguments.DIData[ x ].argName);
 
 					// some debugging goodness
 					if( instance.log.canDebug() ){
-						instance.log.debug("Dependency: #arguments.DIData[x].toString()# --> injected into #arguments.targetID#");
+						instance.log.debug("Dependency: #arguments.DIData[ x ].toString()# --> injected into #arguments.targetID#");
 					}
 				}
 				else if( instance.log.canDebug() ){
-					instance.log.debug("Dependency: #arguments.DIData[x].toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList(instance.binder.getMappings())#");
+					instance.log.debug("Dependency: #arguments.DIData[ x ].toString()# Not Found when wiring #arguments.targetID#. Registered mappings are: #structKeyList(instance.binder.getMappings())#");
 				}
 			}
 		</cfscript>

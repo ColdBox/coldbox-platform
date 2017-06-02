@@ -57,16 +57,22 @@
 		c = builder.getColdBoxDSL(def);
 		assertEquals( this, c);
 
-		mockColdbox.$("getrequestService",this);
+		mockColdbox.$("getRequestService",this);
 		def = {name="configBean", dsl="coldbox:requestService"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( this, c);
 
 		mockFlash = getMockBox().createEmptyMock("coldbox.system.web.flash.SessionFlash");
-		mockColdbox.$("getrequestService", getMockBox().createStub().$("getFlashScope", mockFlash) );
+		mockColdbox.$("getRequestService", getMockBox().createStub().$("getFlashScope", mockFlash) );
 		def = {name="flash", dsl="coldbox:flash"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( mockFlash, c);
+
+		mockEvent = getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
+		mockColdbox.$("getRequestService", getMockBox().createStub().$("getContext", mockEvent) );
+		def = {name="event", dsl="coldbox:requestContext"};
+		c = builder.getColdBoxDSL(def);
+		assertEquals( mockEvent, c);
 
 		mockColdbox.$("getHandlerService",this);
 		def = {name="configBean", dsl="coldbox:handlerService"};
@@ -94,6 +100,8 @@
 		def = {name="marshaller", dsl="coldbox:dataMarshaller"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( mockMarshaller, c);
+
+
 	}
 
 	function testgetColdboxDSLStage3(){
