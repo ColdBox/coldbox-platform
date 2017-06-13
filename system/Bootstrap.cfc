@@ -69,8 +69,16 @@ component serializable="false" accessors="true"{
 		// Setup the Framework And Application
 		application[ appKey ].getLoaderService().loadApplication( COLDBOX_CONFIG_FILE, COLDBOX_APP_MAPPING );
 		// Application Start Handler
-		if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ){
-			application[ appKey ].runEvent( event=application[ appKey ].getSetting( "ApplicationStartHandler" ) );
+		try {
+			if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ){
+				application[ appKey ].runEvent( event=application[ appKey ].getSetting( "ApplicationStartHandler" ) );
+			}
+		}
+		catch ( any e ) {
+			// process the exception
+			writeOutput( processException( application[ appKey ], e ) );
+			// abort it, something went really wrong.
+			abort;
 		}
 		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
 		if( structKeyExists( url, "fwreinit" ) ){
