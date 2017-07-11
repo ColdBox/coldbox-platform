@@ -305,12 +305,16 @@ Description :
 				<cfset tmpCurrentMapping = currentMapping>
 
 				<!--- Map the Path --->
-				<cfset mapPath( path=thisTargetPath, namespace=arguments.namespace, prepend=arguments.prepend )>
+				<cfset mapPath( path=thisTargetPath, namespace=arguments.namespace, prepend=arguments.prepend, force=true )>
 
 				<!--- Influence --->
 				<cfif structKeyExists( arguments, "influence" )>
 					<cfset arguments.influence( this, thisTargetPath )>
 				</cfif>
+
+				<!--- Do this right away so aliases are picked up before this mapping potentially gets overwritten
+				This is neccessary for multuple CFCs with the same name in different folders, but with unique aliases --->
+				<cfset processMappings()>
 
 				<!--- Merge the full array of mappings back together --->
 				<cfset arrayAppend( tmpCurrentMapping, currentMapping[ 1 ]  ) >
