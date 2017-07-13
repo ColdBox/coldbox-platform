@@ -2,6 +2,7 @@
 .DS_Store
 /settings.xml
 .project
+.settings/
 
 # Testing Logs
 test-harness/logs/*.log
