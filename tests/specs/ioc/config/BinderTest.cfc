@@ -10,7 +10,8 @@
 		// Available WireBox public types
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
 		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
-			.$("getColdBox", getMockBox().createStub().$("getSetting","coldbox.test") );
+			.$("getColdBox", getMockBox().createStub().$("getSetting","coldbox.test") )
+			.$("getEventManager", getMockBox().createStub().$("processState") );
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfigPath);
 	}
 
