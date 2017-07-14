@@ -1,4 +1,5 @@
 language: java
+group: deprecated-2017Q2
 
 notifications:
   slack:
