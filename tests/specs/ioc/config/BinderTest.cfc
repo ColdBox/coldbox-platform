@@ -13,6 +13,7 @@
 			.$("getColdBox", getMockBox().createStub().$("getSetting","coldbox.test") )
 			.$("getEventManager", getMockBox().createStub().$("processState") );
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfigPath);
+		config.$("processMappings");
 	}
 
 	function testBinderStandalone(){
