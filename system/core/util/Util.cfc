@@ -10,7 +10,8 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The main ColdBox utility library filled with lots of nice goodies.">
 
-	<cfproperty name="system" inject="java:java.lang.System" />
+	<!--- Construct Static System Pointer --->
+	<cfset variables.system = createObject( "java", "java.lang.System" )>
 
 	<!--- getMixerUtil --->
     <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" colddoc:generic="coldbox.system.core.dynamic.MixerUtil">
