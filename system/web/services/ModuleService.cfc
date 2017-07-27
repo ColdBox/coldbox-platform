@@ -424,6 +424,15 @@ component extends="coldbox.system.web.services.BaseService"{
 			activateModule( thisDependency );
 		}
 
+		// Check if activating one of this module's dependencies already activated this module
+		if( modules[ arguments.moduleName ].activated ){
+			// Log it
+			if( variables.logger.canDebug() ){
+				variables.logger.debug( "Module #arguments.moduleName# already activated during dependecy activation, skipping activation." );
+			}
+			return this;
+		}
+
 		// lock and load baby
 		lock 	name="module#getController().getAppHash()#.activation.#arguments.moduleName#"
 				type="exclusive" 

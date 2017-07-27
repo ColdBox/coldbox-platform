@@ -93,7 +93,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				expect( parentSettings[ "test1" ] ).notToBe( config[ "test1" ].settings );
 			} );
 
-			it( "should not load mdoules that have been excluded, even in bundles", function(){
+			it( "should not load modules that have been excluded, even in bundles", function(){
 				var config = getController().getSetting( "modules" );
 				expect(	config ).notToHaveKey( 'excludedmod' );
 			});
@@ -106,6 +106,15 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 					var config = getController().getSetting( "modules" );
 					expect(	config ).toHaveKey( "inception-mod1" );
 					expect(	config[ "inception-mod1" ].activated ).toBeTrue();
+				});
+			});
+
+			given( "A nested module: a-inception", function(){
+				then( "the nested module should only have its onLoad method called once", function(){
+					expect( request ).toHaveKey( "a-inception" );
+					expect( request[ "a-inception" ] ).toBeStruct();
+					expect( request[ "a-inception" ] ).toHaveKey( "loadedCount" );
+					expect( request[ "a-inception" ].loadedCount ).toBe( 1, "Module onLoad should only have been called once." );
 				});
 			});
 
