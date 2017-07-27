@@ -93,7 +93,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				expect( parentSettings[ "test1" ] ).notToBe( config[ "test1" ].settings );
 			} );
 
-			it( "should not load mdoules that have been excluded, even in bundles", function(){
+			it( "should not load modules that have been excluded, even in bundles", function(){
 				var config = getController().getSetting( "modules" );
 				expect(	config ).notToHaveKey( 'excludedmod' );
 			});
