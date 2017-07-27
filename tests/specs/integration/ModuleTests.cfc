@@ -109,6 +109,15 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				});
 			});
 
+			given( "A nested module: a-inception", function(){
+				then( "the nested module should only have its onLoad method called once", function(){
+					expect( request ).toHaveKey( "a-inception" );
+					expect( request[ "a-inception" ] ).toBeStruct();
+					expect( request[ "a-inception" ] ).toHaveKey( "loadedCount" );
+					expect( request[ "a-inception" ].loadedCount ).toBe( 1, "Module onLoad should only have been called once." );
+				});
+			});
+
 			given( "A nested module: inception with a 'modules_app' convention", function(){
 				then( "it should load and activate its sub-modules", function(){
 					var config = getController().getSetting( "modules" );
