@@ -128,8 +128,9 @@ TODO: update dsl consistency, so it is faster.
 
 				<cfcatch type="any">
 					<!--- Controlled Exception --->
-					<cfthrow message="Error building: #thisMap.getName()# -> #cfcatch.message# #cfcatch.detail# with constructor arguments: #constructorArgs.toString()#"
-							 detail="Mapping: #thisMap.getMemento().toString()#, Stacktrace: #cfcatch.stacktrace#"
+					<cfthrow message="Error building: #thisMap.getName()# -> #cfcatch.message#"
+							 detail="Constructor Arguments: #constructorArgs.toString()#, Error detail: #cfcatch.detail#"
+							 extendedInfo="Mapping: #thisMap.getMemento().toString()#, Stacktrace: #cfcatch.stacktrace#"
 							 type="Builder.BuildCFCDependencyException">
 				</cfcatch>
 			</cftry>
