@@ -968,6 +968,85 @@ component serializable=false accessors="true"{
 	}
 
 	/**
+	 * This method will send a file to the browser or requested HTTP protocol according to arguments.
+	 * CF11+ Compatibility
+	 *
+	 * @file The absolute path to the file or a binary file to send
+	 * @name The name to send to the browser via content disposition header.  If not provided then the name of the file or a UUID for a binary file will be used
+	 * @mimeType A valid mime type to use.  If not passed, then we will try to use one according to file type
+	 * @disposition The browser content disposition (attachment/inline) header
+	 * @abortAtEnd If true, then this method will do a hard abort, we do not recommend this, prefer the event.noRender() for a graceful abort.
+	 * @extension Only used for binary files which types are not determined.  
+	 * @deleteFile Delete the file after it has been streamed to the user. Only used if file is not binary.
+	 */
+	function sendFile( 
+		file="",
+		name="",
+		mimeType="",
+		disposition="attachment",
+		boolean abortAtEnd="false",
+		extension="",
+		boolean deleteFile=false
+	){
+		var fileSize = 0;
+
+		// Binary detection settings
+		if( isBinary( arguments.file ) ){
+			if( len( trim( arguments.name ) ) eq 0){
+				arguments.name = createUUID();
+			}
+			if( !len( trim( arguments.extension ) ) ){
+				throw( 
+					message = "Extension missing for binary file.",
+					type 	= "InvalidExtensionException"
+				);
+			}
+			// Determine file size
+			fileSize = len( arguments.file );
+			//  Lookup mime type 
+			if( !len( trim( arguments.mimetype ) ) ){
+				arguments.mimetype = getFileMimeType( extension );
+			}
+		}
+		// Else file on disk settings
+		else if ( fileExists( arguments.file ) ){
+			// Did we pass a name? Else get it from file path
+			if( !len( trim( arguments.name ) ) ){
+				arguments.name = REReplace( getFileFromPath( arguments.file ), "\.[^.]*$", "" );
+			}
+			//  Set extension 
+			arguments.extension = listLast( arguments.file, "." );
+			//  Set size 
+			fileSize = getFileInfo( arguments.file ).size;
+			//  Lookup mime type 
+			if( !len( trim( arguments.mimetype ) ) ){
+				arguments.mimetype = fileGetMimeType( arguments.file );
+			}
+		} else {
+			throw( 
+				message = "No file binary or file '#arguments.file#' located. Please check your path and arguments.",
+				type 	= "InvalidFileException"
+			);
+		}
+
+		//  Set content headers 
+		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename='#arguments.name#.#extension#'" );
+		setHTTPHeader( name="content-length", value=fileSize );
+		
+		//  Send file 
+		if ( isBinary( arguments.file ) ) {
+			cfcontent( variable=arguments.file, type=arguments.mimetype );
+		} else {
+			cfcontent( deletefile=arguments.deleteFile, file=arguments.file, type=arguments.mimetype );
+		}
+
+		//  Abort further processing? 
+		if( arguments.abortAtEnd ){
+			abort;
+		}
+	}
+
+	/**
 	* Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you
 	* @type The type of data to render. Valid types are JSON, JSONP, JSONT, XML, WDDX, PLAIN/HTML, TEXT, PDF. The deafult is HTML or PLAIN. If an invalid type is sent in, this method will throw an error
 	* @data The data you would like to marshall and return by the framework
@@ -1286,6 +1365,57 @@ component serializable=false accessors="true"{
 				type 	= "RequestContext.InvalidFormat" 
 			);
 		}
+	}
+
+	//  getFileMimeType 
+
+	/**
+	 * Get's the file mime type for a given file extension, this is mostly used for file delivery. 
+	 * If not in the most common, we deliver as a binary octet-stream.
+	 * @extension The extension to assume.
+	 */
+	private function getFileMimeType( required string extension ){
+		var fileMimeType = '';
+		switch ( lcase( arguments.extension ) ) {
+			case  "txt,js,css,cfm,cfc,html,htm,jsp,md,wiki":
+				fileMimeType = 'text/plain';
+				break;
+			case  "gif":
+				fileMimeType = 'image/gif';
+				break;
+			case  "jpg,jpeg":
+				fileMimeType = 'image/jpg';
+				break;
+			case  "png":
+				fileMimeType = 'image/png';
+				break;
+			case  "wav":
+				fileMimeType = 'audio/wav';
+				break;
+			case  "mp3":
+				fileMimeType = 'audio/mpeg3';
+				break;
+			case  "pdf":
+				fileMimeType = 'application/pdf';
+				break;
+			case  "zip,tar,gzip":
+				fileMimeType = 'application/zip';
+				break;
+			case  "ppt,pptx":
+				fileMimeType = 'application/vnd.ms-powerpoint';
+				break;
+			case  "doc,docx":
+				fileMimeType = 'application/msword';
+				break;
+			case  "xls,xlsx":
+				fileMimeType = 'application/vnd.ms-excel';
+				break;
+			default:
+				fileMimeType = 'application/octet-stream';
+				break;
+		}
+		//  More mimeTypes: http://www.iana.org/assignments/media-types/application/ 
+		return fileMimeType;
 	}
 
 }
