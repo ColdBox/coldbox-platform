@@ -127,11 +127,14 @@ TODO: update dsl consistency, so it is faster.
 						  argumentcollection="#constructorArgs#">
 
 				<cfcatch type="any">
-					<!--- Controlled Exception --->
-					<cfthrow message="Error building: #thisMap.getName()# -> #cfcatch.message#"
-							 detail="Constructor Arguments: #constructorArgs.toString()#, Error detail: #cfcatch.detail#"
-							 extendedInfo="Mapping: #thisMap.getMemento().toString()#, Stacktrace: #cfcatch.stacktrace#"
-							 type="Builder.BuildCFCDependencyException">
+					<cfscript>
+						// Controlled exception
+						throw( 
+							type="Builder.BuildCFCDependencyException",
+							message="Error building: #thisMap.getName()# -> #cfcatch.message#.",
+							detail="DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#, Error Location: #cfcatch.tagContext[ 1 ].template#:#cfcatch.tagContext[ 1 ].line#"
+						);
+					</cfscript>
 				</cfcatch>
 			</cftry>
 		</cfif>
@@ -152,7 +155,10 @@ TODO: update dsl consistency, so it is faster.
 
 			// check if factory exists, else throw exception
 			if( NOT instance.injector.containsInstance( factoryName ) ){
-				throw(message="The factory mapping: #factoryName# is not registered with the injector",type="Builder.InvalidFactoryMappingException");
+				throw( 
+					message="The factory mapping: #factoryName# is not registered with the injector", 
+					type="Builder.InvalidFactoryMappingException" 
+				);
 			}
     		// get Factory mapping
 			oFactory = instance.injector.getInstance( factoryName );
