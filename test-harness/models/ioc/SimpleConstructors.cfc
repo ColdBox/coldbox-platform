@@ -7,6 +7,8 @@
 		<cfargument name="dslVar" 		required="true">
 		<cfargument name="modelVar" 	required="true">
 		<cfargument name="modelVarNonRequired" 	required="false">
+		<!--An extra typed argument so we can test instantiation failure -->
+		<cfargument name="extraArg"    	type="string">
     	<cfscript>
     	
     		this.constant = arguments.constant;
