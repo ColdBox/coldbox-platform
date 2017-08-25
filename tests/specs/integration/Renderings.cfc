@@ -97,6 +97,18 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				});
 			} );
 
+			story( "I want to be able to render simple views from actions", function(){
+				given( "a renderView() from an action", function(){
+					then( "it should render the simple view with no name", function(){
+						var e = execute( event="rendering.normalRendering", renderResults=true );
+						expect(	e.getRenderedContent() )
+							.toInclude( "simple view" );
+					});
+				
+				});
+			
+			});
+
 		});
 
 	}

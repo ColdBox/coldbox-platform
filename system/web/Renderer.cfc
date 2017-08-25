@@ -168,7 +168,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var viewLocations		= "";
 
 		// Rendering Region call?
-		if( structKeyExists( arguments, "name" ) ){
+		if( !isNull( arguments.name ) and len( arguments.name ) ){
 			var regions = event.getRenderingRegions();
 			// Verify Region
 			if( !structKeyExists( regions, arguments.name ) ){

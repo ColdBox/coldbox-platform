@@ -33,6 +33,13 @@ component output="false" singleton{
 	}
 
 	/**
+	* normalRendering
+	*/
+	function normalRendering( event, rc, prc ){
+		return renderView( view="simpleview" );
+	}
+
+	/**
 	* renderingRegions
 	*/
 	function renderingRegions( event, rc, prc ){
