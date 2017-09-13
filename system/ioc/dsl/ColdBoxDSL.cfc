@@ -92,7 +92,10 @@ Description :
 							// module setting?
 							if( find("@",thisLocationKey) ){
 								moduleSettings = instance.coldbox.getSetting("modules");
-								if( structKeyExists(moduleSettings, listlast(thisLocationKey,"@") ) ){
+								if( structKeyExists(moduleSettings, listlast(thisLocationKey,"@")) 
+									and structKeyExists( moduleSettings[ listlast(thisLocationKey,"@") ],"settings" )
+									and structKeyExists( moduleSettings[ listlast(thisLocationKey,"@") ].settings,listFirst(thisLocationKey,"@") )
+								 ){
 									return moduleSettings[ listlast(thisLocationKey,"@") ].settings[ listFirst(thisLocationKey,"@") ];
 								}
 								else if( instance.log.canDebug() ){
