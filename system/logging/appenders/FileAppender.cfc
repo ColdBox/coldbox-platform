@@ -111,12 +111,12 @@ Properties:
 			}
 			else{
 				// Cleanup main message
-				message = replace(message,'"','""',"all");
-				message = replace(message,"#chr(13)##chr(10)#",'  ',"all");
-				message = replace(message,chr(13),'  ',"all");
 				if( len(loge.getExtraInfoAsString()) ){
 					message = message & " " & loge.getExtraInfoAsString();
 				}
+				message = replace(message,'"','""',"all");
+				message = replace(message,"#chr(13)##chr(10)#",'  ',"all");
+				message = replace(message,chr(13),'  ',"all");
 				// Entry string
 				entry = '"#severityToString(logEvent.getSeverity())#","#getname()#","#dateformat(timestamp,"MM/DD/YYYY")#","#timeformat(timestamp,"HH:MM:SS")#","#loge.getCategory()#","#message#"';
 			}
