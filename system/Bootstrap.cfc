@@ -247,11 +247,28 @@ component serializable="false" accessors="true"{
 					    structKeyExists( eCacheEntry, "lastAccessTimeout" )
 					){
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
+							
+							// Try to discover the content type
+							var defaultContentType = "text/html";
+							try{
+								// Discover from event caching first.
+								if( isStruct( renderData ) and not structisEmpty( renderData ) ){
+									defaultContentType 	= renderData.contentType;
+								} 
+								// Else, ask the engine
+								else {
+									defaultContentType = getPageContext().getResponse().getContentType();
+								}
+							} catch( any e){
+								// Catch for stupid ACF2016 incompatiblity on the Servlet Response Interface!
+								defaultContentType = getPageContext().getResponse().getResponse().getContentType();
+							}
+							
 							// prepare storage entry
 							var cacheEntry = {
 								renderedContent = renderedContent,
 								renderData		= false,
-								contentType 	= getPageContext().getResponse().getContentType(),
+								contentType 	= defaultContentType,
 								encoding		= "",
 								statusCode		= "",
 								statusText		= "",
@@ -260,7 +277,7 @@ component serializable="false" accessors="true"{
 							
 							// is this a render data entry? If So, append data
 							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
-								cacheEntry.renderData = true;
+								cacheEntry.renderData 	= true;
 								structAppend( cacheEntry, renderData, true );
 							}
 
@@ -277,13 +294,12 @@ component serializable="false" accessors="true"{
 
 					// Render Data? With stupid CF whitespace stuff.
 					if( isStruct( renderData ) and not structisEmpty( renderData ) ){/*
-						*/renderData.controller = cbController;renderDataSetup(argumentCollection=renderData);/*
+						*/renderData.controller = cbController;renderDataSetup( argumentCollection=renderData );/*
 						// Binary
 						*/if( renderData.isBinary ){ cbController.getDataMarshaller().renderContent( type="#renderData.contentType#", variable="#renderedContent#" ); }/*
 						// Non Binary
 						*/else{ writeOutput( renderedContent ); }
-					}
-					else{
+					} else {
 						writeOutput( renderedContent );
 					}
 
@@ -295,7 +311,7 @@ component serializable="false" accessors="true"{
 
 			//****** POST PROCESS *******/
 			if( len( cbController.getSetting( "RequestEndHandler" ) ) ){
-				cbController.runEvent(event=cbController.getSetting("RequestEndHandler"), prePostExempt=true);
+				cbController.runEvent( event=cbController.getSetting("RequestEndHandler"), prePostExempt=true );
 			}
 			interceptorService.processState( "postProcess" );
 			//****** FLASH AUTO-SAVE *******/
@@ -303,8 +319,7 @@ component serializable="false" accessors="true"{
 				cbController.getRequestService().getFlashScope().saveFlash();
 			}
 
-		}
-		catch(Any e){
+		} catch(Any e) {
 			// process the exception and render its report
 			writeOutput( processException( cbController, e ) );
 		}

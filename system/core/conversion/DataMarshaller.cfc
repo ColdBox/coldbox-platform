@@ -110,11 +110,17 @@ Description :
 		<cfargument name="encoding" required="false" default="utf-8" hint="The encoding"/>
 		<cfargument name="reset" 	required="false" default="false" type="boolean" hint="Reset the conten or not" >
 
-   	   	<cfif structKeyExists( arguments, "variable")>
-			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" variable="#arguments.variable#" reset="#arguments.reset#"/>
-		<cfelse>
-			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" reset="#arguments.reset#">
+		<!--- Verify incoming enconding on type or append it --->
+		<cfif !findNoCase( ";", arguments.type )>
+			<cfset arguments.type &= "; charset=#arguments.encoding#">
 		</cfif>
+
+   	   	<cfif structKeyExists( arguments, "variable")>
+			<cfcontent type="#arguments.type#" variable="#arguments.variable#" reset="#arguments.reset#"/>
+		<cfelse>
+			<cfcontent type="#arguments.type#" reset="#arguments.reset#">
+		</cfif>
+		
 		<cfsetting showdebugoutput="false" >
    	</cffunction>
 
