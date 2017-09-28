@@ -9,5 +9,6 @@
             "class":"lucee.runtime.cache.ram.RamCache",
             "readOnly":"false"
         }
-    }
+    },
+    "cacheDefaultObject":"default"
 }
