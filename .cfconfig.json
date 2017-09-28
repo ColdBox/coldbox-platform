@@ -10,5 +10,19 @@
             "readOnly":"false"
         }
     },
-    "cacheDefaultObject":"default"
+    "cacheDefaultObject":"default",
+	"datasources":{
+		"coolblog":{
+			"clientHostname":false,
+			"host":"localhost",
+			"dbdriver":"MySQL",
+			"password":"",
+			"dsn":"jdbc:mysql://localhost:3306/coolblog?tinyInt1isBit=false&",
+			"custom":"",
+			"username":"root",
+			"database":"coolblog",
+			"port":"3306"
+		}
+	}
+	
 }
