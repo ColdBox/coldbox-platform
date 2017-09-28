@@ -14,7 +14,7 @@
 		scope.logMessage(loge);
 		scope.logMessage(loge);
 		
-		debug(request);
+		// debug(request);
 		assertEquals( arrayLen(request["MyScopeLogger"]), 2);
 	}	
 </cfscript>

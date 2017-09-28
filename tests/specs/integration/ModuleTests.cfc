@@ -71,7 +71,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			it( "should load modules in a bundle", function(){
 				var config = getController().getSetting( "modules" );
 
-				debug( config );
+				// debug( config );
 
 				expect(	config ).toHaveKey( 'layouttest' )
 					.toHaveKey( 'test1' );

@@ -17,7 +17,7 @@
 		xml.$("translateValue","mock value");
 		results = xml.arrayToXML(data=test,rootElement="TestArray");
 		assertTrue( isXML(results) );
-		debug(results);
+		// debug(results);
 	}
 	
 	function testqueryToXML(){
@@ -27,11 +27,11 @@
 						  3 | tom");
 		results = xml.queryToXML(data=qTest);
 		assertTrue( isXML(results) );
-		debug(results);
+		// debug(results);
 		
 		results = xml.queryToXML(data=qTest,columnList="id");
 		assertTrue( isXML(results) );
-		debug(results);
+		// debug(results);
 	}
 	
 	function testStructToXML(){
@@ -39,11 +39,11 @@
 		
 		results = xml.structToXML(test);
 		assertTrue( isXML(results) );
-		debug(results);
+		// debug(results);
 		
 		results = xml.structToXML(data=test,rootElement="People");
 		assertTrue( isXML(results) );
-		debug(results);
+		// debug(results);
 	
 	}
 	
@@ -51,31 +51,31 @@
 		test = {name="luis",age="11", testVal=javaCast("null","")};		
 		
 		results = xml.structToXML(test);
-		debug(results);
+		// debug(results);
 		assertTrue( isXML(results) );
 		
 		test = [javaCast("null",""),1,3,test];
 		results = xml.toXML(test);
-		debug(results);
+		// debug(results);
 		assertTrue( isXML(results) );
 	}
 	
 	function testToXML(){
 		//1: Simple Values
 		results = xml.toXML(data="luis");
-		debug(results);
+		// debug(results);
 		assertTrue( isXML(results) );
 	
 		//2: Simple Array
 		ar = [1,2,3];
 		results = xml.toXML(data=ar);
-		debug(results);
+		// debug(results);
 		assertTrue( isXML(results) );
 		
 		//3: Simple Struct
 		struct = {name="luis",age="11"};
 		results = xml.toXML(data=struct);
-		debug(results);
+		// debug(results);
 		assertTrue( isXML(results) );
 		
 		//4: Query
@@ -84,18 +84,18 @@
 						  2 | sana
 						  3 | tom");
 		results = xml.toXML(data=qTest);
-		debug(results);
+		// debug(results);
 		assertTrue( isXML(results) );
 		
 		//5: Nestings
 		nested = [1,2,3,{name="luis",age="11"},5,{name="majano",age="33"}];
 		results = xml.toXML(data=nested);
-		debug(results);
+		// debug(results);
 		assertTrue( isXML(results) );
 		
 		nested = {name="luis",age="21",nicknames=["pio","lui","lois"]};
 		results = xml.toXML(data=nested);
-		debug(results);
+		// debug(results);
 		assertTrue( isXML(results) );
 		
 	}

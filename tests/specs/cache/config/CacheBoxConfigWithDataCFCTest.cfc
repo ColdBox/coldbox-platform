@@ -14,7 +14,7 @@
 		//cacheBox.init( config );
 
 		memento = config.getMemento();
-		debug(memento);
+		// debug(memento);
 
 		assertFalse( structIsEmpty(memento.caches) );
 		assertTrue( structKeyExists(memento.caches,"SampleCache1") );
@@ -34,7 +34,7 @@
 		//cacheBox.init( config );
 
 		memento = config.getMemento();
-		debug(memento);
+		// debug(memento);
 
 		assertFalse( structIsEmpty(memento.caches) );
 		assertTrue( structKeyExists(memento.caches,"SampleCache1") );

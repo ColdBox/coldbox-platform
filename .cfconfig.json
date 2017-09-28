@@ -1,0 +1,13 @@
+{
+    "caches":{
+        "default":{
+            "storage":"false",
+            "custom":{
+                "timeToIdleSeconds":"0",
+                "timeToLiveSeconds":"0"
+            },
+            "class":"lucee.runtime.cache.ram.RamCache",
+            "readOnly":"false"
+        }
+    }
+}

@@ -56,15 +56,15 @@
 	}
 
 	function testGetBinder(){
-		debug( injector.getBinder() );
+		// debug( injector.getBinder() );
 		assert( isObject( injector.getBinder() ) );
 	}
 	function testgetVersion(){
-		debug( injector.getVersion() );
+		// debug( injector.getVersion() );
 		assert( len( injector.getVersion() ) );
 	}
 	function testGetInjectorID(){
-		debug( injector.getInjectorID() );
+		// debug( injector.getInjectorID() );
 		assertEquals( createObject('java','java.lang.System').identityHashCode(injector), injector.getInjectorID() );
 	}
 

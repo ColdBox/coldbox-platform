@@ -48,7 +48,7 @@
 		config.appender("luis3","coldbox.system.logging.AbstractAppender");
 		config.root(appenders="*");
 		config.validate();
-		debug(config.getRoot());
+		// debug(config.getRoot());
 	}
 	function testConventionMethods(){
 		config.info("com.coldbox","com.transfer");

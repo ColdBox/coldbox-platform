@@ -493,7 +493,7 @@
 		link = event.buildLink( linkTo='my/event/handler/', queryString='one=1&two=2' );
 		expect(	link ).toInclude( "jfetmac/applications/coldbox/test-harness/index.cfm/my/event/handler/one/1/two/2" );
 		
-		debug( link );
+		// debug( link );
 	}
 
 	function testOnlyArray() {

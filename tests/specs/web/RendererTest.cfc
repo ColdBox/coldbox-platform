@@ -29,7 +29,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbtestharne
 
 			it( "can render views with caching parameters", function(){
 				var results = r.renderView( view="simpleview", cache=true, cacheTimeout="5" );
-				debug( results );
+				// debug( results );
 
 				var results2 = r.renderView( view="simpleview", cache=true, acheTimeout="5" );
 				expect(	results ).toBe( results2 );

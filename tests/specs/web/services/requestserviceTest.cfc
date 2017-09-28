@@ -46,7 +46,7 @@ Description :
 		/* Catpure the request */
 		context = service.requestCapture();
 
-		debug(context.getCollection());
+		// debug(context.getCollection());
 
 		/* Tests */
 		AssertTrue( isObject(context), "Context Creation");

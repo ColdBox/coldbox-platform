@@ -40,10 +40,10 @@
 	}
 
 	function testGetCurrentLoggers(){
-		debug( logBox.getCurrentLoggers() );
+		// debug( logBox.getCurrentLoggers() );
 	}
 	function testGetCurrentAppenders(){
-		debug( logBox.getCurrentAppenders() );
+		// debug( logBox.getCurrentAppenders() );
 	}
 
 	function testLocateCategoryParentLogger(){

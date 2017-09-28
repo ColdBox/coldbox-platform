@@ -109,7 +109,7 @@ Description :
 	function testClear(){
 		map = {test='test'};
 		map2 = duplicate(map);
-		debug(map2);
+		// debug(map2);
 		
 		store.$property("pool","instance",map);			
 
@@ -118,7 +118,7 @@ Description :
 		
 		results = store.clear('test');
 		
-		debug( store.$callLog() );
+		// debug( store.$callLog() );
 		assertEquals( results, true );
 		assertTrue( structIsEmpty(map) );
 		
