@@ -18,7 +18,7 @@
 
                 var cl = ses.$callLog().addRoute;
 
-                expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times, but it was called: #len( cl )#" );
+                expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times, but it was called: #arrayLen( cl )#" );
 
                 expect( cl[ 1 ] ).toBe( 
                     { 
@@ -47,7 +47,7 @@
 
                 var cl = ses.$callLog().addRoute;
 
-                expect( cl ).toHaveLength( 8, "addRoute should have been called 8 times, but it was called: #len( cl )#" );
+                expect( cl ).toHaveLength( 8, "addRoute should have been called 8 times, but it was called: #arrayLen( cl )#" );
             });
 
             it( "can add RESTFul routes as an array list", function(){
@@ -55,7 +55,7 @@
 
                 var cl = ses.$callLog().addRoute;
 
-                expect( cl ).toHaveLength( 8, "addRoute should have been called 8 times, but it was called: #len( cl )#" );
+                expect( cl ).toHaveLength( 8, "addRoute should have been called 8 times, but it was called: #arrayLen( cl )#" );
             });
             
             it( "can add all the RESTful routes for a resource", function() {
