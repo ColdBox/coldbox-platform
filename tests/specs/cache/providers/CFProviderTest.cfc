@@ -15,6 +15,7 @@ Description :
 	this.loadColdBox = false;
 
 	boolean function isAdobe(){
+		return true;
 		return !listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? true : false;
 	}
 
