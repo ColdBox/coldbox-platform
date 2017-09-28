@@ -51,7 +51,7 @@ before_script:
   # Ready for testing
   - box server start name=$ENGINE --debug
   # Copy over custom web server config
-  - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
+  # - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
 
 script:
   # Execute build via ANT
