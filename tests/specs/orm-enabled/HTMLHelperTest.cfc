@@ -4,8 +4,13 @@ Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.HTMLHelper">
+<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.HTMLHelper" skip="isAdobe">
 <cfscript>
+	
+	boolean function isAdobe(){
+		return !listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? true : false;
+	}
+	
 	function setup(){
 		super.setup();
 		mockRequestContext 	= getMockRequestContext();

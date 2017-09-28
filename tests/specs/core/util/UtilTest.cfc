@@ -6,13 +6,13 @@
 	}
 
 	function isInstanceCheck(){
-		test = createObject("component","coldbox.tests.testhandlers.BaseTest");
+		test = createObject("component","coldbox.tests.testHandlers.BaseTest");
 		assertTrue( util.isInstanceCheck( test, "coldbox.system.EventHandler") );
 
-		test = createObject("component","coldbox.tests.testhandlers.ehTest");
+		test = createObject("component","coldbox.tests.testHandlers.ehTest");
 		assertTrue( util.isInstanceCheck( test, "coldbox.system.EventHandler") );
 
-		test = createObject("component","coldbox.tests.testhandlers.TestNoInheritance");
+		test = createObject("component","coldbox.tests.testHandlers.TestNoInheritance");
 		assertFalse( util.isInstanceCheck( test, "coldbox.system.EventHandler") );
 	}
 

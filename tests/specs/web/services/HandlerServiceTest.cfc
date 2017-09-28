@@ -27,7 +27,7 @@ Description :
 	function testRegisterHandlers(){
 		// Mocks
 		mockController.$("getSetting").$args("HandlersPath").$results(expandPath('/coldbox/test-harness/handlers'));
-		mockController.$("getSetting").$args("HandlersExternalLocationPath").$results(expandPath('/coldbox/test-harness/external/testhandlers'));
+		mockController.$("getSetting").$args("HandlersExternalLocationPath").$results(expandPath('/coldbox/test-harness/external/testHandlers'));
 		mockController.$("setSetting");
 		handlers = ["ehGeneral","blog"];
 		handlerService.$("gethandlerListing",handlers);
