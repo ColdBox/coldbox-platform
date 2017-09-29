@@ -7,11 +7,11 @@ notifications:
 
 env:
   matrix:
-    - ENGINE=lucee@4.5 COLDBOX_VERSION=5.0.0
-    - ENGINE=lucee@5 COLDBOX_VERSION=5.0.0
-    - ENGINE=adobe@10 COLDBOX_VERSION=5.0.0
-    - ENGINE=adobe@11 COLDBOX_VERSION=5.0.0
-    - ENGINE=adobe@2016 COLDBOX_VERSION=5.0.0
+    - ENGINE=lucee@4.5	COLDBOX_VERSION=5.0.0	ANT_TARGET=build.all
+    - ENGINE=lucee@5	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
+    - ENGINE=adobe@10	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
+    - ENGINE=adobe@11	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
+    - ENGINE=adobe@2016	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
 
 branches:
   only:
@@ -55,7 +55,7 @@ before_script:
 
 script:
   # Execute build via ANT
-  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml
+  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
