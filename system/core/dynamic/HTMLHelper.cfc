@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
@@ -86,7 +86,7 @@ Description :
 				if( NOT listFindNoCase(event.getValue(name="cbox_assets",private=true),thisAsset) ){
 
 					// Load Asset
-					if( findNoCase(".js", thisAsset) ){
+					if( findNoCase( "js", listLast(thisAsset,".") ) ){
 						sb.append('<script src="#jsPath##thisAsset#" type="text/javascript"#asyncStr##deferStr#></script>');
 					}
 					else{
