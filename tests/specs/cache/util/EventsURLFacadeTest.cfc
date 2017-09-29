@@ -16,7 +16,7 @@ Description :
 		<cfscript>
 		cm = getMockBox().createEmptyMock(className='coldbox.system.cache.providers.MockProvider');
 		cm.$("getEventCacheKeyPrefix","mock");
-		facade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(cm);
+		facade = CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(cm);
 		</cfscript>
 	</cffunction>
 
