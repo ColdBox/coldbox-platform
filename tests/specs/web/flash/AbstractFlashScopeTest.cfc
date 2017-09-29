@@ -64,8 +64,10 @@
 	function testPersistRC(){
 		mockEvent.$("getCollection",testScope);
 		
+		flash.clear();
+		
 		flash.persistRC();
-		assertEquals( flash.size(), 0, "Nothing persisted, falsh shuold be empty." );
+		assertEquals( flash.size(), 0, "Nothing persisted, flash shuold be empty." );
 		
 		flash.persistRC(include="name");
 		assertEquals( flash.size(), 1, "Flash should contain only 'name', thus one item." );
