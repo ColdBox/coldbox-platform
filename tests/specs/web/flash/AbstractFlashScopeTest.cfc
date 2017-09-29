@@ -65,20 +65,20 @@
 		mockEvent.$("getCollection",testScope);
 		
 		flash.persistRC();
-		assertEquals( flash.size(), 0);
+		assertEquals( flash.size(), 0, "Nothing persisted, falsh shuold be empty." );
 		
 		flash.persistRC(include="name");
-		assertEquals( flash.size(), 1);
+		assertEquals( flash.size(), 1, "Flash should contain only 'name', thus one item." );
 		
 		flash.clear();
 		
 		flash.persistRC(include="name,date");
-		assertEquals( flash.size(), 2);
+		assertEquals( flash.size(), 2, "Flash should cotnain only 'name' and 'date', thus two items." );
 		
 		flash.clear();
 		
 		flash.persistRC(exclude="name");
-		assertEquals( flash.size(), 1);		
+		assertEquals( flash.size(), 1, "After being cleared, flash should only contain 'name', thus one item." );
 	}
 	
 	function testClearFlash(){
