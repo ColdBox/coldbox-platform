@@ -4,8 +4,13 @@ Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.HTMLHelper">
+<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.HTMLHelper" skip="isAdobe">
 <cfscript>
+	
+	boolean function isAdobe(){
+		return !listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? true : false;
+	}
+	
 	function setup(){
 		super.setup();
 		mockRequestContext 	= getMockRequestContext();
@@ -24,7 +29,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		model.$("$htmlhead").$("settingExists",false);
 		model.addAsset('test.js,luis.js');
 
-		debug( model.$callLog().$htmlhead);
+		// debug( model.$callLog().$htmlhead);
 
 		// test duplicate call
 		assertEquals('<script src="test.js" type="text/javascript"></script><script src="luis.js" type="text/javascript"></script>' , model.$callLog().$htmlhead[1][1] );
@@ -53,7 +58,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		// global settings
 		model.$("settingExists",true).$("getSetting","/includes/css/");
 		r = model.addAsset('test1.css,luis1.css',false);
-		debug( r );
+		// debug( r );
 		assertEquals('<link href="/includes/css/test1.css" type="text/css" rel="stylesheet" /><link href="/includes/css/luis1.css" type="text/css" rel="stylesheet" />' , r );
 	}
 
@@ -127,7 +132,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		model.$("getColumnArray",mockArray);
 
 		str = model.ul(values=data,column="name");
-		debug(str);
+		// debug(str);
 		assertEquals( '<ul><li>luis</li><li>joe</li><li>fernando</li></ul>', str);
 	}
 
@@ -163,13 +168,13 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 	function testAddJSContent(){
 		str  = model.addJSContent('function test(){ alert("luis"); }');
-		debug(str);
+		// debug(str);
 		assertEquals('<script type="text/javascript">function test(){ alert("luis"); }</script>', str);
 	}
 
 	function testAddStyleContent(){
 		str  = model.addStyleContent('.test{color: ##123}');
-		debug(str);
+		// debug(str);
 
 		assertEquals('<style type="text/css">.test{color: ##123}</style>', str);
 	}
@@ -200,7 +205,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		data = entityLoad("User");
 
 		str = model.table(data=data,includes="firstName");
-		debug(str);
+		// debug(str);
 		assertTrue( isXML(str) );
 	}
 
@@ -242,11 +247,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		};
 
 		str = model.slugify( data.title1 );
-		debug(str);
+		// debug(str);
 		assertEquals("my-awesome-post", str);
 
 		str = model.slugify( data.title2 );
-		debug(str);
+		// debug(str);
 		assertEquals("sept-is-great-for-me-and-you", str);
 	}
 
@@ -314,7 +319,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		// self-submitting
 		mockEvent.$("getCurrentEvent","user.home").$("buildLink", "https://www.coldbox.org/user/home");
 		str = model.startForm();
-		debug(str);
+		// debug(str);
 		assertTrue( findNoCase( 'action="https://www.coldbox.org/user/home"', str ) );
 	}
 
@@ -330,7 +335,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals('<div><label for="name">My Name</label></div>', str);
 
 		str = model.label(field="name",content="My Name", wrapper="div", wrapperAttrs= { "class" = "label-wrapper", "id" = "label-wrapper-id"});
-		debug(str);
+		// debug(str);
 		assertEquals('<div id="label-wrapper-id" class="label-wrapper"><label for="name">My Name</label></div>',str);
 	}
 
@@ -345,7 +350,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals('<label for="Message">Message</label><textarea name="message" id="message">Hello</textarea>', str);
 
 		str = model.textarea(name="message",value="Hello",label="Message",wrapper="div");
-		debug(str);
+		// debug(str);
 		assertEquals('<label for="Message">Message</label><div><textarea name="message" id="message">Hello</textarea></div>', str);
 
 		str = model.textarea(name="message",value="Hello",label="Message",wrapper="div",wrapperAttrs= {"class" = "wrapper-class", id = "wrapper-id"});
@@ -362,7 +367,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 		str = model.textarea(name="message",value="Hello",label="Message",labelWrapper="div",labelWrapperAttrs= {"class" = "label-wrapper-class", "id" = "label-wrapper-id"});
 		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></div><textarea name="message" id="message">Hello</textarea>', str);
-		debug(str);
+		// debug(str);
 
 		// ALL THE WRAPPERS
 		str = model.textarea(name="message",value="Hello",label="Message",labelWrapper="span",labelWrapperAttrs= {"class" = "label-wrapper-class", "id" = "label-wrapper-id"}, groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id"}, wrapper="div",wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id"});
@@ -371,7 +376,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
 		str = model.textarea(name="lastName",bind=majano);
-		debug(str);
+		// debug(str);
 		assertEquals( xmlParse( '<textarea name="lastName" id="lastName">Majano</textarea>' ), xmlParse( str ) );
 	}
 
@@ -409,7 +414,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
 		str = model.hiddenField(name="lastName",bind=majano);
-		debug(str);
+		// debug(str);
 		assertTrue( findNocase('value="Majano"', str) );
 	}
 
@@ -468,7 +473,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
 		str = model.checkbox(name="lastName", bind=majano, value="majano");
-		debug(str);
+		// debug(str);
 		assertTrue( findNocase('value="Majano"', str) );
 		assertTrue( findNocase('checked="true"', str) );
 	}
@@ -554,71 +559,71 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	function testSelect(){
 		// array
 		str = model.select(name="users",options=[1,2,3]);
-		debug( str );
+		// debug( str );
 		assertEquals('<select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
 
 		str = model.select(name="users",options=[1,2,3], label="Message");
-		debug( str );
+		// debug( str );
 		assertEquals('<label for="users">Message</label><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
 
 		str = model.select(name="users",options=[1,2,3], label="Message", labelWrapper="div");
-		debug( str );
+		// debug( str );
 		assertEquals('<div><label for="users">Message</label></div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
 
 		str = model.select(name="users",options=[1,2,3], label="Message", labelWrapper="div", labelWrapperAttrs={ "class" = "label-wrapper-class", "id" = "label-wrapper-id"});
-		debug( str );
+		// debug( str );
 		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="users">Message</label></div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
 
 		str = model.select(name="users",options=[1,2,3], label="Message", wrapper='div');
-		debug( str );
+		// debug( str );
 		assertEquals('<label for="users">Message</label><div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
 
 		str = model.select(name="users",options=[1,2,3], label="Message", wrapper='div', wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id"});
-		debug( str );
+		// debug( str );
 		assertEquals('<label for="users">Message</label><div id="wrapper-id" class="wrapper-class"><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
 
 		str = model.select(name="users",options=[1,2,3], label="Message", groupWrapper='div');
-		debug( str );
+		// debug( str );
 		assertEquals('<div><label for="users">Message</label><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
 
 		str = model.select(name="users",options=[1,2,3], label="Message", groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id"});
-		debug( str );
+		// debug( str );
 		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="users">Message</label><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
 
 		str = model.select(name="users",options=[1,2,3], label="Message", labelWrapper='span', labelWrapperAttrs = { "class" = "label-wrapper-class", "id" = "label-wrapper-id"}, wrapper='div', wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id"}, groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id"});
-		debug( str );
+		// debug( str );
 		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><span id="label-wrapper-id" class="label-wrapper-class"><label for="users">Message</label></span><div id="wrapper-id" class="wrapper-class"><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div>', str);
 
 	}
 
 	function testAnchor(){
 		str = model.anchor(name="lui");
-		debug( str );
+		// debug( str );
 		assertEquals('<a name="lui"></a>', str);
 
 		str = model.anchor(name="lui",text="Luis");
-		debug( str );
+		// debug( str );
 		assertEquals('<a name="lui">Luis</a>', str);
 	}
 
 	function testhref(){
 		str = model.href(href="actions.save");
-		debug(str);
+		// debug(str);
 		assertEquals('<a href="index.cfm?event=actions.save"></a>', str);
 
 		str = model.href(href="actions.save",text="Edit");
-		debug(str);
+		// debug(str);
 		assertEquals('<a href="index.cfm?event=actions.save">Edit</a>', str);
 	}
 
 
 	function testFieldset(){
 		str = model.startFieldset(legend="Luis");
-		debug(str);
+		// debug(str);
 		assertEquals('<fieldset><legend>Luis</legend>', str);
 
 		str = model.endFieldSet();
-		debug(str);
+		// debug(str);
 		assertEquals('</fieldset>', str);
 	}
 
@@ -626,7 +631,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
 		str = model.emailField(name="lastName",bind=majano);
-		debug(str);
+		// debug(str);
 		assertTrue( findNocase('value="Majano"', str) );
 	}
 
@@ -634,7 +639,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		// entity binding
 		majano = entityLoad("User",{lastName="Majano"}, true);
 		str = model.urlField(name="lastName",bind=majano);
-		debug(str);
+		// debug(str);
 		assertTrue( findNocase('value="Majano"', str) );
 	}
 

@@ -240,12 +240,12 @@
 			myStruct.initDate = dateFormat(now(), "mm/dd/yyy");
 			/* JSON Packet */
 			myJSON = serializeJSON( myStruct );
-			debug( myJSON );
+			// debug( myJSON );
 
 			/* Populate From JSON */
 			obj = populator.populateFromJSON( obj, myJSON );
 			objInstance = obj.getInstance();
-			debug( objInstance );
+			// debug( objInstance );
 
 			/* Assert Population */
 			for( key in objInstance ){

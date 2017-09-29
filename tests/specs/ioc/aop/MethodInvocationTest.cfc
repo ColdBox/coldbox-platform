@@ -85,7 +85,7 @@
 				
 				// proceed with AOP interception
 				results = invocation.proceed(); 
-				debug( results );
+				// debug( results );
 
 				// Assert the crazyness
 				expect( 1 ).toBe( interceptors[ 1 ].callCounter );

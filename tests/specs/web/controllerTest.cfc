@@ -139,7 +139,7 @@
 		controller.setNextEvent(event="general.page",querystring="page=2&test=1");
 		//assertEquals( "", controller.$callLog().sendRelocation[4].URL );
 
-		debug( controller.$calllog() );
+		// debug( controller.$calllog() );
 	}
 
 }

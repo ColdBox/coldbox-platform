@@ -29,7 +29,7 @@
 		cp.$property("stats","instance",mockStats);
 		cp.clearStatistics();
 		asserttrue( arrayLen(mockStats.$callLog().clearStatistics) );
-		debug( mockStats.$callLog() );
+		// debug( mockStats.$callLog() );
 	}
 
 	function testConfiguration(){

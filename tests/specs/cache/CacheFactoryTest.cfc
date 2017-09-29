@@ -11,13 +11,13 @@
 	}
 
 	function testGetConfig(){
-		debug( cacheFactory.getConfig() );
+		// debug( cacheFactory.getConfig() );
 	}
 	function testgetVersion(){
-		debug( cacheFactory.getVersion() );
+		// debug( cacheFactory.getVersion() );
 	}
 	function testGetFactoryID(){
-		debug( cacheFactory.getFactoryID() );
+		// debug( cacheFactory.getFactoryID() );
 		assertEquals( createObject('java','java.lang.System').identityHashCode(cacheFactory), cacheFactory.getFactoryID() );
 	}
 
@@ -45,7 +45,7 @@
 		caches = {test=1,luis=2,joe=3};
 		cacheFactory.$property("caches","instance",caches);
 		data = cacheFactory.getCacheNames();
-		debug(data);
+		// debug(data);
 		assertEquals( structKeyArray(caches), data );
 	}
 
@@ -179,7 +179,7 @@
 	}
 
 	function testAddDefaultCacheWithExceptions(){
-		debug( cacheFactory.getconfig().getMemento() );
+		// debug( cacheFactory.getconfig().getMemento() );
 
 		try{
 			results = cacheFactory.addDefaultCache('');

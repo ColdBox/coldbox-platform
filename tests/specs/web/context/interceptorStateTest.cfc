@@ -72,7 +72,7 @@
 			this.state.register( this.key, this.mock, mockMetadata );
 			AssertEquals( this.state.getInterceptor(this.key), this.mock);
 			assertEquals( this.state.getMetadataMap( this.key ), mockMetadata );
-			debug( this.state.getMetadataMap() );
+			// debug( this.state.getMetadataMap() );
 		</cfscript>
 	</cffunction>		
 	
@@ -135,7 +135,7 @@
 			this.state.invokerAsync( getMockRequestContext(), {}, this.key, "high", mockBuffer );
 			sleep( 1000 );
 			assertTrue( mockInterceptor.$once("unittest") );
-			debug( cfthread );
+			// debug( cfthread );
 		</cfscript>
 	</cffunction>		
 	

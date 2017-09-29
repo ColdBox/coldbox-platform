@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		props = {filePath=expandPath("/tests/logs"),autoExpand=false};
-		debug(props);
+		// debug(props);
 		fileappender = getMockBox().createMock(className="coldbox.system.logging.appenders.FileAppender");
 		
 		// mock LogBox

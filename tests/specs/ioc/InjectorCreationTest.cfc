@@ -27,7 +27,7 @@
 
 	function testSetters(){
 		var r = injector.getInstance("CategoryService");
-		debug( r );
+		// debug( r );
 	}
 
 	function testLocateInstance(){

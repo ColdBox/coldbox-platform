@@ -16,7 +16,7 @@
 		c = {data="hello",nums=[1,2,3]};
 		log.init('unittest',1,c,"unittest");
 		r = log.getExtraInfoAsString();
-		debug(r);
+		// debug(r);
 
 		expected = serializeJSON( c );
 		assertEquals(expected, r);
@@ -26,7 +26,7 @@
 		extra = createObject("component","coldbox.tests.specs.logging.ExtraInfo");
 		log.init('unittest',1,extra,"unittest");
 		r = log.getExtraInfoAsString();
-		debug(r);
+		// debug(r);
 
 		assertEquals( serializeJSON(extra.getData()), r);
 	}
@@ -35,7 +35,7 @@
 		extra = createObject("component","coldbox.tests.specs.logging.ExtraInfo2");
 		log.init('unittest',1,extra,"unittest");
 		r = log.getExtraInfoAsString();
-		debug(r);
+		// debug(r);
 		assertTrue( isXML(r) );
 	}
 

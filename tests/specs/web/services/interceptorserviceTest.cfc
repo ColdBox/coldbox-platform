@@ -136,7 +136,7 @@
 		iService.$property("throwOnInvalidStates","instance.interceptorConfig",false);
 		mockState = getMockBox().createStub().$("process");
 		iService.$property("preProcess","instance.interceptionStates",mockState);
-		debug( iService.getInterceptionStates() );
+		// debug( iService.getInterceptionStates() );
 		iService.processState("badState");
 		assertTrue( mockState.$never("process") );
 
@@ -145,7 +145,7 @@
 		iService.$property("throwOnInvalidStates","instance.interceptorConfig",false);
 		mockState = getMockBox().createStub().$("process");
 		iService.$property("preProcess","instance.interceptionStates",mockState);
-		debug( iService.getInterceptionStates() );
+		// debug( iService.getInterceptionStates() );
 		iService.processState("preProcess");
 		assertTrue( mockState.$once("process") );
 

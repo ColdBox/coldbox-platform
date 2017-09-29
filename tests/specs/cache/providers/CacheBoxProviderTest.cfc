@@ -69,7 +69,7 @@ Description :
 
 		//list
 		results = cache.lookupMulti(keys="test,test2,test3");
-		debug(results);
+		// debug(results);
 		assertEquals( true, results.test );
 		assertEquals( true, results.test2 );
 		assertEquals( false, results.test3 );
@@ -148,7 +148,7 @@ Description :
 		cache.clearStatistics();
 
 		results = cache.getMulti("test,test2");
-		debug(results);
+		// debug(results);
 
 		assertEquals( testVal, results.test );
 		assertFalse( structKeyExists(results,"test2") );
@@ -161,7 +161,7 @@ Description :
 		cache.clearStatistics();
 
 		results = cache.getCachedObjectMetadata("test");
-		debug(results);
+		// debug(results);
 
 		assertEquals( 1, results.hits);
 	}
@@ -350,7 +350,7 @@ Description :
 		makePublic(cache,"_reap");
 		cache._reap();
 
-		debug( cache.$callLog() );
+		// debug( cache.$callLog() );
 		assertEquals( 0, cache.getSize() );
 
 	}

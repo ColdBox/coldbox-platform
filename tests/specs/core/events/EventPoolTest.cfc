@@ -26,7 +26,7 @@
 		pool.process(data);
 
 		assertTrue( arrayLen(target.logs) );
-		debug(target.logs);
+		// debug(target.logs);
 	}
 
 </cfscript>

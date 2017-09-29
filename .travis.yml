@@ -7,11 +7,11 @@ notifications:
 
 env:
   matrix:
-    - ENGINE=lucee@4.5 COLDBOX_VERSION=5.0.0
-    - ENGINE=lucee@5 COLDBOX_VERSION=5.0.0
-    #- ENGINE=adobe@10 COLDBOX_VERSION=5.0.0
-    #- ENGINE=adobe@11 COLDBOX_VERSION=5.0.0
-    #- ENGINE=adobe@2016 COLDBOX_VERSION=5.0.0
+    - ENGINE=lucee@4.5	COLDBOX_VERSION=5.0.0	ANT_TARGET=build.all
+    - ENGINE=lucee@5	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
+    - ENGINE=adobe@10	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
+    - ENGINE=adobe@11	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
+    - ENGINE=adobe@2016	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
 
 branches:
   only:
@@ -39,7 +39,7 @@ install:
   # Install Commandbox
   - sudo apt-get update && sudo apt-get --assume-yes install haveged commandbox
   # Install dependencies
-  - box version && box install
+  - box version && box install && box install commandbox-cfconfig
   # Store the Ortus API Key for forgebox publishing in `master`
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
 
@@ -49,18 +49,19 @@ before_script:
   # import database
   - mysql -u root < tests/resources/coolblog.sql
   # Ready for testing
-  - box server start name=$ENGINE --debug
+  - box server start name=$ENGINE debug=true
   # Copy over custom web server config
-  - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
+  # - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
 
 script:
   # Execute build via ANT
-  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml
+  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
   # Get response from test server to see what went wrong
   - curl http://localhost:8599/tests/runner.cfm?reporter=text
+  - curl http://localhost:8599/tests/tools/IDEDictionaries/builderDictionary.cfm?text=true
   # Spit out our Commandbox log in case we need to debug
   - box server log name=$ENGINE
   - cat `box system-log`

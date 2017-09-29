@@ -18,7 +18,7 @@
 
                 var cl = ses.$callLog().addRoute;
 
-                expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times, but it was called: #cl.len()#" );
+                expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times, but it was called: #arrayLen( cl )#" );
 
                 expect( cl[ 1 ] ).toBe( 
                     { 
@@ -47,7 +47,7 @@
 
                 var cl = ses.$callLog().addRoute;
 
-                expect( cl ).toHaveLength( 8, "addRoute should have been called 8 times, but it was called: #cl.len()#" );
+                expect( cl ).toHaveLength( 8, "addRoute should have been called 8 times, but it was called: #arrayLen( cl )#" );
             });
 
             it( "can add RESTFul routes as an array list", function(){
@@ -55,7 +55,7 @@
 
                 var cl = ses.$callLog().addRoute;
 
-                expect( cl ).toHaveLength( 8, "addRoute should have been called 8 times, but it was called: #cl.len()#" );
+                expect( cl ).toHaveLength( 8, "addRoute should have been called 8 times, but it was called: #arrayLen( cl )#" );
             });
             
             it( "can add all the RESTful routes for a resource", function() {
@@ -110,7 +110,7 @@
                 ses.resources( "photos", "PhotosController" );
 
                 var cl = ses.$callLog().addRoute;
-                debug( cl );
+               // debug( cl );
 
                 expect( cl ).toHaveLength( 4, "addRoute should have been called 4 times" );
                 expect( cl[ 1 ] ).toBe( 
@@ -159,7 +159,7 @@
                 ses.resources( resource = "photos", parameterName = "photoId" );
 
                 var cl = ses.$callLog().addRoute;
-                debug( cl );
+               // debug( cl );
 
                 expect( cl ).toHaveLength( 4, "addRoute should have been called 4 times" );
                 expect( cl[ 1 ] ).toBe( 
@@ -217,7 +217,7 @@
                         ses.resources( resource = "photos", only = "index,show" );
 
                         var cl = ses.$callLog().addRoute;
-                        debug( cl );
+                       // debug( cl );
 
                         expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times" );
                         expect( cl[ 1 ] )
@@ -236,7 +236,7 @@
                         ses.resources( resource = "photos", only = [ "index", "show" ] );
 
                         var cl = ses.$callLog().addRoute;
-                        debug( cl );
+                       // debug( cl );
 
                         expect( cl ).toHaveLength( 2, "addRoute should have been called 2 times" );
                         expect( cl[ 1 ] ).toBe( 
@@ -255,7 +255,7 @@
                         ses.resources( resource = "photos", except = "create,edit,update,delete" );
 
                         var cl = ses.$callLog().addRoute;
-                        debug( cl );
+                       // debug( cl );
 
                         expect( cl ).toHaveLength( 3, "addRoute should have been called 3 times" );
                         expect( cl[ 1 ] ).toBe( 
@@ -276,7 +276,7 @@
                         ses.resources( resource = "photos", except = [ "create", "edit", "update", "delete" ] );
 
                         var cl = ses.$callLog().addRoute;
-                        debug( cl );
+                       // debug( cl );
 
                         expect( cl ).toHaveLength( 3, "addRoute should have been called 3 times" );
                         expect( cl[ 1 ] ).toBe( 
@@ -299,7 +299,7 @@
                         ses.resources( resource = "photos", only = [ "index", "show" ], except = "show", module = "", namespace = "" );
 
                         var cl = ses.$callLog().addRoute;
-                        debug( cl );
+                       // debug( cl );
 
                         expect( cl ).toHaveLength( 1, "addRoute should have been called 1 time" );
                         expect( cl[ 1 ] ).toBe( 

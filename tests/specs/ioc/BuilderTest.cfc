@@ -128,7 +128,7 @@
 		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping" ).init("GoogleNews" );
 		mapping.setPath("http://news.google.com/?output=rss" );
 		r = builder.buildfeed(mapping);
-		debug(r);
+		// debug(r);
 		assertTrue( isStruct(r.metadata) );
 		assertTrue( isQuery(r.items) );
 	}
