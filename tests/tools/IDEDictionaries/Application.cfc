@@ -3,9 +3,10 @@ component{
 
 	// setup root path
 	rootPath = REReplaceNoCase( getDirectoryFromPath( getCurrentTemplatePath() ), "tests(\\|/)tools(\\|/)IDEDictionaries(\\|/)", "" );
+	
+	throw( getDirectoryFromPath( getCurrentTemplatePath() ) & ' --- ' & rootPath );
+	
 	// ColdBox Root path
-	writeOutput( getDirectoryFromPath( getCurrentTemplatePath() ) );
-	writeOutput( rootPath ); abort;
 	this.mappings[ "/coldbox" ] = rootPath;
 	
 }
