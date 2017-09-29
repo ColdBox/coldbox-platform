@@ -49,7 +49,7 @@ before_script:
   # import database
   - mysql -u root < tests/resources/coolblog.sql
   # Ready for testing
-  - box server start name=$ENGINE --debug
+  - box server start name=$ENGINE debug=true
   # Copy over custom web server config
   # - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
 
