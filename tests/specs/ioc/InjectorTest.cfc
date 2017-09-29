@@ -12,7 +12,7 @@
 		injector.init();
 		
 		mockLogger = getMockBox().createStub().$("canDebug", false).$("error");
-		util = getMockBox().createMock("coldbox.system.core.util.util").$("getInheritedMetaData").$results({path="path.to.object"});
+		util = getMockBox().createMock("coldbox.system.core.util.Util").$("getInheritedMetaData").$results({path="path.to.object"});
 		injector.$property("instance.utility","variables",util);
 		injector.$property("instance.log","variables", mockLogger);
 	}

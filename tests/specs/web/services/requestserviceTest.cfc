@@ -91,7 +91,10 @@ Description :
 
 	<cffunction name="tearDown" access="public" returntype="Void" hint="teardown" output="false" >
 		<cfscript>
-		structClear(cookie);
+		// This errors sometimes on Adobe CF 11
+		try {
+			structClear(cookie);
+		} catch( any e ) {}
 		</cfscript>
 	</cffunction>
 
