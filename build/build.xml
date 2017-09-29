@@ -84,14 +84,14 @@
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 		
-		<!-- Make sure we start the embedded server
+		<!-- Make sure we start the embedded server -->
 		<exec executable="box" dir="${basedir}">
 			<arg line="server stop" />
 		</exec>
 		<exec executable="box" dir="${basedir}">
 			<arg line="server start" />
 		</exec>
-		 -->
+		
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
 	</target>
