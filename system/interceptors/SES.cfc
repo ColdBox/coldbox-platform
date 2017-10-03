@@ -1026,8 +1026,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 					break;
 				}
 			}
-
-			if( len( match ) ){
+			
+			if( len( match ) && !findNoCase( "html", match ) ){
 				// if the user passed in format via the query string,
 				// we'll assume that's the value they actually wanted.
 				event.paramValue( 'format', lcase( match ) );
