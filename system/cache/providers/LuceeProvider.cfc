@@ -7,7 +7,7 @@ Author: Luis Majano
 Description:
 	
 This CacheBox provider communicates with the built in caches in
-the Railo Engine
+the Lucee Engine
 
 */
 component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
@@ -15,7 +15,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * Constructor
     */
-	RailoProvider function init() output=false{
+	LuceeProvider function init() output=false{
 		// prepare instance data
 		instance = {
 			// provider name
@@ -121,13 +121,13 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 		var config 	= getConfiguration();
 		var props	= [];
 		
-		lock name="Railoprovider.config.#instance.cacheID#" type="exclusive" throwontimeout="true" timeout="20"{
+		lock name="LuceeProvider.config.#instance.cacheID#" type="exclusive" throwontimeout="true" timeout="20"{
 		
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
 			
 			if( instance.logger.canDebug() )
-				instance.logger.debug( "Starting up Railoprovider Cache: #getName()# with configuration: #config.toString()#" );
+				instance.logger.debug( "Starting up LuceeProvider Cache: #getName()# with configuration: #config.toString()#" );
 			
 			// Validate the configuration
 			validateConfiguration();
@@ -148,7 +148,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     void function shutdown() output=false{
 		//nothing to shutdown
 		if( instance.logger.canDebug() )
-			instance.logger.debug( "RailoProvider Cache: #getName()# has been shutdown." );
+			instance.logger.debug( "LuceeProvider Cache: #getName()# has been shutdown." );
 	}
 	
 	/*
@@ -170,21 +170,21 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	* @colddoc:generic coldbox.system.cache.util.ICacheStats
 	*/
 	any function getStats() output=false{
-		return createObject("component", "coldbox.system.cache.providers.railo-lib.RailoStats").init( this );		
+		return createObject("component", "coldbox.system.cache.providers.lucee-lib.LuceeStats").init( this );		
 	}
 	
 	/**
     * clear the cache stats: Not enabled in this provider
     */
     void function clearStatistics() output=false{
-		// not yet posible with railo
+		// not yet posible with lucee
 	}
 	
 	/**
     * Returns the underlying cache engine: Not enabled in this provider
     */
     any function getObjectStore() output=false{
-		// not yet possible with railo
+		// not yet possible with lucee
 		//return cacheGetSession( getConfiguration().cacheName );
 	}
 	
@@ -256,10 +256,10 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
-    * get an item silently from cache, no stats advised: Stats not available on railo
+    * get an item silently from cache, no stats advised: Stats not available on lucee
     */
     any function getQuiet(required any objectKey) output=false{
-		// not implemented by railo yet
+		// not implemented by lucee yet
 		return get(arguments.objectKey);
 	}
 	
@@ -281,10 +281,10 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
-    * check if object in cache with no stats: Stats not available on railo
+    * check if object in cache with no stats: Stats not available on lucee
     */
     any function lookupQuiet(required any objectKey) output=false{
-		// not possible yet on railo
+		// not possible yet on lucee
 		return lookup(arguments.objectKey);
 	}
 	
@@ -440,7 +440,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * clear with no advising to events
     */
     any function clearQuiet(required any objectKey) output=false{
-		// normal clear, not implemented by railo
+		// normal clear, not implemented by lucee
 		clear(arguments.objectKey);
 		return true;
 	}

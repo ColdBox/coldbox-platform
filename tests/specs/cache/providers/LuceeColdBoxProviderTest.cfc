@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheTest" extends="RailoProviderTest" output="false" skip="isRailo">
+<cfcomponent name="cacheTest" extends="LuceeProviderTest" output="false" skip="isLucee">
 <cfscript>
 
 	function setup(){
@@ -18,7 +18,7 @@ Description :
 		mockController = getMockBox().createEmptyMock("coldbox.system.web.Controller");
 
 		// Create Provider
-		cache = getMockBox().createMock("coldbox.system.cache.providers.RailoColdBoxProvider").init();
+		cache = getMockBox().createMock("coldbox.system.cache.providers.LuceeColdBoxProvider").init();
 
 		// Decorate it
 		cache.setConfiguration( config );

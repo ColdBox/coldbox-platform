@@ -1,5 +1,5 @@
 /*******************************************************************************
-*	Integration Test as BDD (CF10+ or Railo 4.1 Plus)
+*	Integration Test as BDD  
 *
 *	Extends the integration class: coldbox.system.testing.BaseTestCase
 *

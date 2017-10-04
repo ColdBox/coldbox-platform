@@ -37,7 +37,7 @@ Description :
 			var binder = injector.getBinder();
 			var mapping = '';
 
-			// Prevent recursive object creation in Railo/Lucee
+			// Prevent recursive object creation in Lucee
 			if( !structKeyExists( request, 'proxyAutowire' ) ){
 				request.proxyAutowire = true;
 

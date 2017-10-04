@@ -72,7 +72,6 @@ Description :
 		<cfscript>
 			var engine = "ADOBE";
 
-			if ( server.coldfusion.productname eq "Railo" ){ engine = "RAILO"; }
 			if ( server.coldfusion.productname eq "Lucee" ){ engine = "LUCEE"; }
 
 			switch( engine ){
@@ -82,7 +81,7 @@ Description :
 					}
 					break;
 				}
-				case "RAILO" : case "LUCEE" : {
+				case "LUCEE" 	: {
 					return getPageContext().hasFamily();
 					break;
 				}
@@ -368,8 +367,8 @@ Description :
     		var mappingHelper = "";
 
     		// Detect server
-			if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ) {
-				mappingHelper = new RailoMappingHelper();
+			if( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+				mappingHelper = new LuceeMappingHelper();
 			} else {
 				mappingHelper = new CFMappingHelper();
 			}

@@ -10,8 +10,6 @@
 
 		if( findnocase( "coldfusion", engine) ){
 			enginetype = "adobe";
-		} else if ( findnocase( "railo", engine ) ){
-			enginetype = "railo";
 		} else if ( findnocase( "lucee", engine ) ){
 			enginetype = "lucee";
 		}

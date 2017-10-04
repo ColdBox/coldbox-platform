@@ -100,8 +100,8 @@
 	}
 
 	function testProviderMethods(){
-		// skip for railo as they don't have the context method
-		if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ){ return; }
+		// skip for lucee as they don't have the context method
+		if( listFindNoCase( "Lucee", server.coldfusion.productname ) ){ return; }
 
 		providerTest = injector.getInstance("ProviderTest");
 		assertEquals( true, isObject(providerTest.getPizza()) );
@@ -133,8 +133,8 @@
 	function testWebService(){
 		ws = injector.getInstance("coldboxWS");
 
-		// Railo
-		if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ){
+		// 
+		if( listFindNoCase( "Lucee", server.coldfusion.productname ) ){
 			expect(	getMetadata(ws).name  ).toMatch( "rpc" );
 		}
 		// adobe

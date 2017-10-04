@@ -527,18 +527,22 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			} else {
 				lock name="#cbox_layoutLocationKey#.#lockname#" type="exclusive" timeout="15" throwontimeout="true"{
 					cbox_layoutLocation = cbox_locateUDF( layout=cbox_currentLayout, module=arguments.module, explicitModule=cbox_explicitModule );
-					structInsert( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey, cbox_layoutLocation, true);
+					structInsert( controller.getSetting( "layoutsRefMap" ), cbox_layoutLocationKey, cbox_layoutLocation, true );
 				}
 			}
 			// Get the view locations
-			var viewLocations = discoverViewPaths( view=reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ),
-												   module=arguments.module,
-												   explicitModule=cbox_explicitModule );
+			var viewLocations = discoverViewPaths( 
+				view           = reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ),
+				module         = arguments.module,
+				explicitModule = cbox_explicitModule 
+			);
 			// RenderLayout
-			iData.renderedLayout = renderViewComposite( view=cbox_currentLayout,
-														viewPath=viewLocations.viewPath,
-														viewHelperPath=viewLocations.viewHelperPath,
-														args=args );
+			iData.renderedLayout = renderViewComposite( 
+				view           = cbox_currentLayout,
+				viewPath       = viewLocations.viewPath,
+				viewHelperPath = viewLocations.viewHelperPath,
+				args           = args 
+			);
 		}
 
 		// Announce

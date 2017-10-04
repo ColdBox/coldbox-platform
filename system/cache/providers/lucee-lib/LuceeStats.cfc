@@ -6,14 +6,14 @@ www.ortussolutions.com
 Author: Luis Majano
 Description:
 	
-A coldfusion statistics object that communicates with the Railo cache stats
+A coldfusion statistics object that communicates with the lucee cache stats
 
 */
 component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	
 	property name="cacheProvider" serializable="false";
 
-	RailoStats function init( cacheProvider ) output=false{
+	LuceeStats function init( cacheProvider ) output=false{
 		setCacheProvider( arguments.cacheProvider );
 		return this;
 	}
@@ -34,7 +34,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	}
 	
 	void function clearStatistics() output=false{
-		// not yet implemented by railo
+		// not yet implemented by lucee
 	}
 	
 	any function getGarbageCollections() output=false{

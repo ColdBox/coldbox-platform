@@ -9,11 +9,11 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseModelTest" output="false" skip="isRailo">
+<cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseModelTest" output="false" skip="isLucee">
 <cfscript>
 
-	boolean function isRailo(){
-		return listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? false : true;
+	boolean function isLucee(){
+		return listFindNoCase( "Lucee", server.coldfusion.productname ) ? false : true;
 	}
 
 	function setup(){
@@ -36,7 +36,7 @@ Description :
 		};
 
 		// Create Provider
-		cache = getMockBox().createMock("coldbox.system.cache.providers.RailoProvider").init();
+		cache = getMockBox().createMock("coldbox.system.cache.providers.LuceeProvider").init();
 
 		// Decorate it
 		cache.setConfiguration( config );
