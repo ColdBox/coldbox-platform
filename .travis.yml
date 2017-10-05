@@ -9,7 +9,7 @@ env:
   matrix:
     - ENGINE=lucee@4.5	COLDBOX_VERSION=5.0.0	ANT_TARGET=build.all
     - ENGINE=lucee@5	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
-    - ENGINE=adobe@10	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
+    #- ENGINE=adobe@10	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
     - ENGINE=adobe@11	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
     - ENGINE=adobe@2016	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
 
