@@ -535,11 +535,14 @@ component serializable="false" accessors="true"{
 				}
 
 				// Throw Exception, no handlers defined
-				getUtil().throwInvalidHTTP( 
-					className	= "Controller",
+				oRequestContext.setHTTPHeader( 
+					statusCode = 405,
+					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
+				);
+				throw( 
+					message		= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
 					detail		= "The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
-					statusText	= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
-					statusCode	= "405"
+					type		= "InvalidHTTPMethod"
 				);
 			}
 
@@ -550,11 +553,14 @@ component serializable="false" accessors="true"{
 					return runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
 				}
 				// Throw Exception, no handlers defined
-				getUtil().throwInvalidHTTP( 
-					className	= "Controller",
+				oRequestContext.setHTTPHeader( 
+					statusCode = 405,
+					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
+				);
+				throw( 
+					message		= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
 					detail		= "The requested URL: #oRequestContext.getCurrentRoutedURL()# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
-					statusText	= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
-					statusCode	= "405"
+					type		= "InvalidHTTPMethod"
 				);
 			}
 
