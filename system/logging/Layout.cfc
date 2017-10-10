@@ -23,7 +23,7 @@ Description :
 	
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="Layout" hint="Constructor" output="false">
-		<cfargument name="appender" type="any" required="true" default="" hint="The appender linked to (coldbox.system.logging.AbstractAppender)" colddoc:generic="coldbox.system.logging.AbstractAppender"/>
+		<cfargument name="appender" type="any" required="true" default="" hint="The appender linked to (coldbox.system.logging.AbstractAppender)" doc_generic="coldbox.system.logging.AbstractAppender"/>
 		<cfscript>
 			
 			// The appender we are linked to.
@@ -38,7 +38,7 @@ Description :
 
 	<!--- format --->
 	<cffunction name="format" output="false" access="public" returntype="string" hint="Format a logging event message into your own format">
-		<cfargument name="logEvent" type="any"   required="true"   hint="The logging event to use to create a message (coldbox.system.logging.LogEvent)" colddoc:generic="coldbox.system.logging.LogEvent">
+		<cfargument name="logEvent" type="any"   required="true"   hint="The logging event to use to create a message (coldbox.system.logging.LogEvent)" doc_generic="coldbox.system.logging.LogEvent">
 		<cfthrow message="You must implement this layout's format() method."
 				 type="Layout.FormatNotImplementedException">
 	</cffunction>

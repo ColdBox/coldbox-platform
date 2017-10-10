@@ -254,7 +254,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	
 	/*
 	* Get the cache statistics object as coldbox.system.cache.util.ICacheStats
-	* @colddoc:generic coldbox.system.cache.util.ICacheStats
+	* @doc_generic coldbox.system.cache.util.ICacheStats
 	*/
 	any function getStats() output=false{
 		return CreateObject("component", "coldbox.system.cache.providers.cf-lib.CFStats").init( getObjectStore().getStatistics() );		

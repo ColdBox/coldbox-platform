@@ -48,9 +48,9 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="Binder" hint="Constructor: You can pass a data CFC instance, data CFC path or nothing at all for purely programmatic configuration">
-		<cfargument name="injector" 	required="true" 	hint="The Injector this binder is bound to" colddoc:generic="coldbox.system.ioc.Injector">
+		<cfargument name="injector" 	required="true" 	hint="The Injector this binder is bound to" doc_generic="coldbox.system.ioc.Injector">
 		<cfargument name="config" 		required="false" 	hint="The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programatically"/>
-		<cfargument name="properties" 	required="false" 	default="#structNew()#" hint="A structure of binding properties to passthrough to the Binder Configuration CFC" colddoc:generic="struct">
+		<cfargument name="properties" 	required="false" 	default="#structNew()#" hint="A structure of binding properties to passthrough to the Binder Configuration CFC" doc_generic="struct">
 		<cfscript>
 			// Setup incoming properties
 			instance.properties = arguments.properties;
@@ -83,12 +83,12 @@ Description :
 	</cffunction>
 
 	<!--- getInjector --->
-    <cffunction name="getInjector" output="false" access="public" returntype="any" hint="Get the bounded injector for this binder" colddoc:generic="coldbox.system.ioc.Injector">
+    <cffunction name="getInjector" output="false" access="public" returntype="any" hint="Get the bounded injector for this binder" doc_generic="coldbox.system.ioc.Injector">
     	<cfreturn instance.injector>
     </cffunction>
 
 	<!--- getColdBox --->
-    <cffunction name="getColdBox" output="false" access="public" returntype="any" hint="Get the bounded ColdBox context for this binder, if any" colddoc:generic="coldbox.system.web.Controller">
+    <cffunction name="getColdBox" output="false" access="public" returntype="any" hint="Get the bounded ColdBox context for this binder, if any" doc_generic="coldbox.system.web.Controller">
     	<cfreturn instance.coldbox>
     </cffunction>
 
@@ -137,13 +137,13 @@ Description :
 <!------------------------------------------- BINDING PROPERTIES ------------------------------------------>
 
 	<!--- getProperties --->
-    <cffunction name="getProperties" output="false" access="public" returntype="any" hint="Get the binded properties structure" colddoc:generic="struct">
+    <cffunction name="getProperties" output="false" access="public" returntype="any" hint="Get the binded properties structure" doc_generic="struct">
     	<cfreturn instance.properties>
     </cffunction>
 
 	<!--- setProperties --->
     <cffunction name="setProperties" output="false" access="public" returntype="any" hint="Set the binded properties structure">
-    	<cfargument name="properties" required="true" colddoc:generic="struct"/>
+    	<cfargument name="properties" required="true" doc_generic="struct"/>
 		<cfset instance.properties = arguments.properties>
 		<cfreturn this>
     </cffunction>
@@ -195,12 +195,12 @@ Description :
 <!------------------------------------------- MAPPING METHODS ------------------------------------------>
 
 	<!--- getMappings --->
-    <cffunction name="getMappings" output="false" access="public" returntype="any" hint="Get all the registered object mappings structure" colddoc:generic="struct">
+    <cffunction name="getMappings" output="false" access="public" returntype="any" hint="Get all the registered object mappings structure" doc_generic="struct">
     	<cfreturn instance.mappings>
     </cffunction>
 
 	<!--- getMapping --->
-    <cffunction name="getMapping" output="false" access="public" returntype="any" hint="Get a specific object mapping: coldbox.system.ioc.config.Mapping" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    <cffunction name="getMapping" output="false" access="public" returntype="any" hint="Get a specific object mapping: coldbox.system.ioc.config.Mapping" doc_generic="coldbox.system.ioc.config.Mapping">
     	<cfargument name="name" required="true" hint="The name of the mapping to retrieve"/>
 
 		<cfif NOT structKeyExists(instance.mappings, arguments.name)>
@@ -230,7 +230,7 @@ Description :
     </cffunction>
 
 	<!--- mappingExists --->
-    <cffunction name="mappingExists" output="false" access="public" returntype="any" hint="Check if an object mapping exists" colddoc:generic="Boolean">
+    <cffunction name="mappingExists" output="false" access="public" returntype="any" hint="Check if an object mapping exists" doc_generic="Boolean">
     	<cfargument name="name" required="true" hint="The name of the mapping to verify"/>
     	<cfreturn structKeyExists(instance.mappings, arguments.name)>
     </cffunction>
@@ -723,7 +723,7 @@ Description :
 <!------------------------------------------- STOP RECURSIONS ------------------------------------------>
 
 	<!--- getStopRecursions --->
-    <cffunction name="getStopRecursions" output="false" access="public" returntype="any" hint="Get all the stop recursion classes array" colddoc:generic="Array">
+    <cffunction name="getStopRecursions" output="false" access="public" returntype="any" hint="Get all the stop recursion classes array" doc_generic="Array">
     	<cfreturn instance.stopRecursions>
     </cffunction>
 
@@ -744,7 +744,7 @@ Description :
 
 	<!--- scopeRegistration --->
     <cffunction name="scopeRegistration" output="false" access="public" returntype="any" hint="Use to define injector scope registration">
-    	<cfargument name="enabled" 	required="false" default="#DEFAULTS.scopeRegistration.enabled#" hint="Enable registration or not (defaults=false) Boolean" colddoc:generic="Boolean" />
+    	<cfargument name="enabled" 	required="false" default="#DEFAULTS.scopeRegistration.enabled#" hint="Enable registration or not (defaults=false) Boolean" doc_generic="Boolean" />
 		<cfargument name="scope" 	required="false" default="#DEFAULTS.scopeRegistration.scope#" hint="The scope to register on, defaults to application scope"/>
 		<cfargument name="key" 		required="false" default="#DEFAULTS.scopeRegistration.key#" hint="The key to use in the scope, defaults to wireBox"/>
 		<cfset structAppend( instance.scopeRegistration, arguments, true)>
@@ -752,14 +752,14 @@ Description :
     </cffunction>
 
 	<!--- getScopeRegistration --->
-    <cffunction name="getScopeRegistration" output="false" access="public" returntype="any" hint="Get the scope registration details structure" colddoc:generic="Struct">
+    <cffunction name="getScopeRegistration" output="false" access="public" returntype="any" hint="Get the scope registration details structure" doc_generic="Struct">
     	<cfreturn instance.scopeRegistration>
     </cffunction>
 
 <!------------------------------------------- SCAN LOCATIONS ------------------------------------------>
 
 	<!--- getScanLocations --->
-    <cffunction name="getScanLocations" output="false" access="public" returntype="any" hint="Get the linked map of package scan locations for CFCs" colddoc:generic="java.util.LinkedHashMap">
+    <cffunction name="getScanLocations" output="false" access="public" returntype="any" hint="Get the linked map of package scan locations for CFCs" doc_generic="java.util.LinkedHashMap">
     	<cfreturn instance.scanLocations>
     </cffunction>
 
@@ -807,14 +807,14 @@ Description :
     <cffunction name="cacheBox" output="false" access="public" returntype="any" hint="Integrate with CacheBox">
     	<cfargument name="configFile" 		required="false" default="" hint="The configuration file to use for loading CacheBox if creating it."/>
 		<cfargument name="cacheFactory" 	required="false" default="" hint="The CacheBox cache factory instance to link WireBox to"/>
-		<cfargument name="enabled" 			required="false" default="true" hint="Enable or Disable CacheBox Integration, if you call this method then enabled is set to true as most likely you are trying to enable it" colddoc:generic="Boolean"/>
+		<cfargument name="enabled" 			required="false" default="true" hint="Enable or Disable CacheBox Integration, if you call this method then enabled is set to true as most likely you are trying to enable it" doc_generic="Boolean"/>
     	<cfargument name="classNamespace" 	required="false" default="#DEFAULTS.cachebox.classNamespace#" hint="The package namespace to use for creating or connecting to CacheBox. Defaults to: coldbox.system.cache"/>
 		<cfset structAppend(instance.cacheBox, arguments, true)>
 		<cfreturn this>
 	</cffunction>
 
 	<!--- getCacheBoxConfig --->
-    <cffunction name="getCacheBoxConfig" output="false" access="public" returntype="any" hint="Get the CacheBox Configuration Integration structure" colddoc:generic="Struct">
+    <cffunction name="getCacheBoxConfig" output="false" access="public" returntype="any" hint="Get the CacheBox Configuration Integration structure" doc_generic="Struct">
     	<cfreturn instance.cacheBox>
     </cffunction>
 
@@ -856,7 +856,7 @@ Description :
     </cffunction>
 
 	<!--- getCustomDSL --->
-    <cffunction name="getCustomDSL" output="false" access="public" returntype="any" hint="Get the custom dsl namespace registration structure" colddoc:generic="struct">
+    <cffunction name="getCustomDSL" output="false" access="public" returntype="any" hint="Get the custom dsl namespace registration structure" doc_generic="struct">
     	<cfreturn instance.customDSL>
     </cffunction>
 
@@ -893,7 +893,7 @@ Description :
 
 	<!--- loadDataDSL --->
     <cffunction name="loadDataDSL" output="false" access="public" returntype="void" hint="Load a data configuration CFC data DSL">
-    	<cfargument name="rawDSL" required="false" hint="The data configuration DSL structure to load, else look internally" colddoc:generic="struct"/>
+    	<cfargument name="rawDSL" required="false" hint="The data configuration DSL structure to load, else look internally" doc_generic="struct"/>
     	<cfscript>
 			var wireBoxDSL  = variables.wirebox;
 			var key 		= "";
@@ -969,12 +969,12 @@ Description :
     </cffunction>
 
 	<!--- getDefaults --->
-    <cffunction name="getDefaults" output="false" access="public" returntype="any" hint="Get the default WireBox settings structure" colddoc:generic="Struct">
+    <cffunction name="getDefaults" output="false" access="public" returntype="any" hint="Get the default WireBox settings structure" doc_generic="Struct">
     	<cfreturn variables.DEFAULTS>
     </cffunction>
 
 	<!--- Get Memento --->
-	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the instance data structure" colddoc:generic="Struct">
+	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the instance data structure" doc_generic="Struct">
 		<cfreturn instance>
 	</cffunction>
 
@@ -1007,7 +1007,7 @@ Description :
 	<!--- listener --->
 	<cffunction name="listener" output="false" access="public" returntype="any" hint="Add a new listener configuration.">
 		<cfargument name="class" 		required="true"  hint="The class of the listener"/>
-		<cfargument name="properties" 	required="false" default="#structNew()#" hint="The structure of properties for the listner" colddoc:generic="Struct"/>
+		<cfargument name="properties" 	required="false" default="#structNew()#" hint="The structure of properties for the listner" doc_generic="Struct"/>
 		<cfargument name="name" 		required="false" default=""  hint="The name of the listener"/>
         <cfargument name="register" required="false" default="false"  hint="If true, registers the listener right away"/>
 		<cfscript>
@@ -1027,7 +1027,7 @@ Description :
 	</cffunction>
 
 	<!--- getListeners --->
-	<cffunction name="getListeners" output="false" access="public" returntype="any" hint="Get the configured listeners array" colddoc:generic="Array">
+	<cffunction name="getListeners" output="false" access="public" returntype="any" hint="Get the configured listeners array" doc_generic="Array">
 		<cfreturn instance.listeners>
 	</cffunction>
 
@@ -1059,8 +1059,8 @@ Description :
 
     <!--- bindAspect --->
     <cffunction name="bindAspect" output="false" access="public" returntype="any" hint="Bind a aspects to classes and methods">
-    	<cfargument name="classes" 	type="coldbox.system.aop.Matcher" required="true" hint="The class matcher that will be affected with this aspect binding" colddoc:generic="coldbox.system.aop.Matcher"/>
-    	<cfargument name="methods" 	type="coldbox.system.aop.Matcher" required="true" hint="The method matcher that will be affected with this aspect binding" colddoc:generic="coldbox.system.aop.Matcher"/>
+    	<cfargument name="classes" 	type="coldbox.system.aop.Matcher" required="true" hint="The class matcher that will be affected with this aspect binding" doc_generic="coldbox.system.aop.Matcher"/>
+    	<cfargument name="methods" 	type="coldbox.system.aop.Matcher" required="true" hint="The method matcher that will be affected with this aspect binding" doc_generic="coldbox.system.aop.Matcher"/>
     	<cfargument name="aspects" 	type="any" required="true" hint="The name or list of names or array of names of aspects to apply to the classes and method matchers"/>
     	<cfscript>
 			// cleanup aspect
@@ -1073,7 +1073,7 @@ Description :
     </cffunction>
 
     <!--- getAspectBindings --->
-    <cffunction name="getAspectBindings" output="false" access="public" returntype="any" hint="Get the collection of aspect bindings for this binder" colddoc:generic="array">
+    <cffunction name="getAspectBindings" output="false" access="public" returntype="any" hint="Get the collection of aspect bindings for this binder" doc_generic="array">
     	<cfreturn instance.aspectBindings>
     </cffunction>
 

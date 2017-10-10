@@ -14,7 +14,7 @@ Description :
 	<cfset variables.system = createObject( "java", "java.lang.System" )>
 
 	<!--- getMixerUtil --->
-    <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" colddoc:generic="coldbox.system.core.dynamic.MixerUtil">
+    <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" doc_generic="coldbox.system.core.dynamic.MixerUtil">
     	<cfscript>
     		if( structKeyExists(variables, "mixerUtil") ){ return variables.mixerUtil; }
 			variables.mixerUtil = createObject("component","coldbox.system.core.dynamic.MixerUtil").init();
@@ -341,7 +341,7 @@ Description :
 	</cffunction>
 
 	<!--- stopClassRecursion --->
-	<cffunction name="stopClassRecursion" access="private" returntype="any" hint="Should we stop recursion or not due to class name found: Boolean" output="false" colddoc:generic="Boolean">
+	<cffunction name="stopClassRecursion" access="private" returntype="any" hint="Should we stop recursion or not due to class name found: Boolean" output="false" doc_generic="Boolean">
 		<cfargument name="classname" 	required="true" hint="The class name to check">
 		<cfargument name="stopRecursions"	required="true" hint="An array of classes to stop processing at"/>
 		<cfscript>

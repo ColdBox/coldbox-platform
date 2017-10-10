@@ -13,8 +13,8 @@ Description :
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="Provider" hint="Constructor">
-    	<cfargument name="scopeRegistration" required="true" 	hint="The injector scope registration structure" colddoc:generic="struct"/>
-		<cfargument name="scopeStorage" 	 required="true" 	hint="The scope storage utility" 				  colddoc:generic="coldbox.system.core.collections.ScopeStorage"/>
+    	<cfargument name="scopeRegistration" required="true" 	hint="The injector scope registration structure" doc_generic="struct"/>
+		<cfargument name="scopeStorage" 	 required="true" 	hint="The scope storage utility" 				  doc_generic="coldbox.system.core.collections.ScopeStorage"/>
 		<cfargument name="name" 			 required="false" 	hint="The name of the mapping this provider is binded to, MUTEX with name"/>
 		<cfargument name="dsl"				 required="false" 	hint="The DSL string this provider is binded to, MUTEX with name"/>
 		<cfargument name="targetObject"		 required="true" 	hint="The target object that requested the provider."/>

@@ -12,8 +12,8 @@ Description :
 <cfcomponent hint="The DSL processor for all CacheBox related stuff" implements="coldbox.system.ioc.dsl.IDSLBuilder" output="false">
 
 	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the DSL for operation and returns itself" colddoc:generic="coldbox.system.ioc.dsl.IDSLBuilder">
-    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the DSL for operation and returns itself" doc_generic="coldbox.system.ioc.dsl.IDSLBuilder">
+    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
 		<cfscript>
 			instance = { injector = arguments.injector };
 			instance.cacheBox 	= instance.injector.getCacheBox();

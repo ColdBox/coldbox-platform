@@ -184,7 +184,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="interceptorClass" 		required="false" 	type="any" 		hint="Mutex with interceptorObject, this is the qualified class of the interceptor to register">
 		<cfargument name="interceptorObject" 		required="false" 	type="any" 		hint="Mutex with interceptor Class, this is used to register an already instantiated object as an interceptor">
-		<cfargument name="interceptorProperties" 	required="false" 	type="any"		default="#structNew()#" 	hint="The structure of properties to register this interceptor with." colddoc:generic="struct">
+		<cfargument name="interceptorProperties" 	required="false" 	type="any"		default="#structNew()#" 	hint="The structure of properties to register this interceptor with." doc_generic="struct">
 		<cfargument name="customPoints" 			required="false" 	type="any" 		default="" hint="A comma delimmited list or array of custom interception points, if the object or class sent in observes them.">
 		<cfargument name="interceptorName" 			required="false"    type="any"   	hint="The name to use for the interceptor when stored. If not used, we will use the name found in the object's class"/>
 		<!--- ************************************************************* --->
@@ -264,7 +264,7 @@ Description :
     <cffunction name="createInterceptor" output="false" access="private" returntype="any" hint="Create an interceptor object">
     	<cfargument name="interceptorClass" 		required="true" hint="The class path to instantiate"/>
 		<cfargument name="interceptorName" 	 		required="true" hint="The unique name of the interceptor"/>
-		<cfargument name="interceptorProperties" 	required="false" default="#structnew()#" hint="The properties" colddoc:generic="struct"/>
+		<cfargument name="interceptorProperties" 	required="false" default="#structnew()#" hint="The properties" doc_generic="struct"/>
 		<cfscript>
 			var oInterceptor = "";
 			var wirebox = controller.getWireBox();
@@ -345,12 +345,12 @@ Description :
 	</cffunction>
 
 	<!--- getter interceptionPoints --->
-	<cffunction name="getInterceptionPoints" access="public" output="false" returntype="any" hint="Get the interceptionPoints ENUM of all registered points of execution as an array" colddoc:generic="array">
+	<cffunction name="getInterceptionPoints" access="public" output="false" returntype="any" hint="Get the interceptionPoints ENUM of all registered points of execution as an array" doc_generic="array">
 		<cfreturn instance.interceptionPoints/>
 	</cffunction>
 
 	<!--- getter interception states --->
-	<cffunction name="getInterceptionStates" access="public" output="false" returntype="any" hint="Get all the interception states defined in this service" colddoc:generic="struct">
+	<cffunction name="getInterceptionStates" access="public" output="false" returntype="any" hint="Get all the interception states defined in this service" doc_generic="struct">
 		<cfreturn instance.interceptionStates/>
 	</cffunction>
 

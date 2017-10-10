@@ -43,13 +43,13 @@ Description :
     </cffunction>
 
 	<!--- getColdbox --->
-    <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller">
+    <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" doc_generic="coldbox.system.web.Controller">
     	<cfreturn instance.coldbox>
     </cffunction>
 
 	<!--- setColdbox --->
     <cffunction name="setColdbox" output="false" access="public" returntype="void" hint="Set the coldbox application reference">
-    	<cfargument name="coldbox" type="any" required="true" hint="The coldbox application reference as coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller"/>
+    	<cfargument name="coldbox" type="any" required="true" hint="The coldbox application reference as coldbox.system.web.Controller" doc_generic="coldbox.system.web.Controller"/>
     	<cfset instance.coldbox = arguments.coldbox>
 	</cffunction>
 
