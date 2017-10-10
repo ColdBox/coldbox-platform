@@ -7,17 +7,17 @@ Author: Luis Majano
 Description:
 	
 This CacheBox provider communicates with the built in caches in
-the Railo Engine for ColdBox applications.
+the Lucee Engine for ColdBox applications.
 
 */
-component serializable="false" extends="coldbox.system.cache.providers.RailoProvider" implements="coldbox.system.cache.IColdboxApplicationCache"{
+component serializable="false" extends="coldbox.system.cache.providers.LuceeProvider" implements="coldbox.system.cache.IColdboxApplicationCache"{
 
-	RailoColdboxProvider function init() output=false{
+	LuceeColdBoxProvider function init() output=false{
 		super.init();
 		
 		// Cache Prefixes
-		this.VIEW_CACHEKEY_PREFIX 	= "railo_view-";
-		this.EVENT_CACHEKEY_PREFIX 	= "railo_event-";
+		this.VIEW_CACHEKEY_PREFIX 	= "lucee_view-";
+		this.EVENT_CACHEKEY_PREFIX 	= "lucee_event-";
 		
 		// URL Facade Utility
 		instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);

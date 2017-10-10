@@ -5,12 +5,12 @@
 */
 component{
 
-	this.name = "ColdBox Testing Harness" & hash( getCurrentTemplatePath() );
-	this.sessionManagement = true;
-	this.setClientCookies = true;
-	this.clientManagement = true;
-	this.sessionTimeout = createTimeSpan(0,0,10,0);
-	this.applicationTimeout = createTimeSpan(0,0,10,0);
+	this.name               = "ColdBox Testing Harness" & hash( getCurrentTemplatePath() );
+	this.sessionManagement  = true;
+	this.setClientCookies   = true;
+	this.clientManagement   = true;
+	this.sessionTimeout     = createTimeSpan( 0, 0, 10, 0 );
+	this.applicationTimeout = createTimeSpan( 0, 0, 10, 0 );
 
 	// Turn on/off white space management
 	this.whiteSpaceManagement = "smart";

@@ -271,6 +271,7 @@ component extends="coldbox.system.web.services.BaseService"{
 				interceptorSettings     = { customInterceptionPoints = "" },
 				layoutSettings			= { defaultLayout = ""},
 				routes 					= [],
+				resources 				= [],
 				conventions = {
 					handlersLocation 	= "handlers",
 					layoutsLocation 	= "layouts",
@@ -381,7 +382,6 @@ component extends="coldbox.system.web.services.BaseService"{
 	 */
 	ModuleService function activateModule( required moduleName ){
 		var modules 			= controller.getSetting( "modules" );
-		var iData       		= {};
 		var interceptorService  = controller.getInterceptorService();
 		var wirebox				= controller.getWireBox();
 
@@ -441,8 +441,13 @@ component extends="coldbox.system.web.services.BaseService"{
 		{
 
 			// preModuleLoad interception
-			var iData = { moduleLocation=mConfig.path, moduleName=arguments.moduleName };
-			interceptorService.processState( "preModuleLoad", iData );
+			interceptorService.processState( 
+				"preModuleLoad", 
+				{ 
+					moduleLocation = mConfig.path, 
+					moduleName     = arguments.moduleName 
+				}
+			);
 
 			// Register handlers
 			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mconfig.handlerPhysicalPath );
@@ -497,8 +502,13 @@ component extends="coldbox.system.web.services.BaseService"{
 				len( mConfig.entryPoint ) AND NOT 
 				find( ":", mConfig.entryPoint ) 
 			){
+				// Registers module routing + resources
 				interceptorService.getInterceptor( "SES", true )
-					.addModuleRoutes( pattern=mConfig.entryPoint, module=arguments.moduleName, append=false );
+					.addModuleRoutes(
+						pattern = mConfig.entryPoint, 
+						module  = arguments.moduleName,
+						append  = false 
+					);
 			}
 
 			// Call on module configuration object onLoad() if found
@@ -507,8 +517,14 @@ component extends="coldbox.system.web.services.BaseService"{
 			}
 
 			// postModuleLoad interception
-			iData = { moduleLocation=mConfig.path, moduleName=arguments.moduleName, moduleConfig=mConfig };
-			interceptorService.processState( "postModuleLoad", iData );
+			interceptorService.processState( 
+				"postModuleLoad", 
+				{ 
+					moduleLocation = mConfig.path, 
+					moduleName     = arguments.moduleName, 
+					moduleConfig   = mConfig 
+				}
+			);
 
 			// Mark it as loaded as it is now activated
 			mConfig.activated = true;
@@ -581,13 +597,11 @@ component extends="coldbox.system.web.services.BaseService"{
 	boolean function unload( required moduleName ){
 		// This method basically unregisters the module configuration
 		var appConfig 			= controller.getConfigSettings();
-		var iData 				= { moduleName = arguments.moduleName };
 		var interceptorService 	= controller.getInterceptorService();
 		var exceptionUnloading 	= "";
 
 		// Check if module is loaded?
 		if( NOT structKeyExists( appConfig.modules, arguments.moduleName ) ){ return false; }
-
 
 		lock 	name="module#getController().getAppHash()#.unload.#arguments.moduleName#" 
 				type="exclusive" 
@@ -598,7 +612,10 @@ component extends="coldbox.system.web.services.BaseService"{
 			if( NOT structKeyExists(appConfig.modules,arguments.moduleName) ){ return false; }
 
 			// Before unloading a module interception
-			interceptorService.processState( "preModuleUnload",iData);
+			interceptorService.processState( 
+				"preModuleUnload",
+				{ moduleName = arguments.moduleName }
+			);
 
 			// Call on module configuration object onLoad() if found
 			if( structKeyExists(variables.mConfigCache[ arguments.moduleName ],"onUnload" ) ){
@@ -629,7 +646,10 @@ component extends="coldbox.system.web.services.BaseService"{
 			structDelete( variables.mConfigCache, arguments.moduleName );
 
 			//After unloading a module interception
-			interceptorService.processState( "postModuleUnload", iData );
+			interceptorService.processState( 
+				"postModuleUnload", 
+				{ moduleName = arguments.moduleName } 
+			);
 
 			// Log it
 			if( variables.logger.canDebug() ){
@@ -762,9 +782,9 @@ component extends="coldbox.system.web.services.BaseService"{
 			mConfig.parseParentSettings = oConfig.parseParentSettings;
 		}
 
-		//Get the parent settings
+		// Get the parent settings
 		mConfig.parentSettings = oConfig.getPropertyMixin( "parentSettings", "variables", {} );
-		//Get the module settings
+		// Get the module settings
 		mConfig.settings = oConfig.getPropertyMixin( "settings", "variables", {} );
 		// Add the module settings to the parent settings under the modules namespace
 		if ( mConfig.parseParentSettings ) {
@@ -781,27 +801,29 @@ component extends="coldbox.system.web.services.BaseService"{
 			);
 		}
 		appSettings.moduleSettings[ mConfig.modelNamespace ] = mConfig.settings;
-		//Get Interceptors
+		// Get Interceptors
 		mConfig.interceptors = oConfig.getPropertyMixin( "interceptors", "variables", [] );
 		for(var x=1; x lte arrayLen( mConfig.interceptors ); x=x+1){
 			//Name check
-			if( NOT structKeyExists(mConfig.interceptors[x],"name" ) ){
-				mConfig.interceptors[x].name = listLast(mConfig.interceptors[x].class,"." );
+			if( NOT structKeyExists( mConfig.interceptors[ x ], "name" ) ){
+				mConfig.interceptors[ x ].name = listLast(mConfig.interceptors[ x ].class,"." );
 			}
 			//Properties check
-			if( NOT structKeyExists(mConfig.interceptors[x],"properties" ) ){
-				mConfig.interceptors[x].properties = structnew();
+			if( NOT structKeyExists( mConfig.interceptors[ x ], "properties" ) ){
+				mConfig.interceptors[ x ].properties = structnew();
 			}
 		}
 
-		//Get custom interception points
-		mConfig.interceptorSettings = oConfig.getPropertyMixin( "interceptorSettings","variables",structnew());
+		// Get custom interception points
+		mConfig.interceptorSettings = oConfig.getPropertyMixin( "interceptorSettings", "variables", structnew() );
 		if( NOT structKeyExists(mConfig.interceptorSettings,"customInterceptionPoints" ) ){
 			mConfig.interceptorSettings.customInterceptionPoints = "";
 		}
 
-		//Get SES Routes
+		// Get SES Routes
 		mConfig.routes = oConfig.getPropertyMixin( "routes", "variables", [] );
+		// Get SES Resources
+		mConfig.resources = oConfig.getPropertyMixin( "resources", "variables", [] );
 		// Get and Append Module conventions
 		structAppend( mConfig.conventions, oConfig.getPropertyMixin( "conventions", "variables", {} ), true );
 		// Get Module Layout Settings

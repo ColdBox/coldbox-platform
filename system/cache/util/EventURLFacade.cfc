@@ -18,7 +18,7 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="EventURLFacade" hint="Constructor">
-		<cfargument name="cacheProvider" type="any" required="true" hint="The cache provider/manager this utility will be associated with as type: coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache"/>
+		<cfargument name="cacheProvider" type="any" required="true" hint="The cache provider/manager this utility will be associated with as type: coldbox.system.cache.IColdboxApplicationCache" doc_generic="coldbox.system.cache.IColdboxApplicationCache"/>
 		<cfscript>
 			instance = {
 				cacheProvider = arguments.cacheProvider

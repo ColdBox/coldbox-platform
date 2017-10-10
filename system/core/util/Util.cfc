@@ -14,7 +14,7 @@ Description :
 	<cfset variables.system = createObject( "java", "java.lang.System" )>
 
 	<!--- getMixerUtil --->
-    <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" colddoc:generic="coldbox.system.core.dynamic.MixerUtil">
+    <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" doc_generic="coldbox.system.core.dynamic.MixerUtil">
     	<cfscript>
     		if( structKeyExists(variables, "mixerUtil") ){ return variables.mixerUtil; }
 			variables.mixerUtil = createObject("component","coldbox.system.core.dynamic.MixerUtil").init();
@@ -72,7 +72,6 @@ Description :
 		<cfscript>
 			var engine = "ADOBE";
 
-			if ( server.coldfusion.productname eq "Railo" ){ engine = "RAILO"; }
 			if ( server.coldfusion.productname eq "Lucee" ){ engine = "LUCEE"; }
 
 			switch( engine ){
@@ -82,7 +81,7 @@ Description :
 					}
 					break;
 				}
-				case "RAILO" : case "LUCEE" : {
+				case "LUCEE" 	: {
 					return getPageContext().hasFamily();
 					break;
 				}
@@ -133,21 +132,6 @@ Description :
 			return returnString;
 		</cfscript>
 	</cffunction>
-
-	<!--- throwInvalidHTTP --->
-    <cffunction name="throwInvalidHTTP" output="false" access="public" returntype="void" hint="Throw an invalid HTTP exception">
-    	<cfargument name="className" 	required="true" hint="The class producing the exception"/>
-    	<cfargument name="detail"		required="true" hint="The throw detail argument to send out"/>
-		<cfargument name="statusText" 	required="true" hint="Invalid exception status text"/>
-		<cfargument name="statusCode" 	required="true" hint="The status code to send out."/>
-
-		<cfheader statuscode="#arguments.statusCode#" statustext="#arguments.statusText#">
-		<cfthrow type="#arguments.className#.#arguments.statusCode#"
-			     errorcode="#arguments.statusCode#"
-			     message="#arguments.statusText#"
-				 detail="#arguments.detail#">
-
-    </cffunction>
 
     <!--- getSystemSetting --->
     <cffunction name="getSystemSetting" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
@@ -342,7 +326,7 @@ Description :
 	</cffunction>
 
 	<!--- stopClassRecursion --->
-	<cffunction name="stopClassRecursion" access="private" returntype="any" hint="Should we stop recursion or not due to class name found: Boolean" output="false" colddoc:generic="Boolean">
+	<cffunction name="stopClassRecursion" access="private" returntype="any" hint="Should we stop recursion or not due to class name found: Boolean" output="false" doc_generic="Boolean">
 		<cfargument name="classname" 	required="true" hint="The class name to check">
 		<cfargument name="stopRecursions"	required="true" hint="An array of classes to stop processing at"/>
 		<cfscript>
@@ -368,8 +352,8 @@ Description :
     		var mappingHelper = "";
 
     		// Detect server
-			if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ) {
-				mappingHelper = new RailoMappingHelper();
+			if( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+				mappingHelper = new LuceeMappingHelper();
 			} else {
 				mappingHelper = new CFMappingHelper();
 			}

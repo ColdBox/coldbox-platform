@@ -1,5 +1,5 @@
 /*******************************************************************************
-*	Integration Test as BDD (CF10+ or Railo 4.1 Plus)
+*	Integration Test as BDD  
 *
 *	Extends the integration class: coldbox.system.testing.BaseTestCase
 *
@@ -141,6 +141,44 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				});
 			});
 		});
+
+		story( "Modules can register custom routing", function(){
+			given( "A routing array", function(){
+				then( "module routes should be registered", function(){
+					var ses 	= getInterceptor( "SES" );
+					var routing = ses.getModuleRoutes( "conventionsTest" );
+
+					expect( routing ).notToBeEmpty();
+				} );
+			} );
+		} );
+
+		story( "Modules can register custom resources", function(){
+			given( "A resources array", function(){
+				then( "module resourceful routes should be registered", function(){
+					var ses 	= getInterceptor( "SES" );
+					var routing = ses.getModuleRoutes( "resourcesTest" );
+
+					var photosFound = usersFound = false;
+					for( var thisRoute in routing ){
+						if( findNoCase( "photos", thisRoute.handler ?: "" ) ){
+							photosFound = true;
+							continue;
+						}
+						if( findNoCase( "users", thisRoute.handler ?: "" ) ){
+							usersFound = true;
+							continue;
+						}
+					}
+
+					expect( photosFound ).toBeTrue();
+					expect( usersFound ).toBeTrue();
+					
+				} );
+			} );
+		} );
+
+
 	}
 
 }

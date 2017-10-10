@@ -8,7 +8,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 <cfscript>
 	
 	boolean function isAdobe(){
-		return !listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? true : false;
+		return !listFindNoCase( "Lucee", server.coldfusion.productname ) ? true : false;
 	}
 	
 	function setup(){

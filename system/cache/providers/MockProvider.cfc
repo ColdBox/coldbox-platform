@@ -40,7 +40,7 @@ Description :
     </cffunction>
 	
 	<!--- getObjectStore --->
-    <cffunction name="getObjectStore" output="false" access="public" returntype="any" hint="If the cache provider implements it, this returns the cache's object store as type: coldbox.system.cache.store.IObjectStore" colddoc:generic="coldbox.system.cache.store.IObjectStore">
+    <cffunction name="getObjectStore" output="false" access="public" returntype="any" hint="If the cache provider implements it, this returns the cache's object store as type: coldbox.system.cache.store.IObjectStore" doc_generic="coldbox.system.cache.store.IObjectStore">
    		<cfreturn instance.cache>
     </cffunction>
 	

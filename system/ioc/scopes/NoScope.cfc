@@ -13,7 +13,7 @@ Description :
 
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation">
-    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
 		<cfscript>
 			instance = {
 				injector = arguments.injector
@@ -24,8 +24,8 @@ Description :
 
 	<!--- getFromScope --->
     <cffunction name="getFromScope" output="false" access="public" returntype="any" hint="Retrieve an object from scope or create it if not found in scope">
-    	<cfargument name="mapping" 			type="any" required="true"  hint="The object mapping" colddoc:generic="coldbox.system.ioc.config.Mapping"/>
-		<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+    	<cfargument name="mapping" 			type="any" required="true"  hint="The object mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
+		<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
 		<cfscript>
 			// create and return the no scope instance, no locking needed.
 			var object = instance.injector.buildInstance( arguments.mapping, arguments.initArguments );

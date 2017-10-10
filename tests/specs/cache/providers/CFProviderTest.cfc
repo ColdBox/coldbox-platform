@@ -16,7 +16,7 @@ Description :
 
 	boolean function isAdobe(){
 		return true;
-		return !listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? true : false;
+		return !listFindNoCase( "Lucee", server.coldfusion.productname ) ? true : false;
 	}
 
 	function setup(){

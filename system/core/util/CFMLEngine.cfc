@@ -8,7 +8,6 @@ component {
 
 	//setup the engine properties
 	this.ADOBE = "ADOBE";
-	this.RAILO = "RAILO";
 	this.LUCEE = "LUCEE";
 
 	// JDK Version
@@ -22,8 +21,6 @@ component {
 		instance = structnew();
 		// adobe features
 		instance.adobe = {};
-		// railo only features
-		instance.railo = {};
 		// lucee only features
 		instance.lucee = {};
 
@@ -53,9 +50,7 @@ component {
 	string function getEngine() {
 		var engine = this.adobe;
 
-		if ( server.coldfusion.productname eq "Railo" ){
-			engine = this.railo;
-		} else if ( server.coldfusion.productname eq "Lucee" ){
+		if ( server.coldfusion.productname eq "Lucee" ){
 			engine = this.lucee;
 		}
 

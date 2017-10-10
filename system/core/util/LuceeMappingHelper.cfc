@@ -2,7 +2,7 @@
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
-* Creation of mappings via Railo/Lucee
+* Creation of mappings via Lucee
 */
 component{
 

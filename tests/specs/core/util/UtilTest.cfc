@@ -134,7 +134,7 @@
 		assertEquals( md.inheritanceTrail[1], "tests.resources.Class1" );
 		assertEquals( md.inheritanceTrail[2], "tests.resources.Class2" );
 		assertEquals( md.inheritanceTrail[3], "tests.resources.Class3" );
-		assertTrue( listFindNoCase("WEB-INF.cftags.component,railo-context.component,lucee.component", md.inheritanceTrail[4]) );
+		assertTrue( listFindNoCase("WEB-INF.cftags.component,lucee.component", md.inheritanceTrail[4]) );
 
 		assertEquals( md.output, true );
 		assertEquals( md.scope, "server" );

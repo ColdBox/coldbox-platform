@@ -15,7 +15,7 @@ component extends="coldbox.system.cache.policies.AbstractEvictionPolicy"{
 
 	/** 
 	* This is the constructor
-	* @cacheProvider The associated cache provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider
+	* @cacheProvider The associated cache provider of type: coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider
 	*/
  	public LIFO function init( required any cacheProvider ){
 		super.init( arguments.cacheProvider );

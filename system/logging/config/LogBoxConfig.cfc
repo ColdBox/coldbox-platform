@@ -56,7 +56,7 @@ Description :
 	
 	<!--- loadDataCFC --->
     <cffunction name="loadDataDSL" output="false" access="public" returntype="void" hint="Load a data configuration CFC data DSL">
-    	<cfargument name="rawDSL" required="true" hint="The data configuration DSL structure" colddoc:generic="struct"/>
+    	<cfargument name="rawDSL" required="true" hint="The data configuration DSL structure" doc_generic="struct"/>
     	<cfscript>
 			var logBoxDSL  = arguments.rawDSL;
 
@@ -130,7 +130,7 @@ Description :
     </cffunction>
 	
 	<!--- Get Memento --->
-	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the instance data" colddoc:generic="struct">
+	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the instance data" doc_generic="struct">
 		<cfreturn instance>
 	</cffunction>
 	
@@ -182,7 +182,7 @@ Description :
 	<cffunction name="appender" output="false" access="public" returntype="any" hint="Add an appender configuration.">
 		<cfargument name="name" 		required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="class" 		required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
-		<cfargument name="properties" 	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with." colddoc:generic="struct"/>
+		<cfargument name="properties" 	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with." doc_generic="struct"/>
 		<cfargument name="layout" 		required="false" default="" hint="The layout class path to use in this appender for custom message rendering."/>
 		<cfargument name="levelMin" 	required="false" default="0" hint="The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN"/>
 		<cfargument name="levelMax" 	required="false" default="4" hint="The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN"/>
@@ -226,7 +226,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get root logger --->
-	<cffunction name="getRoot" access="public" returntype="any" output="false" hint="Get the root logger definition." colddoc:generic="struct">
+	<cffunction name="getRoot" access="public" returntype="any" output="false" hint="Get the root logger definition." doc_generic="struct">
 		<cfreturn instance.rootLogger>
 	</cffunction>
 	
@@ -251,24 +251,24 @@ Description :
 	</cffunction>
 	
 	<!--- getCategory --->
-	<cffunction name="getCategory" output="false" access="public" returntype="any" hint="Get a specifed category definition" colddoc:generic="struct">
+	<cffunction name="getCategory" output="false" access="public" returntype="any" hint="Get a specifed category definition" doc_generic="struct">
 		<cfargument name="name" required="true" hint="The category to retrieve"/>
 		<cfreturn instance.categories[arguments.name]>
 	</cffunction>
 	
 	<!--- categoryExists --->
-	<cffunction name="categoryExists" output="false" access="public" returntype="any" hint="Check if a category definition exists" colddoc:generic="boolean">
+	<cffunction name="categoryExists" output="false" access="public" returntype="any" hint="Check if a category definition exists" doc_generic="boolean">
 		<cfargument name="name" required="true" hint="The category to retrieve"/>
 		<cfreturn structKeyExists(instance.categories, arguments.name)>
 	</cffunction>
 	
 	<!--- getCategories --->
-	<cffunction name="getAllCategories" output="false" access="public" returntype="any" hint="Get the configured categories" colddoc:generic="struct">
+	<cffunction name="getAllCategories" output="false" access="public" returntype="any" hint="Get the configured categories" doc_generic="struct">
 		<cfreturn instance.categories>
 	</cffunction>
 	
 	<!--- getappenders --->
-	<cffunction name="getAllAppenders" output="false" access="public" returntype="any" hint="Get all the configured appenders" colddoc:generic="struct">
+	<cffunction name="getAllAppenders" output="false" access="public" returntype="any" hint="Get all the configured appenders" doc_generic="struct">
 		<cfreturn instance.appenders>
 	</cffunction>
 	
@@ -343,8 +343,8 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
 	<!--- convertLevels --->
-    <cffunction name="convertLevels" output="false" access="private" returntype="any" hint="Convert levels from an incoming structure of data" colddoc:generic="struct">
-    	<cfargument name="target" required="true" default="" hint="The structure to look for elements: LevelMin and LevelMax" colddoc:generic="struct"/>
+    <cffunction name="convertLevels" output="false" access="private" returntype="any" hint="Convert levels from an incoming structure of data" doc_generic="struct">
+    	<cfargument name="target" required="true" default="" hint="The structure to look for elements: LevelMin and LevelMax" doc_generic="struct"/>
 		<cfscript>
 			// Check levelMin
 			if( structKeyExists(arguments.target, "levelMIN") and NOT isNumeric(arguments.target.levelMin)){

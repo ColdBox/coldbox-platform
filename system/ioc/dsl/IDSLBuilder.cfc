@@ -12,8 +12,8 @@ Description :
 <cfinterface hint="The main interface to produce WireBox namespace DSL Builders">
 
 	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the DSL Builder for operation and returns itself" colddoc:generic="coldbox.system.ioc.dsl.IDSLBuilder">
-    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the DSL Builder for operation and returns itself" doc_generic="coldbox.system.ioc.dsl.IDSLBuilder">
+    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
     </cffunction>
 	
 	<!--- process --->

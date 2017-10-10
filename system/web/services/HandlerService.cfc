@@ -363,7 +363,7 @@ Description :
 	<!--- invalidEvent --->
 	<cffunction name="invalidEvent" output="false" access="private" returntype="void" hint="Invalid Event procedures. Throws EventHandlerNotRegisteredException">
 		<cfargument name="event"  type="string" required="true" hint="The event that was found invalid"/>
-		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean" colddoc:generic="coldbox.system.web.context.EventHandlerBean"/>
+		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean" doc_generic="coldbox.system.web.context.EventHandlerBean"/>
 		<cfscript>
 			var iData			= structnew();
 

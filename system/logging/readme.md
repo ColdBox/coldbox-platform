@@ -71,8 +71,7 @@ Official Site
 
 ## System Requirements
 - Lucee 4.5+
-- Railo 4+
-- ColdFusion 9.02+
+- ColdFusion 11+
 
 ## Quick Installation
 Please go to our [documentation](http://logbox.ortusbooks.com) for expanded instructions. 
