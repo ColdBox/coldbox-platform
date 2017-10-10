@@ -18,12 +18,16 @@
 	<property name="wirebox.slug"	 		value="wirebox"/>
 	
 	<!-- Build Conditions -->
+	<condition property="cfengine" else="lucee@4.5">
+		<isset property="cfengine"/>
+	</condition>
 	<condition property="isTravis" else="false">
       <isset property="isTravis"/>
     </condition>
     <condition property="build.branch" else="development">
       <isset property="build.branch"/>
     </condition>
+
     <!-- Default environment check, if not passed via -Denvironment -->
 	<condition property="environment" value="local">
 		<not><isset property="environment" /></not>
@@ -31,6 +35,7 @@
 	
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
+
 	<!-- Load Contrib Tasks -->
 	<path id="cp">
 		<fileset dir="build/lib">
@@ -39,6 +44,7 @@
 	</path>
 	<!-- Define Tasks -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+
 	<!-- Import Box-Repo Tasks -->
 	<import><url url="https://raw.githubusercontent.com/Ortus-Solutions/box-tasks/master/box-repo.xml"/></import>
 	
@@ -84,12 +90,12 @@
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
 		
-		<!-- Make sure we start the embedded server -->
+		<!-- Make sure we start the embedded server, for builds and tests -->
 		<exec executable="box" dir="${basedir}">
-			<arg line="server stop" />
+			<arg line="server stop name=${cfengine} directory=${basedir} serverConfigFile=${basedir}/server-${cfengine}.json" />
 		</exec>
 		<exec executable="box" dir="${basedir}">
-			<arg line="server start" />
+			<arg line="server start name=${cfengine} directory=${basedir} serverConfigFile=${basedir}/server-${cfengine}.json" />
 		</exec>
 		
 		<!-- Mark as init -->
@@ -129,25 +135,24 @@
 			</else>
 		</if>
     	<!-- Run for Core -->
-    	<subant target="${test.target}">
-          	<fileset dir="tests" includes="automation/test-coldbox.xml"/>
-    		<property name="environment" value="${environment}" />
-        </subant>
+		<exec executable="box" dir="${basedir}">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=false" />
+		</exec>
+
     	<!-- Run for CacheBox -->
-    	<subant target="${test.target}">
-          	<fileset dir="tests" includes="automation/test-cachebox.xml"/>
-    		<property name="environment" value="${environment}" />
-        </subant>
+    	<exec executable="box" dir="${basedir}">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-cachebox.cfm' verbose=false" />
+		</exec>
+
     	<!-- Run for LogBox -->
-    	<subant target="${test.target}">
-          	<fileset dir="tests" includes="automation/test-logbox.xml"/>
-    		<property name="environment" value="${environment}" />
-        </subant>
+    	<exec executable="box" dir="${basedir}">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-logbox.cfm' verbose=false" />
+		</exec>
+
     	<!-- Run for WireBox -->
-    	<subant target="${test.target}">
-          	<fileset dir="tests" includes="automation/test-wirebox.xml"/>
-    		<property name="environment" value="${environment}" />
-        </subant>
+    	<exec executable="box" dir="${basedir}">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=false" />
+		</exec>
     </target>
 	
 	<!-- Build All Releases -->

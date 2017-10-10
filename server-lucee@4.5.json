@@ -1,5 +1,5 @@
 {
-	"app":{
+    "app":{
         "cfengine":""
     },
     "name":"lucee@4.5",
@@ -11,7 +11,8 @@
         },
         "rewrites":{
             "enable":true
-        }
+        },
+        "webroot":""
     },
     "JVM":{
         "heapSize":"512"

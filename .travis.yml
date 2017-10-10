@@ -48,9 +48,11 @@ before_script:
   - mysql -u root -e 'create database coolblog;'
   # import database
   - mysql -u root < tests/resources/coolblog.sql
+  # add our custom engine to our properties
+  - printf "\ncfengine=$ENGINE" >> build/build.properties
   # Ready for testing
-  - box server start name=$ENGINE debug=true
-  # Copy over custom web server config
+  # - box server start name=$ENGINE debug=true
+  # Copy over custom web server config: Commented out in favor of cfconfig now.
   # - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
 
 script:
