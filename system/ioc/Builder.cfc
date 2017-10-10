@@ -398,9 +398,7 @@ TODO: update dsl consistency, so it is faster.
 
 				// If no DSL's found, let's try to use the name as the empty namespace
 				default : {
-					if( NOT find( ":", arguments.definition.dsl ) ){
-						refLocal.dependency = getModelDSL( argumentCollection=arguments );
-					}
+					refLocal.dependency = getModelDSL( argumentCollection=arguments );
 				}
 			}
 
@@ -495,14 +493,19 @@ TODO: update dsl consistency, so it is faster.
 			
 			// DSL stages
 			switch( thisTypeLen ){
-				// model default, get name from property name
-				case 0 : case 1 : {
+				// No injection defined, use property name
+				case 0 : {
 					modelName = arguments.definition.name;
+					break; 
+				}
+				// Injection defined, no need to parse, no listing found
+				case 1 : {
+					modelName = arguments.definition.dsl;
 					break; 
 				}
 				// model:{name} stage
 				case 2 : { 
-					modelName = getToken( thisType, 2, ":" ); 
+					modelName = getToken( thisType, 2, ":" );
 					break;
 				}
 				// model:{name}:{method} stage
