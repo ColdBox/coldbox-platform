@@ -516,7 +516,7 @@ TODO: update dsl consistency, so it is faster.
 				}
 				// model:{alias} stage
 				case 2 : { 
-					modelalias = getToken( thisType, 2, ":" );
+					modelName = getToken( thisType, 2, ":" );
 					break;
 				}
 				// model:{alias}:{method} stage
@@ -526,7 +526,7 @@ TODO: update dsl consistency, so it is faster.
 					break;
 				}
 			}
-
+			
 			// Check if model Exists
 			if( instance.injector.containsInstance( modelName ) ){
 				// Get Model object
