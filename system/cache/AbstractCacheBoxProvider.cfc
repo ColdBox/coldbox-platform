@@ -20,8 +20,7 @@ Properties
 ----------------------------------------------------------------------->
 <cfcomponent hint="An abstract CacheBox Provider with basic/boring functionality built" 
 			 output="false" 
-			 serializable="false"
-			 colddoc:abstract="true">
+			 serializable="false">
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Simple Constructor">
