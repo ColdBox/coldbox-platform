@@ -646,7 +646,10 @@ component extends="coldbox.system.web.services.BaseService"{
 			structDelete( variables.mConfigCache, arguments.moduleName );
 
 			//After unloading a module interception
-			interceptorService.processState( "postModuleUnload", iData );
+			interceptorService.processState( 
+				"postModuleUnload", 
+				{ moduleName = arguments.moduleName } 
+			);
 
 			// Log it
 			if( variables.logger.canDebug() ){

@@ -630,11 +630,11 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		}
 
 		// Process the route as a regex pattern
-		for( var x=1; x lte listLen( thisRoute.pattern, "/" );x=x+1){
+		for( var x=1; x lte listLen( thisRoute.pattern, "/" ); x++ ){
 
 			// Pattern and Pattern Param
 			var thisPattern 		= listGetAt( thisRoute.pattern, x, "/" );
-			var thisPatternParam 	= replace( listFirst( thisPattern,"-" ), ":", "" );
+			var thisPatternParam 	= replace( listFirst( thisPattern, "-" ), ":", "" );
 
 			// Detect Optional Types
 			var patternType = "alphanumeric";
@@ -671,11 +671,11 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				// ALPHANUMERICAL OPTIONAL
 				case "alphanumeric" : {
 					if( find( ":", thisPattern ) ){
-						thisRegex = ( "" & REReplace( thisPattern, ":(.[^-]*)", "[^/]" ) );
+						thisRegex = "(" & REReplace( thisPattern, ":(.[^-]*)","[^/]" );
 						// Check Digits Repetions
 						if( find( "{", thisPattern ) ){
 							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
-							arrayAppend( thisRoute.patternParams, replace( listFirst( thisPattern, "{" ), ":", "" ));
+							arrayAppend( thisRoute.patternParams, replace( listFirst( thisPattern, "{" ), ":", "" ) );
 						} else {
 							thisRegex = thisRegex & "+?)";
 							arrayAppend( thisRoute.patternParams, thisPatternParam );
@@ -693,10 +693,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				// NUMERICAL OPTIONAL
 				case "numeric" : {
 					// Convert to Regex Pattern
-					thisRegex = ( "" & REReplace( thisPattern, ":.*?-numeric", "[0-9]" ) );
+					thisRegex = "(" & REReplace(thisPattern, ":.*?-numeric", "[0-9]" );
 					// Check Digits
 					if( find("{",thisPattern) ){
-						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern,"{" )#)";
+						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
 					} else {
 						thisRegex = thisRegex & "+?)";
 					}
@@ -708,7 +708,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				// ALPHA OPTIONAL
 				case "alpha" : {
 					// Convert to Regex Pattern
-					thisRegex = ( "" & REReplace( thisPattern, ":.*?-alpha", "[a-zA-Z]" ) );
+					thisRegex = "(" & REReplace( thisPattern, ":.*?-alpha", "[a-zA-Z]" );
 					// Check Digits
 					if( find("{",thisPattern) ){
 						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern,"{" )#)";
@@ -855,51 +855,50 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	){
 		var requestString 		 = arguments.action;
 		var packagedRequestString = "";
-		var match 				 = structNew();
-		var foundRoute 			 = structNew();
 		var params 				 = structNew();
-		var key					 = "";
-		var i 					 = 1;
-		var x 					 = 1 ;
 		var rc 					 = event.getCollection();
 		var _routes 			 = variables.routes;
 		var _routesLength 		 = arrayLen( _routes );
-		var contextRouting		 = {};
 
 		// Module call? Switch routes
-		if( len(arguments.module) ){
+		if( len( arguments.module ) ){
 			_routes = getModuleRoutes( arguments.module );
-			_routesLength = arrayLen(_routes);
+			_routesLength = arrayLen( _routes );
 		}
 		// Namespace Call? Switch routes
-		else if( len(arguments.namespace) ){
+		else if( len( arguments.namespace ) ){
 			_routes = getNamespaceRoutes( arguments.namespace );
-			_routesLength = arrayLen(_routes);
+			_routesLength = arrayLen( _routes );
 		}
 
 		//Remove the leading slash
-		if( len(requestString) GT 1 AND left(requestString,1) eq "/" ){
-			requestString = right(requestString,len(requestString)-1);
+		if( len( requestString ) GT 1 AND left( requestString, 1 ) eq "/" ){
+			requestString = right( requestString, len( requestString ) - 1 );
 		}
 		// Add ending slash
-		if( right(requestString,1) IS NOT "/" ){
+		if( right( requestString, 1 ) IS NOT "/" ){
 			requestString = requestString & "/";
 		}
 
 		// Let's Find a Route, Loop over all the routes array
-		for(i=1; i lte _routesLength; i=i+1){
+		var foundRoute = {};
+		for( var i=1; i lte _routesLength; i++ ){
 
 			// Match The route to request String
-			match = reFindNoCase(_routes[ i ].regexPattern,requestString,1,true);
-			if( (match.len[1] IS NOT 0 AND getLooseMatching())
+			var match = reFindNoCase( _routes[ i ].regexPattern, requestString, 1, true );
+			if( ( match.len[ 1 ] IS NOT 0 AND getLooseMatching())
 			     OR
-			    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
+				( NOT getLooseMatching() AND match.len[ 1 ] IS NOT 0 AND match.pos[ 1 ] EQ 1 ) 
+			){
 
 				// Verify condition matching
-				if( structKeyExists( _routes[ i ], "condition" ) AND NOT isSimpleValue( _routes[ i ].condition ) AND NOT _routes[ i ].condition(requestString) ){
+				if( structKeyExists( _routes[ i ], "condition" ) AND NOT 
+					isSimpleValue( _routes[ i ].condition ) AND NOT 
+					_routes[ i ].condition( requestString ) 
+				){
 					// Debug logging
 					if( log.canDebug() ){
-						log.debug("SES Route matched but condition closure did not pass: #_routes[ i ].toString()# on routed string: #requestString#" );
+						log.debug( "SES Route matched but condition closure did not pass: #_routes[ i ].toString()# on routed string: #requestString#" );
 					}
 					// Condition did not pass, move to next route
 					continue;
@@ -908,20 +907,19 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				// Setup the found Route
 				foundRoute = _routes[ i ];
 				// Is this namespace routing?
-				if( len(arguments.namespace) ){
-					arguments.event.setValue(name="currentRoutedNamespace",value=arguments.namespace,private=true);
+				if( len( arguments.namespace ) ){
+					arguments.event.setPrivateValue( name="currentRoutedNamespace", value=arguments.namespace );
 				}
 				// Debug logging
 				if( log.canDebug() ){
-					log.debug("SES Route matched: #foundRoute.toString()# on routed string: #requestString#" );
+					log.debug( "SES Route matched: #foundRoute.toString()# on routed string: #requestString#" );
 				}
 				break;
 			}
-
 		}//end finding routes
 
 		// Check if we found a route, else just return empty params struct
-		if( structIsEmpty(foundRoute) ){
+		if( structIsEmpty( foundRoute ) ){
 			if( log.canDebug() ){
 				log.debug("No SES routes matched on routed string: #requestString#" );
 			}
@@ -930,33 +928,37 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// SSL Checks
 		if( foundRoute.ssl AND NOT event.isSSL() ){
-			setNextEvent(URL=event.getSESBaseURL() & reReplace(cgi.path_info, "^\/", "" ), ssl=true, statusCode=302, queryString=cgi.query_string);
+			setNextEvent(
+				URL         = event.getSESBaseURL() & reReplace( cgi.path_info, "^\/", "" ), 
+				ssl         = true, 
+				statusCode  = 302, 
+				queryString = cgi.query_string
+			);
 		}
 
 		// Check if the match is a module Routing entry point or a namespace entry point or not?
 		if( len( foundRoute.moduleRouting ) OR len( foundRoute.namespaceRouting ) ){
 			// build routing argument struct
-			contextRouting = { action=reReplaceNoCase(requestString,foundRoute.regexpattern,"" ), event=arguments.event };
+			var contextRouting = { action=reReplaceNoCase( requestString, foundRoute.regexpattern, "" ), event=arguments.event };
 			// add module or namespace
 			if( len( foundRoute.moduleRouting ) ){
 				contextRouting.module = foundRoute.moduleRouting;
-			}
-			else{
+			} else {
 				contextRouting.namespace = foundRoute.namespaceRouting;
 			}
 
 			// Try to Populate the params from the module pattern if any
-			for(x=1; x lte arrayLen(foundRoute.patternParams); x=x+1){
-				params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);
+			for( var x=1; x lte arrayLen( foundRoute.patternParams ); x++ ){
+				params[ foundRoute.patternParams[ x ] ] = mid( requestString, match.pos[ x + 1 ], match.len[ x + 1 ] );
 			}
 
 			// Save Found URL
-			arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
+			arguments.event.setPrivateValue( name="currentRoutedURL", value=requestString );
 			// process context find
-			structAppend(params, findRoute(argumentCollection=contextRouting), true);
+			structAppend( params, findRoute( argumentCollection=contextRouting ), true );
 
 			// Return if parameters found.
-			if( NOT structIsEmpty(params) ){
+			if( NOT structIsEmpty( params ) ){
 				return params;
 			}
 		}
@@ -972,9 +974,9 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// Do we need to do package resolving
 		if( NOT foundRoute.packageResolverExempt ){
 			// Resolve the packages
-			packagedRequestString = packageResolver(requestString,foundRoute.patternParams,arguments.module);
+			packagedRequestString = packageResolver( requestString, foundRoute.patternParams, arguments.module );
 			// reset pattern matching, if packages found.
-			if( compare(packagedRequestString,requestString) NEQ 0 ){
+			if( compare( packagedRequestString, requestString ) NEQ 0 ){
 				// Log package resolved
 				if( log.canDebug() ){
 					log.debug("SES Package Resolved: #packagedRequestString#" );
@@ -985,27 +987,27 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		}
 
 		// Populate the params, with variables found in the request string
-		for(x=1; x lte arrayLen(foundRoute.patternParams); x=x+1){
-			params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);
+		for( var x=1; x lte arrayLen( foundRoute.patternParams ); x++ ){
+			params[ foundRoute.patternParams[ x ] ] = mid( requestString, match.pos[ x + 1 ], match.len[ x + 1 ] );
 		}
 
 		// Process Convention Name-Value Pairs
 		if( foundRoute.valuePairTranslation ){
-			findConventionNameValuePairs(requestString,match,params);
+			findConventionNameValuePairs( requestString, match, params );
 		}
 
 		// Now setup all found variables in the param struct, so we can return
-		for(key in foundRoute){
+		for( var key in foundRoute ){
 			// Check that the key is not a reserved route argument and NOT already routed
-			if( NOT listFindNoCase(variables.RESERVED_ROUTE_ARGUMENTS,key)
-				AND NOT structKeyExists(params, key) ){
+			if( NOT listFindNoCase( variables.RESERVED_ROUTE_ARGUMENTS, key )
+				AND NOT structKeyExists( params, key ) ){
 				params[ key ] = foundRoute[ key ];
 			}
-			else if (key eq "matchVariables" ){
-				for(i=1; i lte listLen(foundRoute.matchVariables); i = i+1){
+			else if ( key eq "matchVariables" ){
+				for( var i=1; i lte listLen( foundRoute.matchVariables ); i++ ){
 					// Check if the key does not exist in the routed params yet.
-					if( NOT structKeyExists(params, listFirst(listGetAt(foundRoute.matchVariables,i),"=" ) ) ){
-						params[listFirst(listGetAt(foundRoute.matchVariables,i),"=" )] = listLast(listGetAt(foundRoute.matchVariables,i),"=" );
+					if( NOT structKeyExists( params, listFirst( listGetAt( foundRoute.matchVariables, i ), "=" ) ) ){
+						params[ listFirst( listGetAt( foundRoute.matchVariables, i ), "=" ) ] = listLast( listGetAt( foundRoute.matchVariables, i ), "=" );
 					}
 				}
 			}
@@ -1144,7 +1146,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 			// Cleanup routing string to position of :handler
 			for(x=1; x lte routeParamsLen; x=x+1){
-				if( arguments.routeParams[x] neq "handler" ){
+				if( arguments.routeParams[ x ] neq "handler" ){
 					rString = replace(rString,listFirst(rString,"/" ) & "/","" );
 				}
 				else{
