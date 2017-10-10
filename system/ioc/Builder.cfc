@@ -493,22 +493,33 @@ TODO: update dsl consistency, so it is faster.
 			
 			// DSL stages
 			switch( thisTypeLen ){
-				// No injection defined, use property name
+				// No injection defined, use property name: property name='luis' inject;
 				case 0 : {
 					modelName = arguments.definition.name;
 					break; 
 				}
-				// Injection defined, no need to parse, no listing found
+				// Injected defined, can be different scenarios
+				// property name='luis' inject="id"; use property name
+				// property name='luis' inject="model"; use property name
+				// property name='luis' inject="alias";
 				case 1 : {
-					modelName = arguments.definition.dsl;
+					// Are we the key identifiers
+					if( listFindNoCase( "id,model", arguments.definition.dsl ) ){
+						modelName = arguments.definition.name;
+					} 
+					// else we are a real ID
+					else {
+						modelName = arguments.definition.dsl;
+					}
+					
 					break; 
 				}
-				// model:{name} stage
+				// model:{alias} stage
 				case 2 : { 
-					modelName = getToken( thisType, 2, ":" );
+					modelalias = getToken( thisType, 2, ":" );
 					break;
 				}
-				// model:{name}:{method} stage
+				// model:{alias}:{method} stage
 				case 3 : {
 					modelName 	= getToken( thisType, 2, ":" );
 					methodCall 	= getToken( thisType, 3, ":" );

@@ -1,22 +1,26 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseTestCase">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseTestCase"{
+	
 	this.loadColdBox = false;
 
 	function setup(){
 		// init with defaults
-		injector = getMockBox().createMock("coldbox.system.ioc.Injector").init("coldbox.tests.specs.ioc.config.samples.InjectorCreationTestsBinder");
+		injector = createMock("coldbox.system.ioc.Injector")
+			.init( "coldbox.tests.specs.ioc.config.samples.InjectorCreationTestsBinder" );
 		application.wirebox = injector;
 		// mock logger
-		mockLogger = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug").$("error");
-		injector.$property("log","instance",mockLogger);
+		mockLogger = createEmptyMock( "coldbox.system.logging.Logger" )
+			.$( "canDebug", true )
+			.$( "debug" )
+			.$( "error" );
+		injector.$property( "log", "instance", mockLogger );
 		// mock event manager
-		getMockBox().prepareMock( injector.getEventManager() );
+		prepareMock( injector.getEventManager() );
 		mockStub = createStub();
 	}
 
 	function teardown(){
-		structDelete(application, "wirebox");
 		super.teardown();
+		structDelete( application, "wirebox" );
 	}
 
 	function testMixins(){
@@ -46,12 +50,12 @@
 
 	function testbuildInstance(){
 		//mapping
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("MyTest");
+		mapping = createMock("coldbox.system.ioc.config.Mapping").init("MyTest");
 		// mocks
-		mockBuilder = getMockBox().createMock("coldbox.system.ioc.Builder").init( injector );
+		mockBuilder = createMock("coldbox.system.ioc.Builder").init( injector );
 		injector.$property("builder","instance",mockBuilder);
 		injector.getEventManager().$("process");
-		mockStub = getMockbox().createStub();
+		mockStub = createStub();
 
 		// CFC
 		mapping.setType("cfc");
@@ -83,7 +87,7 @@
 		assertEquals("testbaby", val);
 
 		// Provider
-		mockProvider = getMockBox().createEmptyMock("coldbox.system.ioc.Provider").$("get",mockStub);
+		mockProvider = createEmptyMock("coldbox.system.ioc.Provider").$("get",mockStub);
 		mapping.setType("provider").setPath("MyCoolProvider");
 		injector.$("getInstance").$args("MyCoolProvider").$results(mockProvider);
 		val = injector.buildInstance( mapping );
@@ -186,7 +190,8 @@
 	}
 
 	function testScopes(){
-		r = injector.getInstance("RequestCategoryBean");
+		
+		r = injector.getInstance( "RequestCategoryBean" );
 		assertEquals( request["wirebox:RequestCategoryBean"], r );
 		r = injector.getInstance("SessionCategoryBean");
 		assertEquals( session["wirebox:SessionCategoryBean"], r );
@@ -212,5 +217,4 @@
 		expect(	getMetadata( c ).name ).toMatch( "Injector" );
 	}
 
-</cfscript>
-</cfcomponent>
+}
