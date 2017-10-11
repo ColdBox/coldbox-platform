@@ -440,15 +440,20 @@ component serializable="false" accessors="true"{
 		}
 
 		// Execute our event
-		var results 		= _runEvent( argumentCollection=arguments );
+		var results = _runEvent( argumentCollection=arguments );
 
-		// Verify if they returned the request context, if so, remove it, let's help good people out.
+		// Do we have an object coming back?
 		if( 
 			!isNull( results.data ) && 
-			isObject( results.data  ) &&
-			isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" )
+			isObject( results.data  )
 		){
-			results.delete( "data" );
+			// Ignore, if request context
+			if( isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" )){
+				results.delete( "data" );
+			} 
+			else if( structKeyExists( results.data, "$renderdata" ) ){
+				results.data = results.data.$renderdata();
+			}
 		}
 
 		// Do we need to do action renderings?
