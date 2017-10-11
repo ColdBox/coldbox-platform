@@ -60,6 +60,10 @@ component accessors="true"{
 
 	/************************************** PUBLIC RETURN BACK SETTERS *********************************************/
 	
+	function setIsPrivate( required isPrivate ){ 
+		variables.isPrivate = arguments.isPrivate;
+		return this; 
+	}
 	function setHandler( required handler ){ 
 		variables.handler = arguments.handler;
 		return this; 
@@ -91,6 +95,23 @@ component accessors="true"{
 	
 	/************************************** UTILITY METHODS *********************************************/
 	
+	/**
+	 * Return the full action metadata structure or filter by key and default value if needed
+	 * @return any
+	 */
+	function getActionMetadata( key, defaultValue="" ){
+		// If no key passed, then return full structure
+		if( isNull( arguments.key ) || !len( arguments.key ) ){
+			return variables.actionMetadata;
+		}
+		// Filter by key
+		if( structKeyExists( variables.actionMetadata, arguments.key ) ){
+			return variables.actionMetadata[ arguments.key ];
+		}
+		// Nothing found, just return the default value of empty string
+		return arguments.defaultValue;
+	}
+
 	/**
 	* Get the full execution string
 	*/
