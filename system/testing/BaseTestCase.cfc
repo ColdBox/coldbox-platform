@@ -121,7 +121,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			} else {
 				variables.controller = application[ getColdBoxAppKey() ];
 			}
-			// remove context
+			// remove context + reset headers
 			getController().getRequestService().removeContext();
 			getPageContext().getResponse().reset();
 		}
@@ -138,6 +138,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* BDD: The main setup method for running ColdBox Integration enabled tests
+	* @beforeAll
 	*/
 	function beforeAll(){
 		beforeTests();
@@ -145,6 +146,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* BDD: The main teardown for ColdBox enabled applications after all tests execute
+	* @afterAll
 	*/
 	function afterAll(){
 		afterTests();
