@@ -84,7 +84,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	 */
     ModuleService function rebuildModuleRegistry(){
 		// Add the application's module's location and the system core modules
-		var modLocations   = [ controller.getSetting( "ModulesLocation" ) ];
+		var modLocations = [ controller.getSetting( "ModulesLocation" ) ];
 		// Add the application's external locations array.
 		modLocations.addAll( controller.getSetting( "ModulesExternalLocation" ) );
 		// Add the ColdBox Core Modules Location

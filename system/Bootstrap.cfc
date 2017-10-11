@@ -129,12 +129,6 @@ component serializable="false" accessors="true"{
 					cbController.getWireBox().clearSingletons();
 				}
 			}
-			// Modules AutoReload
-			if( cbController.getSetting( "ModulesAutoReload" ) ){
-				lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{
-					cbController.getModuleService().reloadAll();
-				}
-			}
 			// Handler's Index Auto Reload
 			if( cbController.getSetting( "HandlersIndexAutoReload" ) ){
 				lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{

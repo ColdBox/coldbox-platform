@@ -668,14 +668,16 @@ component accessors="true"{
 		var modules 	  = arguments.oConfig.getPropertyMixin( "modules", "variables", structnew() );
 
 		// Defaults
-		configStruct.ModulesAutoReload  = false;
 		configStruct.ModulesInclude		= [];
 		configStruct.ModulesExclude		= [];
 		configStruct.Modules 			= structNew();
 
-		if( structKeyExists( modules, "autoReload" ) ){ configStruct.modulesAutoReload = modules.autoReload; }
-		if( structKeyExists( modules, "include" ) ){ configStruct.modulesInclude = modules.include; }
-		if( structKeyExists( modules, "exclude" ) ){ configStruct.modulesExclude = modules.exclude; }
+		if( structKeyExists( modules, "include" ) ){ 
+			configStruct.modulesInclude = modules.include; 
+		}
+		if( structKeyExists( modules, "exclude" ) ){ 
+			configStruct.modulesExclude = modules.exclude;
+		}
 	}
 
 	/**************************************** PRIVATE ****************************************/
