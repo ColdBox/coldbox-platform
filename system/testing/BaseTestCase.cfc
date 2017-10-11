@@ -436,11 +436,14 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 					// If we have handler results save them in our context for assertions
 					else if ( 
 						!isNull( handlerResults ) 
-						&&
-						isSimpleValue( handlerResults )
 					){
-						requestContext.setValue("cbox_handler_results", handlerResults);
-						renderedContent = handlerResults;
+						// Store raw results
+						requestContext.setValue( "cbox_handler_results", handlerResults );
+						if( isSimpleValue( handlerResults ) ){
+							renderedContent = handlerResults;
+						} else {
+							renderedContent = serializeJSON( handlerResults );
+						}
 					}
 					// render layout/view pair
 					else{
@@ -470,10 +473,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			// postProcess
 			cbController.getInterceptorService().processState( "postProcess" );
 
-		}
-		catch(Any e){
+		} catch( Any e ) {
 			// Exclude relocations so they can be asserted.
-			if( NOT listFindNoCase(relocationTypes,e.type) ){
+			if( NOT listFindNoCase( relocationTypes, e.type ) ){
 				rethrow;
 			}
 		}

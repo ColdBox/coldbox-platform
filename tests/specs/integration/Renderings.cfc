@@ -46,6 +46,33 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				setup();
 			});
 
+			story( "ColdBox should render complex handler returns natively to JSON", function(){
+				given( "A complex return data from a handler", function(){
+					then( "it should render the data back in json", function(){
+						var e = execute( event="actionRendering.index", renderResults=true );
+						expect(	e.getRenderedContent() )
+							.toBeJSON();
+					});
+				});
+			});
+
+			story( "ColdBox action rendering should determine renderdata type using the handler `renderdata` annotation", function(){
+				given( "A return data from a handler with a renderadata annotation of json", function(){
+					then( "it should render the data back in json", function(){
+						var e = execute( event="actionRendering.asJSON", renderResults=true );
+						expect(	e.getRenderedContent() )
+							.toBeJSON();
+					});
+				});
+				given( "A return data from a handler with a renderadata annotation of xml", function(){
+					then( "it should render the data back in xml", function(){
+						var e = execute( event="actionRendering.asXML", renderResults=true );
+						expect(	e.getRenderedContent() )
+							.toBeTypeOf( "xml" );
+					});
+				});
+			});
+
 			story( "I want to render jsonp", function(){
 				given( "A jsonp type and `callback`", function(){
 					then( "it should render with the appropriate application/javascript type", function(){

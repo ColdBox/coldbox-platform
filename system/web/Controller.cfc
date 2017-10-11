@@ -435,13 +435,34 @@ component serializable="false" accessors="true"{
 			// Test if entry found in cache, and return if found.
 			var data = oCache.get( cacheKey );
 			if( !isNull( data ) ){ 
-				return data; 
+				return data;
 			}
 		}
 
 		// Execute our event
-		var results = _runEvent( argumentCollection=arguments );
-		
+		var results 		= _runEvent( argumentCollection=arguments );
+
+		// Verify if they returned the request context, if so, remove it, let's help good people out.
+		if( 
+			!isNull( results.data ) && 
+			isObject( results.data  ) &&
+			isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" )
+		){
+			results.delete( "data" );
+		}
+
+		// Do we need to do action renderings?
+		if( !isNull( results.data ) &&
+			results.ehBean.getActionMetadata( "renderdata", "html" ) neq "html"
+		){
+			// Do action Rendering
+			services.requestService.getContext()
+				.renderdata(
+					type = results.ehBean.getActionMetadata( "renderdata" ),
+					data = results.data
+				);
+		}
+
 		// Are we caching
 		if( isCachingOn && !isNull( results.data ) ){
 			oCache.set( 

@@ -204,21 +204,29 @@ component serializable="false" accessors="true"{
 				//****** RENDERING PROCEDURES *******/
 				if( not event.isNoRender() ){
 					var renderedContent = "";
+					
 					// pre layout
 					interceptorService.processState( "preLayout" );
+					
 					// Check for Marshalling and data render
 					var renderData = event.getRenderData();
+					
 					// Rendering/Marshalling of content
 					if( isStruct( renderData ) and not structisEmpty( renderData ) ){
 						renderedContent = cbController.getDataMarshaller().marshallData( argumentCollection=renderData );
 					}
-					// Return HTML from handler
+					// Check if handler returned results
 					else if( 
 						!isNull( refResults.results ) 
-						&&
-						isSimpleValue( refResults.results )
 					){
-						renderedContent = refResults.results;
+						// If simple, just return it back, evaluates to HTML
+						if( isSimpleValue( refResults.results ) ){
+							renderedContent = refResults.results;
+						} 
+						// ColdBox does native JSON if you return a complex object.
+						else {
+							renderedContent = serializeJSON( refResults.results );
+						}
 					}
 					// Render Layout/View pair via set variable to eliminate whitespace
 					else {
