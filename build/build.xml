@@ -17,17 +17,6 @@
 	<property name="logbox.slug"	 		value="logbox"/>
 	<property name="wirebox.slug"	 		value="wirebox"/>
 	
-	<!-- Build Conditions -->
-	<condition property="cfengine" else="lucee@4.5">
-		<isset property="cfengine"/>
-	</condition>
-	<condition property="isTravis" else="false">
-      <isset property="isTravis"/>
-    </condition>
-    <condition property="build.branch" else="development">
-      <isset property="build.branch"/>
-    </condition>
-
     <!-- Default environment check, if not passed via -Denvironment -->
 	<condition property="environment" value="local">
 		<not><isset property="environment" /></not>
@@ -61,6 +50,17 @@
 		<!-- Load root properties -->
 		<echo>Loading base properties</echo>
 		<loadproperties srcFile="build/build.properties"/>
+
+		<!-- Build Conditions -->
+		<condition property="cfengine" else="lucee@4.5">
+			<isset property="cfengine"/>
+		</condition>
+		<condition property="isTravis" else="false">
+		<isset property="isTravis"/>
+		</condition>
+		<condition property="build.branch" else="development">
+		<isset property="build.branch"/>
+		</condition>
 
 		<!-- Build Number -->
 		<if>

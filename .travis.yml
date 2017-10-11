@@ -7,8 +7,8 @@ notifications:
 
 env:
   matrix:
-    - ENGINE=lucee@4.5	COLDBOX_VERSION=5.0.0	ANT_TARGET=build.all
-    - ENGINE=lucee@5	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
+    - ENGINE=lucee@4.5 COLDBOX_VERSION=5.0.0 ANT_TARGET=build.all
+    - ENGINE=lucee@5 COLDBOX_VERSION=5.0.0 ANT_TARGET=run-tests
     #- ENGINE=adobe@10	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
     - ENGINE=adobe@11	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
     - ENGINE=adobe@2016	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
@@ -51,6 +51,9 @@ before_script:
   - mysql -u root < tests/resources/coolblog.sql
   # add our custom engine to our properties
   - printf "\ncfengine=$ENGINE" >> build/build.properties
+  - echo "************************ Runtime Properties ********************"
+  - cat build/build.properties
+  - echo "************************ END Runtime Properties ********************"
   # Ready for testing
   # - box server start name=$ENGINE debug=true
   # Copy over custom web server config: Commented out in favor of cfconfig now.
