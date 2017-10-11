@@ -415,40 +415,47 @@ component serializable="false" accessors="true"{
 		cacheSuffix="",
 		cacheProvider="template"
 	){
+		// Determine if we need to cache handler response
+		var isCachingOn = getSetting( "eventCaching" ) && arguments.cache;
+
 		// Check if event empty, if empty then use default event
 		if( NOT len( trim( arguments.event ) ) ){
 			arguments.event = services.requestService.getContext().getCurrentEvent();
 		}
 
-		// relay if no event caching activated or no caching needed
-		if( !getSetting( "eventCaching" ) OR !arguments.cache ){
-			return _runEvent( argumentCollection=arguments );
+		if( isCachingOn ){
+			// Build cache references
+			var oCache 			= variables.cachebox.getCache( arguments.cacheProvider );
+			var oEventURLFacade = oCache.getEventURLFacade();
+			var cacheKey 		= oEventURLFacade.buildBasicCacheKey(
+				keySuffix 	= arguments.cacheSuffix,
+				targetEvent = arguments.event
+			) & hash( arguments.eventArguments.toString() );
+
+			// Test if entry found in cache, and return if found.
+			var data = oCache.get( cacheKey );
+			if( !isNull( data ) ){ 
+				return data; 
+			}
 		}
 
-		// Build cache references
-		var oCache 			= variables.cachebox.getCache( arguments.cacheProvider );
-		var oEventURLFacade = oCache.getEventURLFacade();
-		var cacheKey 		= oEventURLFacade.buildBasicCacheKey(
-			keySuffix 	= arguments.cacheSuffix,
-			targetEvent = arguments.event
-		) & hash( arguments.eventArguments.toString() );
-
-		// Test if entry found and return
-		var data = oCache.get( cacheKey );
-		if( !isNull( data ) ){ return data; }
-
-		// else produce and cache
-		data = _runEvent( argumentCollection=arguments );
-		if( !isNull( data ) ){
+		// Execute our event
+		var results = _runEvent( argumentCollection=arguments );
+		
+		// Are we caching
+		if( isCachingOn && !isNull( results.data ) ){
 			oCache.set( 
 				objectKey			= cacheKey,
-				object 				= data,
+				object 				= results.data,
 				timeout 			= arguments.cacheTimeout,
 				lastAccessTimeout 	= arguments.cacheLastAccessTimeout
 			);
 		}
 
-		return data;
+		// Are we returning data?
+		if( !isNull( results.data ) ){
+			return results.data;
+		}
 	}
 
 	/**
@@ -458,6 +465,8 @@ component serializable="false" accessors="true"{
 	* @private Execute a private event if set, else defaults to public events
 	* @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
 	* @eventArguments A collection of arguments to passthrough to the calling event handler method
+	*
+	* @return struct { data:event handler returned data (null), ehBean:event handler bean representation that was fired }
 	*/
 	private function _runEvent(
 		event="",
@@ -466,17 +475,17 @@ component serializable="false" accessors="true"{
 		boolean defaultEvent=false,
 		struct eventArguments={}
 	){
-		var oRequestContext 	= services.requestService.getContext();
-		var ehBean 				= "";
-		var oHandler 			= "";
-		var iData				= structnew();
-		var loc					= structnew();
+		var oRequestContext = services.requestService.getContext();
+		var results 		= {
+			"data" 		= javaCast( "null", "" ),
+			"ehBean" 	= ""
+		};
 
 		// Setup Invoker args
 		var args = {
 			event 			= oRequestContext,
 			rc 				= oRequestContext.getCollection(),
-			prc 			= oRequestContext.getCollection(private=true),
+			prc 			= oRequestContext.getPrivateCollection(),
 			eventArguments  = arguments.eventArguments
 		};
 
@@ -489,49 +498,54 @@ component serializable="false" accessors="true"{
 		structAppend( argsMain, arguments.eventArguments );
 
 		// Setup interception data
-		iData.processedEvent 	= arguments.event;
-		iData.eventArguments	= arguments.eventArguments;
+		var iData = {
+			"processedEvent" = arguments.event,
+			"eventArguments" = arguments.eventArguments
+		};
 
 		// Validate the incoming event and get a handler bean to continue execution
-		ehBean = services.handlerService.getRegisteredHandler( arguments.event );
+		results.ehBean = services.handlerService
+			.getRegisteredHandler( arguments.event )
+			.setIsPrivate( arguments.private );
 
 		// Validate this is not a view dispatch, else return for rendering
-		if( ehBean.getViewDispatch() ){	return;	}
-		// Is this a private event execution?
-		ehBean.setIsPrivate( arguments.private );
+		if( results.ehBean.getViewDispatch() ){	return results;	}
+
 		// Now get the correct handler to execute
-		oHandler = services.handlerService.getHandler( ehBean, oRequestContext );
+		var oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
+		
 		// Validate again this is not a view dispatch as the handler might exist but not the action
-		if( ehBean.getViewDispatch() ){	return;	}
+		if( results.ehBean.getViewDispatch() ){	return results;	}
 
 		try{
 			// Determine allowed methods in action metadata
-			if( structKeyExists( ehBean.getActionMetadata() , "allowedMethods" ) ){
+			if( structKeyExists( results.ehBean.getActionMetadata() , "allowedMethods" ) ){
 				// incorporate it to the handler
-				oHandler.allowedMethods[ ehBean.getMethod() ] = ehBean.getActionMetadata().allowedMethods;
+				oHandler.allowedMethods[ results.ehBean.getMethod() ] = results.ehBean.getActionMetadata( "allowedMethods" );
 			}
 
 			// Determine if it is An allowed HTTP method to execute, else throw error
 			if( NOT structIsEmpty( oHandler.allowedMethods ) AND
-				structKeyExists( oHandler.allowedMethods, ehBean.getMethod() ) AND
-				NOT listFindNoCase( oHandler.allowedMethods[ ehBean.getMethod() ], oRequestContext.getHTTPMethod() ) 
+				structKeyExists( oHandler.allowedMethods, results.ehBean.getMethod() ) AND
+				NOT listFindNoCase( oHandler.allowedMethods[ results.ehBean.getMethod() ], oRequestContext.getHTTPMethod() ) 
 			){
 				// set Invalid HTTP method in context
 				oRequestContext.setIsInvalidHTTPMethod();
 				// Do we have a local handler for this exception, if so, call it
 				if( oHandler._actionExists( "onInvalidHTTPMethod" ) ){
-					return oHandler.onInvalidHTTPMethod( 
+					results.data = oHandler.onInvalidHTTPMethod( 
 						event			= oRequestContext,
 						rc				= args.rc,
 						prc				= args.prc,
-						faultAction		= ehBean.getmethod(),
+						faultAction		= results.ehBean.getmethod(),
 						eventArguments	= arguments.eventArguments 
 					);
+					return results;
 				}
 
 				// Do we have the invalidHTTPMethodHandler setting? If so, call it.
 				if( len( getSetting( "invalidHTTPMethodHandler" ) ) ){
-					return runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
+					return _runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
 				}
 
 				// Throw Exception, no handlers defined
@@ -550,7 +564,7 @@ component serializable="false" accessors="true"{
 			if( arguments.defaultEvent && oRequestContext.isInvalidHTTPMethod() ){
 				// Do we have the invalidHTTPMethodHandler setting? If so, call it.
 				if( len( getSetting( "invalidHTTPMethodHandler" ) ) ){
-					return runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
+					return _runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
 				}
 				// Throw Exception, no handlers defined
 				oRequestContext.setHTTPHeader( 
@@ -573,43 +587,45 @@ component serializable="false" accessors="true"{
 				// Verify if event was overriden
 				if( arguments.event NEQ iData.processedEvent ){
 					// Validate the overriden event
-					ehBean = services.handlerService.getRegisteredHandler( iData.processedEvent );
+					results.ehBean = services.handlerService.getRegisteredHandler( iData.processedEvent );
 					// Get new handler to follow execution
-					oHandler = services.handlerService.getHandler( ehBean, oRequestContext );
+					oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
 				}
 
 				// Execute Pre Handler if it exists and valid?
-				if( oHandler._actionExists( "preHandler" ) AND validateAction( ehBean.getMethod(), oHandler.PREHANDLER_ONLY, oHandler.PREHANDLER_EXCEPT ) ){
+				if( oHandler._actionExists( "preHandler" ) AND 
+					validateAction( results.ehBean.getMethod(), oHandler.PREHANDLER_ONLY, oHandler.PREHANDLER_EXCEPT ) 
+				){
 					oHandler.preHandler( 
-						event = oRequestContext,
-						rc = args.rc,
-						prc = args.prc,
-						action = ehBean.getMethod(),
+						event          = oRequestContext,
+						rc             = args.rc,
+						prc            = args.prc,
+						action         = results.ehBean.getMethod(),
 						eventArguments = arguments.eventArguments 
 					);
 				}
 
 				// Execute pre{Action}? if it exists and valid?
-				if( oHandler._actionExists( "pre#ehBean.getMethod()#" ) ){
-					invoker( target=oHandler, method="pre#ehBean.getMethod()#", argCollection=args );
+				if( oHandler._actionExists( "pre#results.ehBean.getMethod()#" ) ){
+					invoker( target=oHandler, method="pre#results.ehBean.getMethod()#", argCollection=args );
 				}
 			}
 
 			// Verify if event was overriden
 			if( arguments.defaultEvent and arguments.event NEQ oRequestContext.getCurrentEvent() ){
 				// Validate the overriden event
-				ehBean = services.handlerService.getRegisteredHandler( oRequestContext.getCurrentEvent() );
+				results.ehBean = services.handlerService.getRegisteredHandler( oRequestContext.getCurrentEvent() );
 				// Get new handler to follow execution
-				oHandler = services.handlerService.getHandler( ehBean, oRequestContext );
+				oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
 			}
 
 			// Invoke onMissingAction event
-			if( ehBean.isMissingAction() ){
-				loc.results	= oHandler.onMissingAction(
-					event = oRequestContext,
-					rc = args.rc,
-					prc = args.prc,
-					missingAction = ehBean.getMissingAction(),
+			if( results.ehBean.isMissingAction() ){
+				results.data	= oHandler.onMissingAction(
+					event          = oRequestContext,
+					rc             = args.rc,
+					prc            = args.prc,
+					missingAction  = results.ehBean.getMissingAction(),
 					eventArguments = arguments.eventArguments
 				);
 			}
@@ -617,26 +633,37 @@ component serializable="false" accessors="true"{
 			else{
 
 				// Around {Action} Advice Check?
-				if( oHandler._actionExists( "around#ehBean.getMethod()#" ) ){
-					// Add target Action to loc.args
-					args.targetAction  	= oHandler[ehBean.getMethod()];
-					loc.results = invoker( target=oHandler, method="around#ehBean.getMethod()#", argCollection=args );
+				if( oHandler._actionExists( "around#results.ehBean.getMethod()#" ) ){
+					// Add target Action
+					args.targetAction = oHandler[ results.ehBean.getMethod() ];
+					results.data = invoker( 
+						target        = oHandler, 
+						method        = "around#results.ehBean.getMethod()#", 
+						argCollection = args 
+					);
 					// Cleanup: Remove target action from args for post events
 					structDelete( args, "targetAction" );
 				}
 				// Around Handler Advice Check?
-				else if( oHandler._actionExists( "aroundHandler" ) AND validateAction( ehBean.getMethod(), oHandler.aroundHandler_only, oHandler.aroundHandler_except ) ){
-					loc.results = oHandler.aroundHandler(
-						event = oRequestContext,
-						rc = args.rc,
-						prc = args.prc,
-						targetAction = oHandler[ ehBean.getMethod() ],
+				else if( 
+					oHandler._actionExists( "aroundHandler" ) AND 
+					validateAction( results.ehBean.getMethod(), oHandler.aroundHandler_only, oHandler.aroundHandler_except ) 
+				){
+					results.data = oHandler.aroundHandler(
+						event          = oRequestContext,
+						rc             = args.rc,
+						prc            = args.prc,
+						targetAction   = oHandler[ results.ehBean.getMethod() ],
 						eventArguments = arguments.eventArguments 
 					);
-				}
-				else{
+				} else {
 					// Normal execution
-					loc.results = invoker( target=oHandler, method=ehBean.getMethod(), argCollection=argsMain, private=arguments.private );
+					results.data = invoker( 
+						target        = oHandler, 
+						method        = results.ehBean.getMethod(), 
+						argCollection = argsMain, 
+						private       = arguments.private 
+					);
 				}
 			}
 
@@ -644,45 +671,49 @@ component serializable="false" accessors="true"{
 			if( NOT arguments.prePostExempt ){
 
 				// Execute post{Action}?
-				if( oHandler._actionExists( "post#ehBean.getMethod()#" ) ){
-					invoker( target=oHandler, method="post#ehBean.getMethod()#", argCollection=args );
+				if( oHandler._actionExists( "post#results.ehBean.getMethod()#" ) ){
+					invoker( 
+						target        = oHandler, 
+						method        = "post#results.ehBean.getMethod()#", 
+						argCollection = args 
+					);
 				}
 
 				// Execute postHandler()?
-				if( oHandler._actionExists("postHandler") AND validateAction(ehBean.getMethod(),oHandler.POSTHANDLER_ONLY,oHandler.POSTHANDLER_EXCEPT) ){
+				if( 
+					oHandler._actionExists( "postHandler" ) AND 
+					validateAction( results.ehBean.getMethod(), oHandler.POSTHANDLER_ONLY, oHandler.POSTHANDLER_EXCEPT ) 
+				){
 					oHandler.postHandler(
-						event = oRequestContext,
-						rc = args.rc,
-						prc = args.prc,
-						action = ehBean.getMethod(),
+						event          = oRequestContext,
+						rc             = args.rc,
+						prc            = args.prc,
+						action         = results.ehBean.getMethod(),
 						eventArguments = arguments.eventArguments);
 				}
 
-				// Execute POSTEVENT interceptor
+				// Execute postEvent interceptor
 				services.interceptorService.processState( "postEvent", iData );
 
 			}// end if prePostExempt
 		} catch( any e ){
+			// onError convention
 			if( oHandler._actionExists( "onError" ) ){
-				loc.results = oHandler.onError(
-					event = oRequestContext,
-					rc = args.rc,
-					prc = args.prc,
-					faultAction = ehBean.getmethod(),
-					exception = e,
+				results.data = oHandler.onError(
+					event          = oRequestContext,
+					rc             = args.rc,
+					prc            = args.prc,
+					faultAction    = results.ehBean.getmethod(),
+					exception      = e,
 					eventArguments = arguments.eventArguments);
 			} else {
+				// Bubble up the error
 				rethrow;
 			}
 		}
 
-		// Check if sending back results, else void results
-		if( structKeyExists( loc, "results" ) ){
-			return loc.results;
-		}
-
+		return results;
 	}
-
 
 	/****************************************** APPLICATION LOCATORS *************************************************/
 	
