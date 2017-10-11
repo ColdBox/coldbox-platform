@@ -62,7 +62,7 @@ Optional Methods
 
 			//Error/Exception Handling
 			exceptionHandler		= "",
-			onInvalidEvent			= "",
+			invalidEventHandler		= "",
 			customErrorTemplate		= "",
 
 			//Application Aspects

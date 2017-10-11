@@ -224,8 +224,12 @@ component accessors="true"{
 			configStruct[ "SessionEndHandler" ] = "";
 		}
 		//Check for InvalidEventHandler
-		if ( not structKeyExists( configStruct, "onInvalidEvent" ) ){
-			configStruct[ "onInvalidEvent" ] = "";
+		if ( not structKeyExists( configStruct, "InvalidEventHandler" ) ){
+			configStruct[ "InvalidEventHandler" ] = "";
+		}
+		// TODO: Deprecated setting, remove in older version of the framework
+		if ( structKeyExists( configStruct, "onInvalidEvent" ) ){
+			configStruct[ "InvalidEventHandler" ] = configStruct.onInvalidEvent;
 		}
 		//Check for Implicit Views
 		if ( not structKeyExists( configStruct, "ImplicitViews" ) OR not isBoolean( configStruct.implicitViews) ){

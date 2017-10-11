@@ -44,17 +44,17 @@ Description :
 			registerHandlers();
 
 			// Configuration data and dependencies
-			instance.registeredHandlers			= controller.getSetting("RegisteredHandlers");
-			instance.registeredExternalHandlers = controller.getSetting("RegisteredExternalHandlers");
-			instance.eventAction				= controller.getSetting("EventAction",1);
-			instance.eventName					= controller.getSetting("EventName");
-			instance.onInvalidEvent				= controller.getSetting("onInvalidEvent");
-			instance.handlerCaching				= controller.getSetting("HandlerCaching");
-			instance.eventCaching				= controller.getSetting("EventCaching");
-			instance.handlersInvocationPath		= controller.getSetting("HandlersInvocationPath");
-			instance.handlersExternalLocation	= controller.getSetting("HandlersExternalLocation");
+			instance.registeredHandlers			= controller.getSetting( "RegisteredHandlers" );
+			instance.registeredExternalHandlers = controller.getSetting( "RegisteredExternalHandlers" );
+			instance.eventAction				= controller.getSetting( "EventAction", 1 );
+			instance.eventName					= controller.getSetting( "EventName" );
+			instance.invalidEventHandler		= controller.getSetting( "invalidEventHandler" );
+			instance.handlerCaching				= controller.getSetting( "HandlerCaching" );
+			instance.eventCaching				= controller.getSetting( "EventCaching" );
+			instance.handlersInvocationPath		= controller.getSetting( "HandlersInvocationPath" );
+			instance.handlersExternalLocation	= controller.getSetting( "HandlersExternalLocation" );
 			instance.templateCache				= controller.getCache( "template" );
-			instance.modules					= controller.getSetting("modules");
+			instance.modules					= controller.getSetting( "modules" );
 			instance.interceptorService			= controller.getInterceptorService();
     	</cfscript>
     </cffunction>
@@ -365,38 +365,41 @@ Description :
 		<cfargument name="event"  type="string" required="true" hint="The event that was found invalid"/>
 		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean" doc_generic="coldbox.system.web.context.EventHandlerBean"/>
 		<cfscript>
-			var iData			= structnew();
-
-			// Announce invalid event with invalid event, ehBean and override flag.
-			iData.invalidEvent 	= arguments.event;
-			iData.ehBean 		= arguments.ehBean;
-			iData.override 		= false;
+			var iData = {
+				"invalidEvent" 	= arguments.event,
+				"ehBean"		= arguments.ehBean,
+				"override"		= false
+			};
 			instance.interceptorService.processState( "onInvalidEvent", iData );
 
-			//If the override was changed by the interceptors then they updated the ehBean of execution
+			// If the override was changed by the interceptors then they updated the ehBean of execution
 			if( iData.override ){
 				return;
 			}
 
-			// If onInvalidEvent is registered, use it
-			if ( len(trim(instance.onInvalidEvent)) ){
+			// If invalidEventHandler is registered, use it
+			if ( len( trim( instance.invalidEventHandler ) ) ){
 
 				// Test for invalid Event Error
-				if ( compareNoCase( instance.onInvalidEvent, arguments.event ) eq 0 ){
-					throw( message="The onInvalid event is also invalid",
-						   detail="The onInvalidEvent setting is also invalid: #instance.onInvalidEvent#. Please check your settings",
-						   type="HandlerService.onInValidEventSettingException");
+				if ( compareNoCase( instance.invalidEventHandler, arguments.event ) eq 0 ){
+					throw( 
+						message = "The invalidEventHandler event is also invalid",
+						detail  = "The invalidEventHandler setting is also invalid: #instance.invalidEventHandler#. Please check your settings",
+						type    = "HandlerService.InvalidEventHandlerException"
+					);
 				}
 
 				// Store Invalid Event in PRC
-				controller.getRequestService().getContext().setValue("invalidevent",arguments.event,true);
+				controller.getRequestService().getContext().setPrivateValue( "invalidevent", arguments.event );
 
 				// Override Event With On Invalid Event
-				arguments.ehBean.setHandler(reReplace(instance.onInvalidEvent,"\.[^.]*$",""))
-					.setMethod(listLast(instance.onInvalidEvent,"."))
-					.setModule('');
+				arguments.ehBean.setHandler( reReplace( instance.invalidEventHandler, "\.[^.]*$", "" ) )
+					.setMethod( listLast( instance.invalidEventHandler, ".") )
+					.setModule( '' );
 				// If module found in invalid event, set it for discovery
-				if( find(":",instance.onInvalidEvent) ){ arguments.ehBean.setModule( getToken(instance.onInvalidEvent,1) ); }
+				if( find( ":", instance.invalidEventHandler ) ){ 
+					arguments.ehBean.setModule( getToken( instance.invalidEventHandler, 1 ) ); 
+				}
 
 				return;
 			}
@@ -405,7 +408,10 @@ Description :
 			instance.log.error( "Invalid Event detected: #arguments.event#. Path info: #cgi.path_info#, query string: #cgi.query_string#" );
 
 			// Throw Exception
-			throw( message="The event: #arguments.event# is not a valid registered event.", type="HandlerService.EventHandlerNotRegisteredException" );
+			throw( 
+				message = "The event: #arguments.event# is not a valid registered event.", 
+				type    = "HandlerService.EventHandlerNotRegisteredException" 
+			);
 		</cfscript>
 	</cffunction>
 
