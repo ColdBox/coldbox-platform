@@ -488,12 +488,14 @@ component extends="coldbox.system.web.services.BaseService"{
 				interceptorService.registerInterceptor( 
 					interceptorClass 		= mConfig.interceptors[ y ].class,
 					interceptorProperties 	= mConfig.interceptors[ y ].properties,
-					interceptorName 		= mConfig.interceptors[ y ].name
+					interceptorName 		= mConfig.interceptors[ y ].name & "@" & arguments.moduleName
 				);
 				// Loop over module interceptors to autowire them
 				wirebox.autowire( 
-					target 	= interceptorService.getInterceptor( mConfig.interceptors[ y ].name, true ),
-					targetID= mConfig.interceptors[ y ].class 
+					target 	 = interceptorService.getInterceptor( 
+						mConfig.interceptors[ y ].name & "@" & arguments.moduleName, true
+					),
+					targetID = mConfig.interceptors[ y ].class 
 				);
 			}
 
