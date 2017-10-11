@@ -141,7 +141,10 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* @beforeAll
 	*/
 	function beforeAll(){
-		beforeTests();
+		if( isNull( variables._ranBeforeAll ) ){
+			beforeTests();
+			variables._ranBeforeAll = true;
+		}
 	}
 
 	/**
@@ -149,7 +152,10 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* @afterAll
 	*/
 	function afterAll(){
-		afterTests();
+		if( isNull( variables._ranAfterAll ) ){
+			afterTests();
+			variables._ranAfterAll = true;
+		}
 	}
 
 	/**
