@@ -34,7 +34,9 @@ Description :
 				// Layout-View Events
 				"preLayout", "preRender", "postRender", "preViewRender", "postViewRender", "preLayoutRender", "postLayoutRender", "afterRendererInit",
 				// Module Events
-				"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload", "preModuleRegistration", "postModuleRegistration"
+				"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload", "preModuleRegistration", "postModuleRegistration",
+				// Module Global Events
+				"afterModuleRegistrations"
 			];
 
 			// Init Container of interception states

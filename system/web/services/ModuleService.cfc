@@ -98,8 +98,9 @@ component extends="coldbox.system.web.services.BaseService"{
      * Register all modules for the application. Usually called by framework to load{configuration data.
      */
 	ModuleService function registerAllModules(){
-		var foundModules   = "";
-		var includeModules = controller.getSetting( "modulesInclude" );
+		var foundModules   			= "";
+		var includeModules 			= controller.getSetting( "modulesInclude" );
+		var interceptorService  	= controller.getInterceptorService();
 
 		// Register the initial empty module configuration holder structure
 		structClear( controller.getSetting( "modules" ) );
@@ -126,6 +127,14 @@ component extends="coldbox.system.web.services.BaseService"{
 				registerModule( thisModule );
 			}
 		}
+
+		// interception
+		interceptorService.processState( 
+			"afterModuleRegistrations", 
+			{ 
+				moduleRegistry 	= variables.moduleRegistry
+			}
+		);
 
 		return this;
 	}
@@ -385,7 +394,8 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * Go over all the loaded module configurations and activate them for usage within the{application
 	 */
 	function activateAllModules(){
-		var modules = controller.getSetting( "modules" );
+		var modules 				= controller.getSetting( "modules" );
+		var interceptorService  	= controller.getInterceptorService();
 		// Iterate through module configuration and activate each module
 		for( var moduleName in modules ){
 			// Verify the exception and inclusion lists
@@ -393,6 +403,14 @@ component extends="coldbox.system.web.services.BaseService"{
 				activateModule( moduleName );
 			}
 		}
+
+		// interception
+		interceptorService.processState( 
+			"afterModuleActivations", 
+			{ 
+				moduleRegistry 	= variables.moduleRegistry
+			}
+		);
 	}
 
 	/**
