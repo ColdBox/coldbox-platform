@@ -440,7 +440,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
      * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
      * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
      * @except 			Exclude routes with an except list or array of actions, e.g. "show"
-     * @restful 		If true, then we will only create API based routes. It wil not create a /new and /edit route.
      * @module 			If passed, the module these resources will be attached to.
      * @namespace 		If passed, the namespace these resources will be attached to.
      */
@@ -450,7 +449,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
         parameterName="id",
         only=[],
         except=[],
-        boolean restful=false,
         string module="",
         string namespace=""
     ){
@@ -471,34 +469,30 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
         // Register all resources
         for( var thisResource in arguments.resource ){
-        	
-        	// Edit Route, only if NON Restful
-	        if( !arguments.restful ){
-	        	actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
-		        if ( ! structIsEmpty( actionSet ) ) {
-		            addRoute(
-		            	pattern		= "/#thisResource#/:#arguments.parameterName#/edit",
-		            	handler		= arguments.handler,
-		            	action 		= actionSet,
-		            	module 		= arguments.module,
-		            	namespace	= arguments.namespace
-		            );
-		        }
+			
+			// Edit Routes
+			actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
+			if ( ! structIsEmpty( actionSet ) ) {
+				addRoute(
+					pattern		= "/#thisResource#/:#arguments.parameterName#/edit",
+					handler		= arguments.handler,
+					action 		= actionSet,
+					module 		= arguments.module,
+					namespace	= arguments.namespace
+				);
 			}
 
-	        // New Route, only if NON Restful
-	        if( !arguments.restful ){
-		        actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
-		        if ( ! structIsEmpty( actionSet ) ) {
-		            addRoute(
-		            	pattern		= "/#thisResource#/new",
-		            	handler		= arguments.handler,
-		            	action		= actionSet,
-		            	module 		= arguments.module,
-		            	namespace	= arguments.namespace
-		            );
-		        }
-		    }
+	        // New Routes
+			actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
+			if ( ! structIsEmpty( actionSet ) ) {
+				addRoute(
+					pattern		= "/#thisResource#/new",
+					handler		= arguments.handler,
+					action		= actionSet,
+					module 		= arguments.module,
+					namespace	= arguments.namespace
+				);
+			}
 
 	        // update, delete and show routes
 	        actionSet = filterRouteActions( 
