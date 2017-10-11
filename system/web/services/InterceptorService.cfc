@@ -36,7 +36,7 @@ Description :
 				// Module Events
 				"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload", "preModuleRegistration", "postModuleRegistration",
 				// Module Global Events
-				"afterModuleRegistrations"
+				"afterModuleRegistrations", "afterModuleActivations"
 			];
 
 			// Init Container of interception states
