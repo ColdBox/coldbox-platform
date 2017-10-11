@@ -1297,9 +1297,9 @@ component serializable=false accessors="true"{
 	/**
 	* Filters the collection or private collection down to only the provided keys.
 	* @keys A list or array of keys to bring back from the collection or private collection.
-	* @private Private or public, defaults public.
+	* @private Private or public, defaults public request collection
 	*/
-	struct function only( required keys, boolean private = false ){
+	struct function getOnly( required keys, boolean private = false ){
 		if( isSimpleValue( arguments.keys ) ){
 			arguments.keys = listToArray( arguments.keys );
 		}

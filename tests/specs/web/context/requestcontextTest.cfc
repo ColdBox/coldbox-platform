@@ -502,7 +502,7 @@
 		event.setValue( "email", "john@example.com" );
 		event.setValue( "hackedField", "hacked!" );
 
-		expect( event.only( [ "name", "email", "field-that-does-not-exist" ] ) )
+		expect( event.getOnly( [ "name", "email", "field-that-does-not-exist" ] ) )
 			.toBe( { "name" = "John", "email" = "john@example.com" } );
 	}
 
@@ -512,7 +512,7 @@
 		event.setValue( "email", "john@example.com" );
 		event.setValue( "hackedField", "hacked!" );
 
-		expect( event.only( "name,email,field-that-does-not-exist" ) )
+		expect( event.getOnly( "name,email,field-that-does-not-exist" ) )
 			.toBe( { "name" = "John", "email" = "john@example.com" } );
 	}
 
@@ -523,7 +523,7 @@
 		event.setValue( "name", "Jane", true );
 		event.setValue( "hackedField", "hacked as well!", true );
 
-		expect( event.only( keys = "name,field-that-does-not-exist", private = true ) )
+		expect( event.getOnly( keys = "name,field-that-does-not-exist", private = true ) )
 			.toBe( { "name" = "Jane" } );	
 	}
 
