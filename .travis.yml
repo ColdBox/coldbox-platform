@@ -54,8 +54,8 @@ before_script:
   - echo "************************ Runtime Properties ********************"
   - cat build/build.properties
   - echo "************************ END Runtime Properties ********************"
-  # Ready for testing
-  # - box server start name=$ENGINE debug=true
+  # Starting server twice due to stupid LUCEE 5 bug.
+  - box server start name=$ENGINE debug=true
   # Copy over custom web server config: Commented out in favor of cfconfig now.
   # - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
 

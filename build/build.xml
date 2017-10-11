@@ -134,23 +134,24 @@
 				<property name="test.target" value="run-junit" />
 			</else>
 		</if>
+		
     	<!-- Run for Core -->
-		<exec executable="box" dir="${basedir}">
+		<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner.cfm' verbose=false" />
 		</exec>
 
     	<!-- Run for CacheBox -->
-    	<exec executable="box" dir="${basedir}">
+    	<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-cachebox.cfm' verbose=false" />
 		</exec>
 
     	<!-- Run for LogBox -->
-    	<exec executable="box" dir="${basedir}">
+    	<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-logbox.cfm' verbose=false" />
 		</exec>
 
     	<!-- Run for WireBox -->
-    	<exec executable="box" dir="${basedir}">
+    	<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=false" />
 		</exec>
     </target>
