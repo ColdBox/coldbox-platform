@@ -12,7 +12,7 @@ env:
     #- ENGINE=adobe@10	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
     - ENGINE=adobe@11	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
     - ENGINE=adobe@2016	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
-    - ENGINE=@ortus/adobe-aether	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests ENGINENAME=adobe-aether
+    #- ENGINE=@ortus/adobe-aether	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests ENGINENAME=adobe-aether
 
 branches:
   only:
