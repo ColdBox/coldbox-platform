@@ -152,6 +152,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		var modName 				= arguments.moduleName;
 		var modulesConfiguration	= controller.getSetting( "modules" );
 		var appSettings 			= controller.getConfigSettings();
+		var interceptorService  	= controller.getInterceptorService();
 
 		// Check if incoming invocation path is sent, if so, register as new module
 		if( len( arguments.invocationPath ) ){
@@ -219,6 +220,15 @@ component extends="coldbox.system.web.services.BaseService"{
 				throwontimeout="true" 
 				timeout="20"
 		{
+
+			// interception
+			interceptorService.processState( 
+				"preModuleRegistration", 
+				{ 
+					moduleRegistration 	= variables.moduleRegistry[ arguments.moduleName ],
+					moduleName     		= arguments.moduleName 
+				}
+			);
 
 			// Setup Vanilla Config information for module
 			var mConfig = {
@@ -341,6 +351,15 @@ component extends="coldbox.system.web.services.BaseService"{
 					}
 				}
 			}
+
+			// interception
+			interceptorService.processState( 
+				"postModuleRegistration", 
+				{ 
+					moduleConfig 		= mConfig,
+					moduleName     		= arguments.moduleName 
+				}
+			);
 
 			// Log registration
 			if( variables.logger.canDebug() ){
