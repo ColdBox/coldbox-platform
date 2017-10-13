@@ -1,41 +1,50 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.services.InterceptorService">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.services.InterceptorService"{
 
 	function setup(){
 		super.setup();
+
 		// Create Mock Objects
 		mockbox = getMockBox();
-		mockController 	 	= mockBox.createMock("coldbox.system.testing.mock.web.MockController");
+		mockController 	 	= mockBox.createMock( "coldbox.system.testing.mock.web.MockController" );
 		mockRequestContext 	= getMockRequestContext();
-		mockRequestService 	= mockBox.createEmptyMock("coldbox.system.web.services.RequestService").$("getContext", mockRequestContext);
-		mockLogBox	 	 	= mockBox.createEmptyMock("coldbox.system.logging.LogBox");
-		mockLogger	 	 	= mockBox.createEmptyMock("coldbox.system.logging.Logger");
-		mockFlash		 	= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
-		mockCacheBox   	 	= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
-		mockCache   	 	= mockBox.createEmptyMock("coldbox.system.cache.providers.CacheBoxColdBoxProvider");
-		mockWireBox		 	= mockBox.createEmptyMock("coldbox.system.ioc.Injector");
+		mockRequestService 	= mockBox.createEmptyMock( "coldbox.system.web.services.RequestService" )
+			.$( "getContext", mockRequestContext);
+		mockLogBox	 	 	= mockBox.createEmptyMock( "coldbox.system.logging.LogBox" );
+		mockLogger	 	 	= mockBox.createEmptyMock( "coldbox.system.logging.Logger" );
+		mockFlash		 	= mockBox.createMock( "coldbox.system.web.flash.MockFlash" ).init(mockController);
+		mockCacheBox   	 	= mockBox.createEmptyMock( "coldbox.system.cache.CacheFactory" );
+		mockCache   	 	= mockBox.createEmptyMock( "coldbox.system.cache.providers.CacheBoxColdBoxProvider" );
+		mockWireBox		 	= mockBox.createEmptyMock( "coldbox.system.ioc.Injector" );
 
 		// Mock model Dependencies
 		mockController
-			.$("getRequestService",mockRequestService);
+			.$( "getRequestService",mockRequestService);
 
 		mockController.setLogBox( mockLogBox );
 		mockController.setWireBox( mockWireBox );
 		mockController.setCacheBox( mockCacheBox );
 
-		mockRequestService.$("getFlashScope",mockFlash);
-		mockLogBox.$("getLogger",mockLogger);
+		mockRequestService.$( "getFlashScope",mockFlash);
+		mockLogBox.$( "getLogger",mockLogger);
 
-		iService = model.init(mockController).$("getCache", mockCache);
+		iService = model.init( mockController ).$( "getCache", mockCache );
 
 	}
 
 	function testonConfigurationLoad(){
-			mockController.$("getSetting").$args("InterceptorConfig").$results( {} )
-				.$("getSetting").$args("coldboxConfig").$results( mockBox.createStub() );
-			iService.$("registerInterceptor").$("registerInterceptors");
-			iService.onConfigurationLoad();
-			assertTrue( iService.$once("registerInterceptors") );
+			mockController
+				.$( "getSetting" )
+					.$args( "InterceptorConfig" )
+					.$results( {} )
+				.$( "getSetting" )
+					.$args( "coldboxConfig" )
+					.$results( mockBox.createStub() );
+			iService.$( "registerInterceptor", iService )
+				.$( "registerInterceptors", iService );
+			
+				iService.onConfigurationLoad();
+
+			assertTrue( iService.$once( "registerInterceptors" ) );
 	}
 
 	function testregisterInterceptors(){
@@ -47,16 +56,13 @@
 				{class="coldbox.system.interceptors.Custom", properties = {n=1}, name="Custom"}
 			]
 		};
-		iService.$property("interceptorConfig","instance", mockConfig)
-			.$("registerInterceptor");
-		mockLogger.$("canDebug",false);
+		iService.$property( "interceptorConfig", "variables", mockConfig)
+			.$( "registerInterceptor", iService );
+		mockLogger.$( "canDebug",false);
+		
 		iService.registerInterceptors();
 
-		assertTrue( iService.$count(2,"registerInterceptor") );
-	}
-
-	function testgetrequestBuffer(){
-			AssertTrue( isObject(iService.getRequestBuffer()));
+		assertTrue( iService.$count( 2, "registerInterceptor" ) );
 	}
 
 	function testInterceptionPoints(){
@@ -70,8 +76,8 @@
 
 		AssertFalse( isObject(state) );
 
-		mockState = getMockBox().createStub().$("process");
-		iService.$property("preProcess","instance.interceptionStates",mockState);
+		mockState = getMockBox().createStub().$( "process" );
+		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		state = iService.getStateContainer('preProcess');
 
 		AssertTrue( isObject(state) );
@@ -82,20 +88,20 @@
 
 		// mocks
 		mockCache.INTERCEPTOR_CACHEKEY_PREFIX = "sample";
-		mockState = mockBox.createStub().$("unregister");
-		iService.$property("preProcess","instance.interceptionStates",mockState);
-		mockState2 = mockBox.createStub().$("unregister");
-		iService.$property("preProcess2","instance.interceptionStates",mockState2);
+		mockState = mockBox.createStub().$( "unregister" );
+		iService.$property( "preProcess","variables.interceptionStates",mockState);
+		mockState2 = mockBox.createStub().$( "unregister" );
+		iService.$property( "preProcess2","variables.interceptionStates",mockState2);
 
 		// 1: From All States
-		iService.unregister("Luis");
-		assertTrue( mockState.$once("unregister") );
-		assertTrue( mockState2.$once("unregister") );
+		iService.unregister( "Luis" );
+		assertTrue( mockState.$once( "unregister" ) );
+		assertTrue( mockState2.$once( "unregister" ) );
 
 		// 2: From Specific State
-		iService.unregister("Luis","preProcess2");
-		assertTrue( mockState.$once("unregister") );
-		assertTrue( mockState2.$count(2,"unregister") );
+		iService.unregister( "Luis","preProcess2" );
+		assertTrue( mockState.$once( "unregister" ) );
+		assertTrue( mockState2.$count(2,"unregister" ) );
 	}
 
 	function testAppendInterceptionPoints(){
@@ -118,36 +124,36 @@
 
 	function testSimpleProcessInterception(){
 		// 1: inited with throw enabled but not throw
-		mockController.$("getColdboxInitiated",true);
-		iService.$property("throwOnInvalidStates","instance.interceptorConfig",true);
-		iService.processState("preProcess");
+		mockController.$( "getColdboxInitiated",true);
+		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",true);
+		iService.processState( "preProcess" );
 
 		// 2: inited with throw enabled but with throw
-		mockController.$("getColdboxInitiated",true);
-		iService.$property("throwOnInvalidStates","instance.interceptorConfig",true);
+		mockController.$( "getColdboxInitiated",true);
+		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",true);
 		try{
-			iService.processState("junk");
+			iService.processState( "junk" );
 		}
-		catch("InterceptorService.InvalidInterceptionState" e){}
+		catch( "InterceptorService.InvalidInterceptionState" e){}
 		catch(any e){ fail(e); }
 
 		// 3: process a mock state
-		mockController.$("getColdboxInitiated",true);
-		iService.$property("throwOnInvalidStates","instance.interceptorConfig",false);
-		mockState = getMockBox().createStub().$("process");
-		iService.$property("preProcess","instance.interceptionStates",mockState);
+		mockController.$( "getColdboxInitiated",true);
+		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
+		mockState = getMockBox().createStub().$( "process" );
+		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		// debug( iService.getInterceptionStates() );
-		iService.processState("badState");
-		assertTrue( mockState.$never("process") );
+		iService.processState( "badState" );
+		assertTrue( mockState.$never( "process" ) );
 
 		// 4: real mock state
-		mockController.$("getColdboxInitiated",true);
-		iService.$property("throwOnInvalidStates","instance.interceptorConfig",false);
-		mockState = getMockBox().createStub().$("process");
-		iService.$property("preProcess","instance.interceptionStates",mockState);
+		mockController.$( "getColdboxInitiated",true);
+		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
+		mockState = getMockBox().createStub().$( "process" );
+		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		// debug( iService.getInterceptionStates() );
-		iService.processState("preProcess");
-		assertTrue( mockState.$once("process") );
+		iService.processState( "preProcess" );
+		assertTrue( mockState.$once( "process" ) );
 
 	}
 
@@ -158,29 +164,29 @@
 		md.today = now();
 
 		// mocks
-		mockController.$("getColdboxInitiated",true);
-		iService.$property("throwOnInvalidStates","instance.interceptorConfig",false);
-		mockState = getMockBox().createStub().$("process");
-		iService.$property("preProcess","instance.interceptionStates",mockState);
-		mockBox.prepareMock( iService.getRequestBuffer() ).$("clear");
+		mockController.$( "getColdboxInitiated",true);
+		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
+		mockState = getMockBox().createStub().$( "process" );
+		iService.$property( "preProcess","variables.interceptionStates",mockState);
+		mockBox.prepareMock( iService.getRequestBuffer() ).$( "clear" );
 
 
 		// Append To Buffer
 		iService.getRequestBuffer().append('luis');
-		iService.processState("preProcess",md);
-		assertTrue( iService.getRequestBuffer().$once("clear") );
+		iService.processState( "preProcess",md);
+		assertTrue( iService.getRequestBuffer().$once( "clear" ) );
 
 	}
 
 	function testManualRegistration(){
 			// mocks
 			mockCache.INTERCEPTOR_CACHEKEY_PREFIX = "sample";
-			mockCache.$("set",true);
-			mockLogger.$("canDebug",false).$("error");
-			mockController.$("getAspectsInitiated", false);
+			mockCache.$( "set",true);
+			mockLogger.$( "canDebug",false).$( "error" );
+			mockController.$( "getAspectsInitiated", false);
 
 			iService.appendInterceptionPoints('unitTest');
-			iService.$("createInterceptor", CreateObject("component","coldbox.tests.resources.MockInterceptor") );
+			iService.$( "createInterceptor", CreateObject( "component","coldbox.tests.resources.MockInterceptor" ) );
 			iService.registerInterceptor(interceptorClass='coldbox.tests.resources.MockInterceptor');
 
 			AssertTrue( isObject(iService.getStateContainer('unittest')) );
@@ -188,10 +194,10 @@
 
 	function testManualObjectRegistration(){
 			// mocks
-			var obj = CreateObject("component","coldbox.tests.resources.MockInterceptor");
+			var obj = CreateObject( "component","coldbox.tests.resources.MockInterceptor" );
 			mockCache.INTERCEPTOR_CACHEKEY_PREFIX = "sample";
-			mockLogger.$("canDebug",false);
-			mockController.$("getAspectsInitiated",false);
+			mockLogger.$( "canDebug",false);
+			mockController.$( "getAspectsInitiated",false);
 
 			iService.appendInterceptionPoints('unitTest');
 			iService.registerInterceptor(interceptorObject=obj);
@@ -201,15 +207,15 @@
 
 	function testManualObjectRegistration2(){
 			// mocks
-			var obj = CreateObject("component","coldbox.tests.resources.MockInterceptor");
+			var obj = CreateObject( "component","coldbox.tests.resources.MockInterceptor" );
 			mockCache.INTERCEPTOR_CACHEKEY_PREFIX = "sample";
-			mockLogger.$("canDebug",false);
-			mockController.$("getAspectsInitiated",false);
+			mockLogger.$( "canDebug",false);
+			mockController.$( "getAspectsInitiated",false);
 
 			iService.registerInterceptor(interceptorObject=obj,customPoints='unitTest');
 
 			AssertTrue( isObject(iService.getStateContainer('unittest')) );
 
 	}
-</cfscript>
-</cfcomponent>
+
+}
