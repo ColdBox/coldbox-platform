@@ -381,14 +381,14 @@
 		rd = event.getRenderData();
 		assertEquals( rd.contenttype, "application/json");
 		assertEquals( rd.type, "json");
-		assertEquals( rd.jsonQueryFormat, "query");
-		assertEquals( rd.statusCode, "200");
-		assertEquals( rd.statusText, "");
+		assertEquals( rd.jsonQueryFormat, true );
+		assertEquals( rd.statusCode, "200" );
+		assertEquals( rd.statusText, "" );
 
 
-		event.renderData(type='JSON',data="[1,2,3,4]",jsonQueryFormat="array",jsonCase="upper");
+		event.renderData( type='JSON', data="[1,2,3,4]", jsonQueryFormat="array", jsonCase="upper" );
 		rd = event.getRenderData();
-		assertEquals( rd.jsonQueryFormat, "array");
+		assertEquals( rd.jsonQueryFormat, false );
 
 		//JSONP
 		event.renderData(type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
