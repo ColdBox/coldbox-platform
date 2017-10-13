@@ -1124,6 +1124,12 @@ component serializable=false accessors="true"{
 		rd.xmlRootName 		= arguments.xmlRootName;
 
 		// JSON Properties
+		// Backwards compatibility, remove after next release
+		if( arguments.jsonQueryFormat == "query" ){
+			arguments.jsonQueryFormat = true;
+		} else if( arguments.jsonQueryFormat == "array" ){
+			arguments.jsonQueryFormat = false;
+		}
 		rd.jsonQueryFormat 	= arguments.jsonQueryFormat;
 		rd.jsonCallBack 	= arguments.jsonCallBack;
 
