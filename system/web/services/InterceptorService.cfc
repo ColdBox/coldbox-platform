@@ -77,8 +77,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Run once config loads
+	 * 
+	 * @return InterceptorService
 	 */
-	InterceptorService function onConfigurationLoad(){
+	function onConfigurationLoad(){
 		// Register All Application Interceptors
 		registerInterceptors();
 		return this;
@@ -86,8 +88,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Registers all the interceptors configured
+	 * 
+	 * @return InterceptorService
 	 */
-	InterceptorService function registerInterceptors(){
+	function registerInterceptors(){
 		// if simple, inflate
 		if( isSimpleValue( variables.interceptorConfig.customInterceptionPoints ) ){
 			variables.interceptorConfig.customInterceptionPoints = listToArray( variables.interceptorConfig.customInterceptionPoints );
@@ -181,8 +185,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @interceptorProperties The structure of properties to register this interceptor with.
 	 * @customPoints A comma delimmited list or array of custom interception points, if the object or class sent in observes them.
 	 * @interceptorName The name to use for the interceptor when stored. If not used, we will use the name found in the object's class
+	 * 
+	 * @return InterceptorService
 	 */
-	InterceptorService function registerInterceptor(
+	function registerInterceptor(
 		interceptorClass,
 		interceptorObject,
 		struct interceptorProperties={},
