@@ -36,6 +36,7 @@ Description :
 		<cfargument name="nullEmptyInclude"	required="false" 	type="string"  default="" hint="A list of keys to NULL when empty" />
 		<cfargument name="nullEmptyExclude"	required="false" 	type="string"  default="" hint="A list of keys to NOT NULL when empty" />
 		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
+		<cfargument name="keyCasingFromProperties" required="false" type="boolean" default="false" hint="Derive the memento key casing from the property name of the object if it exists" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Inflate JSON
@@ -60,6 +61,7 @@ Description :
 		<cfargument name="nullEmptyInclude"	required="false" 	type="string"  default="" hint="A list of keys to NULL when empty" />
 		<cfargument name="nullEmptyExclude"	required="false" 	type="string"  default="" hint="A list of keys to NOT NULL when empty" />
 		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
+		<cfargument name="keyCasingFromProperties" required="false" type="boolean" default="false" hint="Derive the memento key casing from the property name of the object if it exists" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			var key				= "";
@@ -108,6 +110,7 @@ Description :
 		<cfargument name="nullEmptyInclude"	required="false" type="string" 	default="" hint="A list of keys to NULL when empty" />
 		<cfargument name="nullEmptyExclude"	required="false" type="string" 	default="" hint="A list of keys to NOT NULL when empty" />
 		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
+		<cfargument name="keyCasingFromProperties" required="false" type="boolean" default="false" hint="Derive the memento key casing from the property names of the object if it exists" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			//by default to take values from first row of the query
@@ -143,6 +146,8 @@ Description :
 		<cfargument name="nullEmptyInclude"	required="false" 	type="string"  default="" hint="A list of keys to NULL when empty" />
 		<cfargument name="nullEmptyExclude"	required="false" 	type="string"  default="" hint="A list of keys to NOT NULL when empty" />
 		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
+		<cfargument name="keyCasingFromProperties" required="false" type="boolean" default="false" hint="Derive the memento key casing from the property name of the object if it exists" />
+
 		<cfscript>
 			// Create a struct including only those keys that match the prefix.
 			//by default to take values from first row of the query
@@ -182,6 +187,7 @@ Description :
 		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
 		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
 		<cfargument name="prefix"               required="true"  type="string"  hint="The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'.">
+		<cfargument name="keyCasingFromProperties" required="false" type="boolean" default="false" hint="Derive the memento key casing from the property name of the object if it exists" />
         <!--- ************************************************************* --->
 		<cfscript>
 			var key 			= "";
@@ -219,9 +225,11 @@ Description :
 		<cfargument name="nullEmptyInclude"	required="false" type="string"  default="" hint="A list of keys to NULL when empty" />
 		<cfargument name="nullEmptyExclude"	required="false" type="string"  default="" hint="A list of keys to NOT NULL when empty" />
 		<cfargument name="composeRelationships" required="false" type="boolean" default="false" hint="Automatically attempt to compose relationships from memento" />
+		<cfargument name="keyCasingFromProperties" required="false" type="boolean" default="false" hint="Derive the memento key casing from the property name of the object if the property exists" />
 		<!--- ************************************************************* --->
 		<cfscript>
 			var beanInstance = arguments.target;
+			var k = "";
 			var key = "";
 			var pop = true;
 			var scopeInjection = false;
@@ -232,6 +240,12 @@ Description :
 			var relationalMeta = "";
 
 			try{
+
+				// if key casing is to be enforced by property definitions
+				var stProperties = {};
+				if ( arguments.keyCasingFromProperties ) {
+					stProperties = getTargetPropertiesAsStruct( arguments.target );
+				}
 
 				// Determine Method of population
 				if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
@@ -245,7 +259,20 @@ Description :
 				}
 
 				// Populate Bean
-				for(key in arguments.memento){
+				for( k in arguments.memento ) {
+					// determine if we should be getting the key casing from the object's properties.  
+					if ( arguments.keyCasingFromProperties ) {
+						//if the memento key exists in the properties create the key using the casing from the property
+						if ( structKeyExists( stProperties, k ) ) { 
+							key = stProperties[ k ];
+						} else {
+							//skip over populating this key if the memento contains a key not defined as a property on the object
+							continue;
+						}
+					} else {
+						key = k;
+					}
+
 					// init population flag
 					pop = true;
 					// init nullValue flag and shortcut to property value
@@ -448,6 +475,24 @@ Description :
 	<!--- Get ColdBox Util --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
+	</cffunction>
+
+	<!--- Get the Target's properties as a struct with a key and value that are the same for easy access and setting of the key's casing --->
+	<cffunction name="getTargetPropertiesAsStruct" access="private" output="false" returntype="struct" hint="Return the property names for the target object as a struct with the key the same as the value">
+		<cfargument name="target" required="true" type="any" />
+
+		<cfscript>
+			// get array of properties
+			var stopRecursions= [ "lucee.Component", "railo.Component", "WEB-INF.cftags.component" ];
+			var properties = getUtil().getInheritedMetaData( arguments.target, stopRecursions ).properties; 
+			var stProps = {};
+			
+			for ( var p = 1; p <= arrayLen( properties ); p++ ) {
+				stProps[ properties[ p ].name ] = properties[ p ].name; 
+			}
+			
+			return stProps;
+		</cfscript>
 	</cffunction>
 
 </cfcomponent>
