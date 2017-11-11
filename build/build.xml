@@ -92,10 +92,10 @@
 		
 		<!-- Make sure we start the embedded server, for builds and tests -->
 		<exec executable="box" dir="${basedir}">
-			<arg line="server stop name=${cfengine} directory=${basedir} serverConfigFile=${basedir}/server-${cfengine}.json" />
+			<arg line="server stop name=${cfengine} directory=${basedir} serverConfigFile=${basedir}/server-${enginename}.json" />
 		</exec>
 		<exec executable="box" dir="${basedir}">
-			<arg line="server start name=${cfengine} directory=${basedir} serverConfigFile=${basedir}/server-${cfengine}.json" />
+			<arg line="server start name=${cfengine} directory=${basedir} serverConfigFile=${basedir}/server-${enginename}.json" />
 		</exec>
 		
 		<!-- Mark as init -->

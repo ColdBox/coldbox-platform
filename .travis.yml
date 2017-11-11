@@ -7,12 +7,11 @@ notifications:
 
 env:
   matrix:
-    - ENGINE=lucee@4.5 COLDBOX_VERSION=5.0.0 ANT_TARGET=build.all
-    - ENGINE=lucee@5 COLDBOX_VERSION=5.0.0 ANT_TARGET=run-tests
-    #- ENGINE=adobe@10	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
-    - ENGINE=adobe@11	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
-    - ENGINE=adobe@2016	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests
-    #- ENGINE=@ortus/adobe-aether	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests ENGINENAME=adobe-aether
+    - ENGINE=lucee@4.5 COLDBOX_VERSION=5.0.0 ANT_TARGET=build.all ENGINENAME=lucee@4.5
+    - ENGINE=lucee@5 COLDBOX_VERSION=5.0.0 ANT_TARGET=run-tests ENGINENAME=lucee@5
+    - ENGINE=adobe@11	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests ENGINENAME=adobe@11
+    - ENGINE=adobe@2016	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests ENGINENAME=adobe@2016
+    - ENGINE=@ortus/adobe-aether	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests ENGINENAME=adobe-aether
 
 branches:
   only:
@@ -51,11 +50,12 @@ before_script:
   - mysql -u root < tests/resources/coolblog.sql
   # add our custom engine to our properties
   - printf "\ncfengine=$ENGINE" >> build/build.properties
+  - printf "\nenginename=$ENGINENAME" >> build/build.properties
   - echo "************************ Runtime Properties ********************"
   - cat build/build.properties
   - echo "************************ END Runtime Properties ********************"
   # Starting server twice due to stupid LUCEE 5 bug.
-  - box server start name=$ENGINE debug=true
+  - box server start name=$ENGINENAME debug=true
   # Copy over custom web server config: Commented out in favor of cfconfig now.
   # - cp build/lib/lucee-web.xml.cfm `box server info property=serverHomeDirectory`/WEB-INF/lucee-web/lucee-web.xml.cfm
 
@@ -69,7 +69,7 @@ after_failure:
   - curl http://localhost:8599/tests/runner.cfm?reporter=text
   - curl http://localhost:8599/tests/tools/IDEDictionaries/builderDictionary.cfm?text=true
   # Spit out our Commandbox log in case we need to debug
-  - box server log name=$ENGINE
+  - box server log name=$ENGINENAME
   - cat `box system-log`
   - ls -l $TRAVIS_BUILD_DIR/apidocs
 
