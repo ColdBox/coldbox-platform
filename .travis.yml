@@ -69,7 +69,7 @@ after_failure:
   - curl http://localhost:8599/tests/runner.cfm?reporter=text
   - curl http://localhost:8599/tests/tools/IDEDictionaries/builderDictionary.cfm?text=true
   # Spit out our Commandbox log in case we need to debug
-  - box server log name=$ENGINE
+  - box server log name=$ENGINENAME
   - cat `box system-log`
   - ls -l $TRAVIS_BUILD_DIR/apidocs
 
