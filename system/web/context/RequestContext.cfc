@@ -8,12 +8,12 @@
 component serializable=false accessors="true"{
 
 	/**
-	* The request context
+	* The request context which contains the URL/FORM or any incoming client data
 	*/
 	property name="context" type="struct";
 
 	/**
-	* The private request context
+	* The private request context which contains safe data your application can produce
 	*/
 	property name="privateContext" type="struct";
 
@@ -25,71 +25,124 @@ component serializable=false accessors="true"{
 	/**
 	* ColdBox System Properties
 	*/
-	property name="properties";
+	property name="properties" type="struct";
+
+	/**
+	 * The incoming event name detection string
+	 */
+	property name="eventName";
+
+	/**
+	 * Execution bit determination. Used to determine if the request is executable or not
+	 */
+	property name="isNoExecution" type="boolean";
+
+	/**
+	 * Registered system layout ref maps
+	 */
+	property name="registeredLayouts" type="struct";
+
+	/**
+	 * Registered system folder layout ref maps
+	 */
+	property name="folderLayouts" type="struct";
+
+	/**
+	 * Registered system folder view ref maps
+	 */
+	property name="viewLayouts" type="struct";
+
+	/**
+	 * Default system layout
+	 */
+	property name="defaultLayout";
+
+	/**
+	 * Default system view
+	 */
+	property name="defaultView";
+
+	/**
+	 * SES Base URL used for the request
+	 */
+	property name="SESBaseURL";
+	
+	/**
+	 * Are we in SES mode for the request or not
+	 */
+	property name="isSES" type="boolean";
+
+	/**
+	 * The incoming RESTFul routed struct (if any)
+	 */
+	property name="routedStruct" type="struct";
+
+	/**
+	 * View Rendering Regions that we will track
+	 */
+	property name="renderingRegions" type="struct";
 
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**
 	* Constructor
+	*
 	* @properties The ColdBox application settings
 	* @controller Acess to the system controller
 	*/
 	function init( required struct properties={}, required any controller ){
-
-		instance = structnew();
-
 		// Store controller;
-		instance.controller = arguments.controller;
+		variables.controller = arguments.controller;
 
 		// Create the Collections
-		instance.context		= structnew();
-		instance.privateContext = structnew();
+		variables.context			= structnew();
+		variables.privateContext 	= structnew();
 
 		// flag for no event execution
-		instance.isNoExecution  	= false;
+		variables.isNoExecution  	= false;
 		// the name of the event via URL/FORM/REMOTE
-		instance.eventName			= arguments.properties.eventName;
+		variables.eventName			= arguments.properties.eventName;
 
 		// Registered Layouts
-		instance.registeredLayouts	= structnew();
+		variables.registeredLayouts	= structnew();
 		if( structKeyExists( arguments.properties, "registeredLayouts" ) ){
-			instance.registeredLayouts = arguments.properties.registeredLayouts;
+			variables.registeredLayouts = arguments.properties.registeredLayouts;
 		}
 
 		// Registered Folder Layouts
-		instance.folderLayouts	= structnew();
+		variables.folderLayouts	= structnew();
 		if( structKeyExists( arguments.properties, "folderLayouts" ) ){
-			instance.folderLayouts = arguments.properties.folderLayouts;
+			variables.folderLayouts = arguments.properties.folderLayouts;
 		}
 
 		// Registered View Layouts
-		instance.viewLayouts	= structnew();
+		variables.viewLayouts	= structnew();
 		if( structKeyExists( arguments.properties, "viewLayouts" ) ){
-			instance.viewLayouts = arguments.properties.viewLayouts;
+			variables.viewLayouts = arguments.properties.viewLayouts;
 		}
 
-		// Modules reference
-		instance.modules = arguments.properties.modules;
+		// Private Modules reference
+		variables.modules = arguments.properties.modules;
 
 		// Default layout + View
-		instance.defaultLayout 	= arguments.properties.defaultLayout;
-		instance.defaultView 	= arguments.properties.defaultView;
+		variables.defaultLayout 	= arguments.properties.defaultLayout;
+		variables.defaultView 	= arguments.properties.defaultView;
 
 		// SES Base URL
-		instance.SESBaseURL = "";
+		variables.SESBaseURL = "";
 		if( structKeyExists( arguments.properties, "SESBaseURL" ) ){
-			instance.SESBaseURL = arguments.properties.SESBaseURL;
+			variables.SESBaseURL = arguments.properties.SESBaseURL;
 		}
 		// flag if using SES
-		instance.isSES 				= false;
+		variables.isSES 				= false;
 		// routed SES structures
-		instance.routedStruct 		= structnew();
+		variables.routedStruct 			= structnew();
 
-		// Flag for Invalid HTTP Method
-		instance.invalidHTTPMethod 	= false;
+		// Private Flag for Invalid HTTP Method
+		variables.invalidHTTPMethod 	= false;
 
 		// Rendering Regions
-		instance.renderingRegions 	= {};
+		variables.renderingRegions 		= {};
 
 		return this;
 	}
@@ -100,14 +153,17 @@ component serializable=false accessors="true"{
 	* Get a representation of this instance
 	*/
 	struct function getMemento(){
-		return instance;
+		// Return only non-function elements
+		return variables.filter( function( key, value ){
+			return ( !isCustomfunction( value ) )
+		} );
 	}
 
 	/**
 	* Override the instance
 	*/
 	function setMemento( required struct memento ){
-		variables.instance = arguments.memento;
+		structAppend( variables, arguments.memento, true );
 		return this;
 	}
 
@@ -119,12 +175,12 @@ component serializable=false accessors="true"{
 	struct function getCollection( boolean deepCopy=false, boolean private=false ){
 		// Private Collection
 		if( arguments.private ){
-			if( arguments.deepCopy ){ return duplicate( instance.privateContext ); }
-			return instance.privateContext;
+			if( arguments.deepCopy ){ return duplicate( variables.privateContext ); }
+			return variables.privateContext;
 		}
 		// Public Collection
-		if ( arguments.deepCopy ){ return duplicate( instance.context ); }
-		return instance.context;
+		if ( arguments.deepCopy ){ return duplicate( variables.context ); }
+		return variables.context;
 	}
 
 	/**
@@ -142,8 +198,8 @@ component serializable=false accessors="true"{
 	* @private Use public or private request collection
 	*/
 	function clearCollection( boolean private=false ){
-		if( arguments.private ) { structClear(instance.privateContext); }
-		else { structClear(instance.context); }
+		if( arguments.private ) { structClear(variables.privateContext); }
+		else { structClear(variables.context); }
 		return this;
 	}
 
@@ -161,8 +217,8 @@ component serializable=false accessors="true"{
 	* @private Private or public, defaults public.
 	*/
 	function collectionAppend( required struct collection, boolean overwrite=false, boolean private=false ){
-		if( arguments.private ) { structAppend(instance.privateContext,arguments.collection, arguments.overwrite); }
-		else { structAppend(instance.context,arguments.collection, arguments.overwrite); }
+		if( arguments.private ) { structAppend(variables.privateContext,arguments.collection, arguments.overwrite); }
+		else { structAppend(variables.context,arguments.collection, arguments.overwrite); }
 		return this;
 	}
 
@@ -181,8 +237,8 @@ component serializable=false accessors="true"{
 	* @private Private or public, defaults public.
 	*/
 	numeric function getSize( boolean private=false ){
-		if( arguments.private ){ return structCount(instance.privateContext); }
-		return structCount(instance.context);
+		if( arguments.private ){ return structCount(variables.privateContext); }
+		return structCount(variables.context);
 	}
 
 	/**
@@ -201,10 +257,10 @@ component serializable=false accessors="true"{
 	* @private Private or public, defaults public.
 	*/
 	function getValue( required name, defaultValue, boolean private=false ){
-		var collection = instance.context;
+		var collection = variables.context;
 
 		// private context switch
-		if( arguments.private ){ collection = instance.privateContext; }
+		if( arguments.private ){ collection = variables.privateContext; }
 
 		// Check if key exists
 		if( structKeyExists(collection, arguments.name) ){
@@ -265,8 +321,8 @@ component serializable=false accessors="true"{
 	* @return RequestContext
 	*/
 	function setValue( required name, required value, boolean private=false ){
-		var collection = instance.context;
-		if( arguments.private ) { collection = instance.privateContext; }
+		var collection = variables.context;
+		if( arguments.private ) { collection = variables.privateContext; }
 
 		collection[arguments.name] = arguments.value;
 		return this;
@@ -292,8 +348,8 @@ component serializable=false accessors="true"{
 	* @return RequestContext
 	*/
 	function removeValue( required name, boolean private=false ){
-		var collection = instance.context;
-		if( arguments.private ){ collection = instance.privateContext; }
+		var collection = variables.context;
+		if( arguments.private ){ collection = variables.privateContext; }
 
 		structDelete(collection,arguments.name);
 
@@ -317,8 +373,8 @@ component serializable=false accessors="true"{
 	* @private Private or public, defaults public.
 	*/
 	boolean function valueExists( required name, boolean private=false ){
-		var collection = instance.context;
-		if( arguments.private ){ collection = instance.privateContext; }
+		var collection = variables.context;
+		if( arguments.private ){ collection = variables.privateContext; }
 		return structKeyExists(collection, arguments.name);
 	}
 
@@ -419,7 +475,7 @@ component serializable=false accessors="true"{
 	* Gets the current incoming event
 	*/
 	string function getCurrentEvent(){
-		return getValue( getEventName(), "" );
+		return getValue( variables.eventName, "" );
 	}
 
 	/**
@@ -462,7 +518,7 @@ component serializable=false accessors="true"{
 			theModule = getCurrentModule();
 		}
 		if( len(theModule) ){
-			return instance.modules[theModule].mapping;
+			return variables.modules[theModule].mapping;
 		}
 		return "";
 	}
@@ -482,25 +538,18 @@ component serializable=false accessors="true"{
 	 * Check if the request was made with an invalid HTTP Method
 	 */
 	boolean function isInvalidHTTPMethod(){
-		return instance.invalidHTTPMethod;
+		return variables.invalidHTTPMethod;
 	}
 
 	/**
 	 * Set the invalid http method flag
 	 */
 	RequestContext function setIsInvalidHTTPMethod( boolean target=true ){
-		instance.invalidHTTPMethod = arguments.target;
+		variables.invalidHTTPMethod = arguments.target;
 		return this;
 	}
 
 	/************************************** VIEW-LAYOUT METHODS *********************************************/
-
-	/**
-	* Get the current rendering regions
-	*/
-	function getRenderingRegions(){
-		return instance.renderingRegions;
-	}
 
 	/**
 	* Set the view to render in this request. Private Request Collection Name: currentView, currentLayout
@@ -533,12 +582,12 @@ component serializable=false accessors="true"{
 	){
 		// Do we have an incoming rendering region definition? If we do, store it and return
 		if( structKeyExists( arguments, "name" ) ){
-			instance.renderingRegions[ arguments.name ] = arguments;
+			variables.renderingRegions[ arguments.name ] = arguments;
 			return this;
 		}
 
 		// stash the view module
-		instance.privateContext[ "viewModule" ] = arguments.module;
+		variables.privateContext[ "viewModule" ] = arguments.module;
 
 		// Direct Layout Usage
 		if( structKeyExists( arguments, "layout" ) ){
@@ -548,13 +597,13 @@ component serializable=false accessors="true"{
 	    else if ( NOT arguments.nolayout AND NOT getPrivateValue( name="layoutoverride", defaultValue=false ) ){
 
 	    	//Verify that the view has a layout in the viewLayouts structure, static lookups
-		    if ( structKeyExists( instance.viewLayouts, lcase( arguments.view ) ) ){
-				setPrivateValue( "currentLayout", instance.viewLayouts[ lcase( arguments.view ) ] );
+		    if ( structKeyExists( variables.viewLayouts, lcase( arguments.view ) ) ){
+				setPrivateValue( "currentLayout", variables.viewLayouts[ lcase( arguments.view ) ] );
 		    } else {
 				//Check the folders structure
-				for( var key in instance.folderLayouts ){
+				for( var key in variables.folderLayouts ){
 					if ( reFindnocase( '^#key#', lcase( arguments.view ) ) ){
-						setPrivateValue( "currentLayout", instance.folderLayouts[ key ] );
+						setPrivateValue( "currentLayout", variables.folderLayouts[ key ] );
 						break;
 					}
 				}//end for loop
@@ -562,15 +611,15 @@ component serializable=false accessors="true"{
 
 			// If not layout, then set default from main application
 			if( not privateValueExists( "currentLayout", true ) ){
-				setPrivateValue( "currentLayout", instance.defaultLayout );
+				setPrivateValue( "currentLayout", variables.defaultLayout );
 			}
 
 			// If in current module, check for a module default layout\
 			var cModule	= getCurrentModule();
 			if( len( cModule )
-			    AND structKeyExists( instance.modules, cModule )
-				AND len( instance.modules[ cModule ].layoutSettings.defaultLayout ) ){
-				setPrivateValue( "currentLayout", instance.modules[ cModule ].layoutSettings.defaultLayout );
+			    AND structKeyExists( variables.modules, cModule )
+				AND len( variables.modules[ cModule ].layoutSettings.defaultLayout ) ){
+				setPrivateValue( "currentLayout", variables.modules[ cModule ].layoutSettings.defaultLayout );
 			}
 
 		} //end layout discover
@@ -604,7 +653,7 @@ component serializable=false accessors="true"{
 		}
 
 		// Set the current view to render.
-		instance.privateContext[ "currentView" ] = arguments.view;
+		variables.privateContext[ "currentView" ] = arguments.view;
 
 		// Record the optional arguments
 		setPrivateValue( "currentViewArgs", arguments.args, true );
@@ -618,9 +667,9 @@ component serializable=false accessors="true"{
 	*/
 	function noLayout(){
 		// remove layout if any
-		structDelete( instance.privateContext, "currentLayout" );
+		structDelete( variables.privateContext, "currentLayout" );
 		// set layout overwritten flag.
-		instance.privateContext[ "layoutoverride" ] = true;
+		variables.privateContext[ "layoutoverride" ] = true;
 		return this;
 	}
 
@@ -631,24 +680,17 @@ component serializable=false accessors="true"{
 	*/
 	function setLayout( required name, module="" ){
 		// Set direct layout first.
-		instance.privateContext[ "currentLayout" ] = trim( arguments.name ) & ".cfm";
+		variables.privateContext[ "currentLayout" ] = trim( arguments.name ) & ".cfm";
 		// Do an Alias Check and override if found.
-		if( structKeyExists( instance.registeredLayouts, arguments.name ) ){
-			instance.privateContext[ "currentLayout" ] = instance.registeredLayouts[ arguments.name ];
+		if( structKeyExists( variables.registeredLayouts, arguments.name ) ){
+			variables.privateContext[ "currentLayout" ] = variables.registeredLayouts[ arguments.name ];
 		}
 		// set layout overwritten flag.
-		instance.privateContext[ "layoutoverride" ] = true;
+		variables.privateContext[ "layoutoverride" ] = true;
 		// module layout?
-		instance.privateContext[ "layoutmodule" ] = arguments.module;
+		variables.privateContext[ "layoutmodule" ] = arguments.module;
 		
 		return this;
-	}
-
-	/**
-	* Get's the default layout of the application
-	*/
-	string function getDefaultLayout(){
-		return instance.defaultLayout;
 	}
 
 	/**
@@ -656,15 +698,8 @@ component serializable=false accessors="true"{
 	* @return RequestContext
 	*/
 	function setDefaultLayout( required defaultLayout ){
-		instance.defaultLayout = arguments.defaultLayout;
+		variables.defaultLayout = arguments.defaultLayout;
 		return this;
-	}
-
-	/**
-	* Get's the default view of the application
-	*/
-	string function getDefaultView(){
-		return instance.defaultView;
 	}
 
 	/**
@@ -672,29 +707,8 @@ component serializable=false accessors="true"{
 	* @return RequestContext
 	*/
 	function setDefaultView( required defaultView ){
-		instance.defaultView = arguments.defaultView;
+		variables.defaultView = arguments.defaultView;
 		return this;
-	}
-
-	/**
-	* Get the registered view layout associations map
-	*/
-	struct function getViewLayouts(){
-		return instance.viewLayouts;
-	}
-
-	/**
-	* Get all the registered layouts in the configuration file
-	*/
-	struct function getRegisteredLayouts(){
-    	return instance.registeredLayouts;
-	}
-
-	/**
-	* Get the registered folder layout associations map
-	*/
-	struct function getFolderLayouts(){
-		return instance.folderLayouts;
 	}
 
 	/************************************** EVENT METHODS *********************************************/
@@ -706,7 +720,7 @@ component serializable=false accessors="true"{
 	* @return RequestContext
 	*/
 	function overrideEvent( required event ){
-		setValue(getEventName(),arguments.event);
+		setValue(variables.eventName,arguments.event);
 		return this;
 	}
 
@@ -746,26 +760,12 @@ component serializable=false accessors="true"{
 	}
 
 	/**
-	* Get the event name
-	*/
-	function getEventName(){
-		return instance.eventName;
-	}
-
-	/**
-	* Determine if we need to execute an incoming event or not
-	*/
-	boolean function isNoExecution(){
-		return instance.isNoExecution;
-	}
-
-	/**
 	* Set that the request will not execute an incoming event. Most likely simulating a servlet call
 	*
 	* @return RequestContext
 	*/
 	function noExecution(){
-		instance.isNoExecution = true;
+		variables.isNoExecution = true;
    		return this;
 	}
 
@@ -773,26 +773,11 @@ component serializable=false accessors="true"{
 
 	/**
 	* Is this request in SES mode
-	*/
-	boolean function isSES(){
-		return instance.isSES;
-	}
-
-	/**
-	* Is this request in SES mode
 	* @return RequestContext
 	*/
 	function setIsSES( required boolean isSES ){
-		instance.isSES = arguments.isSES;
+		variables.isSES = arguments.isSES;
 		return this;
-	}
-
-	/**
-	* Get the SES base URL for this request
-	* @return RequestContext
-	*/
-	string function getSESBaseURL(){
-		return instance.sesBaseURL;
 	}
 
 	/**
@@ -807,7 +792,7 @@ component serializable=false accessors="true"{
 	* @return RequestContext
 	*/
 	function setSESBaseURL( required string sesBaseURL ){
-		instance.sesBaseURL = arguments.sesBaseURL;
+		variables.sesBaseURL = arguments.sesBaseURL;
 		return this;
 	}
 
@@ -815,7 +800,7 @@ component serializable=false accessors="true"{
 	* Returns index.cfm?{eventName}=
 	*/
 	string function getSelf(){
-		return "index.cfm?" & getEventName() & "=";
+		return "index.cfm?" & variables.eventName & "=";
 	}
 
 	/**
@@ -833,7 +818,6 @@ component serializable=false accessors="true"{
 		baseURL="",
 		queryString=""
 	){
-		var sesBaseURL 		= getSESbaseURL();
 		var frontController = "index.cfm";
 
 		// Cleanups
@@ -847,15 +831,15 @@ component serializable=false accessors="true"{
 		}
 
 		// SES Mode
-		if( isSES() ){
+		if( variables.isSES ){
 			// SSL ON OR TURN IT ON
 			if( isSSL() OR ( structKeyExists( arguments, "ssl" ) and arguments.ssl ) ){
-				sesBaseURL = replacenocase( sesBaseURL, "http:", "https:" );
+				variables.SESBaseURL = replacenocase( variables.SESBaseURL, "http:", "https:" );
 			}
 			
 			// SSL Turn Off
 			if( structKeyExists( arguments, "ssl" ) and arguments.ssl eq false ){
-				sesBaseURL = replacenocase( sesBaseURL, "https:", "http:" );
+				variables.SESBaseURL = replacenocase( variables.SESBaseURL, "https:", "http:" );
 			}
 			
 			// Translate link or plain
@@ -874,17 +858,17 @@ component serializable=false accessors="true"{
 			}
 			
 			// Prepare SES Base URL Link
-			if( right( sesBaseURL, 1 ) eq  "/" ){
-				return sesBaseURL & arguments.linkto;
+			if( right( variables.SESBaseURL, 1 ) eq  "/" ){
+				return variables.SESBaseURL & arguments.linkto;
 			} else {
-				return sesBaseURL & "/" & arguments.linkto;
+				return variables.SESBaseURL & "/" & arguments.linkto;
 			}
 		} else {
 			// Check if sending in QUery String
 			if( len( arguments.queryString ) eq 0 ){
-				return "#frontController#?#getEventName()#=#arguments.linkto#";
+				return "#frontController#?#variables.eventName#=#arguments.linkto#";
 			} else {
-				return "#frontController#?#getEventName()#=#arguments.linkto#&#arguments.queryString#";
+				return "#frontController#?#variables.eventName#=#arguments.linkto#&#arguments.queryString#";
 			}
 		}
 
@@ -953,17 +937,10 @@ component serializable=false accessors="true"{
 
 	/**
 	* Get the routed structure of key-value pairs. What the ses interceptor could match.
-	*/
-	struct function getRoutedStruct(){
-		return instance.routedStruct;
-	}
-
-	/**
-	* Get the routed structure of key-value pairs. What the ses interceptor could match.
 	* @return RequestContext
 	*/
 	function setRoutedStruct( required struct routedStruct ){
-		instance.routedStruct = arguments.routedStruct;
+		variables.routedStruct = arguments.routedStruct;
 		return this;
 	}
 
@@ -1310,7 +1287,7 @@ component serializable=false accessors="true"{
 			arguments.keys = listToArray( arguments.keys );
 		}
 		// determine target context
-		var thisContext = arguments.private ? instance.privateContext : instance.context;
+		var thisContext = arguments.private ? variables.privateContext : variables.context;
 
 		var returnStruct = {};
 		for( var key in arguments.keys ){
@@ -1335,7 +1312,7 @@ component serializable=false accessors="true"{
 		// param incoming rc.format to "html"
 		paramValue( "format", "html" );
 		// try to match the incoming format with the ones defined, if not defined then throw an exception
-		if( arrayFindNoCase( arguments.formats, instance.context.format )  ){
+		if( arrayFindNoCase( arguments.formats, variables.context.format )  ){
 			// Cleanup of formats
 			arguments.formats = "";
 			// Determine view from incoming or implicit
@@ -1346,19 +1323,19 @@ component serializable=false accessors="true"{
 				viewToRender = replace( reReplaceNoCase( getCurrentEvent() , "^([^:.]*):", "" ) , ".", "/" );
 			}
 			// Rendering switch
-			switch( instance.context.format ){
+			switch( variables.context.format ){
 				case "json" : case "jsonp" : case "jsont" : case "xml" : case "text" : case "wddx" : {
-					arguments.type = instance.context.format;
+					arguments.type = variables.context.format;
 					return renderData( argumentCollection=arguments );
 				}
 				case "pdf" : {
 					arguments.type = "pdf";
-					arguments.data = instance.controller.getRenderer().renderView( view=viewToRender);
+					arguments.data = variables.controller.getRenderer().renderView( view=viewToRender );
 					return renderData( argumentCollection=arguments );
 				}
 				case "html" : case "plain" : {
 					if( NOT structIsEmpty( arguments.formatsRedirect ) ){
-						instance.controller.setNextEvent( argumentCollection = arguments.formatsRedirect );
+						variables.controller.setNextEvent( argumentCollection = arguments.formatsRedirect );
 						return this;
 					}
 					return setView( view=viewToRender);
@@ -1366,7 +1343,7 @@ component serializable=false accessors="true"{
 			}
 		} else {
 			throw(
-				message = "The incoming format #instance.context.format# is not a valid registered format",
+				message = "The incoming format #variables.context.format# is not a valid registered format",
 				detail 	= "Valid incoming formats are #arguments.formats.toString()#",
 				type 	= "RequestContext.InvalidFormat" 
 			);

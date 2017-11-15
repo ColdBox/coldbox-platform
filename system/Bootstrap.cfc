@@ -198,7 +198,7 @@ component serializable="false" accessors="true"{
 				}
 			} else {
 				//****** EXECUTE MAIN EVENT *******/
-				if( NOT event.isNoExecution() ){
+				if( NOT event.getIsNoExecution() ){
 					refResults.results = cbController.runEvent( defaultEvent=true );
 				}
 				//****** RENDERING PROCEDURES *******/

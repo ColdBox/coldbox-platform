@@ -414,7 +414,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			arguments.event = requestContext.getCurrentEvent();
 
 			// TEST EVENT EXECUTION
-			if( NOT requestContext.isNoExecution() ){
+			if( NOT requestContext.getIsNoExecution() ){
 				// execute the event
 				handlerResults = cbController.runEvent(
 					event 			= arguments.event,

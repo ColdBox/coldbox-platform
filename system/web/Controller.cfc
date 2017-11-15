@@ -292,14 +292,24 @@ component serializable="false" accessors="true"{
 		var routeString     = 0;
 
 		// Determine relocation type
-		if( oRequestContext.isSES() ){ relocationType = "SES"; }
-		if( structKeyExists(arguments,"URL") ){ relocationType = "URL"; }
-		if( structKeyExists(arguments,"URI") ){ relocationType = "URI"; }
+		if( oRequestContext.getIsSES() ){ 
+			relocationType = "SES"; 
+		}
+		if( structKeyExists( arguments, "URL" ) ){ 
+			relocationType = "URL"; 
+		}
+		if( structKeyExists( arguments, "URI" ) ){ 
+			relocationType = "URI"; 
+		}
 
 		// Cleanup event string to default if not sent in
-		if( len(trim(arguments.event)) eq 0 ){ arguments.event = getSetting("DefaultEvent"); }
+		if( len( trim( arguments.event ) ) eq 0 ){ 
+			arguments.event = getSetting( "DefaultEvent" ); 
+		}
 		// Overriding Front Controller via baseURL argument
-		if( len(trim(arguments.baseURL)) ){ frontController = arguments.baseURL; }
+		if( len( trim( arguments.baseURL ) ) ){ 
+			frontController = arguments.baseURL; 
+		}
 
 		// Relocation Types
 		switch( relocationType ){
@@ -311,7 +321,7 @@ component serializable="false" accessors="true"{
 					relocationURL = updateSSL(relocationURL,arguments.ssl);
 				}
 				// Query String?
-				if( len(trim(arguments.queryString)) ){ relocationURL = relocationURL & "?#arguments.queryString#"; }
+				if( len( trim( arguments.queryString ) ) ){ relocationURL = relocationURL & "?#arguments.queryString#"; }
 				break;
 			}
 
@@ -319,7 +329,7 @@ component serializable="false" accessors="true"{
 			case "URI" : {
 				relocationURL = arguments.URI;
 				// Query String?
-				if( len(trim(arguments.queryString)) ){ relocationURL = relocationURL & "?#arguments.queryString#"; }
+				if( len( trim( arguments.queryString ) ) ){ relocationURL = relocationURL & "?#arguments.queryString#"; }
 				break;
 			}
 
@@ -328,7 +338,7 @@ component serializable="false" accessors="true"{
 				// Route String start by converting event syntax to / syntax
 				routeString = replace(arguments.event,".","/","all");
 				// Convert Query String to convention name value-pairs
-				if( len(trim(arguments.queryString)) ){
+				if( len( trim( arguments.queryString ) ) ){
 					// If the routestring ends with '/' we do not want to
 					// double append '/'
 					if (right(routeString,1) NEQ "/")
@@ -365,7 +375,7 @@ component serializable="false" accessors="true"{
 					relocationURL = updateSSL(relocationURL,arguments.ssl);
 				}
 				// Query String?
-				if( len(trim(arguments.queryString)) ){ relocationURL = relocationURL & "&#arguments.queryString#"; }
+				if( len( trim( arguments.queryString ) ) ){ relocationURL = relocationURL & "&#arguments.queryString#"; }
 			}
 		}
 

@@ -120,7 +120,7 @@ Description :
 			}
 
 			//Execute the Event if not demarcated to not execute
-			if( NOT event.isNoExecution() ){
+			if( NOT event.getIsNoExecution() ){
 				refLocal.results = cbController.runEvent( defaultEvent=true );
 			}
 
