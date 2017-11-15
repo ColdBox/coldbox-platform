@@ -1250,21 +1250,19 @@ component serializable=false accessors="true"{
 	* Returns the username and password sent via HTTP basic authentication
 	*/
 	struct function getHTTPBasicCredentials(){
-		var results 	= structnew();
-		var authHeader 	= "";
+		var results 	= {
+			"username" = "",
+			"password" = ""
+		};
 
-		// defaults
-		results.username = "";
-		results.password = "";
-
-		// set credentials
-		authHeader = getHTTPHeader("Authorization","");
+		// get credentials
+		var authHeader = getHTTPHeader( "Authorization", "" );
 
 		// continue if it exists
-		if( len(authHeader) ){
-			authHeader = charsetEncode( binaryDecode( listLast(authHeader," "),"Base64"), "utf-8");
-			results.username = listFirst( authHeader, ":");
-			results.password = listLast( authHeader, ":");
+		if( len( authHeader ) ){
+			authHeader = charsetEncode( binaryDecode( listLast( authHeader," " ), "Base64" ), "utf-8" );
+			results.username = getToken( authHeader, 1, ":" );
+			results.password = getToken( authHeader, 2, ":" );
 		}
 
 		return results;
