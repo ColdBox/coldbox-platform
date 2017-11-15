@@ -271,6 +271,9 @@ component extends="coldbox.system.web.services.BaseService"{
 				disabled			= false,
 				// flag that says if this module can be activated or not
 				activate			= true,
+				// Application Helpers
+				applicationHelper 	= [],
+				// View Helpers
 				// flag that determines if the module settings overrides any
 				// module settings in the parent config (ColdBox.cfc) or
 				// if the parent settings get merged (and overwrite the defaults).
@@ -550,6 +553,18 @@ component extends="coldbox.system.web.services.BaseService"{
 					);
 			}
 
+			// Register App and View Helpers
+			if( arrayLen( mConfig.applicationHelper ) ){
+
+				// Map the helpers with the right mapping if not starting with /
+				mConfig.applicationHelper = mConfig.applicationHelper.map( function( item ){
+					return ( reFind( "^/", item ) ? item : "#mConfig.mapping#/#item#" );
+				} );
+
+				// Incorporate into global helpers
+				controller.getSetting( "applicationHelper" ).addAll( mConfig.applicationHelper );
+			}
+
 			// Call on module configuration object onLoad() if found
 			if( structKeyExists( variables.mConfigCache[ arguments.moduleName ], "onLoad" ) ){
 				variables.mConfigCache[ arguments.moduleName ].onLoad();
@@ -640,7 +655,9 @@ component extends="coldbox.system.web.services.BaseService"{
 		var exceptionUnloading 	= "";
 
 		// Check if module is loaded?
-		if( NOT structKeyExists( appConfig.modules, arguments.moduleName ) ){ return false; }
+		if( NOT structKeyExists( appConfig.modules, arguments.moduleName ) ){ 
+			return false; 
+		}
 
 		lock 	name="module#getController().getAppHash()#.unload.#arguments.moduleName#" 
 				type="exclusive" 
@@ -648,7 +665,9 @@ component extends="coldbox.system.web.services.BaseService"{
 				throwontimeout="true"
 		{
 			// Check if module is loaded?
-			if( NOT structKeyExists(appConfig.modules,arguments.moduleName) ){ return false; }
+			if( NOT structKeyExists( appConfig.modules, arguments.moduleName ) ){ 
+				return false; 
+			}
 
 			// Before unloading a module interception
 			interceptorService.processState( 
@@ -657,13 +676,23 @@ component extends="coldbox.system.web.services.BaseService"{
 			);
 
 			// Call on module configuration object onLoad() if found
-			if( structKeyExists(variables.mConfigCache[ arguments.moduleName ],"onUnload" ) ){
+			if( structKeyExists( variables.mConfigCache[ arguments.moduleName ], "onUnload" ) ){
 				try{
 					variables.mConfigCache[ arguments.moduleName ].onUnload();
 				} catch( Any e ){
 					variables.logger.error( "Error unloading module: #arguments.moduleName#. #e.message# #e.detail#", e );
 					exceptionUnloading = e;
 				}
+			}
+
+			// Unregister app Helpers
+			if( arrayLen( appConfig.modules[ arguments.moduleName ].applicationHelper ) ){
+				controller.setSetting(
+		            "applicationHelper",
+		            arrayFilter( controller.getSetting( "applicationHelper" ), function( helper ) {
+		                return ( !arrayFindNoCase( appConfig.modules[ moduleName ].applicationHelper, helper )  );
+		            } )
+		        );
 			}
 
 			// Unregister all interceptors
@@ -791,6 +820,11 @@ component extends="coldbox.system.web.services.BaseService"{
 		if( structKeyExists( oConfig, "dependencies" ) ){
 			// set it always as an array
 			mConfig.dependencies = isSimpleValue( oConfig.dependencies ) ? listToArray( oConfig.dependencies ) : oConfig.dependencies;
+		}
+		// Application Helpers
+		if( structKeyExists( oConfig, "applicationHelper" ) ){
+			// set it always as an array
+			mConfig.applicationHelper = isSimpleValue( oConfig.applicationHelper ) ? listToArray( oConfig.applicationHelper ) : oConfig.applicationHelper;
 		}
 		// Parent Lookups
 		mConfig.viewParentLookup = true;

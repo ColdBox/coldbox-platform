@@ -153,6 +153,15 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			} );
 		} );
 
+		story( "Modules can register application helpers", function(){
+			given( "application helpers directive", function(){
+				then( "the module service will load them by convention", function(){
+					var event = execute( event="conventionsTest:test.index", renderResults=true );
+					expect( event.getRenderedContent() ).toInclude( "hello from module app helper" );			
+				});
+			});
+		});
+
 		story( "Modules can register custom resources", function(){
 			given( "A resources array", function(){
 				then( "module resourceful routes should be registered", function(){

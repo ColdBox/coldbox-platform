@@ -12,6 +12,9 @@
 	this.layoutParentLookup = true;
 	this.entrypoint			= "conventionsTest";
 	this.modelNamespace 	= "MyConventionsTest";
+	// Application helpers
+	this.applicationHelper 	= [ "helpers/app.cfm" ];
+	this.viewsHelper 		= [ "helpers/views.cfm" ];
 
 	function configure(){
 
