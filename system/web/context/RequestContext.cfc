@@ -155,7 +155,7 @@ component serializable=false accessors="true"{
 	struct function getMemento(){
 		// Return only non-function elements
 		return variables.filter( function( key, value ){
-			return ( !isCustomfunction( value ) )
+			return ( !isCustomfunction( value ) );
 		} );
 	}
 
