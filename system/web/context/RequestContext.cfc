@@ -125,7 +125,7 @@ component serializable=false accessors="true"{
 		variables.modules = arguments.properties.modules;
 
 		// Default layout + View
-		variables.defaultLayout 	= arguments.properties.defaultLayout;
+		variables.defaultLayout = arguments.properties.defaultLayout;
 		variables.defaultView 	= arguments.properties.defaultView;
 
 		// SES Base URL
@@ -772,7 +772,7 @@ component serializable=false accessors="true"{
 	/************************************** URL METHODS *********************************************/
 
 	/**
-	* Is this request in SES mode
+	* Setter for verifying SES mode
 	* @return RequestContext
 	*/
 	function setIsSES( required boolean isSES ){

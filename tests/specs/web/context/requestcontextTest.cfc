@@ -1,7 +1,6 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest"{
 	
 	function setUp(){
-		oRC = createObject("component","coldbox.system.web.context.RequestContext");
 
 		/* Properties */
 		props.DefaultLayout = "Main.cfm";
@@ -9,7 +8,6 @@
 		props.FolderLayouts = structnew();
 		props.ViewLayouts = structnew();
 		props.EventName = "event";
-		props.isSES = false;
 		props.sesBaseURL = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
 		props.registeredLayouts = structnew();
 		props.modules = {
@@ -19,7 +17,7 @@
 		};
 
 		/* Init it */
-		oRC.init(props, getMockController() );
+		oRC =  new coldbox.system.web.context.RequestContext( props, getMockController());
 	}
 
 	function getRequestContext(){
@@ -28,7 +26,7 @@
 
 	function testGetHTMLBaseURL(){
 		var event = getRequestContext();
-		event.$( "isSES", true )
+		event.setIsSES( true )
 			.$( "isSSL", false );
 		expect( event.getHTMLBaseURL() ).toinclude( "http://jfetmac/applications/coldbox/test-harness" );
 
@@ -301,7 +299,7 @@
 		assertEquals( event.getsesBaseURL(), base );
 
 		event.setisSES( true );
-		assertEquals( event.isSES(), true );
+		assertEquals( event.getIsSES(), true );
 	}
 
 	function testInvalidHTTPMethod(){
@@ -431,10 +429,10 @@
 
 	function testNoExecution(){
 		var event = getRequestContext();
-
-		assertFalse( event.isNoExecution() );
+		expect(	event.getIsNoExecution() ).toBeFalse();
+		
 		event.noExecution();
-		assertTrue( event.isNoExecution() );
+		expect(	event.getIsNoExecution() ).toBeTrue();
 	}
 
 	function testCurrentModule(){
@@ -489,9 +487,10 @@
 	function testDoubleSlashInBuildLink(){
 		var event = getRequestContext();
 
-		event.$( "isSES", true );
+		event.setIsSES( true );
+
 		link = event.buildLink( linkTo='my/event/handler/', queryString='one=1&two=2' );
-		expect(	link ).toInclude( "jfetmac/applications/coldbox/test-harness/index.cfm/my/event/handler/one/1/two/2" );
+		expect(	link ).toInclude( "test-harness/index.cfm/my/event/handler/one/1/two/2" );
 		
 		// debug( link );
 	}
