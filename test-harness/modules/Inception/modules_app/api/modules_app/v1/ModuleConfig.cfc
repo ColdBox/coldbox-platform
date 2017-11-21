@@ -1,23 +1,27 @@
 component {
 
 	// Module Properties
-	this.title 				= "Inception";
-	this.author 			= "Luis Majano";
-	this.webURL 			= "http://www.ortussolutions.com";
-	this.description 		= "Module inception test";
+	this.title 				= "v1";
+	this.author 			= "";
+	this.webURL 			= "";
+	this.description 		= "";
 	this.version			= "1.0.0";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
 	this.viewParentLookup 	= true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
-	// Module Entry Point
-	this.entryPoint			= "inception";
+	// Module Entry Point -> Will inherit from parent so it will be /api/v1
+	this.entryPoint			= "v1";
+	this.inheritEntryPoint 	= true;
+
 	// Model Namespace
-	this.modelNamespace		= "";
-	// Auto Map Models Directory
-	this.autoMapModels		= true;
+	this.modelNamespace		= "v1";
 	// CF Mapping
-	this.cfmapping			= "";
+	this.cfmapping			= "v1";
+	// Auto-map models
+	this.autoMapModels		= true;
+	// Module Dependencies
+	this.dependencies 		= [];
 
 	function configure(){
 
@@ -36,17 +40,12 @@ component {
 			defaultLayout = ""
 		};
 
-		// datasources
-		datasources = {
-
-		};
-
 		// SES Routes
 		routes = [
 			// Module Entry Point
-			{pattern="/", handler="home",action="index"},
+			{ pattern="/", handler="home", action="index" },
 			// Convention Route
-			{pattern="/:handler/:action?"}
+			{ pattern="/:handler/:action?" }
 		];
 
 		// Custom Declared Points
