@@ -255,6 +255,8 @@ component extends="coldbox.system.web.services.BaseService"{
 				layoutParentLookup 	= "true",
 				// SES entry point
 				entryPoint 			= "",
+				// Inherit Entry Point
+				inheritEntryPoint 	= false,
 				// ColdFusion mapping
 				cfmapping			= "",
 				// Models namespsace
@@ -397,12 +399,14 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * Go over all the loaded module configurations and activate them for usage within the{application
 	 */
 	function activateAllModules(){
-		var modules 				= controller.getSetting( "modules" );
+		var aRegisteredModules 		= controller.getSetting( "modules" );
 		var interceptorService  	= controller.getInterceptorService();
+		var aModules 				= structKeyArray( variables.moduleRegistry );
+
 		// Iterate through module configuration and activate each module
-		for( var moduleName in modules ){
-			// Verify the exception and inclusion lists
-			if( canLoad( moduleName ) ){
+		for( var moduleName in aModules ){
+			// Can we load module and has it been registered?
+			if( canLoad( moduleName ) && structKeyExists( aRegisteredModules, moduleName ) ){
 				activateModule( moduleName );
 			}
 		}
@@ -544,12 +548,28 @@ component extends="coldbox.system.web.services.BaseService"{
 				len( mConfig.entryPoint ) AND NOT 
 				find( ":", mConfig.entryPoint ) 
 			){
+				var parentEntryPoint 		= "";
+				var visitParentEntryPoint 	= function( parent ){
+					var moduleConfig 	= modules[ arguments.parent ];
+					var thisEntryPoint 	= reReplace( moduleConfig.entryPoint, "^/", "" );
+					// Do we recurse?
+					if( len( moduleConfig.parent ) ){
+						return visitParentEntryPoint( moduleConfig.parent ) & "/" & thisEntryPoint;
+					}
+					return thisEntryPoint;
+				}
+
+				// Discover parent inherit mapping? if set to true and we actually have a parent
+				if( mConfig.inheritEntryPoint && len( mConfig.parent ) ){
+					parentEntryPoint = visitParentEntryPoint( mConfig.parent ) & "/";
+				}
+
 				// Registers module routing + resources
 				interceptorService.getInterceptor( "SES", true )
 					.addModuleRoutes(
-						pattern = mConfig.entryPoint, 
+						pattern = "#parentEntryPoint##reReplace( mConfig.entryPoint, "^/", "" )#", 
 						module  = arguments.moduleName,
-						append  = false 
+						append  = false
 					);
 			}
 
@@ -840,6 +860,11 @@ component extends="coldbox.system.web.services.BaseService"{
 		mConfig.entryPoint = "";
 		if( structKeyExists( oConfig,"entryPoint" ) ){
 			mConfig.entryPoint= oConfig.entryPoint;
+		}
+		// Inherit Entry Point
+		mConfig.inheritEntryPoint = false;
+		if( structKeyExists( oConfig,"inheritEntryPoint" ) ){
+			mConfig.inheritEntryPoint= oConfig.inheritEntryPoint;
 		}
 		// Disabled
 		mConfig.disabled = false;
