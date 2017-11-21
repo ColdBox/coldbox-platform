@@ -247,7 +247,8 @@ component serializable="false" accessors="true"{
 					var eCacheEntry = event.getEventCacheableEntry();
 					if( structKeyExists( eCacheEntry, "cacheKey") AND
 					    structKeyExists( eCacheEntry, "timeout")  AND
-					    structKeyExists( eCacheEntry, "lastAccessTimeout" )
+						structKeyExists( eCacheEntry, "lastAccessTimeout" ) AND
+						getPageContext().getResponse().getStatus() neq 500
 					){
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
 							
