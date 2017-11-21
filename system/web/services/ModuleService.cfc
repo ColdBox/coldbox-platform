@@ -557,7 +557,7 @@ component extends="coldbox.system.web.services.BaseService"{
 						return visitParentEntryPoint( moduleConfig.parent ) & "/" & thisEntryPoint;
 					}
 					return thisEntryPoint;
-				}
+				};
 
 				// Discover parent inherit mapping? if set to true and we actually have a parent
 				if( mConfig.inheritEntryPoint && len( mConfig.parent ) ){
