@@ -1,4 +1,4 @@
-﻿/**
+/**
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
@@ -186,8 +186,8 @@ component serializable="false" accessors="true"{
 				}
 				
 				// Authoritative Header
-				getPageContext().getResponse().setStatus( 203, "Non-Authoritative Information" );
-				getPageContext().getResponse().setHeader( "x-coldbox-cache-response", "true" );
+				getPageContextResponse().setStatus( 203, "Non-Authoritative Information" );
+				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
 				
 				// Render Content as binary or just output
 				if( refResults.eventCaching.isBinary ){
@@ -226,7 +226,7 @@ component serializable="false" accessors="true"{
 						// ColdBox does native JSON if you return a complex object.
 						else {
 							renderedContent = serializeJSON( refResults.results );
-							getPageContext().getResponse().setContentType( "application/json" );
+							getPageContextResponse().setContentType( "application/json" );
 						}
 					}
 					// Render Layout/View pair via set variable to eliminate whitespace
@@ -245,10 +245,11 @@ component serializable="false" accessors="true"{
 
 					//****** EVENT CACHING *******/
 					var eCacheEntry = event.getEventCacheableEntry();
+
 					if( structKeyExists( eCacheEntry, "cacheKey") AND
 					    structKeyExists( eCacheEntry, "timeout")  AND
 						structKeyExists( eCacheEntry, "lastAccessTimeout" ) AND
-						getPageContext().getResponse().getStatus() neq 500
+						getPageContextResponse().getStatus() neq 500
 					){
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
 							
@@ -261,11 +262,11 @@ component serializable="false" accessors="true"{
 								} 
 								// Else, ask the engine
 								else {
-									defaultContentType = getPageContext().getResponse().getContentType();
+									defaultContentType = getPageContextResponse().getContentType();
 								}
 							} catch( any e){
 								// Catch for stupid ACF2016 incompatiblity on the Servlet Response Interface!
-								defaultContentType = getPageContext().getResponse().getResponse().getContentType();
+								defaultContentType = getPageContextResponse().getContentType();
 							}
 							
 							// prepare storage entry
@@ -517,7 +518,7 @@ component serializable="false" accessors="true"{
 		event.setPrivateValue( "exception", oException );
 
 		// Set Exception Header
-		getPageContext().getResponse().setStatus( 500, "Internal Server Error" );
+		getPageContextResponse().setStatus( 500, "Internal Server Error" );
 
 		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ){
@@ -606,7 +607,7 @@ component serializable="false" accessors="true"{
 		required encoding
 	){
     	// Status Codes
-		getPageContext().getResponse().setStatus( arguments.statusCode, arguments.statusText );
+		getPageContextResponse().setStatus( arguments.statusCode, arguments.statusText );
 		// Render the Data Content Type
 		controller.getDataMarshaller().renderContent( type=arguments.contentType, encoding=arguments.encoding, reset=true );
 		return this;
@@ -620,5 +621,18 @@ component serializable="false" accessors="true"{
 			return COLDBOX_APP_KEY;
 		}
 		return "cbController";
+	}
+
+	/**
+	* Helper method to deal with ACF2016's overload of the page context response
+	**/
+	private function getPageContextResponse(){
+		var response = getPageContext().getResponse();
+		try{
+			response.getStatus();
+			return response;
+		}catch( any e ){
+			return response.getResponse();
+		}
 	}
 }
