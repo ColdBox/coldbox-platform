@@ -255,17 +255,13 @@ component serializable="false" accessors="true"{
 							
 							// Try to discover the content type
 							var defaultContentType = "text/html";
-							try{
-								// Discover from event caching first.
-								if( isStruct( renderData ) and not structisEmpty( renderData ) ){
-									defaultContentType 	= renderData.contentType;
-								} 
-								// Else, ask the engine
-								else {
-									defaultContentType = getPageContextResponse().getContentType();
-								}
-							} catch( any e){
-								// Catch for stupid ACF2016 incompatiblity on the Servlet Response Interface!
+							
+							// Discover from event caching first.
+							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
+								defaultContentType 	= renderData.contentType;
+							} 
+							// Else, ask the engine
+							else {
 								defaultContentType = getPageContextResponse().getContentType();
 							}
 							
