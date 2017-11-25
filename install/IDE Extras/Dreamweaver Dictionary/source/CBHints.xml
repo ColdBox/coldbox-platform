@@ -31,7 +31,7 @@
 	<function pattern="renderExternalView(string:view)" doctypes="ColdFusion,CFC" />
 	<function pattern="renderView(string:view,[boolean:cache],[numeric:cacheTimeout],[numeric:cacheLastAccessTimeout])" doctypes="ColdFusion,CFC" />
 	<function pattern="runEvent(string:event,[boolean:prepostExempt],[boolean:private])" doctypes="ColdFusion,CFC" />
-	<function pattern="setNextEvent(string:event,[string:queryString],[boolean:addToken],[string:persist])" doctypes="ColdFusion,CFC" />
+	<function pattern="relocate(string:event,[string:queryString],[boolean:addToken],[string:persist])" doctypes="ColdFusion,CFC" />
 	<function pattern="setNextRoute(string:route,[string:persist])" doctypes="ColdFusion,CFC" />
 	<function pattern="setSetting(string:name,value)" doctypes="ColdFusion,CFC" />
 	<function pattern="settingExists(string:name,[boolean:FWSetting])" doctypes="ColdFusion,CFC" />
@@ -56,7 +56,7 @@
 		<menuitem label="getUtil()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="persistVariables()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="runEvent()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="setNextEvent()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="relocate()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="setNextRoute()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="setSetting()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="settingExists()" icon="shared/CBHints/images/hintCB.gif" />

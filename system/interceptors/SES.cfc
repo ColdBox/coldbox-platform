@@ -928,7 +928,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// SSL Checks
 		if( foundRoute.ssl AND NOT event.isSSL() ){
-			setNextEvent(
+			relocate(
 				URL         = event.getSESBaseURL() & reReplace( cgi.path_info, "^\/", "" ), 
 				ssl         = true, 
 				statusCode  = 302, 

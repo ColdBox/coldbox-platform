@@ -41,7 +41,7 @@
 
 	// Do something
 	function doSomething( event, rc, prc ){
-		setNextEvent("main.index");
+		relocate("main.index");
 	}
 
 	function testPrivateActions( event, rc, prc ){

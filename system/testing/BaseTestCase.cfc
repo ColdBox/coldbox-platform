@@ -346,7 +346,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	){
 		var handlerResults  = "";
 		var requestContext  = "";
-		var relocationTypes = "TestController.setNextEvent,TestController.relocate";
+		var relocationTypes = "TestController.relocate";
 		var cbController    = getController();
 		var renderData		= "";
 		var renderedContent = "";

@@ -19,7 +19,7 @@ component extends="coldbox.system.web.ControllerDecorator" {
     * @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
     * @statusCode The status code to use in the relocation
     */
-    function setNextEvent(
+    function relocate(
         event=getSetting( "DefaultEvent" ), 
         queryString="", 
         boolean addToken=false, 
@@ -37,7 +37,7 @@ component extends="coldbox.system.web.ControllerDecorator" {
         // copy over to rc
         for( var thisArg in arguments ){
             if( structKeyExists( arguments, thisArg ) ){
-                rc[ "setNextEvent_#thisArg#" ] = arguments[ thisArg ];
+                rc[ "relocate_#thisArg#" ] = arguments[ thisArg ];
             }
         }
 
@@ -46,7 +46,7 @@ component extends="coldbox.system.web.ControllerDecorator" {
             getInterceptorService().processState("postProcess");
         }
 
-        throw( message="Relocating via setNextEvent", type="TestController.setNextEvent" );
+        throw( message="Relocating via relocate", type="TestController.relocate" );
     }
 
 	function runEvent(){

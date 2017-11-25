@@ -255,7 +255,8 @@ component serializable="false" accessors="true"{
 	/****************************************** RELOCATION HELPERS *************************************************/
 
 	/**
-	* Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI
+	* Relocate user browser requests to other events, URLs, or URIs.
+	*
 	* @event The name of the event to relocate to, if not passed, then it will use the default event found in your configuration file.
 	* @queryString The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
 	* @addToken Wether to add the tokens or not to the relocation. Default is false
@@ -270,7 +271,7 @@ component serializable="false" accessors="true"{
 	* 
 	* @return Controller
 	*/
-	function setNextEvent(
+	function relocate(
 		event=getSetting( "DefaultEvent" ), 
 		queryString="", 
 		boolean addToken=false, 
@@ -393,7 +394,7 @@ component serializable="false" accessors="true"{
 		}
 
 		// Send Relocation
-		sendRelocation(URL=relocationURL,addToken=arguments.addToken,statusCode=arguments.statusCode);
+		sendRelocation( URL=relocationURL, addToken=arguments.addToken, statusCode=arguments.statusCode );
 
 		return this;
 	}
