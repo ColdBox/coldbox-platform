@@ -257,6 +257,8 @@ component extends="coldbox.system.web.services.BaseService"{
 				entryPoint 			= "",
 				// Inherit Entry Point
 				inheritEntryPoint 	= false,
+				// Inherited Entry Point
+				inheritedEntryPoint = "",
 				// ColdFusion mapping
 				cfmapping			= "",
 				// Models namespsace
@@ -564,10 +566,13 @@ component extends="coldbox.system.web.services.BaseService"{
 					parentEntryPoint = visitParentEntryPoint( mConfig.parent ) & "/";
 				}
 
+				// Store Inherited Entry Point
+				mConfig.inheritedEntryPoint = parentEntryPoint & reReplace( mConfig.entryPoint, "^/", "" );
+
 				// Registers module routing + resources
 				interceptorService.getInterceptor( "SES", true )
 					.addModuleRoutes(
-						pattern = "#parentEntryPoint##reReplace( mConfig.entryPoint, "^/", "" )#", 
+						pattern = mConfig.inheritedEntryPoint, 
 						module  = arguments.moduleName,
 						append  = false
 					);

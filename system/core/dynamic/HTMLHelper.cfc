@@ -181,12 +181,12 @@ Description :
 				// Verify SSL Bit
 				if( structKeyExists( arguments, "ssl" ) ){ 
 					arguments.href = event.buildLink(
-						linkto 		= arguments.href,
+						to 			= arguments.href,
 						ssl			= arguments.ssl,
 						queryString = arguments.queryString
 					); 
 				} else { 
-					arguments.href = event.buildLink( linkto=arguments.action, queryString=arguments.queryString ); 
+					arguments.href = event.buildLink( to=arguments.action, queryString=arguments.queryString ); 
 				}
 			}
 
@@ -604,11 +604,11 @@ Description :
 				// Verify SSL Bit
 				if( structKeyExists( arguments, "ssl" ) ){ 
 					arguments.action = event.buildLink(
-						linkto 		= arguments.action,
+						to	 		= arguments.action,
 						ssl			= arguments.ssl
 					); 
 				} else { 
-					arguments.action = event.buildLink( linkto=arguments.action ); 
+					arguments.action = event.buildLink( to=arguments.action ); 
 				}
 			}
 

@@ -76,7 +76,7 @@ component {
 		// SES Resources
 		resources = [
 			{ resource="photos" },
-			{ resource="users", restful=true }
+			{ resource="users" }
 		];
 
 		// Custom Declared Points

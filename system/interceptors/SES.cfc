@@ -133,7 +133,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	function getBaseURL(){
 		return variables.baseURL;
 	}
-
 	function setUniqueURLS( boolean uniqueURLS ){
 		variables.uniqueURLS = arguments.uniqueURLS;
 		return this;
@@ -365,13 +364,14 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 	/**
 	 * process a with closure
+	 * 
 	 * @args The arugments to process
 	 */
 	SES function processWith( required args ){
-		var w 	= variables.withClosure;
+		var w = variables.withClosure;
 
 		// only process arguments once per addRoute() call.
-		if( structKeyExists( args,"$$withProcessed" ) ){ 
+		if( structKeyExists( args, "$$withProcessed" ) ){ 
 			return this; 
 		}
 
@@ -414,6 +414,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			// Import configuration
 			include arguments.location;
 		} catch ( Any e ){
+			writeDump( var=e );abort;
 			throw(
 				message = "Error importing routes configuration file: #e.message# #e.detail#", 
 				detail  = e.tagContext.toString(), 
@@ -528,6 +529,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 	/**
 	 * Adds a route to dispatch and returns itself.
+	 * 
 	 * @pattern  The pattern to match against the URL.
 	 * @handler The handler to execute if pattern matched.
 	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
@@ -547,6 +549,9 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @statusCode The HTTP status code to send to the browser response.
 	 * @statusText Explains the HTTP status code sent to the browser response.
 	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
+	 * @name The name of the route
+	 * 
+	 * @return SES
 	 */
 	function addRoute(
 		required string pattern,
@@ -567,7 +572,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		any response,
 		numeric statusCode,
 		string statusText,
-		any condition
+		any condition,
+		string name=""
 	){
 		var thisRoute        = {};
 		var thisRegex        = 0;
@@ -583,9 +589,9 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		}
 
 		// Process all incoming arguments into the route to store
-		for( var arg in arguments){
+		for( var arg in arguments ){
 			if( structKeyExists( arguments, arg ) ){ 
-				thisRoute[arg] = arguments[arg];
+				thisRoute[ arg ] = arguments[ arg ];
 			}
 		}
 
@@ -743,7 +749,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		else{
 			// Append or PrePend
 			if( arguments.append ){	
-				ArrayAppend( variables.routes, thisRoute ); 
+				arrayAppend( variables.routes, thisRoute ); 
 			} else { 
 				arrayPrePend( variables.routes, thisRoute ); 
 			}
@@ -1448,8 +1454,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		var appMapping 		= getSetting('AppMapping');
 
 		// Verify the config file, else set it to our convention in the config/Routes.cfm
-		if( not propertyExists('configFile') ){
-			setProperty('configFile','config/Routes.cfm');
+		if( not propertyExists( 'configFile' ) ){
+			setProperty( 'configFile', 'config/Routes.cfm' );
 		}
 
 		//App location prefix
