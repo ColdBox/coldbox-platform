@@ -14,13 +14,12 @@
 	this.modelNamespace 	= "MyConventionsTest";
 	// Application helpers
 	this.applicationHelper 	= [ "helpers/app.cfm" ];
-	this.viewsHelper 		= [ "helpers/views.cfm" ];
 
 	function configure(){
 
 		// SES Routes
 		routes = [
-			{ pattern="/", handler="test",action="index" },
+			{ pattern="/", handler="test", action="index" },
 			{ pattern="/:handler/:action?" }
 		];
 

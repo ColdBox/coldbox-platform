@@ -25,7 +25,7 @@
 				.$results( {
 					myModule = {
 						routes = [
-							{ pattern="/", handler="home", action="index" }
+							{ pattern="/", handler="home", action="index", name="home" }
 						],
 						resources = [ { resource="photos" } ]
 					}

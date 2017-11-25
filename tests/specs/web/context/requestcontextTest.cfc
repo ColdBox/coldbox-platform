@@ -3,25 +3,72 @@
 	function setUp(){
 
 		/* Properties */
-		props.DefaultLayout = "Main.cfm";
-		props.DefaultView = "";
-		props.FolderLayouts = structnew();
-		props.ViewLayouts = structnew();
-		props.EventName = "event";
-		props.sesBaseURL = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
+		props.defaultLayout     = "Main.cfm";
+		props.defaultView       = "";
+		props.folderLayouts     = structnew();
+		props.viewLayouts       = structnew();
+		props.eventName         = "event";
+		props.sesBaseURL        = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
 		props.registeredLayouts = structnew();
-		props.modules = {
+		props.modules           = {
 			test1 = {
 				mapping = "/coldbox/test-harness"
 			}
 		};
 
 		/* Init it */
-		oRC =  new coldbox.system.web.context.RequestContext( props, getMockController());
+		mockController = getMockController();
+		prepareMock( mockController.getInterceptorService() );
+		
+		oRC =  new coldbox.system.web.context.RequestContext( props, mockController );
 	}
 
 	function getRequestContext(){
 		return prepareMock( oRC );
+	}
+
+	function testValidRoutes(){
+		// Mocks
+		var mockSES = createStub()
+			.$( "getRoutes", [ { name="contactus", pattern="contactus/" } ] );
+		mockController.getInterceptorService().$( "getInterceptor", mockSES );
+		
+		var event = getRequestContext().setIsSES( true );
+		var r = event.route( "contactus" );
+		//debug( r );
+		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
+	}
+
+	function testValidModuleRoutes(){
+		// Mocks
+		var mockSES = createStub()
+			.$( "getModuleRoutes", [
+					{ name="home", pattern="home/" }
+				]
+			)
+			.$( "getRoutes", [] );
+		mockController.getInterceptorService().$( "getInterceptor", mockSES );
+		
+		var event = getRequestContext()
+			.setIsSES( true )
+			.$property( "modules", "variables", {
+				myModule = {
+					inheritedEntryPoint = "mymodule/"
+				}
+			} );
+		var r = event.route( "home@mymodule" );
+		//debug( r );
+		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/home/" );
+	}
+	
+	function testInvalidRoute(){
+		// Mocks
+		var mockSES = createStub()
+			.$( "getRoutes", [] );
+		mockController.getInterceptorService().$( "getInterceptor", mockSES );
+		
+		var event = getRequestContext().setIsSES( true );
+		expect( function(){ event.route( "invalid" ); } ).toThrow();
 	}
 
 	function testGetHTMLBaseURL(){

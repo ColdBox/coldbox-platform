@@ -512,13 +512,13 @@ component serializable=false accessors="true"{
 	*/
 	string function getModuleRoot( module="" ){
 		var theModule = "";
-		if (structKeyExists(arguments,"module") and len(arguments.module)) {
+		if( structKeyExists( arguments, "module" ) and len( arguments.module ) ){
 			theModule = arguments.module;
 		} else {
 			theModule = getCurrentModule();
 		}
-		if( len(theModule) ){
-			return variables.modules[theModule].mapping;
+		if( len( theModule ) ){
+			return variables.modules[ theModule ].mapping;
 		}
 		return "";
 	}
@@ -804,7 +804,8 @@ component serializable=false accessors="true"{
 	}
 
 	/**
-	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`
+	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
+	 * If you need a route from a module then append the module address: `@moduleName` in order to find the right route.
 	 * 
 	 * @name The name of the route
 	 * @params The parameters of the route to replace
@@ -813,17 +814,28 @@ component serializable=false accessors="true"{
 	 * @throws InvalidArgumentException
 	 */
 	string function route( required name, struct params={}, boolean ssl ){
-		var routingService = variables.controller.getInterceptorService().getInterceptor( "ses" );
+		// Get routing service and default routes
+		var routingService 	= variables.controller.getInterceptorService().getInterceptor( "ses" );
+		var targetRoutes 	= routingService.getRoutes();
+		var entryPoint 		= "";
+
+		// Module Route?
+		if( find( "@", arguments.name ) ){
+			var targetModule 	= getToken( arguments.name, 2, "@" );
+			targetRoutes 		= routingService.getModuleRoutes( targetModule );
+			arguments.name 		= getToken( arguments.name, 1, "@" );
+			entryPoint 			= variables.modules[ targetmodule ].inheritedEntryPoint;
+		}
 		
-		// Find the named route in the main router
-		var foundRoute = routingService.getRoutes().filter( function( item ){
+		// Find the named route
+		var foundRoute = targetRoutes.filter( function( item ){
 			return ( arguments.item.name == name ? true : false );
 		} );
 
-		// Did we find it.
+		// Did we find it?
 		if( arrayLen( foundRoute ) ){
 			var args = {
-				to 	= foundRoute[ 1 ].pattern,
+				to 	= entryPoint & foundRoute[ 1 ].pattern,
 				ssl = arguments.ssl ?: javaCast( "null", "" ) 
 			};
 
