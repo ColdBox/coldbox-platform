@@ -508,6 +508,7 @@ component serializable=false accessors="true"{
 
 	/**
 	* Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings
+	*
 	* @module Optional name of the module you want the root for, defaults to the current running module
 	*/
 	string function getModuleRoot( module="" ){
@@ -519,6 +520,24 @@ component serializable=false accessors="true"{
 		}
 		if( len( theModule ) ){
 			return variables.modules[ theModule ].mapping;
+		}
+		return "";
+	}
+
+	/**
+	* Convenience method to get a module's inherited entry point URL, blank if not found
+	*
+	* @module Optional name of the module you want the root for, defaults to the current running module
+	*/
+	string function getModuleEntryPoint( module="" ){
+		var theModule = "";
+		if( structKeyExists( arguments, "module" ) and len( arguments.module ) ){
+			theModule = arguments.module;
+		} else {
+			theModule = getCurrentModule();
+		}
+		if( len( theModule ) ){
+			return variables.modules[ theModule ].inheritedEntryPoint;
 		}
 		return "";
 	}

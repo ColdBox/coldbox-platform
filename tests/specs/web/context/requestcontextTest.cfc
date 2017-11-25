@@ -39,6 +39,18 @@
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
 	}
 
+	function testGetModuleEntryPoint(){
+		var event = getRequestContext()
+			.setIsSES( true )
+			.$property( "modules", "variables", {
+				myModule = {
+					inheritedEntryPoint = "mymodule/"
+				}
+			} );
+		var r = event.getModuleEntryPoint( "myModule" );
+		expect( r ).toBe( "mymodule/" );
+	}
+
 	function testValidModuleRoutes(){
 		// Mocks
 		var mockSES = createStub()
