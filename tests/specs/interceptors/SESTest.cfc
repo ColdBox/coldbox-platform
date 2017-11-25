@@ -3,51 +3,63 @@
 	function beforeAll() {
 		super.setup();
 		variables.ses = variables.interceptor;
+
+		// mocks
+		ses.$( "getSetting" )
+				.$args( "AppMapping" )
+				.$results( "/coldbox/test-harness" )
+			.$( "getSetting" )
+				.$args( "DefaultEvent" )
+				.$results( 'index' )
+			.$( "getSetting" )
+				.$args( "EventName" )
+				.$results( 'event' )
+			.$( "getSetting" )
+				.$args( "HandlersPath" )
+				.$results( expandPath( "/coldbox/test-harness/handlers" ) )
+			.$( "getSetting" )
+				.$args( "HandlersExternalLocationPath" )
+				.$results( "" )
+			.$( "getSetting" )
+				.$args( "Modules" )
+				.$results( {
+					myModule = {
+						routes = [
+							{ pattern="/", handler="home", action="index" }
+						],
+						resources = [ { resource="photos" } ]
+					}
+				} )
+			.$( "importConfiguration" )
+			.setBaseURL( "http://localhost" )
+			.setProperty( 'configFile', '/coldbox/test-harness/config/Routes.cfm' )
+			.configure();
 	}
 
 	function run() {
 		describe( "URL Routing", function(){
 
-			it( "can be configured on startup", function(){
-				
-				// mocks
-				mockController
-					.$("getSetting")
-						.$args("HandlersPath")
-						.$results( expandPath("/coldbox/test-harness/handlers") )
-					.$("getSetting")
-						.$args("HandlersExternalLocationPath")
-						.$results("")
-					.$("getSetting")
-						.$args("Modules")
-						.$results( {} )
-					.$("getSetting")
-						.$args("EventName")
-						.$results( 'event' )
-					.$("getSetting")
-						.$args("DefaultEvent")
-						.$results( 'index' );
-
-				ses.$("getSetting")
-					.$args("AppMapping")
-					.$results("/coldbox/test-harness")
-					.$("importConfiguration")
-					.$("setSetting");
-				
-				ses.setBaseURL( "http://localhost" );
-				ses.configure();
-				
-				expect( ses.$atLeast( 2, "setSetting" ) ).toBeTrue();
+			it( "can add namespace routing", function(){
+				ses.addNamespace( pattern="/luis", namespace="luis" );
+				expect( ses.getNamespaceRoutingTable() ).toHaveKey( "luis" );
+				expect( ses.getRoutes().filter( function( item ){
+					return ( item.pattern == "luis/" ? true : false );
+				} ) ).notToBeEmpty();
 			} );
 
-			it( "can add namespace routing", function(){
-				ses.$property("namespaceroutingtable","variables",{})
-					.$("addRoute");
-	
-				ses.addNamespace( pattern="/luis", namespace="luis" );
-		
-				expect( "luis" ).toBe( ses.$callLog().addRoute[ 1 ].namespaceRouting );
-				expect( "/luis" ).toBe( ses.$callLog().addRoute[ 1 ].pattern );
+			it( "can add module routing", function(){
+				ses.addModuleRoutes( pattern="/myModule", module="myModule" );
+				expect( ses.getModuleRoutingTable() ).toHaveKey( "myModule" );
+				expect( ses.getRoutes().filter( function( item ){
+					return ( item.pattern == "myModule/" ? true : false );
+				} ) ).notToBeEmpty();
+			} );
+
+			it( "can add named routes", function(){
+				ses.addRoute( pattern="/luis", name="luis" );
+				expect( ses.getRoutes().filter( function( item ){
+					return ( item.name == "luis" ? true : false );
+				} ) ).notToBeEmpty();
 			} );
 
 			it( "can clean incoming pathing", function(){
@@ -95,11 +107,11 @@
 				beforeEach( function(){
 					var mockLog = createStub().$( "canDebug", false );
 					ses.$property( propertyName = "log", mock = mockLog );
-					ses.$("getSetting").$args("AppMapping").$results("/coldbox/test-harness")
-						.$("getSetting").$args("eventName").$results("event")
-						.$("importConfiguration")
-						.$("setSetting");
-					ses.setBaseURL("http://localhost");
+					ses.$( "getSetting" ).$args("AppMapping" ).$results("/coldbox/test-harness" )
+						.$("getSetting" ).$args("eventName" ).$results("event" )
+						.$("importConfiguration" )
+						.$("setSetting" );
+					ses.setBaseURL("http://localhost" );
 					ses.configure();
 					
 					// Mocks

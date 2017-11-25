@@ -26,20 +26,20 @@
 	};
 
 	// Responses
-	addRoute( pattern="/ff", response="Hello FireFox", condition=ff);
-	addRoute( pattern="/luis/:lname", response="<h1>Hi Luis {lname}, how are {you}</h1>", statusCode="200", statusText="What up dude!");
-	addRoute( pattern="/luis2/:lname", response=fResponse, statusCode="202", statusText="What up from closure land");
+	addRoute( pattern="/ff", response="Hello FireFox", condition=ff );
+	addRoute( pattern="/luis/:lname", response="<h1>Hi Luis {lname}, how are {you}</h1>", statusCode="200", statusText="What up dude!" );
+	addRoute( pattern="/luis2/:lname", response=fResponse, statusCode="202", statusText="What up from closure land" );
 
 	// Views No Events
-	addRoute( pattern="contactus",view="simpleview");
-	addRoute( pattern="contactus2",view="simpleview",viewnoLayout=true);
+	addRoute( pattern="contactus", name="contactus", view="simpleview" );
+	addRoute( pattern="contactus2", name="contactus2", view="simpleview", viewnoLayout=true );
 
 	// Add Module Routing Here For Common-View Layout Testing
 	addModuleRoutes( pattern="/moduleLookup", module="moduleLookup");
 	addModuleRoutes( pattern="/parentLookup", module="parentLookup");
 
 	// Register namespaces
-	addNamespace( pattern="/luis",namespace="luis");
+	addNamespace( pattern="/luis", namespace="luis");
 
 	// Sample namespace
 	with( namespace="luis" )
@@ -53,7 +53,9 @@
 		.addRoute( pattern="/:id/:name{4}?")
 	.endWith();
 
-	addRoute( pattern="/testroute", handler="main", action="index" );
+	addRoute( pattern="/complexParams/:id-numeric{2}/:name-regex(luis)", name="complexParams", handler="main", action="index" );
+	addRoute( pattern="/testroute/:id/:name", name="testRouteWithParams", handler="main", action="index" );
+	addRoute( pattern="/testroute", name="testRoute", handler="main", action="index" );
 
 	// Should fire localized onInvalidHTTPMethod
 	addRoute( pattern="invalid-restful", handler="restful", action={ index = "post" } );

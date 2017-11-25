@@ -2,7 +2,7 @@
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
-* Models a ColdBox request, stores the incoming request collection and private request collection.
+* Models a ColdBox request, stores the incoming request collection (FORM/URL/REMOTE) and private request collection.
 * It is also used to determine metadata about a request and helps you build RESTFul responses.
 **/
 component serializable=false accessors="true"{
@@ -92,7 +92,7 @@ component serializable=false accessors="true"{
 	*/
 	function init( required struct properties={}, required any controller ){
 		// Store controller;
-		variables.controller = arguments.controller;
+		variables.controller 		= arguments.controller;
 
 		// Create the Collections
 		variables.context			= structnew();
@@ -784,7 +784,7 @@ component serializable=false accessors="true"{
 	* Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.
 	*/
 	string function getHTMLBaseURL(){
-		return REReplaceNoCase( buildLink( linkTo='', ssl=isSSL() ), "index.cfm\/?", "" );
+		return REReplaceNoCase( buildLink( to='', ssl=isSSL() ), "index.cfm\/?", "" );
 	}
 
 	/**
@@ -804,15 +804,55 @@ component serializable=false accessors="true"{
 	}
 
 	/**
-	* Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes
-	* @linkTo The event or route you want to create the link to
-	* @translate Translate between . and / depending on the SES mode on linkTo and queryString arguments. Defaults to true.
-	* @ssl Turn SSl on/off on URL creation
+	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`
+	 * 
+	 * @name The name of the route
+	 * @params The parameters of the route to replace
+	 * @ssl Turn SSL on/off or detect it by default
+	 * 
+	 * @throws InvalidArgumentException
+	 */
+	string function route( required name, struct params={}, boolean ssl ){
+		var routingService = variables.controller.getInterceptorService().getInterceptor( "ses" );
+		
+		// Find the named route in the main router
+		var foundRoute = routingService.getRoutes().filter( function( item ){
+			return ( arguments.item.name == name ? true : false );
+		} );
+
+		// Did we find it.
+		if( arrayLen( foundRoute ) ){
+			var args = {
+				to 	= foundRoute[ 1 ].pattern,
+				ssl = arguments.ssl ?: javaCast( "null", "" ) 
+			};
+
+			// Process Params
+			arguments.params.each( function( key, value ){
+				args.to = reReplaceNoCase( args.to, ":#key#-?[^/]*", value, "all" );
+			} );
+
+			return buildLink( argumentCollection=args );
+		}
+
+		throw(
+			type 		= "InvalidArgumentException",
+			message  	= "The named route '#arguments.name#' does not exist"
+		);
+		
+	}
+
+	/**
+	* Builds links to events or URL Routes
+	*
+	* @to The event or route path you want to create the link to
+	* @translate Translate between . to / depending on the SES mode on to and queryString arguments. Defaults to true.
+	* @ssl Turn SSl on/off on URL creation, by default is SSL is enabled, we will use it.
 	* @baseURL If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm
 	* @queryString The query string to append
 	*/
 	string function buildLink(
-		required linkTo,
+		required to,
 		boolean translate=true,
 		boolean ssl,
 		baseURL="",
@@ -821,7 +861,7 @@ component serializable=false accessors="true"{
 		var frontController = "index.cfm";
 
 		// Cleanups
-		arguments.linkTo 		= trim( arguments.linkTo );
+		arguments.to 			= trim( arguments.to );
 		arguments.baseURL 		= trim( arguments.baseURL );
 		arguments.queryString 	= trim( arguments.queryString );
 
@@ -844,31 +884,31 @@ component serializable=false accessors="true"{
 			
 			// Translate link or plain
 			if( arguments.translate ){
-				arguments.linkto = replace( arguments.linkto, ".", "/", "all" );
+				arguments.to = replace( arguments.to, ".", "/", "all" );
 				// QuqeryString Conversions
 				if( len( arguments.queryString ) ){
-					if( right( arguments.linkTo, 1 ) neq  "/" ){
-						arguments.linkto = arguments.linkto & "/";
+					if( right( arguments.to, 1 ) neq  "/" ){
+						arguments.to = arguments.to & "/";
 					}
-					arguments.linkto = arguments.linkto & replace( arguments.queryString, "&", "/", "all" );
-					arguments.linkto = replace( arguments.linkto, "=", "/", "all" );
+					arguments.to = arguments.to & replace( arguments.queryString, "&", "/", "all" );
+					arguments.to = replace( arguments.to, "=", "/", "all" );
 				}
 			} else if( len( arguments.queryString ) ){
-				arguments.linkto = arguments.linkto & "?" & arguments.queryString;
+				arguments.to = arguments.to & "?" & arguments.queryString;
 			}
 			
 			// Prepare SES Base URL Link
 			if( right( variables.SESBaseURL, 1 ) eq  "/" ){
-				return variables.SESBaseURL & arguments.linkto;
+				return variables.SESBaseURL & arguments.to;
 			} else {
-				return variables.SESBaseURL & "/" & arguments.linkto;
+				return variables.SESBaseURL & "/" & arguments.to;
 			}
 		} else {
-			// Check if sending in QUery String
+			// Check if sending in Query String
 			if( len( arguments.queryString ) eq 0 ){
-				return "#frontController#?#variables.eventName#=#arguments.linkto#";
+				return "#frontController#?#variables.eventName#=#arguments.to#";
 			} else {
-				return "#frontController#?#variables.eventName#=#arguments.linkto#&#arguments.queryString#";
+				return "#frontController#?#variables.eventName#=#arguments.to#&#arguments.queryString#";
 			}
 		}
 

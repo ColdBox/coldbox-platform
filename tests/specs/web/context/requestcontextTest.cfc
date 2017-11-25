@@ -44,7 +44,7 @@
 		var event = getRequestContext();
 		var test = {today=now()};
 
-		event.collectionAppend(test);
+		event.collectionAppend( test);
 		event.clearCollection();
 
 		AssertEquals( structnew(), event.getCollection() );
@@ -56,7 +56,7 @@
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend(test);
+		event.collectionAppend( test);
 
 		AssertEquals( test, event.getCollection() );
 	}
@@ -67,7 +67,7 @@
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend(test);
+		event.collectionAppend( test);
 
 		AssertEquals( 1, event.getSize() );
 	}
@@ -78,7 +78,7 @@
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend(test);
+		event.collectionAppend( test);
 
 		assertEquals( test.today , event.getValue("today") );
 
@@ -95,7 +95,7 @@
 
 		event.setValue("test", test.today);
 
-		assertEquals(test.today, event.getValue("test") );
+		assertEquals( test.today, event.getValue("test") );
 
 	}
 
@@ -107,7 +107,7 @@
 		event.clearCollection();
 
 		event.setValue("test", test.today);
-		assertEquals(test.today, event.getValue("test") );
+		assertEquals( test.today, event.getValue("test") );
 
 		event.removeValue("test");
 		assertEquals( false, event.getValue("test", false) );
@@ -321,51 +321,51 @@
 		/* simple setup */
 		event.setisSES(false);
 		testurl = event.buildLink('general.index');
-		AssertEquals(testurl, "index.cfm?event=general.index" );
+		AssertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* simple qs */
 		event.setisSES(false);
-		testurl = event.buildLink(linkTo='general.index',queryString="page=2");
-		AssertEquals(testurl, "index.cfm?event=general.index&page=2" );
+		testurl = event.buildLink( to='general.index',queryString="page=2");
+		AssertEquals( testurl, "index.cfm?event=general.index&page=2" );
 
 		/* empty qs */
 		event.setisSES(false);
-		testurl = event.buildLink(linkTo='general.index',queryString="");
-		AssertEquals(testurl, "index.cfm?event=general.index" );
+		testurl = event.buildLink( to='general.index',queryString="");
+		AssertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* ses test */
 		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkTo='general/index', ssl=false );
-		AssertEquals(testurl, base & "/general/index" );
+		testurl = event.buildLink( to='general/index', ssl=false );
+		AssertEquals( testurl, base & "/general/index" );
 
 		/* query string transformation */
 		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkTo='general/index', queryString="page=2&tests=4", ssl=false );
-		AssertEquals(testurl, base & "/general/index/page/2/tests/4" );
+		testurl = event.buildLink( to='general/index', queryString="page=2&tests=4", ssl=false );
+		AssertEquals( testurl, base & "/general/index/page/2/tests/4" );
 
 		/* ssl test */
 		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkto='general/index', ssl=true );
-		AssertEquals(testurl, basessl & "/general/index" );
+		testurl = event.buildLink( to='general/index', ssl=true );
+		AssertEquals( testurl, basessl & "/general/index" );
 		
 		// SSL OFF
 		event.setsesBaseURL( basessl );
-		testurl = event.buildLink( linkto='general/index', ssl=false, queryString="name=luis&cool=false" );
-		AssertEquals(testurl, base & "/general/index/name/luis/cool/false" );
+		testurl = event.buildLink( to='general/index', ssl=false, queryString="name=luis&cool=false" );
+		AssertEquals( testurl, base & "/general/index/name/luis/cool/false" );
 
 		/* translate */
 		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkto='general.index', translate=false, ssl=false );
+		testurl = event.buildLink( to='general.index', translate=false, ssl=false );
 		AssertEquals( testurl, base & "/general.index" );
 
 		/* translate with query string */
 		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkto='general.index', queryString="name=luis&cool=false", translate=false, ssl=false );
+		testurl = event.buildLink( to='general.index', queryString="name=luis&cool=false", translate=false, ssl=false );
 		AssertEquals( testurl, base & "/general.index?name=luis&cool=false" );
 	}
 
@@ -375,7 +375,7 @@
 		AssertEquals( event.getRenderData(), structnew());
 
 		// Test JSON
-		event.renderData(type='JSON',data="[1,2,3,4]");
+		event.renderData( type='JSON',data="[1,2,3,4]");
 		rd = event.getRenderData();
 		assertEquals( rd.contenttype, "application/json");
 		assertEquals( rd.type, "json");
@@ -389,13 +389,13 @@
 		assertEquals( rd.jsonQueryFormat, false );
 
 		//JSONP
-		event.renderData(type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
+		event.renderData( type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
 		rd = event.getRenderData();
 		assertEquals( rd.type, "jsonp");
 		assertEquals( rd.jsonCallback, 'testCallback');
 
 		// Test WDDX
-		event.renderData(type="WDDX",data=arrayNew(1));
+		event.renderData( type="WDDX",data=arrayNew(1));
 		rd = event.getRenderData();
 		assertEquals( rd.contenttype, "text/xml");
 		assertEquals( rd.type, "wddx");
@@ -472,7 +472,7 @@
 
 		test = event.getHTTPContent();
 
-		assertTrue( isSimpleValue(test) );
+		assertTrue( isSimpleValue( test) );
 	}
 
 	function testNoLayout(){
@@ -489,7 +489,7 @@
 
 		event.setIsSES( true );
 
-		link = event.buildLink( linkTo='my/event/handler/', queryString='one=1&two=2' );
+		link = event.buildLink( to='my/event/handler/', queryString='one=1&two=2' );
 		expect(	link ).toInclude( "test-harness/index.cfm/my/event/handler/one/1/two/2" );
 		
 		// debug( link );
