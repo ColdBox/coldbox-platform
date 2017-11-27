@@ -88,7 +88,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		}
 
 		// Default Event Action Checks
-		variables.handlerService.defaultEventCheck( context );
+		variables.handlerService.defaultActionCheck( context );
 
 		// Are we using event caching?
 		eventCachingTest( context, fwCache );

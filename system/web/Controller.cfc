@@ -497,12 +497,15 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Executes events with full life-cycle methods and returns the event results if any were returned
+	*
 	* @event The event string to execute, if nothing is passed we will execute the application's default event.
 	* @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
 	* @private Execute a private event if set, else defaults to public events
 	* @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
 	* @eventArguments A collection of arguments to passthrough to the calling event handler method
 	*
+	* @throws InvalidHTTPMethod
+	* 
 	* @return struct { data:event handler returned data (null), ehBean:event handler bean representation that was fired }
 	*/
 	private function _runEvent(
@@ -542,11 +545,13 @@ component serializable="false" accessors="true"{
 
 		// Validate the incoming event and get a handler bean to continue execution
 		results.ehBean = services.handlerService
-			.getRegisteredHandler( arguments.event )
+			.getHandlerBean( arguments.event )
 			.setIsPrivate( arguments.private );
 
 		// Validate this is not a view dispatch, else return for rendering
-		if( results.ehBean.getViewDispatch() ){	return results;	}
+		if( results.ehBean.getViewDispatch() ){	
+			return results;	
+		}
 
 		// Now get the correct handler to execute
 		var oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
@@ -624,7 +629,7 @@ component serializable="false" accessors="true"{
 				// Verify if event was overriden
 				if( arguments.event NEQ iData.processedEvent ){
 					// Validate the overriden event
-					results.ehBean = services.handlerService.getRegisteredHandler( iData.processedEvent );
+					results.ehBean = services.handlerService.getHandlerBean( iData.processedEvent );
 					// Get new handler to follow execution
 					oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
 				}
@@ -651,7 +656,7 @@ component serializable="false" accessors="true"{
 			// Verify if event was overriden
 			if( arguments.defaultEvent and arguments.event NEQ oRequestContext.getCurrentEvent() ){
 				// Validate the overriden event
-				results.ehBean = services.handlerService.getRegisteredHandler( oRequestContext.getCurrentEvent() );
+				results.ehBean = services.handlerService.getHandlerBean( oRequestContext.getCurrentEvent() );
 				// Get new handler to follow execution
 				oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
 			}

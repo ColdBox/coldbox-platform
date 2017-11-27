@@ -1,50 +1,67 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
+﻿/**
+* Request Context Decorator
+*/
+component extends="coldbox.system.testing.BaseModelTest"{
+	
+/*********************************** LIFE CYCLE Methods ***********************************/
 
-Author 	    :	Luis Majano
-Date        :	September 3, 2007
-Description :
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-<cfscript>
-	function setup(){
-		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
+	// executes before all suites+specs in the run() method
+	function beforeAll(){
+		super.beforeAll();
+		
+		mockController = createMock( className="coldbox.system.web.Controller" );
 		mockController.setUtil( new coldbox.system.core.util.Util() );
 
-		mockInterceptorService = getMockBox().createMock(className="coldbox.system.web.services.InterceptorService",clearMethods=true);
-		mockEngine     = getMockBox().createEmptyMock(className="coldbox.system.core.util.CFMLEngine");
+		mockInterceptorService 	= createMock( className="coldbox.system.web.services.InterceptorService", clearMethods=true );
+		mockEngine     			= createEmptyMock( className="coldbox.system.core.util.CFMLEngine" );
 
-		mockController.$("getInterceptorService",mockInterceptorService);
-		mockController.$("getCFMLEngine",mockEngine);
-
-		handlerService = getMockBox().createMock(classname="coldbox.system.web.services.HandlerService");
-		handlerService.init(mockController);
+		mockController.$( "getInterceptorService", mockInterceptorService )
+			.$( "getCFMLEngine", mockEngine );
 	}
 
-	function testRegisterHandlers(){
-		// Mocks
-		mockController.$("getSetting").$args("HandlersPath").$results(expandPath('/coldbox/test-harness/handlers'));
-		mockController.$("getSetting").$args("HandlersExternalLocationPath").$results(expandPath('/coldbox/test-harness/external/testHandlers'));
-		mockController.$("setSetting");
-		handlers = ["ehGeneral","blog"];
-		handlerService.$("gethandlerListing",handlers);
-
-		handlerService.registerHandlers();
-		//debug(mockController.$callLog().setSetting[1]);
-		assertEquals( mockController.$callLog().setSetting[1].value, arrayToList(handlers));
-		assertEquals( mockController.$callLog().setSetting[2].value, arrayToList(handlers));
+	// executes after all suites+specs in the run() method
+	function afterAll(){
+		super.afterAll();
 	}
 
-	function testRecurseListing(){
-		path = expandPath("/coldbox/test-harness/handlers");
-		makePublic(handlerService,"getHandlerListing");
+/*********************************** BDD SUITES ***********************************/
 
-		files = handlerService.getHandlerListing(path);
-		//debug(files);
-		assertTrue( arrayLen(files) );
+	function run( testResults, testBox ){
+		describe( "Handler Service", function(){
+			
+			beforeEach( function(){
+				handlerService = createMock( classname="coldbox.system.web.services.HandlerService" ).init( mockController );
+			} );
+
+			it( "can register handlers", function(){
+				// Mocks
+				mockController
+					.$("getSetting")
+						.$args("HandlersPath")
+						.$results( expandPath('/coldbox/test-harness/handlers') )
+					.$("getSetting")
+						.$args("HandlersExternalLocationPath")
+						.$results( expandPath('/coldbox/test-harness/external/testHandlers') )
+					.$( "setSetting" );
+				
+				var handlers = [ "ehGeneral", "blog" ];
+				handlerService.$( "gethandlerListing", handlers );
+
+				handlerService.registerHandlers();
+
+				//debug(mockController.$callLog().setSetting[1]);
+				expect( mockController.$callLog().setSetting[ 1 ].value ).toBe( arrayToList( handlers ) );
+				expect( mockController.$callLog().setSetting[ 2 ].value ).toBe( arrayToList( handlers ) );
+			} );
+
+			it( "can recurse handler listings", function(){
+				var path = expandPath( "/coldbox/test-harness/handlers" );
+				makePublic( handlerService, "getHandlerListing" );
+
+				var files = handlerService.getHandlerListing( path );
+				expect( files ).notToBeEmpty();
+			} );
+		} );
 	}
-</cfscript>
-</cfcomponent>
+
+}
