@@ -98,14 +98,14 @@ component extends="coldbox.system.web.services.BaseService"{
 
 	/**
 	 * Tests if the incoming context is an event cache
+	 * 
 	 * @context The request context to test for event caching
 	 * @context.docbox_generic coldbox.system.web.context.RequestContext
-	 * @fwCache
+	 * @fwCache Flag to hard purge the cache if needed
 	 */
-	function eventCachingTest( required context, boolean fwCache=false ){
+	RequestService function eventCachingTest( required context, boolean fwCache=false ){
 		var eventCache   	= structnew();
 		var oEventURLFacade = variables.templateCache.getEventURLFacade();
-		var eventDictionary = 0;
 		var currentEvent    = arguments.context.getCurrentEvent();
 
 		// Are we using event caching?
@@ -114,22 +114,25 @@ component extends="coldbox.system.web.services.BaseService"{
 			arguments.context.removeEventCacheableEntry();
 
 			// Get metadata entry for event that's fired.
-			eventDictionary = variables.handlerService.getEventMetaDataEntry(currentEvent);
+			var eventDictionary = variables.handlerService.getEventMetaDataEntry( currentEvent );
 
 			// Verify that it is cacheable, else quit, no need for testing anymore.
 			if( NOT eventDictionary.cacheable ){
-				return;
+				return this;
 			}
 
 			// Build the event cache key according to incoming request
-			eventCache.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
-														  targetEvent=currentEvent,
-														  targetContext=arguments.context);
+			eventCache.cacheKey = oEventURLFacade.buildEventKey(
+				keySuffix     = eventDictionary.suffix,
+				targetEvent   = currentEvent,
+				targetContext = arguments.context
+			);
+
 			// Check for Event Cache Purge
 			if ( arguments.fwCache ){
 				// Clear the key from the cache
 				variables.templateCache.clear( eventCache.cacheKey );
-				return;
+				return this;
 			}
 
 			// Event has been found, flag it so we can render it from cache if it still survives
@@ -137,22 +140,29 @@ component extends="coldbox.system.web.services.BaseService"{
 
 			// debug logging
 			if( variables.log.canDebug() ){
-				variables.log.debug("Event caching detected for : #eventCache.toString()#");
+				variables.log.debug("Event caching detected for : #eventCache.toString()#" );
 			}
 
 		}//end if using event caching.
+
+		return this;
 	}
 
 	/**
 	 * Get the Request context from request scope or create a new one.
+	 * 
+	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function getContext(){
-		if ( structKeyExists(request,"cb_requestContext") ){ return request.cb_requestContext; }
-		return createContext();
+		return ( request.cb_requestContext ?: createContext() );
 	}
 
 	/**
 	 * Set the request context into the request scope
+	 * 
+	 * @context Request Context object
+	 * 
+	 * @RequestService
 	 */
 	RequestService function setContext( required context ){
 		request.cb_requestContext = arguments.context;
