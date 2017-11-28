@@ -238,6 +238,17 @@
 		assertEquals( layout & ".cfm", event.getCurrentLayout() );
 	}
 
+	function testGetCurrentHandlerWithModule(){
+		var event = getRequestContext();
+		var defaultEvent = "myModule:test.doSomething";
+
+		event.setValue( "event", defaultEvent );
+
+		expect( event.getCurrentModule() ).toBe( "myModule" );
+		expect( event.getCurrentHandler() ).toBe( "test" );
+		expect( event.getCurrentAction() ).toBe( "doSomething" );
+	}
+
 	function testgetCurrentEventHandlerAction(){
 		var event = getRequestContext();
 		var defaultEvent = "ehTest.doSomething";

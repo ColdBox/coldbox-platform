@@ -482,28 +482,32 @@ component serializable=false accessors="true"{
 	* Gets the current handler requested in the current event
 	*/
 	string function getCurrentHandler(){
-		var testHandler = reReplace(getCurrentEvent(),"\.[^.]*$","");
-		if( listLen(testHandler,".") eq 1){
+		var thisEvent = getCurrentEvent();
+		// If module call, clean it up
+		if( find( ":", thisEvent ) ){
+			thisEvent = getToken( thisEvent, 2, ":" );
+		}
+		var testHandler = reReplace( thisEvent, "\.[^.]*$", "" );
+		if( listLen( testHandler, "." ) eq 1 ){
 			return testHandler;
 		}
 
-		return listLast(testHandler,".");
+		return listLast( testHandler, "." );
 	}
 
 	/**
 	* Gets the current action requested in the current event
 	*/
 	string function getCurrentAction(){
-		return listLast(getCurrentEvent(),".");
+		return listLast( getCurrentEvent(), "." );
 	}
 
 	/**
 	* Gets the current module name, else returns empty string
 	*/
 	string function getCurrentModule(){
-		var event = getCurrentEvent();
-		if( NOT find(":",event) ){ return "";}
-		return listFirst(event,":");
+		var thisEvent = getCurrentEvent();
+		return ( find( ":", thisEvent ) ? listFirst( thisEvent, ":" ) : "" );
 	}
 
 	/**
