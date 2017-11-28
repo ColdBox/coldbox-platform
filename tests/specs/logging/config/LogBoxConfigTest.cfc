@@ -13,7 +13,7 @@
 		try{
 			config.appender(name="luis2",class="coldbox.system.logging.AbstractAppender",levelMin=-40,levelMax=50);
 		}
-		catch("LogBoxConfig.InvalidLevel" e){
+		catch("InvalidLevel" e){
 		}
 		catch(Any e){
 			fail(e);
@@ -30,7 +30,7 @@
 			config.validate();
 			fail("this should have failed.");
 		}
-		catch("coldbox.system.logging.config.LogBoxConfig.AppenderNotFound" e){}
+		catch("AppenderNotFound" e){}
 		catch(Any e){ fail(e.message); }
 	}
 	

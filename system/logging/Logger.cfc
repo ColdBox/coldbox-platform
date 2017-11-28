@@ -187,12 +187,16 @@ Description :
 				levelMin = this.logLevels.lookupAsInt( levelMin );
 			}
 			// Verify level
-			if( this.logLevels.isLevelValid(arguments.levelMin) AND
-			    arguments.levelMin lte getLevelMax() ){
+			if( this.logLevels.isLevelValid( arguments.levelMin ) AND
+				arguments.levelMin lte getLevelMax() 
+			){
 				instance.levelMin = arguments.levelMin;
-			}
-			else{
-				throw("Invalid Log Level","The log level #arguments.levelMin# is invalid or greater than the levelMax (#getLevelMax()#). Valid log levels are from 0 to 5","Logger.InvalidLogLevelException");
+			} else {
+				throw(
+					message = "Invalid Log Level",
+					detail  = "The log level #arguments.levelMin# is invalid or greater than the levelMax (#getLevelMax()#). Valid log levels are from 0 to 5",
+					type    = "Logger.InvalidLogLevelException"
+				);
 			}
 		</cfscript>
 	</cffunction>
@@ -209,12 +213,17 @@ Description :
 				levelMax = this.logLevels.lookupAsInt( levelMax );
 			}
 			// Verify level
-			if( this.logLevels.isLevelValid(arguments.levelMax) AND
-			    arguments.levelMax gte getLevelMin() ){
+			if( this.logLevels.isLevelValid( arguments.levelMax ) AND
+				arguments.levelMax gte getLevelMin() 
+			){
 				instance.levelMax = arguments.levelMax;
 			}
 			else{
-				throw("Invalid Log Level","The log level #arguments.levelMax# is invalid or less than the levelMin (#getLevelMin()#). Valid log levels are from 0 to 5","Logger.InvalidLogLevelException");
+				throw(
+					message = "Invalid Log Level",
+					detail  = "The log level #arguments.levelMax# is invalid or less than the levelMin (#getLevelMin()#). Valid log levels are from 0 to 5",
+					type    = "Logger.InvalidLogLevelException"
+				);
 			}
 		</cfscript>
 	</cffunction>
