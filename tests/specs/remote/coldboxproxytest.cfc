@@ -1,14 +1,6 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author     :	Luis Majano
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness"{
+
 		function setup(){
-			reset();
 			super.setup();
 			proxy = CreateObject("component","cbtestharness.remote.MyProxy");
 		}
@@ -123,5 +115,5 @@ Author     :	Luis Majano
 			assertTrue( isObject( proxy.getCache("template") ) );
 
 		}
-	</cfscript>
-</cfcomponent>
+
+	}
