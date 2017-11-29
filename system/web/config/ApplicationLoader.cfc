@@ -2,12 +2,14 @@
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
-* Loads a Coldbox.cfc into the framework
+* This service loads all application configuration from conventions or a ColdBox.cfc
 */
 component accessors="true"{
 
 	/**
 	 * Constructor
+	 * 
+	 * @constructor
 	 */
 	function init( required controller ){
 		// setup local variables
@@ -21,9 +23,10 @@ component accessors="true"{
 
 	/**
 	 * Parse the application configuration file
+	 * 
 	 * @overrideAppMapping The direct location of the application in the web server.
 	 */
-	function loadConfiguration( string overrideAppMapping="" ){
+	ApplicationLoader function loadConfiguration( string overrideAppMapping="" ){
 		//Create Config Structure
 		var configStruct		= structNew();
 		var coldboxSettings 	= variables.coldboxSettings;
@@ -131,11 +134,15 @@ component accessors="true"{
 		parseFlashScope( oConfig, configStruct );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
-		configStruct.configTimeStamp = variables.util.fileLastModified( coldboxSettings[ "ConfigFileLocation" ]);
+		configStruct.configTimeStamp = variables.util.fileLastModified( 
+			replace( coldboxSettings[ "ConfigFileLocation" ], ".", "/", "all" ) & ".cfc" 
+		);
 
-		//finish by loading configuration
+		// finish by loading configuration
 		configStruct.coldboxConfig = oConfig;
 		variables.controller.setConfigSettings( configStruct);
+
+		return this;
 	}
 
 	/**
