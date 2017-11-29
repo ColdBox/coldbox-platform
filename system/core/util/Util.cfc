@@ -54,11 +54,10 @@ Description :
 	<cffunction name="getAbsolutePath" access="public" output="false" returntype="string" hint="Turn any system path, either relative or absolute, into a fully qualified one">
 		<cfargument name="path" required="true">
 		<cfscript>
-			var fileObj = createObject( "java", "java.io.File" ).init( javaCast( "string", arguments.path ) );
-			if( fileObj.isAbsolute() ){
+			if( fileExists( arguments.path ) ){
 				return arguments.path;
 			}
-			return expandPath( arguments.path );
+			return expandpath( arguments.path );
 		</cfscript>
 	</cffunction>
 

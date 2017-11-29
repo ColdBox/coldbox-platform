@@ -5,9 +5,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 Author     :	Luis Majano
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/cbtestharness">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness">
 	<cfscript>
 		function setup(){
+			reset();
 			super.setup();
 			proxy = CreateObject("component","cbtestharness.remote.MyProxy");
 		}
@@ -93,8 +94,8 @@ Author     :	Luis Majano
 
 		function testProxyAppLoading(){
 			local.load = structnew();
-			local.load.appMapping 		= "/coldbox/test-harness";
-			local.load.configLocation	= "coldbox.test-harness.config.Coldbox";
+			local.load.appMapping 		= "/cbTestHarness";
+			local.load.configLocation	= "cbTestHarness.config.Coldbox";
 			local.load.reloadApp 		= true;
 			local.load.appKey 			= "testApp";
 

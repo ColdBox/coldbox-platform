@@ -47,7 +47,7 @@ component accessors="true"{
 
 		//Default Locations for ROOT based apps, which is the default
 		//Parse out the first / to create the invocation Path
-		if ( left( configStruct[ "AppMapping" ],1) eq "/" ){
+		if ( left( configStruct[ "AppMapping" ], 1 ) eq "/" ){
 			configStruct[ "AppMapping" ] = removeChars( configStruct[ "AppMapping" ], 1, 1 );
 		}
 		//AppMappingInvocation Path
@@ -68,7 +68,7 @@ component accessors="true"{
 		}
 
 		//Create config Object
-		oConfig = createObject( "component", configCreatePath);
+		oConfig = createObject( "component", configCreatePath );
 
 		//Decorate It
 		oConfig.injectPropertyMixin = variables.util.getMixerUtil().injectPropertyMixin;
@@ -135,12 +135,12 @@ component accessors="true"{
 
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = variables.util.fileLastModified( 
-			replace( coldboxSettings[ "ConfigFileLocation" ], ".", "/", "all" ) & ".cfc" 
+			getMetadata( oConfig ).path
 		);
 
 		// finish by loading configuration
 		configStruct.coldboxConfig = oConfig;
-		variables.controller.setConfigSettings( configStruct);
+		variables.controller.setConfigSettings( configStruct );
 
 		return this;
 	}
