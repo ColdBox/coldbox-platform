@@ -29,8 +29,6 @@ Description :
 			instance.mixins[ "exposeMixin" ]				= variables.exposeMixin;
 			instance.mixins[ "methodProxy" ]				= variables.methodProxy;
 
-			instance.system = createObject('java','java.lang.System');
-
 			return this;
 		</cfscript>
 	</cffunction>
@@ -40,35 +38,25 @@ Description :
 	<!--- Start Method Injection on a CFC --->
 	<cffunction name="start" hint="Start method injection set -> Injects: includeitMixin,injectMixin,removeMixin,invokerMixin,injectPropertyMixin,removePropertyMixin,getPropertyMixin,populatePropertyMixin" access="public" returntype="void" output="false">
 		<cfargument name="CFC" required="true" hint="The cfc to mixin">
-		<cfset var udf = 0>
-
-		<cfif NOT structKeyExists(arguments.CFC, "$mixed")>
-		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
-			<cfif NOT structKeyExists(arguments.CFC, "$mixed")>
-			<cfscript>
-				for( udf in instance.mixins ){
-					arguments.CFC[udf] = instance.mixins[udf];
+		<cfscript>
+			if ( NOT structKeyExists( arguments.CFC, "$mixed" ) ){
+				for( var thisUDF in instance.mixins ){
+					arguments.CFC[ thisUDF ] = instance.mixins[ thisUDF ];
 				}
 				arguments.CFC.$mixed = true;
-			</cfscript>
-			</cfif>
-		</cflock>
-		</cfif>
+			}
+		</cfscript>
 	</cffunction>
 
 	<!--- Stop the injection, do cleanup --->
 	<cffunction name="stop" hint="stop injection block. Removes mixed in methods." access="public" returntype="void" output="false">
 		<cfargument name="CFC" hint="The cfc to inject the method into" type="any" required="Yes">
-		<cfset var udf = 0>
-
-		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
-			<cfscript>
-				for( udf in instance.mixins ){
-					arguments.CFC[udf] = instance.mixins[udf];
-					StructDelete(arguments.CFC, udf);
-				}
-			</cfscript>
-		</cflock>
+		<cfscript>
+			for( var udf in instance.mixins ){
+				structDelete( arguments.CFC, udf );
+			}
+			structDelete( arguments.CFC, "$mixed" );
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- MIXINS ------------------------------------------>

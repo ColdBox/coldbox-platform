@@ -15,7 +15,8 @@ Description :
 	this.loadColdBox = false;
 
 	boolean function isAdobe(){
-		return listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ? true : false;
+		return true;
+		return !listFindNoCase( "Lucee", server.coldfusion.productname ) ? true : false;
 	}
 
 	function setup(){
@@ -84,7 +85,7 @@ Description :
 	function testgetCachedObjectMetadata(){
 		cache.set("test",now());
 		md = cache.getCachedObjectMetadata("test");
-		debug(md);
+		// debug(md);
 		assertEquals( false, structIsEmpty(md) );
 	}
 
@@ -129,7 +130,7 @@ Description :
 		cache.set("test",testVal,20);
 
 		results = cache.getQuiet("test");
-		debug(results);
+		// debug(results);
 		assertEquals( testVal, results );
 		assertEquals( 0, cache.getStats().getMisses() );
 		assertEquals( 0, cache.getStats().getHits() );
@@ -144,7 +145,7 @@ Description :
 		md = cache.getCachedObjectMetadata("test");
 		assertEquals( 60, md.idleTime );
 		assertEquals( 120, md.timespan);
-		debug(md);
+		// debug(md);
 	}
 
 	function testSetQuiet(){
@@ -156,7 +157,7 @@ Description :
 		md = cache.getCachedObjectMetadata("test");
 		assertEquals( 60, md.idleTime );
 		assertEquals( 120, md.timespan);
-		debug(md);
+		// debug(md);
 	}
 
 	function testGetSize(){

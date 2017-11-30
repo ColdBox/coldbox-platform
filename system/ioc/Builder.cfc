@@ -17,7 +17,7 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="Builder" hint="Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder" output="false" >
-		<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+		<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
 		<cfscript>
 			instance = {
 				injector 	= arguments.injector,
@@ -43,7 +43,7 @@ TODO: update dsl consistency, so it is faster.
 	</cffunction>
 
 	<!--- getCustomDSL --->
-    <cffunction name="getCustomDSL" output="false" access="public" returntype="any" hint="Get the registered custom dsl instances structure" colddoc:generic="struct">
+    <cffunction name="getCustomDSL" output="false" access="public" returntype="any" hint="Get the registered custom dsl instances structure" doc_generic="struct">
     	<cfreturn instance.customDSL>
     </cffunction>
 
@@ -91,8 +91,8 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- buildCFC --->
     <cffunction name="buildCFC" output="false" access="public" returntype="any" hint="Build a cfc class via mappings">
-    	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+    	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" doc_generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
 		<cfscript>
 			var thisMap 		= arguments.mapping;
 			var oModel 			= createObject("component", thisMap.getPath() );
@@ -127,10 +127,14 @@ TODO: update dsl consistency, so it is faster.
 						  argumentcollection="#constructorArgs#">
 
 				<cfcatch type="any">
-					<!--- Controlled Exception --->
-					<cfthrow message="Error building: #thisMap.getName()# -> #cfcatch.message# #cfcatch.detail# with constructor arguments: #constructorArgs.toString()#"
-							 detail="Mapping: #thisMap.getMemento().toString()#, Stacktrace: #cfcatch.stacktrace#"
-							 type="Builder.BuildCFCDependencyException">
+					<cfscript>
+						// Controlled exception
+						throw( 
+							type="Builder.BuildCFCDependencyException",
+							message="Error building: #thisMap.getName()# -> #cfcatch.message#.",
+							detail="DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#, Error Location: #cfcatch.tagContext[ 1 ].template#:#cfcatch.tagContext[ 1 ].line#"
+						);
+					</cfscript>
 				</cfcatch>
 			</cftry>
 		</cfif>
@@ -140,8 +144,8 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- buildFactoryMethod --->
     <cffunction name="buildFactoryMethod" output="false" access="public" returntype="any" hint="Build an object using a factory method">
-    	<cfargument name="mapping" 			required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+    	<cfargument name="mapping" 			required="true" hint="The mapping to construct" doc_generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
 		<cfscript>
     		var thisMap 	= arguments.mapping;
 			var oFactory 	= "";
@@ -151,7 +155,10 @@ TODO: update dsl consistency, so it is faster.
 
 			// check if factory exists, else throw exception
 			if( NOT instance.injector.containsInstance( factoryName ) ){
-				throw(message="The factory mapping: #factoryName# is not registered with the injector",type="Builder.InvalidFactoryMappingException");
+				throw( 
+					message="The factory mapping: #factoryName# is not registered with the injector", 
+					type="Builder.InvalidFactoryMappingException" 
+				);
 			}
     		// get Factory mapping
 			oFactory = instance.injector.getInstance( factoryName );
@@ -175,7 +182,7 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- buildJavaClass --->
     <cffunction name="buildJavaClass" output="false" access="public" returntype="any" hint="Build a Java class via mappings">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" doc_generic="coldbox.system.ioc.config.Mapping">
     	<cfscript>
 			var x 			= 1;
 			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
@@ -185,8 +192,9 @@ TODO: update dsl consistency, so it is faster.
 
 			// Loop Over Arguments
 			for(x = 1; x <= DIArgsLen; x++){
+				var thisDIArg = DIArgs[ x ];
 				// do we have javacasting?
-				if( !isNull( DIArgs[x].javaCast ) ){
+				if( !isNull( thisDIArg.javaCast ) ){
 					ArrayAppend(args, "javaCast(DIArgs[#x#].javaCast, DIArgs[#x#].value)");
 				}
 				else{
@@ -209,7 +217,7 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- buildArgumentCollection --->
     <cffunction name="buildArgumentCollection" output="false" access="public" returntype="any" hint="Build arguments for a mapping and return the structure representation">
-    	<cfargument name="mapping" 			required="true"  hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="mapping" 			required="true"  hint="The mapping to construct" doc_generic="coldbox.system.ioc.config.Mapping">
     	<cfargument name="argumentArray" 	required="true"  hint="The argument array of data"/>
     	<cfargument name="targetObject" 	required="true"  hint="The target object we are building the DSL dependency for"/>
 		<cfscript>
@@ -221,37 +229,37 @@ TODO: update dsl consistency, so it is faster.
 
 			// Loop Over Arguments
 			for(x=1;x lte DIArgsLen; x=x+1){
-
+				var thisDIArg = DIArgs[ x ];
 				// Is value set in mapping? If so, add it and continue
-				if( !isNull( DIArgs[x].value ) ){
-					args[ DIArgs[x].name ] = DIArgs[x].value;
+				if( !isNull( thisDIArg.value ) ){
+					args[ thisDIArg.name ] = thisDIArg.value;
 					continue;
 				}
 
 				// Is it by DSL construction? If so, add it and continue, if not found it returns null, which is ok
-				if( !isNull( DIArgs[x].dsl ) ){
-					args[ DIArgs[x].name ] = buildDSLDependency( definition=DIArgs[x], targetID=thisMap.getName(), targetObject=arguments.targetObject );
+				if( !isNull( thisDIArg.dsl ) ){
+					args[ thisDIArg.name ] = buildDSLDependency( definition=thisDIArg, targetID=thisMap.getName(), targetObject=arguments.targetObject );
 					continue;
 				}
 
 				// If we get here then it is by ref id, so let's verify it exists and optional
-				if( len(instance.injector.containsInstance( DIArgs[x].ref )) ){
-					args[ DIArgs[x].name ] = instance.injector.getInstance(name=DIArgs[x].ref);
+				if( len(instance.injector.containsInstance( thisDIArg.ref )) ){
+					args[ thisDIArg.name ] = instance.injector.getInstance(name=thisDIArg.ref);
 					continue;
 				}
 
 				// Not found, so check if it is required
-				if( DIArgs[x].required ){
+				if( thisDIArg.required ){
 					// Log the error
-					instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+					instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[ x ].name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
 					// not found but required, then throw exception
-					throw(message="Argument reference not located: #DIArgs[x].name#",
-									  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #DIArgs[x].toString()#.",
+					throw(message="Argument reference not located: #thisDIArg.name#",
+									  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #thisDIArg.toString()#.",
 									  		 type="Injector.ArgumentNotFoundException");
 				}
 				// else just log it via debug
 				else if( instance.log.canDebug() ){
-					instance.log.debug("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[x].name# for mapping: #arguments.mapping.getMemento().toString()#", DIArgs[x]);
+					instance.log.debug("Target: #thisMap.getName()# -> Argument reference not located: #thisDIArg.name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
 				}
 
 			}
@@ -262,16 +270,16 @@ TODO: update dsl consistency, so it is faster.
 
 	<!--- buildWebservice --->
     <cffunction name="buildWebservice" output="false" access="public" returntype="any" hint="Build a webservice object">
-    	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
-    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+    	<cfargument name="mapping" 			required="true" 	hint="The mapping to construct" doc_generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="initArguments" 	required="false"	default="#structnew()#" 	hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
 		<cfscript>
     		var argStruct 	= {};
 			var DIArgs 		= arguments.mapping.getDIConstructorArguments();
-			var DIArgsLen   = arraylen(DIArgs);
+			var DIArgsLen   = arraylen( DIArgs );
 
 			// Loop Over Arguments for wsdl args
-			for(x=1;x lte DIArgsLen; x=x+1){
-				argStruct[ DIArgs[x].name ] = DIArgs[x].value;
+			for(var x=1; x lte DIArgsLen; x++ ){
+				argStruct[ DIArgs[ x ].name ] = DIArgs[ x ].value;
 			}
 
 			// Do we ahve overrides
@@ -279,13 +287,13 @@ TODO: update dsl consistency, so it is faster.
 				structAppend(argStruct, arguments.initArguments,true);
 			}
 
-			return createObject("webservice", arguments.mapping.getPath(), argStruct );
+			return createObject( "webservice", arguments.mapping.getPath(), argStruct );
 		</cfscript>
     </cffunction>
 
 	<!--- buildFeed --->
     <cffunction name="buildFeed" output="false" access="public" returntype="any" hint="Build an rss feed the WireBox way">
-    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" colddoc:generic="coldbox.system.ioc.config.Mapping">
+    	<cfargument name="mapping" 	required="true" hint="The mapping to construct" doc_generic="coldbox.system.ioc.config.Mapping">
     	<cfset var results = {}>
 
     	<cffeed action="read" source="#arguments.mapping.getPath()#" query="results.items" properties="results.metadata" timeout="20">
@@ -302,11 +310,15 @@ TODO: update dsl consistency, so it is faster.
 		<cfargument name="targetObject" required="false"	default="" 	hint="The target object we are building the DSL dependency for"/>
 		<cfscript>
 			var definition = {
-				required=true,
-				name = "",
-				dsl = arguments.dsl
+				required = true,
+				name     = "",
+				dsl      = arguments.dsl
 			};
-			return buildDSLDependency( definition=definition, targetID=arguments.targetID, targetObject=arguments.targetObject );
+			return buildDSLDependency( 
+				definition   = definition, 
+				targetID     = arguments.targetID, 
+				targetObject = arguments.targetObject 
+			);
 		</cfscript>
 	</cffunction>
 
@@ -317,67 +329,97 @@ TODO: update dsl consistency, so it is faster.
 		<cfargument name="targetObject" required="false" default="" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var refLocal 			= {};
-			var DSLNamespace 		= listFirst(arguments.definition.dsl,":");
+			var DSLNamespace 		= listFirst( arguments.definition.dsl, ":" );
 
 			// Check if Custom DSL exists, if it does, execute it
 			if( structKeyExists( instance.customDSL, DSLNamespace ) ){
-				return instance.customDSL[ DSLNamespace ].process(argumentCollection=arguments);
+				return instance.customDSL[ DSLNamespace ].process( argumentCollection=arguments );
 			}
 
 			// Determine Type of Injection according to type
 			// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
 			switch( DSLNamespace ){
+				
 				// ColdBox Context DSL
-				case "ocm" : case "coldbox" : {
-					refLocal.dependency = instance.coldboxDSL.process(argumentCollection=arguments); break;
+				case "coldbox" : {
+					refLocal.dependency = instance.coldboxDSL.process( argumentCollection=arguments ); 
+					break;
 				}
+
 				// CacheBox Context DSL
 				case "cacheBox"			 : {
 					// check if linked
 					if( !instance.injector.isCacheBoxLinked() AND !instance.injector.isColdBoxLinked() ){
-						throw(message="The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",type="Builder.IllegalDSLException");
+						throw(
+							message	= "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
+							type	= "Builder.IllegalDSLException"
+						);
 					}
 					// retrieve it
-					refLocal.dependency = instance.cacheBoxDSL.process(argumentCollection=arguments); break;
+					refLocal.dependency = instance.cacheBoxDSL.process( argumentCollection=arguments ); 
+					break;
 				}
+
 				// logbox injection DSL always available
-				case "logbox"			 : { refLocal.dependency = instance.logBoxDSL.process(argumentCollection=arguments); break;}
+				case "logbox"			 : { 
+					refLocal.dependency = instance.logBoxDSL.process( argumentCollection=arguments ); 
+					break;
+				}
+
 				// WireBox Internal DSL for models and id
-				case "model" : case "id" : { refLocal.dependency = getModelDSL(argumentCollection=arguments); break; }
+				case "model" : case "id" : { 
+					refLocal.dependency = getModelDSL( argumentCollection=arguments ); 
+					break; 
+				}
+
 				// provider injection DSL always available
-				case "provider"			 : { refLocal.dependency = getProviderDSL(argumentCollection=arguments); break; }
+				case "provider"			 : { 
+					refLocal.dependency = getProviderDSL( argumentCollection=arguments ); 
+					break; 
+				}
+
 				// wirebox injection DSL always available
-				case "wirebox"			 : { refLocal.dependency = getWireBoxDSL(argumentCollection=arguments); break;}
+				case "wirebox"			 : { 
+					refLocal.dependency = getWireBoxDSL( argumentCollection=arguments ); 
+					break;
+				}
+
 				// java class
-				case "java"				 : { refLocal.dependency = getJavaDSL(argumentCollection=arguments); break; }
+				case "java"				 : { 
+					refLocal.dependency = getJavaDSL( argumentCollection=arguments ); 
+					break; 
+				}
+
 				// coldfusion type annotation
-				case "bytype"			 : { refLocal.dependency = getByTypeDSL(argumentCollection=arguments); break; }
+				case "bytype"			 : { 
+					refLocal.dependency = getByTypeDSL( argumentCollection=arguments ); 
+					break; 
+				}
 
-				// No internal DSL's found, then check custom DSL's
+				// If no DSL's found, let's try to use the name as the empty namespace
 				default : {
-
-					// If no DSL's found, let's try to use the name as the empty namespace
-					if( NOT find( ":", arguments.definition.dsl ) ){
-						arguments.definition.dsl = "id:#arguments.definition.dsl#";
-						refLocal.dependency = getModelDSL(argumentCollection=arguments);
-					}
+					refLocal.dependency = getModelDSL( argumentCollection=arguments );
 				}
 			}
 
 			// return only if found
-			if( structKeyExists( refLocal, "dependency" ) ){ return refLocal.dependency; }
+			if( structKeyExists( refLocal, "dependency" ) ){ 
+				return refLocal.dependency; 
+			}
 
 			// was dependency required? If so, then throw exception
 			if( arguments.definition.required ){
 				// Logging
 				if( instance.log.canError() ){
-					instance.log.error("Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency");
+					instance.log.error( "Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency" );
 				}
 
 				// Throw exception as DSL Dependency requested was not located
-				throw(message="The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
-										 detail="The target requesting the dependency is: '#arguments.targetID#'",
-										 type="Builder.DSLDependencyNotFoundException");
+				throw(
+					message = "The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
+					detail  = "The target requesting the dependency is: '#arguments.targetID#'",
+					type    = "Builder.DSLDependencyNotFoundException"
+				);
 			}
 			// else return void, no dependency found that was required
 		</cfscript>
@@ -445,38 +487,57 @@ TODO: update dsl consistency, so it is faster.
 		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
 			var thisType 		= arguments.definition.dsl;
-			var thisTypeLen 	= listLen(thisType,":");
+			var thisTypeLen 	= listLen( thisType, ":" );
 			var methodCall 		= "";
 			var modelName 		= "";
-			var oModel			= "";
-
+			
 			// DSL stages
-			switch(thisTypeLen){
-				//model default, get name from property name
-				case 1: { modelName = arguments.definition.name; break; }
-				//model:{name} stage
-				case 2: { modelName = getToken(thisType,2,":"); break;
+			switch( thisTypeLen ){
+				// No injection defined, use property name: property name='luis' inject;
+				case 0 : {
+					modelName = arguments.definition.name;
+					break; 
 				}
-				//model:{name}:{method} stage
-				case 3: {
-					modelName 	= getToken(thisType,2,":");
-					methodCall 	= getToken(thisType,3,":");
+				// Injected defined, can be different scenarios
+				// property name='luis' inject="id"; use property name
+				// property name='luis' inject="model"; use property name
+				// property name='luis' inject="alias";
+				case 1 : {
+					// Are we the key identifiers
+					if( listFindNoCase( "id,model", arguments.definition.dsl ) ){
+						modelName = arguments.definition.name;
+					} 
+					// else we are a real ID
+					else {
+						modelName = arguments.definition.dsl;
+					}
+					
+					break; 
+				}
+				// model:{alias} stage
+				case 2 : { 
+					modelName = getToken( thisType, 2, ":" );
+					break;
+				}
+				// model:{alias}:{method} stage
+				case 3 : {
+					modelName 	= getToken( thisType, 2, ":" );
+					methodCall 	= getToken( thisType, 3, ":" );
 					break;
 				}
 			}
-
+			
 			// Check if model Exists
 			if( instance.injector.containsInstance( modelName ) ){
 				// Get Model object
-				oModel = instance.injector.getInstance( modelName );
+				var oModel = instance.injector.getInstance( modelName );
 				// Factories: TODO: Add arguments with 'ref()' parsing for argument references or 'dsl()'
-				if( len(methodCall) ){
-					return evaluate("oModel.#methodCall#()");
+				if( len( methodCall ) ){
+					return evaluate( "oModel.#methodCall#()" );
 				}
 				return oModel;
-			}
-			else if( instance.log.canDebug() ){
-				instance.log.debug("getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#");
+			} else if ( instance.log.canDebug() ){
+				instance.log.debug( "getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#" );
 			}
 		</cfscript>
 	</cffunction>

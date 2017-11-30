@@ -15,16 +15,6 @@
     },
     "bugs":"https://ortussolutions.atlassian.net/browse/COLDBOX",
     "shortDescription":"A conventions based MVC development framework",
-    "engines":[
-        {
-            "type":"adobe",
-            "version":">9.0.2"
-        },
-        {
-            "type":"lucee",
-            "version":">4.5"
-        }
-    ],
     "license":[
         {
             "type":"Apache2",
@@ -46,22 +36,16 @@
         "runner":[
             {
                 "default":"http://localhost:8599/tests/runner.cfm"
-            },
-            {
-                "cf10":"http://cf10cboxdev.local/coldbox/tests/runner.cfm"
-            },
-            {
-                "cf11":"http://cf11cboxdev.local/coldbox/tests/runner.cfm"
-            },
-            {
-                "lucee":"http://luceecboxdev.local/coldbox/tests/runner.cfm"
             }
         ]
     },
     "devDependencies":{
-        "testbox":"be"
+        "testbox":"^2.5.0"
     },
     "installPaths":{
         "testbox":"testbox"
+    },
+    "scripts":{
+        
     }
 }

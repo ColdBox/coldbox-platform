@@ -71,7 +71,7 @@ Description :
     </cffunction>
 	
 	<!--- getKeys --->
-    <cffunction name="getKeys" output="false" access="public" returntype="any" hint="Returns an array of the keys stored in the index" colddoc:generic="array">
+    <cffunction name="getKeys" output="false" access="public" returntype="any" hint="Returns an array of the keys stored in the index" doc_generic="array">
     	<cfreturn structKeyArray( getPoolMetadata() )>
     </cffunction>
 

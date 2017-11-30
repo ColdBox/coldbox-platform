@@ -10,14 +10,16 @@
 		// Available WireBox public types
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
 		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
-			.$("getColdBox", getMockBox().createStub().$("getSetting","coldbox.test") );
+			.$("getColdBox", getMockBox().createStub().$("getSetting","coldbox.test") )
+			.$("getEventManager", getMockBox().createStub().$("processState") );
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfigPath);
+		getMockBox().prepareMock( config ).$("processMappings");
 	}
 
 	function testBinderStandalone(){
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(mockInjector);
 		memento = config.getMemento();
-		debug(memento);
+		// debug(memento);
 	}
 
 	function testBinderWithConfigInstance(){
@@ -26,7 +28,7 @@
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfig);
 
 		memento = config.getMemento();
-		debug(memento);
+		// debug(memento);
 
 		// assert Defaults
 		assertTrue( arrayLen(memento.listeners) );
@@ -45,7 +47,7 @@
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfigPath);
 
 		memento = config.getMemento();
-		debug(memento);
+		// debug(memento);
 
 		// assert Defaults
 		assertTrue( arrayLen(memento.listeners) );
@@ -370,7 +372,7 @@
 		assertEquals( true, cbconfig.enabled);
 		assertEquals( "my.path.CacheBox", cbconfig.configFile);
 		assertEquals( "coldbox.system.cache", cbconfig.classNamespace);
-		debug(cbconfig);
+		// debug(cbconfig);
 
 		// test mapping into cachebox
 		config.mapPath("Test").inCacheBox(timeout=30);
@@ -390,11 +392,11 @@
 
 	function testDSLs(){
 		dsls = config.getCustomDSL();
-		debug(dsls);
+		// debug(dsls);
 		assertEquals( true, structIsEmpty(dsls));
 		config.mapDSL("FunkyScope","my.scope.FunkyTown");
 		assertEquals( false, structIsEmpty(dsls));
-		debug(dsls);
+		// debug(dsls);
 	}
 
 	function testScopes(){
@@ -402,19 +404,19 @@
 		assertEquals( true, structIsEmpty(scopes));
 		config.mapScope("FunkyScope","my.scope.FunkyTown");
 		assertEquals( false, structIsEmpty(scopes));
-		debug(scopes);
+		// debug(scopes);
 	}
 
 	function testLogBoxConfig(){
 		lc = config.getLogBoxConfig();
-		debug(lc);
+		// debug(lc);
 		assertEquals("coldbox.system.ioc.config.LogBox", lc);
 		config.logBoxConfig("mypath.logbox.Config");
 		assertEquals("mypath.logbox.Config",config.getLogBoxConfig());
 	}
 
 	function testListenerMethods(){
-		debug( config.getListeners() );
+		// debug( config.getListeners() );
 		assertEquals(1, arrayLen(config.getListeners()));
 
 		config.listener("models.listener",{},"configListner");
@@ -426,7 +428,13 @@
 		assertEquals(3, arrayLen(config.getListeners()));
 		listeners = config.getListeners();
 		assertEquals( "FunkyTown", listeners[3].name);
+	}
 
+	function testActivateListener(){
+		mockInjector.$( "registerListener" ).$args( "models.listener", {}, "configListner", true );
+		config.listener( "models.listener", {}, "configListener", true );
+		config.listener( "models.listener", {}, "configListener2", false );
+		assertTrue( mockInjector.$once( "registerListener" ), "Injector should have only been called once." );
 	}
 
 	function testLoadDataDSL(){
@@ -539,7 +547,7 @@
 		assertEquals( "getPlugin", mapping.getMethod() );
 		DIMethodArgs = mapping.getDIMethodArguments();
 		assertTrue( 3, arrayLen(DIMethodArgs) );
-		debug( DIMethodArgs );
+		// debug( DIMethodArgs );
 	}
 
 	function testToProvider(){

@@ -37,19 +37,34 @@ We leverage **CommandBox** to build ColdBox and its libraries.  You can download
 Once CommandBox is install go into the root of the project and type: `box install`. This will download all required dependencies and test dependencies for you.
 
 ### Startup Test Server
-Startup the test server via the following command: `box server start`. This will startup a server that you can use for development, hacking and testing. 
+Startup the test server via the following command: `box server start` in the root of the repository. This will startup a server that you can use for development, hacking and testing.
 
 > **Note:** The server will start in a specific port, make sure you take note of it.
 
-### Create Testing Datasource
+We deliver the capabilities for you to test the following egines:
 
-ColdBox requires a datasource connection in order to be able to provide testing capabilities for integration.  Please open the CFML administrator and create a datsource called **coolblog** and populate it with our SQL script that can be found here: `/coldbox/tests/resources/coolblog.sql`.
+* Lucee 4.5
+* Lucee 5
+* ACF 10
+* ACF 11
+* ACF 2016
+
+Just look at the appropriate `server-engine.json` file in the root of the repository.
+
+### Testing Datasource
+
+The testing datasource is pre-configured with the following properties that can be found in the file `/test-harness/config/runtime.ci.properties`, which leverages a MySQL database.
+
+* Database: `coolblog`
+* Username: `mysql`
+* Password: *empty*
+
+Populate your database with our SQL script that can be found here: `/tests/resources/coolblog.sql`.
 
 ### Lucee Optional: `Default` Cache
 If you are in the Lucee CFML engine, then you will need to register a `default` cache in the administrator so CacheBox can be tested.  
 
 ## Test Harness
-We also deliver a ColdBox application that is used for integration testing and so much more.
-This is found under `/coldbox/test-harness` which also needs access to the `coolblog` datasource.
+We also deliver a ColdBox application that is used for integration testing and so much more.  This is found under `/coldbox/test-harness` which also needs access to the `coolblog` datasource.
 
 #Happy Coding and Contributing!

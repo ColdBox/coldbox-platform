@@ -1,11 +1,11 @@
-﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.flash.ColdBoxCacheFlash"{
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.flash.ColdboxCacheFlash"{
 		
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Cache Flash", function(){
 
 			beforeEach( function() {
-				super.setup();
+				setup();
 				flash = model;
 
 				// mocks

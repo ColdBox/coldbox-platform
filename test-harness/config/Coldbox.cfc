@@ -36,7 +36,7 @@
 			//Error/Exception Handling
 			invalidHTTPMethodHandler 	= "main.invalidHTTPMethod",
 			exceptionHandler			= "main.onException",
-			onInvalidEvent				= "main.onInvalidEvent",
+			invalidEventHandler			= "main.onInvalidEvent",
 			//customErrorTemplate		= "/coldbox/system/includes/BugReport.cfm",
 			customErrorTemplate		= "views/_templates/generic_error.cfm",
 
@@ -48,14 +48,16 @@
 
 		// custom settings
 		settings = {
-
+			test1 = {
+				display = "not-core"
+			}
 		};
 
 		// environment settings, create a detectEnvironment() method to detect it yourself.
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the cgi.http_host.
 		environments = {
-			development = "^cf.,^railo.,^localhost,jfetmac"
+			development = "^cf.,^localhost,^127/.0/.0/.1"
 		};
 
 		// Module Directives

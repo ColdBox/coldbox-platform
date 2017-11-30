@@ -428,7 +428,7 @@ Description :
 		<cfscript>
 			var meta = {};
 			// get array of properties
-			var stopRecursions= [ "lucee.Component", "railo.Component", "WEB-INF.cftags.component" ];
+			var stopRecursions= [ "lucee.Component", "WEB-INF.cftags.component" ];
 			var properties = getUtil().getInheritedMetaData( arguments.target, stopRecursions ).properties; 
 
 			// loop over properties

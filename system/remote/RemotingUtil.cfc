@@ -13,7 +13,7 @@ A cool remoting utililty component
 	<!--- 
 	Based on original function by Elliot Sprehn, found here
 	http://livedocs.adobe.com/coldfusion/7/htmldocs/wwhelp/wwhimpl/common/html/wwhelp.htm?context=ColdFusion_Documentation&file=00000271.htm
-	BlueDragon and Railo by Chris Blackwell
+	by Chris Blackwell
 	--->
 	<cffunction name="clearHeaderBuffer" output="false" access="public" returntype="void" hint="Clear the CFHTMLHead buffer">
 		<cfset var my = structnew() />
@@ -35,11 +35,11 @@ A cool remoting utililty component
 			</cfcase>
 	
 	
-			<cfcase value="Railo,Lucee">
+			<cfcase value="Lucee">
 	
 				<cfset my.out = getPageContext().getOut() />
 	
-				<cfloop condition="getMetaData(my.out).getName() is 'railo.runtime.writer.BodyContentImpl'">
+				<cfloop condition="getMetaData(my.out).getName() is 'lucee.runtime.writer.BodyContentImpl'">
 					<cfset my.out = my.out.getEnclosingWriter() />
 				</cfloop>
 	

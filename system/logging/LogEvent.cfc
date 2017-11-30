@@ -24,7 +24,7 @@ Description :
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">
 		<cfargument name="message" 	 required="true"   hint="The message to log.">
-		<cfargument name="severity"  required="true"   hint="The severity level to log." colddoc:generic="numeric">
+		<cfargument name="severity"  required="true"   hint="The severity level to log." doc_generic="numeric">
 		<cfargument name="extraInfo" required="false" default="" hint="Extra information to send to the loggers.">
 		<cfargument name="category"  required="false" default="" hint="The category to log this message under.  By default it is blank."/>
 		<cfscript>
@@ -89,7 +89,7 @@ Description :
 		<cfset instance.message = arguments.message>
 	</cffunction>
 	
-	<cffunction name="getSeverity" access="public" returntype="any" output="false" hint="Get the severity to log" colddoc:generic="numeric">
+	<cffunction name="getSeverity" access="public" returntype="any" output="false" hint="Get the severity to log" doc_generic="numeric">
 		<cfreturn instance.severity>
 	</cffunction>
 	<cffunction name="setSeverity" access="public" returntype="void" output="false" hint="Set the severity to log">

@@ -37,7 +37,7 @@ Description :
 			var binder = injector.getBinder();
 			var mapping = '';
 
-			// Prevent recursive object creation in Railo/Lucee
+			// Prevent recursive object creation in Lucee
 			if( !structKeyExists( request, 'proxyAutowire' ) ){
 				request.proxyAutowire = true;
 
@@ -120,8 +120,8 @@ Description :
 			}
 
 			//Execute the Event if not demarcated to not execute
-			if( NOT event.isNoExecution() ){
-				refLocal.results = cbController.runEvent( default=true );
+			if( NOT event.getIsNoExecution() ){
+				refLocal.results = cbController.runEvent( defaultEvent=true );
 			}
 
 			//Request END Handler if defined
@@ -240,7 +240,7 @@ Description :
 	</cffunction>
 
 	<!--- Get the cachebox instance --->
-	<cffunction name="getCacheBox" output="false" access="private" returntype="any" hint="Get the CacheBox reference." colddoc:generic="coldbox.system.cache.CacheFactory">
+	<cffunction name="getCacheBox" output="false" access="private" returntype="any" hint="Get the CacheBox reference." doc_generic="coldbox.system.cache.CacheFactory">
 		<cfreturn getController().getCacheBox()>
 	</cffunction>
 
@@ -253,7 +253,7 @@ Description :
     <cffunction name="getInstance" output="false" access="private" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
     	<cfargument name="name" 			required="true" 	hint="The mapping name or CFC instance path to try to build up"/>
 		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
-		<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
 		<cfreturn getWireBox().getInstance(argumentCollection=arguments)>
 	</cffunction>
 
@@ -297,13 +297,13 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
 		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
-		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" colddoc:generic="struct"/>
+		<cfargument name="initArguments" 	required="false" 	default="#structnew()#" hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
 		<!--- ************************************************************* --->
 		<cfreturn getWireBox().getInstance(argumentCollection=arguments)>
 	</cffunction>
 
 	<!--- Get a CacheBox Cache --->
-	<cffunction name="getCache" access="private" output="false" returntype="any" hint="Get a CacheBox Cache Provider" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
+	<cffunction name="getCache" access="private" output="false" returntype="any" hint="Get a CacheBox Cache Provider" doc_generic="coldbox.system.cache.IColdboxApplicationCache">
 		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
 		<cfreturn getController().getCache( arguments.cacheName )/>
 	</cffunction>

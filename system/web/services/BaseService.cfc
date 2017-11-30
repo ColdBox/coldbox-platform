@@ -2,9 +2,9 @@
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
-* A ColdBox base internal service
+* Base Helper class for all ColdBox services
 */
-component accessors="true" doc_abstract="true"{
+component accessors="true"{
 
 	/**
 	* ColdBox Controller

@@ -26,7 +26,7 @@ Description :
 		<cfargument name="encoding" 	required="false" type="string" default="utf-8" hint="The default character encoding to use"/>
 		<!--- ************************************************************* --->
 		<cfargument name="jsonCallback" 	type="string" required="false" default="" hint="Only needed when using JSONP, this is the callback to add to the JSON packet"/>
-		<cfargument name="jsonQueryFormat" 	type="string" 	required="false" default="query" hint="JSON Only: query or array" />
+		<cfargument name="jsonQueryFormat" 	type="string" 	required="false" default="true" hint="JSON Only: This parameter can be a Boolean value that specifies how to serialize ColdFusion queries or a string with possible values row, column, or struct" />
 		<!--- ************************************************************* --->
 		<cfargument name="xmlColumnList"    type="string"   required="false" default="" hint="XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query">
 		<cfargument name="xmlUseCDATA"  	type="boolean"  required="false" default="false" hint="XML Only: Use CDATA content for ALL values. The default is false">
@@ -39,13 +39,13 @@ Description :
 		<cfset var args 	= {}>
 
 		<!--- Validate Type --->
-		<cfif not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$",arguments.type)>
+		<cfif not reFindnocase("^(JSON|JSONP|JSONT|WDDX|XML|PLAIN|HTML|TEXT|PDF)$", arguments.type )>
 			<cfthrow message="Invalid type" detail="The type you sent: #arguments.type# is invalid. Valid types are JSON, JSONP, WDDX, XML, TEXT, PDF and PLAIN" type="InvalidMarshallingType">
 		</cfif>
 
 		<!--- $renderdata convention --->
 		<cfif isObject( arguments.data ) AND structKeyExists( arguments.data, "$renderdata" )>
-			<cfreturn arguments.data.$renderdata(argumentCollection=arguments)>
+			<cfreturn arguments.data.$renderdata( argumentCollection=arguments )>
 		</cfif>
 
 		<!--- Switch on types --->
@@ -55,9 +55,11 @@ Description :
 			<cfcase value="JSON,JSONP">
 				<cfscript>
 				// marshall to JSON
-				results = serializeJSON( arguments.data, ( arguments.jsonQueryFormat eq "array") ? false : true );
+				results = serializeJSON( arguments.data, arguments.jsonQueryFormat );
 				// wrap results in callback function for JSONP
-				if( len( arguments.jsonCallback ) > 0 ){ results = "#arguments.jsonCallback#(#results#)"; }
+				if( len( arguments.jsonCallback ) > 0 ){ 
+					results = "#arguments.jsonCallback#(#results#)"; 
+				}
 				</cfscript>
 			</cfcase>
 
@@ -74,7 +76,9 @@ Description :
 				args.useCDATA = arguments.xmlUseCDATA;
 				args.delimiter = arguments.xmlListDelimiter;
 				args.rootName = arguments.xmlRootName;
-				if( len( trim( arguments.xmlColumnList ) ) ){ args.columnlist = arguments.xmlColumnList; }
+				if( len( trim( arguments.xmlColumnList ) ) ){ 
+					args.columnlist = arguments.xmlColumnList; 
+				}
 				// Marshal to xml
 				results = xmlConverter.toXML( argumentCollection=args );
 				</cfscript>
@@ -110,11 +114,17 @@ Description :
 		<cfargument name="encoding" required="false" default="utf-8" hint="The encoding"/>
 		<cfargument name="reset" 	required="false" default="false" type="boolean" hint="Reset the conten or not" >
 
-   	   	<cfif structKeyExists( arguments, "variable")>
-			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" variable="#arguments.variable#" reset="#arguments.reset#"/>
-		<cfelse>
-			<cfcontent type="#arguments.type#; charset=#arguments.encoding#" reset="#arguments.reset#">
+		<!--- Verify incoming enconding on type or append it --->
+		<cfif !findNoCase( ";", arguments.type )>
+			<cfset arguments.type &= "; charset=#arguments.encoding#">
 		</cfif>
+
+   	   	<cfif structKeyExists( arguments, "variable")>
+			<cfcontent type="#arguments.type#" variable="#arguments.variable#" reset="#arguments.reset#"/>
+		<cfelse>
+			<cfcontent type="#arguments.type#" reset="#arguments.reset#">
+		</cfif>
+		
 		<cfsetting showdebugoutput="false" >
    	</cffunction>
 

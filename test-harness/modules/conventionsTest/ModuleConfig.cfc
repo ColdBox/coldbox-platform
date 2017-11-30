@@ -11,12 +11,15 @@
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
 	this.entrypoint			= "conventionsTest";
+	this.modelNamespace 	= "MyConventionsTest";
+	// Application helpers
+	this.applicationHelper 	= [ "helpers/app.cfm" ];
 
 	function configure(){
 
 		// SES Routes
 		routes = [
-			{ pattern="/", handler="test",action="index" },
+			{ pattern="/", handler="test", action="index" },
 			{ pattern="/:handler/:action?" }
 		];
 
@@ -27,12 +30,6 @@
 			modelsLocation = "system/model"
 		};
 
-		// Model Mappings
-		modelMappings = {
-			"Simple@conventionsTest" = {
-				path = "Simple"
-			}
-		};
 	}
 
 }

@@ -7,11 +7,11 @@
 component{
 
 	// Release Metadata
-	this.codename 		= "ColdBox SEEK";
+	this.codename 		= "ColdBox Perseverance";
 	this.author			= "Ortus Solutions";
-	this.authorEmail 	= "coldbox@ortussolutions.com";
-	this.authorWebsite	= "http://www.ortussolutions.com";
-	this.suffix			= "Nehemiah";
+	this.authorEmail 	= "info@ortussolutions.com";
+	this.authorWebsite	= "https://www.ortussolutions.com";
+	this.suffix			= "Joshua 1:9";
 	this.version		= "@build.version@+@build.number@";
 	this.description	= "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
@@ -22,12 +22,12 @@ component{
 
 	// flash scope defaults
 	this.flash = {
-		scope = "session",
-		properties = {},
-		inflateToRC = true,
+		scope        = "session",
+		properties   = {},
+		inflateToRC  = true,
 		inflateToPRC = false,
-		autoPurge = true,
-		autoSave = true
+		autoPurge    = true,
+		autoSave     = true
 	};
 
     // Conventions
@@ -39,7 +39,6 @@ component{
 	this.configConvention	= "config.Coldbox";
 	this.modulesConvention	= "modules";
 	this.includesConvention = "includes";
-
 
 	function configure(){}
 }

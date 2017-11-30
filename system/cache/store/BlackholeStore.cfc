@@ -14,7 +14,7 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="BlackholeStore" hint="Constructor">
-		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
+		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			// Store Fields
 			var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired,isSimple";

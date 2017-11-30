@@ -45,7 +45,7 @@
 
 		keys = index.getSortedKeys("hits","","asc");
 
-		debug(keys);
+		// debug(keys);
 		assertEquals( "test2", keys[1] );
 
 	}

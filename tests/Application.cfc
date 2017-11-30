@@ -5,12 +5,12 @@
 */
 component{
 
-	this.name = "ColdBox Testing Harness" & hash( getCurrentTemplatePath() );
-	this.sessionManagement = true;
-	this.setClientCookies = true;
-	this.clientManagement = true;
-	this.sessionTimeout = createTimeSpan(0,0,10,0);
-	this.applicationTimeout = createTimeSpan(0,0,10,0);
+	this.name               = "ColdBox Testing Harness" & hash( getCurrentTemplatePath() );
+	this.sessionManagement  = true;
+	this.setClientCookies   = true;
+	this.clientManagement   = true;
+	this.sessionTimeout     = createTimeSpan( 0, 0, 10, 0 );
+	this.applicationTimeout = createTimeSpan( 0, 0, 10, 0 );
 
 	// Turn on/off white space management
 	this.whiteSpaceManagement = "smart";
@@ -26,26 +26,11 @@ component{
 	// harness path
 	this.mappings[ "/cbtestharness" ] 	= rootPath & "test-harness";
 
-	// Datasource definitions For Standalone mode/travis mode.
-	if( directoryExists( "/home/travis" ) ){
-		this.datasources[ "coolblog" ] = {
-			  class 			: 'org.gjt.mm.mysql.Driver',
-			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true',
-			  username 			: 'root'
-		};
-	
-	}
+	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
+	COLDBOX_APP_ROOT_PATH = this.mappings[ "/cbtestharness" ];
 
-    // ORM Settings
-    this.ormEnabled 	  = true;
-    this.datasource		  = "coolblog";
-    this.ormSettings	  = {
-    	cfclocation 		= "/cbtestharness/models/entities",
-    	logSQL 				= false,
-    	flushAtRequestEnd 	= false,
-    	autoManageSession 	= false,
-    	eventHandling 	  	=  false
-    };
+	// Core Application.cfc mixins - ORM Settings, etc
+	include "../test-harness/config/ApplicationMixins.cfm";
 
 	function onRequestStart( required targetPage ){
 

@@ -2,6 +2,8 @@
 .DS_Store
 /settings.xml
 .project
+.settings/
+
 # Testing Logs
 test-harness/logs/*.log
 test-harness/logs
@@ -13,11 +15,17 @@ tests/automation/results
 tests/automation/results-*
 tests/logs
 tests/suites/loadtests/settings.xml
+
 # Build artifacts
 build-coldbox
 build/build.number
 artifacts/*
+
 # Dependencies
 testbox/*
 apidocs/docbox/*
 ApplicationTemplates/*
+tests/suites/loadtests/logs
+
+# Custom Settings
+test-harness/config/runtime.properties.cfm

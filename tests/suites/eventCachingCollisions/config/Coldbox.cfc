@@ -10,7 +10,6 @@ structures/arrays to create for configuration
 - ioc (struct)
 - models (struct) DEPRECATED use Wirebox instead
 - wirebox (struct)
-- datasources (struct)
 - layoutSettings (struct)
 - layouts (array of structs)
 - cacheBox (struct)
@@ -63,7 +62,7 @@ Optional Methods
 
 			//Error/Exception Handling
 			exceptionHandler		= "",
-			onInvalidEvent			= "",
+			invalidEventHandler		= "",
 			customErrorTemplate		= "",
 
 			//Application Aspects
@@ -81,7 +80,6 @@ Optional Methods
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the cgi.http_host.
 		environments = {
-			//development = "^cf8.,^railo."
 		};
 
 		// Module Directives

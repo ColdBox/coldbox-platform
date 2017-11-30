@@ -48,15 +48,21 @@
 		</cfif>
 		</section>
 
+		<section id="named-routes">
+		<div class="page-header">
+	        <h2>
+	        	Named Routes Construction
+			</h2>
+		</div>
+		<ul>
+			<li><a href="#event.route( "contactus" )#">#event.route( "contactus" )#</a></li>
+			<li><a href="#event.route( "testRoute" )#">#event.route( "testRoute" )#</a></li>
+			<li><a href="#event.route( "testRouteWithParams", { id=1, name='test' } )#">#event.route( "testRouteWithParams", { id=1, name='test' } )#</a></li>
+			<li><a href="#event.route( "complexParams", { id=1, name='test' } )#">#event.route( "complexParams", { id=1, name='test' } )#</a></li>
+		</ul>
+		</section>
+
 	</div>
 
-	<!---Side Bar --->
-	<div class="col-md-3">
-		<div class="well">
-			<ul class="nav nav-list">
-				<li><strong>Actions</strong></li>
-			</ul>
-		</div>
-	</div>
 </div>
 </cfoutput>

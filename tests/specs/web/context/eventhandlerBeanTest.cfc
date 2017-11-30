@@ -13,7 +13,7 @@
 			this.instance.missingAction = "";
 			this.instance.module = "";
 
-			this.ehbean.init(this.instance.invocationPath);
+			this.ehbean.init( this.instance.invocationPath );
 
 			for( var thisKey in this.instance ){
 				evaluate( "this.ehBean.set#thisKey#( this.instance[ thisKey ] )" );

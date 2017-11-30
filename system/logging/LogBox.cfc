@@ -58,7 +58,7 @@ Description :
 
 	<!--- configure --->
 	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories">
-		<cfargument name="config" type="any" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox: coldbox.system.logging.config.LogBoxConfig" colddoc:generic="coldbox.system.logging.config.LogBoxConfig"/>
+		<cfargument name="config" type="any" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox: coldbox.system.logging.config.LogBoxConfig" doc_generic="coldbox.system.logging.config.LogBoxConfig"/>
 		<cfscript>
 			var appenders 	= "";
 			var key 		= "";
@@ -108,19 +108,19 @@ Description :
 	</cffunction>
 
 	<!--- Get the config object --->
-	<cffunction name="getConfig" access="public" returntype="any" output="false" hint="Get this LogBox's configuration object." colddoc:generic="coldbox.system.logging.config.LogBoxConfig">
+	<cffunction name="getConfig" access="public" returntype="any" output="false" hint="Get this LogBox's configuration object." doc_generic="coldbox.system.logging.config.LogBoxConfig">
 		<cfreturn instance.config>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- getRootLogger --->
-	<cffunction name="getRootLogger" output="false" access="public" returntype="any" hint="Get the root logger" colddoc:generic="coldbox.system.logging.Logger">
+	<cffunction name="getRootLogger" output="false" access="public" returntype="any" hint="Get the root logger" doc_generic="coldbox.system.logging.Logger">
 		<cfreturn instance.loggerRegistry["ROOT"]>
 	</cffunction>
 
 	<!--- getLogger --->
-	<cffunction name="getLogger" output="false" access="public" returntype="any" hint="Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox" colddoc:generic="coldbox.system.logging.Logger">
+	<cffunction name="getLogger" output="false" access="public" returntype="any" hint="Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox" doc_generic="coldbox.system.logging.Logger">
 		<cfargument name="category" type="any" required="true" hint="The category name to use in this logger or pass in the target object will log from and we will inspect the object and use its metadata name."/>
 		<cfscript>
 			var args = structnew();
@@ -190,10 +190,10 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="class" 		required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
-		<cfargument name="properties" 	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with." colddoc:generic="struct"/>
+		<cfargument name="properties" 	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with." doc_generic="struct"/>
 		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
-		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
+		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN" doc_generic="numeric"/>
+		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN" doc_generic="numeric"/>
 		<!--- ************************************************************* --->
 		<cfset var appenders = instance.appenderRegistry>
 		<cfset var oAppender = "">
@@ -252,7 +252,7 @@ Description :
 	</cffunction>
 
 	<!--- getAppendersMap --->
-	<cffunction name="getAppendersMap" output="false" access="public" returntype="any" hint="Get a map of appenders by list. Usually called to get a category of appenders." colddoc:generic="struct">
+	<cffunction name="getAppendersMap" output="false" access="public" returntype="any" hint="Get a map of appenders by list. Usually called to get a category of appenders." doc_generic="struct">
 		<cfargument name="appenders" required="true" hint="The list of appenders to get"/>
 		<cfscript>
 			var appendersMap = structnew();
@@ -268,7 +268,7 @@ Description :
 	</cffunction>
 
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" colddoc:generic="coldbox.system.core.util.Util">
+	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" doc_generic="coldbox.system.core.util.Util">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 

@@ -11,26 +11,10 @@ component serializable="false" accessors="true"{
 	property name="controller";
 
 	/**
-	* Get a datasource structure representation
-	* @alias.hint The alias of the datasource to get from the config structures
-	*/
-	struct function getDatasource( required alias ){
-		var datasources = controller.getSetting( "datasources");
-		if( structKeyExists( datasources, arguments.alias ) ){
-			return datasources[ arguments.alias ];
-		}
-		throw( 
-			message = "Datasource #arguments.alias# has not been defined in your config",
-			detail 	= "Defined datasources are: #structKeyList( datasources )#",
-			type 	= "UndefinedDatasource"
-		);
-	}
-
-	/**
 	* Get a model object
-	* @name.hint The mapping name or CFC path to retrieve
-	* @dsl.hint The DSL string to use to retrieve an instance
-	* @initArguments.hint The constructor structure of arguments to passthrough when initializing the instance
+	* @name The mapping name or CFC path to retrieve
+	* @dsl The DSL string to use to retrieve an instance
+	* @initArguments The constructor structure of arguments to passthrough when initializing the instance
 	*/
 	function getModel( name, dsl, initArguments={} ){
 		return getInstance( argumentCollection=arguments );
@@ -38,9 +22,9 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Get a instance object from WireBox
-	* @name.hint The mapping name or CFC path to retrieve
-	* @dsl.hint The DSL string to use to retrieve an instance
-	* @initArguments.hint The constructor structure of arguments to passthrough when initializing the instance
+	* @name The mapping name or CFC path to retrieve
+	* @dsl The DSL string to use to retrieve an instance
+	* @initArguments The constructor structure of arguments to passthrough when initializing the instance
 	*/
 	function getInstance( name, dsl, initArguments={} ){
 		return controller.getWirebox().getInstance( argumentCollection=arguments );
@@ -48,15 +32,15 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Populate a model object from the request Collection or a passed in memento structure
-	* @model.hint The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
-	* @scope.hint Use scope injection instead of setters population. Ex: scope=variables.instance.
-	* @trustedSetter.hint If set to true, the setter method will be called even if it does not exist in the object
-	* @include.hint A list of keys to include in the population
-	* @exclude.hint A list of keys to exclude in the population
-	* @ignoreEmpty.hint Ignore empty values on populations, great for ORM population
-	* @nullEmptyInclude.hint A list of keys to NULL when empty
-	* @nullEmptyExclude.hint A list of keys to NOT NULL when empty
-	* @composeRelationships.hint Automatically attempt to compose relationships from memento
+	* @model The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
+	* @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
+	* @trustedSetter If set to true, the setter method will be called even if it does not exist in the object
+	* @include A list of keys to include in the population
+	* @exclude A list of keys to exclude in the population
+	* @ignoreEmpty Ignore empty values on populations, great for ORM population
+	* @nullEmptyInclude A list of keys to NULL when empty
+	* @nullEmptyExclude A list of keys to NOT NULL when empty
+	* @composeRelationships Automatically attempt to compose relationships from memento
 	* @memento A structure to populate the model, if not passed it defaults to the request collection
 	* @jsonstring If you pass a json string, we will populate your model with it
 	* @xml If you pass an xml string, we will populate your model with it
@@ -122,7 +106,7 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Get the RC or PRC collection reference
-	* @private.hint The boolean bit that says give me the RC by default or true for the private collection (PRC)
+	* @private The boolean bit that says give me the RC by default or true for the private collection (PRC)
 	*/
 	struct function getRequestCollection( boolean private=false ){
 		return getRequestContext().getCollection( private=arguments.private );
@@ -130,20 +114,21 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Render out a view
-	* @view.hint The the view to render, if not passed, then we look in the request context for the current set view.
-	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	* @module.hint The module to render the view from explicitly
-	* @cache.hint Cached the view output or not, defaults to false
-	* @cacheTimeout.hint The time in minutes to cache the view
-	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested
-	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
-	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
-	* @collection.hint A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	* @collectionAs.hint The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	* @collectionStartRow.hint The start row to limit the collection rendering with
-	* @collectionMaxRows.hint The max rows to iterate over the collection rendering with
-	* @collectionDelim.hint  A string to delimit the collection renderings by
-	* @prePostExempt.hint If true, pre/post view interceptors will not be fired. By default they do fire
+	* @view The the view to render, if not passed, then we look in the request context for the current set view.
+	* @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	* @module The module to render the view from explicitly
+	* @cache Cached the view output or not, defaults to false
+	* @cacheTimeout The time in minutes to cache the view
+	* @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
+	* @cacheSuffix The suffix to add into the cache entry for this view rendering
+	* @cacheProvider The provider to cache this view in, defaults to 'template'
+	* @collection A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
+	* @collectionAs The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
+	* @collectionStartRow The start row to limit the collection rendering with
+	* @collectionMaxRows The max rows to iterate over the collection rendering with
+	* @collectionDelim  A string to delimit the collection renderings by
+	* @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
+	* @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
 	*/
 	function renderView(
 		view="",
@@ -159,20 +144,21 @@ component serializable="false" accessors="true"{
 		numeric collectionStartRow="1",
 		numeric collectionMaxRows=0,
 		collectionDelim="",
-		boolean prePostExempt=false
+		boolean prePostExempt=false,
+		name
 	){
 		return controller.getRenderer().renderView( argumentCollection=arguments );
 	}
 
 	/**
     * Renders an external view anywhere that cfinclude works.
-    * @view.hint The the view to render
-	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	* @cache.hint Cached the view output or not, defaults to false
-	* @cacheTimeout.hint The time in minutes to cache the view
-	* @cacheLastAccessTimeout.hint The time in minutes the view will be removed from cache if idle or requested
-	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
-	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
+    * @view The the view to render
+	* @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	* @cache Cached the view output or not, defaults to false
+	* @cacheTimeout The time in minutes to cache the view
+	* @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
+	* @cacheSuffix The suffix to add into the cache entry for this view rendering
+	* @cacheProvider The provider to cache this view in, defaults to 'template'
 	*/
     function renderExternalView(
     	required view,
@@ -188,12 +174,12 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Render a layout or a layout + view combo
-	* @layout.hint The layout to render out
-	* @module.hint The module to explicitly render this layout from
-	* @view.hint The view to render within this layout
-	* @args.hint An optional set of arguments that will be available to this layouts/view rendering ONLY
-	* @viewModule.hint The module to explicitly render the view from
-	* @prePostExempt.hint If true, pre/post layout interceptors will not be fired. By default they do fire
+	* @layout The layout to render out
+	* @module The module to explicitly render this layout from
+	* @view The view to render within this layout
+	* @args An optional set of arguments that will be available to this layouts/view rendering ONLY
+	* @viewModule The module to explicitly render the view from
+	* @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
 	*/
 	function renderLayout(
 		layout,
@@ -208,7 +194,7 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Get an interceptor reference
-	* @interceptorName.hint The name of the interceptor to retrieve
+	* @interceptorName The name of the interceptor to retrieve
 	*
 	* @return Interceptor
 	*/
@@ -218,13 +204,13 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
-	* @state.hint The event to announce
-	* @interceptData.hint A data structure used to pass intercepted information.
-	* @async.hint If true, the entire interception chain will be ran in a separate thread.
-	* @asyncAll.hint If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
-	* @asyncAllJoin.hint If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
-	* @asyncPriority.hint The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
-	* @asyncJoinTimeout.hint The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
+	* @state The event to announce
+	* @interceptData A data structure used to pass intercepted information.
+	* @async If true, the entire interception chain will be ran in a separate thread.
+	* @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
+	* @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
+	* @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
+	* @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
 	*
 	* @return struct of thread information or void
 	*/
@@ -242,7 +228,7 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Get a named CacheBox Cache
-	* @name.hint The name of the cache to retrieve, if not passed, it used the 'default' cache.
+	* @name The name of the cache to retrieve, if not passed, it used the 'default' cache.
 	*
 	* @return coldbox.system.cache.IColdboxApplicationCache
 	*/
@@ -252,8 +238,8 @@ component serializable="false" accessors="true"{
 
 	/**
 	* DEPRECATED: Get all the settings structure
-	* @fwsetting.hint Retrieve from the config or fw settings, defaults to config
-	* @deepCopy.hint Do a deep or shallow copy, shallow is default
+	* @fwsetting Retrieve from the config or fw settings, defaults to config
+	* @deepCopy Do a deep or shallow copy, shallow is default
 	*/
 	function getSettingStructure( boolean fwSetting=false, boolean deepCopy=false ){
 		return controller.getSettingStructure( argumentCollection=arguments );
@@ -261,9 +247,9 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Get a setting from the system
-	* @name.hint The key of the setting
-	* @fwSetting.hint Retrieve from the config or fw settings, defaults to config
-	* @defaultValue.hint If not found in config, default return value
+	* @name The key of the setting
+	* @fwSetting Retrieve from the config or fw settings, defaults to config
+	* @defaultValue If not found in config, default return value
 	*/
 	function getSetting( required name, boolean fwSetting=false, defaultValue ){
 		return controller.getSetting( argumentCollection=arguments );
@@ -271,8 +257,8 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Verify a setting from the system
-	* @name.hint The key of the setting
-	* @fwSetting.hint Retrieve from the config or fw settings, defaults to config
+	* @name The key of the setting
+	* @fwSetting Retrieve from the config or fw settings, defaults to config
 	*/
 	boolean function settingExists( required name, boolean fwSetting=false ){
 		return controller.settingExists( argumentCollection=arguments );
@@ -280,8 +266,8 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Set a new setting in the system
-	* @name.hint The key of the setting
-	* @value.hint The value of the setting
+	* @name The key of the setting
+	* @value The value of the setting
 	*
 	* @return FrameworkSuperType
 	*/
@@ -292,9 +278,9 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Get a module's settings structure or a specific setting if the setting key is passed
-	* @module.hint The module to retrieve the configuration settings from
-	* @setting.hint The setting to retrieve if passed
-	* @defaultValue.hint The default value to return if setting does not exist
+	* @module The module to retrieve the configuration settings from
+	* @setting The setting to retrieve if passed
+	* @defaultValue The default value to return if setting does not exist
 	*
 	* @return struct or any
 	*/
@@ -309,7 +295,7 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Get a module's configuration structure
-	* @module.hint The module to retrieve the configuration structure from
+	* @module The module to retrieve the configuration structure from
 	*/
 	struct function getModuleConfig( required module ){
 		var mConfig = controller.getSetting( "modules" );
@@ -322,18 +308,19 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Relocate the user to another location
-	* @event.hint The name of the event to run, if not passed, then it will use the default event found in your configuration file
-	* @URL.hint The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
-	* @URI.hint The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
-	* @queryString.hint The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
-	* @persist.hint What request collection keys to persist in flash ram
-	* @persistStruct.hint A structure key-value pairs to persist in flash ram
-	* @addToken.hint Wether to add the tokens or not. Default is false
-	* @ssl.hint Whether to relocate in SSL or not
-	* @baseURL.hint Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm
-	* @postProcessExempt.hint Do not fire the postProcess interceptors
-	* @statusCode.hint The status code to use in the relocation
+	* DEPRECATED! PLEASE USE `relocate()` method instead
+	*
+	* @event The name of the event to run, if not passed, then it will use the default event found in your configuration file
+	* @URL The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
+	* @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
+	* @queryString The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
+	* @persist What request collection keys to persist in flash ram
+	* @persistStruct A structure key-value pairs to persist in flash ram
+	* @addToken Wether to add the tokens or not. Default is false
+	* @ssl Whether to relocate in SSL or not
+	* @baseURL Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm
+	* @postProcessExempt Do not fire the postProcess interceptors
+	* @statusCode The status code to use in the relocation
 	*/
 	void function setNextEvent(
 		event,
@@ -348,7 +335,38 @@ component serializable="false" accessors="true"{
 		boolean postProcessExempt,
 		numeric statusCode
 	){
-		controller.setNextEvent( argumentCollection=arguments );
+		controller.relocate( argumentCollection=arguments );
+	}
+
+	/**
+	* Relocate user browser requests to other events, URLs, or URIs.
+	*
+	* @event The name of the event to run, if not passed, then it will use the default event found in your configuration file
+	* @URL The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
+	* @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
+	* @queryString The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
+	* @persist What request collection keys to persist in flash ram
+	* @persistStruct A structure key-value pairs to persist in flash ram
+	* @addToken Wether to add the tokens or not. Default is false
+	* @ssl Whether to relocate in SSL or not
+	* @baseURL Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm
+	* @postProcessExempt Do not fire the postProcess interceptors
+	* @statusCode The status code to use in the relocation
+	*/
+	void function relocate(
+		event,
+		URL,
+		URI,
+		queryString,
+		persist,
+		struct persistStruct,
+		boolean addToken,
+		boolean ssl,
+		baseURL,
+		boolean postProcessExempt,
+		numeric statusCode
+	){
+		controller.relocate( argumentCollection=arguments );
 	}
 
 	/**
@@ -358,11 +376,11 @@ component serializable="false" accessors="true"{
 	* @private Execute a private event if set, else defaults to public events
 	* @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
 	* @eventArguments A collection of arguments to passthrough to the calling event handler method
-	* @cache.hint Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
-	* @cacheTimeout.hint The time in minutes to cache the results
-	* @cacheLastAccessTimeout.hint The time in minutes the results will be removed from cache if idle or requested
-	* @cacheSuffix.hint The suffix to add into the cache entry for this event rendering
-	* @cacheProvider.hint The provider to cache this event rendering in, defaults to 'template'
+	* @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	* @cacheTimeout The time in minutes to cache the results
+	* @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
+	* @cacheSuffix The suffix to add into the cache entry for this event rendering
+	* @cacheProvider The provider to cache this event rendering in, defaults to 'template'
 	*/
 	function runEvent(
 		event="",
@@ -381,8 +399,8 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Persist variables into the Flash RAM
-	* @persist.hint A list of request collection keys to persist
-	* @persistStruct.hint A struct of key-value pairs to persist
+	* @persist A list of request collection keys to persist
+	* @persistStruct A struct of key-value pairs to persist
 	* @return FrameworkSuperType
 	*/
 	function persistVariables( persist="", struct persistStruct={} ){
@@ -394,7 +412,7 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Resolve a file to be either relative or absolute in your application
-	* @pathToCheck.hint The file path to check
+	* @pathToCheck The file path to check
 	*/
 	string function locateFilePath( required pathToCheck ){
 		return controller.locateFilePath( argumentCollection=arguments );
@@ -402,7 +420,7 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Resolve a directory to be either relative or absolute in your application
-	* @pathToCheck.hint The file path to check
+	* @pathToCheck The file path to check
 	*/
 	string function locateDirectoryPath( required pathToCheck ){
 		return controller.locateDirectoryPath( argumentCollection=arguments );
@@ -411,7 +429,7 @@ component serializable="false" accessors="true"{
 	/**
 	* Add a js/css asset(s) to the html head section. You can also pass in a list of assets. This method
 	* keeps track of the loaded assets so they are only loaded once
-	* @asset.hint The asset(s) to load, only js or css files. This can also be a comma delimmited list.
+	* @asset The asset(s) to load, only js or css files. This can also be a comma delimmited list.
 	*/
 	string function addAsset( required asset ){
 		return getInstance( "coldbox.system.core.dynamic.HTMLHelper" ).addAsset( argumentCollection=arguments );
@@ -419,7 +437,7 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Injects a UDF Library (*.cfc or *.cfm) into the target object.  It does not however, put the mixins on any of the cfc scopes. Therefore they can only be called internally
-	* @udflibrary.hint The UDF library to inject
+	* @udflibrary The UDF library to inject
 	* @return FrameworkSuperType
 	*/
 	any function includeUDF( required udflibrary ){
@@ -434,25 +452,21 @@ component serializable="false" accessors="true"{
 			targetLocation = "/" & appMapping & "/" & arguments.udflibrary;
 		}
 		// checks if no .cfc or .cfm where sent
-		else if( fileExists(UDFRelativePath & ".cfc") ){
+		else if ( fileExists(UDFRelativePath & ".cfc") ){
 			targetLocation = "/" & appMapping & "/" & arguments.udflibrary & ".cfc";
-		}
-		else if( fileExists(UDFRelativePath & ".cfm") ){
+		} else if ( fileExists(UDFRelativePath & ".cfm") ){
 			targetLocation = "/" & appMapping & "/" & arguments.udflibrary & ".cfm";
-		}
-		// Absolute Checks
-		else if( fileExists( UDFFullPath ) ){
+		} else if ( fileExists( UDFFullPath ) ){
 			targetLocation = "#udflibrary#";
-		}
-		else if( fileExists(UDFFullPath & ".cfc") ){
+		} else if ( fileExists( UDFFullPath & ".cfc" ) ){
 			targetLocation = "#udflibrary#.cfc";
-		}
-		else if( fileExists(UDFFullPath & ".cfm") ){
+		} else if ( fileExists( UDFFullPath & ".cfm" ) ){
 			targetLocation = "#udflibrary#.cfm";
-		}else {
-			throw( message="Error loading UDF library: #arguments.udflibrary#",
-				   detail="The UDF library was not found.  Please make sure you verify the file location.",
-				   type="FrameworkSupertype.UDFLibraryNotFoundException");
+		} else {
+			throw( 
+				message = "Error loading UDF library: #arguments.udflibrary#",
+				detail 	= "The UDF library was not found.  Please make sure you verify the file location.",
+				type 	= "FrameworkSupertype.UDFLibraryNotFoundException");
 		}
 
 		// Include the UDF

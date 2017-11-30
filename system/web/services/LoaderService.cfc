@@ -27,12 +27,12 @@ component extends="coldbox.system.web.services.BaseService"{
 		createAppLoader( arguments.overrideConfigFile ).loadConfiguration( arguments.overrideAppMapping );
 
 		// Do we need to create a controller decorator?
-		if( len( controller.getSetting("ControllerDecorator") ) ){
+		if( len( controller.getSetting( "ControllerDecorator" ) ) ){
 			createControllerDecorator();
 		}
 
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
-		if( NOT structIsEmpty( controller.getSetting("LogBoxConfig") ) ){
+		if( NOT structIsEmpty( controller.getSetting( "LogBoxConfig" ) ) ){
 			// reconfigure LogBox with user configurations
 			controller.getLogBox().configure( controller.getLogBox().getConfig() );
 			// Reset the controller main logger
@@ -70,7 +70,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	*/
 	LoaderService function createControllerDecorator(){
 		// create decorator
-		var decorator 	= createObject("component", controller.getSetting("ControllerDecorator") ).init( controller );
+		var decorator 	= createObject( "component", controller.getSetting( "ControllerDecorator" ) ).init( controller );
 		var services  	= controller.getServices();
 
 		// Call configuration on it
@@ -130,15 +130,15 @@ component extends="coldbox.system.web.services.BaseService"{
 	* Create the application's CacheBox instance
 	*/
 	LoaderService function createCacheBox(){
-		var config 				= createObject("Component","coldbox.system.cache.config.CacheBoxConfig").init();
-		var cacheBoxSettings 	= controller.getSetting("cacheBox");
+		var config 				= createObject( "Component","coldbox.system.cache.config.CacheBoxConfig" ).init();
+		var cacheBoxSettings 	= controller.getSetting( "cacheBox" );
 		var cacheBox			= "";
 
 		// Load by File
 		if( len(cacheBoxSettings.configFile) ){
 
 			// load by config file type
-			if( listLast(cacheBoxSettings.configFile,".") eq "xml"){
+			if( listLast(cacheBoxSettings.configFile,"." ) eq "xml" ){
 				config.init(XMLConfig=cacheBoxSettings.configFile);
 			}
 			else{

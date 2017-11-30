@@ -41,7 +41,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* @return BaseTestCase
 	*/
 	function metadataInspection(){
-		var md = getMetadata( this );
+		var md = new coldbox.system.core.util.Util().getInheritedMetadata( this );
 		// Inspect for appMapping annotation
 		if( structKeyExists( md, "appMapping" ) ){
 			variables.appMapping = md.appMapping;
@@ -121,8 +121,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			} else {
 				variables.controller = application[ getColdBoxAppKey() ];
 			}
-			// remove context
+			// remove context + reset headers
 			getController().getRequestService().removeContext();
+			getPageContext().getResponse().reset();
 		}
 	}
 
@@ -137,16 +138,24 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* BDD: The main setup method for running ColdBox Integration enabled tests
+	* @beforeAll
 	*/
 	function beforeAll(){
-		beforeTests();
+		if( isNull( variables._ranBeforeAll ) ){
+			beforeTests();
+			variables._ranBeforeAll = true;
+		}
 	}
 
 	/**
 	* BDD: The main teardown for ColdBox enabled applications after all tests execute
+	* @afterAll
 	*/
 	function afterAll(){
-		afterTests();
+		if( isNull( variables._ranAfterAll ) ){
+			afterTests();
+			variables._ranAfterAll = true;
+		}
 	}
 
 	/**
@@ -155,7 +164,15 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	*/
 	function reset( boolean clearMethods=false, decorator ){
 		structDelete( application, getColdboxAppKey() );
-		structClear( request );
+		
+		if( !structIsEmpty( request ) ){
+			lock type="exclusive" scope="request" timeout=10{
+				if( !structIsEmpty( request ) ){
+					structClear( request );
+				}
+			}
+		}
+
 		return this;
 	}
 
@@ -329,7 +346,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	){
 		var handlerResults  = "";
 		var requestContext  = "";
-		var relocationTypes = "TestController.setNextEvent,TestController.relocate";
+		var relocationTypes = "TestController.relocate";
 		var cbController    = getController();
 		var renderData		= "";
 		var renderedContent = "";
@@ -397,7 +414,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			arguments.event = requestContext.getCurrentEvent();
 
 			// TEST EVENT EXECUTION
-			if( NOT requestContext.isNoExecution() ){
+			if( NOT requestContext.getIsNoExecution() ){
 				// execute the event
 				handlerResults = cbController.runEvent(
 					event 			= arguments.event,
@@ -417,9 +434,16 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 						renderedContent = cbController.getDataMarshaller().marshallData(argumentCollection=renderData);
 					}
 					// If we have handler results save them in our context for assertions
-					else if ( !isNull( handlerResults ) ){
-						requestContext.setValue("cbox_handler_results", handlerResults);
-						renderedContent = handlerResults;
+					else if ( 
+						!isNull( handlerResults ) 
+					){
+						// Store raw results
+						requestContext.setValue( "cbox_handler_results", handlerResults );
+						if( isSimpleValue( handlerResults ) ){
+							renderedContent = handlerResults;
+						} else {
+							renderedContent = serializeJSON( handlerResults );
+						}
 					}
 					// render layout/view pair
 					else{
@@ -449,10 +473,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			// postProcess
 			cbController.getInterceptorService().processState( "postProcess" );
 
-		}
-		catch(Any e){
+		} catch( Any e ) {
 			// Exclude relocations so they can be asserted.
-			if( NOT listFindNoCase(relocationTypes,e.type) ){
+			if( NOT listFindNoCase( relocationTypes, e.type ) ){
 				rethrow;
 			}
 		}

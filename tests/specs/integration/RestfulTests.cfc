@@ -1,5 +1,5 @@
 /*******************************************************************************
-*	Integration Test as BDD (CF10+ or Railo 4.1 Plus)
+*	Integration Test as BDD  
 *
 *	Extends the integration class: coldbox.system.testing.BaseTestCase
 *
@@ -42,8 +42,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			it( "can handle allowed HTTP methods in action annotations", function(){
 				prepareMock( getRequestContext() ).$( "getHTTPMethod", "POST" );
 
-				var event = execute( event="main.actionAllowedMethod", renderResults=true )
-				//debug( event.getRenderedContent() );
+				var event = execute( event="main.actionAllowedMethod", renderResults=true );
 				expect(	event.getRenderedContent() ).toBe( "invalid http: main.actionAllowedMethod" );
 			});
 
@@ -67,6 +66,22 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				}
 				
 			});
+
+			it( "can redirect only for html formats with the `formatsRedirect` parameter", function() {
+				getRequestContext().setValue( "format", "json" );
+				var event = execute( event="rendering.redirect", renderResults=true );
+				var rc = event.getCollection();
+				var prc = event.getCollection( private=true );
+				expect( rc ).notToHaveKey( "relocate_event" );
+				expect( prc.cbox_renderData ).toBeStruct();
+				expect( prc.cbox_renderData.contenttype ).toMatch( "json" );
+
+				getRequestContext().setValue( "format", "html" );
+				var event = execute( event="rendering.redirect", renderResults=true );
+				var rc = event.getCollection();
+				expect( rc ).toHaveKey( "relocate_event" );
+				expect( rc[ "relocate_event" ] ).toBe( "Main.index" );
+			} );
 
 		});
 

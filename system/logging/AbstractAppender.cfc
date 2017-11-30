@@ -38,10 +38,10 @@ Description :
 	<cffunction name="init" access="public" returntype="AbstractAppender" hint="Constructor called by a Concrete Appender" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		required="true" hint="The unique name for this appender."/>
-		<cfargument name="properties" 	required="false" default="#structnew()#" hint="A map of configuration properties for the appender" colddoc:generic="struct"/>
+		<cfargument name="properties" 	required="false" default="#structnew()#" hint="A map of configuration properties for the appender" doc_generic="struct"/>
 		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
-		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN" colddoc:generic="numeric"/>
+		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN" doc_generic="numeric"/>
+		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN" doc_generic="numeric"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Appender's Name
@@ -74,7 +74,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Level Min --->
-	<cffunction name="getlevelMin" access="public" returntype="any" output="false" hint="Get the level min setting" colddoc:generic="numeric">
+	<cffunction name="getlevelMin" access="public" returntype="any" output="false" hint="Get the level min setting" doc_generic="numeric">
 		<cfreturn instance.levelMin>
 	</cffunction>
 	<cffunction name="setLevelMin" access="public" output="false" returntype="void" hint="Set the appender's default levelMin">
@@ -92,7 +92,7 @@ Description :
 	</cffunction>
 
 	<!--- GetSet level Max --->
-	<cffunction name="getlevelMax" access="public" returntype="any" output="false" hint="Get the level Max setting" colddoc:generic="numeric">
+	<cffunction name="getlevelMax" access="public" returntype="any" output="false" hint="Get the level Max setting" doc_generic="numeric">
 		<cfreturn instance.levelMax>
 	</cffunction>
 	<cffunction name="setLevelMax" access="public" output="false" returntype="void" hint="Set the appender's default levelMax">
@@ -124,13 +124,13 @@ Description :
 	</cffunction>
 
 	<!--- hasCustomLayout --->
-	<cffunction name="hasCustomLayout" output="false" access="public" returntype="any" hint="Whether a custom layout has been set or not." colddoc:generic="Boolean">
+	<cffunction name="hasCustomLayout" output="false" access="public" returntype="any" hint="Whether a custom layout has been set or not." doc_generic="Boolean">
 		<cfreturn isObject(getCustomLayout())>
 	</cffunction>
 
 	<!--- severityToString --->
 	<cffunction name="severityToString" output="false" access="public" returntype="any" hint="convert a severity to a string">
-		<cfargument name="severity" required="true" hint="The numeric severity to convert" colddoc:generic="numeric"/>
+		<cfargument name="severity" required="true" hint="The numeric severity to convert" doc_generic="numeric"/>
 		<cfreturn this.logLevels.lookup(arguments.severity)>
 	</cffunction>
 
@@ -145,7 +145,7 @@ Description :
 	</cffunction>
 
 	<!--- Initied flag --->
-	<cffunction name="isInitialized" access="public" returntype="any" output="false" hint="Checks if the appender's internal variables are initialized." colddoc:generic="Boolean">
+	<cffunction name="isInitialized" access="public" returntype="any" output="false" hint="Checks if the appender's internal variables are initialized." doc_generic="Boolean">
 		<cfreturn instance.initialized>
 	</cffunction>
 	<cffunction name="setInitialized" access="public" returntype="void" output="false" hint="Set's the appender's internal variables flag to initalized.">
@@ -162,8 +162,8 @@ Description :
 	</cffunction>
 
 	<!--- canLog --->
-	<cffunction name="canLog" output="false" access="public" returntype="any" hint="Checks wether a log can be made on this appender using a passed in level" colddoc:generic="Boolean">
-		<cfargument name="level" required="true" hint="The level to check if it can be logged in this Appender" colddoc:generic="numeric"/>
+	<cffunction name="canLog" output="false" access="public" returntype="any" hint="Checks wether a log can be made on this appender using a passed in level" doc_generic="Boolean">
+		<cfargument name="level" required="true" hint="The level to check if it can be logged in this Appender" doc_generic="numeric"/>
 		<cfscript>
 			return (arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
 		</cfscript>
@@ -172,13 +172,13 @@ Description :
 <!------------------------------------------- PROPERTY METHODS ------------------------------------------->
 
 	<!--- getter for the properties structure --->
-	<cffunction name="getProperties" access="public" output="false" returntype="any" hint="Get properties structure map" colddoc:generic="struct">
+	<cffunction name="getProperties" access="public" output="false" returntype="any" hint="Get properties structure map" doc_generic="struct">
 		<cfreturn instance.properties/>
 	</cffunction>
 
 	<!--- setter for the properties structure --->
 	<cffunction name="setProperties" access="public" output="false" returntype="void" hint="Set the entire properties structure map">
-		<cfargument name="properties" required="true" colddoc:generic="struct"/>
+		<cfargument name="properties" required="true" doc_generic="struct"/>
 		<cfset instance.properties = arguments.properties/>
 	</cffunction>
 
@@ -196,7 +196,7 @@ Description :
 	</cffunction>
 
 	<!--- check for a property --->
-	<cffunction name="propertyExists" access="public" returntype="any" hint="Checks wether a given property exists or not." output="false" colddoc:generic="Boolean">
+	<cffunction name="propertyExists" access="public" returntype="any" hint="Checks wether a given property exists or not." output="false" doc_generic="Boolean">
 		<cfargument name="property" required="true" hint="The property name">
 		<cfreturn structKeyExists(instance.properties,arguments.property)>
 	</cffunction>

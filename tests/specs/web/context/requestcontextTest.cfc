@@ -1,34 +1,91 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest"{
 	
 	function setUp(){
-		oRC = createObject("component","coldbox.system.web.context.RequestContext");
 
 		/* Properties */
-		props.DefaultLayout = "Main.cfm";
-		props.DefaultView = "";
-		props.FolderLayouts = structnew();
-		props.ViewLayouts = structnew();
-		props.EventName = "event";
-		props.isSES = false;
-		props.sesBaseURL = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
+		props.defaultLayout     = "Main.cfm";
+		props.defaultView       = "";
+		props.folderLayouts     = structnew();
+		props.viewLayouts       = structnew();
+		props.eventName         = "event";
+		props.sesBaseURL        = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
 		props.registeredLayouts = structnew();
-		props.modules = {
+		props.modules           = {
 			test1 = {
 				mapping = "/coldbox/test-harness"
 			}
 		};
 
 		/* Init it */
-		oRC.init(props, getMockController() );
+		mockController = getMockController();
+		prepareMock( mockController.getInterceptorService() );
+		
+		oRC =  new coldbox.system.web.context.RequestContext( props, mockController );
 	}
 
 	function getRequestContext(){
 		return prepareMock( oRC );
 	}
 
+	function testValidRoutes(){
+		// Mocks
+		var mockSES = createStub()
+			.$( "getRoutes", [ { name="contactus", pattern="contactus/" } ] );
+		mockController.getInterceptorService().$( "getInterceptor", mockSES );
+		
+		var event = getRequestContext().setIsSES( true );
+		var r = event.route( "contactus" );
+		//debug( r );
+		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
+	}
+
+	function testGetModuleEntryPoint(){
+		var event = getRequestContext()
+			.setIsSES( true )
+			.$property( "modules", "variables", {
+				myModule = {
+					inheritedEntryPoint = "mymodule/"
+				}
+			} );
+		var r = event.getModuleEntryPoint( "myModule" );
+		expect( r ).toBe( "mymodule/" );
+	}
+
+	function testValidModuleRoutes(){
+		// Mocks
+		var mockSES = createStub()
+			.$( "getModuleRoutes", [
+					{ name="home", pattern="home/" }
+				]
+			)
+			.$( "getRoutes", [] );
+		mockController.getInterceptorService().$( "getInterceptor", mockSES );
+		
+		var event = getRequestContext()
+			.setIsSES( true )
+			.$property( "modules", "variables", {
+				myModule = {
+					inheritedEntryPoint = "mymodule/"
+				}
+			} );
+		var r = event.route( "home@mymodule" );
+		//debug( r );
+		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/home/" );
+	}
+	
+	function testInvalidRoute(){
+		// Mocks
+		var mockSES = createStub()
+			.$( "getRoutes", [] );
+		mockController.getInterceptorService().$( "getInterceptor", mockSES );
+		
+		var event = getRequestContext().setIsSES( true );
+		expect( function(){ event.route( "invalid" ); } ).toThrow();
+	}
+
 	function testGetHTMLBaseURL(){
 		var event = getRequestContext();
-		event.$( "isSES", true )
+		event.setIsSES( true )
 			.$( "isSSL", false );
 		expect( event.getHTMLBaseURL() ).toinclude( "http://jfetmac/applications/coldbox/test-harness" );
 
@@ -46,7 +103,7 @@
 		var event = getRequestContext();
 		var test = {today=now()};
 
-		event.collectionAppend(test);
+		event.collectionAppend( test);
 		event.clearCollection();
 
 		AssertEquals( structnew(), event.getCollection() );
@@ -58,7 +115,7 @@
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend(test);
+		event.collectionAppend( test);
 
 		AssertEquals( test, event.getCollection() );
 	}
@@ -69,7 +126,7 @@
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend(test);
+		event.collectionAppend( test);
 
 		AssertEquals( 1, event.getSize() );
 	}
@@ -80,7 +137,7 @@
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend(test);
+		event.collectionAppend( test);
 
 		assertEquals( test.today , event.getValue("today") );
 
@@ -97,7 +154,7 @@
 
 		event.setValue("test", test.today);
 
-		assertEquals(test.today, event.getValue("test") );
+		assertEquals( test.today, event.getValue("test") );
 
 	}
 
@@ -109,7 +166,7 @@
 		event.clearCollection();
 
 		event.setValue("test", test.today);
-		assertEquals(test.today, event.getValue("test") );
+		assertEquals( test.today, event.getValue("test") );
 
 		event.removeValue("test");
 		assertEquals( false, event.getValue("test", false) );
@@ -179,6 +236,17 @@
 
 		event.setLayout(layout);
 		assertEquals( layout & ".cfm", event.getCurrentLayout() );
+	}
+
+	function testGetCurrentHandlerWithModule(){
+		var event = getRequestContext();
+		var defaultEvent = "myModule:test.doSomething";
+
+		event.setValue( "event", defaultEvent );
+
+		expect( event.getCurrentModule() ).toBe( "myModule" );
+		expect( event.getCurrentHandler() ).toBe( "test" );
+		expect( event.getCurrentAction() ).toBe( "doSomething" );
 	}
 
 	function testgetCurrentEventHandlerAction(){
@@ -300,8 +368,8 @@
 		event.setsesBaseURL(base);
 		assertEquals( event.getsesBaseURL(), base );
 
-		event.setisSES(true);
-		assertEquals( event.isSES(), true );
+		event.setisSES( true );
+		assertEquals( event.getIsSES(), true );
 	}
 
 	function testInvalidHTTPMethod(){
@@ -323,45 +391,52 @@
 		/* simple setup */
 		event.setisSES(false);
 		testurl = event.buildLink('general.index');
-		AssertEquals(testurl, "index.cfm?event=general.index" );
+		AssertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* simple qs */
 		event.setisSES(false);
-		testurl = event.buildLink(linkTo='general.index',queryString="page=2");
-		AssertEquals(testurl, "index.cfm?event=general.index&page=2" );
+		testurl = event.buildLink( to='general.index',queryString="page=2");
+		AssertEquals( testurl, "index.cfm?event=general.index&page=2" );
 
 		/* empty qs */
 		event.setisSES(false);
-		testurl = event.buildLink(linkTo='general.index',queryString="");
-		AssertEquals(testurl, "index.cfm?event=general.index" );
+		testurl = event.buildLink( to='general.index',queryString="");
+		AssertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* ses test */
-		event.setisSES(true);
+		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkTo='general/index', ssl=false );
-		AssertEquals(testurl, base & "/general/index" );
+		testurl = event.buildLink( to='general/index', ssl=false );
+		AssertEquals( testurl, base & "/general/index" );
 
 		/* query string transformation */
-		event.setisSES(true);
+		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkTo='general/index', queryString="page=2&tests=4", ssl=false );
-		AssertEquals(testurl, base & "/general/index/page/2/tests/4" );
+		testurl = event.buildLink( to='general/index', queryString="page=2&tests=4", ssl=false );
+		AssertEquals( testurl, base & "/general/index/page/2/tests/4" );
 
 		/* ssl test */
-		event.setisSES(true);
+		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkto='general/index', ssl=true );
-		AssertEquals(testurl, basessl & "/general/index" );
+		testurl = event.buildLink( to='general/index', ssl=true );
+		AssertEquals( testurl, basessl & "/general/index" );
+		
 		// SSL OFF
-		event.setsesBaseURL(basessl);
-		testurl = event.buildLink( linkto='general/index', ssl=false );
-		AssertEquals(testurl, base & "/general/index" );
+		event.setsesBaseURL( basessl );
+		testurl = event.buildLink( to='general/index', ssl=false, queryString="name=luis&cool=false" );
+		AssertEquals( testurl, base & "/general/index/name/luis/cool/false" );
 
 		/* translate */
-		event.setisSES(true);
+		event.setisSES( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( linkto='general.index', translate=false, ssl=false );
-		AssertEquals(testurl, base & "/general.index" );
+		testurl = event.buildLink( to='general.index', translate=false, ssl=false );
+		AssertEquals( testurl, base & "/general.index" );
+
+		/* translate with query string */
+		event.setisSES( true );
+		event.setsesBaseURL( base );
+		testurl = event.buildLink( to='general.index', queryString="name=luis&cool=false", translate=false, ssl=false );
+		AssertEquals( testurl, base & "/general.index?name=luis&cool=false" );
 	}
 
 	function testRenderData(){
@@ -370,27 +445,27 @@
 		AssertEquals( event.getRenderData(), structnew());
 
 		// Test JSON
-		event.renderData(type='JSON',data="[1,2,3,4]");
+		event.renderData( type='JSON',data="[1,2,3,4]");
 		rd = event.getRenderData();
 		assertEquals( rd.contenttype, "application/json");
 		assertEquals( rd.type, "json");
-		assertEquals( rd.jsonQueryFormat, "query");
-		assertEquals( rd.statusCode, "200");
-		assertEquals( rd.statusText, "");
+		assertEquals( rd.jsonQueryFormat, true );
+		assertEquals( rd.statusCode, "200" );
+		assertEquals( rd.statusText, "" );
 
 
-		event.renderData(type='JSON',data="[1,2,3,4]",jsonQueryFormat="array",jsonCase="upper");
+		event.renderData( type='JSON', data="[1,2,3,4]", jsonQueryFormat="array", jsonCase="upper" );
 		rd = event.getRenderData();
-		assertEquals( rd.jsonQueryFormat, "array");
+		assertEquals( rd.jsonQueryFormat, false );
 
 		//JSONP
-		event.renderData(type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
+		event.renderData( type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
 		rd = event.getRenderData();
 		assertEquals( rd.type, "jsonp");
 		assertEquals( rd.jsonCallback, 'testCallback');
 
 		// Test WDDX
-		event.renderData(type="WDDX",data=arrayNew(1));
+		event.renderData( type="WDDX",data=arrayNew(1));
 		rd = event.getRenderData();
 		assertEquals( rd.contenttype, "text/xml");
 		assertEquals( rd.type, "wddx");
@@ -424,10 +499,10 @@
 
 	function testNoExecution(){
 		var event = getRequestContext();
-
-		assertFalse( event.isNoExecution() );
+		expect(	event.getIsNoExecution() ).toBeFalse();
+		
 		event.noExecution();
-		assertTrue( event.isNoExecution() );
+		expect(	event.getIsNoExecution() ).toBeTrue();
 	}
 
 	function testCurrentModule(){
@@ -467,7 +542,7 @@
 
 		test = event.getHTTPContent();
 
-		assertTrue( isSimpleValue(test) );
+		assertTrue( isSimpleValue( test) );
 	}
 
 	function testNoLayout(){
@@ -482,11 +557,43 @@
 	function testDoubleSlashInBuildLink(){
 		var event = getRequestContext();
 
-		event.$( "isSES", true );
-		link = event.buildLink( linkTo='my/event/handler/', queryString='one=1&two=2' );
-		expect(	link ).toInclude( "jfetmac/applications/coldbox/test-harness/index.cfm/my/event/handler/one/1/two/2" );
+		event.setIsSES( true );
+
+		link = event.buildLink( to='my/event/handler/', queryString='one=1&two=2' );
+		expect(	link ).toInclude( "test-harness/index.cfm/my/event/handler/one/1/two/2" );
 		
-		debug( link );
+		// debug( link );
+	}
+
+	function testOnlyArray() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "email", "john@example.com" );
+		event.setValue( "hackedField", "hacked!" );
+
+		expect( event.getOnly( [ "name", "email", "field-that-does-not-exist" ] ) )
+			.toBe( { "name" = "John", "email" = "john@example.com" } );
+	}
+
+	function testOnlyList() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "email", "john@example.com" );
+		event.setValue( "hackedField", "hacked!" );
+
+		expect( event.getOnly( "name,email,field-that-does-not-exist" ) )
+			.toBe( { "name" = "John", "email" = "john@example.com" } );
+	}
+
+	function testOnlyPrivate() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "hackedField", "hacked!" );
+		event.setValue( "name", "Jane", true );
+		event.setValue( "hackedField", "hacked as well!", true );
+
+		expect( event.getOnly( keys = "name,field-that-does-not-exist", private = true ) )
+			.toBe( { "name" = "Jane" } );	
 	}
 
 }

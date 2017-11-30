@@ -104,35 +104,35 @@
 		populateIndex(100);
 		stime=getTickCOunt();
 		results = index.getSortedKeys("lastAccessed","numeric","asc");
-		debug("100 sorted: #getTickCount()-stime#ms");
+		// debug("100 sorted: #getTickCount()-stime#ms");
 		index.clearAll();
 
 		// 500 elements
 		populateIndex(500);
 		stime=getTickCOunt();
 		results = index.getSortedKeys("lastAccessed","numeric","asc");
-		debug("500 sorted: #getTickCount()-stime#ms");
+		// debug("500 sorted: #getTickCount()-stime#ms");
 		index.clearAll();
 
 		// 1000 elements
 		populateIndex(1000);
 		stime=getTickCOunt();
 		results = index.getSortedKeys("lastAccessed","numeric","asc");
-		debug("1000 sorted: #getTickCount()-stime#ms");
+		// debug("1000 sorted: #getTickCount()-stime#ms");
 		index.clearAll();
 
 		// 5000 elements
 		populateIndex(5000);
 		stime=getTickCOunt();
 		results = index.getSortedKeys("lastAccessed","numeric","asc");
-		debug("5000 sorted: #getTickCount()-stime#ms");
+		// debug("5000 sorted: #getTickCount()-stime#ms");
 		index.clearAll();
 
 		// 10000 elements
 		populateIndex(10000);
 		stime=getTickCOunt();
 		results = index.getSortedKeys("lastAccessed","numeric","asc");
-		debug("10000 sorted: #getTickCount()-stime#ms");
+		// debug("10000 sorted: #getTickCount()-stime#ms");
 		index.clearAll();
 	}
 </cfscript>

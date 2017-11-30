@@ -20,21 +20,21 @@ Description :
     </cffunction>
 
 	<!--- getColdbox --->
-    <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller">
+    <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" doc_generic="coldbox.system.web.Controller">
     </cffunction>
 
 	<!--- setColdbox --->
     <cffunction name="setColdbox" output="false" access="public" returntype="void" hint="Set the coldbox application reference">
-    	<cfargument name="coldbox" type="any" required="true" hint="The coldbox application reference as type: coldbox.system.web.Controller" colddoc:generic="coldbox.system.web.Controller"/>
+    	<cfargument name="coldbox" type="any" required="true" hint="The coldbox application reference as type: coldbox.system.web.Controller" doc_generic="coldbox.system.web.Controller"/>
     </cffunction>
 
 	<!--- getEventURLFacade --->
-    <cffunction name="getEventURLFacade" output="false" access="public" returntype="any" hint="Get the event caching URL facade utility" colddoc:generic="coldbox.system.cache.util.EventURLFacade">
+    <cffunction name="getEventURLFacade" output="false" access="public" returntype="any" hint="Get the event caching URL facade utility" doc_generic="coldbox.system.cache.util.EventURLFacade">
     </cffunction>
 
 	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
-		<cfargument name="async" type="any" hint="Run command asynchronously or not" colddoc:generic="boolean"/>
+		<cfargument name="async" type="any" hint="Run command asynchronously or not" doc_generic="boolean"/>
 	</cffunction>
 	
 	<!--- clearEvent --->
@@ -61,7 +61,7 @@ Description :
 
 	<!--- Clear All The Views from the Cache. --->
 	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
-		<cfargument name="async" type="any" hint="Run command asynchronously or not" colddoc:generic="Boolean"/>
+		<cfargument name="async" type="any" hint="Run command asynchronously or not" doc_generic="Boolean"/>
 	</cffunction>
 	
 </cfinterface>

@@ -14,29 +14,29 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfparam name="FORM" default="#structnew()#">
 		<cfscript>
-		cm = getMockBox().createEmptyMock(className='coldbox.system.cache.providers.MockProvider');
-		cm.$("getEventCacheKeyPrefix","mock");
-		facade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(cm);
+		cm = createEmptyMock( 'coldbox.system.cache.providers.MockProvider' );
+		cm.$( "getEventCacheKeyPrefix", "mock" );
+		facade = new coldbox.system.cache.util.EventURLFacade( cm );
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="testgetUniqueHash" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			routedStruct.name = "luis";
+			routedStruct = { name = "luis" };
 
 			/* Mocks */
-			context = getMockBox().createMock('coldbox.system.web.context.RequestContext');
-			context.$('getRoutedStruct').$results(routedStruct)
-			       .$("getValue","123");
+			context = createMock( 'coldbox.system.web.context.RequestContext' )
+				.setRoutedStruct( routedStruct );
+			context.$( "getValue", "123" );
 
 			/* setup url vars */
-			url.event = 'main.index';
-			url.id = "123";
-			url.fwCache="True";
+			url.event   = 'main.index';
+			url.id      = "123";
+			url.fwCache = "True";
 
-			testHash = facade.getUniqueHash(context);
+			testHash = facade.getUniqueHash( context );
 
-			AssertTrue( len(testHash) );
+			AssertTrue( len( testHash ) );
 		</cfscript>
 	</cffunction>
 
@@ -56,11 +56,11 @@ Description :
 
 	<cffunction name="testbuildEventKey" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			routedStruct.name = "majano";
+			routedStruct = { name = "majano" };
 
 			/* Mocks */
-			context = getMockBox().createMock('coldbox.system.web.context.RequestContext');
-			context.$('getRoutedStruct').$results(routedStruct)
+			context = createMock( 'coldbox.system.web.context.RequestContext' );
+			context.setRoutedStruct( routedStruct )
 			       .$("getValue","123");
 
 			/* setup url vars */

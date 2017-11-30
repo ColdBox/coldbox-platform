@@ -87,13 +87,13 @@ Description :
 	</cffunction>
 
 	<!--- getMemento --->
-    <cffunction name="getMemento" output="false" access="public" returntype="any" hint="Get the instance memento structure" colddoc:generic="struct">
+    <cffunction name="getMemento" output="false" access="public" returntype="any" hint="Get the instance memento structure" doc_generic="struct">
     	<cfreturn instance>
     </cffunction>
 
 	<!--- processMemento --->
     <cffunction name="processMemento" output="false" access="public" returntype="any" hint="Process a mapping memento">
-    	<cfargument name="memento" required="true" hint="The data memento to process" colddoc:generic="struct"/>
+    	<cfargument name="memento" required="true" hint="The data memento to process" doc_generic="struct"/>
 		<cfargument name="excludes" required="false" hint="List of instance's memento keys to not process" default="" />
     	<cfscript>
 			var x = 1;
@@ -232,11 +232,11 @@ Description :
     </cffunction>
 
 	<!--- Aliases --->
-	<cffunction name="getAlias" access="public" returntype="any" output="false" hint="Get the mapping aliases array" colddoc:generic="Array">
+	<cffunction name="getAlias" access="public" returntype="any" output="false" hint="Get the mapping aliases array" doc_generic="Array">
     	<cfreturn instance.alias>
     </cffunction>
     <cffunction name="setAlias" access="public" returntype="any" output="false" hint="Set the mapping aliases">
-    	<cfargument name="alias" required="true" colddoc:generic="Array">
+    	<cfargument name="alias" required="true" doc_generic="Array">
     	<cfset instance.alias = arguments.alias>
     	<cfreturn this>
     </cffunction>
@@ -292,38 +292,38 @@ Description :
     </cffunction>
 
 	<!--- isAutowire --->
-    <cffunction name="isAutowire" output="false" access="public" returntype="any" hint="Flag describing if you are using autowire or not as Boolean" colddoc:generic="Boolean">
+    <cffunction name="isAutowire" output="false" access="public" returntype="any" hint="Flag describing if you are using autowire or not as Boolean" doc_generic="Boolean">
     	<cfreturn instance.autowire>
     </cffunction>
     <cffunction name="setAutowire" access="public" returntype="any" output="false" hint="Set autowire property">
-    	<cfargument name="autowire" required="true" colddoc:generic="Boolean">
+    	<cfargument name="autowire" required="true" doc_generic="Boolean">
     	<cfset instance.autowire = arguments.autowire>
     	<cfreturn this>
     </cffunction>
 
     <!--- isAspect --->
-    <cffunction name="isAspect" output="false" access="public" returntype="any" hint="Flag describing if this mapping is an AOP aspect or not" colddoc:generic="Boolean">
+    <cffunction name="isAspect" output="false" access="public" returntype="any" hint="Flag describing if this mapping is an AOP aspect or not" doc_generic="Boolean">
     	<cfreturn instance.aspect>
     </cffunction>
     <cffunction name="setAspect" access="public" returntype="any" output="false" hint="Set aspect property">
-    	<cfargument name="aspect" required="true" colddoc:generic="Boolean">
+    	<cfargument name="aspect" required="true" doc_generic="Boolean">
     	<cfset instance.aspect = arguments.aspect>
     	<cfreturn this>
     </cffunction>
 
     <!--- isAspectAutoBinding --->
-    <cffunction name="isAspectAutoBinding" output="false" access="public" returntype="any" hint="Is this mapping an auto aspect binding" colddoc:generic="Boolean">
+    <cffunction name="isAspectAutoBinding" output="false" access="public" returntype="any" hint="Is this mapping an auto aspect binding" doc_generic="Boolean">
     	<cfreturn instance.autoAspectBinding>
     </cffunction>
     <!--- setAspectAutoBinding --->
     <cffunction name="setAspectAutoBinding" output="false" access="public" returntype="any" hint="Set the aspect auto binding bit">
-    	<cfargument name="autoBinding" required="true" colddoc:generic="Boolean">
+    	<cfargument name="autoBinding" required="true" doc_generic="Boolean">
     	<cfset instance.autoAspectBinding = arguments.autoBinding>
     	<cfreturn this>
     </cffunction>
 
 	<!--- isAutoInit --->
-    <cffunction name="isAutoInit" output="false" access="public" returntype="any" hint="Using auto init of mapping target or not as boolean" colddoc:generic="Boolean">
+    <cffunction name="isAutoInit" output="false" access="public" returntype="any" hint="Using auto init of mapping target or not as boolean" doc_generic="Boolean">
     	<cfreturn instance.autoInit>
     </cffunction>
     <cffunction name="setAutoInit" access="public" returntype="any" output="false" hint="Set autoInit property">
@@ -343,7 +343,7 @@ Description :
     </cffunction>
 
 	<!--- DSL --->
-	<cffunction name="isDSL" output="false" access="public" returntype="any" hint="Does this mapping have a DSL construction element or not as Boolean" colddoc:generic="boolean">
+	<cffunction name="isDSL" output="false" access="public" returntype="any" hint="Does this mapping have a DSL construction element or not as Boolean" doc_generic="boolean">
 		<cfreturn (len(instance.dsl) GT 0)>
     </cffunction>
     <cffunction name="getDSL" access="public" returntype="any" output="false" hint="Get the construction DSL">
@@ -366,12 +366,12 @@ Description :
 			return this;
 		</cfscript>
     </cffunction>
-    <cffunction name="getCacheProperties" output="false" access="public" returntype="any" hint="Get this mappings cache properties structure" colddoc:generic="struct">
+    <cffunction name="getCacheProperties" output="false" access="public" returntype="any" hint="Get this mappings cache properties structure" doc_generic="struct">
     	<cfreturn instance.cache>
     </cffunction>
 
 	<!--- getDIConstructorArguments --->
-    <cffunction name="getDIConstructorArguments" output="false" access="public" returntype="any" hint="Get all the constructor argument definitions array" colddoc:generic="array">
+    <cffunction name="getDIConstructorArguments" output="false" access="public" returntype="any" hint="Get all the constructor argument definitions array" doc_generic="array">
     	<cfreturn instance.DIConstructorArgs>
     </cffunction>
 
@@ -424,12 +424,12 @@ Description :
     </cffunction>
 
 	<!--- getDIMethodArguments --->
-    <cffunction name="getDIMethodArguments" output="false" access="public" returntype="any" hint="Get all the method argument definitions array" colddoc:generic="array">
+    <cffunction name="getDIMethodArguments" output="false" access="public" returntype="any" hint="Get all the method argument definitions array" doc_generic="array">
     	<cfreturn instance.DIMethodArgs>
     </cffunction>
 
 	<!--- getProperties --->
-    <cffunction name="getDIProperties" output="false" access="public" returntype="any" hint="Get all the DI property definitions array" colddoc:generic="Array">
+    <cffunction name="getDIProperties" output="false" access="public" returntype="any" hint="Get all the DI property definitions array" doc_generic="Array">
     	<cfreturn instance.DIProperties>
     </cffunction>
 
@@ -457,7 +457,7 @@ Description :
     </cffunction>
 
     <!--- getDISetters --->
-    <cffunction name="getDISetters" output="false" access="public" returntype="any" hint="Get all the DI setter definitions array" colddoc:generic="array">
+    <cffunction name="getDISetters" output="false" access="public" returntype="any" hint="Get all the DI setter definitions array" doc_generic="array">
     	<cfreturn instance.DISetters>
     </cffunction>
 
@@ -492,7 +492,7 @@ Description :
     </cffunction>
 
 	<!--- onDIComplete --->
-    <cffunction name="getOnDIComplete" output="false" access="public" returntype="any" hint="Get all the DI complete methods array" colddoc:generic="array">
+    <cffunction name="getOnDIComplete" output="false" access="public" returntype="any" hint="Get all the DI complete methods array" doc_generic="array">
     	<cfreturn instance.onDIComplete>
     </cffunction>
     <cffunction name="setOnDIComplete" output="false" access="public" returntype="any" hint="Set the DI Complete method array">
@@ -502,7 +502,7 @@ Description :
     </cffunction>
 
 	<!--- isDiscovered --->
-    <cffunction name="isDiscovered" output="false" access="public" returntype="any" hint="Checks if this mapping has already been processed or not" colddoc:generic="Boolean">
+    <cffunction name="isDiscovered" output="false" access="public" returntype="any" hint="Checks if this mapping has already been processed or not" doc_generic="Boolean">
     	<cfreturn instance.discovered>
     </cffunction>
 
@@ -525,7 +525,7 @@ Description :
     </cffunction>
 
 	<!--- isEagerInit --->
-    <cffunction name="isEagerInit" output="false" access="public" returntype="any" hint="Is this mapping eager initialized or not as Boolean" colddoc:generic="Boolean">
+    <cffunction name="isEagerInit" output="false" access="public" returntype="any" hint="Is this mapping eager initialized or not as Boolean" doc_generic="Boolean">
     	<cfreturn instance.eagerInit>
     </cffunction>
 
@@ -537,7 +537,7 @@ Description :
 	</cffunction>
 
 	<!--- getProviderMethods --->
-    <cffunction name="getProviderMethods" output="false" access="public" returntype="any" hint="Get the discovered provider methods array" colddoc:generic="Array">
+    <cffunction name="getProviderMethods" output="false" access="public" returntype="any" hint="Get the discovered provider methods array" doc_generic="Array">
     	<cfreturn instance.providerMethods>
     </cffunction>
 
@@ -924,7 +924,7 @@ Description :
 	</cffunction>
 
 	<!--- getDIDefinition --->
-    <cffunction name="getDIDefinition" output="false" access="private" returntype="any" hint="Get a new DI definition structure" colddoc:generic="structure">
+    <cffunction name="getDIDefinition" output="false" access="private" returntype="any" hint="Get a new DI definition structure" doc_generic="structure">
     	<cfreturn duplicate(variables.DIDefinition)>
     </cffunction>
 

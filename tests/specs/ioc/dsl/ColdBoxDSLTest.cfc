@@ -17,29 +17,30 @@
 	}
 
 	function testProcess(){
-
 		// Mock spies
-		builder.$("getOCMDSL",true)
+		builder
 			.$("getEntityServiceDSL",true)
 			.$("getColdboxDSL",true);
-
-		def = {dsl="ocm"};
-		builder.process(def);
-		assertTrue( builder.$once("getOCMDSL") );
 
 		def = {dsl="coldbox"};
 		builder.process(def);
 		assertTrue( builder.$once("getColdboxDSL") );
 	}
 
-	function testGetDatasource(){
-		data = {test={name='test',dbtype='mysql'}};
-		mockColdBox.$("getSetting", data);
-		makePublic(builder,"getDatasource");
+	function testInvalidDSL(){
+		makePublic( builder, "getColdboxDSL" );
+		try{
+			c = builder.getColdBoxDSL( { name="coldbox", dsl="coldbox:foobar" } );
+			c = builder.getColdBoxDSL( { name="coldbox", dsl="coldbox:foobar:testss" } );
+			c = builder.getColdBoxDSL( { name="coldbox", dsl="coldbox:foobar:testss:invalid:invliad" } );
 
-		d = builder.getDatasource('test');
-		assertEquals( "test", d.name );
-		assertEquals( "mysql", d.dbtype );
+			fail( "Invalid Throw Type for DSL" );
+
+		} catch( "ColdBoxDSL.InvalidDSL" e ){
+			// The right catch
+		} catch( any e ){
+			fail( "Invalid Throw Type for DSL" );
+		}
 	}
 
 	function testgetColdboxDSLStage1AndStage2(){
@@ -56,16 +57,22 @@
 		c = builder.getColdBoxDSL(def);
 		assertEquals( this, c);
 
-		mockColdbox.$("getrequestService",this);
+		mockColdbox.$("getRequestService",this);
 		def = {name="configBean", dsl="coldbox:requestService"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( this, c);
 
 		mockFlash = getMockBox().createEmptyMock("coldbox.system.web.flash.SessionFlash");
-		mockColdbox.$("getrequestService", getMockBox().createStub().$("getFlashScope", mockFlash) );
+		mockColdbox.$("getRequestService", getMockBox().createStub().$("getFlashScope", mockFlash) );
 		def = {name="flash", dsl="coldbox:flash"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( mockFlash, c);
+
+		mockEvent = getMockBox().createEmptyMock("coldbox.system.web.context.RequestContext");
+		mockColdbox.$("getRequestService", getMockBox().createStub().$("getContext", mockEvent) );
+		def = {name="event", dsl="coldbox:requestContext"};
+		c = builder.getColdBoxDSL(def);
+		assertEquals( mockEvent, c);
 
 		mockColdbox.$("getHandlerService",this);
 		def = {name="configBean", dsl="coldbox:handlerService"};
@@ -93,6 +100,8 @@
 		def = {name="marshaller", dsl="coldbox:dataMarshaller"};
 		c = builder.getColdBoxDSL(def);
 		assertEquals( mockMarshaller, c);
+
+
 	}
 
 	function testgetColdboxDSLStage3(){
@@ -143,12 +152,6 @@
 		mockColdBox.$("getSetting").$args("mySetting",true).$results("UnitTest");
 		c = builder.getColdBoxDSL(def);
 		assertEquals("unitTest", c);
-
-		// datasource
-		def = {name="ds", dsl="coldbox:datasource:coolAlias"};
-		builder.$("getDatasource").$args("coolAlias").$results( this );
-		c = builder.getColdBoxDSL(def);
-		assertEquals(this, c);
 
 		// interceptor
 		def = {name="ds", dsl="coldbox:interceptor:coolAlias"};

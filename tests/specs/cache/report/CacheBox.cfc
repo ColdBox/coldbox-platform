@@ -71,9 +71,9 @@ Description :
 		};
 		
 		// cool thing about programmatic configuration
-		if( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ){
-			cachebox.caches.railoCache = {
-				provider = "coldbox.system.cache.providers.RailoProvider"
+		if( listFindNoCase( "Lucee", server.coldfusion.productname ) ){
+			cachebox.caches.luceeCache = {
+				provider = "coldbox.system.cache.providers.LuceeProvider"
 			};
 		}
 		

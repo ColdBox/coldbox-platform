@@ -1,18 +1,18 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
-		util = CreateObject("component","coldbox.system.core.util.Util");
+		util = createMock("coldbox.system.core.util.Util");
 		class1 = CreateObject("component","tests.resources.Class1");
 	}
 
 	function isInstanceCheck(){
-		test = createObject("component","coldbox.tests.testhandlers.BaseTest");
+		test = createObject("component","coldbox.tests.testHandlers.BaseTest");
 		assertTrue( util.isInstanceCheck( test, "coldbox.system.EventHandler") );
 
-		test = createObject("component","coldbox.tests.testhandlers.ehTest");
+		test = createObject("component","coldbox.tests.testHandlers.ehTest");
 		assertTrue( util.isInstanceCheck( test, "coldbox.system.EventHandler") );
 
-		test = createObject("component","coldbox.tests.testhandlers.TestNoInheritance");
+		test = createObject("component","coldbox.tests.testHandlers.TestNoInheritance");
 		assertFalse( util.isInstanceCheck( test, "coldbox.system.EventHandler") );
 	}
 
@@ -44,6 +44,89 @@
 
 	}
 
+	function testGetSystemSetting(){
+		var systemMock = createStub();
+
+		systemMock.$( "getProperty" ).$args( "foo" ).$results( "bar" );
+		systemMock.$( "getProperty" ).$args( "bar" ).$results( javacast( "null", "" ) );
+		systemMock.$( "getProperty" ).$args( "baz" ).$results( javacast( "null", "" ) );
+
+		systemMock.$( "getEnv" ).$args( "bar" ).$results( "baz" );
+		systemMock.$( "getEnv" ).$args( "baz" ).$results( javacast( "null", "" ) );
+
+		util.$property( propertyName = "system", mock = systemMock );
+
+		var setting = util.getSystemSetting( "foo" );
+		assertEquals( setting, "bar" );
+
+		setting = util.getSystemSetting( "bar" );
+		assertEquals( setting, "baz" );
+
+		var exceptionThrown = false;
+		try {
+			var setting = util.getSystemSetting( "baz" );
+		}
+		catch( SystemSettingNotFound e ) {
+			exceptionThrown = true;
+		}
+		catch( any e ) {
+			fail( "Expected a SystemSettingNotFound expception.  Received [#e.type#]. [#e.message#]" );
+		}
+		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
+
+		setting = util.getSystemSetting( "baz", "default" );
+		assertEquals( setting, "default" );
+	}
+
+	function testGetSystemProperty(){
+		var systemMock = createObject( "java", "java.lang.System" );
+		systemMock.setProperty( "foo", "bar" );
+		util.$property( propertyName = "system", mock = systemMock );
+
+		var setting = util.getSystemProperty( "foo" );
+		assertEquals( setting, "bar" );
+
+		var exceptionThrown = false;
+		try {
+			var setting = util.getSystemProperty( "bar" );
+		}
+		catch( SystemSettingNotFound e ) {
+			exceptionThrown = true;
+		}
+		catch( any e ) {
+			fail( "Expected a SystemSettingNotFound expception.  Received [#e.type#]. [#e.message#]" );
+		}
+		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
+
+		setting = util.getSystemProperty( "bar", "baz" );
+		assertEquals( setting, "baz" );
+	}
+
+	function testGetEnv(){
+		var systemMock = createStub();
+		systemMock.$( "getEnv" ).$args( "foo" ).$results( "bar" );
+		systemMock.$( "getEnv" ).$args( "bar" ).$results( javacast( "null", "" ) );
+		util.$property( propertyName = "system", mock = systemMock );
+
+		var setting = util.getEnv( "foo" );
+		assertEquals( setting, "bar" );
+
+		var exceptionThrown = false;
+		try {
+			var setting = util.getEnv( "bar" );
+		}
+		catch( SystemSettingNotFound e ) {
+			exceptionThrown = true;
+		}
+		catch( any e ) {
+			fail( "Expected a SystemSettingNotFound expception.  Received [#e.type#]. [#e.message#]" );
+		}
+		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
+
+		setting = util.getEnv( "bar", "baz" );
+		assertEquals( setting, "baz" );
+	}
+
 	private function testGetInheritedMetaDataHelper(md){
 
 		assertTrue( structKeyExists( md, "inheritanceTrail") );
@@ -51,7 +134,7 @@
 		assertEquals( md.inheritanceTrail[1], "tests.resources.Class1" );
 		assertEquals( md.inheritanceTrail[2], "tests.resources.Class2" );
 		assertEquals( md.inheritanceTrail[3], "tests.resources.Class3" );
-		assertTrue( listFindNoCase("WEB-INF.cftags.component,railo-context.component,lucee.component", md.inheritanceTrail[4]) );
+		assertTrue( listFindNoCase("WEB-INF.cftags.component,lucee.component", md.inheritanceTrail[4]) );
 
 		assertEquals( md.output, true );
 		assertEquals( md.scope, "server" );

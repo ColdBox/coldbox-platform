@@ -54,7 +54,7 @@ Description :
 	<cffunction name="testPolicy" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
 			lru.execute();	
-			debug( mockLogger.$callLog() );
+			// debug( mockLogger.$callLog() );
 			assertEquals(2, arrayLen(mockCM.$callLog().clear) );		
 			assertEquals( "obj2", mockCM.$callLog().clear[1][1] );		
 		</cfscript>

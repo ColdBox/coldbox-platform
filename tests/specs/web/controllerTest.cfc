@@ -100,7 +100,7 @@
 		assertEquals( persistStruct, mockFlash.$callLog().putAll[2].map  );
 	}
 
-	function testsetNextEvent(){
+	function testRelocate(){
 		// mock data
 		mockFlash = getMockBox().createMock("coldbox.system.web.flash.MockFlash").init(controller);
 		mockContext = getMockRequestContext();
@@ -120,26 +120,26 @@
 		controller.getRequestService().$("processState");
 
 		// Test Full URL
-		controller.setNextEvent(URL="http://www.coldbox.org",addToken=true);
+		controller.relocate( URL="http://www.coldbox.org",addToken=true);
 		assertEquals( "http://www.coldbox.org", controller.$callLog().sendRelocation[1].URL );
 		assertEquals( true, controller.$callLog().sendRelocation[1].addToken );
 		assertEquals( 0, controller.$callLog().sendRelocation[1].statusCode );
 
 		// Full URL with more stuff
-		controller.setNextEvent(URL="http://www.coldbox.org",statusCode=301,queryString="page=2&test=1");
+		controller.relocate( URL="http://www.coldbox.org",statusCode=301,queryString="page=2&test=1");
 		assertEquals( "http://www.coldbox.org?page=2&test=1", controller.$callLog().sendRelocation[2].URL );
 		assertEquals( false, controller.$callLog().sendRelocation[2].addToken );
 		assertEquals( 301, controller.$callLog().sendRelocation[2].statusCode );
 
 		// Test relative URI with query strings
-		controller.setNextEvent(URI="/route/path/two",queryString="page=2&test=1");
+		controller.relocate( URI="/route/path/two",queryString="page=2&test=1");
 		assertEquals( "/route/path/two?page=2&test=1", controller.$callLog().sendRelocation[3].URL );
 
 		// Test normal event
-		controller.setNextEvent(event="general.page",querystring="page=2&test=1");
+		controller.relocate( event="general.page",querystring="page=2&test=1");
 		//assertEquals( "", controller.$callLog().sendRelocation[4].URL );
 
-		debug( controller.$calllog() );
+		// debug( controller.$calllog() );
 	}
 
 }

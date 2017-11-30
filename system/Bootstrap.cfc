@@ -69,8 +69,16 @@ component serializable="false" accessors="true"{
 		// Setup the Framework And Application
 		application[ appKey ].getLoaderService().loadApplication( COLDBOX_CONFIG_FILE, COLDBOX_APP_MAPPING );
 		// Application Start Handler
-		if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ){
-			application[ appKey ].runEvent( event=application[ appKey ].getSetting( "ApplicationStartHandler" ) );
+		try {
+			if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ){
+				application[ appKey ].runEvent( event=application[ appKey ].getSetting( "ApplicationStartHandler" ) );
+			}
+		}
+		catch ( any e ) {
+			// process the exception
+			writeOutput( processException( application[ appKey ], e ) );
+			// abort it, something went really wrong.
+			abort;
 		}
 		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
 		if( structKeyExists( url, "fwreinit" ) ){
@@ -119,12 +127,6 @@ component serializable="false" accessors="true"{
 			if( cbController.getSetting( "Wirebox" ).singletonReload ){
 				lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{
 					cbController.getWireBox().clearSingletons();
-				}
-			}
-			// Modules AutoReload
-			if( cbController.getSetting( "ModulesAutoReload" ) ){
-				lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{
-					cbController.getModuleService().reloadAll();
 				}
 			}
 			// Handler's Index Auto Reload
@@ -184,8 +186,8 @@ component serializable="false" accessors="true"{
 				}
 				
 				// Authoritative Header
-				getPageContext().getResponse().setStatus( 203, "Non-Authoritative Information" );
-				getPageContext().getResponse().setHeader( "x-coldbox-cache-response", "true" );
+				getPageContextResponse().setStatus( 203, "Non-Authoritative Information" );
+				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
 				
 				// Render Content as binary or just output
 				if( refResults.eventCaching.isBinary ){
@@ -196,27 +198,41 @@ component serializable="false" accessors="true"{
 				}
 			} else {
 				//****** EXECUTE MAIN EVENT *******/
-				if( NOT event.isNoExecution() ){
+				if( NOT event.getIsNoExecution() ){
 					refResults.results = cbController.runEvent( defaultEvent=true );
 				}
 				//****** RENDERING PROCEDURES *******/
 				if( not event.isNoRender() ){
 					var renderedContent = "";
+					
 					// pre layout
 					interceptorService.processState( "preLayout" );
+					
 					// Check for Marshalling and data render
 					var renderData = event.getRenderData();
+					
 					// Rendering/Marshalling of content
 					if( isStruct( renderData ) and not structisEmpty( renderData ) ){
 						renderedContent = cbController.getDataMarshaller().marshallData( argumentCollection=renderData );
 					}
-					// Check for Event Handler return results
-					else if( !isNull( refResults.results ) ){
-						renderedContent = refResults.results;
+					// Check if handler returned results
+					else if( 
+						!isNull( refResults.results ) 
+					){
+						// If simple, just return it back, evaluates to HTML
+						if( isSimpleValue( refResults.results ) ){
+							renderedContent = refResults.results;
+						} 
+						// ColdBox does native JSON if you return a complex object.
+						else {
+							renderedContent = serializeJSON( refResults.results );
+							getPageContextResponse().setContentType( "application/json" );
+						}
 					}
 					// Render Layout/View pair via set variable to eliminate whitespace
 					else {
-						renderedContent = cbcontroller.getRenderer().renderLayout( module=event.getCurrentLayoutModule(), viewModule=event.getCurrentViewModule() );
+						renderedContent = cbcontroller.getRenderer()
+							.renderLayout( module=event.getCurrentLayoutModule(), viewModule=event.getCurrentViewModule() );
 					}
 
 					//****** PRE-RENDER EVENTS *******/
@@ -231,14 +247,27 @@ component serializable="false" accessors="true"{
 					var eCacheEntry = event.getEventCacheableEntry();
 					if( structKeyExists( eCacheEntry, "cacheKey") AND
 					    structKeyExists( eCacheEntry, "timeout")  AND
-					    structKeyExists( eCacheEntry, "lastAccessTimeout" )
+						structKeyExists( eCacheEntry, "lastAccessTimeout" ) AND
+						getPageContextResponse().getStatus() neq 500
 					){
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
+							
+							// Try to discover the content type
+							var defaultContentType = "text/html";
+							// Discover from event caching first.
+							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
+								defaultContentType 	= renderData.contentType;
+							} 
+							// Else, ask the engine
+							else {
+								defaultContentType = getPageContextResponse().getContentType();
+							}
+							
 							// prepare storage entry
 							var cacheEntry = {
 								renderedContent = renderedContent,
 								renderData		= false,
-								contentType 	= getPageContext().getResponse().getContentType(),
+								contentType 	= defaultContentType,
 								encoding		= "",
 								statusCode		= "",
 								statusText		= "",
@@ -247,7 +276,7 @@ component serializable="false" accessors="true"{
 							
 							// is this a render data entry? If So, append data
 							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
-								cacheEntry.renderData = true;
+								cacheEntry.renderData 	= true;
 								structAppend( cacheEntry, renderData, true );
 							}
 
@@ -264,13 +293,12 @@ component serializable="false" accessors="true"{
 
 					// Render Data? With stupid CF whitespace stuff.
 					if( isStruct( renderData ) and not structisEmpty( renderData ) ){/*
-						*/renderData.controller = cbController;renderDataSetup(argumentCollection=renderData);/*
+						*/renderData.controller = cbController;renderDataSetup( argumentCollection=renderData );/*
 						// Binary
 						*/if( renderData.isBinary ){ cbController.getDataMarshaller().renderContent( type="#renderData.contentType#", variable="#renderedContent#" ); }/*
 						// Non Binary
 						*/else{ writeOutput( renderedContent ); }
-					}
-					else{
+					} else {
 						writeOutput( renderedContent );
 					}
 
@@ -282,7 +310,7 @@ component serializable="false" accessors="true"{
 
 			//****** POST PROCESS *******/
 			if( len( cbController.getSetting( "RequestEndHandler" ) ) ){
-				cbController.runEvent(event=cbController.getSetting("RequestEndHandler"), prePostExempt=true);
+				cbController.runEvent( event=cbController.getSetting("RequestEndHandler"), prePostExempt=true );
 			}
 			interceptorService.processState( "postProcess" );
 			//****** FLASH AUTO-SAVE *******/
@@ -290,8 +318,7 @@ component serializable="false" accessors="true"{
 				cbController.getRequestService().getFlashScope().saveFlash();
 			}
 
-		}
-		catch(Any e){
+		} catch(Any e) {
 			// process the exception and render its report
 			writeOutput( processException( cbController, e ) );
 		}
@@ -304,9 +331,7 @@ component serializable="false" accessors="true"{
 	* Verify if a reinit is sent
 	*/
 	boolean function isFWReinit(){
-		var reinitPass 		= "";
-		var incomingPass 	= "";
-		var appKey 			= locateAppKey();
+		var appKey 	= locateAppKey();
 
 		// CF Parm Structures just in case
 		param name="FORM" 	default="#structNew()#";
@@ -321,9 +346,7 @@ component serializable="false" accessors="true"{
 		if ( structKeyExists( url, "fwreinit" ) or structKeyExists( form, "fwreinit" ) ){
 
 			// Check if we have a reinit password at hand.
-			if ( application[ appKey ].settingExists( "ReinitPassword" ) ){
-				reinitPass = application[ appKey ].getSetting( "ReinitPassword" );
-			}
+			var reinitPass = application[ appKey ].getSetting( name="ReinitPassword", defaultValue="" );
 
 			// pass Checks
 			if ( NOT len( reinitPass ) ){
@@ -331,6 +354,7 @@ component serializable="false" accessors="true"{
 			}
 
 			// Get the incoming pass from form or url
+			var incomingPass 	= "";
 			if( structKeyExists( form, "fwreinit" ) ){
 				incomingPass = form.fwreinit;
 			} else {
@@ -340,6 +364,8 @@ component serializable="false" accessors="true"{
 			// Compare the passwords
 			if( compare( reinitPass, hash( incomingPass ) ) eq 0 ){
 				return true;
+			} else {
+				application[ appKey ].getLog().warn( "The incoming reinit password is not valid." );
 			}
 
 		}//else if reinit found.
@@ -485,7 +511,10 @@ component serializable="false" accessors="true"{
 		// Store exception in private context
 		event.setPrivateValue( "exception", oException );
 
-		//Run custom Exception handler if Found, else run default exception routines
+		// Set Exception Header
+		getPageContextResponse().setStatus( 500, "Internal Server Error" );
+
+		// Run custom Exception handler if Found, else run default exception routines
 		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ){
 			try{
 				arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) );
@@ -572,7 +601,7 @@ component serializable="false" accessors="true"{
 		required encoding
 	){
     	// Status Codes
-		getPageContext().getResponse().setStatus( arguments.statusCode, arguments.statusText );
+		getPageContextResponse().setStatus( arguments.statusCode, arguments.statusText );
 		// Render the Data Content Type
 		controller.getDataMarshaller().renderContent( type=arguments.contentType, encoding=arguments.encoding, reset=true );
 		return this;
@@ -587,4 +616,18 @@ component serializable="false" accessors="true"{
 		}
 		return "cbController";
 	}
+
+	/**
+	* Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
+	**/
+	private function getPageContextResponse(){
+		var response = getPageContext().getResponse();
+		try{
+			response.getStatus();
+			return response;
+		}catch( any e ){
+			return response.getResponse();
+		}
+	}
+
 }
