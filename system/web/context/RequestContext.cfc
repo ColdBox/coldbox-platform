@@ -890,13 +890,18 @@ component serializable=false accessors="true"{
 	* @queryString The query string to append
 	*/
 	string function buildLink(
-		required to,
+		to,
 		boolean translate=true,
 		boolean ssl,
 		baseURL="",
 		queryString=""
 	){
 		var frontController = "index.cfm";
+
+		// Compatibility: Remove by 5.1
+		if( !isNull( arguments.linkTo ) and len( arguments.linkTo ) ){
+			arguments.to = trim( arguments.linkTo );
+		}
 
 		// Cleanups
 		arguments.to 			= trim( arguments.to );
