@@ -144,6 +144,9 @@ component serializable=false accessors="true"{
 		// Rendering Regions
 		variables.renderingRegions 		= {};
 
+		// Adding Compatibility methods that will be removed in 5.1.x
+		this.isSES = variables.getIsSES();
+
 		return this;
 	}
 
