@@ -1,218 +1,236 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-
-Author     :	Luis Majano
-Date        :	04/12/2009
-Description :
- A simple DB appender for MySQL, MSSQL, Oracle, PostgreSQL
-
-Inspiration from Tim Blair <tim@bla.ir> cflogger project.
-
-Properties:
- - dsn : the dsn to use for logging
- - table : the table to store the logs in
- - schema : which schema the table exists in (Optional)
- - columnMap : A column map for aliasing columns. (Optional)
- - autocreate : if true, then we will create the table. Defaults to false (Optional)
- - ensureChecks : if true, then we will check the dsn and table existence.  Defaults to true (Optional)
-				   
-The columns needed in the table are
-
- - id : UUID
- - severity : string
- - category : string
- - logdate : timestamp
- - appendername : string
- - message : string
- - extrainfo : string
-
-If you are building a mapper, the map must have the above keys in it.
-
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
-			 output="false"
-			 hint="This is a simple implementation of a appender that is db based.">
-	
-	<!--- Init --->
-	<cffunction name="init" access="public" returntype="DBAppender" hint="Constructor" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="name" 		required="true" hint="The unique name for this appender."/>
-		<cfargument name="properties" 	required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
-		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			// Init supertype
-			super.init( argumentCollection=arguments );
-			
-			// valid columns
-			instance.columns = "id,severity,category,logdate,appendername,message,extrainfo";
-			// UUID generator
-			instance.uuid = createobject( "java", "java.util.UUID" );
-			
-			// Verify properties
-			if( NOT propertyExists( 'dsn' ) ){ 
-				throw(message="No dsn property defined",type="DBAppender.InvalidProperty" ); 
-			}
-			if( NOT propertyExists( 'table' ) ){ 
-				throw(message="No table property defined",type="DBAppender.InvalidProperty" ); 
-			}
-			if( NOT propertyExists( 'autoCreate' ) OR NOT isBoolean(getProperty( 'autoCreate' )) ){ 
-				setProperty( 'autoCreate', false); 
-			}
-			if( NOT propertyExists( 'defaultCategory' ) ){
-				setProperty( "defaultCategory", arguments.name);
-			}
-			if( propertyExists( "columnMap" ) ){
-				checkColumnMap();
-			}
-			if( NOT propertyExists( "ensureChecks" ) ){
-				setProperty( "ensureChecks", true);
-			}
-			if( NOT propertyExists( "rotate" ) ){
-				setProperty( "rotate", true );
-			}
-			if( NOT propertyExists( "rotationDays" ) ){
-				setProperty( "rotationDays", 30 );
-			}
-			if( NOT propertyExists( "rotationFrequency" ) ){
-				setProperty( "rotationFrequency", 5 );
-			}
-			if( NOT propertyExists( "schema" ) ){
-				setProperty( "schema", "" );
-			}
-			
-			// DB Rotation Time
-			instance.lastDBRotation = "";
-			
-			return this;
-		</cfscript>
-	</cffunction>	
-	
-	<!--- onRegistration --->
-	<cffunction name="onRegistration" output="false" access="public" returntype="void" hint="Runs on registration">
-		<cfscript>
-			if( getProperty( "ensureChecks" ) ){
-				// Table Checks
-				ensureTable();
-			}
-		</cfscript>
-	</cffunction>
-	
-	<!--- Log Message --->
-	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender.">
-		<!--- ************************************************************* --->
-		<cfargument name="logEvent" type="any" required="true" hint="The logging event"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var type 		= "cf_sql_tinyint";
-			var category 	= getProperty( "defaultCategory" );
-			var cmap 		= "";
-			var cols 		= "";
-			var loge 		= arguments.logEvent;
-			var message 	= loge.getMessage();
-			
-			// Check Category Sent?
-			if( NOT loge.getCategory() eq "" ){
-				category = loge.getCategory();
-			}
-			
-			// Column Maps
-			if( propertyExists( 'columnMap' ) ){
-				cmap = getProperty( 'columnMap' );
-				cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.appendername#,#cmap.message#,#cmap.extrainfo#";
-			} else{
-				cols = instance.columns;
-			}
-		</cfscript>
-		
-		<!--- write the log message to the DB --->
-		<cfquery datasource="#getProperty( "dsn" )#">
-			INSERT INTO #getTable()# (#cols#) VALUES (
-				<cfqueryparam cfsqltype="cf_sql_varchar" 	value="#instance.uuid.randomUUID().toString()#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" 	value="#severityToString(loge.getseverity())#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" 	value="#left(category,100)#">,
-				<cfqueryparam cfsqltype="cf_sql_timestamp" 	value="#loge.getTimestamp()#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" 	value="#left(getName(),100)#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" 	value="#loge.getMessage()#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" 	value="#loge.getExtraInfoAsString()#">
-			)
-		</cfquery>
-		
-		<!--- rotation --->
-		<cfset this.rotationCheck()>
-	</cffunction>
-	
-	<!--- rotationCheck --->    
-    <cffunction name="rotationCheck" output="false" access="public" returntype="any" hint="Rotation checks">    
-    	<cfscript>	    
-			// Verify if in rotation frequency
-			if( isDate( instance.lastDBRotation ) AND dateDiff( "n",  instance.lastDBRotation, now() ) LTE getProperty( "rotationFrequency" ) ){
-				return;
-			}
-			
-			// Rotations
-			this.doRotation();
-			
-			// Store last profile time
-			instance.lastDBRotation = now();			
-    	</cfscript>    
-    </cffunction>
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * A simple DB appender for MySQL, MSSQL, Oracle, PostgreSQL
+ * 
+ * Properties:
+ * - dsn : the dsn to use for logging
+ * - table : the table to store the logs in
+ * - schema : which schema the table exists in (Optional)
+ * - columnMap : A column map for aliasing columns. (Optional)
+ * - autocreate : if true, then we will create the table. Defaults to false (Optional)
+ * - ensureChecks : if true, then we will check the dsn and table existence.  Defaults to true (Optional)
+ * 				   
+ * The columns needed in the table are
+ * 
+ * - id : UUID
+ * - severity : string
+ * - category : string
+ * - logdate : timestamp
+ * - appendername : string
+ * - message : string
+ * - extrainfo : string
+ * 
+ * If you are building a mapper, the map must have the above keys in it.
+**/
+component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
     
-    <!--- doRotation --->    
-    <cffunction name="doRotation" output="false" access="public" returntype="any" hint="Do Rotation">    
-   		<cfset var qLogs 		= "">
-		<cfset var cols 		= instance.columns>
-		<cfset var targetDate 	= dateAdd( "d", "-#getProperty( "rotationDays" )#", now() ) >
+    /**
+	 * Constructor
+	 * 
+	 * @name The unique name for this appender.
+	 * @properties A map of configuration properties for the appender"
+	 * @layout The layout class to use in this appender for custom message rendering.
+	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @levelMax The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
+	 */
+	function init(
+		required name,
+		struct properties={},
+		layout="",
+		levelMin=0,
+		levelMax=4
+	){
+       	// Init supertype
+		super.init( argumentCollection=arguments );
 		
-   		<cfquery datasource="#getProperty( "dsn" )#" name="qLogs">
-			DELETE
-			  FROM #getTable()#
-			 WHERE #listgetAt( cols,4)# < <cfqueryparam cfsqltype="#getDateTimeDBType()#" value="#dateFormat( targetDate, 'mm/dd/yyyy' )#">
-		</cfquery>
+		// valid columns
+		variables.columns = "id,severity,category,logdate,appendername,message,extrainfo";
+		// UUID generator
+		variables.uuid = createobject( "java", "java.util.UUID" );
 		
-    </cffunction>
+		// Verify properties
+		if( NOT propertyExists( 'dsn' ) ){ 
+			throw( message="No dsn property defined", type="DBAppender.InvalidProperty" ); 
+		}
+		if( NOT propertyExists( 'table' ) ){ 
+			throw( message="No table property defined", type="DBAppender.InvalidProperty" ); 
+		}
+		if( NOT propertyExists( 'autoCreate' ) OR NOT isBoolean( getProperty( 'autoCreate' ) ) ){ 
+			setProperty( 'autoCreate', false ); 
+		}
+		if( NOT propertyExists( 'defaultCategory' ) ){
+			setProperty( "defaultCategory", arguments.name );
+		}
+		if( propertyExists( "columnMap" ) ){
+			checkColumnMap();
+		}
+		if( NOT propertyExists( "ensureChecks" ) ){
+			setProperty( "ensureChecks", true );
+		}
+		if( NOT propertyExists( "rotate" ) ){
+			setProperty( "rotate", true );
+		}
+		if( NOT propertyExists( "rotationDays" ) ){
+			setProperty( "rotationDays", 30 );
+		}
+		if( NOT propertyExists( "rotationFrequency" ) ){
+			setProperty( "rotationFrequency", 5 );
+		}
+		if( NOT propertyExists( "schema" ) ){
+			setProperty( "schema", "" );
+		}
+		
+		// DB Rotation Time
+		variables.lastDBRotation = "";
+		return this;
+	}
 	
-<!------------------------------------------- PRIVATE ------------------------------------------>
-	
-	<cffunction name="getTable" hint="Return the table name with the schema included if found." access="private">
-		<cfscript>
-			if( len( getProperty( 'schema' ) ) ){
-				return getProperty( 'schema' ) & "." & getProperty( 'table' );  
+	/**
+	 * Runs on registration
+	 */
+	function onRegistration(){
+		if( getProperty( "ensureChecks" ) ){
+			// Table Checks
+			ensureTable();
+		}
+		return this;
+	}
+
+    /**
+	 * Write an entry into the appender. You must implement this method yourself.
+	 * 
+	 * @logEvent The logging event to log
+	 */
+	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
+		var type 		= "cf_sql_tinyint";
+		var category 	= getProperty( "defaultCategory" );
+		var cmap 		= "";
+		var cols 		= "";
+		var loge 		= arguments.logEvent;
+		var message 	= loge.getMessage();
+		
+		// Check Category Sent?
+		if( NOT loge.getCategory() eq "" ){
+			category = loge.getCategory();
+		}
+		
+		// Column Maps
+		if( propertyExists( 'columnMap' ) ){
+			cmap = getProperty( 'columnMap' );
+			cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.appendername#,#cmap.message#,#cmap.extrainfo#";
+		} else {
+			cols = variables.columns;
+		}
+
+		queryExecute( 
+			"INSERT INTO #getTable()# (#cols#) 
+				VALUES (
+					:uuid,
+					:severity,
+					:category,
+					:timestamp,
+					:name,
+					:message,
+					:extraInfo
+				)
+			",
+			{
+				uuid      = { cfsqltype="cf_sql_varchar", 	value="#variables.uuid.randomUUID().toString()#" },
+				severity  = { cfsqltype="cf_sql_varchar", 	value="#severityToString( loge.getseverity() )#" },
+				category  = { cfsqltype="cf_sql_varchar", 	value="#left( category, 100 )#" },
+				timestamp = { cfsqltype="cf_sql_timestamp", value="#loge.getTimestamp()#" },
+				name      = { cfsqltype="cf_sql_varchar", 	value="#left( getName(), 100 )#" },
+				message   = { cfsqltype="cf_sql_varchar", 	value="#loge.getMessage()#" },
+				extraInfo = { cfsqltype="cf_sql_varchar", 	value="#loge.getExtraInfoAsString()#" }
+			},
+			{
+				datasource = getProperty( "dsn" )
 			}
-			return getProperty( 'table' );
-		</cfscript>
-	</cffunction>
+		);
 
-	<!--- ensureTable --->
-	<cffunction name="ensureTable" output="false" access="private" returntype="void" hint="Verify or create the logging table">
-		<cfset var dsn 			= getProperty( "dsn" )>
-		<cfset var qTables 		= 0>
-		<cfset var tableFound 	= false>
-		<cfset var qCreate 		= "">
-		<cfset var cols 		= instance.columns>
+		this.rotationCheck();
+
+		return this;
+	}
+
+	/**
+	 * Rotation checks
+	 */
+	function rotationCheck(){
+		// Verify if in rotation frequency
+		if( isDate( variables.lastDBRotation ) AND dateDiff( "n",  variables.lastDBRotation, now() ) LTE getProperty( "rotationFrequency" ) ){
+			return;
+		}
 		
-		<cfif getProperty( "autoCreate" )>
-			<!--- Get Tables on this DSN --->
-			<cfdbinfo datasource="#dsn#" name="qTables" type="tables" />
+		// Rotations
+		this.doRotation();
+		
+		// Store last profile time
+		variables.lastDBRotation = now();
+	}
 
-			<!--- Verify it exists --->
-			<cfloop query="qTables">
-				<cfif qTables.table_name eq getProperty( "table" )>
-					<cfset tableFound = true>
-					<cfbreak>
-				</cfif>
-			</cfloop>
+	/**
+	 * Do the rotation
+	 */
+	function doRotation(){
+		var qLogs 		= "";
+		var cols 		= variables.columns;
+		var targetDate 	= dateAdd( "d", "-#getProperty( "rotationDays" )#", now() );
 
-			<!--- Only create if not found --->
-			<cfif NOT tableFound>
-				<!--- Try to Create Table  --->
-				<cfquery name="qCreate" datasource="#dsn#">
-					CREATE TABLE #getTable()# (
+		queryExecute( 
+			"DELETE
+			  FROM #getTable()#
+			 WHERE #listgetAt( cols,4)# < :datetime
+			",
+			{
+				datetime = { cfsqltype="#getDateTimeDBType()#", value="#dateFormat( targetDate, 'mm/dd/yyyy' )#" }
+			},
+			{
+				datasource = getProperty( "dsn" )
+			}
+		);
+		
+		return this;
+	}
+		
+	/************************************************ PRIVATE ************************************************/
+	
+	/**
+	 * Return the table name with the schema included if found.
+	 */
+	private function getTable(){
+		if( len( getProperty( 'schema' ) ) ){
+			return getProperty( 'schema' ) & "." & getProperty( 'table' );  
+		}
+		return getProperty( 'table' );
+	}
+
+	/**
+	 * Verify or create the logging table
+	 */
+	private function ensureTable(){
+		var dsn 			= getProperty( "dsn" );
+		var qTables 		= 0;
+		var tableFound 		= false;
+		var qCreate 		= "";
+		var cols 			= variables.columns;
+	
+		if( getProperty( "autoCreate" ) ){
+			// Get Tables on this DSN
+			cfdbinfo( datasource="#dsn#", name="qTables", type="tables" );
+
+			for( var thisRecord in qTables ){
+				if( thisRecord.table_name == getProperty( "table" ) ){
+					tableFound = true;
+					break;
+				}
+			}
+
+			if( NOT tableFound ){
+				queryExecute( 
+					"CREATE TABLE #getTable()# (
 						#listgetAt( cols, 1 )# VARCHAR(36) NOT NULL,
 						#listgetAt( cols, 2 )# VARCHAR(10) NOT NULL,
 						#listgetAt( cols, 3 )# VARCHAR(100) NOT NULL,
@@ -221,101 +239,114 @@ If you are building a mapper, the map must have the above keys in it.
 						#listgetAt( cols, 6 )# #getTextColumnType()#,
 						#listgetAt( cols, 7 )# #getTextColumnType()#,
 						PRIMARY KEY (id)
-					)
-				</cfquery>
-			</cfif>
-		</cfif>
-	</cffunction>
-	
-	<!--- checkColumnMap --->
-	<cffunction name="checkColumnMap" output="false" access="private" returntype="void" hint="Check a column map definition">
-		<cfscript>
-			var map = getProperty( 'columnMap' );
-			
-			for( var key in map ){
-				if( NOT listFindNoCase( instance.columns, key ) ){
-					throw(
-						message = "Invalid column map key: #key#",
-						detail 	= "The available keys are #instance.columns#",
-						type 	= "DBAppender.InvalidColumnMapException" 
-					);
-				}
+					)",
+					{},
+					{
+						datasource = getProperty( "dsn" )
+					}
+				);
 			}
-		</cfscript>
-	</cffunction>
-	
-	<!--- getDateTimeDBType --->    
-    <cffunction name="getDateTimeDBType" output="false" access="private" returntype="any">    
-    	<cfset var qResults = "">
-    	<cfdbinfo type="Version" name="qResults" datasource="#getProperty( 'dsn' )#" >
-    	<cfscript>	 
-			switch( qResults.database_productName ){
-				case "PostgreSQL" : {
-					return "cf_sql_timestamp";
-				}
-				case "MySQL" : {
-					return "cf_sql_timestamp";
-				}
-				case "Microsoft SQL Server" : {
-					return "cf_sql_date";
-				}
-				case "Oracle" :{
-					return "cf_sql_timestamp";
-				}
-				default : {
-					return "cf_sql_timestamp";
-				}
-			}   
-    	</cfscript>    
-    </cffunction>
+		}
+	}
 
-    <cffunction name="getTextColumnType" output="false" access="private" returntype="any">    
-    	<cfset var qResults = "">
-    	<cfdbinfo type="Version" name="qResults" datasource="#getProperty( 'dsn' )#" >
-    	<cfscript>	 
-			switch( qResults.database_productName ){
-				case "PostgreSQL" : {
-					return "TEXT";
-				}
-				case "MySQL" : {
-					return "LONGTEXT";
-				}
-				case "Microsoft SQL Server" : {
-					return "TEXT";
-				}
-				case "Oracle" :{
-					return "LONGTEXT";
-				}
-				default : {
-					return "TEXT";
-				}
-			}   
-    	</cfscript>    
-    </cffunction>
+	/**
+	 * Check a column map definition
+	 * 
+	 * @throws DBAppender.InvalidColumnMapException
+	 */
+	private function checkColumnMap(){
+		var map = getProperty( 'columnMap' );
+			
+		for( var key in map ){
+			if( NOT listFindNoCase( variables.columns, key ) ){
+				throw(
+					message = "Invalid column map key: #key#",
+					detail 	= "The available keys are #variables.columns#",
+					type 	= "DBAppender.InvalidColumnMapException" 
+				);
+			}
+		}
+	}
 
-    <!--- getDateTimeColumnType --->    
-    <cffunction name="getDateTimeColumnType" output="false" access="private" returntype="any">    
-    	<cfset var qResults = "">
-    	<cfdbinfo type="Version" name="qResults" datasource="#getProperty( 'dsn' )#" >
-    	<cfscript>	 
-			switch( qResults.database_productName ){
-				case "PostgreSQL" : {
-					return "TIMESTAMP";
-				}
-				case "MySQL" : {
-					return "DATETIME";
-				}
-				case "Microsoft SQL Server" : {
-					return "DATETIME";
-				}
-				case "Oracle" :{
-					return "DATE";
-				}
-				default : {
-					return "DATETIME";
-				}
-			}   
-    	</cfscript>    
-    </cffunction>
-	
-</cfcomponent>
+	/**
+	 * Get db specific date time column type
+	 */
+	private function getDateTimeDBType(){
+		var qResults = "";
+		
+		cfdbinfo( type="Version", name="qResults", datasource="#getProperty( 'dsn' )#" );
+		
+		switch( qResults.database_productName ){
+			case "PostgreSQL" : {
+				return "cf_sql_timestamp";
+			}
+			case "MySQL" : {
+				return "cf_sql_timestamp";
+			}
+			case "Microsoft SQL Server" : {
+				return "cf_sql_date";
+			}
+			case "Oracle" :{
+				return "cf_sql_timestamp";
+			}
+			default : {
+				return "cf_sql_timestamp";
+			}
+		}   
+	}
+
+	/**
+	 * Get db specific text column type
+	 */
+	private function getTextColumnType(){
+		var qResults = "";
+		
+		cfdbinfo( type="Version", name="qResults", datasource="#getProperty( 'dsn' )#" );
+		
+		switch( qResults.database_productName ){
+			case "PostgreSQL" : {
+				return "TEXT";
+			}
+			case "MySQL" : {
+				return "LONGTEXT";
+			}
+			case "Microsoft SQL Server" : {
+				return "TEXT";
+			}
+			case "Oracle" :{
+				return "LONGTEXT";
+			}
+			default : {
+				return "TEXT";
+			}
+		}  
+	}
+
+	/**
+	 * Get db specific text column type
+	 */
+	private function getDateTimeColumnType(){
+		var qResults = "";
+		
+		cfdbinfo( type="Version", name="qResults", datasource="#getProperty( 'dsn' )#" );
+		
+		switch( qResults.database_productName ){
+			case "PostgreSQL" : {
+				return "TIMESTAMP";
+			}
+			case "MySQL" : {
+				return "DATETIME";
+			}
+			case "Microsoft SQL Server" : {
+				return "DATETIME";
+			}
+			case "Oracle" :{
+				return "DATE";
+			}
+			default : {
+				return "DATETIME";
+			}
+		}
+	}
+   
+}

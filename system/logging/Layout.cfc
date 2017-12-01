@@ -1,46 +1,40 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* This is a base layout object that will help you create custom layout's for messages in appenders
+**/
+component accessors="true"{
+	/**
+	 * The LogBox appender this layotu is linked to.
+	 */
+	property name="appender";
 
-Author     :	Luis Majano
-Date        :	3/13/2009
-Description :
-	This is a base layout object that will help you create custom 
-	layout's for messages in appenders
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="This is a base custom layout for a message in an appender.">
+	// The log levels enum as a public property
+	this.logLevels = new coldbox.system.logging.LogLevels();
+	// A line Sep Constant, man, wish we had final in CF.
+	this.LINE_SEP  = chr(13) & chr(10);
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	 * Constructor
+	 * 
+	 * @appender The appender this layout is linked to.
+	 */
+	function init( required appender ){
+		variables.appender = arguments.appender;
+		return this;
+	}
 
-	<cfscript>
-		// The log levels enum as a public property
-		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
-		// A line Sep Constant, man, wish we had final in CF.
-		this.LINE_SEP  = chr(13) & chr(10);
-	</cfscript>
+	/**
+	 * Format a logging event message into your own format
+	 * 
+	 * @logEvent The LogBox logging event object
+	 */
+	function format( required logEvent ){
+		throw(
+			message = "You must implement this layout's format() method",
+			type 	= "FormatNotImplementedException"
+		)
+	}
 	
-	<!--- Init --->
-	<cffunction name="init" access="public" returntype="Layout" hint="Constructor" output="false">
-		<cfargument name="appender" type="any" required="true" default="" hint="The appender linked to (coldbox.system.logging.AbstractAppender)" doc_generic="coldbox.system.logging.AbstractAppender"/>
-		<cfscript>
-			
-			// The appender we are linked to.
-			instance.appender = arguments.appender;
-			
-			// Return 
-			return this;
-		</cfscript>
-	</cffunction>
-	
-<!------------------------------------------- PUBLIC ------------------------------------------>
-
-	<!--- format --->
-	<cffunction name="format" output="false" access="public" returntype="string" hint="Format a logging event message into your own format">
-		<cfargument name="logEvent" type="any"   required="true"   hint="The logging event to use to create a message (coldbox.system.logging.LogEvent)" doc_generic="coldbox.system.logging.LogEvent">
-		<cfthrow message="You must implement this layout's format() method."
-				 type="Layout.FormatNotImplementedException">
-	</cffunction>
-	
-</cfcomponent>
+}

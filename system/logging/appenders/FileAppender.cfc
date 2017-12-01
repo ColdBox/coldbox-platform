@@ -64,7 +64,7 @@ Properties:
 			}
 
 			//lock information
-			instance.lockName = instance._hash & getname() & "logOperation";
+			instance.lockName = getHash() & getname() & "logOperation";
 			instance.lockTimeout = 25;
 
 			return this;
