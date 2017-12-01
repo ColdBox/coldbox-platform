@@ -70,7 +70,7 @@ component serializable=false accessors="true"{
 	/**
 	 * Are we in SES mode for the request or not
 	 */
-	property name="isSES" type="boolean";
+	property name="SESEnabled" type="boolean";
 
 	/**
 	 * The incoming RESTFul routed struct (if any)
@@ -134,7 +134,7 @@ component serializable=false accessors="true"{
 			variables.SESBaseURL = arguments.properties.SESBaseURL;
 		}
 		// flag if using SES
-		variables.isSES 				= false;
+		variables.SESEnabled 			= false;
 		// routed SES structures
 		variables.routedStruct 			= structnew();
 
@@ -143,9 +143,6 @@ component serializable=false accessors="true"{
 
 		// Rendering Regions
 		variables.renderingRegions 		= {};
-
-		// Adding Compatibility methods that will be removed in 5.1.x
-		this.isSES = variables.getIsSES();
 
 		return this;
 	}
@@ -799,11 +796,19 @@ component serializable=false accessors="true"{
 
 	/**
 	* Setter for verifying SES mode
+	*
 	* @return RequestContext
 	*/
-	function setIsSES( required boolean isSES ){
-		variables.isSES = arguments.isSES;
+	function setSESEnabled( required boolean flag ){
+		variables.SESEnabled = arguments.flag;
 		return this;
+	}
+
+	/**
+	 * Verify if SES is enabled or not in the request
+	 */
+	boolean function isSES(){
+		return variables.SESEnabled;
 	}
 
 	/**
@@ -914,7 +919,7 @@ component serializable=false accessors="true"{
 		}
 
 		// SES Mode
-		if( variables.isSES ){
+		if( variables.SESEnabled ){
 			// SSL ON OR TURN IT ON
 			if( isSSL() OR ( structKeyExists( arguments, "ssl" ) and arguments.ssl ) ){
 				variables.SESBaseURL = replacenocase( variables.SESBaseURL, "http:", "https:" );
