@@ -293,7 +293,7 @@ component serializable="false" accessors="true"{
 		var routeString     = 0;
 
 		// Determine relocation type
-		if( oRequestContext.getIsSES() ){ 
+		if( oRequestContext.isSES() ){ 
 			relocationType = "SES"; 
 		}
 		if( structKeyExists( arguments, "URL" ) ){ 

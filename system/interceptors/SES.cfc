@@ -120,7 +120,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// Configure Context, Just in case
 		controller.getRequestService().getContext()
-			.setIsSES( variables.enabled )
+			.setSESEnabled( variables.enabled )
 			.setSESBaseURL( variables.baseURL );
 	}
 
@@ -159,7 +159,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		if( variables.autoReload ){ configure(); }
 
 		// Set that we are in ses mode
-		arguments.event.setIsSES( true );
+		arguments.event.setSESEnabled( true );
 
 		// Check for invalid URLs if in strict mode via unique URLs
 		if( variables.uniqueURLs ){

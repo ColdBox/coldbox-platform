@@ -33,7 +33,7 @@
 			.$( "getRoutes", [ { name="contactus", pattern="contactus/" } ] );
 		mockController.getInterceptorService().$( "getInterceptor", mockSES );
 		
-		var event = getRequestContext().setIsSES( true );
+		var event = getRequestContext().setSESEnabled( true );
 		var r = event.route( "contactus" );
 		//debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
@@ -41,7 +41,7 @@
 
 	function testGetModuleEntryPoint(){
 		var event = getRequestContext()
-			.setIsSES( true )
+			.setSESEnabled( true )
 			.$property( "modules", "variables", {
 				myModule = {
 					inheritedEntryPoint = "mymodule/"
@@ -62,7 +62,7 @@
 		mockController.getInterceptorService().$( "getInterceptor", mockSES );
 		
 		var event = getRequestContext()
-			.setIsSES( true )
+			.setSESEnabled( true )
 			.$property( "modules", "variables", {
 				myModule = {
 					inheritedEntryPoint = "mymodule/"
@@ -79,13 +79,13 @@
 			.$( "getRoutes", [] );
 		mockController.getInterceptorService().$( "getInterceptor", mockSES );
 		
-		var event = getRequestContext().setIsSES( true );
+		var event = getRequestContext().setSESEnabled( true );
 		expect( function(){ event.route( "invalid" ); } ).toThrow();
 	}
 
 	function testGetHTMLBaseURL(){
 		var event = getRequestContext();
-		event.setIsSES( true )
+		event.setSESEnabled( true )
 			.$( "isSSL", false );
 		expect( event.getHTMLBaseURL() ).toinclude( "http://jfetmac/applications/coldbox/test-harness" );
 
@@ -368,8 +368,8 @@
 		event.setsesBaseURL(base);
 		assertEquals( event.getsesBaseURL(), base );
 
-		event.setisSES( true );
-		assertEquals( event.getIsSES(), true );
+		event.setSESEnabled( true );
+		assertEquals( event.isSES(), true );
 	}
 
 	function testInvalidHTTPMethod(){
@@ -389,34 +389,34 @@
 		basessl = "https://www.luismajano.com/index.cfm";
 
 		/* simple setup */
-		event.setisSES(false);
+		event.setSESEnabled(false);
 		testurl = event.buildLink('general.index');
 		AssertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* simple qs */
-		event.setisSES(false);
+		event.setSESEnabled(false);
 		testurl = event.buildLink( to='general.index',queryString="page=2");
 		AssertEquals( testurl, "index.cfm?event=general.index&page=2" );
 
 		/* empty qs */
-		event.setisSES(false);
+		event.setSESEnabled(false);
 		testurl = event.buildLink( to='general.index',queryString="");
 		AssertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* ses test */
-		event.setisSES( true );
+		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( to='general/index', ssl=false );
 		AssertEquals( testurl, base & "/general/index" );
 
 		/* query string transformation */
-		event.setisSES( true );
+		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( to='general/index', queryString="page=2&tests=4", ssl=false );
 		AssertEquals( testurl, base & "/general/index/page/2/tests/4" );
 
 		/* ssl test */
-		event.setisSES( true );
+		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( to='general/index', ssl=true );
 		AssertEquals( testurl, basessl & "/general/index" );
@@ -427,13 +427,13 @@
 		AssertEquals( testurl, base & "/general/index/name/luis/cool/false" );
 
 		/* translate */
-		event.setisSES( true );
+		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( to='general.index', translate=false, ssl=false );
 		AssertEquals( testurl, base & "/general.index" );
 
 		/* translate with query string */
-		event.setisSES( true );
+		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( to='general.index', queryString="name=luis&cool=false", translate=false, ssl=false );
 		AssertEquals( testurl, base & "/general.index?name=luis&cool=false" );
@@ -557,7 +557,7 @@
 	function testDoubleSlashInBuildLink(){
 		var event = getRequestContext();
 
-		event.setIsSES( true );
+		event.setSESEnabled( true );
 
 		link = event.buildLink( to='my/event/handler/', queryString='one=1&two=2' );
 		expect(	link ).toInclude( "test-harness/index.cfm/my/event/handler/one/1/two/2" );
