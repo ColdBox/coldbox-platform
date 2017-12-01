@@ -28,7 +28,7 @@ Description :
 	<cffunction name="arrayToStruct" output="false" access="public" returntype="struct" hint="Convert an array to struct argument notation">
 		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
 		<cfscript>
-			return a.reduce( function( result, item, index ){
+			return arguments.in.reduce( function( result, item, index ){
 				var target = result ?: structNew();
 				target[ index ] = item;
 				return target;
