@@ -58,7 +58,7 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 		try{
 			variables.fileRotator.checkRotation( this );
 		} catch( Any e ) {
-			writeDump( var=e );abort;
+			
 			$log(
 				"ERROR",
 				"Could not zip and rotate log files in #getName()#. #e.message# #e.detail#"
