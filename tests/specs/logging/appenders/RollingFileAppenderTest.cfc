@@ -1,39 +1,60 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-<cfscript>
-	function setup(){
-		props = {filePath=expandPath("/tests/logs"),autoExpand=false,
-				 fileMaxArchives=1,fileMaxSize=3};
-		//debug(props);
-		fileappender = getMockBox().createMock(className="coldbox.system.logging.appenders.RollingFileAppender");
-		
-		// mock LogBox
-		logBox = getMockBox().createMock(classname="coldbox.system.logging.LogBox",clearMethod=true);
-		fileAppender.logBox = logBox;
-		
-		fileappender.init('MyFileAppender',props);
-		
-		loge = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
-		loge.init("Unit Test Sample",0,"","UnitTest");
-	}
-	function testOnRegistration(){
-		fileAppender.onRegistration();	
-	}
-	function testLogMessage(){
-		for(x=0; x lte 50; x++){
-			loge.setSeverity(x);
-			loge.setCategory("coldbox.system.testing");
-			fileappender.logMessage(loge);
-		}
-		files = dirlist(props.filePath);
-		assertTrue( files.recordcount gt 1 );
-	}	
-</cfscript>
+﻿
+/**
+* My BDD Test
+*/
+component extends="coldbox.system.testing.BaseModelTest"{
+	
+/*********************************** LIFE CYCLE Methods ***********************************/
 
-<!--- dirlist --->
-<cffunction name="dirlist" output="false" access="private" returntype="query" hint="">
-	<cfargument name="dir" type="string" required="true" default="" hint=""/>
-	<cfset var qList = "">
-	<cfdirectory action="list" directory="#arguments.dir#" name="qList">
-	<cfreturn qlist>
-</cffunction>
-</cfcomponent>
+	// executes before all suites+specs in the run() method
+	function beforeAll(){
+		super.beforeAll();	
+	}
+
+	// executes after all suites+specs in the run() method
+	function afterAll(){
+		super.afterAll();
+	}
+
+/*********************************** BDD SUITES ***********************************/
+
+	function run( testResults, testBox ){
+		// all your suites go here.
+		describe( "Rolling File Appender", function(){
+			
+			beforeEach(function( currentSpec ){
+				props = { filePath=expandPath("/tests/logs"), autoExpand=false, fileMaxArchives=1, fileMaxSize=3 };
+				
+				//debug(props);
+				fileappender = createMock( "coldbox.system.logging.appenders.RollingFileAppender" );
+				
+				// mock LogBox
+				logBox = createMock( classname="coldbox.system.logging.LogBox", clearMethod=true );
+				fileAppender.logBox = logBox;
+				
+				fileappender.init( 'MyFileAppender', props );
+				
+				loge = createMock( "coldbox.system.logging.LogEvent" );
+				loge.init( "Unit Test Sample", 0, "", "UnitTest" );
+			});
+
+			it( "can call registration", function(){
+				fileAppender.onRegistration();
+			});
+			
+			it( "can log messages", function(){
+				// Log 50 messages to trigger rotation
+				for( var x=0; x lte 100; x++ ){
+					loge.setSeverity( x );
+					loge.setCategory( "coldbox.system.testing" );
+					fileappender.logMessage( loge );
+				}
+				var files = directoryList( props.filePath, false, "query" );
+				debug( files );	
+				expect(	files ).notToBeEmpty();
+			});
+
+		});
+	}
+	
+}

@@ -13,7 +13,7 @@
  * - fileMaxSize : The max file size for log files. Defaults to 2000 (2 MB)
  * - fileMaxArchives : The max number of archives to keep. Defaults to 2.
 **/
-component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
+component accessors="true" extends="coldbox.system.logging.appenders.FileAppender" {
     
     /**
 	 * Constructor
@@ -33,10 +33,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	){
         super.init( argumentCollection=arguments );
 			
-		if( NOT propertyExists( "fileMaxSize" ) OR NOT isNumeric(getProperty( "fileMaxSize" )) ){
+		if( NOT propertyExists( "fileMaxSize" ) OR NOT isNumeric( getProperty( "fileMaxSize" ) ) ){
 			setProperty( "fileMaxSize", "2000" );
 		}
-		if( NOT propertyExists( "fileMaxArchives" ) OR NOT isNumeric(getProperty( "fileMaxArchives" )) ){
+		if( NOT propertyExists( "fileMaxArchives" ) OR NOT isNumeric( getProperty( "fileMaxArchives" ) ) ){
 			setProperty( "fileMaxArchives", "2" );
 		}
 		
@@ -51,13 +51,14 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 * @logEvent The logging event to log
 	 */
 	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
-		// Log the message in the super.
+		// Log the message in the super class
 		super.logMessage( arguments.logEvent );
 		
 		// Rotate
 		try{
 			variables.fileRotator.checkRotation( this );
-		} catch(Any e) {
+		} catch( Any e ) {
+			writeDump( var=e );abort;
 			$log(
 				"ERROR",
 				"Could not zip and rotate log files in #getName()#. #e.message# #e.detail#"
