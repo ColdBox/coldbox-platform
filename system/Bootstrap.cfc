@@ -2,8 +2,8 @@
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
-* Loads the framwork into memory and provides a ColdBox application.
 * @author Luis Majano <lmajano@ortussolutions.com>
+* Loads the framwork into memory and provides a ColdBox application.
 */
 component serializable="false" accessors="true"{
 
@@ -56,14 +56,35 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Loads the framework into application scope and executes app start procedures
+	 * Loads the framework into application scope and executes app start procedures
+	 * 
+	 * @throws InvalidColdBoxMapping
 	*/
 	function loadColdBox(){
 		var appKey = locateAppKey();
+		
 		// Cleanup of old code, just in case
 		if( structkeyExists( application, appKey ) ){
 			structDelete( application, appKey );
 		}
+
+		// Verify Mapping
+		if( !fileExists( expandPath( "/coldbox/system/web/Controller.cfc" ) ) ){
+			var coldboxDirectory = reReplaceNoCase(
+				getDirectoryFromPath( getCurrentTemplatePath() ),
+				"[\\/]system",
+				""	
+			);
+			throw(
+				message = "Cannot find the '/'coldbox' mapping",
+				detail 	= "It seems that you do not have a '/coldbox' mapping in your application and we cannot continue to process the request.
+				The good news is that you can easily resolve this by either creating a mapping in your Admnistrator or in this application's
+				Application.cfc that points to this directory: '#coldboxDirectory#'.  You can also copy the code snippet
+				below to add to your Application.cfc's pseudo constructor: this.mappings[ '/coldbox' ] = '#coldboxDirectory#'",
+				type	= "InvalidColdBoxMapping"
+			);
+		}
+
 		// Create Brand New Controller
 		application[ appKey ] = new coldbox.system.web.Controller( COLDBOX_APP_ROOT_PATH, appKey );
 		// Setup the Framework And Application
