@@ -34,7 +34,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		variables.templateCache			= controller.getCache( "template" );
 		variables.flashData 			= controller.getSetting( "flash" );
 		variables.flashDataHash			= hash( variables.flashData.toString() );
-		
+
 		// build out Flash RAM
 		buildFlashScope();
 	}
@@ -98,7 +98,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 	/**
 	 * Tests if the incoming context is an event cache
-	 * 
+	 *
 	 * @context The request context to test for event caching
 	 * @context.docbox_generic coldbox.system.web.context.RequestContext
 	 * @fwCache Flag to hard purge the cache if needed
@@ -150,18 +150,20 @@ component extends="coldbox.system.web.services.BaseService"{
 
 	/**
 	 * Get the Request context from request scope or create a new one.
-	 * 
+	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
-	function getContext(){
-		return ( request.cb_requestContext ?: createContext() );
+	function getContext( string classPath = "coldbox.system.web.context.RequestContext" ){
+        return ( request.keyExists( "cb_requestContext" ) ?
+            request[ "cb_requestContext" ] :
+            createContext( classPath ) );
 	}
 
 	/**
 	 * Set the request context into the request scope
-	 * 
+	 *
 	 * @context Request Context object
-	 * 
+	 *
 	 * @RequestService
 	 */
 	RequestService function setContext( required context ){
@@ -246,11 +248,11 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * Creates a new request context object
 	 * @return coldbox.system.web.context.RequestContext
 	 */
-	function createContext(){
+	function createContext( string classPath = "coldbox.system.web.context.RequestContext" ){
 		var oDecorator = "";
 
-		// Create the original request context
-		var oContext = new coldbox.system.web.context.RequestContext( properties=controller.getConfigSettings(), controller=controller );
+        // Create the original request context
+		var oContext = createObject( "component", classPath ).init( properties=controller.getConfigSettings(), controller=controller );
 
 		// Determine if we have a decorator, if we do, then decorate it.
 		if ( len( controller.getSetting( name="RequestContextDecorator", defaultValue="" ) ) ){
