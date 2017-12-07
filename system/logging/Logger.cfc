@@ -30,6 +30,10 @@ Description :
 		// Logger Logging Level defaults, which is wideeeee open!
 		instance.levelMin 		= this.logLevels.FATAL;
 		instance.levelMax 		= this.logLevels.DEBUG;
+
+		function getMemento(){
+			return instance;
+		}
 	</cfscript>
 
 	<!--- Init --->
