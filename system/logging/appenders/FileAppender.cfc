@@ -26,6 +26,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * The default lock timeout
 	 */
 	property name="lockTimeout" default="25" type="numeric";
+
+	/**
+	 * Log Listener Queue
+	 */
+	property name="logListener" type="struct";
     
     /**
 	 * Constructor
@@ -82,6 +87,24 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		variables.lockName 		= getHash() & getname() & "logOperation";
 		variables.lockTimeout 	= 25;
 
+		// Activate Log Listener Queue
+		variables.logListener = {
+			active 	= false,
+			queue 	= []
+		};
+
+		// Declare locking construct
+		variables.lock = function( type="exclusive", body ){
+			lock 	name="#getHash() & getName()#-logListener"
+					type=arguments.type
+					timeout="#variables.lockTimeout#"
+					throwOnTimeout=true{
+
+				return arguments.body();
+
+			}
+		};
+
 		return this;
     }
 
@@ -115,7 +138,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "MM/DD/YYYY" )#","#timeformat( timestamp, "HH:MM:SS" )#","#loge.getCategory()#","#message#"';
 		}
 
-		// Setup the real entry
+		// Log it
 		append( entry );
 
 		return this;
@@ -137,16 +160,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	FileAppender function removeLogFile(){
 		if( fileExists( variables.logFullPath ) ){
 
-			lock 	name="#variables.lockName#"
-					type="exclusive"
-					timeout="#variables.lockTimeout#"
-					throwOnTimeout=true{
-				
+			variables.lock( body=function(){
 				if( fileExists( variables.logFullPath ) ){
 					fileDelete( variables.logFullPath );
 				} // end double lock race condition
-
-			} // end lock
+			} );
 
 		} // end if
 
@@ -159,11 +177,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	FileAppender function initLogLocation(){
 		if( !fileExists( variables.logFullPath ) ){
 
-			lock 	name="#variables.lockName#"
-					type="exclusive"
-					timeout="#variables.lockTimeout#"
-					throwOnTimeout=true{
-				
+			variables.lock( body=function(){
 				if( !fileExists( variables.logFullPath ) ){
 					try{
 						// Default Log Directory
@@ -174,12 +188,113 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 						$log( "ERROR", "Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#" );
 					}
 				} // end double lock race condition
-
-			} // end lock
+			} );
 
 		}
 
 		return this;
+	}
+
+	/**
+	 * Start the log listener so we can queue up the logging to alleviate for disk operations
+	 */
+	function startLogListener(){
+		
+		var isActive = variables.lock( "readonly", function(){
+			return variables.logListener.active;
+		} );
+		
+		if( isActive ){
+			//out( "Listener already active exiting startup..." );
+			return; 
+		} else {
+			//out( "Listener needs to startup" );
+		}
+
+		thread  action="run" name="#variables.lockName#-#getTickCount()#"{
+			// Activate listener
+			var isActivating = variables.lock( body=function(){
+				if( !variables.logListener.active ){
+					//out( "listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
+					variables.logListener.active = true;
+					return true;
+				} else {
+					//out( "listener was just marked as active, just existing lock" );
+					return false;
+				}
+			} );
+
+			if( !isActivating ){ return; }
+
+			var lastRun       = getTickCount();
+			var start         = lastRun;
+			var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
+			var flushInterval = 1000; // 1 second
+			var sleepInterval = 50; 
+			var count         = 0;
+			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
+			var hasMessages   = false;
+
+			try{
+				out( "Starting #getName()# thread", true );
+				
+				// Execute only if there are messages in the queue or the internal has been crossed
+				while(
+					variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
+				){
+					
+					//out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
+
+					if( variables.logListener.queue.len() ){
+						// pop and dequeue
+						var thisMessage = variables.logListener.queue[ 1 ];
+						variables.logListener.queue.deleteAt( 1 );
+
+						if( isSimpleValue( oFile ) ){
+							oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
+						}
+						
+						//out( "Wrote to file #thisMessage#" );
+
+						// Write to file
+						fileWriteLine( oFile, thisMessage ); 
+						
+						// Mark the last run
+						lastRun = getTickCount(); 
+					}
+
+					// flush to disk every start + 1000ms 
+					if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
+						out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
+						fileClose( oFile );
+						oFile = "";
+						start = getTickCount();
+					}
+
+					//out( "Sleeping: lastRun #lastRun + maxIdle#" );
+
+					sleep( sleepInterval ); // take a nap
+				}
+
+			} catch( Any e ){
+				$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
+				out( "Error with listener thread for #getName()#" & e.message & e.detail );
+			} finally {
+				out( "Stopping listener thread for #getName()#, we have done our job" );
+				
+				// Stop log listener
+				variables.lock( body=function(){
+					variables.logListener.active = false;
+				} );
+
+				if( !isSimpleValue( oFile ) ){
+					fileClose( oFile );
+					oFile = "";
+				}
+			}
+
+		} // end threading
+
 	}
 	
 	/************************************ PRIVATE ************************************/
@@ -190,21 +305,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @message The target message
 	 */
 	private FileAppender function append( required message ){
-		lock 	name="#variables.lockName#"
-				type="exclusive"
-				timeout="#variables.lockTimeout#"
-				throwOnTimeout=true{
-			
-			cffile( 
-				action     = "append",
-				file 	   = variables.logFullPath,
-				output 	   = arguments.message,
-				addNewLine = true,
-				charset    = getProperty( "fileEncoding" ),
-				fixnewline = true
-			);
+		// Ensure log listener
+		startLogListener();
 
-		}
+		// queue message up
+		arrayAppend( variables.logListener.queue, arguments.message );
 
 		return this;
 	}

@@ -13,6 +13,19 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		if( directoryExists( dirPath ) ){
 			directoryDelete( expandPath("/tests/logs"), true );
 		}
+
+		props = { filePath=expandPath("/tests/logs"), autoExpand=false };
+		// debug(props);
+		fileappender = createMock( "coldbox.system.logging.appenders.FileAppender" );
+		
+		// mock LogBox
+		logBox = createMock( classname="coldbox.system.logging.LogBox", clearMethod=true );
+		fileAppender.logBox = logBox;
+		
+		fileappender.init( 'MyFileAppender', props );
+		
+		loge = createMock( "coldbox.system.logging.LogEvent" );
+		loge.init( "Unit Test Sample", 0, "", "UnitTest" );
 	}
 
 	// executes after all suites+specs in the run() method
@@ -26,21 +39,6 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		// all your suites go here.
 		describe( "File Appender", function(){
 			
-			beforeEach(function( currentSpec ){
-				props = { filePath=expandPath("/tests/logs"), autoExpand=false };
-				// debug(props);
-				fileappender = createMock( "coldbox.system.logging.appenders.FileAppender" );
-				
-				// mock LogBox
-				logBox = createMock( classname="coldbox.system.logging.LogBox", clearMethod=true );
-				fileAppender.logBox = logBox;
-				
-				fileappender.init( 'MyFileAppender', props );
-				
-				loge = createMock( "coldbox.system.logging.LogEvent" );
-				loge.init( "Unit Test Sample", 0, "", "UnitTest" );
-			});
-
 			it( "can call registration", function(){
 				fileAppender.onRegistration();
 			});
@@ -53,6 +51,9 @@ component extends="coldbox.system.testing.BaseModelTest"{
 					fileappender.logMessage( loge );
 				}
 				
+				// sleep to let threads write to disk.
+				sleep( 1000 );
+
 				var content = fileRead( fileAppender.getLogFullPath() );
 				expect(	content ).toInclude( "Unit Test Sample" );
 			} );

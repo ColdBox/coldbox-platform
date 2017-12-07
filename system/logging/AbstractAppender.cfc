@@ -232,4 +232,17 @@ component accessors="true"{
 		return this;
 	}
 
+	/**
+	 * Utiliy to send to output to console.
+	 *
+	 * @message Message to send
+	 * @addNewLine Add a line break or not, default is yes
+	 */
+	private function out( required message, boolean addNewLine=true ){
+		if( arguments.addNewLine ){
+			arguments.message &= chr( 13 ) & chr( 10 );
+		}
+		createObject( "java", "java.lang.System" ).out.println( arguments.message );
+	}
+
 }
