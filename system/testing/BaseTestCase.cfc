@@ -164,7 +164,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	*/
 	function reset( boolean clearMethods=false, decorator ){
 		structDelete( application, getColdboxAppKey() );
-		
+
 		if( !structIsEmpty( request ) ){
 			lock type="exclusive" scope="request" timeout=10{
 				if( !structIsEmpty( request ) ){
@@ -296,7 +296,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* @return coldbox.system.web.context.RequestContext
 	*/
 	function getRequestContext(){
-		return getController().getRequestService().getContext();
+		return getController().getRequestService().getContext(
+            "coldbox.system.testing.mock.web.context.MockRequestContext"
+        );
 	}
 
 	/**
@@ -400,7 +402,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			if ( len( cbController.getSetting( "ApplicationStartHandler" ) ) ){
 				cbController.runEvent( cbController.getSetting( "ApplicationStartHandler" ), true );
 			}
-			
+
 			// preProcess
 			cbController.getInterceptorService().processState( "preProcess" );
 
@@ -431,11 +433,13 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 					// Render Data?
 					renderData = requestContext.getRenderData();
 					if( isStruct( renderData ) and NOT structIsEmpty( renderData ) ){
+                        requestContext.setValue( "cbox_render_data", renderData );
+                        requestContext.setValue( "cbox_statusCode", renderData.statusCode );
 						renderedContent = cbController.getDataMarshaller().marshallData(argumentCollection=renderData);
 					}
 					// If we have handler results save them in our context for assertions
-					else if ( 
-						!isNull( handlerResults ) 
+					else if (
+						!isNull( handlerResults )
 					){
 						// Store raw results
 						requestContext.setValue( "cbox_handler_results", handlerResults );
@@ -483,8 +487,10 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 		// Return the correct event context.
 		requestContext = getRequestContext();
 
-        // Add in the getRenderedContent method for convenience
+        // Add in the test helpers for convenience
         requestContext.getRenderedContent = variables.getRenderedContent;
+        requestContext.getRenderData = variables.getRenderData;
+        requestContext.getStatusCode = variables.getStatusCode;
 
 		return requestContext;
 	}
@@ -497,6 +503,24 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     function getRenderedContent(){
         return getValue( "cbox_rendered_content", "" );
     }
+
+    /**
+    * Get the render data struct for a ColdBox integration test
+    *
+    * @return cbox_render_data or an empty struct
+    */
+    function getRenderData(){
+        return getValue( "cbox_render_data", {} );
+    }
+
+    /**
+    * Get the status code for a ColdBox integration test
+    *
+    * @return cbox_statusCode or 200
+    */
+    function getStatusCode(){
+        return getValue( "cbox_statusCode", 200 );
+    };
 
 	/**
 	* Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
@@ -596,10 +620,10 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
             if ( ArrayLen( pairParts ) < 2 ){
                 pairParts[ 2 ] = '';
             }
-			
+
 			// Decode query parameter name and value now that we're done parsing them.
 			pairParts[ 1 ] = URLDecode( pairParts[ 1 ] );
-			pairParts[ 2 ] = URLDecode( pairParts[ 2 ] ); 
+			pairParts[ 2 ] = URLDecode( pairParts[ 2 ] );
 
             if ( ! StructKeyExists( queryParams, pairParts[1] ) ){
                 queryParams[ pairParts[ 1 ] ] = '';
