@@ -38,7 +38,7 @@ component accessors="true"{
 	 * 
 	 * @return RequestBuffer
 	 */
-	function append(){
+	function append( required str ){
 		getBufferObject().append( arguments.str );
 		return this;
 	}
