@@ -286,7 +286,7 @@ component accessors="true"{
 			.listToArray()
 			.reduce( function( result, item, index ){
 				var target = result ?: structNew();
-				target[ item ] = variables.appenderRegistry[ item ] ?: "";
+				target[ item ] = variables.appenderRegistry[ item ];
 				return target;
 			} );
 		return results ?: structnew();
