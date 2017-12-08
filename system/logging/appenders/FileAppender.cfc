@@ -211,7 +211,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			//out( "Listener needs to startup" );
 		}
 
-		thread  action="run" name="#variables.lockName#-#hash( now() )#"{
+		thread  action="run" name="#variables.lockName#-#hash( createUUID() )#"{
 			// Activate listener
 			var isActivating = variables.lock( body=function(){
 				if( !variables.logListener.active ){
