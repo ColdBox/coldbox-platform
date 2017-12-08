@@ -71,7 +71,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		variables.withModule	= "";
 
 		// STATIC Reserved Keys as needed for cleanups
-		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace";
+		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting";
 		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation,ssl,append";
 
 		// STATIC Valid Extensions
