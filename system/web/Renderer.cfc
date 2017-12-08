@@ -725,15 +725,16 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		return locateView(arguments.view);
 	}
 
-	/************************************** PRIVATE *********************************************/
-
 	/**
-	* Discover view+helper path locations
-	* @view The view to discover
-	* @module The module address
-	* @explicitModule Is the module explicit or discoverable.
+	 * Discover view+helper path locations
+	 * 
+	 * @view The view to discover
+	 * @module The module address
+	 * @explicitModule Is the module explicit or discoverable.
+	 * 
+	 * @return struct  = { viewPath:string, viewHelperPath:string }
 	*/
-	private function discoverViewPaths( required view, module, boolean explicitModule=false ){
+	function discoverViewPaths( required view, module, boolean explicitModule=false ){
 		var locationKey 	= arguments.view & arguments.module & arguments.explicitModule;
 		var locationUDF 	= variables.locateView;
 		var dPath			= "";
@@ -784,7 +785,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		}
 
 		return refMap;
-    }
+	}
+	
+	/************************************** PRIVATE *********************************************/
 
 	/**
 	* Checks if implicit views are turned on and if so, calculate view according to event.
