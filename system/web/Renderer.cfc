@@ -117,8 +117,11 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	/************************************** VIEW METHODS *********************************************/
 
 	/**
-	* set the explicit view bit, used mostly internally
-	* @view The name of the view to render
+	 * set the explicit view bit, used mostly internally
+	 * 
+	 * @view The name of the view to render
+	 * 
+	 * @return Renderer
 	*/
 	function setExplicitView( required view ){
 		explicitView = arguments.view;
@@ -126,22 +129,23 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	}
 
 	/**
-	* Render out a view
-	* @view The the view to render, if not passed, then we look in the request context for the current set view.
-	* @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
-	* @module The module to render the view from explicitly
-	* @cache Cached the view output or not, defaults to false
-	* @cacheTimeout The time in minutes to cache the view
-	* @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
-	* @cacheSuffix The suffix to add into the cache entry for this view rendering
-	* @cacheProvider The provider to cache this view in, defaults to 'template'
-	* @collection A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
-	* @collectionAs The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
-	* @collectionStartRow The start row to limit the collection rendering with
-	* @collectionMaxRows The max rows to iterate over the collection rendering with
-	* @collectionDelim  A string to delimit the collection renderings by
-	* @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
-	* @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
+	 * Render out a view
+	 * 
+	 * @view The the view to render, if not passed, then we look in the request context for the current set view.
+	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
+	 * @module The module to render the view from explicitly
+	 * @cache Cached the view output or not, defaults to false
+	 * @cacheTimeout The time in minutes to cache the view
+	 * @cacheLastAccessTimeout The time in minutes the view will be removed from cache if idle or requested
+	 * @cacheSuffix The suffix to add into the cache entry for this view rendering
+	 * @cacheProvider The provider to cache this view in, defaults to 'template'
+	 * @collection A collection to use by this Renderer to render the view as many times as the items in the collection (Array or Query)
+	 * @collectionAs The name of the collection variable in the partial rendering.  If not passed, we will use the name of the view by convention
+	 * @collectionStartRow The start row to limit the collection rendering with
+	 * @collectionMaxRows The max rows to iterate over the collection rendering with
+	 * @collectionDelim  A string to delimit the collection renderings by
+	 * @prePostExempt If true, pre/post view interceptors will not be fired. By default they do fire
+	 * @name The name of the rendering region to render out, Usually all arguments are coming from the stored region but you override them using this function's arguments.
 	*/
 	function renderView(
 		view="",
@@ -190,7 +194,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			arguments.module = event.getCurrentViewModule();
 			// if module is still empty check the event pattern
 			// if no module is execution, this will be empty anyways.
-			if( NOT len(arguments.module) ){
+			if( NOT len( arguments.module ) ){
 				arguments.module = event.getCurrentModule();
 			}
 		} else {
@@ -441,13 +445,14 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	/************************************** LAYOUT METHODS *********************************************/
 
 	/**
-	* Render a layout or a layout + view combo
-	* @layout The layout to render out
-	* @module The module to explicitly render this layout from
-	* @view The view to render within this layout
-	* @args An optional set of arguments that will be available to this layouts/view rendering ONLY
-	* @viewModule The module to explicitly render the view from
-	* @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
+	 * Render a layout or a layout + view combo
+	 * 
+	 * @layout The layout to render out
+	 * @module The module to explicitly render this layout from
+	 * @view The view to render within this layout
+	 * @args An optional set of arguments that will be available to this layouts/view rendering ONLY
+	 * @viewModule The module to explicitly render the view from
+	 * @prePostExempt If true, pre/post layout interceptors will not be fired. By default they do fire
 	*/
 	function renderLayout(
 		layout,
