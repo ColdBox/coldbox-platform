@@ -95,8 +95,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.renderedHelpers	= {};
 		variables.lockName			= "rendering.#variables.controller.getAppHash()#";
 
-		// Discovery caching is tied to handlers for discovery.
-		variables.isDiscoveryCaching = controller.getSetting( "handlerCaching" );
+		// Discovery caching
+		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
 
 		// Set event scope, we are not caching, so it is threadsafe.
 		variables.event = getRequestContext();
