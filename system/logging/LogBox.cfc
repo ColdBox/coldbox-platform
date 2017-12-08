@@ -289,7 +289,7 @@ component accessors="true"{
 				target[ item ] = variables.appenderRegistry[ item ] ?: "";
 				return target;
 			} );
-		return results ?: {};
+		return results ?: structnew();
 	}
 	
 	/**
