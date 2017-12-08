@@ -140,10 +140,10 @@ component extends="coldbox.system.web.services.BaseService"{
 
 			// debug logging
 			if( variables.log.canDebug() ){
-				variables.log.debug("Event caching detected for : #eventCache.toString()#" );
+				variables.log.debug( "Event caching detected for : #eventCache.toString()#" );
 			}
 
-		}//end if using event caching.
+		} //end if using event caching.
 
 		return this;
 	}

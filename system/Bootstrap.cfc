@@ -177,7 +177,7 @@ component serializable="false" accessors="true"{
 		}
 		// Local references
 		var interceptorService 	= cbController.getInterceptorService();
-		var templateCache		= cbController.getCacheBox().getCache( "template" );
+		var cacheBox 			= cbController.getCacheBox();
 
 		try{
 			// set request time, for info purposes
@@ -194,10 +194,16 @@ component serializable="false" accessors="true"{
 			}
 
 			//****** EVENT CACHING CONTENT DELIVERY *******/
-			var refResults = {};
-			if( structKeyExists( event.getEventCacheableEntry(), "cachekey" ) ){
-				refResults.eventCaching = templateCache.get( event.getEventCacheableEntry().cacheKey );
+			var refResults	 = {};
+			var eCacheEntry	 = event.getEventCacheableEntry();
+
+			// Verify if event caching item is in selected cache
+			if( structKeyExists( eCacheEntry, "cachekey" ) ){
+				refResults.eventCaching = cacheBox
+					.getCache( eCacheEntry.provider )
+					.get( eCacheEntry.cacheKey );
 			}
+
 			// Verify if cached content existed.
 			if ( structKeyExists( refResults, "eventCaching" ) ){
 				// check renderdata
@@ -261,16 +267,13 @@ component serializable="false" accessors="true"{
 						renderedContent = renderedContent
 					};
 					interceptorService.processState( "preRender", interceptorData );
-					// replace back content in case of modification
+					// replace back content in case of modification, strings passed by value
 					renderedContent = interceptorData.renderedContent;
 
 					//****** EVENT CACHING *******/
 					var eCacheEntry = event.getEventCacheableEntry();
-					if( structKeyExists( eCacheEntry, "cacheKey") AND
-					    structKeyExists( eCacheEntry, "timeout")  AND
-						structKeyExists( eCacheEntry, "lastAccessTimeout" ) AND
-						getPageContextResponse().getStatus() neq 500
-					){
+					if( structKeyExists( eCacheEntry, "cacheKey") AND getPageContextResponse().getStatus() neq 500 ){
+						
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
 							
 							// Try to discover the content type
@@ -302,12 +305,14 @@ component serializable="false" accessors="true"{
 							}
 
 							// Cache it
-							templateCache.set( 
-								eCacheEntry.cacheKey,
-								cacheEntry,
-								eCacheEntry.timeout,
-								eCacheEntry.lastAccessTimeout 
-							);
+							cacheBox
+								.getCache( eCacheEntry.provider )
+								.set( 
+									eCacheEntry.cacheKey,
+									cacheEntry,
+									eCacheEntry.timeout,
+									eCacheEntry.lastAccessTimeout 
+								);
 						}
 
 					} // end event caching
@@ -334,12 +339,13 @@ component serializable="false" accessors="true"{
 				cbController.runEvent( event=cbController.getSetting("RequestEndHandler"), prePostExempt=true );
 			}
 			interceptorService.processState( "postProcess" );
+
 			//****** FLASH AUTO-SAVE *******/
 			if( cbController.getSetting( "flash" ).autoSave ){
 				cbController.getRequestService().getFlashScope().saveFlash();
 			}
 
-		} catch(Any e) {
+		} catch( Any e ) {
 			// process the exception and render its report
 			writeOutput( processException( cbController, e ) );
 		}
@@ -347,6 +353,8 @@ component serializable="false" accessors="true"{
 		// Time the request
 		request.fwExecTime = getTickCount() - request.fwExecTime;
 	}
+
+
 
 	/**
 	* Verify if a reinit is sent

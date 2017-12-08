@@ -58,9 +58,24 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 			it( "can do basic cached events", function(){
 				var event = execute( event="eventcaching", renderResults=true );
-				var prc = event.getCollection(private=true);
+				var prc = event.getPrivateCollection();
 
-				expect( prc.cbox_eventCacheableEntry ).toBeStruct();
+				expect( prc.cbox_eventCacheableEntry )
+					.toBeStruct()
+					.toHaveKey( "provider" );
+				expect( prc.cbox_eventCacheableEntry.provider ).toBe( "template" );
+				//debug( prc.cbox_eventCacheableEntry );
+			});
+
+			
+			it( "can do cached events with custom provider annotations", function(){
+				var event = execute( event="eventcaching.withProvider", renderResults=true );
+				var prc = event.getPrivateCollection();
+
+				expect( prc.cbox_eventCacheableEntry )
+					.toBeStruct()
+					.toHaveKey( "provider" );
+				expect( prc.cbox_eventCacheableEntry.provider ).toBe( "default" );
 			});
 
 			var formats = [ "json", "xml", "pdf" ];
