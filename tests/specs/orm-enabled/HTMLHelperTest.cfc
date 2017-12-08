@@ -659,6 +659,15 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		expect(	str ).toBe( '<div class=''form-group''><div class=''form-control''><input type="text" name="luis" value="luis" id="luis"/></div></div>' );
 	}
 
+	function testLabelAttrs() {
+		var str = model.checkbox(name='luis',value=1,label='luis?',labelAttrs={title='Check this box for luis'});
+		expect ( str ).toBe('<label for="luis" title="Check this box for luis">luis?</label><input type="checkbox" name="luis" value="1" id="luis"/>');
+	}
+
+	function testInputInsideLabel() {
+		var str = model.checkbox(name='luis',value=1,label='luis?',labelAttrs={title='Check this box for luis'}, inputInsideLabel=1);
+		expect ( str ).toBe('<label for="luis" title="Check this box for luis"><input type="checkbox" name="luis" value="1" id="luis"/>luis?</label>');
+	}
 
 </cfscript>
 
