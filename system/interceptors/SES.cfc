@@ -124,8 +124,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			.setSESBaseURL( variables.baseURL );
 	}
 
-	// CF-11 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
+	/****************************************************************************************************************************/
+	// CF-11/2016 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
 	// Remove this with new CFC approach. CFM files will have to upgrade to CFC capabilities once feature is complete.
+
 	function setBaseURL( string baseURL ){
 		variables.baseURL = arguments.baseURL;
 		return this;
@@ -140,6 +142,11 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	function getUniqueURLS(){
 		return variables.uniqueURLS;
 	}
+	function setValidExtensions( required extensions ){
+		variables.extensions = arguments.extensions;
+	}
+
+	/****************************************************************************************************************************/
 
 	/**
 	 * This is the route dispatch
