@@ -244,11 +244,12 @@ component accessors="true"{
 	 * 
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
+	 * 
+	 * @return Logger
 	 */
-	Logger function debug( required message, extraInfo="" ){
+	function debug( required message, extraInfo="" ){
 		arguments.severity = this.logLevels.DEBUG;
-		logMessage( argumentCollection=arguments );
-		return this;
+		return logMessage( argumentCollection=arguments );
 	}
 
 	/**
@@ -256,11 +257,12 @@ component accessors="true"{
 	 * 
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
+	 * 
+	 * @return Logger
 	 */
-	Logger function info( required message, extraInfo="" ){
+	function info( required message, extraInfo="" ){
 		arguments.severity = this.logLevels.INFO;
-		logMessage( argumentCollection=arguments );
-		return this;
+		return logMessage( argumentCollection=arguments );
 	}
 
 	/**
@@ -268,11 +270,12 @@ component accessors="true"{
 	 * 
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
+	 * 
+	 * @return Logger
 	 */
-	Logger function warn( required message, extraInfo="" ){
+	function warn( required message, extraInfo="" ){
 		arguments.severity = this.logLevels.WARN;
-		logMessage( argumentCollection=arguments );
-		return this;
+		return logMessage( argumentCollection=arguments );
 	}
 
 	/**
@@ -280,11 +283,12 @@ component accessors="true"{
 	 * 
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
+	 * 
+	 * @return Logger
 	 */
-	Logger function error( required message, extraInfo="" ){
+	function error( required message, extraInfo="" ){
 		arguments.severity = this.logLevels.ERROR;
-		logMessage( argumentCollection=arguments );
-		return this;
+		return logMessage( argumentCollection=arguments );
 	}
 
 	/**
@@ -292,11 +296,12 @@ component accessors="true"{
 	 * 
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
+	 * 
+	 * @return Logger
 	 */
-	Logger function fatal( required message, extraInfo="" ){
+	function fatal( required message, extraInfo="" ){
 		arguments.severity = this.logLevels.FATAL;
-		logMessage( argumentCollection=arguments );
-		return this;
+		return logMessage( argumentCollection=arguments );
 	}
 
 	/**
@@ -383,35 +388,35 @@ component accessors="true"{
 	/**
 	 * Can I log a fatal message
 	 */
-	function canFatal(){
+	boolean function canFatal(){
 		return canLog( this.logLevels.FATAL );
 	}
 
 	/**
 	 * Can I log a ERROR message
 	 */
-	function canError(){
+	boolean function canError(){
 		return canLog( this.logLevels.ERROR );
 	}
 
 	/**
 	 * Can I log a WARN message
 	 */
-	function canWarn(){
+	boolean function canWarn(){
 		return canLog( this.logLevels.WARN );
 	}
 
 	/**
 	 * Can I log a INFO message
 	 */
-	function canInfo(){
+	boolean function canInfo(){
 		return canLog( this.logLevels.INFO );
 	}
 
 	/**
 	 * Can I log a DEBUG message
 	 */
-	function canDebug(){
+	boolean function canDebug(){
 		return canLog( this.logLevels.DEBUG );
 	}
 
