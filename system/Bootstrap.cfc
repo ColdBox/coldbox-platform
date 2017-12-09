@@ -199,6 +199,9 @@ component serializable="false" accessors="true"{
 
 			// Verify if event caching item is in selected cache
 			if( structKeyExists( eCacheEntry, "cachekey" ) ){
+				if( !structKeyExists( eCacheEntry, "provider" ) ){
+					eCacheEntry[ "provider" ] = "template";
+				}
 				refResults.eventCaching = cacheBox
 					.getCache( eCacheEntry.provider )
 					.get( eCacheEntry.cacheKey );
