@@ -33,6 +33,13 @@ component accessors="true"{
 	}
 
 	/**
+	 * Stupid accessors in CF11 does not work.
+	 */
+	function getPool(){
+		return variables.pool;
+	}
+
+	/**
 	 * Register an object with this pool
 	 * 
 	 * @key The key of the object
