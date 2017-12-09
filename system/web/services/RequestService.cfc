@@ -121,17 +121,23 @@ component extends="coldbox.system.web.services.BaseService"{
 				return this;
 			}
 
+			// Incorporate metadata about event
+			eventCache.append( eventDictionary, true );
 			// Build the event cache key according to incoming request
-			eventCache.cacheKey = oEventURLFacade.buildEventKey(
+			eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
 				keySuffix     = eventDictionary.suffix,
 				targetEvent   = currentEvent,
 				targetContext = arguments.context
 			);
 
 			// Check for Event Cache Purge
-			if ( arguments.fwCache ){
+			if( arguments.fwCache ){
 				// Clear the key from the cache
-				variables.templateCache.clear( eventCache.cacheKey );
+				variables.cacheBox
+					.getCache( eventDictionary.provider )
+					.clear( eventCache.cacheKey );
+				
+				// Return don't show cached version
 				return this;
 			}
 
