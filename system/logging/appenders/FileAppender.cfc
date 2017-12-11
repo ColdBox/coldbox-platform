@@ -200,6 +200,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	function startLogListener(){
 		
+		// Verify if listener has started.
 		var isActive = variables.lock( "readonly", function(){
 			return variables.logListener.active;
 		} );
@@ -209,6 +210,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			return; 
 		} else {
 			//out( "Listener needs to startup" );
+		}
+
+		// Check if we are in a thread already, if so, just skip
+		if( getUtil().inThread() ){
+			return;
 		}
 
 		thread  action="run" name="#variables.lockName#-#hash( createUUID() )#"{
@@ -294,7 +300,6 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			}
 
 		} // end threading
-
 	}
 	
 	/************************************ PRIVATE ************************************/
