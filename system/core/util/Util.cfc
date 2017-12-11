@@ -10,9 +10,6 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The main ColdBox utility library filled with lots of nice goodies.">
 
-	<!--- Construct Static System Pointer --->
-	<cfset variables.system = createObject( "java", "java.lang.System" )>
-
 	<!--- getMixerUtil --->
     <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" doc_generic="coldbox.system.core.dynamic.MixerUtil">
     	<cfscript>
@@ -132,6 +129,7 @@ Description :
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
 		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties or the env" />
 		<cfscript>
+			var system = createObject( "java", "java.lang.System" );
 			var value = system.getProperty( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
@@ -158,6 +156,7 @@ Description :
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
 		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties" />
 		<cfscript>
+			var system = createObject( "java", "java.lang.System" );
 			var value = system.getProperty( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
@@ -179,6 +178,7 @@ Description :
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
 		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the env" />
 		<cfscript>
+			var system = createObject( "java", "java.lang.System" );
 			var value = system.getEnv( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
