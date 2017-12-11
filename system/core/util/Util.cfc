@@ -10,14 +10,11 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The main ColdBox utility library filled with lots of nice goodies.">
 
-	<!--- Construct Static System Pointer --->
-	<cfset variables.system = createObject( "java", "java.lang.System" )>
-
 	<!--- getMixerUtil --->
     <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" doc_generic="coldbox.system.core.dynamic.MixerUtil">
     	<cfscript>
-    		if( structKeyExists( variables, "mixerUtil" ) ){ 
-				return variables.mixerUtil; 
+    		if( structKeyExists( variables, "mixerUtil" ) ){
+				return variables.mixerUtil;
 			}
 			variables.mixerUtil = new coldbox.system.core.dynamic.MixerUtil();
 			return variables.mixerUtil;
@@ -95,7 +92,7 @@ Description :
 			var lookup       = 0;
 			var varName      = 0;
 			var varValue     = 0;
-			
+
 			// Loop and Replace
 			while( true ){
 				// Search For Pattern
@@ -131,12 +128,13 @@ Description :
     <cffunction name="getSystemSetting" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
 		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties or the env" />
+		<cfargument name="system" required="false" default="#createObject( "java", "java.lang.System" )#" hint="The Java system class to use" />
 		<cfscript>
 			var value = system.getProperty( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
 			}
-			
+
 			value = system.getEnv( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
@@ -156,7 +154,8 @@ Description :
     <!--- getSystemProperty --->
     <cffunction name="getSystemProperty" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
-		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties" />
+        <cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties" />
+        <cfargument name="system" required="false" default="#createObject( "java", "java.lang.System" )#" hint="The Java system class to use" />
 		<cfscript>
 			var value = system.getProperty( arguments.key );
 			if ( ! isNull( value ) ) {
@@ -177,7 +176,8 @@ Description :
     <!--- getEnv --->
     <cffunction name="getEnv" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
-		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the env" />
+        <cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the env" />
+        <cfargument name="system" required="false" default="#createObject( "java", "java.lang.System" )#" hint="The Java system class to use" />
 		<cfscript>
 			var value = system.getEnv( arguments.key );
 			if ( ! isNull( value ) ) {
@@ -238,8 +238,8 @@ Description :
 			var baseObject = createObject( "component", familyPath );
 
 			// Check if init already exists?
-			if( structKeyExists( arguments.target, "init" ) ){ 
-				arguments.target.$cbInit = baseObject.init;	
+			if( structKeyExists( arguments.target, "init" ) ){
+				arguments.target.$cbInit = baseObject.init;
 			}
 
 			// Mix in methods
@@ -274,8 +274,8 @@ Description :
 
 		<!--- If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into. --->
 
-		<cfif 	structKeyExists( md, "extends" ) AND 
-				md.type eq "component" AND 
+		<cfif 	structKeyExists( md, "extends" ) AND
+				md.type eq "component" AND
 				stopClassRecursion( md.extends.name, arguments.stopRecursions ) EQ FALSE
 		>
 			<cfset loc.parent = getInheritedMetaData( component=component, stopRecursions=stopRecursions, md=md.extends )>
@@ -328,7 +328,7 @@ Description :
 			for( var thisClass in arguments.stopRecursions ){
 				if( compareNoCase( thisClass, arguments.classname) eq 0 ){
 					return true;
-				} 
+				}
 			}
 			return false;
 		</cfscript>
