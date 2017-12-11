@@ -199,6 +199,11 @@ component serializable="false" accessors="true"{
 
 			// Verify if event caching item is in selected cache
 			if( structKeyExists( eCacheEntry, "cachekey" ) ){
+				// Stop gap for upgrades
+				if( isNull( eCacheEntry.provider) ){
+					eCacheEntry.provider = "template";
+				}
+				// Get cache element.
 				refResults.eventCaching = cacheBox
 					.getCache( eCacheEntry.provider )
 					.get( eCacheEntry.cacheKey );
