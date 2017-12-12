@@ -73,7 +73,16 @@ Description :
 					break;
 				}
 				case "LUCEE" 	: {
-					return getPageContext().hasFamily();
+					
+					var version = listFirst( server.lucee.version, "." );
+
+					if( version == 5 ){
+						return isInThread();
+					}
+
+					if( findNoCase( "cfthread", createObject( "java", "java.lang.Thread" ).currentThread().getThreadGroup().getName() ) ){
+						return true;
+					}
 					break;
 				}
 			} //end switch statement.

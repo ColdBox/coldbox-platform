@@ -162,6 +162,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			// Execute Interception in the state object
 			arguments.event 	= controller.getRequestService().getContext();
 			arguments.buffer 	= requestBuffer;
+
+			// Execute Interception
 			var results 		= variables.interceptionStates
 				.find( arguments.state )
 				.process( argumentCollection=arguments );

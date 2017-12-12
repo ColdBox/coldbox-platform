@@ -403,7 +403,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 				"prc" 			= attributes.event.getPrivateCollection()
 			};
 
-			evaluate( "#this.getInterceptors().get( attributes.key )#.#this.getState()#( argumentCollection=args )" );
+			evaluate( "this.getInterceptors().get( attributes.key ).#this.getState()#( argumentCollection=args )" );
 
 			if( variables.log.canDebug() ){
 				variables.log.debug( "Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#" );
@@ -443,14 +443,14 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 			"prc" 			= arguments.event.getPrivateCollection()
 		};
 
-		var results = evaluate( "#arguments.interceptor#.#getState()#( argumentCollection=args )" );
+		var results = evaluate( "arguments.interceptor.#getState()#( argumentCollection=args )" );
 		
 		if( variables.log.canDebug() ){
 			variables.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
 		}
 
-		if( !isNull( local.results ) and isBoolean( local.results ) ){
-			return local.results;
+		if( !isNull( results ) and isBoolean( results ) ){
+			return results;
 		} else {
 			return false;
 		}
