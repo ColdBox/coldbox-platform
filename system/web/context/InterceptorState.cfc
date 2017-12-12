@@ -394,14 +394,17 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 				key="#arguments.interceptorKey#"
 				buffer="#arguments.buffer#"
 		{
-			cfinvoke( component="#this.getInterceptors().get( attributes.key )#", method="#this.getstate()#" ){
-				cfinvokeargument( name="event" 			,value="#attributes.event#" );
-				cfinvokeargument( name="interceptData" 	,value="#attributes.interceptData#" );
-				cfinvokeargument( name="buffer" 		,value="#attributes.buffer#" );
-				cfinvokeargument( name="rc" 			,value="#attributes.event.getCollection()#" );
-				cfinvokeargument( name="prc" 			,value="#attributes.event.getPrivateCollection()#" );
+
+			var args = {
+				"event" 		= attributes.event,
+				"interceptData" = attributes.interceptData,
+				"buffer" 		= attributes.buffer,
+				"rc" 			= attributes.event.getCollection(),
+				"prc" 			= attributes.event.getPrivateCollection()
 			};
-			
+
+			evaluate( "#this.getInterceptors().get( attributes.key )#.#this.getState()#( argumentCollection=args )" );
+
 			if( variables.log.canDebug() ){
 				variables.log.debug( "Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#" );
 			}
@@ -431,14 +434,16 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 		if( variables.log.canDebug() ){
 			variables.log.debug( "Interception started for: '#getState()#', key: #arguments.interceptorKey#" );
 		}
-		
-		cfinvoke( component="#arguments.interceptor#", method="#getstate()#", returnvariable="local.results" ){
-			cfinvokeargument( name="event" 			, value="#arguments.event#" );
-			cfinvokeargument( name="interceptData" 	, value="#arguments.interceptData#" );
-			cfinvokeargument( name="buffer" 		, value="#arguments.buffer#" );
-			cfinvokeargument( name="rc" 			, value="#arguments.event.getCollection()#" );
-			cfinvokeargument( name="prc" 			, value="#arguments.event.getPrivateCollection()#" );
+
+		var args = {
+			"event" 		= arguments.event,
+			"interceptData" = arguments.interceptData,
+			"buffer" 		= arguments.buffer,
+			"rc" 			= arguments.event.getCollection(),
+			"prc" 			= arguments.event.getPrivateCollection()
 		};
+
+		var results = evaluate( "#arguments.interceptor#.#getState()#( argumentCollection=args )" );
 		
 		if( variables.log.canDebug() ){
 			variables.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
