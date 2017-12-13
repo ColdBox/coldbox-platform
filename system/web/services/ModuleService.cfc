@@ -788,7 +788,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		oConfig.getPropertyMixin 	= mixerUtil.getPropertyMixin;
 
 		// MixIn Variables
-		oConfig.injectPropertyMixin( "controller", 		controller );
+		oConfig.injectPropertyMixin( "controller", 		controller )
 			.injectPropertyMixin( "coldboxVersion", 	controller.getColdBoxSettings().version )
 			.injectPropertyMixin( "appMapping", 		controller.getSetting( "appMapping" ) )
 			.injectPropertyMixin( "moduleMapping", 	  	mConfig.mapping )
