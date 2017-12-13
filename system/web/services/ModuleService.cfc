@@ -788,19 +788,20 @@ component extends="coldbox.system.web.services.BaseService"{
 		oConfig.getPropertyMixin 	= mixerUtil.getPropertyMixin;
 
 		// MixIn Variables
-		oConfig.injectPropertyMixin( "controller", 		  controller );
-		oConfig.injectPropertyMixin( "coldboxVersion", 	  controller.getColdBoxSettings().version );
-		oConfig.injectPropertyMixin( "appMapping", 		  controller.getSetting( "appMapping" ) );
-		oConfig.injectPropertyMixin( "moduleMapping", 	  mConfig.mapping );
-		oConfig.injectPropertyMixin( "modulePath", 		  mConfig.path );
-		oConfig.injectPropertyMixin( "logBox", 			  controller.getLogBox() );
-		oConfig.injectPropertyMixin( "log", 			  controller.getLogBox().getLogger( oConfig) );
-		oConfig.injectPropertyMixin( "wirebox", 		  controller.getWireBox() );
-		oConfig.injectPropertyMixin( "binder", 			  controller.getWireBox().getBinder() );
-		oConfig.injectPropertyMixin( "cachebox", 		  controller.getCacheBox() );
-		oConfig.injectPropertyMixin( "getSystemSetting",  controller.getUtil().getSystemSetting );
-		oConfig.injectPropertyMixin( "getSystemProperty", controller.getUtil().getSystemProperty );
-		oConfig.injectPropertyMixin( "getEnv",            controller.getUtil().getEnv );
+		oConfig.injectPropertyMixin( "controller", 		controller );
+			.injectPropertyMixin( "coldboxVersion", 	controller.getColdBoxSettings().version )
+			.injectPropertyMixin( "appMapping", 		controller.getSetting( "appMapping" ) )
+			.injectPropertyMixin( "moduleMapping", 	  	mConfig.mapping )
+			.injectPropertyMixin( "modulePath", 		mConfig.path )
+			.injectPropertyMixin( "logBox", 			controller.getLogBox() )
+			.injectPropertyMixin( "log", 			  	controller.getLogBox().getLogger( oConfig) )
+			.injectPropertyMixin( "wirebox", 		  	controller.getWireBox() )
+			.injectPropertyMixin( "binder", 			controller.getWireBox().getBinder() )
+			.injectPropertyMixin( "cachebox", 		  	controller.getCacheBox() )
+			.injectPropertyMixin( "getJavaSystem",  	controller.getUtil().getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting",   controller.getUtil().getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty",  controller.getUtil().getSystemProperty )
+			.injectPropertyMixin( "getEnv",             controller.getUtil().getEnv );
 
 		// Configure the module
 		oConfig.configure();

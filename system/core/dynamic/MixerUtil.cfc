@@ -95,9 +95,11 @@ Description :
 			var methodName = getFunctionCalledName();
 
 			if( !structKeyExists( this.$exposedMethods, methodName ) ){
-				throw( message="The exposed method you are calling: #methodName# does not exist",
-					   detail="Exposed methods are #structKeyList( this.$exposedMethods )#",
-					   type="ExposedMethodProxy" );
+				throw( 
+					message = "The exposed method you are calling: #methodName# does not exist",
+					detail  = "Exposed methods are #structKeyList( this.$exposedMethods )#",
+					type    = "ExposedMethodProxy" 
+				);
 			}
 
 			var method = this.$exposedMethods[ methodName ];
@@ -109,6 +111,7 @@ Description :
 	<cffunction name="includeitMixin" access="public" hint="Facade for cfinclude" returntype="void" output="true">
 		<cfargument name="template" required="true">
 		<cfinclude template="#template#">
+		<cfreturn this>
 	</cffunction>
 
 	<!--- injectMixin --->
@@ -116,8 +119,10 @@ Description :
 		<cfargument name="name" 	required="true"  hint="The name to inject the UDF as"/>
 		<cfargument name="UDF"		required="true"  hint="UDF to inject">
 		<cfscript>
-			variables[arguments.name] 	= arguments.UDF;
-			this[arguments.name] 		= arguments.UDF;
+			variables[ arguments.name ] = arguments.UDF;
+			this[ arguments.name ] 		= arguments.UDF;
+
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -128,9 +133,11 @@ Description :
 		<cfargument name="scope" 			required="false" default="variables" hint="The scope to which inject the property to."/>
 		<cfscript>
 			// Validate Property
-			if( structKeyExists(evaluate(arguments.scope),arguments.propertyName) ){
+			if( structKeyExists( evaluate( arguments.scope ), arguments.propertyName ) ){
 				"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
 			}
+
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -158,6 +165,8 @@ Description :
 		<cfargument name="scope" 			required="false" default="variables" hint="The scope to which inject the property to."/>
 		<cfscript>
 			"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
+
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -165,8 +174,10 @@ Description :
 	<cffunction name="removeMixin" hint="Removes a method in a CFC" access="public" returntype="void" output="false">
 		<cfargument name="UDFName" hint="Name of the UDF to be removed" type="string" required="Yes">
 		<cfscript>
-			structDelete(this, arguments.udfName);
-			structDelete(variables, arguments.udfName);
+			structDelete( this, arguments.udfName );
+			structDelete( variables, arguments.udfName );
+
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -175,7 +186,9 @@ Description :
 		<cfargument name="propertyName" 	required="true" hint="The name of the property to remove."/>
 		<cfargument name="scope" 			required="false" default="variables" hint="The scope to which inject the property to."/>
 		<cfscript>
-			structDelete(evaluate(arguments.scope),arguments.propertyName);
+			structDelete( evaluate( arguments.scope ), arguments.propertyName );
+
+			return this;
 		</cfscript>
 	</cffunction>
 
