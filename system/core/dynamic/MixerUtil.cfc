@@ -108,14 +108,14 @@ Description :
 	</cffunction>
 
 	<!--- includeitMixin --->
-	<cffunction name="includeitMixin" access="public" hint="Facade for cfinclude" returntype="void" output="true">
+	<cffunction name="includeitMixin" access="public" hint="Facade for cfinclude" returntype="any" output="true">
 		<cfargument name="template" required="true">
 		<cfinclude template="#template#">
 		<cfreturn this>
 	</cffunction>
 
 	<!--- injectMixin --->
-	<cffunction name="injectMixin" hint="Injects a method into the CFC" access="public" returntype="void" output="false">
+	<cffunction name="injectMixin" hint="Injects a method into the CFC" access="public" returntype="any" output="false">
 		<cfargument name="name" 	required="true"  hint="The name to inject the UDF as"/>
 		<cfargument name="UDF"		required="true"  hint="UDF to inject">
 		<cfscript>
@@ -127,7 +127,7 @@ Description :
 	</cffunction>
 
 	<!--- populatePropertyMixin --->
-	<cffunction name="populatePropertyMixin" hint="Populates a property if it exists" access="public" returntype="void" output="false">
+	<cffunction name="populatePropertyMixin" hint="Populates a property if it exists" access="public" returntype="any" output="false">
 		<cfargument name="propertyName" 	required="true" hint="The name of the property to inject."/>
 		<cfargument name="propertyValue" 	required="true" hint="The value of the property to inject"/>
 		<cfargument name="scope" 			required="false" default="variables" hint="The scope to which inject the property to."/>
@@ -159,7 +159,7 @@ Description :
 	</cffunction>
 
 	<!--- injectPropertyMixin --->
-	<cffunction name="injectPropertyMixin" hint="injects a property into the passed scope" access="public" returntype="void" output="false">
+	<cffunction name="injectPropertyMixin" hint="injects a property into the passed scope" access="public" returntype="any" output="false">
 		<cfargument name="propertyName" 	required="true" hint="The name of the property to inject."/>
 		<cfargument name="propertyValue" 	required="true" hint="The value of the property to inject"/>
 		<cfargument name="scope" 			required="false" default="variables" hint="The scope to which inject the property to."/>
@@ -171,7 +171,7 @@ Description :
 	</cffunction>
 
 	<!--- removeMixin --->
-	<cffunction name="removeMixin" hint="Removes a method in a CFC" access="public" returntype="void" output="false">
+	<cffunction name="removeMixin" hint="Removes a method in a CFC" access="public" returntype="any" output="false">
 		<cfargument name="UDFName" hint="Name of the UDF to be removed" type="string" required="Yes">
 		<cfscript>
 			structDelete( this, arguments.udfName );
@@ -182,7 +182,7 @@ Description :
 	</cffunction>
 
 	<!--- removePropertyMixin --->
-	<cffunction name="removePropertyMixin" hint="removes a property from the cfc used." access="public" returntype="void" output="false">
+	<cffunction name="removePropertyMixin" hint="removes a property from the cfc used." access="public" returntype="any" output="false">
 		<cfargument name="propertyName" 	required="true" hint="The name of the property to remove."/>
 		<cfargument name="scope" 			required="false" default="variables" hint="The scope to which inject the property to."/>
 		<cfscript>
