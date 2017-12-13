@@ -48,6 +48,7 @@
 		mockBuffer = getMockBox().createMock(className="coldbox.system.core.util.RequestBuffer").init();
 		mockIService.$("getRequestBuffer",mockBuffer);
 
+        interceptor.clearBuffer();
 		interceptor.appendToBuffer("Hello");
 		assertEquals( interceptor.getBufferString(), "Hello" );
 		assertEquals( interceptor.getBufferObject(), mockBuffer);

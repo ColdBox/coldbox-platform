@@ -73,7 +73,7 @@ Description :
 					break;
 				}
 				case "LUCEE" 	: {
-					
+
 					var version = listFirst( server.lucee.version, "." );
 
 					if( version == 5 ){
@@ -137,14 +137,13 @@ Description :
     <cffunction name="getSystemSetting" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
 		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties or the env" />
-		<cfargument name="system" required="false" default="#createObject( "java", "java.lang.System" )#" hint="The Java system class to use" />
 		<cfscript>
-			var value = system.getProperty( arguments.key );
+			var value = getJavaSystem().getProperty( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
 			}
 
-			value = system.getEnv( arguments.key );
+			value = getJavaSystem().getEnv( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
 			}
@@ -164,9 +163,8 @@ Description :
     <cffunction name="getSystemProperty" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
         <cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties" />
-        <cfargument name="system" required="false" default="#createObject( "java", "java.lang.System" )#" hint="The Java system class to use" />
 		<cfscript>
-			var value = system.getProperty( arguments.key );
+			var value = getJavaSystem().getProperty( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
 			}
@@ -186,9 +184,8 @@ Description :
     <cffunction name="getEnv" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
         <cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the env" />
-        <cfargument name="system" required="false" default="#createObject( "java", "java.lang.System" )#" hint="The Java system class to use" />
 		<cfscript>
-			var value = system.getEnv( arguments.key );
+			var value = getJavaSystem().getEnv( arguments.key );
 			if ( ! isNull( value ) ) {
 				return value;
 			}
@@ -202,6 +199,16 @@ Description :
 				message = "Could not find a env property with key [#arguments.key#]."
 			);
 		</cfscript>
+    </cffunction>
+
+    <!--- getJavaSystem --->
+    <cffunction name="getJavaSystem" output="false" access="public" returntype="any" hint="Retrieve an instance of Java System">
+        <cfscript>
+            if ( ! structKeyExists( variables, "javaSystem" ) ) {
+                variables.javaSystem = createObject( "java", "java.lang.System" );
+            }
+            return variables.javaSystem;
+        </cfscript>
     </cffunction>
 
 <!------------------------------------------- Taxonomy Utility Methods ------------------------------------------>

@@ -54,17 +54,17 @@
 		systemMock.$( "getEnv" ).$args( "bar" ).$results( "baz" );
 		systemMock.$( "getEnv" ).$args( "baz" ).$results( javacast( "null", "" ) );
 
-		util.$property( propertyName = "system", mock = systemMock );
+        util.$( "getJavaSystem", systemMock );
 
-		var setting = util.getSystemSetting( key = "foo", system = systemMock );
+		var setting = util.getSystemSetting( "foo" );
 		assertEquals( setting, "bar" );
 
-		setting = util.getSystemSetting( key = "bar", system = systemMock );
+		setting = util.getSystemSetting( "bar" );
 		assertEquals( setting, "baz" );
 
 		var exceptionThrown = false;
 		try {
-			var setting = util.getSystemSetting( key = "baz", system = systemMock );
+			var setting = util.getSystemSetting( "baz" );
 		}
 		catch( SystemSettingNotFound e ) {
 			exceptionThrown = true;
@@ -74,20 +74,22 @@
 		}
 		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
 
-		setting = util.getSystemSetting( key = "baz", defaultValue = "default", system = systemMock );
+		setting = util.getSystemSetting( "baz", "default" );
 		assertEquals( setting, "default" );
 	}
 
 	function testGetSystemProperty(){
 		var systemMock = createObject( "java", "java.lang.System" );
-		systemMock.setProperty( "foo", "bar" );
+        systemMock.setProperty( "foo", "bar" );
 
-		var setting = util.getSystemProperty( key = "foo", system = systemMock );
+        util.$( "getJavaSystem", systemMock );
+
+		var setting = util.getSystemProperty( "foo" );
 		assertEquals( setting, "bar" );
 
 		var exceptionThrown = false;
 		try {
-			var setting = util.getSystemProperty( key = "bar", system = systemMock );
+			var setting = util.getSystemProperty( "bar" );
 		}
 		catch( SystemSettingNotFound e ) {
 			exceptionThrown = true;
@@ -97,21 +99,23 @@
 		}
 		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
 
-		setting = util.getSystemProperty( key = "bar", defaultValue = "baz", system = systemMock );
+		setting = util.getSystemProperty( "bar", "baz" );
 		assertEquals( setting, "baz" );
 	}
 
 	function testGetEnv(){
 		var systemMock = createStub();
 		systemMock.$( "getEnv" ).$args( "foo" ).$results( "bar" );
-		systemMock.$( "getEnv" ).$args( "bar" ).$results( javacast( "null", "" ) );
+        systemMock.$( "getEnv" ).$args( "bar" ).$results( javacast( "null", "" ) );
 
-		var setting = util.getEnv( key = "foo", system = systemMock );
+        util.$( "getJavaSystem", systemMock );
+
+		var setting = util.getEnv( "foo" );
 		assertEquals( setting, "bar" );
 
 		var exceptionThrown = false;
 		try {
-			var setting = util.getEnv( key = "bar", system = systemMock );
+			var setting = util.getEnv( "bar" );
 		}
 		catch( SystemSettingNotFound e ) {
 			exceptionThrown = true;
@@ -121,7 +125,7 @@
 		}
 		assertTrue( exceptionThrown, "A SystemSettingNotFound exception should have been thrown." );
 
-		setting = util.getEnv( key = "bar", defaultValue = "baz", system = systemMock );
+		setting = util.getEnv( "bar", "baz" );
 		assertEquals( setting, "baz" );
 	}
 
