@@ -57,13 +57,24 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	property name="baseURL" type="string";
 
 	/**
+	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index.cfm` is in the path of the rewriter or not.
+	 * The default value is **false**.
+	 */
+	property name="fullRewrites" type="boolean" default="false";
+
+	/**
 	 * Constructor
 	 */
 	function configure(){
+
+		/************************************** FLUENT CONSTRUCTS *********************************************/
+
 		// with closure
 		variables.withClosure = {};
 		// module closure
 		variables.withModule	= "";
+
+		/************************************** CONSTANTS *********************************************/
 
 		// STATIC Reserved Keys as needed for cleanups
 		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting";
@@ -72,7 +83,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// STATIC Valid Extensions
 		variables.VALID_EXTENSIONS 			= "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
 
-		/************************************** ROUTING DEFAULTS *********************************************/
+		/************************************** ROUTING DEFAULTS: Due to ACF11 Bugs on Properties *********************************************/
 
 		// Main routes Routing Table
 		variables.routes = [];
@@ -92,8 +103,16 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		variables.throwOnInvalidExtension = false;
 		// Initialize the valid extensions to detect
 		variables.validExtensions = variables.VALID_EXTENSIONS;
-		// Base Routing URL
-		variables.baseURL = "";
+		
+		// Base Routing URL, defaults to the domain and app mapping
+		if( len( getSetting( "AppMapping" ) ) lte 1 ){
+			variables.baseURL = "http://#cgi.HTTP_HOST#";
+		} else {
+			variables.baseURL = "http://#cgi.HTTP_HOST#/#getSetting( 'AppMapping' )#";
+		}
+		
+		// Are full rewrites enabled
+		variables.fullRewrites = false;
 
 		/************************************** INTERNAL DEPENDENCIES *********************************************/
  
@@ -107,11 +126,18 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// Import Configuration
 		importConfiguration();
 
-		// Save the base URL in the application settings
-		setSetting( 'sesBaseURL', variables.baseURL );
-		setSetting( 'htmlBaseURL', replacenocase( variables.baseURL, "index.cfm", "" ) );
+		// Check if rewrites turned off. If so, append the `index.cfm` to it.
+		if( !variables.fullRewrites AND !findNoCase( "index.cfm", variables.baseURL ) ){
+			variables.baseURL &= "/index.cfm";
+		}
+		// Remove any double slashes
+		variables.baseURL = reReplace( variables.baseURL, "\/\/$", "/", "all" );
 
-		// Configure Context, Just in case
+		// Save the base URL in the application settings
+		setSetting( 'SESBaseURL', variables.baseURL );
+		setSetting( 'HTMLBaseURL', replaceNoCase( variables.baseURL, "index.cfm", "" ) );
+
+		// Configure Context that we are enabled and with the base URL for routing
 		controller.getRequestService().getContext()
 			.setSESEnabled( variables.enabled )
 			.setSESBaseURL( variables.baseURL );
@@ -158,9 +184,19 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if ( NOT variables.enabled OR arguments.event.isProxyRequest() ){ return; }
+
+		// AppMapping for BaseURL Construction
+		var appMapping = ( len( getSetting( 'AppMapping' ) lte 1 ) ? getSetting( 'AppMapping' ) & "/" : "" );
 		
-		// Set that we are in ses mode
-		arguments.event.setSESEnabled( true );
+		// Activate and record the incoming URL for multi-domain hosting
+		arguments.event
+			.setSESEnabled( true )
+			.setSESBaseURL( 
+				"http" & 
+				( event.isSSL() ? "s" : "" ) & 
+				"://#cgi.HTTP_HOST#/#appMapping#" & 
+				( variables.fullRewrites ? "index.cfm" : "" )
+			);
 
 		// Check for invalid URLs if in strict mode via unique URLs
 		if( variables.uniqueURLs ){

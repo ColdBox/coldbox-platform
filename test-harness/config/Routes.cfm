@@ -1,19 +1,7 @@
 <cfscript>
 	setUniqueURLs( false );
-	setBaseURL( "http://#cgi.http_host#/#getSetting('AppMapping')#/index.cfm" );
-
-	// REST services via new action as JSON Struct
-	/*
-
-	addRoute( pattern="/rest",
-		     handler="Rest",
-		     action="{GET:'show', PUT:'update', DELETE:'delete', POST:'save'}");
-	// REST services as Implicit structures
-	addRoute( pattern="/api",
-		     handler="Rest",
-		     action={GET='show', PUT='update', DELETE='delete', POST='save'});
-
-	*/
+	//setFullRewrites( false );
+	
 
 	addRoute( pattern="post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)", handler="ehGeneral", action="dumpRC" );
 
