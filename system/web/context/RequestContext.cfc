@@ -457,6 +457,15 @@ component serializable=false accessors="true"{
 	string function getCurrentRoute(){
 		return getPrivateValue( "currentRoute", "" );
 	}
+
+	/**
+	* Get the current request's SES route name
+	*/
+	string function getCurrentRouteName(){
+		return getPrivateValue( "currentRouteName", "" );
+	}
+	
+
 	/**
 	* Get the current routed URL that matched the SES route
 	*/

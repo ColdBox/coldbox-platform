@@ -243,7 +243,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 			// Create routed event
 			rc[ variables.eventName ] = aRoute.handler;
-			if( structKeyExists(aRoute,"action" ) ){
+			if( structKeyExists( aRoute,"action" ) ){
 				rc[ variables.eventName ] &= "." & aRoute.action;
 			}
 
@@ -252,12 +252,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				rc[ variables.eventName ] = aRoute.module & ":" & rc[ variables.eventName ];
 			}
 
-		}// end if handler exists
+		} // end if handler exists
 
 		// See if View is Dispatched
 		if( structKeyExists( aRoute, "view" ) ){
 			// Dispatch the View
-			arguments.event.setView( name=aRoute.view, noLayout=aRoute.viewNoLayout )
+			arguments.event
+				.setView( name=aRoute.view, noLayout=aRoute.viewNoLayout )
 				.noExecution();
 		}
 
@@ -943,14 +944,17 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 				// Setup the found Route
 				foundRoute = _routes[ i ];
+				
 				// Is this namespace routing?
 				if( len( arguments.namespace ) ){
-					arguments.event.setPrivateValue( name="currentRoutedNamespace", value=arguments.namespace );
+					arguments.event.setPrivateValue( "currentRoutedNamespace", arguments.namespace );
 				}
+				
 				// Debug logging
 				if( log.canDebug() ){
 					log.debug( "SES Route matched: #foundRoute.toString()# on routed string: #requestString#" );
 				}
+				
 				break;
 			}
 		}//end finding routes
@@ -990,7 +994,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			}
 
 			// Save Found URL
-			arguments.event.setPrivateValue( name="currentRoutedURL", value=requestString );
+			arguments.event.setPrivateValue( "currentRoutedURL", requestString );
 			// process context find
 			structAppend( params, findRoute( argumentCollection=contextRouting ), true );
 
@@ -1000,12 +1004,14 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			}
 		}
 
-		// Save Found Route
-		arguments.event.setValue(name="currentRoute",value=foundRoute.pattern,private=true);
+		// Save Found Route + Name
+		arguments.event
+			.setPrivateValue( "currentRoute", 		foundRoute.pattern )
+			.setPrivateValue( "currentRouteName",	foundRoute.name );
 
 		// Save Found URL if NOT Found already
-		if( NOT arguments.event.valueExists(name="currentRoutedURL",private=true) ){
-			arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
+		if( NOT arguments.event.privateValueExists( "currentRoutedURL" ) ){
+			arguments.event.setPrivateValue( "currentRoutedURL", requestString );
 		}
 
 		// Do we need to do package resolving
