@@ -116,12 +116,16 @@
 					
 					// Mocks
 					mockController = createMock( "coldbox.system.web.Controller" );
-					mockEvent = createMock( "coldbox.system.web.context.RequestContext" ).init( controller = mockController, properties = {
-							defaultLayout = "Main.cfm",
-							defaultView = "",
-							eventName = "event",
-							modules = {}
-						} );
+					mockEvent = createMock( "coldbox.system.web.context.RequestContext" )
+						.init( 
+							controller = mockController, 
+							properties = {
+								defaultLayout 	= "Main.cfm",
+								defaultView 	= "",
+								eventName 		= "event",
+								modules 		= {}
+							} 
+						);
 					mockInterceptData = {};
 				} );
 
@@ -131,7 +135,7 @@
 						pathInfo = "/Main/index",
 						scriptName = ""
 					} );
-					ses.onRequestCapture( mockEvent, mockInterceptData );
+					ses.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
 					expect( mockEvent.valueExists( "format" ) ).toBeFalse();
 				} );
 
@@ -141,7 +145,7 @@
 						pathInfo = "/Main/index.xml",
 						scriptName = ""
 					} );
-					ses.onRequestCapture( mockEvent, mockInterceptData );
+					ses.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
 					mockEvent.removeValue( "format" );
@@ -154,7 +158,7 @@
 						pathInfo = "/Main/index",
 						scriptName = ""
 					} );
-					ses.onRequestCapture( mockEvent, mockInterceptData );
+					ses.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "json" );
 					mockEvent.removeValue( "format" );
@@ -167,7 +171,7 @@
 						pathInfo = "/Main/index.xml",
 						scriptName = ""
 					} );
-					ses.onRequestCapture( mockEvent, mockInterceptData );
+					ses.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
 					mockEvent.removeValue( "format" );
