@@ -22,11 +22,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	property name="namespaceRoutingTable" type="struct";
 
 	/**
-	 * Auto reload configuration file flag
-	 */
-	property name="autoReload" type="boolean" default="false";
-
-	/**
 	 * Flag to enable unique or not URLs
 	 */
 	property name="uniqueURLS" type="boolean" default="false";
@@ -91,8 +86,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		variables.uniqueURLs = true;
 		// Enable the interceptor by default
 		variables.enabled = true;
-		// Auto reload configuration file flag
-		variables.autoReload = false;
 		// Detect extensions flag, so it can place a 'format' variable on the rc
 		variables.extensionDetection = true;
 		// Throw an exception when extension detection is invalid or not
@@ -125,6 +118,12 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	}
 
 	/****************************************************************************************************************************/
+	// DEPRECATED FUNCTIONALITY: Remove in later release
+
+	function setAutoReload(){}
+	function getAutoReload(){ return false; }
+
+	/****************************************************************************************************************************/
 	// CF-11/2016 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
 	// Remove this with new CFC approach. CFM files will have to upgrade to CFC capabilities once feature is complete.
 
@@ -149,22 +148,17 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	/****************************************************************************************************************************/
 
 	/**
-	 * This is the route dispatch
-	 * @event The event object
-	 * @interceptData The data intercepted
+	 * This is the route dispatcher called upon the request is captured.
 	 */
-	public void function onRequestCapture( required event, required interceptData ){
+	public void function onRequestCapture( event, interceptData, rc, prc, buffer ){
 		// Find which route this URL matches
 		var routedStruct = structnew();
-		var rc 			 = arguments.event.getCollection();
-        var cleanedPaths = getCleanedPaths( rc, arguments.event );
+		var cleanedPaths = getCleanedPaths( rc, arguments.event );
 		var HTTPMethod	 = arguments.event.getHTTPMethod();
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if ( NOT variables.enabled OR arguments.event.isProxyRequest() ){ return; }
-		// Auto Reload, usually in dev? then reconfigure the interceptor.
-		if( variables.autoReload ){ configure(); }
-
+		
 		// Set that we are in ses mode
 		arguments.event.setSESEnabled( true );
 
