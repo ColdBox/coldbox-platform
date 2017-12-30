@@ -77,4 +77,14 @@ Description :
 		<cfreturn instance.scopeStorage.get(cacheKey, CFScope)>
     </cffunction>
 
+	<!--- exists --->
+	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Indicates whether an object exists in scope">
+		<cfargument name="mapping"  type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
+		<cfscript>
+			var cacheKey = "wirebox:#arguments.mapping.getName()#";
+			var CFScope  = arguments.mapping.getScope();
+			return instance.scopeStorage.exists(cacheKey, CFScope);
+		</cfscript>
+	</cffunction>
+
 </cfcomponent>

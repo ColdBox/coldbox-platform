@@ -259,12 +259,18 @@ Description :
 								  type="Injector.InvalidScopeException");
 			}
 
-			// Request object from scope now, we now have it from the scope created, initialized and wired
-			target = instance.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments );
+			if( instance.scopes[ mapping.getScope() ].exists( mapping ) ){
+				// Request object from scope now
+				target = instance.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments );
+			}
+			else{
+				// Request object from scope, which will create, initialize and wire the instance
+				target = instance.scopes[ mapping.getScope() ].getFromScope( mapping, arguments.initArguments );
 
-			// Announce creation, initialization and DI magicfinicitation!
-			iData = {mapping=mapping,target=target,injector=this};
-			instance.eventManager.processState("afterInstanceCreation",iData);
+				// Announce creation, initialization and DI magicfinicitation!
+				iData = {mapping=mapping,target=target,injector=this};
+				instance.eventManager.processState("afterInstanceCreation",iData);
+			}
 
 			return target;
 		</cfscript>
