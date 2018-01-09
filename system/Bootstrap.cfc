@@ -257,7 +257,7 @@ component serializable="false" accessors="true"{
 						} 
 						// ColdBox does native JSON if you return a complex object.
 						else {
-							renderedContent = serializeJSON( refResults.results );
+							renderedContent = serializeJSON( refResults.results, true );
 							getPageContextResponse().setContentType( "application/json" );
 						}
 					}
