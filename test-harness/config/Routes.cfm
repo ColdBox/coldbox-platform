@@ -1,7 +1,7 @@
 <cfscript>
 	setUniqueURLs( false );
 	//setFullRewrites( false );
-	
+
 
 	addRoute( pattern="post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)", handler="ehGeneral", action="dumpRC" );
 
@@ -11,7 +11,22 @@
 
 	function fResponse(rc){
 		return "<h1>Hello from closure land: #arguments.rc.lname#</h1>";
-	};
+    };
+
+    // subdomain routing
+    addRoute(
+        domain = "subdomain-routing.dev",
+        pattern = "/",
+        handler = "subdomain",
+        action = "index"
+    );
+
+    addRoute(
+        domain = ":username.forgebox.dev",
+        pattern = "/",
+        handler = "subdomain",
+        action = "show"
+    );
 
 	// Resources
 	resources( "photos" );
@@ -50,9 +65,9 @@
 
 	// Should fire localized onInvalidHTTPMethod
 	addRoute( pattern="invalid-restful", handler="restful", action={ index = "post" } );
-	// 
+	//
 	addRoute( pattern="invalid-main-method", handler="main", action={ index = "post" } );
-	
+
 	// Default Application Routing
 	addRoute( pattern=":handler/:action?/:id-numeric?",matchVariables="isFound=true,testDate=#now()#");
 
