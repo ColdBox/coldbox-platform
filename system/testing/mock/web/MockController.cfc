@@ -46,14 +46,15 @@ component extends="coldbox.system.web.Controller" accessors="true"{
 
 		// copy over to rc
 		for( var thisArg in arguments ){
-			if( structKeyExists( arguments, thisArg ) ){
-				rc[ "setNextEvent_#thisArg#" ] = arguments[ thisArg ];
+			if( !isNull( arguments[ thisArg ] ) ){
+				rc[ "setNextEvent_#thisArg#" ] 	= arguments[ thisArg ];
+				rc[ "relocate_#thisArg#" ] 		= arguments[ thisArg ];
 			}
 		}
 
 		// Post Process
 		if( arguments.postProcessExempt ){
-			getInterceptorService().processState("postProcess");
+			getInterceptorService().processState( "postProcess" );
 		}
 
 		throw( message="Relocating via setNextEvent", type="TestController.setNextEvent" );
@@ -91,14 +92,15 @@ component extends="coldbox.system.web.Controller" accessors="true"{
 
 		// copy over to rc
 		for( var thisArg in arguments ){
-			if( structKeyExists( arguments, thisArg ) ){
-				rc[ "relocate_#thisArg#" ] = arguments[ thisArg ];
+			if( !isNull( arguments[ thisArg ] ) ){
+				rc[ "setNextEvent_#thisArg#" ] 	= arguments[ thisArg ];
+				rc[ "relocate_#thisArg#" ] 		= arguments[ thisArg ];
 			}
 		}
 
 		// Post Process
 		if( arguments.postProcessExempt ){
-			getInterceptorService().processState("postProcess");
+			getInterceptorService().processState( "postProcess" );
 		}
 
 		throw( message="Relocating via relocate", type="TestController.relocate" );
