@@ -301,6 +301,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			append        = arguments.append 
 		);
 
+		// Iterate through module resources and process them
+		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].resources ); x++ ){
+			var args = mConfig[ arguments.module ].resources[ x ];
+			args.module = arguments.module;
+			resources( argumentCollection=args );
+		}
+
 		// Iterate through module routes and process them
 		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].routes ); x++ ){
 			// Verify if simple value, then treat it as an include path location
@@ -318,13 +325,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				args.module = arguments.module;
 				addRoute( argumentCollection=args );
 			}
-		}
-
-		// Iterate through module resources and process them
-		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].resources ); x++ ){
-			var args = mConfig[ arguments.module ].resources[ x ];
-			args.module = arguments.module;
-			resources( argumentCollection=args );
 		}
 
 		return this;
