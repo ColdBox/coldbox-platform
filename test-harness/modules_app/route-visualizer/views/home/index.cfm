@@ -1,5 +1,7 @@
 <cfoutput>
-<h1>Route Visualizer</h1>
+<h1>ColdBox Route Visualizer</h1>
+
+<p>Routes as they are traveresed for matching</p>
 
 #renderView(
     view = "home/routeTable",
