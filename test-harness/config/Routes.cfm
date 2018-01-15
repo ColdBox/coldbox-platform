@@ -13,6 +13,9 @@
 		return "<h1>Hello from closure land: #arguments.rc.lname#</h1>";
 	};
 
+	// Resources
+	resources( "photos" );
+
 	// Responses
 	addRoute( pattern="/ff", response="Hello FireFox", condition=ff );
 	addRoute( pattern="/luis/:lname", response="<h1>Hi Luis {lname}, how are {you}</h1>", statusCode="200", statusText="What up dude!" );
