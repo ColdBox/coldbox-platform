@@ -911,7 +911,7 @@ Description :
 
 			// create textarea
 			buffer.append("<button");
-			flattenAttributes(arguments,"value,label,wrapper,labelWrapper,groupWrapper,labelClass",buffer).append(">#arguments.value#</button>");
+			flattenAttributes(arguments,"value,label,wrapper,labelWrapper,groupWrapper,labelClass,inputInsideLabel",buffer).append(">#arguments.value#</button>");
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper,1);
