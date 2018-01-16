@@ -2,8 +2,8 @@
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
-* Loads the framwork into memory and provides a ColdBox application.
 * @author Luis Majano <lmajano@ortussolutions.com>
+* Loads the framwork into memory and provides a ColdBox application.
 */
 component serializable="false" accessors="true"{
 
@@ -56,14 +56,35 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Loads the framework into application scope and executes app start procedures
+	 * Loads the framework into application scope and executes app start procedures
+	 * 
+	 * @throws InvalidColdBoxMapping
 	*/
 	function loadColdBox(){
 		var appKey = locateAppKey();
+		
 		// Cleanup of old code, just in case
 		if( structkeyExists( application, appKey ) ){
 			structDelete( application, appKey );
 		}
+
+		// Verify Mapping
+		if( !fileExists( expandPath( "/coldbox/system/web/Controller.cfc" ) ) ){
+			var coldboxDirectory = reReplaceNoCase(
+				getDirectoryFromPath( getCurrentTemplatePath() ),
+				"[\\/]system",
+				""	
+			);
+			throw(
+				message = "Cannot find the '/'coldbox' mapping",
+				detail 	= "It seems that you do not have a '/coldbox' mapping in your application and we cannot continue to process the request.
+				The good news is that you can easily resolve this by either creating a mapping in your Admnistrator or in this application's
+				Application.cfc that points to this directory: '#coldboxDirectory#'.  You can also copy the code snippet
+				below to add to your Application.cfc's pseudo constructor: this.mappings[ '/coldbox' ] = '#coldboxDirectory#'",
+				type	= "InvalidColdBoxMapping"
+			);
+		}
+
 		// Create Brand New Controller
 		application[ appKey ] = new coldbox.system.web.Controller( COLDBOX_APP_ROOT_PATH, appKey );
 		// Setup the Framework And Application
@@ -156,7 +177,7 @@ component serializable="false" accessors="true"{
 		}
 		// Local references
 		var interceptorService 	= cbController.getInterceptorService();
-		var templateCache		= cbController.getCacheBox().getCache( "template" );
+		var cacheBox 			= cbController.getCacheBox();
 
 		try{
 			// set request time, for info purposes
@@ -173,10 +194,21 @@ component serializable="false" accessors="true"{
 			}
 
 			//****** EVENT CACHING CONTENT DELIVERY *******/
-			var refResults = {};
-			if( structKeyExists( event.getEventCacheableEntry(), "cachekey" ) ){
-				refResults.eventCaching = templateCache.get( event.getEventCacheableEntry().cacheKey );
+			var refResults	 = {};
+			var eCacheEntry	 = event.getEventCacheableEntry();
+
+			// Verify if event caching item is in selected cache
+			if( structKeyExists( eCacheEntry, "cachekey" ) ){
+				// Stop gap for upgrades
+				if( isNull( eCacheEntry.provider) ){
+					eCacheEntry.provider = "template";
+				}
+				// Get cache element.
+				refResults.eventCaching = cacheBox
+					.getCache( eCacheEntry.provider )
+					.get( eCacheEntry.cacheKey );
 			}
+
 			// Verify if cached content existed.
 			if ( structKeyExists( refResults, "eventCaching" ) ){
 				// check renderdata
@@ -225,7 +257,7 @@ component serializable="false" accessors="true"{
 						} 
 						// ColdBox does native JSON if you return a complex object.
 						else {
-							renderedContent = serializeJSON( refResults.results );
+							renderedContent = serializeJSON( refResults.results, true );
 							getPageContextResponse().setContentType( "application/json" );
 						}
 					}
@@ -240,16 +272,13 @@ component serializable="false" accessors="true"{
 						renderedContent = renderedContent
 					};
 					interceptorService.processState( "preRender", interceptorData );
-					// replace back content in case of modification
+					// replace back content in case of modification, strings passed by value
 					renderedContent = interceptorData.renderedContent;
 
 					//****** EVENT CACHING *******/
 					var eCacheEntry = event.getEventCacheableEntry();
-					if( structKeyExists( eCacheEntry, "cacheKey") AND
-					    structKeyExists( eCacheEntry, "timeout")  AND
-						structKeyExists( eCacheEntry, "lastAccessTimeout" ) AND
-						getPageContextResponse().getStatus() neq 500
-					){
+					if( structKeyExists( eCacheEntry, "cacheKey") AND getPageContextResponse().getStatus() neq 500 ){
+						
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
 							
 							// Try to discover the content type
@@ -281,12 +310,14 @@ component serializable="false" accessors="true"{
 							}
 
 							// Cache it
-							templateCache.set( 
-								eCacheEntry.cacheKey,
-								cacheEntry,
-								eCacheEntry.timeout,
-								eCacheEntry.lastAccessTimeout 
-							);
+							cacheBox
+								.getCache( eCacheEntry.provider )
+								.set( 
+									eCacheEntry.cacheKey,
+									cacheEntry,
+									eCacheEntry.timeout,
+									eCacheEntry.lastAccessTimeout 
+								);
 						}
 
 					} // end event caching
@@ -313,12 +344,13 @@ component serializable="false" accessors="true"{
 				cbController.runEvent( event=cbController.getSetting("RequestEndHandler"), prePostExempt=true );
 			}
 			interceptorService.processState( "postProcess" );
+
 			//****** FLASH AUTO-SAVE *******/
 			if( cbController.getSetting( "flash" ).autoSave ){
 				cbController.getRequestService().getFlashScope().saveFlash();
 			}
 
-		} catch(Any e) {
+		} catch( Any e ) {
 			// process the exception and render its report
 			writeOutput( processException( cbController, e ) );
 		}
@@ -326,6 +358,8 @@ component serializable="false" accessors="true"{
 		// Time the request
 		request.fwExecTime = getTickCount() - request.fwExecTime;
 	}
+
+
 
 	/**
 	* Verify if a reinit is sent

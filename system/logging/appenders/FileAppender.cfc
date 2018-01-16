@@ -1,205 +1,335 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * An appender that leverages the OS file system
+ * 
+ * Properties:
+ * - filepath     : The location of where to store the log file.
+ * - autoExpand   : Whether to expand the file path or not. Defaults to true.
+ * - filename     : The name of the file, if not defined, then it will use the name of this appender. Do not append an extension to it. We will append a .log to it.
+ * - fileEncoding : The file encoding to use, by default we use ISO-8859-1;
+**/
+component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
-Author     :	Luis Majano
-Date        :	3/13/2009
-Description :
-	Simple File Appender
+	/**
+	 * The log file location
+	 */
+	property name="logFullpath";
 
-Properties:
+	/**
+	 * The default lock name
+	 */
+	property name="lockName";
 
-- filepath : The location of where to store the log file.
-- autoExpand : Whether to expand the file path or not. Defaults to true.
-- filename : The name of the file, if not defined, then it will use the name of this appender.
-		     Do not append an extension to it. We will append a .log to it.
-- fileEncoding : The file encoding to use, by default we use ISO-8859-1;
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.logging.AbstractAppender"
-			 output="false"
-			 hint="This is a simple implementation of an appender that is file based.">
+	/**
+	 * The default lock timeout
+	 */
+	property name="lockTimeout" default="25" type="numeric";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	 * Log Listener Queue
+	 */
+	property name="logListener" type="struct";
+    
+    /**
+	 * Constructor
+	 * 
+	 * @name The unique name for this appender.
+	 * @properties A map of configuration properties for the appender"
+	 * @layout The layout class to use in this appender for custom message rendering.
+	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @levelMax The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
+	 * 
+	 * @throws FileAppender.PropertyNotFound
+	 */
+	function init(
+		required name,
+		struct properties={},
+		layout="",
+		levelMin=0,
+		levelMax=4
+	){
+		super.init( argumentCollection=arguments );
 
-	<!--- Constructor --->
-	<cffunction name="init" access="public" returntype="FileAppender" hint="Constructor" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="name" 		required="true" hint="The unique name for this appender."/>
-		<cfargument name="properties" 	required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
-		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			super.init(argumentCollection=arguments);
+		// Setup Properties
+		if( NOT propertyExists( "filepath" ) ){
+			throw(
+				message = "Filepath property not defined",
+				type    = "FileAppender.PropertyNotFound" 
+			);
+		}
+		if( NOT propertyExists( "autoExpand" ) ){
+			setProperty( "autoExpand", true );
+		}
+		if( NOT propertyExists( "filename" ) ){
+			setProperty( "filename", getName() );
+		}
+		if( NOT propertyExists( "fileEncoding" ) ){
+			setProperty( "fileEncoding", "ISO-8859-1" );
+		}
+		// Cleanup File Names
+		setProperty( "filename", REreplacenocase( getProperty( "filename" ), "[^0-9a-z]", "", "ALL" ) );
 
-			// Setup Properties
-			if( NOT propertyExists("filepath") ){
-				throw(message="Filepath property not defined",type="FileAppender.PropertyNotFound");
+		// Setup the log file full path
+		variables.logFullpath = getProperty( "filePath" );
+		// Clean ending slash
+		variables.logFullPath = reReplacenocase( variables.logFullPath, "[/\\]$", "" );
+		// Concatenate Full Log path
+		variables.logFullPath = variables.logFullpath & "/" & getProperty( "filename" ) & ".log";
+
+		// Do we expand the path?
+		if( getProperty( "autoExpand" ) ){
+			variables.logFullPath = expandPath( variables.logFullpath );
+		}
+
+		// lock information
+		variables.lockName 		= getHash() & getname() & "logOperation";
+		variables.lockTimeout 	= 25;
+
+		// Activate Log Listener Queue
+		variables.logListener = {
+			active 	= false,
+			queue 	= []
+		};
+
+		// Declare locking construct
+		variables.lock = function( type="exclusive", body ){
+			lock 	name="#getHash() & getName()#-logListener"
+					type=arguments.type
+					timeout="#variables.lockTimeout#"
+					throwOnTimeout=true{
+
+				return arguments.body();
+
 			}
-			if( NOT propertyExists("autoExpand") ){
-				setProperty("autoExpand",true);
+		};
+
+		return this;
+    }
+
+    /**
+	 * Write an entry into the appender. You must implement this method yourself.
+	 * 
+	 * @logEvent The logging event to log
+	 */
+	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
+		var loge      = arguments.logEvent;
+		var timestamp = loge.getTimestamp();
+		var message   = loge.getMessage();
+		var entry     = "";
+
+		// Ensure Log File
+		initLogLocation();
+
+		// Message Layout
+		if( hasCustomLayout() ){
+			entry = getCustomLayout().format( loge );
+		} else {
+			// Cleanup main message
+			if( len( loge.getExtraInfoAsString() ) ){
+				message = message & " " & loge.getExtraInfoAsString();
 			}
-			if( NOT propertyExists("filename") ){
-				setProperty("filename",getName());
-			}
-			if( NOT propertyExists("fileEncoding") ){
-				setProperty("fileEncoding","ISO-8859-1");
-			}
-			// Cleanup File Names
-			setProperty("filename", REreplacenocase(getProperty("filename"), "[^0-9a-z]","","ALL") );
+			message = replace( message, '"', '""', "all" );
+			message = replace( message, "#chr(13)##chr(10)#", '  ', "all" );
+			message = replace( message, chr(13), '  ', "all" );
+			
+			// Entry string
+			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "MM/DD/YYYY" )#","#timeformat( timestamp, "HH:MM:SS" )#","#loge.getCategory()#","#message#"';
+		}
 
-			// Setup the log file full path
-			instance.logFullpath = getProperty("filePath");
-			// Clean ending slash
-			instance.logFullPath = reReplacenocase(instance.logFullPath,"[/\\]$","");
-			// Concatenate Full Log path
-			instance.logFullPath = instance.logFullpath & "/" & getProperty("filename") & ".log";
+		// Log it
+		append( entry );
 
-			// Do we expand the path?
-			if( getProperty("autoExpand") ){
-				instance.logFullPath = expandPath(instance.logFullpath);
-			}
+		return this;
+	}
 
-			//lock information
-			instance.lockName = instance._hash & getname() & "logOperation";
-			instance.lockTimeout = 25;
+	/**
+	 * Called upon registration
+	 */
+	FileAppender function onRegistration(){
+		// Init the log location
+		initLogLocation();
 
-			return this;
-		</cfscript>
-	</cffunction>
+		return this;
+	}
 
-	<!--- Get Lock Name --->
-	<cffunction name="getlockname" access="public" returntype="any" output="false" hint="The file Lock name">
-		<cfreturn instance.lockname>
-	</cffunction>
-	<cffunction name="getlockTimeout" access="public" returntype="any" output="false" hint="The lock timeout">
-		<cfreturn instance.lockTimeout>
-	</cffunction>
+	/**
+	 * Remove the log file for this appender
+	 */
+	FileAppender function removeLogFile(){
+		if( fileExists( variables.logFullPath ) ){
 
-	<!--- onRegistration --->
-	<cffunction name="onRegistration" output="false" access="public" returntype="void" hint="Runs on registration">
-		<cfscript>
-			// Default Log Directory
-			ensureDefaultLogDirectory();
-			// Init the log location
-			initLogLocation();
-		</cfscript>
-	</cffunction>
+			variables.lock( body=function(){
+				if( fileExists( variables.logFullPath ) ){
+					fileDelete( variables.logFullPath );
+				} // end double lock race condition
+			} );
 
-	<!--- Log Message --->
-	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender.">
-		<!--- ************************************************************* --->
-		<cfargument name="logEvent" type="any" required="true" hint="The logging event"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var loge = arguments.logEvent;
-			var timestamp = loge.getTimestamp();
-			var message = loge.getMessage();
-			var entry = "";
+		} // end if
 
-			// Does file still exist?
-			if( NOT fileExists( instance.logFullpath ) ){
-				ensureDefaultLogDirectory();
-				initLogLocation();
-			}
+		return this;
+	}
 
-			if( hasCustomLayout() ){
-				entry = getCustomLayout().format(loge);
-			}
-			else{
-				// Cleanup main message
-				if( len(loge.getExtraInfoAsString()) ){
-					message = message & " " & loge.getExtraInfoAsString();
-				}
-				message = replace(message,'"','""',"all");
-				message = replace(message,"#chr(13)##chr(10)#",'  ',"all");
-				message = replace(message,chr(13),'  ',"all");
-				// Entry string
-				entry = '"#severityToString(logEvent.getSeverity())#","#getname()#","#dateformat(timestamp,"MM/DD/YYYY")#","#timeformat(timestamp,"HH:MM:SS")#","#loge.getCategory()#","#message#"';
-			}
+	/**
+	 * Initialize the file log location if it does not exist. Please note that if exceptions are detected, then we log them in the CF facilities
+	 */
+	FileAppender function initLogLocation(){
+		if( !fileExists( variables.logFullPath ) ){
 
-			// Setup the real entry
-			append(entry);
-		</cfscript>
-	</cffunction>
-
-	<!--- get/set log full path --->
-	<cffunction name="getlogFullpath" access="public" returntype="any" output="false" hint="Get the full log path used.">
-		<cfreturn instance.logFullpath>
-	</cffunction>
-
-	<!--- Remove the log File --->
-	<cffunction name="removeLogFile" access="public" hint="Removes the log file" output="false" returntype="void">
-		<cfif fileExists( instance.logFullpath )>
-			<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
-				<cffile action="delete" file="#instance.logFullpath#">
-			</cflock>
-		</cfif>
-	</cffunction>
-
-	<!--- Init Log Location --->
-	<cffunction name="initLogLocation" access="public" hint="Initialize the file log location if it does not exist." output="false" returntype="void">
-		<cfset var fileObj = "">
-
-		<!--- Create Log File if It does not exist and initialize it. --->
-		<cfif not fileExists( instance.logFullpath )>
-			<!--- Log File Setup --->
-			<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
-			<cfscript>
-				// Double Lock
-				if( not fileExists( instance.logFullpath ) ){
-					// Create empty log file
+			variables.lock( body=function(){
+				if( !fileExists( variables.logFullPath ) ){
 					try{
-						fileObj = createObject("java","java.io.File").init(JavaCast("string", instance.logFullpath )).createNewFile();
+						// Default Log Directory
+						ensureDefaultLogDirectory();
+						// Create log file
+						append( '"Severity","Appender","Date","Time","Category","Message"' );
+					} catch( Any e ) {
+						$log( "ERROR", "Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#" );
 					}
-					catch(Any e){
-						$log("ERROR","Cannot create appender's: #getName()# log file. File #instance.logFullpath#. #e.message# #e.detail#");
-					}
+				} // end double lock race condition
+			} );
+
+		}
+
+		return this;
+	}
+
+	/**
+	 * Start the log listener so we can queue up the logging to alleviate for disk operations
+	 */
+	function startLogListener(){
+		
+		// Verify if listener has started.
+		var isActive = variables.lock( "readonly", function(){
+			return variables.logListener.active;
+		} );
+		
+		if( isActive ){
+			//out( "Listener already active exiting startup..." );
+			return; 
+		} else {
+			//out( "Listener needs to startup" );
+		}
+
+		// Check if we are in a thread already, if so, just skip
+		if( getUtil().inThread() ){
+			return;
+		}
+
+		thread  action="run" name="#variables.lockName#-#hash( createUUID() )#"{
+			// Activate listener
+			var isActivating = variables.lock( body=function(){
+				if( !variables.logListener.active ){
+					//out( "listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
+					variables.logListener.active = true;
+					return true;
+				} else {
+					//out( "listener was just marked as active, just existing lock" );
+					return false;
 				}
-			</cfscript>
-			</cflock>
-			<!--- Log First Entry --->
-			<cfset append('"Severity","Appender","Date","Time","Category","Message"')>
-		<cfelse>
-			<cfscript>
-			//Check if we can write
-			fileObj = createObject("java","java.io.File").init(JavaCast("string",instance.logFullpath));
-			if( NOT fileObj.canWrite() ){
-				$log("ERROR","Cannot write to file: #instance.logFullpath# by appender #getName()#");
+			} );
+
+			if( !isActivating ){ return; }
+
+			var lastRun       = getTickCount();
+			var start         = lastRun;
+			var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
+			var flushInterval = 1000; // 1 second
+			var sleepInterval = 50; 
+			var count         = 0;
+			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
+			var hasMessages   = false;
+
+			try{
+				out( "Starting #getName()# thread", true );
+				
+				// Execute only if there are messages in the queue or the internal has been crossed
+				while(
+					variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
+				){
+					
+					//out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
+
+					if( variables.logListener.queue.len() ){
+						// pop and dequeue
+						var thisMessage = variables.logListener.queue[ 1 ];
+						variables.logListener.queue.deleteAt( 1 );
+
+						if( isSimpleValue( oFile ) ){
+							oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
+						}
+						
+						//out( "Wrote to file #thisMessage#" );
+
+						// Write to file
+						fileWriteLine( oFile, thisMessage ); 
+						
+						// Mark the last run
+						lastRun = getTickCount(); 
+					}
+
+					// flush to disk every start + 1000ms 
+					if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
+						out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
+						fileClose( oFile );
+						oFile = "";
+						start = getTickCount();
+					}
+
+					//out( "Sleeping: lastRun #lastRun + maxIdle#" );
+
+					sleep( sleepInterval ); // take a nap
+				}
+
+			} catch( Any e ){
+				$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
+				out( "Error with listener thread for #getName()#" & e.message & e.detail );
+			} finally {
+				out( "Stopping listener thread for #getName()#, we have done our job" );
+				
+				// Stop log listener
+				variables.lock( body=function(){
+					variables.logListener.active = false;
+				} );
+
+				if( !isSimpleValue( oFile ) ){
+					fileClose( oFile );
+					oFile = "";
+				}
 			}
-			</cfscript>
-		</cfif>
-	</cffunction>
 
-<!------------------------------------------- PRIVATE ------------------------------------------->
+		} // end threading
+	}
+	
+	/************************************ PRIVATE ************************************/
 
+	/**
+	 * Append a message to the log file
+	 *
+	 * @message The target message
+	 */
+	private FileAppender function append( required message ){
+		// Ensure log listener
+		startLogListener();
 
+		// queue message up
+		arrayAppend( variables.logListener.queue, arguments.message );
 
-	<!--- append --->
-	<cffunction name="append" output="false" access="private" returntype="void" hint="Append a message to a file">
-		<cfargument name="message" required="true" hint="The message to append"/>
+		return this;
+	}
 
-		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
-			<cffile action="append"
-					addnewline="true"
-					file="#instance.logFullpath#"
-					output="#arguments.message#"
-					charset="#getProperty("fileEncoding")#">
-		</cflock>
-	</cffunction>
+	/**
+	 * Ensures the log directory.
+	 */
+	private function ensureDefaultLogDirectory(){
+		var dirPath = getDirectoryFrompath( variables.logFullpath );
 
-	<!--- Ensure directory --->
-	<cffunction name="ensureDefaultLogDirectory" access="private" hint="Ensures the log directory." output="false" returntype="void">
-		<cfset var dirPath = getDirectoryFrompath(instance.logFullpath)>
+		if( !directoryExists( dirPath ) ){
+			directoryCreate( dirPath );
+		}
 
-		<!--- Check if the directory already exists --->
-		<cfif not directoryExists(dirPath)>
-			<cfdirectory action="create" directory="#dirPath#">
-		</cfif>
-	</cffunction>
+		return this;
+	}
 
-
-</cfcomponent>
+}

@@ -22,11 +22,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	property name="namespaceRoutingTable" type="struct";
 
 	/**
-	 * Auto reload configuration file flag
-	 */
-	property name="autoReload" type="boolean" default="false";
-
-	/**
 	 * Flag to enable unique or not URLs
 	 */
 	property name="uniqueURLS" type="boolean" default="false";
@@ -62,22 +57,33 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	property name="baseURL" type="string";
 
 	/**
+	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index.cfm` is in the path of the rewriter or not.
+	 * The default value is **false**.
+	 */
+	property name="fullRewrites" type="boolean" default="false";
+
+	/**
 	 * Constructor
 	 */
 	function configure(){
+
+		/************************************** FLUENT CONSTRUCTS *********************************************/
+
 		// with closure
 		variables.withClosure = {};
 		// module closure
 		variables.withModule	= "";
 
+		/************************************** CONSTANTS *********************************************/
+
 		// STATIC Reserved Keys as needed for cleanups
-		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition";
+		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting";
 		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation,ssl,append";
 
 		// STATIC Valid Extensions
 		variables.VALID_EXTENSIONS 			= "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
 
-		/************************************** ROUTING DEFAULTS *********************************************/
+		/************************************** ROUTING DEFAULTS: Due to ACF11 Bugs on Properties *********************************************/
 
 		// Main routes Routing Table
 		variables.routes = [];
@@ -91,16 +97,22 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		variables.uniqueURLs = true;
 		// Enable the interceptor by default
 		variables.enabled = true;
-		// Auto reload configuration file flag
-		variables.autoReload = false;
 		// Detect extensions flag, so it can place a 'format' variable on the rc
 		variables.extensionDetection = true;
 		// Throw an exception when extension detection is invalid or not
 		variables.throwOnInvalidExtension = false;
 		// Initialize the valid extensions to detect
 		variables.validExtensions = variables.VALID_EXTENSIONS;
-		// Base Routing URL
-		variables.baseURL = "";
+		
+		// Base Routing URL, defaults to the domain and app mapping
+		if( len( getSetting( "AppMapping" ) ) lte 1 ){
+			variables.baseURL = "http://#cgi.HTTP_HOST#";
+		} else {
+			variables.baseURL = "http://#cgi.HTTP_HOST#/#getSetting( 'AppMapping' )#";
+		}
+		
+		// Are full rewrites enabled
+		variables.fullRewrites = false;
 
 		/************************************** INTERNAL DEPENDENCIES *********************************************/
  
@@ -114,18 +126,33 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// Import Configuration
 		importConfiguration();
 
-		// Save the base URL in the application settings
-		setSetting( 'sesBaseURL', variables.baseURL );
-		setSetting( 'htmlBaseURL', replacenocase( variables.baseURL, "index.cfm", "" ) );
+		// Check if rewrites turned off. If so, append the `index.cfm` to it.
+		if( !variables.fullRewrites AND !findNoCase( "index.cfm", variables.baseURL ) ){
+			variables.baseURL &= "/index.cfm";
+		}
+		// Remove any double slashes
+		variables.baseURL = reReplace( variables.baseURL, "\/\/$", "/", "all" );
 
-		// Configure Context, Just in case
+		// Save the base URL in the application settings
+		setSetting( 'SESBaseURL', variables.baseURL );
+		setSetting( 'HTMLBaseURL', replaceNoCase( variables.baseURL, "index.cfm", "" ) );
+
+		// Configure Context that we are enabled and with the base URL for routing
 		controller.getRequestService().getContext()
 			.setSESEnabled( variables.enabled )
 			.setSESBaseURL( variables.baseURL );
 	}
 
-	// CF-11 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
+	/****************************************************************************************************************************/
+	// DEPRECATED FUNCTIONALITY: Remove in later release
+
+	function setAutoReload(){}
+	function getAutoReload(){ return false; }
+
+	/****************************************************************************************************************************/
+	// CF-11/2016 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
 	// Remove this with new CFC approach. CFM files will have to upgrade to CFC capabilities once feature is complete.
+
 	function setBaseURL( string baseURL ){
 		variables.baseURL = arguments.baseURL;
 		return this;
@@ -140,26 +167,36 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	function getUniqueURLS(){
 		return variables.uniqueURLS;
 	}
+	function setValidExtensions( required extensions ){
+		variables.extensions = arguments.extensions;
+	}
+
+	/****************************************************************************************************************************/
 
 	/**
-	 * This is the route dispatch
-	 * @event The event object
-	 * @interceptData The data intercepted
+	 * This is the route dispatcher called upon the request is captured.
 	 */
-	public void function onRequestCapture( required event, required interceptData ){
+	public void function onRequestCapture( event, interceptData, rc, prc, buffer ){
 		// Find which route this URL matches
 		var routedStruct = structnew();
-		var rc 			 = arguments.event.getCollection();
-        var cleanedPaths = getCleanedPaths( rc, arguments.event );
+		var cleanedPaths = getCleanedPaths( rc, arguments.event );
 		var HTTPMethod	 = arguments.event.getHTTPMethod();
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if ( NOT variables.enabled OR arguments.event.isProxyRequest() ){ return; }
-		// Auto Reload, usually in dev? then reconfigure the interceptor.
-		if( variables.autoReload ){ configure(); }
 
-		// Set that we are in ses mode
-		arguments.event.setSESEnabled( true );
+		// AppMapping for BaseURL Construction
+		var appMapping = ( len( getSetting( 'AppMapping' ) lte 1 ) ? getSetting( 'AppMapping' ) & "/" : "" );
+		
+		// Activate and record the incoming URL for multi-domain hosting
+		arguments.event
+			.setSESEnabled( true )
+			.setSESBaseURL( 
+				"http" & 
+				( event.isSSL() ? "s" : "" ) & 
+				"://#cgi.HTTP_HOST#/#appMapping#" & 
+				( variables.fullRewrites ? "index.cfm" : "" )
+			);
 
 		// Check for invalid URLs if in strict mode via unique URLs
 		if( variables.uniqueURLs ){
@@ -206,7 +243,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 			// Create routed event
 			rc[ variables.eventName ] = aRoute.handler;
-			if( structKeyExists(aRoute,"action" ) ){
+			if( structKeyExists( aRoute,"action" ) ){
 				rc[ variables.eventName ] &= "." & aRoute.action;
 			}
 
@@ -215,12 +252,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				rc[ variables.eventName ] = aRoute.module & ":" & rc[ variables.eventName ];
 			}
 
-		}// end if handler exists
+		} // end if handler exists
 
 		// See if View is Dispatched
 		if( structKeyExists( aRoute, "view" ) ){
 			// Dispatch the View
-			arguments.event.setView( name=aRoute.view, noLayout=aRoute.viewNoLayout )
+			arguments.event
+				.setView( name=aRoute.view, noLayout=aRoute.viewNoLayout )
 				.noExecution();
 		}
 
@@ -263,6 +301,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			append        = arguments.append 
 		);
 
+		// Iterate through module resources and process them
+		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].resources ); x++ ){
+			var args = mConfig[ arguments.module ].resources[ x ];
+			args.module = arguments.module;
+			resources( argumentCollection=args );
+		}
+
 		// Iterate through module routes and process them
 		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].routes ); x++ ){
 			// Verify if simple value, then treat it as an include path location
@@ -280,13 +325,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				args.module = arguments.module;
 				addRoute( argumentCollection=args );
 			}
-		}
-
-		// Iterate through module resources and process them
-		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].resources ); x++ ){
-			var args = mConfig[ arguments.module ].resources[ x ];
-			args.module = arguments.module;
-			resources( argumentCollection=args );
 		}
 
 		return this;
@@ -906,14 +944,17 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 				// Setup the found Route
 				foundRoute = _routes[ i ];
+				
 				// Is this namespace routing?
 				if( len( arguments.namespace ) ){
-					arguments.event.setPrivateValue( name="currentRoutedNamespace", value=arguments.namespace );
+					arguments.event.setPrivateValue( "currentRoutedNamespace", arguments.namespace );
 				}
+				
 				// Debug logging
 				if( log.canDebug() ){
 					log.debug( "SES Route matched: #foundRoute.toString()# on routed string: #requestString#" );
 				}
+				
 				break;
 			}
 		}//end finding routes
@@ -953,7 +994,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			}
 
 			// Save Found URL
-			arguments.event.setPrivateValue( name="currentRoutedURL", value=requestString );
+			arguments.event.setPrivateValue( "currentRoutedURL", requestString );
 			// process context find
 			structAppend( params, findRoute( argumentCollection=contextRouting ), true );
 
@@ -963,12 +1004,14 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			}
 		}
 
-		// Save Found Route
-		arguments.event.setValue(name="currentRoute",value=foundRoute.pattern,private=true);
+		// Save Found Route + Name
+		arguments.event
+			.setPrivateValue( "currentRoute", 		foundRoute.pattern )
+			.setPrivateValue( "currentRouteName",	foundRoute.name );
 
 		// Save Found URL if NOT Found already
-		if( NOT arguments.event.valueExists(name="currentRoutedURL",private=true) ){
-			arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
+		if( NOT arguments.event.privateValueExists( "currentRoutedURL" ) ){
+			arguments.event.setPrivateValue( "currentRoutedURL", requestString );
 		}
 
 		// Do we need to do package resolving

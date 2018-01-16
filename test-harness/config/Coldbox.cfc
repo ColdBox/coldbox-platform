@@ -95,7 +95,7 @@
 		//Interceptor Settings
 		interceptorSettings = {
 			throwOnInvalidStates = false,
-			customInterceptionPoints = ""
+			customInterceptionPoints = "onCustomState"
 		};
 
 		//Register interceptors as an array, we need order
@@ -103,7 +103,9 @@
 			//SES
 			{class="coldbox.system.interceptors.SES",
 			 properties={}
-			}
+			},
+			{ class="#appMapping#.interceptors.Test1" },
+			{ class="#appMapping#.interceptors.Test2" }
 		];
 
 		//Datasources

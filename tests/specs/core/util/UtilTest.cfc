@@ -54,7 +54,7 @@
 		systemMock.$( "getEnv" ).$args( "bar" ).$results( "baz" );
 		systemMock.$( "getEnv" ).$args( "baz" ).$results( javacast( "null", "" ) );
 
-		util.$property( propertyName = "system", mock = systemMock );
+        util.$( "getJavaSystem", systemMock );
 
 		var setting = util.getSystemSetting( "foo" );
 		assertEquals( setting, "bar" );
@@ -80,8 +80,9 @@
 
 	function testGetSystemProperty(){
 		var systemMock = createObject( "java", "java.lang.System" );
-		systemMock.setProperty( "foo", "bar" );
-		util.$property( propertyName = "system", mock = systemMock );
+        systemMock.setProperty( "foo", "bar" );
+
+        util.$( "getJavaSystem", systemMock );
 
 		var setting = util.getSystemProperty( "foo" );
 		assertEquals( setting, "bar" );
@@ -105,8 +106,9 @@
 	function testGetEnv(){
 		var systemMock = createStub();
 		systemMock.$( "getEnv" ).$args( "foo" ).$results( "bar" );
-		systemMock.$( "getEnv" ).$args( "bar" ).$results( javacast( "null", "" ) );
-		util.$property( propertyName = "system", mock = systemMock );
+        systemMock.$( "getEnv" ).$args( "bar" ).$results( javacast( "null", "" ) );
+
+        util.$( "getJavaSystem", systemMock );
 
 		var setting = util.getEnv( "foo" );
 		assertEquals( setting, "bar" );

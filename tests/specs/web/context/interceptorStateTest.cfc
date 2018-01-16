@@ -55,7 +55,7 @@
 			// Now process with other method for event pattern
 			this.event.setValue("unittest",false);
 			this.mock.unittest = variables.unittest;
-			this.state.$property("metadataMap","instance", { "#this.key#" = {async=false, asyncPriority="normal", eventPattern="^UnitTest"} } );
+			this.state.$property("metadataMap","variables", { "#this.key#" = {async=false, asyncPriority="normal", eventPattern="^UnitTest"} } );
 			this.state.process( event=this.event, interceptData=structnew(), buffer=mockBuffer );
 			assertEquals(false, this.event.getValue('unittest'));
 			

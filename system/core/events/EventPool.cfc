@@ -1,143 +1,126 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This object models an event driven pool of objects
+*/
+component accessors="true"{
 
-Author     :	Luis Majano
-Date        :	9/28/2007
-Description :
-	This object models an event pool
------------------------------------------------------------------------>
-<cfcomponent hint="This object models an event pool that fires by convetion on its configured name." output="false">
+	/**
+	 * The collection of listeners in the pool backed by a linked hashmap which is synchornized for threading
+	 */
+	property name="pool" doc_generic="java.util.LinkedHashMap";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	 * The event pool state name
+	 */
+	property name="state";
 
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="EventPool">
-	    <cfargument name="state" type="string" required="true" hint="The event pool state name to model">
-	    <cfscript>
-			var linkedHashMap = createObject("java","java.util.LinkedHashMap").init( 3 );
-			var collections   = createObject("java", "java.util.Collections");
-			
-			// keep a state of objects
-			instance = structnew();
+	/**
+	 * Constructor
+	 * 
+	 * @state The name of the pool
+	 */
+	function init( required state ){
+		var linkedHashMap = createObject( "java", "java.util.LinkedHashMap" ).init( 5 );
+		var collections   = createObject( "java", "java.util.Collections" );
+		
+		// Create the event pool, start with 5 instead of 16 to save space
+		variables.pool 	= collections.synchronizedMap( linkedHashMap );
+		variables.state = arguments.state;
 
-			// Create the event pool, start with 3 instead of 16 to save space
-			instance.pool 	= collections.synchronizedMap( linkedHashMap );
-			instance.state 	= arguments.state;
+		return this;
+	}
 
-			return this;
-		</cfscript>
-	</cffunction>
+	/**
+	 * Stupid accessors in CF11 does not work.
+	 */
+	function getPool(){
+		return variables.pool;
+	}
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+	/**
+	 * Register an object with this pool
+	 * 
+	 * @key The key of the object
+	 * @target The object
+	 * 
+	 * @return EventPool
+	 */
+	function register( required key, required target ){
+		variables.pool.put( lcase( arguments.key ), arguments.target );
+		return this;
+	}
 
-	<!--- Register a new object with this event pool --->
-	<cffunction name="register" access="public" returntype="any" hint="Register an object class with this event pool" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="key" 		required="true" type="string" 	hint="The key of the object">
-		<cfargument name="target" 	required="true" type="any" 		hint="The target object to register.">
-		<!--- ************************************************************* --->
-		<cfset instance.pool.put( lcase( arguments.key ), arguments.target )>
-		<cfreturn this>
-	</cffunction>
+	/**
+	 * Unregister an object from this pool
+	 * 
+	 * @key The key of the object
+	 */
+	boolean function unregister( required key ){
+		arguments.key = lcase( arguments.key );
+		if( structKeyExists( variables.pool, arguments.key ) ){
+			variables.pool.remove( arguments.key );
+			return true;
+		}
+		return false;
+	}
 
-	<!--- Remove a target object from the pool state --->
-	<cffunction name="unregister" access="public" returntype="boolean" hint="Unregister an object from this event pool" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="key" 	required="true" type="string" 	hint="The key of the object">
-		<!--- ************************************************************* --->
-		<cfscript>
-			if( exists( arguments.key ) ){
-				instance.pool.remove( lcase( arguments.key ) );
-				return true;
-			}
-			return false;
-		</cfscript>
-	</cffunction>
+	/**
+	 * Check if a key exists in the pool
+	 */
+	boolean function exists( required key ){
+		return structKeyExists( variables.pool, lcase( arguments.key ) );
+	}
 
-	<!--- exists --->
-	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Checks if the passed key is registered with this event pool">
-		<!--- ************************************************************* --->
-		<cfargument name="key" 	required="true" type="string" 	hint="The key of the object">
-		<!--- ************************************************************* --->
-		<cfreturn structKeyExists( instance.pool, lcase( arguments.key ) )>
-	</cffunction>
+	/**
+	 * Get an object from this event pool. Else return a blank structure if not found
+	 */
+	function getObject( required key ){
+		arguments.key = lcase( arguments.key );
+		if( structKeyExists( variables.pool, arguments.key ) ){
+			return variables.pool[ arguments.key ];
+		}
+		return {};
+	}
 
-	<!--- Get Object --->
-	<cffunction name="getObject" access="public" returntype="any" hint="Get an object from this event pool. Else return a blank structure if not found" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="key" 	required="true" type="string" 	hint="The key of the object">
-		<!--- ************************************************************* --->
-		<cfscript>
+	/**
+	 * Process this event pool according to it's name.
+	 * 
+	 * @interceptData The data used in the interception call
+	 * @interceptData.doc_generic struct
+	 * 
+	 * @return EventPool
+	 */
+	function process( required interceptData ){
+		// Loop and execute each target object as registered in order
+		for( var key in variables.pool ){
+			// Invoke the execution point
+			var stopChain = invoker( variables.pool[ key ], arguments.interceptData );
 
-			if( exists( arguments.key ) ){
-				return instance.pool[ lcase( arguments.key ) ];
-			}
+			// Check for results
+			if( stopChain ){ break; }
+		}
+		
+		return this;
+	}
 
-			return structnew();
-		</cfscript>
-	</cffunction>
+	/**
+	 * Execute the interception point, returns a value if the chain should be stopped (true) or ignored (void/false)
+	 * 
+	 * @target The target object
+	 * @interceptData The data used in the interception call
+	 * @interceptData.doc_generic struct
+	 * 
+	 */
+	private function invoker( required target, required interceptData ){
+		var results = evaluate( "arguments.target.#variables.state#( interceptData = arguments.interceptData )" );
 
-	<!--- Process the Pool --->
-	<cffunction name="process" access="public" returntype="any" hint="Process this event pool according to it's name." output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="interceptData" required="true" type="struct" hint="A data structure used to pass information.">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var key 		= "";
-			var stopChain 	= "";
-	
-			// Loop and execute each target object as registered in order
-			for( key in instance.pool ){
-				// Invoke the execution point
-				stopChain = invoker( instance.pool[ key ], arguments.interceptData );
-	
-				// Check for results
-				if( stopChain ){ break; }
-			}
-			
-			return this;
-		</cfscript>
-	</cffunction>
+		if( !isNull( results ) && isBoolean( results ) ){
+			return results;
+		}
 
-	<!--- getter setter state --->
-	<cffunction name="getState" access="public" output="false" returntype="any" hint="Get the event pool's state name">
-		<cfreturn instance.state/>
-	</cffunction>
-	<cffunction name="setState" access="public" output="false" returntype="void" hint="Set the event pool's state name">
-		<!--- ************************************************************* --->
-		<cfargument name="state" type="any" required="true"/>
-		<!--- ************************************************************* --->
-		<cfset instance.state = arguments.state/>
-	</cffunction>
+		return false;
+	}
 
-	<!--- getter setter Pool --->
-	<cffunction name="getPool" access="public" output="false" returntype="any" hint="Get the Pool linked hash map">
-		<cfreturn instance.pool/>
-	</cffunction>
-
-<!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<!--- Invoker --->
-	<cffunction name="invoker" access="private" returntype="any" hint="Execute an event interception point" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="target" 		  required="true" type="any" 		hint="The target object">
-		<cfargument name="interceptData"  required="true" type="any" 		hint="A metadata structure used to pass intercepted information.">
-		<!--- ************************************************************* --->
-		<cfset var refLocal = structnew()>
-
-		<!--- Invoke the target --->
-		<cfinvoke component="#arguments.target#" method="#instance.state#" returnvariable="refLocal.results">
-			<cfinvokeargument name="interceptData" 	value="#arguments.interceptData#">
-		</cfinvoke>
-
-		<!--- Check if we have results --->
-		<cfif structKeyExists(refLocal,"results") and isBoolean(refLocal.results)>
-			<cfreturn refLocal.results>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
-	</cffunction>
-
-</cfcomponent>
+}

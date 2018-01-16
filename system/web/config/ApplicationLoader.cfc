@@ -67,20 +67,22 @@ component accessors="true"{
 			configCreatePath = "coldbox.system.web.config.Settings";
 		}
 
-		//Create config Object
+		// Create config Object
 		oConfig = createObject( "component", configCreatePath );
 
-		//Decorate It
-		oConfig.injectPropertyMixin = variables.util.getMixerUtil().injectPropertyMixin;
-		oConfig.getPropertyMixin 	= variables.util.getMixerUtil().getPropertyMixin;
+		// Decorate It
+		var mixerUtil = variables.util.getMixerUtil();
+		oConfig.injectPropertyMixin = mixerUtil.injectPropertyMixin;
+		oConfig.getPropertyMixin 	= mixerUtil.getPropertyMixin;
 
 		//MixIn Variables
-		oConfig.injectPropertyMixin( "controller",			variables.controller );
-		oConfig.injectPropertyMixin( "logBoxConfig",		variables.controller.getLogBox().getConfig() );
-		oConfig.injectPropertyMixin( "appMapping",			configStruct.appMapping );
-		oConfig.injectPropertyMixin( "getSystemSetting",	variables.util.getSystemSetting );
-		oConfig.injectPropertyMixin( "getSystemProperty",	variables.util.getSystemProperty );
-		oConfig.injectPropertyMixin( "getEnv",				variables.util.getEnv );
+		oConfig.injectPropertyMixin( "controller",		variables.controller )
+			.injectPropertyMixin( "logBoxConfig",		variables.controller.getLogBox().getConfig() )
+			.injectPropertyMixin( "appMapping",			configStruct.appMapping )
+			.injectPropertyMixin( "getJavaSystem",		variables.util.getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting",	variables.util.getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty",	variables.util.getSystemProperty )
+			.injectPropertyMixin( "getEnv",				variables.util.getEnv );
 
 		//Configure it
 		oConfig.configure();

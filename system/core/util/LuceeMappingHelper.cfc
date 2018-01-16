@@ -7,12 +7,17 @@
 component{
 
 	/**
-	* Engine caches app mappings, but gives us a method to update them via the application "tag"
+	 * Add a Lucee mapping
+	 * 
+	 * @name The name of the mapping
+	 * @path The path of the mapping
 	*/
-	function addMapping( required string name, required string path ) {
+	LuceeMappingHelper function addMapping( required name, required path ) {
 		var mappings = getApplicationSettings().mappings;
 		mappings[ arguments.name ] = arguments.path;
 		application action='update' mappings='#mappings#';
+
+		return this;
 	}
 
 }

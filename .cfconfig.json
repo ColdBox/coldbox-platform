@@ -1,28 +1,30 @@
 {
-    "caches":{
-        "default":{
-            "storage":"false",
-            "custom":{
-                "timeToIdleSeconds":"0",
-                "timeToLiveSeconds":"0"
+    "caches": {
+        "default": {
+            "storage": "false",
+            "custom": {
+                "timeToIdleSeconds": "0",
+                "timeToLiveSeconds": "0"
             },
-            "class":"lucee.runtime.cache.ram.RamCache",
-            "readOnly":"false"
+            "class": "lucee.runtime.cache.ram.RamCache",
+            "readOnly": "false"
         }
     },
-    "cacheDefaultObject":"default",
-	"datasources":{
-		"coolblog":{
-			"clientHostname":false,
-			"host":"localhost",
-			"dbdriver":"MySQL",
-			"password":"",
-			"dsn":"jdbc:mysql://localhost:3306/coolblog?tinyInt1isBit=false&",
-			"custom":"",
-			"username":"root",
-			"database":"coolblog",
-			"port":"3306"
-		}
-	}
-	
+    "cacheDefaultObject": "default",
+    "datasources": {
+        "coolblog": {
+            "clientHostname": false,
+            "host": "localhost",
+            "dbdriver": "MySQL",
+            "password": "",
+            "dsn": "jdbc:mysql://localhost:3306/coolblog?tinyInt1isBit=false&",
+            "custom": "",
+            "username": "root",
+            "database": "coolblog",
+            "port": "3306"
+        }
+    },
+    "debuggingEnabled": false,
+    "ajaxDebugWindowEnabled": false,
+    "debuggingReportExecutionTimes": false
 }

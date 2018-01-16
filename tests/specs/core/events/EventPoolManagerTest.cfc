@@ -1,16 +1,17 @@
 ﻿<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
-		manager = getMockBox().createMock("coldbox.system.core.events.EventPoolManager");
-		manager.init( listToArray('onTest') );
+		manager = createMock("coldbox.system.core.events.EventPoolManager");
+		manager.init( [ "onTest" ] );
 	}
+
 	function testProperties(){
-		assertEquals( manager.getEventStates(), "onTest");
-		assertEquals( manager.getStopRecursionClasses(), "");
+		assertEquals( manager.getEventStates(), [ "onTest" ] );
+		assertEquals( manager.getStopRecursionClasses(), "" );
 		assertTrue( structIsEmpty( manager.getEventPoolContainer() ));
 
-		manager.appendInterceptionPoints("onError");
-		assertEquals( manager.getEventStates(), "onTest,onError");
+		manager.appendInterceptionPoints( "onError" );
+		assertEquals( manager.getEventStates(), listToArray( "onTest,onError" ) );
 	}
 
 	function testRegisterUnregister(){
@@ -18,8 +19,8 @@
 
 		//1
 		manager.register(event);
-		assertEquals( manager.getObject("Event"), event);
-		assertTrue( isObject(manager.getEventPool("onTest")) );
+		assertEquals( manager.getObject( "Event" ), event );
+		assertTrue( isObject( manager.getEventPool( "onTest" ) ) );
 		manager.unregister("Event");
 		try{
 			manager.getObject("Event");
@@ -67,16 +68,17 @@
 		catch("EventPoolManager.ObjectNotFound" e){}
 		catch(Any e){ fail("wrong throw"); }
 	}
+
 	function testProcessStates(){
 		var event = new tests.resources.Event();
-		manager.register(event);
+		manager.register( event );
 
-		manager.processState("onAnnotation");
-		manager.processState("onCreate");
-		manager.processState("onTest");
+		manager.processState( "onAnnotation" );
+		manager.processState( "onCreate" );
+		manager.processState( "onTest" );
 
-		//debug(event.logs);
-		assertTrue( arrayLen( event.logs) );
+		debug(event.logs);
+		assertTrue( arrayLen( event.logs ) );
 	}
 </cfscript>
 

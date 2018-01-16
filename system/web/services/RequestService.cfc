@@ -34,7 +34,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		variables.templateCache			= controller.getCache( "template" );
 		variables.flashData 			= controller.getSetting( "flash" );
 		variables.flashDataHash			= hash( variables.flashData.toString() );
-		
+
 		// build out Flash RAM
 		buildFlashScope();
 	}
@@ -98,7 +98,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 	/**
 	 * Tests if the incoming context is an event cache
-	 * 
+	 *
 	 * @context The request context to test for event caching
 	 * @context.docbox_generic coldbox.system.web.context.RequestContext
 	 * @fwCache Flag to hard purge the cache if needed
@@ -121,17 +121,23 @@ component extends="coldbox.system.web.services.BaseService"{
 				return this;
 			}
 
+			// Incorporate metadata about event
+			eventCache.append( eventDictionary, true );
 			// Build the event cache key according to incoming request
-			eventCache.cacheKey = oEventURLFacade.buildEventKey(
+			eventCache[ "cacheKey" ] = oEventURLFacade.buildEventKey(
 				keySuffix     = eventDictionary.suffix,
 				targetEvent   = currentEvent,
 				targetContext = arguments.context
 			);
 
 			// Check for Event Cache Purge
-			if ( arguments.fwCache ){
+			if( arguments.fwCache ){
 				// Clear the key from the cache
-				variables.templateCache.clear( eventCache.cacheKey );
+				variables.cacheBox
+					.getCache( eventDictionary.provider )
+					.clear( eventCache.cacheKey );
+				
+				// Return don't show cached version
 				return this;
 			}
 
@@ -140,28 +146,30 @@ component extends="coldbox.system.web.services.BaseService"{
 
 			// debug logging
 			if( variables.log.canDebug() ){
-				variables.log.debug("Event caching detected for : #eventCache.toString()#" );
+				variables.log.debug( "Event caching detected for : #eventCache.toString()#" );
 			}
 
-		}//end if using event caching.
+		} //end if using event caching.
 
 		return this;
 	}
 
 	/**
 	 * Get the Request context from request scope or create a new one.
-	 * 
+	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
-	function getContext(){
-		return ( request.cb_requestContext ?: createContext() );
+	function getContext( string classPath = "coldbox.system.web.context.RequestContext" ){
+        return ( request.keyExists( "cb_requestContext" ) ?
+            request[ "cb_requestContext" ] :
+            createContext( classPath ) );
 	}
 
 	/**
 	 * Set the request context into the request scope
-	 * 
+	 *
 	 * @context Request Context object
-	 * 
+	 *
 	 * @RequestService
 	 */
 	RequestService function setContext( required context ){
@@ -246,11 +254,11 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * Creates a new request context object
 	 * @return coldbox.system.web.context.RequestContext
 	 */
-	function createContext(){
+	function createContext( string classPath = "coldbox.system.web.context.RequestContext" ){
 		var oDecorator = "";
 
-		// Create the original request context
-		var oContext = new coldbox.system.web.context.RequestContext( properties=controller.getConfigSettings(), controller=controller );
+        // Create the original request context
+		var oContext = createObject( "component", classPath ).init( properties=controller.getConfigSettings(), controller=controller );
 
 		// Determine if we have a decorator, if we do, then decorate it.
 		if ( len( controller.getSetting( name="RequestContextDecorator", defaultValue="" ) ) ){

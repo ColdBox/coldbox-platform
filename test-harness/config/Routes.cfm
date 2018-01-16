@@ -1,19 +1,7 @@
 <cfscript>
 	setUniqueURLs( false );
-	setBaseURL( "http://#cgi.http_host#/#getSetting('AppMapping')#/index.cfm" );
-
-	// REST services via new action as JSON Struct
-	/*
-
-	addRoute( pattern="/rest",
-		     handler="Rest",
-		     action="{GET:'show', PUT:'update', DELETE:'delete', POST:'save'}");
-	// REST services as Implicit structures
-	addRoute( pattern="/api",
-		     handler="Rest",
-		     action={GET='show', PUT='update', DELETE='delete', POST='save'});
-
-	*/
+	//setFullRewrites( false );
+	
 
 	addRoute( pattern="post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)", handler="ehGeneral", action="dumpRC" );
 
@@ -24,6 +12,9 @@
 	function fResponse(rc){
 		return "<h1>Hello from closure land: #arguments.rc.lname#</h1>";
 	};
+
+	// Resources
+	resources( "photos" );
 
 	// Responses
 	addRoute( pattern="/ff", response="Hello FireFox", condition=ff );

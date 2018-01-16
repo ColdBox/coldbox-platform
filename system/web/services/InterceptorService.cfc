@@ -145,7 +145,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	){
 		// Validate Incoming State
 		if( variables.interceptorConfig.throwOnInvalidStates AND NOT 
-			listFindNoCase( arrayToList( variables.interceptionPoints ), arguments.state ) 
+			arrayFindNoCase( variables.interceptionPoints, arguments.state )
 		){
 			throw( 
 				message = "The interception state sent in to process is not valid: #arguments.state#", 
@@ -162,7 +162,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			// Execute Interception in the state object
 			arguments.event 	= controller.getRequestService().getContext();
 			arguments.buffer 	= requestBuffer;
-			var results 		= structFind( variables.interceptionStates, arguments.state ).process( argumentCollection=arguments );
+
+			// Execute Interception
+			var results 		= variables.interceptionStates
+				.find( arguments.state )
+				.process( argumentCollection=arguments );
 		}
 
 		// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace

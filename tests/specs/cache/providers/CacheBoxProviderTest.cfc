@@ -17,15 +17,22 @@ Description :
 	function setup(){
 		super.setup();
 		//Mocks
-		mockFactory  = getMockBox().createEmptyMock(className='coldbox.system.cache.CacheFactory');
-		mockEventManager  = getMockBox().createEmptyMock(className='coldbox.system.core.events.EventPoolManager');
-		mockLogBox	 = getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
-		mockLogger	 = getMockBox().createEmptyMock("coldbox.system.logging.Logger");
+		mockFactory  		= createEmptyMock(className='coldbox.system.cache.CacheFactory');
+		mockEventManager  	= createEmptyMock(className='coldbox.system.core.events.EventPoolManager');
+		mockLogBox	 		= createEmptyMock( "coldbox.system.logging.LogBox" );
+		mockLogger	 		= createEmptyMock( "coldbox.system.logging.Logger" );
+
 		// Mock Methods
-		mockFactory.$("getLogBox",mockLogBox);
-		mockLogBox.$("getLogger", mockLogger);
-		mockLogger.$("error").$("debug").$("info").$("canDebug",true).$("canInfo",true).$("canError",true);
-		mockEventManager.$("processState");
+		mockFactory.$( "getLogBox",mockLogBox );
+		mockLogBox.$( "getLogger", mockLogger );
+		mockLogger
+			.$( "error", mockLogger )
+			.$( "debug", mockLogger )
+			.$( "info", mockLogger )
+			.$( "canDebug", true )
+			.$( "canInfo", true )
+			.$( "canError", true );
+		mockEventManager.$( "processState" );
 
 		// Config
 		config = {
@@ -63,12 +70,12 @@ Description :
 	}
 
 	function testLookupMulti(){
-		cache.getObjectStore().set("test",now(),20);
-		cache.getObjectStore().set("test2",now(),20);
+		cache.getObjectStore().set( "test",now(),20);
+		cache.getObjectStore().set( "test2",now(),20);
 		cache.clearStatistics();
 
 		//list
-		results = cache.lookupMulti(keys="test,test2,test3");
+		results = cache.lookupMulti(keys="test,test2,test3" );
 		// debug(results);
 		assertEquals( true, results.test );
 		assertEquals( true, results.test2 );
@@ -76,11 +83,11 @@ Description :
 	}
 
 	function testLookup(){
-		cache.getObjectStore().set("test",now(),20);
+		cache.getObjectStore().set( "test",now(),20);
 		cache.clearStatistics();
 
-		assertEquals( false, cache.lookup("invalid") );
-		assertEquals( true, cache.lookup("test") );
+		assertEquals( false, cache.lookup( "invalid" ) );
+		assertEquals( true, cache.lookup( "test" ) );
 
 		assertEquals( 1, cache.getStats().getMisses() );
 		assertEquals( 1, cache.getStats().getHits() );
@@ -88,11 +95,11 @@ Description :
 	}
 
 	function testLookupQuiet(){
-		cache.getObjectStore().set("test",now(),20);
+		cache.getObjectStore().set( "test",now(),20);
 		cache.clearStatistics();
 
-		assertEquals( false, cache.lookupQuiet("invalid") );
-		assertEquals( true, cache.lookupQuiet("test") );
+		assertEquals( false, cache.lookupQuiet( "invalid" ) );
+		assertEquals( true, cache.lookupQuiet( "test" ) );
 
 		assertEquals( 0, cache.getStats().getMisses() );
 		assertEquals( 0, cache.getStats().getHits() );
@@ -107,7 +114,7 @@ Description :
 		var results = cache.get( "test" );
 
 		assertEquals( results, testval );
-		assertEquals( 0, cache.getStats().getMisses(), "Actual: #cache.getStats().getMisses()#");
+		assertEquals( 0, cache.getStats().getMisses(), "Actual: #cache.getStats().getMisses()#" );
 		assertEquals( 1, cache.getStats().getHits(), "Actual: #cache.getStats().getHits()#" );
 	}
 
@@ -133,10 +140,10 @@ Description :
 
 	function testGetQuiet(){
 		testVal = {name="luis", age=32};
-		cache.getObjectStore().set("test",testVal,20);
+		cache.getObjectStore().set( "test",testVal,20);
 		cache.clearStatistics();
 
-		results = cache.getQuiet("test");
+		results = cache.getQuiet( "test" );
 		assertEquals( results, testval );
 		assertEquals( 0, cache.getStats().getMisses() );
 		assertEquals( 0, cache.getStats().getHits() );
@@ -144,23 +151,23 @@ Description :
 
 	function testGetMulti(){
 		testVal = {name="luis", age=32};
-		cache.getObjectStore().set("test",testVal,20);
+		cache.getObjectStore().set( "test",testVal,20);
 		cache.clearStatistics();
 
-		results = cache.getMulti("test,test2");
+		results = cache.getMulti( "test,test2" );
 		// debug(results);
 
 		assertEquals( testVal, results.test );
-		assertFalse( structKeyExists(results,"test2") );
+		assertFalse( structKeyExists(results,"test2" ) );
 
 	}
 
 	function testgetCachedObjectMetadata(){
 		testVal = {name="luis", age=32};
-		cache.getObjectStore().set("test",testVal,20);
+		cache.getObjectStore().set( "test",testVal,20);
 		cache.clearStatistics();
 
-		results = cache.getCachedObjectMetadata("test");
+		results = cache.getCachedObjectMetadata( "test" );
 		// debug(results);
 
 		assertEquals( 1, results.hits);
@@ -170,22 +177,22 @@ Description :
 		testVal = {name="luis", age=32};
 		cache.clearAll();
 
-		cache.set("test",testVal,20);
-		md = cache.getCachedObjectMetadata("test");
-		assertEquals( testVal, cache.get("test") );
+		cache.set( "test",testVal,20);
+		md = cache.getCachedObjectMetadata( "test" );
+		assertEquals( testVal, cache.get( "test" ) );
 		assertEquals( 2, arrayLen(mockEventManager.$callLog().processState) );
 		assertEquals( 20, md.timeout );
 		assertEquals( config.objectDefaultLastAccessTimeout, md.lastAccesstimeout );
 
-		cache.set("test",testVal,20,20);
-		md = cache.getCachedObjectMetadata("test");
-		assertEquals( testVal, cache.get("test") );
+		cache.set( "test",testVal,20,20);
+		md = cache.getCachedObjectMetadata( "test" );
+		assertEquals( testVal, cache.get( "test" ) );
 		assertEquals( 20, md.timeout );
 		assertEquals( 20, md.lastAccesstimeout );
 
-		cache.set("test",testVal);
-		md = cache.getCachedObjectMetadata("test");
-		assertEquals( testVal, cache.get("test") );
+		cache.set( "test",testVal);
+		md = cache.getCachedObjectMetadata( "test" );
+		assertEquals( testVal, cache.get( "test" ) );
 		assertEquals( config.objectDefaultTimeout, md.timeout );
 		assertEquals( config.objectDefaultLastAccessTimeout, md.lastAccesstimeout );
 
@@ -193,9 +200,9 @@ Description :
 
 	function testsetQuiet(){
 		testVal = {name="luis", age=32};
-		cache.setQuiet("test",testVal,20);
+		cache.setQuiet( "test",testVal,20);
 
-		assertEquals( testVal, cache.get("test") );
+		assertEquals( testVal, cache.get( "test" ) );
 		assertEquals( 0, arrayLen(mockEventManager.$callLog().processState) );
 	}
 
@@ -206,8 +213,8 @@ Description :
 		};
 		cache.setMulti(test);
 
-		assertEquals( test.key1, cache.get("key1") );
-		assertEquals( test.key2, cache.get("key2") );
+		assertEquals( test.key1, cache.get( "key1" ) );
+		assertEquals( test.key2, cache.get( "key2" ) );
 	}
 
 	function testClearMulti(){
@@ -217,10 +224,10 @@ Description :
 		};
 		cache.setMulti(test);
 
-		cache.clearMulti("key1,key2");
+		cache.clearMulti( "key1,key2" );
 
-		assertFalse( cache.lookup("key1") );
-		assertFalse( cache.lookup("key2") );
+		assertFalse( cache.lookup( "key1" ) );
+		assertFalse( cache.lookup( "key2" ) );
 
 	}
 
@@ -229,11 +236,11 @@ Description :
 			key1 = now(),
 			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
-		cache.setQuiet("key1",test.key1);
+		cache.setQuiet( "key1",test.key1);
 
-		cache.clearQuiet("key1");
+		cache.clearQuiet( "key1" );
 
-		assertFalse( cache.lookup("key1") );
+		assertFalse( cache.lookup( "key1" ) );
 		assertEquals( 0, arrayLen(mockEventManager.$callLog().processState) );
 	}
 
@@ -242,11 +249,11 @@ Description :
 			key1 = now(),
 			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
-		cache.setQuiet("key1",test.key1);
+		cache.setQuiet( "key1",test.key1);
 
-		cache.clear("key1");
+		cache.clear( "key1" );
 
-		assertFalse( cache.lookup("key1") );
+		assertFalse( cache.lookup( "key1" ) );
 		assertEquals( 1, arrayLen(mockEventManager.$callLog().processState) );
 	}
 
@@ -259,8 +266,8 @@ Description :
 
 		cache.clearAll();
 
-		assertFalse( cache.lookup("key1") );
-		assertFalse( cache.lookup("key2") );
+		assertFalse( cache.lookup( "key1" ) );
+		assertFalse( cache.lookup( "key2" ) );
 
 		assertEquals( 3, arrayLen(mockEventManager.$callLog().processState) );
 	}
@@ -282,13 +289,13 @@ Description :
 			key1 = now(),
 			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
-		cache.set("test", test);
-		cache.expireObject("test");
+		cache.set( "test", test);
+		cache.expireObject( "test" );
 
-		assertTrue( cache.isExpired("test") );
+		assertTrue( cache.isExpired( "test" ) );
 
-		cache.set("test3", test);
-		assertFalse( cache.isExpired("test3") );
+		cache.set( "test3", test);
+		assertFalse( cache.isExpired( "test3" ) );
 	}
 
 	function testExpireByKeySnippet(){
@@ -296,13 +303,13 @@ Description :
 			key1 = now(),
 			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
-		cache.set("test1", test.key1);
-		cache.set("test2", test.key2);
+		cache.set( "test1", test.key1);
+		cache.set( "test2", test.key2);
 
-		cache.expireByKeySnippet("tes",true);
+		cache.expireByKeySnippet( "tes",true);
 
-		assertTrue( cache.isExpired("test1") );
-		assertTrue( cache.isExpired("test2") );
+		assertTrue( cache.isExpired( "test1" ) );
+		assertTrue( cache.isExpired( "test2" ) );
 
 	}
 
@@ -311,13 +318,13 @@ Description :
 			key1 = now(),
 			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
-		cache.set("test1", test.key1);
-		cache.set("test2", test.key2);
+		cache.set( "test1", test.key1);
+		cache.set( "test2", test.key2);
 
 		cache.expireAll();
 
-		assertTrue( cache.isExpired("test1") );
-		assertTrue( cache.isExpired("test2") );
+		assertTrue( cache.isExpired( "test1" ) );
+		assertTrue( cache.isExpired( "test2" ) );
 
 	}
 
@@ -326,13 +333,13 @@ Description :
 			key1 = now(),
 			key2 = {name="Luis Mahoney", cool="You betcha!"}
 		};
-		cache.set("test1", test.key1);
-		cache.set("test2", test.key2);
+		cache.set( "test1", test.key1);
+		cache.set( "test2", test.key2);
 
 		keys = cache.getKeys();
 
-		assertTrue( keys.contains("test1") );
-		assertTrue( keys.contains("test2") );
+		assertTrue( keys.contains( "test1" ) );
+		assertTrue( keys.contains( "test2" ) );
 
 	}
 
@@ -342,12 +349,12 @@ Description :
 			key2 = {name="luis",age=2}
 		};
 		cache.clearAll();
-		cache.set("test1", test.key1);
-		cache.set("test2", test.key2);
+		cache.set( "test1", test.key1);
+		cache.set( "test2", test.key2);
 
 		cache.expireAll();
 
-		makePublic(cache,"_reap");
+		makePublic(cache,"_reap" );
 		cache._reap();
 
 		// debug( cache.$callLog() );

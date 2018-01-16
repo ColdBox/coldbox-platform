@@ -1,275 +1,302 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This is LogBox, an enterprise logging library. Please remember to persist this class once it has been created.
+ * You can create as many instances of LogBox as you like. Just remember that you
+ * need to register loggers in it.  It can be one or 1000, it all depends on you.
+ *
+ * By default, LogBox will log any warnings pertaining to itself in the CF logs
+ * according to its name.
+*/
+component accessors="true"{
 
-Author     :	Luis Majano
-Date        :	3/13/2009
-Description :
-	This is LogBox, an enterprise logger. Please remember to persist this factory once it has been created.
-	You can create as many instances of LogBox as you like. Just remember that you
-	need to register loggers in it.  It can be one or 1000, it all depends on you.
+	
+	/**
+	* The LogBox unique ID
+	*/
+	property name="logBoxID";
 
-	By default, LogBox will log any warnings pertaining to itself in the CF logs
-	according to its name.
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="This is LogBox, an enterprise logger. Please remember to persist this factory once it has been created.">
+	/**
+	* The LogBox operating version
+	*/
+	property name="version";
+	
+	/**
+	* The appender registration map
+	*/
+	property name="appenderRegistry" type="struct";
+	
+	/**
+	* The Logger registration map
+	*/
+	property name="loggerRegistry" type="struct";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	* Category based appenders
+	*/
+	property name="categoryAppenders";
 
-	<cfscript>
-		// The log levels enum as a public property
-		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
+	/**
+	* Configuration object
+	*/
+	property name="config";
 
-		// private instance scope
-		instance = structnew();
+	/**
+	* ColdBox linkage class
+	*/
+	property name="coldbox";
+
+	// The log levels enum as a public property
+	this.logLevels = new coldbox.system.logging.LogLevels();
+
+	/**
+	 * Constructor
+	 *
+	 * @config The LogBoxConfig object to use to configure this instance of LogBox
+	 * @coldbox A coldbox application that this instance of logbox can be linked to.
+	 */
+	function init( required coldbox.system.logging.config.LogBoxConfig config, coldbox="" ){
 		// LogBox Unique ID
-		instance.logboxID = createObject('java','java.lang.System').identityHashCode(this);
+		variables.logboxID          = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
 		// Appenders
-		instance.appenderRegistry = structnew();
+		variables.appenderRegistry  = structnew();
 		// Loggers
-		instance.loggerRegistry = structnew();
+		variables.loggerRegistry    = structnew();
 		// Category Appenders
-		instance.categoryAppenders = "";
+		variables.categoryAppenders = "";
 		// Version
-		instance.version = "@build.version@+@build.number@";
-		// Configuration object
-		instance.config = "";
-		// ColdBox Application Link
-		instance.coldbox = "";
-	</cfscript>
+		variables.version           = "@build.version@+@build.number@";
+		
+		// Link incoming ColdBox argument
+		variables.coldbox = arguments.coldbox;
 
-	<!--- Init --->
-	<cffunction name="init" access="public" returntype="LogBox" hint="Constructor" output="false" >
-		<cfargument name="config"  type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
-		<cfargument name="coldbox" type="any" required="false" default="" hint="A coldbox application that this instance of logbox can be linked to."/>
-		<cfscript>
-			// Check if linking ColdBox
-			if( isObject(arguments.coldbox) ){ instance.coldbox = arguments.coldbox; }
+		// Configure LogBox
+		configure( arguments.config );
 
-			// Configure LogBox
-			configure(arguments.config);
+		return this;
+	}
 
-			// Return LogBox
-			return this;
-		</cfscript>
-	</cffunction>
-
-	<!--- configure --->
-	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories">
-		<cfargument name="config" type="any" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox: coldbox.system.logging.config.LogBoxConfig" doc_generic="coldbox.system.logging.config.LogBoxConfig"/>
-		<cfscript>
-			var appenders 	= "";
-			var key 		= "";
-			var oRoot 		= "";
-			var rootConfig 	= "";
-			var args 		= structnew();
-		</cfscript>
-
-		<cflock name="#instance.logboxID#.logBox.config" type="exclusive" timeout="30">
-			<cfscript>
-			// Store config object
-			instance.config = arguments.config;
-			// Validate configuration
-			instance.config.validate();
+	/**
+	 * Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories
+	 * 
+	 * @config The LogBoxConfig object to use to configure this instance of LogBox: coldbox.system.logging.config.LogBoxConfig
+	 * @config.doc_generic coldbox.system.logging.config.LogBoxConfig
+	 */
+	function configure( required config ){
+		lock name="#variables.logBoxID#.logbox.config" type="exclusive" timeout="30" throwOnTimeout=true{
+			// Store config object with validation
+			variables.config = arguments.config.validate();
 
 			// Reset Registries
-			instance.appenderRegistry = structnew();
-			instance.loggerRegistry = structnew();
+			variables.appenderRegistry 	= structnew();
+			variables.loggerRegistry 	= structnew();
 
 			//Get appender definitions
-			appenders = instance.config.getAllAppenders();
+			var appenders = variables.config.getAllAppenders();
 
 			// Register All Appenders configured
-			for( key in appenders ){
-				registerAppender(argumentCollection=appenders[key]);
+			for( var key in appenders ){
+				registerAppender( argumentCollection=appenders[ key ] );
 			}
 
 			// Get Root def
-			rootConfig = instance.config.getRoot();
+			var rootConfig = variables.config.getRoot();
 			// Create Root Logger
-			args.category = "ROOT";
-			args.levelMin = rootConfig.levelMin;
-			args.levelMax = rootConfig.levelMax;
-			args.appenders = getAppendersMap(rootConfig.appenders);
-			oRoot = createObject("component","coldbox.system.logging.Logger").init(argumentCollection=args);
-
+			var args = {
+				category = "ROOT",
+				levelMin = rootConfig.levelMin,
+				levelMax = rootConfig.levelMax,
+				appenders = getAppendersMap( rootConfig.appenders )
+			};
+			
 			//Save in Registry
-			instance.loggerRegistry = structnew();
-			instance.loggerRegistry["ROOT"] = oRoot;
-		</cfscript>
-		</cflock>
-	</cffunction>
+			variables.loggerRegistry = {
+				"ROOT" = new coldbox.system.logging.Logger( argumentCollection=args )
+			};
+		}
+	}
 
-	<!--- Get Version --->
-	<cffunction name="getVersion" access="public" returntype="any" output="false" hint="Get the LogBox version string.">
-		<cfreturn instance.Version>
-	</cffunction>
+	/**
+	 * Get the root logger object
+	 * 
+	 * @return coldbox.system.logging.Logger
+	 */
+	function getRootLogger(){
+		return variables.loggerRegistry[ "ROOT" ];
+	}
 
-	<!--- Get the config object --->
-	<cffunction name="getConfig" access="public" returntype="any" output="false" hint="Get this LogBox's configuration object." doc_generic="coldbox.system.logging.config.LogBoxConfig">
-		<cfreturn instance.config>
-	</cffunction>
+	/**
+	 * Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox
+	 * 
+	 * @category The category name to use in this logger or pass in the target object will log from and we will inspect the object and use its metadata name
+	 * 
+	 * @return coldbox.system.logging.Logger
+	 */
+	function getLogger( required category ){
+		var root = getRootLogger();
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+		// is category object?
+		if( isObject( arguments.category ) ){ 
+			arguments.category = getMetadata( arguments.category ).name;
+		}
 
-	<!--- getRootLogger --->
-	<cffunction name="getRootLogger" output="false" access="public" returntype="any" hint="Get the root logger" doc_generic="coldbox.system.logging.Logger">
-		<cfreturn instance.loggerRegistry["ROOT"]>
-	</cffunction>
+		// trim cat, just in case
+		arguments.category = trim( arguments.category );
 
-	<!--- getLogger --->
-	<cffunction name="getLogger" output="false" access="public" returntype="any" hint="Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox" doc_generic="coldbox.system.logging.Logger">
-		<cfargument name="category" type="any" required="true" hint="The category name to use in this logger or pass in the target object will log from and we will inspect the object and use its metadata name."/>
-		<cfscript>
-			var args = structnew();
-			var categoryConfig = "";
-			var oLogger = "";
-			var root = instance.loggerRegistry["ROOT"];
+		// Is logger by category name created already?
+		if( structKeyExists( variables.loggerRegistry, arguments.category ) ){
+			return variables.loggerRegistry[ arguments.category ];
+		}
 
-			// is category object?
-			if( isObject(arguments.category) ){ arguments.category = getMetadata(arguments.category).name; }
+		// Do we have a category definition, so we can build it?
+		var args = {};
+		if( variables.config.categoryExists( arguments.category ) ){
+			var categoryConfig = variables.config.getCategory( arguments.category );
+			// Setup creation arguments
+			args = {
+				category 	= categoryConfig.name,
+				levelMin 	= categoryConfig.levelMin,
+				levelMax 	= categoryConfig.levelMax,
+				appenders 	= getAppendersMap( categoryConfig.appenders )
+			};
+		} else {
+			// Do Category Inheritance? or else just return the root logger.
+			root = locateCategoryParentLogger( arguments.category );
+			// Build it out as per Root logger
+			args = {
+				category = arguments.category,
+				levelMin = root.getLevelMin(),
+				levelMax = root.getLevelMax()
+			};
+		}
 
-			//trim cat, just in case
-			arguments.category = trim(arguments.category);
-
-			//Is logger by category name created already?
-			if( structKeyExists(instance.loggerRegistry,arguments.category) ){
-				return instance.loggerRegistry[arguments.category];
+		// Create it
+		lock name="#variables.logboxID#.logBox.logger.#arguments.category#" type="exclusive" throwontimeout="true" timeout="30"{
+			if( NOT structKeyExists( variables.loggerRegistry, arguments.category ) ){
+				// Create logger
+				var oLogger = new coldbox.system.logging.Logger( argumentCollection=args );
+				// Inject Root Logger
+				oLogger.setRootLogger( root );
+				// Store it
+				variables.loggerRegistry[ arguments.category ] = oLogger;
 			}
-			//Do we have a category definition, so we can build it?
-			if( instance.config.categoryExists(arguments.category) ){
-				categoryConfig = instance.config.getCategory(arguments.category);
-				// Setup creation arguments
-				args.category = categoryConfig.name;
-				args.levelMin = categoryConfig.levelMin;
-				args.levelMax = categoryConfig.levelMax;
-				args.appenders = getAppendersMap(categoryConfig.appenders);
-			}
-			else{
-				// Setup new category name
-				args.category = arguments.category;
-				// Do Category Inheritance? or else just return the root logger.
-				root = locateCategoryParentLogger(arguments.category);
-				// Setup the category levels according to parent found.
-				args.levelMin = root.getLevelMin();
-				args.levelMax = root.getLevelMax();
-			}
-		</cfscript>
+		}
 
-		<!--- Create New Logger --->
-		<cflock name="#instance.logboxID#.logBox.logger.#arguments.category#" type="exclusive" throwontimeout="true" timeout="30">
-			<cfscript>
-				if( NOT structKeyExists(instance.loggerRegistry,arguments.category) ){
-					// Create logger
-					oLogger = createObject("component","coldbox.system.logging.Logger").init(argumentCollection=args);
-					// Inject Root Logger
-					oLogger.setRootLogger(root);
+		return variables.loggerRegistry[ arguments.category ];
+	}
+
+	/**
+	 * Get the list of currently instantiated loggers.
+	 */
+	string function getCurrentLoggers(){
+		return structKeyList( variables.loggerRegistry );
+	}
+
+	/**
+	 * Get the list of currently instantiated appenders.
+	 */
+	string function getCurrentAppenders(){
+		return structKeyList( variables.appenderRegistry );
+	}
+
+	/**
+	 * Register a new appender object in the appender registry.
+	 * 
+	 * @name A unique name for the appender to register. Only unique names can be registered per variables.
+	 * @class The appender's class to register. We will create, init it and register it for you.
+	 * @properties The structure of properties to configure this appender with.
+	 * @layout The layout class to use in this appender for custom message rendering
+	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+	 * @levelMax The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN
+	 */
+	function registerAppender(
+		required name,
+		required class,
+		struct properties={},
+		layout="",
+		numeric levelMin=0,
+		numeric levelMax=4
+	){
+
+		if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
+
+			lock name="#variables.logboxID#.registerappender.#name#" type="exclusive" timeout="15" throwOnTimeout="true"{
+				
+				if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
+					
+					// Create appender and linking
+					var oAppender = new "#arguments.class#"( argumentCollection=arguments );
+					oAppender.setColdBox( variables.coldbox );
+					// run registration event
+					oAppender.onRegistration();
+					// set initialized
+					oAppender.setInitialized( true );
 					// Store it
-					instance.loggerRegistry[arguments.category] = oLogger;
+					variables.appenderRegistry[ arguments.name ] = oAppender;
+
 				}
-			</cfscript>
-		</cflock>
 
-		<cfreturn instance.loggerRegistry[arguments.category]>
-	</cffunction>
+			} // end lock
 
-	<!--- getCurrentLoggers --->
-	<cffunction name="getCurrentLoggers" output="false" access="public" returntype="any" hint="Get the list of currently instantiated loggers.">
-		<cfreturn structKeyList(instance.loggerRegistry)>
-	</cffunction>
+		}
 
-	<!--- getCurrentAppenders --->
-	<cffunction name="getCurrentAppenders" output="false" access="public" returntype="any" hint="Get the list of currently registered appenders.">
-		<cfreturn structKeyList(instance.appenderRegistry)>
-	</cffunction>
+	}
 
-	<!--- registerAppender --->
-	<cffunction name="registerAppender" output="false" access="public" returntype="any" hint="Register a new appender object in the appender registry.">
-		<!--- ************************************************************* --->
-		<cfargument name="name" 		required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
-		<cfargument name="class" 		required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
-		<cfargument name="properties" 	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with." doc_generic="struct"/>
-		<cfargument name="layout" 		required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin"  	required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN" doc_generic="numeric"/>
-		<cfargument name="levelMax"  	required="false" default="4" hint="The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN" doc_generic="numeric"/>
-		<!--- ************************************************************* --->
-		<cfset var appenders = instance.appenderRegistry>
-		<cfset var oAppender = "">
+	/********************************************* PRIVATE *********************************************/
 
-		<!--- Verify Registration --->
-		<cfif NOT structKeyExists(appenders,arguments.name)>
-			<cflock name="#instance.logboxID#.registerappender.#name#" type="exclusive" timeout="15">
-				<cfscript>
-					if( NOT structKeyExists(appenders,arguments.name) ){
-						// Create appender
-						oAppender = createObject("component",arguments.class).init(argumentCollection=arguments);
-						// Is running within ColdBox
-						if( isObject(instance.coldbox) ){ oAppender.setColdbox(instance.coldbox); }
-						// run registration event
-						oAppender.onRegistration();
-						// set initialized
-						oAppender.setInitialized(true);
-						// Store it
-						appenders[arguments.name] = oAppender;
-					}
-				</cfscript>
-			</cflock>
-		</cfif>
-	</cffunction>
+	/**
+	 * Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.
+	 * 
+	 * @category The category name to investigate for parents
+	 */
+	private function locateCategoryParentLogger( required category ){
+		// Get parent category name shortened by one.
+		var parentCategory = "";
 
-<!------------------------------------------- PRIVATE ------------------------------------------>
+		// category len check
+		if( len( arguments.category ) ){
+			parentCategory = listDeleteAt( arguments.category, listLen( arguments.category, "." ), "." );
+		}
 
-	<!--- locateCategoryParentLogger --->
-	<cffunction name="locateCategoryParentLogger" output="false" access="private" returntype="any" hint="Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.">
-		<cfargument name="category" required="true" hint="The category name to investigate for parents."/>
-		<cfscript>
-			// Get parent category name shortened by one.
-			var parentCategory = "";
+		// Check if parent Category is empty
+		if( len( parentCategory ) EQ 0 ){
+			// Just return the root logger, nothing found.
+			return getRootLogger();
+		}
+		// Does it exist already in the instantiated loggers?
+		if( structKeyExists( variables.loggerRegistry, parentCategory ) ){
+			return variables.loggerRegistry[ parentCategory ];
+		}
+		// Do we need to create it, lazy loading?
+		if( variables.config.categoryExists( parentCategory ) ){
+			return getLogger( parentCategory );
+		}
+		// Else, it was not located, recurse
+		return locateCategoryParentLogger( parentCategory );
+	}
 
-			// category len check
-			if( len(arguments.category) ){
-				parentCategory = listDeleteAt(arguments.category, listLen(arguments.category,"."), ".");
-			}
+	/**
+	 * Get a map of appenders by list. Usually called to get a category of appenders
+	 * 
+	 * @appenders The list of appenders to get
+	 */
+	struct function getAppendersMap( required appenders ){
+		var results = arguments.appenders
+			.listToArray()
+			.reduce( function( result, item, index ){
+				var target = result ?: structNew();
+				target[ item ] = variables.appenderRegistry[ item ];
+				return target;
+			} );
+		return results ?: structnew();
+	}
+	
+	/**
+	 * Get Utility Object
+	 */
+	private function getUtil(){
+		return new coldbox.system.core.util.Util();
+	}
 
-			// Check if parent Category is empty
-			if( len(parentCategory) EQ 0 ){
-				// Just return the root logger, nothing found.
-				return instance.loggerRegistry["ROOT"];
-			}
-			// Does it exist already in the instantiated loggers?
-			if( structKeyExists(instance.loggerRegistry,parentCategory) ){
-				return instance.loggerRegistry[parentCategory];
-			}
-			// Do we need to create it, lazy loading?
-			if( instance.config.categoryExists(parentCategory) ){
-				return getLogger(parentCategory);
-			}
-			// Else, it was not located, recurse
-			return locateCategoryParentLogger(parentCategory);
-		</cfscript>
-	</cffunction>
-
-	<!--- getAppendersMap --->
-	<cffunction name="getAppendersMap" output="false" access="public" returntype="any" hint="Get a map of appenders by list. Usually called to get a category of appenders." doc_generic="struct">
-		<cfargument name="appenders" required="true" hint="The list of appenders to get"/>
-		<cfscript>
-			var appendersMap = structnew();
-
-			// Go over appender's list and configure it
-			arguments.appenders = listToArray( arguments.appenders );
-			for( var thisAppender in arguments.appenders ){
-				appendersMap[ thisAppender ] = instance.appenderRegistry[ thisAppender ];
-			}
-
-			return appendersMap;
-		</cfscript>
-	</cffunction>
-
-	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object" doc_generic="coldbox.system.core.util.Util">
-		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
-	</cffunction>
-
-</cfcomponent>
+}

@@ -60,14 +60,13 @@ Bug Tracking/Agile Boards
 - https://ortussolutions.atlassian.net/browse/LOGBOX
 
 Documentation
-- http://logbox.ortusbooks.com
-- http://wiki.coldbox.org/wiki/LogBox.cfm
+- https://logbox.ortusbooks.com
 
 Blog
-- http://blog.coldbox.org
+- https://www.ortussolutions.com/blog
 
 Official Site
-- http://www.coldbox.org
+- https://www.coldbox.org
 
 ## System Requirements
 - Lucee 4.5+
@@ -86,16 +85,16 @@ We recommend you use [CommandBox](http://www.ortussolutions.com/products/command
 
 **Bleeding Edge Release**
 
-`box install logbox-be`
+`box install logbox@be`
 
 **Simple Install**
 
 Unzip the download into a folder called `logbox` in your webroot or place outside of the webroot and create a per-application mapping `/logbox` that points to it.
 
 **Bleeding Edge Downloads**
-You can always leverage our bleeding edge artifacts server to download LogBox: http://integration.staging.ortussolutions.com/artifacts/ortussolutions/logbox/
+You can always leverage our bleeding edge artifacts server to download LogBox: http://downloads.ortussolutions.com/#/ortussolutions/logbox/
 
 ---
  
-###THE DAILY BREAD
+### THE DAILY BREAD
  > "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" Jn 14:1-12
