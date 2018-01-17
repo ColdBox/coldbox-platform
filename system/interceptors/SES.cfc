@@ -170,6 +170,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	function setValidExtensions( required extensions ){
 		variables.extensions = arguments.extensions;
 	}
+	function setFullRewrites( boolean target ){
+		variables.fullRewrites = arguments.target;
+		return this;
+	}
+	function getFullRewrites(){
+		return variables.fullRewrites;
+	}
 
 	/****************************************************************************************************************************/
 
