@@ -1,65 +1,85 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* A scope that leverages the request scope
+**/
+component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
-Author 	    :	Luis Majano
-Description :
-	I am an awesome request scope
+	/**
+	 * Injector linkage
+	 */
+	property name="injector";
 
------------------------------------------------------------------------>
-<cfcomponent output="false" implements="coldbox.system.ioc.scopes.IScope" hint="I am an awesome request scope">
+	/**
+	 * Log Reference
+	 */
+	property name="log";
 
-	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation">
-    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
-    	<cfscript>
-			instance = {
-				injector	 = arguments.injector,
-				log			 = arguments.injector.getLogBox().getLogger( this )
-			};
-			return this;
-		</cfscript>
-    </cffunction>
+	/**
+	 * Configure the scope for operation and returns itself
+	 * 
+	 * 
+	 * @injector The linked WireBox injector
+	 * @injector.doc_generic coldbox.system.ioc.Injector
+	 * 
+	 * @return coldbox.system.ioc.scopes.IScope
+	 */
+	function init( required injector ){
+		variables.injector 	= arguments.injector;
+		variables.log		= arguments.injector.getLogBox().getLogger( this );
+		return this;
+	}
 
-	<!--- getFromScope --->
-    <cffunction name="getFromScope" output="false" access="public" returntype="any" hint="Retrieve an object from scope or create it if not found in scope">
-    	<cfargument name="mapping" 			type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
-		<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
-		<cfscript>
-			var cacheKey = "wirebox:#arguments.mapping.getName()#";
-			var target	= "";
+	/**
+	 * Retrieve an object from scope or create it if not found in scope
+	 * 
+	 * 
+	 * @mapping The linked WireBox injector
+	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * @initArguments The constructor struct of arguments to passthrough to initialization
+	 * @initArguments.doc_generic struct
+	 */
+	function getFromScope( required mapping, initArguments ){
+		var cacheKey    = "wirebox:#arguments.mapping.getName()#";
 
-			// Check if already in request scope
-			if( NOT structKeyExists(request, cacheKey) ){
-				// some nice debug info.
-				if( instance.log.canDebug() ){
-					instance.log.debug("Object: (#arguments.mapping.getName()#) not found in request scope, beggining construction.");
-				}
-				// construct it and store it, to satisfy circular dependencies
-				target = instance.injector.buildInstance( arguments.mapping, arguments.initArguments );
-				request[ cacheKey ] = target;
-				// wire it
-				instance.injector.autowire(target=target,mapping=arguments.mapping);
-				// log it
-				if( instance.log.canDebug() ){
-					instance.log.debug("Object: (#arguments.mapping.getName()#) constructed and stored in Request scope.");
-				}
-				return target;
-			}
+        // Check if already in request scope
+        if( NOT structKeyExists( request, cacheKey ) ){
+            // some nice debug info.
+            if( variables.log.canDebug() ){
+                variables.log.debug( "Object: (#arguments.mapping.getName()#) not found in request scope, beggining construction." );
+            }
+            
+            // construct it and store it, to satisfy circular dependencies
+            var target = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
+            request[ cacheKey ] = target;
+            
+            // wire it
+            variables.injector.autowire( target=target, mapping=arguments.mapping );
+            
+            // log it
+            if( variables.log.canDebug() ){
+                variables.log.debug( "Object: (#arguments.mapping.getName()#) constructed and stored in Request scope." );
+            }
 
-			return request[ cacheKey ];
-		</cfscript>
-    </cffunction>
+            return target;
+        }
 
-	<!--- exists --->
-	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Indicates whether an object exists in scope">
-		<cfargument name="mapping"  type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
-		<cfscript>
-			var cacheKey = "wirebox:#arguments.mapping.getName()#";
-			return structKeyExists(request, cacheKey);
-		</cfscript>
-	</cffunction>
+        return request[ cacheKey ];
+	}
 
-</cfcomponent>
+
+	/**
+	 * Indicates whether an object exists in scope
+	 * 
+	 * @mapping The linked WireBox injector
+	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * 
+	 * @return coldbox.system.ioc.scopes.IScope
+	 */
+	boolean function exists( required mapping ){
+		var cacheKey = "wirebox:#arguments.mapping.getName()#";
+		return structKeyExists( request, cacheKey );
+	}
+
+}

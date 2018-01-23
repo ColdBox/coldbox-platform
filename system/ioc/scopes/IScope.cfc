@@ -1,32 +1,42 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* The main interface to produce WireBox storage scopes
+**/
+interface{
 
-Author 	    :	Luis Majano
-Description :
-	The main interface to produce WireBox storage scopes
-	
------------------------------------------------------------------------>
-<cfinterface hint="The main interface to produce WireBox storage scopes">
+	/**
+	 * Configure the scope for operation and returns itself
+	 * 
+	 * 
+	 * @injector The linked WireBox injector
+	 * @injector.doc_generic coldbox.system.ioc.Injector
+	 * 
+	 * @return coldbox.system.ioc.scopes.IScope
+	 */
+	function init( required injector );
 
-	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation and returns itself" doc_generic="coldbox.system.ioc.scopes.IScope">
-    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
-    </cffunction>
+	/**
+	 * Retrieve an object from scope or create it if not found in scope
+	 * 
+	 * 
+	 * @mapping The linked WireBox injector
+	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * @initArguments The constructor struct of arguments to passthrough to initialization
+	 * @initArguments.doc_generic struct
+	 */
+	function getFromScope( required mapping, initArguments );
 
-	<!--- getFromScope --->
-    <cffunction name="getFromScope" output="false" access="public" returntype="any" hint="Retrieve an object from scope or create it if not found in scope">
-    	<cfargument name="mapping" 			type="any" required="true"  hint="The object mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
-    	<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
-		
-	</cffunction>
 
-	<!--- exists --->
-	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Indicates whether an object exists in scope">
-		<cfargument name="mapping" 			type="any" required="true"  hint="The object mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
+	/**
+	 * Indicates whether an object exists in scope
+	 * 
+	 * @mapping The linked WireBox injector
+	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * 
+	 * @return coldbox.system.ioc.scopes.IScope
+	 */
+	boolean function exists( required mapping );
 
-	</cffunction>
-
-</cfinterface>
+}

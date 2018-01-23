@@ -1,45 +1,65 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* A no scope scope scope :)
+**/
+component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
-Author 	    :	Luis Majano
-Description :
-	I am the NoScope Scope of Scopes
-	
------------------------------------------------------------------------>
-<cfcomponent output="false" implements="coldbox.system.ioc.scopes.IScope" hint="I am the NoScope Scope of Scopes">
+	/**
+	 * Injector linkage
+	 */
+	property name="injector";
 
-	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the scope for operation">
-    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
-		<cfscript>
-			instance = {
-				injector = arguments.injector
-			};
-			return this;
-		</cfscript>
-    </cffunction>
+	/**
+	 * Log Reference
+	 */
+	property name="log";
 
-	<!--- getFromScope --->
-    <cffunction name="getFromScope" output="false" access="public" returntype="any" hint="Retrieve an object from scope or create it if not found in scope">
-    	<cfargument name="mapping" 			type="any" required="true"  hint="The object mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
-		<cfargument name="initArguments" 	type="any" required="false" hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
-		<cfscript>
-			// create and return the no scope instance, no locking needed.
-			var object = instance.injector.buildInstance( arguments.mapping, arguments.initArguments );
-			// wire it
-			instance.injector.autowire(target=object,mapping=arguments.mapping);
-			// send it back
-			return object;
-		</cfscript>
-    </cffunction>
+	/**
+	 * Configure the scope for operation and returns itself
+	 * 
+	 * 
+	 * @injector The linked WireBox injector
+	 * @injector.doc_generic coldbox.system.ioc.Injector
+	 * 
+	 * @return coldbox.system.ioc.scopes.IScope
+	 */
+	function init( required injector ){
+		variables.injector 	= arguments.injector;
+		variables.log		= arguments.injector.getLogBox().getLogger( this );
+		return this;
+	}
 
-	<!--- exists --->
-	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Indicates whether an object exists in scope">
-		<cfargument name="mapping"  type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
-		<cfreturn false/>
-	</cffunction>
-	
-</cfcomponent>
+	/**
+	 * Retrieve an object from scope or create it if not found in scope
+	 * 
+	 * 
+	 * @mapping The linked WireBox injector
+	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * @initArguments The constructor struct of arguments to passthrough to initialization
+	 * @initArguments.doc_generic struct
+	 */
+	function getFromScope( required mapping, initArguments ){
+		// create and return the no scope instance, no locking needed.
+        var object = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
+        // wire it
+        variables.injector.autowire( target=object, mapping=arguments.mapping );
+        // send it back
+        return object;
+	}
+
+
+	/**
+	 * Indicates whether an object exists in scope
+	 * 
+	 * @mapping The linked WireBox injector
+	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
+	 * 
+	 * @return coldbox.system.ioc.scopes.IScope
+	 */
+	boolean function exists( required mapping ){
+		return false;
+	}
+
+}
