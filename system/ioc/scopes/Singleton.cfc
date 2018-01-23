@@ -77,10 +77,16 @@ Description :
 		<cfreturn instance.singletons[cacheKey]>
     </cffunction>
 
+	<!--- exists --->
+	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Indicates whether an object exists in scope">
+		<cfargument name="mapping"  type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
+		<cfreturn structKeyExists(instance.singletons, lcase( arguments.mapping.getName() ))/>
+	</cffunction>
+
 	<!--- clear --->
-    <cffunction name="clear" output="false" access="public" returntype="void" hint="Clear the singletons scope and re-create it">
+	<cffunction name="clear" output="false" access="public" returntype="void" hint="Clear the singletons scope and re-create it">
 		<cfset instance.singletons = createObject("java","java.util.concurrent.ConcurrentHashMap").init()>
-    </cffunction>
+	</cffunction>
 
 	<!--- getSingletons --->
     <cffunction name="getSingletons" output="false" access="public" returntype="any" hint="Get all singletons structure" doc_generic="java.util.concurrent.ConcurrentHashMap">
