@@ -1,15 +1,11 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author 	 :	Luis Majano
-Description :
-	The default ColdBox WireBox Injector configuration object that is used when the
-	WireBox injector is created
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="The default WireBox Injector configuration object" extends="coldbox.system.ioc.config.Binder">
-<cfscript>
+﻿/**
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* The default ColdBox WireBox Injector configuration object that is used when the
+* WireBox injector is created
+**/
+component extends="coldbox.system.ioc.config.Binder"{
 	
 	/**
 	* Configure WireBox, that's it!
@@ -62,5 +58,5 @@ Description :
 			]			
 		};
 	}	
-</cfscript>
-</cfcomponent>
+
+}

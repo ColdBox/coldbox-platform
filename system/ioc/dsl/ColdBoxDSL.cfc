@@ -1,141 +1,172 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* Process DSL functions via ColdBox
+**/
+component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 
-Author 	    :	Luis Majano
-Description :
-	The DSL processor for all ColdBox related stuff
+	/**
+	 * Injector Reference
+	 */
+	property name="injector";
 
------------------------------------------------------------------------>
-<cfcomponent hint="The DSL builder for all ColdBox related stuff" implements="coldbox.system.ioc.dsl.IDSLBuilder" output="false">
+	/**
+	 * CacheBox Reference
+	 */
+	property name="cachebox";
 
-	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the DSL for operation and returns itself" doc_generic="coldbox.system.ioc.dsl.IDSLBuilder">
-    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
-		<cfscript>
-			instance = {
-				injector = arguments.injector
-			};
-			instance.coldbox 	= instance.injector.getColdBox();
-			instance.cachebox	= instance.injector.getCacheBox();
-			instance.log		= instance.injector.getLogBox().getLogger( this );
+	/**
+	 * ColdBox Reference
+	 */
+	property name="coldbox";
 
-			return this;
-		</cfscript>
-    </cffunction>
+	/**
+	 * Log Reference
+	 */
+	property name="log";
 
-	<!--- process --->
-    <cffunction name="process" output="false" access="public" returntype="any" hint="Process an incoming DSL definition and produce an object with it.">
-		<cfargument name="definition" 	required="true"  hint="The injection dsl definition structure to process. Keys: name, dsl"/>
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var DSLNamespace 		= listFirst( arguments.definition.dsl, ":" );
+	/**
+	 * Configure the DSL Builder for operation and returns itself
+	 * 
+	 * @injector The linked WireBox Injector
+	 * @injector.doc_generic coldbox.system.ioc.Injector
+	 * 
+	 * @return coldbox.system.ioc.dsl.IDSLBuilder
+	 */
+	function init( required injector ){
+		variables.injector 	= arguments.injector;
+		variables.coldbox 	= variables.injector.getColdBox();
+		variables.cacheBox 	= variables.injector.getCacheBox();
+		variables.log		= variables.injector.getLogBox().getLogger( this );
+		
+		return this;
+	}
 
-			switch( DSLNamespace ){
-				case "coldbox" 			: { return getColdboxDSL( argumentCollection=arguments ); }
-			}
-		</cfscript>
-    </cffunction>
+	/**
+	 * Process an incoming DSL definition and produce an object with it
+	 * 
+	 * @definition The injection dsl definition structure to process. Keys: name, dsl
+	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * 
+	 * @return coldbox.system.ioc.dsl.IDSLBuilder
+	 */
+	function process( required definition, targetObject ){
+		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
-	<!--- getColdboxDSL --->
-	<cffunction name="getColdboxDSL" access="private" returntype="any" hint="Get dependencies using the coldbox dependency DSL" output="false" >
-		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var thisName 			= arguments.definition.name;
-			var thisType 			= arguments.definition.dsl;
-			var thisTypeLen 		= listLen(thisType,":");
-			var thisLocationType 	= "";
-			var thisLocationKey 	= "";
-			var moduleSettings		= "";
+		switch( DSLNamespace ){
+			case "coldbox" : { return getColdboxDSL( argumentCollection=arguments ); }
+		}
 
-			// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
-			if(	thisTypeLen eq 2
-				and listFindNoCase("setting,fwSetting,datasource,interceptor",listLast(thisType,":"))
-				and len(thisName)){
-				// Add the additional alias to the DSL
-				thisType = thisType & ":" & thisName;
-				thisTypeLen = 3;
-			}
+		// else ignore not our DSL
+	}
 
-			// DSL stages
-			switch(thisTypeLen){
-				// coldbox only DSL
-				case 1: { return instance.coldbox; }
-				// coldbox:{key} stage 2
-				case 2: {
-					thisLocationKey = getToken(thisType,2,":");
-					switch( thisLocationKey ){
-						case "flash"		 		: { return instance.coldbox.getRequestService().getFlashScope(); }
-						case "loaderService"		: { return instance.coldbox.getLoaderService(); }
-						case "requestService"		: { return instance.coldbox.getRequestService(); }
-						case "requestContext"		: { return instance.coldbox.getRequestService().getContext(); }
-						case "handlerService"		: { return instance.coldbox.getHandlerService(); }
-						case "interceptorService"	: { return instance.coldbox.getInterceptorService(); }
-						case "moduleService"		: { return instance.coldbox.getModuleService(); }
-						case "renderer"				: { return instance.coldbox.getRenderer(); }
-						case "dataMarshaller"		: { return instance.coldbox.getDataMarshaller(); }
-						case "configSettings"		: { return instance.coldbox.getConfigSettings(); }
-						case "fwSettings"			: { return instance.coldbox.getColdboxSettings(); }
-					} // end of services
+	/******************************** PRIVATE ****************************************************************/
 
-					break;
-				}
-				//coldbox:{key}:{target} Usually for named factories
-				case 3: {
-					thisLocationType = getToken(thisType,2,":");
-					thisLocationKey  = getToken(thisType,3,":");
-					switch(thisLocationType){
-						case "setting" 				: {
-							// module setting?
-							if( find("@",thisLocationKey) ){
-								moduleSettings = instance.coldbox.getSetting("modules");
-								if( structKeyExists(moduleSettings, listlast(thisLocationKey,"@")) 
-									and structKeyExists( moduleSettings[ listlast(thisLocationKey,"@") ],"settings" )
-									and structKeyExists( moduleSettings[ listlast(thisLocationKey,"@") ].settings,listFirst(thisLocationKey,"@") )
-								 ){
-									return moduleSettings[ listlast(thisLocationKey,"@") ].settings[ listFirst(thisLocationKey,"@") ];
-								}
-								else if( instance.log.canDebug() ){
-									instance.log.debug("The module requested: #listlast(thisLocationKey,"@")# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
-								}
-							}
-							// just get setting
-							return instance.coldbox.getSetting( thisLocationKey );
-						}
-						case "modulesettings"		: {
-							moduleSettings = instance.coldbox.getSetting("modules");
-							if( structKeyExists(moduleSettings, thisLocationKey ) ){
-								return moduleSettings[ thisLocationKey ].settings;
-							}
-							else if( instance.log.canDebug() ){
-								instance.log.debug("The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
-							}
-						}
-						case "moduleconfig"		: {
-							moduleSettings = instance.coldbox.getSetting("modules");
-							if( structKeyExists(moduleSettings, thisLocationKey ) ){
-								return moduleSettings[ thisLocationKey ];
-							}
-							else if( instance.log.canDebug() ){
-								instance.log.debug("The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#");
-							}
-						}
-						case "fwSetting" 			: { return instance.coldbox.getSetting(thisLocationKey,true); }
-						case "interceptor" 			: { return instance.coldbox.getInterceptorService().getInterceptor(thisLocationKey,true); }
-					}//end of services
-					break;
-				}
+	/**
+	 * Process a ColdBox DSL
+	 *
+	 * @definition The injection dsl definition structure to process. Keys: name, dsl
+	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 */
+	private function getColdBoxDSL( required definition, targetObject ){
+		var thisName 			= arguments.definition.name;
+		var thisType 			= arguments.definition.dsl;
+		var thisTypeLen 		= listLen( thisType, ":" );
+		var thisLocationType 	= "";
+		var thisLocationKey 	= "";
+		var moduleSettings		= "";
+
+		// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
+		if(	thisTypeLen eq 2
+			and listFindNoCase( "setting,fwSetting,datasource,interceptor", listLast( thisType, ":" ) )
+			and len( thisName ) 
+		){
+			// Add the additional alias to the DSL
+			thisType 	= thisType & ":" & thisName;
+			thisTypeLen = 3;
+		}
+
+		// DSL stages
+		switch( thisTypeLen ){
+			// coldbox only DSL
+			case 1 : { 
+				return variables.coldbox; 
 			}
 
-			// If we get here we have a problem.
-			throw( 
-				type 	= "ColdBoxDSL.InvalidDSL",
-				message = "The DSL provided was not valid: #arguments.definition.toString()#"
-			);
-		</cfscript>
-	</cffunction>
+			// coldbox:{key} stage 2
+			case 2 : {
+				thisLocationKey = getToken( thisType, 2, ":" );
+				switch( thisLocationKey ){
+					case "flash"		 		: { return variables.coldbox.getRequestService().getFlashScope(); }
+					case "loaderService"		: { return variables.coldbox.getLoaderService(); }
+					case "requestService"		: { return variables.coldbox.getRequestService(); }
+					case "requestContext"		: { return variables.coldbox.getRequestService().getContext(); }
+					case "handlerService"		: { return variables.coldbox.getHandlerService(); }
+					case "interceptorService"	: { return variables.coldbox.getInterceptorService(); }
+					case "moduleService"		: { return variables.coldbox.getModuleService(); }
+					case "renderer"				: { return variables.coldbox.getRenderer(); }
+					case "dataMarshaller"		: { return variables.coldbox.getDataMarshaller(); }
+					case "configSettings"		: { return variables.coldbox.getConfigSettings(); }
+					case "fwSettings"			: { return variables.coldbox.getColdboxSettings(); }
+				} // end of services
 
-</cfcomponent>
+				break;
+			}
+
+			//coldbox:{key}:{target} Usually for named factories
+			case 3 : {
+				thisLocationType = getToken( thisType, 2, ":" );
+				thisLocationKey  = getToken( thisType, 3, ":" );
+				switch( thisLocationType ){
+					case "setting" 				: {
+						// module setting?
+						if( find( "@", thisLocationKey ) ){
+							moduleSettings = variables.coldbox.getSetting( "modules" );
+							if( structKeyExists( moduleSettings, listlast(thisLocationKey, "@" )) 
+								and structKeyExists( moduleSettings[ listlast(thisLocationKey, "@" ) ],"settings" )
+								and structKeyExists( moduleSettings[ listlast(thisLocationKey, "@" ) ].settings,listFirst( thisLocationKey, "@" ) )
+								){
+								return moduleSettings[ listlast(thisLocationKey, "@" ) ].settings[ listFirst( thisLocationKey, "@" ) ];
+							}
+							else if( variables.log.canDebug() ){
+								variables.log.debug( "The module requested: #listlast( thisLocationKey, "@" )# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#" );
+							}
+						}
+						// just get setting
+						return variables.coldbox.getSetting( thisLocationKey );
+					}
+					case "modulesettings"		: {
+						moduleSettings = variables.coldbox.getSetting( "modules" );
+						if( structKeyExists( moduleSettings, thisLocationKey ) ){
+							return moduleSettings[ thisLocationKey ].settings;
+						}
+						else if( variables.log.canDebug() ){
+							variables.log.debug( "The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#" );
+						}
+					}
+					case "moduleconfig"		: {
+						moduleSettings = variables.coldbox.getSetting( "modules" );
+						if( structKeyExists( moduleSettings, thisLocationKey ) ){
+							return moduleSettings[ thisLocationKey ];
+						}
+						else if( variables.log.canDebug() ){
+							variables.log.debug( "The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#" );
+						}
+					}
+					case "fwSetting" 			: { return variables.coldbox.getSetting( thisLocationKey, true ); }
+					case "interceptor" 			: { return variables.coldbox.getInterceptorService().getInterceptor( thisLocationKey, true ); }
+				}//end of services
+				
+				break;
+			}
+		}
+
+		// If we get here we have a problem.
+		throw( 
+			type 	= "ColdBoxDSL.InvalidDSL",
+			message = "The DSL provided was not valid: #arguments.definition.toString()#"
+		);
+	}
+	
+}

@@ -1,69 +1,88 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* Process DSL functions via CacheBox
+**/
+component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 
-Author 	    :	Luis Majano
-Description :
-	The DSL processor for all CacheBox related stuff
-	
------------------------------------------------------------------------>
-<cfcomponent hint="The DSL processor for all CacheBox related stuff" implements="coldbox.system.ioc.dsl.IDSLBuilder" output="false">
+	/**
+	 * Injector Reference
+	 */
+	property name="injector";
 
-	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Configure the DSL for operation and returns itself" doc_generic="coldbox.system.ioc.dsl.IDSLBuilder">
-    	<cfargument name="injector" type="any" required="true" hint="The linked WireBox injector" doc_generic="coldbox.system.ioc.Injector"/>
-		<cfscript>
-			instance = { injector = arguments.injector };
-			instance.cacheBox 	= instance.injector.getCacheBox();
-			instance.log		= instance.injector.getLogBox().getLogger( this );
+	/**
+	 * CacheBox Reference
+	 */
+	property name="cacheBox";
+
+	/**
+	 * Log Reference
+	 */
+	property name="log";
+
+	/**
+	 * Configure the DSL Builder for operation and returns itself
+	 * 
+	 * @injector The linked WireBox Injector
+	 * @injector.doc_generic coldbox.system.ioc.Injector
+	 * 
+	 * @return coldbox.system.ioc.dsl.IDSLBuilder
+	 */
+	function init( required injector ){
+		variables.injector 	= arguments.injector;
+		variables.cacheBox 	= variables.injector.getCacheBox();
+		variables.log		= variables.injector.getLogBox().getLogger( this );
+		
+		return this;
+	}
+
+	/**
+	 * Process an incoming DSL definition and produce an object with it
+	 * 
+	 * @definition The injection dsl definition structure to process. Keys: name, dsl
+	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * 
+	 * @return coldbox.system.ioc.dsl.IDSLBuilder
+	 */
+	function process( required definition, targetObject ){
+		var thisType 		= arguments.definition.dsl;
+		var thisTypeLen 	= listLen( thisType, ":" );
 			
-			return this;
-		</cfscript>   
-    </cffunction>
-	
-	<!--- process --->
-    <cffunction name="process" output="false" access="public" returntype="any" hint="Process an incoming DSL definition and produce an object with it.">
-		<cfargument name="definition" 	required="true" hint="The injection dsl definition structure to process. Keys: name, dsl"/>
-		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
-		<cfscript>
-			var thisType 			= arguments.definition.dsl;
-			var thisTypeLen 		= listLen(thisType,":");
-			var cacheName 			= "";
-			var cacheElement 		= "";
-			
-			// DSL stages
-			switch(thisTypeLen){
-				// CacheBox
-				case 1 : { return instance.cacheBox; }
-				// CacheBox:CacheName
-				case 2 : {
-					cacheName = getToken(thisType,2,":");
-					// Verify that cache exists
-					if( instance.cacheBox.cacheExists( cacheName ) ){
-						return instance.cacheBox.getCache( cacheName );
-					}
-					else if( instance.log.canDebug() ){
-						instance.log.debug("getCacheBoxDSL() cannot find named cache #cacheName# using definition: #arguments.definition.toString()#. Existing cache names are #instance.cacheBox.getCacheNames().toString()#");
-					}
-					break;
-				}
-				// CacheBox:CacheName:Element
-				case 3 : {
-					cacheName 		= getToken(thisType,2,":");
-					cacheElement 	= getToken(thisType,3,":");
-					// Verify that dependency exists in the Cache container
-					if( instance.cacheBox.getCache( cacheName ).lookup( cacheElement ) ){
-						return instance.cacheBox.getCache( cacheName ).get( cacheElement );
-					}
-					else if( instance.log.canDebug() ){
-						instance.log.debug("getCacheBoxDSL() cannot find cache Key: #cacheElement# in the #cacheName# cache using definition: #arguments.definition.toString()#");
-					}
-					break;
-				} // end level 3 main DSL
+		// DSL stages
+		switch( thisTypeLen ){
+			// CacheBox
+			case 1 : { 
+				return variables.cacheBox; 
 			}
-		</cfscript>   	
-    </cffunction>		
+
+			// CacheBox:CacheName
+			case 2 : {
+				var cacheName = getToken( thisType, 2, ":" );
+				// Verify that cache exists
+				if( variables.cacheBox.cacheExists( cacheName ) ){
+					return variables.cacheBox.getCache( cacheName );
+				}
+				else if( variables.log.canDebug() ){
+					variables.log.debug( "getCacheBoxDSL() cannot find named cache #cacheName# using definition: #arguments.definition.toString()#. Existing cache names are #variables.cacheBox.getCacheNames().toString()#" );
+				}
+				break;
+			}
+
+			// CacheBox:CacheName:Element
+			case 3 : {
+				var cacheName 		= getToken( thisType, 2, ":" );
+				var cacheElement 	= getToken( thisType, 3, ":" );
+				// Verify that dependency exists in the Cache container
+				if( variables.cacheBox.getCache( cacheName ).lookup( cacheElement ) ){
+					return variables.cacheBox.getCache( cacheName ).get( cacheElement );
+				}
+				else if( variables.log.canDebug() ){
+					variables.log.debug( "getCacheBoxDSL() cannot find cache Key: #cacheElement# in the #cacheName# cache using definition: #arguments.definition.toString()#" );
+				}
+				break;
+			} // end level 3 main DSL
+		}
+	}
 	
-</cfcomponent>
+}
