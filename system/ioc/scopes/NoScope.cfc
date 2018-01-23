@@ -35,5 +35,11 @@ Description :
 			return object;
 		</cfscript>
     </cffunction>
+
+	<!--- exists --->
+	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Indicates whether an object exists in scope">
+		<cfargument name="mapping"  type="any" required="true" hint="The object mapping: coldbox.system.ioc.config.Mapping" doc_generic="coldbox.system.ioc.config.Mapping"/>
+		<cfreturn false/>
+	</cffunction>
 	
 </cfcomponent>
