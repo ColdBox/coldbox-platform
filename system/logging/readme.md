@@ -54,7 +54,7 @@ Source Code
 - https://github.com/coldbox/coldbox-platform
 
 Continuous Integration
-- http://jenkins.staging.ortussolutions.com/job/OS-ColdBoxPlatform%20BE/
+- https://travis-ci.org/ColdBox/coldbox-platform
 
 Bug Tracking/Agile Boards
 - https://ortussolutions.atlassian.net/browse/LOGBOX
