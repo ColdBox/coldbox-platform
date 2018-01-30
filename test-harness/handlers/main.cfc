@@ -15,7 +15,7 @@
 		prc.aRoutes          = getInterceptor( "SES", true ).getRoutes();
 		prc.aModuleRoutes    = getInterceptor( "SES", true ).getModuleRoutingTable();
 		prc.aNamespaceRoutes = getInterceptor( "SES", true ).getNamespaceRoutingTable();
-		
+
 		event.setView( "main/routes" );
 	}
 
@@ -28,7 +28,6 @@
 	 * Global invalid http method handler
 	 */
 	function invalidHTTPMethod( event, rc, prc ){
-		event.setHTTPHeader( statusCode=405, statusText="invalid http method" );
 		return "invalid http: #event.getCurrentEvent()#";
 	}
 
@@ -61,8 +60,7 @@
 	}
 
 	function onInvalidEvent( event, rc, prc ){
-		event.setHTTPHeader( statusCode="404", statusText="InvalidPage")
-			.renderData( data="<h1>Invalid Page</h1>" );
+		event.renderData( data="<h1>Invalid Page</h1>" );
 	}
 
 	function onRequestStart( event, rc, prc ){
