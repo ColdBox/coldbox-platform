@@ -28,7 +28,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @controller ColdBox Controller
 	 */
 	function init( required controller ){
@@ -92,9 +92,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	/**
 	 * Asks wirebox for an instance of a handler.  It verifies that there is a mapping in Wirebox for the handler
 	 * if it does not exist, it maps it first and then retrieves it.
-	 * 
+	 *
 	 * @invocationPath The handler invocation path
-	 * 
+	 *
 	 * @return Handler Instance
 	 */
 	function newHandler( required invocationPath ){
@@ -117,7 +117,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				.setVirtualInheritance( "coldbox.system.EventHandler" )
 				.addDIConstructorArgument( name="controller", value=controller )
 				.setThreadSafe( true )
-				.setScope( 
+				.setScope(
 					variables.handlerCaching ? wirebox.getBinder().SCOPES.SINGLETON : wirebox.getBinder().SCOPES.NOSCOPE
 				)
 				.setCacheProperties( key="handlers-#arguments.invocationPath#" )
@@ -132,7 +132,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * Get a validated handler instance using an event handler bean and context. This is called
 	 * once event execution is in progress.
 	 * Before returning this method verifies method of execution, event caching, invalid events and stores metadata
-	 * 
+	 *
 	 * @ehBean The event handler bean representation
 	 * @requestContext The request context object
 	 */
@@ -157,8 +157,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 
 			// Test for Implicit View Dispatch
-			if( controller.getSetting( "ImplicitViews" ) AND 
-				isViewDispatch( arguments.ehBean.getFullEvent(), arguments.ehBean ) 
+			if( controller.getSetting( "ImplicitViews" ) AND
+				isViewDispatch( arguments.ehBean.getFullEvent(), arguments.ehBean )
 			){
 				return oEventHandler;
 			}
@@ -168,8 +168,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 			// If we get here, then the invalid event kicked in and exists, else an exception is thrown
 			// Go retrieve the handler that will handle the invalid event so it can execute.
-			return getHandler( 
-				getHandlerBean( arguments.ehBean.getFullEvent() ), 
+			return getHandler(
+				getHandlerBean( arguments.ehBean.getFullEvent() ),
 				oRequestContext
 			);
 
@@ -183,8 +183,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 
 		// Event Caching Routines, if using caching, NOT a private event and we are executing the main event
-		if ( 
-			variables.eventCaching AND 
+		if (
+			variables.eventCaching AND
 			!arguments.ehBean.getIsPrivate() AND
 			arguments.ehBean.getFullEvent() EQ oRequestContext.getCurrentEvent()
 		){
@@ -218,9 +218,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Parse the incoming event string into an event handler bean that is used for the current execution context
-	 * 
+	 *
 	 * @event The full event string
-	 * 
+	 *
 	 * @return coldbox.system.web.context.EventHandlerBean
 	 */
 	function getHandlerBean( required string event ){
@@ -291,7 +291,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * the internal handlers list.  If found, then we append the default action to the event.
 	 *
 	 * @event The request context
-	 * 
+	 *
 	 * @return HandlerService
 	 */
 	function defaultActionCheck( required event ){
@@ -303,9 +303,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Module Check?
 		if( find( ":", currentEvent ) ){
 			var module = listFirst( currentEvent, ":" );
-			if( 
-				structKeyExists( modulesConfig, module ) AND 
-				listFindNoCase( modulesConfig[ module ].registeredHandlers, reReplaceNoCase( currentEvent, "^([^:.]*):", "" ) ) 
+			if(
+				structKeyExists( modulesConfig, module ) AND
+				listFindNoCase( modulesConfig[ module ].registeredHandlers, reReplaceNoCase( currentEvent, "^([^:.]*):", "" ) )
 			){
 				// Append the default event action
 				currentEvent = currentEvent & "." & variables.eventAction;
@@ -316,9 +316,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Do a Default Action Test First, if default action desired.
-		if( 
-			listFindNoCase( handlersList, currentEvent ) OR 
-			listFindNoCase( handlersExternalList, currentEvent ) 
+		if(
+			listFindNoCase( handlersList, currentEvent ) OR
+			listFindNoCase( handlersExternalList, currentEvent )
 		){
 			// Append the default event action
 			currentEvent = currentEvent & "." & variables.eventAction;
@@ -329,9 +329,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		return this;
 	}
 	/**
-	 * Check if the incoming event has a matching implicit view to dispatch. This is usually called 
+	 * Check if the incoming event has a matching implicit view to dispatch. This is usually called
 	 * when there is no existing handler found.
-	 * 
+	 *
 	 * @event The event string
 	 * @ehBean The event handler bean
 	 */
@@ -363,21 +363,26 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Invalid Event procedures
-	 * 
+	 *
 	 * @event The event that was found to be invalid
 	 * @ehBean The event handler bean
-	 * 
+	 *
 	 * @throws EventHandlerNotRegisteredException,InvalidEventHandlerException
-	 * 
+	 *
 	 * @return HandlerService
 	 */
 	function invalidEvent( required string event, required ehBean ){
+        controller.getRequestService().getContext().setHTTPHeader(
+            statusCode = 404,
+            statusText = "Not Found"
+        );
+
 		var iData = {
 			"invalidEvent" 	= arguments.event,
 			"ehBean"		= arguments.ehBean,
 			"override"		= false
 		};
-		variables.interceptorService.processState( "onInvalidEvent", iData );
+        variables.interceptorService.processState( "onInvalidEvent", iData );
 
 		// If the override was changed by the interceptors then they updated the ehBean of execution
 		if( iData.override ){
@@ -389,7 +394,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 			// Test for invalid Event Error as well so we don't go in an endless error loop
 			if ( compareNoCase( variables.invalidEventHandler, arguments.event ) eq 0 ){
-				throw( 
+				throw(
 					message = "The invalidEventHandler event is also invalid",
 					detail  = "The invalidEventHandler setting is also invalid: #variables.invalidEventHandler#. Please check your settings",
 					type    = "HandlerService.InvalidEventHandlerException"
@@ -404,9 +409,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				.setMethod( listLast( variables.invalidEventHandler, ".") )
 				.setModule( '' );
 			// If module found in invalid event, set it for discovery
-			if( find( ":", variables.invalidEventHandler ) ){ 
-				arguments.ehBean.setModule( getToken( variables.invalidEventHandler, 1 ) ); 
-			}
+			if( find( ":", variables.invalidEventHandler ) ){
+				arguments.ehBean.setModule( getToken( variables.invalidEventHandler, 1 ) );
+            }
 
 			return this;
 		}
@@ -415,17 +420,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.log.error( "Invalid Event detected: #arguments.event#. Path info: #cgi.path_info#, query string: #cgi.query_string#" );
 
 		// Throw Exception
-		throw( 
-			message = "The event: #arguments.event# is not a valid registered event.", 
-			type    = "EventHandlerNotRegisteredException" 
+		throw(
+			message = "The event: #arguments.event# is not a valid registered event.",
+			type    = "EventHandlerNotRegisteredException"
 		);
 	}
 
 	/**
 	 * Register's application event handlers according to convention and external paths
-	 * 
+	 *
 	 * @throws HandlersDirectoryNotFoundException
-	 * 
+	 *
 	 * @return HandlerService
 	 */
 	function registerHandlers(){
@@ -465,7 +470,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Clear the internal cache dictionaries
-	 * 
+	 *
 	 * @return HandlerService
 	 */
 	function clearDictionaries(){
@@ -475,7 +480,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Get an event string's metdata entry. If not found, then you will get a new metadata entry using the `getNewMDEntry()` method.
-	 * 
+	 *
 	 * @targetEvent The event to match for metadata.
 	 */
 	struct function getEventMetadataEntry( required targetEvent ){
@@ -488,7 +493,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Retrieve handler listings from disk
-	 * 
+	 *
 	 * @directory The path to retrieve
 	 */
 	array function getHandlerListing( required directory ){
@@ -516,12 +521,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		return fileArray;
 	}
-	
+
 	/************************************ PRIVATE ************************************/
 
 	/**
 	 * Verifies setup of base handler class in WireBox
-	 * 
+	 *
 	 * @return HandlerService
 	 */
 	private function wireboxSetup(){
@@ -538,7 +543,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Return a new metadata struct object
-	 * 
+	 *
 	 * @return { cacheable:boolean, timeout, lastAccessTimeout, cacheKey, suffix }
 	 */
 	 private struct function getNewMDEntry(){
@@ -554,10 +559,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Return the event caching metadata for an action execution context.
-	 * 
+	 *
 	 * @ehBean The event handler bean
 	 * @oEventHandler The event handler to execute
-	 * 
+	 *
 	 * @return strc
 	 */
 	private struct function getEventCachingMetadata( required ehBean, required oEventHandler ){
@@ -565,9 +570,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Double lock for race conditions
 		if( !structKeyExists( variables.eventCacheDictionary, cacheKey ) ){
-			lock 	name="handlerservice.#controller.getAppHash()#.eventcachingmd.#cacheKey#" 
+			lock 	name="handlerservice.#controller.getAppHash()#.eventcachingmd.#cacheKey#"
 					type="exclusive"
-					throwontimeout="true" 
+					throwontimeout="true"
 					timeout="10"
 			{
 				if ( !structKeyExists( variables.eventCacheDictionary, cacheKey) ){
@@ -580,7 +585,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 						mdEntry.timeout 			= arguments.ehBean.getActionMetadata( "cacheTimeout", "" );
 						mdEntry.lastAccessTimeout 	= arguments.ehBean.getActionMetadata( "cacheLastAccessTimeout", "" );
 						mdEntry.provider 		 	= arguments.ehBean.getActionMetadata( "cacheProvider", "template" );
-						
+
 						// Handler Event Cache Key Suffix, this is global to the event
 						if( isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) ){
 							mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX( arguments.ehBean );
@@ -589,7 +594,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 						}
 
 					} //end cache metadata is true
-					
+
 					// Save md Entry in dictionary
 					variables.eventCacheDictionary[ cacheKey ] = mdEntry;
 				}//end of md cache dictionary.

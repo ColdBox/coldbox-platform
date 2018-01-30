@@ -1,4 +1,4 @@
-﻿component{
+component{
 
 	this.allowedMethods = {
 		"index" = "GET"
@@ -22,7 +22,11 @@
 	function testUnload( event, rc, prc ){
 		controller.getModuleService().unload( "conventionsTest" );
 		return "unloaded conventions";
-	}
+    }
+
+    function throwException( event, rc, prc ) {
+        throw( "Whoops!" );
+    }
 
 	/**
 	 * Global invalid http method handler
@@ -60,7 +64,7 @@
 	}
 
 	function onInvalidEvent( event, rc, prc ){
-		event.renderData( data="<h1>Invalid Page</h1>" );
+		event.renderData( data="<h1>Invalid Page</h1>", statusCode = 404 );
 	}
 
 	function onRequestStart( event, rc, prc ){
