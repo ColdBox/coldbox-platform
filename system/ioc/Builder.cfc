@@ -6,6 +6,12 @@
 **/
 component output="false" serializable="false" accessors="true"{
 
+	property name="injector";
+	property name="logBox";
+	property name="log";
+	property name="utility";
+	property name="customDSL";
+
 	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found coldbox.system.ioc.config.DefaultBinder
 	 *
@@ -15,26 +21,25 @@ component output="false" serializable="false" accessors="true"{
 	 * @return coldbox.system.ioc.Builder
 	 */
 	function init(required injector){
-			instance = {
-				injector 	= arguments.injector,
-				logBox		= arguments.injector.getLogBox(),
-				log		 	= arguments.injector.getLogBox().getlogger(this),
-				utility		= arguments.injector.getUtil(),
-				customDSL	= structnew()
-			};
+			
+		variables.injector 	= arguments.injector;
+		variables.logBox		= arguments.injector.getLogBox();
+		variables.log		 	= arguments.injector.getLogBox().getlogger(this);
+		variables.utility		= arguments.injector.getUtil();
+		variables.customDSL	= structnew();
+			
+		// Do we need to build the coldbox DSL namespace
+		if( variables.injector.isColdBoxLinked() ){
+			variables.coldboxDSL = createObject("component","coldbox.system.ioc.dsl.ColdBoxDSL").init( arguments.injector );
+		}
+		// Is CacheBox Linked?
+		if( variables.injector.isCacheBoxLinked() ){
+			variables.cacheBoxDSL = createObject("component","coldbox.system.ioc.dsl.CacheBoxDSL").init( arguments.injector );
+		}
+		// Build LogBox DSL Namespace
+		variables.logBoxDSL = createObject("component","coldbox.system.ioc.dsl.LogBoxDSL").init( arguments.injector );
 
-			// Do we need to build the coldbox DSL namespace
-			if( instance.injector.isColdBoxLinked() ){
-				instance.coldboxDSL = createObject("component","coldbox.system.ioc.dsl.ColdBoxDSL").init( arguments.injector );
-			}
-			// Is CacheBox Linked?
-			if( instance.injector.isCacheBoxLinked() ){
-				instance.cacheBoxDSL = createObject("component","coldbox.system.ioc.dsl.CacheBoxDSL").init( arguments.injector );
-			}
-			// Build LogBox DSL Namespace
-			instance.logBoxDSL = createObject("component","coldbox.system.ioc.dsl.LogBoxDSL").init( arguments.injector );
-
-			return this;
+		return this;
 	}
 
 
@@ -44,7 +49,7 @@ component output="false" serializable="false" accessors="true"{
 	 * @doc_generic struct
 	 */
     function getCustomDSL() {
-    	return instance.customDSL;
+    	return variables.customDSL;
     }
 
 	/**
@@ -52,7 +57,7 @@ component output="false" serializable="false" accessors="true"{
 	 *
 	 */
     function registerCustomBuilders() {
-		var customDSL = instance.injector.getBinder().getCustomDSL();
+		var customDSL = variables.injector.getBinder().getCustomDSL();
 
 		// Register Custom DSL Builders
 		for( var key in customDSL ){
@@ -68,10 +73,10 @@ component output="false" serializable="false" accessors="true"{
 	 */
     function registerDSL(required namespace, required path) {
 		// register dsl
-		instance.customDSL[ arguments.namespace ] = createObject( "component", arguments.path ).init( instance.injector );
+		variables.customDSL[ arguments.namespace ] = createObject( "component", arguments.path ).init( variables.injector );
 		// Debugging
-		if( instance.log.canDebug() ){
-			instance.log.debug("Registered custom DSL Builder with namespace: #arguments.namespace#");
+		if( variables.log.canDebug() ){
+			variables.log.debug("Registered custom DSL Builder with namespace: #arguments.namespace#");
 		}
 	}
 
@@ -108,7 +113,7 @@ component output="false" serializable="false" accessors="true"{
 		// Do we have virtual inheritance?
 		if( arguments.mapping.isVirtualInheritance() ){
 			// retrieve the VI mapping.
-			viMapping = instance.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
+			viMapping = variables.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
 			// Does it match the family already?
 			if( NOT isInstanceOf(oModel, viMapping.getPath() ) ){
 				toVirtualInheritance( viMapping, oModel );
@@ -156,14 +161,14 @@ component output="false" serializable="false" accessors="true"{
 		var methodArgs  = "";
 
 		// check if factory exists, else throw exception
-		if( NOT instance.injector.containsInstance( factoryName ) ){
+		if( NOT variables.injector.containsInstance( factoryName ) ){
 			throw( 
 				message="The factory mapping: #factoryName# is not registered with the injector", 
 				type="Builder.InvalidFactoryMappingException" 
 			);
 		}
 		// get Factory mapping
-		oFactory = instance.injector.getInstance( factoryName );
+		oFactory = variables.injector.getInstance( factoryName );
 		// Get Method Arguments
 		methodArgs = buildArgumentCollection(thisMap, thisMap.getDIMethodArguments(), oFactory);
 		// Do we have overrides
@@ -246,23 +251,23 @@ component output="false" serializable="false" accessors="true"{
 			}
 
 			// If we get here then it is by ref id, so let's verify it exists and optional
-			if( len(instance.injector.containsInstance( thisDIArg.ref )) ){
-				args[ thisDIArg.name ] = instance.injector.getInstance(name=thisDIArg.ref);
+			if( len(variables.injector.containsInstance( thisDIArg.ref )) ){
+				args[ thisDIArg.name ] = variables.injector.getInstance(name=thisDIArg.ref);
 				continue;
 			}
 
 			// Not found, so check if it is required
 			if( thisDIArg.required ){
 				// Log the error
-				instance.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[ x ].name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
+				variables.log.error("Target: #thisMap.getName()# -> Argument reference not located: #DIArgs[ x ].name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
 				// not found but required, then throw exception
 				throw(message="Argument reference not located: #thisDIArg.name#",
 								  		 detail="Injecting: #thisMap.getMemento().toString()#. The argument details are: #thisDIArg.toString()#.",
 								  		 type="Injector.ArgumentNotFoundException");
 			}
 			// else just log it via debug
-			else if( instance.log.canDebug() ){
-				instance.log.debug("Target: #thisMap.getName()# -> Argument reference not located: #thisDIArg.name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
+			else if( variables.log.canDebug() ){
+				variables.log.debug("Target: #thisMap.getName()# -> Argument reference not located: #thisDIArg.name# for mapping: #arguments.mapping.getMemento().toString()#", thisDIArg);
 			}
 
 		}
@@ -344,8 +349,8 @@ component output="false" serializable="false" accessors="true"{
 		var DSLNamespace 		= listFirst( arguments.definition.dsl, ":" );
 
 		// Check if Custom DSL exists, if it does, execute it
-		if( structKeyExists( instance.customDSL, DSLNamespace ) ){
-			return instance.customDSL[ DSLNamespace ].process( argumentCollection=arguments );
+		if( structKeyExists( variables.customDSL, DSLNamespace ) ){
+			return variables.customDSL[ DSLNamespace ].process( argumentCollection=arguments );
 		}
 
 		// Determine Type of Injection according to type
@@ -354,27 +359,27 @@ component output="false" serializable="false" accessors="true"{
 			
 			// ColdBox Context DSL
 			case "coldbox" : {
-				refLocal.dependency = instance.coldboxDSL.process( argumentCollection=arguments ); 
+				refLocal.dependency = variables.coldboxDSL.process( argumentCollection=arguments ); 
 				break;
 			}
 
 			// CacheBox Context DSL
 			case "cacheBox"			 : {
 				// check if linked
-				if( !instance.injector.isCacheBoxLinked() AND !instance.injector.isColdBoxLinked() ){
+				if( !variables.injector.isCacheBoxLinked() AND !variables.injector.isColdBoxLinked() ){
 					throw(
 						message	= "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox/CacheBox Context",
 						type	= "Builder.IllegalDSLException"
 					);
 				}
 				// retrieve it
-				refLocal.dependency = instance.cacheBoxDSL.process( argumentCollection=arguments ); 
+				refLocal.dependency = variables.cacheBoxDSL.process( argumentCollection=arguments ); 
 				break;
 			}
 
 			// logbox injection DSL always available
 			case "logbox"			 : { 
-				refLocal.dependency = instance.logBoxDSL.process( argumentCollection=arguments ); 
+				refLocal.dependency = variables.logBoxDSL.process( argumentCollection=arguments ); 
 				break;
 			}
 
@@ -422,8 +427,8 @@ component output="false" serializable="false" accessors="true"{
 		// was dependency required? If so, then throw exception
 		if( arguments.definition.required ){
 			// Logging
-			if( instance.log.canError() ){
-				instance.log.error( "Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency" );
+			if( variables.log.canError() ){
+				variables.log.error( "Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency" );
 			}
 
 			// Throw exception as DSL Dependency requested was not located
@@ -465,16 +470,16 @@ component output="false" serializable="false" accessors="true"{
 		// DSL stages
 		switch(thisTypeLen){
 			// WireBox injector
-			case 1 : { return instance.injector; }
+			case 1 : { return variables.injector; }
 			// Level 2 DSL
 			case 2 : {
 				thisLocationKey = getToken(thisType,2,":");
 				switch( thisLocationKey ){
-					case "parent" 		: { return instance.injector.getParent(); }
-					case "eventManager" : { return instance.injector.getEventManager(); }
-					case "binder" 		: { return instance.injector.getBinder(); }
-					case "populator" 	: { return instance.injector.getObjectPopulator(); }
-					case "properties" 	: { return instance.injector.getBinder().getProperties(); }
+					case "parent" 		: { return variables.injector.getParent(); }
+					case "eventManager" : { return variables.injector.getEventManager(); }
+					case "binder" 		: { return variables.injector.getBinder(); }
+					case "populator" 	: { return variables.injector.getObjectPopulator(); }
+					case "properties" 	: { return variables.injector.getBinder().getProperties(); }
 				}
 				break;
 			}
@@ -485,8 +490,8 @@ component output="false" serializable="false" accessors="true"{
 				// DSL Level 2 Stage Types
 				switch(thisLocationType){
 					// Scope DSL
-					case "scope" 	: { return instance.injector.getScope( thisLocationKey ); break; }
-					case "property" : { return instance.injector.getBinder().getProperty( thisLocationKey );break; }
+					case "scope" 	: { return variables.injector.getScope( thisLocationKey ); break; }
+					case "property" : { return variables.injector.getBinder().getProperty( thisLocationKey );break; }
 				}
 				break;
 			} // end level 3 main DSL
@@ -542,16 +547,16 @@ component output="false" serializable="false" accessors="true"{
 		}
 		
 		// Check if model Exists
-		if( instance.injector.containsInstance( modelName ) ){
+		if( variables.injector.containsInstance( modelName ) ){
 			// Get Model object
-			var oModel = instance.injector.getInstance( modelName );
+			var oModel = variables.injector.getInstance( modelName );
 			// Factories: TODO: Add arguments with 'ref()' parsing for argument references or 'dsl()'
 			if( len( methodCall ) ){
 				return evaluate( "oModel.#methodCall#()" );
 			}
 			return oModel;
-		} else if ( instance.log.canDebug() ){
-			instance.log.debug( "getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#" );
+		} else if ( variables.log.canDebug() ){
+			variables.log.debug( "getModelDSL() cannot find model object #modelName# using definition #arguments.definition.toString()#" );
 		}
 	}
 
@@ -581,13 +586,13 @@ component output="false" serializable="false" accessors="true"{
 
 		// Build provider arguments
 		args = {
-			scopeRegistration = instance.injector.getScopeRegistration(),
-			scopeStorage = instance.injector.getScopeStorage(),
+			scopeRegistration = variables.injector.getScopeRegistration(),
+			scopeStorage = variables.injector.getScopeStorage(),
 			targetObject = arguments.targetObject
 		};
 
 		// Check if the passed in provider is an ID directly
-		if( instance.injector.containsInstance( providerName ) ){
+		if( variables.injector.containsInstance( providerName ) ){
 			args.name = providerName;
 		}
 		// Else try to tag it by FULL DSL
@@ -608,8 +613,8 @@ component output="false" serializable="false" accessors="true"{
 	private any function getByTypeDSL(required definition, targetObject) {
 		var injectType 	=  arguments.definition.type;
 
-		if( instance.injector.containsInstance( injectType ) ){
-			return instance.injector.getInstance( injectType );
+		if( variables.injector.containsInstance( injectType ) ){
+			return variables.injector.getInstance( injectType );
 		}
 	}
 
@@ -626,10 +631,10 @@ component output="false" serializable="false" accessors="true"{
 		var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS";
 
 		// Mix it up baby
-		instance.utility.getMixerUtil().start( arguments.target );
+		variables.utility.getMixerUtil().start( arguments.target );
 
 		// Create base family object
-		baseObject = instance.injector.getInstance( arguments.mapping.getName() );
+		baseObject = variables.injector.getInstance( arguments.mapping.getName() );
 
 		// Check if init already exists in target and base?
 		if( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject,"init" ) ){
