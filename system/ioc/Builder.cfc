@@ -120,24 +120,24 @@ component output="false" serializable="false" accessors="true"{
 			}
 		}
 
-		<!--- Constructor initialization? --->
-		if(thisMap.isAutoInit()  AND structKeyExists(oModel,thisMap.getConstructor())) {
-			<!--- Get Arguments --->
+		// Constructor initialization? 
+		if(thisMap.isAutoInit() AND structKeyExists(oModel,thisMap.getConstructor())) {
+			// Get Arguments
 			constructorArgs = buildArgumentCollection(thisMap, thisMap.getDIConstructorArguments(), oModel );
 
-			<!--- Do We have initArguments to override --->
+			// Do We have initArguments to override
 			if(NOT structIsEmpty(arguments.initArguments)) {
 				structAppend(constructorArgs,arguments.initArguments,true);
 			}
 
 			try {
-				<!--- Invoke constructor --->
-				invoke("#oModel#", "#thisMap.getConstructor()#", "#constructorArgs#");
-			} catch(e) {
+				// Invoke constructor
+				invoke(oModel, thisMap.getConstructor(), constructorArgs);
+			} catch(any e) {
 				throw( 
 					type="Builder.BuildCFCDependencyException",
-					message="Error building: #thisMap.getName()# -> #cfcatch.message#.",
-					detail="DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#, Error Location: #cfcatch.tagContext[ 1 ].template#:#cfcatch.tagContext[ 1 ].line#"
+					message="Error building: #thisMap.getName()# -> #e.message#.",
+					detail="DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#, Error Location: #e.tagContext[ 1 ].template#:#e.tagContext[ 1 ].line#"
 				);
 			}
 		}
@@ -176,10 +176,10 @@ component output="false" serializable="false" accessors="true"{
 			structAppend(methodArgs,arguments.initArguments,true);
 		}
 
-		<!--- Get From Factory --->
+		//Get From Factory
 		oModel = invoke("#oFactory#", "#thisMap.getMethod()#", "#methodArgs#");
 
-		<!--- Return factory bean --->
+		//Return factory bean
 		return oModel;
    	}
 
@@ -310,12 +310,12 @@ component output="false" serializable="false" accessors="true"{
 	function buildFeed(required mapping) {
     	var results = {};
 
-    	feed action="read" source="#arguments.mapping.getPath()#" query="results.items" properties="results.metadata" timeout="20";
+    	cffeed(action="read", source=arguments.mapping.getPath(), query="results.items", properties="results.metadata", timeout="20");
 
 		return results;
     }
 
-<!------------------------------------------- Internal DSL Builders ------------------------------------------>
+	// Internal DSL Builders
 
 	/**
 	 * Build a DSL Dependency using a simple dsl string
@@ -441,7 +441,7 @@ component output="false" serializable="false" accessors="true"{
 		// else return void, no dependency found that was required
 	}
 
-<!------------------------------------------- DSL BUILDER METHODS ------------------------------------------>
+	//DSL BUILDER METHODS
 
 	/**
 	 * Get a Java object
