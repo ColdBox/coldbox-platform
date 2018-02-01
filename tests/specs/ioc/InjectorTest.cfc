@@ -13,8 +13,8 @@
 		
 		mockLogger = getMockBox().createStub().$("canDebug", false).$("error");
 		util = getMockBox().createMock("coldbox.system.core.util.Util").$("getInheritedMetaData").$results({path="path.to.object"});
-		injector.$property("instance.utility","variables",util);
-		injector.$property("instance.log","variables", mockLogger);
+		injector.$property("utility","variables",util);
+		injector.$property("log","variables", mockLogger);
 	}
 
 	function testShutdown(){
@@ -23,8 +23,8 @@
 		cachebox = getMockBox().createStub().$("shutdown");
 		eventManager = getMockBox().createStub().$("processState");
 		injector.setParent( parent );
-		injector.$property("cachebox", "instance", cachebox)
-			.$property("eventManager", "instance", eventManager)
+		injector.$property("cachebox", "variables", cachebox)
+			.$property("eventManager", "variables", eventManager)
 			.$("isCacheBoxLinked", true).$("removeFromScope");
 		mockLogger.$("canInfo", true).$("info");
 		
@@ -161,7 +161,7 @@
 	function testColdBox(){
 
 		assertFalse( injector.isColdBoxLinked() );
-		injector.$property("coldbox","instance", getMockBox().createStub() );
+		injector.$property("coldbox","variables", getMockBox().createStub() );
 		assertTrue( injector.isColdBoxLinked() );
 	}
 
