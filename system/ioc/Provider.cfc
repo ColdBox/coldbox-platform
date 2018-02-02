@@ -21,17 +21,15 @@ component implements="coldbox.system.ioc.IProvider" hint="A WireBox provider obj
 	 * @targetObject The target object that requested the provider.
 	 */
 	public Provider function init(required scopeRegistration, required scopeStorage, name, dsl, required targetObject) {
-		instance = {
-			name = "",
-			dsl  = "",
-			scopeRegistration 	= arguments.scopeRegistration,
-			scopeStorage 		= arguments.scopeStorage,
-			targetObject		= arguments.targetObject
-		};
+		variables.name = "";
+		variables.dsl  = "";
+		variables.scopeRegistration = arguments.scopeRegistration;
+		variables.scopeStorage = arguments.scopeStorage;
+		variables.targetObject = arguments.targetObject;
 			
 		// Verify incoming name or DSL
-		if( structKeyExists( arguments, "name" ) ){ instance.name = arguments.name; }
-		if( structKeyExists( arguments, "dsl" ) ){ instance.dsl = arguments.dsl; }
+		if( structKeyExists( arguments, "name" ) ){ variables.name = arguments.name; }
+		if( structKeyExists( arguments, "dsl" ) ){ variables.dsl = arguments.dsl; }
 		
 		return this;
 	}
@@ -40,15 +38,15 @@ component implements="coldbox.system.ioc.IProvider" hint="A WireBox provider obj
 	 * Get the provided object
 	 */
 	public any function get() {
-		var scopeInfo = instance.scopeRegistration;
+		var scopeInfo = variables.scopeRegistration;
 			
 		// Return if scope exists, else throw exception
-		if( instance.scopeStorage.exists(scopeInfo.key, scopeInfo.scope) ){
+		if( variables.scopeStorage.exists(scopeInfo.key, scopeInfo.scope) ){
 			// retrieve by name or DSL
-			if( len( instance.name ) )
-				return instance.scopeStorage.get( scopeInfo.key, scopeInfo.scope ).getInstance( name=instance.name, targetObject=instance.targetObject );
-			if( len( instance.dsl ) )
-				return instance.scopeStorage.get( scopeInfo.key, scopeInfo.scope ).getInstance( dsl=instance.dsl, targetObject=instance.targetObject );
+			if( len( variables.name ) )
+				return variables.scopeStorage.get( scopeInfo.key, scopeInfo.scope ).getInstance( name=variables.name, targetObject=variables.targetObject );
+			if( len( variables.dsl ) )
+				return variables.scopeStorage.get( scopeInfo.key, scopeInfo.scope ).getInstance( dsl=variables.dsl, targetObject=variables.targetObject );
 		}
 		throw( message="Injector not found in scope registration information", detail="Scope information: #scopeInfo.toString()#", type="Provider.InjectorNotOnScope" );
 	}
