@@ -7,8 +7,18 @@
 /**
  * A WireBox provider object that retrieves objects by using the provider pattern.
  */
-component implements="coldbox.system.ioc.IProvider" hint="A WireBox provider object that retrieves objects by using the provider pattern." output="false" {
+component implements="coldbox.system.ioc.IProvider" accessors="true" output="false" {
 	
+	property name="name";
+
+	property name="dsl ";
+
+	property name="scopeRegistration";
+
+	property name="scopeStorage";
+
+	property name="targetObject";
+
 	/**
 	 * Constructor
 	 *
