@@ -327,15 +327,25 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	}
 
 	/**
-	* Executes a framework lifecycle by executing an event.  This method returns a request context object that can be used for assertions
-	* @event The event to execute (e.g. 'main.index')
-    * @route The route to execute (e.g. '/login' which may route to 'sessions.new')
-	* @private Call a private event or not
-	* @prePostExempt If true, pre/post handlers will not be fired.
-	* @eventArguments A collection of arguments to passthrough to the calling event handler method
-	* @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+    * Executes a framework lifecycle by executing an event.
+    * This method returns a request context object that
+    * is decorated and can be used for assertions.
+    *
+	* @event                 The event to execute (e.g. 'main.index')
+    * @route                 The route to execute
+    *                        (e.g. '/login' which may route to 'sessions.new')
+	* @private               Call a private event or not.
+	* @prePostExempt         If true, pre/post handlers will not be fired.
+    * @eventArguments        A collection of arguments to passthrough to the
+    *                        calling event handler method.
+    * @renderResults         If true, then it will try to do the normal
+    *                        rendering procedures and store the rendered content
+    *                        in the RC as cbox_rendered_content.
+    * @withExceptionHandling If true, then ColdBox will process any errors
+    *                        through the exception handling framework instead
+    *                        of just throwing the error. Default: false.
 	*
-	* @return coldbox.system.context.RequestContext
+	* @return                coldbox.system.context.RequestContext
 	*/
 	function execute(
 		string event = "",
@@ -528,6 +538,11 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         return getValue( "cbox_statusCode", 200 );
     }
 
+    /**
+    * Get the status code set in the CFML engine.
+    *
+    * @return The CFML status code.
+    */
     function getNativeStatusCode() {
         return getPageContextResponse().getStatus();
     }
