@@ -5,7 +5,7 @@
 * This interceptor provides complete SES and URL mappings support to ColdBox Applications
 */
 component extends="coldbox.system.Interceptor" accessors="true"{
-	
+
 	/**
 	 * The routing table
 	 */
@@ -29,12 +29,12 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	/**
 	 * Flag to enable/disable routing
 	 */
-	property name="enabled" type="boolean" default="true";	
+	property name="enabled" type="boolean" default="true";
 
 	/**
 	 * Loose matching flag for regex matches
 	 */
-	property name="looseMatching" type="boolean" default="false";	
+	property name="looseMatching" type="boolean" default="false";
 
 	/**
 	 * Detect extensions flag, so it can place a 'format' variable on the rc
@@ -78,7 +78,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// STATIC Reserved Keys as needed for cleanups
 		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting";
-		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation,ssl,append";
+		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexDomain,domain,regexpattern,matchVariables,packageresolverexempt,domainParams,patternParams,valuePairTranslation,ssl,append";
 
 		// STATIC Valid Extensions
 		variables.VALID_EXTENSIONS 			= "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
@@ -103,19 +103,19 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		variables.throwOnInvalidExtension = false;
 		// Initialize the valid extensions to detect
 		variables.validExtensions = variables.VALID_EXTENSIONS;
-		
+
 		// Base Routing URL, defaults to the domain and app mapping
 		if( len( getSetting( "AppMapping" ) ) lte 1 ){
 			variables.baseURL = "http://#cgi.HTTP_HOST#";
 		} else {
 			variables.baseURL = "http://#cgi.HTTP_HOST#/#getSetting( 'AppMapping' )#";
 		}
-		
+
 		// Are full rewrites enabled
 		variables.fullRewrites = false;
 
 		/************************************** INTERNAL DEPENDENCIES *********************************************/
- 
+
 	 	variables.handlersPath 					= getSetting( "HandlersPath" );
 		variables.handlersExternalLocationPath 	= getSetting( "HandlersExternalLocationPath" );
 		variables.modules						= getSetting( "Modules" );
@@ -186,7 +186,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	public void function onRequestCapture( event, interceptData, rc, prc, buffer ){
 		// Find which route this URL matches
 		var routedStruct = structnew();
-		var cleanedPaths = getCleanedPaths( rc, arguments.event );
+        var cleanedPaths = getCleanedPaths( rc, arguments.event );
 		var HTTPMethod	 = arguments.event.getHTTPMethod();
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
@@ -194,14 +194,14 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// AppMapping for BaseURL Construction
 		var appMapping = ( len( getSetting( 'AppMapping' ) lte 1 ) ? getSetting( 'AppMapping' ) & "/" : "" );
-		
+
 		// Activate and record the incoming URL for multi-domain hosting
 		arguments.event
 			.setSESEnabled( true )
-			.setSESBaseURL( 
-				"http" & 
-				( event.isSSL() ? "s" : "" ) & 
-				"://#cgi.HTTP_HOST#/#appMapping#" & 
+			.setSESBaseURL(
+				"http" &
+				( event.isSSL() ? "s" : "" ) &
+				"://#cgi.HTTP_HOST#/#appMapping#" &
 				( variables.fullRewrites ? "index.cfm" : "" )
 			);
 
@@ -213,10 +213,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// Extension detection if enabled, so we can do cool extension formats
 		if( variables.extensionDetection ){
 			cleanedPaths[ "pathInfo" ] = detectExtension( cleanedPaths[ "pathInfo" ], arguments.event );
-		}
+        }
 
 		// Find a route to dispatch
-		var aRoute = findRoute( action=cleanedPaths[ "pathInfo" ], event=arguments.event );
+		var aRoute = findRoute( action=cleanedPaths[ "pathInfo" ], event=arguments.event, domain=cleanedPaths[ "domain" ] );
 
 		// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 		for( var key in aRoute ){
@@ -302,10 +302,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		}
 
 		// Store the entry point for the module routes.
-		addRoute( 
-			pattern       = arguments.pattern, 
-			moduleRouting = arguments.module, 
-			append        = arguments.append 
+		addRoute(
+			pattern       = arguments.pattern,
+			moduleRouting = arguments.module,
+			append        = arguments.append
 		);
 
 		// Iterate through module resources and process them
@@ -351,8 +351,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// Store the entry point for the namespace
 		addRoute(
-			pattern 			= arguments.pattern, 
-			namespaceRouting 	= arguments.namespace, 
+			pattern 			= arguments.pattern,
+			namespaceRouting 	= arguments.namespace,
 			append 				= arguments.append
 		);
 
@@ -378,20 +378,20 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
 	 */
 	SES function with(
-		string pattern, 
-		string handler, 
-		any action, 
-		boolean packageResolverExempt, 
-		string matchVariables, 
-		string view, 
-		boolean viewNoLayout, 
-		boolean valuePairTranslation, 
-		any constraints, 
-		string module, 
-		string moduleRouting, 
-		string namespace, 
-		string namespaceRouting, 
-		boolean ssl, 
+		string pattern,
+		string handler,
+		any action,
+		boolean packageResolverExempt,
+		string matchVariables,
+		string view,
+		boolean viewNoLayout,
+		boolean valuePairTranslation,
+		any constraints,
+		string module,
+		string moduleRouting,
+		string namespace,
+		string namespaceRouting,
+		boolean ssl,
 		boolean append
 	){
 		// set the withClosure
@@ -409,15 +409,15 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 	/**
 	 * process a with closure
-	 * 
+	 *
 	 * @args The arugments to process
 	 */
 	SES function processWith( required args ){
 		var w = variables.withClosure;
 
 		// only process arguments once per addRoute() call.
-		if( structKeyExists( args, "$$withProcessed" ) ){ 
-			return this; 
+		if( structKeyExists( args, "$$withProcessed" ) ){
+			return this;
 		}
 
 		for( var key in w ){
@@ -461,8 +461,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		} catch ( Any e ){
 			writeDump( var=e );abort;
 			throw(
-				message = "Error importing routes configuration file: #e.message# #e.detail#", 
-				detail  = e.tagContext.toString(), 
+				message = "Error importing routes configuration file: #e.message# #e.detail#",
+				detail  = e.tagContext.toString(),
 				type    = "SES.IncludeRoutingConfig"
 			);
 		}
@@ -480,7 +480,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * - `/photos/:id/edit` : `GET` -> `photos.edit` Return an HTML form for editing a photo
 	 * - `/photos/:id` : `POST/PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
-	 * 
+	 *
      * @resource 		The name of a single resource or a list of resources or an array of resources
      * @handler 		The handler for the route. Defaults to the resource name.
      * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
@@ -515,7 +515,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
         // Register all resources
         for( var thisResource in arguments.resource ){
-			
+
 			// Edit Routes
 			actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
 			if ( ! structIsEmpty( actionSet ) ) {
@@ -541,10 +541,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			}
 
 	        // update, delete and show routes
-	        actionSet = filterRouteActions( 
-	        	{ PUT = "update", PATCH = "update", POST = "update", DELETE = "delete", GET = "show" }, 
-	        	arguments.only, 
-	        	arguments.except 
+	        actionSet = filterRouteActions(
+	        	{ PUT = "update", PATCH = "update", POST = "update", DELETE = "delete", GET = "show" },
+	        	arguments.only,
+	        	arguments.except
 	        );
 	        if ( ! structIsEmpty( actionSet ) ) {
 	            addRoute(
@@ -555,7 +555,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		            namespace	= arguments.namespace
 	            );
 			}
-			
+
 	        // Index + Creation
 	        actionSet = filterRouteActions( { GET = "index", POST = "create" }, arguments.only, arguments.except );
 	        if ( ! structIsEmpty( actionSet ) ) {
@@ -574,7 +574,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 	/**
 	 * Adds a route to dispatch and returns itself.
-	 * 
+	 *
 	 * @pattern  The pattern to match against the URL.
 	 * @handler The handler to execute if pattern matched.
 	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
@@ -595,7 +595,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @statusText Explains the HTTP status code sent to the browser response.
 	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
 	 * @name The name of the route
-	 * 
+     * @domain The domain to match, including wildcards
+	 *
 	 * @return SES
 	 */
 	function addRoute(
@@ -618,7 +619,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		numeric statusCode,
 		string statusText,
 		any condition,
-		string name=""
+        string name="",
+        string domain
 	){
 		var thisRoute        = {};
 		var thisRegex        = 0;
@@ -629,13 +631,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		}
 
 		// module closure
-		if( len( variables.withModule ) ){ 
-			arguments.module = variables.withModule; 
+		if( len( variables.withModule ) ){
+			arguments.module = variables.withModule;
 		}
 
 		// Process all incoming arguments into the route to store
 		for( var arg in arguments ){
-			if( structKeyExists( arguments, arg ) ){ 
+			if( structKeyExists( arguments, arg ) ){
 				thisRoute[ arg ] = arguments[ arg ];
 			}
 		}
@@ -683,16 +685,16 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 			// Detect Optional Types
 			var patternType = "alphanumeric";
-			if( findnoCase( "-numeric", thisPattern ) ){ 
-				patternType = "numeric"; 
+			if( findnoCase( "-numeric", thisPattern ) ){
+				patternType = "numeric";
 			}
-			if( findnoCase( "-alpha", thisPattern ) ){ 
-				patternType = "alpha"; 
+			if( findnoCase( "-alpha", thisPattern ) ){
+				patternType = "alpha";
 			}
-			if( findNoCase( "-regex:", thisPattern ) ){ 
-				patternType = "regexParam"; 
-			} else if ( findNoCase( "regex:", thisPattern ) ){ 
-				patternType = "regex"; 
+			if( findNoCase( "-regex:", thisPattern ) ){
+				patternType = "regexParam";
+			} else if ( findNoCase( "regex:", thisPattern ) ){
+				patternType = "regex";
 			}
 
 			// Pattern Type Regex
@@ -771,32 +773,130 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		} // end looping of pattern optionals
 
+        thisRoute.domainParams = [];
+        thisRoute.regexDomain = "^";
+        if ( structKeyExists( thisRoute, "domain" ) ) {
+            // Process the route as a regex pattern
+            for(x=1; x lte listLen(thisRoute.domain,".");x=x+1){
+
+                // Pattern and Pattern Param
+                thisDomain = listGetAt(thisRoute.domain,x,".");
+                thisDomainParam = replace(listFirst(thisDomain,"-"),":","");
+
+                // Detect Optional Types
+                patternType = "alphanumeric";
+                if( findnoCase("-numeric",thisDomain) ){ patternType = "numeric"; }
+                if( findnoCase("-alpha",thisDomain) ){ patternType = "alpha"; }
+                // This is a prefix like above to match a param (creates rc variable)
+                if( findNoCase("-regex:",thisDomain) ){ patternType = "regexParam"; }
+                // This is a placeholder for static text in the route
+                else if( findNoCase("regex:",thisDomain) ){ patternType = "regex"; }
+
+                // Pattern Type Regex
+                switch(patternType){
+                    // CUSTOM REGEX for static route parts
+                    case "regex" : {
+                        thisRegex = replacenocase(thisDomain,"regex:","");
+                        break;
+                    }
+                    // CUSTOM REGEX for route param
+                    case "regexParam" : {
+                        // Pull out Regex Pattern
+                        thisRegex = REReplace(thisDomain, ":.*?-regex:", "");
+                        // Add Route Param
+                        arrayAppend(thisRoute.domainParams,thisDomainParam);
+                        break;
+                    }
+                    // ALPHANUMERICAL OPTIONAL
+                    case "alphanumeric" : {
+                        if( find(":",thisDomain) ){
+                            thisRegex = "(" & REReplace(thisDomain,":(.[^-]*)","[^\/\.]");
+                            // Check Digits Repetions
+                            if( find("{",thisDomain) ){
+                                thisRegex = listFirst(thisRegex,"{") & "{#listLast(thisDomain,"{")#)";
+                                arrayAppend(thisRoute.domainParams,replace(listFirst(thisDomain,"{"),":",""));
+                            }
+                            else{
+                                thisRegex = thisRegex & "+?)";
+                                arrayAppend(thisRoute.domainParams,thisDomainParam);
+                            }
+                            // Override Constraints with your own REGEX
+                            if( structKeyExists(thisRoute.constraints,thisDomainParam) ){
+                                thisRegex = thisRoute.constraints[thisDomainParam];
+                            }
+                        }
+                        else{
+                            thisRegex = thisDomain;
+                        }
+                        break;
+                    }
+                    // NUMERICAL OPTIONAL
+                    case "numeric" : {
+                        // Convert to Regex Pattern
+                        thisRegex = "(" & REReplace(thisDomain, ":.*?-numeric", "[0-9]");
+                        // Check Digits
+                        if( find("{",thisDomain) ){
+                            thisRegex = listFirst(thisRegex,"{") & "{#listLast(thisDomain,"{")#)";
+                        }
+                        else{
+                            thisRegex = thisRegex & "+?)";
+                        }
+                        // Add Route Param
+                        arrayAppend(thisRoute.domainParams,thisDomainParam);
+                        break;
+                    }
+                    // ALPHA OPTIONAL
+                    case "alpha" : {
+                        // Convert to Regex Pattern
+                        thisRegex = "(" & REReplace(thisDomain, ":.*?-alpha", "[a-zA-Z]");
+                        // Check Digits
+                        if( find("{",thisDomain) ){
+                            thisRegex = listFirst(thisRegex,"{") & "{#listLast(thisDomain,"{")#)";
+                        }
+                        else{
+                            thisRegex = thisRegex & "+?)";
+                        }
+                        // Add Route Param
+                        arrayAppend(thisRoute.domainParams,thisDomainParam);
+                        break;
+                    }
+                } //end pattern type detection switch
+
+                // Add Regex Created To Pattern
+                thisRoute.regexDomain = thisRoute.regexDomain & thisRegex & ".";
+
+            } // end looping of pattern optionals
+            if( right( thisRoute.regexDomain, 1 ) == "." ) {
+                thisRoute.regexDomain = left( thisRoute.regexDomain, len( thisRoute.regexDomain ) - 1 );
+            }
+        }
+
 		// Add it to the corresponding routing table
 		// MODULES
 		if( len( arguments.module ) ){
 			// Append or PrePend
-			if( arguments.append ){	
-				ArrayAppend( getModuleRoutes( arguments.module ), thisRoute ); 
-			} else { 
-				arrayPrePend( getModuleRoutes( arguments.module ), thisRoute ); 
+			if( arguments.append ){
+				ArrayAppend( getModuleRoutes( arguments.module ), thisRoute );
+			} else {
+				arrayPrePend( getModuleRoutes( arguments.module ), thisRoute );
 			}
 		}
 		// NAMESPACES
 		else if( len( arguments.namespace ) ){
 			// Append or PrePend
-			if( arguments.append ){	
-				arrayAppend( getNamespaceRoutes( arguments.namespace ), thisRoute ); 
-			} else { 
-				arrayPrePend( getNamespaceRoutes( arguments.namespace ), thisRoute ); 
+			if( arguments.append ){
+				arrayAppend( getNamespaceRoutes( arguments.namespace ), thisRoute );
+			} else {
+				arrayPrePend( getNamespaceRoutes( arguments.namespace ), thisRoute );
 			}
 		}
 		// Default Routing Table
 		else{
 			// Append or PrePend
-			if( arguments.append ){	
-				arrayAppend( variables.routes, thisRoute ); 
-			} else { 
-				arrayPrePend( variables.routes, thisRoute ); 
+			if( arguments.append ){
+				arrayAppend( variables.routes, thisRoute );
+			} else {
+				arrayPrePend( variables.routes, thisRoute );
 			}
 		}
 
@@ -884,19 +984,21 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		}
 		return CGI[ arguments.CGIElement ];
 	}
-	
+
 	/**
 	 * Figures out which route matches this request and returns a routed structure
 	 * @action The action evaluated by path_info
 	 * @event The event object
 	 * @module Incoming module
 	 * @namespace Incoming namespace
+     * @domain Incoming domain
 	 */
 	function findRoute(
 		required action,
-		required event, 
+		required event,
 		module="",
-		namespace=""
+        namespace="",
+        domain=""
 	){
 		var requestString 		 = arguments.action;
 		var packagedRequestString = "";
@@ -933,13 +1035,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			var match = reFindNoCase( _routes[ i ].regexPattern, requestString, 1, true );
 			if( ( match.len[ 1 ] IS NOT 0 AND getLooseMatching())
 			     OR
-				( NOT getLooseMatching() AND match.len[ 1 ] IS NOT 0 AND match.pos[ 1 ] EQ 1 ) 
+				( NOT getLooseMatching() AND match.len[ 1 ] IS NOT 0 AND match.pos[ 1 ] EQ 1 )
 			){
 
 				// Verify condition matching
-				if( structKeyExists( _routes[ i ], "condition" ) AND NOT 
-					isSimpleValue( _routes[ i ].condition ) AND NOT 
-					_routes[ i ].condition( requestString ) 
+				if( structKeyExists( _routes[ i ], "condition" ) AND NOT
+					isSimpleValue( _routes[ i ].condition ) AND NOT
+					_routes[ i ].condition( requestString )
 				){
 					// Debug logging
 					if( log.canDebug() ){
@@ -947,21 +1049,29 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 					}
 					// Condition did not pass, move to next route
 					continue;
-				}
+                }
+
+                // Verify domain if exists
+                if( structKeyExists( _routes[ i ], "domain" ) AND isSimpleValue( _routes[ i ].domain ) ){
+                    var domainMatch = reFindNoCase(_routes[i].regexDomain,domain,1,true);
+                    if (domainMatch.len[1] == 0) {
+                        continue;
+                    }
+                }
 
 				// Setup the found Route
 				foundRoute = _routes[ i ];
-				
+
 				// Is this namespace routing?
 				if( len( arguments.namespace ) ){
 					arguments.event.setPrivateValue( "currentRoutedNamespace", arguments.namespace );
 				}
-				
+
 				// Debug logging
 				if( log.canDebug() ){
 					log.debug( "SES Route matched: #foundRoute.toString()# on routed string: #requestString#" );
 				}
-				
+
 				break;
 			}
 		}//end finding routes
@@ -977,9 +1087,9 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// SSL Checks
 		if( foundRoute.ssl AND NOT event.isSSL() ){
 			relocate(
-				URL         = event.getSESBaseURL() & reReplace( cgi.path_info, "^\/", "" ), 
-				ssl         = true, 
-				statusCode  = 302, 
+				URL         = event.getSESBaseURL() & reReplace( cgi.path_info, "^\/", "" ),
+				ssl         = true,
+				statusCode  = 302,
 				queryString = cgi.query_string
 			);
 		}
@@ -1039,7 +1149,11 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// Populate the params, with variables found in the request string
 		for( var x=1; x lte arrayLen( foundRoute.patternParams ); x++ ){
 			params[ foundRoute.patternParams[ x ] ] = mid( requestString, match.pos[ x + 1 ], match.len[ x + 1 ] );
-		}
+        }
+
+        for(x=1; x lte arrayLen(foundRoute.domainParams); x=x+1){
+            params[foundRoute.domainParams[x]] = listGetAt( domain, x, "." );
+        }
 
 		// Process Convention Name-Value Pairs
 		if( foundRoute.valuePairTranslation ){
@@ -1093,12 +1207,12 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				// remove it from the string and return string for continued parsing.
 				return left( requestString, len( arguments.requestString ) - extensionLen - 1 );
 			} else if( variables.throwOnInvalidExtension ){
-				event.setHTTPHeader( 
-					statusText = "Invalid Requested Format Extension: #extension#", 
+				event.setHTTPHeader(
+					statusText = "Invalid Requested Format Extension: #extension#",
 					statusCode = 406
 				);
 				throw(
-					message = "Invalid requested format extendion: #extension#",	
+					message = "Invalid requested format extendion: #extension#",
 					detail	= "Invalid Request Format Extension Detected: #extension#. Valid extensions are: #variables.validExtensions#",
 					type 	= "InvalidRequestedFormatExtension"
 				);
@@ -1118,7 +1232,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 					break;
 				}
 			}
-			
+
 			if( len( match ) && !findNoCase( "html", match ) ){
 				// if the user passed in format via the query string,
 				// we'll assume that's the value they actually wanted.
@@ -1167,8 +1281,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// render it out
 		event.renderdata(
-			data 		= theResponse, 
-			statusCode 	= aRoute.statusCode, 
+			data 		= theResponse,
+			statusCode 	= aRoute.statusCode,
 			statusText 	= aRoute.statusText
 		).noExecution();
 	}
@@ -1284,11 +1398,11 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		AND
 		if the incoming event is not the default OR it is the default via the URL.
 		**/
-		if ( 
+		if (
 			structKeyExists( rc, variables.eventName )
-			AND 
+			AND
 			( arguments.route EQ "/index.cfm" or arguments.route eq "" )
-			AND 
+			AND
 			(
 		  		rc[variables.eventName] NEQ variables.defaultEvent
 		  		OR
@@ -1296,18 +1410,18 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			)
 		){
 
-			//  New Pathing Calculations if not the default event. If default, relocate to the domain. 
+			//  New Pathing Calculations if not the default event. If default, relocate to the domain.
 			if ( rc[variables.eventName] != variables.defaultEvent ) {
-				//  Clean for handler & Action 
+				//  Clean for handler & Action
 				if ( StructKeyExists(rc, variables.eventName) ) {
 					handler = reReplace(rc[variables.eventName],"\.[^.]*$","" );
 					action = ListLast( rc[variables.eventName], "." );
 				}
-				//  route a handler 
+				//  route a handler
 				if ( len(handler) ) {
 					newpath = "/" & handler;
 				}
-				//  route path with handler + action if not the default event action 
+				//  route path with handler + action if not the default event action
 				if ( len(handler) && len(action) ) {
 					newpath = newpath & "/" & action;
 				}
@@ -1320,21 +1434,21 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 			// Relocation Headers
 			if( httpRequestData.method eq "GET" ){
-				getPageContext().getResponse().addIntHeader( 
-					javaCast( "string", "Moved permanently" ), 
+				getPageContext().getResponse().addIntHeader(
+					javaCast( "string", "Moved permanently" ),
 					javaCast( "int", 301 )
 				);
 			} else {
-				getPageContext().getResponse().addIntHeader( 
-					javaCast( "string", "See Other" ), 
-					javaCast( "int", 303 ) 
+				getPageContext().getResponse().addIntHeader(
+					javaCast( "string", "See Other" ),
+					javaCast( "int", 303 )
 				);
 			}
 
 			// Send location
-			getPageContext().getResponse().addHeader( 
-				javaCast( "string", "Location" ), 
-				javaCast( "string", "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#" ) 
+			getPageContext().getResponse().addHeader(
+				javaCast( "string", "Location" ),
+				javaCast( "string", "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#" )
 			);
 
 			abort;
@@ -1432,9 +1546,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		var items = {};
 
 		// Get path_info & script name
-		// Replace any duplicate slashes with 1 just in case
+        // Replace any duplicate slashes with 1 just in case
+        items[ "domain" ]		= trim( reReplace( getCGIElement( 'server_name', arguments.event ), "\/{2,}", "/", "all" ) );
 		items[ "pathInfo" ]		= trim( reReplace( getCGIElement( 'path_info', arguments.event ), "\/{2,}", "/", "all" ) );
-		items[ "scriptName" ] 	= trim( reReplacenocase( getCGIElement( 'script_name', arguments.event ), "[/\\]index\.cfm", "" ) );
+        items[ "scriptName" ] 	= trim( reReplacenocase( getCGIElement( 'script_name', arguments.event ), "[/\\]index\.cfm", "" ) );
 
 		// Clean ContextRoots
 		if( len( getContextRoot() ) ){
@@ -1476,7 +1591,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 				optionals = optionals & replacenocase( thisPattern, "?", "", "all" ) & "/";
 			}
 		}
-		
+
 		// Register our routeList
 		var routeList = base & optionals;
 		// Recurse and register in reverse order
@@ -1561,7 +1676,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
                         structDelete( actionSet, HTTPVerb );
                     }
                 }
-            }   
+            }
         }
 
         return actionSet;

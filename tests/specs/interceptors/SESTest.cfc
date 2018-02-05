@@ -1,5 +1,5 @@
 ﻿component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="coldbox.system.interceptors.SES"{
-	
+
 	function beforeAll() {
 		super.setup();
 		variables.ses = variables.interceptor;
@@ -64,8 +64,8 @@
 
 			it( "can clean incoming pathing", function(){
 
-				makePublic( ses, "getCleanedPaths", "getCleanedPaths" );
-				
+				makePublic( ses, "getCleanedPaths", "getCleanedPathsPublic" );
+
 				var rc = {
 					someURLvar = 1,
 					index = "hello"
@@ -73,33 +73,33 @@
 
 				//test folder with index.cfm
 				var path_info = "/somefolder/index.cfm?somrURLVar=yes";
-				ses.$('getCGIElement').$results(path_info,'');
-				var results = ses.getCleanedPaths(rc,'event');
-				expect( "/someFolder/index.cfm" ).toBe( results.pathInfo );
-		
+				ses.$('getCGIElement').$results('',path_info,'');
+                var results = ses.getCleanedPathsPublic(rc,'event');
+                expect( results.pathInfo ).toBe( "/someFolder/index.cfm" );
+
 				//test folder with leading index.cfm
 				path_info = "/index.cfm/somefolder/index.cfm?somrURLVar=yes";
-				ses.$('getCGIElement').$results(path_info,'');
-				results = ses.getCleanedPaths(rc,'event');
-				expect( "/someFolder/index.cfm" ).toBe( results.pathInfo );
-		
+				ses.$('getCGIElement').$results('',path_info,'');
+				results = ses.getCleanedPathsPublic(rc,'event');
+                expect( results.pathInfo ).toBe( "/someFolder/index.cfm" );
+
 				//test folder wwith other .cfm
 				path_info = "/somefolder/test.cfm?somrURLVar=yes";
-				ses.$('getCGIElement').$results(path_info,'');
-				results = ses.getCleanedPaths(rc,'event');
-				expect( "/someFolder/test.cfm" ).toBe( results.pathInfo );
-		
+				ses.$('getCGIElement').$results('',path_info,'');
+				results = ses.getCleanedPathsPublic(rc,'event');
+                expect( results.pathInfo ).toBe( "/someFolder/test.cfm" );
+
 				//test regular SES route
 				path_info = "/somefolder/test";
-				ses.$('getCGIElement').$results(path_info,'');
-				results = ses.getCleanedPaths(rc,'event');
-				expect( "/somefolder/test" ).toBe( results.pathInfo );
-		
+				ses.$('getCGIElement').$results('',path_info,'');
+				results = ses.getCleanedPathsPublic(rc,'event');
+                expect( results.pathInfo ).toBe( "/somefolder/test" );
+
 				//test regular SES route with index
 				path_info = "/somefolder/index";
-				ses.$('getCGIElement').$results(path_info,'');
-				results = ses.getCleanedPaths(rc,'event');
-				expect( "/somefolder/index" ).toBe( results.pathInfo );
+				ses.$('getCGIElement').$results('',path_info,'');
+				results = ses.getCleanedPathsPublic(rc,'event');
+                expect( results.pathInfo ).toBe( "/somefolder/index" );
 			} );
 
 			describe( "Can have different format detections", function(){
@@ -113,18 +113,18 @@
 						.$("setSetting" );
 					ses.setBaseURL("http://localhost" );
 					ses.configure();
-					
+
 					// Mocks
 					mockController = createMock( "coldbox.system.web.Controller" );
 					mockEvent = createMock( "coldbox.system.web.context.RequestContext" )
-						.init( 
-							controller = mockController, 
+						.init(
+							controller = mockController,
 							properties = {
 								defaultLayout 	= "Main.cfm",
 								defaultView 	= "",
 								eventName 		= "event",
 								modules 		= {}
-							} 
+							}
 						);
 					mockInterceptData = {};
 				} );
@@ -132,6 +132,7 @@
 				it( "can detect default formats", function(){
 					// default format
 					ses.$( "getCleanedPaths", {
+                        domain = "",
 						pathInfo = "/Main/index",
 						scriptName = ""
 					} );
@@ -142,6 +143,7 @@
 				it( "can do extension detection", function(){
 					// extension detection
 					ses.$( "getCleanedPaths", {
+                        domain = "",
 						pathInfo = "/Main/index.xml",
 						scriptName = ""
 					} );
@@ -155,6 +157,7 @@
 					// Accept header parsing
 					mockEvent.$( "getHTTPHeader" ).$args( "Accept" ).$results( "application/json" );
 					ses.$( "getCleanedPaths", {
+                        domain = "",
 						pathInfo = "/Main/index",
 						scriptName = ""
 					} );
@@ -168,6 +171,7 @@
 					// uses extension over Accept header
 					mockEvent.$( "getHTTPHeader" ).$args( "Accept" ).$results( "application/json" );
 					ses.$( "getCleanedPaths", {
+                        domain = "",
 						pathInfo = "/Main/index.xml",
 						scriptName = ""
 					} );
@@ -176,7 +180,7 @@
 					expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
 					mockEvent.removeValue( "format" );
 				} );
-				
+
 			} );
 		} );
 	}
