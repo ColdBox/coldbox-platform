@@ -1,10 +1,10 @@
 /*******************************************************************************
-*	Integration Test as BDD  
+*	Integration Test as BDD
 *
 *	Extends the integration class: coldbox.system.testing.BaseTestCase
 *
-*	so you can test your ColdBox application headlessly. The 'appMapping' points by default to 
-*	the '/root' mapping created in the test folder Application.cfc.  Please note that this 
+*	so you can test your ColdBox application headlessly. The 'appMapping' points by default to
+*	the '/root' mapping created in the test folder Application.cfc.  Please note that this
 *	Application.cfc must mimic the real one in your root, including ORM settings if needed.
 *
 *	The 'execute()' method is used to execute a ColdBox event, with the following arguments
@@ -15,7 +15,7 @@
 *	* renderResults : Render back the results of the event
 *******************************************************************************/
 component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness"{
-	
+
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
@@ -29,7 +29,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 	}
 
 /*********************************** BDD SUITES ***********************************/
-	
+
 	function run(){
 
 		describe( "Event Execution System", function(){
@@ -67,13 +67,43 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 						prepareMock( getRequestContext() ).$( "getHTTPMethod", "DELETE" );
 						// Execute
 						var e = execute( event="main.index", renderResults=true );
-						expect(	e.getRenderedContent() ).toInclude( "invalid http: main.index" );
+                        expect(	e.getRenderedContent() ).toInclude( "invalid http: main.index" );
+                        expect( e.getStatusCode() ).toBe( 405 );
+					});
+				});
+            });
+
+            story( "I want to execute a global invalid event handler", function(){
+				given( "an invalid event", function(){
+					then( "it should fire the global invalid event handler", function(){
+                        var e = execute( event="does.not.exist", renderResults=true );
+                        expect( e.getStatusCode() ).toBe( 404 );
+					});
+				});
+            });
+
+            story( "I want the onException to have a default status code of 500", function(){
+				given( "an event that fires an exception", function(){
+					then( "it should default the status code to 500", function(){
+                        expect( function() {
+                            var e = execute( event="main.throwException", renderResults=true, withExceptionHandling = true );
+                        } ).toThrow();
+                        expect( getNativeStatusCode() ).toBe( 500 );
 					});
 				});
 			});
-		
+
 		});
 
-	}
-	
+    }
+
+    private function getNativeStatusCode() {
+        if ( structKeyExists( server, "lucee" ) ) {
+            return getPageContext().getResponse().getStatus();
+        }
+        else {
+            return getPageContext().getResponse().getResponse().getStatus();
+        }
+    }
+
 }

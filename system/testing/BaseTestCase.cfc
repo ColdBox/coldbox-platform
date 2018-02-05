@@ -123,7 +123,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			}
 			// remove context + reset headers
 			getController().getRequestService().removeContext();
-			getPageContext().getResponse().reset();
+			getPageContextResponse().reset();
 		}
 	}
 
@@ -327,15 +327,25 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	}
 
 	/**
-	* Executes a framework lifecycle by executing an event.  This method returns a request context object that can be used for assertions
-	* @event The event to execute (e.g. 'main.index')
-    * @route The route to execute (e.g. '/login' which may route to 'sessions.new')
-	* @private Call a private event or not
-	* @prePostExempt If true, pre/post handlers will not be fired.
-	* @eventArguments A collection of arguments to passthrough to the calling event handler method
-	* @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+    * Executes a framework lifecycle by executing an event.
+    * This method returns a request context object that
+    * is decorated and can be used for assertions.
+    *
+	* @event                 The event to execute (e.g. 'main.index')
+    * @route                 The route to execute
+    *                        (e.g. '/login' which may route to 'sessions.new')
+	* @private               Call a private event or not.
+	* @prePostExempt         If true, pre/post handlers will not be fired.
+    * @eventArguments        A collection of arguments to passthrough to the
+    *                        calling event handler method.
+    * @renderResults         If true, then it will try to do the normal
+    *                        rendering procedures and store the rendered content
+    *                        in the RC as cbox_rendered_content.
+    * @withExceptionHandling If true, then ColdBox will process any errors
+    *                        through the exception handling framework instead
+    *                        of just throwing the error. Default: false.
 	*
-	* @return coldbox.system.context.RequestContext
+	* @return                coldbox.system.context.RequestContext
 	*/
 	function execute(
 		string event = "",
@@ -344,7 +354,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 		boolean private=false,
 		boolean prePostExempt=false,
 		struct eventArguments={},
-		boolean renderResults=false
+        boolean renderResults=false,
+        boolean withExceptionHandling = false
 	){
 		var handlerResults  = "";
 		var requestContext  = "";
@@ -441,8 +452,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 					else if (
 						!isNull( handlerResults )
 					){
-						// Store raw results
-						requestContext.setValue( "cbox_handler_results", handlerResults );
+                        // Store raw results
+                        requestContext.setValue( "cbox_handler_results", handlerResults );
+                        requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						if( isSimpleValue( handlerResults ) ){
 							renderedContent = handlerResults;
 						} else {
@@ -451,6 +463,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 					}
 					// render layout/view pair
 					else{
+                        requestContext.setValue( "cbox_statusCode", getNativeStatusCode() );
 						renderedContent = cbcontroller.getRenderer()
 							.renderLayout(module=requestContext.getCurrentLayoutModule(),
 									     viewModule=requestContext.getCurrentViewModule());
@@ -478,6 +491,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			cbController.getInterceptorService().processState( "postProcess" );
 
 		} catch( Any e ) {
+            if ( withExceptionHandling ) {
+                processException( cbController, e );
+            }
 			// Exclude relocations so they can be asserted.
 			if( NOT listFindNoCase( relocationTypes, e.type ) ){
 				rethrow;
@@ -520,7 +536,16 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     */
     function getStatusCode(){
         return getValue( "cbox_statusCode", 200 );
-    };
+    }
+
+    /**
+    * Get the status code set in the CFML engine.
+    *
+    * @return The CFML status code.
+    */
+    function getNativeStatusCode() {
+        return getPageContextResponse().getStatus();
+    }
 
 	/**
 	* Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
@@ -634,5 +659,88 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
         return queryParams;
     }
+
+    /**
+	* Process an exception and returns a rendered bug report
+	* @controller The ColdBox Controller
+	* @exception The ColdFusion exception
+	*/
+	private string function processException( required controller, required exception ){
+        // prepare exception facade object + app logger
+		var oException	= new coldbox.system.web.context.ExceptionBean( arguments.exception );
+		var appLogger  	= arguments.controller.getLogBox().getLogger( this );
+		var event		= arguments.controller.getRequestService().getContext();
+		var rc 			= event.getCollection();
+		var prc 		= event.getPrivateCollection();
+
+		// Announce interception
+		arguments.controller.getInterceptorService()
+        .processState( "onException", { exception = arguments.exception } );
+
+		// Store exception in private context
+		event.setPrivateValue( "exception", oException );
+
+		// Set Exception Header
+		getPageContextResponse().setStatus( 500, "Internal Server Error" );
+
+		// Run custom Exception handler if Found, else run default exception routines
+		if ( len( arguments.controller.getSetting( "ExceptionHandler" ) ) ){
+            try{
+                arguments.controller.runEvent( arguments.controller.getSetting( "Exceptionhandler" ) );
+			} catch( Any e ) {
+                // Log Original Error First
+				appLogger.error( "Original Error: #arguments.exception.message# #arguments.exception.detail# ", arguments.exception );
+				// Log Exception Handler Error
+				appLogger.error( "Error running exception handler: #arguments.controller.getSetting( "ExceptionHandler" )# #e.message# #e.detail#", e );
+				// rethrow error
+				rethrow;
+			}
+		} else {
+            // Log Error
+			appLogger.error( "Error: #arguments.exception.message# #arguments.exception.detail# ", arguments.exception );
+		}
+
+		// Render out error via CustomErrorTemplate or Core
+		var customErrorTemplate = arguments.controller.getSetting( "CustomErrorTemplate" );
+		if( len( customErrorTemplate ) ){
+			// Get app location path
+			var appLocation 			= "/";
+			if( len( arguments.controller.getSetting( "AppMapping" ) ) ){
+				appLocation = appLocation & arguments.controller.getSetting( "AppMapping" ) & "/";
+			}
+			var bugReportRelativePath 	= appLocation & reReplace( customErrorTemplate, "^/", "" );
+			var bugReportAbsolutePath 	= customErrorTemplate;
+
+			// Show Bug Report
+			savecontent variable="local.exceptionReport"{
+				// Do we have right path already, test by expanding
+				if( fileExists( expandPath( bugReportRelativePath ) ) ){
+					include "#bugReportRelativePath#";
+				} else {
+					include "#bugReportAbsolutePath#";
+				}
+			}
+
+		} else {
+			// Default ColdBox Error Template
+			savecontent variable="local.exceptionReport"{
+				include "/coldbox/system/includes/BugReport-Public.cfm";
+			}
+		}
+
+		return local.exceptionReport;
+    }
+
+    /**
+	* Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
+	**/
+	private function getPageContextResponse(){
+        if ( structKeyExists( server, "lucee" ) ) {
+            return getPageContext().getResponse();
+        }
+        else {
+            return getPageContext().getResponse().getResponse();
+        }
+	}
 
 }

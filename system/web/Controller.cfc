@@ -71,7 +71,7 @@ component serializable="false" accessors="true"{
 		variables.services 		= createObject( "java", "java.util.LinkedHashMap" ).init( 6 );
 		// CFML Engine Utility
 		variables.CFMLEngine 	= new coldbox.system.core.util.CFMLEngine();
-		
+
 		// Set Main Application Properties
 		variables.coldboxInitiated 		= false;
 		variables.appKey				= arguments.appKey;
@@ -94,7 +94,7 @@ component serializable="false" accessors="true"{
 		services.handlerService 	= new coldbox.system.web.services.HandlerService( this );
 		services.moduleService 		= new coldbox.system.web.services.ModuleService( this );
 		services.interceptorService = new coldbox.system.web.services.InterceptorService( this );
-		
+
 		// CacheBox Instance
 		variables.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
 		// WireBox Instance
@@ -134,7 +134,7 @@ component serializable="false" accessors="true"{
 	/**
 	* Get a Cache provider from CacheBox
 	* @cacheName The name of the cache to retrieve, or it defaults to the 'default' cache.
-	* 
+	*
 	* @return coldbox.system.cache.IColdboxApplicationCache
 	*/
 	function getCache( required cacheName='default' ){
@@ -216,7 +216,7 @@ component serializable="false" accessors="true"{
 	* Set a value in the application configuration settings
 	* @name The name of the setting
 	* @value The value to set
-	* 
+	*
 	* @return Controller
 	*/
 	function setSetting( required name, required value ){
@@ -268,20 +268,20 @@ component serializable="false" accessors="true"{
 	* @URL The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
 	* @URI The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
 	* @statusCode The status code to use in the relocation
-	* 
+	*
 	* @return Controller
 	*/
 	function relocate(
-		event=getSetting( "DefaultEvent" ), 
-		queryString="", 
-		boolean addToken=false, 
+		event=getSetting( "DefaultEvent" ),
+		queryString="",
+		boolean addToken=false,
 		persist="",
 		struct persistStruct=structnew()
-		boolean ssl, 
-		baseURL="", 
-		boolean postProcessExempt=false, 
-		URL, 
-		URI, 
+		boolean ssl,
+		baseURL="",
+		boolean postProcessExempt=false,
+		URL,
+		URI,
 		numeric statusCode=0
 	){
 		// Determine the type of relocation
@@ -293,23 +293,23 @@ component serializable="false" accessors="true"{
 		var routeString     = 0;
 
 		// Determine relocation type
-		if( oRequestContext.isSES() ){ 
-			relocationType = "SES"; 
+		if( oRequestContext.isSES() ){
+			relocationType = "SES";
 		}
-		if( structKeyExists( arguments, "URL" ) ){ 
-			relocationType = "URL"; 
+		if( structKeyExists( arguments, "URL" ) ){
+			relocationType = "URL";
 		}
-		if( structKeyExists( arguments, "URI" ) ){ 
-			relocationType = "URI"; 
+		if( structKeyExists( arguments, "URI" ) ){
+			relocationType = "URI";
 		}
 
 		// Cleanup event string to default if not sent in
-		if( len( trim( arguments.event ) ) eq 0 ){ 
-			arguments.event = getSetting( "DefaultEvent" ); 
+		if( len( trim( arguments.event ) ) eq 0 ){
+			arguments.event = getSetting( "DefaultEvent" );
 		}
 		// Overriding Front Controller via baseURL argument
-		if( len( trim( arguments.baseURL ) ) ){ 
-			frontController = arguments.baseURL; 
+		if( len( trim( arguments.baseURL ) ) ){
+			frontController = arguments.baseURL;
 		}
 
 		// Relocation Types
@@ -445,7 +445,7 @@ component serializable="false" accessors="true"{
 
 			// Test if entry found in cache, and return if found.
 			var data = oCache.get( cacheKey );
-			if( !isNull( data ) ){ 
+			if( !isNull( data ) ){
 				return data;
 			}
 		}
@@ -454,14 +454,14 @@ component serializable="false" accessors="true"{
 		var results = _runEvent( argumentCollection=arguments );
 
 		// Do we have an object coming back?
-		if( 
-			!isNull( results.data ) && 
+		if(
+			!isNull( results.data ) &&
 			isObject( results.data  )
 		){
 			// Ignore, if request context
 			if( isInstanceOf( results.data, "coldbox.system.web.context.RequestContext" )){
 				results.delete( "data" );
-			} 
+			}
 			else if( structKeyExists( results.data, "$renderdata" ) ){
 				results.data = results.data.$renderdata();
 			}
@@ -481,7 +481,7 @@ component serializable="false" accessors="true"{
 
 		// Are we caching
 		if( isCachingOn && !isNull( results.data ) ){
-			oCache.set( 
+			oCache.set(
 				objectKey			= cacheKey,
 				object 				= results.data,
 				timeout 			= arguments.cacheTimeout,
@@ -505,7 +505,7 @@ component serializable="false" accessors="true"{
 	* @eventArguments A collection of arguments to passthrough to the calling event handler method
 	*
 	* @throws InvalidHTTPMethod
-	* 
+	*
 	* @return struct { data:event handler returned data (null), ehBean:event handler bean representation that was fired }
 	*/
 	private function _runEvent(
@@ -549,13 +549,13 @@ component serializable="false" accessors="true"{
 			.setIsPrivate( arguments.private );
 
 		// Validate this is not a view dispatch, else return for rendering
-		if( results.ehBean.getViewDispatch() ){	
-			return results;	
+		if( results.ehBean.getViewDispatch() ){
+			return results;
 		}
 
 		// Now get the correct handler to execute
 		var oHandler = services.handlerService.getHandler( results.ehBean, oRequestContext );
-		
+
 		// Validate again this is not a view dispatch as the handler might exist but not the action
 		if( results.ehBean.getViewDispatch() ){	return results;	}
 
@@ -569,18 +569,22 @@ component serializable="false" accessors="true"{
 			// Determine if it is An allowed HTTP method to execute, else throw error
 			if( NOT structIsEmpty( oHandler.allowedMethods ) AND
 				structKeyExists( oHandler.allowedMethods, results.ehBean.getMethod() ) AND
-				NOT listFindNoCase( oHandler.allowedMethods[ results.ehBean.getMethod() ], oRequestContext.getHTTPMethod() ) 
+				NOT listFindNoCase( oHandler.allowedMethods[ results.ehBean.getMethod() ], oRequestContext.getHTTPMethod() )
 			){
+                oRequestContext.setHTTPHeader(
+					statusCode = 405,
+					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
+				);
 				// set Invalid HTTP method in context
 				oRequestContext.setIsInvalidHTTPMethod();
 				// Do we have a local handler for this exception, if so, call it
 				if( oHandler._actionExists( "onInvalidHTTPMethod" ) ){
-					results.data = oHandler.onInvalidHTTPMethod( 
+					results.data = oHandler.onInvalidHTTPMethod(
 						event			= oRequestContext,
 						rc				= args.rc,
 						prc				= args.prc,
 						faultAction		= results.ehBean.getmethod(),
-						eventArguments	= arguments.eventArguments 
+						eventArguments	= arguments.eventArguments
 					);
 					return results;
 				}
@@ -591,11 +595,7 @@ component serializable="false" accessors="true"{
 				}
 
 				// Throw Exception, no handlers defined
-				oRequestContext.setHTTPHeader( 
-					statusCode = 405,
-					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
-				);
-				throw( 
+				throw(
 					message		= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
 					detail		= "The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
 					type		= "InvalidHTTPMethod"
@@ -609,11 +609,11 @@ component serializable="false" accessors="true"{
 					return _runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
 				}
 				// Throw Exception, no handlers defined
-				oRequestContext.setHTTPHeader( 
+				oRequestContext.setHTTPHeader(
 					statusCode = 405,
 					statusText = "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'"
 				);
-				throw( 
+				throw(
 					message		= "Invalid HTTP Method: '#oRequestContext.getHTTPMethod()#'",
 					detail		= "The requested URL: #oRequestContext.getCurrentRoutedURL()# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'",
 					type		= "InvalidHTTPMethod"
@@ -635,15 +635,15 @@ component serializable="false" accessors="true"{
 				}
 
 				// Execute Pre Handler if it exists and valid?
-				if( oHandler._actionExists( "preHandler" ) AND 
-					validateAction( results.ehBean.getMethod(), oHandler.PREHANDLER_ONLY, oHandler.PREHANDLER_EXCEPT ) 
+				if( oHandler._actionExists( "preHandler" ) AND
+					validateAction( results.ehBean.getMethod(), oHandler.PREHANDLER_ONLY, oHandler.PREHANDLER_EXCEPT )
 				){
-					oHandler.preHandler( 
+					oHandler.preHandler(
 						event          = oRequestContext,
 						rc             = args.rc,
 						prc            = args.prc,
 						action         = results.ehBean.getMethod(),
-						eventArguments = arguments.eventArguments 
+						eventArguments = arguments.eventArguments
 					);
 				}
 
@@ -678,33 +678,33 @@ component serializable="false" accessors="true"{
 				if( oHandler._actionExists( "around#results.ehBean.getMethod()#" ) ){
 					// Add target Action
 					args.targetAction = oHandler[ results.ehBean.getMethod() ];
-					results.data = invoker( 
-						target        = oHandler, 
-						method        = "around#results.ehBean.getMethod()#", 
-						argCollection = args 
+					results.data = invoker(
+						target        = oHandler,
+						method        = "around#results.ehBean.getMethod()#",
+						argCollection = args
 					);
 					// Cleanup: Remove target action from args for post events
 					structDelete( args, "targetAction" );
 				}
 				// Around Handler Advice Check?
-				else if( 
-					oHandler._actionExists( "aroundHandler" ) AND 
-					validateAction( results.ehBean.getMethod(), oHandler.aroundHandler_only, oHandler.aroundHandler_except ) 
+				else if(
+					oHandler._actionExists( "aroundHandler" ) AND
+					validateAction( results.ehBean.getMethod(), oHandler.aroundHandler_only, oHandler.aroundHandler_except )
 				){
 					results.data = oHandler.aroundHandler(
 						event          = oRequestContext,
 						rc             = args.rc,
 						prc            = args.prc,
 						targetAction   = oHandler[ results.ehBean.getMethod() ],
-						eventArguments = arguments.eventArguments 
+						eventArguments = arguments.eventArguments
 					);
 				} else {
 					// Normal execution
-					results.data = invoker( 
-						target        = oHandler, 
-						method        = results.ehBean.getMethod(), 
-						argCollection = argsMain, 
-						private       = arguments.private 
+					results.data = invoker(
+						target        = oHandler,
+						method        = results.ehBean.getMethod(),
+						argCollection = argsMain,
+						private       = arguments.private
 					);
 				}
 			}
@@ -714,17 +714,17 @@ component serializable="false" accessors="true"{
 
 				// Execute post{Action}?
 				if( oHandler._actionExists( "post#results.ehBean.getMethod()#" ) ){
-					invoker( 
-						target        = oHandler, 
-						method        = "post#results.ehBean.getMethod()#", 
-						argCollection = args 
+					invoker(
+						target        = oHandler,
+						method        = "post#results.ehBean.getMethod()#",
+						argCollection = args
 					);
 				}
 
 				// Execute postHandler()?
-				if( 
-					oHandler._actionExists( "postHandler" ) AND 
-					validateAction( results.ehBean.getMethod(), oHandler.POSTHANDLER_ONLY, oHandler.POSTHANDLER_EXCEPT ) 
+				if(
+					oHandler._actionExists( "postHandler" ) AND
+					validateAction( results.ehBean.getMethod(), oHandler.POSTHANDLER_ONLY, oHandler.POSTHANDLER_EXCEPT )
 				){
 					oHandler.postHandler(
 						event          = oRequestContext,
@@ -758,7 +758,7 @@ component serializable="false" accessors="true"{
 	}
 
 	/****************************************** APPLICATION LOCATORS *************************************************/
-	
+
 	/**
 	* Locate the real path location of a file in a coldbox application. 3 checks: 1) inside of coldbox app, 2) expand the path, 3) Absolute location. If path not found, it returns an empty path
 	* @pathToCheck The relative or absolute file path to verify and locate
@@ -808,7 +808,7 @@ component serializable="false" accessors="true"{
 	}
 
 /****************************************** PRIVATE HELPERS *************************************************/
-	
+
 	/**
 	* Load the internal ColdBox settings
 	*/
@@ -865,8 +865,8 @@ component serializable="false" accessors="true"{
 	/**
 	* Invoke private/public event handler methods
 	*/
-	private function invoker( 
-		required any target, 
+	private function invoker(
+		required any target,
 		required method,
 		struct argCollection={},
 		boolean private=false
