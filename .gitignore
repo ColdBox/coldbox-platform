@@ -1,8 +1,9 @@
-# Config Files
+# OS + IDE
 .DS_Store
 /settings.xml
 .project
 .settings/
+.vscode
 
 # Testing Logs
 test-harness/logs/*.log
