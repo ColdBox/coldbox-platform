@@ -40,12 +40,12 @@
         ]
     },
     "devDependencies":{
-        "testbox":"^2.5.0"
+        "testbox":"^2.6.0"
     },
     "installPaths":{
         "testbox":"testbox"
     },
     "scripts":{
-        
+
     }
 }
