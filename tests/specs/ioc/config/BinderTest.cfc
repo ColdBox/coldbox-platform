@@ -9,11 +9,11 @@
 		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
 		// Available WireBox public types
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
-		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector")
-			.$("getColdBox", getMockBox().createStub().$("getSetting","coldbox.test") )
-			.$("getEventManager", getMockBox().createStub().$("processState") );
+		mockInjector = createEmptyMock( "coldbox.system.ioc.Injector" )
+			.$("getColdBox", createStub().$("getSetting","coldbox.test") )
+			.$("getEventManager", createStub().$("processState") );
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(injector=mockInjector,config=dataConfigPath);
-		getMockBox().prepareMock( config ).$("processMappings");
+		prepareMock( config ).$("processMappings");
 	}
 
 	function testBinderStandalone(){
@@ -297,7 +297,7 @@
 		config.mapPath("Test")
 			.property(name="binding",value="2")
 			.property(name="obj2",ref="obj2")
-			.property(name="obj3", dsl="provider:obj3",scope="instance", required=false);
+			.property(name="obj3", dsl="provider:obj3",scope="variables", required=false);
 		mapping = config.getMapping("Test");
 		properties = mapping.getDIProperties();
 		assertEquals( 3, arrayLen(properties));
@@ -431,7 +431,11 @@
 	}
 
 	function testActivateListener(){
-		mockInjector.$( "registerListener" ).$args( "models.listener", {}, "configListner", true );
+		mockInjector
+			.$( method="registerListener", preserveReturnType=false )
+			.$args( "models.listener", {}, "configListner", true )
+			.$results( mockInjector );
+
 		config.listener( "models.listener", {}, "configListener", true );
 		config.listener( "models.listener", {}, "configListener2", false );
 		assertTrue( mockInjector.$once( "registerListener" ), "Injector should have only been called once." );
@@ -506,7 +510,7 @@
 		config.reset();
 		config.mapDirectory(packagePath="coldbox.test-harness.models", filter=filterUDF);
 		assertFalse( config.mappingExists("Simple") );
-		
+
 		// Multiple mappings chaining
 		config.reset();
 		// Map entire directory as singletons
@@ -514,9 +518,9 @@
 		var mappings = config.getMappings();
 		// Check them each and ensure they're all singletons
 		for( var thisMapping in mappings ) {
-			assertEquals( mappings[ thisMapping ].getScope(), "singleton" );	
+			assertEquals( mappings[ thisMapping ].getScope(), "singleton" );
 		}
-		
+
 	}
 
 	private function influenceUDF(binder, path){
@@ -639,7 +643,7 @@
 		config.map("brad")
 			.toValue( 'wood' )
 			.withInfluence( function() {
-			return reverse( instance ); 
+			return reverse( variables );
 		});
 		mapping = config.getMapping("brad");
 		assertFalse( isSimpleValue( mapping.getInfluenceClosure() ) );

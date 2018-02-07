@@ -266,7 +266,7 @@ component serializable="false" accessors="true"{
 			}
 
 			// If we get here then it is by ref id, so let's verify it exists and optional
-			if( len( variables.injector.containsInstance( thisArg.ref )) ){
+			if( variables.injector.containsInstance( thisArg.ref ) ){
 				args[ thisArg.name ] = variables.injector.getInstance( name=thisArg.ref );
 				continue;
 			}

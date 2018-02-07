@@ -1,40 +1,50 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * An interface that enables any CFC to act like a parent injector within WireBox.
+ **/
+ interface {
 
-Author 	    :	Luis Majano
-Description :
-	An interface that enables any CFC to act like a parent injector within WireBox.
-	
------------------------------------------------------------------------>
-<cfinterface hint="An interface that enables any CFC to act like a parent injector within WireBox">
-	
-	<!--- setParent --->
-    <cffunction name="setParent" output="false" access="public" returntype="void" hint="Link a parent Injector with this injector">
-    	<cfargument name="injector" required="true" hint="A WireBox Injector to assign as a parent to this Injector" doc_generic="coldbox.system.ioc.Injector">
-    </cffunction>
-	
-	<!--- getParent --->
-    <cffunction name="getParent" output="false" access="public" returntype="any" hint="Get a reference to the parent injector instance, else an empty simple string meaning nothing is set" doc_generic="coldbox.system.ioc.Injector">
-    </cffunction>
-	
-	<!--- getInstance --->
-    <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object model instance">
-    	<cfargument name="name" 			required="false" 	hint="The mapping name or CFC instance path to try to build up"/>
-		<cfargument name="dsl"				required="false" 	hint="The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'"/>
-		<cfargument name="initArguments" 	required="false" 	hint="The constructor structure of arguments to passthrough when initializing the instance" doc_generic="struct"/>
-		<cfargument name="targetObject" 	required="false"	default="" 	hint="The object requesting the dependency, usually only used by DSL lookups"/>
-	</cffunction>
-	
-	<!--- containsInstance --->
-    <cffunction name="containsInstance" output="false" access="public" returntype="any" hint="Checks if this injector can locate a model instance or not" doc_generic="boolean">
-    	<cfargument name="name" required="true" hint="The object name or alias to search for if this container can locate it or has knowledge of it"/>
-    </cffunction>
+	/**
+	 * Link a parent Injector with this injector and return itself
+	 *
+	 * @injector A WireBox Injector to assign as a parent to this Injector
+	 * @injector.doc_generic coldbox.system.ioc.Injector
+	 *
+	 * @return IInjector
+	 */
+	function setParent( required injector );
 
-	<!--- shutdown --->
-    <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown the injector gracefully by calling the shutdown events internally.">
-    </cffunction>
-	
-</cfinterface>
+	/**
+	 * Get a reference to the parent injector instance, else an empty simple string meaning nothing is set
+	 *
+	 * @return coldbox.system.ioc.Injector
+	 */
+	function getParent();
+
+	/**
+	 * Locates, Creates, Injects and Configures an object model instance
+	 *
+	 * @name The mapping name or CFC instance path to try to build up
+	 * @dsl The dsl string to use to retrieve the instance model object, mutually exclusive with 'name'
+	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
+	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
+	 */
+	function getInstance( name, dsl, struct initArguments, targetObject="" );
+
+	/**
+	 * Checks if this injector can locate a model instance or not
+	 *
+	 * @name The object name or alias to search for if this container can locate it or has knowledge of it
+	 */
+	boolean function containsInstance( required name );
+
+	/**
+	 * Shutdown the injector gracefully by calling the shutdown events internally
+	 *
+	 * @return IInjector
+	 */
+	function shutdown();
+
+ }

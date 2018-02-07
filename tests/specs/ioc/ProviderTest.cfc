@@ -10,9 +10,9 @@
 			scope 	= "application",
 			key 	= "wirebox"
 		};
-		mockScopeStorage = getMockBox().createEmptyMock("coldbox.system.core.collections.ScopeStorage")
-			.$("exists",false);
-		provider = getMockBox().createMock("coldbox.system.ioc.Provider")
+		mockScopeStorage = getMockBox().createEmptyMock( "coldbox.system.core.collections.ScopeStorage" )
+			.$( "exists",false);
+		provider = getMockBox().createMock( "coldbox.system.ioc.Provider" )
 			.init(scopeRegistration=scopeInfo, 
 				  scopeStorage=mockScopeStorage,
 				  name="UnitTest",
@@ -23,16 +23,16 @@
 		try{
 			provider.get();
 		}
-		catch("Provider.InjectorNotOnScope" e){
+		catch( "Provider.InjectorNotOnScope" e){
 		}
 		catch(Any e){ fail(e); }
 	}
 	
 	function testGet(){
 		// Mocks
-		mockTarget = getMockBox().createStub().$("verify", true);
-		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector").$("getInstance", mockTarget);
-		mockScopeStorage.$("exists",true).$("get", mockInjector);
+		mockTarget = getMockBox().createStub().$( "verify", true);
+		mockInjector = getMockBox().createEmptyMock( "coldbox.system.ioc.Injector" ).$( "getInstance", mockTarget);
+		mockScopeStorage.$( "exists",true).$( "get", mockInjector);
 		
 		// 1. Execute get by name
 		results = provider.get();
@@ -40,7 +40,7 @@
 		assertTrue( results.verify() );
 		
 		// 2. Execute get by dsl
-		provider = getMockBox().createMock("coldbox.system.ioc.Provider")
+		provider = getMockBox().createMock( "coldbox.system.ioc.Provider" )
 			.init(scopeRegistration=scopeInfo, 
 				  scopeStorage=mockScopeStorage, 
 				  dsl="logbox:logger:{this}",
@@ -53,11 +53,11 @@
 	function testProxyMethods(){
 		// Mocks
 		mockTarget = getMockBox().createStub()
-			.$("getTest", true)
-			.$("sayHello","luis");
-		mockInjector = getMockBox().createEmptyMock("coldbox.system.ioc.Injector").$("getInstance",mockTarget);
-		mockScopeStorage.$("exists",true).$("get",mockInjector);
-		provider.$("get", mockTarget);
+			.$( "getTest", true)
+			.$( "sayHello","luis" );
+		mockInjector = getMockBox().createEmptyMock( "coldbox.system.ioc.Injector" ).$( "getInstance",mockTarget);
+		mockScopeStorage.$( "exists",true).$( "get",mockInjector);
+		provider.$( "get", mockTarget);
 		
 		// call proxy method
 		r = provider.getTest();
@@ -65,7 +65,7 @@
 		
 		// call proxy method
 		r = provider.sayHello();
-		assertEquals("luis", r);
+		assertEquals( "luis", r);
 	}
 	
 	
