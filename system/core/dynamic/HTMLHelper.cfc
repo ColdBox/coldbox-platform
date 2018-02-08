@@ -179,14 +179,14 @@ Description :
 			// Check if we have a base URL and if we need to build our link
 			if( arguments.noBaseURL eq FALSE and NOT find( "://", arguments.href ) ){
 				// Verify SSL Bit
-				if( structKeyExists( arguments, "ssl" ) ){ 
+				if( structKeyExists( arguments, "ssl" ) ){
 					arguments.href = event.buildLink(
 						to 			= arguments.href,
 						ssl			= arguments.ssl,
 						queryString = arguments.queryString
-					); 
-				} else { 
-					arguments.href = event.buildLink( to=arguments.action, queryString=arguments.queryString ); 
+					);
+				} else {
+					arguments.href = event.buildLink( to=arguments.action, queryString=arguments.queryString );
 				}
 			}
 
@@ -311,9 +311,9 @@ Description :
 			else if( isArray( arguments.data ) and arrayLen( arguments.data ) ){
 				var firstMetadata = getMetadata( arguments.data[ 1 ] );
 				// Check for array of ORM Object
-				if( 
-					isObject( arguments.data[ 1 ] ) 
-					AND 
+				if(
+					isObject( arguments.data[ 1 ] )
+					AND
 					structKeyExists( firstMetadata, "persistent" ) && firstMetadata.persistent
 				){
 					arguments.data = entityToQuery( arguments.data );
@@ -602,13 +602,13 @@ Description :
 			// Check if we have a base URL and if we need to build our link
 			if( arguments.noBaseURL eq FALSE and NOT find( "://", arguments.action ) ){
 				// Verify SSL Bit
-				if( structKeyExists( arguments, "ssl" ) ){ 
+				if( structKeyExists( arguments, "ssl" ) ){
 					arguments.action = event.buildLink(
 						to	 		= arguments.action,
 						ssl			= arguments.ssl
-					); 
-				} else { 
-					arguments.action = event.buildLink( to=arguments.action ); 
+					);
+				} else {
+					arguments.action = event.buildLink( to=arguments.action );
 				}
 			}
 
@@ -622,7 +622,7 @@ Description :
 			// create tag
 			flattenAttributes( arguments, "noBaseURL,ssl,multipart", formBuffer )
 				.append( ">" );
-				
+
 			// If we wanted to use PUT, PATCH, or DELETE, spoof the HTTP method
 			// by including a hidden field in the form that ColdBox will look for.
 			if ( len( desiredMethod ) ) {
@@ -678,11 +678,11 @@ Description :
 			// get content
 			if( NOT len(content) ){ arguments.content = makePretty(arguments.field); }
 			arguments.for = arguments.field;
-	
+
 			if (labelMode == 0 || labelMode == 1) {
 				// wrapper?
 				wrapTag(buffer,arguments.wrapper,0,arguments.wrapperAttrs);
-				
+
 				// create label tag
 				buffer.append("<label");
 				flattenAttributes(arguments,"content,field,wrapper,labelMode,labelAttrs",buffer);
@@ -915,7 +915,7 @@ Description :
 
 			//wrapper?
 			wrapTag(buffer,arguments.wrapper,1);
-			
+
 			// close label tag if inputInsideLabel?
 			if (len(arguments.label) && arguments.inputInsideLabel) {
 				buffer.append( this.label(field=arguments.id, content=arguments.label, wrapper=arguments.labelWrapper, labelMode = 2) ); // close the label tag if we have one opened
@@ -1268,7 +1268,7 @@ Description :
 			// group wrapper?
 			wrapTag( buffer, arguments.groupWrapper, 0, arguments.groupWrapperAttrs );
 			// label?
-			if( len( arguments.label ) ){ buffer.append( this.label( field=arguments.id, content=arguments.label, wrapper=arguments.labelWrapper, wrapperAttrs=arguments.labelWrapperAttrs, class=arguments.labelClass, 
+			if( len( arguments.label ) ){ buffer.append( this.label( field=arguments.id, content=arguments.label, wrapper=arguments.labelWrapper, wrapperAttrs=arguments.labelWrapperAttrs, class=arguments.labelClass,
 				labelMode = (arguments.inputInsideLabel ? 1 : 0), labelAttrs=arguments.labelAttrs ) ); }
 			//wrapper?
 			wrapTag( buffer, arguments.wrapper, 0, arguments.wrapperAttrs );
@@ -1297,7 +1297,7 @@ Description :
 			if (len(arguments.label) && arguments.inputInsideLabel) {
 				buffer.append( this.label(field=arguments.id, content=arguments.label, wrapper=arguments.labelWrapper, labelMode = 2) ); // close the label tag if we have one opened
 			}
-		
+
 			// group wrapper?
 			wrapTag( buffer, arguments.groupWrapper, 1 );
 
@@ -1322,7 +1322,7 @@ Description :
 		<cfargument name="manytoone" 		type="struct" 	required="false" default="#structnew()#" hint="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string]. Example: {criteria={productid=1},sortorder='Department desc'}"/>
 		<cfargument name="manytomany" 		type="struct" 	required="false" default="#structnew()#" hint="A structure of data to help with many to one relationships on how they are presented. Possible key values for each key are [valuecolumn='',namecolumn='',criteria={},sortorder=string,selectColumn='']. Example: {criteria={productid=1},sortorder='Department desc'}"/>
 		<cfargument name="inputInsideLabel"	type="boolean"	required="false" default=false hint="If true, closes the label tag after the input tag and puts the label text after the input tag" />
-		
+
 		<cfscript>
 			var buffer 	= createObject("java","java.lang.StringBuilder").init('');
 			var md 		= getMetadata( arguments.entity );
@@ -1381,7 +1381,7 @@ Description :
 						if( NOT loc.orm.contains(arguments.entity) OR NOT arguments.showRelations){
 							break;
 						}
-						
+
 						// prepare lookup args
 						loc.criteria			= {};
 						loc.sortorder 		= "";
@@ -1415,7 +1415,8 @@ Description :
 						}
 
 						// values should be an array of objects, so let's convert them
-						loc.relArray = evaluate("arguments.entity.get#prop.name#()");
+						loc.relArray = invoke( arguments.entity, "get#prop.name#" );
+
 						if( isNull(loc.relArray) ){ loc.relArray = []; }
 						if( NOT len(loc.selectColumn) AND arrayLen(loc.relArray) ){
 							// if select column is empty, then select first property as select value, not perfect but hey better than nothing
@@ -1423,7 +1424,9 @@ Description :
 						}
 						// iterate and select
 						for(y=1; y lte arrayLen(loc.relArray); y++){
-							arrayAppend(loc.values, evaluate("loc.relArray[y].get#loc.selectColumn#()") );
+							loc.values.append(
+								invoke( loc.relArray[ y ], "get#loc.selectColumn#" )
+							);
 						}
 						// generation args
 						args = {
@@ -1444,7 +1447,7 @@ Description :
 						arguments["data-ormtype"] 	= "one-to-many";
 						// We just show them as a nice table because we are not scaffolding, just display
 						// values should be an array of objects, so let's convert them
-						loc.relArray = evaluate("arguments.entity.get#prop.name#()");
+						loc.relArray = invoke( arguments.entity, "get#prop.name#" );
 						if( isNull(loc.relArray) ){ loc.relArray = []; }
 
 						// Label Generation
@@ -1478,7 +1481,7 @@ Description :
 						arguments["data-ormtype"] 	= "one-to-one";
 						// We just show them as a nice table because we are not scaffolding, just display
 						// values should be an array of objects, so let's convert them
-						loc.data = evaluate("arguments.entity.get#prop.name#()");
+						loc.data = invoke( arguments.entity, "get#prop.name#" );
 						if( isNull(loc.data) ){ loc.relArray = []; }
 						else{ loc.relArray = [ loc.data ]; }
 
@@ -1625,7 +1628,7 @@ Description :
 										controller.getSetting( "appMapping" );
 			var filePath 			= expandPath( "#mapping#/#includesLocation#/#arguments.buildDirectory#/rev-manifest.json" );
 			var href 				= "#mapping#/#includesLocation#/#arguments.fileName#";
-			
+
 			if ( ! fileExists( filePath ) ) {
 				return href;
 			}
@@ -1645,7 +1648,7 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
+
 	<!--- objectsToTable --->
 	<cffunction name="objectsToTable" output="false" access="private" returntype="void" hint="Convert a table out of an array of objects">
 		<cfargument name="data" 		type="any"			 required="true"	hint="The array to convert into a table"/>
@@ -1678,7 +1681,7 @@ Description :
 				for( var thisProperty in properties ){
 					// Display headers?
 					if( passIncludeExclude( thisProperty.name, arguments.includes, arguments.excludes ) ){
-						str.append( "<td>#evaluate( "thisRecord.get#thisProperty.name#()" )#</td>" );
+						str.append( "<td>#invoke( thisRecord, "get#thisProperty.name#" )#</td>" );
 					}
 				}
 				str.append( "</tr>" );
@@ -1820,10 +1823,14 @@ Description :
 				}
 
 				// entity value
-				entityValue = evaluate( "arguments.args.bind.get#arguments.args.bindProperty#()" );
-				if( isNull( entityValue ) ){ entityValue = ""; }
+				entityValue = invoke( arguments.args.bind, "get#arguments.args.bindProperty#" );
+				if( isNull( entityValue ) ){
+					entityValue = "";
+				}
 				// Verify if the value is an entity, if it is, then use the 'column' to retrieve the value
-				if( isObject( entityValue ) ){ entityValue = evaluate( "entityValue.get#arguments.args.column#()" ); }
+				if( isObject( entityValue ) ){
+					entityValue = invoke( entityValue, "get#arguments.args.column#" );
+				}
 
 				// If radio or checkbox button, check it
 				if( structKeyExists( arguments.args, "type" ) AND listFindNoCase( "radio,checkbox", arguments.args.type ) ){
@@ -1866,7 +1873,7 @@ Description :
 			// Only do if we have length
 			if( len( arguments.tag ) ){
 				// Starting or ending?
-				if( arguments.end ){ 
+				if( arguments.end ){
 					arguments.buffer.append( "</#listFirst( arguments.tag, " " )#>" );
 				} else {
 					arguments.buffer.append( "<#arguments.tag#" );
@@ -1875,7 +1882,7 @@ Description :
 							arguments.buffer.append(' ' & attr & '="' & structFind(arguments.attrs,attr) & '"');
 						}
 					}
-					arguments.buffer.append(">"); 
+					arguments.buffer.append(">");
 				}
 			}
 		</cfscript>

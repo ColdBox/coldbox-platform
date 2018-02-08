@@ -118,7 +118,7 @@ Description :
 					}
 					// Lookup Nested Value
 					else if( isDefined( "arguments.settings.#varName#" ) ){
-						varValue = evaluate( "arguments.settings.#varName#" );
+						varValue = structFindKey( arguments.settings, varName )[ 1 ].value;
 					}
 					// Remove PlaceHolder Entirely
 					returnString = removeChars( returnString, lookup.pos[ 1 ], lookup.len[ 1 ] );

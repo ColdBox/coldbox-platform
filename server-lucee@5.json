@@ -1,5 +1,5 @@
 {
-	"app":{
+    "app":{
         "cfengine":"lucee@5"
     },
     "name":"lucee@5",

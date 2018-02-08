@@ -256,7 +256,7 @@ Modifications
 					OR md.properties[x]["marshal"] EQ true
 				){
 					thisName  = md.properties[x].name;
-					thisValue = evaluate("target.get#thisName#()");
+					thisValue = invoke( target, "get#thisName()#" );
 
 					// Value Defined?
 					if( not isDefined("thisValue") ){

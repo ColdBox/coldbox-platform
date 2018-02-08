@@ -18,13 +18,13 @@ component accessors="true"{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @state The name of the pool
 	 */
 	function init( required state ){
 		var linkedHashMap = createObject( "java", "java.util.LinkedHashMap" ).init( 5 );
 		var collections   = createObject( "java", "java.util.Collections" );
-		
+
 		// Create the event pool, start with 5 instead of 16 to save space
 		variables.pool 	= collections.synchronizedMap( linkedHashMap );
 		variables.state = arguments.state;
@@ -41,10 +41,10 @@ component accessors="true"{
 
 	/**
 	 * Register an object with this pool
-	 * 
+	 *
 	 * @key The key of the object
 	 * @target The object
-	 * 
+	 *
 	 * @return EventPool
 	 */
 	function register( required key, required target ){
@@ -54,7 +54,7 @@ component accessors="true"{
 
 	/**
 	 * Unregister an object from this pool
-	 * 
+	 *
 	 * @key The key of the object
 	 */
 	boolean function unregister( required key ){
@@ -86,10 +86,10 @@ component accessors="true"{
 
 	/**
 	 * Process this event pool according to it's name.
-	 * 
+	 *
 	 * @interceptData The data used in the interception call
 	 * @interceptData.doc_generic struct
-	 * 
+	 *
 	 * @return EventPool
 	 */
 	function process( required interceptData ){
@@ -101,20 +101,24 @@ component accessors="true"{
 			// Check for results
 			if( stopChain ){ break; }
 		}
-		
+
 		return this;
 	}
 
 	/**
 	 * Execute the interception point, returns a value if the chain should be stopped (true) or ignored (void/false)
-	 * 
+	 *
 	 * @target The target object
 	 * @interceptData The data used in the interception call
 	 * @interceptData.doc_generic struct
-	 * 
+	 *
 	 */
 	private function invoker( required target, required interceptData ){
-		var results = evaluate( "arguments.target.#variables.state#( interceptData = arguments.interceptData )" );
+		var results = invoke(
+			arguments.target,
+			variables.state,
+			{ interceptData = arguments.interceptData }
+		);
 
 		if( !isNull( results ) && isBoolean( results ) ){
 			return results;

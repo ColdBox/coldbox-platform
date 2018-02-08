@@ -363,12 +363,13 @@ Description :
 													// try to get struct key value from entity
 													if( !isNull( item ) ) {
 														try {
-															keyValue = evaluate("item.get#structKeyColumn#()");
+															keyValue = invoke( item, "get#structKeyColumn#" );
 														}
 														catch( Any e ) {
-															throw(type="BeanPopulator.PopulateBeanException",
-                    							  			  message="Error populating bean #getMetaData(beanInstance).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
-                    							  			  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
+															throw(
+																type	= "BeanPopulator.PopulateBeanException",
+                    							  			 	message	= "Error populating bean #getMetaData( beanInstance ).name# relationship of #key#. The structKeyColumn #structKeyColumn# could not be resolved.",
+                    							  			  	detail	= "#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
 														}
 													}
 													// if the structKeyColumn value was found...
@@ -392,11 +393,11 @@ Description :
 							// Populate the property as a null value
 							if( isNull( propertyValue ) ) {
 								// Finally...set the value
-								evaluate( "beanInstance.set#key#( JavaCast( 'null', '' ) )" );
+								invoke( beanInstance, "set#key#", [ JavaCast( 'null', '' ) ] );
 							}
 							// Populate the property as the value obtained whether simple or related
 							else {
-								evaluate( "beanInstance.set#key#( propertyValue )" );
+								invoke( beanInstance, "set#key#", [ propertyValue ] );
 							}
 
 						} // end if setter or scope injection
@@ -429,7 +430,7 @@ Description :
 			var meta = {};
 			// get array of properties
 			var stopRecursions= [ "lucee.Component", "WEB-INF.cftags.component" ];
-			var properties = getUtil().getInheritedMetaData( arguments.target, stopRecursions ).properties; 
+			var properties = getUtil().getInheritedMetaData( arguments.target, stopRecursions ).properties;
 
 			// loop over properties
 			for( var i = 1; i <= arrayLen( properties ); i++ ) {

@@ -8,7 +8,7 @@ component accessors="true"{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @constructor
 	 */
 	function init( required controller ){
@@ -23,7 +23,7 @@ component accessors="true"{
 
 	/**
 	 * Parse the application configuration file
-	 * 
+	 *
 	 * @overrideAppMapping The direct location of the application in the web server.
 	 */
 	ApplicationLoader function loadConfiguration( string overrideAppMapping="" ){
@@ -136,7 +136,7 @@ component accessors="true"{
 		parseFlashScope( oConfig, configStruct );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
-		configStruct.configTimeStamp = variables.util.fileLastModified( 
+		configStruct.configTimeStamp = variables.util.fileLastModified(
 			getMetadata( oConfig ).path
 		);
 
@@ -245,11 +245,11 @@ component accessors="true"{
 			configStruct[ "ImplicitViews" ] = true;
 		}
 		//Check for ReinitPassword
-		if ( not structKeyExists( configStruct, "ReinitPassword" ) ){ 
-			configStruct[ "ReinitPassword" ] = hash( createUUID() ); 
+		if ( not structKeyExists( configStruct, "ReinitPassword" ) ){
+			configStruct[ "ReinitPassword" ] = hash( createUUID() );
 		}
-		else if( len( configStruct[ "ReinitPassword" ]) ){ 
-			configStruct[ "ReinitPassword" ] = hash( configStruct[ "ReinitPassword" ] ); 
+		else if( len( configStruct[ "ReinitPassword" ]) ){
+			configStruct[ "ReinitPassword" ] = hash( configStruct[ "ReinitPassword" ] );
 		}
 		//Check For ApplicationHelper
 		if ( not structKeyExists( configStruct, "applicationHelper" ) ){
@@ -316,11 +316,11 @@ component accessors="true"{
 		}
 		// Prepend Convention of modules_app according to location
 		if( len( configStruct.appMapping ) ){
-			arrayPrepend( configStruct.ModulesExternalLocation, "/#configStruct.appMapping#/modules_app" );	
+			arrayPrepend( configStruct.ModulesExternalLocation, "/#configStruct.appMapping#/modules_app" );
 		} else {
 			arrayPrepend( configStruct.ModulesExternalLocation, "/modules_app" );
 		}
-		
+
 		//Check for invalidHTTPMethodHandler
 		if ( not structKeyExists( configStruct, "invalidHTTPMethodHandler" ) ){
 			configStruct[ "invalidHTTPMethodHandler" ] = "";
@@ -685,10 +685,10 @@ component accessors="true"{
 		configStruct.ModulesExclude		= [];
 		configStruct.Modules 			= structNew();
 
-		if( structKeyExists( modules, "include" ) ){ 
-			configStruct.modulesInclude = modules.include; 
+		if( structKeyExists( modules, "include" ) ){
+			configStruct.modulesInclude = modules.include;
 		}
-		if( structKeyExists( modules, "exclude" ) ){ 
+		if( structKeyExists( modules, "exclude" ) ){
 			configStruct.modulesExclude = modules.exclude;
 		}
 	}
@@ -724,7 +724,7 @@ component accessors="true"{
 
 		// call environment method if exists
 		if( structKeyExists( arguments.oConfig, configStruct.environment ) ){
-			evaluate( "arguments.oConfig.#configStruct.environment#()" );
+			invoke( arguments.oConfig, "#configStruct.environment#" );
 		}
 	}
 
@@ -749,7 +749,7 @@ component accessors="true"{
 	}
 
 	/**
-	 * Load LogBox by file 
+	 * Load LogBox by file
 	 */
 	private function loadLogBoxByFile( required logBoxConfig, required filePath ){
 		// Load according xml?

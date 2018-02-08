@@ -228,7 +228,11 @@ component serializable="false" accessors="true"{
 		// init?
 		if( thisMap.isAutoInit() ){
 			if( args.len() ){
-				return evaluate( 'createObject( "java", arguments.mapping.getPath() ).init( #arrayToList( args )# )' );
+				return invoke(
+					createObject( "java", arguments.mapping.getPath() ),
+					"init",
+					args
+				);
 			}
 			return createObject( "java", arguments.mapping.getPath() ).init();
 		}
@@ -575,7 +579,7 @@ component serializable="false" accessors="true"{
 			var oModel = variables.injector.getInstance( modelName );
 			// Factories: TODO: Add arguments with 'ref()' parsing for argument references or 'dsl()'
 			if( len( methodCall ) ){
-				return evaluate( "oModel.#methodCall#()" );
+				return invoke( oModel, methodCall );
 			}
 			return oModel;
 		} else if ( variables.log.canDebug() ){
