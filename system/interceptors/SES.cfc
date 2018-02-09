@@ -78,7 +78,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// STATIC Reserved Keys as needed for cleanups
 		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting";
-		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation,ssl,append";
+		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexDomain,domain,regexpattern,matchVariables,packageresolverexempt,domainParams,patternParams,valuePairTranslation,ssl,append";
 
 		// STATIC Valid Extensions
 		variables.VALID_EXTENSIONS 			= "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
@@ -186,7 +186,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	public void function onRequestCapture( event, interceptData, rc, prc, buffer ){
 		// Find which route this URL matches
 		var routedStruct = structnew();
-		var cleanedPaths = getCleanedPaths( rc, arguments.event );
+        var cleanedPaths = getCleanedPaths( rc, arguments.event );
 		var HTTPMethod	 = arguments.event.getHTTPMethod();
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
@@ -213,10 +213,14 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// Extension detection if enabled, so we can do cool extension formats
 		if( variables.extensionDetection ){
 			cleanedPaths[ "pathInfo" ] = detectExtension( cleanedPaths[ "pathInfo" ], arguments.event );
-		}
+        }
 
 		// Find a route to dispatch
-		var aRoute = findRoute( action=cleanedPaths[ "pathInfo" ], event=arguments.event );
+		var aRoute = findRoute(
+			action = cleanedPaths[ "pathInfo" ],
+			event  = arguments.event,
+			domain = cleanedPaths[ "domain" ]
+		);
 
 		// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 		for( var key in aRoute ){
@@ -376,6 +380,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
 	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
 	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @domain The domain to match, including wildcards
 	 */
 	SES function with(
 		string pattern,
@@ -392,7 +397,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		string namespace,
 		string namespaceRouting,
 		boolean ssl,
-		boolean append
+		boolean append,
+		string domain
 	){
 		// set the withClosure
 		variables.withClosure = arguments;
@@ -595,6 +601,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @statusText Explains the HTTP status code sent to the browser response.
 	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
 	 * @name The name of the route
+     * @domain The domain to match, including wildcards
 	 *
 	 * @return SES
 	 */
@@ -618,7 +625,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		numeric statusCode,
 		string statusText,
 		any condition,
-		string name=""
+        string name="",
+        string domain
 	){
 		var thisRoute        = {};
 		var thisRegex        = 0;
@@ -771,6 +779,109 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		} // end looping of pattern optionals
 
+		// Process Sub-Domain Routing
+        thisRoute.domainParams 	= [];
+        thisRoute.regexDomain 	= "^";
+        if ( structKeyExists( thisRoute, "domain" ) ) {
+            // Process the route as a regex pattern
+            for( var x=1; x lte listLen( thisRoute.domain, "." ); x++ ){
+
+                // Pattern and Pattern Param
+                var thisDomain      = listGetAt( thisRoute.domain, x, "." );
+               	var thisDomainParam = replace( listFirst( thisDomain, "-" ), ":", "" );
+
+                // Detect Optional Types
+                patternType = "alphanumeric";
+                if( findnoCase( "-numeric", thisDomain ) ){
+					patternType = "numeric";
+				}
+                if( findnoCase( "-alpha", thisDomain ) ){
+					patternType = "alpha";
+				}
+                // This is a prefix like above to match a param (creates rc variable)
+                if( findNoCase( "-regex:", thisDomain ) ){
+					patternType = "regexParam";
+				}
+                // This is a placeholder for static text in the route
+                else if( findNoCase( "regex:", thisDomain ) ){
+					patternType = "regex";
+				}
+
+                // Pattern Type Regex
+                switch( patternType ){
+                    // CUSTOM REGEX for static route parts
+                    case "regex" : {
+                        thisRegex = replacenocase( thisDomain, "regex:", "" );
+                        break;
+                    }
+                    // CUSTOM REGEX for route param
+                    case "regexParam" : {
+                        // Pull out Regex Pattern
+                        thisRegex = REReplace( thisDomain, ":.*?-regex:", "" );
+                        // Add Route Param
+                        arrayAppend( thisRoute.domainParams, thisDomainParam );
+                        break;
+                    }
+                    // ALPHANUMERICAL OPTIONAL
+                    case "alphanumeric" : {
+                        if( find( ":", thisDomain ) ){
+                            thisRegex = "(" & REReplace( thisDomain, ":(.[^-]*)", "[^\/\.]" );
+                            // Check Digits Repetions
+                            if( find( "{", thisDomain ) ){
+                                thisRegex = listFirst( thisRegex,"{") & "{#listLast( thisDomain, "{" )#)";
+                                arrayAppend( thisRoute.domainParams, replace( listFirst( thisDomain,"{" ), ":", "" ) );
+                            } else {
+                                thisRegex = thisRegex & "+?)";
+                                arrayAppend( thisRoute.domainParams, thisDomainParam );
+                            }
+                            // Override Constraints with your own REGEX
+                            if( structKeyExists( thisRoute.constraints, thisDomainParam ) ){
+                                thisRegex = thisRoute.constraints[ thisDomainParam ];
+                            }
+                        } else {
+                            thisRegex = thisDomain;
+                        }
+                        break;
+                    }
+                    // NUMERICAL OPTIONAL
+                    case "numeric" : {
+                        // Convert to Regex Pattern
+                        thisRegex = "(" & REReplace( thisDomain, ":.*?-numeric", "[0-9]" );
+                        // Check Digits
+                        if( find("{",thisDomain) ){
+                            thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
+                        } else {
+                            thisRegex = thisRegex & "+?)";
+                        }
+                        // Add Route Param
+                        arrayAppend( thisRoute.domainParams, thisDomainParam );
+                        break;
+                    }
+                    // ALPHA OPTIONAL
+                    case "alpha" : {
+                        // Convert to Regex Pattern
+                        thisRegex = "(" & REReplace( thisDomain, ":.*?-alpha", "[a-zA-Z]" );
+                        // Check Digits
+                        if( find( "{", thisDomain ) ){
+                            thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
+                        } else {
+                            thisRegex = thisRegex & "+?)";
+                        }
+                        // Add Route Param
+                        arrayAppend( thisRoute.domainParams,thisDomainParam );
+                        break;
+                    }
+                } //end pattern type detection switch
+
+                // Add Regex Created To Pattern
+                thisRoute.regexDomain = thisRoute.regexDomain & thisRegex & ".";
+
+            } // end looping of pattern optionals
+            if( right( thisRoute.regexDomain, 1 ) == "." ) {
+                thisRoute.regexDomain = left( thisRoute.regexDomain, len( thisRoute.regexDomain ) - 1 );
+            }
+        }
+
 		// Add it to the corresponding routing table
 		// MODULES
 		if( len( arguments.module ) ){
@@ -891,12 +1002,14 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @event The event object
 	 * @module Incoming module
 	 * @namespace Incoming namespace
+     * @domain Incoming domain
 	 */
 	function findRoute(
 		required action,
 		required event,
 		module="",
-		namespace=""
+        namespace="",
+        domain=""
 	){
 		var requestString 		 = arguments.action;
 		var packagedRequestString = "";
@@ -947,7 +1060,15 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 					}
 					// Condition did not pass, move to next route
 					continue;
-				}
+                }
+
+                // Verify domain if exists
+                if( structKeyExists( _routes[ i ], "domain" ) AND isSimpleValue( _routes[ i ].domain ) ){
+                    var domainMatch = reFindNoCase( _routes[ i ].regexDomain, domain, 1, true );
+                    if( domainMatch.len[ 1 ] == 0 ){
+                        continue;
+                    }
+                }
 
 				// Setup the found Route
 				foundRoute = _routes[ i ];
@@ -1039,7 +1160,12 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// Populate the params, with variables found in the request string
 		for( var x=1; x lte arrayLen( foundRoute.patternParams ); x++ ){
 			params[ foundRoute.patternParams[ x ] ] = mid( requestString, match.pos[ x + 1 ], match.len[ x + 1 ] );
-		}
+        }
+
+		// Populate the params, with variables found in the domain string
+        for( var x=1; x lte arrayLen( foundRoute.domainParams ); x++ ){
+            params[ foundRoute.domainParams[ x ] ] = listGetAt( domain, x, "." );
+        }
 
 		// Process Convention Name-Value Pairs
 		if( foundRoute.valuePairTranslation ){
@@ -1432,9 +1558,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		var items = {};
 
 		// Get path_info & script name
-		// Replace any duplicate slashes with 1 just in case
+        // Replace any duplicate slashes with 1 just in case
 		items[ "pathInfo" ]		= trim( reReplace( getCGIElement( 'path_info', arguments.event ), "\/{2,}", "/", "all" ) );
-		items[ "scriptName" ] 	= trim( reReplacenocase( getCGIElement( 'script_name', arguments.event ), "[/\\]index\.cfm", "" ) );
+        items[ "scriptName" ] 	= trim( reReplacenocase( getCGIElement( 'script_name', arguments.event ), "[/\\]index\.cfm", "" ) );
+        items[ "domain" ]		= trim( reReplace( getCGIElement( 'server_name', arguments.event ), "\/{2,}", "/", "all" ) );
 
 		// Clean ContextRoots
 		if( len( getContextRoot() ) ){
@@ -1446,7 +1573,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		items[ "pathInfo" ] = trim( reReplacenocase( items[ "pathInfo" ], "^[/\\]index\.cfm", "" ) );
 		// Clean the scriptname from the pathinfo if it is the first item in case this is a nested application
 		if( len( items[ "scriptName" ] ) ){
-			items["pathInfo"] = reReplaceNocase(items["pathInfo"], "^#items["scriptName"]#","" );
+			items[ "pathInfo" ] = reReplaceNocase( items[ "pathInfo" ], "^#items[ "scriptName" ]#", "" );
 		}
 
 		// clean 1 or > / in front of route in some cases, scope = one by default

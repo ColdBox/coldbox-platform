@@ -373,11 +373,11 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         	// If the route is for the home page, use the default event in the config/ColdBox.cfc
         	if ( arguments.route == "/" ){
         		arguments.event = getController().getSetting( "defaultEvent" );
-			getRequestContext().setValue( getRequestContext().getEventName(), arguments.event );
-			prepareMock( getInterceptor( "SES" ) ).$( "getCleanedPaths", {
-				pathInfo = arguments.route,
-				scriptName = ""
-			} );
+				getRequestContext().setValue( getRequestContext().getEventName(), arguments.event );
+				prepareMock( getInterceptor( "SES" ) )
+					.$( "getCGIElement" ).$args( "path_info", getRequestContext() ).$results( arguments.route )
+					.$( "getCGIElement" ).$args( "script_name", getRequestContext() ).$results( "" )
+					.$( "getCGIElement" ).$args( "domain", getRequestContext() ).$results( cgi.server_name );
         		arguments.route = "";
         	}
 
@@ -394,13 +394,16 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
                 getRequestContext().collectionAppend( parseQueryString( arguments.queryString ) );
 
                 // mock the cleaned paths so SES routes will be recognized
-                prepareMock( getInterceptor( "SES" ) ).$( "getCleanedPaths", { pathInfo = routeParts.route, scriptName = "" } );
+				prepareMock( getInterceptor( "SES" ) )
+					.$( "getCGIElement" ).$args( "path_info", getRequestContext() ).$results( routeParts.route )
+					.$( "getCGIElement" ).$args( "script_name", getRequestContext() ).$results( "" )
+					.$( "getCGIElement" ).$args( "domain", getRequestContext() ).$results( cgi.server_name );
             }
             else{
                 // If we were passed just an event, remove routing since we don't need it
                 getInterceptor( "SES" ).setEnabled( false );
             }
-        }catch( "InterceptorService.InterceptorNotFound" e ){
+        } catch( "InterceptorService.InterceptorNotFound" e ) {
         	// In either case, if the interceptor doesn't exists, just ignore it.
         }
 
