@@ -301,10 +301,18 @@ Description :
 								propertyValue = JavaCast( "null", "" );
 							}
 
+							var getEntityMap = function(){
+								if( find( "2018", server.coldfusion.productVersion ) ){
+									return arrayToList( ORMGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
+								} else {
+									return structKeyArray( ORMGetSessionFactory().getAllClassMetadata() );
+								}
+							};
+
 							// If property isn't null, try to compose the relationship
 							if( !isNull( propertyValue ) && composeRelationships && structKeyExists( relationalMeta, key ) ) {
 								// get valid, known entity name list
-								var validEntityNames = structKeyList( ORMGetSessionFactory().getAllClassMetadata() );
+								var validEntityNames = getEntityMap();
 								var targetEntityName = "";
 								/**
 								 * The only info we know about the relationships are the property names and the cfcs
@@ -316,11 +324,11 @@ Description :
 								 */
 
 								// 1.) name match
-								if( listFindNoCase( validEntityNames, key ) ) {
+								if( validEntityNames.findNoCase( key ) ){
 									targetEntityName = key;
 								}
 								// 2.) attempt match on CFC metadata
-								else if( listFindNoCase( validEntityNames, listLast( relationalMeta[ key ].cfc, "." ) ) ) {
+								else if( validEntityNames.findNoCase( listLast( relationalMeta[ key ].cfc, "." ) ) ) {
 									targetEntityName = listLast( relationalMeta[ key ].cfc, "." );
 								}
 								// 3.) component lookup
