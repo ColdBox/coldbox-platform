@@ -23,15 +23,17 @@
 		parent       = createStub().$( "shutdown", injector );
 		cachebox     = createStub().$( "shutdown" );
 		eventManager = createStub().$( "processState" );
+
 		injector.setParent( parent );
 		injector.$property( "cachebox", "variables", cachebox )
 			.$property( "eventManager", "variables", eventManager )
 			.$( "isCacheBoxLinked", true )
-			.$( "removeFromScope", injector );
-		mockLogger.$( "canInfo", true).$( "info" );
+			.$( method="removeFromScope", returns=injector, preserveReturnType=false );
+		mockLogger.$( "canInfo", true ).$( "info" );
 
 		injector.shutdown();
-		assertTrue( eventManager.$times(2, "processState" ) );
+
+		assertTrue( eventManager.$times( 2, "processState" ) );
 		assertTrue( parent.$once( "shutdown" ) );
 		assertTrue( injector.$once( "removeFromScope" ) );
 		assertTrue( cacheBox.$once( "shutdown" ) );

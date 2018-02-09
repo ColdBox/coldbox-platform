@@ -250,7 +250,6 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		if( variables.log.canInfo() ){
 			variables.log.info( "Shutdown of Injector: #getInjectorID()# requested and started." );
 		}
-
 		// Notify Listeners
 		variables.eventManager.processState( "beforeInjectorShutdown", iData );
 
