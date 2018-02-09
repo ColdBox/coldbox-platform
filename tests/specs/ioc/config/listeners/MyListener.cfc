@@ -15,19 +15,19 @@
 	<!--- afterInjectorConfiguration --->
     <cffunction name="afterInjectorConfiguration" output="false" access="public" returntype="any" hint="">
     	<cfargument name="interceptData" type="struct"/>		
-		<cfset log.info("#properties.name# -> afterInjectorConfiguration called", arguments.interceptData.toString())>
+		<cfset log.info( "#properties.name# -> afterInjectorConfiguration called", arguments.interceptData.toString())>
     </cffunction>
 
 	<!--- beforeObjectCreation --->
     <cffunction name="beforeInstanceCreation" output="false" access="public" returntype="any" hint="">
     	<cfargument name="interceptData" type="struct"/>
-		<cfset log.info("#properties.name# -> beforeInstanceCreation called", arguments.interceptData.toString())>
+		<cfset log.info( "#properties.name# -> beforeInstanceCreation called", arguments.interceptData.toString())>
     </cffunction>
 	
 	<!--- afterObjectCreation --->
     <cffunction name="afterInstanceCreation" output="false" access="public" returntype="any" hint="">
     	<cfargument name="interceptData" type="struct"/>
-		<cfset log.info("#properties.name# -> afterInstanceCreation called", arguments.interceptData.toString())>
+		<cfset log.info( "#properties.name# -> afterInstanceCreation called", arguments.interceptData.toString())>
     </cffunction>
 	
 

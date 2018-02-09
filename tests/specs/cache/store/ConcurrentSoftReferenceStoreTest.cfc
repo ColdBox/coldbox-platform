@@ -13,12 +13,12 @@ Description :
 <cfscript>
 
 	function setup(){
-		mockProvider = getMockBox().createMock("coldbox.system.cache.providers.MockProvider");
-		store = getMockBox().createMock(className="coldbox.system.cache.store.ConcurrentSoftReferenceStore").init(mockProvider);
+		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" );
+		store = createMock(className="coldbox.system.cache.store.ConcurrentSoftReferenceStore" ).init(mockProvider);
 	}
 	
 	function testClearAll(){
-		store.set("test", now(), 20);
+		store.set( "test", now(), 20);
 		assertEquals( 1, store.getSize() );
 		store.clearAll();
 		assertEquals( 0, store.getSize() );
@@ -30,9 +30,9 @@ Description :
 	
 	function testGetKeys(){
 		assertEquals( arrayNew(1), store.getKeys() );
-		store.set("test", now() );
-		store.set("test1", now() );
-		store.set("test2", now() );
+		store.set( "test", now() );
+		store.set( "test1", now() );
+		store.set( "test2", now() );
 		assertEquals( 3 , arrayLen( store.getKeys() ) );
 	}
 	
@@ -41,23 +41,23 @@ Description :
 		assertFalse( store.lookup('nada') );
 		
 		// non sr
-		store.set("test",now(),0);
-		assertEquals(true, store.lookup("test") );
+		store.set( "test",now(),0);
+		assertEquals(true, store.lookup( "test" ) );
 		
 		// store SR
-		store.set("test", now(), 10);
-		assertEquals(true, store.lookup("test") );
+		store.set( "test", now(), 10);
+		assertEquals(true, store.lookup( "test" ) );
 		
 		// expired one
-		store.set("test", now(), 10);
-		store.expireObject("test");
-		assertEquals(false, store.lookup("test") );
+		store.set( "test", now(), 10);
+		store.expireObject( "test" );
+		assertEquals(false, store.lookup( "test" ) );
 		
 		// expire SR
-		store.set("test", now(), 10);
+		store.set( "test", now(), 10);
 		pool = store.getPool();
-		pool["test"].clear();
-		assertEquals(false, store.lookup("test") );
+		pool[ "test" ].clear();
+		assertEquals(false, store.lookup( "test" ) );
 	}
 	
 	function testGet(){
@@ -65,15 +65,15 @@ Description :
 			name="luis", created = now()
 		};
 		// non-sr
-		store.set("test",test, 0);
-		assertEquals( test, store.get("test") );
-		assertEquals( 2, store.getIndexer().getObjectMetadataProperty("test","hits") );
+		store.set( "test",test, 0);
+		assertEquals( test, store.get( "test" ) );
+		assertEquals( 2, store.getIndexer().getObjectMetadataProperty( "test","hits" ) );
 	
 		// sr	
-		store.set("test",test, 10);
-		assertEquals( test, store.get("test") );
-		assertEquals( true, store.getIndexer().getObjectMetadataProperty("test","isSoftReference") );
-		assertEquals( 2, store.getIndexer().getObjectMetadataProperty("test","hits") );
+		store.set( "test",test, 10);
+		assertEquals( test, store.get( "test" ) );
+		assertEquals( true, store.getIndexer().getObjectMetadataProperty( "test","isSoftReference" ) );
+		assertEquals( 2, store.getIndexer().getObjectMetadataProperty( "test","hits" ) );
 	}
 	
 	function testGetQuiet(){
@@ -81,22 +81,22 @@ Description :
 			name="luis", created = now()
 		};
 		// non-sr
-		store.set("test",test, 0);
-		assertEquals( test, store.getQuiet("test") );
-		assertEquals( 1, store.getIndexer().getObjectMetadataProperty("test","hits") );
+		store.set( "test",test, 0);
+		assertEquals( test, store.getQuiet( "test" ) );
+		assertEquals( 1, store.getIndexer().getObjectMetadataProperty( "test","hits" ) );
 		
 		// sr	
-		store.set("test",test, 10);
-		assertEquals( test, store.getQuiet("test") );
-		assertEquals( true, store.getIndexer().getObjectMetadataProperty("test","isSoftReference") );
-		assertEquals( 1, store.getIndexer().getObjectMetadataProperty("test","hits") );
+		store.set( "test",test, 10);
+		assertEquals( test, store.getQuiet( "test" ) );
+		assertEquals( true, store.getIndexer().getObjectMetadataProperty( "test","isSoftReference" ) );
+		assertEquals( 1, store.getIndexer().getObjectMetadataProperty( "test","hits" ) );
 	}
 	
 	function testExpirations(){
-		store.set("test", now());
-		assertFalse( store.isExpired("test") );
-		store.expireObject("test");
-		assertTrue( store.isExpired("test") );
+		store.set( "test", now());
+		assertFalse( store.isExpired( "test" ) );
+		store.expireObject( "test" );
+		assertTrue( store.isExpired( "test" ) );
 	}
 	
 	function testSet(){
@@ -106,7 +106,7 @@ Description :
 		assertEquals( data['test'], "123" );
 		
 		//2:Timeout = X
-		store.$("createSoftReference","MySoftReference");
+		store.$( "createSoftReference","MySoftReference" );
 		store.set('test',"123",20,20);
 		data = store.getPool();
 		assertEquals( data['test'], "MySoftReference" );
@@ -116,12 +116,12 @@ Description :
 	function testClear(){
 		
 		// non sr
-		store.set("test",now(),0);
+		store.set( "test",now(),0);
 		results = store.clear('test');
 		assertEquals( results, true );
 		
 		// sr
-		store.set("test",now(),10);
+		store.set( "test",now(),10);
 		results = store.clear('test');
 		assertEquals( results, true );
 	}
@@ -134,7 +134,7 @@ Description :
 
 	
 	function testgetReferenceQueue(){
-		AssertEquals( getMetadata(store.getReferenceQueue()).name, "java.lang.ref.ReferenceQueue");
+		AssertEquals( getMetadata(store.getReferenceQueue()).name, "java.lang.ref.ReferenceQueue" );
 	}	
 	
 	function testgetSoftRefKeyMap(){
@@ -143,7 +143,7 @@ Description :
 	
 	function testgetSoftRefKey(){
 		map = {softRef='123'};
-		store.$("getSoftRefKeyMap",map);
+		store.$( "getSoftRefKeyMap",map);
 		assertEquals(map.softRef, store.getSoftRefKey('softRef') );
 	}
 	
@@ -151,7 +151,7 @@ Description :
 		key = "myObj";
 		obj = {name="luis",date=now()};
 		
-		makePublic(store,"createSoftReference");
+		makePublic(store,"createSoftReference" );
 		
 		sr = store.createSoftReference(key,obj);
 		

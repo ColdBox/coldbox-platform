@@ -2,14 +2,14 @@
 <cfscript>
 	this.loadColdBox = false;
 	function setup(){
-		flash = getMockBox().createMock("coldbox.system.web.flash.ClientFlash");
-		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
-		converter = getMockBox().createMock(className="coldbox.system.core.conversion.ObjectMarshaller").init();
+		flash = createMock( "coldbox.system.web.flash.ClientFlash" );
+		mockController = createMock(className="coldbox.system.web.Controller" );
+		converter = createMock(className="coldbox.system.core.conversion.ObjectMarshaller" ).init();
 
 		flash.init(mockController);
 
 		system = createObject( "java","java.lang.System" );
-		obj = createObject("component","coldbox.system.core.util.CFMLEngine").init();
+		obj = createObject( "component","coldbox.system.core.util.CFMLEngine" ).init();
 		test = converter.deserializeObject( converter.serializeObject( obj ) );
 
 		//test scope
@@ -28,7 +28,7 @@
 		assertFalse( structKeyExists(client,flash.getFlashKey()) );
 	}
 	function testSaveFlash(){
-		flash.$("getScope",testscope);
+		flash.$( "getScope",testscope);
 		flash.saveFlash();
 		assertTrue( len(client[flash.getFlashKey()]) );
 	}

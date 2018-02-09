@@ -6,21 +6,21 @@
 		pool.init('onTest');
 	}
 	function testEventPool(){
-		target = createObject("component","tests.resources.Event");
-		pool.register("myEvent",target);
+		target = createObject( "component","tests.resources.Event" );
+		pool.register( "myEvent",target);
 
-		assertTrue( pool.exists("myEvent") );
-		assertTrue( pool.exists("MYEVENT") );
-		assertEquals( pool.getObject("myEvent"), target);
+		assertTrue( pool.exists( "myEvent" ) );
+		assertTrue( pool.exists( "MYEVENT" ) );
+		assertEquals( pool.getObject( "myEvent" ), target);
 
-		assertFalse( pool.exists("yes") );
-		pool.unregister("myEvent");
-		assertFalse( pool.exists("myEvent") );
+		assertFalse( pool.exists( "yes" ) );
+		pool.unregister( "myEvent" );
+		assertFalse( pool.exists( "myEvent" ) );
 	}
 	function testProcessEventPool(){
-		target = createObject("component","tests.resources.Event");
-		pool.register("myEvent",target);
-		data = {hello="Luis Majano", from="#createUUID()#"};
+		target = createObject( "component","tests.resources.Event" );
+		pool.register( "myEvent",target);
+		data = {hello="Luis Majano", from="#createUUID()#" };
 
 		assertequals(arrayLen(target.logs), 0);
 		pool.process(data);

@@ -4,7 +4,7 @@
 
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.e = createObject("component","coldbox.system.web.context.ExceptionBean");
+			this.e = createObject( "component","coldbox.system.web.context.ExceptionBean" );
 
 			this.instance.exceptionstruct = structnew();
 			this.instance.exceptionstruct.type = "error";
@@ -54,7 +54,7 @@
 	<cffunction name="testGetters" access="public" returnType="void">
 		<cfscript>
 			for(key in this.instance){
-				evaluate("this.e.get#key#()");
+				evaluate( "this.e.get#key#()" );
 			}
 		</cfscript>
 	</cffunction>

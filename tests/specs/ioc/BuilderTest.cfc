@@ -17,13 +17,13 @@
 		mockLogBox   = createEmptyMock( "coldbox.system.logging.LogBox" )
 			.$( "getLogger", mockLogger );
 
-		mockInjector = createEmptyMock( "coldbox.system.ioc.Injector" )
-			.$( "getLogbox", createstub().$( "getLogger", mockLogger) )
-			.$( "getUtil", createMock( "coldbox.system.core.util.Util" ) )
+		mockInjector = createMock( "coldbox.system.ioc.Injector" )
+			.setLogBox( createstub().$( "getLogger", mockLogger) )
+			.setUtility( createMock( "coldbox.system.core.util.Util" ) )
 			.$( "isColdBoxLinked", true ).$( "isCacheBoxLinked", true )
-			.$( "getColdbox", mockColdbox )
-			.$( "getLogBox", mockLogBox )
-			.$( "getCacheBox",mockCacheBox );
+			.setColdBox( mockColdbox )
+			.setLogBox( mockLogBox )
+			.setCacheBox( mockCacheBox );
 
 		builder 	= createMock( "coldbox.system.ioc.Builder" ).init( mockInjector );
 		mockStub 	= createStub();
@@ -32,31 +32,31 @@
 	function testCacheboxLinkOff(){
 		mockInjector.$( "isColdBoxLinked", false).$( "isCacheBoxLinked", false);
 		expectException( "Builder.IllegalDSLException" );
-		builder.buildDSLDependency( definition={dsl = "cachebox:default"}, targetID="unit-test", targetObject=getMockBox().createStub() );
+		builder.buildDSLDependency( definition={dsl = "cachebox:default" }, targetID="unit-test", targetObject=createStub() );
 	}
 
 	function testGetJavaDSL(){
 		makePublic(builder, "getJavaDSL" );
-		def = {dsl="java:java.util.LinkedHashMap"};
+		def = {dsl="java:java.util.LinkedHashMap" };
 		e = builder.getJavaDSL( def );
 		assertTrue( isInstanceOf(e, "java.util.LinkedHashMap" ) );
 	}
 
 	function testbuildJavaClass(){
-		mapping = getMockBox().createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
+		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
 		mapping.setPath( "java.util.LinkedHashMap" )
 			.addDIConstructorArgument(value="3" )
 			.addDIConstructorArgument(value="5",javaCast="float" );
 		r = builder.buildJavaClass(mapping);
 
-		mapping = getMockBox().createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
+		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
 		mapping.setPath( "java.util.LinkedHashMap" );
 		r = builder.buildJavaClass(mapping);
 		//debug(r);
 	}
 
 	function testbuildWebservice(){
-		mapping = getMockBox().createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
+		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
 		mapping.setPath( "https://lucee.stg.ortussolutions.com/ExtensionProvider.cfc?wsdl" );
 		r = builder.buildwebservice(mapping);
 		//debug(r);
@@ -129,7 +129,7 @@
 			.addDIConstructorArgument( name="dslVar",dsl="logbox" )
 			.addDIConstructorArgument( name="modelVar",ref="myBean" )
 			.addDIConstructorArgument( name="modelVarNonRequired",required="false",ref="modelNotFound" )
-			.addDIConstructorArgument( name="extraArg", value={"failMe" : true } );
+			.addDIConstructorArgument( name="extraArg", value={ "failMe" : true } );
 		try{
 			var r = builder.buildCFC(mapping);
 		}
@@ -178,17 +178,16 @@
 
 	function testgetProviderDSL(){
 		makePublic(builder,"getProviderDSL" );
-		var data = {name="luis", dsl="provider:luis"};
+		var data = {name="luis", dsl="provider:luis" };
 
 		// mocks
 		var mockLuis = createStub();
-		var scopeInfo = {enabled=true,scope="application",key="wirebox"};
+		var scopeInfo = {enabled=true,scope="application",key="wirebox" };
 		mockInjector
 			.$( "containsInstance", true )
 			.$( "getInstance", mockLuis )
 			.$( "getScopeRegistration", scopeInfo )
-			.$(
-				"getScopeStorage",
+			.setScopeStorage(
 				createEmptyMock( "coldbox.system.core.collections.ScopeStorage" )
 					.$( "exists", true ).$( "get", mockInjector )
 			);
@@ -204,7 +203,7 @@
 		};
 		var mockBinder = createMock( "coldbox.system.ioc.config.Binder" )
 			.$( "getCustomDSL", customDSL);
-		mockInjector.$( "getBinder",mockBinder);
+		mockInjector.setBinder( mockBinder );
 		builder.registerCustomBuilders();
 
 		var custom = builder.getCustomDSL();
@@ -218,7 +217,7 @@
 		};
 		var mockBinder = createMock( "coldbox.system.ioc.config.Binder" )
 			.$( "getCustomDSL", customDSL );
-		mockInjector.$( "getBinder", mockBinder );
+		mockInjector.setBinder( mockBinder );
 		builder.registerCustomBuilders();
 
 		var test = builder.buildDSLDependency(def, "UnitTest" );
@@ -241,60 +240,60 @@
 
 	function testgetWireBoxDSL(){
 		makePublic(builder,"getWireBoxDSL" );
-		var data = {name="luis", dsl="wirebox"};
+		var data = {name="luis", dsl="wirebox" };
 
 		// wirebox
 		var p = builder.getWireBoxDSL(data);
 		expect(	getMetadata( p ).name ).toMatch( "Injector" );
 
 		// wirebox:parent
-		data = {name="luis", dsl="wirebox:parent"};
+		data = {name="luis", dsl="wirebox:parent" };
 		mockInjector.$( "getParent","" );
 		p = builder.getWireBoxDSL(data);
 		assertEquals( "", p);
 
 		//wirebox:eventmanager
-		data = {name="luis", dsl="wirebox:eventManager"};
+		data = {name="luis", dsl="wirebox:eventManager" };
 		mockEventManager = createEmptyMock( "coldbox.system.core.events.EventPoolManager" );
-		mockInjector.$( "getEventManager",mockEventManager);
+		mockInjector.setEventManager( mockEventManager );
 		p = builder.getWireBoxDSL(data);
 		assertEquals(mockEventManager, p);
 
 		//wirebox:binder
-		data = {name="luis", dsl="wirebox:binder"};
+		data = {name="luis", dsl="wirebox:binder" };
 		mockBinder = createMock( "coldbox.system.ioc.config.Binder" );
-		mockInjector.$( "getBinder",mockBinder);
+		mockInjector.setBinder( mockBinder);
 		p = builder.getWireBoxDSL(data);
 		assertEquals(mockBinder, p);
 
 		//wirebox:populator
-		data = {name="luis", dsl="wirebox:populator"};
+		data = {name="luis", dsl="wirebox:populator" };
 		populator = createEmptyMock( "coldbox.system.core.dynamic.BeanPopulator" );
 		mockInjector.$( "getObjectPopulator", populator);
 		p = builder.getWireBoxDSL(data);
 		assertEquals(populator, p);
 
 		//wirebox:scope
-		data = {name="luis", dsl="wirebox:scope:singleton"};
+		data = {name="luis", dsl="wirebox:scope:singleton" };
 		mockScope = createEmptyMock( "coldbox.system.ioc.scopes.Singleton" );
 		mockInjector.$( "getScope", mockScope);
 		p = builder.getWireBoxDSL(data);
 		assertEquals(mockScope, p);
 
 		//wirebox:properties
-		data = {name="luis", dsl="wirebox:properties"};
-		props = {prop1="hello",name="luis"};
+		data = {name="luis", dsl="wirebox:properties" };
+		props = {prop1="hello",name="luis" };
 		mockBinder = createMock( "coldbox.system.ioc.config.Binder" )
 			.$( "getProperties", props);
-		mockInjector.$( "getBinder",mockBinder);
+		mockInjector.setBinder( mockBinder);
 		p = builder.getWireBoxDSL(data);
 		assertEquals( props, p);
 
 		//wirebox:property:{}
-		data = {name="luis", dsl="wirebox:property:name"};
-		props = {prop1="hello",name="luis"};
+		data = {name="luis", dsl="wirebox:property:name" };
+		props = {prop1="hello",name="luis" };
 		mockBinder = createMock( "coldbox.system.ioc.config.Binder" ).setProperties( props );
-		mockInjector.$( "getBinder",mockBinder);
+		mockInjector.setBinder( mockBinder);
 		p = builder.getWireBoxDSL(data);
 		assertEquals( "luis", p);
 	}
@@ -303,7 +302,7 @@
 		// mocks
 		mockLuis = createStub();
 		mockTarget = createStub();
-		scopeInfo = {enabled=true, scope="application", key="wirebox"};
+		scopeInfo = {enabled=true, scope="application", key="wirebox" };
 		mockInjector.$( "getInstance", mockLuis)
 			.$( "containsInstance", true);
 		scopeStorage = createStub()

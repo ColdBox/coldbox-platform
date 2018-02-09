@@ -22,23 +22,23 @@ Description :
 		super.setup();
 
 		//Mocks
-		mockFactory  = getMockBox().createEmptyMock(className='coldbox.system.cache.CacheFactory');
-		mockEventManager  = getMockBox().createEmptyMock(className='coldbox.system.core.events.EventPoolManager');
-		mockLogBox	 = getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
-		mockLogger	 = getMockBox().createEmptyMock("coldbox.system.logging.Logger");
+		mockFactory  = createEmptyMock(className='coldbox.system.cache.CacheFactory');
+		mockEventManager  = createEmptyMock(className='coldbox.system.core.events.EventPoolManager');
+		mockLogBox	 = createEmptyMock( "coldbox.system.logging.LogBox" );
+		mockLogger	 = createEmptyMock( "coldbox.system.logging.Logger" );
 
 		// Mock Methods
-		mockFactory.$("getLogBox",mockLogBox);
-		mockLogBox.$("getLogger", mockLogger);
-		mockLogger.$("error").$("debug").$("info").$("canDebug", false);
-		mockEventManager.$("processState");
+		mockFactory.$( "getLogBox",mockLogBox);
+		mockLogBox.$( "getLogger", mockLogger);
+		mockLogger.$( "error" ).$( "debug" ).$( "info" ).$( "canDebug", false);
+		mockEventManager.$( "processState" );
 
 		// Config
 		config = {
 		};
 
 		// Create Provider
-		cache = getMockBox().createMock("coldbox.system.cache.providers.LuceeProvider").init();
+		cache = createMock( "coldbox.system.cache.providers.LuceeProvider" ).init();
 
 		// Decorate it
 		cache.setConfiguration( config );
@@ -58,31 +58,31 @@ Description :
 	}
 
 	function testLookup(){
-		cache.set("test",now(),20);
+		cache.set( "test",now(),20);
 		cache.clearStatistics();
 
-		assertEquals( false, cache.lookup("invalid") );
-		assertEquals( true, cache.lookup("test") );
+		assertEquals( false, cache.lookup( "invalid" ) );
+		assertEquals( true, cache.lookup( "test" ) );
 	}
 
 	function testLookupQuiet(){
-		cache.set("test",now(),20);
+		cache.set( "test",now(),20);
 		cache.clearStatistics();
 
-		assertEquals( false, cache.lookupQuiet("invalid") );
-		assertEquals( true, cache.lookupQuiet("test") );
+		assertEquals( false, cache.lookupQuiet( "invalid" ) );
+		assertEquals( true, cache.lookupQuiet( "test" ) );
 	}
 
 	function testgetKeys(){
 		cacheClear();
-		cache.set("test",now());
-		cache.set("test2",now());
+		cache.set( "test",now());
+		cache.set( "test2",now());
 		assertEquals( 2, arrayLen(cache.getKeys()) );
 	}
 
 	function testgetCachedObjectMetadata(){
-		cache.set("test",now());
-		md = cache.getCachedObjectMetadata("test");
+		cache.set( "test",now());
+		md = cache.getCachedObjectMetadata( "test" );
 		// debug(md);
 		assertEquals( false, structIsEmpty(md) );
 	}
@@ -90,16 +90,16 @@ Description :
 	function testGet(){
 		testVal = {name="luis", age=32};
 
-		cache.set("test",testVal,20);
+		cache.set( "test",testVal,20);
 		cache.clearStatistics();
 
-		results = cache.get("test");
+		results = cache.get( "test" );
 		assertEquals( results, testval );
 		//assertEquals( 0, cache.getStats().getMisses() );
 		//assertEquals( 1, cache.getStats().getHits() );
 
-		results = cache.get("test2");
-		assertFalse( isDefined("results") );
+		results = cache.get( "test2" );
+		assertFalse( isDefined( "results" ) );
 		//assertEquals( 1, cache.getStats().getMisses() );
 	}
 
@@ -117,9 +117,9 @@ Description :
 		testVal = {name="luis", age=32};
 
 		cache.clearStatistics();
-		cache.set("test",testVal,20);
+		cache.set( "test",testVal,20);
 
-		results = cache.getQuiet("test");
+		results = cache.getQuiet( "test" );
 		// debug(results);
 		assertEquals( testVal, results );
 		//assertEquals( 0, cache.getStats().getMisses() );
@@ -130,9 +130,9 @@ Description :
 		testVal = {name="luis", age=32};
 		cache.clearAll();
 
-		cache.set("test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
-		assertEquals( testVal, cache.get("test") );
-		md = cache.getCachedObjectMetadata("test");
+		cache.set( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		assertEquals( testVal, cache.get( "test" ) );
+		md = cache.getCachedObjectMetadata( "test" );
 		assertEquals( 60*1000, md.idleTime );
 		assertEquals( 120*1000, md.timespan);
 		// debug(md);
@@ -142,9 +142,9 @@ Description :
 		testVal = {name="luis", age=32};
 		cache.clearAll();
 
-		cache.setQuiet("test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
-		assertEquals( testVal, cache.get("test") );
-		md = cache.getCachedObjectMetadata("test");
+		cache.setQuiet( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		assertEquals( testVal, cache.get( "test" ) );
+		md = cache.getCachedObjectMetadata( "test" );
 		assertEquals( 60*1000, md.idleTime );
 		assertEquals( 120*1000, md.timespan);
 		// debug(md);
@@ -154,7 +154,7 @@ Description :
 		testVal = {name="luis", age=32};
 		cache.clearAll();
 
-		cache.setQuiet("test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		cache.setQuiet( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
 
 		assertEquals(1, cache.getSize() );
 	}
@@ -163,10 +163,10 @@ Description :
 		testVal = {name="luis", age=32};
 		cache.clearAll();
 
-		cache.set("test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		cache.set( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
 
 		assertEquals(1, cache.getSize() );
-		cache.clear("test");
+		cache.clear( "test" );
 		assertEquals(0, cache.getSize() );
 
 	}
@@ -175,10 +175,10 @@ Description :
 		testVal = {name="luis", age=32};
 		cache.clearAll();
 
-		cache.set("test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		cache.set( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
 
 		assertEquals(1, cache.getSize() );
-		cache.clearQuiet("test");
+		cache.clearQuiet( "test" );
 		assertEquals(0, cache.getSize() );
 
 	}

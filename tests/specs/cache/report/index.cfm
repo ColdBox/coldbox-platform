@@ -2,25 +2,25 @@
 <cfimport prefix="cachebox" taglib="/coldbox/system/cache/report">
 
 <!--- Create CacheBox --->
-<cfif structKeyExists(url,"reinit") OR NOT structKeyExists(application,"cacheBox")>
+<cfif structKeyExists(url,"reinit" ) OR NOT structKeyExists(application,"cacheBox" )>
 	<cfset configPath = "coldbox.tests.specs.cache.report.CacheBox">
-	<cfset config     = createObject("component","coldbox.system.cache.config.CacheBoxConfig").init(CFCConfigPath=configPath)>
-	<cfset application.cacheBox   = createObject("component","coldbox.system.cache.CacheFactory").init(config)>
+	<cfset config     = createObject( "component","coldbox.system.cache.config.CacheBoxConfig" ).init(CFCConfigPath=configPath)>
+	<cfset application.cacheBox   = createObject( "component","coldbox.system.cache.CacheFactory" ).init(config)>
 	<cflocation url="index.cfm" addtoken="false" />
 <cfelse>
 	<cfset cachebox = application.cacheBox>
 	<cfset default = cacheBox.getDefaultCache()>
 	<cfscript>
 		for(x=1; x lt 100; x++){
-			default.set("Entry#x#", now(), randRange(1,200));
+			default.set( "Entry#x#", now(), randRange(1,200));
 		}
 	</cfscript>
 </cfif>
 
 <!--- Tests --->
-<cfset default.get("Test")>
-<cfset default.get("Entry2")>
-<cfset default.get("Invalid")>
+<cfset default.get( "Test" )>
+<cfset default.get( "Entry2" )>
+<cfset default.get( "Invalid" )>
 
 <cfoutput>
 <html>

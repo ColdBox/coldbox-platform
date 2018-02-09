@@ -1,11 +1,11 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
-		tracer = getMockBox().createMock(className="coldbox.system.logging.appenders.TracerAppender");
+		tracer = createMock(className="coldbox.system.logging.appenders.TracerAppender" );
 		tracer.init('MyCFTracer');
 		
-		loge = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
-		loge.init("Unit Test Sample",0,structnew(),"UnitTest");
+		loge = createMock(className="coldbox.system.logging.LogEvent" );
+		loge.init( "Unit Test Sample",0,structnew(),"UnitTest" );
 	}
 	
 	function testLogMessage(){

@@ -16,7 +16,7 @@
 
 		AssertTrue( len( cfmlengine.getEngine() ) gt 0, "Engine test" );
 
-		AssertTrue( isNumeric( cfmlengine.getVersion() ) , "Version Test");
+		AssertTrue( isNumeric( cfmlengine.getVersion() ) , "Version Test" );
 
 	}
 }

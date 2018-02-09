@@ -107,11 +107,11 @@
 				beforeEach( function(){
 					var mockLog = createStub().$( "canDebug", false );
 					ses.$property( propertyName = "log", mock = mockLog );
-					ses.$( "getSetting" ).$args("AppMapping" ).$results("/coldbox/test-harness" )
-						.$("getSetting" ).$args("eventName" ).$results("event" )
-						.$("importConfiguration" )
-						.$("setSetting" );
-					ses.setBaseURL("http://localhost" );
+					ses.$( "getSetting" ).$args( "AppMapping" ).$results( "/coldbox/test-harness" )
+						.$( "getSetting" ).$args( "eventName" ).$results( "event" )
+						.$( "importConfiguration" )
+						.$( "setSetting" );
+					ses.setBaseURL( "http://localhost" );
 					ses.configure();
 					
 					// Mocks

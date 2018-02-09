@@ -10,7 +10,7 @@
             
             beforeEach( function(){
                 ses.$reset();
-                ses.$("addRoute");
+                ses.$( "addRoute" );
             } );
 
             it( "can add RESTFul routes as a string list", function(){

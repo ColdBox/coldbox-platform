@@ -41,7 +41,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 			it( "can handle invalid events", function(){
 				var event = execute( event="invalid:bogus.index", renderResults=true );
-				expect(	event.getValue( "cbox_rendered_content") ).toBe( "<h1>Invalid Page</h1>" );
+				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "<h1>Invalid Page</h1>" );
 			});
 		
 		

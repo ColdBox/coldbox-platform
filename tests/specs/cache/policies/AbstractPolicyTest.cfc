@@ -14,24 +14,24 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 
-		mockCM 		 = getMockBox().createEmptyMock(className='coldbox.system.cache.providers.MockProvider');
-		mockFactory  = getMockBox().createEmptyMock(className='coldbox.system.cache.CacheFactory');
-		mockLogBox	 = getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
-		mockLogger	 = getMockBox().createEmptyMock("coldbox.system.logging.Logger");
-		mockPool 	 = getMockBox().createEmptyMock(className='coldbox.system.cache.store.ConcurrentStore');
-		mockStats 	 = getMockBox().createEmptyMock(className='coldbox.system.cache.util.CacheStats');
-		mockIndexer  = getMockBox().createEmptyMock(className='coldbox.system.cache.store.indexers.MetadataIndexer');
+		mockCM 		 = createEmptyMock(className='coldbox.system.cache.providers.MockProvider');
+		mockFactory  = createEmptyMock(className='coldbox.system.cache.CacheFactory');
+		mockLogBox	 = createEmptyMock( "coldbox.system.logging.LogBox" );
+		mockLogger	 = createEmptyMock( "coldbox.system.logging.Logger" );
+		mockPool 	 = createEmptyMock(className='coldbox.system.cache.store.ConcurrentStore');
+		mockStats 	 = createEmptyMock(className='coldbox.system.cache.util.CacheStats');
+		mockIndexer  = createEmptyMock(className='coldbox.system.cache.store.indexers.MetadataIndexer');
 
 		// Mocks
-		mockCM.$("getCacheFactory", mockFactory)
+		mockCM.$( "getCacheFactory", mockFactory)
 			.$('getStats',mockStats)
-			.$("getName","MockCache")
-			.$("getObjectStore", mockPool)
-			.$("clear");
-		mockPool.$("getIndexer", mockIndexer);
-		mockFactory.$("getLogBox",mockLogBox);
-		mockLogBox.$("getLogger", mockLogger);
-		mockLogger.$("error").$("debug").$("info").$("canDebug",true).$("canInfo",true);
+			.$( "getName","MockCache" )
+			.$( "getObjectStore", mockPool)
+			.$( "clear" );
+		mockPool.$( "getIndexer", mockIndexer);
+		mockFactory.$( "getLogBox",mockLogBox);
+		mockLogBox.$( "getLogger", mockLogger);
+		mockLogger.$( "error" ).$( "debug" ).$( "info" ).$( "canDebug",true).$( "canInfo",true);
 		mockStats.$('evictionHit');
 		</cfscript>
 	</cffunction>

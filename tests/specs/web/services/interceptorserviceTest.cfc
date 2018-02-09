@@ -50,10 +50,10 @@
 	function testregisterInterceptors(){
 		var states = "";
 		mockConfig = {
-			customInterceptionPoints = ["myCustom"],
+			customInterceptionPoints = [ "myCustom" ],
 			interceptors = [
-				{class="coldbox.system.interceptors.SES", properties = {}, name="MySES"},
-				{class="coldbox.system.interceptors.Custom", properties = {n=1}, name="Custom"}
+				{class="coldbox.system.interceptors.SES", properties = {}, name="MySES" },
+				{class="coldbox.system.interceptors.Custom", properties = {n=1}, name="Custom" }
 			]
 		};
 		iService.$property( "interceptorConfig", "variables", mockConfig)
@@ -76,7 +76,7 @@
 
 		AssertFalse( isObject(state) );
 
-		mockState = getMockBox().createStub().$( "process" );
+		mockState = createStub().$( "process" );
 		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		state = iService.getStateContainer('preProcess');
 
@@ -140,7 +140,7 @@
 		// 3: process a mock state
 		mockController.$( "getColdboxInitiated",true);
 		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
-		mockState = getMockBox().createStub().$( "process" );
+		mockState = createStub().$( "process" );
 		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		// debug( iService.getInterceptionStates() );
 		iService.processState( "badState" );
@@ -149,7 +149,7 @@
 		// 4: real mock state
 		mockController.$( "getColdboxInitiated",true);
 		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
-		mockState = getMockBox().createStub().$( "process" );
+		mockState = createStub().$( "process" );
 		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		// debug( iService.getInterceptionStates() );
 		iService.processState( "preProcess" );
@@ -166,7 +166,7 @@
 		// mocks
 		mockController.$( "getColdboxInitiated",true);
 		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
-		mockState = getMockBox().createStub().$( "process" );
+		mockState = createStub().$( "process" );
 		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		mockBox.prepareMock( iService.getRequestBuffer() ).$( "clear" );
 

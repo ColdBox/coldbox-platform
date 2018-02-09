@@ -2,7 +2,7 @@
 <cfscript>
 
 	function setup(){
-		config = getMockBox().createMock("coldbox.system.cache.config.DefaultConfiguration");
+		config = createMock( "coldbox.system.cache.config.DefaultConfiguration" );
 	}
 
 	function testConfigure(){

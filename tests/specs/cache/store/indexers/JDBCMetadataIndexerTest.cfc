@@ -6,9 +6,9 @@
 			dsn   = "coolblog",
 			table = "cacheBox"
 		};
-		mockProvider = getMockBox().createMock("coldbox.system.cache.providers.MockProvider");
-		mockProvider.$("getConfiguration", config);
-		store = getMockBox().createMock(className="coldbox.system.cache.store.JDBCStore").init(mockProvider);
+		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" );
+		mockProvider.$( "getConfiguration", config);
+		store = createMock(className="coldbox.system.cache.store.JDBCStore" ).init(mockProvider);
 		index = store.getIndexer();
 	}
 
@@ -20,30 +20,30 @@
 	}
 
 	function testgetObjectMetadata(){
-		store.set("test1",now(),1);
-		store.set("test2",now(),1);
-		store.set("test3",now(),1);
-		results = index.getObjectMetadata("test1");
+		store.set( "test1",now(),1);
+		store.set( "test2",now(),1);
+		store.set( "test3",now(),1);
+		results = index.getObjectMetadata( "test1" );
 
 		assertTrue( not structIsEmpty(results) );
 	}
 
 	function testgetObjectMetadataProperty(){
-		store.set("test1",now(),1);
-		assertEquals( 1, index.getObjectMetadataProperty("test1","hits") );
+		store.set( "test1",now(),1);
+		assertEquals( 1, index.getObjectMetadataProperty( "test1","hits" ) );
 	}
 
 	function getSortedKeys(){
 		store.clearAll();
-		store.set("test1",now(),1);
-		store.set("test2",now(),1);
-		store.set("test3",now(),1);
+		store.set( "test1",now(),1);
+		store.set( "test2",now(),1);
+		store.set( "test3",now(),1);
 
-		store.get("test1");
-		store.get("test1");
-		store.get("test3");
+		store.get( "test1" );
+		store.get( "test1" );
+		store.get( "test3" );
 
-		keys = index.getSortedKeys("hits","","asc");
+		keys = index.getSortedKeys( "hits","","asc" );
 
 		// debug(keys);
 		assertEquals( "test2", keys[1] );

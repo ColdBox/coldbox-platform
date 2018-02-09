@@ -3,8 +3,8 @@
 
 	function setup(){
 		// init with defaults
-		cacheFactory = getMockBox().createMock("coldbox.system.cache.CacheFactory");
-		mockCache 	 = getMockBox().createMock("coldbox.system.cache.providers.MockProvider").init();
+		cacheFactory = createMock( "coldbox.system.cache.CacheFactory" );
+		mockCache 	 = createMock( "coldbox.system.cache.providers.MockProvider" ).init();
 
 		// init factory
 		cacheFactory.init();
@@ -22,28 +22,28 @@
 	}
 
 	function testconfigureLogBox(){
-		makePublic(cachefactory,"configureLogBox");
+		makePublic(cachefactory,"configureLogBox" );
 		cacheFactory.configureLogBox( "coldbox.system.cache.config.LogBox" );
 
 		assertTrue( isObject(cacheFactory.getLogBox()) );
 	}
 
 	function testConfigureEventManager(){
-		makePublic(cachefactory,"configureEventManager");
+		makePublic(cachefactory,"configureEventManager" );
 		cacheFactory.configureEventManager();
 
 		assertTrue( isObject(cacheFactory.getEventManager()) );
 	}
 
 	function testgetDefaultCache(){
-		cacheFactory.$("getCache", getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider") );
+		cacheFactory.$( "getCache", createEmptyMock( "coldbox.system.cache.providers.MockProvider" ) );
 		cacheFactory.getDefaultCache();
 		assertEquals( 1, arrayLen(cacheFactory.$callLog().getCache) );
 	}
 
 	function testGetCacheNames(){
 		caches = {test=1,luis=2,joe=3};
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 		data = cacheFactory.getCacheNames();
 		// debug(data);
 		assertEquals( structKeyArray(caches), data );
@@ -51,13 +51,13 @@
 
 	function testExpireAll(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
-		caches.cache1.$("expireAll");
-		caches.cache2.$("expireAll");
+		cacheFactory.$property( "caches","instance",caches);
+		caches.cache1.$( "expireAll" );
+		caches.cache2.$( "expireAll" );
 
 		cacheFactory.expireAll();
 
@@ -66,13 +66,13 @@
 
 	function testClearAll(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
-		caches.cache1.$("clearAll");
-		caches.cache2.$("clearAll");
+		cacheFactory.$property( "caches","instance",caches);
+		caches.cache1.$( "clearAll" );
+		caches.cache2.$( "clearAll" );
 
 		cacheFactory.clearAll();
 
@@ -81,14 +81,14 @@
 
 	function testReplaceCacheWithInstance(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
-		caches.cache1.$("getName","Cache1");
-		cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider");
-		cache2.$("getName","MockCache");
+		caches.cache1.$( "getName","Cache1" );
+		cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
+		cache2.$( "getName","MockCache" );
 
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 
 		cacheFactory.replaceCache(caches.cache1, cache2);
 
@@ -98,84 +98,84 @@
 
 	function testCacheExists(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 
-		assertEquals( false, cacheFactory.cacheExists("jose") );
-		assertEquals( true, cacheFactory.cacheExists("cache1") );
-		assertEquals( true, cacheFactory.cacheExists("CACHE2") );
+		assertEquals( false, cacheFactory.cacheExists( "jose" ) );
+		assertEquals( true, cacheFactory.cacheExists( "cache1" ) );
+		assertEquals( true, cacheFactory.cacheExists( "CACHE2" ) );
 	}
 
 	function testRemoveAll(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
-		caches.cache1.$("shutdown");
-		caches.cache2.$("shutdown");
+		caches.cache1.$( "shutdown" );
+		caches.cache2.$( "shutdown" );
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 
 		cacheFactory.removeAll();
 
-		assertEquals( false, cacheFactory.cacheExists("jose") );
-		assertEquals( false, cacheFactory.cacheExists("cache1") );
-		assertEquals( false, cacheFactory.cacheExists("CACHE2") );
+		assertEquals( false, cacheFactory.cacheExists( "jose" ) );
+		assertEquals( false, cacheFactory.cacheExists( "cache1" ) );
+		assertEquals( false, cacheFactory.cacheExists( "CACHE2" ) );
 	}
 
 	function testRemoveCache(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
-		caches.cache2.$("shutdown");
+		caches.cache2.$( "shutdown" );
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 
-		results = cacheFactory.removeCache("invalid");
+		results = cacheFactory.removeCache( "invalid" );
 		assertEquals( false, results );
 
-		results = cacheFactory.removeCache("cache2");
+		results = cacheFactory.removeCache( "cache2" );
 		assertEquals( true, results );
-		assertEquals( false, structKeyExists(caches, "cache2") );
+		assertEquals( false, structKeyExists(caches, "cache2" ) );
 	}
 
 	function testShutdown(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
-		caches.cache1.$("shutdown");
-		caches.cache2.$("shutdown");
+		caches.cache1.$( "shutdown" );
+		caches.cache2.$( "shutdown" );
 
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 
 		cacheFactory.shutdown();
 
-		assertEquals( false, cacheFactory.cacheExists("cache1") );
-		assertEquals( false, cacheFactory.cacheExists("CACHE2") );
+		assertEquals( false, cacheFactory.cacheExists( "cache1" ) );
+		assertEquals( false, cacheFactory.cacheExists( "CACHE2" ) );
 	}
 
 	function testShutdownCache(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
-		caches.cache1.$("shutdown");
-		caches.cache2.$("shutdown");
+		caches.cache1.$( "shutdown" );
+		caches.cache2.$( "shutdown" );
 
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 
 		// cache invalid
-		cacheFactory.shutdownCache("bogus");
-		cacheFactory.shutdownCache("cache1");
+		cacheFactory.shutdownCache( "bogus" );
+		cacheFactory.shutdownCache( "cache1" );
 
-		assertEquals( false, cacheFactory.cacheExists("cache1") );
+		assertEquals( false, cacheFactory.cacheExists( "cache1" ) );
 	}
 
 	function testAddDefaultCacheWithExceptions(){
@@ -183,25 +183,25 @@
 
 		try{
 			results = cacheFactory.addDefaultCache('');
-			fail("this should fail");
+			fail( "this should fail" );
 		}
-		catch("CacheFactory.InvalidNameException" e){
+		catch( "CacheFactory.InvalidNameException" e){
 		}
 		catch(Any e){
 			fail(e);
 		}
 
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 		try{
 			results = cacheFactory.addDefaultCache('cache2');
-			fail("this should fail");
+			fail( "this should fail" );
 		}
-		catch("CacheFactory.CacheExistsException" e){
+		catch( "CacheFactory.CacheExistsException" e){
 		}
 		catch(Any e){
 			fail(e.type);
@@ -209,20 +209,20 @@
 	}
 
 	function testAddDefaultCache(){
-		mockCache = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider");
-		mockCache.$("getName","helloCache");
-		cacheFactory.$("createCache", mockCache);
+		mockCache = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
+		mockCache.$( "getName","helloCache" );
+		cacheFactory.$( "createCache", mockCache);
 
-		results = cacheFactory.addDefaultCache("helloCache");
+		results = cacheFactory.addDefaultCache( "helloCache" );
 		assertEquals( "helloCache", results.getName() );
 		assertEquals( 1, arrayLen(cacheFactory.$callLog().createCache ) );
 		assertEquals( "helloCache", cacheFactory.$callLog().createCache[1].name );
 	}
 
 	function testAddCache(){
-		mockCache = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider");
-		mockCache.$("getName","helloCache");
-		cacheFactory.$("registerCache");
+		mockCache = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
+		mockCache.$( "getName","helloCache" );
+		cacheFactory.$( "registerCache" );
 
 		results = cacheFactory.addCache(mockCache);
 
@@ -232,32 +232,32 @@
 
 	function testGetCache(){
 		caches = {
-			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
-			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
+			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 
 		//mock caches
-		cacheFactory.$property("caches","instance",caches);
+		cacheFactory.$property( "caches","instance",caches);
 
 		try{
-			cacheFactory.getCache("JOE");fail("cannot get here");
+			cacheFactory.getCache( "JOE" );fail( "cannot get here" );
 		}
-		catch("CacheFactory.CacheNotFoundException" e){
+		catch( "CacheFactory.CacheNotFoundException" e){
 		}
 		catch(Any e){ fail(e); }
 
-		results = cacheFactory.getCache("cache1");
+		results = cacheFactory.getCache( "cache1" );
 		assertEquals( caches.cache1, results);
 	}
 
 	function testCreateCache(){
-		makePublic(cacheFactory, "createCache");
+		makePublic(cacheFactory, "createCache" );
 		//mocks
-		cacheFactory.$("registerCache");
+		cacheFactory.$( "registerCache" );
 
-		results = cacheFactory.createCache("Mock","coldbox.system.cache.providers.MockProvider",structNew());
+		results = cacheFactory.createCache( "Mock","coldbox.system.cache.providers.MockProvider",structNew());
 
-		assertEquals("Mock", results.getName() );
+		assertEquals( "Mock", results.getName() );
 		assertEquals(1, arrayLen(cacheFactory.$callLog().registerCache) );
 	}
 

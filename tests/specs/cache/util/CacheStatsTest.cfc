@@ -3,8 +3,8 @@
 
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			cm = getMockBox().createEmptyMock(className='coldbox.system.cache.providers.MockProvider');
-			stats = getMockBox().createMock("coldbox.system.cache.util.CacheStats").init(cm);
+			cm = createEmptyMock(className='coldbox.system.cache.providers.MockProvider');
+			stats = createMock( "coldbox.system.cache.util.CacheStats" ).init(cm);
 		</cfscript>
 	</cffunction>
 
@@ -45,8 +45,8 @@
 			hits = 100;
 			misses = 10;
 			requests = hits+misses;
-			stats.$property("hits","instance",100);
-			stats.$property("misses","instance",10);
+			stats.$property( "hits","instance",100);
+			stats.$property( "misses","instance",10);
 			ratio = stats.getCachePerformanceRatio();
 
 			AssertEquals(ratio, (hits/requests)*100 );
@@ -68,14 +68,14 @@
 	<cffunction name="testgethits" access="public" returnType="void">
 		<cfscript>
 			AssertEquals( stats.getHits(), 0);
-			stats.$property("hits","instance",10);
+			stats.$property( "hits","instance",10);
 			AssertEquals( stats.getHits(), 10);
 		</cfscript>
 	</cffunction>
 		<cffunction name="testgetmisses" access="public" returnType="void">
 		<cfscript>
 			AssertEquals( stats.getMisses(), 0);
-			stats.$property("misses","instance",10);
+			stats.$property( "misses","instance",10);
 			AssertEquals( stats.getMisses(), 10);
 		</cfscript>
 	</cffunction>
@@ -115,14 +115,14 @@
 
 	<cffunction name="testsetEvictionCount" access="public" returnType="void">
 		<cfscript>
-			stats.$property("evictionCount","instance",40);
+			stats.$property( "evictionCount","instance",40);
 			AssertEquals(stats.getEvictionCount(),40);
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="testsetGarbageCollections" access="public" returnType="void">
 		<cfscript>
-			stats.$property("garbageCollections","instance",40);
+			stats.$property( "garbageCollections","instance",40);
 			AssertEquals(stats.getGarbageCollections(),40);
 		</cfscript>
 	</cffunction>

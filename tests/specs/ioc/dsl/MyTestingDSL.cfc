@@ -25,7 +25,7 @@ Description :
 		<cfargument name="definition"  required="true" hint="The injection dsl definition structure to process. Keys: name, dsl"/>
 		<cfargument name="targetObject" required="false" hint="The target object we are building the DSL dependency for. If empty, means we are just requesting building"/>
 		<cfscript>
-			instance.name = getToken(arguments.definition.dsl, 2, ":");
+			instance.name = getToken(arguments.definition.dsl, 2, ":" );
 			return this;
 		</cfscript>
     </cffunction>

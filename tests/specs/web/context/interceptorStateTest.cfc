@@ -4,19 +4,19 @@
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
 			// Prepare mocks
-			mockLogBox = createEmptyMock("coldbox.system.logging.LogBox");
-			mockLogger = createEmptyMock("coldbox.system.logging.Logger").$("canDebug", false);
-			mockLogBox.$("getLogger",mockLogger);
+			mockLogBox = createEmptyMock( "coldbox.system.logging.LogBox" );
+			mockLogger = createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false);
+			mockLogBox.$( "getLogger",mockLogger);
 			mockRequestService = createEmptyMock( "coldbox.system.web.services.RequestService" )
 				.$( "getContext", getMockRequestContext() );
 			mockController = createEmptyMock( "coldbox.system.web.Controller" )
 				.$( "getRequestService", mockRequestService );
 			
-			this.state = createMock("coldbox.system.web.context.InterceptorState");		
+			this.state = createMock( "coldbox.system.web.context.InterceptorState" );		
 			this.event = getMockRequestContext();
-			this.event.$("getEventName","event");
-			this.mock = createMock("coldbox.tests.resources.MockInterceptor");
-			this.mock2 = createMock("coldbox.tests.resources.MockInterceptor");
+			this.event.$( "getEventName","event" );
+			this.mock = createMock( "coldbox.tests.resources.MockInterceptor" );
+			this.mock2 = createMock( "coldbox.tests.resources.MockInterceptor" );
 			this.key = "cbox_interceptor_" & "mock";
 			
 			this.state.init( 'unittest', mockLogBox, mockController );
@@ -48,19 +48,19 @@
 
 	<cffunction name="testprocess" access="public" returnType="void">
 		<cfscript>
-			mockBuffer = getMockBox().createStub();
+			mockBuffer = createStub();
 			this.state.process( event=this.event, interceptData=structnew(), buffer=mockBuffer );
 			assertEquals( this.event.getValue('unittest'), true);
 			
 			// Now process with other method for event pattern
-			this.event.setValue("unittest",false);
+			this.event.setValue( "unittest",false);
 			this.mock.unittest = variables.unittest;
-			this.state.$property("metadataMap","variables", { "#this.key#" = {async=false, asyncPriority="normal", eventPattern="^UnitTest"} } );
+			this.state.$property( "metadataMap","variables", { "#this.key#" = {async=false, asyncPriority="normal", eventPattern="^UnitTest" } } );
 			this.state.process( event=this.event, interceptData=structnew(), buffer=mockBuffer );
 			assertEquals(false, this.event.getValue('unittest'));
 			
 			// Now add event
-			this.event.setValue("event","UnitTest.test");
+			this.event.setValue( "event","UnitTest.test" );
 			this.state.process( event=this.event, interceptData=structnew(), buffer=mockBuffer );
 			assertEquals(true,this.event.getValue('unittest'));
 		</cfscript>
@@ -102,15 +102,15 @@
 			//register one interceptor for testing
 			this.state.unregister( this.key );
 			mockMetadata = { async=false, asyncPriority = "normal", eventPattern = "" };
-			mockInterceptor = getMockBox().createMock("coldbox.tests.resources.MockInterceptor").$("unittest");
+			mockInterceptor = createMock( "coldbox.tests.resources.MockInterceptor" ).$( "unittest" );
 			this.state.register(this.key, mockInterceptor, mockMetadata );
 			
 			// Invoke
 			makepublic( this.state, "invoker" );
-			assertTrue( mockInterceptor.$never("unittest") );
-			mockBuffer = getMockBox().createStub();
+			assertTrue( mockInterceptor.$never( "unittest" ) );
+			mockBuffer = createStub();
 			this.state.invoker(mockInterceptor, getMockRequestContext(), {}, this.key, mockBuffer );
-			assertTrue( mockInterceptor.$once("unittest") );
+			assertTrue( mockInterceptor.$once( "unittest" ) );
 			
 		</cfscript>
 	</cffunction>	
@@ -118,7 +118,7 @@
 	<cffunction name="testInvokerThreaded" access="public" returnType="void">
 		<cfscript>
 			// Mocks
-			mockBuffer = getMockBox().createStub();
+			mockBuffer = createStub();
 			getMockRequestContext().$( "getCollection", {} )
 				.$( "getPrivateCollection", {} );
 			
@@ -126,15 +126,15 @@
 			//register one interceptor for testing
 			this.state.unregister( this.key );
 			mockMetadata = { async=true, asyncPriority = "high", eventPattern = "" };
-			mockInterceptor = getMockBox().createMock("coldbox.tests.resources.MockInterceptor").$("unittest");
+			mockInterceptor = createMock( "coldbox.tests.resources.MockInterceptor" ).$( "unittest" );
 			this.state.register( this.key, mockInterceptor, mockMetadata );
 			
 			// Invoke
 			makepublic( this.state, "invokerAsync" );
-			assertTrue( mockInterceptor.$never("unittest") );
+			assertTrue( mockInterceptor.$never( "unittest" ) );
 			this.state.invokerAsync( getMockRequestContext(), {}, this.key, "high", mockBuffer );
 			sleep( 1000 );
-			assertTrue( mockInterceptor.$once("unittest") );
+			assertTrue( mockInterceptor.$once( "unittest" ) );
 			// debug( cfthread );
 		</cfscript>
 	</cffunction>		

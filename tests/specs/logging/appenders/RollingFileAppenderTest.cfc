@@ -23,7 +23,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		describe( "Rolling File Appender", function(){
 			
 			beforeEach(function( currentSpec ){
-				props = { filePath=expandPath("/tests/logs"), autoExpand=false, fileMaxArchives=1, fileMaxSize=3 };
+				props = { filePath=expandPath( "/tests/logs" ), autoExpand=false, fileMaxArchives=1, fileMaxSize=3 };
 				
 				//debug(props);
 				fileappender = createMock( "coldbox.system.logging.appenders.RollingFileAppender" );

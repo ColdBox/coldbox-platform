@@ -10,8 +10,8 @@
 		<cfscript>
 			stime = getTickCount();
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = entityNew("User");
-			makePublic( populator,"getRelationshipMetaData");
+			obj = entityNew( "User" );
+			makePublic( populator,"getRelationshipMetaData" );
 			meta = populator.getRelationshipMetaData( target = obj );
 			assertTrue( isStruct( meta ) );
 			for( item in meta ) {
@@ -26,8 +26,8 @@
 			stime = getTickCount();
 
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = entityNew("User");
-			role= entityNew("Role");
+			obj = entityNew( "User" );
+			role= entityNew( "Role" );
 
 			/* Struct */
 			myStruct = structnew();
@@ -56,7 +56,7 @@
 			stime = getTickCount();
 
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = entityNew("User");
+			obj = entityNew( "User" );
 
 			/* Struct */
 			myStruct = structnew();
@@ -67,21 +67,21 @@
 			myStruct.password = "";
 
 			/* Populate From Struct - no columns null*/
-			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="");
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="" );
 
 			assertEquals( myStruct.firstName, user.getFirstName() );
 			assertFalse( isNull( user.getUsername() ) );
 			assertFalse( isNull( user.getPassword() ) );
 
 			/* Populate From Struct - One column null*/
-			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="username");
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="username" );
 
 			assertEquals( myStruct.firstName, user.getFirstName() );
 			assertTrue( isNull( user.getUsername() ) );
 			assertFalse( isNull( user.getPassword() ) );
 
 			/* Populate From Struct - All columns null*/
-			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="*");
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="*" );
 
 			assertEquals( myStruct.firstName, user.getFirstName() );
 			assertTrue( isNull( user.getUsername() ) );
@@ -95,7 +95,7 @@
 			stime = getTickCount();
 
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = entityNew("User");
+			obj = entityNew( "User" );
 
 			/* Struct */
 			myStruct = structnew();
@@ -106,21 +106,21 @@
 			myStruct.password = "";
 
 			/* Populate From Struct - no columns null*/
-			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyExclude="");
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyExclude="" );
 
 			assertEquals( myStruct.firstName, user.getFirstName() );
 			assertFalse( isNull( user.getUsername() ) );
 			assertFalse( isNull( user.getPassword() ) );
 
 			/* Populate From Struct - One column not null*/
-			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="*",nullEmptyExclude="username");
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyInclude="*",nullEmptyExclude="username" );
 
 			assertEquals( myStruct.firstName, user.getFirstName() );
 			assertFalse( isNull( user.getUsername() ) );
 			assertTrue( isNull( user.getPassword() ) );
 
 			/* Populate From Struct - All columns null*/
-			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyExclude="*");
+			user = populator.populateFromStruct(target=obj,memento=myStruct,nullEmptyExclude="*" );
 
 			assertEquals( myStruct.firstName, user.getFirstName() );
 			assertFalse( isNull( user.getUsername() ) );
@@ -134,7 +134,7 @@
 			stime = getTickCount();
 
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = entityNew("User");
+			obj = entityNew( "User" );
 
 			/* Struct */
 			myStruct = structnew();
@@ -158,7 +158,7 @@
 			stime = getTickCount();
 
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
+			obj = createMock('coldbox.test-harness.models.formBean');
 
 			/* Struct */
 			myStruct = structnew();
@@ -171,7 +171,7 @@
 			obj = populator.populateFromStruct(obj,myStruct);
 			objInstance = obj.getInstance();
 
-			//debug("Timer: #getTickCount()-stime#");
+			//debug( "Timer: #getTickCount()-stime#" );
 
 			/* Assert Population */
 			for( key in objInstance ){
@@ -179,8 +179,8 @@
 			}
 
 			/* populate using scope now */
-			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
-			obj = populator.populateFromStruct(obj,myStruct,"variables.instance");
+			obj = createMock('coldbox.test-harness.models.formBean');
+			obj = populator.populateFromStruct(obj,myStruct,"variables.instance" );
 			objInstance = obj.getInstance();
 			/* Assert Population */
 			for( key in objInstance ){
@@ -188,7 +188,7 @@
 			}
 
 			/* Populate using onMissingMethod */
-			obj = getMockBox().createMock('coldbox.test-harness.models.formImplicitBean');
+			obj = createMock('coldbox.test-harness.models.formImplicitBean');
 			obj = populator.populateFromStruct(target=obj,memento=myStruct,trustedSetter=true);
 			objInstance = obj.getInstance();
 			/* Assert Population */
@@ -204,7 +204,7 @@
 			stime = getTickCount();
 
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
+			obj = createMock('coldbox.test-harness.models.formBean');
 
 			/* Struct */
 			myStruct = structnew();
@@ -217,7 +217,7 @@
 			obj = populator.populateFromStructWithPrefix( target=obj, memento=myStruct, prefix="user_" );
 			objInstance = obj.getInstance();
 
-			//debug("Timer: #getTickCount()-stime#");
+			//debug( "Timer: #getTickCount()-stime#" );
 
 			/* Assert Population */
 			for( key in objInstance ){
@@ -230,14 +230,14 @@
 	<cffunction name="testpopulateFromJSON" output="false" access="public" returntype="any" hint="">
 		<cfscript>
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
+			obj = createMock('coldbox.test-harness.models.formBean');
 
 			/* Struct */
 			myStruct = structnew();
 			myStruct.fname = "Luis";
 			myStruct.lname = "Majano";
 			myStruct.email = "test@coldboxframework.com";
-			myStruct.initDate = dateFormat(now(), "mm/dd/yyy");
+			myStruct.initDate = dateFormat(now(), "mm/dd/yyy" );
 			/* JSON Packet */
 			myJSON = serializeJSON( myStruct );
 			// debug( myJSON );
@@ -257,7 +257,7 @@
 	<cffunction name="testPopulateFromXML" output="false" access="public" returntype="any" hint="">
 		<cfscript>
 			/* We are using the formBean object: fname,lname,email,initDate */
-			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
+			obj = createMock('coldbox.test-harness.models.formBean');
 
 			/* Struct */
 			xml = "<root>
@@ -283,22 +283,22 @@
 		<cfscript>
 
 			// We are using the formBean object: fname,lname,email,initDate
-			obj = getMockBox().createMock('coldbox.test-harness.models.formBean');
+			obj = createMock('coldbox.test-harness.models.formBean');
 
 			// Query
 			myQuery = QueryNew('fname,lname,email,initDate');
 			QueryAddRow(myQuery,1);
-			querySetCell(myQuery, "fname", "Sana");
-			querySetCell(myQuery, "lname", "Ullah");
-			querySetCell(myQuery, "email", "test13@test13.com");
+			querySetCell(myQuery, "fname", "Sana" );
+			querySetCell(myQuery, "lname", "Ullah" );
+			querySetCell(myQuery, "email", "test13@test13.com" );
 			querySetCell(myQuery, "initDate", now());
 
 			// Populate From Query
 			obj = populator.populateFromQuery(obj,myQuery);
 
-			AssertEquals(myQuery["fname"][1],obj.getfname());
-			AssertEquals(myQuery["lname"][1],obj.getlname());
-			AssertEquals(myQuery["email"][1],obj.getemail());
+			AssertEquals(myQuery[ "fname" ][1],obj.getfname());
+			AssertEquals(myQuery[ "lname" ][1],obj.getlname());
+			AssertEquals(myQuery[ "email" ][1],obj.getemail());
 		</cfscript>
 	</cffunction>
 

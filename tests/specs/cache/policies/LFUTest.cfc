@@ -28,23 +28,23 @@ Description :
 		pool['obj1'].isExpired = false;
 		pool['obj1'].hits = 1;
 		
-		pool['obj2'].Created = dateAdd("n",-7,now());
+		pool['obj2'].Created = dateAdd( "n",-7,now());
 		pool['obj2'].Timeout = 10;
 		pool['obj2'].isExpired = false;
 		pool['obj2'].hits = 555;
 		
-		pool['obj3'].Created = dateAdd("n",-6,now());
+		pool['obj3'].Created = dateAdd( "n",-6,now());
 		pool['obj3'].Timeout = 10;
 		pool['obj3'].isExpired = false;
 		pool['obj3'].hits = 2;
 		
-		mockCM.$("getConfiguration",config);
-		mockIndexer.$("getPoolMetadata", pool).$("objectExists",true);
-		keys = structSort(pool,"numeric","asc","hits");
-		mockIndexer.$("getSortedKeys", keys);
-		mockIndexer.$("getObjectMetadata").$results(pool.obj2,pool.obj3,pool.obj1);
+		mockCM.$( "getConfiguration",config);
+		mockIndexer.$( "getPoolMetadata", pool).$( "objectExists",true);
+		keys = structSort(pool,"numeric","asc","hits" );
+		mockIndexer.$( "getSortedKeys", keys);
+		mockIndexer.$( "getObjectMetadata" ).$results(pool.obj2,pool.obj3,pool.obj1);
 		
-		lfu = getMockBox().createMock("coldbox.system.cache.policies.LFU").init(mockCM);
+		lfu = createMock( "coldbox.system.cache.policies.LFU" ).init(mockCM);
 		</cfscript>
 	</cffunction>
 	

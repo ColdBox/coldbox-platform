@@ -10,9 +10,9 @@
 			scope 	= "application",
 			key 	= "wirebox"
 		};
-		mockScopeStorage = getMockBox().createEmptyMock( "coldbox.system.core.collections.ScopeStorage" )
+		mockScopeStorage = createEmptyMock( "coldbox.system.core.collections.ScopeStorage" )
 			.$( "exists",false);
-		provider = getMockBox().createMock( "coldbox.system.ioc.Provider" )
+		provider = createMock( "coldbox.system.ioc.Provider" )
 			.init(scopeRegistration=scopeInfo, 
 				  scopeStorage=mockScopeStorage,
 				  name="UnitTest",
@@ -30,8 +30,8 @@
 	
 	function testGet(){
 		// Mocks
-		mockTarget = getMockBox().createStub().$( "verify", true);
-		mockInjector = getMockBox().createEmptyMock( "coldbox.system.ioc.Injector" ).$( "getInstance", mockTarget);
+		mockTarget = createStub().$( "verify", true);
+		mockInjector = createEmptyMock( "coldbox.system.ioc.Injector" ).$( "getInstance", mockTarget);
 		mockScopeStorage.$( "exists",true).$( "get", mockInjector);
 		
 		// 1. Execute get by name
@@ -40,7 +40,7 @@
 		assertTrue( results.verify() );
 		
 		// 2. Execute get by dsl
-		provider = getMockBox().createMock( "coldbox.system.ioc.Provider" )
+		provider = createMock( "coldbox.system.ioc.Provider" )
 			.init(scopeRegistration=scopeInfo, 
 				  scopeStorage=mockScopeStorage, 
 				  dsl="logbox:logger:{this}",
@@ -52,10 +52,10 @@
 	
 	function testProxyMethods(){
 		// Mocks
-		mockTarget = getMockBox().createStub()
+		mockTarget = createStub()
 			.$( "getTest", true)
 			.$( "sayHello","luis" );
-		mockInjector = getMockBox().createEmptyMock( "coldbox.system.ioc.Injector" ).$( "getInstance",mockTarget);
+		mockInjector = createEmptyMock( "coldbox.system.ioc.Injector" ).$( "getInstance",mockTarget);
 		mockScopeStorage.$( "exists",true).$( "get",mockInjector);
 		provider.$( "get", mockTarget);
 		

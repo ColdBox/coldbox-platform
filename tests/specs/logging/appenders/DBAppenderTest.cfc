@@ -4,26 +4,26 @@
 
 	function setup(){
 		props = {dsn='coolblog',table='logs',autocreate='true'};
-		db = getMockBox().createMock(className="coldbox.system.logging.appenders.DBAppender");
+		db = createMock(className="coldbox.system.logging.appenders.DBAppender" );
 		db.init('UnitTest',props);
 		
-		loge = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
-		loge.init("Unit Test Sample",0,structnew(),"UnitTest");
+		loge = createMock(className="coldbox.system.logging.LogEvent" );
+		loge.init( "Unit Test Sample",0,structnew(),"UnitTest" );
 	}
 
 	function testSchema(){
 		assertTrue( len( db.getProperty('schema') ) eq 0 );
-		props = {dsn='coolblog',table='logs',autocreate='true', schema="test"};
+		props = {dsn='coolblog',table='logs',autocreate='true', schema="test" };
 		db.init( 'UnitTest', props );
 		assertTrue( len( db.getProperty('schema') ) );
 	}
 	
 	function testEnsureTable(){
 		// drop table
-		new Query( datasource="coolblog", sql="drop table logs").execute();
-		makePublic(db,"ensureTable");
+		new Query( datasource="coolblog", sql="drop table logs" ).execute();
+		makePublic(db,"ensureTable" );
 		db.ensureTable();
-		var r = new Query( datasource="coolblog", sql="check table logs").execute().getResult();
+		var r = new Query( datasource="coolblog", sql="check table logs" ).execute().getResult();
 		assertEquals( r.msg_text, "ok" );
 	}
 	
@@ -47,7 +47,7 @@
 			db.init('UnitTest',props);
 			fail('map should have failed');
 		}
-		catch("DBAppender.InvalidColumnMapException" e){}
+		catch( "DBAppender.InvalidColumnMapException" e){}
 		catch(any e ){fail(e.message & e.detail);}
 		
 		//valid map

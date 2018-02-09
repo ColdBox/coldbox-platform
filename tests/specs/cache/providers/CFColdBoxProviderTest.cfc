@@ -15,10 +15,10 @@ Description :
 	function setup(){
 		super.setup();
 		// Mock Controller
-		mockController = getMockBox().createEmptyMock("coldbox.system.web.Controller");
+		mockController = createEmptyMock( "coldbox.system.web.Controller" );
 
 		// Create Provider
-		cache = getMockBox().createMock("coldbox.system.cache.providers.CFColdBoxProvider").init();
+		cache = createMock( "coldbox.system.cache.providers.CFColdBoxProvider" ).init();
 
 		// Decorate it
 		cache.setConfiguration( config );
@@ -36,7 +36,7 @@ Description :
 	}
 
 	function testgetEventURLFacade(){
-		assertEquals(true, isInstanceOf(cache.getEventURLFacade(),"coldbox.system.cache.util.EventURLFacade") );
+		assertEquals(true, isInstanceOf(cache.getEventURLFacade(),"coldbox.system.cache.util.EventURLFacade" ) );
 	}
 
 	function testClearAllEvents(){
@@ -46,19 +46,19 @@ Description :
 		cache.ClearAllViews();
 	}
 	function testclearByKeySnippet(){
-		cache.clearByKeySnippet("test",false);
+		cache.clearByKeySnippet( "test",false);
 	}
 	function testclearEvent(){
-		cache.clearEvent("test");
+		cache.clearEvent( "test" );
 	}
 	function testclearEventMulti(){
-		cache.clearEventMulti("test");
+		cache.clearEventMulti( "test" );
 	}
 	function testclearViewMulti(){
-		cache.clearViewMulti("test");
+		cache.clearViewMulti( "test" );
 	}
 	function testclearView(){
-		cache.clearView("test");
+		cache.clearView( "test" );
 	}
 </cfscript>
 </cfcomponent>

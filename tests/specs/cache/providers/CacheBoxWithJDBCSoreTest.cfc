@@ -34,7 +34,7 @@ Description :
 		};
 
 		// Create Provider
-		cache = getMockBox().createMock("coldbox.system.cache.providers.CacheBoxProvider").init();
+		cache = createMock( "coldbox.system.cache.providers.CacheBoxProvider" ).init();
 
 		// Decorate it
 		cache.setConfiguration( config );

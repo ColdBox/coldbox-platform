@@ -42,7 +42,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbtestharne
 			});
 
 			it( "can render external views", function(){
-				var results = r.renderExternalView("/cbtestharness/external/testViews/externalview");
+				var results = r.renderExternalView( "/cbtestharness/external/testViews/externalview" );
 				expect(	results ).toInclude( "external" );
 			});
 

@@ -36,11 +36,11 @@ component extends="coldbox.system.testing.BaseModelTest"{
 			it( "can register handlers", function(){
 				// Mocks
 				mockController
-					.$("getSetting")
-						.$args("HandlersPath")
+					.$( "getSetting" )
+						.$args( "HandlersPath" )
 						.$results( expandPath('/coldbox/test-harness/handlers') )
-					.$("getSetting")
-						.$args("HandlersExternalLocationPath")
+					.$( "getSetting" )
+						.$args( "HandlersExternalLocationPath" )
 						.$results( expandPath('/coldbox/test-harness/external/testHandlers') )
 					.$( "setSetting" );
 				

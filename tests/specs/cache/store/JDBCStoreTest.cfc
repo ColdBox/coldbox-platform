@@ -17,9 +17,9 @@ Description :
 			dsn   = "coolblog",
 			table = "cacheBox"
 		};
-		mockProvider = getMockBox().createMock("coldbox.system.cache.providers.MockProvider");
-		mockProvider.$("getConfiguration", config);
-		store = getMockBox().createMock(className="coldbox.system.cache.store.JDBCStore").init(mockProvider);
+		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" );
+		mockProvider.$( "getConfiguration", config);
+		store = createMock(className="coldbox.system.cache.store.JDBCStore" ).init(mockProvider);
 	}
 
 	function tearDown(){
@@ -28,7 +28,7 @@ Description :
 
 	function testClearAll(){
 		store.clearAll();
-		store.set("test", now(), 20);
+		store.set( "test", now(), 20);
 		assertEquals( 1, store.getSize() );
 		store.clearAll();
 		assertEquals( 0, store.getSize() );
@@ -41,9 +41,9 @@ Description :
 	function testGetKeys(){
 		store.clearAll();
 		assertEquals( arrayNew(1), store.getKeys() );
-		store.set("test", now() );
-		store.set("test1", now() );
-		store.set("test2", now() );
+		store.set( "test", now() );
+		store.set( "test1", now() );
+		store.set( "test2", now() );
 		assertEquals( 3 , arrayLen( store.getKeys() ) );
 	}
 
@@ -51,45 +51,45 @@ Description :
 		store.clearAll();
 		assertFalse( store.lookup('nada') );
 
-		store.set("myKey","hello");
+		store.set( "myKey","hello" );
 
 		assertTrue( store.lookup('myKey') );
 
-		store.expireObject("myKey");
+		store.expireObject( "myKey" );
 
 		assertFalse( store.lookup('myKey') );
 	}
 
 	function testGet(){
-		store.set("myKey","123");
+		store.set( "myKey","123" );
 		assertEquals( store.get('myKey'), "123" );
 	}
 
 	function testGetQuiet(){
-		store.set("myKey","123",0);
+		store.set( "myKey","123",0);
 		assertEquals( store.getQuiet('myKey'), "123" );
 	}
 
 	function testExpirations(){
-		store.set("test", now());
-		assertFalse( store.isExpired("test") );
-		store.expireObject("test");
-		assertTrue( store.isExpired("test") );
+		store.set( "test", now());
+		assertFalse( store.isExpired( "test" ) );
+		store.expireObject( "test" );
+		assertTrue( store.isExpired( "test" ) );
 	}
 
 	function testSet(){
 		//1:Timeout = 0 (Eternal)
 		store.set('test',"123",0,0);
-		assertEquals("123", store.get("test") );
+		assertEquals( "123", store.get( "test" ) );
 
 		//2:Timeout = X
 		store.set('test',"123",20,20);
-		assertEquals("123", store.get("test") );
+		assertEquals( "123", store.get( "test" ) );
 
 		//3 complex
-		var complex = createObject("component", "coldbox.test-harness.models.formBean").init();
+		var complex = createObject( "component", "coldbox.test-harness.models.formBean" ).init();
 		store.set( 'test', complex, 20 );
-		results = store.get("test");
+		results = store.get( "test" );
 
 		assertEquals( results.getFname(), complex.getFname() );
 	}
@@ -98,7 +98,7 @@ Description :
 
 		assertFalse( store.clear('invalid') );
 
-		store.set("test", now(), 20);
+		store.set( "test", now(), 20);
 		results = store.clear('test');
 
 		assertTrue( results );

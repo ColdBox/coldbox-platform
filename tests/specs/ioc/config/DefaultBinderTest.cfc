@@ -2,7 +2,7 @@
 <cfscript>
 	
 	function setup(){
-		config = getMockBox().createMock("coldbox.system.ioc.config.DefaultBinder");
+		config = createMock( "coldbox.system.ioc.config.DefaultBinder" );
 	}
 
 	function testConfigure(){

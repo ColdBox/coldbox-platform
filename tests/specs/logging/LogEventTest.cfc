@@ -1,11 +1,11 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
-		log = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
+		log = createMock(className="coldbox.system.logging.LogEvent" );
 	}
 
 	function testextraInfoSimple(){
-		log.init('unittest',1,"hello","unittest");
+		log.init('unittest',1,"hello","unittest" );
 
 		r = log.getExtraInfoAsString();
 
@@ -14,7 +14,7 @@
 
 	function testExtraInfoComplex(){
 		c = {data="hello",nums=[1,2,3]};
-		log.init('unittest',1,c,"unittest");
+		log.init('unittest',1,c,"unittest" );
 		r = log.getExtraInfoAsString();
 		// debug(r);
 
@@ -23,8 +23,8 @@
 	}
 
 	function testExtraInfoConventionString(){
-		extra = createObject("component","coldbox.tests.specs.logging.ExtraInfo");
-		log.init('unittest',1,extra,"unittest");
+		extra = createObject( "component","coldbox.tests.specs.logging.ExtraInfo" );
+		log.init('unittest',1,extra,"unittest" );
 		r = log.getExtraInfoAsString();
 		// debug(r);
 
@@ -32,8 +32,8 @@
 	}
 
 	function testExtraInfoCFC(){
-		extra = createObject("component","coldbox.tests.specs.logging.ExtraInfo2");
-		log.init('unittest',1,extra,"unittest");
+		extra = createObject( "component","coldbox.tests.specs.logging.ExtraInfo2" );
+		log.init('unittest',1,extra,"unittest" );
 		r = log.getExtraInfoAsString();
 		// debug(r);
 		assertTrue( isXML(r) );

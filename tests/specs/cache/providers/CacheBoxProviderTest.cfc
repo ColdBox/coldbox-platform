@@ -234,7 +234,7 @@ Description :
 	function testClearQuiet(){
 		test = {
 			key1 = now(),
-			key2 = {name="Pio", age="32", cool="beyond belief"}
+			key2 = {name="Pio", age="32", cool="beyond belief" }
 		};
 		cache.setQuiet( "key1",test.key1);
 
@@ -247,7 +247,7 @@ Description :
 	function testClear(){
 		test = {
 			key1 = now(),
-			key2 = {name="Pio", age="32", cool="beyond belief"}
+			key2 = {name="Pio", age="32", cool="beyond belief" }
 		};
 		cache.setQuiet( "key1",test.key1);
 
@@ -260,7 +260,7 @@ Description :
 	function testClearAll(){
 		test = {
 			key1 = now(),
-			key2 = {name="Pio", age="32", cool="beyond belief"}
+			key2 = {name="Pio", age="32", cool="beyond belief" }
 		};
 		cache.setMulti(test);
 
@@ -275,7 +275,7 @@ Description :
 	function testGetSize(){
 		test = {
 			key1 = now(),
-			key2 = {age="32", name="Lui Mahoney"}
+			key2 = {age="32", name="Lui Mahoney" }
 		};
 		cache.clearAll();
 		cache.setMulti(test);
@@ -287,7 +287,7 @@ Description :
 	function testExpireObjectAndIsExpired(){
 		test = {
 			key1 = now(),
-			key2 = {name="Pio", age="32", cool="beyond belief"}
+			key2 = {name="Pio", age="32", cool="beyond belief" }
 		};
 		cache.set( "test", test);
 		cache.expireObject( "test" );
@@ -301,7 +301,7 @@ Description :
 	function testExpireByKeySnippet(){
 		test = {
 			key1 = now(),
-			key2 = {name="Pio", age="32", cool="beyond belief"}
+			key2 = {name="Pio", age="32", cool="beyond belief" }
 		};
 		cache.set( "test1", test.key1);
 		cache.set( "test2", test.key2);
@@ -316,7 +316,7 @@ Description :
 	function testExpireAll(){
 		test = {
 			key1 = now(),
-			key2 = {name="Pio", age="32", cool="beyond belief"}
+			key2 = {name="Pio", age="32", cool="beyond belief" }
 		};
 		cache.set( "test1", test.key1);
 		cache.set( "test2", test.key2);
@@ -331,7 +331,7 @@ Description :
 	function testGetKeys(){
 		test = {
 			key1 = now(),
-			key2 = {name="Luis Mahoney", cool="You betcha!"}
+			key2 = {name="Luis Mahoney", cool="You betcha!" }
 		};
 		cache.set( "test1", test.key1);
 		cache.set( "test2", test.key2);

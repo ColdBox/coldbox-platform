@@ -139,9 +139,9 @@
 		event.clearCollection();
 		event.collectionAppend( test);
 
-		assertEquals( test.today , event.getValue("today") );
+		assertEquals( test.today , event.getValue( "today" ) );
 
-		assertEquals( "null", event.getValue("invalidVar", "null") );
+		assertEquals( "null", event.getValue( "invalidVar", "null" ) );
 
 	}
 
@@ -152,9 +152,9 @@
 
 		event.clearCollection();
 
-		event.setValue("test", test.today);
+		event.setValue( "test", test.today);
 
-		assertEquals( test.today, event.getValue("test") );
+		assertEquals( test.today, event.getValue( "test" ) );
 
 	}
 
@@ -165,11 +165,11 @@
 
 		event.clearCollection();
 
-		event.setValue("test", test.today);
-		assertEquals( test.today, event.getValue("test") );
+		event.setValue( "test", test.today);
+		assertEquals( test.today, event.getValue( "test" ) );
 
-		event.removeValue("test");
-		assertEquals( false, event.getValue("test", false) );
+		event.removeValue( "test" );
+		assertEquals( false, event.getValue( "test", false) );
 	}
 
 	function testvalueExists(){
@@ -179,11 +179,11 @@
 
 		event.clearCollection();
 
-		event.setValue("test", test.today);
-		assertTrue( event.valueExists("test") );
+		event.setValue( "test", test.today);
+		assertTrue( event.valueExists( "test" ) );
 
-		event.removeValue("test");
-		assertFalse( event.valueExists("test") );
+		event.removeValue( "test" );
+		assertFalse( event.valueExists( "test" ) );
 	}
 
 	function testparamValue(){
@@ -193,11 +193,11 @@
 
 		event.clearCollection();
 
-		AssertFalse( event.valueExists("test") );
+		AssertFalse( event.valueExists( "test" ) );
 
-		event.paramValue("test", test.today);
+		event.paramValue( "test", test.today);
 
-		assertTrue( event.valueExists("test") );
+		assertTrue( event.valueExists( "test" ) );
 
 	}
 
@@ -217,7 +217,7 @@
 		assertEquals( 'Main.cfm', event.getCurrentLayout() );
 
 		// set view with caching
-		event.setView(view="home", cache="True", cacheProvider="luis", cacheTimeout="20", cacheLastAccessTimeout="1", cacheSuffix="test");
+		event.setView(view="home", cache="True", cacheProvider="luis", cacheTimeout="20", cacheLastAccessTimeout="1", cacheSuffix="test" );
 		r = event.getViewCacheableEntry();
 		//debug( r );
 
@@ -253,7 +253,7 @@
 		var event = getRequestContext();
 		var defaultEvent = "ehTest.doSomething";
 
-		event.setValue("event", defaultEvent);
+		event.setValue( "event", defaultEvent);
 
 		assertEquals( defaultEvent, event.getCurrentEvent() );
 		assertEquals( "ehTest", event.getCurrentHandler() );
@@ -261,7 +261,7 @@
 
 		defaultEvent = "blog.content.doSomething";
 
-		event.setValue("event", defaultEvent);
+		event.setValue( "event", defaultEvent);
 
 		assertEquals( defaultEvent, event.getCurrentEvent() );
 		assertEquals( "content", event.getCurrentHandler() );
@@ -269,7 +269,7 @@
 
 		defaultEvent = "blog.content.security.doSomething";
 
-		event.setValue("event", defaultEvent);
+		event.setValue( "event", defaultEvent);
 
 		assertEquals( defaultEvent, event.getCurrentEvent() );
 		assertEquals( "security", event.getCurrentHandler() );
@@ -282,7 +282,7 @@
 		var newEvent = "pio.yea";
 
 		event.clearCollection();
-		event.setValue("event","blog.dspEntries");
+		event.setValue( "event","blog.dspEntries" );
 		event.overrideEvent(newEvent);
 
 		assertEquals( newEvent , event.getCurrentEvent() );
@@ -325,13 +325,13 @@
 		var event = getRequestContext();
 		var centry = structnew();
 
-		AssertFalse( event.isEventCacheable(), "event cacheable");
+		AssertFalse( event.isEventCacheable(), "event cacheable" );
 
 		centry.cacheable = true;
 		centry.test = true;
 
 		event.setEventCacheableEntry(centry);
-		AssertTrue( event.isEventCacheable(), "event cacheable 2");
+		AssertTrue( event.isEventCacheable(), "event cacheable 2" );
 		AssertEquals(centry, event.getEventCacheableEntry() );
 	}
 
@@ -339,13 +339,13 @@
 		var event = getRequestContext();
 		var centry = structnew();
 
-		AssertFalse( event.isViewCacheable(), "view cacheable");
+		AssertFalse( event.isViewCacheable(), "view cacheable" );
 
 		centry.cacheable = true;
 		centry.test = true;
 
 		event.setViewCacheableEntry(centry);
-		AssertTrue( event.isViewCacheable(), "view cacheable 2");
+		AssertTrue( event.isViewCacheable(), "view cacheable 2" );
 		AssertEquals(centry, event.getViewCacheableEntry() );
 	}
 
@@ -395,12 +395,12 @@
 
 		/* simple qs */
 		event.setSESEnabled(false);
-		testurl = event.buildLink( to='general.index',queryString="page=2");
+		testurl = event.buildLink( to='general.index',queryString="page=2" );
 		AssertEquals( testurl, "index.cfm?event=general.index&page=2" );
 
 		/* empty qs */
 		event.setSESEnabled(false);
-		testurl = event.buildLink( to='general.index',queryString="");
+		testurl = event.buildLink( to='general.index',queryString="" );
 		AssertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* ses test */
@@ -445,10 +445,10 @@
 		AssertEquals( event.getRenderData(), structnew());
 
 		// Test JSON
-		event.renderData( type='JSON',data="[1,2,3,4]");
+		event.renderData( type='JSON',data="[1,2,3,4]" );
 		rd = event.getRenderData();
-		assertEquals( rd.contenttype, "application/json");
-		assertEquals( rd.type, "json");
+		assertEquals( rd.contenttype, "application/json" );
+		assertEquals( rd.type, "json" );
 		assertEquals( rd.jsonQueryFormat, true );
 		assertEquals( rd.statusCode, "200" );
 		assertEquals( rd.statusText, "" );
@@ -459,42 +459,42 @@
 		assertEquals( rd.jsonQueryFormat, false );
 
 		//JSONP
-		event.renderData( type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback");
+		event.renderData( type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback" );
 		rd = event.getRenderData();
-		assertEquals( rd.type, "jsonp");
+		assertEquals( rd.type, "jsonp" );
 		assertEquals( rd.jsonCallback, 'testCallback');
 
 		// Test WDDX
 		event.renderData( type="WDDX",data=arrayNew(1));
 		rd = event.getRenderData();
-		assertEquals( rd.contenttype, "text/xml");
-		assertEquals( rd.type, "wddx");
+		assertEquals( rd.contenttype, "text/xml" );
+		assertEquals( rd.type, "wddx" );
 
 		// Test PLAIN
-		event.renderData(data="Hello");
+		event.renderData(data="Hello" );
 		rd = event.getRenderData();
-		assertEquals( rd.type, "html");
-		assertEquals( rd.contenttype, "text/html");
+		assertEquals( rd.type, "html" );
+		assertEquals( rd.contenttype, "text/html" );
 
 		// Test XML
-		event.renderData(data=structnew(),type="xml");
+		event.renderData(data=structnew(),type="xml" );
 		rd = event.getRenderData();
-		assertEquals( rd.type, "xml");
-		assertEquals( rd.contenttype, "text/xml");
-		assertEquals( rd.xmlListDelimiter, ",");
-		assertEquals( rd.xmlColumnList, "");
+		assertEquals( rd.type, "xml" );
+		assertEquals( rd.contenttype, "text/xml" );
+		assertEquals( rd.xmlListDelimiter, "," );
+		assertEquals( rd.xmlColumnList, "" );
 
 		// Test contenttype
-		event.renderData(data="Hello",contentType="application/ms-excel");
+		event.renderData(data="Hello",contentType="application/ms-excel" );
 		rd = event.getRenderData();
-		assertEquals( rd.type, "html");
-		assertEquals( rd.contenttype, "application/ms-excel");
+		assertEquals( rd.type, "html" );
+		assertEquals( rd.contenttype, "application/ms-excel" );
 
 		// Test StatusCodes
-		event.renderData(data="hello",statusCode="400",statusText="Invalid Call!");
+		event.renderData(data="hello",statusCode="400",statusText="Invalid Call!" );
 		rd = event.getRenderData();
-		assertEquals( rd.statusCode, "400");
-		assertEquals( rd.statusText, "Invalid Call!");
+		assertEquals( rd.statusCode, "400" );
+		assertEquals( rd.statusText, "Invalid Call!" );
 	}
 
 	function testNoExecution(){
@@ -508,13 +508,13 @@
 	function testCurrentModule(){
 		var event = getRequestContext();
 
-		event.setValue("event","myModule:test.home");
+		event.setValue( "event","myModule:test.home" );
 
 		//debug(event.getCurrentEVent());
-		assertEquals("myModule", event.getCurrentModule());
+		assertEquals( "myModule", event.getCurrentModule());
 
-		event.setValue("event","test.home");
-		assertEquals("", event.getCurrentModule());
+		event.setValue( "event","test.home" );
+		assertEquals( "", event.getCurrentModule());
 	}
 
 
@@ -523,8 +523,8 @@
 
 
 		//debug(event.getCurrentEVent());
-		assertEquals("", event.getmoduleRoot());
-		event.setValue("event","test1:test.home");
+		assertEquals( "", event.getmoduleRoot());
+		event.setValue( "event","test1:test.home" );
 		assertEquals(props.modules.test1.mapping, event.getmoduleRoot());
 	}
 
@@ -532,9 +532,9 @@
 	function testsetHTTPHeader(){
 		var event = getRequestContext();
 
-		event.setHTTPHeader(statusCode="200",statusText="Hello");
+		event.setHTTPHeader(statusCode="200",statusText="Hello" );
 
-		event.setHTTPHeader(name="expires",value="#now()#");
+		event.setHTTPHeader(name="expires",value="#now()#" );
 	}
 
 	function testGetHTTPConetnt(){
@@ -548,10 +548,10 @@
 	function testNoLayout(){
 		var event = getRequestContext();
 
-		event.noLayout().setView("test");
+		event.noLayout().setView( "test" );
 
 		//debug( event.getCollection(private=true) );
-		assertEquals( true, event.getValue("layoutOverride",false,true) );
+		assertEquals( true, event.getValue( "layoutOverride",false,true) );
 	}
 
 	function testDoubleSlashInBuildLink(){

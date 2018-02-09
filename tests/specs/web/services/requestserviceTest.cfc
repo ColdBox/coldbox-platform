@@ -20,11 +20,11 @@ Description :
 
 	<cffunction name="testRequestCapturesWithNoDecoration" access="public" returntype="void" output="false">
 		<cfscript>
-			var originalSetting = getcontroller().getSetting("RequestContextDecorator");
+			var originalSetting = getcontroller().getSetting( "RequestContextDecorator" );
 
-			getcontroller().setSetting("RequestContextDecorator","");
+			getcontroller().setSetting( "RequestContextDecorator","" );
 			testRequestCaptures();
-			getcontroller().setSetting("RequestContextDecorator",originalSetting);
+			getcontroller().setSetting( "RequestContextDecorator",originalSetting);
 
 		</cfscript>
 	</cffunction>
@@ -49,9 +49,9 @@ Description :
 		// debug(context.getCollection());
 
 		/* Tests */
-		AssertTrue( isObject(context), "Context Creation");
-		AssertTrue(url.today eq context.getValue('today') , "URL Append");
-		AssertTrue(context.valueExists('event'), "Multi-Event Test");
+		AssertTrue( isObject(context), "Context Creation" );
+		AssertTrue(url.today eq context.getValue('today') , "URL Append" );
+		AssertTrue(context.valueExists('event'), "Multi-Event Test" );
 		</cfscript>
 	</cffunction>
 
@@ -67,8 +67,8 @@ Description :
 		context = service.requestCapture();
 
 		/* Tests */
-		AssertTrue( isObject(context), "Context Creation");
-		AssertTrue( url.event eq context.getCurrentEvent(), "Event mismatch: #context.getCurrentEvent()#");
+		AssertTrue( isObject(context), "Context Creation" );
+		AssertTrue( url.event eq context.getCurrentEvent(), "Event mismatch: #context.getCurrentEvent()#" );
 		</cfscript>
 	</cffunction>
 
@@ -78,13 +78,13 @@ Description :
 		var context = "";
 
 		context = service.getContext();
-		AssertTrue( isObject(context), "Context Create");
+		AssertTrue( isObject(context), "Context Create" );
 
-		structDelete(request, "cb_requestContext");
-		assertFalse( service.contextExists() , "Context exists");
+		structDelete(request, "cb_requestContext" );
+		assertFalse( service.contextExists() , "Context exists" );
 
 		service.setContext(context);
-		assertTrue( structKeyExists(request,"cb_requestContext") ,"setter in request");
+		assertTrue( structKeyExists(request,"cb_requestContext" ) ,"setter in request" );
 
 		</cfscript>
 	</cffunction>

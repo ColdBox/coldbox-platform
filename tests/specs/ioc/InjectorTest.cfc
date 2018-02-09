@@ -12,7 +12,7 @@
 		injector.init();
 
 		mockLogger = createStub().$( "canDebug", false).$( "error" );
-		util = createMock( "coldbox.system.core.util.Util" ).$( "getInheritedMetaData" ).$results({path="path.to.object"});
+		util = createMock( "coldbox.system.core.util.Util" ).$( "getInheritedMetaData" ).$results({path="path.to.object" });
 		injector.$property( "utility","variables",util);
 		injector.$property( "log","variables", mockLogger);
 	}
@@ -103,7 +103,7 @@
 
 	function testdoScopeRegistration(){
 		makePublic(injector, "doScopeRegistration" );
-		scopeReg = {key = "wirebox",scope="application"};
+		scopeReg = {key = "wirebox",scope="application" };
 
 		binder = injector.getBinder();
 		prepareMock( binder ).$( "getScopeRegistration", scopeReg);
@@ -180,7 +180,7 @@
 	}
 
 	function testRemoveFromScope(){
-		scopeReg = {enabled= true, key = "wirebox",scope="application"};
+		scopeReg = {enabled= true, key = "wirebox",scope="application" };
 		binder = injector.getBinder();
 		prepareMock( binder ).$( "getScopeRegistration", scopeReg);
 		application.wirebox = createStub();

@@ -4,7 +4,7 @@
 	<cffunction name="setup" output="false" access="public" returntype="any" hint="">
 		<cfscript>
 			structDelete( request, "_cbox_request_buffer" );
-			rb = CreateObject("component","coldbox.system.core.util.RequestBuffer").init("1.5");
+			rb = CreateObject( "component","coldbox.system.core.util.RequestBuffer" ).init( "1.5" );
 		</cfscript>
 	</cffunction>
 

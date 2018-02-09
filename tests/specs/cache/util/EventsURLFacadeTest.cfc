@@ -44,7 +44,7 @@ Description :
 		<cfscript>
 			event = "main.index";
 			args = "id=1";
-			myStruct["id"] = 1;
+			myStruct[ "id" ] = 1;
 
 			testHash = facade.buildHash(args);
 
@@ -61,14 +61,14 @@ Description :
 			/* Mocks */
 			context = createMock( 'coldbox.system.web.context.RequestContext' );
 			context.setRoutedStruct( routedStruct )
-			       .$("getValue","123");
+			       .$( "getValue","123" );
 
 			/* setup url vars */
 			url.event = 'main.index';
 			url.id = "123";
 			url.fwCache="True";
 
-			testCacheKey = facade.buildEventKey("unittest","main.index",context);
+			testCacheKey = facade.buildEventKey( "unittest","main.index",context);
 			uniqueHash = facade.getUniqueHash(context);
 			targetKey = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & uniqueHash;
 
@@ -80,10 +80,10 @@ Description :
 		<cfscript>
 			event = "main.index";
 			args = "id=1";
-			myStruct["id"] = 1;
+			myStruct[ "id" ] = 1;
 			myStruct['cgihost'] = cgi.http_host;
 
-			testCacheKey = facade.buildEventKeyNoContext("unittest","main.index",args);
+			testCacheKey = facade.buildEventKeyNoContext( "unittest","main.index",args);
 			targetKey = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & hash(myStruct.toString());
 
 			AssertEquals( testCacheKey, targetKey  );

@@ -29,25 +29,25 @@ Description :
 		pool['obj1'].isExpired = false;
 		pool['obj1'].hits = 999;
 		
-		pool['obj2'].Created = dateAdd("n",-15,now());
-		pool['obj2'].lastAccessed = dateAdd("n",-14,now());
+		pool['obj2'].Created = dateAdd( "n",-15,now());
+		pool['obj2'].lastAccessed = dateAdd( "n",-14,now());
 		pool['obj2'].Timeout = 10;
 		pool['obj2'].isExpired = false;
 		pool['obj2'].hits = 555;
 		
-		pool['obj3'].Created = dateAdd("n",-15,now());
-		pool['obj3'].lastAccessed = dateAdd("n",-7,now());
+		pool['obj3'].Created = dateAdd( "n",-15,now());
+		pool['obj3'].lastAccessed = dateAdd( "n",-7,now());
 		pool['obj3'].Timeout = 10;
 		pool['obj3'].isExpired = false;
 		pool['obj3'].hits = 111;
 		
-		mockCM.$("getConfiguration",config);
-		mockIndexer.$("getPoolMetadata", pool).$("objectExists",true);
-		keys = structSort(pool,"numeric","asc","lastAccessed");
-		mockIndexer.$("getSortedKeys", keys);
-		mockIndexer.$("getObjectMetadata").$results(pool.obj2,pool.obj3,pool.obj1);
+		mockCM.$( "getConfiguration",config);
+		mockIndexer.$( "getPoolMetadata", pool).$( "objectExists",true);
+		keys = structSort(pool,"numeric","asc","lastAccessed" );
+		mockIndexer.$( "getSortedKeys", keys);
+		mockIndexer.$( "getObjectMetadata" ).$results(pool.obj2,pool.obj3,pool.obj1);
 		
-		lru = getMockBox().createMock("coldbox.system.cache.policies.LRU").init(mockCM);
+		lru = createMock( "coldbox.system.cache.policies.LRU" ).init(mockCM);
 		</cfscript>
 	</cffunction>
 	

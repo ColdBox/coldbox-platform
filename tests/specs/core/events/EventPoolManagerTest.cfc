@@ -1,7 +1,7 @@
 ﻿<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
-		manager = createMock("coldbox.system.core.events.EventPoolManager");
+		manager = createMock( "coldbox.system.core.events.EventPoolManager" );
 		manager.init( [ "onTest" ] );
 	}
 
@@ -21,52 +21,52 @@
 		manager.register(event);
 		assertEquals( manager.getObject( "Event" ), event );
 		assertTrue( isObject( manager.getEventPool( "onTest" ) ) );
-		manager.unregister("Event");
+		manager.unregister( "Event" );
 		try{
-			manager.getObject("Event");
-			fail("Event still exists");
+			manager.getObject( "Event" );
+			fail( "Event still exists" );
 		}
-		catch("EventPoolManager.ObjectNotFound" e){
+		catch( "EventPoolManager.ObjectNotFound" e){
 		}
-		catch(Any e){ fail("wrong throw"); }
+		catch(Any e){ fail( "wrong throw" ); }
 
 		manager.register(event);
 
 		// 2 type registration
-		manager.register(event,"luis");
-		assertEquals( manager.getObject("luis"), event);
-		assertTrue( isObject(manager.getEventPool("onTest")) );
-		manager.unregister("luis");
+		manager.register(event,"luis" );
+		assertEquals( manager.getObject( "luis" ), event);
+		assertTrue( isObject(manager.getEventPool( "onTest" )) );
+		manager.unregister( "luis" );
 		try{
-			manager.getObject("luis");
-			fail("Event still exists");
+			manager.getObject( "luis" );
+			fail( "Event still exists" );
 		}
-		catch("EventPoolManager.ObjectNotFound" e){}
-		catch(Any e){ fail("wrong throw"); }
+		catch( "EventPoolManager.ObjectNotFound" e){}
+		catch(Any e){ fail( "wrong throw" ); }
 
 		// 3 type registration
-		manager.register(event,"luis","onCreate");
-		assertEquals( manager.getObject("luis"), event);
-		assertTrue( isObject(manager.getEventPool("onCreate")) );
-		manager.unregister("luis");
+		manager.register(event,"luis","onCreate" );
+		assertEquals( manager.getObject( "luis" ), event);
+		assertTrue( isObject(manager.getEventPool( "onCreate" )) );
+		manager.unregister( "luis" );
 		try{
-			manager.getObject("luis");
-			fail("Event still exists");
+			manager.getObject( "luis" );
+			fail( "Event still exists" );
 		}
-		catch("EventPoolManager.ObjectNotFound" e){}
-		catch(Any e){ fail("wrong throw"); }
+		catch( "EventPoolManager.ObjectNotFound" e){}
+		catch(Any e){ fail( "wrong throw" ); }
 
 		// 4 type registration Annotation
-		manager.register(event,"luis");
-		assertEquals( manager.getObject("luis"), event);
-		assertTrue( isObject(manager.getEventPool("onAnnotation")) );
-		manager.unregister("luis");
+		manager.register(event,"luis" );
+		assertEquals( manager.getObject( "luis" ), event);
+		assertTrue( isObject(manager.getEventPool( "onAnnotation" )) );
+		manager.unregister( "luis" );
 		try{
-			manager.getObject("luis");
-			fail("Event still exists");
+			manager.getObject( "luis" );
+			fail( "Event still exists" );
 		}
-		catch("EventPoolManager.ObjectNotFound" e){}
-		catch(Any e){ fail("wrong throw"); }
+		catch( "EventPoolManager.ObjectNotFound" e){}
+		catch(Any e){ fail( "wrong throw" ); }
 	}
 
 	function testProcessStates(){

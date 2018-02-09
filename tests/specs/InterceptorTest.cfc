@@ -2,20 +2,20 @@
 <cfscript>
 
 	function setup(){
-		interceptor 	= getMockBox().createMock(className="coldbox.system.Interceptor");
-		mockIService 	= getMockBox().createMock(className="coldbox.system.web.services.InterceptorService",clearMethods=true);
-		mockController  = getMockBox().createMock(className="coldbox.system.web.Controller");
-		mockRS 			= getMockBox().createMock(className="coldbox.system.web.services.RequestService");
-		flashScope 		= getMockBox().createMock(className="coldbox.system.web.flash.MockFlash");
-		mockLogBox 		= getMockBox().createMock(className="coldbox.system.logging.LogBox");
-		mockLogger 		= getMockBox().createMock(className="coldbox.system.logging.Logger");
-		mockCacheBox    = getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
-		mockWireBox     = getMockBox().createEmptyMock("coldbox.system.ioc.Injector");
+		interceptor 	= createMock(className="coldbox.system.Interceptor" );
+		mockIService 	= createMock(className="coldbox.system.web.services.InterceptorService",clearMethods=true);
+		mockController  = createMock(className="coldbox.system.web.Controller" );
+		mockRS 			= createMock(className="coldbox.system.web.services.RequestService" );
+		flashScope 		= createMock(className="coldbox.system.web.flash.MockFlash" );
+		mockLogBox 		= createMock(className="coldbox.system.logging.LogBox" );
+		mockLogger 		= createMock(className="coldbox.system.logging.Logger" );
+		mockCacheBox    = createEmptyMock( "coldbox.system.cache.CacheFactory" );
+		mockWireBox     = createEmptyMock( "coldbox.system.ioc.Injector" );
 
 		mockController
 			.$( "getRequestService", mockRS )
 			.$( "getInterceptorService", mockIService )
-			.$( "getSetting").$args( "applicationHelper" ).$results( [] );
+			.$( "getSetting" ).$args( "applicationHelper" ).$results( [] );
 
 		mockController.setLogBox( mockLogBox );
 		mockController.setWireBox( mockWireBox );
@@ -30,26 +30,26 @@
 	}
 
 	function testProperties(){
-		assertEquals( interceptor.getProperty("debugMode"), true );
-		interceptor.setProperty("luis","majano");
-		assertEquals( interceptor.getProperty("luis"), "majano" );
+		assertEquals( interceptor.getProperty( "debugMode" ), true );
+		interceptor.setProperty( "luis","majano" );
+		assertEquals( interceptor.getProperty( "luis" ), "majano" );
 
-		assertTrue( interceptor.propertyExists("luis") );
+		assertTrue( interceptor.propertyExists( "luis" ) );
 	}
 
 	function testUnregister(){
-		mockController.$("getInterceptorService",mockIService);
-		mockIService.$("unregister",true);
+		mockController.$( "getInterceptorService",mockIService);
+		mockIService.$( "unregister",true);
 
-		interceptor.unregister("preProcess");
-		assertEquals( mockIService.$count("unregister"), 1 );
+		interceptor.unregister( "preProcess" );
+		assertEquals( mockIService.$count( "unregister" ), 1 );
 	}
 	function testRequestBuffer(){
-		mockBuffer = getMockBox().createMock(className="coldbox.system.core.util.RequestBuffer").init();
-		mockIService.$("getRequestBuffer",mockBuffer);
+		mockBuffer = createMock(className="coldbox.system.core.util.RequestBuffer" ).init();
+		mockIService.$( "getRequestBuffer",mockBuffer);
 
         interceptor.clearBuffer();
-		interceptor.appendToBuffer("Hello");
+		interceptor.appendToBuffer( "Hello" );
 		assertEquals( interceptor.getBufferString(), "Hello" );
 		assertEquals( interceptor.getBufferObject(), mockBuffer);
 

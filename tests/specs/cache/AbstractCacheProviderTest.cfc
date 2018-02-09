@@ -2,31 +2,31 @@
 <cfscript>
 
 	function setup(){
-		cp = getMockBox().createMock("coldbox.system.cache.AbstractCacheBoxProvider").init();
+		cp = createMock( "coldbox.system.cache.AbstractCacheBoxProvider" ).init();
 	}
 
 	function testName(){
-		cp.setName("unitTest");
+		cp.setName( "unitTest" );
 
 		assertEquals( "unitTest", cp.getName() );
 	}
 
 	function testEnabled(){
 		assertFalse( cp.isEnabled() );
-		cp.$property("enabled","instance",true);
+		cp.$property( "enabled","instance",true);
 		assertTrue( cp.isEnabled() );
 	}
 
 	function testReportingEnabled(){
 		assertFalse( cp.isEnabled() );
-		cp.$property("enabled","instance",true);
+		cp.$property( "enabled","instance",true);
 		assertTrue( cp.isEnabled() );
 	}
 
 	function testClearStatistics(){
-		mockStats = getMockBox().createMock("coldbox.system.cache.util.CacheStats");
-		mockStats.$("clearStatistics");
-		cp.$property("stats","instance",mockStats);
+		mockStats = createMock( "coldbox.system.cache.util.CacheStats" );
+		mockStats.$( "clearStatistics" );
+		cp.$property( "stats","instance",mockStats);
 		cp.clearStatistics();
 		asserttrue( arrayLen(mockStats.$callLog().clearStatistics) );
 		// debug( mockStats.$callLog() );
@@ -43,7 +43,7 @@
 	}
 
 	function testCacheFactory(){
-		mockFactory = getMockBox().createEmptyMock("coldbox.system.cache.CacheFactory");
+		mockFactory = createEmptyMock( "coldbox.system.cache.CacheFactory" );
 		cp.setCacheFactory( mockFactory );
 
 		assertEquals( mockFactory, cp.getCacheFactory() );
@@ -51,7 +51,7 @@
 
 
 	function testEventManager(){
-		mockEventManager = getMockBox().createStub();
+		mockEventManager = createStub();
 		cp.seteventManager( mockEventManager );
 
 		assertEquals( mockEventManager, cp.getEventManager() );

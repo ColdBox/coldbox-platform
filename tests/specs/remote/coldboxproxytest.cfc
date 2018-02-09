@@ -2,7 +2,7 @@
 
 		function setup(){
 			super.setup();
-			proxy = CreateObject("component","cbtestharness.remote.MyProxy");
+			proxy = CreateObject( "component","cbtestharness.remote.MyProxy" );
 		}
 
 		function teardown(){
@@ -10,7 +10,7 @@
 		}
 
 		function testRemotingUtil(){
-			makePublic(proxy, "getRemotingUtil");
+			makePublic(proxy, "getRemotingUtil" );
 			util = proxy.getRemotingUtil();
 			assertTrue( isObject(util) );
 		}
@@ -28,60 +28,60 @@
 			//Test With default ProxyReturnCollection = false
 			makePublic( proxy, "process" );
 			results = proxy.process(event='proxy.getIntroArrays');
-			AssertTrue( isArray(results), "Getting Array");
+			AssertTrue( isArray(results), "Getting Array" );
 
 			//test other process
 			results = proxy.process(event='proxy.getIntroStructure');
-			AssertTrue( isStruct(results), "Getting Structure");
+			AssertTrue( isStruct(results), "Getting Structure" );
 		}
 
 		function testProxyWithCollection(){
 			var results = "";
 
 			//Set return setting
-			application.cbController.setSetting("ProxyReturnCollection",true);
+			application.cbController.setSetting( "ProxyReturnCollection",true);
 
 			//Test With default ProxyReturnCollection = false
 			makePublic( proxy, "process" );
 			results = proxy.process(event='proxy.getIntroArraysCollection');
-			AssertTrue( isStruct(results), "Collection Test");
-			AssertTrue( isArray(results.myArray), "Getting Array From Collection");
+			AssertTrue( isStruct(results), "Collection Test" );
+			AssertTrue( isArray(results.myArray), "Getting Array From Collection" );
 
-			application.cbController.setSetting("ProxyReturnCollection",false);
+			application.cbController.setSetting( "ProxyReturnCollection",false);
 		}
 
 		function testProxyInterceptions(){
 			var results = "";
 
 			//Announce interception
-			makePublic(proxy,"announceInterception");
+			makePublic(proxy,"announceInterception" );
 			results = proxy.announceInterception(state='onLog');
-			AssertTrue(results,"onLog intercepted");
+			AssertTrue(results,"onLog intercepted" );
 		}
 
 		function testVerifyColdBox(){
 			makePublic( proxy, "verifyColdBox" );
 			assertTrue( proxy.verifyColdBox() );
-			structDelete(application, "cbController");
-			expectException("ColdBoxProxy.ControllerIllegalState");
+			structDelete(application, "cbController" );
+			expectException( "ColdBoxProxy.ControllerIllegalState" );
 			proxy.verifyColdBox();
 		}
 
 		function testGetCacheBox(){
-			makePublic(proxy,"getCacheBox");
+			makePublic(proxy,"getCacheBox" );
 			assertTrue( isObject( proxy.getCacheBox() ) );
 		}
 
 		function testGetWireBox(){
-			makePublic(proxy,"getWireBox");
+			makePublic(proxy,"getWireBox" );
 			assertTrue( isObject( proxy.getWireBox() ) );
 		}
 
 		function testGetInstance(){
-			makePublic(proxy,"getModel");
-			makePublic(proxy,"getInstance");
-			assertTrue( isObject( proxy.getInstance("testModel") ) );
-			assertTrue( isObject( proxy.getModel("testModel") ) );
+			makePublic(proxy,"getModel" );
+			makePublic(proxy,"getInstance" );
+			assertTrue( isObject( proxy.getInstance( "testModel" ) ) );
+			assertTrue( isObject( proxy.getModel( "testModel" ) ) );
 		}
 
 		function testProxyAppLoading(){
@@ -96,23 +96,23 @@
 		}
 
 		function testLogBox(){
-			makePublic(proxy,"getLogBox");
-			makePublic(proxy,"getRootLogger");
-			makePublic(proxy,"getLogger");
+			makePublic(proxy,"getLogBox" );
+			makePublic(proxy,"getRootLogger" );
+			makePublic(proxy,"getLogger" );
 			assertEquals(getController().getLogBox(), proxy.getLogBox());
 			assertEquals(getController().getLogBox().getRootLogger(), proxy.getRootLogger());
 			assertEquals(getController().getLogBox().getLogger('unittest'), proxy.getLogger('unittest'));
 		}
 
 		function testGetInterceptor(){
-			makePublic(proxy,"getInterceptor");
-			assertTrue( isObject( proxy.getInterceptor("SES") ) );
+			makePublic(proxy,"getInterceptor" );
+			assertTrue( isObject( proxy.getInterceptor( "SES" ) ) );
 		}
 
 		function testGetCache(){
-			makePublic(proxy,"getCache");
+			makePublic(proxy,"getCache" );
 			assertTrue( isObject( proxy.getCache() ) );
-			assertTrue( isObject( proxy.getCache("template") ) );
+			assertTrue( isObject( proxy.getCache( "template" ) ) );
 
 		}
 

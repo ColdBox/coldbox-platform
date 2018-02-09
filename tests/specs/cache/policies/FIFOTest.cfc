@@ -27,21 +27,21 @@ Description :
 		pool['obj1'].Created = now();
 		pool['obj1'].Timeout = 5;
 		pool['obj1'].isExpired = false;
-		pool['obj2'].Created = dateAdd("n",-7,now());
+		pool['obj2'].Created = dateAdd( "n",-7,now());
 		pool['obj2'].Timeout = 10;
 		pool['obj2'].isExpired = false;
-		pool['obj3'].Created = dateAdd("n",-6,now());
+		pool['obj3'].Created = dateAdd( "n",-6,now());
 		pool['obj3'].Timeout = 10;
 		pool['obj3'].isExpired = false;
 
-		mockCM.$("getConfiguration",config);
-		mockIndexer.$("getPoolMetadata", pool).$("objectExists",true);
-		keys = structSort(pool,"numeric","asc","Created");
+		mockCM.$( "getConfiguration",config);
+		mockIndexer.$( "getPoolMetadata", pool).$( "objectExists",true);
+		keys = structSort(pool,"numeric","asc","Created" );
 
-		mockIndexer.$("getSortedKeys", keys);
-		mockIndexer.$("getObjectMetadata").$results(pool.obj2,pool.obj3,pool.obj1);
+		mockIndexer.$( "getSortedKeys", keys);
+		mockIndexer.$( "getObjectMetadata" ).$results(pool.obj2,pool.obj3,pool.obj1);
 
-		fifo = getMockBox().createMock("coldbox.system.cache.policies.FIFO").init(mockCM);
+		fifo = createMock( "coldbox.system.cache.policies.FIFO" ).init(mockCM);
 
 		</cfscript>
 	</cffunction>

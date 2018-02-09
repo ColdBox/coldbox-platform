@@ -11,10 +11,10 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		
 		dirPath = expandPath( "/tests/logs" );
 		if( directoryExists( dirPath ) ){
-			directoryDelete( expandPath("/tests/logs"), true );
+			directoryDelete( expandPath( "/tests/logs" ), true );
 		}
 
-		props = { filePath=expandPath("/tests/logs"), autoExpand=false };
+		props = { filePath=expandPath( "/tests/logs" ), autoExpand=false };
 		// debug(props);
 		fileappender = createMock( "coldbox.system.logging.appenders.FileAppender" );
 		

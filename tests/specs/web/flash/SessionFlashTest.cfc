@@ -2,8 +2,8 @@
 <cfscript>
 	this.loadColdBox = false;
 	function setup(){
-		flash = getMockBox().createMock("coldbox.system.web.flash.SessionFlash");
-		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
+		flash = createMock( "coldbox.system.web.flash.SessionFlash" );
+		mockController = createMock(className="coldbox.system.web.Controller" );
 		flash.init(mockController);
 		
 		//test scope
@@ -23,7 +23,7 @@
 		assertFalse( structKeyExists(session, flash.getFlashKey() ));
 	}
 	function testSaveFlash(){
-		flash.$("getScope",testscope);
+		flash.$( "getScope",testscope);
 		flash.saveFlash();
 		assertEquals( session[flash.getFlashKey()], testscope );
 	}

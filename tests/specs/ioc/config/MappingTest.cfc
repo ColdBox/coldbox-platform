@@ -4,7 +4,7 @@
 
 	function setup(){
 		super.setup();
-		mapping = getMockBox().createMock("coldbox.system.ioc.config.Mapping").init("UnitTest");
+		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "UnitTest" );
 	}
 
 	function testInit(){
@@ -14,28 +14,28 @@
 
 	function testProcessMemento(){
 		var data = {
-			alias=["funky"],
+			alias=[ "funky" ],
 			type="CFC",
 			path="my.models.Funky",
 			eagerInit = true,
 			threadSafe = true,
 			scope="singleton",
-			cache={key="data", timeout="30"},
+			cache={key="data", timeout="30" },
 			DIConstructorArgs = [
-				{name="val", value="0"},
-				{name="transfer", ref="transfer"}
+				{name="val", value="0" },
+				{name="transfer", ref="transfer" }
 			],
 			DIProperties = [
-				{name="user", dsl="provider:User"},
+				{name="user", dsl="provider:User" },
 				{name="nonRequired", dsl="provider:User", required=false}
 			],
 			DISetters = [
-				{name="Joke",value="You!"},
-				{name="service", ref="MyService", argName="MyService"}
+				{name="Joke",value="You!" },
+				{name="service", ref="MyService", argName="MyService" }
 			],
 			DIMethodArgs = [
-				{name="Joke",value="You!"},
-				{name="service", ref="MyService"}
+				{name="Joke",value="You!" },
+				{name="service", ref="MyService" }
 			]
 		};
 
@@ -63,8 +63,8 @@
 
 		setters = mapping.getDISetters();
 		assertEquals( 2, arrayLen(setters));
-		assertEquals("Joke", setters[1].argName );
-		assertEquals("MyService", setters[2].argName );
+		assertEquals( "Joke", setters[1].argName );
+		assertEquals( "MyService", setters[2].argName );
 
 
 		args = mapping.getDIMethodArguments();
@@ -84,35 +84,35 @@
 	function testProcessMementoWithExcludes(){
 		var data = {
 			name="abstractService",
-			alias=["abstractService"],
+			alias=[ "abstractService" ],
 			type="CFC",
 			path="path.to.abstractService",
 			eagerInit = true,
 			scope="singleton",
-			cache={key="data", timeout="30"},
+			cache={key="data", timeout="30" },
 			DIConstructorArgs = [
-				{name="val", value="0"},
-				{name="transfer", ref="transfer"}
+				{name="val", value="0" },
+				{name="transfer", ref="transfer" }
 			],
 			DIProperties = [
-				{name="user", dsl="provider:User"}
+				{name="user", dsl="provider:User" }
 			],
 			DISetters = [
-				{name="Joke",value="You!"},
-				{name="service", ref="MyService", argName="MyService"}
+				{name="Joke",value="You!" },
+				{name="service", ref="MyService", argName="MyService" }
 			],
 			DIMethodArgs = [
-				{name="Joke",value="You!"},
-				{name="service", ref="MyService"}
+				{name="Joke",value="You!" },
+				{name="service", ref="MyService" }
 			]
 		};
 
-		mapping.processMemento(data,"name,alias,path");
+		mapping.processMemento(data,"name,alias,path" );
 
 		// name should still be "UnitTest" and not "abstractService"
 		assertEquals( "UnitTest", mapping.getName() );
 		assertNotEquals( data.name, mapping.getName() );
-		// alias should still be empty array [] and not ["abstractService"]
+		// alias should still be empty array [] and not [ "abstractService" ]
 		assertEquals( 0, arrayLen(mapping.getAlias()) );
 		assertNotEquals( data.alias, mapping.getAlias() );
 		// path should still be "" and not "path.to.abstractService"
@@ -134,8 +134,8 @@
 
 		setters = mapping.getDISetters();
 		assertEquals( 2, arrayLen(setters));
-		assertEquals("Joke", setters[1].argName );
-		assertEquals("MyService", setters[2].argName );
+		assertEquals( "Joke", setters[1].argName );
+		assertEquals( "MyService", setters[2].argName );
 
 		assertEquals( 2, arrayLen(mapping.getDIMethodArguments()));
 		assertEquals( false, mapping.isAspect() );
@@ -149,7 +149,7 @@
 
 	function testProviderMethods(){
 		assertEquals(0, arrayLen( mapping.getProviderMethods()) );
-		mapping.addProviderMethod("createRandom", "MyRandomOBJ");
+		mapping.addProviderMethod( "createRandom", "MyRandomOBJ" );
 		assertEquals(1, arrayLen( mapping.getProviderMethods()) );
 		methods = mapping.getProviderMethods();
 		assertEquals( "MyRandomOBJ", methods[1].mapping);

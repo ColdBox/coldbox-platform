@@ -21,11 +21,11 @@ Description :
 	function testRegisterHandlers(){
 		var context = "";
 		var fs = "/";
-		var dummyFile = getController().getSetting("HandlersPath") & fs & "dummy.cfc";
+		var dummyFile = getController().getSetting( "HandlersPath" ) & fs & "dummy.cfc";
 
 		createFile( dummyFile );
 		getController().getHandlerService().registerHandlers();
-		AssertTrue( listFindNocase(getController().getSetting("RegisteredHandlers"), "dummy") );
+		AssertTrue( listFindNocase(getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
 		removeFile( dummyFile );
 	}
 
@@ -41,7 +41,7 @@ Description :
 		<cfargument name="filename"	 		type="String"  required="yes" 	 hint="The absolute path of the file to create.">
 		<!--- ************************************************************* --->
 		<cfscript>
-		var fileObj = createObject("java","java.io.File").init(JavaCast("string",arguments.filename));
+		var fileObj = createObject( "java","java.io.File" ).init(JavaCast( "string",arguments.filename));
 		fileObj.createNewFile();
 		</cfscript>
 	</cffunction>
@@ -51,7 +51,7 @@ Description :
 		<cfargument name="filename"	 		type="string"  required="yes" 	 hint="The absolute path to the file.">
 		<!--- ************************************************************* --->
 		<cfscript>
-		var fileObj = createObject("java","java.io.File").init(JavaCast("string",arguments.filename));
+		var fileObj = createObject( "java","java.io.File" ).init(JavaCast( "string",arguments.filename));
 		return fileObj.delete();
 		</cfscript>
 	</cffunction>

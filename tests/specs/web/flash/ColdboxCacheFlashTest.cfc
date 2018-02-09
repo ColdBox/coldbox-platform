@@ -10,9 +10,9 @@
 
 				// mocks
 				session.sessionid = createUUID();
-				mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
-				mockCache = getMockBox().createMock(className="coldbox.system.cache.providers.CacheBoxProvider",clearMethods=true);
-				mockController.$("getCache",mockCache).$("settingExists",false);
+				mockController = createMock(className="coldbox.system.web.Controller",clearMethods=true);
+				mockCache = createMock(className="coldbox.system.cache.providers.CacheBoxProvider",clearMethods=true);
+				mockController.$( "getCache",mockCache).$( "settingExists",false);
 
 				// Init Flash
 				flash.init( mockController );
@@ -34,20 +34,20 @@
 			});
 
 			it( "can save the flash scope", function(){
-				flash.$("getScope",testscope);
-				mockCache.$("set",true);
+				flash.$( "getScope",testscope);
+				mockCache.$( "set",true);
 				flash.saveFlash();
 				expect( arrayLen( mockCache.$callLog().set ) ).toBeTrue();
 			});
 
 			it( "can check if the flash scope exists", function(){
-				mockCache.$("lookup",true);
+				mockCache.$( "lookup",true);
 				expect( flash.flashExists() ).toBeTrue();
 			});
 
 			it( "can get the flash scope", function(){
-				mockCache.$("get",testScope);
-				flash.$("flashExists",true);
+				mockCache.$( "get",testScope);
+				flash.$( "flashExists",true);
 				expect( flash.getFlash() ).toBe( testScope );
 			});
 

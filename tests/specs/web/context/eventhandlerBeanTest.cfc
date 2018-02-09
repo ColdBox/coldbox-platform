@@ -4,7 +4,7 @@
 
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.ehbean = createObject("component","coldbox.system.web.context.EventHandlerBean");
+			this.ehbean = createObject( "component","coldbox.system.web.context.EventHandlerBean" );
 
 			this.instance.invocationPath = "coldbox.test-harness";
 			this.instance.handler = "general";
@@ -31,7 +31,7 @@
 	<cffunction name="testgetFullEvent" access="public" returnType="void">
 		<cfscript>
 			assertEquals( this.ehBean.getFullEvent(), this.instance.handler & "." & this.instance.method );
-			this.ehBean.setModule("luis");
+			this.ehBean.setModule( "luis" );
 			assertEquals( this.ehBean.getFullEvent(), "luis:" & this.instance.handler & "." & this.instance.method );
 		</cfscript>
 	</cffunction>
@@ -86,7 +86,7 @@
 		<cfscript>
 			assertEquals( this.ehBean.getModule(), this.instance.module );
 			this.ehBean.setModule('TEST');
-			assertEquals( this.ehBean.getModule(), "TEST");
+			assertEquals( this.ehBean.getModule(), "TEST" );
 
 		</cfscript>
 	</cffunction>

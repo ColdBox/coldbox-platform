@@ -1,7 +1,7 @@
 ﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
 <cfscript>
 	function setup(){
-		appender = getMockBox().createMock(className="coldbox.system.logging.AbstractAppender");
+		appender = createMock(className="coldbox.system.logging.AbstractAppender" );
 		appender.init('mytest',structnew());
 	}
 	
