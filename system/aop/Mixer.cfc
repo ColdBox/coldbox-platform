@@ -278,25 +278,32 @@ component accessors="true"{
 		required aspects
 	){
 		var udfOut 			= createObject( "java","java.lang.StringBuilder" ).init( '' );
-		var tmpFile 		= variables.properties.generationPath & "/" & variables.uuid.randomUUID().toString() & ".cfm";
-		var expandedFile 	= expandPath( tmpFile );
-		var lb				= "#chr(13)##chr(10)#";
+		var lb				= "#chr( 13 )##chr( 10 )#";
 		var fncMD			= {
-			name = "", access = "public", output="false", returnType = "any"
+			name       = "", 
+			access     = "public", 
+			output     ="false", 
+			returnType = "any"
 		};
 		var mappingName 	= arguments.mapping.getName();
 		var mdJSON			= urlEncodedFormat( serializeJSON( arguments.jointPointMD ) );
 
 		// MD proxy Defaults
 		fncMD.name = arguments.jointPointMD.name;
-		if( structKeyExists( arguments.jointPointMD, "access" ) ){ fncMD.access = arguments.jointPointMD.access; }
-		if( structKeyExists( arguments.jointPointMD, "output" ) ){ fncMD.output = arguments.jointPointMD.output; }
-		if( structKeyExists( arguments.jointPointMD, "returntype" ) ){ fncMD.returntype = arguments.jointPointMD.returnType; }
-
+		if( structKeyExists( arguments.jointPointMD, "access" ) ){ 
+			fncMD.access = arguments.jointPointMD.access; 
+		}
+		if( structKeyExists( arguments.jointPointMD, "output" ) ){ 
+			fncMD.output = arguments.jointPointMD.output; 
+		}
+		if( structKeyExists( arguments.jointPointMD, "returntype" ) ){ 
+			fncMD.returntype = arguments.jointPointMD.returnType; 
+		}
 		// Create Original Method Proxy Signature
 		if( fncMD.access eq "public" ){
 			udfOut.append( '<cfset this[ "#arguments.jointpoint#" ] = variables["aop_#hash( arguments.jointpoint )#" ]>#lb#' );
 		}
+
 		var thisFNC = '
 		<:cffunction name="aop_#hash( arguments.jointpoint )#" 
 					access="#fncMD.access#" 
@@ -323,31 +330,42 @@ component accessors="true"{
 		<cfset variables[ "#arguments.jointpoint#" ] = variables[ "aop_#hash( arguments.jointpoint )#" ]>
 		<cfset structDelete( variables, "aop_#hash( jointpoint )#" ) >
 		';
+
 		// Do : replacement, due to inline compilation avoidances
 		thisFNC = replace( thisFNC, "<:", "<", "all" );
 		udfOut.append( thisFNC );
+		
+		// MD5 Content Checks
+		var codeSignature 	= hash( udfOUt.toString() );
+		var tmpFile 		= variables.properties.generationPath & "/" & codeSignature & ".cfm";
+		var expandedFile 	= expandPath( tmpFile );
 
 		try{
-			// Write it out to the generation space
-			variables.mixerUtil.writeAspect( expandedFile, udfOUt.toString() );
+			// Write it out to the generation space if it does not exist
+			if( !fileExists( expandedFile ) ){
+				variables.mixerUtil.writeAspect( expandedFile, udfOUt.toString() );
+			}
+
 			// Save jointpoint in method targets alongside the interceptors
 			arguments.target.$wbAOPStoreJointPoint( arguments.jointpoint, buildInterceptors( arguments.aspects) );
 			// Remove the old method to proxy it
 			arguments.target.$wbAOPRemove( arguments.jointpoint );
 			// Mix In generated aspect
 			arguments.target.$wbAOPInclude( tmpFile );
+			
 			// Remove Temp Aspect from disk
-			variables.mixerUtil.removeAspect( expandedFile );
+			//variables.mixerUtil.removeAspect( expandedFile );
+			
 			// debug info
 			if( variables.log.canDebug() ){
 				variables.log.debug( "Target (#mappingName#) weaved with new (#arguments.jointpoint#) method and with the following aspects: #arguments.aspects.toString()#" );
 			}
-		} catch(Any e){
+		} catch( Any e ){
 			// Remove Stub, just in case.
 			variables.mixerUtil.removeAspect( expandedFile );
 			// log it
 			if( variables.log.canError() ){
-				variables.log.error("Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#", e);
+				variables.log.error( "Exception mixing in AOP aspect for (#mappingName#): #e.message# #e.detail#", e );
 			}
 			// throw the exception
 			throw(

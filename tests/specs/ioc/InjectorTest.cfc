@@ -12,9 +12,10 @@
 		injector.init();
 
 		mockLogger = createStub().$( "canDebug", false).$( "error" );
-		util = createMock( "coldbox.system.core.util.Util" ).$( "getInheritedMetaData" ).$results({path="path.to.object" });
-		injector.$property( "utility","variables",util);
-		injector.$property( "log","variables", mockLogger);
+		util = createMock( "coldbox.system.core.util.Util" )
+			.$( "getInheritedMetaData" ).$results( {path="path.to.object" } );
+		injector.setUtility( util );
+		injector.setLog( mockLogger );
 	}
 
 	function testShutdown(){
@@ -23,7 +24,7 @@
 		cachebox     = createStub().$( "shutdown" );
 		eventManager = createStub().$( "processState" );
 		injector.setParent( parent );
-		injector.$property( "cachebox", "variables", cachebox)
+		injector.$property( "cachebox", "variables", cachebox )
 			.$property( "eventManager", "variables", eventManager )
 			.$( "isCacheBoxLinked", true )
 			.$( "removeFromScope", injector );
