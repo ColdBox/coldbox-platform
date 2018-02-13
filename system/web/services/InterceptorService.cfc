@@ -5,7 +5,7 @@
 * This service takes care of all events and interceptions in ColdBox
 */
 component extends="coldbox.system.web.services.BaseService" accessors="true"{
-	
+
 	/**
 	 * Interception Points which can be announced
 	 */
@@ -68,7 +68,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.interceptorConfig = controller.getSetting( "InterceptorConfig" );
 		// Register CFC Configuration Object
 		registerInterceptor(
-			interceptorObject 	= controller.getSetting( 'coldboxConfig' ), 
+			interceptorObject 	= controller.getSetting( 'coldboxConfig' ),
 			interceptorName 	= "coldboxConfig"
 		);
 
@@ -77,7 +77,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Run once config loads
-	 * 
+	 *
 	 * @return InterceptorService
 	 */
 	function onConfigurationLoad(){
@@ -88,7 +88,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Registers all the interceptors configured
-	 * 
+	 *
 	 * @return InterceptorService
 	 */
 	function registerInterceptors(){
@@ -123,7 +123,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	* Process a State's Interceptors
 	* Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
 	*
-	* This is needed so interceptors can write to the page output buffer 
+	* This is needed so interceptors can write to the page output buffer
 	* @output true
 	*
 	* @state An interception state to process
@@ -134,31 +134,31 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	* @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
 	* @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout
 	*/
-	public any function processState( 
+	public any function processState(
 		required any state,
 		any interceptData=structNew(),
 		boolean async=false,
 		boolean asyncAll=false,
 		boolean asyncAllJoin=true,
 		string asyncPriority='NORMAL',
-		numeric asyncJoinTimeout=0 
+		numeric asyncJoinTimeout=0
 	){
 		// Validate Incoming State
-		if( variables.interceptorConfig.throwOnInvalidStates AND NOT 
+		if( variables.interceptorConfig.throwOnInvalidStates AND NOT
 			arrayFindNoCase( variables.interceptionPoints, arguments.state )
 		){
-			throw( 
-				message = "The interception state sent in to process is not valid: #arguments.state#", 
-				detail 	= "Valid states are #variables.interceptionPoints.toString()#", 
+			throw(
+				message = "The interception state sent in to process is not valid: #arguments.state#",
+				detail 	= "Valid states are #variables.interceptionPoints.toString()#",
 				type 	= "InterceptorService.InvalidInterceptionState"
 			);
 		}
 
-		// Init the Request Buffer
-		var requestBuffer = new coldbox.system.core.util.RequestBuffer();
-
 		// Process The State if it exists, else just exit out
 		if( structKeyExists( variables.interceptionStates, arguments.state ) ){
+			// Init the Request Buffer
+			var requestBuffer = new coldbox.system.core.util.RequestBuffer();
+
 			// Execute Interception in the state object
 			arguments.event 	= controller.getRequestService().getContext();
 			arguments.buffer 	= requestBuffer;
@@ -167,14 +167,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			var results 		= variables.interceptionStates
 				.find( arguments.state )
 				.process( argumentCollection=arguments );
+
+			// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace
+			if( requestBuffer.isBufferInScope() ) {
+				writeOutput( requestBuffer.getString() );
+				requestBuffer.clear();
+			}
 		}
 
-		// Process Output Buffer: looks weird, but we are outputting stuff and CF loves its whitespace
-		if( requestBuffer.isBufferInScope() ) {
-			writeOutput( requestBuffer.getString() );
-			requestBuffer.clear();
-		}
-		
 		// Any results
 		if( !isNull( results ) ){
 			return results;
@@ -189,7 +189,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @interceptorProperties The structure of properties to register this interceptor with.
 	 * @customPoints A comma delimmited list or array of custom interception points, if the object or class sent in observes them.
 	 * @interceptorName The name to use for the interceptor when stored. If not used, we will use the name found in the object's class
-	 * 
+	 *
 	 * @return InterceptorService
 	 */
 	function registerInterceptor(
@@ -215,16 +215,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 			oInterceptor = arguments.interceptorObject;
 		} else {
-			throw( 
+			throw(
 				message = "Invalid registration.",
 				detail  = "You did not send in an interceptorClass or interceptorObject argument for registration",
-				type    = "InterceptorService.InvalidRegistration" 
+				type    = "InterceptorService.InvalidRegistration"
 			);
 		}
 
-		lock 	name="interceptorService.#getController().getAppHash()#.registerInterceptor.#objectName#" 
-				type="exclusive" 
-				throwontimeout="true" 
+		lock 	name="interceptorService.#getController().getAppHash()#.registerInterceptor.#objectName#"
+				type="exclusive"
+				throwontimeout="true"
 				timeout="30"
 		{
 			// Did we send in a class to instantiate
@@ -274,7 +274,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @interceptorClass The class path to instantiate
 	 * @interceptorName The unique name of the object
 	 * @interceptorProperties Construction properties
-	 * 
+	 *
 	 * @return The newly created interceptor
 	 */
 	function createInterceptor(
@@ -289,9 +289,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			// wirebox lazy load checks
 			wireboxSetup();
 			// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-			wirebox.registerNewInstance( 
-					name         = "interceptor-" & arguments.interceptorName, 
-					instancePath = arguments.interceptorClass 
+			wirebox.registerNewInstance(
+					name         = "interceptor-" & arguments.interceptorName,
+					instancePath = arguments.interceptorClass
 				)
 				.setScope( wirebox.getBinder().SCOPES.SINGLETON )
 				.setThreadSafe( true )
@@ -301,7 +301,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 		// retrieve, build and wire from wirebox
 		var oInterceptor = wirebox.getInstance( "interceptor-" & arguments.interceptorName );
-		
+
 		// check for virtual $super, if it does, pass new properties
 		if( structKeyExists( oInterceptor, "$super" ) ){
 			oInterceptor.$super.setProperties( arguments.interceptorProperties );
@@ -320,13 +320,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		for( var key in states ){
 			var state = states[ key ];
-			if( state.exists( interceptorKey ) ){ 
-				return state.getInterceptor( interceptorKey ); 
+			if( state.exists( interceptorKey ) ){
+				return state.getInterceptor( interceptorKey );
 			}
 		}
 
 		// Throw Exception
-		throw( 
+		throw(
 			message = "Interceptor: #arguments.interceptorName# not found in any state: #structKeyList( states )#.",
 			type    = "InterceptorService.InterceptorNotFound"
 		);
@@ -336,7 +336,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * Append a list of custom interception points to the CORE interception points and returns itself
 	 *
 	 * @customPoints A comma delimmited list or array of custom interception points to append. If they already exists, then they will not be added again.
-	 * 
+	 *
 	 * @return  The current interception points
 	 */
 	array function appendInterceptionPoints( required customPoints ){
@@ -357,7 +357,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Get a State Container, it will return a blank structure if the state is not found.
-	 * 
+	 *
 	 * @state The state to retrieve
 	 */
 	function getStateContainer( required state ){
@@ -405,7 +405,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		interceptorMD
 	){
 		var oInterceptorState = "";
-		
+
 		// Init md if not passed
 		if( not structKeyExists( arguments, "interceptorMD") ){
 			arguments.interceptorMD = newPointRecord();
@@ -413,10 +413,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Verify if state doesn't exist, create it
 		if ( NOT structKeyExists( variables.interceptionStates, arguments.state ) ){
-			oInterceptorState = new coldbox.system.web.context.InterceptorState( 
-				state 		= arguments.state, 
-				logbox 		= controller.getLogBox(), 
-				controller 	= controller 
+			oInterceptorState = new coldbox.system.web.context.InterceptorState(
+				state 		= arguments.state,
+				logbox 		= controller.getLogBox(),
+				controller 	= controller
 			);
 			variables.interceptionStates[ arguments.state ] = oInterceptorState;
 		} else {
@@ -451,12 +451,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	private InterceptorService function wireboxSetup(){
 		var wirebox = controller.getWireBox();
-		
+
 		// Check if handler mapped?
 		if( NOT wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ){
 			// feed the base class
 			wirebox.registerNewInstance(
-					name         = variables.INTERCEPTOR_BASE_CLASS, 
+					name         = variables.INTERCEPTOR_BASE_CLASS,
 					instancePath = variables.INTERCEPTOR_BASE_CLASS
 				)
 				.addDIConstructorArgument( name="controller", value=controller )
@@ -492,18 +492,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					 NOT structKeyExists( pointsFound, arguments.metadata.functions[ x ].name ) ){
 					// Create point record
 					var pointRecord = newPointRecord();
-					
+
 					// Discover point information
-					if( structKeyExists( arguments.metadata.functions[ x ], "async" ) ){ 
-						pointRecord.async = true; 
+					if( structKeyExists( arguments.metadata.functions[ x ], "async" ) ){
+						pointRecord.async = true;
 					}
-					if( structKeyExists( arguments.metadata.functions[ x ], "asyncPriority" ) ){ 
-						pointRecord.asyncPriority = arguments.metadata.functions[ x ].asyncPriority; 
+					if( structKeyExists( arguments.metadata.functions[ x ], "asyncPriority" ) ){
+						pointRecord.asyncPriority = arguments.metadata.functions[ x ].asyncPriority;
 					}
-					if( structKeyExists( arguments.metadata.functions[ x ], "eventPattern" ) ){ 
-						pointRecord.eventPattern = arguments.metadata.functions[ x ].eventPattern; 
+					if( structKeyExists( arguments.metadata.functions[ x ], "eventPattern" ) ){
+						pointRecord.eventPattern = arguments.metadata.functions[ x ].eventPattern;
 					}
-					
+
 					// Insert to metadata struct of points found
 					structInsert( pointsFound, arguments.metadata.functions[ x ].name, pointRecord );
 				}
@@ -512,10 +512,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Start Registering inheritances
-		if( 
-			structKeyExists( arguments.metadata, "extends" ) 
+		if(
+			structKeyExists( arguments.metadata, "extends" )
 			&&
-			( arguments.metadata.extends.name neq "coldbox.system.Interceptor" 
+			( arguments.metadata.extends.name neq "coldbox.system.Interceptor"
 				&&
 			 arguments.metadata.extends.name neq "coldbox.system.EventHandler" )
 		){
