@@ -1,8 +1,7 @@
 {
-    "output": [],
     "rule": [],
     "includes": [
-        { "code": "AVOID_USING_STRUCTNEW" },
+		{ "code": "AVOID_USING_STRUCTNEW" },
         { "code": "AVOID_USING_ARRAYNEW" },
         { "code": "AVOID_USING_CFINCLUDE_TAG" },
 		{ "code": "AVOID_USING_CFABORT_TAG" },
@@ -62,7 +61,6 @@
 		{ "code": "VAR_IS_TEMPORARY" }
     ],
     "inheritParent": false,
-    "inheritPlugins": true,
     "parameters": {
 		"TooManyFunctionsChecker.maximum" : 20
 	}

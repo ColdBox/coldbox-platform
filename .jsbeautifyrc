@@ -1,0 +1,42 @@
+{
+    "beautify.language": {
+        "js": ["js","json","cfc"],
+        "css": ["css", "scss"],
+        "html": ["htm", "html", "cfml", "cfm"]
+    },
+    "brace_style": "collapse",
+    "indent_with_tabs": true,
+    "indent_size": 4,
+    "indent_level": 0,
+    "preserve_newlines": true,
+    "max_preserve_newlines": 5,
+    "html": {
+        "allowed_file_extensions": ["htm", "html", "xhtml", "shtml", "xml", "svg", "cfm", "cfml"],
+        "indent_scripts": "keep",
+        "indent_inner_html": true,
+        "indent_body_inner_html": true,
+        "indent_handlebars": true,
+        "unformatted": ["code", "pre"],
+        "content_unformatted": ["pre", "code"],
+        "wrap_line_length": 0
+    },
+    "css": {
+        "selector_separator_newline": true
+    },
+    "js": {
+        "break_chained_methods": true,
+        "comma_first": false,
+        "e4x": false,
+        "jslint_happy": true,
+        "keep_function_indentation": true,
+        "keep_array_indentation": true,
+        "space_after_anon_function": false,
+        "spaceBeforeConditional": true,
+        "space_in_paren": true,
+        "space_in_empty_paren": false,
+        "space_before_conditional": true,
+        "operator_position": "before-newline",
+        "unescape_strings": false,
+        "wrap_line_length": 0
+    }
+}
