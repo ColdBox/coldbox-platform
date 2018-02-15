@@ -444,7 +444,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		var handlerArray = getHandlerListing( handlersPath );
 
 		// Set registered Handlers
-		controller.setSetting( name="registeredHandlers", value=arrayToList( handlerArray ) );
+		variables.registeredHandlers = arrayToList( handlerArray );
+		controller.setSetting( name="registeredHandlers", value=variables.registeredHandlers );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -463,7 +464,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Set registered External Handlers
-		controller.setSetting( name="registeredExternalHandlers", value=arrayToList( handlersExternalArray ) );
+		variables.registeredExternalHandlers = arrayToList( handlersExternalArray );
+		controller.setSetting( name="registeredExternalHandlers", value=variables.registeredExternalHandlers );
 
 		return this;
 	}
