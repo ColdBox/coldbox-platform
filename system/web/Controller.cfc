@@ -604,6 +604,17 @@ component serializable="false" accessors="true"{
 
 			// SES Invalid HTTP Routing
 			if( arguments.defaultEvent && oRequestContext.isInvalidHTTPMethod() ){
+				
+				if( oHandler._actionExists( "onInvalidHTTPMethod" ) ){
+					return oHandler.onInvalidHTTPMethod( 
+						event			= oRequestContext,
+						rc				= args.rc,
+						prc				= args.prc,
+						faultAction		= oRequestContext.getCurrentRoutedURL(),
+						eventArguments	= arguments.eventArguments 
+					);
+				}
+				
 				// Do we have the invalidHTTPMethodHandler setting? If so, call it.
 				if( len( getSetting( "invalidHTTPMethodHandler" ) ) ){
 					return _runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
