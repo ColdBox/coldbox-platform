@@ -512,7 +512,123 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         requestContext.getStatusCode = variables.getStatusCode;
 
 		return requestContext;
-	}
+    }
+
+    /**
+     * Shortcut method to making a request through the framework.
+     *
+     * @route The route to execute.
+     * @params Params to pass to the `rc` scope.
+     * @headers Custom headers to pass as from the request
+     * @method The method type to execute.  Defaults to GET.
+     * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+     */
+    function request(
+        string route = "",
+        struct params = {},
+        struct headers = {},
+        string method = "GET",
+        boolean renderResults = true
+    ) {
+        var mockedEvent = prepareMock( getRequestContext() ).$( "getHTTPMethod", ucase( method ) );
+        params.keyArray().each( function( name ) {
+            mockedEvent.setValue( name, params[ name ] );
+        } );
+        headers.keyArray().each( function( name ) {
+            mockedEvent.$( "getHTTPHeader" ).$args( name ).$results( headers[ name ] );
+        } );
+        return execute( argumentCollection = arguments );
+    }
+
+    /**
+     * Shortcut method to making a GET request through the framework.
+     *
+     * @route The route to execute.
+     * @params Params to pass to the `rc` scope.
+     * @headers Custom headers to pass as from the request
+     * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+     */
+    function get(
+        string route = "",
+        struct params = {},
+        struct headers = {},
+        boolean renderResults = true
+    ) {
+        arguments.method = "GET";
+        return request( argumentCollection = arguments );
+    }
+
+    /**
+    * Shortcut method to making a POST request through the framework.
+    *
+    * @route The route to execute.
+    * @params Params to pass to the `rc` scope.
+    * @headers Custom headers to pass as from the request
+    * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+    */
+    function post(
+        string route = "",
+        struct params = {},
+        struct headers = {},
+        boolean renderResults=true
+    ) {
+        arguments.method = "POST";
+        return request( argumentCollection = arguments );
+    }
+
+    /**
+    * Shortcut method to making a PUT request through the framework.
+    *
+    * @route The route to execute.
+    * @params Params to pass to the `rc` scope.
+    * @headers Custom headers to pass as from the request
+    * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+    */
+    function put(
+        string route = "",
+        struct params = {},
+        struct headers = {},
+        boolean renderResults=true
+    ) {
+        arguments.method = "PUT";
+        return request( argumentCollection = arguments );
+    }
+
+    /**
+    * Shortcut method to making a PATCH request through the framework.
+    *
+    * @route The route to execute.
+    * @params Params to pass to the `rc` scope.
+    * @headers Custom headers to pass as from the request
+    * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+    */
+    function patch(
+        string route = "",
+        struct params = {},
+        struct headers = {},
+        boolean renderResults=true
+    ) {
+        arguments.method = "PATCH";
+        return request( argumentCollection = arguments );
+    }
+
+    /**
+    * Shortcut method to making a DELETE request through the framework.
+    *
+    * @route The route to execute.
+    * @params Params to pass to the `rc` scope.
+    * @headers Custom headers to pass as from the request
+    * @renderResults If true, then it will try to do the normal rendering procedures and store the rendered content in the RC as cbox_rendered_content
+    */
+    function delete(
+        string route = "",
+        struct params = {},
+        struct headers = {},
+        boolean renderResults=true
+    ) {
+        arguments.method = "DELETE";
+        return request( argumentCollection = arguments );
+    }
 
     /**
     * Get the rendered content from a ColdBox integration test
