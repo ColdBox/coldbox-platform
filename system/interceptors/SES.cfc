@@ -194,6 +194,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		// AppMapping for BaseURL Construction
 		var appMapping = ( len( getSetting( 'AppMapping' ) lte 1 ) ? getSetting( 'AppMapping' ) & "/" : "" );
+		appMapping = left( appMapping, 1 ) == "/" ? appMapping : "/#appMapping#";
 
 		// Activate and record the incoming URL for multi-domain hosting
 		arguments.event
