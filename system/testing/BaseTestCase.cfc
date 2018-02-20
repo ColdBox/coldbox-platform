@@ -138,7 +138,6 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* BDD: The main setup method for running ColdBox Integration enabled tests
-	* @beforeAll
 	*/
 	function beforeAll(){
 		if( isNull( variables._ranBeforeAll ) ){
@@ -149,7 +148,6 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* BDD: The main teardown for ColdBox enabled applications after all tests execute
-	* @afterAll
 	*/
 	function afterAll(){
 		if( isNull( variables._ranAfterAll ) ){
