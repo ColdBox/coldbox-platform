@@ -368,6 +368,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         }
 
         try{
+
         	// If the route is for the home page, use the default event in the config/ColdBox.cfc
         	if ( arguments.route == "/" ){
         		arguments.event = getController().getSetting( "defaultEvent" );
@@ -387,9 +388,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
                 var routeParts = explodeRoute( arguments.route );
 
                 // add the query string parameters from the route to the request context
-                getRequestContext().collectionAppend( routeParts.queryStringCollection );
-                // add the query string parameters from the arguments to the request context
-                getRequestContext().collectionAppend( parseQueryString( arguments.queryString ) );
+                getRequestContext().collectionAppend( routeParts.queryStringCollection )
+                	.collectionAppend( parseQueryString( arguments.queryString ) );
 
                 // mock the cleaned paths so SES routes will be recognized
 				prepareMock( getInterceptor( "SES" ) )
@@ -401,14 +401,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
                 // If we were passed just an event, remove routing since we don't need it
                 getInterceptor( "SES" ).setEnabled( false );
             }
-        } catch( "InterceptorService.InterceptorNotFound" e ) {
-        	// In either case, if the interceptor doesn't exists, just ignore it.
-        }
 
-		// Setup the request Context with setup FORM/URL variables set in the unit test.
-		setupRequest( arguments.event );
-
-		try{
+			// Setup the request Context with setup FORM/URL variables set in the unit test.
+			setupRequest( arguments.event );
 
 			// App Start Handler
 			if ( len( cbController.getSetting( "ApplicationStartHandler" ) ) ){
@@ -491,7 +486,10 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			// postProcess
 			cbController.getInterceptorService().processState( "postProcess" );
 
-		} catch( Any e ) {
+		} catch( "InterceptorService.InterceptorNotFound" e ) {
+        	// In either case, if the interceptor doesn't exists, just ignore it.
+        } catch( Any e ) {
+			// Are we doing exception handling?
             if ( withExceptionHandling ) {
                 processException( cbController, e );
             }
@@ -506,8 +504,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
         // Add in the test helpers for convenience
         requestContext.getRenderedContent = variables.getRenderedContent;
-        requestContext.getRenderData = variables.getRenderData;
-        requestContext.getStatusCode = variables.getStatusCode;
+        requestContext.getRenderData      = variables.getRenderData;
+        requestContext.getStatusCode      = variables.getStatusCode;
 
 		return requestContext;
     }

@@ -4,6 +4,10 @@ component{
 		"index" = "GET"
 	};
 
+	function redirectTest( event, rc, prc ){
+		return "Redirected correctly";
+	}
+
 	function index( event, rc, prc ){
 		prc.welcomeMessage = "Welcome to ColdBox!";
 		event.setView("main/index");

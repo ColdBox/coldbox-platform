@@ -77,7 +77,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		/************************************** CONSTANTS *********************************************/
 
 		// STATIC Reserved Keys as needed for cleanups
-		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting";
+		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting,redirect";
 		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexDomain,domain,regexpattern,matchVariables,packageresolverexempt,domainParams,patternParams,valuePairTranslation,ssl,append";
 
 		// STATIC Valid Extensions
@@ -185,9 +185,9 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 */
 	public void function onRequestCapture( event, interceptData, rc, prc, buffer ){
 		// Find which route this URL matches
-		var routedStruct = structnew();
+		var routedStruct = {};
         var cleanedPaths = getCleanedPaths( rc, arguments.event );
-		var HTTPMethod	 = arguments.event.getHTTPMethod();
+		var HttpMethod	 = arguments.event.getHTTPMethod();
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if ( NOT variables.enabled OR arguments.event.isProxyRequest() ){ return; }
@@ -224,15 +224,24 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		);
 
 		// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
-		for( var key in aRoute ){
+		aRoute.each( function( key, value ){
 			// Reserved Keys Check, only translate NON reserved keys
 			if( not listFindNoCase( variables.RESERVED_KEYS, key ) ){
-				rc[ key ] = aRoute[ key ];
-				routedStruct[ key ] = aRoute[ key ];
+				rc[ key ] 			= value;
+				routedStruct[ key ] = value;
+			}
+		} );
+
+		// Process Redirects
+		if( !isNull( aRoute.redirect ) ){
+			if( aRoute.redirect.findNoCase( "http" ) ){
+				relocate( URL=aRoute.redirect, statusCode=aRoute.statusCode ?: 301 );
+			} else {
+				relocate( event=aRoute.redirect, statusCode=aRoute.statusCode ?: 301 );
 			}
 		}
 
-		// Create Event To Dispatch if handler key exists
+		// Process Handler/Actions
 		if( structKeyExists( aRoute, "handler" ) ){
 			// Check if using HTTP method actions via struct
 			if( structKeyExists( aRoute, "action" ) && isStruct( aRoute.action ) ){
@@ -255,7 +264,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 			// Create routed event
 			rc[ variables.eventName ] = aRoute.handler;
-			if( structKeyExists( aRoute,"action" ) ){
+			if( structKeyExists( aRoute, "action" ) ){
 				rc[ variables.eventName ] &= "." & aRoute.action;
 			}
 
@@ -603,6 +612,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
 	 * @name The name of the route
      * @domain The domain to match, including wildcards
+	 * @redirect If used, then the route will dispatch a relocation to this value as the new route using the `statuCode` default of 301 (Permanent) or if you define a `statusCode` we will use that.
 	 *
 	 * @return SES
 	 */
@@ -627,7 +637,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		string statusText,
 		any condition,
         string name="",
-        string domain
+		string domain,
+		string redirect
 	){
 		var thisRoute        = {};
 		var thisRegex        = 0;
@@ -999,6 +1010,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 	/**
 	 * Figures out which route matches this request and returns a routed structure
+	 *
 	 * @action The action evaluated by path_info
 	 * @event The event object
 	 * @module Incoming module

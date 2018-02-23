@@ -1,5 +1,5 @@
 component extends="coldbox.system.web.ControllerDecorator" {
-	
+
 	this.decorator = "true";
 
 	function configure(){
@@ -20,16 +20,16 @@ component extends="coldbox.system.web.ControllerDecorator" {
     * @statusCode The status code to use in the relocation
     */
     function relocate(
-        event=getSetting( "DefaultEvent" ), 
-        queryString="", 
-        boolean addToken=false, 
+        event=getSetting( "DefaultEvent" ),
+        queryString="",
+        boolean addToken=false,
         persist="",
         struct persistStruct=structnew()
-        boolean ssl, 
-        baseURL="", 
-        boolean postProcessExempt=false, 
-        URL, 
-        URI, 
+        boolean ssl,
+        baseURL="",
+        boolean postProcessExempt=false,
+        URL,
+        URI,
         numeric statusCode=0
     ){
         var rc = getRequestService().getContext().getCollection();
@@ -46,12 +46,12 @@ component extends="coldbox.system.web.ControllerDecorator" {
             getInterceptorService().processState("postProcess");
         }
 
-        throw( message="Relocating via relocate", type="TestController.relocate" );
+        throw( message="Relocating via relocate: #arguments.toString()#", type="TestController.relocate" );
     }
 
 	function runEvent(){
 		getLogBox().getLogger( this ).info(" Called decorator runEvent(#arguments.toString()#)" );
 		return getController().runEvent(argumentCollection=arguments);
 	}
-	
-} 
+
+}

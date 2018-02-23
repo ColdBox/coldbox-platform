@@ -2,6 +2,16 @@
 	setUniqueURLs( false );
 	//setFullRewrites( false );
 
+	// Redirects
+	addRoute(
+		pattern 	= "/tempRoute",
+		redirect 	= "/main/redirectTest",
+		statusCode 	= 302
+	);
+	addRoute(
+		pattern 	= "/oldRoute",
+		redirect 	= "/main/redirectTest"
+	);
 
 	addRoute( pattern="post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)", handler="ehGeneral", action="dumpRC" );
 
