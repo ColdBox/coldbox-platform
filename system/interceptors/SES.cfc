@@ -103,14 +103,15 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		variables.throwOnInvalidExtension = false;
 		// Initialize the valid extensions to detect
 		variables.validExtensions = variables.VALID_EXTENSIONS;
-
+		// AppMapping for BaseURL Construction
+		variables.appMapping = ( len( getSetting( 'AppMapping' ) lte 1 ) ? getSetting( 'AppMapping' ) & "/" : "" );
+		variables.appMapping = left( variables.appMapping, 1 ) == "/" ? variables.appMapping : "/#appMapping#";
 		// Base Routing URL, defaults to the domain and app mapping
-		if( len( getSetting( "AppMapping" ) ) lte 1 ){
+		if( len( variables.appMapping ) lte 1 ){
 			variables.baseURL = "http://#cgi.HTTP_HOST#";
 		} else {
-			variables.baseURL = "http://#cgi.HTTP_HOST#/#getSetting( 'AppMapping' )#";
+			variables.baseURL = "http://#cgi.HTTP_HOST##variables.appMapping#";
 		}
-
 		// Are full rewrites enabled
 		variables.fullRewrites = false;
 
@@ -220,14 +221,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		// Find which route this URL matches
 		var routedStruct = {};
         var cleanedPaths = getCleanedPaths( rc, arguments.event );
-		var HttpMethod	 = arguments.event.getHTTPMethod();
+		var HttpMethod	 = arguments.event.getHttpMethod();
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if ( NOT variables.enabled OR arguments.event.isProxyRequest() ){ return; }
-
-		// AppMapping for BaseURL Construction
-		var appMapping = ( len( getSetting( 'AppMapping' ) lte 1 ) ? getSetting( 'AppMapping' ) & "/" : "" );
-		appMapping = left( appMapping, 1 ) == "/" ? appMapping : "/#appMapping#";
 
 		// Activate and record the incoming URL for multi-domain hosting
 		arguments.event
@@ -235,7 +232,7 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 			.setSESBaseURL(
 				"http" &
 				( event.isSSL() ? "s" : "" ) &
-				"://#cgi.HTTP_HOST#/#appMapping#" &
+				"://#cgi.HTTP_HOST#/#variables.appMapping#" &
 				( variables.fullRewrites ? "" : "index.cfm" )
 			);
 
@@ -1649,7 +1646,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	private function importConfiguration(){
 		var appLocPrefix 	= "/";
 		var refLocal 		= {};
-		var appMapping 		= getSetting( "AppMapping" );
 
 		// Verify the config file, else set it to our convention in the config/Routes.cfm
 		if( not propertyExists( "configFile" ) ){
@@ -1657,8 +1653,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		}
 
 		// App location prefix
-		if( len( appMapping ) ){
-			appLocPrefix = appLocPrefix & appMapping & "/";
+		if( len( variables.appMapping ) ){
+			appLocPrefix = appLocPrefix & variables.appMapping & "/";
 		}
 
 		// Setup the config Path for relative location first.
