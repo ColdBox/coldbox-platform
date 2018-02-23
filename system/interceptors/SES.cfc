@@ -357,26 +357,24 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		);
 
 		// Iterate through module resources and process them
-		mConfig[ arguments.module ].resources
-			.each( function( item ){
-				item.module = module;
-				resources( argumentCollection=item );
-			} );
+		mConfig.find( arguments.module ).resources.each( function( item ){
+			item.module = module;
+			resources( argumentCollection=item );
+		} );
 
-		mConfig[ arguments.module ].routes
-			.each( function( item ){
-				if( isSimpleValue( item ) ){
-					// prepare module pivot
-					variables.withModule = module;
-					// Include it via conventions using declared route
-					includeRoutes( location=mConfig[ module ].mapping & "/" & item );
-					// Remove pivot
-					variables.withModule = "";
-				} else {
-					item.module = module;
-					addRoute( argumentCollection=item );
-				}
-			} );
+		mConfig.find( arguments.module ).routes.each( function( item ){
+			if( isSimpleValue( item ) ){
+				// prepare module pivot
+				variables.withModule = module;
+				// Include it via conventions using declared route
+				includeRoutes( location=mConfig[ module ].mapping & "/" & item );
+				// Remove pivot
+				variables.withModule = "";
+			} else {
+				item.module = module;
+				addRoute( argumentCollection=item );
+			}
+		} );
 
 		return this;
 	}
