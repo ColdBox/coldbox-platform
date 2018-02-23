@@ -144,6 +144,37 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	}
 
 	/****************************************************************************************************************************/
+	/*												INCLUDE ROUTING FILES 														*/
+	/****************************************************************************************************************************/
+
+	/**
+	 * Includes a routes configuration file as an added import and returns itself after import
+	 * @location The include location of the routes configuration template. Do not add '.cfm'
+	 */
+	SES function includeRoutes( required location ){
+		// verify .cfm or not
+		if( listLast( arguments.location, "." ) NEQ "cfm" ){
+			arguments.location &= ".cfm";
+		}
+
+		// We are ready to roll
+		try{
+			// Try to remove pathInfoProvider, just in case
+			structdelete( variables, "pathInfoProvider" );
+			structdelete( this, "pathInfoProvider" );
+			// Import configuration
+			include arguments.location;
+		} catch ( Any e ){
+			throw(
+				message = "Error importing routes configuration file: #e.message# #e.detail#",
+				detail  = e.tagContext.toString(),
+				type    = "SES.IncludeRoutingConfig"
+			);
+		}
+		return this;
+	}
+
+	/****************************************************************************************************************************/
 	// DEPRECATED FUNCTIONALITY: Remove in later release
 
 	function setAutoReload(){}
@@ -178,6 +209,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		return variables.fullRewrites;
 	}
 
+	/****************************************************************************************************************************/
+	/* 													INTERCEPTION EVENT 														*/
 	/****************************************************************************************************************************/
 
 	/**
@@ -292,6 +325,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		arguments.event.setRoutedStruct( routedStruct );
 	}
 
+	/****************************************************************************************************************************/
+	/* 											ROUTE REGISTRATION METHODS														*/
+	/****************************************************************************************************************************/
+
 	/**
 	 * Register modules routes in the specified position in the main routing table, and returns itself
 	 * @pattern The pattern to match against the URL
@@ -323,30 +360,26 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 		);
 
 		// Iterate through module resources and process them
-		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].resources ); x++ ){
-			var args = mConfig[ arguments.module ].resources[ x ];
-			args.module = arguments.module;
-			resources( argumentCollection=args );
-		}
+		mConfig[ arguments.module ].resources
+			.each( function( item ){
+				item.module = module;
+				resources( argumentCollection=item );
+			} );
 
-		// Iterate through module routes and process them
-		for( var x=1; x lte ArrayLen( mConfig[ arguments.module ].routes ); x++ ){
-			// Verify if simple value, then treat it as an include path location
-			if( isSimpleValue( mConfig[ arguments.module ].routes[ x ] ) ){
-				// prepare module pivot
-				variables.withModule = arguments.module;
-				// Include it via conventions using declared route
-				includeRoutes( location=mConfig[ arguments.module ].mapping & "/" & mConfig[ arguments.module ].routes[ x ] );
-				// Remove pivot
-				variables.withModule = "";
-			}
-			// else, normal routing
-			else{
-				var args = mConfig[ arguments.module ].routes[ x ];
-				args.module = arguments.module;
-				addRoute( argumentCollection=args );
-			}
-		}
+		mConfig[ arguments.module ].routes
+			.each( function( item ){
+				if( isSimpleValue( item ) ){
+					// prepare module pivot
+					variables.withModule = module;
+					// Include it via conventions using declared route
+					includeRoutes( location=mConfig[ module ].mapping & "/" & item );
+					// Remove pivot
+					variables.withModule = "";
+				} else {
+					item.module = module;
+					addRoute( argumentCollection=item );
+				}
+			} );
 
 		return this;
 	}
@@ -454,34 +487,6 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		args.$$withProcessed = true;
 
-		return this;
-	}
-
-	/**
-	 * Includes a routes configuration file as an added import and returns itself after import
-	 * @location The include location of the routes configuration template. Do not add '.cfm'
-	 */
-	SES function includeRoutes( required location ){
-		// verify .cfm or not
-		if( listLast( arguments.location, "." ) NEQ "cfm" ){
-			arguments.location &= ".cfm";
-		}
-
-		// We are ready to roll
-		try{
-			// Try to remove pathInfoProvider, just in case
-			structdelete( variables, "pathInfoProvider" );
-			structdelete( this, "pathInfoProvider" );
-			// Import configuration
-			include arguments.location;
-		} catch ( Any e ){
-			writeDump( var=e );abort;
-			throw(
-				message = "Error importing routes configuration file: #e.message# #e.detail#",
-				detail  = e.tagContext.toString(),
-				type    = "SES.IncludeRoutingConfig"
-			);
-		}
 		return this;
 	}
 
@@ -925,6 +930,10 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 
 		return this;
 	}
+
+	/****************************************************************************************************************************/
+	/* 													OPERATIONAL METHODS														*/
+	/****************************************************************************************************************************/
 
 	/**
 	 * Get a namespace routes array
@@ -1639,37 +1648,33 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 */
 	private function importConfiguration(){
 		var appLocPrefix 	= "/";
-		var configFilePath 	= "";
-		var refLocal 		= structnew();
-		var appMapping 		= getSetting('AppMapping');
+		var refLocal 		= {};
+		var appMapping 		= getSetting( "AppMapping" );
 
 		// Verify the config file, else set it to our convention in the config/Routes.cfm
-		if( not propertyExists( 'configFile' ) ){
-			setProperty( 'configFile', 'config/Routes.cfm' );
+		if( not propertyExists( "configFile" ) ){
+			setProperty( "configFile", "config/Routes.cfm" );
 		}
 
-		//App location prefix
-		if( len(appMapping) ){
+		// App location prefix
+		if( len( appMapping ) ){
 			appLocPrefix = appLocPrefix & appMapping & "/";
 		}
 
 		// Setup the config Path for relative location first.
-		configFilePath = appLocPrefix & reReplace(getProperty('ConfigFile'),"^/","" );
-		if( NOT fileExists(expandPath(configFilePath)) ){
-			//Check absolute location as not found inside our app
-			configFilePath = getProperty('ConfigFile');
-			if( NOT fileExists(expandPath(configFilePath)) ){
-				throw(message="Error locating routes file: #configFilePath#",type="SES.ConfigFileNotFound" );
+		var configFilePath = appLocPrefix & reReplace( getProperty( "ConfigFile" ), "^/", "" );
+		if( NOT fileExists( expandPath( configFilePath ) ) ){
+			// Check absolute location as not found inside our app
+			configFilePath = getProperty( "ConfigFile" );
+			if( NOT fileExists( expandPath( configFilePath ) ) ){
+				throw( message="Error locating routes file: #configFilePath#", type="SES.ConfigFileNotFound" );
 			}
 		}
 
 		// Include configuration
 		includeRoutes( configFilePath );
 
-		// Validate the base URL
-		if ( len( getBaseURL() ) eq 0 ){
-			throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
-		}
+		return this;
 	}
 
     /**
