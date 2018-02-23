@@ -1644,21 +1644,13 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	 * Import the routing configuration file
 	 */
 	private function importConfiguration(){
-		var appLocPrefix 	= "/";
-		var refLocal 		= {};
-
 		// Verify the config file, else set it to our convention in the config/Routes.cfm
 		if( not propertyExists( "configFile" ) ){
 			setProperty( "configFile", "config/Routes.cfm" );
 		}
 
-		// App location prefix
-		if( len( variables.appMapping ) ){
-			appLocPrefix = appLocPrefix & variables.appMapping & "/";
-		}
-
 		// Setup the config Path for relative location first.
-		var configFilePath = appLocPrefix & reReplace( getProperty( "ConfigFile" ), "^/", "" );
+		var configFilePath = variables.appMapping & reReplace( getProperty( "ConfigFile" ), "^/", "" );
 		if( NOT fileExists( expandPath( configFilePath ) ) ){
 			// Check absolute location as not found inside our app
 			configFilePath = getProperty( "ConfigFile" );
