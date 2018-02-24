@@ -1,0 +1,1459 @@
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Manages all the routing definitions for the application
+ */
+component accessors="true" extends="coldbox.system.FrameworkSupertype"{
+
+	/**
+	 * The routing table
+	 */
+	property name="routes" type="array";
+
+	/**
+	 * Modules Routing Table
+	 */
+	property name="moduleRoutingTable" type="struct";
+
+	/**
+	 * Namespace routing tables
+	 */
+	property name="namespaceRoutingTable" type="struct";
+
+	/**
+	 * Flag to enable unique or not URLs
+	 */
+	property name="uniqueURLS" type="boolean" default="false";
+
+	/**
+	 * Flag to enable/disable routing
+	 */
+	property name="enabled" type="boolean" default="true";
+
+	/**
+	 * Loose matching flag for regex matches
+	 */
+	property name="looseMatching" type="boolean" default="false";
+
+	/**
+	 * Detect extensions flag, so it can place a 'format' variable on the rc
+	 */
+	property name="extensionDetection" type="boolean" default="true";
+
+	/**
+	 * Throw an exception when extension detection is invalid or not
+	 */
+	property name="throwOnInvalidExtension" type="boolean" default="false";
+
+	/**
+	 * Initialize the valid extensions to detect
+	 */
+	property name="validExtensions" type="string" default="json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
+
+	/**
+	 * Base routing URL
+	 */
+	property name="baseURL" type="string";
+
+	/**
+	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index.cfm` is in the path of the rewriter or not.
+	 * The default value is **false**.
+	 */
+	property name="fullRewrites" type="boolean" default="false";
+
+	/**
+	 * ColdBox Controller
+	 */
+	property name="controller";
+
+	/**
+	 * Fluent route construct
+	 */
+	property name="thisRoute" type="struct";
+
+	/**
+	 * Constructor
+	 *
+	 * @controller The ColdBox controller linkage
+	 */
+	function init( required controller ){
+
+		variables.controller = arguments.controller;
+
+		/************************************** FLUENT CONSTRUCTS *********************************************/
+
+		// with closure
+		variables.withClosure = {};
+		// module closure
+		variables.withModule	= "";
+		// this routing pointer
+		variables.thisRoute 	= initRouteDefinition();
+
+		/************************************** CONSTANTS *********************************************/
+
+		// STATIC Reserved Keys as needed for cleanups
+		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting,redirect,event,verbs";
+		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexDomain,domain,regexpattern,matchVariables,packageresolverexempt,domainParams,patternParams,valuePairTranslation,ssl,append";
+
+		// STATIC Valid Extensions
+		variables.VALID_EXTENSIONS 			= "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
+
+		/************************************** ROUTING DEFAULTS: Due to ACF11 Bugs on Properties *********************************************/
+
+		// Main routes Routing Table
+		variables.routes = [];
+		// Module Routing Table
+		variables.moduleRoutingTable = {};
+		// Namespaces Routing Table
+		variables.namespaceRoutingTable = {};
+		// Loose matching flag for regex matches
+		variables.looseMatching = false;
+		// Flag to enable unique or not URLs
+		variables.uniqueURLs = true;
+		// Enable the interceptor by default
+		variables.enabled = true;
+		// Detect extensions flag, so it can place a 'format' variable on the rc
+		variables.extensionDetection = true;
+		// Throw an exception when extension detection is invalid or not
+		variables.throwOnInvalidExtension = false;
+		// Initialize the valid extensions to detect
+		variables.validExtensions = variables.VALID_EXTENSIONS;
+		// AppMapping for BaseURL Construction
+		variables.appMapping = ( len( controller.getSetting( 'AppMapping' ) lte 1 ) ? controller.getSetting( 'AppMapping' ) & "/" : "" );
+		variables.appMapping = left( variables.appMapping, 1 ) == "/" ? variables.appMapping : "/#appMapping#";
+		// Base Routing URL, defaults to the domain and app mapping
+		if( len( variables.appMapping ) lte 1 ){
+			variables.baseURL = "http://#cgi.HTTP_HOST#";
+		} else {
+			variables.baseURL = "http://#cgi.HTTP_HOST##variables.appMapping#";
+		}
+		// Are full rewrites enabled
+		variables.fullRewrites = false;
+
+		return this;
+	}
+
+	/****************************************************************************************************************************/
+	// DEPRECATED FUNCTIONALITY: Remove in later release
+
+	/**
+	 * @deprecated Please use the Routes.cfc approach instead
+	 *
+	 * Includes a routes configuration file as an added import and returns itself after import
+	 *
+	 * @location The include location of the routes configuration template. Do not add '.cfm'
+	 */
+	Router function includeRoutes( required location ){
+		// verify .cfm or not
+		if( listLast( arguments.location, "." ) NEQ "cfm" ){
+			arguments.location &= ".cfm";
+		}
+
+		// We are ready to roll
+		try{
+			// Try to remove pathInfoProvider, just in case
+			structdelete( variables, "pathInfoProvider" );
+			structdelete( this, "pathInfoProvider" );
+			// Import configuration
+			include arguments.location;
+		} catch ( Any e ){
+			throw(
+				message = "Error importing routes configuration file: #e.message# #e.detail#",
+				detail  = e.tagContext.toString(),
+				type    = "SES.IncludeRoutingConfig"
+			);
+		}
+		return this;
+	}
+
+	function setAutoReload(){}
+	function getAutoReload(){ return false; }
+
+	/****************************************************************************************************************************/
+	// CF-11/2016 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
+	// Remove this with new CFC approach. CFM files will have to upgrade to CFC capabilities once feature is complete.
+
+	function setBaseURL( string baseURL ){
+		variables.baseURL = arguments.baseURL;
+		return this;
+	}
+	function getBaseURL(){
+		return variables.baseURL;
+	}
+	function setUniqueURLS( boolean uniqueURLS ){
+		variables.uniqueURLS = arguments.uniqueURLS;
+		return this;
+	}
+	function getUniqueURLS(){
+		return variables.uniqueURLS;
+	}
+	function setValidExtensions( required extensions ){
+		variables.extensions = arguments.extensions;
+	}
+	function setFullRewrites( boolean target ){
+		variables.fullRewrites = arguments.target;
+		return this;
+	}
+	function getFullRewrites(){
+		return variables.fullRewrites;
+	}
+
+	/****************************************************************************************************************************/
+	/* 											ROUTING TABLE METHODS															*/
+	/****************************************************************************************************************************/
+
+	/**
+	 * Register modules routes in the specified position in the main routing table, and returns itself
+	 * @pattern The pattern to match against the URL
+	 * @module The module to load routes for
+	 * @append Whether the module entry point route should be appended or pre-pended to the main routes array. By default we append to the end of the array
+	 */
+	Router function addModuleRoutes( required pattern, required module, boolean append=true ){
+		var mConfig = variables.controller.getSetting( "modules" );
+
+		// Verify module exists and loaded
+		if( NOT structKeyExists( mConfig, arguments.module ) ){
+			throw(
+				message	= "Error loading module routes as the module requested '#arguments.module#' is not loaded.",
+				detail	= "The loaded modules are: #structKeyList( mConfig )#",
+				type	= "SES.InvalidModuleName"
+			);
+		}
+
+		// Create the module routes container if it does not exist already
+		if( NOT structKeyExists( variables.moduleRoutingTable, arguments.module ) ){
+			variables.moduleRoutingTable[ arguments.module ] = [];
+		}
+
+		// Store the entry point for the module routes.
+		addRoute(
+			pattern       = arguments.pattern,
+			moduleRouting = arguments.module,
+			append        = arguments.append
+		);
+
+		// Process module resources
+		mConfig.find( arguments.module ).resources.each( function( item ){
+				item.module = module;
+				resources( argumentCollection=item );
+		} );
+
+		// Process module routes
+		mConfig.find( arguments.module ).routes.each( function( item ){
+			if( isSimpleValue( item ) ){
+				// prepare module pivot
+				variables.withModule = module;
+				// Include it via conventions using declared route
+				includeRoutes( location=mConfig[ module ].mapping & "/" & item );
+				// Remove pivot
+				variables.withModule = "";
+			} else {
+				item.module = module;
+				addRoute( argumentCollection=item );
+			}
+		} );
+
+		return this;
+	}
+
+	/**
+	 * Remove a module's routing table and registration points and return itself
+	 * @module The module to remove
+	 */
+	Router function removeModuleRoutes( required module ){
+		// remove all module routes
+		structDelete( variables.moduleRoutingTable, arguments.module );
+		// remove module routing entry point
+		variables.routes = variables.routes.filter( function( item ){
+			return ( item.moduleRouting != module );
+		} );
+
+		return this;
+	}
+
+	/**
+	 * Get a module's routes array
+	 * @module The module to get
+	 */
+	array function getModuleRoutes( required module ){
+		if( structKeyExists( variables.moduleRoutingTable, arguments.module ) ){
+			return variables.moduleRoutingTable[ arguments.module ];
+		}
+		throw(
+			message = "Module routes for #arguments.module# do not exists",
+			detail 	= "Loaded module routes are #structKeyList( variables.moduleRoutingTable )#",
+			type 	= "SES.InvalidModuleException"
+		);
+	}
+
+	/**
+	 * Register a namespace in the specified position in the main routing table, and returns itself
+	 * @pattern The pattern to match against the URL.
+	 * @namespace The name of the namespace to register
+	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 */
+	Router function addNamespace( required pattern, required namespace, boolean append="true" ){
+		// Create the namespace routes container if it does not exist already, as we could create many patterns that point to the same namespace
+		if( NOT structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ){
+			variables.namespaceRoutingTable[ arguments.namespace ] = [];
+		}
+
+		// Store the entry point for the namespace
+		addRoute(
+			pattern 			= arguments.pattern,
+			namespaceRouting 	= arguments.namespace,
+			append 				= arguments.append
+		);
+
+		return this;
+	}
+
+	/**
+	 * Get a namespace routes array
+	 * @namespace The namespace to get
+	 */
+	array function getNamespaceRoutes( required namespace ){
+		if( structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ){
+			return variables.namespaceRoutingTable[ arguments.namespace ];
+		}
+
+		throw(
+			message = "Namespace routes for #arguments.namespace# do not exists",
+			detail 	= "Loaded namespace routes are #structKeyList( variables.namespaceRoutingTable )#",
+			type 	= "SES.InvalidNamespaceException"
+		);
+	}
+
+	/**
+	 * Remove a namespace's routing table and registration points and return itself
+	 * @namespace The namespace to remove
+	 */
+	Router function removeNamespaceRoutes( required namespace ){
+		// remove all namespace routes
+		structDelete( variables.namespaceRoutingTable, arguments.namespace );
+
+		// remove namespace routing entry points
+		variables.routes = variables.routes.filter( function( item ){
+			return ( item.namespaceRouting != namespace );
+		} );
+
+		return this;
+	}
+
+	/****************************************************************************************************************************/
+	/* 											ROUTE REGISTRATION METHODS														*/
+	/****************************************************************************************************************************/
+
+	/**
+	 * Starts a with closure, where all arguments will be prefixed for the next concatenated addRoute() methods until an endWith() is called
+	 *
+	 * @pattern The pattern to match against the URL.
+	 * @handler The handler to execute if pattern matched.
+	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
+	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
+	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
+	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
+	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @valuePairTranslation Activate convention name value pair translations or not. Turned on by default
+	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 * @module The module to add this route to
+	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
+	 * @namespace The namespace to add this route to
+	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
+	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
+	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @domain The domain to match, including wildcards
+	 */
+	Router function with(
+		string pattern,
+		string handler,
+		any action,
+		boolean packageResolverExempt,
+		string matchVariables,
+		string view,
+		boolean viewNoLayout,
+		boolean valuePairTranslation,
+		any constraints,
+		string module,
+		string moduleRouting,
+		string namespace,
+		string namespaceRouting,
+		boolean ssl,
+		boolean append,
+		string domain
+	){
+		// set the withClosure
+		variables.withClosure = arguments;
+		return this;
+	}
+
+	/**
+	 * End a with closure and returns itself
+	 */
+	Router function endWith(){
+		variables.withClosure = {};
+		return this;
+	}
+
+	/**
+	 * process a with closure
+	 *
+	 * @args The arugments to process
+	 */
+	Router function processWith( required args ){
+		var w = variables.withClosure;
+
+		// only process arguments once per addRoute() call.
+		if( structKeyExists( args, "$$withProcessed" ) ){
+			return this;
+		}
+
+		w.filter( function( key, value ){
+			return !isNull( value );
+		} ).each( function( key, value ){
+			// Verify if the key does not exist in incoming but it does in with, so default it
+			if ( NOT structKeyExists( args, key ) ){
+				args[ key ] = value;
+			}
+			// If it does exist in the incoming arguments and simple value, then we prefix, complex values are ignored.
+			else if ( isSimpleValue( args[ key ] ) AND NOT isBoolean( args[ key ] ) ){
+				args[ key ] = value & args[ key ];
+			}
+		} );
+
+		args.$$withProcessed = true;
+
+		return this;
+	}
+
+    /**
+     * Create all RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
+     * By convention, the name of the resource maps to the name of the event handler.
+	 * Example: `resource = photos` Then we will create the following routes:
+	 * - `/photos` : `GET` -> `photos.index` Display a list of photos
+	 * - `/photos/new` : `GET` -> `photos.new` Returns an HTML form for creating a new photo
+	 * - `/photos` : `POST` -> `photos.create` Create a new photo
+	 * - `/photos/:id` : `GET` -> `photos.show` Display a specific photo
+	 * - `/photos/:id/edit` : `GET` -> `photos.edit` Return an HTML form for editing a photo
+	 * - `/photos/:id` : `POST/PUT/PATCH` -> `photos.update` Update a specific photo
+	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
+	 *
+     * @resource 		The name of a single resource or a list of resources or an array of resources
+     * @handler 		The handler for the route. Defaults to the resource name.
+     * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
+     * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
+     * @except 			Exclude routes with an except list or array of actions, e.g. "show"
+     * @module 			If passed, the module these resources will be attached to.
+     * @namespace 		If passed, the namespace these resources will be attached to.
+     */
+    function resources(
+        required resource,
+        handler=arguments.resource,
+        parameterName="id",
+        only=[],
+        except=[],
+        string module="",
+        string namespace=""
+    ){
+		// Inflate incoming arguments if not arrays
+        if ( ! isArray( arguments.only ) ) {
+            arguments.only = listToArray( arguments.only );
+        }
+        if ( ! isArray( arguments.except ) ) {
+            arguments.except = listToArray( arguments.except );
+        }
+        if( isSimpleValue( arguments.resource ) ){
+        	arguments.resource = listToArray( arguments.resource );
+        }
+
+        var actionSet = {};
+
+        // Register all resources
+        for( var thisResource in arguments.resource ){
+
+			// Edit Routes
+			actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
+			if ( ! structIsEmpty( actionSet ) ) {
+				addRoute(
+					pattern		= "/#thisResource#/:#arguments.parameterName#/edit",
+					handler		= arguments.handler,
+					action 		= actionSet,
+					module 		= arguments.module,
+					namespace	= arguments.namespace
+				);
+			}
+
+	        // New Routes
+			actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
+			if ( ! structIsEmpty( actionSet ) ) {
+				addRoute(
+					pattern		= "/#thisResource#/new",
+					handler		= arguments.handler,
+					action		= actionSet,
+					module 		= arguments.module,
+					namespace	= arguments.namespace
+				);
+			}
+
+	        // update, delete and show routes
+	        actionSet = filterRouteActions(
+	        	{ PUT = "update", PATCH = "update", POST = "update", DELETE = "delete", GET = "show" },
+	        	arguments.only,
+	        	arguments.except
+	        );
+	        if ( ! structIsEmpty( actionSet ) ) {
+	            addRoute(
+	            	pattern		= "/#thisResource#/:#arguments.parameterName#",
+	            	handler		= arguments.handler,
+	            	action 		= actionSet,
+		            module 		= arguments.module,
+		            namespace	= arguments.namespace
+	            );
+			}
+
+	        // Index + Creation
+	        actionSet = filterRouteActions( { GET = "index", POST = "create" }, arguments.only, arguments.except );
+	        if ( ! structIsEmpty( actionSet ) ) {
+	            addRoute(
+	            	pattern		= "/#thisResource#",
+	            	handler		= arguments.handler,
+	            	action 		= actionSet,
+		            module 		= arguments.module,
+		            namespace	= arguments.namespace
+	            );
+	        }
+        }
+
+        return this;
+    }
+
+	/**
+	 * Adds a route to dispatch and returns itself.
+	 *
+	 * @pattern  The pattern to match against the URL.
+	 * @handler The handler to execute if pattern matched.
+	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
+	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
+	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
+	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
+	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
+	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
+	 * @constraints A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 * @module The module to add this route to
+	 * @moduleRouting Called internally by addModuleRoutes to add a module routing route.
+	 * @namespace The namespace to add this route to
+	 * @namespaceRouting Called internally by addNamespaceRoutes to add a namespaced routing route.
+	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
+	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 * @response An HTML response string to send back or a closure to be executed that should return the response. The closure takes in a 'params' struct of all matched params and the string will be parsed with the named value pairs as ${param}
+	 * @statusCode The HTTP status code to send to the browser response.
+	 * @statusText Explains the HTTP status code sent to the browser response.
+	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
+	 * @name The name of the route
+     * @domain The domain to match, including wildcards
+	 * @redirect If used, then the route will dispatch a relocation to this value as the new route using the `statuCode` default of 301 (Permanent) or if you define a `statusCode` we will use that.
+	 * @event The event to execute if route matches
+	 * @verbs The allowed HTTP Verbs for the route
+	 *
+	 * @return SES
+	 */
+	function addRoute(
+		required string pattern,
+		string handler,
+		any action,
+		boolean packageResolverExempt="false",
+		string matchVariables,
+		string view,
+		boolean viewNoLayout="false",
+		boolean valuePairTranslation="true",
+		any constraints="",
+		string module="",
+		string moduleRouting="",
+		string namespace="",
+		string namespaceRouting="",
+		boolean ssl="false",
+		boolean append="true",
+		any response,
+		numeric statusCode,
+		string statusText,
+		any condition,
+        string name="",
+		string domain,
+		string redirect,
+		string event,
+		string verbs=""
+	){
+		var thisRoute        = {};
+		var thisRegex        = 0;
+
+		// process a with closure if not empty
+		if( NOT structIsEmpty( variables.withClosure ) ){
+			processWith( arguments );
+		}
+
+		// module closure
+		if( len( variables.withModule ) ){
+			arguments.module = variables.withModule;
+		}
+
+		// Process all incoming arguments into the route to store
+		for( var arg in arguments ){
+			if( structKeyExists( arguments, arg ) ){
+				thisRoute[ arg ] = arguments[ arg ];
+			}
+		}
+
+		// Cleanup Route: Add trailing / to make it easier to parse
+		if( right( thisRoute.pattern, 1 ) IS NOT "/" ){
+			thisRoute.pattern = thisRoute.pattern & "/";
+		}
+
+		// Cleanup initial /, not needed if found.
+		if( left( thisRoute.pattern, 1 ) IS "/" ){
+			if( thisRoute.pattern neq "/" ){
+				thisRoute.pattern = right( thisRoute.pattern, len( thisRoute.pattern ) - 1 );
+			}
+		}
+
+		// Check if we have optional args by looking for a ?
+		if( findnocase( "?", thisRoute.pattern ) AND NOT findNoCase( "regex:", thisRoute.pattern ) ){
+			processRouteOptionals( thisRoute );
+			return this;
+		}
+
+		// Process json constraints?
+		thisRoute.constraints = structnew();
+		// Check if implicit struct
+		if( isStruct( arguments.constraints ) ){
+			thisRoute.constraints = arguments.constraints;
+		}
+
+		// Init the matching variables
+		thisRoute.regexPattern 	= "";
+		thisRoute.patternParams = [];
+
+		// Check for / pattern
+		if( len( thisRoute.pattern ) eq 1 ){
+			thisRoute.regexPattern = "/";
+		}
+
+		// Process the route as a regex pattern
+		for( var x=1; x lte listLen( thisRoute.pattern, "/" ); x++ ){
+
+			// Pattern and Pattern Param
+			var thisPattern 		= listGetAt( thisRoute.pattern, x, "/" );
+			var thisPatternParam 	= replace( listFirst( thisPattern, "-" ), ":", "" );
+
+			// Detect Optional Types
+			var patternType = "alphanumeric";
+			if( findnoCase( "-numeric", thisPattern ) ){
+				patternType = "numeric";
+			}
+			if( findnoCase( "-alpha", thisPattern ) ){
+				patternType = "alpha";
+			}
+			if( findNoCase( "-regex:", thisPattern ) ){
+				patternType = "regexParam";
+			} else if ( findNoCase( "regex:", thisPattern ) ){
+				patternType = "regex";
+			}
+
+			// Pattern Type Regex
+			switch( patternType ){
+
+				// CUSTOM REGEX for static route parts
+				case "regex" : {
+					thisRegex = replacenocase( thisPattern, "regex:", "" );
+					break;
+				}
+
+				// CUSTOM REGEX for route param
+				case "regexParam" : {
+					// Pull out Regex Pattern
+					thisRegex = REReplace( thisPattern, ":.*?-regex:", "" );
+					// Add Route Param
+					arrayAppend( thisRoute.patternParams, thisPatternParam );
+					break;
+				}
+
+				// ALPHANUMERICAL OPTIONAL
+				case "alphanumeric" : {
+					if( find( ":", thisPattern ) ){
+						thisRegex = "(" & REReplace( thisPattern, ":(.[^-]*)","[^/]" );
+						// Check Digits Repetions
+						if( find( "{", thisPattern ) ){
+							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
+							arrayAppend( thisRoute.patternParams, replace( listFirst( thisPattern, "{" ), ":", "" ) );
+						} else {
+							thisRegex = thisRegex & "+?)";
+							arrayAppend( thisRoute.patternParams, thisPatternParam );
+						}
+						// Override Constraints with your own REGEX
+						if( structKeyExists( thisRoute.constraints, thisPatternParam ) ){
+							thisRegex = thisRoute.constraints[ thisPatternParam ];
+						}
+					} else {
+						thisRegex = thisPattern;
+					}
+					break;
+				}
+
+				// NUMERICAL OPTIONAL
+				case "numeric" : {
+					// Convert to Regex Pattern
+					thisRegex = "(" & REReplace(thisPattern, ":.*?-numeric", "[0-9]" );
+					// Check Digits
+					if( find("{",thisPattern) ){
+						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
+					} else {
+						thisRegex = thisRegex & "+?)";
+					}
+					// Add Route Param
+					arrayAppend( thisRoute.patternParams, thisPatternParam );
+					break;
+				}
+
+				// ALPHA OPTIONAL
+				case "alpha" : {
+					// Convert to Regex Pattern
+					thisRegex = "(" & REReplace( thisPattern, ":.*?-alpha", "[a-zA-Z]" );
+					// Check Digits
+					if( find("{",thisPattern) ){
+						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern,"{" )#)";
+					} else {
+						thisRegex = thisRegex & "+?)";
+					}
+					// Add Route Param
+					arrayAppend( thisRoute.patternParams, thisPatternParam );
+					break;
+				}
+			} //end pattern type detection switch
+
+			// Add Regex Created To Pattern
+			thisRoute.regexPattern = thisRoute.regexPattern & thisRegex & "/";
+
+		} // end looping of pattern optionals
+
+		// Process Sub-Domain Routing
+        thisRoute.domainParams 	= [];
+        thisRoute.regexDomain 	= "^";
+        if ( structKeyExists( thisRoute, "domain" ) ) {
+            // Process the route as a regex pattern
+            for( var x=1; x lte listLen( thisRoute.domain, "." ); x++ ){
+
+                // Pattern and Pattern Param
+                var thisDomain      = listGetAt( thisRoute.domain, x, "." );
+               	var thisDomainParam = replace( listFirst( thisDomain, "-" ), ":", "" );
+
+                // Detect Optional Types
+                patternType = "alphanumeric";
+                if( findnoCase( "-numeric", thisDomain ) ){
+					patternType = "numeric";
+				}
+                if( findnoCase( "-alpha", thisDomain ) ){
+					patternType = "alpha";
+				}
+                // This is a prefix like above to match a param (creates rc variable)
+                if( findNoCase( "-regex:", thisDomain ) ){
+					patternType = "regexParam";
+				}
+                // This is a placeholder for static text in the route
+                else if( findNoCase( "regex:", thisDomain ) ){
+					patternType = "regex";
+				}
+
+                // Pattern Type Regex
+                switch( patternType ){
+                    // CUSTOM REGEX for static route parts
+                    case "regex" : {
+                        thisRegex = replacenocase( thisDomain, "regex:", "" );
+                        break;
+                    }
+                    // CUSTOM REGEX for route param
+                    case "regexParam" : {
+                        // Pull out Regex Pattern
+                        thisRegex = REReplace( thisDomain, ":.*?-regex:", "" );
+                        // Add Route Param
+                        arrayAppend( thisRoute.domainParams, thisDomainParam );
+                        break;
+                    }
+                    // ALPHANUMERICAL OPTIONAL
+                    case "alphanumeric" : {
+                        if( find( ":", thisDomain ) ){
+                            thisRegex = "(" & REReplace( thisDomain, ":(.[^-]*)", "[^\/\.]" );
+                            // Check Digits Repetions
+                            if( find( "{", thisDomain ) ){
+                                thisRegex = listFirst( thisRegex,"{") & "{#listLast( thisDomain, "{" )#)";
+                                arrayAppend( thisRoute.domainParams, replace( listFirst( thisDomain,"{" ), ":", "" ) );
+                            } else {
+                                thisRegex = thisRegex & "+?)";
+                                arrayAppend( thisRoute.domainParams, thisDomainParam );
+                            }
+                            // Override Constraints with your own REGEX
+                            if( structKeyExists( thisRoute.constraints, thisDomainParam ) ){
+                                thisRegex = thisRoute.constraints[ thisDomainParam ];
+                            }
+                        } else {
+                            thisRegex = thisDomain;
+                        }
+                        break;
+                    }
+                    // NUMERICAL OPTIONAL
+                    case "numeric" : {
+                        // Convert to Regex Pattern
+                        thisRegex = "(" & REReplace( thisDomain, ":.*?-numeric", "[0-9]" );
+                        // Check Digits
+                        if( find("{",thisDomain) ){
+                            thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
+                        } else {
+                            thisRegex = thisRegex & "+?)";
+                        }
+                        // Add Route Param
+                        arrayAppend( thisRoute.domainParams, thisDomainParam );
+                        break;
+                    }
+                    // ALPHA OPTIONAL
+                    case "alpha" : {
+                        // Convert to Regex Pattern
+                        thisRegex = "(" & REReplace( thisDomain, ":.*?-alpha", "[a-zA-Z]" );
+                        // Check Digits
+                        if( find( "{", thisDomain ) ){
+                            thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
+                        } else {
+                            thisRegex = thisRegex & "+?)";
+                        }
+                        // Add Route Param
+                        arrayAppend( thisRoute.domainParams,thisDomainParam );
+                        break;
+                    }
+                } //end pattern type detection switch
+
+                // Add Regex Created To Pattern
+                thisRoute.regexDomain = thisRoute.regexDomain & thisRegex & ".";
+
+            } // end looping of pattern optionals
+            if( right( thisRoute.regexDomain, 1 ) == "." ) {
+                thisRoute.regexDomain = left( thisRoute.regexDomain, len( thisRoute.regexDomain ) - 1 );
+            }
+        }
+
+		// Add it to the corresponding routing table
+		// MODULES
+		if( len( arguments.module ) ){
+			// Append or PrePend
+			if( arguments.append ){
+				ArrayAppend( getModuleRoutes( arguments.module ), thisRoute );
+			} else {
+				arrayPrePend( getModuleRoutes( arguments.module ), thisRoute );
+			}
+		}
+		// NAMESPACES
+		else if( len( arguments.namespace ) ){
+			// Append or PrePend
+			if( arguments.append ){
+				arrayAppend( getNamespaceRoutes( arguments.namespace ), thisRoute );
+			} else {
+				arrayPrePend( getNamespaceRoutes( arguments.namespace ), thisRoute );
+			}
+		}
+		// Default Routing Table
+		else{
+			// Append or PrePend
+			if( arguments.append ){
+				arrayAppend( variables.routes, thisRoute );
+			} else {
+				arrayPrePend( variables.routes, thisRoute );
+			}
+		}
+
+		return this;
+	}
+
+	/****************************************************************************************************************************/
+	/* 													NEW ROUTING DSL														*/
+	/****************************************************************************************************************************/
+
+	/**
+	 * Construct a route definition construct
+	 */
+	private struct function initRouteDefinition(){
+		return {
+			pattern               	=  "",
+			handler               	=  "",
+			action                	=  "",
+			packageResolverExempt 	= false,
+			view                  	=  "",
+			layout                	=  "",
+			viewNoLayout          	= false,
+			valuePairTranslation  	= true,
+			constraints           	= {},
+			module                	= "",
+			moduleRouting         	= "",
+			namespace             	= "",
+			namespaceRouting      	= "",
+			ssl                   	= false,
+			append                	= true,
+			response              	= "",
+			statusCode            	= 200,
+			statusText            	= "Ok",
+			condition             	= "",
+			name                  	= "",
+			domain                	= "",
+			redirect              	= "",
+			event 					= "",
+			verbs 					= "",
+			headers 				= {},
+			rc 						= {},
+			prc 					= {}
+		};
+	}
+
+	/**
+	 * Initiate a new route registration.  Please note that you must finalize the registration by calling a terminator
+	 * fluently.  Unless, you pass in a target which can be a reponse closure/lambda or an event string.
+	 *
+	 * <pre>
+	 * // with terminator
+	 * route( "/home" ).to( "main.index" )
+	 * // with inline lambda
+	 * route( "/home", function( event, rc, prc ){ return "hello"; }  )
+	 * // with inline event
+	 * route( "/home", "main.index" )
+	 * // with inline event + name
+	 * route( "/home", "main.index", "home" )
+	 * </pre>
+	 *
+	 * @pattern The pattern to register
+	 * @target A response closure/lambda or an event string to execute
+	 * @name The name of the route
+	 */
+	function route( required pattern, target, name="" ){
+		// inline termination
+		if( !isNull( arguments.target ) ){
+			var args = {};
+			// Simple => Event
+			if( isSimpleValue( arguments.target ) ){
+				args = {
+					pattern = arguments.pattern,
+					event   = arguments.target,
+					verbs   = variables.thisRoute.verbs ?: "",
+					name 	= arguments.name
+				};
+			}
+			// Closure/Lambda => Response
+			else {
+				args = {
+					pattern  = arguments.pattern,
+					response = arguments.target,
+					verbs    = variables.thisRoute.verbs ?: "",
+					name 	= arguments.name
+				};
+			}
+			// Inline terminator, finish it off!
+			addRoute( argumentCollection = args );
+			variables.thisRoute = initRouteDefinition();
+			return this;
+		}
+
+		// Store data and continue
+		variables.thisRoute.pattern = arguments.pattern;
+		variables.thisRoute.name 	= arguments.name;
+		return this;
+	}
+
+	/**
+	 * Register a route with GET restriction. Same as calling the following
+	 * <pre>
+	 * route( "/hello", "hello" ).withVerbs( "GET" )
+	 * </pre>
+	 *
+	 * @pattern The pattern to register
+	 * @target A response closure/lambda or an event string to execute
+	 */
+	function get( required pattern, target ){
+		variables.thisRoute.verbs = "GET";
+		return route( argumentCollection = arguments );
+	}
+
+	/**
+	 * Register a route with POST restriction. Same as calling the following
+	 * <pre>
+	 * route( "/hello", "hello" ).withVerbs( "POST" )
+	 * </pre>
+	 *
+	 * @pattern The pattern to register
+	 * @target A response closure/lambda or an event string to execute
+	 */
+	function post( required pattern, target ){
+		variables.thisRoute.verbs = "POST";
+		return route( argumentCollection = arguments );
+	}
+
+	/**
+	 * Register a route with PUT restriction. Same as calling the following
+	 * <pre>
+	 * route( "/hello", "hello" ).withVerbs( "PUT" )
+	 * </pre>
+	 *
+	 * @pattern The pattern to register
+	 * @target A response closure/lambda or an event string to execute
+	 */
+	function put( required pattern, target ){
+		variables.thisRoute.verbs = "PUT";
+		return route( argumentCollection = arguments );
+	}
+
+	/**
+	 * Register a route with DELETE restriction. Same as calling the following
+	 * <pre>
+	 * route( "/hello", "hello" ).withVerbs( "DELETE" )
+	 * </pre>
+	 *
+	 * @pattern The pattern to register
+	 * @target A response closure/lambda or an event string to execute
+	 */
+	function delete( required pattern, target ){
+		variables.thisRoute.verbs = "DELETE";
+		return route( argumentCollection = arguments );
+	}
+
+	/**
+	 * Register a route with PATHC restriction. Same as calling the following
+	 * <pre>
+	 * route( "/hello", "hello" ).withVerbs( "PATHC" )
+	 * </pre>
+	 *
+	 * @pattern The pattern to register
+	 * @target A response closure/lambda or an event string to execute
+	 */
+	function patch( required pattern, target ){
+		variables.thisRoute.verbs = "PATCH";
+		return route( argumentCollection = arguments );
+	}
+
+	/**
+	 * Register a route with OPTIONS restriction. Same as calling the following
+	 * <pre>
+	 * route( "/hello", "hello" ).withVerbs( "OPTIONS" )
+	 * </pre>
+	 *
+	 * @pattern The pattern to register
+	 * @target A response closure/lambda or an event string to execute
+	 */
+	function options( required pattern, target ){
+		variables.thisRoute.verbs = "OPTIONS";
+		return route( argumentCollection = arguments );
+	}
+
+	/****************************************************************************************************************************/
+	/* 													MODIFIERS																*/
+	/****************************************************************************************************************************/
+
+	/**
+	 * Add a header to a route
+	 * <pre>
+	 * route( "hello", "main.index" ).header( "name", "hello" )
+	 * </pre>
+	 *
+	 * @name The header name
+	 * @value The header value
+	 * @overwrite Overwrite if already defined
+	 */
+	function header( required name, required value, boolean overwrite=true ){
+		variables.thisRoute.headers.insert(
+			arguments.name,
+			arguments.value,
+			arguments.overwrite
+		);
+		return this;
+	}
+
+	/**
+	 * Appends a collection of header name-values to a pattern
+	 * <pre>
+	 * route( "hello", "main.index" ).headers( { ... } )
+	 * </pre>
+	 *
+	 * @map The structure of headers to issue
+	 * @overwrite Overwrite the elements
+	 */
+	function headers( required map, boolean overwrite=true ){
+		variables.thisRoute.headers.append( arguments.map, arguments.overwrite );
+		return this;
+	}
+
+	/**
+	 * Registers the route as a named route
+	 * <pre>
+	 * route( "hello", "main.index" ).as( "main" )
+	 * </pre>
+	 *
+	 * @name The name to use for the route
+	 */
+	function as( required name ){
+		variables.thisRoute.name = arguments.name;
+		return this;
+	}
+
+	/**
+	 * Register a request collection name-value pair if the route matches
+	 * <pre>
+	 * route( "hello", "main.index" ).rc( "private", true )
+	 * </pre>
+	 *
+	 * @name The key name
+	 * @value The value
+	 * @overwrite Overwrite the value
+	 */
+	function rc( required name, required value, boolean overwrite=true ){
+		variables.thisRoute.rc.insert(
+			arguments.name,
+			arguments.value,
+			arguments.overwrite
+		);
+		return this;
+	}
+
+	/**
+	 * Appends a collection of name-values to the RC if the route matches
+	 * <pre>
+	 * route( "hello", "main.index" ).rcAppend( { ... } )
+	 * </pre>
+	 *
+	 * @map The structure to append
+	 * @overwrite Overwrite elements, default behavior
+	 */
+	function rcAppend( required map, boolean overwrite=true ){
+		variables.thisRoute.rc.append( arguments.map, arguments.overwrite );
+		return this;
+	}
+
+	/**
+	 * Register a private request collection name-value pair if the route matches
+	 * <pre>
+	 * route( "hello", "main.index" ).prc( "private", true )
+	 * </pre>
+	 *
+	 * @name The key name
+	 * @value The value
+	 * @overwrite Overwrite the value
+	 */
+	function prc( required name, required value, boolean overwrite=true ){
+		variables.thisRoute.prc.insert(
+			arguments.name,
+			arguments.value,
+			arguments.overwrite
+		);
+		return this;
+	}
+
+	/**
+	 * Appends a collection of name-values to the PRC if the route matches
+	 * <pre>
+	 * route( "hello", "main.index" ).prcAppend( { ... } )
+	 * </pre>
+	 *
+	 * @map The structure to append
+	 * @overwrite Overwrite elements, default behavior
+	 */
+	function prcAppend( required map, boolean overwrite=true ){
+		variables.thisRoute.prc.append( arguments.map, arguments.overwrite );
+		return this;
+	}
+
+	/**
+	 * Register a struct of constraints for the route
+	 * <pre>
+	 * route( "hello", "main.index" ).constraints( { ... } )
+	 * </pre>
+	 *
+	 * @map A structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match.
+	 */
+	function constraints( required map ){
+		variables.thisRoute.constraints = arguments.map;
+		return this;
+	}
+
+	/**
+	 * Registers a pattern into a specific module routing table
+	 * <pre>
+	 * route( "hello", "main.index" ).withModule( "explorer" )
+	 * </pre>
+	 *
+	 * @name The module name
+	 */
+	function withModule( required name ){
+		variables.thisRoute.module = arguments.name;
+		return this;
+	}
+
+	/**
+	 * Registers a pattern into a specific Namespace routing table
+	 * <pre>
+	 * route( "hello", "main.index" ).withNamespace( "myAPI" )
+	 * </pre>
+	 *
+	 * @name The namespace name
+	 */
+	function withNamespace( required name ){
+		variables.thisRoute.namespace = arguments.name;
+		return this;
+	}
+
+	/**
+	 * Forces SSL on the route
+	 * <pre>
+	 * route( "hello", "main.index" ).withSSL()
+	 * </pre>
+	 */
+	function withSSL(){
+		variables.thisRoute.ssl = true;
+		return this;
+	}
+
+	/**
+	 * Registers a closure/lambda that will be called once the route matches to verify if we can proceed and execute its terminators.
+	 * The closure/lambda must return boolean
+	 * <pre>
+	 * route( "hello", "main.index" ).withCondition( () => return false )
+	 * </pre>
+	 *
+	 * @condition closure or lambda
+	 */
+	function withCondition( required condition ){
+		variables.thisRoute.condition = arguments.condition;
+		return this;
+	}
+
+	/**
+	 * Registers a pattern that must exist under a domain pattern
+	 * <pre>
+	 * route( "hello", "main.index" ).withDomain( ":username.forgebox.dev" )
+	 * </pre>
+	 *
+	 * @domain The domain construct
+	 */
+	function withDomain( required domain ){
+		variables.thisRoute.domain = arguments.domain;
+		return this;
+	}
+
+	/**
+	 * Turn package resolver on/off
+	 * <pre>
+	 * route( "hello", "main.index" ).packageResolver( false );
+	 * </pre>
+	 *
+	 * @toggle The boolean toggle
+	 */
+	function packageResolver( required boolean toggle ){
+		variables.thisRoute.packageResolver = arguments.toggle;
+		return this;
+	}
+
+	/**
+	 * Turns on/off the value pair translator from extra metdata in a URL
+	 * <pre>
+	 * route( "hello", "main.index" ).valuePairTranslator( false );
+	 * </pre>
+	 *
+	 * @toggle The boolean toggle
+	 */
+	function valuePairTranslator( required boolean toggle ){
+		variables.thisRoute.valuePairTranslator = arguments.toggle;
+		return this;
+	}
+
+	/**
+	 * Prepends the route to the routing table. By default all routes are appended.
+	 * <pre>
+	 * route( "hello", "main.index" ).prepend();
+	 * </pre>
+	 */
+	function prepend(){
+		variables.thisRoute.append = false;
+		return this;
+	}
+
+	/**
+	 * Appends the route to the routing table. By default all routes are appended.
+	 * <pre>
+	 * route( "hello", "main.index" ).append();
+	 * </pre>
+	 */
+	function append(){
+		variables.thisRoute.append = true;
+		return this;
+	}
+
+	/**
+	 * Restricts the route to specific HTTP Verbs. Just pass a list of allowed verbs
+	 * <pre>
+	 * route( "hello", "main.index" ).withVerbs( "GET,POST,PUT" );
+	 * </pre>
+	 *
+	 * @verbs The list of HTTP Verbs
+	 */
+	function withVerbs( required verbs ){
+		variables.thisRoute.verbs = arguments.verbs;
+		return this;
+	}
+
+	/****************************************************************************************************************************/
+	/* 													TERMINATORS																*/
+	/****************************************************************************************************************************/
+
+	/**
+	 * Send a route to a view/layout combo
+	 * <pre>
+	 * route( "hello", "main.index" ).toView( "hello" );
+	 * route( "hello", "main.index" ).toView( "hello", "rest" );
+	 * route( "hello", "main.index" ).toView( view="hello", noLayout=true );
+	 * </pre>
+	 */
+	function toView( required view, layout="", boolean noLayout=false ){
+		variables.thisRoute.append( {
+			view     : arguments.view,
+			layout   : arguments.layout,
+			noLayout : arguments.nolayout
+		}, true );
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Redirects to a route or full HTTP URL if the pattern matched
+	 * <pre>
+	 * route( "old" ).toRedirect( "/api/new" );
+	 * route( "old" ).toRedirect( "/api/new", 302 );
+	 * route( "old" ).toRedirect( "https://www.ortussolutions.com");
+	 * </pre>
+	 */
+	function toRedirect( required target, statusCode=301 ){
+		variables.thisRoute.append( {
+			redirect     : arguments.target,
+			statusCode   : arguments.statusCode
+		}, true );
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Terminates the route to execute an event
+	 * <pre>
+	 * route( "old" ).to( "main.index" );
+	 * route( "old" ).to( "main" );
+	 * route( "old" ).to( "api:main.index" );
+	 * </pre>
+	 */
+	function to( required event ){
+		variables.thisRoute.event = arguments.event;
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Terminates the route to execute a response closure with optional status codes and texts
+	 * <pre>
+	 * route( "old" ).to( ( event, rc, prc ) => {
+	 * 	...
+	 *  return "html/data"
+	 * } );
+	 * </pre>
+	 */
+	function toResponse( required body, numeric statusCode = 200, statusText = "Ok" ){
+		variables.thisRoute.append( {
+			response    : arguments.body,
+			statusCode  : arguments.statusCode,
+			statusText	: arguments.statusText
+		}, true );
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Terminate the route to be the entry point for module routing
+	 * <pre>
+	 * route( "/api/v1" ).toModuleRouting( "API" );
+	 * </pre>
+	 */
+	function toModuleRouting( required module ){
+		variables.thisRoute.append( {
+			moduleRouting	: arguments.module
+		}, true );
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Terminate the route to be the entry point for namespace routing
+	 * <pre>
+	 * route( "/api/v1" ).toNamespaceRouting( "API" );
+	 * </pre>
+	 */
+	function toNamespaceRouting( required namespace ){
+		variables.thisRoute.append( {
+			namespaceRouting	: arguments.namespace
+		}, true );
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/*****************************************************************************************/
+	/************************************ PRIVATE ********************************************/
+	/*****************************************************************************************/
+
+	/**
+     * Get the correct route actions based on only and except lists
+     * @initial The initial set of route actions
+     * @only 	Limit actions with only
+     * @except 	Exclude actions with except
+     */
+    private struct function filterRouteActions( required struct initial, array only = [], array except = [] ) {
+        var actionSet = arguments.initial;
+
+        if ( structKeyExists( arguments, "only" ) && ! isNull( arguments.only ) && ! arrayIsEmpty( arguments.only ) ) {
+            actionSet = {};
+            for( var HTTPVerb in arguments.initial ){
+                var methodName = arguments.initial[ HTTPVerb ];
+                for( var onlyAction in arguments.only ){
+                    if ( compareNoCase( methodName, onlyAction ) == 0 ) {
+                        structInsert( actionSet, HTTPVerb, onlyAction );
+                    }
+                }
+            }
+        }
+
+        if ( structKeyExists( arguments, "except" ) && ! isNull( arguments.except ) && ! arrayIsEmpty( arguments.except ) ) {
+            for( var HTTPVerb in arguments.initial ){
+                var methodName = arguments.initial[ HTTPVerb ];
+                for( var exceptAction in arguments.except ){
+                    if ( compareNoCase( methodName, exceptAction ) == 0 ) {
+                        structDelete( actionSet, HTTPVerb );
+                    }
+                }
+            }
+        }
+
+        return actionSet;
+    }
+}
