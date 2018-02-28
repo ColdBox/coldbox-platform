@@ -11,7 +11,8 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		// Mocks
 		controller = createMock( "coldbox.system.web.Controller" )
 			.init( expandPath( '/coldbox/test-harness'), "cbController" )
-			.setSetting( "AppMapping", "/" )
+			.setSetting( "AppMapping", "" )
+			.setSetting( "RoutingAppMapping", "/" )
 			.setSetting( "modules", {
 				"unitTest" = {
 					"routes" = [
@@ -93,13 +94,6 @@ component extends="coldbox.system.testing.BaseModelTest"{
 			} );
 
 			story( "I can register module routes", function(){
-				given( "an invalid module", function(){
-					then( "it should throw an exception", function(){
-						expect( function(){
-							router.addModuleRoutes( pattern="/invalid", module="invalid" );
-						} ).toThrow();
-					} );
-				} );
 				given( "an vaid module", function(){
 					then( "it should add resources and routes", function(){
 						router.addModuleRoutes( pattern="/myModule", module="unitTest" );
@@ -313,6 +307,22 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				});
 			});
 
+			story( "I can register routes to handlers", function(){
+				given( "A toHandler() terminator", function(){
+					then( "the route will register", function(){
+						router.route( "/about/:action" )
+							.toHandler( "static" );
+						var thisRoute = router.getRoutes().reduce( function( result, item ){
+							if( item.handler == "static" )
+								return item;
+						} );
+
+						expect(	thisRoute ).toBeStruct();
+
+					});
+				});
+			});
+
 			story( "I can register routes to responses", function(){
 				given( "A response terminator", function(){
 					then( "the route will register", function(){
@@ -330,6 +340,23 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 						expect(	thisRoute ).toBeStruct();
 						expect( thisRoute.response() ).toBe( "About Page" );
+
+					});
+				});
+			});
+
+			story( "I can register routes with the default terminator", function(){
+				given( "A route with only modifiers and the default terminator of end()", function(){
+					then( "the route will register", function(){
+						router.route( "/about/:handler" )
+							.withAction( "static" )
+							.end();
+						var thisRoute = router.getRoutes().reduce( function( result, item ){
+							if( item.action == "static" )
+								return item;
+						} );
+
+						expect(	thisRoute ).toBeStruct();
 
 					});
 				});

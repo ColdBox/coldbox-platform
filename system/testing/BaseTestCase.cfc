@@ -383,7 +383,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
             // if we were passed a route, parse it and prepare the SES interceptor for routing.
             else if ( arguments.route != "" ){
             	// enable the SES interceptor
-            	getInterceptor( "SES" ).setEnabled( true );
+            	getInstance( "router@coldbox" ).setEnabled( true );
                 // separate the route into the route and the query string
                 var routeParts = explodeRoute( arguments.route );
 
@@ -399,7 +399,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
             }
             else{
                 // If we were passed just an event, remove routing since we don't need it
-                getInterceptor( "SES" ).setEnabled( false );
+				getInstance( "router@coldbox" ).setEnabled( false );
             }
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
