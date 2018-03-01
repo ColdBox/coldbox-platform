@@ -134,7 +134,7 @@ Description :
 	</cffunction>
 
     <!--- getSystemSetting --->
-    <cffunction name="getSystemSetting" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
+    <cffunction name="getSystemSetting" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name. It looks at properties first then environment variables">
     	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
 		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties or the env" />
 		<cfscript>
@@ -160,8 +160,8 @@ Description :
     </cffunction>
 
     <!--- getSystemProperty --->
-    <cffunction name="getSystemProperty" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
-    	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
+    <cffunction name="getSystemProperty" output="false" access="public" returntype="any" hint="Retrieve a Java System property value by name.">
+    	<cfargument name="key" required="true" type="string" hint="The name of the java property to look up."/>
         <cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties" />
 		<cfscript>
 			var value = getJavaSystem().getProperty( arguments.key );
@@ -181,8 +181,8 @@ Description :
     </cffunction>
 
     <!--- getEnv --->
-    <cffunction name="getEnv" output="false" access="public" returntype="any" hint="Retrieve a Java System property or env value by name.">
-    	<cfargument name="key" required="true" type="string" hint="The name of the setting to look up."/>
+    <cffunction name="getEnv" output="false" access="public" returntype="any" hint="Retrieve a Java System environment value by name.">
+    	<cfargument name="key" required="true" type="string" hint="The name of the environment variable to look up."/>
         <cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the env" />
 		<cfscript>
 			var value = getJavaSystem().getEnv( arguments.key );
@@ -196,7 +196,7 @@ Description :
 
 			throw(
 				type = "SystemSettingNotFound",
-				message = "Could not find a env property with key [#arguments.key#]."
+				message = "Could not find a environment variable with key [#arguments.key#]."
 			);
 		</cfscript>
     </cffunction>

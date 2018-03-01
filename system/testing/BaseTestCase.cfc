@@ -664,13 +664,13 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
-	* @state.hint The event to announce
-	* @interceptData.hint A data structure used to pass intercepted information.
-	* @async.hint If true, the entire interception chain will be ran in a separate thread.
-	* @asyncAll.hint If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
-	* @asyncAllJoin.hint If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
-	* @asyncPriority.hint The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
-	* @asyncJoinTimeout.hint The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
+	* @state The event to announce
+	* @interceptData A data structure used to pass intercepted information.
+	* @async If true, the entire interception chain will be ran in a separate thread.
+	* @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
+	* @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
+	* @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
+	* @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout.
 	*
 	* @return struct of thread information or void
 	*/
@@ -688,7 +688,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* Get an interceptor reference
-	* @interceptorName.hint The name of the interceptor to retrieve
+	* @interceptorName The name of the interceptor to retrieve
 	*
 	* @return Interceptor
 	*/
@@ -698,9 +698,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* Get a model object
-	* @name.hint The mapping name or CFC path to retrieve
-	* @dsl.hint The DSL string to use to retrieve an instance
-	* @initArguments.hint The constructor structure of arguments to passthrough when initializing the instance
+	* @name The mapping name or CFC path to retrieve
+	* @dsl The DSL string to use to retrieve an instance
+	* @initArguments The constructor structure of arguments to passthrough when initializing the instance
 	*/
 	function getModel( name, dsl, initArguments={} ){
 		return getInstance( argumentCollection=arguments );
@@ -708,17 +708,18 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 	/**
 	* Get a instance object from WireBox
-	* @name.hint The mapping name or CFC path to retrieve
-	* @dsl.hint The DSL string to use to retrieve an instance
-	* @initArguments.hint The constructor structure of arguments to passthrough when initializing the instance
+	* @name The mapping name or CFC path to retrieve
+	* @dsl The DSL string to use to retrieve an instance
+	* @initArguments The constructor structure of arguments to passthrough when initializing the instance
 	*/
 	function getInstance( name, dsl, initArguments={} ){
 		return getController().getWireBox().getInstance( argumentCollection=arguments );
 	}
 
 	/**
-	* Get the ColdBox global utility class
-	*/
+	 * Get the ColdBox global utility class
+	 * @return coldbox.system.core.util.Util
+	 */
 	function getUtil(){
 		return new coldbox.system.core.util.Util();
 	}
@@ -738,7 +739,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
             queryParams = parseQueryString( routeParts[ 2 ] );
         }
 
-        return { route = routeParts[1], queryStringCollection = queryParams };
+        return { route = routeParts[ 1 ], queryStringCollection = queryParams };
     }
 
     /**
@@ -749,28 +750,12 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @return a struct of query string parameters
     */
     private struct function parseQueryString( required string queryString ){
-        var queryParams = {};
+		var queryParams = {};
 
-        var queryParamsArray = ListToArray( arguments.queryString, '&' );
-
-        for ( var queryStringPair in queryParamsArray ){
-            var pairParts = ListToArray( queryStringPair, '=' );
-
-            // If there is an empty value, set it to an empty string
-            if ( ArrayLen( pairParts ) < 2 ){
-                pairParts[ 2 ] = '';
-            }
-
-			// Decode query parameter name and value now that we're done parsing them.
-			pairParts[ 1 ] = URLDecode( pairParts[ 1 ] );
-			pairParts[ 2 ] = URLDecode( pairParts[ 2 ] );
-
-            if ( ! StructKeyExists( queryParams, pairParts[1] ) ){
-                queryParams[ pairParts[ 1 ] ] = '';
-            }
-
-            queryParams[ pairParts[ 1 ] ] = ListAppend( queryParams[ pairParts[ 1 ] ], pairParts[ 2 ] );
-        }
+		queryString.listToArray( "&" )
+			.each( function( item ){
+				queryParams[ UrlDecode( item.getToken( 1, "=" ) ) ] = UrlDecode( item.getToken( 2, "=" ) );
+			} );
 
         return queryParams;
     }
@@ -790,7 +775,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 
 		// Announce interception
 		arguments.controller.getInterceptorService()
-        .processState( "onException", { exception = arguments.exception } );
+        	.processState( "onException", { exception = arguments.exception } );
 
 		// Store exception in private context
 		event.setPrivateValue( "exception", oException );
@@ -852,8 +837,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	private function getPageContextResponse(){
         if ( structKeyExists( server, "lucee" ) ) {
             return getPageContext().getResponse();
-        }
-        else {
+        } else {
             return getPageContext().getResponse().getResponse();
         }
 	}
