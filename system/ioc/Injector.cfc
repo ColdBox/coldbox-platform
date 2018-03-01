@@ -183,7 +183,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		var iData			= {};
 		var withColdbox 	= isColdBoxLinked();
 
-		//Lock For Configuration
+		// Lock For Configuration
 		lock name=variables.lockName type="exclusive" timeout="30" throwontimeout="true"{
 			if( withColdBox ){
 				// link LogBox
@@ -225,6 +225,13 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			// Scope registration if enabled?
 			if( variables.binder.getScopeRegistration().enabled ){
 				doScopeRegistration();
+			}
+
+			// Register binder as an interceptor
+			if( NOT isColdBoxLinked() ){
+				variables.eventManager.register( variables.binder, "wirebox-binder" );
+			} else {
+				variables.eventManager.registerInterceptor( interceptorObject=variables.binder, interceptorName="wirebox-binder" );
 			}
 
 			// process mappings for metadata and initialization.
