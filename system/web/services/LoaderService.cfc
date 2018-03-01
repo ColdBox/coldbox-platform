@@ -48,9 +48,9 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Create WireBox Container
 		createWireBox();
 		// Execute onConfigurationLoad for coldbox internal services()
-		services.each( function( name, thisService ) {
+		for( var thisService in services ){
 			thisService.onConfigurationLoad();
-		} );
+		}
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		controller.setColdboxInitiated( true );
 		// Activate All Modules
@@ -78,9 +78,9 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Override in persistence scope
 		application[ controller.getAppKey() ] = decorator;
 		// Override locally now in all services
-		services.each( function( name, thisService ) {
+		for( var thisService in services ){
 			thisService.setController( decorator );
-		} );
+		}
 		return this;
 	}
 
