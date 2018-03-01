@@ -1,5 +1,5 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest"{
-	
+
 	function setUp(){
 
 		/* Properties */
@@ -19,7 +19,8 @@
 		/* Init it */
 		mockController = getMockController();
 		prepareMock( mockController.getInterceptorService() );
-		
+		prepareMock( mockController.getWireBox() );
+
 		oRC =  new coldbox.system.web.context.RequestContext( props, mockController );
 	}
 
@@ -29,10 +30,10 @@
 
 	function testValidRoutes(){
 		// Mocks
-		var mockSES = createStub()
+		var mockRouter = createStub()
 			.$( "getRoutes", [ { name="contactus", pattern="contactus/" } ] );
-		mockController.getInterceptorService().$( "getInterceptor", mockSES );
-		
+		mockController.getWireBox().$( "getInstance", mockRouter );
+
 		var event = getRequestContext().setSESEnabled( true );
 		var r = event.route( "contactus" );
 		//debug( r );
@@ -53,14 +54,14 @@
 
 	function testValidModuleRoutes(){
 		// Mocks
-		var mockSES = createStub()
+		var mockRouter = createStub()
 			.$( "getModuleRoutes", [
 					{ name="home", pattern="home/" }
 				]
 			)
 			.$( "getRoutes", [] );
-		mockController.getInterceptorService().$( "getInterceptor", mockSES );
-		
+		mockController.getWireBox().$( "getInstance", mockRouter );
+
 		var event = getRequestContext()
 			.setSESEnabled( true )
 			.$property( "modules", "variables", {
@@ -72,13 +73,13 @@
 		//debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/home/" );
 	}
-	
+
 	function testInvalidRoute(){
 		// Mocks
 		var mockSES = createStub()
 			.$( "getRoutes", [] );
 		mockController.getInterceptorService().$( "getInterceptor", mockSES );
-		
+
 		var event = getRequestContext().setSESEnabled( true );
 		expect( function(){ event.route( "invalid" ); } ).toThrow();
 	}
@@ -420,7 +421,7 @@
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( to='general/index', ssl=true );
 		AssertEquals( testurl, basessl & "/general/index" );
-		
+
 		// SSL OFF
 		event.setsesBaseURL( basessl );
 		testurl = event.buildLink( to='general/index', ssl=false, queryString="name=luis&cool=false" );
@@ -500,7 +501,7 @@
 	function testNoExecution(){
 		var event = getRequestContext();
 		expect(	event.getIsNoExecution() ).toBeFalse();
-		
+
 		event.noExecution();
 		expect(	event.getIsNoExecution() ).toBeTrue();
 	}
@@ -561,7 +562,7 @@
 
 		link = event.buildLink( to='my/event/handler/', queryString='one=1&two=2' );
 		expect(	link ).toInclude( "test-harness/index.cfm/my/event/handler/one/1/two/2" );
-		
+
 		// debug( link );
 	}
 
@@ -593,7 +594,7 @@
 		event.setValue( "hackedField", "hacked as well!", true );
 
 		expect( event.getOnly( keys = "name,field-that-does-not-exist", private = true ) )
-			.toBe( { "name" = "Jane" } );	
+			.toBe( { "name" = "Jane" } );
 	}
 
 }
