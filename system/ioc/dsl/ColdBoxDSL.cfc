@@ -28,10 +28,10 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 
 	/**
 	 * Configure the DSL Builder for operation and returns itself
-	 * 
+	 *
 	 * @injector The linked WireBox Injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
-	 * 
+	 *
 	 * @return coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	function init( required injector ){
@@ -39,16 +39,16 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 		variables.coldbox 	= variables.injector.getColdBox();
 		variables.cacheBox 	= variables.injector.getCacheBox();
 		variables.log		= variables.injector.getLogBox().getLogger( this );
-		
+
 		return this;
 	}
 
 	/**
 	 * Process an incoming DSL definition and produce an object with it
-	 * 
+	 *
 	 * @definition The injection dsl definition structure to process. Keys: name, dsl
 	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
-	 * 
+	 *
 	 * @return coldbox.system.ioc.dsl.IDSLBuilder
 	 */
 	function process( required definition, targetObject ){
@@ -80,7 +80,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 		// Support shortcut for specifying name in the definition instead of the DSl for supporting namespaces
 		if(	thisTypeLen eq 2
 			and listFindNoCase( "setting,fwSetting,datasource,interceptor", listLast( thisType, ":" ) )
-			and len( thisName ) 
+			and len( thisName )
 		){
 			// Add the additional alias to the DSL
 			thisType 	= thisType & ":" & thisName;
@@ -90,25 +90,27 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 		// DSL stages
 		switch( thisTypeLen ){
 			// coldbox only DSL
-			case 1 : { 
-				return variables.coldbox; 
+			case 1 : {
+				return variables.coldbox;
 			}
 
 			// coldbox:{key} stage 2
 			case 2 : {
 				thisLocationKey = getToken( thisType, 2, ":" );
 				switch( thisLocationKey ){
+					case "configSettings"		: { return variables.coldbox.getConfigSettings(); }
+					case "dataMarshaller"		: { return variables.coldbox.getDataMarshaller(); }
 					case "flash"		 		: { return variables.coldbox.getRequestService().getFlashScope(); }
-					case "loaderService"		: { return variables.coldbox.getLoaderService(); }
-					case "requestService"		: { return variables.coldbox.getRequestService(); }
-					case "requestContext"		: { return variables.coldbox.getRequestService().getContext(); }
+					case "fwSettings"			: { return variables.coldbox.getColdboxSettings(); }
 					case "handlerService"		: { return variables.coldbox.getHandlerService(); }
 					case "interceptorService"	: { return variables.coldbox.getInterceptorService(); }
+					case "loaderService"		: { return variables.coldbox.getLoaderService(); }
 					case "moduleService"		: { return variables.coldbox.getModuleService(); }
+					case "requestContext"		: { return variables.coldbox.getRequestService().getContext(); }
+					case "requestService"		: { return variables.coldbox.getRequestService(); }
+					case "router"				: { return variables.injector.getInstance( "router@coldbox" ); }
+					case "routingService"		: { return variables.coldbox.getRoutingService(); }
 					case "renderer"				: { return variables.coldbox.getRenderer(); }
-					case "dataMarshaller"		: { return variables.coldbox.getDataMarshaller(); }
-					case "configSettings"		: { return variables.coldbox.getConfigSettings(); }
-					case "fwSettings"			: { return variables.coldbox.getColdboxSettings(); }
 				} // end of services
 
 				break;
@@ -123,7 +125,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 						// module setting?
 						if( find( "@", thisLocationKey ) ){
 							moduleSettings = variables.coldbox.getSetting( "modules" );
-							if( structKeyExists( moduleSettings, listlast(thisLocationKey, "@" )) 
+							if( structKeyExists( moduleSettings, listlast(thisLocationKey, "@" ))
 								and structKeyExists( moduleSettings[ listlast(thisLocationKey, "@" ) ],"settings" )
 								and structKeyExists( moduleSettings[ listlast(thisLocationKey, "@" ) ].settings,listFirst( thisLocationKey, "@" ) )
 								){
@@ -157,16 +159,16 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 					case "fwSetting" 			: { return variables.coldbox.getSetting( thisLocationKey, true ); }
 					case "interceptor" 			: { return variables.coldbox.getInterceptorService().getInterceptor( thisLocationKey, true ); }
 				}//end of services
-				
+
 				break;
 			}
 		}
 
 		// If we get here we have a problem.
-		throw( 
+		throw(
 			type 	= "ColdBoxDSL.InvalidDSL",
 			message = "The DSL provided was not valid: #arguments.definition.toString()#"
 		);
 	}
-	
+
 }

@@ -48,9 +48,9 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Create WireBox Container
 		createWireBox();
 		// Execute onConfigurationLoad for coldbox internal services()
-		for( var key in services ){
-			services[ key ].onConfigurationLoad();
-		}
+		services.each( function( name, thisService ) {
+			thisService.onConfigurationLoad();
+		} );
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		controller.setColdboxInitiated( true );
 		// Activate All Modules
@@ -78,15 +78,15 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Override in persistence scope
 		application[ controller.getAppKey() ] = decorator;
 		// Override locally now in all services
-		for( var key in services ){
-			services[ key ].setController( decorator );
-		}
+		services.each( function( name, thisService ) {
+			thisService.setController( decorator );
+		} );
 		return this;
 	}
 
 	/**
 	* Create a running LogBox instance configured using ColdBox's default config
-	* 
+	*
 	* @return coldbox.system.logging.LogBox
 	*/
 	function createDefaultLogBox(){
@@ -125,7 +125,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 		return this;
 	}
-	
+
 	/**
 	* Create the application's CacheBox instance
 	*/
@@ -158,7 +158,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		controller.getCacheBox().init(config,controller);
 		return this;
 	}
-	
+
 	/**
 	* Process the shutdown of the application
 	*/
@@ -180,12 +180,12 @@ component extends="coldbox.system.web.services.BaseService"{
 		}
 		return this;
 	}
-	
+
 	/**************************************** PRIVATE ************************************************/
 
 	/**
 	* Creates the application loader
-	* @overrideConfigFile Only used for unit testing or reparsing of a specific coldbox config file 
+	* @overrideConfigFile Only used for unit testing or reparsing of a specific coldbox config file
 	*/
 	function createAppLoader( overrideConfigFile="" ){
 		var coldBoxSettings 	= controller.getColdBoxSettings();

@@ -66,7 +66,7 @@ component serializable=false accessors="true"{
 	 * SES Base URL used for the request
 	 */
 	property name="SESBaseURL";
-	
+
 	/**
 	 * Are we in SES mode for the request or not
 	 */
@@ -464,7 +464,7 @@ component serializable=false accessors="true"{
 	string function getCurrentRouteName(){
 		return getPrivateValue( "currentRouteName", "" );
 	}
-	
+
 
 	/**
 	* Get the current routed URL that matched the SES route
@@ -671,15 +671,15 @@ component serializable=false accessors="true"{
 				cacheSuffix 		= arguments.cacheSuffix,
 				cacheProvider 		= arguments.cacheProvider
 			};
-			
+
 			if ( isNumeric( arguments.cacheTimeout ) ){
 				cacheEntry.timeout = arguments.cacheTimeout;
 			}
-			
+
 			if ( isNumeric( arguments.cacheLastAccessTimeout ) ){
 				cacheEntry.lastAccessTimeout = arguments.cacheLastAccessTimeout;
 			}
-			
+
 			//Save the view cache entry
 			setViewCacheableEntry( cacheEntry );
 		}
@@ -721,7 +721,7 @@ component serializable=false accessors="true"{
 		variables.privateContext[ "layoutoverride" ] = true;
 		// module layout?
 		variables.privateContext[ "layoutmodule" ] = arguments.module;
-		
+
 		return this;
 	}
 
@@ -846,27 +846,27 @@ component serializable=false accessors="true"{
 	/**
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
 	 * If you need a route from a module then append the module address: `@moduleName` in order to find the right route.
-	 * 
+	 *
 	 * @name The name of the route
 	 * @params The parameters of the route to replace
 	 * @ssl Turn SSL on/off or detect it by default
-	 * 
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	string function route( required name, struct params={}, boolean ssl ){
 		// Get routing service and default routes
-		var routingService 	= variables.controller.getInterceptorService().getInterceptor( "ses" );
-		var targetRoutes 	= routingService.getRoutes();
+		var router 			= variables.controller.getWirebox().getInstance( "router@coldbox" );
+		var targetRoutes 	= router.getRoutes();
 		var entryPoint 		= "";
 
 		// Module Route?
 		if( find( "@", arguments.name ) ){
 			var targetModule 	= getToken( arguments.name, 2, "@" );
-			targetRoutes 		= routingService.getModuleRoutes( targetModule );
+			targetRoutes 		= router.getModuleRoutes( targetModule );
 			arguments.name 		= getToken( arguments.name, 1, "@" );
 			entryPoint 			= variables.modules[ targetmodule ].inheritedEntryPoint;
 		}
-		
+
 		// Find the named route
 		var foundRoute = targetRoutes.filter( function( item ){
 			return ( arguments.item.name == name ? true : false );
@@ -876,7 +876,7 @@ component serializable=false accessors="true"{
 		if( arrayLen( foundRoute ) ){
 			var args = {
 				to 	= entryPoint & foundRoute[ 1 ].pattern,
-				ssl = arguments.ssl ?: javaCast( "null", "" ) 
+				ssl = arguments.ssl ?: javaCast( "null", "" )
 			};
 
 			// Process Params
@@ -891,7 +891,7 @@ component serializable=false accessors="true"{
 			type 		= "InvalidArgumentException",
 			message  	= "The named route '#arguments.name#' does not exist"
 		);
-		
+
 	}
 
 	/**
@@ -933,12 +933,12 @@ component serializable=false accessors="true"{
 			if( isSSL() OR ( structKeyExists( arguments, "ssl" ) and arguments.ssl ) ){
 				variables.SESBaseURL = replacenocase( variables.SESBaseURL, "http:", "https:" );
 			}
-			
+
 			// SSL Turn Off
 			if( structKeyExists( arguments, "ssl" ) and arguments.ssl eq false ){
 				variables.SESBaseURL = replacenocase( variables.SESBaseURL, "https:", "http:" );
 			}
-			
+
 			// Translate link or plain
 			if( arguments.translate ){
 				arguments.to = replace( arguments.to, ".", "/", "all" );
@@ -953,7 +953,7 @@ component serializable=false accessors="true"{
 			} else if( len( arguments.queryString ) ){
 				arguments.to = arguments.to & "?" & arguments.queryString;
 			}
-			
+
 			// Prepare SES Base URL Link
 			if( right( variables.SESBaseURL, 1 ) eq  "/" ){
 				return variables.SESBaseURL & arguments.to;
@@ -1050,10 +1050,10 @@ component serializable=false accessors="true"{
 	 * @mimeType A valid mime type to use.  If not passed, then we will try to use one according to file type
 	 * @disposition The browser content disposition (attachment/inline) header
 	 * @abortAtEnd If true, then this method will do a hard abort, we do not recommend this, prefer the event.noRender() for a graceful abort.
-	 * @extension Only used for binary files which types are not determined.  
+	 * @extension Only used for binary files which types are not determined.
 	 * @deleteFile Delete the file after it has been streamed to the user. Only used if file is not binary.
 	 */
-	function sendFile( 
+	function sendFile(
 		file="",
 		name="",
 		mimeType="",
@@ -1070,14 +1070,14 @@ component serializable=false accessors="true"{
 				arguments.name = createUUID();
 			}
 			if( !len( trim( arguments.extension ) ) ){
-				throw( 
+				throw(
 					message = "Extension missing for binary file.",
 					type 	= "InvalidExtensionException"
 				);
 			}
 			// Determine file size
 			fileSize = len( arguments.file );
-			//  Lookup mime type 
+			//  Lookup mime type
 			if( !len( trim( arguments.mimetype ) ) ){
 				arguments.mimetype = getFileMimeType( extension );
 			}
@@ -1088,33 +1088,33 @@ component serializable=false accessors="true"{
 			if( !len( trim( arguments.name ) ) ){
 				arguments.name = REReplace( getFileFromPath( arguments.file ), "\.[^.]*$", "" );
 			}
-			//  Set extension 
+			//  Set extension
 			arguments.extension = listLast( arguments.file, "." );
-			//  Set size 
+			//  Set size
 			fileSize = getFileInfo( arguments.file ).size;
-			//  Lookup mime type 
+			//  Lookup mime type
 			if( !len( trim( arguments.mimetype ) ) ){
 				arguments.mimetype = fileGetMimeType( arguments.file );
 			}
 		} else {
-			throw( 
+			throw(
 				message = "No file binary or file '#arguments.file#' located. Please check your path and arguments.",
 				type 	= "InvalidFileException"
 			);
 		}
 
-		//  Set content headers 
+		//  Set content headers
 		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename='#arguments.name#.#extension#'" );
 		setHTTPHeader( name="content-length", value=fileSize );
-		
-		//  Send file 
+
+		//  Send file
 		if ( isBinary( arguments.file ) ) {
 			cfcontent( variable=arguments.file, type=arguments.mimetype );
 		} else {
 			cfcontent( deletefile=arguments.deleteFile, file=arguments.file, type=arguments.mimetype );
 		}
 
-		//  Abort further processing? 
+		//  Abort further processing?
 		if( arguments.abortAtEnd ){
 			abort;
 		}
@@ -1215,7 +1215,7 @@ component serializable=false accessors="true"{
 			case "JSON" : {
 				rd.contenttype = 'application/json';
 				if( arguments.jsonAsText ){
-					rd.contentType = "text/plain"; 
+					rd.contentType = "text/plain";
 				}
 				break;
 			}
@@ -1228,13 +1228,13 @@ component serializable=false accessors="true"{
 				rd.type = "JSON";
 				break;
 			}
-			case "XML" : case "WDDX" : { 
-				rd.contentType = "text/xml"; 
-				break; 
+			case "XML" : case "WDDX" : {
+				rd.contentType = "text/xml";
+				break;
 			}
-			case "TEXT" : { 
-				rd.contentType = "text/plain"; 
-				break; 
+			case "TEXT" : {
+				rd.contentType = "text/plain";
+				break;
 			}
 			case "PDF" : {
 				rd.contentType = "application/pdf";
@@ -1249,8 +1249,8 @@ component serializable=false accessors="true"{
 		}
 
 		// HTTP Location?
-		if( len( arguments.location ) ){ 
-			setHTTPHeader( name="location", value=arguments.location ); 
+		if( len( arguments.location ) ){
+			setHTTPHeader( name="location", value=arguments.location );
 		}
 
 		// Save Rendering data privately.
@@ -1440,15 +1440,15 @@ component serializable=false accessors="true"{
 			throw(
 				message = "The incoming format #variables.context.format# is not a valid registered format",
 				detail 	= "Valid incoming formats are #arguments.formats.toString()#",
-				type 	= "RequestContext.InvalidFormat" 
+				type 	= "RequestContext.InvalidFormat"
 			);
 		}
 	}
 
-	//  getFileMimeType 
+	//  getFileMimeType
 
 	/**
-	 * Get's the file mime type for a given file extension, this is mostly used for file delivery. 
+	 * Get's the file mime type for a given file extension, this is mostly used for file delivery.
 	 * If not in the most common, we deliver as a binary octet-stream.
 	 * @extension The extension to assume.
 	 */
@@ -1492,7 +1492,7 @@ component serializable=false accessors="true"{
 				fileMimeType = 'application/octet-stream';
 				break;
 		}
-		//  More mimeTypes: http://www.iana.org/assignments/media-types/application/ 
+		//  More mimeTypes: http://www.iana.org/assignments/media-types/application/
 		return fileMimeType;
 	}
 

@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Manages all the routing definitions for the application
+ * Manages all the routing definitions for the application and exposes the
+ * ColdBox Routing DSL
  */
-component accessors="true" extends="coldbox.system.FrameworkSupertype"{
+component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton threadsafe{
 
 	/**
 	 * The routing table
@@ -76,10 +77,17 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype"{
 	 * Constructor
 	 *
 	 * @controller The ColdBox controller linkage
+	 * @controller.inject coldbox
 	 */
 	function init( required controller ){
 
-		variables.controller = arguments.controller;
+		// Setup Internal Work Objects
+		variables.controller 	= arguments.controller;
+		variables.wirebox 		= arguments.controller.getWireBox();
+		variables.cachebox 		= arguments.controller.getCacheBox();
+		variables.logBox 		= arguments.controller.getLogBox();
+		variables.log 			= variables.logBox.getLogger( this );
+		variables.flash 		= arguments.controller.getRequestService().getFlashScope();
 
 		/************************************** FLUENT CONSTRUCTS *********************************************/
 
@@ -93,8 +101,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype"{
 		/************************************** CONSTANTS *********************************************/
 
 		// STATIC Reserved Keys as needed for cleanups
-		variables.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting,redirect,event,verbs";
-		variables.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexDomain,domain,regexpattern,matchVariables,packageresolverexempt,domainParams,patternParams,valuePairTranslation,ssl,append";
+		this.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting,redirect,event,verbs";
+		this.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexDomain,domain,regexpattern,matchVariables,packageresolverexempt,domainParams,patternParams,valuePairTranslation,ssl,append";
 
 		// STATIC Valid Extensions
 		variables.VALID_EXTENSIONS 			= "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
@@ -119,19 +127,53 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype"{
 		variables.throwOnInvalidExtension = false;
 		// Initialize the valid extensions to detect
 		variables.validExtensions = variables.VALID_EXTENSIONS;
-		// AppMapping for BaseURL Construction
-		variables.appMapping = ( len( controller.getSetting( 'AppMapping' ) lte 1 ) ? controller.getSetting( 'AppMapping' ) & "/" : "" );
-		variables.appMapping = left( variables.appMapping, 1 ) == "/" ? variables.appMapping : "/#appMapping#";
-		// Base Routing URL, defaults to the domain and app mapping
-		if( len( variables.appMapping ) lte 1 ){
+		// Base Routing URL, defaults to the domain and app mapping defined by the routing services
+		if( len( controller.getSetting( "RoutingAppMapping" ) ) lte 1 ){
 			variables.baseURL = "http://#cgi.HTTP_HOST#";
 		} else {
-			variables.baseURL = "http://#cgi.HTTP_HOST##variables.appMapping#";
+			variables.baseURL = "http://#cgi.HTTP_HOST##controller.getSetting( "RoutingAppMapping" )#";
 		}
 		// Are full rewrites enabled
 		variables.fullRewrites = false;
 
 		return this;
+	}
+
+
+	/**
+	 * This method is to be implemented by the application router you create.
+	 * This is where you will define all your routing.
+	 */
+	function configure(){}
+
+	/**
+	 * This method is called by the Routing Services to make sure the router is ready for operation.
+	 * This is ONLY called by the routing services.
+	 */
+	function startup(){
+		// Check if rewrites turned off. If so, append the `index.cfm` to it.
+		if( !variables.fullRewrites AND !findNoCase( "index.cfm", variables.baseURL ) ){
+			variables.baseURL &= "/index.cfm";
+		}
+		// Remove any double slashes
+		variables.baseURL = reReplace( variables.baseURL, "\/\/$", "/", "all" );
+
+		// Save the base URL in the application settings
+		variables.controller.setSetting( 'SESBaseURL', variables.baseURL );
+		variables.controller.setSetting( 'HTMLBaseURL', replaceNoCase( variables.baseURL, "index.cfm", "" ) );
+
+		// Configure Context that we are enabled and with the base URL for routing
+		variables.controller.getRequestService().getContext()
+			.setSESEnabled( variables.enabled )
+			.setSESBaseURL( variables.baseURL );
+	}
+
+	/**
+	 * Verifies if an extension is valid in the Router
+	 * @extension The extension to validate
+	 */
+	boolean function isValidExtension( required extension ){
+		return variables.validExtensions.listFindNoCase( arguments.extension ) > 0;
 	}
 
 	/****************************************************************************************************************************/
@@ -1176,6 +1218,44 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype"{
 	}
 
 	/**
+	 * Registers a pattern into a specific handler for execution. The handler string can include dot notations for folder paths or even
+	 * a module `:` designator. Usually this is called if you want to delegate a route to a specific action terminator `toAction()`.
+	 * This action can be a single action or a struct of HTTP Verbs to action maps. Please note that this is NOT the same as using
+	 * the `toHandler()` terminator, which terminates the route addition to a specific handler.
+	 * <br>
+	 * Please see examples below:
+	 * <pre>
+	 * route( "api/user" ).withHandler( "User" ).toAction( { get : "index", delete : "delete" } );
+	 * route( "api/user/details" ).withHandler( "User" ).toAction( "details" );
+	 * </pre>
+	 *
+	 * @handler The handler syntax
+	 */
+	function withHandler( required handler ){
+		variables.thisRoute.handler = arguments.handler;
+		return this;
+	}
+
+	/**
+	 * Registers a pattern into a specific action for execution. The action string can be a single action or a struct of
+	 * HTTP Verb to actions map. Usually this is called to keep track of actions throughout a route definition and then follow
+	 * it with a handler terminator or the global terminator: `end()`
+	 * <br>
+	 * Please see examples below:
+	 * <pre>
+	 * route( "api/user" ).\withoAction( { get : "index", delete : "delete" } ).toHandler( "User" );
+	 * route( "api/user/details" ).withAction( "details" ).toHandler( "User" );
+	 * route( "api/:handler" ).withAction( "index" ).end();
+	 * </pre>
+	 *
+	 * @handler The handler syntax
+	 */
+	function withAction( required action ){
+		variables.thisRoute.action = arguments.action;
+		return this;
+	}
+
+	/**
 	 * Registers a pattern into a specific module routing table
 	 * <pre>
 	 * route( "hello", "main.index" ).withModule( "explorer" )
@@ -1305,6 +1385,20 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype"{
 	/****************************************************************************************************************************/
 
 	/**
+	 * This is a global route definition terminator. It will grab whatever the fluent API collected and create a route from it.
+	 * <pre>
+	 * route( "hello" ).withHandler( "luis" ).withAction( "hello" ).end();
+	 * </pre>
+	 */
+	function end(){
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
 	 * Send a route to a view/layout combo
 	 * <pre>
 	 * route( "hello", "main.index" ).toView( "hello" );
@@ -1355,6 +1449,23 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype"{
 	 */
 	function to( required event ){
 		variables.thisRoute.event = arguments.event;
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
+	 * Terminates the route to execute a specific handler. Usually this will be done if the action is coming via the URL as a `:action` placeholder
+	 * or you want the default `index` action to execute.
+	 * <pre>
+	 * route( "about/:action" ).toHandler( "static" )
+	 * route( "users/:action?" ).toHandler( "users" )
+	 * </pre>
+	 */
+	function toHandler( required handler ){
+		variables.thisRoute.handler = arguments.handler;
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
 		// reinit
@@ -1455,5 +1566,44 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype"{
         }
 
         return actionSet;
-    }
+	}
+
+	/**
+	 * Process route optionals
+	 *
+	 * @thisRoute The route structure
+	 */
+	private function processRouteOptionals( required struct thisRoute ){
+		var base 		= "";
+		var optionals 	= "";
+
+		// Parse our base & optionals strings
+		arguments.thisRoute.pattern.listToArray( "/" )
+			.each( function( item ){
+				// Check for ?
+				if( not findnocase( "?", item ) ){
+					base = base & item & "/";
+				} else {
+					optionals = optionals & replacenocase( item, "?", "", "all" ) & "/";
+				}
+			} );
+
+		// Register our optionals
+		var routeList = base & optionals;
+		optionals.listToArray( "/" )
+			.each( function( item ){
+				// Create new route
+				thisRoute.pattern = routeList;
+				// Register route
+				addRoute( argumentCollection=thisRoute );
+				// Remove last bit
+				routeList = listDeleteat( routeList, listlen( routeList, "/" ), "/" );
+			} );
+
+			// Setup the base route again
+		arguments.thisRoute.pattern = base;
+		// Register the final route
+		addRoute( argumentCollection=arguments.thisRoute );
+	}
+
 }

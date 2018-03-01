@@ -90,15 +90,16 @@ component serializable="false" accessors="true"{
 		variables.log 				= variables.logBox.getLogger( this );
 
 		// Setup the ColdBox Services
+		services.interceptorService = new coldbox.system.web.services.InterceptorService( this );
 		services.requestService 	= new coldbox.system.web.services.RequestService( this );
 		services.handlerService 	= new coldbox.system.web.services.HandlerService( this );
 		services.moduleService 		= new coldbox.system.web.services.ModuleService( this );
-		services.interceptorService = new coldbox.system.web.services.InterceptorService( this );
+		services.routingService		= new coldbox.system.web.services.RoutingService( this );
 
 		// CacheBox Instance
-		variables.cacheBox 	= createObject("component","coldbox.system.cache.CacheFactory");
+		variables.cacheBox 	= createObject( "component", "coldbox.system.cache.CacheFactory" );
 		// WireBox Instance
-		variables.wireBox	= createObject("component","coldbox.system.ioc.Injector");
+		variables.wireBox	= createObject( "component", "coldbox.system.ioc.Injector" );
 
 		// Load up default ColdBox Settings
 		loadColdBoxSettings();
@@ -174,6 +175,13 @@ component serializable="false" accessors="true"{
 	*/
 	function getRequestService(){
 		return services.requestService;
+	}
+
+	/**
+	* Get the routing service
+	*/
+	function getRoutingService(){
+		return services.routingService;
 	}
 
 	/****************************************** SETTING METHODS *************************************************/
@@ -337,16 +345,16 @@ component serializable="false" accessors="true"{
 			// Default event relocations
 			case "SES" : {
 				// Route String start by converting event syntax to / syntax
-				routeString = replace(arguments.event,".","/","all");
+				routeString = replace( arguments.event, ".", "/", "all" );
 				// Convert Query String to convention name value-pairs
 				if( len( trim( arguments.queryString ) ) ){
 					// If the routestring ends with '/' we do not want to
 					// double append '/'
 					if (right(routeString,1) NEQ "/")
 					{
-						routeString = routeString & "/" & replace(arguments.queryString,"&","/","all");
+						routeString = routeString & "/" & replace( arguments.queryString, "&", "/", "all" );
 					} else {
-						routeString = routeString & replace(arguments.queryString,"&","/","all");
+						routeString = routeString & replace( arguments.queryString, "&", "/", "all" );
 					}
 					routeString = replace(routeString,"=","/","all");
 				}
@@ -354,13 +362,16 @@ component serializable="false" accessors="true"{
 				// Get Base relocation URL from context
 				relocationURL = oRequestContext.getSESBaseURL();
 				//if the sesBaseURL is nothing, set it to the setting
-				if(!len(relocationURL)){relocationURL = getSetting('sesBaseURL');}
+				if( !len( relocationURL ) ){
+					relocationURL = getSetting( 'sesBaseURL' );
+				}
 				//add the trailing slash if there isnt one
-				if( right(relocationURL,1) neq "/" ){ relocationURL = relocationURL & "/"; }
-
+				if( right( relocationURL, 1 ) neq "/" ){
+					relocationURL = relocationURL & "/";
+				}
 				// Check SSL?
-				if( structKeyExists(arguments, "ssl") ){
-					relocationURL = updateSSL(relocationURL,arguments.ssl);
+				if( structKeyExists( arguments, "ssl" ) ){
+					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 
 				// Finalize the URL
@@ -372,11 +383,13 @@ component serializable="false" accessors="true"{
 				// Basic URL Relocation
 				relocationURL = "#frontController#?#eventName#=#arguments.event#";
 				// Check SSL?
-				if( structKeyExists(arguments, "ssl") ){
-					relocationURL = updateSSL(relocationURL,arguments.ssl);
+				if( structKeyExists( arguments, "ssl" ) ){
+					relocationURL = updateSSL( relocationURL, arguments.ssl );
 				}
 				// Query String?
-				if( len( trim( arguments.queryString ) ) ){ relocationURL = relocationURL & "&#arguments.queryString#"; }
+				if( len( trim( arguments.queryString ) ) ){
+					relocationURL = relocationURL & "&#arguments.queryString#";
+				}
 			}
 		}
 

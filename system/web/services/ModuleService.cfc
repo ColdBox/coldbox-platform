@@ -462,13 +462,13 @@ component extends="coldbox.system.web.services.BaseService"{
 		var mConfig = modules[ arguments.moduleName ];
 
 		// Do we have dependencies to activate first
-		for( var thisDependency in mConfig.dependencies ){
+		mConfig.dependencies.each( function( thisDependency ){
 			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Activating #arguments.moduleName# requests dependency activation: #thisDependency#" );
+				variables.logger.debug( "Activating #moduleName# requests dependency activation: #thisDependency#" );
 			}
 			// Activate dependency first
 			activateModule( thisDependency );
-		}
+		} );
 
 		// Check if activating one of this module's dependencies already activated this module
 		if( modules[ arguments.moduleName ].activated ){
@@ -530,20 +530,18 @@ component extends="coldbox.system.web.services.BaseService"{
 			}
 
 			// Register Interceptors with Announcement service
-			for( var y=1; y lte arrayLen( mConfig.interceptors ); y++ ){
+			mConfig.interceptors.each( function( thisInterceptor ){
 				interceptorService.registerInterceptor(
-					interceptorClass 		= mConfig.interceptors[ y ].class,
-					interceptorProperties 	= mConfig.interceptors[ y ].properties,
-					interceptorName 		= mConfig.interceptors[ y ].name & "@" & arguments.moduleName
+					interceptorClass 		= thisInterceptor.class,
+					interceptorProperties 	= thisInterceptor.properties,
+					interceptorName 		= thisInterceptor.name & "@" & moduleName
 				);
 				// Loop over module interceptors to autowire them
 				wirebox.autowire(
-					target 	 = interceptorService.getInterceptor(
-						mConfig.interceptors[ y ].name & "@" & arguments.moduleName, true
-					),
-					targetID = mConfig.interceptors[ y ].class
+					target 	 = interceptorService.getInterceptor( thisInterceptor.name & "@" & moduleName ),
+					targetID = thisInterceptor.class
 				);
-			}
+			} );
 
 			// Register module routing entry point pre-pended to routes
 			if( controller.settingExists( 'sesBaseURL' ) AND
@@ -570,7 +568,7 @@ component extends="coldbox.system.web.services.BaseService"{
 				mConfig.inheritedEntryPoint = parentEntryPoint & reReplace( mConfig.entryPoint, "^/", "" );
 
 				// Registers module routing + resources
-				interceptorService.getInterceptor( "SES", true )
+				wirebox.getInstance( "router@coldbox" )
 					.addModuleRoutes(
 						pattern = mConfig.inheritedEntryPoint,
 						module  = arguments.moduleName,
@@ -609,9 +607,9 @@ component extends="coldbox.system.web.services.BaseService"{
 			mConfig.activated = true;
 
 			// Now activate any children
-			for( var thisChild in mConfig.childModules ){
+			mConfig.childModules.each( function( thisChild ){
 				activateModule( moduleName=thisChild );
-			}
+			} );
 
 			// Log it
 			if( variables.logger.canDebug() ){
@@ -724,12 +722,15 @@ component extends="coldbox.system.web.services.BaseService"{
 			for( var x=1; x lte arrayLen( appConfig.modules[ arguments.moduleName ].interceptors ); x++){
 				interceptorService.unregister( appConfig.modules[ arguments.moduleName ].interceptors[ x ].name);
 			}
+
 			// Unregister Config object
 			interceptorService.unregister( "ModuleConfig:#arguments.moduleName#" );
 
 			// Remove SES if enabled.
 			if( controller.settingExists( "sesBaseURL" ) ){
-				interceptorService.getInterceptor( "SES", true ).removeModuleRoutes( arguments.moduleName );
+				controller.getWireBox()
+					.getInstnce( "router@coldbox" )
+					.removeModuleRoutes( arguments.moduleName );
 			}
 
 			// Remove configuration

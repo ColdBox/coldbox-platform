@@ -14,7 +14,7 @@
 
     <tbody>
     <cfset index = 1>
-    <cfloop array="#args.routes#" item="thisRoute">
+    <cfloop array="#args.routes#" index="thisRoute">
         <tr>
             <td>
                 #index++#
