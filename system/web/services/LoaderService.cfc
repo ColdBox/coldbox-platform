@@ -4,7 +4,7 @@
 * ---
 * This service loads and configures a ColdBox application for operation
 */
-component extends="coldbox.system.web.services.BaseService"{
+component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	* Constructor
@@ -49,7 +49,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		createWireBox();
 		// Execute onConfigurationLoad for coldbox internal services()
 		for( var thisService in services ){
-			thisService.onConfigurationLoad();
+			services[ thisService ].onConfigurationLoad();
 		}
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		controller.setColdboxInitiated( true );
@@ -77,9 +77,10 @@ component extends="coldbox.system.web.services.BaseService"{
 		decorator.configure();
 		// Override in persistence scope
 		application[ controller.getAppKey() ] = decorator;
+
 		// Override locally now in all services
 		for( var thisService in services ){
-			thisService.setController( decorator );
+			services[ thisService ].setController( decorator );
 		}
 		return this;
 	}
