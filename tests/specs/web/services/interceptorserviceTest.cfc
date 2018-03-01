@@ -41,7 +41,7 @@
 					.$results( mockBox.createStub() );
 			iService.$( "registerInterceptor", iService )
 				.$( "registerInterceptors", iService );
-			
+
 				iService.onConfigurationLoad();
 
 			assertTrue( iService.$once( "registerInterceptors" ) );
@@ -59,7 +59,7 @@
 		iService.$property( "interceptorConfig", "variables", mockConfig)
 			.$( "registerInterceptor", iService );
 		mockLogger.$( "canDebug",false);
-		
+
 		iService.registerInterceptors();
 
 		assertTrue( iService.$count( 2, "registerInterceptor" ) );
@@ -154,27 +154,6 @@
 		// debug( iService.getInterceptionStates() );
 		iService.processState( "preProcess" );
 		assertTrue( mockState.$once( "process" ) );
-
-	}
-
-	function testProcessInterceptionWithBuffer() skip="true"{
-		var md = structnew();
-
-		md.test = "UNIT TESTING";
-		md.today = now();
-
-		// mocks
-		mockController.$( "getColdboxInitiated",true);
-		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
-		mockState = createStub().$( "process" );
-		iService.$property( "preProcess","variables.interceptionStates",mockState);
-		mockBox.prepareMock( iService.getRequestBuffer() ).$( "clear" );
-
-
-		// Append To Buffer
-		iService.getRequestBuffer().append('luis');
-		iService.processState( "preProcess",md);
-		assertTrue( iService.getRequestBuffer().$once( "clear" ) );
 
 	}
 

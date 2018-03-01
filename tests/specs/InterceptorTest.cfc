@@ -44,18 +44,5 @@
 		interceptor.unregister( "preProcess" );
 		assertEquals( mockIService.$count( "unregister" ), 1 );
 	}
-	function testRequestBuffer(){
-		mockBuffer = createMock(className="coldbox.system.core.util.RequestBuffer" ).init();
-		mockIService.$( "getRequestBuffer",mockBuffer);
-
-        interceptor.clearBuffer();
-		interceptor.appendToBuffer( "Hello" );
-		assertEquals( interceptor.getBufferString(), "Hello" );
-		assertEquals( interceptor.getBufferObject(), mockBuffer);
-
-		interceptor.clearBuffer();
-		assertEquals( interceptor.getBufferString(), "" );
-
-	}
 </cfscript>
 </cfcomponent>

@@ -177,14 +177,6 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	/********************************************* MOCKING METHODS *********************************************/
 
 	/**
-	* I will return to you a mock request buffer object used mostly in interceptor calls
-	* @return coldbox.system.core.util.RequestBuffer
-	*/
-	function getMockRequestBuffer(){
-		return getMockBox().createMock( "coldbox.system.core.util.RequestBuffer" ).init();
-	}
-
-	/**
 	* I will return a mock controller object
 	* @return coldbox.system.testing.mock.web.MockController
 	*/

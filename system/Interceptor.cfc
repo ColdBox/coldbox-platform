@@ -26,8 +26,8 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 
 	/**
 	* Constructor
-	* @controller.hint The ColdBox controller
-	* @properties.hint The properties to init the Interceptor with
+	* @controller The ColdBox controller
+	* @properties The properties to init the Interceptor with
 	*
 	* @result Interceptor
 	*/
@@ -61,8 +61,8 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 
 	/**
 	* Get an interceptor property
-	* @property.hint The property to retrieve
-	* @defaultValue.hint The default value to return if property does not exist
+	* @property The property to retrieve
+	* @defaultValue The default value to return if property does not exist
 	*/
 	any function getProperty( required property, defaultValue ){
 		return ( structKeyExists( variables.properties, arguments.property ) ? variables.properties[ arguments.property ] : arguments.defaultValue );
@@ -70,8 +70,8 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 
 	/**
 	* Store an interceptor property
-	* @property.hint The property to store
-	* @value.hint The value to store
+	* @property The property to store
+	* @value The value to store
 	*
 	* @return Interceptor instance
 	*/
@@ -82,7 +82,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 
 	/**
 	* Verify an interceptor property
-	* @property.hint The property to check
+	* @property The property to check
 	*/
 	boolean function propertyExists( required property ){
 		return structKeyExists( variables.properties, arguments.property );
@@ -90,7 +90,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 
 	/**
 	* Unregister the interceptor
-	* @state.hint The named state to unregister this interceptor from
+	* @state The named state to unregister this interceptor from
 	*
 	* @return Interceptor
 	*/
@@ -113,12 +113,13 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	}
 
 	/**
-	* Append to the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
-	* @deprecated
-	* @str.hint The string to append to the buffer
-	*
-	* @return Interceptor
-	*/
+	 * Append to the interceptor buffer: Deprecated, please use incoming buffer arguments instead, this is not thread safe
+	 * @deprecated Please use the incoming `buffer` argument instead
+	 *
+	 * @str The string to append to the buffer
+	 *
+	 * @return Interceptor
+	 */
 	function appendToBuffer( required str ){
 		getBufferObject().append( arguments.str );
 		return this;
@@ -126,7 +127,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 
 	/**
 	* Get the string representation of the buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
-	* @deprecated
+	* @deprecated Please use the incoming `buffer` argument instead
 	*/
 	string function getBufferString(){
 		return getBufferObject().getString();
@@ -134,11 +135,15 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 
 	/**
 	* Get the request buffer object from scope.: Deprecated, please use incoming buffer arguements instead, this is not thread safe
-	* @deprecated
-	* @return coldbox.system.core.util.RequestBuffer
+	* @deprecated Please use the incoming `buffer` argument instead
+
+	* @return struct
 	*/
 	function getBufferObject(){
-		return variables.interceptorService.getRequestBuffer();
+		if( !equest.keyExists( "__cbox_buffer" ) ){
+			request[ "__cbox_buffer" ] = variables.interceptorService.getLazyBuffer();
+		}
+		return request[ "__cbox_buffer" ];
 	}
 
 }
