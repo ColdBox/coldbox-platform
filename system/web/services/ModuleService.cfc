@@ -729,7 +729,7 @@ component extends="coldbox.system.web.services.BaseService"{
 			// Remove SES if enabled.
 			if( controller.settingExists( "sesBaseURL" ) ){
 				controller.getWireBox()
-					.getInstnce( "router@coldbox" )
+					.getInstance( "router@coldbox" )
 					.removeModuleRoutes( arguments.moduleName );
 			}
 
