@@ -651,29 +651,40 @@ component serializable="false" accessors="true"{
 	 * @target The target object
 	 */
 	function toVirtualInheritance( required mapping, required target ){
-		var baseObject 		   = "";
-		var familyPath 		   = "";
-		var constructorArgs    = "";
-		var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS";
-
-		// Mix it up baby
-		variables.utility.getMixerUtil().start( arguments.target );
+		var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS,this";
 
 		// Create base family object
-		baseObject = variables.injector.getInstance( arguments.mapping.getName() );
+		var baseObject = variables.injector.getInstance( arguments.mapping.getName() );
+
+		// Mix them up baby!
+		variables.utility.getMixerUtil().start( arguments.target );
+		variables.utility.getMixerUtil().start( baseObject );
 
 		// Check if init already exists in target and base?
-		if( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject,"init" ) ){
+		if( structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ){
 			arguments.target.$superInit = baseObject.init;
 		}
 
-		// Mix in methods
+		// Mix in public methods and public properties
 		for( var key in baseObject ){
 			// If target has overriden method, then don't override it with mixin, simulated inheritance
 			if( NOT structKeyExists( arguments.target, key ) AND NOT listFindNoCase( excludedProperties, key ) ){
+				// inject method in both variables and this scope to simulate public access
 				arguments.target.injectMixin( key, baseObject[ key ] );
 			}
 		}
+
+		// Mix in private scope, which includes private properties and methods
+		var targetVariables = arguments.target.getVariablesMixin();
+		baseObject.getVariablesMixin()
+			// filter out overrides
+			.filter( function( key, value ) {
+				return ( !targetVariables.keyExists( key ) AND NOT listFindNoCase( excludedProperties, key ) );
+			} )
+			// inject
+			.each( function( key, value ){
+				target.injectPropertyMixin( key, value );
+			} );
 
 		// Mix in virtual super class
 		arguments.target.$super = baseObject;

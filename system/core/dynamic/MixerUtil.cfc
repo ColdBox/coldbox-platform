@@ -28,6 +28,7 @@ Description :
 			instance.mixins[ "getPropertyMixin" ]			= variables.getPropertyMixin;
 			instance.mixins[ "exposeMixin" ]				= variables.exposeMixin;
 			instance.mixins[ "methodProxy" ]				= variables.methodProxy;
+			instance.mixins[ "getVariablesMixin" ]			= variables.getVariablesMixin;
 
 			return this;
 		</cfscript>
@@ -95,10 +96,10 @@ Description :
 			var methodName = getFunctionCalledName();
 
 			if( !structKeyExists( this.$exposedMethods, methodName ) ){
-				throw( 
+				throw(
 					message = "The exposed method you are calling: #methodName# does not exist",
 					detail  = "Exposed methods are #structKeyList( this.$exposedMethods )#",
-					type    = "ExposedMethodProxy" 
+					type    = "ExposedMethodProxy"
 				);
 			}
 
@@ -112,6 +113,11 @@ Description :
 		<cfargument name="template" required="true">
 		<cfinclude template="#template#">
 		<cfreturn this>
+	</cffunction>
+
+	<!--- getVariablesMixin --->
+	<cffunction name="getVariablesMixin" access="public" hint="Get the variables scope" returntype="any" output="true">
+		<cfreturn variables>
 	</cffunction>
 
 	<!--- injectMixin --->
