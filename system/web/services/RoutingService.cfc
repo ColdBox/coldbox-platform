@@ -170,12 +170,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		} );
 
 		// Process Redirects
-		if( !isNull( targetRoute.redirect ) ){
+		if( !isNull( targetRoute.redirect ) && targetRoute.redirect.len() ){
 			if( targetRoute.redirect.findNoCase( "http" ) ){
-				relocate( URL=targetRoute.redirect, statusCode=targetRoute.statusCode ?: 301 );
+				controller.relocate( URL=targetRoute.redirect, statusCode=targetRoute.statusCode ?: 301 );
 			} else {
-				relocate( event=targetRoute.redirect, statusCode=targetRoute.statusCode ?: 301 );
+				controller.relocate( event=targetRoute.redirect, statusCode=targetRoute.statusCode ?: 301 );
 			}
+			return;
 		}
 
 		// Process Handler/Actions
@@ -336,7 +337,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// SSL Checks
 		if( foundRoute.ssl AND NOT event.isSSL() ){
-			relocate(
+			controller.relocate(
 				URL         = event.getSESBaseURL() & reReplace( cgi.path_info, "^\/", "" ),
 				ssl         = true,
 				statusCode  = 302,
@@ -505,7 +506,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 						.listFirst();
 				}, "" );
 
-			if( match.len() && match.findNoCase( "htm" ) ){
+			if( match.len() && !match.findNoCase( "htm" ) ){
 				// if the user passed in format via the query string,
 				// we'll assume that's the value they actually wanted.
 				event.paramValue( "format", match.lcase() );

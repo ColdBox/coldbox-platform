@@ -181,7 +181,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* @return coldbox.system.testing.mock.web.MockController
 	*/
 	function getMockController(){
-		return CreateObject( "component", "coldbox.system.testing.mock.web.MockController" ).init( '/unittest', 'unitTest' );
+		return prepareMock( new coldbox.system.testing.mock.web.MockController( '/unittest', 'unitTest' ) );
 	}
 
 	/**
@@ -365,26 +365,25 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         	if ( arguments.route == "/" ){
         		arguments.event = getController().getSetting( "defaultEvent" );
 				getRequestContext().setValue( getRequestContext().getEventName(), arguments.event );
-				prepareMock( getInterceptor( "SES" ) )
+				prepareMock( getController().getRoutingService() )
 					.$( "getCGIElement" ).$args( "path_info", getRequestContext() ).$results( arguments.route )
 					.$( "getCGIElement" ).$args( "script_name", getRequestContext() ).$results( "" )
 					.$( "getCGIElement" ).$args( "domain", getRequestContext() ).$results( cgi.server_name );
         		arguments.route = "";
         	}
-
             // if we were passed a route, parse it and prepare the SES interceptor for routing.
-            else if ( arguments.route != "" ){
+            else if ( arguments.route.len() ){
             	// enable the SES interceptor
             	getInstance( "router@coldbox" ).setEnabled( true );
                 // separate the route into the route and the query string
-                var routeParts = explodeRoute( arguments.route );
+				var routeParts = explodeRoute( arguments.route );
 
                 // add the query string parameters from the route to the request context
                 getRequestContext().collectionAppend( routeParts.queryStringCollection )
                 	.collectionAppend( parseQueryString( arguments.queryString ) );
 
                 // mock the cleaned paths so SES routes will be recognized
-				prepareMock( getInterceptor( "SES" ) )
+				prepareMock( getController().getRoutingService() )
 					.$( "getCGIElement" ).$args( "path_info", getRequestContext() ).$results( routeParts.route )
 					.$( "getCGIElement" ).$args( "script_name", getRequestContext() ).$results( "" )
 					.$( "getCGIElement" ).$args( "domain", getRequestContext() ).$results( cgi.server_name );
@@ -392,7 +391,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
             else{
                 // If we were passed just an event, remove routing since we don't need it
 				getInstance( "router@coldbox" ).setEnabled( false );
-            }
+			}
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
 			setupRequest( arguments.event );

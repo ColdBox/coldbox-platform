@@ -4,11 +4,11 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 		describe( "subdomain routing", function() {
             beforeEach( function() {
                 setup();
-                variables.mockSES = prepareMock( getInterceptor( "SES" ) );
+                variables.routingService = prepareMock( getController().getRoutingService() );
             } );
 
             it( "can match on a specific domain", function() {
-                mockSES
+                routingService
                     .$( "getCGIElement" )
                     .$args( "server_name", getRequestContext() )
                     .$results( "subdomain-routing.dev" );
@@ -21,7 +21,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
             } );
 
             it( "skips if the domain is not matched", function() {
-                mockSES
+                routingService
                     .$( "getCGIElement" )
                     .$args( "server_name", getRequestContext() )
                     .$results( "not-the-correct-domain.dev" );
@@ -34,7 +34,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
             } );
 
             it( "can match on a domain with wildcards", function() {
-                mockSES
+                routingService
                     .$( "getCGIElement" )
                     .$args( "server_name", getRequestContext() )
                     .$results( "luis.forgebox.dev" );
@@ -47,7 +47,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
             } );
 
             it( "provides any matched values in the domain in the rc", function() {
-                mockSES
+                routingService
                     .$( "getCGIElement" )
                     .$args( "server_name", getRequestContext() )
                     .$results( "luis.forgebox.dev" );

@@ -4,12 +4,11 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 		describe( "Route Redirects", function() {
             beforeEach( function() {
                 setup();
-                variables.mockSES = prepareMock( getInterceptor( "SES" ) );
             } );
 
             it( "can relocate with the default status code", function() {
 				var event = execute( route = "/oldRoute" );
-                var rc = event.getCollection();
+				var rc = event.getCollection();
 				expect(	rc.relocate_event ).toBe( "/main/redirectTest" );
 				expect(	rc.relocate_statusCode ).toBe( 301 );
 			} );

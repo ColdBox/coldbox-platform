@@ -169,6 +169,15 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	}
 
 	/**
+	 * A quick snapshot of the router state
+	 */
+	struct function getMemento(){
+		return variables.filter( function( k, v ){
+			return ( !isCustomFunction( v ) && !isObject( v ) );
+		} );
+	}
+
+	/**
 	 * Verifies if an extension is valid in the Router
 	 * @extension The extension to validate
 	 */
