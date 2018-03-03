@@ -17,7 +17,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	function init( required controller ){
 		setController( arguments.controller );
-
 		return this;
 	}
 
@@ -36,8 +35,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.wirebox 						= controller.getWireBox();
 
 		// Routing AppMapping Determinations
-		variables.routingAppMapping = ( len( controller.getSetting( 'AppMapping' ) lte 1 ) ? controller.getSetting( 'AppMapping' ) & "/" : "" );
-		variables.routingAppMapping = left( variables.routingAppMapping, 1 ) == "/" ? variables.routingAppMapping : "/#variables.routingAppMapping#";
+		variables.appMapping 					= controller.getSetting( 'AppMapping' );
+		variables.routingAppMapping 			= ( len( controller.getSetting( 'AppMapping' ) lte 1 ) ? controller.getSetting( 'AppMapping' ) & "/" : "" );
+		variables.routingAppMapping 			= left( variables.routingAppMapping, 1 ) == "/" ? variables.routingAppMapping : "/#variables.routingAppMapping#";
 
 		// Store routing appmapping
 		controller.setSetting( "routingAppMapping", variables.routingAppMapping );
@@ -70,43 +70,66 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	/****************************************************************************************************************************/
 
 	/**
-	 * Import a Router into this interceptor.
+	 * Load a ColdBox Router CFC or a legacy router.
 	 * This leverages first the legacy option of `routes.cfm` and if not found looks at `Router.cfc`
 	 */
 	private function loadRouter(){
-		var routerFile = "config/Routes.cfm";
+		// Declare types of routers to discover
+		var legacyRouter 	= "config/Routes.cfm";
+		var modernRouter 	= "config.Router";
+		var baseRouter 		= "coldbox.system.web.routing.Router";
 
-		// Validate file location: relative or absolute
-		var configFilePath = variables.routingAppMapping & reReplace( routerFile, "^/", "" );
-		if( NOT fileExists( expandPath( configFilePath ) ) ){
-			// Check absolute location as not found inside our app
-			configFilePath = routerFile;
-			if( NOT fileExists( expandPath( configFilePath ) ) ){
-				throw( message="Error locating routes file: #configFilePath#", type="SES.ConfigFileNotFound" );
+		// Modern Router?
+		var configFilePath 	= variables.routingAppMapping & modernRouter.replace( ".", "/", "all" ) & ".cfc";
+		var routerType 		= "modern";
+		if( !fileExists( expandPath( configFilePath ) ) ){
+			// Legacy Router?
+			configFilePath 	=  variables.routingAppMapping & legacyRouter;
+			routerType 		= "legacy";
+			if( !fileExists( expandPath( configFilePath ) ) ){
+				// Base Router?
+				routerType 	= "base";
 			}
 		}
 
-		// Load Router by style: legacy or modern
-		if( listLast( configFilePath, "." ) == "cfm" ){
-			// Register basic router
-			wirebox.registerNewInstance( name="router@coldbox", instancePath="coldbox.system.web.routing.Router" );
-			// Process legacy Routes.cfm. Create a basic Router
-			variables.router = wirebox.getInstance( "router@coldbox" )
-				// Load up legacy template
-				.includeRoutes( configFilePath );
-		} else {
-			// Process as a Router.cfc with virtual inheritance
-			wirebox.registerNewInstance( name="router@coldbox", instancePath=invocationPath )
-				.setVirtualInheritance( "coldbox.system.web.routing.Router" )
-				.addDIConstructorArgument( name="controller", value=controller )
-				.setThreadSafe( true )
-				.setScope(
-					wirebox.getBinder().SCOPES.SINGLETON
-				);
-			// Create the Router
-			variables.router = wirebox.getInstance( "Router@coldbox" );
-			// Process it
-			variables.router.configure();
+		// Check if base router mapped?
+		if( NOT wirebox.getBinder().mappingExists( baseRouter ) ){
+			// feed the base class
+			wirebox.registerNewInstance( name=baseRouter, instancePath=baseRouter );
+		}
+
+		// Load Router
+		switch( routerType ){
+			case "modern" : {
+				// Process as a Router.cfc with virtual inheritance
+				wirebox.registerNewInstance( name="router@coldbox", instancePath=variables.appMapping & "." & modernRouter )
+					.setVirtualInheritance( baseRouter )
+					.addDIConstructorArgument( name="controller", value=controller )
+					.setThreadSafe( true )
+					.setScope(
+						wirebox.getBinder().SCOPES.SINGLETON
+					);
+				// Create the Router
+				variables.router = wirebox.getInstance( "router@coldbox" );
+				// Process it
+				variables.router.configure();
+				break;
+			}
+			case "legacy" : {
+				// Register basic router
+				wirebox.registerNewInstance( name="router@coldbox", instancePath=baseRouter );
+				// Process legacy Routes.cfm. Create a basic Router
+				variables.router = wirebox.getInstance( "router@coldbox" )
+					// Load up legacy template
+					.includeRoutes( configFilePath );
+				break;
+			}
+			default : {
+				// Register basic router with default routing
+				wirebox.registerNewInstance( name="router@coldbox", instancePath=baseRouter );
+				variables.router = wirebox.getInstance( "router@coldbox" )
+					.addRoute( pattern="/:handler/:action?" );
+			}
 		}
 
 		// Startup the Router for operation
@@ -139,7 +162,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			.setSESBaseURL(
 				"http" &
 				( event.isSSL() ? "s" : "" ) &
-				"://#cgi.HTTP_HOST#/#variables.routingAppMapping#" &
+				"://#cgi.HTTP_HOST##variables.routingAppMapping#" &
 				( variables.router.getFullRewrites() ? "" : "index.cfm" )
 			);
 

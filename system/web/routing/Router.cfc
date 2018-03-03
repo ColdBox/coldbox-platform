@@ -94,7 +94,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		// with closure
 		variables.withClosure = {};
 		// module closure
-		variables.withModule	= "";
+		variables.thisModule	= "";
 		// this routing pointer
 		variables.thisRoute 	= initRouteDefinition();
 
@@ -194,8 +194,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * Includes a routes configuration file as an added import and returns itself after import
 	 *
 	 * @location The include location of the routes configuration template. Do not add '.cfm'
+	 *
+	 * @return Router
 	 */
-	Router function includeRoutes( required location ){
+	function includeRoutes( required location ){
 		// verify .cfm or not
 		if( listLast( arguments.location, "." ) NEQ "cfm" ){
 			arguments.location &= ".cfm";
@@ -259,8 +261,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * @pattern The pattern to match against the URL
 	 * @module The module to load routes for
 	 * @append Whether the module entry point route should be appended or pre-pended to the main routes array. By default we append to the end of the array
+	 *
+	 * @return Router
 	 */
-	Router function addModuleRoutes( required pattern, required module, boolean append=true ){
+	function addModuleRoutes( required pattern, required module, boolean append=true ){
 		var mConfig = variables.controller.getSetting( "modules" );
 
 		// Verify module exists and loaded
@@ -294,11 +298,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		mConfig.find( arguments.module ).routes.each( function( item ){
 			if( isSimpleValue( item ) ){
 				// prepare module pivot
-				variables.withModule = module;
+				variables.thisModule = module;
 				// Include it via conventions using declared route
 				includeRoutes( location=mConfig[ module ].mapping & "/" & item );
 				// Remove pivot
-				variables.withModule = "";
+				variables.thisModule = "";
 			} else {
 				item.module = module;
 				addRoute( argumentCollection=item );
@@ -311,8 +315,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	/**
 	 * Remove a module's routing table and registration points and return itself
 	 * @module The module to remove
+	 *
+	 * @return Router
 	 */
-	Router function removeModuleRoutes( required module ){
+	function removeModuleRoutes( required module ){
 		// remove all module routes
 		structDelete( variables.moduleRoutingTable, arguments.module );
 		// remove module routing entry point
@@ -343,8 +349,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * @pattern The pattern to match against the URL.
 	 * @namespace The name of the namespace to register
 	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
+	 *
+	 * @return Router
 	 */
-	Router function addNamespace( required pattern, required namespace, boolean append="true" ){
+	function addNamespace( required pattern, required namespace, boolean append="true" ){
 		// Create the namespace routes container if it does not exist already, as we could create many patterns that point to the same namespace
 		if( NOT structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ){
 			variables.namespaceRoutingTable[ arguments.namespace ] = [];
@@ -379,8 +387,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	/**
 	 * Remove a namespace's routing table and registration points and return itself
 	 * @namespace The namespace to remove
+	 *
+	 * @return Router
 	 */
-	Router function removeNamespaceRoutes( required namespace ){
+	function removeNamespaceRoutes( required namespace ){
 		// remove all namespace routes
 		structDelete( variables.namespaceRoutingTable, arguments.namespace );
 
@@ -415,8 +425,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * @ssl Makes the route an SSL only route if true, else it can be anything. If an ssl only route is hit without ssl, the interceptor will redirect to it via ssl
 	 * @append Whether the route should be appended or pre-pended to the array. By default we append to the end of the array
 	 * @domain The domain to match, including wildcards
+	 *
+	 * @return Router
 	 */
-	Router function with(
+	function with(
 		string pattern,
 		string handler,
 		any action,
@@ -441,8 +453,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 
 	/**
 	 * End a with closure and returns itself
+	 *
+	 * @return Router
 	 */
-	Router function endWith(){
+	function endWith(){
 		variables.withClosure = {};
 		return this;
 	}
@@ -451,8 +465,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * process a with closure
 	 *
 	 * @args The arugments to process
+	 *
+	 * @return Router
 	 */
-	Router function processWith( required args ){
+	function processWith( required args ){
 		var w = variables.withClosure;
 
 		// only process arguments once per addRoute() call.
@@ -638,14 +654,15 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		var thisRoute        = {};
 		var thisRegex        = 0;
 
+
 		// process a with closure if not empty
 		if( NOT structIsEmpty( variables.withClosure ) ){
 			processWith( arguments );
 		}
 
 		// module closure
-		if( len( variables.withModule ) ){
-			arguments.module = variables.withModule;
+		if( len( variables.thisModule ) ){
+			arguments.module = variables.thisModule;
 		}
 
 		// Process all incoming arguments into the route to store
@@ -894,27 +911,27 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		if( len( arguments.module ) ){
 			// Append or PrePend
 			if( arguments.append ){
-				ArrayAppend( getModuleRoutes( arguments.module ), thisRoute );
+				getModuleRoutes( arguments.module ).append( thisRoute );
 			} else {
-				arrayPrePend( getModuleRoutes( arguments.module ), thisRoute );
+				getModuleRoutes( arguments.module ).prePrend( thisRoute );
 			}
 		}
 		// NAMESPACES
 		else if( len( arguments.namespace ) ){
 			// Append or PrePend
 			if( arguments.append ){
-				arrayAppend( getNamespaceRoutes( arguments.namespace ), thisRoute );
+				getNamespaceRoutes( arguments.namespace ).append( thisRoute );
 			} else {
-				arrayPrePend( getNamespaceRoutes( arguments.namespace ), thisRoute );
+				getNamespaceRoutes( arguments.namespace ).prePrend( thisRoute );
 			}
 		}
 		// Default Routing Table
 		else{
 			// Append or PrePend
 			if( arguments.append ){
-				arrayAppend( variables.routes, thisRoute );
+				variables.routes.append( thisRoute );
 			} else {
-				arrayPrePend( variables.routes, thisRoute );
+				variables.routes.prePend( thisRoute );
 			}
 		}
 
