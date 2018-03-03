@@ -140,7 +140,8 @@ component serializable="false" accessors="true"{
 			var viMapping = variables.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
 			// Does it match the family already?
 			if( NOT isInstanceOf( oModel, viMapping.getPath() ) ){
-				toVirtualInheritance( viMapping, oModel );
+				// Virtualize it.
+				toVirtualInheritance( viMapping, oModel, arguments.mapping );
 			}
 		}
 
@@ -649,9 +650,12 @@ component serializable="false" accessors="true"{
 	 *
 	 * @mapping The mapping to convert to
 	 * @target The target object
+	 * @targetMapping The target mapping
+	 *
+	 * @return The target object
 	 */
-	function toVirtualInheritance( required mapping, required target ){
-		var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS,this";
+	function toVirtualInheritance( required mapping, required target, required targetMapping ){
+		var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS,this,init";
 
 		// Create base family object
 		var baseObject = variables.injector.getInstance( arguments.mapping.getName() );
@@ -674,20 +678,40 @@ component serializable="false" accessors="true"{
 			}
 		}
 
-		// Mix in private scope, which includes private properties and methods
-		var targetVariables = arguments.target.getVariablesMixin();
+		// Prepare for private Property/method Injections
+		var targetVariables 	= arguments.target.getVariablesMixin();
+		var generateAccessors 	= arguments.mapping.getObjectMetadata().accessors ?: false;
+		var baseProperties 		= {};
+
+		// Process baseProperties lookup map
+		if( arguments.mapping.getObjectMetadata().keyExists( "properties" ) ){
+			arguments.mapping.getObjectMetadata().properties
+				.each( function( item ){
+					baseProperties[ item.name ] = true;
+				} );
+		}
+
 		baseObject.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ) {
 				return ( !targetVariables.keyExists( key ) AND NOT listFindNoCase( excludedProperties, key ) );
 			} )
-			// inject
-			.each( function( key, value ){
-				target.injectPropertyMixin( key, value );
+			.each( function( propertyName, propertyValue ){
+				// inject the property/method now
+				target.injectPropertyMixin( propertyName, propertyValue );
+				// Do we need to do automatic generic getter/setters
+				if( generateAccessors and baseProperties.keyExists( propertyName ) ){
+					target[ "get" & propertyName ] = variables.genericGetter;
+					target[ "set" & propertyName ] = variables.genericSetter;
+				}
 			} );
 
 		// Mix in virtual super class
 		arguments.target.$super = baseObject;
+
+		return arguments.target;
+		/**
+		 * NOT NEEDED ANYMORE SINCE WE NOW COPY OVER THE STATE OF THE OBJECT
 		// Verify if we need to init the virtualized object
 		if( structKeyExists( arguments.target, "$superInit" ) ){
 			// get super constructor arguments.
@@ -695,6 +719,24 @@ component serializable="false" accessors="true"{
 			// Init the virtualized inheritance
 			arguments.target.$superInit( argumentCollection=constructorArgs );
 		}
+		**/
+	}
+
+	/**
+	 * Generic setter for Virtual Inheritance
+	 */
+	private function genericSetter() {
+		var propName = getFunctionCalledName().replaceNoCase( 'set', '' );
+		variables[ propName ] = arguments[ 1 ];
+		return this;
+	}
+
+	/**
+	 * Generic getter for Virtual Inheritance
+	 */
+	private function genericGetter() {
+		var propName = getFunctionCalledName().replaceNoCase( 'get', '' );
+		return variables[ propName ];
 	}
 
 }
