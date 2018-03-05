@@ -26,14 +26,14 @@
 				<strong>Domain:</strong> <span title="Regex" class="badge badge-#thisRoute.domain.len() ? "success" : "info"#">#thisRoute.domain.len() ? thisRoute.domain : "all"#</span>
 			</td>
 			<td>
-				#thisRoute.verbs.len() ? thisRoute.verbs : "any"#
+				#thisRoute.verbs.len() ? "<span class='badge badge-info'>#thisRoute.verbs#</span>" : "any"#
             </td>
 			<td>
 				<cfif thisRoute.handler.len() ?: 0>
 					<strong>Handler:</strong> #thisRoute.handler#<br>
 				</cfif>
 
-				<cfif thisRoute.action.len()>
+				<cfif thisRoute.action.len() ?: 0>
 					<strong>Action:</strong> #serializeJSON( thisRoute.action )#
 				</cfif>
 

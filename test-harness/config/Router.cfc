@@ -66,11 +66,16 @@ component{
 
 		// Should fire localized onInvalidHTTPMethod
 		route( pattern="invalid-restful" )
-			.withAction( { index = "post" } )
+			.withAction( { post = "index" } )
 			.toHandler( "restful" );
+
 		route( pattern="invalid-main-method" )
-			.withAction( { index = "post" } )
+			.withAction( { post = "index" } )
 			.toHandler( "main" );
+
+		route( "invalid-main-verbs" )
+			.withVerbs( "post" )
+			.to( "main.index" );
 
 		// Default Application Routing
 		route( ":handler/:action?/:id-numeric?" )

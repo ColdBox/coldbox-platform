@@ -225,6 +225,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 		}
 
+		// Process HTTP Verbs
+		if( routeResults.route.verbs.len()
+			and
+			!routeResults.route.verbs.listFindNoCase( HTTPMethod )
+		){
+			// Check if we have a handler? If we do, then just override the invalid http method action
+			if( routeResults.route.handler.len() ){
+				routeResults.route.action = "onInvalidHTTPMethod";
+			}
+
+			// Mark as invalid HTTP Exception
+			arguments.event.setIsInvalidHTTPMethod( true );
+			if( log.canDebug() ){
+				log.debug( "Invalid HTTP Method detected: #HTTPMethod#", routeResults.route );
+			}
+		}
+
 		// Process Handler/Actions
 		if( routeResults.route.handler.len() ){
 			// Check if using HTTP method actions via struct
