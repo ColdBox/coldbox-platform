@@ -16,46 +16,69 @@ component{
 		route( "post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)" )
 			.to( "ehGeneral.dumpRC" );
 
-		function ff(){
-			return ( findnocase( "Firefox", cgi.HTTP_USER_AGENT ) ? true : false );
-		};
-
-		function fResponse(rc){
-			return "<h1>Hello from closure land: #arguments.rc.lname#</h1>";
-		};
-
 		// subdomain routing
-		addRoute(
-			domain = "subdomain-routing.dev",
-			pattern = "/",
-			handler = "subdomain",
-			action = "index"
-		);
-		addRoute(
-			domain = ":username.forgebox.dev",
-			pattern = "/",
-			handler = "subdomain",
-			action = "show"
-		);
+		route( "/" )
+			.withDomain( "subdomain-routing.dev" )
+			.to( "subdomain.index" );
+		route( "/" )
+			.withDomain( ":username.forgebox.dev" )
+			.to( "subdomain.show" );
 
 		// Resources
 		resources( "photos" );
 
-		// Responses
-		addRoute( pattern="/ff", response="Hello FireFox", condition=ff );
-		addRoute( pattern="/luis/:lname", response="<h1>Hi Luis {lname}, how are {you}</h1>", statusCode="200", statusText="What up dude!" );
-		addRoute( pattern="/luis2/:lname", response=fResponse, statusCode="202", statusText="What up from closure land" );
+		// Responses + Conditions
+		route( "/ff" )
+			.withCondition( function(){
+				return ( findnocase( "Firefox", cgi.HTTP_USER_AGENT ) ? true : false );
+			} )
+			.toResponse( "Hello FireFox" );
+
+		route( "/luis/:lname" )
+			.toResponse( "<h1>Hi Luis {lname}, how are {you}</h1>", 200, "What up dude!" );
+
+		route( "/luis2/:lname" )
+			.toResponse( function( event, rc, prc ){
+				return "<h1>Hello from closure land: #arguments.rc.lname#</h1>";
+			} );
 
 		// Views No Events
-		addRoute( pattern="contactus", name="contactus", view="simpleview" );
-		addRoute( pattern="contactus2", name="contactus2", view="simpleview", viewnoLayout=true );
+		route( "contactus" )
+			.as( "contactUs")
+			.toView( "simpleView" );
+
+		route( pattern="contactus2", name="contactus2" )
+			.toView( view="simpleView", noLayout=true );
 
 		// Add Module Routing Here For Common-View Layout Testing
-		addModuleRoutes( pattern="/moduleLookup", module="moduleLookup");
-		addModuleRoutes( pattern="/parentLookup", module="parentLookup");
+		route( "/moduleLookup" )
+			.toModuleRouting( "moduleLookup" );
+		route( "/parentLookup" )
+			.toModuleRouting( "parentLookup" );
+
+		// More Routes
+		route( pattern="/complexParams/:id-numeric{2}/:name-regex(luis)", name="complexParams" )
+			.to( "main.index" );
+		route( pattern="/testroute/:id/:name", name="testRouteWithParams" )
+			.to( "main.index" );
+		route( pattern="/testroute", name="testRoute" )
+			.to( "main.index" );
+
+		// Should fire localized onInvalidHTTPMethod
+		addRoute( pattern="invalid-restful", handler="restful", action={ index = "post" } );
+		//
+		addRoute( pattern="invalid-main-method", handler="main", action={ index = "post" } );
+
+		// Default Application Routing
+		addRoute( pattern=":handler/:action?/:id-numeric?",matchVariables="isFound=true,testDate=#now()#");
+
+
+		// Some Legacy Namespace + With Closures
 
 		// Register namespaces
-		addNamespace( pattern="/luis", namespace="luis");
+		route( "/luis" )
+			.toNamespaceRouting( "luis" );
+		//addNamespace( pattern="/luis", namespace="luis");
 
 		// Sample namespace
 		with( namespace="luis" )
@@ -68,18 +91,6 @@ component{
 			.addRoute( pattern="/:id-numeric{2}/:num-numeric/:name/:month{3}?" )
 			.addRoute( pattern="/:id/:name{4}?")
 		.endWith();
-
-		addRoute( pattern="/complexParams/:id-numeric{2}/:name-regex(luis)", name="complexParams", handler="main", action="index" );
-		addRoute( pattern="/testroute/:id/:name", name="testRouteWithParams", handler="main", action="index" );
-		addRoute( pattern="/testroute", name="testRoute", handler="main", action="index" );
-
-		// Should fire localized onInvalidHTTPMethod
-		addRoute( pattern="invalid-restful", handler="restful", action={ index = "post" } );
-		//
-		addRoute( pattern="invalid-main-method", handler="main", action={ index = "post" } );
-
-		// Default Application Routing
-		addRoute( pattern=":handler/:action?/:id-numeric?",matchVariables="isFound=true,testDate=#now()#");
 	}
 
 }

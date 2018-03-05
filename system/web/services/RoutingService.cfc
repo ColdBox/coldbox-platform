@@ -268,9 +268,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// See if Response is dispatched
-		if( isCustomFunction( routeResults.route.response ) ){
+		if( isCustomFunction( routeResults.route.response ) || routeResults.route.response.len() ){
 			renderResponse( routeResults.route, arguments.event );
 		}
+
 
 		// Save the Routed Variables so event caching can verify them
 		arguments.event.setRoutedStruct( routeResults.params );

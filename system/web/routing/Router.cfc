@@ -100,12 +100,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 
 		/************************************** CONSTANTS *********************************************/
 
-		// STATIC Reserved Keys as needed for cleanups
-		this.RESERVED_KEYS 			= "handler,action,view,viewNoLayout,module,moduleRouting,response,statusCode,statusText,condition,name,namespace,namespaceRouting,redirect,event,verbs";
-		this.RESERVED_ROUTE_ARGUMENTS 	= "constraints,pattern,regexDomain,domain,regexpattern,matchVariables,packageresolverexempt,domainParams,patternParams,valuePairTranslation,ssl,append";
-
 		// STATIC Valid Extensions
-		variables.VALID_EXTENSIONS 			= "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
+		variables.VALID_EXTENSIONS = "json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
 
 		/************************************** ROUTING DEFAULTS: Due to ACF11 Bugs on Properties *********************************************/
 
@@ -622,6 +618,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * @redirect If used, then the route will dispatch a relocation to this value as the new route using the `statuCode` default of 301 (Permanent) or if you define a `statusCode` we will use that.
 	 * @event The event to execute if route matches
 	 * @verbs The allowed HTTP Verbs for the route
+	 * @layout The view layout to use
 	 *
 	 * @return SES
 	 */
@@ -649,7 +646,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		string domain="",
 		string redirect="",
 		string event="",
-		string verbs=""
+		string verbs="",
+		string layout=""
 	){
 		// The route construct we will save
 		var thisRoute        = {};
@@ -1426,9 +1424,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 */
 	function toView( required view, layout="", boolean noLayout=false ){
 		variables.thisRoute.append( {
-			view     : arguments.view,
-			layout   : arguments.layout,
-			noLayout : arguments.nolayout
+			view     		: arguments.view,
+			layout   		: arguments.layout,
+			viewNoLayout 	: arguments.nolayout
 		}, true );
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
@@ -1537,11 +1535,12 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * </pre>
 	 */
 	function toNamespaceRouting( required namespace ){
-		variables.thisRoute.append( {
-			namespaceRouting	: arguments.namespace
-		}, true );
-		// register the route
-		addRoute( argumentCollection = variables.thisRoute );
+		// Register route to namespace
+		addNamespace(
+			pattern 	= variables.thisRoute.pattern,
+			namespace 	= arguments.namespace
+		);
+
 		// reinit
 		variables.thisRoute = initRouteDefinition();
 		return this;
