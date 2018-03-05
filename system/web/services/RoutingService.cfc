@@ -70,8 +70,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	/****************************************************************************************************************************/
 
 	/**
-	 * Load a ColdBox Router CFC or a legacy router.
-	 * This leverages first the legacy option of `routes.cfm` and if not found looks at `Router.cfc`
+	 * Load a ColdBox Router CFC or a legacy router CFM template.
 	 */
 	private function loadRouter(){
 		// Declare types of routers to discover
@@ -101,6 +100,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Load Router
 		switch( routerType ){
 			case "modern" : {
+				// Log it
+				log.info( "Loading Modern Router at: #modernRouter#" );
 				// Process as a Router.cfc with virtual inheritance
 				wirebox.registerNewInstance( name="router@coldbox", instancePath=variables.appMapping & "." & modernRouter )
 					.setVirtualInheritance( baseRouter )
@@ -116,6 +117,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				break;
 			}
 			case "legacy" : {
+				// Log it
+				log.info( "Loading Legacy Router at: #legacyRouter#" );
 				// Register basic router
 				wirebox.registerNewInstance( name="router@coldbox", instancePath=baseRouter );
 				// Process legacy Routes.cfm. Create a basic Router
@@ -125,6 +128,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				break;
 			}
 			default : {
+				// Log it
+				log.info( "Loading Base ColdBox Router" );
 				// Register basic router with default routing
 				wirebox.registerNewInstance( name="router@coldbox", instancePath=baseRouter );
 				variables.router = wirebox.getInstance( "router@coldbox" )
@@ -146,10 +151,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * This is the route dispatcher called upon the request is captured.
 	 */
 	public void function onRequestCapture( event, interceptData, rc, prc, buffer ){
-		// Find which route this URL matches
-		var routedStruct = {};
         var cleanedPaths = getCleanedPaths( rc, arguments.event );
-		var HttpMethod	 = arguments.event.getHttpMethod();
+		var httpMethod	 = arguments.event.getHttpMethod();
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if( ! variables.router.getEnabled() OR arguments.event.isProxyRequest() ){
@@ -177,80 +180,100 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
         }
 
 		// Find a route to dispatch
-		var targetRoute = findRoute(
+		var routeResults = findRoute(
 			action = cleanedPaths[ "pathInfo" ],
 			event  = arguments.event,
 			domain = cleanedPaths[ "domain" ]
 		);
 
 		// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
-		targetRoute.each( function( key, value ){
-			// Reserved Keys Check, only translate NON reserved keys
-			if( !variables.router.RESERVED_KEYS.listFindNoCase( key ) ){
-				rc[ key ] 			= value;
-				routedStruct[ key ] = value;
-			}
-		} );
+		rc.append( routeResults.params, true );
+
+		/****************** Start Processing Route ******************/
 
 		// Process Redirects
-		if( !isNull( targetRoute.redirect ) && targetRoute.redirect.len() ){
-			if( targetRoute.redirect.findNoCase( "http" ) ){
-				controller.relocate( URL=targetRoute.redirect, statusCode=targetRoute.statusCode ?: 301 );
+		if( routeResults.route.redirect.len() ){
+			if( routeResults.route.redirect.findNoCase( "http" ) ){
+				controller.relocate( URL=routeResults.route.redirect, statusCode=routeResults.route.statusCode ?: 301 );
 			} else {
-				controller.relocate( event=targetRoute.redirect, statusCode=targetRoute.statusCode ?: 301 );
+				controller.relocate( event=routeResults.route.redirect, statusCode=routeResults.route.statusCode ?: 301 );
 			}
 			return;
 		}
 
+		// Process SSL Redirects
+		if( routeResults.route.ssl AND NOT event.isSSL() ){
+			controller.relocate(
+				URL         = event.getSESBaseURL() & reReplace( cgi.path_info, "^\/", "" ),
+				ssl         = true,
+				statusCode  = 302,
+				queryString = cgi.query_string
+			);
+			return;
+		}
+
+		// Process Direct Event
+		if( routeResults.route.event.len() ){
+			rc[ variables.eventName ] = routeResults.route.event;
+			// Do we have a module? If so, prefix it
+			if( routeResults.route.module.len() ){
+				rc[ variables.eventName ] = routeResults.route.module & ":" & rc[ variables.eventName ];
+			}
+		}
+
 		// Process Handler/Actions
-		if( structKeyExists( targetRoute, "handler" ) ){
+		if( routeResults.route.handler.len() ){
 			// Check if using HTTP method actions via struct
-			if( structKeyExists( targetRoute, "action" ) && isStruct( targetRoute.action ) ){
+			if( isStruct( routeResults.route.action ) ){
 				// Verify HTTP method used is valid
-				if( structKeyExists( targetRoute.action, HTTPMethod ) ){
-					targetRoute.action = targetRoute.action[ HTTPMethod ];
+				if( structKeyExists( routeResults.route.action, HTTPMethod ) ){
+					routeResults.route.action = routeResults.route.action[ HTTPMethod ];
 					// Send for logging in debug mode
 					if( log.canDebug() ){
-						log.debug( "Matched HTTP Method (#HTTPMethod#) to routed action: #targetRoute.action#" );
+						log.debug( "Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action#" );
 					}
 				} else {
 					// Mark as invalid HTTP Exception
-					targetRoute.action = "onInvalidHTTPMethod";
+					routeResults.route.action = "onInvalidHTTPMethod";
 					arguments.event.setIsInvalidHTTPMethod( true );
 					if( log.canDebug() ){
-						log.debug( "Invalid HTTP Method detected: #HTTPMethod#", targetRoute );
+						log.debug( "Invalid HTTP Method detected: #HTTPMethod#", routeResults.route );
 					}
 				}
 			}
 
 			// Create routed event
-			rc[ variables.eventName ] = targetRoute.handler;
-			if( structKeyExists( targetRoute, "action" ) ){
-				rc[ variables.eventName ] &= "." & targetRoute.action;
+			rc[ variables.eventName ] = routeResults.route.handler;
+			if( routeResults.route.action.len() ){
+				rc[ variables.eventName ] &= "." & routeResults.route.action;
 			}
 
 			// Do we have a module? If so, create routed module event.
-			if( len( targetRoute.module ) ){
-				rc[ variables.eventName ] = targetRoute.module & ":" & rc[ variables.eventName ];
+			if( routeResults.route.module.len() ){
+				rc[ variables.eventName ] = routeResults.route.module & ":" & rc[ variables.eventName ];
 			}
 
 		} // end if handler exists
 
 		// See if View is Dispatched
-		if( structKeyExists( targetRoute, "view" ) ){
+		if( routeResults.route.view.len() ){
 			// Dispatch the View
 			arguments.event
-				.setView( name=targetRoute.view, noLayout=targetRoute.viewNoLayout )
+				.setView( name=routeResults.route.view, noLayout=routeResults.route.viewNoLayout )
 				.noExecution();
+			// Layout?
+			if( routeResults.route.layout.len() ){
+				arguments.event.setLayout( routeResults.route.layout );
+			}
 		}
 
 		// See if Response is dispatched
-		if( structKeyExists( targetRoute, "response" ) ){
-			renderResponse( targetRoute, arguments.event );
+		if( isCustomFunction( routeResults.route.response ) ){
+			renderResponse( routeResults.route, arguments.event );
 		}
 
 		// Save the Routed Variables so event caching can verify them
-		arguments.event.setRoutedStruct( routedStruct );
+		arguments.event.setRoutedStruct( routeResults.params );
 	}
 
 	/****************************************************************************************************************************/
@@ -258,15 +281,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	/****************************************************************************************************************************/
 
 	/**
-	 * Figures out which route matches this request and returns a routed structure
+	 * Figures out which route matches this request and returns a routed structure containing
+	 * the `route` it discovered or an empty structure and the `params` structure which represents
+	 * URL placeholders, convention name value pairs, matching variables, etc.
 	 *
 	 * @action The action evaluated by path_info
 	 * @event The event object
 	 * @module Incoming module
 	 * @namespace Incoming namespace
      * @domain Incoming domain
+	 *
+	 * @result Struct: { route: found route or empty struct, params: translated params }
 	 */
-	function findRoute(
+	struct function findRoute(
 		required action,
 		required event,
 		module="",
@@ -274,11 +301,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
         domain=""
 	){
 		var requestString 		 = arguments.action;
-		var params 				 = {};
 		var rc 					 = event.getCollection();
+		var results 			= {
+			"route" 	: {},
+			"params" 	: {}
+		};
 
 		// Start with global routes
-		var _routes 			 = variables.router.getRoutes();
+		var _routes = variables.router.getRoutes();
 		// Module call? Switch routes
 		if( len( arguments.module ) ){
 			_routes 		= variables.router.getModuleRoutes( arguments.module );
@@ -290,7 +320,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Process routing length
-		var _routesLength 	= _routes.len();
+		var _routesLength = _routes.len();
 
 		// Remove the leading slash
 		if( len( requestString ) GT 1 AND left( requestString, 1 ) eq "/" ){
@@ -302,19 +332,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Let's Find a Route, Loop over all the routes array
-		var foundRoute = {};
 		for( var i=1; i lte _routesLength; i++ ){
 
 			// Match The route to request String
 			var match = reFindNoCase( _routes[ i ].regexPattern, requestString, 1, true );
-			if( ( match.len[ 1 ] IS NOT 0 AND variables.router.getLooseMatching())
+			if( ( match.len[ 1 ] IS NOT 0 AND variables.router.getLooseMatching() )
 			     OR
 				( NOT variables.router.getLooseMatching() AND match.len[ 1 ] IS NOT 0 AND match.pos[ 1 ] EQ 1 )
 			){
 
 				// Verify condition matching
-				if( structKeyExists( _routes[ i ], "condition" ) AND NOT
-					isSimpleValue( _routes[ i ].condition ) AND NOT
+				if( isCustomFunction( _routes[ i ].condition )
+					AND NOT
 					_routes[ i ].condition( requestString )
 				){
 					// Debug logging
@@ -323,18 +352,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					}
 					// Condition did not pass, move to next route
 					continue;
-                }
+				}
 
                 // Verify domain if exists
-                if( structKeyExists( _routes[ i ], "domain" ) AND isSimpleValue( _routes[ i ].domain ) ){
-                    var domainMatch = reFindNoCase( _routes[ i ].regexDomain, domain, 1, true );
+                if( _routes[ i ].domain.len() ){
+                    var domainMatch = reFindNoCase( _routes[ i ].regexDomain, arguments.domain, 1, true );
                     if( domainMatch.len[ 1 ] == 0 ){
                         continue;
                     }
                 }
 
 				// Setup the found Route
-				foundRoute = _routes[ i ];
+				results.route = _routes[ i ];
 
 				// Is this namespace routing?
 				if( len( arguments.namespace ) ){
@@ -343,7 +372,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 				// Debug logging
 				if( log.canDebug() ){
-					log.debug( "SES Route matched: #foundRoute.toString()# on routed string: #requestString#" );
+					log.debug( "SES Route matched: #results.route.toString()# on routed string: #requestString#" );
 				}
 
 				break;
@@ -351,57 +380,48 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}//end finding routes
 
 		// Check if we found a route, else just return empty params struct
-		if( structIsEmpty( foundRoute ) ){
+		if( results.route.isEmpty() ){
 			if( log.canDebug() ){
 				log.debug( "No URL routes matched on routed string: #requestString#" );
 			}
-			return params;
-		}
-
-		// SSL Checks
-		if( foundRoute.ssl AND NOT event.isSSL() ){
-			controller.relocate(
-				URL         = event.getSESBaseURL() & reReplace( cgi.path_info, "^\/", "" ),
-				ssl         = true,
-				statusCode  = 302,
-				queryString = cgi.query_string
-			);
+			return results;
 		}
 
 		// Check if the match is a module Routing entry point or a namespace entry point or not?
-		if( len( foundRoute.moduleRouting ) OR len( foundRoute.namespaceRouting ) ){
-			// build routing argument struct
+		if( len( results.route.moduleRouting ) OR len( results.route.namespaceRouting ) ){
+			// build routing argument struct based on module/namespace context
 			var contextRouting = {
-				action = reReplaceNoCase( requestString, foundRoute.regexpattern, "" ),
+				action = reReplaceNoCase( requestString, results.route.regexpattern, "" ),
 				event  = arguments.event
 			};
 			// add module or namespace
-			if( len( foundRoute.moduleRouting ) ){
-				contextRouting.module = foundRoute.moduleRouting;
+			if( len( results.route.moduleRouting ) ){
+				contextRouting.module = results.route.moduleRouting;
 			} else {
-				contextRouting.namespace = foundRoute.namespaceRouting;
+				contextRouting.namespace = results.route.namespaceRouting;
 			}
 
 			// Try to Populate the params from the module pattern if any
-			for( var x=1; x lte arrayLen( foundRoute.patternParams ); x++ ){
-				params[ foundRoute.patternParams[ x ] ] = mid( requestString, match.pos[ x + 1 ], match.len[ x + 1 ] );
-			}
+			results.route.patternParams.each( function( item, index ){
+				results.params[ item ] = mid( requestString, match.pos[ index + 1 ], match.len[ index + 1 ] );
+			} );
 
 			// Save Found URL
 			arguments.event.setPrivateValue( "currentRoutedURL", requestString );
-			// process context find
-			structAppend( params, findRoute( argumentCollection=contextRouting ), true );
 
-			// Return if parameters found.
-			if( NOT structIsEmpty( params ) ){
-				return params;
+			// process context discovery of incoming pattern
+			var contextRoute = findRoute( argumentCollection = contextRouting );
+
+			// Return if route found.
+			if( ! contextRoute.route.isEmpty() ){
+				return contextRoute;
 			}
 		}
 
 		// Save Found Route + Name
 		arguments.event
-			.setPrivateValue( "currentRoute", 		foundRoute.pattern )
-			.setPrivateValue( "currentRouteName",	foundRoute.name );
+			.setPrivateValue( "currentRoute", 		results.route.pattern )
+			.setPrivateValue( "currentRouteName",	results.route.name );
 
 		// Save Found URL if NOT Found already
 		if( NOT arguments.event.privateValueExists( "currentRoutedURL" ) ){
@@ -409,9 +429,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Do we need to do package resolving
-		if( NOT foundRoute.packageResolverExempt ){
+		if( NOT results.route.packageResolverExempt ){
 			// Resolve the packages
-			var packagedRequestString = packageResolver( requestString, foundRoute.patternParams, arguments.module );
+			var packagedRequestString = packageResolver( requestString, results.route.patternParams, arguments.module );
 			// reset pattern matching, if packages found.
 			if( compare( packagedRequestString, requestString ) NEQ 0 ){
 				// Log package resolved
@@ -424,39 +444,30 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Populate the params, with variables found in the request string
-		for( var x=1; x lte arrayLen( foundRoute.patternParams ); x++ ){
-			params[ foundRoute.patternParams[ x ] ] = mid( requestString, match.pos[ x + 1 ], match.len[ x + 1 ] );
-        }
+		results.route.patternParams.each( function( item, index ){
+			results.params[ item ] = mid( requestString, match.pos[ index + 1 ], match.len[ index + 1 ] );
+		} );
 
 		// Populate the params, with variables found in the domain string
-        for( var x=1; x lte arrayLen( foundRoute.domainParams ); x++ ){
-            params[ foundRoute.domainParams[ x ] ] = listGetAt( domain, x, "." );
-        }
+		results.route.domainParams.each( function( item, index ){
+			results.params[ item ] = listGetAt( arguments.domain, index, "." );
+		} );
 
-		// Process Convention Name-Value Pairs
-		if( foundRoute.valuePairTranslation ){
-			findConventionNameValuePairs( requestString, match, params );
+		// Process Convention Name-Value Pairs into discovered params
+		if( results.route.valuePairTranslation ){
+			findConventionNameValuePairs( requestString, match, results.params );
 		}
 
-		// Now setup all found variables in the param struct, so we can return
-		for( var key in foundRoute ){
-			// Check that the key is not a reserved route argument and NOT already routed
-			if( ! variables.router.RESERVED_ROUTE_ARGUMENTS.listFindNoCase( key )
-				AND ! params.keyExists( key )
-			){
-				params[ key ] = foundRoute[ key ];
-			}
-			else if ( key eq "matchVariables" ){
-				for( var i=1; i lte listLen( foundRoute.matchVariables ); i++ ){
-					// Check if the key does not exist in the routed params yet.
-					if( NOT structKeyExists( params, listFirst( listGetAt( foundRoute.matchVariables, i ), "=" ) ) ){
-						params[ listFirst( listGetAt( foundRoute.matchVariables, i ), "=" ) ] = listLast( listGetAt( foundRoute.matchVariables, i ), "=" );
-					}
+		// Process legacy match-variables to incorporate to discovered params
+		results.route.matchVariables.listToArray()
+			.each( function( item ){
+				// Only set if not incoming.
+				if( !results.params.keyExists( item.getToken( 1, "=" ) ) ){
+					results.params[ item.getToken( 1, "=" ) ] = item.getToken( 2, "=" );
 				}
-			}
-		}
+			} );
 
-		return params;
+		return results;
 	}
 
 	/**
@@ -795,7 +806,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	}
 
 	/**
-	 * Find the convention name value pairs in the incoming request string
+	 * Find the convention name value pairs in the incoming request string, if found, we will incorporate them into the incoming `params` arguments
 	 *
 	 * @requestString the incoming request string
 	 * @match The regex matcher object
@@ -804,27 +815,29 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	private function findConventionNameValuePairs( required string requestString, required any match, required struct params ){
 		var leftOverLen = len( arguments.requestString ) - arguments.match.len[ 1 ];
 		if( leftOverLen gt 0 ){
-			// Cleanup remaining string
-			var conventionString 	= right( arguments.requestString, leftOverLen ).split( "/" );
-			var conventionStringLen = arrayLen( conventionString );
 
-			// If conventions found, continue parsing
-			for( var i=1; i lte conventionStringLen; i++ ){
-				if( i mod 2 eq 0 ){
-					// Even: Means Variable Value
-					arguments.params[ tmpVar ] = conventionString[ i ];
-				} else {
-					// ODD: Means variable name
-					var tmpVar = trim( conventionString[ i ] );
-					// Verify it is a valid variable Name
-					if ( NOT isValid( "variableName", tmpVar ) ){
-						tmpVar = "_INVALID_VARIABLE_NAME_POS_#i#_";
-					} else {
-						// Default Value of empty
-						arguments.params[ tmpVar ] = "";
+			// Process Name/Value Pairs
+			var currentKey = "";
+			right( arguments.requestString, leftOverLen )
+				.listToArray( "/" )
+				.each( function( item, index ){
+					// Odd index means variable assignment
+					if( index mod 2 neq 0 ){
+						// Validate incoming Item
+						if( ! isValid( "variableName", item ) ){
+							item = "INVALID_VARIABLE_NAME-#item#";
+						}
+						// Set pivot point
+						currentKey = item;
+						// Set it to default empty value
+						params[ currentKey ] = "";
 					}
-				}
-			}//end loop over pairs
+					// Odd index means the
+					else {
+						params[ currentKey ] = item;
+					}
+				} );
+
 		} //end if convention name value pairs
 	}
 

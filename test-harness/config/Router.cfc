@@ -3,18 +3,18 @@ component{
 	function configure(){
 		setUniqueURLs( false );
 		//setFullRewrites( false );
-		// Redirects
-		addRoute(
-			pattern 	= "/tempRoute",
-			redirect 	= "/main/redirectTest",
-			statusCode 	= 302
-			);
-		addRoute(
-			pattern 	= "/oldRoute",
-			redirect 	= "/main/redirectTest"
-		);
 
-		addRoute( pattern="post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)", handler="ehGeneral", action="dumpRC" );
+		// Redirects
+		route( "/tempRoute" )
+			.toRedirect( "/main/redirectTest", 302 );
+		route( "/oldRoute" )
+			.toRedirect( "/main/redirectTest" );
+
+		route( "/render/:format" ).to( "actionRendering.index" );
+
+		// With Regex
+		route( "post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)" )
+			.to( "ehGeneral.dumpRC" );
 
 		function ff(){
 			return ( findnocase( "Firefox", cgi.HTTP_USER_AGENT ) ? true : false );

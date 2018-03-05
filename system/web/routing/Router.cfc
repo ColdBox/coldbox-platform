@@ -627,30 +627,31 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 */
 	function addRoute(
 		required string pattern,
-		string handler,
-		any action,
+		string handler="",
+		any action="",
 		boolean packageResolverExempt="false",
-		string matchVariables,
-		string view,
+		string matchVariables="",
+		string view="",
 		boolean viewNoLayout="false",
 		boolean valuePairTranslation="true",
-		any constraints="",
+		any constraints=structnew(),
 		string module="",
 		string moduleRouting="",
 		string namespace="",
 		string namespaceRouting="",
 		boolean ssl="false",
 		boolean append="true",
-		any response,
-		numeric statusCode,
-		string statusText,
-		any condition,
+		any response="",
+		numeric statusCode=200,
+		string statusText="",
+		any condition="",
         string name="",
-		string domain,
-		string redirect,
-		string event,
+		string domain="",
+		string redirect="",
+		string event="",
 		string verbs=""
 	){
+		// The route construct we will save
 		var thisRoute        = {};
 		var thisRegex        = 0;
 
@@ -660,17 +661,15 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 			processWith( arguments );
 		}
 
-		// module closure
+		// module pivot point
 		if( len( variables.thisModule ) ){
 			arguments.module = variables.thisModule;
 		}
 
 		// Process all incoming arguments into the route to store
-		for( var arg in arguments ){
-			if( structKeyExists( arguments, arg ) ){
-				thisRoute[ arg ] = arguments[ arg ];
-			}
-		}
+		arguments.each( function( key, value ){
+			thisRoute[ key ] = value;
+		} );
 
 		// Cleanup Route: Add trailing / to make it easier to parse
 		if( right( thisRoute.pattern, 1 ) IS NOT "/" ){
@@ -690,14 +689,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 			return this;
 		}
 
-		// Process json constraints?
-		thisRoute.constraints = structnew();
-		// Check if implicit struct
-		if( isStruct( arguments.constraints ) ){
-			thisRoute.constraints = arguments.constraints;
-		}
-
-		// Init the matching variables
+		// Init the matching variables and pattern parameters
 		thisRoute.regexPattern 	= "";
 		thisRoute.patternParams = [];
 
@@ -1428,7 +1420,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * Send a route to a view/layout combo
 	 * <pre>
 	 * route( "hello", "main.index" ).toView( "hello" );
-	 * route( "hello", "main.index" ).toView( "hello", "rest" );
+	 * route( "hello", "main.index" ).toView( view="hello", layout="rest" );
 	 * route( "hello", "main.index" ).toView( view="hello", noLayout=true );
 	 * </pre>
 	 */
