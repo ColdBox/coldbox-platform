@@ -79,7 +79,7 @@ component {
 
 		// Layout Settings
 		layoutSettings = {
-			defaultLayout = ""
+			defaultLayout = "Main.cfm"
 		};
 
 		// SES Routes
