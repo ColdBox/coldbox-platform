@@ -33,8 +33,8 @@
 					<strong>Handler:</strong> #thisRoute.handler#<br>
 				</cfif>
 
-				<cfif thisRoute.action.len() ?: 0>
-					<strong>Action:</strong> #thisRoute.action.toString()#
+				<cfif thisRoute.action.len()>
+					<strong>Action:</strong> #serializeJSON( thisRoute.action )#
 				</cfif>
 
 				<cfif thisRoute.event.len() ?: 0>
