@@ -598,7 +598,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * @handler The handler to execute if pattern matched.
 	 * @action The action in a handler to execute if a pattern is matched.  This can also be a structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}
 	 * @packageResolverExempt If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern
-	 * @matchVariables A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
+	 * @matchVariables DEPRECATED: Use RC or PRC structs instead. A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest
 	 * @view The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.
 	 * @viewNoLayout If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.
 	 * @valuePairTranslation  Activate convention name value pair translations or not. Turned on by default
@@ -619,6 +619,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * @event The event to execute if route matches
 	 * @verbs The allowed HTTP Verbs for the route
 	 * @layout The view layout to use
+	 * @headers The HTTP headers to attach to the response if route matches
+	 * @rc The RC name value pairs to attach if the reponse matches
+	 * @prc The PRC name value pairs to attach if the reponse matches
 	 *
 	 * @return SES
 	 */
@@ -647,7 +650,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		string redirect="",
 		string event="",
 		string verbs="",
-		string layout=""
+		string layout="",
+		struct headers = {},
+		struct rc = {},
+		struct prc = {}
 	){
 		// The route construct we will save
 		var thisRoute        = {};

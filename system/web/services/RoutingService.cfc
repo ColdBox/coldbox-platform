@@ -188,6 +188,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 		rc.append( routeResults.params, true );
+		// Incorporate RC variables without overrides
+		rc.append( routeResults.route.rc );
+		// Incorporate PRC variables without overrides
+		prc.append( routeResults.route.prc );
 
 		/****************** Start Processing Route ******************/
 
