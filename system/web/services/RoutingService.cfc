@@ -288,6 +288,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 		}
 
+		// Process Response Headers
+		routeResults.route.headers.each( function( key, value ){
+			arguments.event.setHTTPHeader( name=key, value=value );
+		} );
+
 		// See if Response is dispatched
 		if( isCustomFunction( routeResults.route.response ) || routeResults.route.response.len() ){
 			renderResponse( routeResults.route, arguments.event );
