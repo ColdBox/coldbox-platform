@@ -312,7 +312,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		} );
 
 		// See if Response is dispatched
-		if( isCustomFunction( routeResults.route.response ) || routeResults.route.response.len() ){
+		if( isClosure( routeResults.route.response ) || routeResults.route.response.len() ){
 			renderResponse( routeResults.route, arguments.event );
 		}
 
@@ -387,7 +387,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			){
 
 				// Verify condition matching
-				if( isCustomFunction( _routes[ i ].condition )
+				if( isClosure( _routes[ i ].condition )
 					AND NOT
 					_routes[ i ].condition( requestString )
 				){

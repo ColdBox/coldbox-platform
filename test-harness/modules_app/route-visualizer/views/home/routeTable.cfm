@@ -52,14 +52,14 @@
 				</cfif>
 
 				<cfif isSimpleValue( thisRoute.response ) and thisRoute.response.len()>
-					<strong>response:</strong><br>
+					<strong>Simple Response:</strong><br>
 					<pre class="card"><code>
 						#htmlCodeFormat( thisRoute.response )#
 					</code></pre>
 				</cfif>
 
-				<cfif isCustomFunction( thisRoute.response )>
-					<strong>response:</strong><br>
+				<cfif isClosure( thisRoute.response )>
+					<strong>Lambda Response:</strong><br>
 					<cfdump var="#thisRoute.response#">
 				</cfif>
 			</td>

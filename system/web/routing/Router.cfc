@@ -443,7 +443,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		string domain
 	){
 		// set the withClosure
-		variables.withClosure = arguments;
+		variables.withClosure.append( arguments );
 		return this;
 	}
 
@@ -671,9 +671,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		}
 
 		// Process all incoming arguments into the route to store
-		arguments.each( function( key, value ){
-			thisRoute[ key ] = value;
-		} );
+		thisRoute.append( arguments );
 
 		// Cleanup Route: Add trailing / to make it easier to parse
 		if( right( thisRoute.pattern, 1 ) IS NOT "/" ){
