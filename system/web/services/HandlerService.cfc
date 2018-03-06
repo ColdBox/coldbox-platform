@@ -500,16 +500,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	array function getHandlerListing( required directory ){
 		// Get listings
-		var files = directoryList( arguments.directory, true, "query", "*.cfc" );
+		var files = directoryList( arguments.directory, true, "array", "*.cfc" );
 		// Convert windows \ to java /
 		arguments.directory = replace( arguments.directory, "\","/", "all" );
 
 		// Iterate, clean and register
 		var fileArray = [];
-		for( var i=1; i lte files.recordcount; i++ ){
+		for( var file in files ){
 
-			var thisAbsolutePath = replace( files.directory[ i ], "\", "/", "all" ) & "/";
-			var cleanHandler = replacenocase( thisAbsolutePath, arguments.directory, "", "all" ) & files.name[ i ];
+			var thisAbsolutePath = replace( file, "\", "/", "all" );
+			var cleanHandler = replacenocase( thisAbsolutePath, arguments.directory, "", "all" );
 
 			// Clean OS separators to dot notation.
 			cleanHandler = removeChars( replacenocase( cleanHandler, "/", ".", "all" ), 1, 1 );
