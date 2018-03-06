@@ -235,7 +235,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 						expect(	thisRoute ).toBeStruct();
 						expect( thisRoute.view ).toBe( "about" );
 						expect( thisRoute.layout ).toBeEmpty();
-						expect( thisRoute.noLayout ).toBeFalse();
+						expect( thisRoute.viewNoLayout ).toBeFalse();
 
 					});
 				});
@@ -251,7 +251,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 						expect(	thisRoute ).toBeStruct();
 						expect( thisRoute.view ).toBe( "about" );
 						expect( thisRoute.layout ).toBeEmpty();
-						expect( thisRoute.noLayout ).toBeTrue();
+						expect( thisRoute.viewNoLayout ).toBeTrue();
 
 					});
 				});
@@ -267,7 +267,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 						expect(	thisRoute ).toBeStruct();
 						expect( thisRoute.view ).toBe( "about" );
 						expect( thisRoute.layout ).toBe( "document" );
-						expect( thisRoute.noLayout ).toBeFalse();
+						expect( thisRoute.viewNoLayout ).toBeFalse();
 
 					});
 				});

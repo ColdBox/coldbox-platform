@@ -17,6 +17,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	function init( required controller ){
 		setController( arguments.controller );
+
+		variables.RESERVED_PATTERNS = [ "handler", "action" ];
+
 		return this;
 	}
 
@@ -185,6 +188,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			event  = arguments.event,
 			domain = cleanedPaths[ "domain" ]
 		);
+
+		// Check if we found a route, else most likely it is the default event
+		if( routeResults.route.isEmpty() ){
+			return;
+		}
+
+		// Process :handler :action pattern params by convention
+		if( routeresults.params.count() ){
+			variables.RESERVED_PATTERNS.each( function( item ){
+				if( routeResults.params.keyExists( item ) ){
+					routeResults.route[ item ] = routeResults.params[ item ];
+					structDelete( routeResults.params, item );
+				}
+			} );
+		}
 
 		// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 		rc.append( routeResults.params, true );
@@ -477,7 +495,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Populate the params, with variables found in the domain string
 		results.route.domainParams.each( function( item, index ){
-			results.params[ item ] = listGetAt( arguments.domain, index, "." );
+			results.params[ item ] = listGetAt( domain, index, "." );
 		} );
 
 		// Process Convention Name-Value Pairs into discovered params
