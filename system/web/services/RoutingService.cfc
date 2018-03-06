@@ -49,7 +49,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.controller.getInterceptorService()
 			.registerInterceptor( interceptorObject = this );
 
-		// Load the Application Router: Interceptors are online and modules are registered but not activated
+		// Load the Application Router
 		loadRouter();
 	}
 
@@ -123,7 +123,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				// Log it
 				log.info( "Loading Legacy Router at: #legacyRouter#" );
 				// Register basic router
-				wirebox.registerNewInstance( name="router@coldbox", instancePath=baseRouter );
+				wirebox.registerNewInstance( name="router@coldbox", instancePath=baseRouter )
+					.setScope(
+						wirebox.getBinder().SCOPES.SINGLETON
+					);
 				// Process legacy Routes.cfm. Create a basic Router
 				variables.router = wirebox.getInstance( "router@coldbox" )
 					// Load up legacy template
@@ -134,7 +137,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				// Log it
 				log.info( "Loading Base ColdBox Router" );
 				// Register basic router with default routing
-				wirebox.registerNewInstance( name="router@coldbox", instancePath=baseRouter );
+				wirebox.registerNewInstance( name="router@coldbox", instancePath=baseRouter )
+					.setScope(
+						wirebox.getBinder().SCOPES.SINGLETON
+					);
 				variables.router = wirebox.getInstance( "router@coldbox" )
 					.addRoute( pattern="/:handler/:action?" );
 			}
@@ -298,7 +304,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		if( routeResults.route.view.len() ){
 			// Dispatch the View
 			arguments.event
-				.setView( name=routeResults.route.view, noLayout=routeResults.route.viewNoLayout )
+				.setView( view=routeResults.route.view, noLayout=routeResults.route.viewNoLayout )
 				.noExecution();
 			// Layout?
 			if( routeResults.route.layout.len() ){
@@ -308,7 +314,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Process Response Headers
 		routeResults.route.headers.each( function( key, value ){
-			arguments.event.setHTTPHeader( name=key, value=value );
+			event.setHTTPHeader( name=key, value=value );
 		} );
 
 		// See if Response is dispatched
