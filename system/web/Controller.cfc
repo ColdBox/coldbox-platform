@@ -93,8 +93,8 @@ component serializable="false" accessors="true"{
 		services.interceptorService = new coldbox.system.web.services.InterceptorService( this );
 		services.requestService 	= new coldbox.system.web.services.RequestService( this );
 		services.handlerService 	= new coldbox.system.web.services.HandlerService( this );
-		services.moduleService 		= new coldbox.system.web.services.ModuleService( this );
 		services.routingService		= new coldbox.system.web.services.RoutingService( this );
+		services.moduleService 		= new coldbox.system.web.services.ModuleService( this );
 
 		// CacheBox Instance
 		variables.cacheBox 	= createObject( "component", "coldbox.system.cache.CacheFactory" );

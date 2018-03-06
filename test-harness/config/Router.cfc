@@ -43,12 +43,12 @@ component{
 			} );
 
 		// Views No Events
+		route( pattern="contactus2", name="contactus2" )
+			.toView( view="simpleView", noLayout=true );
+
 		route( "contactus" )
 			.as( "contactUs")
 			.toView( "simpleView" );
-
-		route( pattern="contactus2", name="contactus2" )
-			.toView( view="simpleView", noLayout=true );
 
 		// Add Module Routing Here For Common-View Layout Testing
 		route( "/moduleLookup" )

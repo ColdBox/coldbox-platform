@@ -82,13 +82,8 @@ component {
 			defaultLayout = "Main.cfm"
 		};
 
-		// SES Routes
-		routes = [
-			// Module Entry Point
-			{ pattern="/", handler="home", action="index" },
-			// Convention Route
-			{ pattern="/:handler/:action?" }
-		];
+		router.route( "/" ).to( "home.index" );
+		router.route( "/:handler/:action?" ).end();
 
 		// SES Resources
 		resources = [

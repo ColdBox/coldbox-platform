@@ -304,11 +304,16 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		if( routeResults.route.view.len() ){
 			// Dispatch the View
 			arguments.event
-				.setView( view=routeResults.route.view, noLayout=routeResults.route.viewNoLayout )
+				.setView(
+					view     	= routeResults.route.view,
+					noLayout 	= routeResults.route.viewNoLayout,
+					module 		= routeResults.route.viewModule
+				)
 				.noExecution();
+
 			// Layout?
 			if( routeResults.route.layout.len() ){
-				arguments.event.setLayout( routeResults.route.layout );
+				arguments.event.setLayout( name=routeResults.route.layout, module=routeResults.route.layoutModule );
 			}
 		}
 
@@ -321,7 +326,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		if( isClosure( routeResults.route.response ) || routeResults.route.response.len() ){
 			renderResponse( routeResults.route, arguments.event );
 		}
-
 
 		// Save the Routed Variables so event caching can verify them
 		arguments.event.setRoutedStruct( routeResults.params );

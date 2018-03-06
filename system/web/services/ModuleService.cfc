@@ -48,7 +48,8 @@ component extends="coldbox.system.web.services.BaseService"{
 	 */
     ModuleService function onConfigurationLoad(){
 		//Get Local Logger Now Configured
-		variables.logger = controller.getLogBox().getLogger( this );
+		variables.logger 	= controller.getLogBox().getLogger( this );
+		variables.wirebox 	= controller.getWireBox();
 		// Register The Modules
 		registerAllModules();
 		return this;
@@ -429,7 +430,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	ModuleService function activateModule( required moduleName ){
 		var modules 			= controller.getSetting( "modules" );
 		var interceptorService  = controller.getInterceptorService();
-		var wirebox				= controller.getWireBox();
+		var appRouter 			= variables.wirebox.getInstance( "router@coldbox" );
 
 		// If module not registered, throw exception
 		if( NOT structKeyExists( modules, arguments.moduleName ) ){
@@ -510,7 +511,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 				// Add as a mapped directory with module name as the namespace with correct mapping path
 				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
-				var binder 		= wirebox.getBinder();
+				var binder 		= variables.wirebox.getBinder();
 
 				if( len( mConfig.modelNamespace ) ){
 					binder.mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
@@ -537,17 +538,14 @@ component extends="coldbox.system.web.services.BaseService"{
 					interceptorName 		= thisInterceptor.name & "@" & moduleName
 				);
 				// Loop over module interceptors to autowire them
-				wirebox.autowire(
+				variables.wirebox.autowire(
 					target 	 = interceptorService.getInterceptor( thisInterceptor.name & "@" & moduleName ),
 					targetID = thisInterceptor.class
 				);
 			} );
 
 			// Register module routing entry point pre-pended to routes
-			if( controller.settingExists( 'sesBaseURL' ) AND
-				len( mConfig.entryPoint ) AND NOT
-				find( ":", mConfig.entryPoint )
-			){
+			if( mConfig.entryPoint.len() ){
 				var parentEntryPoint 		= "";
 				var visitParentEntryPoint 	= function( parent ){
 					var moduleConfig 	= modules[ arguments.parent ];
@@ -567,13 +565,22 @@ component extends="coldbox.system.web.services.BaseService"{
 				// Store Inherited Entry Point
 				mConfig.inheritedEntryPoint = parentEntryPoint & reReplace( mConfig.entryPoint, "^/", "" );
 
-				// Registers module routing + resources
-				wirebox.getInstance( "router@coldbox" )
-					.addModuleRoutes(
-						pattern = mConfig.inheritedEntryPoint,
-						module  = arguments.moduleName,
-						append  = false
-					);
+				// Register Module Routing Entry Point + Struct Literals for routes and resources
+				appRouter.addModuleRoutes(
+					pattern = mConfig.inheritedEntryPoint,
+					module  = arguments.moduleName,
+					append  = false
+				);
+
+				// Now look into the module router and register its routes.
+				mConfig.router.getRoutes().each( function( item ){
+					// Incorporate module context
+					if( !item.module.len() ){
+						item.module = moduleName;
+					}
+					// Add to App Router
+					appRouter.getModuleRoutes( moduleName ).append( item );
+				} );
 			}
 
 			// Register App and View Helpers
@@ -728,8 +735,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 			// Remove SES if enabled.
 			if( controller.settingExists( "sesBaseURL" ) ){
-				controller.getWireBox()
-					.getInstance( "router@coldbox" )
+				variables.wirebox.getInstance( "router@coldbox" )
 					.removeModuleRoutes( arguments.moduleName );
 			}
 
@@ -779,16 +785,13 @@ component extends="coldbox.system.web.services.BaseService"{
 	 */
 	function loadModuleConfiguration( required struct config, required moduleName ){
 		var mConfig 	= arguments.config;
-		var oConfig 	= createObject( "component", mConfig.invocationPath & ".ModuleConfig" );
-		var toLoad 		= "";
+		var oConfig 	= variables.wirebox.getInstance( mConfig.invocationPath & ".ModuleConfig" );
 		var appSettings = controller.getConfigSettings();
-		var mixerUtil	= controller.getUtil().getMixerUtil();
 
-		// Decorate It
-		oConfig.injectPropertyMixin = mixerUtil.injectPropertyMixin;
-		oConfig.getPropertyMixin 	= mixerUtil.getPropertyMixin;
+		// Build a new router for this module so we can track its routes
+		arguments.config.router = variables.wirebox.getInstance( "coldbox.system.web.routing.Router" );
 
-		// MixIn Variables
+		// MixIn Variables Scope
 		oConfig.injectPropertyMixin( "controller", 		controller )
 			.injectPropertyMixin( "coldboxVersion", 	controller.getColdBoxSettings().version )
 			.injectPropertyMixin( "appMapping", 		controller.getSetting( "appMapping" ) )
@@ -796,13 +799,18 @@ component extends="coldbox.system.web.services.BaseService"{
 			.injectPropertyMixin( "modulePath", 		mConfig.path )
 			.injectPropertyMixin( "logBox", 			controller.getLogBox() )
 			.injectPropertyMixin( "log", 			  	controller.getLogBox().getLogger( oConfig) )
-			.injectPropertyMixin( "wirebox", 		  	controller.getWireBox() )
-			.injectPropertyMixin( "binder", 			controller.getWireBox().getBinder() )
+			.injectPropertyMixin( "wirebox", 		  	variables.wireBox )
+			.injectPropertyMixin( "binder", 			variables.wireBox.getBinder() )
 			.injectPropertyMixin( "cachebox", 		  	controller.getCacheBox() )
 			.injectPropertyMixin( "getJavaSystem",  	controller.getUtil().getJavaSystem )
 			.injectPropertyMixin( "getSystemSetting",   controller.getUtil().getSystemSetting )
 			.injectPropertyMixin( "getSystemProperty",  controller.getUtil().getSystemProperty )
-			.injectPropertyMixin( "getEnv",             controller.getUtil().getEnv );
+			.injectPropertyMixin( "getEnv",             controller.getUtil().getEnv )
+			.injectPropertyMixin( "router",             arguments.config.router );
+
+		// Create module routing in the router
+		//arguments.config.router.setThisModule( arguments.moduleName );
+		//arguments.config.router.getModuleRoutingTable().insert( arguments.moduleName, [] );
 
 		// Configure the module
 		oConfig.configure();
@@ -811,6 +819,8 @@ component extends="coldbox.system.web.services.BaseService"{
 		if( structKeyExists( oConfig, appSettings.environment ) ){
 			invoke( oConfig, "#appSettings.environment#" );
 		}
+
+		// Start Processing Properties
 
 		// title
 		if( !structKeyExists( oConfig, "title" ) ){ oConfig.title = arguments.moduleName; }
@@ -945,14 +955,12 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * @locations The array of locations to register
 	 */
     private function buildRegistry( required array locations ){
-		var locLen = arrayLen( arguments.locations );
-
-		for( var x=1; x lte locLen; x++ ){
-			if( len( trim( arguments.locations[ x ] ) ) ){
-				// Get all modules found in the module location and append to module registry, only new ones are added
-				scanModulesDirectory( arguments.locations[ x ] );
-			}
-		}
+		arguments.locations.filter( function( item ){
+			return item.trim().len();
+		} ).each( function( item ){
+			// Get all modules found in the module location and append to module registry, only new ones are added
+			scanModulesDirectory( item );
+		});
     }
 
 	/**
@@ -960,32 +968,31 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * @dirPath The path to scan
 	 */
 	private function scanModulesDirectory( required dirPath ){
-		var q = "";
 		var expandedPath = expandPath( arguments.dirpath );
 
-		var qModules = directoryList(
+		directoryList(
 			expandedPath,
 			false,
-			"query",
+			"array",
 			"",
 			"asc"
-		);
-
-		for( var thisModule in qModules ){
-			// Don't register period names
-			if( thisModule.type == "Dir" && not find( ".", thisModule.name ) ){
-				// Add only if it does not exist, so location preference kicks in
-				if( not structKeyExists( variables.moduleRegistry, thisModule.name ) ){
-					variables.moduleRegistry[ thisModule.name ] = {
-						locationPath 	= arguments.dirPath,
-						physicalPath 	= expandedPath,
-						invocationPath 	= replace( reReplace( arguments.dirPath, "^/", "" ), "/", ".", "all" )
-					};
-				} else {
-					variables.logger.debug( "Found duplicate module: #thisModule.name# in #arguments.dirPath#. Skipping its registration in our module registry, order of preference given." );
-				}
+		).filter( function( item ){
+			// Only directories please and no . folders
+			return ( directoryExists( item ) && ! item.listLast( "\/" ).find( "." ) );
+		} ).each( function( item ){
+			var moduleName = item.listLast( "\/" );
+			// Add only if it does not exist, so location preference kicks in
+			if( not structKeyExists( variables.moduleRegistry, moduleName ) ){
+				variables.moduleRegistry[ moduleName ] = {
+					locationPath 	= dirPath,
+					physicalPath 	= expandedPath,
+					invocationPath 	= replace( reReplace( dirPath, "^/", "" ), "/", ".", "all" )
+				};
+			} else {
+				variables.logger.debug( "Found duplicate module: #moduleName# in #dirPath#. Skipping its registration in our module registry, order of preference given." );
 			}
-		}
+		} );
+
 	}
 
 	/**

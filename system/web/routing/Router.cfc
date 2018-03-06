@@ -5,7 +5,7 @@
  * Manages all the routing definitions for the application and exposes the
  * ColdBox Routing DSL
  */
-component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton threadsafe{
+component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsafe{
 
 	/**
 	 * The routing table
@@ -72,6 +72,16 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * Fluent route construct
 	 */
 	property name="thisRoute" type="struct";
+
+	/**
+	 * Fluent route construct for modules
+	 */
+	property name="thisModule" type="string";
+
+	/**
+	 * Fluent route construct for with routing
+	 */
+	property name="withClosure" type="struct";
 
 	/**
 	 * Constructor
@@ -622,6 +632,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * @headers The HTTP headers to attach to the response if route matches
 	 * @rc The RC name value pairs to attach if the reponse matches
 	 * @prc The PRC name value pairs to attach if the reponse matches
+	 * @viewModule The module the view belongs to
+	 * @layoutModule The module the layout belongs to
 	 *
 	 * @return SES
 	 */
@@ -653,7 +665,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 		string layout="",
 		struct headers = {},
 		struct rc = {},
-		struct prc = {}
+		struct prc = {},
+		string viewModule = "",
+		string layoutModule = ""
 	){
 		// The route construct we will save
 		var thisRoute        = {};
@@ -948,6 +962,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 			view                  	=  "",
 			layout                	=  "",
 			viewNoLayout          	= false,
+			viewModule 				= "",
+			layoutModule 			= "",
 			valuePairTranslation  	= true,
 			constraints           	= {},
 			module                	= "",
@@ -1426,11 +1442,19 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	 * route( "hello", "main.index" ).toView( view="hello", noLayout=true );
 	 * </pre>
 	 */
-	function toView( required view, layout="", boolean noLayout=false ){
+	function toView(
+		required view,
+		layout="",
+		boolean noLayout=false,
+		viewModule="",
+		layoutModule=""
+	){
 		variables.thisRoute.append( {
 			view     		: arguments.view,
 			layout   		: arguments.layout,
-			viewNoLayout 	: arguments.nolayout
+			viewNoLayout 	: arguments.nolayout,
+			viewModule 		: arguments.viewModule,
+			layoutModule 	: arguments.layoutModule
 		}, true );
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
@@ -1496,7 +1520,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" singleton
 	/**
 	 * Terminates the route to execute a response closure with optional status codes and texts
 	 * <pre>
-	 * route( "old" ).to( ( event, rc, prc ) => {
+	 * route( "old" ).toResponse( ( event, rc, prc ) => {
 	 * 	...
 	 *  return "html/data"
 	 * } );
