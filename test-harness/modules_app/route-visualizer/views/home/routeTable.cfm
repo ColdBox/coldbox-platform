@@ -1,5 +1,5 @@
 <cfoutput>
-<table class="table table-striped table-condensed table-hover">
+<table class="table table-striped table-condensed table-hover" id="table-routes">
     <thead class="thead-dark">
         <tr>
             <th>order</th>
@@ -20,7 +20,7 @@
             <td>
                 #index++#
             </td>
-            <td>
+            <td class="pattern">
 				#thisRoute.pattern#<br>
 				<strong>Regex:</strong> #thisRoute.regexpattern#<br>
 				<strong>Domain:</strong> <span title="Regex" class="badge badge-#thisRoute.domain.len() ? "success" : "info"#">#thisRoute.domain.len() ? thisRoute.domain : "all"#</span>
