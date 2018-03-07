@@ -806,11 +806,8 @@ component extends="coldbox.system.web.services.BaseService"{
 			.injectPropertyMixin( "getSystemSetting",   controller.getUtil().getSystemSetting )
 			.injectPropertyMixin( "getSystemProperty",  controller.getUtil().getSystemProperty )
 			.injectPropertyMixin( "getEnv",             controller.getUtil().getEnv )
+			.injectPropertyMixin( "appRouter",          variables.wireBox.getInstance( "router@coldbox" ) )
 			.injectPropertyMixin( "router",             arguments.config.router );
-
-		// Create module routing in the router
-		//arguments.config.router.setThisModule( arguments.moduleName );
-		//arguments.config.router.getModuleRoutingTable().insert( arguments.moduleName, [] );
 
 		// Configure the module
 		oConfig.configure();
