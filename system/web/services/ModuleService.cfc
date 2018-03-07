@@ -304,10 +304,14 @@ component extends="coldbox.system.web.services.BaseService"{
 					layoutsLocation 	= "layouts",
 					viewsLocation 		= "views",
 					modelsLocation      = "models",
-					includesLocation    = "includes"
+					includesLocation    = "includes",
+					routerLocation		= "config.Router"
 				},
 				childModules			= [],
-				parent 					= arguments.parent
+				parent 					= arguments.parent,
+				router 					= "",
+				routerInvocationPath 	= modulesInvocationPath & "." & modName,
+				routerPhysicalPath 		= modLocation
 			};
 
 			// Load Module configuration from cfc and store it in module Config Cache
@@ -323,16 +327,21 @@ component extends="coldbox.system.web.services.BaseService"{
 			}
 			// Store module configuration in main modules configuration
 			modulesConfiguration[ modName ] = mConfig;
+
 			// Link aliases by reference in both modules list and config cache
 			for( var thisAlias in mConfig.aliases ){
 				modulesConfiguration[ thisAlias ] 	= modulesConfiguration[ modName ];
 				variables.mConfigCache[ thisAlias ]  = variables.mConfigCache[ modName ];
 			}
+
 			// Update the paths according to conventions
 			mConfig.handlerInvocationPath 	&= ".#replace( mConfig.conventions.handlersLocation, "/", ".", "all" )#";
 			mConfig.handlerPhysicalPath     &= "/#mConfig.conventions.handlersLocation#";
 			mConfig.modelsInvocationPath    &= ".#replace( mConfig.conventions.modelsLocation, "/", ".", "all" )#";
 			mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
+			mConfig.routerInvocationPath 	&= ".#mConfig.conventions.routerLocation#";
+			mConfig.routerPhysicalPath 		&= "/#mConfig.conventions.routerLocation.replace( ".", "/", "all" )#.cfc";
+
 			// Register CFML Mapping if it exists, for loading purposes
 			if( len( trim( mConfig.cfMapping ) ) ){
 				controller.getUtil().addMapping( name=mConfig.cfMapping, path=mConfig.path );
@@ -572,7 +581,27 @@ component extends="coldbox.system.web.services.BaseService"{
 					append  = false
 				);
 
-				// Now look into the module router and register its routes.
+				// Does the module have its own config.Router.cfc, if so, let's use it as well.
+				if( fileExists( mConfig.routerPhysicalPath ) ){
+					// Process as a Router.cfc with virtual inheritance
+					wirebox.registerNewInstance( name=mConfig.routerInvocationPath, instancePath=mConfig.routerInvocationPath )
+						.setVirtualInheritance( "coldbox.system.web.routing.Router" )
+						.setThreadSafe( true );
+					// Create the Router back into the config
+					mConfig.router = wirebox.getInstance( mConfig.routerInvocationPath );
+					// Process it
+					mConfig.router.configure();
+				}
+
+				// Add convention based routing if it does not exist.
+				var conventionsRouteExists = mConfig.router.getRoutes().find( function( item ){
+					return ( item.pattern == "/:handler/:action?" || item.pattern == ":handler/:action?" );
+				} );
+				if( conventionsRouteExists == 0 ){
+					mConfig.router.route( "/:handler/:action?" ).end();
+				};
+
+				// Process Module Router
 				mConfig.router.getRoutes().each( function( item ){
 					// Incorporate module context
 					if( !item.module.len() ){

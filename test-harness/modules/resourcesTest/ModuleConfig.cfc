@@ -65,19 +65,6 @@ component {
 	this.dependencies 		= [];
 
 	function configure(){
-		// SES Routes
-		routes = [
-			// Module Entry Point
-			{ pattern="/", handler="home", action="index" },
-			// Convention Route
-			{ pattern="/:handler/:action?" }
-		];
-
-		// SES Resources
-		resources = [
-			{ resource="photos" },
-			{ resource="users" }
-		];
 
 		// Custom Declared Points
 		interceptorSettings = {

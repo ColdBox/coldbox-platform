@@ -108,7 +108,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				// Process as a Router.cfc with virtual inheritance
 				wirebox.registerNewInstance( name="router@coldbox", instancePath=variables.appMapping & "." & modernRouter )
 					.setVirtualInheritance( baseRouter )
-					.addDIConstructorArgument( name="controller", value=controller )
 					.setThreadSafe( true )
 					.setScope(
 						wirebox.getBinder().SCOPES.SINGLETON
