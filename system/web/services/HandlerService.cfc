@@ -589,7 +589,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 						mdEntry.provider 		 	= arguments.ehBean.getActionMetadata( "cacheProvider", "template" );
 
 						// Handler Event Cache Key Suffix, this is global to the event
-						if( isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) ){
+						if( isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) || isCustomFunction( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) ){
 							mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX( arguments.ehBean );
 						} else {
 							mdEntry.suffix = arguments.oEventHandler.EVENT_CACHE_SUFFIX;
