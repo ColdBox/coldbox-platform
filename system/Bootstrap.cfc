@@ -57,12 +57,12 @@ component serializable="false" accessors="true"{
 
 	/**
 	 * Loads the framework into application scope and executes app start procedures
-	 * 
+	 *
 	 * @throws InvalidColdBoxMapping
 	*/
 	function loadColdBox(){
 		var appKey = locateAppKey();
-		
+
 		// Cleanup of old code, just in case
 		if( structkeyExists( application, appKey ) ){
 			structDelete( application, appKey );
@@ -73,7 +73,7 @@ component serializable="false" accessors="true"{
 			var coldboxDirectory = reReplaceNoCase(
 				getDirectoryFromPath( getCurrentTemplatePath() ),
 				"[\\/]system",
-				""	
+				""
 			);
 			throw(
 				message = "Cannot find the '/'coldbox' mapping",
@@ -216,11 +216,10 @@ component serializable="false" accessors="true"{
 					refResults.eventCaching.controller = cbController;
 					renderDataSetup( argumentCollection=refResults.eventCaching );
 				}
-				
-				// Authoritative Header
-				getPageContextResponse().setStatus( 203, "Non-Authoritative Information" );
+
+				// Caching Header
 				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
-				
+
 				// Render Content as binary or just output
 				if( refResults.eventCaching.isBinary ){
 					cbController.getDataMarshaller().renderContent( type="#refResults.eventCaching.contentType#", variable="#refResults.eventCaching.renderedContent#" );
@@ -236,25 +235,25 @@ component serializable="false" accessors="true"{
 				//****** RENDERING PROCEDURES *******/
 				if( not event.isNoRender() ){
 					var renderedContent = "";
-					
+
 					// pre layout
 					interceptorService.processState( "preLayout" );
-					
+
 					// Check for Marshalling and data render
 					var renderData = event.getRenderData();
-					
+
 					// Rendering/Marshalling of content
 					if( isStruct( renderData ) and not structisEmpty( renderData ) ){
 						renderedContent = cbController.getDataMarshaller().marshallData( argumentCollection=renderData );
 					}
 					// Check if handler returned results
-					else if( 
-						!isNull( refResults.results ) 
+					else if(
+						!isNull( refResults.results )
 					){
 						// If simple, just return it back, evaluates to HTML
 						if( isSimpleValue( refResults.results ) ){
 							renderedContent = refResults.results;
-						} 
+						}
 						// ColdBox does native JSON if you return a complex object.
 						else {
 							renderedContent = serializeJSON( refResults.results, true );
@@ -278,20 +277,20 @@ component serializable="false" accessors="true"{
 					//****** EVENT CACHING *******/
 					var eCacheEntry = event.getEventCacheableEntry();
 					if( structKeyExists( eCacheEntry, "cacheKey") AND getPageContextResponse().getStatus() neq 500 ){
-						
+
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
-							
+
 							// Try to discover the content type
 							var defaultContentType = "text/html";
 							// Discover from event caching first.
 							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
 								defaultContentType 	= renderData.contentType;
-							} 
+							}
 							// Else, ask the engine
 							else {
 								defaultContentType = getPageContextResponse().getContentType();
 							}
-							
+
 							// prepare storage entry
 							var cacheEntry = {
 								renderedContent = renderedContent,
@@ -302,7 +301,7 @@ component serializable="false" accessors="true"{
 								statusText		= "",
 								isBinary		= false
 							};
-							
+
 							// is this a render data entry? If So, append data
 							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
 								cacheEntry.renderData 	= true;
@@ -312,11 +311,11 @@ component serializable="false" accessors="true"{
 							// Cache it
 							cacheBox
 								.getCache( eCacheEntry.provider )
-								.set( 
+								.set(
 									eCacheEntry.cacheKey,
 									cacheEntry,
 									eCacheEntry.timeout,
-									eCacheEntry.lastAccessTimeout 
+									eCacheEntry.lastAccessTimeout
 								);
 						}
 
@@ -585,7 +584,7 @@ component serializable="false" accessors="true"{
 					include "#bugReportAbsolutePath#";
 				}
 			}
-			
+
 		} else {
 			// Default ColdBox Error Template
 			savecontent variable="local.exceptionReport"{
