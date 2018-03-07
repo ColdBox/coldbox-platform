@@ -4,11 +4,15 @@
 component{
 
 	function index( event, rc, prc ){
-		var oSES = getInterceptor( "SES" );
+		if( wirebox.containsInstance( name="router@coldbox" ) ){
+			var oRouter = getInstance( "router@coldbox" );
+		} else {
+			var oRouter = getInterceptor( "SES" );
+		}
 
-		prc.aRoutes          = oSES.getRoutes();
-		prc.aModuleRoutes    = oSES.getModuleRoutingTable();
-		prc.aNamespaceRoutes = oSES.getNamespaceRoutingTable();
+		prc.aRoutes          = oRouter.getRoutes();
+		prc.aModuleRoutes    = oRouter.getModuleRoutingTable();
+		prc.aNamespaceRoutes = oRouter.getNamespaceRoutingTable();
 
 		event.setView( "home/index" );
 	}
