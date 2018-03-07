@@ -8,7 +8,7 @@
 			<th>terminator</th>
             <th width="50">module</th>
 			<th width="50">namespace</th>
-			<th width="50">action</th>
+			<th width="150" class="text-center">actions</th>
         </tr>
     </thead>
 
@@ -20,13 +20,19 @@
             <td>
                 #index++#
             </td>
-            <td class="pattern">
+            <td <cfif args.type eq "root">class="pattern"</cfif>>
 				#thisRoute.pattern#<br>
-				<strong>Regex:</strong> #thisRoute.regexpattern#<br>
-				<strong>Domain:</strong> <span title="Regex" class="badge badge-#thisRoute.domain.len() ? "success" : "info"#">#thisRoute.domain.len() ? thisRoute.domain : "all"#</span>
+				<strong>Regex:</strong> #thisRoute.regexpattern#
+				<cfif thisRoute.keyExists( "domain" )>
+					<strong>Domain:</strong> <span title="Regex" class="badge badge-#thisRoute.domain.len() ? "success" : "info"#">#thisRoute.domain.len() ? thisRoute.domain : "all"#</span>
+				</cfif>
 			</td>
 			<td>
+				<cfif thisRoute.keyExists( "verbs" )>
 				#thisRoute.verbs.len() ? "<span class='badge badge-info'>#thisRoute.verbs#</span>" : "any"#
+				<cfelse>
+					any
+				</cfif>
             </td>
 			<td>
 				<cfif thisRoute.handler.len() ?: 0>
@@ -41,24 +47,24 @@
 					<strong>Event:</strong> #thisRoute.event.toString()#
 				</cfif>
 
-				<cfif thisRoute.redirect.len()>
+				<cfif thisRoute.redirect.len() ?: 0>
 					<strong>Redirect:</strong> #thisRoute.statusCode ?: ''#: #thisRoute.redirect#
 				</cfif>
 
-				<cfif thisRoute.view.len()>
+				<cfif thisRoute.view.len() ?: 0>
 					<strong>View:</strong> #thisRoute.view#<br>
 					<strong>No Layout:</strong> #thisRoute.viewNoLayout#<br>
 					<strong>Layout:</strong> #thisRoute.layout#
 				</cfif>
 
-				<cfif isSimpleValue( thisRoute.response ) and thisRoute.response.len()>
+				<cfif thisRoute.keyExists( "response" ) and isSimpleValue( thisRoute.response ) and thisRoute.response.len()>
 					<strong>Simple Response:</strong><br>
 					<pre class="card"><code>
 						#htmlCodeFormat( thisRoute.response )#
 					</code></pre>
 				</cfif>
 
-				<cfif isClosure( thisRoute.response )>
+				<cfif thisRoute.keyExists( "response" ) and isClosure( thisRoute.response )>
 					<strong>Lambda Response:</strong><br>
 					<cfdump var="#thisRoute.response#">
 				</cfif>
@@ -67,18 +73,19 @@
 				#thisRoute.moduleRouting#
 				<cfif thisRoute.moduleRouting.len()>
 					<br>
-					<button class="btn btn-primary btn-sm" onclick="$( '##module-#thisRoute.id#' ).toggle()">Open Module Router</button>
+					<button class="btn btn-primary btn-sm" onclick="$( '##module-#thisRoute.id#' ).toggle()">Open Router</button>
 				</cfif>
             </td>
             <td>
 				#thisRoute.namespaceRouting#
 				<cfif thisRoute.namespaceRouting.len()>
 					<br>
-					<button class="btn btn-primary btn-sm" onclick="$( '##namespace-#thisRoute.id#' ).toggle()">Open Namespace Router</button>
+					<button class="btn btn-primary btn-sm" onclick="$( '##namespace-#thisRoute.id#' ).toggle()">Open Router</button>
 				</cfif>
 			</td>
-			<td>
-				<button class="btn btn-danger btn-sm" onclick="$( '##debug-#thisRoute.id#' ).toggle()">Route Dump</button>
+			<td class="text-center">
+				<button class="btn btn-danger btn-sm" onclick="$( '##debug-#thisRoute.id#' ).toggle()">Dump</button>
+				<a href="#event.buildLink( thisRoute.pattern )#" target="_blank" class="btn btn-sm btn-primary">Run</a>
 			</td>
 		</tr>
 
@@ -99,7 +106,7 @@
 				<h3>#thisRoute.moduleRouting# Module Routes</h3>
 				#getRenderer().renderView(
 					view = "home/routeTable",
-					args = { routes = prc.aModuleRoutes[ thisRoute.moduleRouting ] }
+					args = { routes = prc.aModuleRoutes[ thisRoute.moduleRouting ], type = "module" }
 				)#
             </td>
         </tr>
@@ -113,7 +120,7 @@
                 <h3>#thisRoute.namespaceRouting# Namespace Routes</h3>
                 #getRenderer().renderView(
                     view = "home/routeTable",
-                    args = { routes = prc.aNamespaceRoutes[ thisRoute.namespaceRouting ] }
+                    args = { routes = prc.aNamespaceRoutes[ thisRoute.namespaceRouting ], type = "namespace" }
                 )#
             </td>
         </tr>
