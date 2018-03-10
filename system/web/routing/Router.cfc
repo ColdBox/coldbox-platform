@@ -190,6 +190,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	boolean function isValidExtension( required extension ){
 		return variables.validExtensions.listFindNoCase( arguments.extension ) > 0;
 	}
+	
+	/**
+	 * A quick ColdBox4 compatibility wrapper
+	 */
+	struct function getModulesRoutingTable(){
+		return getModuleRoutingTable();
+	}
 
 	/****************************************************************************************************************************/
 	// DEPRECATED FUNCTIONALITY: Remove in later release
