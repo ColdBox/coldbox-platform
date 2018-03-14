@@ -101,12 +101,14 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 
 		/************************************** FLUENT CONSTRUCTS *********************************************/
 
-		// with closure
+		// With closure
 		variables.withClosure = {};
-		// module closure
-		variables.thisModule	= "";
-		// this routing pointer
-		variables.thisRoute 	= initRouteDefinition();
+		// Module closure
+		variables.thisModule = "";
+		// Groupt Pivot
+		variables.onGroup = false;
+		// Routing pointer
+		variables.thisRoute = initRouteDefinition();
 
 		/************************************** CONSTANTS *********************************************/
 
@@ -190,8 +192,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	boolean function isValidExtension( required extension ){
 		return variables.validExtensions.listFindNoCase( arguments.extension ) > 0;
 	}
-	
+
 	/**
+	 * @deprecated Please use `getModuleRoutingTable()` instead.
 	 * A quick ColdBox4 compatibility wrapper
 	 */
 	struct function getModulesRoutingTable(){
@@ -420,6 +423,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	/****************************************************************************************************************************/
 
 	/**
+	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
+	 *
 	 * Starts a with closure, where all arguments will be prefixed for the next concatenated addRoute() methods until an endWith() is called
 	 *
 	 * @pattern The pattern to match against the URL.
@@ -465,6 +470,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	}
 
 	/**
+	 * @deprecated This has been deprecated in favor of the <code>group()</code> function.
+	 *
 	 * End a with closure and returns itself
 	 *
 	 * @return Router
@@ -485,7 +492,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		var w = variables.withClosure;
 
 		// only process arguments once per addRoute() call.
-		if( structKeyExists( args, "$$withProcessed" ) ){
+		if( structKeyExists( arguments.args, "$$withProcessed" ) ){
 			return this;
 		}
 
@@ -503,6 +510,36 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		} );
 
 		args.$$withProcessed = true;
+
+		return this;
+	}
+
+	/**
+	 * This is the new approach to the <code>with</code> closure approach which has been marked as deprecated.
+	 * You can pass any route option via the <code>options</code> structure and those values will be prefixed against
+	 * any routing values done withing the <code>body</code> closure.
+	 *
+	 * <pre>
+	 * group( { pattern="/api", target="api", handler="api" }, function( options ){
+	 * 	route( "/", "main.index" );
+	 *  route( "/echo", "echo" );
+	 * 	route( "/users/:id" ).withAction( { get : "index", post : "save" } ).toHandler( "users" );
+	 * } )
+	 * </pre>
+	 *
+	 * @options The route options that match routing, look at the <code>addRoute()</code> method
+	 * @body The closure or lambda to contain all the routing methods to be grouped with the options data.
+	 */
+	function group( struct options={}, body ){
+		// Mark the group
+		variables.onGroup = true;
+
+		// set the withClosure
+		variables.withClosure.append( arguments.options );
+		// Execute the body
+		arguments.body( arguments.options );
+		// Pivot out of the group
+		variables.onGroup = false;
 
 		return this;
 	}
@@ -682,7 +719,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 
 
 		// process a with closure if not empty
-		if( NOT structIsEmpty( variables.withClosure ) ){
+		if( ! variables.withClosure.isEmpty() && ! variables.onGroup ){
 			processWith( arguments );
 		}
 
@@ -961,6 +998,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * Construct a route definition construct
 	 */
 	private struct function initRouteDefinition(){
+		// Reset a group with closure
+		if( !variables.onGroup ){
+			variables.withClosure 		= {};
+		}
+		// Return a new route definition
 		return {
 			pattern               	=  "",
 			handler               	=  "",
@@ -1016,6 +1058,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	function route( required pattern, target, name="" ){
 		// inline termination
 		if( !isNull( arguments.target ) ){
+			// process a with closure if not empty
+			if( !variables.withClosure.isEmpty() ){
+				processWith( arguments );
+			}
+			// Prepare Routing Structure
 			var args = {};
 			// Simple => Event
 			if( isSimpleValue( arguments.target ) ){
@@ -1035,16 +1082,21 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 					name 	= arguments.name
 				};
 			}
+
 			// Inline terminator, finish it off!
 			addRoute( argumentCollection = args );
 			variables.thisRoute = initRouteDefinition();
 			return this;
+		} else {
+			// process a with closure if not empty
+			if( !variables.withClosure.isEmpty() ){
+				processWith( arguments );
+			}
+			// Store data and continue
+			variables.thisRoute.pattern = arguments.pattern;
+			variables.thisRoute.name 	= arguments.name;
+			return this;
 		}
-
-		// Store data and continue
-		variables.thisRoute.pattern = arguments.pattern;
-		variables.thisRoute.name 	= arguments.name;
-		return this;
 	}
 
 	/**
@@ -1146,6 +1198,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @overwrite Overwrite if already defined
 	 */
 	function header( required name, required value, boolean overwrite=true ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
+
 		variables.thisRoute.headers.insert(
 			arguments.name,
 			arguments.value,
@@ -1164,6 +1221,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @overwrite Overwrite the elements
 	 */
 	function headers( required map, boolean overwrite=true ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.headers.append( arguments.map, arguments.overwrite );
 		return this;
 	}
@@ -1177,6 +1238,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @name The name to use for the route
 	 */
 	function as( required name ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.name = arguments.name;
 		return this;
 	}
@@ -1192,6 +1257,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @overwrite Overwrite the value
 	 */
 	function rc( required name, required value, boolean overwrite=true ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.rc.insert(
 			arguments.name,
 			arguments.value,
@@ -1210,6 +1279,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @overwrite Overwrite elements, default behavior
 	 */
 	function rcAppend( required map, boolean overwrite=true ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.rc.append( arguments.map, arguments.overwrite );
 		return this;
 	}
@@ -1225,6 +1298,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @overwrite Overwrite the value
 	 */
 	function prc( required name, required value, boolean overwrite=true ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.prc.insert(
 			arguments.name,
 			arguments.value,
@@ -1243,6 +1320,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @overwrite Overwrite elements, default behavior
 	 */
 	function prcAppend( required map, boolean overwrite=true ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.prc.append( arguments.map, arguments.overwrite );
 		return this;
 	}
@@ -1275,6 +1356,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @handler The handler syntax
 	 */
 	function withHandler( required handler ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.handler = arguments.handler;
 		return this;
 	}
@@ -1286,7 +1371,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * <br>
 	 * Please see examples below:
 	 * <pre>
-	 * route( "api/user" ).\withoAction( { get : "index", delete : "delete" } ).toHandler( "User" );
+	 * route( "api/user" ).\withAction( { get : "index", delete : "delete" } ).toHandler( "User" );
 	 * route( "api/user/details" ).withAction( "details" ).toHandler( "User" );
 	 * route( "api/:handler" ).withAction( "index" ).end();
 	 * </pre>
@@ -1294,6 +1379,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @handler The handler syntax
 	 */
 	function withAction( required action ){
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.action = arguments.action;
 		return this;
 	}
@@ -1307,6 +1395,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @name The module name
 	 */
 	function withModule( required name ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.module = arguments.name;
 		return this;
 	}
@@ -1320,6 +1412,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @name The namespace name
 	 */
 	function withNamespace( required name ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.namespace = arguments.name;
 		return this;
 	}
@@ -1331,6 +1427,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * </pre>
 	 */
 	function withSSL(){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.ssl = true;
 		return this;
 	}
@@ -1345,6 +1445,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @condition closure or lambda
 	 */
 	function withCondition( required condition ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.condition = arguments.condition;
 		return this;
 	}
@@ -1358,6 +1462,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @domain The domain construct
 	 */
 	function withDomain( required domain ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.domain = arguments.domain;
 		return this;
 	}
@@ -1419,6 +1527,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @verbs The list of HTTP Verbs
 	 */
 	function withVerbs( required verbs ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		variables.thisRoute.verbs = arguments.verbs;
 		return this;
 	}
@@ -1456,6 +1568,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		viewModule="",
 		layoutModule=""
 	){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
+		// Construct Arguments
 		variables.thisRoute.append( {
 			view     		: arguments.view,
 			layout   		: arguments.layout,
@@ -1479,6 +1596,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * </pre>
 	 */
 	function toRedirect( required target, statusCode=301 ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
+		// Construct arguments
 		variables.thisRoute.append( {
 			redirect     : arguments.target,
 			statusCode   : arguments.statusCode
@@ -1499,6 +1621,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * </pre>
 	 */
 	function to( required event ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
+		// Store event
 		variables.thisRoute.event = arguments.event;
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
@@ -1516,6 +1643,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * </pre>
 	 */
 	function toHandler( required handler ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
+		// Store handler
 		variables.thisRoute.handler = arguments.handler;
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
@@ -1534,6 +1666,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * </pre>
 	 */
 	function toResponse( required body, numeric statusCode = 200, statusText = "Ok" ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
+		// Construct arguments
 		variables.thisRoute.append( {
 			response    : arguments.body,
 			statusCode  : arguments.statusCode,
@@ -1553,6 +1690,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * </pre>
 	 */
 	function toModuleRouting( required module ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
+		// Construct arguments
 		variables.thisRoute.append( {
 			moduleRouting	: arguments.module
 		}, true );
@@ -1570,6 +1712,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * </pre>
 	 */
 	function toNamespaceRouting( required namespace ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
 		// Register route to namespace
 		addNamespace(
 			pattern 	= variables.thisRoute.pattern,

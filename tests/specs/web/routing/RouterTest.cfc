@@ -42,6 +42,36 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				router = createMock( "coldbox.system.web.routing.Router" ).init( controller );
 			});
 
+			story( "I want to group routes with common options", function(){
+				given( "a grouped route with valid options", function(){
+					then( "it should store the route with common options", function(){
+
+						router.group( { target="api.", handler="api.", pattern="/api" }, function( options ){
+							router
+							.route( "/", "main.index" )
+							.route( "/hello", "echo.index" )
+							.route( "/users/:id" )
+								.withAction( { "get" : "index", "post" : "save", "put" : "save", "delete" : "delete" } )
+								.toHandler( "users" );
+						} );
+
+						var routes = router.getRoutes();
+						expect(	routes ).toHaveLength( 3 );
+
+						expect( routes[ 1 ].event ).toBe( "api.main.index" );
+						expect( routes[ 1 ].pattern ).toBe( "api/" );
+
+						expect( routes[ 2 ].event ).toBe( "api.echo.index" );
+						expect( routes[ 2 ].pattern ).toBe( "api/hello/" );
+
+						expect( routes[ 3 ].handler ).toBe( "api.users" );
+						expect( routes[ 3 ].pattern ).toBe( "api/users/:id/" );
+
+
+					});
+				});
+			});
+
 			story( "I want to register fluent routes with no modifiers or terminators", function(){
 				given( "no inline target", function(){
 					then( "it should store the route pointer", function(){
