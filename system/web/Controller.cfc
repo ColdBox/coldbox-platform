@@ -617,10 +617,23 @@ component serializable="false" accessors="true"{
 
 			// SES Invalid HTTP Routing
 			if( arguments.defaultEvent && oRequestContext.isInvalidHTTPMethod() ){
+				// Do we have a local handler for this exception, if so, call it
+				if( oHandler._actionExists( "onInvalidHTTPMethod" ) ){
+					results.data = oHandler.onInvalidHTTPMethod(
+						event			= oRequestContext,
+						rc				= args.rc,
+						prc				= args.prc,
+						faultAction		= results.ehBean.getmethod(),
+						eventArguments	= arguments.eventArguments
+					);
+					return results;
+				}
+
 				// Do we have the invalidHTTPMethodHandler setting? If so, call it.
 				if( len( getSetting( "invalidHTTPMethodHandler" ) ) ){
 					return _runEvent( event = getSetting( "invalidHTTPMethodHandler" ) );
 				}
+
 				// Throw Exception, no handlers defined
 				oRequestContext.setHTTPHeader(
 					statusCode = 405,

@@ -246,57 +246,58 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			if( routeResults.route.module.len() ){
 				rc[ variables.eventName ] = routeResults.route.module & ":" & rc[ variables.eventName ];
 			}
-		}
-
-		// Process HTTP Verbs
-		if( routeResults.route.verbs.len()
-			and
-			!routeResults.route.verbs.listFindNoCase( HTTPMethod )
-		){
-			// Check if we have a handler? If we do, then just override the invalid http method action
-			if( routeResults.route.handler.len() ){
-				routeResults.route.action = "onInvalidHTTPMethod";
-			}
-
-			// Mark as invalid HTTP Exception
-			arguments.event.setIsInvalidHTTPMethod( true );
-			if( log.canDebug() ){
-				log.debug( "Invalid HTTP Method detected: #HTTPMethod#", routeResults.route );
+			// Process HTTP Verbs
+			if( routeResults.route.verbs.len()
+				and
+				!routeResults.route.verbs.listFindNoCase( httpMethod )
+			){
+				// Mark as invalid HTTP Exception
+				arguments.event.setIsInvalidHTTPMethod( true );
+				if( log.canDebug() ){
+					log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+				}
 			}
 		}
 
 		// Process Handler/Actions
 		if( routeResults.route.handler.len() ){
-			// Check if using HTTP method actions via struct
-			if( isStruct( routeResults.route.action ) ){
-				// Verify HTTP method used is valid
-				if( structKeyExists( routeResults.route.action, HTTPMethod ) ){
-					routeResults.route.action = routeResults.route.action[ HTTPMethod ];
-					// Send for logging in debug mode
-					if( log.canDebug() ){
-						log.debug( "Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action#" );
-					}
-				} else {
-					// Mark as invalid HTTP Exception
-					routeResults.route.action = "onInvalidHTTPMethod";
-					arguments.event.setIsInvalidHTTPMethod( true );
-					if( log.canDebug() ){
-						log.debug( "Invalid HTTP Method detected: #HTTPMethod#", routeResults.route );
-					}
-				}
-			}
-
 			// Create routed event
 			rc[ variables.eventName ] = routeResults.route.handler;
-			if( routeResults.route.action.len() ){
-				rc[ variables.eventName ] &= "." & routeResults.route.action;
-			}
-
-			// Do we have a module? If so, create routed module event.
+			// Do we have a module? If so, prefix it
 			if( routeResults.route.module.len() ){
 				rc[ variables.eventName ] = routeResults.route.module & ":" & rc[ variables.eventName ];
 			}
 
+			// Process HTTP Verbs
+			if( routeResults.route.verbs.len()
+				and
+				!routeResults.route.verbs.listFindNoCase( httpMethod )
+			){
+				// Mark as invalid HTTP Exception
+				arguments.event.setIsInvalidHTTPMethod( true );
+				if( log.canDebug() ){
+					log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+				}
+			}
+
+			// Check if using HTTP method actions via struct
+			if( isStruct( routeResults.route.action ) ){
+				// Verify HTTP method used is valid
+				if( structKeyExists( routeResults.route.action, httpMethod ) ){
+					rc[ variables.eventName ] &= ".#routeResults.route.action[ httpMethod ]#";
+					// Send for logging in debug mode
+					if( log.canDebug() ){
+						log.debug( "Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#" );
+					}
+				} else {
+					// Mark as invalid HTTP Exception
+					rc[ variables.eventName ] &= ".onInvalidHTTPMethod";
+					arguments.event.setIsInvalidHTTPMethod( true );
+					if( log.canDebug() ){
+						log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
+					}
+				}
+			}
 		} // end if handler exists
 
 		// See if View is Dispatched

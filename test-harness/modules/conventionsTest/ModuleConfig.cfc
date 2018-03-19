@@ -20,6 +20,16 @@
 		// SES Routes
 		routes = [
 			{ pattern="/", handler="test", action="index" },
+			{
+				pattern = "/search",
+				handler = "search",
+				action  = {
+					"OPTIONS" : "options",
+					"HEAD"    : "index",
+					"GET"     : "index",
+					"POST"    : "index"
+				}
+			},
 			{ pattern="/:handler/:action?" }
 		];
 
