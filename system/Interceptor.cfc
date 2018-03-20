@@ -140,7 +140,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	* @return struct
 	*/
 	function getBufferObject(){
-		if( !equest.keyExists( "__cbox_buffer" ) ){
+		if( !request.keyExists( "__cbox_buffer" ) ){
 			request[ "__cbox_buffer" ] = variables.interceptorService.getLazyBuffer();
 		}
 		return request[ "__cbox_buffer" ];
