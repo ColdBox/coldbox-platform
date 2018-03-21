@@ -160,7 +160,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	public void function onRequestCapture( event, interceptData, rc, prc, buffer ){
         var cleanedPaths = getCleanedPaths( rc, arguments.event );
-		var httpMethod	 = arguments.event.getHttpMethod();
 
 		// Check if disabled or in proxy mode, if it is, then exit out.
 		if( ! variables.router.getEnabled() OR arguments.event.isProxyRequest() ){
@@ -193,6 +192,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			event  = arguments.event,
 			domain = cleanedPaths[ "domain" ]
 		);
+
+		// Process the route
+		processRoute( routeResults, event, rc, prc );
+	}
+
+	/**
+	 * Process a route result to be used by the request
+	 *
+	 * @routeResults The route results a <code>findRoute()</code> method returns
+	 * @event The ColdBox Request context
+	 * @rc The requset collection
+	 * @prc The private request collection
+	 */
+	function processRoute( required struct routeResults, required event, required rc, required prc ){
+		var httpMethod = arguments.event.getHttpMethod();
 
 		// Check if we found a route, else most likely it is the default event
 		if( routeResults.route.isEmpty() ){
