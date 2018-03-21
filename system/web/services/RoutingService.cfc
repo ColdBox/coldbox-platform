@@ -298,6 +298,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					}
 				}
 			}
+			// Simple value action
+			else if( routeResults.route.action.len() ){
+				rc[ variables.eventName ] &= ".#routeResults.route.action#";
+			}
 		} // end if handler exists
 
 		// See if View is Dispatched
@@ -418,8 +422,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
                     }
                 }
 
-				// Setup the found Route
-				results.route = _routes[ i ];
+				// Setup the found Route: we dup to avoid reference collisions
+				results.route = duplicate( _routes[ i ] );
 
 				// Is this namespace routing?
 				if( len( arguments.namespace ) ){
