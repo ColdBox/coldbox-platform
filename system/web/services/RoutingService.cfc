@@ -197,7 +197,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		var discoveredEvent = processRoute( routeResults, event, rc, prc );
 
 		// Do we use the discovered event?
-		if( discoveredEvent.len() ){
+		if( !isNull( discoveredEvent ) and discoveredEvent.len() ){
 			rc[ variables.eventName ] = discoveredEvent;
 		}
 	}
