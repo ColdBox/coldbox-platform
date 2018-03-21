@@ -194,7 +194,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		);
 
 		// Process the route
-		processRoute( routeResults, event, rc, prc );
+		var discoveredEvent = processRoute( routeResults, event, rc, prc );
+
+		// Do we use the discovered event?
+		if( discoveredEvent.len() ){
+			rc[ variables.eventName ] = discoveredEvent;
+		}
 	}
 
 	/**
@@ -204,9 +209,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @event The ColdBox Request context
 	 * @rc The requset collection
 	 * @prc The private request collection
+	 *
+	 * @return An event string that can be used for execution. Empty if using something else
 	 */
 	function processRoute( required struct routeResults, required event, required rc, required prc ){
-		var httpMethod = arguments.event.getHttpMethod();
+		var httpMethod 		= arguments.event.getHttpMethod();
+		var discoveredEvent = "";
 
 		// Check if we found a route, else most likely it is the default event
 		if( routeResults.route.isEmpty() ){
@@ -255,10 +263,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Process Direct Event
 		if( routeResults.route.event.len() ){
-			rc[ variables.eventName ] = routeResults.route.event;
+			discoveredEvent = routeResults.route.event;
 			// Do we have a module? If so, prefix it
 			if( routeResults.route.module.len() ){
-				rc[ variables.eventName ] = routeResults.route.module & ":" & rc[ variables.eventName ];
+				discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
 			}
 			// Process HTTP Verbs
 			if( routeResults.route.verbs.len()
@@ -276,10 +284,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Process Handler/Actions
 		if( routeResults.route.handler.len() ){
 			// Create routed event
-			rc[ variables.eventName ] = routeResults.route.handler;
+			discoveredEvent = routeResults.route.handler;
 			// Do we have a module? If so, prefix it
 			if( routeResults.route.module.len() ){
-				rc[ variables.eventName ] = routeResults.route.module & ":" & rc[ variables.eventName ];
+				discoveredEvent = routeResults.route.module & ":" & discoveredEvent;
 			}
 
 			// Process HTTP Verbs
@@ -298,14 +306,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			if( isStruct( routeResults.route.action ) ){
 				// Verify HTTP method used is valid
 				if( structKeyExists( routeResults.route.action, httpMethod ) ){
-					rc[ variables.eventName ] &= ".#routeResults.route.action[ httpMethod ]#";
+					discoveredEvent &= ".#routeResults.route.action[ httpMethod ]#";
 					// Send for logging in debug mode
 					if( log.canDebug() ){
 						log.debug( "Matched HTTP Method (#HTTPMethod#) to routed action: #routeResults.route.action[ httpMethod ]#" );
 					}
 				} else {
 					// Mark as invalid HTTP Exception
-					rc[ variables.eventName ] &= ".onInvalidHTTPMethod";
+					discoveredEvent &= ".onInvalidHTTPMethod";
 					arguments.event.setIsInvalidHTTPMethod( true );
 					if( log.canDebug() ){
 						log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
@@ -314,7 +322,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 			// Simple value action
 			else if( routeResults.route.action.len() ){
-				rc[ variables.eventName ] &= ".#routeResults.route.action#";
+				discoveredEvent &= ".#routeResults.route.action#";
 			}
 		} // end if handler exists
 
@@ -347,6 +355,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Save the Routed Variables so event caching can verify them
 		arguments.event.setRoutedStruct( routeResults.params );
+
+		return discoveredEvent;
 	}
 
 	/****************************************************************************************************************************/
