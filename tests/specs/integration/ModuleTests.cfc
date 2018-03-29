@@ -1,5 +1,5 @@
 /*******************************************************************************
-*	Integration Test as BDD  
+*	Integration Test as BDD
 *
 *	Extends the integration class: coldbox.system.testing.BaseTestCase
 *
@@ -86,7 +86,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 				expect(	config ).toHaveKey( 'test1' );
 				expect( config[ "test1" ] ).toHaveKey( "settings" );
-				
+
 				expect( config[ "test1" ].settings ).toBe( parentSettings.moduleSettings[ "test1" ] );
 
 				expect( parentSettings ).toHaveKey( "test1" );
@@ -127,21 +127,6 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			});
 		});
 
-		story( "Modules can support default model export", function(){
-			given( "A module with a model of the same name", function(){
-				then( "You will be able to get the model via @moduleName", function(){
-					var oModel = getInstance( "@conventionsTest" );
-					oModel.echo();
-				});
-			});
-			given( "A model namespace", function(){
-				then( "You will be able to get the model via @modelNamespace", function(){
-					var oModel = getInstance( "@MyConventionsTest" );
-					oModel.echo();
-				});
-			});
-		});
-
 		story( "Modules can register custom routing", function(){
 			given( "A routing array", function(){
 				then( "module routes should be registered", function(){
@@ -157,7 +142,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			given( "application helpers directive", function(){
 				then( "the module service will load them by convention", function(){
 					var event = execute( event="conventionsTest:test.index", renderResults=true );
-					expect( event.getRenderedContent() ).toInclude( "hello from module app helper" );			
+					expect( event.getRenderedContent() ).toInclude( "hello from module app helper" );
 				});
 			});
 		});
@@ -182,7 +167,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 					expect( photosFound ).toBeTrue();
 					expect( usersFound ).toBeTrue();
-					
+
 				} );
 			} );
 		} );
