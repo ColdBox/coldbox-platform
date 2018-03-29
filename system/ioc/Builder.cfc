@@ -4,7 +4,7 @@
  * ---
  * The WireBox builder for components, java, etc. I am in charge of building stuff and integration dsl builders.
  **/
-component serializable="false" accessors="true"{
+ component serializable="false" accessors="true"{
 
 	/**
 	 * Injector Reference
@@ -680,7 +680,10 @@ component serializable="false" accessors="true"{
 
 		// Prepare for private Property/method Injections
 		var targetVariables 	= arguments.target.getVariablesMixin();
-		var generateAccessors 	= arguments.mapping.getObjectMetadata().accessors ?: false;
+		var generateAccessors 	= false;
+		if( arguments.mapping.getObjectMetadata().keyExists( "accessors" ) and arguments.mapping.getObjectMetadata().accessors ){
+			generateAccessors = true;
+		}
 		var baseProperties 		= {};
 
 		// Process baseProperties lookup map
