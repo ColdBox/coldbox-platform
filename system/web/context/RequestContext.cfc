@@ -1491,7 +1491,45 @@ component serializable=false accessors="true"{
 		}
 
 		return returnStruct;
-	}
+    }
+
+    /**
+    * Filters the private collection down to only the provided keys.
+    * @keys A list or array of keys to bring back from the private collection.
+    */
+    struct function getPrivateOnly( required keys ){
+        return getOnly( keys = keys, private = true );
+    }
+
+    /**
+	* Filters the collection or private collection down to all keys except the provided keys.
+	* @keys A list or array of keys to exclude from the results of the collection or private collection.
+	* @private Private or public, defaults public request collection
+	*/
+	struct function getExcept( required keys, boolean private = false ){
+		if( isSimpleValue( arguments.keys ) ){
+			arguments.keys = listToArray( arguments.keys );
+		}
+		// determine target context
+		var thisContext = arguments.private ? variables.privateContext : variables.context;
+
+        var returnStruct = {};
+		for( var key in thisContext ){
+			if( ! arrayContains( arguments.keys, key ) ){
+				returnStruct[ key ] = thisContext[ key ];
+			}
+		}
+
+		return returnStruct;
+    }
+
+    /**
+	* Filters the private collection down to all keys except the provided keys.
+	* @keys A list or array of keys to exclude from the results of the private collection.
+	*/
+	struct function getPrivateExcept( required keys ){
+		return getExcept( keys = keys, private = true );
+    }
 
 	/************************************** RESTFUL *********************************************/
 

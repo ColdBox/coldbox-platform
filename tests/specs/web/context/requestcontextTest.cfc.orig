@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseModelTest"{
+﻿component extends="coldbox.system.testing.BaseModelTest"{
 
 	function setUp(){
 
@@ -19,7 +19,10 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		/* Init it */
 		mockController = getMockController();
 		prepareMock( mockController.getInterceptorService() );
+<<<<<<< Updated upstream
 		prepareMock( mockController.getWireBox() );
+=======
+>>>>>>> Stashed changes
 
 		oRC =  new coldbox.system.web.context.RequestContext( props, mockController );
 	}
@@ -32,7 +35,11 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		// Mocks
 		var mockRouter = createStub()
 			.$( "getRoutes", [ { name="contactus", pattern="contactus/" } ] );
+<<<<<<< Updated upstream
 		mockController.getWireBox().$( "getInstance", mockRouter );
+=======
+		mockController.getInterceptorService().$( "getInterceptor", mockSES );
+>>>>>>> Stashed changes
 
 		var event = getRequestContext().setSESEnabled( true );
 		var r = event.route( "contactus" );
@@ -60,7 +67,11 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				]
 			)
 			.$( "getRoutes", [] );
+<<<<<<< Updated upstream
 		mockController.getWireBox().$( "getInstance", mockRouter );
+=======
+		mockController.getInterceptorService().$( "getInterceptor", mockSES );
+>>>>>>> Stashed changes
 
 		var event = getRequestContext()
 			.setSESEnabled( true )
@@ -595,6 +606,8 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 		expect( event.getOnly( keys = "name,field-that-does-not-exist", private = true ) )
 			.toBe( { "name" = "Jane" } );
+<<<<<<< Updated upstream
+=======
     }
 
     function testPrivateOnlyMethod() {
@@ -616,6 +629,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 		expect( event.getExcept( [ "hackedField", "field-that-does-not-exist" ] ) )
 			.toBe( { "name" = "John", "email" = "john@example.com" } );
+>>>>>>> Stashed changes
 	}
 
 	function testExceptList() {
