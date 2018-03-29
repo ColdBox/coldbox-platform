@@ -1012,10 +1012,11 @@ component serializable=false accessors="true"{
 		var frontController = "index.cfm";
 
 		// Compatibility: Remove by 5.1
-		if( !isNull( arguments.linkTo ) and len( arguments.linkTo ) ){
+		if( !isNull( arguments.linkTo ) ){
 			arguments.to = trim( arguments.linkTo );
 		}
 
+		// Check if to is defined.
 		// Cleanups
 		arguments.to 			= trim( arguments.to );
 		arguments.baseURL 		= trim( arguments.baseURL );
