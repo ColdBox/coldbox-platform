@@ -377,7 +377,7 @@ component serializable="false" accessors="true"{
 		// Check if Custom DSL exists, if it does, execute it
 		if( structKeyExists( variables.customDSL, DSLNamespace ) ){
 			return variables.customDSL[ DSLNamespace ].process( argumentCollection=arguments );
-		}
+        }
 
 		// Determine Type of Injection according to type
 		// Some namespaces requires the ColdBox context, if not found, an exception is thrown.
@@ -441,6 +441,9 @@ component serializable="false" accessors="true"{
 
 			// If no DSL's found, let's try to use the name as the empty namespace
 			default : {
+                if( len( DSLNamespace ) && left( DSLNamespace, 1 ) == "@" ){
+                    arguments.definition.dsl = arguments.definition.name & arguments.definition.dsl;
+                }
 				refLocal.dependency = getModelDSL( argumentCollection=arguments );
 			}
 		}
