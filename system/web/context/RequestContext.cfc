@@ -940,7 +940,23 @@ component serializable=false accessors="true"{
 	*/
 	string function getSelf(){
 		return "index.cfm?" & variables.eventName & "=";
-	}
+    }
+
+    /**
+     * Returns the full url including the protocol, host, and path.
+     * Handles SES urls gracefully.
+     */
+    string function getFullURL() {
+        return arrayToList( [
+            isSSL() ? "https://" : "http://",
+            CGI.SERVER_NAME,
+            isSES() ? "" : "/index.cfm",
+            CGI.PATH_INFO,
+            CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
+            CGI.QUERY_STRING != "" ? "?" : "",
+            CGI.QUERY_STRING
+        ], "" );
+    }
 
 	/**
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
