@@ -1,4 +1,4 @@
-﻿component extends="coldbox.system.testing.BaseModelTest"{
+component extends="coldbox.system.testing.BaseModelTest"{
 
 	function setUp(){
 
@@ -586,7 +586,7 @@
 			.toBe( { "name" = "John", "email" = "john@example.com" } );
 	}
 
-	function testOnlyPrivate() {
+	function testPrivateOnlyFlag() {
 		var event = getRequestContext();
 		event.setValue( "name", "John" );
 		event.setValue( "hackedField", "hacked!" );
@@ -595,6 +595,59 @@
 
 		expect( event.getOnly( keys = "name,field-that-does-not-exist", private = true ) )
 			.toBe( { "name" = "Jane" } );
+    }
+
+    function testPrivateOnlyMethod() {
+        var event = getRequestContext();
+        event.setValue( "name", "John" );
+        event.setValue( "hackedField", "hacked!" );
+        event.setValue( "name", "Jane", true );
+        event.setValue( "hackedField", "hacked as well!", true );
+
+        expect( event.getPrivateOnly( [ "name", "field-that-does-not-exist" ] ) )
+            .toBe( { "name" = "Jane" } );
+    }
+
+    function testExceptArray() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "email", "john@example.com" );
+		event.setValue( "hackedField", "hacked!" );
+
+		expect( event.getExcept( [ "hackedField", "field-that-does-not-exist" ] ) )
+			.toBe( { "name" = "John", "email" = "john@example.com" } );
 	}
+
+	function testExceptList() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "email", "john@example.com" );
+		event.setValue( "hackedField", "hacked!" );
+
+		expect( event.getExcept( "hackedField,field-that-does-not-exist" ) )
+			.toBe( { "name" = "John", "email" = "john@example.com" } );
+    }
+
+    function testPrivateExceptFlag() {
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "hackedField", "hacked!" );
+		event.setValue( "name", "Jane", true );
+		event.setValue( "hackedField", "hacked as well!", true );
+
+		expect( event.getExcept( keys = "hackedField,key-that-does-not-exist", private = true ) )
+			.toBe( { "name" = "Jane" } );
+    }
+
+    function testPrivateExceptMethod() {
+        var event = getRequestContext();
+        event.setValue( "name", "John" );
+        event.setValue( "hackedField", "hacked!" );
+        event.setValue( "name", "Jane", true );
+        event.setValue( "hackedField", "hacked as well!", true );
+
+        expect( event.getPrivateExcept( [ "hackedField", "key-that-does-not-exist" ] ) )
+            .toBe( { "name" = "Jane" } );
+    }
 
 }
