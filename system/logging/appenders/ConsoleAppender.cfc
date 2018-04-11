@@ -20,10 +20,11 @@ component extends="coldbox.system.logging.AbstractAppender"{
 		struct properties = {},
 		string layout     = "",
 		string levelMin   = 0,
-		string levelMax   = 4 
+		string levelMax   = 4
 	){
 		super.init( argumentCollection=arguments );
-		variables.out = createObject( "java", "java.lang.System" ).out;
+		variables.out 	= createObject( "java", "java.lang.System" ).out;
+		variables.error = createObject( "java", "java.lang.System" ).err;
     	return this;
 	}
 
@@ -42,10 +43,22 @@ component extends="coldbox.system.logging.AbstractAppender"{
 		  		logEvent.getmessage() & " ExtraInfo: " &
 		  		logEvent.getextraInfoAsString();
 		}
-		
-		// log message
-		variables.out.println( entry );
-		
+		switch( logEvent.getSeverity() ){
+			// Fatal + Error go to error stream
+			case "0" : case "1" : {
+				// log message
+				variables.error.println( entry );
+				break;
+			}
+			// Warning and above go to info stream
+			default : {
+				// log message
+				variables.out.println( entry );
+				break;
+			}
+		}
+
+
 		return this;
 	}
 
