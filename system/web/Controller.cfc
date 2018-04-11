@@ -90,8 +90,8 @@ component serializable="false" accessors="true"{
 		variables.log 				= variables.logBox.getLogger( this );
 
 		// Setup the ColdBox Services
-		services.interceptorService = new coldbox.system.web.services.InterceptorService( this );
 		services.requestService 	= new coldbox.system.web.services.RequestService( this );
+		services.interceptorService = new coldbox.system.web.services.InterceptorService( this );
 		services.handlerService 	= new coldbox.system.web.services.HandlerService( this );
 		services.routingService		= new coldbox.system.web.services.RoutingService( this );
 		services.moduleService 		= new coldbox.system.web.services.ModuleService( this );

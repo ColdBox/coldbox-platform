@@ -41,6 +41,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 	/**
 	 * I capture an incoming request. Returns: coldbox.system.web.context.RequestContext
+	 *
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	any function requestCapture(){
@@ -136,7 +137,7 @@ component extends="coldbox.system.web.services.BaseService"{
 				variables.cacheBox
 					.getCache( eventDictionary.provider )
 					.clear( eventCache.cacheKey );
-				
+
 				// Return don't show cached version
 				return this;
 			}
@@ -213,7 +214,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * Build's the Flash RAM Scope as defined in the application spec.
 	 */
 	RequestService function buildFlashScope(){
-			var flashPath 	= "";
+		var flashPath = "";
 
 		// Shorthand Flash Types
 		switch( variables.flashData.scope ){
