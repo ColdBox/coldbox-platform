@@ -15,6 +15,6 @@
         "webroot":""
     },
     "JVM":{
-        "heapSize":"512"
+        "heapSize":"1024"
     }
 }
