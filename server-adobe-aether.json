@@ -2,7 +2,7 @@
     "app":{
         "cfengine":"@ortus/adobe-aether"
     },
-    "name":"adobe-aether",
+    "name":"coldbox-adobe-aether",
     "force":true,
     "openBrowser":false,
     "web":{

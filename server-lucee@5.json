@@ -2,7 +2,7 @@
     "app":{
         "cfengine":"lucee@5"
     },
-    "name":"lucee@5",
+    "name":"coldbox-lucee@5",
     "force":true,
     "openBrowser":false,
     "web":{
