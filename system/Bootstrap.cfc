@@ -198,7 +198,7 @@ component serializable="false" accessors="true"{
 			var eCacheEntry	 = event.getEventCacheableEntry();
 
 			// Verify if event caching item is in selected cache
-			if( structKeyExists( eCacheEntry, "cachekey" ) ){
+			if( eCacheEntry.keyExists( "cachekey" ) ){
 				// Stop gap for upgrades
 				if( isNull( eCacheEntry.provider) ){
 					eCacheEntry.provider = "template";
@@ -243,7 +243,7 @@ component serializable="false" accessors="true"{
 					var renderData = event.getRenderData();
 
 					// Rendering/Marshalling of content
-					if( isStruct( renderData ) and not structisEmpty( renderData ) ){
+					if( !structisEmpty( renderData ) ){
 						renderedContent = cbController.getDataMarshaller().marshallData( argumentCollection=renderData );
 					}
 					// Check if handler returned results
@@ -276,18 +276,20 @@ component serializable="false" accessors="true"{
 
 					//****** EVENT CACHING *******/
 					var eCacheEntry = event.getEventCacheableEntry();
-					if( structKeyExists( eCacheEntry, "cacheKey") AND getPageContextResponse().getStatus() neq 500 ){
-
+					if(
+						eCacheEntry.keyExists( "cacheKey" ) AND
+						getPageContextResponse().getStatus() neq 500 AND
+						( renderData.keyExists( "statusCode" ) and renderdata.statusCode neq 500 )
+					){
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
 
 							// Try to discover the content type
 							var defaultContentType = "text/html";
 							// Discover from event caching first.
-							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
+							if( !structisEmpty( renderData ) ){
 								defaultContentType 	= renderData.contentType;
-							}
-							// Else, ask the engine
-							else {
+							} else {
+								// Else, ask the engine
 								defaultContentType = getPageContextResponse().getContentType();
 							}
 
@@ -303,7 +305,7 @@ component serializable="false" accessors="true"{
 							};
 
 							// is this a render data entry? If So, append data
-							if( isStruct( renderData ) and not structisEmpty( renderData ) ){
+							if( !structisEmpty( renderData ) ){
 								cacheEntry.renderData 	= true;
 								structAppend( cacheEntry, renderData, true );
 							}
@@ -322,7 +324,7 @@ component serializable="false" accessors="true"{
 					} // end event caching
 
 					// Render Data? With stupid CF whitespace stuff.
-					if( isStruct( renderData ) and not structisEmpty( renderData ) ){/*
+					if( !structisEmpty( renderData ) ){/*
 						*/renderData.controller = cbController;renderDataSetup( argumentCollection=renderData );/*
 						// Binary
 						*/if( renderData.isBinary ){ cbController.getDataMarshaller().renderContent( type="#renderData.contentType#", variable="#renderedContent#" ); }/*

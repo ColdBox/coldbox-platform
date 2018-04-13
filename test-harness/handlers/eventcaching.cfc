@@ -43,6 +43,10 @@
 		return { data = data, timestamp = now() };
 	}
 
+	/**
+	 * Produces a non-throwing error by setting the status code to 500,
+	 * This should not cache the output
+	 */
 	function produceError( event, rc, prc ) cache="true" cacheTimeout="10"{
 		event.setHTTPHeader( statusCode=500, statusText="error" );
 		return {
@@ -50,6 +54,16 @@
 			messages = "Test",
 			when = now()
 		};
+	}
+
+	function produceRenderData( event, rc, prc )cache="True" cachetimeout="5"{
+		var data = {
+			error = false,
+			messages = "Test",
+			when = now()
+		};
+
+		event.renderData( type="json", data=data, statusCode=500 );
 	}
 
 }

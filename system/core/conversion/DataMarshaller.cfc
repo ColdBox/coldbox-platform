@@ -57,8 +57,8 @@ Description :
 				// marshall to JSON
 				results = serializeJSON( arguments.data, arguments.jsonQueryFormat );
 				// wrap results in callback function for JSONP
-				if( len( arguments.jsonCallback ) > 0 ){ 
-					results = "#arguments.jsonCallback#(#results#)"; 
+				if( len( arguments.jsonCallback ) > 0 ){
+					results = "#arguments.jsonCallback#(#results#)";
 				}
 				</cfscript>
 			</cfcase>
@@ -76,8 +76,8 @@ Description :
 				args.useCDATA = arguments.xmlUseCDATA;
 				args.delimiter = arguments.xmlListDelimiter;
 				args.rootName = arguments.xmlRootName;
-				if( len( trim( arguments.xmlColumnList ) ) ){ 
-					args.columnlist = arguments.xmlColumnList; 
+				if( len( trim( arguments.xmlColumnList ) ) ){
+					args.columnlist = arguments.xmlColumnList;
 				}
 				// Marshal to xml
 				results = xmlConverter.toXML( argumentCollection=args );
@@ -119,12 +119,12 @@ Description :
 			<cfset arguments.type &= "; charset=#arguments.encoding#">
 		</cfif>
 
-   	   	<cfif structKeyExists( arguments, "variable")>
+   	   	<cfif structKeyExists( arguments, "variable" )>
 			<cfcontent type="#arguments.type#" variable="#arguments.variable#" reset="#arguments.reset#"/>
 		<cfelse>
 			<cfcontent type="#arguments.type#" reset="#arguments.reset#">
 		</cfif>
-		
+
 		<cfsetting showdebugoutput="false" >
    	</cffunction>
 
