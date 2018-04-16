@@ -3,7 +3,7 @@
  * www.ortussolutions.com
  * ---
  * An appender that leverages the OS file system
- * 
+ *
  * Properties:
  * - filepath     : The location of where to store the log file.
  * - autoExpand   : Whether to expand the file path or not. Defaults to true.
@@ -31,16 +31,16 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Log Listener Queue
 	 */
 	property name="logListener" type="struct";
-    
+
     /**
 	 * Constructor
-	 * 
+	 *
 	 * @name The unique name for this appender.
 	 * @properties A map of configuration properties for the appender"
 	 * @layout The layout class to use in this appender for custom message rendering.
 	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
 	 * @levelMax The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
-	 * 
+	 *
 	 * @throws FileAppender.PropertyNotFound
 	 */
 	function init(
@@ -56,7 +56,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		if( NOT propertyExists( "filepath" ) ){
 			throw(
 				message = "Filepath property not defined",
-				type    = "FileAppender.PropertyNotFound" 
+				type    = "FileAppender.PropertyNotFound"
 			);
 		}
 		if( NOT propertyExists( "autoExpand" ) ){
@@ -110,7 +110,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
     /**
 	 * Write an entry into the appender. You must implement this method yourself.
-	 * 
+	 *
 	 * @logEvent The logging event to log
 	 */
 	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
@@ -133,7 +133,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			message = replace( message, '"', '""', "all" );
 			message = replace( message, "#chr(13)##chr(10)#", '  ', "all" );
 			message = replace( message, chr(13), '  ', "all" );
-			
+
 			// Entry string
 			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "MM/DD/YYYY" )#","#timeformat( timestamp, "HH:MM:SS" )#","#loge.getCategory()#","#message#"';
 		}
@@ -199,15 +199,15 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Start the log listener so we can queue up the logging to alleviate for disk operations
 	 */
 	function startLogListener(){
-		
+
 		// Verify if listener has started.
 		var isActive = variables.lock( "readonly", function(){
 			return variables.logListener.active;
 		} );
-		
+
 		if( isActive ){
 			//out( "Listener already active exiting startup..." );
-			return; 
+			return;
 		} else {
 			//out( "Listener needs to startup" );
 		}
@@ -236,19 +236,19 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			var start         = lastRun;
 			var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
 			var flushInterval = 1000; // 1 second
-			var sleepInterval = 50; 
+			var sleepInterval = 50;
 			var count         = 0;
 			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
 			var hasMessages   = false;
 
 			try{
-				out( "Starting #getName()# thread", true );
-				
+				//out( "Starting #getName()# thread", true );
+
 				// Execute only if there are messages in the queue or the internal has been crossed
 				while(
 					variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
 				){
-					
+
 					//out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
 
 					if( variables.logListener.queue.len() ){
@@ -259,19 +259,19 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 						if( isSimpleValue( oFile ) ){
 							oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
 						}
-						
+
 						//out( "Wrote to file #thisMessage#" );
 
 						// Write to file
-						fileWriteLine( oFile, thisMessage ); 
-						
+						fileWriteLine( oFile, thisMessage );
+
 						// Mark the last run
-						lastRun = getTickCount(); 
+						lastRun = getTickCount();
 					}
 
-					// flush to disk every start + 1000ms 
+					// flush to disk every start + 1000ms
 					if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
-						out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
+						//out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
 						fileClose( oFile );
 						oFile = "";
 						start = getTickCount();
@@ -284,10 +284,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 			} catch( Any e ){
 				$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
-				out( "Error with listener thread for #getName()#" & e.message & e.detail );
+				//out( "Error with listener thread for #getName()#" & e.message & e.detail );
 			} finally {
-				out( "Stopping listener thread for #getName()#, we have done our job" );
-				
+				//out( "Stopping listener thread for #getName()#, we have done our job" );
+
 				// Stop log listener
 				variables.lock( body=function(){
 					variables.logListener.active = false;
@@ -301,7 +301,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 		} // end threading
 	}
-	
+
 	/************************************ PRIVATE ************************************/
 
 	/**
