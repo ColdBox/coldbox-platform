@@ -985,20 +985,19 @@ Description :
 
 	<!--- processMappings --->
     <cffunction name="processMappings" output="false" access="public" returntype="any" hint="Process all registered mappings, called by injector when ready to start serving requests">
-    	<cfscript>
-			// iterate over declared mappings,process, announce, eager and the whole nine yards
-			for( var key in instance.mappings ){
-				var thisMapping = instance.mappings[ key ];
-				// has it been discovered yet?
-				if( NOT thisMapping.isDiscovered() ){
-					// process the metadata
-					thisMapping.process( binder=this, injector=instance.injector );
-					// is it eager?
-					if( thisMapping.isEagerInit() ){
-						instance.injector.getInstance( thisMapping.getName() );
-					}
+		<cfscript>
+
+			instance.mappings.filter( function( key, thisMapping ){
+				return ( !thisMapping.isDiscovered() );
+			} ).each( function( key, thisMapping ){
+				// process the metadata
+				thisMapping.process( binder=this, injector=instance.injector );
+				// is it eager?
+				if( thisMapping.isEagerInit() ){
+					instance.injector.getInstance( thisMapping.getName() );
 				}
-			}
+			} );
+
 		</cfscript>
     </cffunction>
 

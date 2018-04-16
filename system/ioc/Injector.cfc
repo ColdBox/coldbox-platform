@@ -234,6 +234,11 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				variables.eventManager.registerInterceptor( interceptorObject=variables.binder, interceptorName="wirebox-binder" );
 			}
 
+			// Check if binder has onLoad convention
+			if( structKeyExists( variables.binder, "onLoad" ) ){
+				variables.binder.onLoad();
+			}
+
 			// process mappings for metadata and initialization.
 			variables.binder.processMappings();
 
