@@ -313,8 +313,13 @@ Description :
 				</cfif>
 
 				<!--- Do this right away so aliases are picked up before this mapping potentially gets overwritten
-				This is neccessary for multuple CFCs with the same name in different folders, but with unique aliases --->
-				<cfset processMappings()>
+				This is neccessary for multuple CFCs with the same name in different folders, but with unique aliases
+
+				Only execute if in ColdBox mode, else skip.
+				--->
+				<cfif isObject( instance.coldbox )>
+					<cfset processMappings()>
+				</cfif>
 
 				<!--- Merge the full array of mappings back together --->
 				<cfset arrayAppend( tmpCurrentMapping, currentMapping[ 1 ]  ) >
