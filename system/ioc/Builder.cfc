@@ -660,10 +660,17 @@
 	function toVirtualInheritance( required mapping, required target, required targetMapping ){
 		var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS,this,init";
 
-		// Create base family object
+		// Check if the base mapping has been discovered yet
+		if( NOT arguments.mapping.isDiscovered() ){
+			// process inspection of instance
+			arguments.mapping.process(
+				binder   = variables.injector.getBinder(),
+				injector = variables.injector
+			);
+		}
+		// Build it out now and wire it
 		var baseObject = variables.injector.buildInstance( arguments.mapping );
-		// wire it
-        variables.injector.autowire( target=baseObject, mapping=arguments.mapping );
+		variables.injector.autowire( target=baseObject, mapping=arguments.mapping );
 
 		// Mix them up baby!
 		variables.utility.getMixerUtil().start( arguments.target );
