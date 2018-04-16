@@ -16,7 +16,9 @@
 				"coldbox.test-harness.models"
 			],
 			// Stop recursions
-			stopRecursions = [ "coldbox.system.Interceptor"	]
+			stopRecursions = [ "coldbox.system.Interceptor"	],
+			// LogBox
+			logBoxConfig = "tests.specs.ioc.config.samples.LogBox"
 		};
 
 		// WireBox Object Mappings
@@ -47,7 +49,7 @@
 			.setter(name="jsonProperty",ref="jsonProperty",argName="MyJsonProperty" )
 			.setter(name="jsonProperty2",ref="jsonProperty" )
 			.into(this.SCOPES.SINGLETON);
-		
+
 		// map by convention
 		map( "CategoryBean" ).to( "#modelsPath#.ioc.category.CategoryBean" );
 		map( "categoryCoolService" ).to( "#modelsPath#.ioc.category.CategoryService" ).asSingleton();
@@ -107,14 +109,14 @@
 		// Implicit properties
 		map( "implicitTest" ).to( "#modelsPath#.ioc.ImplicitTest" ).setter(name="testProperty",value=123);
 
-		 
-		map( "closureProvider" ).toProvider( function(){ 
+
+		map( "closureProvider" ).toProvider( function(){
 			return 'closureProviderInstance';
 		} );
-				 
+
 		map( 'instanceWithInfluence' )
 			.toValue( '123' )
-			.withInfluence( function() { 
+			.withInfluence( function() {
 				return reverse( instance );
 			});
 
