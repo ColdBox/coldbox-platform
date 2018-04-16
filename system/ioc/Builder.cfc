@@ -661,7 +661,9 @@
 		var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS,this,init";
 
 		// Create base family object
-		var baseObject = variables.injector.getInstance( arguments.mapping.getName() );
+		var baseObject = variables.injector.buildInstance( arguments.mapping );
+		// wire it
+        variables.injector.autowire( target=baseObject, mapping=arguments.mapping );
 
 		// Mix them up baby!
 		variables.utility.getMixerUtil().start( arguments.target );
