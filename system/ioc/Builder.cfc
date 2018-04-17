@@ -658,7 +658,7 @@
 	 * @return The target object
 	 */
 	function toVirtualInheritance( required mapping, required target, required targetMapping ){
-		var excludedProperties = "$super,$wbaopmixed,$mixed,$WBAOPTARGETMAPPING,$WBAOPTARGETS,this,init";
+		var excludedProperties = "$super,$wbaopmixed,$mixed,this,init";
 
 		// Check if the base mapping has been discovered yet
 		if( NOT arguments.mapping.isDiscovered() ){
