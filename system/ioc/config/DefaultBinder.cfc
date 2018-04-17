@@ -25,6 +25,10 @@ component extends="coldbox.system.ioc.config.Binder"{
 				// classNamespace = "" A class path namespace to use to create CacheBox: Default=coldbox.system.cache or wirebox.system.cache
 			},			
 			
+			// Name of a CacheBox cache to store metadata in to speed up start time.
+			// Since metadata is already stored in memory, this is only useful for a disk, etc cache that persists across restarts.
+			metadataCache='',
+			
 			// Scope registration, automatically register a wirebox injector instance on any CF scope
 			// By default it registeres itself on application scope
 			scopeRegistration = {
