@@ -596,7 +596,18 @@ Description :
 					md = arguments.metadata;
 				}
 				else{
-					md = arguments.injector.getUtil().getInheritedMetaData(instance.path, arguments.binder.getStopRecursions());
+					var produceMetadataUDF = function() { return injector.getUtil().getInheritedMetaData(instance.path, binder.getStopRecursions()); };
+					
+					// Are we caching metadata?
+					if( len( binder.getMetadataCache() ) ) {
+						// Get from cache or produce on demand
+						md = injector.getCacheBox().getCache( binder.getMetadataCache() ).getOrSet(
+							instance.path,
+							produceMetadataUDF
+						);
+					} else {
+						md = produceMetadataUDF();
+					}
 				}
 
 				// Store Metadata

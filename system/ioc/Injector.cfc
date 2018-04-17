@@ -337,8 +337,16 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 		// Check if the mapping has been discovered yet, and if it hasn't it must be autowired enabled in order to process.
 		if( NOT mapping.isDiscovered() ){
+			try {
 			// process inspection of instance
 			mapping.process( binder=variables.binder, injector=this );
+			} catch( any e ) {
+				// Remove bad mapping
+				var mappings = variables.binder.getMappings();
+				mappings.delete( name );
+				// rethrow
+				throw( object=e );
+			}
 		}
 
 		// scope persistence check

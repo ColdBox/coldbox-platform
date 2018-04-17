@@ -131,6 +131,8 @@ Description :
 			instance.properties = {};
 			// Stop Recursion classes
 			instance.stopRecursions = [];
+			// Meatadata cache
+			instance.metadataCache = '';
 		</cfscript>
 	</cffunction>
 
@@ -845,6 +847,17 @@ Description :
     	</cfscript>
     </cffunction>
 
+	<!--- getMetadataCache --->
+    <cffunction name="getMetadataCache" output="false" access="public" returntype="string" hint="Get the metadataCache setting">
+    	<cfreturn instance.metadataCache>
+    </cffunction>
+
+	<!--- setMetadataCache --->
+    <cffunction name="setMetadataCache" output="false" access="public" returntype="string" hint="Set the metadataCache setting">
+    	<cfargument name="metadataCache" required="true" hint="The name of the cache for metadata caching"/>
+    	<cfset instance.metadataCache = arguments.metadataCache>
+    </cffunction>
+
 <!------------------------------------------- MAP DSL ------------------------------------------>
 
 	<!--- mapDSL --->
@@ -929,6 +942,11 @@ Description :
 				cacheBox(argumentCollection=wireBoxDSL.cacheBox);
 			}
 
+			// Register metadataCache
+			if( structKeyExists( wireBoxDSL, "metadataCache") ){
+				setMetadataCache( wireBoxDSL.metadataCache );
+			}
+
 			// Register Custom DSL
 			if( structKeyExists( wireBoxDSL, "customDSL") ){
 				structAppend(instance.customDSL, wireBoxDSL.customDSL, true);
@@ -986,17 +1004,27 @@ Description :
 	<!--- processMappings --->
     <cffunction name="processMappings" output="false" access="public" returntype="any" hint="Process all registered mappings, called by injector when ready to start serving requests">
 		<cfscript>
-
+			var mappingError	= "";
 			instance.mappings.filter( function( key, thisMapping ){
 				return ( !thisMapping.isDiscovered() );
 			} ).each( function( key, thisMapping ){
+				try {
 				// process the metadata
 				thisMapping.process( binder=this, injector=instance.injector );
 				// is it eager?
 				if( thisMapping.isEagerInit() ){
 					instance.injector.getInstance( thisMapping.getName() );
 				}
+				} catch( any e ) {
+					// Remove bad mapping
+					instance.mappings.delete( key );
+					mappingError = e;
+				}
+
 			} );
+			if( !isSimpleValue( mappingError ) ) {
+				throw( object=mappingError );
+			}
 
 		</cfscript>
     </cffunction>
