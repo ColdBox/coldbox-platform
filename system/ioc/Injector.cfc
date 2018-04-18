@@ -1165,6 +1165,11 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			arguments.binder = createObject( "component", arguments.binder );
 		}
 
+		// Inject Environment Support
+		arguments.binder[ "getSystemSetting" ]  = variables.utility.getSystemSetting;
+		arguments.binder[ "getSystemProperty" ] = variables.utility.getSystemProperty;
+		arguments.binder[ "getEnv" ]            = variables.utility.getEnv;
+
 		// Check if data CFC or binder family
 		if( NOT isInstanceOf( arguments.binder, "coldbox.system.ioc.config.Binder" ) ){
 			// simple data cfc, create native binder and decorate data CFC
@@ -1174,7 +1179,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				properties = arguments.properties
 			);
 		} else {
-			// else init the binder and configur it
+			// else init the binder and configure it
 			var nativeBinder = arguments.binder.init( injector=this, properties=arguments.properties );
 			// Configure it
 			nativeBinder.configure();
