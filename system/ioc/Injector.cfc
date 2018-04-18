@@ -265,6 +265,11 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		// Notify Listeners
 		variables.eventManager.processState( "beforeInjectorShutdown", iData );
 
+		// Check if binder has onShutdown convention
+		if( structKeyExists( variables.binder, "onShutdown" ) ){
+			variables.binder.onShutdown();
+		}
+
 		// Is parent linked
 		if( isObject( variables.parent ) ){
 			variables.parent.shutdown();
