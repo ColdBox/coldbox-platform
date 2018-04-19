@@ -1118,7 +1118,7 @@ Description :
 				// struct normalizing
 				if( isStruct( val[x] ) ){
 					// Default
-					thisName = thisValue;
+					thisName = "";
 
 					// check for value?
 					if( structKeyExists(val[x], "value") ){ thisValue = val[x].value; }
@@ -1131,8 +1131,10 @@ Description :
 					if( len( arguments.nameColumn ) ){
 						if( structKeyExists( val[x], arguments.nameColumn ) ){ thisName = val[x][nameColumn]; }
 					}
-					else{
-						if( structKeyExists( val[x], arguments.column ) ){ thisName = val[x][column]; }
+					
+					// Only set to the value if thisName is still empty
+					if( thisName == "" ){
+						thisName = thisVal;
 					}
 
 				}
