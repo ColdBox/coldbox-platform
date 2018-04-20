@@ -105,8 +105,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			case "modern" : {
 				// Log it
 				log.info( "Loading Modern Router at: #modernRouter#" );
+				var modernRouterPath = ( variables.appMapping.len() ? "#variables.appMapping#.#modernRouter#" : modernRouter );
 				// Process as a Router.cfc with virtual inheritance
-				wirebox.registerNewInstance( name="router@coldbox", instancePath=variables.appMapping & "." & modernRouter )
+				wirebox.registerNewInstance( name="router@coldbox", instancePath=modernRouterPath )
 					.setVirtualInheritance( baseRouter )
 					.setThreadSafe( true )
 					.setScope(
