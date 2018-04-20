@@ -390,7 +390,7 @@ Description :
 		<cfscript>
 			// copy parent class's memento instance, exclude alias, name and path
 			for( var mapping in getCurrentMapping() ) {
-				mapping.processMemento( getMapping( arguments.alias ).getMemento(), "alias,name,path" );
+				mapping.processMemento( getMapping( arguments.alias ).getMemento(), "alias,name" );
 			}
 			return this;
 		</cfscript>
