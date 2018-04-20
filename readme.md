@@ -26,14 +26,17 @@ Holy Ghost which is given unto us. ." Romans 5:5
 ----
 
 # Welcome to ColdBox
+
 ColdBox is a conventions modular MVC development platform for ColdFusion (CFML).
 
 ## License
+
 Apache License, Version 2.0.
 
 >The ColdBox Websites, logo and content have a separate license and they are a separate entity.
 
 ## Versioning
+
 ColdBox is maintained under the Semantic Versioning guidelines as much as possible.
 
 Releases will be numbered with the following format:
@@ -51,32 +54,38 @@ And constructed with the following guidelines:
 ## Important Links
 
 Source Code
+
 - https://github.com/coldbox/coldbox-platform
 
 Bug Tracking/Agile Boards
+
 - https://ortussolutions.atlassian.net/browse/COLDBOX
 - https://ortussolutions.atlassian.net/browse/WIREBOX
 - https://ortussolutions.atlassian.net/browse/LOGBOX
 - https://ortussolutions.atlassian.net/browse/CACHEBOX
 
 Documentation
+
 - https://coldbox.ortusbooks.com
 - https://wiki.coldbox.org (Legacy)
 
 Official Site
+
 - https://www.ortussolutions.com/products/coldbox
 - https://www.coldbox.org
 
 ## System Requirements
+
 - Lucee 4.5+
 - ColdFusion 11+
 
 ## Quick Installation
+
 Please go to our [documentation](https://coldbox.ortusbooks.com) for expanded instructions. 
 
 **CommandBox (Recommended)**
 
-We recommend you use [CommandBox](http://www.ortussolutions.com/products/commandbox), our CFML CLI and package manager, to install ColdBox.
+We recommend you use [CommandBox](https://www.ortussolutions.com/products/commandbox), our CFML CLI and package manager, to install ColdBox.
 
 **Stable Release**
 
@@ -84,21 +93,23 @@ We recommend you use [CommandBox](http://www.ortussolutions.com/products/command
 
 **Bleeding Edge Release**
 
-`box install coldbox-be`
-
-**Simple Install**
-
-Unzip the download into a folder called `coldbox` in your webroot or place outside of the webroot and create a per-application mapping `/coldbox` that points to it.
-
-**Bleeding Edge Downloads**
-You can always leverage our bleeding edge artifacts server to download ColdBox: https://integration.stg.ortussolutions.com/artifacts/ortussolutions/coldbox/
+`box install coldbox@be`
 
 ## Collaboration
-If you want to develop and hack at the source, you will need to download [CommandBox](http://www.ortussolutions.com/products/commandbox) first.  Then in the root of this project, type `box install`.  This will download the necessary dependencies to develop and test the core.  You can then go ahead and start an embedded server `box server start` and start hacking around.  
+
+If you want to develop and hack at the source, you will need to download [CommandBox](https://www.ortussolutions.com/products/commandbox) first.
+
+Then you need to install some CommandBox modules in order to work with environment variables and cfml engine configuration. Just type the following command:
+
+```
+install commandbox-cfconfig,commandbox-dotenv
+```
+
+Then in the root of this project, type `box install`.  This will download the necessary dependencies to develop and test the core.  You can then go ahead and start an embedded server `box server start` and start hacking around.
 
 For running our test suites you will need 2 more steps, so please refer to the [Readme](tests/readme.md) in the tests folder.
 
 ---
  
-###THE DAILY BREAD
+### THE DAILY BREAD
  > "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" Jn 14:1-12

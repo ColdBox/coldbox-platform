@@ -1,13 +1,12 @@
 # Welcome to the ColdBox Test Suite
 
 ```
-   ____     ____     _____       ______     ______      ____     __     __  
-  / ___)   / __ \   (_   _)     (_  __ \   (_   _ \    / __ \   (_ \   / _) 
- / /      / /  \ \    | |         ) ) \ \    ) (_) )  / /  \ \    \ \_/ /   
-( (      ( ()  () )   | |        ( (   ) )   \   _/  ( ()  () )    \   /    
-( (      ( ()  () )   | |   __    ) )  ) )   /  _ \  ( ()  () )    / _ \    
- \ \___   \ \__/ /  __| |___) )  / /__/ /   _) (_) )  \ \__/ /   _/ / \ \_  
-  \____)   \____/   \________/  (______/   (______/    \____/   (__/   \__) 
+   ____      _     _ ____            
+  / ___|___ | | __| | __ )  _____  __
+ | |   / _ \| |/ _` |  _ \ / _ \ \/ /
+ | |__| (_) | | (_| | |_) | (_) >  < 
+  \____\___/|_|\__,_|____/ \___/_/\_\
+                                     
 ```
 
 Copyright Since 2005 ColdBox Platform by Luis Majano and Ortus Solutions, Corp
@@ -27,16 +26,26 @@ Holy Ghost which is given unto us. ." Romans 5:5
 ----
 
 ## Instructions
+
 This folder contains a full suite of BDD specs, load tests and much more.  Here are some
 instructions on how to get the test suites to run in your development environment.
 
 ### Get CommandBox
-We leverage **CommandBox** to build ColdBox and its libraries.  You can download it from our main website here: http://www.ortussolutions.com/products/commandbox.
+
+We leverage **CommandBox** to build ColdBox and its libraries.  You can download it from our main website here: https://www.ortussolutions.com/products/commandbox.
 
 ### Install Dependencies
-Once CommandBox is install go into the root of the project and type: `box install`. This will download all required dependencies and test dependencies for you.
+
+Install the CommandBox modules first by typing the following command:
+
+```
+install commandbox-cfconfig,commandbox-dotenv
+```
+
+Then go into the root of the project and type: `box install`. This will download all required dependencies and test dependencies for you.
 
 ### Startup Test Server
+
 Startup the test server via the following command: `box server start` in the root of the repository. This will startup a server that you can use for development, hacking and testing.
 
 > **Note:** The server will start in a specific port, make sure you take note of it.
@@ -65,11 +74,11 @@ The testing datasource is pre-configured with the following properties that can 
 Populate your database with our SQL script that can be found here: `/tests/resources/coolblog.sql`.
 
 ### Lucee Optional: `Default` Cache
+
 If you are in the Lucee CFML engine, then you will need to register a `default` cache in the administrator so CacheBox can be tested.  
 
-
-
 ## Test Harness
+
 We also deliver a ColdBox application that is used for integration testing and so much more.  This is found under `/coldbox/test-harness` which also needs access to the `coolblog` datasource.
 
 # Happy Coding and Contributing!
