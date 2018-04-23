@@ -615,7 +615,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 
 	        // update, delete and show routes
 	        actionSet = filterRouteActions(
-	        	{ PUT = "update", PATCH = "update", POST = "update", DELETE = "delete", GET = "show" },
+	        	{ PUT = "update", PATCH = "update", POST = "create", DELETE = "delete", GET = "show" },
 	        	arguments.only,
 	        	arguments.except
 	        );
