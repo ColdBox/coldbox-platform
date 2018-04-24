@@ -716,8 +716,8 @@
 				target.injectPropertyMixin( propertyName, propertyValue );
 				// Do we need to do automatic generic getter/setters
 				if( generateAccessors and baseProperties.keyExists( propertyName ) ){
-					target[ "get" & propertyName ] = variables.genericGetter;
-					target[ "set" & propertyName ] = variables.genericSetter;
+                    target.injectMixin( "get" & propertyName, variables.genericGetter );
+                    target.injectMixin( "set" & propertyName, variables.genericSetter );
 				}
 			} );
 
