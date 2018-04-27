@@ -54,6 +54,15 @@ component extends="coldbox.system.web.services.BaseService"{
 		if( isDefined( "FORM" ) ){ structAppend( rc, FORM ); }
 		if( isDefined( "URL" )  ){ structAppend( rc, URL ); }
 
+		// If the inbound content body is a JSON payload capture it
+		if( 
+			len( context.getHTTPContent() ) 
+			&& isJSON(  context.getHTTPContent() )
+			&& isStruct( context.getHTTPContent( json=true ) ) 
+		) {
+			structAppend( rc, context.getHTTPContent( json=true ) );
+		}
+		
 		// Configure decorator if available?
 		if ( structKeyExists( context, "configure" ) ){ context.configure(); }
 
