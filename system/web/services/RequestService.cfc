@@ -57,10 +57,12 @@ component extends="coldbox.system.web.services.BaseService"{
 		// If the inbound content body is a JSON payload capture it
 		if( 
 			len( context.getHTTPContent() ) 
-			&& isJSON(  context.getHTTPContent() )
-			&& isStruct( context.getHTTPContent( json=true ) ) 
+			&& isJSON(  context.getHTTPContent() ) 
 		) {
-			structAppend( rc, context.getHTTPContent( json=true ) );
+			var payload = context.getHTTPContent( json=true );
+			if( isStruct( payload ) ){
+				structAppend( rc, payload );
+			}
 		}
 		
 		// Configure decorator if available?
