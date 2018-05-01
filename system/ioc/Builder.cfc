@@ -717,11 +717,11 @@
 				// Do we need to do automatic generic getter/setters
 				if( generateAccessors and baseProperties.keyExists( propertyName ) ){
 
-					if( !target.keyExists( "get#propertyName#" ) ){
+					if( ! structKeyExists( target, "get#propertyName#" ) ){
 						target.injectMixin( "get" & propertyName, variables.genericGetter );
 					}
 
-					if( !target.keyExists( "set#propertyName#" ) ){
+					if( ! structKeyExists( target, "set#propertyName#" ) ){
 						target.injectMixin( "set" & propertyName, variables.genericSetter );
 					}
 
