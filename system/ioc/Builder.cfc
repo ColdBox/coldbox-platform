@@ -716,9 +716,13 @@
 				target.injectPropertyMixin( propertyName, propertyValue );
 				// Do we need to do automatic generic getter/setters
 				if( generateAccessors and baseProperties.keyExists( propertyName ) ){
-					target[ "get" & propertyName ] = variables.genericGetter;
-					target[ "set" & propertyName ] = variables.genericSetter;
-				}
+                    if ( functionNotOverriden( baseObject, "get" & propertyName ) ) {
+                        target.injectMixin( "get" & propertyName, variables.genericGetter );
+                    }
+                    if ( functionNotOverriden( baseObject, "set" & propertyName ) ) {
+                        target.injectMixin( "set" & propertyName, variables.genericSetter );
+                    }
+                }
 			} );
 
 		// Mix in virtual super class
@@ -752,6 +756,13 @@
 	private function genericGetter() {
 		var propName = getFunctionCalledName().replaceNoCase( 'get', '' );
 		return variables[ propName ];
-	}
+    }
+
+    /**
+     * Check if a function is a custom function on the target object
+     */
+    private function functionNotOverriden( object, functionName ) {
+        return ! getMetadata( object[ functionName ] ).keyExists( "position" );
+    }
 
 }
