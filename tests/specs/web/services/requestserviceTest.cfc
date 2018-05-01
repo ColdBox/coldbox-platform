@@ -57,21 +57,21 @@ Description :
 
 	<cffunction name="testRequestCaptureOfJSONBody" access="public" returntype="void" output="false">
 		<cfscript>
-		var mockContext = prepareMock( 
-								getController().getRequestService().getContext() 
-							).$( "getHTTPContent" ).$callback(  
+		var mockContext = prepareMock(
+								getController().getRequestService().getContext()
+							).$( "getHTTPContent" ).$callback(
 								function( boolean json=false ){
 									var payload = {
 										"name" : "Jon Clausen",
 										"type" : "JSON"
-									}
+									};
 
 									if( json ){
 										return payload;
 									} else {
-										return serializeJSON( payload )
+										return serializeJSON( payload );
 									}
-								} 
+								}
 							);
 		var service = prepareMock( getController().getRequestService() )
 						.$( 'getContext' ).$callback(
