@@ -97,7 +97,8 @@
 			.property(name:"someAlphaDAO", ref:"someAlphaDAO" )
 			.property(name:"someBravoDAO", ref:"someBravoDAO" );
 		// define concrete service that inherits the abstract parent service dependencies via the parent method
-		map( "concreteService" ).to( "#modelsPath#.parent.ConcreteService" )
+		map( "concreteService" )
+			.to( "#modelsPath#.parent.ConcreteService" )
 			.parent( "abstractService" )
 			.property(name:"someCharlieDAO", ref:"someCharlieDAO" )
 			.property(name:"someDeltaDAO", ref:"someDeltaDAO" );

@@ -97,73 +97,78 @@ Description :
 		<cfargument name="excludes" required="false" hint="List of instance's memento keys to not process" default="" />
     	<cfscript>
 			var x = 1;
-			var key = "";
 
 
 			// if excludes is passed as an array, convert to list
-			if(isArray(arguments.excludes)){
-				arguments.excludes = arrayToList(arguments.excludes);
+			if( isArray( arguments.excludes ) ){
+				arguments.excludes = arrayToList( arguments.excludes );
 			}
 
 			// append incoming memento data
-			for(key in arguments.memento){
+			for( var key in arguments.memento ){
 
 				// if current key is in excludes list, skip and continue to next loop
-				if(listFindNoCase(arguments.excludes, key)){
+				if( listFindNoCase( arguments.excludes, key ) ){
 					continue;
 				}
 
-				switch(key){
+				switch( key ){
 
-					//process cache properties
-					case "cache" :
-					{
-						setCacheProperties(argumentCollection=arguments.memento.cache );
+					// process cache properties
+					case "cache" : {
+						setCacheProperties( argumentCollection=arguments.memento.cache );
 						break;
 					}
 
-					//process constructor args
-					case "DIConstructorArgs" :
-					{
-						for(x=1; x lte arrayLen(arguments.memento.DIConstructorArgs); x++){
-							addDIConstructorArgument(argumentCollection=arguments.memento.DIConstructorArgs[x] );
+					// process constructor args
+					case "DIConstructorArgs" : {
+						for( x=1; x lte arrayLen( arguments.memento.DIConstructorArgs ); x++ ){
+							addDIConstructorArgument( argumentCollection=arguments.memento.DIConstructorArgs[ x ] );
 						}
 						break;
 					}
 
-					//process properties
-					case "DIProperties" :
-					{
-						for(x=1; x lte arrayLen(arguments.memento.DIProperties); x++){
-							addDIProperty(argumentCollection=arguments.memento.DIProperties[x] );
+					// process properties
+					case "DIProperties" : {
+						for( x=1; x lte arrayLen( arguments.memento.DIProperties ); x++){
+							addDIProperty( argumentCollection=arguments.memento.DIProperties[ x ] );
 						}
 						break;
 					}
 
-					//process DISetters
+					// process DISetters
 					case "DISetters" : {
-					for(x=1; x lte arrayLen(arguments.memento.DISetters); x++){
-					addDISetter(argumentCollection=arguments.memento.DISetters[x] );
-					}
-					break;
+						for( x=1; x lte arrayLen( arguments.memento.DISetters ); x++){
+							addDISetter( argumentCollection=arguments.memento.DISetters[ x ] );
+						}
+						break;
 					}
 
-					//process DIMethodArgs
-					case "DIMethodArgs" :
-					{
-						for(x=1; x lte arrayLen(arguments.memento.DIMethodArgs); x++){
-							addDIMethodArgument(argumentCollection=arguments.memento.DIMethodArgs[x] );
+					// process DIMethodArgs
+					case "DIMethodArgs" : {
+						for( x=1; x lte arrayLen( arguments.memento.DIMethodArgs ); x++){
+							addDIMethodArgument( argumentCollection=arguments.memento.DIMethodArgs[ x ] );
+						}
+						break;
+					}
+
+					// process path
+					case "path" : {
+						// Only override if it doesn't exist or empty
+						if( !instance.keyExists( "path" ) OR !len( instance.path ) ){
+							instance[ "path" ] = arguments.memento[ "path" ];
 						}
 						break;
 					}
 
 					default:{
-						instance[key] = arguments.memento[key];
+						instance[ key ] = arguments.memento[ key ];
+						break;
 					}
 				}// end switch
 
-
 			}
+
 			return this;
     	</cfscript>
     </cffunction>
@@ -389,8 +394,8 @@ Description :
 			var x   = 1;
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DIConstructorArgs); x++){
-				if( structKeyExists( arguments, "name" ) AND structKeyExists( instance.DIConstructorArgs[x], "name" ) AND
-					instance.DIConstructorArgs[x].name eq arguments.name ){ return this;}
+				if( structKeyExists( arguments, "name" ) AND structKeyExists( instance.DIConstructorArgs[ x ], "name" ) AND
+					instance.DIConstructorArgs[ x ].name eq arguments.name ){ return this;}
 			}
 			// Register new constructor argument.
 			structAppend(def, arguments, true);
@@ -414,8 +419,8 @@ Description :
 			var x	= 1;
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DIMethodArgs); x++){
-				if( structKeyExists(instance.DIMethodArgs[x],"name") AND
-					instance.DIMethodArgs[x].name eq arguments.name ){ return this;}
+				if( structKeyExists(instance.DIMethodArgs[ x ],"name") AND
+					instance.DIMethodArgs[ x ].name eq arguments.name ){ return this;}
 			}
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIMethodArgs, def );
@@ -475,7 +480,7 @@ Description :
 
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DISetters); x++){
-				if( instance.DISetters[x].name eq arguments.name ){ return this;}
+				if( instance.DISetters[ x ].name eq arguments.name ){ return this;}
 			}
 			// Remove scope for setter injection
 			def.scope = "";
@@ -597,7 +602,7 @@ Description :
 				}
 				else{
 					var produceMetadataUDF = function() { return injector.getUtil().getInheritedMetaData(instance.path, binder.getStopRecursions()); };
-					
+
 					// Are we caching metadata?
 					if( len( binder.getMetadataCache() ) ) {
 						// Get from cache or produce on demand
@@ -666,7 +671,7 @@ Description :
 					instance.alias.addAll( thisAliases );
 					// register alias references on binder
 					for(x=1; x lte arrayLen(thisAliases); x++){
-						mappings[ thisAliases[x] ] = this;
+						mappings[ thisAliases[ x ] ] = this;
 					}
 				}
 
@@ -825,22 +830,22 @@ Description :
 				// Loop over each property and identify injectable properties
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
 					// Check if property not discovered or if inject annotation is found
-					if( structKeyExists(md.properties[x],"inject") ){
+					if( structKeyExists(md.properties[ x ],"inject") ){
 						// prepare default params, we do this so we do not alter the md as it is cached by cf
 						params = {
-							scope="variables", inject="model", name=md.properties[x].name, required=true, type="any"
+							scope="variables", inject="model", name=md.properties[ x ].name, required=true, type="any"
 						};
 						// default property type
 						if( structKeyExists( md.properties[ x ], "type" ) ){
 							params.type = md.properties[ x ].type;
 						}
 						// default injection scope, if not found in object
-						if( structKeyExists(md.properties[x],"scope") ){
-							params.scope = md.properties[x].scope;
+						if( structKeyExists(md.properties[ x ],"scope") ){
+							params.scope = md.properties[ x ].scope;
 						}
 						// Get injection if it exists
-						if( len(md.properties[x].inject) ){
-							params.inject = md.properties[x].inject;
+						if( len(md.properties[ x ].inject) ){
+							params.inject = md.properties[ x ].inject;
 						}
 						// Get required
 						if( structKeyExists( md.properties[ x ], "required" ) and isBoolean( md.properties[ x ].required ) ){
@@ -860,33 +865,33 @@ Description :
 
 					// Verify Processing or do we continue to next iteration for processing
 					// This is to avoid overriding by parent trees in inheritance chains
-					if( structKeyExists(arguments.dependencies, md.functions[x].name) ){
+					if( structKeyExists(arguments.dependencies, md.functions[ x ].name) ){
 						continue;
 					}
 
 					// Constructor Processing if found
-					if( md.functions[x].name eq instance.constructor ){
+					if( md.functions[ x ].name eq instance.constructor ){
 						// Loop Over Arguments to process them for dependencies
-						for(y=1;y lte arrayLen(md.functions[x].parameters); y++){
+						for(y=1;y lte arrayLen(md.functions[ x ].parameters); y++){
 
 							// prepare params as we do not alter md as cf caches it
 							params = {
-								required = false, inject="model", name=md.functions[x].parameters[y].name, type="any"
+								required = false, inject="model", name=md.functions[ x ].parameters[y].name, type="any"
 							};
 							// check type annotation
 							if( structKeyExists( md.functions[ x ].parameters[ y ], "type" ) ){
 								params.type = md.functions[ x ].parameters[ y ].type;
 							}
 							// Check required annotation
-							if( structKeyExists(md.functions[x].parameters[y], "required") ){
-								params.required = md.functions[x].parameters[y].required;
+							if( structKeyExists(md.functions[ x ].parameters[y], "required") ){
+								params.required = md.functions[ x ].parameters[y].required;
 							}
 							// Check injection annotation, if not found then no injection
-							if( structKeyExists(md.functions[x].parameters[y],"inject") ){
+							if( structKeyExists(md.functions[ x ].parameters[y],"inject") ){
 
 								// Check if inject has value, else default it to 'model' or 'id' namespace
-								if( len(md.functions[x].parameters[y].inject) ){
-									params.inject = md.functions[x].parameters[y].inject;
+								if( len(md.functions[ x ].parameters[y].inject) ){
+									params.inject = md.functions[ x ].parameters[y].inject;
 								}
 
 								// ADD Constructor argument
@@ -898,34 +903,34 @@ Description :
 
 						}
 						// add constructor to found list, so it is processed only once in recursions
-						arguments.dependencies[md.functions[x].name] = "constructor";
+						arguments.dependencies[md.functions[ x ].name] = "constructor";
 					}
 
 					// Setter discovery, MUST be inject annotation marked to be processed.
-					if( left(md.functions[x].name,3) eq "set" AND structKeyExists(md.functions[x],"inject")){
+					if( left(md.functions[ x ].name,3) eq "set" AND structKeyExists(md.functions[ x ],"inject")){
 
 						// setup setter params in order to avoid touching the md struct as cf caches it
-						params = {inject="model",name=right(md.functions[x].name, Len(md.functions[x].name)-3)};
+						params = {inject="model",name=right(md.functions[ x ].name, Len(md.functions[ x ].name)-3)};
 
 						// Check DSL marker if it has a value else use default of Model
-						if( len(md.functions[x].inject) ){
-							params.inject = md.functions[x].inject;
+						if( len(md.functions[ x ].inject) ){
+							params.inject = md.functions[ x ].inject;
 						}
 						// Add to setter to mappings and recursion lookup
 						addDISetter(name=params.name,dsl=params.inject);
-						arguments.dependencies[md.functions[x].name] = "setter";
+						arguments.dependencies[md.functions[ x ].name] = "setter";
 					}
 
 					// Provider Methods Discovery
-					if( structKeyExists( md.functions[x], "provider") AND len(md.functions[x].provider)){
-						addProviderMethod(md.functions[x].name, md.functions[x].provider);
-						arguments.dependencies[md.functions[x].name] = "provider";
+					if( structKeyExists( md.functions[ x ], "provider") AND len(md.functions[ x ].provider)){
+						addProviderMethod(md.functions[ x ].name, md.functions[ x ].provider);
+						arguments.dependencies[md.functions[ x ].name] = "provider";
 					}
 
 					// onDIComplete Method Discovery
-					if( structKeyExists( md.functions[x], "onDIComplete") ){
-						arrayAppend(instance.onDIComplete, md.functions[x].name );
-						arguments.dependencies[md.functions[x].name] = "onDIComplete";
+					if( structKeyExists( md.functions[ x ], "onDIComplete") ){
+						arrayAppend(instance.onDIComplete, md.functions[ x ].name );
+						arguments.dependencies[md.functions[ x ].name] = "onDIComplete";
 					}
 
 				}//end loop of functions
