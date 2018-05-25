@@ -217,8 +217,17 @@ component serializable="false" accessors="true"{
 					renderDataSetup( argumentCollection=refResults.eventCaching );
 				}
 
-				// Caching Header
+				// Caching Header Identifier
 				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
+				
+				// Stop Gap for upgrades, remove by 4.2
+				if( isNull( refResults.eventCaching.responseHeaders ) ){
+					refResults.eventCaching.responseHeaders = {};
+				}
+				// Response Headers that were cached
+				refResults.eventCaching.responseHeaders.each( function( key, value ){
+					event.setHTTPHeader( name=key, value=value );
+				} );
 
 				// Render Content as binary or just output
 				if( refResults.eventCaching.isBinary ){
@@ -301,7 +310,8 @@ component serializable="false" accessors="true"{
 								encoding		= "",
 								statusCode		= "",
 								statusText		= "",
-								isBinary		= false
+								isBinary		= false,
+								responseHeaders = event.getResponseHeaders()
 							};
 
 							// is this a render data entry? If So, append data
