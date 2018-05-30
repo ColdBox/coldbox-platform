@@ -219,7 +219,7 @@ component serializable="false" accessors="true"{
 
 				// Caching Header Identifier
 				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
-				
+
 				// Stop Gap for upgrades, remove by 4.2
 				if( isNull( refResults.eventCaching.responseHeaders ) ){
 					refResults.eventCaching.responseHeaders = {};
@@ -288,7 +288,14 @@ component serializable="false" accessors="true"{
 					if(
 						eCacheEntry.keyExists( "cacheKey" ) AND
 						getPageContextResponse().getStatus() neq 500 AND
-						( renderData.keyExists( "statusCode" ) and renderdata.statusCode neq 500 )
+						(
+							renderData.isEmpty()
+							OR
+							(
+								renderData.keyExists( "statusCode" ) and
+								renderdata.statusCode neq 500
+							)
+						)
 					){
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
 
