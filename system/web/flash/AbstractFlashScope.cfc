@@ -87,28 +87,24 @@ component accessors="true"{
 	* @return AbstractFlashScope
 	*/
 	function clearFlash(){
-		var scope 		= "";
-		var scopeKeys	= [];
-		var scopeKeysLen = 0;
-
 		// Check if flash exists
 		if( flashExists() ){
-			// Get pointer to flash scope
-			scope 			= getFlash();
-			scopeKeys 		= listToArray( structKeyList( scope ) );
-			scopeKeysLen 	= arrayLen( scopeKeys );
-			// iterate over keys and purge
-			for( var x=1; x <= scopeKeysLen; x++){
-				// check if purging and remove
-				if( structKeyExists( scope, scopeKeys[ x ]) && scope[ scopeKeys[ x ] ].autoPurge ){
-					structDelete( scope, scopeKeys[ x ] );
-				}
-			}
-			// Destroy if empty
-			if( structIsEmpty(scope) ){
+			var scope = getFlash();
+			
+			scope
+				.filter( function( key, value ){
+					return ( value.autoPurge ?: false );
+				} )
+				.keyArray()
+				.each( function( item ){
+					scope.delete( item );
+				} );
+
+			if( scope.isEmpty() ){
 				removeFlash();
 			}
 		}
+
 		return this;
 	}
 
