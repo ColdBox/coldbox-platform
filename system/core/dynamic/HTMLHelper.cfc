@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
@@ -58,6 +58,7 @@ Description :
 		<cfargument name="sendToHeader" type="boolean"	required="false" default="true" hint="Send to the header via htmlhead by default, else it returns the content"/>
 		<cfargument name="async" 		type="boolean" 	required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)"/>
 		<cfargument name="defer" 		type="boolean" 	required="false" default="false" hint="HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)"/>
+		<cfargument name="fileExt" 		type="string" 	required="false" default="" hint="Specifies the file extension"/>
 		<cfscript>
 			var sb = createObject("java","java.lang.StringBuilder").init('');
 			var x = 1;
@@ -76,6 +77,10 @@ Description :
 			if( arguments.async ){ asyncStr = " async='async'"; }
 			// Defer HTML5 attribute
 			if( arguments.defer ){ deferStr = " defer='defer'"; }
+			
+			var isJs = false;
+			// Check if is JS
+			if( findNoCase( "js", arguments.fileExt ) ){ isJs = true }
 
 			// request assets storage
 			event.paramValue(name="cbox_assets",value="",private=true);
@@ -84,9 +89,9 @@ Description :
 				thisAsset = trim( listGetAt( arguments.asset, x ) );
 				// Is asset already loaded
 				if( NOT listFindNoCase(event.getValue(name="cbox_assets",private=true),thisAsset) ){
-
+					
 					// Load Asset
-					if( findNoCase(".js", thisAsset) ){
+					if( findNoCase(".js", thisAsset) || isJs ){
 						sb.append('<script src="#jsPath##thisAsset#" type="text/javascript"#asyncStr##deferStr#></script>');
 					}
 					else{
