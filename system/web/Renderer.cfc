@@ -810,13 +810,14 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		}
 
+		var dPath = getDirectoryFromPath( refMap.viewPath );
+		
 		// Check for directory helper convention first
 		if( fileExists( expandPath( dPath & listLast( dPath,"/" ) & "Helper.cfm" ) ) ){
 			refMap.viewHelperPath.append( dPath & listLast( dPath,"/" ) & "Helper.cfm" );
 		}
 
 		// Check for view helper convention second
-		var dPath = getDirectoryFromPath( refMap.viewPath );
 		if( fileExists( expandPath( refMap.viewPath & "Helper.cfm" ) ) ){
 			refMap.viewHelperPath.append( refMap.viewPath & "Helper.cfm" );
 		}
