@@ -81,7 +81,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.viewsHelper				= variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching				= variables.controller.getSetting( "viewCaching" );
 		variables.isViewsHelperIncluded		= false;
-		variables.explicitView 				= "";
+		variables.explicitView 				= {};
 
 		// Verify View Helper Template extension + location
 		if( len( variables.viewsHelper ) ){
@@ -120,11 +120,15 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	 * set the explicit view bit, used mostly internally
 	 * 
 	 * @view The name of the view to render
+	 * @module The name of the module this view comes from
 	 * 
 	 * @return Renderer
 	*/
-	function setExplicitView( required view ){
-		explicitView = arguments.view;
+	function setExplicitView( required view, module="" ){
+		variables.explicitView = {
+			"view" 		: arguments.view,
+			"module" 	: arguments.module
+		};
 		return this;
 	}
 
@@ -188,6 +192,21 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			structDelete( arguments, 'name' );
 		}
 
+		// Rendering an explicit view or do we need to get the view from the context or explicit context?
+		if( NOT len( arguments.view ) ){
+			// Rendering an explicit Renderer view/layout combo?
+			if( !variables.explicitView.isEmpty() ){
+				arguments.view = variables.explicitView.view;
+				arguments.module = variables.explicitView.module;
+				// clear the explicit view now that it has been used
+				setExplicitView( {} );
+			}
+			// Render the view in the context
+			else{ 
+				arguments.view = event.getCurrentView(); 
+			}
+		}
+
 		// If no incoming explicit module call, default the value to the one in the request context for convenience
 		if( NOT len( arguments.module ) ){
 			// check for an explicit view module
@@ -199,18 +218,6 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			}
 		} else {
 			explicitModule = true;
-		}
-
-		// Rendering an explicit view or do we need to get the view from the context or explicit context?
-		if( NOT len( arguments.view ) ){
-			// Rendering an explicit Renderer view/layout combo?
-			if( len( variables.explicitView ) ){
-				arguments.view = variables.explicitView;
-				// clear the explicit view now that it has been used
-				setExplicitView( "" );
-			}
-			// Render the view in the context
-			else{ arguments.view = event.getCurrentView(); }
 		}
 
 		// Do we have a view To render? Else throw exception
@@ -472,9 +479,12 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var viewLocations			= "";
 
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
-		if( len( trim( arguments.view ) ) AND arguments.view neq explicitView ){
+		if( 
+			arguments.view.trim().len() AND
+			( variables.explicitView.keyExists( "view" ) and arguments.view != variables.explicitView.view )
+		){
 			return controller.getRenderer()
-				.setExplicitView( arguments.view )
+				.setExplicitView( arguments.view, arguments.viewModule )
 				.renderLayout( argumentCollection=arguments );
 		}
 
