@@ -666,10 +666,20 @@ component serializable=false accessors="true"{
 	* Are we in SSL or not? This method looks at cgi.server_port_secure for indication
 	*/
 	boolean function isSSL(){
-		if( isBoolean( cgi.server_port_secure ) AND cgi.server_port_secure){ return true; }
+		if( isBoolean( cgi.server_port_secure ) AND cgi.server_port_secure ){ 
+			return true; 
+		}
 		// Add typical proxy headers for SSL
-		if( getHTTPHeader( "x-forwarded-proto", "http" ) eq "https" ){ return true; }
-		if( getHTTPHeader( "x-scheme", "http" ) eq "https" ){ return true; }
+		if( getHTTPHeader( "x-forwarded-proto", "http" ) eq "https" ){ 
+			return true; 
+		}
+		if( getHTTPHeader( "x-scheme", "http" ) eq "https" ){ 
+			return true; 
+		}
+		// cgi.https 
+		if( cgi.keyExists( "https" ) and cgi.https eq "on" ){
+			return true;
+		}
 		return false;
 	}
 
