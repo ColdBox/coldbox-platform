@@ -227,6 +227,16 @@ component extends="coldbox.system.web.services.BaseService"{
 	RequestService function buildFlashScope(){
 		var flashPath = "";
 
+		// Verify Flash decisions
+		if( variables.flashData.scope == "session" and !isDefined( "session") ){
+			log.error( "Flash RAM was set to use session but session is undefined, changing it to cache for you so we don't blow up.");
+			variables.flashData.scope = "cache";
+		}
+		if( variables.flashData.scope == "client" and !isDefined( "client") ){
+			log.error( "Flash RAM was set to use client but client is undefined, changing it to cache for you so we don't blow up.");
+			variables.flashData.scope = "cache";
+		}
+
 		// Shorthand Flash Types
 		switch( variables.flashData.scope ){
 			case "session" : {
@@ -235,10 +245,6 @@ component extends="coldbox.system.web.services.BaseService"{
 			}
 			case "client" : {
 				flashpath = "coldbox.system.web.flash.ClientFlash";
-				break;
-			}
-			case "cluster" : {
-				flashpath = "coldbox.system.web.flash.ClusterFlash";
 				break;
 			}
 			case "cache" : {

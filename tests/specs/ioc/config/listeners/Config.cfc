@@ -33,7 +33,7 @@ Description :
 			// By default it registeres itself on application scope
 			scopeRegistration = {
 				enabled = true,
-				scope   = "application", // server, cluster, session, application
+				scope   = "application", // server, session, application
 				key		= "wireBox"
 			},
 
