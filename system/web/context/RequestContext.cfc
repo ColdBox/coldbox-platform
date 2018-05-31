@@ -931,7 +931,7 @@ component serializable=false accessors="true"{
 	* Get the HTML base URL that is used for the HTML <base> tag. This also accounts for SSL or not.
 	*/
 	string function getHTMLBaseURL(){
-		return REReplaceNoCase( buildLink( to='', ssl=isSSL() ), "index.cfm\/?", "" );
+		return REReplaceNoCase( buildLink( to='', ssl=isSSL() ), "index.cfm\/?", "" ) & getContextRoot().right( -1 );
 	}
 
 	/**
