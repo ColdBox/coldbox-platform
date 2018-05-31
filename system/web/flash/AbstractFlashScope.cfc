@@ -323,6 +323,15 @@ component accessors="true"{
 	}
 
 	/**
+	 * Returns a struct of all the flash content values. If the value is null, we will return an empty value.
+	 */
+	struct function getAll(){
+		return getScope().map( function( key, value ){
+			return value.content;
+		} );
+	}
+
+	/**
 	* Get an object from flash scope
 	* @name.hint The name of the value
 	* @defaultValue.hint The default value if the scope does not have the object"
