@@ -448,10 +448,19 @@ component serializable="false" accessors="true"{
 		cfparam( name="application.fwReinit", default =false );
 		
 		// Fail fast so users coming in during a reinit just get a please try again message.
-		if( application.fwReinit && variables.COLDBOX_FAIL_FAST ) {
-			writeOutput( 'Oops! Seems ColdBox is still not ready to serve requests, please try again.' );
-			// You don't have to return a 500, I just did this so JMeter would report it differently than a 200 
-			cfheader( statusCode="503", statustext="ColdBox Not Available Yet!" );
+		if( application.fwReinit ){
+
+			// Closure or UDF
+			if( isClosure( variables.COLDBOX_FAIL_FAST ) || isCustomFunction( variables.COLDBOX_FAIL_FAST ) ){
+				variables.COLDBOX_FAIL_FAST();
+			} 
+			// Core Fail Fast Option
+			else if( isBoolean( variables.COLDBOX_FAIL_FAST ) && variables.COLDBOX_FAIL_FAST ){
+				writeOutput( 'Oops! Seems ColdBox is still not ready to serve requests, please try again.' );
+				// You don't have to return a 500, I just did this so JMeter would report it differently than a 200 
+				cfheader( statusCode="503", statustext="ColdBox Not Available Yet!" );
+			}
+
 			return false;
 		}
 
