@@ -69,15 +69,15 @@ Description :
 		<cfargument name="queryString" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
 		<cfscript>
 			//.*- = the cache suffix and appendages for regex to match
-			var cacheKey = getAssociatedCache().getEventCacheKeyPrefix() & replace(arguments.eventsnippet,".","\.","all") & ".*-.*";
+			var cacheKey = getAssociatedCache().getEventCacheKeyPrefix() & replace( arguments.eventsnippet, ".", "\.", "all" ) & ".*-.*";
 														  
 			//Check if we are purging with query string
-			if( len(arguments.queryString) neq 0 ){
-				cacheKey = cacheKey & "-" & getAssociatedCache().getEventURLFacade().buildHash(arguments.queryString);
+			if( len( arguments.queryString ) neq 0 ){
+				cacheKey &= "-" & getAssociatedCache().getEventURLFacade().buildHash( arguments.queryString );
 			}
-			
+
 			// Clear All Events by Criteria
-			clearByKeySnippet(keySnippet=cacheKey,regex=true);
+			clearByKeySnippet( keySnippet=cacheKey, regex=true );
 		</cfscript>
 	</cffunction>
 	

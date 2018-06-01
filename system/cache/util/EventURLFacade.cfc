@@ -35,20 +35,24 @@ Description :
 		<cfargument name="event" required="true" hint="The event request context to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
-			var targetMixer		 = structnew();
-			var key 			 = "";
-			
-			// Get the original incoming context hash
-			targetMixer['incomingHash'] = arguments.event.getValue(name="cbox_incomingContextHash",private=true);
-			
-			// Multi-Host support
-			targetMixer['cgihost'] = cgi.http_host;
+			var incomingHash = hash(
+				arguments.event.getCollection().filter( function( key, value ){
+					// Remove event, not needed for hashing purposes
+					return ( key != "event" );
+				} ).toString()
+			);
+			var targetMixer	= {
+				// Get the original incoming context hash
+				"incomingHash" 	= incomingHash,
+				// Multi-Host support
+				"cgihost" 		= cgi.http_host
+			};
 			
 			// Incorporate Routed Structs
-			structAppend(targetMixer, arguments.event.getRoutedStruct(),true);
+			structAppend( targetMixer, arguments.event.getRoutedStruct(), true );
 			
 			// Return unique identifier
-			return hash(targetMixer.toString());			
+			return hash( targetMixer.toString() );			
 		</cfscript>
 	</cffunction>
 	
@@ -58,19 +62,24 @@ Description :
 		<cfargument name="args"  required="true" hint="The string of args to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
-			var myStruct = structnew();
-			var x =1;
-			
-			// Multi-Host support
-			myStruct['cgihost'] = cgi.http_host;
-			
-			//Build structure from arg list
-			for(x=1;x lte listlen(arguments.args,"&"); x=x+1){
-				myStruct[trim(listFirst(listGetAt(arguments.args, x, "&"),'='))] = urlDecode(trim(listLast(listGetAt(arguments.args, x, "&"),'=')));
-			}
-			
-			//return hash
-			return hash(myStruct.toString());
+			var virtualRC = {};
+			arguments.args
+				.listToArray( "&" )
+				.each( function( item ){
+					virtualRC[ item.getToken( 1, "=" ).trim() ] = item.getToken( 2, "=" ).trim().urlDecode();
+				} );
+
+			writeDump( var = "==> Hash Args Struct: #virtualRC.toString()#", output="console" );
+
+			var myStruct = {
+				// Get the original incoming context hash according to incoming arguments
+				"incomingHash" 	= hash( virtualRC.toString() ),
+				// Multi-Host support
+				"cgihost" 		= cgi.http_host
+			};
+
+			// return hash from cache key struct
+			return hash( myStruct.toString() );
 		</cfscript>
 	</cffunction>
 	
@@ -84,8 +93,8 @@ Description :
 		<cfscript>
 			var key = "";
 			
-			key = buildBasicCacheKey(argumentCollection=arguments) & getUniqueHash(arguments.targetContext);
-			
+			key = buildBasicCacheKey( argumentCollection=arguments ) & getUniqueHash( arguments.targetContext );
+
 			return key;
 		</cfscript>		
 	</cffunction>
@@ -100,7 +109,7 @@ Description :
 		<cfscript>
 			var key = "";
 			
-			key = buildBasicCacheKey(argumentCollection=arguments) & buildHash(arguments.targetArgs);
+			key = buildBasicCacheKey( argumentCollection=arguments ) & buildHash( arguments.targetArgs );
 			
 			return key;
 		</cfscript>		

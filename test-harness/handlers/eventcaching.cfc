@@ -1,5 +1,21 @@
 ﻿component output="false" singleton{
 
+	/**
+	* clear all event caching for tests.
+	*/
+	function clearAll( event, rc, prc ){
+		getCache( "template" ).clearEvent( "eventcaching.index" );
+		return cacheKeys( argumentCollection=arguments );
+	}
+
+	/**
+	* clear all for json
+	*/
+	function clearJSON( event, rc, prc ){
+		getCache( "template" ).clearEvent( "eventcaching.index", "format=json" );
+		return cacheKeys( argumentCollection=arguments );
+	}
+
 	// Default Action
 	function index( event, rc, prc ) cache="true" cacheTimeout="10"{
 		prc.data = [

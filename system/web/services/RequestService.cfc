@@ -48,7 +48,6 @@ component extends="coldbox.system.web.services.BaseService"{
 		var context 	= getContext();
 		var rc			= context.getCollection();
 		var prc 		= context.getCollection( private=true );
-		var fwCache		= false;
 
 		// Capture FORM/URL
 		if( isDefined( "FORM" ) ){ structAppend( rc, FORM ); }
@@ -66,13 +65,15 @@ component extends="coldbox.system.web.services.BaseService"{
 		}
 		
 		// Configure decorator if available?
-		if ( structKeyExists( context, "configure" ) ){ context.configure(); }
+		if ( structKeyExists( context, "configure" ) ){ 
+			context.configure(); 
+		}
 
 		// Execute onRequestCapture interceptionPoint
 		variables.interceptorService.processState( "onRequestCapture" );
 
 		// Remove FW reserved commands just in case before collection snapshot
-		fwCache = structKeyExists( rc,"fwCache" );
+		var fwCache = structKeyExists( rc, "fwCache" );
 		structDelete( rc, "fwCache" );
 
 		// Take snapshot of incoming collection
@@ -81,7 +82,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Do we have flash elements to inflate?
 		if( variables.flashScope.flashExists() ){
 			if( variables.log.canDebug() ){
-				variables.log.debug("Flash RAM detected, inflating flash...");
+				variables.log.debug( "Flash RAM detected, inflating flash." );
 			}
 			variables.flashScope.inflateFlash();
 		}
@@ -116,7 +117,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * @fwCache Flag to hard purge the cache if needed
 	 */
 	RequestService function eventCachingTest( required context, boolean fwCache=false ){
-		var eventCache   	= structnew();
+		var eventCache   	= {};
 		var oEventURLFacade = variables.templateCache.getEventURLFacade();
 		var currentEvent    = arguments.context.getCurrentEvent();
 
