@@ -234,7 +234,7 @@ component{
 			} );
 
 		//populate bean and return
-		arguments.memento = arguments.newMemento;
+		arguments.memento = newMemento;
 		return populateFromStruct( argumentCollection=arguments );
 	}
 
