@@ -137,7 +137,7 @@ component{
 		arguments.memento = structnew();
 		listToArray( arguments.qry.columnList )
 			.each( function( item ){
-				arguments.memento[ item ] = arguments.qry[ item ][ arguments.rowNumber ];
+				memento[ item ] = qry[ item ][ rowNumber ];
 			} );
 
 		//populate bean and return
@@ -185,7 +185,7 @@ component{
 			} )
 			.each( function( item ){
 				var trueColumnName = item.replaceNocase( prefix, "" );
-				arguments.memento[ trueColumnName ] = arguments.qry[ item ][ arguments.rowNumber ];
+				memento[ trueColumnName ] = qry[ item ][ rowNumber ];
 			} );
 
 		//populate bean and return
