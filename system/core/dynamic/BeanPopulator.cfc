@@ -41,7 +41,7 @@ component{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=false,
+		boolean composeRelationships=false
 	){
 		// Inflate JSON
 		arguments.memento = deserializeJSON( arguments.JSONString );
@@ -78,7 +78,7 @@ component{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=false,
+		boolean composeRelationships=false
 	){
 		// determine XML object or string?
 		if( isSimpleValue( arguments.xml ) ){
@@ -95,11 +95,15 @@ component{
 			return;
 		}
 
-		// prepare memento
 		arguments.memento = {};
-		arguments.xml[ arguments.root ].XMLChildren.each( function( item ){
-			arguments.memento[ item.XMLName ] = trim( item.XMLText );
-		} );
+		// Have to do it this way as ACF11 parsing sucks on structs and member functions
+		var xmlRoot = arguments.xml[ arguments.root ];
+		// Populate memento from XML
+		xmlRoot
+			.XMLChildren
+			.each( function( item ){
+				memento[ item.XMLName ] = trim( item.XMLText );
+			} );
 
 		return populateFromStruct( argumentCollection=arguments );
 	}
@@ -132,7 +136,7 @@ component{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=false,
+		boolean composeRelationships=false
 	){
 		arguments.memento = structnew();
 		listToArray( arguments.qry.columnList )
@@ -174,7 +178,7 @@ component{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=false,
+		boolean composeRelationships=false
 	){
 		var prefixLength 	= len( arguments.prefix );
 
@@ -220,7 +224,7 @@ component{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=false,
+		boolean composeRelationships=false
 	){
 		var prefixLength 	= len( arguments.prefix );
 		var newMemento 		= {};
@@ -264,7 +268,7 @@ component{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=false,
+		boolean composeRelationships=false
 	){
 		var beanInstance = arguments.target;
 		var key = "";
