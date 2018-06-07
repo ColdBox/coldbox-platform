@@ -599,7 +599,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 	function testInputInsideLabel() {
 		var str = model.checkbox(name='luis',value=1,label='luis?',labelAttrs={title='Check this box for luis'}, inputInsideLabel=1);
-		expect ( str ).toBe('<label for="luis" title="Check&##x20;this&##x20;box&##x20;for&##x20;luis"><input value="1" name="luis" id="luis" type="checkbox"/>luis&##x3f;</label>');
+		expect( xmlParse( "<root>#str#</root>" ) )
+			.toBe(
+				xmlParse( 
+					'<root><label for="luis" title="Check&##x20;this&##x20;box&##x20;for&##x20;luis"><input value="1" name="luis" id="luis" type="checkbox"/>luis&##x3f;</label></root>'
+				)
+			);
 	}
 
 </cfscript>
