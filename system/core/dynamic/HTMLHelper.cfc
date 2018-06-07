@@ -11,8 +11,9 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * Constructor
 	 *
 	 * @controller The ColdBox Controller
+	 * @controller.inject coldbox
 	 */
-	function init( required controller inject="coldbox" ){
+	function init( required controller ){
 		variables.controller = arguments.controller;
 
 		return this;
