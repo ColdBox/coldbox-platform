@@ -580,7 +580,9 @@ component serializable="false" accessors="true"{
 			}
 
 			// Determine if it is An allowed HTTP method to execute, else throw error
-			if( NOT structIsEmpty( oHandler.allowedMethods ) AND
+			if( 
+				arguments.defaultEvent AND
+				NOT structIsEmpty( oHandler.allowedMethods ) AND
 				structKeyExists( oHandler.allowedMethods, results.ehBean.getMethod() ) AND
 				NOT listFindNoCase( oHandler.allowedMethods[ results.ehBean.getMethod() ], oRequestContext.getHTTPMethod() )
 			){
