@@ -34,7 +34,7 @@ addons:
 install:
   # Install CommandBox
   - curl -k  -o /tmp/box.zip -location "https://downloads.ortussolutions.com.s3.amazonaws.com/ortussolutions/commandbox/${COMMANDBOX_VERSION}/commandbox-bin-${COMMANDBOX_VERSION}.zip"
-  - sudo unzip /tmp/box.zip -d /usr/bin && chmod +x /usr/bin/box
+  - sudo unzip /tmp/box.zip -d /usr/bin && sudo chmod +x /usr/bin/box
   # Install Commandbox + Supporting Utilities
   - sudo apt-get update && sudo apt-get --assume-yes install haveged jq
   # Install dependencies
