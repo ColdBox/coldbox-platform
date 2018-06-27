@@ -8,9 +8,9 @@ notifications:
 env:
   matrix:
     - ENGINE=lucee@4.5 COLDBOX_VERSION=5.1.0 ANT_TARGET=build.all
-    - ENGINE=lucee@5 COLDBOX_VERSION=5.1.0 ANT_TARGET=run-tests
-    - ENGINE=adobe@11	COLDBOX_VERSION=5.1.0	ANT_TARGET=run-tests
-    - ENGINE=adobe@2016	COLDBOX_VERSION=5.1.0	ANT_TARGET=run-tests
+    #- ENGINE=lucee@5 COLDBOX_VERSION=5.1.0 ANT_TARGET=run-tests
+    #- ENGINE=adobe@11	COLDBOX_VERSION=5.1.0	ANT_TARGET=run-tests
+    #- ENGINE=adobe@2016	COLDBOX_VERSION=5.1.0	ANT_TARGET=run-tests
     #- ENGINE=@ortus/adobe-aether	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests ENGINENAME=adobe-aether
 
 branches:
@@ -34,7 +34,7 @@ install:
   #- curl -L -k -v -o /tmp/box.zip -location "https://www.ortussolutions.com/parent/download/commandbox/type/bin"
   #- mkdir -p /usr/local/bin
   #- unzip /tmp/box.zip -d /usr/local/bin && chmod +x /usr/local/bin/box
-  - sudo sh -c "$(curl -fsSL https://commandbox.app/install.sh)"
+  - sh -c "$(curl -fsSL https://commandbox.stg.ortushq.com/install.sh)"
   # Install Commandbox + Supporting Utilities
   - sudo apt-get update && sudo apt-get --assume-yes install haveged jq
   # Install dependencies
