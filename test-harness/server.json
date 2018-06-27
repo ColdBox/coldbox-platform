@@ -1,0 +1,7 @@
+{
+    "web":{
+        "rewrites":{
+            "enable":"true"
+        }
+    }
+}
