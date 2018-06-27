@@ -6,8 +6,6 @@ notifications:
     secure: FIHlTn/YO7Wgumm1uIqmoEsqjQA7fV0AE94Rjc5yKzM3AquQa8HicgDVVk0d2GrKRnl0xt3j4ZJV//VJyIjlCd/QVKuj48R2ChjEY2im3+99HFPafCUI5/S2uyowKU6mJTFonH9v6p41eqxdbiAxJdDGOT0V2Gpt3UBSNuHz8ED9/aIHqv+P7M+VD6Xd2XYwctPniWlaSWx57sWcnG/VkFG45qFQAyha64uxOOe4M3ZmG/n5FfauZ8cBVLiRKEIr+CyNhh1ujfzi7+4uzMlSNL5t/BbZamAQuZzqGzGQ9RVvIlyPgUGNJtDEE/hWS09aagXF5T6EMj00szizErh4J1/x4qZwml5+TcBN31E0QmAhCtZe85sr3tYgic+hEz9XX1yymQzf/C7n4to2yNvq0r4g51xDk8IuP95WEh7zaqLlvFZvBFgxpHZBMYlRvhytjOYDeIFRMcGwHZcXosaG2ejqDwcGq/LC4oeG4sSwmg9sdRrtcmcanrNqrBka86WYO6LntI3JdZ86/1ACEUHzhCCwvrKELc9Ji1xxGAgS7QKH+s2/hnJuiMyv73gOVLKYC+wPMLt+fvOmPLSEl+PJiAIlToBq1KUBg03RSQLfPOLD7OrJ8VvDZsEPwejqlGDyc4wRglS9OTi7SnN5LYHSDNDdGdREegWqq9qDHEYEVLI=
 
 env:
-  global:
-    - COMMANDBOX_VERSION=4.1.0
   matrix:
     - ENGINE=lucee@4.5 COLDBOX_VERSION=5.1.0 ANT_TARGET=build.all
     - ENGINE=lucee@5 COLDBOX_VERSION=5.1.0 ANT_TARGET=run-tests
@@ -33,7 +31,7 @@ addons:
 
 install:
   # Install CommandBox
-  - curl -k  -o /tmp/box.zip -location "https://downloads.ortussolutions.com.s3.amazonaws.com/ortussolutions/commandbox/${COMMANDBOX_VERSION}/commandbox-bin-${COMMANDBOX_VERSION}.zip"
+  - curl -L -k -o /tmp/box.zip -location "https://www.ortussolutions.com/parent/download/commandbox/type/bin"
   - sudo unzip /tmp/box.zip -d /usr/bin && sudo chmod +x /usr/bin/box
   # Install Commandbox + Supporting Utilities
   - sudo apt-get update && sudo apt-get --assume-yes install haveged jq
