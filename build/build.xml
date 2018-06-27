@@ -87,8 +87,6 @@
 
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
 
 		<!-- Make sure we start the embedded server, for builds and tests -->
 		<exec executable="box" dir="${basedir}">
@@ -100,26 +98,6 @@
 
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
-	</target>
-
-	<!-- update permissions on reports -->
-	<target name="update.permissions" description="Update staging server permissions">
-		<!-- Integration permissions -->
-		<if>
-			<equals arg1="${environment}" arg2="auto" />
-			<then>
-				<chmod perm="go+wrs" type="both" verbose="true">
-					<fileset dir="${dir.build}"><include name="**/**" /></fileset>
-					<fileset dir="${basedir}/testbox/system"><include name="**/**" /></fileset>
-				</chmod>
-				<chown owner="stg-ortus" verbose="true">
-					<fileset dir="${dir.build}" />
-					<fileset dir="${basedir}/testbox/system" />
-				</chown>
-			</then>
-			<else>
-			</else>
-		</if>
 	</target>
 
 	<!-- Run Tests For Platform -->
@@ -175,9 +153,6 @@
 				<include name="coldbox-be*" />
 			</fileset>
 		</delete>
-
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
 
 		<!-- Build Label -->
 		<property name="build.label" value="coldbox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
@@ -306,9 +281,6 @@
 			</fileset>
 		</delete>
 
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
-
 		<!-- Build Label -->
 		<property name="build.label" value="cachebox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<concat destfile="${dir.build}/cachebox/${build.label}">Built on ${start.TODAY}</concat>
@@ -430,8 +402,6 @@
 				<include name="logbox-be*" />
 			</fileset>
 		</delete>
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
 
 		<!-- Build Label -->
 		<property name="build.label" value="logbox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
@@ -550,9 +520,6 @@
 				<include name="wirebox-be*" />
 			</fileset>
 		</delete>
-
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
 
 		<!-- Build Label -->
 		<property name="build.label" value="wirebox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
