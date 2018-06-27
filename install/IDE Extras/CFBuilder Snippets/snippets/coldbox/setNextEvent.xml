@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>relocate</name>
-<help>relocate method</help>
-<starttext><![CDATA[relocate(event="$${event}",queryString="$${url params}")]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>

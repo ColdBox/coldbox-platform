@@ -223,11 +223,12 @@
 			</else>
 		</if>
 
-		<!-- Execute IDE Dictionaries -->
+		<!-- Execute IDE Dictionaries
 		<get 	dest="${dir.build}/coldbox/install/IDE Extras/CFBuilder Dictionary/coldbox.builder.xml"
 				src="${url.dictionaries}/builderDictionary.cfm?text=true"
 				verbose="true"
 		/>
+		-->
 
 		<!-- Execute Api Docs -->
 		<get 	dest="${dir.build}/docbox.html"

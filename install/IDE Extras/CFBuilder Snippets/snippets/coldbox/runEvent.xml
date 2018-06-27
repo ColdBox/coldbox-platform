@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>runEvent</name>
-<help>RunEvent method</help>
-<starttext><![CDATA[runEvent(event="$${event}",prepostExempt="$${PrePostExempt:false|true}",private=$${private:false|true},eventArguments=$${event arguments struct:structnew()})]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>
