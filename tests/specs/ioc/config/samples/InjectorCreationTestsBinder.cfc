@@ -27,7 +27,7 @@
 		// map to constant value, no need for scope
 		map( "jsonProperty" ).toValue( "[{name:'luis'},{name:'Jose'}]" );
 		// map to ws
-		map( "coldboxWS" ).toWebservice( "https://lucee.stg.ortussolutions.com/ExtensionProvider.cfc?wsdl" );
+		map( "coldboxWS" ).toWebservice( "http://www.SoapClient.com/xml/SQLDataSoap.wsdl" );
 		// map to rss feed
 		map( "googleNews" )
 			.toRSS( "http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&output=rss" )
@@ -97,7 +97,8 @@
 			.property(name:"someAlphaDAO", ref:"someAlphaDAO" )
 			.property(name:"someBravoDAO", ref:"someBravoDAO" );
 		// define concrete service that inherits the abstract parent service dependencies via the parent method
-		map( "concreteService" ).to( "#modelsPath#.parent.ConcreteService" )
+		map( "concreteService" )
+			.to( "#modelsPath#.parent.ConcreteService" )
 			.parent( "abstractService" )
 			.property(name:"someCharlieDAO", ref:"someCharlieDAO" )
 			.property(name:"someDeltaDAO", ref:"someDeltaDAO" );

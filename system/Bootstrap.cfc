@@ -21,6 +21,8 @@ component serializable="false" accessors="true"{
 	property name="lockTimeout";
 	// The application hash used for locks
 	property name="appHash";
+	// By default if an app is reiniting and a request hits it, we will fail fast with a message
+	property name="COLDBOX_FAIL_FAST";
 
 	// param the properties with defaults
 	param name="COLDBOX_CONFIG_FILE" 	default="";
@@ -29,6 +31,7 @@ component serializable="false" accessors="true"{
 	param name="COLDBOX_APP_MAPPING" 	default="";
 	param name="appHash"				default="#hash( getBaseTemplatePath() )#";
 	param name="lockTimeout"			default="30" type="numeric";
+	param name="COLDBOX_FAIL_FAST"		default="true";
 
 	/**
 	* Constructor, called by your Application CFC
@@ -36,22 +39,26 @@ component serializable="false" accessors="true"{
 	* @COLDBOX_APP_ROOT_PATH The location of the app on disk
 	* @COLDBOX_APP_KEY The key used in application scope for this application
 	* @COLDBOX_APP_MAPPING The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
+	* @COLDBOX_FAIL_FAST By default if an app is reiniting and a request hits it, we will fail fast with a message
 	*/
 	function init(
 		required string COLDBOX_CONFIG_FILE,
 		required string COLDBOX_APP_ROOT_PATH,
 		string COLDBOX_APP_KEY,
-		string COLDBOX_APP_MAPPING=""
+		string COLDBOX_APP_MAPPING="",
+		boolean COLDBOX_FAIL_FAST=true
 	){
 		// Set vars for two main locations
 		setCOLDBOX_CONFIG_FILE( arguments.COLDBOX_CONFIG_FILE );
 		setCOLDBOX_APP_ROOT_PATH( arguments.COLDBOX_APP_ROOT_PATH );
 		setCOLDBOX_APP_MAPPING( arguments.COLDBOX_APP_MAPPING );
+		setCOLDBOX_FAIL_FAST( arguments.COLDBOX_FAIL_FAST );
 
 		// App Key Check
 		if( structKeyExists( arguments, "COLDBOX_APP_KEY" ) AND len( trim( arguments.COLDBOX_APP_KEY ) ) ){
 			setCOLDBOX_APP_KEY( arguments.COLDBOX_APP_KEY );
 		}
+
 		return this;
 	}
 
@@ -122,19 +129,25 @@ component serializable="false" accessors="true"{
 			lock type="exclusive" name="#appHash#" timeout="#lockTimeout#" throwontimeout="true"{
 				// double lock
 				if( NOT structkeyExists( application, appkey ) OR NOT application[ appKey ].getColdboxInitiated() OR needReinit ){
-
-					// Verify if we are Reiniting?
-					if( structkeyExists( application, appKey ) AND application[ appKey ].getColdboxInitiated() AND needReinit ){
-						// process preReinit interceptors
-						application[ appKey ].getInterceptorService().processState( "preReinit" );
-						// Shutdown the application services
-						application[ appKey ].getLoaderService().processShutdown();
+					try{
+						// Tell the word we are reiniting
+						application.fwReinit = true;
+						// Verify if we are Reiniting?
+						if( structkeyExists( application, appKey ) AND application[ appKey ].getColdboxInitiated() AND needReinit ){
+							// process preReinit interceptors
+							application[ appKey ].getInterceptorService().processState( "preReinit" );
+							// Shutdown the application services
+							application[ appKey ].getLoaderService().processShutdown();
+						}
+						// Reload ColdBox
+						loadColdBox();
+						// Remove any context stragglers
+						structDelete( request, "cb_requestContext" );
+					} catch ( any e ){
+						rethrow;
+					} finally {
+						application.fwReinit = false;
 					}
-
-					// Reload ColdBox
-					loadColdBox();
-					// Remove any context stragglers
-					structDelete( request, "cb_requestContext" );
 				}
 			} // end lock
 		}
@@ -199,10 +212,6 @@ component serializable="false" accessors="true"{
 
 			// Verify if event caching item is in selected cache
 			if( eCacheEntry.keyExists( "cachekey" ) ){
-				// Stop gap for upgrades
-				if( isNull( eCacheEntry.provider) ){
-					eCacheEntry.provider = "template";
-				}
 				// Get cache element.
 				refResults.eventCaching = cacheBox
 					.getCache( eCacheEntry.provider )
@@ -210,15 +219,24 @@ component serializable="false" accessors="true"{
 			}
 
 			// Verify if cached content existed.
-			if ( structKeyExists( refResults, "eventCaching" ) ){
+			if ( !isNull( refresults.eventCaching ) ){
 				// check renderdata
 				if( refResults.eventCaching.renderData ){
 					refResults.eventCaching.controller = cbController;
 					renderDataSetup( argumentCollection=refResults.eventCaching );
 				}
 
-				// Caching Header
+				// Caching Header Identifier
 				getPageContextResponse().setHeader( "x-coldbox-cache-response", "true" );
+
+				// Stop Gap for upgrades, remove by 4.2
+				if( isNull( refResults.eventCaching.responseHeaders ) ){
+					refResults.eventCaching.responseHeaders = {};
+				}
+				// Response Headers that were cached
+				refResults.eventCaching.responseHeaders.each( function( key, value ){
+					event.setHTTPHeader( name=key, value=value );
+				} );
 
 				// Render Content as binary or just output
 				if( refResults.eventCaching.isBinary ){
@@ -279,7 +297,14 @@ component serializable="false" accessors="true"{
 					if(
 						eCacheEntry.keyExists( "cacheKey" ) AND
 						getPageContextResponse().getStatus() neq 500 AND
-						( renderData.keyExists( "statusCode" ) and renderdata.statusCode neq 500 )
+						(
+							renderData.isEmpty()
+							OR
+							(
+								renderData.keyExists( "statusCode" ) and
+								renderdata.statusCode neq 500
+							)
+						)
 					){
 						lock type="exclusive" name="#variables.appHash#.caching.#eCacheEntry.cacheKey#" timeout="#variables.lockTimeout#" throwontimeout="true"{
 
@@ -301,7 +326,8 @@ component serializable="false" accessors="true"{
 								encoding		= "",
 								statusCode		= "",
 								statusText		= "",
-								isBinary		= false
+								isBinary		= false,
+								responseHeaders = event.getResponseHeaders()
 							};
 
 							// is this a render data entry? If So, append data
@@ -414,6 +440,26 @@ component serializable="false" accessors="true"{
 	* On request start
 	*/
 	boolean function onRequestStart( required targetPage ) output=true{
+		// Global flag to denote if we are in mid reinit or not.
+		cfparam( name="application.fwReinit", default =false );
+		
+		// Fail fast so users coming in during a reinit just get a please try again message.
+		if( application.fwReinit ){
+
+			// Closure or UDF
+			if( isClosure( variables.COLDBOX_FAIL_FAST ) || isCustomFunction( variables.COLDBOX_FAIL_FAST ) ){
+				variables.COLDBOX_FAIL_FAST();
+			} 
+			// Core Fail Fast Option
+			else if( isBoolean( variables.COLDBOX_FAIL_FAST ) && variables.COLDBOX_FAIL_FAST ){
+				writeOutput( 'Oops! Seems ColdBox is still not ready to serve requests, please try again.' );
+				// You don't have to return a 500, I just did this so JMeter would report it differently than a 200 
+				cfheader( statusCode="503", statustext="ColdBox Not Available Yet!" );
+			}
+
+			return false;
+		}
+
 		// Verify Reloading
 		reloadChecks();
 		// Process A ColdBox Request Only

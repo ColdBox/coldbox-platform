@@ -114,5 +114,20 @@
 		
 		assertTrue( listLen( r ) == 5 );
 	}
+
+	function testGetAll(){
+		var testScope = {
+			t1 = {content=createUUID(),keep=true,autoPurge=true},
+			t2 = {content=createUUID(),keep=true,autoPurge=true},
+			t3 = {content=createUUID(),keep=true,autoPurge=false},
+			t4 = {content=createUUID(),keep=true,autoPurge=true},
+			t5 = {content=createUUID(),keep=true,autoPurge=false}
+		};
+		flash.$( "getScope", testScope );
+		
+		var r = flash.getAll();
+		expect( r ).toBeStruct()
+			.toHaveLength( 5 );		
+	}
 	
 }

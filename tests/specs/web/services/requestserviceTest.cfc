@@ -55,6 +55,44 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="testRequestCaptureOfJSONBody" access="public" returntype="void" output="false">
+		<cfscript>
+		var mockContext = prepareMock(
+								getController().getRequestService().getContext()
+							).$( "getHTTPContent" ).$callback(
+								function( boolean json=false ){
+									var payload = {
+										"name" : "Jon Clausen",
+										"type" : "JSON"
+									};
+
+									if( json ){
+										return payload;
+									} else {
+										return serializeJSON( payload );
+									}
+								}
+							);
+		var service = prepareMock( getController().getRequestService() )
+						.$( 'getContext' ).$callback(
+							function( ){
+								return mockContext;
+							}
+						 );
+
+		/* Catpure the request */
+		context = service.requestCapture();
+
+		debug( context.getCollection() );
+
+		/* Tests */
+		assertTrue( isObject(context), "Context Creation" );
+		assertTrue( context.valueExists( "name" ) , "JSON Append" );
+		assertTrue( context.valueExists( "type" ) , "JSON Append" );
+		assertEquals( context.getValue( "type" ), 'JSON' );
+		</cfscript>
+	</cffunction>
+
 	<cffunction name="testDefaultEvent" access="public" returntype="void" output="false">
 		<cfscript>
 		var service = getController().getRequestService();

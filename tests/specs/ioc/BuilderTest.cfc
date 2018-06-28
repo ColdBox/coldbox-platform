@@ -57,7 +57,7 @@
 
 	function testbuildWebservice(){
 		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
-		mapping.setPath( "https://lucee.stg.ortussolutions.com/ExtensionProvider.cfc?wsdl" );
+		mapping.setPath( "http://www.SoapClient.com/xml/SQLDataSoap.wsdl" );
 		r = builder.buildwebservice(mapping);
 		//debug(r);
 	}

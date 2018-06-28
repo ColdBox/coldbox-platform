@@ -10,8 +10,8 @@
 
 	<!-- UPDATE ON EACH VERSION CYCLE -->
 	<property name="groupID"				value="ortussolutions" />
-	<property name="coldbox.version" 		value="5.0.0" />
-	<property name="coldbox.stableversion" 	value="4.3.0" />
+	<property name="coldbox.version" 		value="5.1.0" />
+	<property name="coldbox.stableversion" 	value="5.0.0" />
 	<property name="coldbox.slug"	 		value="coldbox"/>
 	<property name="cachebox.slug"	 		value="cachebox"/>
 	<property name="logbox.slug"	 		value="logbox"/>
@@ -87,8 +87,6 @@
 
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
 
 		<!-- Make sure we start the embedded server, for builds and tests -->
 		<exec executable="box" dir="${basedir}">
@@ -100,26 +98,6 @@
 
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
-	</target>
-
-	<!-- update permissions on reports -->
-	<target name="update.permissions" description="Update staging server permissions">
-		<!-- Integration permissions -->
-		<if>
-			<equals arg1="${environment}" arg2="auto" />
-			<then>
-				<chmod perm="go+wrs" type="both" verbose="true">
-					<fileset dir="${dir.build}"><include name="**/**" /></fileset>
-					<fileset dir="${basedir}/testbox/system"><include name="**/**" /></fileset>
-				</chmod>
-				<chown owner="stg-ortus" verbose="true">
-					<fileset dir="${dir.build}" />
-					<fileset dir="${basedir}/testbox/system" />
-				</chown>
-			</then>
-			<else>
-			</else>
-		</if>
 	</target>
 
 	<!-- Run Tests For Platform -->
@@ -176,9 +154,6 @@
 			</fileset>
 		</delete>
 
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
-
 		<!-- Build Label -->
 		<property name="build.label" value="coldbox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<concat destfile="${dir.build}/coldbox/${build.label}">Built on ${start.TODAY}</concat>
@@ -189,10 +164,11 @@
         	</fileset>
         </copy>
 
-		<!-- Move Install folder -->
+		<!-- Move Install folder
 		<copy todir="${dir.build}/coldbox/install" encoding="UTF-8" overwrite="true">
         	<fileset dir="install" />
         </copy>
+		-->
 
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/coldbox/" encoding="UTF-8" overwrite="true">
@@ -223,11 +199,12 @@
 			</else>
 		</if>
 
-		<!-- Execute IDE Dictionaries -->
+		<!-- Execute IDE Dictionaries
 		<get 	dest="${dir.build}/coldbox/install/IDE Extras/CFBuilder Dictionary/coldbox.builder.xml"
 				src="${url.dictionaries}/builderDictionary.cfm?text=true"
 				verbose="true"
 		/>
+		-->
 
 		<!-- Execute Api Docs -->
 		<get 	dest="${dir.build}/docbox.html"
@@ -239,8 +216,9 @@
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-apidocs-${coldbox.version}.zip" basedir="${dir.coldbox.apidocs}" />
 
-		<!-- Zip IDE Extras -->
+		<!-- Zip IDE Extras
 		<zip destfile="${dir.coldbox.exports}/coldbox-ide-${coldbox.version}.zip" basedir="${dir.build}/coldbox/install/IDE Extras" />
+		-->
 
 		<!-- Zip ColdBox Bundle -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" basedir="${dir.build}/coldbox" />
@@ -304,9 +282,6 @@
 				<include name="cachebox-be*" />
 			</fileset>
 		</delete>
-
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
 
 		<!-- Build Label -->
 		<property name="build.label" value="cachebox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
@@ -429,8 +404,6 @@
 				<include name="logbox-be*" />
 			</fileset>
 		</delete>
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
 
 		<!-- Build Label -->
 		<property name="build.label" value="logbox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
@@ -549,9 +522,6 @@
 				<include name="wirebox-be*" />
 			</fileset>
 		</delete>
-
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
 
 		<!-- Build Label -->
 		<property name="build.label" value="wirebox-${coldbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>

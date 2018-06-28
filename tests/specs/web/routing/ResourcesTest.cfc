@@ -37,7 +37,7 @@
 
                 var cl = router.$callLog().addRoute;
 
-                expect( cl ).toHaveLength( 4, "addRoute should have been called 4 times" );
+				expect( cl ).toHaveLength( 4, "addRoute should have been called 4 times" );
                 expect( cl[ 1 ] ).toBe(
                     {
                         pattern = "/photos/:id/edit",
@@ -62,7 +62,7 @@
                     {
                         pattern = "/photos/:id",
                         handler = "photos",
-                        action = { GET = "show", PUT = "update", PATCH = "update", POST = "update", DELETE = "delete" },
+                        action = { GET = "show", PUT = "update", PATCH = "update", POST = "create", DELETE = "delete" },
                         module  = "",
                         namespace = ""
                     },
@@ -111,7 +111,7 @@
                     {
                         pattern = "/photos/:id",
                         handler = "PhotosController",
-                        action = { GET = "show", PUT = "update", PATCH = "update", POST = "update", DELETE = "delete" },
+                        action = { GET = "show", PUT = "update", PATCH = "update", POST = "create", DELETE = "delete" },
                         module  = "",
                         namespace = ""
                     },
@@ -160,7 +160,7 @@
                     {
                         pattern = "/photos/:photoId",
                         handler = "photos",
-                        action  = { GET = "show", PUT = "update", PATCH = "update", POST = "update", DELETE = "delete" },
+                        action  = { GET = "show", PUT = "update", PATCH = "update", POST = "create", DELETE = "delete" },
                         module  = "",
                         namespace = ""
                     },

@@ -824,26 +824,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				log.debug( "SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#" );
 			}
 
-			// Relocation Headers
+			// Setup Relocation
+			var relocationUrl = "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#";
+
 			if( httpRequestData.method eq "GET" ){
-				getPageContext().getResponse().addIntHeader(
-					javaCast( "string", "Moved permanently" ),
-					javaCast( "int", 301 )
+				cflocation(
+					url        = relocationUrl,
+					statusCode = 301
 				);
 			} else {
-				getPageContext().getResponse().addIntHeader(
-					javaCast( "string", "See Other" ),
-					javaCast( "int", 303 )
+				cflocation(
+					url        = relocationUrl,
+					statusCode = 303
 				);
 			}
 
-			// Send location
-			getPageContext().getResponse().addHeader(
-				javaCast( "string", "Location" ),
-				javaCast( "string", "#arguments.event.getSESbaseURL()##newpath##serializeURL( httpRequestData.content, arguments.event )#" )
-			);
-
-			abort;
 		}
 	}
 

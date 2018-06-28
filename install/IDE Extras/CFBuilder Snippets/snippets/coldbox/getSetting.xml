@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>getSetting</name>
-<help>Get a Setting</help>
-<starttext><![CDATA[getSetting("$${Setting Name}")]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>

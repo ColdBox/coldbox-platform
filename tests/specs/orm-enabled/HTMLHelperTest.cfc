@@ -4,12 +4,8 @@ Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.HTMLHelper" skip="isAdobe">
+<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.HTMLHelper">
 <cfscript>
-	
-	boolean function isAdobe(){
-		return !listFindNoCase( "Lucee", server.coldfusion.productname ) ? true : false;
-	}
 	
 	function setup(){
 		super.setup();
@@ -17,7 +13,8 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		mockRequestService 	= createEmptyMock( "coldbox.system.web.services.RequestService" )
 			.$( "getContext", mockRequestContext);
 		mockController 		= createEmptyMock( "coldbox.system.testing.mock.web.MockController" )
-			.$( "getRequestService", mockRequestService );
+			.$( "getRequestService", mockRequestService )
+			.$( "getSetting", "path" );
 
 		model.init( mockController );
 	}
@@ -26,20 +23,20 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		var mockEvent = getMockRequestContext();
 		mockRequestService.$( "getContext", mockEvent);
 
-		model.$( "$htmlhead" ).$( "settingExists",false);
+		model.$( "$htmlhead" ).$( "getSetting", "");
 		model.addAsset('test.js,luis.js');
 
 		// debug( model.$callLog().$htmlhead);
 
 		// test duplicate call
-		assertEquals('<script src="test.js" type="text/javascript"></script><script src="luis.js" type="text/javascript"></script>' , model.$callLog().$htmlhead[1][1] );
+		assertEquals('<script src="test.js" ></script><script src="luis.js" ></script>' , model.$callLog().$htmlhead[1][1] );
 		model.addAsset('test.js');
 		assertEquals(1, arrayLen(model.$callLog().$htmlHead) );
 
 		// global settings
 		model.$( "settingExists",true).$( "getSetting","/includes/js/" );
 		r = model.addAsset('test1.js,luis1.js',false);
-		assertEquals('<script src="/includes/js/test1.js" type="text/javascript"></script><script src="/includes/js/luis1.js" type="text/javascript"></script>' , r );
+		assertEquals('<script src="/includes/js/test1.js" ></script><script src="/includes/js/luis1.js" ></script>' , r );
 
 	}
 
@@ -47,13 +44,13 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		var mockEvent = getMockRequestContext();
 		mockRequestService.$( "getContext", mockEvent);
 
-		model.$( "$htmlhead" ).$( "settingExists",false);
+		model.$( "$htmlhead" ).$( "getSetting", "" );
 		model.addAsset('test.css,luis.css');
 
 		// test duplicate call
 		assertEquals('<link href="test.css" type="text/css" rel="stylesheet" /><link href="luis.css" type="text/css" rel="stylesheet" />' , model.$callLog().$htmlhead[1][1] );
 		model.addAsset('test.css');
-		assertEquals(1, arrayLen(model.$callLog().$htmlHead) );
+		assertEquals( 1, arrayLen(model.$callLog().$htmlHead) );
 
 		// global settings
 		model.$( "settingExists",true).$( "getSetting","/includes/css/" );
@@ -82,15 +79,15 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		mockRequestService.$( "getContext", mockEvent);
 
 		img = model.img( "includes/images/pio.jpg" );
-		assertEquals('<img src="http://www.coldbox.org/includes/images/pio.jpg" />', img);
+		assertEquals('<img src="#encodeForHTMLAttribute( "http://www.coldbox.org/includes/images/pio.jpg" )#" />', img);
 
 		img = model.img( "http://hello.com/includes/images/pio.jpg" );
-		assertEquals('<img src="http://hello.com/includes/images/pio.jpg" />', img);
+		assertEquals('<img src="#encodeForHTMLAttribute( "http://hello.com/includes/images/pio.jpg" )#" />', img);
 
 		// no base url
 		mockEvent.$( "getSESBaseURL","" );
 		img = model.img( "includes/images/pio.jpg" );
-		assertEquals('<img src="includes/images/pio.jpg" />', img);
+		assertEquals('<img src="#encodeForHTMLAttribute( "includes/images/pio.jpg" )#" />', img);
 	}
 
 	function testLink(){
@@ -169,7 +166,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	function testAddJSContent(){
 		str  = model.addJSContent('function test(){ alert( "luis" ); }');
 		// debug(str);
-		assertEquals('<script type="text/javascript">function test(){ alert( "luis" ); }</script>', str);
+		assertEquals('<script>function test(){ alert( "luis" ); }</script>', str);
 	}
 
 	function testAddStyleContent(){
@@ -185,20 +182,28 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		2 | peter" );
 
 		str = model.table(data=data);
-		assertEquals( "<table><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>",
-					 str);
+		assertEquals(  
+			xmlParse( "<table><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>" ),
+			xmlParse( str )
+		);
 
 		str = model.table(data=data,class="test" );
-		assertEquals('<table class="test"><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>',
-					 str);
+		assertEquals( 
+			xmlParse( "<table class='test'><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>" ),
+			xmlParse( str ) 
+		);
 
 		str = model.table(data=data,includes="name",class="test" );
-		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
-					 str);
+		assertEquals( 
+			xmlParse( "<table class='test'><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>" ),
+			xmlParse( str ) 
+		);
 
 		str = model.table(data=data,excludes="id",class="test" );
-		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
-					 str);
+		assertEquals( 
+			xmlParse( "<table class='test'><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>" ),
+			xmlParse( str ) 
+		);
 	}
 
 	function testTableORM() skip="true"{
@@ -237,7 +242,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		var str = model.table( data=data );
 		expect(	str ).toInclude( '<th>NAME</th>' )
 			.toInclude( "<th>EMAIL</th>" )
-			.toInclude( "testing@testing.com" );
+			.toInclude( "testing&##x40;testing.com" );
 	}
 
 	function testSlugify(){
@@ -294,33 +299,33 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = model.endForm();
 		assertEquals( "</form>",str);
 
-		str = model.startForm(action='user.save');
+		str = model.startForm( action='user.save' );
 		//debug(str);
-		assertTrue( findNoCase( 'action="index.cfm?event=user.save"', str)  );
+		assertTrue( findNoCase( 'user.save"', str)  );
 
 		var mockEvent = getMockRequestContext()
 			.$( "buildLink", "http://www.coldbox.org/user/save" );
 		mockRequestService.$( "getContext", mockEvent);
 		str = model.startForm(action='user.save');
 		//debug(str);
-		assertTrue( findNoCase( 'action="http://www.coldbox.org/user/save"', str ) );
+		assertTrue( findNoCase( 'action="#encodeForHTMLAttribute( "http://www.coldbox.org/user/save" )#"', str ) );
 
 		var mockEvent = getMockRequestContext()
 			.$( "buildLink", "https://www.coldbox.org/user/save" );
 		mockRequestService.$( "getContext", mockEvent);
 		str = model.startForm(action='user.save',ssl=true);
 		//debug(str);
-		assertTrue( findNoCase( 'action="https://www.coldbox.org/user/save"', str ) );
+		assertTrue( findNoCase( 'action="#encodeForHTMLAttribute( "https://www.coldbox.org/user/save" )#"', str ) );
 
 		str = model.startForm(action='user.save',method="get",name="userForm" );
 		//debug(str);
-		assertTrue( findNoCase( 'action="https://www.coldbox.org/user/save"', str) );
+		assertTrue( findNoCase( 'action="#encodeForHTMLAttribute( "https://www.coldbox.org/user/save" )#"', str) );
 
 		// self-submitting
 		mockEvent.$( "getCurrentEvent","user.home" ).$( "buildLink", "https://www.coldbox.org/user/home" );
 		str = model.startForm();
 		// debug(str);
-		assertTrue( findNoCase( 'action="https://www.coldbox.org/user/home"', str ) );
+		assertTrue( findNoCase( 'action="#encodeForHTMLAttribute( "https://www.coldbox.org/user/home" )#"', str ) );
 	}
 
 	function testLabel(){
@@ -334,14 +339,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		//debug(str);
 		assertEquals('<div><label for="name">My Name</label></div>', str);
 
-		str = model.label(field="name",content="My Name", wrapper="div", wrapperAttrs= { "class" = "label-wrapper", "id" = "label-wrapper-id" });
-		// debug(str);
-		assertEquals('<div id="label-wrapper-id" class="label-wrapper"><label for="name">My Name</label></div>',str);
 	}
 
 	function testTextArea(){
 		str = model.textarea(name="message" );
-		assertEquals('<textarea name="message" id="message"></textarea>', str);
+		assertEquals( xmlParse( '<textarea name="message" id="message"></textarea>' ), xmlParse( str ) );
 
 		str = model.textarea(name="message",value="Hello" );
 		assertEquals('<textarea name="message" id="message">Hello</textarea>', str);
@@ -352,26 +354,6 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = model.textarea(name="message",value="Hello",label="Message",wrapper="div" );
 		// debug(str);
 		assertEquals('<label for="Message">Message</label><div><textarea name="message" id="message">Hello</textarea></div>', str);
-
-		str = model.textarea(name="message",value="Hello",label="Message",wrapper="div",wrapperAttrs= { "class" = "wrapper-class", id = "wrapper-id" });
-		assertEquals('<label for="message">Message</label><div id="wrapper-id" class="wrapper-class"><textarea name="message" id="message">Hello</textarea></div>', str);
-
-		str = model.textarea(name="message",value="Hello",label="Message",groupWrapper="div" );
-		assertEquals('<div><label for="message">Message</label><textarea name="message" id="message">Hello</textarea></div>', str);
-
-		str = model.textarea(name="message",value="Hello",label="Message",groupWrapper="div",groupWrapperAttrs= { "class" = "group-wrapper-class", "id" = "group-wrapper-id" });
-		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="message">Message</label><textarea name="message" id="message">Hello</textarea></div>', str);
-
-		str = model.textarea(name="message",value="Hello",label="Message",labelWrapper="div" );
-		assertEquals('<div><label for="message">Message</label></div><textarea name="message" id="message">Hello</textarea>', str);
-
-		str = model.textarea(name="message",value="Hello",label="Message",labelWrapper="div",labelWrapperAttrs= { "class" = "label-wrapper-class", "id" = "label-wrapper-id" });
-		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></div><textarea name="message" id="message">Hello</textarea>', str);
-		// debug(str);
-
-		// ALL THE WRAPPERS
-		str = model.textarea(name="message",value="Hello",label="Message",labelWrapper="span",labelWrapperAttrs= { "class" = "label-wrapper-class", "id" = "label-wrapper-id" }, groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id" }, wrapper="div",wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id" });
-		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><span id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></span><div id="wrapper-id" class="wrapper-class"><textarea name="message" id="message">Hello</textarea></div></div>', str);
 
 		// entity binding
 		majano = entityLoad( "User",{lastName="Majano" }, true);
@@ -390,22 +372,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		str = model.passwordField(name="message",value="test", wrapper='div', wrapperAttrs= { "class" = "wrapper-class", "id" = "wrapper-id" });
 		assertEquals( xmlParse( '<div class="wrapper-class" id="wrapper-id"><input name="message" value="test" id="message" type="password"/></div>' ), xmlParse( str ) );
 
-		str = model.passwordField(name="message",value="test", label="Message" );
-		assertEquals( '<label for="message">Message</label><input type="password" name="message" value="test" id="message"/>',str );
-
-		str = model.passwordField(name="message",value="test", label="Message", labelWrapper='div');
-		assertEquals('<div><label for="message">Message</label></div><input type="password" name="message" value="test" id="message"/>',str);
-
-		str = model.passwordField(name="message",value="test", label="Message", labelWrapper='div', labelWrapperAttrs= { "class" = "label-wrapper-class", "id" = "label-wrapper-id" });
-		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></div><input type="password" name="message" value="test" id="message"/>', str );
-
-		str = model.passwordField(name="message",value="test", label="Message", groupWrapper='div',labelWrapper='span');
-		assertEquals('<div><span><label for="message">Message</label></span><input type="password" name="message" value="test" id="message"/></div>',str);
-
-		str = model.passwordField(name="message",value="test", label="Message", groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id" });
-		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="message">Message</label><input type="password" name="message" value="test" id="message"/></div>',str);
 	}
-
 
 	function testHiddenField(){
 		str = model.hiddenField(name="message" );
@@ -432,28 +399,12 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 	function testButton(){
 		str = model.button(name="message",value="hello",type="submit" );
-		assertEquals('<button name="message" type="submit" id="message">hello</button>' ,str);
-
-		str = model.button(name="message",value="hello",type="submit",label="Message" );
-		assertEquals('<label for="message">Message</label><button name="message" type="submit" id="message">hello</button>',str );
-
-		str = model.button(name="message",value="hello",type="submit",label="Message", labelWrapper="div" );
-		assertEquals('<div><label for="message">Message</label></div><button name="message" type="submit" id="message">hello</button>', str );
-
-		str = model.button(name="message",value="hello",type="submit",label="Message", labelWrapper="div", labelWrapperAttrs= { "class" = "label-wrapper-class", "id" = "label-wrapper-id" });
-		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="message">Message</label></div><button name="message" type="submit" id="message">hello</button>',str );
-
-		str = model.button(name="message",value="hello",type="submit",label="Message", wrapper="div" );
-		assertEquals('<label for="message">Message</label><div><button name="message" type="submit" id="message">hello</button></div>', str );
-
-		str = model.button(name="message",value="hello",type="submit",label="Message", wrapper="div", wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id" });
-		assertEquals('<label for="message">Message</label><div id="wrapper-id" class="wrapper-class"><button name="message" type="submit" id="message">hello</button></div>', str );
-
-		str = model.button(name="message",value="hello",type="submit",label="Message", groupWrapper="div" );
-		assertEquals('<div><label for="message">Message</label><button name="message" type="submit" id="message">hello</button></div>', str );
-
-		str = model.button(name="message",value="hello",type="submit",label="Message", groupWrapper="div", groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id" });
-		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="message">Message</label><button name="message" type="submit" id="message">hello</button></div>', str );
+		xml = xmlParse( str );
+		expect(	xml.button.xmlText ).toBe( "hello" );
+		expect(	xml.button.XMLAttributes )
+			.toHaveKey( "name" )
+			.toHaveKey( "type" )
+			.toHaveKey( "id" );
 	}
 
 	function testFileField(){
@@ -501,7 +452,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 
 	function testsubmitButton(){
-		str = model.submitButton(name="message" );
+		str = model.submitButton( name="message" );
 		assertEquals( xmlParse( '<input name="message" value="Submit" id="message" type="submit"/>' ), xmlParse( str ) );
 
 	}
@@ -514,7 +465,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 	function testIMageButton(){
 		str = model.imageButton(name="message",src="includes/photo.jpg" );
-		assertTrue( findNocase('src="includes/photo.jpg"', str) );
+		assertTrue( findNocase('src="#encodeForHTMLAttribute( "includes/photo.jpg" )#"', str) );
 	}
 
 	function testOptions(){
@@ -570,30 +521,9 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		// debug( str );
 		assertEquals('<div><label for="users">Message</label></div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
 
-		str = model.select(name="users",options=[1,2,3], label="Message", labelWrapper="div", labelWrapperAttrs={ "class" = "label-wrapper-class", "id" = "label-wrapper-id" });
-		// debug( str );
-		assertEquals('<div id="label-wrapper-id" class="label-wrapper-class"><label for="users">Message</label></div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>', str);
-
 		str = model.select(name="users",options=[1,2,3], label="Message", wrapper='div');
 		// debug( str );
 		assertEquals('<label for="users">Message</label><div><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
-
-		str = model.select(name="users",options=[1,2,3], label="Message", wrapper='div', wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id" });
-		// debug( str );
-		assertEquals('<label for="users">Message</label><div id="wrapper-id" class="wrapper-class"><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
-
-		str = model.select(name="users",options=[1,2,3], label="Message", groupWrapper='div');
-		// debug( str );
-		assertEquals('<div><label for="users">Message</label><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
-
-		str = model.select(name="users",options=[1,2,3], label="Message", groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id" });
-		// debug( str );
-		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><label for="users">Message</label><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>', str);
-
-		str = model.select(name="users",options=[1,2,3], label="Message", labelWrapper='span', labelWrapperAttrs = { "class" = "label-wrapper-class", "id" = "label-wrapper-id" }, wrapper='div', wrapperAttrs = { "class" = "wrapper-class", "id" = "wrapper-id" }, groupWrapper='div', groupWrapperAttrs = { "class" = "group-wrapper-class", "id" = "group-wrapper-id" });
-		// debug( str );
-		assertEquals('<div id="group-wrapper-id" class="group-wrapper-class"><span id="label-wrapper-id" class="label-wrapper-class"><label for="users">Message</label></span><div id="wrapper-id" class="wrapper-class"><select name="users" id="users"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div>', str);
-
 	}
 
 	function testAnchor(){
@@ -609,11 +539,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	function testhref(){
 		str = model.href(href="actions.save" );
 		// debug(str);
-		assertEquals('<a href="index.cfm?event=actions.save"></a>', str);
+		assertEquals('<a href="#encodeForHTMLAttribute( "index.cfm?event=actions.save" )#"></a>', str);
 
 		str = model.href(href="actions.save",text="Edit" );
 		// debug(str);
-		assertEquals('<a href="index.cfm?event=actions.save">Edit</a>', str);
+		assertEquals('<a href="#encodeForHTMLAttribute( "index.cfm?event=actions.save" )#">Edit</a>', str);
 	}
 
 
@@ -656,17 +586,25 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 			wrapper = "div class='form-control'",
 			groupWrapper = "div class='form-group'"
 		);
-		expect(	str ).toBe( '<div class=''form-group''><div class=''form-control''><input type="text" name="luis" value="luis" id="luis"/></div></div>' );
+		expect(	str )
+			.toInclude( '<div class=''form-group''><div class=''form-control''>' )
+			.toInclude( '</div></div>' );
 	}
 
 	function testLabelAttrs() {
 		var str = model.checkbox(name='luis',value=1,label='luis?',labelAttrs={title='Check this box for luis'});
-		expect ( str ).toBe('<label for="luis" title="Check this box for luis">luis?</label><input type="checkbox" name="luis" value="1" id="luis"/>');
+		expect( xmlparse( "<root>#str#</root>" ) )
+			.toBe( xmlParse( '<root><label for="luis" title="Check this box for luis">luis?</label><input type="checkbox" name="luis" value="1" id="luis"/></root>' ) );
 	}
 
 	function testInputInsideLabel() {
 		var str = model.checkbox(name='luis',value=1,label='luis?',labelAttrs={title='Check this box for luis'}, inputInsideLabel=1);
-		expect ( str ).toBe('<label for="luis" title="Check this box for luis"><input type="checkbox" name="luis" value="1" id="luis"/>luis?</label>');
+		expect( xmlParse( "<root>#str#</root>" ) )
+			.toBe(
+				xmlParse( 
+					'<root><label for="luis" title="Check&##x20;this&##x20;box&##x20;for&##x20;luis"><input value="1" name="luis" id="luis" type="checkbox"/>luis&##x3f;</label></root>'
+				)
+			);
 	}
 
 </cfscript>

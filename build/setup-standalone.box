@@ -1,3 +1,0 @@
-# fileCopy build/lib/lucee-web.xml.cfm "`server status name\=$1 --json | #structFind serverHome`"
-# Copy Lucee server config
-#fileCopy build/lib/lucee-server.xml /home/travis/.CommandBox/engine/cfml/server/lucee-server/context

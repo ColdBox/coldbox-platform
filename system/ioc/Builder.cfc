@@ -716,8 +716,15 @@
 				target.injectPropertyMixin( propertyName, propertyValue );
 				// Do we need to do automatic generic getter/setters
 				if( generateAccessors and baseProperties.keyExists( propertyName ) ){
-					target[ "get" & propertyName ] = variables.genericGetter;
-					target[ "set" & propertyName ] = variables.genericSetter;
+
+					if( ! structKeyExists( target, "get#propertyName#" ) ){
+						target.injectMixin( "get" & propertyName, variables.genericGetter );
+					}
+
+					if( ! structKeyExists( target, "set#propertyName#" ) ){
+						target.injectMixin( "set" & propertyName, variables.genericSetter );
+					}
+
 				}
 			} );
 
@@ -725,16 +732,6 @@
 		arguments.target.$super = baseObject;
 
 		return arguments.target;
-		/**
-		 * NOT NEEDED ANYMORE SINCE WE NOW COPY OVER THE STATE OF THE OBJECT
-		// Verify if we need to init the virtualized object
-		if( structKeyExists( arguments.target, "$superInit" ) ){
-			// get super constructor arguments.
-			constructorArgs = buildArgumentCollection( arguments.mapping, arguments.mapping.getDIConstructorArguments(), baseObject );
-			// Init the virtualized inheritance
-			arguments.target.$superInit( argumentCollection=constructorArgs );
-		}
-		**/
 	}
 
 	/**

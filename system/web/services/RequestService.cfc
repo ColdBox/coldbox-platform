@@ -48,20 +48,32 @@ component extends="coldbox.system.web.services.BaseService"{
 		var context 	= getContext();
 		var rc			= context.getCollection();
 		var prc 		= context.getCollection( private=true );
-		var fwCache		= false;
 
 		// Capture FORM/URL
 		if( isDefined( "FORM" ) ){ structAppend( rc, FORM ); }
 		if( isDefined( "URL" )  ){ structAppend( rc, URL ); }
 
+		// If the inbound content body is a JSON payload capture it
+		if( 
+			len( context.getHTTPContent() ) 
+			&& isJSON(  context.getHTTPContent() ) 
+		) {
+			var payload = context.getHTTPContent( json=true );
+			if( isStruct( payload ) ){
+				structAppend( rc, payload );
+			}
+		}
+		
 		// Configure decorator if available?
-		if ( structKeyExists( context, "configure" ) ){ context.configure(); }
+		if ( structKeyExists( context, "configure" ) ){ 
+			context.configure(); 
+		}
 
 		// Execute onRequestCapture interceptionPoint
 		variables.interceptorService.processState( "onRequestCapture" );
 
 		// Remove FW reserved commands just in case before collection snapshot
-		fwCache = structKeyExists( rc,"fwCache" );
+		var fwCache = structKeyExists( rc, "fwCache" );
 		structDelete( rc, "fwCache" );
 
 		// Take snapshot of incoming collection
@@ -70,7 +82,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Do we have flash elements to inflate?
 		if( variables.flashScope.flashExists() ){
 			if( variables.log.canDebug() ){
-				variables.log.debug("Flash RAM detected, inflating flash...");
+				variables.log.debug( "Flash RAM detected, inflating flash." );
 			}
 			variables.flashScope.inflateFlash();
 		}
@@ -105,7 +117,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * @fwCache Flag to hard purge the cache if needed
 	 */
 	RequestService function eventCachingTest( required context, boolean fwCache=false ){
-		var eventCache   	= structnew();
+		var eventCache   	= {};
 		var oEventURLFacade = variables.templateCache.getEventURLFacade();
 		var currentEvent    = arguments.context.getCurrentEvent();
 
@@ -216,6 +228,16 @@ component extends="coldbox.system.web.services.BaseService"{
 	RequestService function buildFlashScope(){
 		var flashPath = "";
 
+		// Verify Flash decisions
+		if( variables.flashData.scope == "session" and !isDefined( "session") ){
+			log.error( "Flash RAM was set to use session but session is undefined, changing it to cache for you so we don't blow up.");
+			variables.flashData.scope = "cache";
+		}
+		if( variables.flashData.scope == "client" and !isDefined( "client") ){
+			log.error( "Flash RAM was set to use client but client is undefined, changing it to cache for you so we don't blow up.");
+			variables.flashData.scope = "cache";
+		}
+
 		// Shorthand Flash Types
 		switch( variables.flashData.scope ){
 			case "session" : {
@@ -224,10 +246,6 @@ component extends="coldbox.system.web.services.BaseService"{
 			}
 			case "client" : {
 				flashpath = "coldbox.system.web.flash.ClientFlash";
-				break;
-			}
-			case "cluster" : {
-				flashpath = "coldbox.system.web.flash.ClusterFlash";
 				break;
 			}
 			case "cache" : {

@@ -20,7 +20,7 @@ component{
 			// By default it registeres itself on server scope
 			scopeRegistration = {
 				enabled = true,
-				scope   = "server", // server, cluster, session
+				scope   = "server", // server, session
 				key		= "cacheBox"
 			},
 			

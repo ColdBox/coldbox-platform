@@ -22,19 +22,17 @@ Description :
 
 	<cffunction name="testgetUniqueHash" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			routedStruct = { name = "luis" };
+			var routedStruct = { name = "luis" };
 
 			/* Mocks */
-			context = createMock( 'coldbox.system.web.context.RequestContext' )
-				.setRoutedStruct( routedStruct );
-			context.$( "getValue", "123" );
+			var context = createMock( 'coldbox.system.web.context.RequestContext' )
+				.setRoutedStruct( routedStruct )
+				.setContext( {
+					event 	: "main.index",
+					id 		: "123"
+				} );
 
-			/* setup url vars */
-			url.event   = 'main.index';
-			url.id      = "123";
-			url.fwCache = "True";
-
-			testHash = facade.getUniqueHash( context );
+			var testHash = facade.getUniqueHash( context );
 
 			AssertTrue( len( testHash ) );
 		</cfscript>
@@ -42,51 +40,49 @@ Description :
 
 	<cffunction name="testbuildHash" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			event = "main.index";
-			args = "id=1";
-			myStruct[ "id" ] = 1;
+			var args = "id=1&name=luis";
+			var testHash = facade.buildHash( args );
+			var testargs = {
+				"id" : 1,
+				"name" : "luis"
+			};
+			var target = {
+				"incomingHash" : hash( testargs.toString() ),
+				"cgihost" : cgi.http_host
+			};
 
-			testHash = facade.buildHash(args);
-
-			myStruct['cgihost'] = cgi.http_host;
-
-			AssertEquals( testHash, hash(myStruct.toString()) );
+			expect( testHash ).toBe( hash( target.toString() ) );
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="testbuildEventKey" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			routedStruct = { name = "majano" };
-
 			/* Mocks */
-			context = createMock( 'coldbox.system.web.context.RequestContext' );
-			context.setRoutedStruct( routedStruct )
-			       .$( "getValue","123" );
+			var context = createMock( 'coldbox.system.web.context.RequestContext' );
+			context.setRoutedStruct( {
+					"name" : "majano"
+				} )
+				.setContext( {
+					event 	: "main.index",
+					id 		: "123"
+				} );
 
-			/* setup url vars */
-			url.event = 'main.index';
-			url.id = "123";
-			url.fwCache="True";
+			var testCacheKey 	= facade.buildEventKey( "unittest", "main.index", context );
+			var uniqueHash 		= facade.getUniqueHash( context );
+			var targetKey 		= cm.getEventCacheKeyPrefix() & "main.index-unittest-" & uniqueHash;
 
-			testCacheKey = facade.buildEventKey( "unittest","main.index",context);
-			uniqueHash = facade.getUniqueHash(context);
-			targetKey = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & uniqueHash;
-
-			AssertEquals( testCacheKey, targetKey );
+			expect( testCacheKey ).toBe( targetKey );
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="testbuildEventKeyNoContext" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			event = "main.index";
-			args = "id=1";
-			myStruct[ "id" ] = 1;
-			myStruct['cgihost'] = cgi.http_host;
+			var args = "id=1";
 
-			testCacheKey = facade.buildEventKeyNoContext( "unittest","main.index",args);
-			targetKey = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & hash(myStruct.toString());
+			var testCacheKey = facade.buildEventKeyNoContext( "unittest", "main.index", args );
+			var targetKey = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & facade.buildHash( args );
 
-			AssertEquals( testCacheKey, targetKey  );
+			expect( testCacheKey ).toBe( targetKey );
 		</cfscript>
 	</cffunction>
 

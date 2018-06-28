@@ -420,7 +420,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 					event 			= arguments.event,
 					private 		= arguments.private,
 					prepostExempt	= arguments.prepostExempt,
-					eventArguments 	= arguments.eventArguments
+					eventArguments 	= arguments.eventArguments,
+					defaultEvent 	= true
 				);
 
 				// Are we doing rendering procedures?

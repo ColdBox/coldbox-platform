@@ -64,7 +64,6 @@
 			scope.getScope( "server" );
 			scope.getScope( "client" );
 			scope.getScope( "cookie" );
-			scope.getScope( "cluster" );
 		</cfscript>
 	</cffunction>
 

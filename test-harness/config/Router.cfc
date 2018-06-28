@@ -79,7 +79,6 @@ component{
 
 		// Default Application Routing
 		route( ":handler/:action?/:id-numeric?" )
-			.rcAppend( { isFound=true, testDate=now() } )
 			.end();
 
 
