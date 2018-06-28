@@ -164,10 +164,11 @@
         	</fileset>
         </copy>
 
-		<!-- Move Install folder -->
+		<!-- Move Install folder
 		<copy todir="${dir.build}/coldbox/install" encoding="UTF-8" overwrite="true">
         	<fileset dir="install" />
         </copy>
+		-->
 
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/coldbox/" encoding="UTF-8" overwrite="true">
@@ -215,8 +216,9 @@
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-apidocs-${coldbox.version}.zip" basedir="${dir.coldbox.apidocs}" />
 
-		<!-- Zip IDE Extras -->
+		<!-- Zip IDE Extras
 		<zip destfile="${dir.coldbox.exports}/coldbox-ide-${coldbox.version}.zip" basedir="${dir.build}/coldbox/install/IDE Extras" />
+		-->
 
 		<!-- Zip ColdBox Bundle -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" basedir="${dir.build}/coldbox" />
