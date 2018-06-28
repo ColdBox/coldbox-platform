@@ -5,8 +5,6 @@ component{
 		//setFullRewrites( false );
 
 		// Redirects
-		route( "/" )
-			.toRedirect( target="ui", statusCode=301 );
 		route( "/tempRoute" )
 			.toRedirect( "/main/redirectTest", 302 );
 		route( "/oldRoute" )
