@@ -126,7 +126,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		// Loose matching flag for regex matches
 		variables.looseMatching = false;
 		// Flag to enable unique or not URLs
-		variables.uniqueURLs = true;
+		variables.uniqueURLs = false;
 		// Enable the interceptor by default
 		variables.enabled = true;
 		// Detect extensions flag, so it can place a 'format' variable on the rc
