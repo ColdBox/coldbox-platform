@@ -29,13 +29,19 @@ addons:
     - mysql-client-core-5.6
     - mysql-client-5.6
 
+before_install:
+  # CommandBox Keys
+  - sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
+  - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
+    /etc/apt/sources.list.d/commandbox.list
+
 install:
   # Install CommandBox
-  - sudo bash -c "$(curl -fsSL https://commandbox.stg.ortushq.com/install.sh) 4.0.0"
+  #- sudo bash -c "$(curl -fsSL https://commandbox.stg.ortushq.com/install.sh)" 4.0.0
   # Make CommandBox usable by travis user so I don't have to change anything
-  - sudo chmod 777 /usr/local/bin/box
+  # - sudo chmod 777 /usr/local/bin/box
   # Install Commandbox + Supporting Utilities
-  - sudo apt-get update && sudo apt-get --assume-yes install haveged jq
+  - sudo apt-get update && sudo apt-get --assume-yes install commandbox haveged jq
   # Install dependencies
   - box install && box install commandbox-cfconfig
   # Store the Ortus API Key for forgebox publishing in `master`
