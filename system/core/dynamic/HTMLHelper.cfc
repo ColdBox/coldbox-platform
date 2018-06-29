@@ -1417,7 +1417,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	function inputField(
 		type="text",
 		name="",
-		value=""
+		value="",
 		boolean disabled=false,
 		boolean checked=false,
 		boolean readonly=false,
