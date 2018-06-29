@@ -2640,7 +2640,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * #html.contacts( class='bold', content='My Contacts' )# -> <contacts class='bold'>My Contacts</contacts>
 	 * </pre>
 	 */
-	private function onMissingMethod( missingMethodName, missingMethodArguments ){
+	function onMissingMethod( missingMethodName, missingMethodArguments ){
 		arguments.missingMethodArguments.tag = arguments.missingMethodName;
 
 		// Positional Content
