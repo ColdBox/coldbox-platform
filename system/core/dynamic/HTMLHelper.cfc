@@ -42,8 +42,8 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	}
 
 	/**
-	 * Add a js/css asset(s) to the html head section. You can also pass in a list of assets via the 
-	 * asset argument to try to load all of them.	You can also make this method return the string 
+	 * Add a js/css asset(s) to the html head section. You can also pass in a list of assets via the
+	 * asset argument to try to load all of them.	You can also make this method return the string
 	 * that will be sent to the header instead.
 	 *
 	 * If the setings: htmlHelper_js_path exists, we will use it as a prefix for JS files
@@ -56,8 +56,8 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * @async HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
 	 * @defer HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)
 	 */
-	function addAsset( 
-		required asset, 
+	function addAsset(
+		required asset,
 		boolean sendToHeader=true,
 		boolean async=false,
 		boolean defer=false
@@ -66,18 +66,18 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		var event 	= controller.getRequestService().getContext();
 
 		// Global location settings
-		var jsPath 	= getSetting( "htmlhelper_js_path", "" );
-		var cssPath = getSetting( "htmlhelper_css_path", "" );
+		var jsPath 	= getSetting( name="htmlhelper_js_path",   defaultValue="" );
+		var cssPath = getSetting( name="htmlhelper_css_path",  defaultValue="" );
 
 		// Async HTML5 attribute
 		var asyncStr = "";
-		if( arguments.async ){ 
-			asyncStr = " async='async'"; 
+		if( arguments.async ){
+			asyncStr = " async='async'";
 		}
 		// Defer HTML5 attribute
 		var deferStr = "";
-		if( arguments.defer ){ 
-			deferStr = " defer='defer'"; 
+		if( arguments.defer ){
+			deferStr = " defer='defer'";
 		}
 
 		// request assets storage
@@ -124,7 +124,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	}
 
 	/**
-	 * Generate non-breaking spaces 
+	 * Generate non-breaking spaces
 	 * @count The number
 	 */
 	function nbs( numeric count=1 ){
@@ -174,7 +174,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 	/**
 	 * Create href tags, using the SES base URL or not
-	 * 
+	 *
 	 * @href Where to link to, this can be an action, absolute, etc If not set, we will create a link to the current executed event.
 	 * @text The text of the link
 	 * @queryString The query string to append, if needed.
@@ -225,7 +225,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 	/**
 	 * Create link tags, using the SES base URL or not
-	 * 
+	 *
 	 * @href The href link to link to
 	 * @rel The rel attribute
 	 * @type The type attribute
@@ -268,7 +268,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 	/**
 	 * Create image tags using the SES base URL or not
-	 * 
+	 *
 	 * @src The source URL to link to
 	 * @alt The alt tag
 	 * @class The class tag
@@ -412,8 +412,8 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		var tmpType = "";
 
 		// prep type
-		if( arguments.type eq "equiv" ){ 
-			arguments.type = "http-equiv"; 
+		if( arguments.type eq "equiv" ){
+			arguments.type = "http-equiv";
 		};
 
 		// Array of structs or simple value
@@ -722,9 +722,9 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		normalizeID( arguments );
 
 		// Multipart Encoding Type
-		if( arguments.multipart ){ 
-			arguments.enctype = "multipart/form-data"; 
-		} else { 
+		if( arguments.multipart ){
+			arguments.enctype = "multipart/form-data";
+		} else {
 			arguments.enctype = "";
 		}
 
@@ -788,7 +788,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * @class The class to be applied to the label
 	 * @labelMode 0 - Open and close the label tag with wrappers around it (default); 1 - Open the wrapper and the label but do not close them; 2- Output the content, close the label and the wrapper
 	 */
-	function label( 
+	function label(
 		required field,
 		content="",
 		struct labelAttrs={},
@@ -801,18 +801,18 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		var buffer = createObject( "java", "java.lang.StringBuilder" ).init( '' );
 
 		// get content
-		if( NOT len( content ) ){ 
-			arguments.content = makePretty( arguments.field ); 
+		if( NOT len( content ) ){
+			arguments.content = makePretty( arguments.field );
 		}
 		arguments.for = arguments.field;
 
 		if( arguments.labelMode == 0 || arguments.labelMode == 1 ){
 			// wrapper?
-			wrapTag( 
-				buffer = buffer, 
-				tag    = arguments.wrapper, 
-				end    = 0, 
-				attrs  = arguments.wrapperAttrs 
+			wrapTag(
+				buffer = buffer,
+				tag    = arguments.wrapper,
+				end    = 0,
+				attrs  = arguments.wrapperAttrs
 			);
 
 			// create label tag
@@ -825,10 +825,10 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		if( labelMode == 0 || labelMode == 2 ){
 			buffer.append( "#encodeForHTML( arguments.content )#</label>");
 			//wrapper?
-			wrapTag( 
-				buffer = buffer, 
-				tag    = arguments.wrapper, 
-				end    = 1 
+			wrapTag(
+				buffer = buffer,
+				tag    = arguments.wrapper,
+				end    = 1
 			);
 		}
 
@@ -1417,7 +1417,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	function inputField(
 		type="text",
 		name="",
-		value=""
+		value="",
 		boolean disabled=false,
 		boolean checked=false,
 		boolean readonly=false,
@@ -1440,44 +1440,44 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 		// ID Normalization
 		normalizeID( arguments );
-		
+
 		// group wrapper?
 		wrapTag( buffer, arguments.groupWrapper, 0, arguments.groupWrapperAttrs );
 
 		// label?
-		if( len( arguments.label ) ){ 
+		if( len( arguments.label ) ){
 			buffer.append(
-				this.label( 
+				this.label(
 					field        = arguments.id,
 					content      = arguments.label,
 					wrapper      = arguments.labelWrapper,
 					wrapperAttrs = arguments.labelWrapperAttrs,
 					class        = arguments.labelClass,
-					labelMode    = ( arguments.inputInsideLabel ? 1 : 0 ), 
-					labelAttrs   = arguments.labelAttrs 
-				) 
-			); 
+					labelMode    = ( arguments.inputInsideLabel ? 1 : 0 ),
+					labelAttrs   = arguments.labelAttrs
+				)
+			);
 		}
 		//wrapper?
 		wrapTag( buffer, arguments.wrapper, 0, arguments.wrapperAttrs );
 
 		// disabled fix
-		if( arguments.disabled ){ 
-			arguments.disabled = "disabled"; 
-		} else { 
-			arguments.disabled = ""; 
+		if( arguments.disabled ){
+			arguments.disabled = "disabled";
+		} else {
+			arguments.disabled = "";
 		}
 		// checked fix
-		if( arguments.checked ){ 
-			arguments.checked = "checked"; 
-		} else { 
-			arguments.checked = ""; 
+		if( arguments.checked ){
+			arguments.checked = "checked";
+		} else {
+			arguments.checked = "";
 		}
 		// readonly fix
-		if( arguments.readonly ){ 
-			arguments.readonly = "readonly"; 
-		} else { 
-			arguments.readonly = ""; 
+		if( arguments.readonly ){
+			arguments.readonly = "readonly";
+		} else {
+			arguments.readonly = "";
 		}
 
 		// binding?
@@ -1492,11 +1492,11 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 		// close label tag if inputInsideLabel
 		if( len( arguments.label ) && arguments.inputInsideLabel ){
-			buffer.append( 
+			buffer.append(
 				this.label(
-					field     = arguments.id, 
-					content   = arguments.label, 
-					wrapper   = arguments.labelWrapper, 
+					field     = arguments.id,
+					content   = arguments.label,
+					wrapper   = arguments.labelWrapper,
 					labelMode = 2
 				)
 			); // close the label tag if we have one opened
@@ -1672,8 +1672,8 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		);
 
 		// label?
-		if( len( arguments.label ) ){ 
-			buffer.append( 
+		if( len( arguments.label ) ){
+			buffer.append(
 				this.label(
 					field        = arguments.id,
 					content      = arguments.label,
@@ -1681,8 +1681,8 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 					wrapperAttrs = arguments.labelWrapperAttrs,
 					class        = arguments.labelClass,
 					labelAttrs   = arguments.labelAttrs
-				) 
-			); 
+				)
+			);
 		}
 
 		//wrapper?
@@ -1694,16 +1694,16 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		);
 
 		// disabled fix
-		if( arguments.disabled ){ 
-			arguments.disabled = "disabled"; 
-		} else { 
-			arguments.disabled = ""; 
+		if( arguments.disabled ){
+			arguments.disabled = "disabled";
+		} else {
+			arguments.disabled = "";
 		}
 		// multiple fix
-		if( arguments.multiple ){ 
-			arguments.multiple = "multiple"; 
-		} else { 
-			arguments.multiple = ""; 
+		if( arguments.multiple ){
+			arguments.multiple = "multiple";
+		} else {
+			arguments.multiple = "";
 		}
 
 		// create select
@@ -1724,14 +1724,14 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		if( isSimpleValue( arguments.options ) AND findnocase( "</option>", arguments.options ) ){
 			buffer.append( arguments.options );
 		} else {
-			buffer.append( 
+			buffer.append(
 				this.options(
 					arguments.options,
 					arguments.column,
 					arguments.nameColumn,
 					arguments.selectedIndex,
 					arguments.selectedValue
-				) 
+				)
 			);
 		}
 
@@ -1747,11 +1747,11 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 		// close label tag if inputInsideLabel
 		if( len( arguments.label ) && arguments.inputInsideLabel ){
-			buffer.append( 
+			buffer.append(
 				this.label(
-					field     = arguments.id, 
-					content   = arguments.label, 
-					wrapper   = arguments.labelWrapper, 
+					field     = arguments.id,
+					content   = arguments.label,
+					wrapper   = arguments.labelWrapper,
 					labelMode =  2
 				)
 			); // close the label tag if we have one opened
@@ -1816,42 +1816,42 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		normalizeID( arguments );
 
 		// group wrapper?
-		wrapTag( 
-			buffer, 
-			arguments.groupWrapper, 
-			0, 
-			arguments.groupWrapperAttrs 
+		wrapTag(
+			buffer,
+			arguments.groupWrapper,
+			0,
+			arguments.groupWrapperAttrs
 		);
 
 		// label?
-		if( len( arguments.label ) ){ 
-			buffer.append( 
+		if( len( arguments.label ) ){
+			buffer.append(
 				this.label(
 					field        = arguments.id,
 					content      = arguments.label,
 					wrapper      = arguments.labelWrapper,
 					wrapperAttrs = arguments.labelWrapperAttrs,
 					class        = arguments.labelClass,
-					labelMode    = ( arguments.inputInsideLabel ? 1 : 0 ),  
+					labelMode    = ( arguments.inputInsideLabel ? 1 : 0 ),
 					labelAttrs   = arguments.labelAttrs
-				) 
-			); 
+				)
+			);
 		}
 
 		//wrapper?
-		wrapTag( 
-			buffer, 
-			arguments.wrapper, 
-			0, 
-			arguments.wrapperAttrs 
+		wrapTag(
+			buffer,
+			arguments.wrapper,
+			0,
+			arguments.wrapperAttrs
 		);
 
 		// disabled fix
-		if( arguments.disabled ){ 
-			arguments.disabled = "disabled"; 
+		if( arguments.disabled ){
+			arguments.disabled = "disabled";
 		}
-		else{ 
-			arguments.disabled = ""; 
+		else{
+			arguments.disabled = "";
 		}
 
 		// create textarea
@@ -1867,13 +1867,13 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 		// close label tag if inputInsideLabel?
 		if ( len( arguments.label ) && arguments.inputInsideLabel ){
-			buffer.append( 
+			buffer.append(
 				this.label(
-					field     = arguments.id, 
-					content   = arguments.label, 
-					wrapper   = arguments.labelWrapper, 
+					field     = arguments.id,
+					content   = arguments.label,
+					wrapper   = arguments.labelWrapper,
 					labelMode = 2
-				) 
+				)
 			); // close the label tag if we have one opened
 		}
 
@@ -2265,7 +2265,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * @buffer The output buffer
 	 */
 	function objectsToTable(
-		required data, 
+		required data,
 		string includes="",
 		string excludes="",
 		required buffer
@@ -2314,7 +2314,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * @buffer The output buffer
 	 */
 	function arrayToTable(
-		required data, 
+		required data,
 		string includes="",
 		string excludes="",
 		required buffer
@@ -2356,7 +2356,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * @buffer The output buffer
 	 */
 	function queryToTable(
-		required data, 
+		required data,
 		string includes="",
 		string excludes="",
 		required buffer
@@ -2378,7 +2378,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		// Render Body from query
 		for( var thisRow in arguments.data ){
 			arguments.buffer.append( "<tr>" );
-			
+
 			columns.each( function( item ){
 				buffer.append( "<td>#encodeForHTML( thisRow[ item ] )#</td>" );
 			} );
@@ -2410,16 +2410,16 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		var args	= "";
 
 		// list or array or query?
-		if( isSimpleValue( val ) ){ 
-			val = listToArray( val ); 
+		if( isSimpleValue( val ) ){
+			val = listToArray( val );
 		}
-		if( isQuery( val ) ){ 
-			val = getColumnArray( val, arguments.column ); 
+		if( isQuery( val ) ){
+			val = getColumnArray( val, arguments.column );
 		}
 
 		// start tag
 		buffer.append( "<#arguments.tag#" );
-		
+
 		// flatten extra attributes via arguments
 		flattenAttributes( arguments, "tag,values,column", buffer ).append( ">" );
 
@@ -2433,7 +2433,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		}
 
 		buffer.append( "</#arguments.tag#>" );
-		
+
 		return buffer.toString();
 	}
 
@@ -2452,9 +2452,9 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 				// check if name exists else throw exception
 				if( NOT structKeyExists( arguments.args, "name" ) OR NOT len( arguments.args.name ) ){
-					throw( 
-						type 	= "HTMLHelper.NameBindingException", 
-						message = "The 'name' argument was not passed and no binding property was passed, so we can't bind dude!" 
+					throw(
+						type 	= "HTMLHelper.NameBindingException",
+						message = "The 'name' argument was not passed and no binding property was passed, so we can't bind dude!"
 					);
 				}
 
@@ -2464,7 +2464,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 			// entity value
 			var entityValue = invoke( arguments.args.bind, "get#arguments.args.bindProperty#" );
-			
+
 			if( isNull( entityValue ) ){
 				entityValue = "";
 			}
@@ -2502,10 +2502,10 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * @args The argument structures
 	 */
 	private function normalizeID( required args ){
-		if( 
-			structKeyExists( arguments.args, "name" ) AND 
-			len( arguments.args.name ) AND 
-			NOT structKeyExists( arguments.args, "id" ) 
+		if(
+			structKeyExists( arguments.args, "name" ) AND
+			len( arguments.args.name ) AND
+			NOT structKeyExists( arguments.args, "id" )
 		){
 			arguments.args.id = arguments.args.name;
 		}
@@ -2521,7 +2521,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * @attrs The attributes of the tag
 	 *
 	 */
-	private function wrapTag( 
+	private function wrapTag(
 		required buffer,
 		required tag,
 		boolean end=false,
@@ -2562,8 +2562,8 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	private string function prepareBaseLink( boolean noBaseURL=false, src ){
 		var baseURL = replacenocase( controller.getRequestService().getContext().getSESbaseURL() ,"index.cfm", "" );
 		// return if base is eempty
-		if( NOT len( baseURL ) ){ 
-			return arguments.src; 
+		if( NOT len( baseURL ) ){
+			return arguments.src;
 		}
 
 		// Check if we have a base URL
@@ -2631,7 +2631,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 	/**
 	 * Intercepts any XX() call to the helper, meaning rendering ANY type of tag.
-	 * The first positional argument will be treated as the content of the tag or you can use 
+	 * The first positional argument will be treated as the content of the tag or you can use
 	 * the <code>content</code> argument directly:
 	 *
 	 * <pre>
@@ -2640,7 +2640,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * #html.contacts( class='bold', content='My Contacts' )# -> <contacts class='bold'>My Contacts</contacts>
 	 * </pre>
 	 */
-	private function onMissingMethod( missingMethodName, missingMethodArguments ){
+	function onMissingMethod( missingMethodName, missingMethodArguments ){
 		arguments.missingMethodArguments.tag = arguments.missingMethodName;
 
 		// Positional Content
@@ -2661,7 +2661,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 */
 	private array function getColumnArray( required qry, required columnName ){
 		var results = [];
-		
+
 		// Done this way as ACF is so iconsistent
 		for( var thisRow in arguments.qry ){
 			results.append( thisRow[ arguments.columnName ] );

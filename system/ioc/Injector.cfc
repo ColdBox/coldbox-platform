@@ -196,6 +196,9 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				variables.eventManager = variables.coldbox.getInterceptorService();
 			}
 
+			// Create and Configure Event Manager
+			configureEventManager();
+
 			// Store binder object built accordingly to our binder building procedures
 			variables.binder = buildBinder( arguments.binder, arguments.properties );
 
@@ -207,8 +210,6 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				configureCacheBox( variables.binder.getCacheBoxConfig() );
 			}
 
-			// Create and Configure Event Manager
-			configureEventManager();
 			// Register All Custom Listeners
 			registerListeners();
 			// Create our object builder
@@ -1139,16 +1140,12 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		// Use or create event manager
 		if( isColdBoxLinked() && isObject( variables.eventManager ) ){
 			// Link Interception States
-			variables.eventManager.appendInterceptionPoints( arrayToList(variables.eventStates) );
+			variables.eventManager.appendInterceptionPoints( variables.eventStates );
 			return this;
 		}
 
 		// create event manager
 		variables.eventManager = new coldbox.system.core.events.EventPoolManager( variables.eventStates );
-		// Debugging
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Registered injector's event manager with the following event states: #variables.eventStates.toString()#" );
-		}
 
 		return this;
 	}
