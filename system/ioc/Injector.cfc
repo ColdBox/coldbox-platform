@@ -1146,10 +1146,6 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 		// create event manager
 		variables.eventManager = new coldbox.system.core.events.EventPoolManager( variables.eventStates );
-		// Debugging
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Registered injector's event manager with the following event states: #variables.eventStates.toString()#" );
-		}
 
 		return this;
 	}
