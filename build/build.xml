@@ -10,8 +10,8 @@
 
 	<!-- UPDATE ON EACH VERSION CYCLE -->
 	<property name="groupID"				value="ortussolutions" />
-	<property name="coldbox.version" 		value="5.1.1" />
-	<property name="coldbox.stableversion" 	value="5.1.0" />
+	<property name="coldbox.version" 		value="5.2.0" />
+	<property name="coldbox.stableversion" 	value="5.1.1" />
 	<property name="coldbox.slug"	 		value="coldbox"/>
 	<property name="cachebox.slug"	 		value="cachebox"/>
 	<property name="logbox.slug"	 		value="logbox"/>
