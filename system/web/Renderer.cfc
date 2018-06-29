@@ -118,10 +118,10 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	 * set the explicit view bit, used mostly internally
-	 * 
+	 *
 	 * @view The name of the view to render
 	 * @module The name of the module this view comes from
-	 * 
+	 *
 	 * @return Renderer
 	*/
 	function setExplicitView( required view, module="" ){
@@ -134,7 +134,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	 * Render out a view
-	 * 
+	 *
 	 * @view The the view to render, if not passed, then we look in the request context for the current set view.
 	 * @args A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	 * @module The module to render the view from explicitly
@@ -183,7 +183,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 				throw(
 					message = "Invalid rendering region: #arguments.name#",
 					detail 	= "Valid regions are: #structKeyList( regions )#",
-					type 	= "InvalidRenderingRegion" 
+					type 	= "InvalidRenderingRegion"
 				);
 			}
 			// Incorporate region data
@@ -202,8 +202,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 				setExplicitView( {} );
 			}
 			// Render the view in the context
-			else{ 
-				arguments.view = event.getCurrentView(); 
+			else{
+				arguments.view = event.getCurrentView();
 			}
 		}
 
@@ -279,9 +279,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		// Render simple composite view
 		else{
 			iData.renderedView = renderViewComposite(
-				arguments.view, 
-				viewLocations.viewPath, 
-				viewLocations.viewHelperPath, 
+				arguments.view,
+				viewLocations.viewPath,
+				viewLocations.viewHelperPath,
 				arguments.args
 			);
 		}
@@ -338,13 +338,13 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 					buffer.append( arguments.collectionDelim );
 				}
 				// render item composite
-				buffer.append( 
-					renderViewComposite( 
-						arguments.view, 
-						arguments.viewPath, 
-						arguments.viewHelperPath, 
-						arguments.args 
-					) 
+				buffer.append(
+					renderViewComposite(
+						arguments.view,
+						arguments.viewPath,
+						arguments.viewHelperPath,
+						arguments.args
+					)
 				);
 			}
 			return buffer.toString();
@@ -367,20 +367,20 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			for( var j=1; j <= listLen( columnList ); j++){
 				variables[ arguments.collectionAs ][ ListGetAt( columnList, j ) ] = arguments.collection[ ListGetAt( columnList, j ) ][ x ];
 			}
-			
+
 			// prepend the delim
 			if ( variables._counter NEQ 1 ) {
 				buffer.append( arguments.collectionDelim );
 			}
-			
+
 			// render item composite
-			buffer.append( 
-				renderViewComposite( 
-					arguments.view, 
-					arguments.viewPath, 
-					arguments.viewHelperPath, 
+			buffer.append(
+				renderViewComposite(
+					arguments.view,
+					arguments.viewPath,
+					arguments.viewHelperPath,
 					arguments.args
-				) 
+				)
 			);
 			_localCounter++;
 		}
@@ -412,9 +412,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			}
 
 			// view helpers ( directory + view + whatever )
-			if( 
+			if(
 				arguments.viewHelperPath.len() AND
-				NOT variables.renderedHelpers.keyExists( hash( arguments.viewHelperPath.toString() ) ) 
+				NOT variables.renderedHelpers.keyExists( hash( arguments.viewHelperPath.toString() ) )
 			){
 				arguments.viewHelperPath.each( function( item ){
 					include "#arguments.item#";
@@ -468,12 +468,12 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		// Get view locations
 		viewLocations = discoverViewPaths( view=arguments.view, module="", explicitModule=false );
 		// Render External View
-		cbox_renderedView = renderViewComposite( 
+		cbox_renderedView = renderViewComposite(
 			view           = view,
 			viewPath       = viewLocations.viewPath,
 			viewHelperPath = viewLocations.viewHelperPath,
 			args           = args,
-			renderer       = this 
+			renderer       = this
 		);
 		// Are we caching it
 		if( arguments.cache && variables.viewCaching ){
@@ -486,7 +486,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	 * Render a layout or a layout + view combo
-	 * 
+	 *
 	 * @layout The layout to render out
 	 * @module The module to explicitly render this layout from
 	 * @view The view to render within this layout
@@ -512,9 +512,13 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var viewLocations			= "";
 
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
-		if( 
+		if(
 			arguments.view.trim().len() AND
-			( variables.explicitView.keyExists( "view" ) and arguments.view != variables.explicitView.view )
+			(
+				!variables.explicitView.keyExists( "view" )
+				OR
+				variables.explicitView.keyExists( "view" ) and arguments.view != variables.explicitView.view
+			)
 		){
 			return controller.getRenderer()
 				.setExplicitView( arguments.view, arguments.viewModule )
@@ -579,17 +583,17 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 				}
 			}
 			// Get the view locations
-			var viewLocations = discoverViewPaths( 
+			var viewLocations = discoverViewPaths(
 				view           = reverse ( listRest( reverse( cbox_layoutLocation ), "." ) ),
 				module         = arguments.module,
-				explicitModule = cbox_explicitModule 
+				explicitModule = cbox_explicitModule
 			);
 			// RenderLayout
-			iData.renderedLayout = renderViewComposite( 
+			iData.renderedLayout = renderViewComposite(
 				view           = cbox_currentLayout,
 				viewPath       = viewLocations.viewPath,
 				viewHelperPath = viewLocations.viewHelperPath,
-				args           = args 
+				args           = args
 			);
 		}
 
@@ -770,11 +774,11 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 	/**
 	 * Discover view+helper path locations
-	 * 
+	 *
 	 * @view The view to discover
 	 * @module The module address
 	 * @explicitModule Is the module explicit or discoverable.
-	 * 
+	 *
 	 * @return struct  = { viewPath:string, viewHelperPath:string }
 	*/
 	function discoverViewPaths( required view, module, boolean explicitModule=false ){
@@ -811,7 +815,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		}
 
 		var dPath = getDirectoryFromPath( refMap.viewPath );
-		
+
 		// Check for directory helper convention first
 		if( fileExists( expandPath( dPath & listLast( dPath,"/" ) & "Helper.cfm" ) ) ){
 			refMap.viewHelperPath.append( dPath & listLast( dPath,"/" ) & "Helper.cfm" );
@@ -831,7 +835,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		return refMap;
 	}
-	
+
 	/************************************** PRIVATE *********************************************/
 
 	/**
