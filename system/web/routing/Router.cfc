@@ -1032,7 +1032,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			verbs 					= "",
 			headers 				= {},
 			rc 						= {},
-			prc 					= {}
+			prc 					= {},
+			overwriteRC             = {},
+			overwritePRC            = {}
 		};
 	}
 
@@ -1266,6 +1268,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			arguments.value,
 			arguments.overwrite
 		);
+
+		variables.thisRoute.rcOverwrite[ name ] = overwrite;
+
 		return this;
 	}
 
@@ -1284,6 +1289,12 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			processWith( arguments );
 		}
 		variables.thisRoute.rc.append( arguments.map, arguments.overwrite );
+
+		//set our overwrite flags for the route params
+		for( var keyName in arguments.map ){
+			variables.thisRoute.rcOverwrite[ keyName ] = overwrite;
+		}
+
 		return this;
 	}
 
@@ -1307,6 +1318,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			arguments.value,
 			arguments.overwrite
 		);
+
+		variables.thisRoute.prcOverwrite[ name ] = overwrite;		
+
 		return this;
 	}
 
@@ -1325,6 +1339,12 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			processWith( arguments );
 		}
 		variables.thisRoute.prc.append( arguments.map, arguments.overwrite );
+
+		//set our overwrite flags for the route params
+		for( var keyName in arguments.map ){
+			variables.thisRoute.prcOverwrite[ keyName ] = overwrite;
+		}
+
 		return this;
 	}
 
