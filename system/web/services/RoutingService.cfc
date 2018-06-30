@@ -234,12 +234,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Now route should have all the key/pairs from the URL we need to pass to our event object for processing
 		rc.append( routeResults.params, true );
+
 		// Incorporate RC variables using overwrite settings
 		for( var rcKey in routeResults.route.rc ){
 			if( !structKeyExists( rc, rcKey ) || ( routeResults.route.rcOverwrite[ rcKey ] ?: false ) ){
 				rc[ rcKey ] = routeResults.route.rc[ rcKey ]
 			}
 		}
+		
 		// Incorporate PRC variables using overwrite settings
 		for( var prcKey in routeResults.route.prc ){
 			if( !structKeyExists( prc, prcKey ) || ( routeResults.route.prcOverwrite[ prcKey ] ?: false ) ){
