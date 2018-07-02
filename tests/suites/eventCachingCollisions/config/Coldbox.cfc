@@ -112,7 +112,6 @@ Optional Methods
 
 		//Interceptor Settings
 		interceptorSettings = {
-			throwOnInvalidStates = false,
 			customInterceptionPoints = ""
 		};
 

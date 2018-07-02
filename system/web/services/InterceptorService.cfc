@@ -143,17 +143,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		string asyncPriority='NORMAL',
 		numeric asyncJoinTimeout=0
 	){
-		// Validate Incoming State
-		if( variables.interceptorConfig.throwOnInvalidStates AND NOT
-			arrayFindNoCase( variables.interceptionPoints, arguments.state )
-		){
-			throw(
-				message = "The interception state sent in to process is not valid: #arguments.state#",
-				detail 	= "Valid states are #variables.interceptionPoints.toString()#",
-				type 	= "InterceptorService.InvalidInterceptionState"
-			);
-		}
-
 		// Process The State if it exists, else just exit out
 		if( structKeyExists( variables.interceptionStates, arguments.state ) ){
 			arguments.event 	= controller.getRequestService().getContext();

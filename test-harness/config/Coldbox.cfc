@@ -94,7 +94,6 @@
 
 		//Interceptor Settings
 		interceptorSettings = {
-			throwOnInvalidStates = false,
 			customInterceptionPoints = "onCustomState"
 		};
 
