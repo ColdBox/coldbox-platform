@@ -125,21 +125,10 @@
 	function testSimpleProcessInterception(){
 		// 1: inited with throw enabled but not throw
 		mockController.$( "getColdboxInitiated",true);
-		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",true);
 		iService.processState( "preProcess" );
-
-		// 2: inited with throw enabled but with throw
-		mockController.$( "getColdboxInitiated",true);
-		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",true);
-		try{
-			iService.processState( "junk" );
-		}
-		catch( "InterceptorService.InvalidInterceptionState" e){}
-		catch(any e){ fail(e); }
 
 		// 3: process a mock state
 		mockController.$( "getColdboxInitiated",true);
-		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
 		mockState = createStub().$( "process" );
 		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		// debug( iService.getInterceptionStates() );
@@ -148,7 +137,6 @@
 
 		// 4: real mock state
 		mockController.$( "getColdboxInitiated",true);
-		iService.$property( "throwOnInvalidStates","variables.interceptorConfig",false);
 		mockState = createStub().$( "process" );
 		iService.$property( "preProcess","variables.interceptionStates",mockState);
 		// debug( iService.getInterceptionStates() );

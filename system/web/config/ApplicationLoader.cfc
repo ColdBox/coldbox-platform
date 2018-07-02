@@ -556,7 +556,6 @@ component accessors="true"{
 		//defaults
 		configStruct.interceptorConfig = structnew();
 		configStruct.interceptorConfig.interceptors = [];
-		configStruct.interceptorConfig.throwOnInvalidStates = false;
 		configStruct.interceptorConfig.customInterceptionPoints = "";
 
 		//Append settings
