@@ -134,6 +134,8 @@ component serializable="false" accessors="true"{
 						application.fwReinit = true;
 						// Verify if we are Reiniting?
 						if( structkeyExists( application, appKey ) AND application[ appKey ].getColdboxInitiated() AND needReinit ){
+							// Load Module CF Mappings so modules can unload properly
+							application[ appKey ].getModuleService().loadMappings();
 							// process preReinit interceptors
 							application[ appKey ].getInterceptorService().processState( "preReinit" );
 							// Shutdown the application services
