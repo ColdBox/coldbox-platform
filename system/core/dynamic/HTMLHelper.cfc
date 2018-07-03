@@ -1860,7 +1860,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			arguments,
 			"value,label,wrapper,labelWrapper,groupWrapper,labelClass,inputInsideLabel",
 			buffer
-		).append( ">#encodeForHTML( arguments.value )#</button>" );
+		).append( ">#arguments.value#</button>" );
 
 		//wrapper?
 		wrapTag( buffer, arguments.wrapper, 1 );
