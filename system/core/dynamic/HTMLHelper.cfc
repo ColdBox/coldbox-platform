@@ -2675,7 +2675,6 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 */
 	private function $htmlHead( required content ){
 		cfhtmlhead( text="#arguments.content#" );
-		return this;
 	}
 
 }
