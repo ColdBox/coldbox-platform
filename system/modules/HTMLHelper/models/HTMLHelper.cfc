@@ -195,7 +195,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		);
 
 		// Prepare content output
-		if( arguments.content.len() ){
+		if( len( arguments.content ) ){
 			// Value Encoding
 			if( variables.settings.encodeValues ){
 				arguments.content = encodeForHTML( arguments.content );
