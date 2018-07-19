@@ -321,9 +321,14 @@ component accessors="true"{
 			arrayPrepend( configStruct.ModulesExternalLocation, "/modules_app" );
 		}
 
-		//Check for invalidHTTPMethodHandler
+		// Check for invalidHTTPMethodHandler
 		if ( not structKeyExists( configStruct, "invalidHTTPMethodHandler" ) ){
 			configStruct[ "invalidHTTPMethodHandler" ] = "";
+		}
+
+		// JSON Payload To RC
+		if ( not structKeyExists( configStruct, "jsonPayloadToRC" ) ){
+			configStruct[ "jsonPayloadToRC" ] = false;
 		}
 	}
 
