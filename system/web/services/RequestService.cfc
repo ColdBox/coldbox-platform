@@ -55,7 +55,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 		// If the inbound content body is a JSON payload capture it
 		if(
-			controllger.getSetting( "jsonPayloadToRC" ) &&
+			controller.getSetting( "jsonPayloadToRC" ) &&
 			len( context.getHTTPContent() ) &&
 			isJSON(  context.getHTTPContent() )
 		) {
