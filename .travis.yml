@@ -13,7 +13,7 @@ env:
     - ENGINE=lucee@5 ANT_TARGET=run-tests
     - ENGINE=adobe@11	ANT_TARGET=run-tests
     - ENGINE=adobe@2016	ANT_TARGET=run-tests
-    #- ENGINE=@ortus/adobe-aether	COLDBOX_VERSION=5.0.0	ANT_TARGET=run-tests ENGINENAME=adobe-aether
+    - ENGINE=adobe@2018	ANT_TARGET=run-tests
 
 branches:
   only:
@@ -33,7 +33,7 @@ addons:
 
 before_install:
   # CommandBox Keys
-  - sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
+  - curl -fsSl https://downloads.ortussolutions.com/debs/gpg | sudo apt-key add -
   - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
     /etc/apt/sources.list.d/commandbox.list
 
