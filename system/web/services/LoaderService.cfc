@@ -108,9 +108,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Map ColdBox Utility Objects
 		var binder = controller.getWireBox().getBinder();
 
-		// Map HTML Helper
-		binder.map( "HTMLHelper@coldbox" )
-			.to( "coldbox.system.core.dynamic.HTMLHelper" );
 		// Map Renderer
 		binder.map( "Renderer@coldbox" )
 			.to( "coldbox.system.web.Renderer" );

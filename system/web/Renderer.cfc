@@ -13,10 +13,6 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* Template cache provider
 	*/
 	property name="templateCache" 	inject="cachebox:template";
-	/**
-	* HTML Helper
-	*/
-	property name="html"			inject="HTMLHelper@coldbox";
 
 	/************************************** PROPERTIES *********************************************/
 
@@ -49,6 +45,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	property name="event";
 	property name="rc";
 	property name="prc";
+	property name="html";
 
 	/************************************** CONSTRUCTOR *********************************************/
 
@@ -104,6 +101,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		// Create View Scopes
 		variables.rc 	= event.getCollection();
 		variables.prc 	= event.getCollection( private=true );
+
+		// HTML Helper
+		variables.html 	= variables.wirebox.getInstance( dsl="@HTMLHelper" );
 
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();

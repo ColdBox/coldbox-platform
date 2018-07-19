@@ -1,12 +1,5 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.core.dynamic.HTMLHelper">
-<cfscript>
-	
+﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.modules.HTMLHelper.models.HTMLHelper"{
+
 	function setup(){
 		super.setup();
 		mockRequestContext 	= getMockRequestContext();
@@ -15,6 +8,15 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		mockController 		= createEmptyMock( "coldbox.system.testing.mock.web.MockController" )
 			.$( "getRequestService", mockRequestService )
 			.$( "getSetting", "path" );
+
+		model
+			.$( "getModuleSettings" )
+			.$args( "HTMLHelper" )
+			.$results( {
+				js_path 		= "",
+				css_path 		= "",
+				encodeValues	= false
+			} );
 
 		model.init( mockController );
 	}
@@ -79,15 +81,15 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		mockRequestService.$( "getContext", mockEvent);
 
 		img = model.img( "includes/images/pio.jpg" );
-		assertEquals('<img src="#encodeForHTMLAttribute( "http://www.coldbox.org/includes/images/pio.jpg" )#" />', img);
+		assertEquals('<img src="#encodeForHTMLAttribute( "http://www.coldbox.org/includes/images/pio.jpg" )#"></img>', img);
 
 		img = model.img( "http://hello.com/includes/images/pio.jpg" );
-		assertEquals('<img src="#encodeForHTMLAttribute( "http://hello.com/includes/images/pio.jpg" )#" />', img);
+		assertEquals('<img src="#encodeForHTMLAttribute( "http://hello.com/includes/images/pio.jpg" )#"></img>', img);
 
 		// no base url
 		mockEvent.$( "getSESBaseURL","" );
 		img = model.img( "includes/images/pio.jpg" );
-		assertEquals('<img src="#encodeForHTMLAttribute( "includes/images/pio.jpg" )#" />', img);
+		assertEquals('<img src="#encodeForHTMLAttribute( "includes/images/pio.jpg" )#"></img>', img);
 	}
 
 	function testLink(){
@@ -182,27 +184,27 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		2 | peter" );
 
 		str = model.table(data=data);
-		assertEquals(  
+		assertEquals(
 			xmlParse( "<table><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>" ),
 			xmlParse( str )
 		);
 
 		str = model.table(data=data,class="test" );
-		assertEquals( 
+		assertEquals(
 			xmlParse( "<table class='test'><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>" ),
-			xmlParse( str ) 
+			xmlParse( str )
 		);
 
 		str = model.table(data=data,includes="name",class="test" );
-		assertEquals( 
+		assertEquals(
 			xmlParse( "<table class='test'><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>" ),
-			xmlParse( str ) 
+			xmlParse( str )
 		);
 
 		str = model.table(data=data,excludes="id",class="test" );
-		assertEquals( 
+		assertEquals(
 			xmlParse( "<table class='test'><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>" ),
-			xmlParse( str ) 
+			xmlParse( str )
 		);
 	}
 
@@ -235,14 +237,14 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 
 	function testTableArrayofObjects(){
-		var data = [ 
+		var data = [
 			new tests.resources.Test(),
 			new tests.resources.Test( name="test", email="testing@testing.com" )
 		];
 		var str = model.table( data=data );
 		expect(	str ).toInclude( '<th>NAME</th>' )
 			.toInclude( "<th>EMAIL</th>" )
-			.toInclude( "testing&##x40;testing.com" );
+			.toInclude( "testing@testing.com" );
 	}
 
 	function testSlugify(){
@@ -527,13 +529,13 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 
 	function testAnchor(){
-		str = model.anchor(name="lui" );
-		// debug( str );
-		assertEquals('<a name="lui"></a>', str);
-
-		str = model.anchor(name="lui",text="Luis" );
-		// debug( str );
-		assertEquals('<a name="lui">Luis</a>', str);
+		var str = model.anchor( name="lui" );
+		expect( xmlParse( "<root>#str#</root>" ) )
+			.toBe(
+				xmlParse(
+					'<root><a id="lui" name="lui"></a></root>'
+				)
+			);
 	}
 
 	function testhref(){
@@ -580,8 +582,8 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 	}
 
 	function testComplexWrapperTags(){
-		var str = model.textField( 
-			name="luis", 
+		var str = model.textField(
+			name="luis",
 			value='luis',
 			wrapper = "div class='form-control'",
 			groupWrapper = "div class='form-group'"
@@ -601,12 +603,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		var str = model.checkbox(name='luis',value=1,label='luis?',labelAttrs={title='Check this box for luis'}, inputInsideLabel=1);
 		expect( xmlParse( "<root>#str#</root>" ) )
 			.toBe(
-				xmlParse( 
+				xmlParse(
 					'<root><label for="luis" title="Check&##x20;this&##x20;box&##x20;for&##x20;luis"><input value="1" name="luis" id="luis" type="checkbox"/>luis&##x3f;</label></root>'
 				)
 			);
 	}
 
-</cfscript>
-
-</cfcomponent>
+}
