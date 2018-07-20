@@ -24,7 +24,7 @@ Description :
 
 			getcontroller().setSetting( "RequestContextDecorator","" );
 			testRequestCaptures();
-			getcontroller().setSetting( "RequestContextDecorator",originalSetting);
+			getcontroller().setSetting( "RequestContextDecorator", originalSetting );
 
 		</cfscript>
 	</cffunction>
@@ -57,6 +57,7 @@ Description :
 
 	<cffunction name="testRequestCaptureOfJSONBody" access="public" returntype="void" output="false">
 		<cfscript>
+		getController().setSetting( "jsonPayloadToRC", true );
 		var mockContext = prepareMock(
 								getController().getRequestService().getContext()
 							).$( "getHTTPContent" ).$callback(

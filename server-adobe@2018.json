@@ -1,8 +1,8 @@
 {
     "app":{
-        "cfengine":"@ortus/adobe-aether"
+        "cfengine":"adobe@2018"
     },
-    "name":"coldbox-adobe-aether",
+    "name":"coldbox-adobe@2018",
     "force":true,
     "openBrowser":false,
     "web":{

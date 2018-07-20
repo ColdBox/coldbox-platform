@@ -54,19 +54,20 @@ component extends="coldbox.system.web.services.BaseService"{
 		if( isDefined( "URL" )  ){ structAppend( rc, URL ); }
 
 		// If the inbound content body is a JSON payload capture it
-		if( 
-			len( context.getHTTPContent() ) 
-			&& isJSON(  context.getHTTPContent() ) 
+		if(
+			controller.getSetting( "jsonPayloadToRC" ) &&
+			len( context.getHTTPContent() ) &&
+			isJSON(  context.getHTTPContent() )
 		) {
 			var payload = context.getHTTPContent( json=true );
 			if( isStruct( payload ) ){
 				structAppend( rc, payload );
 			}
 		}
-		
+
 		// Configure decorator if available?
-		if ( structKeyExists( context, "configure" ) ){ 
-			context.configure(); 
+		if ( structKeyExists( context, "configure" ) ){
+			context.configure();
 		}
 
 		// Execute onRequestCapture interceptionPoint

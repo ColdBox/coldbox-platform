@@ -68,7 +68,7 @@ component serializable="false" accessors="true"{
 		} else {
 			arguments.target = arguments.model;
 		}
-		
+
 		// json?
 		if( structKeyExists( arguments, "jsonstring" ) ){
 			return wirebox.getObjectPopulator().populateFromJSON( argumentCollection=arguments );
@@ -76,7 +76,7 @@ component serializable="false" accessors="true"{
 		// XML
 		else if( structKeyExists( arguments, "xml" ) ){
 			return wirebox.getObjectPopulator().populateFromXML( argumentCollection=arguments );
-		} 
+		}
 		// Query
 		else if( structKeyExists( arguments, "qry" ) ){
 			return wirebox.getObjectPopulator().populateFromQuery( argumentCollection=arguments );
@@ -432,7 +432,7 @@ component serializable="false" accessors="true"{
 	* @asset The asset(s) to load, only js or css files. This can also be a comma delimmited list.
 	*/
 	string function addAsset( required asset ){
-		return getInstance( "coldbox.system.core.dynamic.HTMLHelper" ).addAsset( argumentCollection=arguments );
+		return getInstance( "@HTMLHelper" ).addAsset( argumentCollection=arguments );
 	}
 
 	/**
@@ -463,7 +463,7 @@ component serializable="false" accessors="true"{
 		} else if ( fileExists( UDFFullPath & ".cfm" ) ){
 			targetLocation = "#udflibrary#.cfm";
 		} else {
-			throw( 
+			throw(
 				message = "Error loading UDF library: #arguments.udflibrary#",
 				detail 	= "The UDF library was not found.  Please make sure you verify the file location.",
 				type 	= "FrameworkSupertype.UDFLibraryNotFoundException");

@@ -529,6 +529,12 @@ component extends="coldbox.system.web.services.BaseService"{
 					binder.mapDirectory( packagePath=packagePath );
 				}
 
+				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
+				if( fileExists( mconfig.modelsPhysicalPath & "/#arguments.moduleName#.cfc" ) ){
+					binder.map( [ "@#arguments.moduleName#", "@#mConfig.modelNamespace#" ] )
+						.to( packagePath & ".#arguments.moduleName#" );
+ 				}
+
 				// Process mapped data
 				binder.processMappings();
 			}

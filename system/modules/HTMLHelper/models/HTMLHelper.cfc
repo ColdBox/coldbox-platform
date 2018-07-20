@@ -5,7 +5,12 @@
  * A cool utility that helps you when working with HTML so it is less verbose, more consistency,
  * ORM data binding, auto escaping and much more.
  */
-component extends="coldbox.system.FrameworkSupertype" singleton{
+component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
+
+	/**
+	 * Module Settings
+	 */
+	property name="settings";
 
 	/**
 	 * Constructor
@@ -14,7 +19,8 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * @controller.inject coldbox
 	 */
 	function init( required controller ){
-		variables.controller = arguments.controller;
+		variables.controller 	= arguments.controller;
+		variables.settings 		= getModuleSettings( "htmlhelper" );
 
 		return this;
 	}
@@ -27,7 +33,11 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 */
 	function addJSContent( required content, boolean sendToHeader=false ){
 		var str = '<script>#arguments.content#</script>';
-		return ( arguments.sendToHeader ? $htmlhead( str ) : str );
+		if( arguments.sendToHeader ){
+			$htmlhead( str );
+		} else{
+			return str;
+		}
 	}
 
 	/**
@@ -38,7 +48,11 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 */
 	function addStyleContent( required content, boolean sendToHeader=false ){
 		var str = '<style type="text/css">#arguments.content#</style>';
-		return ( arguments.sendToHeader ? $htmlhead( str ) : str );
+		if( arguments.sendToHeader ){
+			$htmlhead( str );
+		} else{
+			return str;
+		}
 	}
 
 	/**
@@ -46,8 +60,10 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	 * asset argument to try to load all of them.	You can also make this method return the string
 	 * that will be sent to the header instead.
 	 *
-	 * If the setings: htmlHelper_js_path exists, we will use it as a prefix for JS files
-	 * If the setings: htmlhelper_css_path exists, we will use it as a prefix for CSS Files
+	 * If the setings: htmlHelper_js_path exists, we will use it as a prefix for JS files (Deprecated by 5.2)
+	 * If the setings: htmlhelper_css_path exists, we will use it as a prefix for CSS Files (Deprecated by 5.2)
+	 *
+	 * In 5.2 the HTML Helper is an internal module, to configure it levareage the `HTMLHelper` module settings.
 	 *
 	 * This method tracks assets in the PRC via the key: <strong>cbox_assets</strong>
 	 *
@@ -66,8 +82,14 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		var event 	= controller.getRequestService().getContext();
 
 		// Global location settings
-		var jsPath 	= getSetting( name="htmlhelper_js_path",   defaultValue="" );
-		var cssPath = getSetting( name="htmlhelper_css_path",  defaultValue="" );
+		var jsPath 	= getSetting(
+			name         = "htmlhelper_js_path",
+			defaultValue = variables.settings.js_path
+		);
+		var cssPath = getSetting(
+			name         = "htmlhelper_css_path",
+			defaultValue = variables.settings.css_path
+		);
 
 		// Async HTML5 attribute
 		var asyncStr = "";
@@ -112,7 +134,11 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			} );
 
 		// Load it
-		return ( arguments.sendToHeader && len( sb.toString() ) ? $htmlhead( sb.toString() ) : sb.toString() );
+		if( arguments.sendToHeader && len( sb.toString() ) ){
+			$htmlhead( sb.toString() );
+		} else{
+			return sb.toString();
+		}
 	}
 
 	/**
@@ -132,44 +158,71 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 	}
 
 	/**
-	 * Generate XSS safe headers
+	 * Generate headers
 	 * @content The content
 	 * @size The size
 	 */
 	function heading( required content, numeric size=1 ){
-		return "<h#arguments.size#>#encodeForHTML( arguments.content )#</h#arguments.size#>";
+		return this.tag( "h#arguments.size#", arguments.content );
 	}
 
 	/**
-	 * Generate XSS safe tags
+	 * Generate tags
 	 * @tag The tag to generate
 	 * @content The content
 	 * @data The data-{key} elements to add
+	 * @excludes List of attributes to exclude from the tag generation
 	 */
-	function tag( required tag, required content, struct data={} ){
+	function tag( required tag, content="", struct data={}, string excludes="" ){
+		// Prepare attribute Exclusions
+		var excludeList = "tag,content";
+		if( arguments.excludes.len() ){
+			excludeList = excludeList.listAppend( arguments.excludes );
+		}
+
+		// Argument Cleanup
+		arguments.delete( "excludes" );
+		arguments.delete( "text" );
+
+		// Prepare output
 		var buffer	= createObject( "java", "java.lang.StringBuilder" ).init( "<#arguments.tag#" );
 
 		// append tag attributes
-		flattenAttributes( target=arguments, excludes="tag,content", buffer=buffer )
-			.append( '>#encodeForHTML( arguments.content )#</#arguments.tag#>' );
+		flattenAttributes(
+			target   = arguments,
+			excludes = excludeList,
+			buffer   = buffer
+		);
 
+		// Prepare content output
+		if( len( arguments.content ) ){
+			// Value Encoding
+			if( variables.settings.encodeValues ){
+				arguments.content = encodeForHTML( arguments.content );
+			}
+			// Output tag + content
+			buffer.append( ">#arguments.content#</#arguments.tag#>" );
+		} else {
+			buffer.append( "></#arguments.tag#>" );
+		}
+
+		// Return HTML
 		return buffer.toString();
 	}
 
 	/**
-	 * Generate XSS safe anchors
+	 * Generate anchors
 	 * @name The name of the anchor
 	 * @text The text of the link
 	 * @data The data-{key} elements to add
 	 */
 	function anchor( required name, text="", struct data={} ){
-		var buffer = createObject( "java", "java.lang.StringBuilder" ).init( "<a" );
+		// HTML 5 compat
+		arguments.id 	= arguments.name;
+		arguments.tag 	= "a";
+		arguments.content = arguments.text;
 
-		// build link
-		flattenAttributes( arguments, "text", buffer )
-			.append( '>#encodeForHTML( arguments.text )#</a>' );
-
-		return buffer.toString();
+		return this.tag( argumentCollection=arguments );
 	}
 
 	/**
@@ -194,7 +247,6 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		boolean noBaseURL=false,
 		struct data={}
 	){
-		var buffer 	= createObject( "java", "java.lang.StringBuilder" ).init( "<a" );
 		var event	= controller.getRequestService().getContext();
 
 		// self-link?
@@ -216,11 +268,12 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			);
 		}
 
-		// build link
-		flattenAttributes( arguments, "noBaseURL,text,querystring,ssl", buffer )
-			.append( '>#encodeForHTML( arguments.text )#</a>' );
+		// Setup Excludes + Tag
+		arguments.tag 		= "a";
+		arguments.content 	= arguments.text;
+		arguments.excludes	= "noBaseURL,queryString,ssl";
 
-		return buffer.toString();
+		return this.tag( argumentCollection=arguments );
 	}
 
 	/**
@@ -247,23 +300,24 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		boolean sendToHeader=false,
 		struct data={}
 	){
-		var buffer = createObject( "java", "java.lang.StringBuilder" ).init( "<link" );
-
 		// Check if we have a base URL
 		arguments.href = prepareBaseLink( arguments.noBaseURL, arguments.href );
 
 		// exclusions
-		var excludes = "noBaseURL";
+		arguments.excludes = "noBaseURL";
 		if( arguments.rel == "canonical" ){
-			 excludes &= ",type,title,media,charset";
+			arguments.excludes &= ",type,title,media,charset";
 		}
 
-		// build link
-		flattenAttributes( arguments, excludes, buffer )
-			.append( '/>' );
-
-		// Load it
-		return ( arguments.sendToHeader ? $htmlhead( buffer.toString() ) : buffer.toString() );
+		// Setup Excludes + Tag
+		arguments.tag = "link";
+		var output = this.tag( argumentCollection=arguments );
+		// Output
+		if( arguments.sendToHeader ){
+			$htmlhead( output );
+		} else{
+			return output;
+		}
 	}
 
 	/**
@@ -292,19 +346,15 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		boolean noBaseURL=false,
 		struct data={}
 	){
-		var buffer = createObject( "java", "java.lang.StringBuilder" ).init( "<img" );
-
 		// ID Normalization
 		normalizeID( arguments );
-
 		// Check if we have a base URL
 		arguments.src = prepareBaseLink( arguments.noBaseURL, arguments.src );
+		// Setup Excludes + Tag
+		arguments.tag 		= "img";
+		arguments.excludes	= "noBaseURL,";
 
-		// create image
-		flattenAttributes( arguments, "noBaseURL", buffer )
-			.append(' />');
-
-		return buffer.toString();
+		return this.tag( argumentCollection=arguments );
 	}
 
 	/**
@@ -437,8 +487,12 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			}
 		}
 
-		//Load it
-		return ( arguments.sendToHeader ? $htmlhead( buffer.toString() ) : buffer.toString() );
+		// Load it
+		if( arguments.sendToHeader ){
+			$htmlhead( buffer.toString() );
+		} else {
+			return buffer.toString();
+		}
 	}
 
 	/**
@@ -763,7 +817,10 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 		// add Legend?
 		if( len( arguments.legend ) ){
-			buffer.append("<legend>#encodeForHTML( arguments.legend )#</legend>");
+			if( variables.settings.encodeValues ){
+				arguments.legend = encodeForHTML( arguments.legend );
+			}
+			buffer.append( "<legend>#arguments.legend#</legend>" );
 		}
 
 		return buffer.toString();
@@ -823,7 +880,10 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		}
 
 		if( labelMode == 0 || labelMode == 2 ){
-			buffer.append( "#encodeForHTML( arguments.content )#</label>");
+			if( variables.settings.encodeValues ){
+				arguments.content = encodeForHTML( arguments.content );
+			}
+			buffer.append( "#arguments.content#</label>");
 			//wrapper?
 			wrapTag(
 				buffer = buffer,
@@ -1604,7 +1664,12 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			if( listfindNoCase( arguments.selectedValue, thisValue ) ){
 				buffer.append(' selected="selected"');
 			}
-			buffer.append(">#encodeForHTML( thisName )#</option>");
+
+			if( variables.settings.encodeValues ){
+				thisName = encodeForHTML( thisName );
+			}
+
+			buffer.append(">#thisName#</option>");
 		}
 
 		return buffer.toString();
@@ -1860,7 +1925,13 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			arguments,
 			"value,label,wrapper,labelWrapper,groupWrapper,labelClass,inputInsideLabel",
 			buffer
-		).append( ">#encodeForHTML( arguments.value )#</button>" );
+		);
+
+		if( variables.settings.encodeValues ){
+			arguments.value = encodeForHTML( arguments.value );
+		}
+
+		buffer.append( ">#arguments.value#</button>" );
 
 		//wrapper?
 		wrapTag( buffer, arguments.wrapper, 1 );
@@ -2287,7 +2358,10 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 		// Show Headers
 		showProperties.each( function( item ){
-			buffer.append( "<th>#encodeForHTML( item.name )#</th>" );
+			if( variables.settings.encodeValues ){
+				item.name = encodeForHTML( item.name );
+			}
+			buffer.append( "<th>#item.name#</th>" );
 		} );
 
 		buffer.append( "</tr></thead><tbody>" );
@@ -2296,7 +2370,11 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			buffer.append( "<tr>" );
 
 			showProperties.each( function( thisProperty ){
-				buffer.append( "<td>#encodeForHTML( invoke( thisRow, "get#thisProperty.name#" ) )#</td>" );
+				var thisValue = invoke( thisRow, "get#thisProperty.name#" );
+				if( variables.settings.encodeValues ){
+					thisValue = encodeForHTML( thisValue );
+				}
+				buffer.append( "<td>#thisValue#</td>" );
 			} );
 
 			buffer.append( "</tr>" );
@@ -2327,7 +2405,10 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 		// print out headers
 		columns.each( function( item ){
-			buffer.append( "<th>#encodeForHTML( item )#</th>" );
+			if( variables.settings.encodeValues ){
+				item = encodeForHTML( item );
+			}
+			buffer.append( "<th>#item#</th>" );
 		} );
 
 		buffer.append( "</tr></thead><tbody>" );
@@ -2338,7 +2419,11 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 
 			// Only show the right columns
 			columns.each( function( thisColumn ){
-				buffer.append( "<td>#encodeForHTML( thisRow[ thisColumn ] )#</td>" );
+				var thisValue = thisRow[ thisColumn ];
+				if( variables.settings.encodeValues ){
+					thisValue = encodeForHTML( thisValue );
+				}
+				buffer.append( "<td>#thisValue#</td>" );
 			} );
 
 			buffer.append( "</tr>" );
@@ -2369,7 +2454,10 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 		// Render Headers
 		columns
 			.each( function( item ){
-				buffer.append( "<th>#encodeForHTML( item )#</th>" );
+				if( variables.settings.encodeValues ){
+					item = encodeForHTML( item );
+				}
+				buffer.append( "<th>#item#</th>" );
 			} );
 
 		arguments.buffer.append( "</tr></thead><tbody>" );
@@ -2380,7 +2468,11 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			arguments.buffer.append( "<tr>" );
 
 			columns.each( function( item ){
-				buffer.append( "<td>#encodeForHTML( thisRow[ item ] )#</td>" );
+				var thisValue = thisRow[ item ];
+				if( variables.settings.encodeValues ){
+					thisValue = encodeForHTML( thisValue );
+				}
+				buffer.append( "<td>#thisValue#</td>" );
 			} );
 
 			arguments.buffer.append( "</tr>" );
@@ -2428,7 +2520,7 @@ component extends="coldbox.system.FrameworkSupertype" singleton{
 			if( isArray( thisValue ) ){
 				buffer.append( toHTMLList( arguments.tag, thisValue, arguments.column ) );
 			} else {
-				buffer.append("<li>#encodeForHTML( thisValue )#</li>");
+				buffer.append( this.tag( tag="li", content=thisValue ) );
 			}
 		}
 
