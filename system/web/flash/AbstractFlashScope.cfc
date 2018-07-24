@@ -41,15 +41,20 @@ component accessors="true"{
 		variables.defaults   = arguments.defaults;
 
 		// Defaults checks, just in case
-		if( ! structKeyExists( variables.defaults,"inflateToRC") ){ variables.defaults.inflateToRC = true; }
-		if( ! structKeyExists( variables.defaults,"inflateToPRC") ){ variables.defaults.inflateToPRC = false; }
-		if( ! structKeyExists( variables.defaults,"autoPurge") ){ variables.defaults.autoPurge = true; }
+		if( ! structKeyExists( variables.defaults, "inflateToRC" ) ){
+			variables.defaults.inflateToRC = true;
+		}
+		if( ! structKeyExists( variables.defaults, "inflateToPRC" ) ){
+			variables.defaults.inflateToPRC = false;
+		}
+		if( ! structKeyExists( variables.defaults, "autoPurge" ) ){
+			variables.defaults.autoPurge = true;
+		}
 
 		// check for properties
 		if( structKeyExists( arguments.defaults, "properties" ) ){
 			variables.properties = arguments.defaults.properties;
-		}
-		else{
+		} else {
 			variables.properties = {};
 		}
 
@@ -90,10 +95,13 @@ component accessors="true"{
 		// Check if flash exists
 		if( flashExists() ){
 			var scope = getFlash();
-			
+
 			scope
 				.filter( function( key, value ){
-					return ( value.autoPurge ?: false );
+					if( value.keyExists( "autoPurge" ) ){
+						return value.autoPurge;
+					}
+					return false;
 				} )
 				.keyArray()
 				.each( function( item ){
