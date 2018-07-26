@@ -118,11 +118,11 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 				// Load Asset
 				if( findNoCase( ".js", item ) ){
 					sb.append(
-						'<script src="#jsPath##item#" #asyncStr##deferStr#></script>'
+						'<script src="#jsPath##encodeForHTMLAttribute( item )#" #asyncStr##deferStr#></script>'
 					);
 				} else {
 					sb.append(
-						'<link href="#cssPath##item#" type="text/css" rel="stylesheet" />'
+						'<link href="#cssPath##encodeForHTMLAttribute( item )#" type="text/css" rel="stylesheet" />'
 					);
 				}
 
@@ -619,7 +619,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		// Add single source
 		if( arrayLen(arguments.src) eq 1){
 			arguments.src[1] = prepareBaseLink(arguments.noBaseURL, arguments.src[1]);
-			video.append(' src="#arguments.src[1]#" />');
+			video.append(' src="#encodeForHTMLAttribute( arguments.src[ 1 ] )#" />');
 			return video.toString();
 		}
 
@@ -627,7 +627,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		video.append(">");
 		for(x=1; x lte arrayLen(arguments.src); x++){
 			arguments.src[ x ] = prepareBaseLink(arguments.noBaseURL, arguments.src[ x ]);
-			video.append('<source src="#arguments.src[ x ]#"/>');
+			video.append('<source src="#encodeForHTMLAttribute( arguments.src[ x ] )#"/>');
 		}
 		video.append("</video>");
 
@@ -684,7 +684,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		// Add single source
 		if( arrayLen(arguments.src) eq 1){
 			arguments.src[1] = prepareBaseLink(arguments.noBaseURL, arguments.src[1]);
-			audio.append(' src="#arguments.src[1]#" />');
+			audio.append(' src="#encodeForHTMLAttribute( arguments.src[1] )#" />');
 			return audio.toString();
 		}
 
@@ -692,7 +692,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		audio.append(">");
 		for(x=1; x lte arrayLen(arguments.src); x++){
 			arguments.src[ x ] = prepareBaseLink(arguments.noBaseURL, arguments.src[ x ]);
-			audio.append('<source src="#arguments.src[ x ]#"/>');
+			audio.append('<source src="#encodeForHTMLAttribute( arguments.src[ x ] )#"/>');
 		}
 		audio.append("</audio>");
 
@@ -964,7 +964,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		// create textarea
 		buffer.append("<textarea");
-		flattenAttributes(arguments,"value,label,wrapper,labelWrapper,groupWrapper,labelAttrs,labelClass,bind,bindProperty,inputInsideLabel",buffer).append(">#arguments.value#</textarea>");
+		flattenAttributes(arguments,"value,label,wrapper,labelWrapper,groupWrapper,labelAttrs,labelClass,bind,bindProperty,inputInsideLabel",buffer).append(">#encodeForHTML( arguments.value )#</textarea>");
 
 		//wrapper?
 		wrapTag(buffer,arguments.wrapper,1);
@@ -2348,7 +2348,10 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		var key			= "";
 
 		// Metadata
-		var firstMetadata 	= getMetadata( arguments.data[ 1 ] ?: {} );
+		var firstMetadata = {};
+		if( !isNull( arguments.data[ 1 ] ) ){
+			firstMetadata = getMetadata( arguments.data[ 1 ] );
+		}
 		// All properties
 		var properties 		= structKeyExists( firstMetadata, "properties" ) ? firstMetadata.properties : [];
 		// Filtered properties
@@ -2398,7 +2401,9 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		required buffer
 	){
 		// Guess columns from first struct found
-		var columns	= structKeyArray( data[ 1 ] ?: {} )
+		var thisData = ( isNull( data[ 1 ] ) ? structNew() : data[ 1 ] );
+
+		var columns	= structKeyArray( thisData )
 			.filter( function( item ){
 				return ( passIncludeExclude( item, includes, excludes ) );
 			} );

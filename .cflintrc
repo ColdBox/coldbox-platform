@@ -1,13 +1,10 @@
 {
     "rule": [],
     "includes": [
-		{ "code": "AVOID_USING_STRUCTNEW" },
-        { "code": "AVOID_USING_ARRAYNEW" },
         { "code": "AVOID_USING_CFINCLUDE_TAG" },
 		{ "code": "AVOID_USING_CFABORT_TAG" },
 		{ "code": "AVOID_USING_CFEXECUTE_TAG" },
 		{ "code": "AVOID_USING_DEBUG_ATTR" },
-		{ "code": "AVOID_USING_CREATEOBJECT" },
 		{ "code": "AVOID_USING_ABORT" },
 		{ "code": "AVOID_USING_ISDATE" },
 		{ "code": "AVOID_USING_ISDEBUGMODE" },
@@ -41,7 +38,6 @@
 		{ "code": "FUNCTION_HINT_MISSING" },
 		{ "code": "FILE_SHOULD_START_WITH_LOWERCASE" },
         { "code": "LOCAL_LITERAL_VALUE_USED_TOO_OFTEN" },
-		{ "code": "GLOBAL_VAR" },
         { "code": "GLOBAL_LITERAL_VALUE_USED_TOO_OFTEN" },
 		{ "code": "MISSING_VAR" },
 		{ "code" : "METHOD_INVALID_NAME" },
@@ -57,8 +53,7 @@
 		{ "code": "SCOPE_ALLCAPS_NAME" },
 		{ "code": "VAR_ALLCAPS_NAME" },
 		{ "code": "VAR_INVALID_NAME" },
-		{ "code": "VAR_TOO_WORDY" },
-		{ "code": "VAR_IS_TEMPORARY" }
+		{ "code": "VAR_TOO_WORDY" }
     ],
     "inheritParent": false,
     "parameters": {

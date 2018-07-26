@@ -11,7 +11,7 @@
 */
 component accessors="true"{
 
-	
+
 	/**
 	* The LogBox unique ID
 	*/
@@ -21,12 +21,12 @@ component accessors="true"{
 	* The LogBox operating version
 	*/
 	property name="version";
-	
+
 	/**
 	* The appender registration map
 	*/
 	property name="appenderRegistry" type="struct";
-	
+
 	/**
 	* The Logger registration map
 	*/
@@ -67,7 +67,7 @@ component accessors="true"{
 		variables.categoryAppenders = "";
 		// Version
 		variables.version           = "@build.version@+@build.number@";
-		
+
 		// Link incoming ColdBox argument
 		variables.coldbox = arguments.coldbox;
 
@@ -79,7 +79,7 @@ component accessors="true"{
 
 	/**
 	 * Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories
-	 * 
+	 *
 	 * @config The LogBoxConfig object to use to configure this instance of LogBox: coldbox.system.logging.config.LogBoxConfig
 	 * @config.doc_generic coldbox.system.logging.config.LogBoxConfig
 	 */
@@ -109,7 +109,7 @@ component accessors="true"{
 				levelMax = rootConfig.levelMax,
 				appenders = getAppendersMap( rootConfig.appenders )
 			};
-			
+
 			//Save in Registry
 			variables.loggerRegistry = {
 				"ROOT" = new coldbox.system.logging.Logger( argumentCollection=args )
@@ -119,7 +119,7 @@ component accessors="true"{
 
 	/**
 	 * Get the root logger object
-	 * 
+	 *
 	 * @return coldbox.system.logging.Logger
 	 */
 	function getRootLogger(){
@@ -128,16 +128,16 @@ component accessors="true"{
 
 	/**
 	 * Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox
-	 * 
+	 *
 	 * @category The category name to use in this logger or pass in the target object will log from and we will inspect the object and use its metadata name
-	 * 
+	 *
 	 * @return coldbox.system.logging.Logger
 	 */
 	function getLogger( required category ){
 		var root = getRootLogger();
 
 		// is category object?
-		if( isObject( arguments.category ) ){ 
+		if( isObject( arguments.category ) ){
 			arguments.category = getMetadata( arguments.category ).name;
 		}
 
@@ -202,7 +202,7 @@ component accessors="true"{
 
 	/**
 	 * Register a new appender object in the appender registry.
-	 * 
+	 *
 	 * @name A unique name for the appender to register. Only unique names can be registered per variables.
 	 * @class The appender's class to register. We will create, init it and register it for you.
 	 * @properties The structure of properties to configure this appender with.
@@ -222,9 +222,9 @@ component accessors="true"{
 		if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
 
 			lock name="#variables.logboxID#.registerappender.#name#" type="exclusive" timeout="15" throwOnTimeout="true"{
-				
+
 				if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
-					
+
 					// Create appender and linking
 					var oAppender = new "#arguments.class#"( argumentCollection=arguments );
 					oAppender.setColdBox( variables.coldbox );
@@ -247,7 +247,7 @@ component accessors="true"{
 
 	/**
 	 * Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.
-	 * 
+	 *
 	 * @category The category name to investigate for parents
 	 */
 	private function locateCategoryParentLogger( required category ){
@@ -278,20 +278,24 @@ component accessors="true"{
 
 	/**
 	 * Get a map of appenders by list. Usually called to get a category of appenders
-	 * 
+	 *
 	 * @appenders The list of appenders to get
 	 */
 	struct function getAppendersMap( required appenders ){
 		var results = arguments.appenders
 			.listToArray()
 			.reduce( function( result, item, index ){
-				var target = result ?: structNew();
+				var target = {};
+				if( !isNull( arguments.result ) ){
+					target = result;
+				}
 				target[ item ] = variables.appenderRegistry[ item ];
 				return target;
 			} );
-		return results ?: structnew();
+
+		return ( isNull( results ) ? structNew() : results );
 	}
-	
+
 	/**
 	 * Get Utility Object
 	 */
