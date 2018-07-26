@@ -1069,7 +1069,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 				args = {
 					pattern = arguments.pattern,
 					event   = arguments.target,
-					verbs   = variables.thisRoute.verbs ?: "",
+					verbs   = ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
 					name 	= arguments.name
 				};
 			}
@@ -1078,8 +1078,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 				args = {
 					pattern  = arguments.pattern,
 					response = arguments.target,
-					verbs    = variables.thisRoute.verbs ?: "",
-					name 	= arguments.name
+					verbs 	 = ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
+					name 	 = arguments.name
 				};
 			}
 

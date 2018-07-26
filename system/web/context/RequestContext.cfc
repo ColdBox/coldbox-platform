@@ -666,17 +666,17 @@ component serializable=false accessors="true"{
 	* Are we in SSL or not? This method looks at cgi.server_port_secure for indication
 	*/
 	boolean function isSSL(){
-		if( isBoolean( cgi.server_port_secure ) AND cgi.server_port_secure ){ 
-			return true; 
+		if( isBoolean( cgi.server_port_secure ) AND cgi.server_port_secure ){
+			return true;
 		}
 		// Add typical proxy headers for SSL
-		if( getHTTPHeader( "x-forwarded-proto", "http" ) eq "https" ){ 
-			return true; 
+		if( getHTTPHeader( "x-forwarded-proto", "http" ) eq "https" ){
+			return true;
 		}
-		if( getHTTPHeader( "x-scheme", "http" ) eq "https" ){ 
-			return true; 
+		if( getHTTPHeader( "x-scheme", "http" ) eq "https" ){
+			return true;
 		}
-		// cgi.https 
+		// cgi.https
 		if( cgi.keyExists( "https" ) and cgi.https eq "on" ){
 			return true;
 		}
@@ -1009,8 +1009,11 @@ component serializable=false accessors="true"{
 		if( arrayLen( foundRoute ) ){
 			var args = {
 				to 	= entryPoint & foundRoute[ 1 ].pattern,
-				ssl = arguments.ssl ?: javaCast( "null", "" )
+				ssl = javaCast( "null", "" )
 			};
+			if( !isNull( arguments.ssl ) ){
+				args.ssl = arguments.ssl;
+			}
 
 			// Process Params
 			arguments.params.each( function( key, value ){
@@ -1446,7 +1449,7 @@ component serializable=false accessors="true"{
 
 	/**
 	 * Set an HTTP Response Header
-	 * 
+	 *
 	 * @statusCode the status code
 	 * @statusText the status text
 	 * @name The header name
@@ -1471,10 +1474,10 @@ component serializable=false accessors="true"{
 			getPageContext().getResponse().addHeader( javaCast( "string", arguments.name ), javaCast( "string", arguments.value ) );
 			variables.responseHeaders[ arguments.name ] = arguments.value;
 		} else {
-			throw( 
+			throw(
 				message = "Invalid header arguments",
 				detail 	= "Pass in either a statusCode or name argument",
-				type 	= "RequestContext.InvalidHTTPHeaderParameters" 
+				type 	= "RequestContext.InvalidHTTPHeaderParameters"
 			);
 		}
 

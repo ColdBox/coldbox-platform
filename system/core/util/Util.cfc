@@ -26,7 +26,10 @@ Description :
 		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
 		<cfscript>
 			return arguments.in.reduce( function( result, item, index ){
-				var target = result ?: structNew();
+				var target = {};
+				if( !isNull( result ) ){
+					target = result;
+				}
 				target[ index ] = item;
 				return target;
 			} );

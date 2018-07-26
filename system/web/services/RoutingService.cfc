@@ -244,9 +244,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Process Redirects
 		if( routeResults.route.redirect.len() ){
 			if( routeResults.route.redirect.findNoCase( "http" ) ){
-				controller.relocate( URL=routeResults.route.redirect, statusCode=routeResults.route.statusCode ?: 301 );
+				controller.relocate(
+					URL        = routeResults.route.redirect,
+					statusCode = ( routeResults.route.keyExists( "statusCode" ) ? routeResults.route.statusCode : 301 )
+				);
 			} else {
-				controller.relocate( event=routeResults.route.redirect, statusCode=routeResults.route.statusCode ?: 301 );
+				controller.relocate(
+					event      = routeResults.route.redirect,
+					statusCode = ( routeResults.route.keyExists( "statusCode" ) ? routeResults.route.statusCode : 301 )
+				);
 			}
 			return;
 		}

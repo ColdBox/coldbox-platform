@@ -2348,7 +2348,10 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		var key			= "";
 
 		// Metadata
-		var firstMetadata 	= getMetadata( arguments.data[ 1 ] ?: structNew() );
+		var firstMetadata = {};
+		if( !isNull( arguments.data[ 1 ] ) ){
+			firstMetadata = getMetadata( arguments.data[ 1 ] );
+		}
 		// All properties
 		var properties 		= structKeyExists( firstMetadata, "properties" ) ? firstMetadata.properties : [];
 		// Filtered properties
@@ -2398,7 +2401,9 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		required buffer
 	){
 		// Guess columns from first struct found
-		var columns	= structKeyArray( data[ 1 ] ?: structNew() )
+		var thisData = ( isNull( data[ 1 ] ) ? structNew() : data[ 1 ] );
+
+		var columns	= structKeyArray( thisData )
 			.filter( function( item ){
 				return ( passIncludeExclude( item, includes, excludes ) );
 			} );
