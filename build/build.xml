@@ -11,7 +11,9 @@
 	<!-- UPDATE ON EACH VERSION CYCLE -->
 	<property name="groupID"				value="ortussolutions" />
 
-	<property name="coldbox.version" 		value="5.2.0" />
+	<!-- PASSED IN NOW
+	<property name="coldbox.version" 		value="5.1.3" />
+	-->
 	<property name="coldbox.stableversion" 	value="5.1.2" />
 
 	<property name="coldbox.slug"	 		value="coldbox"/>

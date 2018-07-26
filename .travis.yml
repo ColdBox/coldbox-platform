@@ -7,7 +7,8 @@ notifications:
 
 env:
   global:
-    - COLDBOX_VERSION=5.2.0
+    # TARGET RELEASE VERSION: BUMP AS NEEDED
+    - COLDBOX_VERSION=5.1.3
   matrix:
     - ENGINE=lucee@4.5 ANT_TARGET=build.all
     - ENGINE=lucee@5 ANT_TARGET=run-tests
@@ -60,7 +61,7 @@ before_script:
 
 script:
   # Execute build via ANT
-  - ant -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
+  - ant -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
