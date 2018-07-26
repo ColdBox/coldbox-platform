@@ -23,7 +23,7 @@ component{
 			case  "ColdFusion Server" :
 				my.out = getPageContext().getOut();
 				//  It's necessary to iterate over this until we get to a coldfusion.runtime.NeoJspWriter
-				while( condition="getMetaData( my.out ).getName() == 'coldfusion.runtime.NeoBodyContent'" ) {
+				while( getMetaData( my.out ).getName() == 'coldfusion.runtime.NeoBodyContent' ){
 					my.out = my.out.getEnclosingWriter();
 				}
 				my.method = my.out.getClass().getDeclaredMethod( "initHeaderBuffer", [] );
@@ -32,7 +32,7 @@ component{
 				break;
 			case  "Lucee" :
 				my.out = getPageContext().getOut();
-				while ( condition="getMetaData( my.out ).getName() == 'lucee.runtime.writer.BodyContentImpl'" ) {
+				while( getMetaData( my.out ).getName() == 'lucee.runtime.writer.BodyContentImpl' ){
 					my.out = my.out.getEnclosingWriter();
 				}
 				my.headData = my.out.getClass().getDeclaredField( "headData" );
