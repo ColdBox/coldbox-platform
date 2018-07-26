@@ -8,6 +8,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 	/**
 	 * Constructor
+	 * @controller The ColdBox Controller.
 	 */
 	function init( required controller ){
 		setController( arguments.controller );
@@ -20,7 +21,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	}
 
 	/**
-	 * Once configuration loads
+	 * Once configuration loads this method is fired by the service loader.
 	 */
 	function onConfigurationLoad(){
 		// Local Configuration data and dependencies
@@ -207,7 +208,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	}
 
 	/**
-	 * Does the request context exist in request scope
+	 * Return the flash scope instance in use by the framework.
 	 */
 	any function getFlashScope(){
 		return variables.flashScope;
@@ -230,11 +231,11 @@ component extends="coldbox.system.web.services.BaseService"{
 		var flashPath = "";
 
 		// Verify Flash decisions
-		if( variables.flashData.scope == "session" and !isDefined( "session") ){
+		if( variables.flashData.scope == "session" and !getApplicationMetadata().sessionManagement ){
 			log.error( "Flash RAM was set to use session but session is undefined, changing it to cache for you so we don't blow up.");
 			variables.flashData.scope = "cache";
 		}
-		if( variables.flashData.scope == "client" and !isDefined( "client") ){
+		if( variables.flashData.scope == "client" and !getApplicationMetadata().clientManagement ){
 			log.error( "Flash RAM was set to use client but client is undefined, changing it to cache for you so we don't blow up.");
 			variables.flashData.scope = "cache";
 		}
