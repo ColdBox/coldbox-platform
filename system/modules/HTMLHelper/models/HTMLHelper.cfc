@@ -944,32 +944,55 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		// ID Normalization
 		normalizeID( arguments );
 		// group wrapper?
-		wrapTag(buffer,arguments.groupWrapper,0,arguments.groupWrapperAttrs);
+		wrapTag( buffer, arguments.groupWrapper, 0, arguments.groupWrapperAttrs );
+
 		// label?
-		if( len(arguments.label) ){ buffer.append( this.label(field=arguments.id,content=arguments.label,wrapper=arguments.labelWrapper,wrapperAttrs=arguments.labelWrapperAttrs,class=arguments.labelClass,
-			labelMode = (arguments.inputInsideLabel ? 1 : 0), labelAttrs=arguments.labelAttrs) ); }
+		if( len( arguments.label ) ){
+			buffer.append(
+				this.label(
+					field        = arguments.id,
+					content      = arguments.label,
+					wrapper      = arguments.labelWrapper,
+					wrapperAttrs = arguments.labelWrapperAttrs,
+					class        = arguments.labelClass,
+					labelMode    = ( arguments.inputInsideLabel ? 1 : 0 ),
+					labelAttrs	 = arguments.labelAttrs
+				)
+			);
+		}
 
 		//wrapper?
-		wrapTag(buffer,arguments.wrapper,0,arguments.wrapperAttrs);
+		wrapTag( buffer, arguments.wrapper, 0, arguments.wrapperAttrs );
 
 		// disabled fix
-		if( arguments.disabled ){ arguments.disabled = "disabled"; }
-		else{ arguments.disabled = ""; }
+		if( arguments.disabled ){
+			arguments.disabled = "disabled";
+		} else {
+			arguments.disabled = "";
+		}
 		// readonly fix
-		if( arguments.readonly ){ arguments.readonly = "readonly"; }
-		else{ arguments.readonly = ""; }
+		if( arguments.readonly ){
+			arguments.readonly = "readonly";
+		} else {
+			arguments.readonly = "";
+		}
 
 		// Entity Binding?
-		bindValue(arguments);
+		bindValue( arguments );
 
 		// create textarea
-		buffer.append("<textarea");
-		flattenAttributes(arguments,"value,label,wrapper,labelWrapper,groupWrapper,labelAttrs,labelClass,bind,bindProperty,inputInsideLabel",buffer).append(">#encodeForHTML( arguments.value )#</textarea>");
+		buffer.append( "<textarea" );
+		flattenAttributes(
+			arguments,
+			"value,label,wrapper,labelWrapper,groupWrapper,labelAttrs,labelClass,bind,bindProperty,inputInsideLabel",
+			buffer
+		).append(">#variables.settings.encodeValues ? encodeForHTML( arguments.value ) : arguments.value#</textarea>");
 
 		//wrapper?
-		wrapTag(buffer,arguments.wrapper,1);
+		wrapTag( buffer, arguments.wrapper, 1 );
 		// group wrapper?
-		wrapTag(buffer,arguments.groupWrapper,1);
+		wrapTag( buffer, arguments.groupWrapper, 1 );
+
 		return buffer.toString();
 	}
 
