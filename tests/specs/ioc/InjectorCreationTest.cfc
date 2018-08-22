@@ -217,4 +217,10 @@
 		expect(	getMetadata( c ).name ).toMatch( "Injector" );
 	}
 
+	function testVirtualInheritanceCreation(){
+		var c = injector.getInstance( "virtually-inherited-class" );
+		expect(	c.getData() ).toBe( "My Data" );
+	}
+
+
 }
