@@ -122,7 +122,8 @@
 			});
 
 		map( "tests.resources.VirtualParentClass" )
-			.to( "tests.resources.VirtualParentClass" );
+			.to( "tests.resources.VirtualParentClass" )
+			.initArg( name="data", value="Default Data" );;
 
 		map( "virtually-inherited-class" )
 			.to( "tests.resources.ChildClass" )
