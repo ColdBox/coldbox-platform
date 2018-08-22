@@ -586,7 +586,8 @@ component extends="coldbox.system.web.services.BaseService"{
 					// Process as a Router.cfc with virtual inheritance
 					wirebox.registerNewInstance( name=mConfig.routerInvocationPath, instancePath=mConfig.routerInvocationPath )
 						.setVirtualInheritance( "coldbox.system.web.routing.Router" )
-						.setThreadSafe( true );
+						.setThreadSafe( true )
+						.addDIConstructorArgument( name="controller", value=controller );
 					// Create the Router back into the config
 					mConfig.router = wirebox.getInstance( mConfig.routerInvocationPath );
 					// Process it

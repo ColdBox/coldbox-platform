@@ -112,7 +112,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					.setThreadSafe( true )
 					.setScope(
 						wirebox.getBinder().SCOPES.SINGLETON
-					);
+					)
+					.addDIConstructorArgument( name="controller", value=controller );
 				// Create the Router
 				variables.router = wirebox.getInstance( "router@coldbox" );
 				// Process it
