@@ -69,6 +69,13 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	}
 
 	/**
+	* Get struct of properties
+	*/
+	any function getProperties(){
+		return variables.properties;
+	}
+
+	/**
 	* Store an interceptor property
 	* @property The property to store
 	* @value The value to store

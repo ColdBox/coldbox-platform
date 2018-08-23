@@ -706,6 +706,11 @@
 				} );
 		}
 
+		// Copy init only if the base object has it and the child doesn't.
+		if( !structKeyExists( arguments.target, "init" ) AND structKeyExists( baseObject, "init" ) ){
+			arguments.target.injectMixin( 'init', baseObject.init );
+		}
+
 		baseObject.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ) {
@@ -713,7 +718,9 @@
 			} )
 			.each( function( propertyName, propertyValue ){
 				// inject the property/method now
-				target.injectPropertyMixin( propertyName, propertyValue );
+				if( !isNull( propertyValue ) ) {
+					target.injectPropertyMixin( propertyName, propertyValue );	
+				}
 				// Do we need to do automatic generic getter/setters
 				if( generateAccessors and baseProperties.keyExists( propertyName ) ){
 
