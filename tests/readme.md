@@ -50,7 +50,7 @@ Startup the test server via the following command: `box server start` in the roo
 
 > **Note:** The server will start in a specific port, make sure you take note of it.
 
-We deliver the capabilities for you to test the following egines:
+We deliver the capabilities for you to test the following engines:
 
 * Lucee 4.5 (Default)
 * Lucee 5
