@@ -56,6 +56,7 @@ We deliver the capabilities for you to test the following engines:
 * Lucee 5
 * ACF 11
 * ACF 2016
+* ACF 2018
 
 Just look at the appropriate `server-engine.json` file in the root of the repository so you can test a specific engine like this:
 
