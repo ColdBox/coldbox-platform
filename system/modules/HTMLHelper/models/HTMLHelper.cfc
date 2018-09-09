@@ -116,7 +116,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 			} )
 			.each( function( item ){
 				// Load Asset
-				if( findNoCase( ".js", item ) ){
+				if( listLast( listFirst( listFirst( item, '##' ), '?' ), '.' ) EQ 'js' ){
 					sb.append(
 						'<script src="#jsPath##encodeForHTMLAttribute( item )#" #asyncStr##deferStr#></script>'
 					);
