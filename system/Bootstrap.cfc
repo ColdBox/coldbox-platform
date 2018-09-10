@@ -46,7 +46,7 @@ component serializable="false" accessors="true"{
 		required string COLDBOX_APP_ROOT_PATH,
 		string COLDBOX_APP_KEY,
 		string COLDBOX_APP_MAPPING="",
-		boolean COLDBOX_FAIL_FAST=true
+		any COLDBOX_FAIL_FAST=true
 	){
 		// Set vars for two main locations
 		setCOLDBOX_CONFIG_FILE( arguments.COLDBOX_CONFIG_FILE );
