@@ -39,7 +39,7 @@ We leverage **CommandBox** to build ColdBox and its libraries.  You can download
 Install the CommandBox modules first by typing the following command:
 
 ```
-install commandbox-cfconfig,commandbox-dotenv
+install commandbox-cfconfig
 ```
 
 Then go into the root of the project and type: `box install`. This will download all required dependencies and test dependencies for you.
@@ -50,12 +50,13 @@ Startup the test server via the following command: `box server start` in the roo
 
 > **Note:** The server will start in a specific port, make sure you take note of it.
 
-We deliver the capabilities for you to test the following egines:
+We deliver the capabilities for you to test the following engines:
 
 * Lucee 4.5 (Default)
 * Lucee 5
 * ACF 11
 * ACF 2016
+* ACF 2018
 
 Just look at the appropriate `server-engine.json` file in the root of the repository so you can test a specific engine like this:
 
@@ -63,15 +64,17 @@ Just look at the appropriate `server-engine.json` file in the root of the reposi
 box server start serverConfigFile=server-adobe@2016.json
 ```
 
+> **Note:** Run the above command from the root of the repo.
+
 ### Testing Datasource
 
-The testing datasource is pre-configured with the following properties that can be found in the file `/test-harness/config/runtime.properties.cfm`, which leverages a MySQL database.
+The testing datasource is pre-configured with the following properties that can be found in the file `/.cfconfig.json`, which leverages a MySQL database.
 
 * Database: `coolblog`
 * Username: `mysql`
 * Password: *empty* or whatever is your local password.
 
-Populate your database with our SQL script that can be found here: `/tests/resources/coolblog.sql`.
+Modify those values as you need to change the connection details or remove the datasource from the JSON file and create it manually in the admin.  Create a database called `coolblog` and populateit with our SQL script that can be found here: `/tests/resources/coolblog.sql`.  There is a version of the SQL script for MS SQL Server as well in the same folder.
 
 ### Lucee Optional: `Default` Cache
 

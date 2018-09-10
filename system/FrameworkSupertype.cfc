@@ -481,6 +481,11 @@ component serializable="false" accessors="true"{
 	* @return FrameworkSuperType
 	*/
 	any function loadApplicationHelpers(){
+		// Skip if we've already mixed in a super class
+		if( structKeyExists( this, '$super' ) ) {
+			return this;
+		}
+		
 		// Inject global helpers
 		var helpers	= controller.getSetting( "applicationHelper" );
 
