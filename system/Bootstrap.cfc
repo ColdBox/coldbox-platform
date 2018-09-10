@@ -34,19 +34,19 @@ component serializable="false" accessors="true"{
 	param name="COLDBOX_FAIL_FAST"		default="true";
 
 	/**
-	* Constructor, called by your Application CFC
-	* @COLDBOX_CONFIG_FILE The override location of the config file
-	* @COLDBOX_APP_ROOT_PATH The location of the app on disk
-	* @COLDBOX_APP_KEY The key used in application scope for this application
-	* @COLDBOX_APP_MAPPING The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
-	* @COLDBOX_FAIL_FAST By default if an app is reiniting and a request hits it, we will fail fast with a message
-	*/
-	function init(
+	 * Constructor, called by your Application CFC
+	 * @COLDBOX_CONFIG_FILE The override location of the config file
+	 * @COLDBOX_APP_ROOT_PATH The location of the app on disk
+	 * @COLDBOX_APP_KEY The key used in application scope for this application
+	 * @COLDBOX_APP_MAPPING The application mapping override, only used for Flex/SOAP apps, this is auto-calculated
+	 * @COLDBOX_FAIL_FAST By default if an app is reiniting and a request hits it, we will fail fast with a message. This can be a boolean indicator or a closure.
+	 */
+	Bootstrap function init(
 		required string COLDBOX_CONFIG_FILE,
 		required string COLDBOX_APP_ROOT_PATH,
 		string COLDBOX_APP_KEY,
 		string COLDBOX_APP_MAPPING="",
-		boolean COLDBOX_FAIL_FAST=true
+		any COLDBOX_FAIL_FAST=true
 	){
 		// Set vars for two main locations
 		setCOLDBOX_CONFIG_FILE( arguments.COLDBOX_CONFIG_FILE );
@@ -444,18 +444,18 @@ component serializable="false" accessors="true"{
 	boolean function onRequestStart( required targetPage ) output=true{
 		// Global flag to denote if we are in mid reinit or not.
 		cfparam( name="application.fwReinit", default =false );
-		
+
 		// Fail fast so users coming in during a reinit just get a please try again message.
 		if( application.fwReinit ){
 
 			// Closure or UDF
 			if( isClosure( variables.COLDBOX_FAIL_FAST ) || isCustomFunction( variables.COLDBOX_FAIL_FAST ) ){
 				variables.COLDBOX_FAIL_FAST();
-			} 
+			}
 			// Core Fail Fast Option
 			else if( isBoolean( variables.COLDBOX_FAIL_FAST ) && variables.COLDBOX_FAIL_FAST ){
 				writeOutput( 'Oops! Seems ColdBox is still not ready to serve requests, please try again.' );
-				// You don't have to return a 500, I just did this so JMeter would report it differently than a 200 
+				// You don't have to return a 500, I just did this so JMeter would report it differently than a 200
 				cfheader( statusCode="503", statustext="ColdBox Not Available Yet!" );
 			}
 
