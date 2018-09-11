@@ -1656,8 +1656,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 			// struct normalizing
 			if( isStruct( val[ x ] ) ){
-				// Default
-				thisName = thisValue;
+				thisName = "";
 
 				// check for value?
 				if( structKeyExists(val[ x ], "value") ){ thisValue = val[ x ].value; }
@@ -1670,8 +1669,10 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 				if( len( arguments.nameColumn ) ){
 					if( structKeyExists( val[ x ], arguments.nameColumn ) ){ thisName = val[ x ][nameColumn]; }
 				}
-				else{
-					if( structKeyExists( val[ x ], arguments.column ) ){ thisName = val[ x ][column]; }
+				
+				// If thisName is still the default, use the content of thisValue as the name
+				if( thisName == "" ){
+					thisName = thisValue;
 				}
 
 			}
