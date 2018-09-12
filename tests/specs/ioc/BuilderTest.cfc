@@ -57,7 +57,7 @@
 
 	function testbuildWebservice(){
 		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "Buffer" );
-		mapping.setPath( "http://www.SoapClient.com/xml/SQLDataSoap.wsdl" );
+		mapping.setPath( "http://localhost:8599/test-harness/remote/MyProxy.cfc?wsdl" );
 		r = builder.buildwebservice(mapping);
 		//debug(r);
 	}

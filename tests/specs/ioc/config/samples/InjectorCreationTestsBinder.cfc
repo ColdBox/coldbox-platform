@@ -27,7 +27,7 @@
 		// map to constant value, no need for scope
 		map( "jsonProperty" ).toValue( "[{name:'luis'},{name:'Jose'}]" );
 		// map to ws
-		map( "coldboxWS" ).toWebservice( "http://www.SoapClient.com/xml/SQLDataSoap.wsdl" );
+		map( "coldboxWS" ).toWebservice( "http://localhost:8599/test-harness/remote/MyProxy.cfc?wsdl" );
 		// map to rss feed
 		map( "googleNews" )
 			.toRSS( "http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&output=rss" )
@@ -127,7 +127,7 @@
 
 		map( "virtually-inherited-class" )
 			.to( "tests.resources.ChildClass" )
-			.virtualInheritance( "tests.resources.VirtualParentClass" )	
+			.virtualInheritance( "tests.resources.VirtualParentClass" )
 			.initArg( name="data", value="My Data" );
 
 	}
