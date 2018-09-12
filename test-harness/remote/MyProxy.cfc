@@ -13,7 +13,7 @@ Description :
 <cfcomponent name="MyProxy" output="false" extends="coldbox.system.remote.ColdboxProxy">
 
 	<cffunction name="echo" output="false" access="remote" returnType="string">
-		<cfreturn "hello";
+		<cfreturn "hello">
 	</cffunction>
 
 	<cffunction name="yourRemoteCall" output="false" access="remote" returntype="string" hint="Your Hint">
