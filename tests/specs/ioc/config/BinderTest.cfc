@@ -185,10 +185,10 @@
 	}
 
 	function testToWebservice(){
-		config.map( "Test" ).toWebservice( "http://localhost:8599/test-harness/remote/MyProxy.cfc?wsdl" );
+		config.map( "Test" ).toWebservice( "http://localhost:8599/test-harness/remote/Echo.cfc?wsdl" );
 		mapping = config.getMapping( "Test" );
 		assertEquals( this.TYPES.WEBSERVICE, mapping.getType() );
-		assertEquals( "http://localhost:8599/test-harness/remote/MyProxy.cfc?wsdl", mapping.getPath() );
+		assertEquals( "http://localhost:8599/test-harness/remote/Echo.cfc?wsdl", mapping.getPath() );
 	}
 
 	function testToRSS(){
