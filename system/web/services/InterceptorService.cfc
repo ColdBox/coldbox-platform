@@ -178,7 +178,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				return buffer.builder;
 			},
 			clear = function(){
-				buffer.get().clear();
+				buffer.get().setLength( 0 );
 				return buffer;
 			},
 			append = function( required str ){
