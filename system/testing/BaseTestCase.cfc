@@ -633,7 +633,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @return cbox_render_data or an empty struct
     */
     function getRenderData(){
-        return getValue( "cbox_render_data", {} );
+		return getPrivateValue( name="cbox_renderdata", defaultValue=structnew() );
     }
 
     /**
