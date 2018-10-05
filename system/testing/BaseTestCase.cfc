@@ -104,6 +104,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 				// Setup
 				variables.controller.getLoaderService().loadApplication( variables.configMapping, variables.appMapping );
 			}
+			// Load Module CF Mappings so modules can work properly
+			variables.controller.getModuleService().loadMappings();
 			// Auto registration of test as interceptor
 			variables.controller.getInterceptorService().registerInterceptor(interceptorObject=this);
 		}
