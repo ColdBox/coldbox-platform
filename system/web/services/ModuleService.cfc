@@ -444,7 +444,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		// If module not registered, throw exception
 		if( NOT structKeyExists( modules, arguments.moduleName ) ){
 			throw(
-				message = "Cannot activate module: #arguments.moduleName#",
+				message = "Cannot activate module: #arguments.moduleName#. Already processed #StructKeyList( modules )#",
 				detail 	= "The module has not been registered, register the module first and then activate it.",
 				type 	= "ModuleService.IllegalModuleState"
 			);
