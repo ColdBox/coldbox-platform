@@ -330,6 +330,11 @@ component accessors="true"{
 		if ( not structKeyExists( configStruct, "jsonPayloadToRC" ) ){
 			configStruct[ "jsonPayloadToRC" ] = false;
 		}
+
+		// Auto Map Core Models, defaults to false in ColdBox 5, will default to true in ColdBox 6
+		if ( not structKeyExists( configStruct, "autoMapModels" ) ){
+			configStruct[ "autoMapModels" ] = false;
+		}
 	}
 
 	/**

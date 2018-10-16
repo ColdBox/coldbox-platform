@@ -53,6 +53,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		controller.setColdboxInitiated( true );
+		// Auto Map Root Models
+		if( controller.getSetting( "autoMapModels" ) ){
+			controller.getWireBox().getBinder().mapDirectory( controller.getSetting( "ModelsInvocationPath" ) );
+		}
 		// Activate All Modules
 		controller.getModuleService().activateAllModules();
 		// Execute afterConfigurationLoad

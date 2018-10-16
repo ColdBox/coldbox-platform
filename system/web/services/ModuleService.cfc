@@ -519,7 +519,7 @@ component extends="coldbox.system.web.services.BaseService"{
 			if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
 
 				// Add as a mapped directory with module name as the namespace with correct mapping path
-				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
+				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath );
 				var binder 		= variables.wirebox.getBinder();
 
 				if( len( mConfig.modelNamespace ) ){
