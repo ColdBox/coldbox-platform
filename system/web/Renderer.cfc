@@ -855,7 +855,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		if( NOT len( event.getCurrentView() ) ){
 
 			// Implicit views
-			if( controller.getSetting( name="caseSensitiveImplicitViews", defaultValue=false ) ){
+			if( controller.getSetting( name="caseSensitiveImplicitViews", defaultValue=true ) ){
 				event.setView( replace( cEvent, ".", "/", "all" ) );
 			} else {
 				event.setView( lcase( replace( cEvent, ".", "/", "all" ) ) );
