@@ -457,13 +457,15 @@ component serializable="false" accessors="true"{
 				writeOutput( 'Oops! Seems ColdBox is still not ready to serve requests, please try again.' );
 				// You don't have to return a 500, I just did this so JMeter would report it differently than a 200
 				cfheader( statusCode="503", statustext="ColdBox Not Available Yet!" );
+				// Break up!
+				return false;
 			}
 
-			return false;
 		}
 
 		// Verify Reloading
 		reloadChecks();
+
 		// Process A ColdBox Request Only
 		if( findNoCase( 'index.cfm', listLast( arguments.targetPage, '/' ) ) ){
 			processColdBoxRequest();
