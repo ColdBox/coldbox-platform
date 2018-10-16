@@ -1371,12 +1371,12 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * <br>
 	 * Please see examples below:
 	 * <pre>
-	 * route( "api/user" ).\withAction( { get : "index", delete : "delete" } ).toHandler( "User" );
+		* route( "api/user" ).\withAction( { get : "index", delete : "delete" } ).toHandler( "User" );
 	 * route( "api/user/details" ).withAction( "details" ).toHandler( "User" );
 	 * route( "api/:handler" ).withAction( "index" ).end();
 	 * </pre>
 	 *
-	 * @handler The handler syntax
+	 * @action The action string or the action struct of HTTP verbs matching an action
 	 */
 	function withAction( required action ){
 		if( !variables.withClosure.isEmpty() ){
