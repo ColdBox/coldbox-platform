@@ -29,8 +29,7 @@
         "**/.*",
         "tests",
         "apidocs",
-        "testbox",
-        "*/.md"
+        "testbox"
     ],
     "testbox":{
         "runner":[
@@ -40,7 +39,7 @@
         ]
     },
     "devDependencies":{
-        "testbox":"^2.6.0"
+        "testbox":"^2.8.0"
     },
     "installPaths":{
         "testbox":"testbox"
