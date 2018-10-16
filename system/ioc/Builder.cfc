@@ -456,15 +456,24 @@
 
 		// was dependency required? If so, then throw exception
 		if( arguments.definition.required ){
+			
+			// Build human-readable description of the mapping
+			var depDesc = [];
+			if( !isNull( arguments.definition.name ) ) { depDesc.append( "Name of '#arguments.definition.name#'" ); }
+			if( !isNull( arguments.definition.DSL ) ) { depDesc.append( "DSL of '#arguments.definition.DSL#'" ); }
+			if( !isNull( arguments.definition.REF ) ) { depDesc.append( "REF of '#arguments.definition.REF#'" ); }
+			
+			var injectMessage = "The target '#arguments.targetID#' requested a missing dependency with a #depDesc.toList( ' and ' )#";
+			
 			// Logging
 			if( variables.log.canError() ){
-				variables.log.error( "Target: #arguments.targetID# -> DSL Definition: #arguments.definition.toString()# did not produce any resulting dependency" );
+				variables.log.error( injectMessage, arguments.definition );
 			}
 
 			// Throw exception as DSL Dependency requested was not located
 			throw(
-				message = "The DSL Definition #arguments.definition.toString()# did not produce any resulting dependency",
-				detail  = "The target requesting the dependency is: '#arguments.targetID#'",
+				message = injectMessage,
+				detail  = arguments.definition.toString(),
 				type    = "Builder.DSLDependencyNotFoundException"
 			);
 		}
