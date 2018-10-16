@@ -72,6 +72,19 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				});
 			});
 
+			story( "I want to register routes with a toAction() terminator", function(){
+				given( "a toAction() terminator", function(){
+					then( "it should register the appropriate route", function(){
+						router
+							.route( "/toAction" )
+							.withHandler( "luis" )
+							.toAction( "index" );
+						expect( router.getRoutes()[ 1 ].pattern ).toBe( "toAction/" );
+						expect( router.getRoutes()[ 1 ].action ).toBe( "index" );
+					});
+				});
+			} );
+
 			story( "I want to register fluent routes with no modifiers or terminators", function(){
 				given( "no inline target", function(){
 					then( "it should store the route pointer", function(){
