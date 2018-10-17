@@ -104,6 +104,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 				// Setup
 				variables.controller.getLoaderService().loadApplication( variables.configMapping, variables.appMapping );
 			}
+			// Load Module CF Mappings so modules can work properly
+			variables.controller.getModuleService().loadMappings();
 			// Auto registration of test as interceptor
 			variables.controller.getInterceptorService().registerInterceptor(interceptorObject=this);
 		}
@@ -348,7 +350,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         boolean withExceptionHandling = false
 	){
 		var handlerResults  = "";
-		var requestContext  = "";
+		var requestContext  = getRequestContext();
 		var relocationTypes = "TestController.relocate";
 		var cbController    = getController();
 		var renderData		= "";
@@ -364,12 +366,12 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         	// If the route is for the home page, use the default event in the config/ColdBox.cfc
         	if ( arguments.route == "/" ){
         		arguments.event = getController().getSetting( "defaultEvent" );
-				getRequestContext().setValue( getRequestContext().getEventName(), arguments.event );
+				requestContext.setValue( requestContext.getEventName(), arguments.event );
 				prepareMock( getController().getRoutingService() )
-					.$( "getCGIElement" ).$args( "path_info", getRequestContext() ).$results( arguments.route )
-					.$( "getCGIElement" ).$args( "script_name", getRequestContext() ).$results( "" )
-					.$( "getCGIElement" ).$args( "domain", getRequestContext() ).$results( cgi.server_name );
-        		arguments.route = "";
+					.$( "getCGIElement" ).$args( "path_info", requestContext ).$results( arguments.route )
+					.$( "getCGIElement" ).$args( "script_name", requestContext ).$results( "" )
+					.$( "getCGIElement" ).$args( "domain", requestContext ).$results( cgi.server_name );
+				arguments.route = "";
         	}
             // if we were passed a route, parse it and prepare the SES interceptor for routing.
             else if ( arguments.route.len() ){
@@ -377,16 +379,15 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
             	getInstance( "router@coldbox" ).setEnabled( true );
                 // separate the route into the route and the query string
 				var routeParts = explodeRoute( arguments.route );
-
                 // add the query string parameters from the route to the request context
-                getRequestContext().collectionAppend( routeParts.queryStringCollection )
+                requestContext.collectionAppend( routeParts.queryStringCollection )
                 	.collectionAppend( parseQueryString( arguments.queryString ) );
 
                 // mock the cleaned paths so SES routes will be recognized
 				prepareMock( getController().getRoutingService() )
-					.$( "getCGIElement" ).$args( "path_info", getRequestContext() ).$results( routeParts.route )
-					.$( "getCGIElement" ).$args( "script_name", getRequestContext() ).$results( "" )
-					.$( "getCGIElement" ).$args( "domain", getRequestContext() ).$results( cgi.server_name );
+					.$( "getCGIElement" ).$args( "path_info", requestContext ).$results( routeParts.route )
+					.$( "getCGIElement" ).$args( "script_name", requestContext ).$results( "" )
+					.$( "getCGIElement" ).$args( "domain", requestContext ).$results( cgi.server_name );
             }
             else{
                 // If we were passed just an event, remove routing since we don't need it
@@ -394,6 +395,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			}
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
+			cbController.getRequestService().setContext( requestContext );
 			setupRequest( arguments.event );
 
 			// App Start Handler
@@ -633,7 +635,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @return cbox_render_data or an empty struct
     */
     function getRenderData(){
-        return getValue( "cbox_render_data", {} );
+		return getPrivateValue( name="cbox_renderdata", defaultValue=structnew() );
     }
 
     /**

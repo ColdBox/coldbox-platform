@@ -112,9 +112,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					.setThreadSafe( true )
 					.setScope(
 						wirebox.getBinder().SCOPES.SINGLETON
-					);
+					)
+					.addDIConstructorArgument( name="controller", value=controller );
 				// Create the Router
 				variables.router = wirebox.getInstance( "router@coldbox" );
+				// Register the Router as an Interceptor as well.
+				variables.controller.getInterceptorService()
+					.registerInterceptor( interceptorObject = variables.router );
 				// Process it
 				variables.router.configure();
 				break;
@@ -616,7 +620,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// check accepts headers for the best match
 		else{
 			// Process Accept Headers
-			var match = event.getHTTPHeader( "Accept", "" ).listToArray()
+			var acceptHeader = event.getHTTPHeader( "Accept", "" ) ?: "";
+			var match = acceptHeader.listToArray()
 				// Discover the matching extension
 				.reduce( function( previous, thisAccept ){
 					// If we found, just return

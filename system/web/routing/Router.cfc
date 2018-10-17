@@ -489,25 +489,24 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @return Router
 	 */
 	function processWith( required args ){
-		var w = variables.withClosure;
-
 		// only process arguments once per addRoute() call.
 		if( structKeyExists( arguments.args, "$$withProcessed" ) ){
 			return this;
 		}
 
-		w.filter( function( key, value ){
-			return !isNull( value );
-		} ).each( function( key, value ){
-			// Verify if the key does not exist in incoming but it does in with, so default it
-			if ( NOT structKeyExists( args, key ) ){
-				args[ key ] = value;
-			}
-			// If it does exist in the incoming arguments and simple value, then we prefix, complex values are ignored.
-			else if ( isSimpleValue( args[ key ] ) AND NOT isBoolean( args[ key ] ) ){
-				args[ key ] = value & args[ key ];
-			}
-		} );
+		variables.withClosure
+			.filter( function( key, value ){
+				return !isNull( value );
+			} ).each( function( key, value ){
+				// Verify if the key does not exist in incoming but it does in with, so default it
+				if ( NOT structKeyExists( args, key ) ){
+					args[ key ] = value;
+				}
+				// If it does exist in the incoming arguments and simple value, then we prefix, complex values are ignored.
+				else if ( isSimpleValue( args[ key ] ) AND NOT isBoolean( args[ key ] ) ){
+					args[ key ] = value & args[ key ];
+				}
+			} );
 
 		args.$$withProcessed = true;
 
@@ -1092,9 +1091,14 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			if( !variables.withClosure.isEmpty() ){
 				processWith( arguments );
 			}
+
 			// Store data and continue
 			variables.thisRoute.pattern = arguments.pattern;
 			variables.thisRoute.name 	= arguments.name;
+
+			// Add a Handler in if it exists
+			variables.thisRoute.handler = arguments.handler ?: "";
+
 			return this;
 		}
 	}
@@ -1371,12 +1375,12 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * <br>
 	 * Please see examples below:
 	 * <pre>
-	 * route( "api/user" ).\withAction( { get : "index", delete : "delete" } ).toHandler( "User" );
+		* route( "api/user" ).\withAction( { get : "index", delete : "delete" } ).toHandler( "User" );
 	 * route( "api/user/details" ).withAction( "details" ).toHandler( "User" );
 	 * route( "api/:handler" ).withAction( "index" ).end();
 	 * </pre>
 	 *
-	 * @handler The handler syntax
+	 * @action The action string or the action struct of HTTP verbs matching an action
 	 */
 	function withAction( required action ){
 		if( !variables.withClosure.isEmpty() ){
@@ -1560,6 +1564,12 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * route( "hello", "main.index" ).toView( view="hello", layout="rest" );
 	 * route( "hello", "main.index" ).toView( view="hello", noLayout=true );
 	 * </pre>
+	 *
+	 * @view The view to render
+	 * @layout The layout to use or default one
+	 * @noLayout Use only the view or attach the layout
+	 * @viewModule The module the view comes from
+	 * @layoutModule The module the layout comes from
 	 */
 	function toView(
 		required view,
@@ -1594,6 +1604,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * route( "old" ).toRedirect( "/api/new", 302 );
 	 * route( "old" ).toRedirect( "https://www.ortussolutions.com");
 	 * </pre>
+	 *
+	 * @target The target URI
+	 * @statusCode The statusCode to use, defaults to 301
 	 */
 	function toRedirect( required target, statusCode=301 ){
 		// process a with closure if not empty
@@ -1619,6 +1632,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * route( "old" ).to( "main" );
 	 * route( "old" ).to( "api:main.index" );
 	 * </pre>
+	 *
+	 * @event The event to execute
 	 */
 	function to( required event ){
 		// process a with closure if not empty
@@ -1641,6 +1656,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * route( "about/:action" ).toHandler( "static" )
 	 * route( "users/:action?" ).toHandler( "users" )
 	 * </pre>
+	 *
+	 * @handler The handler to send this route to for processing
 	 */
 	function toHandler( required handler ){
 		// process a with closure if not empty
@@ -1657,6 +1674,29 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	}
 
 	/**
+	 * Terminates the route to execute a specific action or action struct. Usually the handler has already been defined beforehand.
+	 * <pre>
+	 * route( "about/:handler" ).toAction( "index" )
+	 * route( "/api/v1/users" ).withHandler( "users" ).toAction( { GET : "index", POST : "save" } )
+	 * </pre>
+	 *
+	 * @action The action string or the action struct of HTTP verbs matching an action
+	 */
+	function toAction( required action ){
+		// process a with closure if not empty
+		if( !variables.withClosure.isEmpty() ){
+			processWith( arguments );
+		}
+		// Store action
+		variables.thisRoute.action = arguments.action;
+		// register the route
+		addRoute( argumentCollection = variables.thisRoute );
+		// reinit
+		variables.thisRoute = initRouteDefinition();
+		return this;
+	}
+
+	/**
 	 * Terminates the route to execute a response closure with optional status codes and texts
 	 * <pre>
 	 * route( "old" ).toResponse( ( event, rc, prc ) => {
@@ -1664,6 +1704,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 *  return "html/data"
 	 * } );
 	 * </pre>
+	 *
+	 * @body The body of the response a lambda or closure
+	 * @statusCode The status code to use, defaults to 200
+	 * @statusText The status text to use, defaults to 'OK'
 	 */
 	function toResponse( required body, numeric statusCode = 200, statusText = "Ok" ){
 		// process a with closure if not empty
@@ -1688,6 +1732,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * <pre>
 	 * route( "/api/v1" ).toModuleRouting( "API" );
 	 * </pre>
+	 *
+	 * @module The module to send the route to
 	 */
 	function toModuleRouting( required module ){
 		// process a with closure if not empty
@@ -1710,6 +1756,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * <pre>
 	 * route( "/api/v1" ).toNamespaceRouting( "API" );
 	 * </pre>
+	 *
+	 * @namespace The namespace to send the route to
 	 */
 	function toNamespaceRouting( required namespace ){
 		// process a with closure if not empty

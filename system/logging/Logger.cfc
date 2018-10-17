@@ -20,7 +20,7 @@ component accessors="true"{
 	 * Appenders linked to this logger
 	 */
 	property name="appenders" type="struct";
-	
+
 	/**
 	 * Level Min
 	 */
@@ -36,13 +36,13 @@ component accessors="true"{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @category The category name to use this logger with
 	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
 	 * @levelMax The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
 	 * @appenders A struct of already created appenders for this category, or blank to use the root logger.
 	 */
-	function init( 
+	function init(
 		required category,
 		numeric levelMin=0,
 		numeric levelMax=4,
@@ -60,7 +60,7 @@ component accessors="true"{
 		// Utilities
 		variables._hash 		= createObject( 'java','java.lang.System').identityHashCode( this );
 		variables.util 			= new coldbox.system.core.util.Util();
-	
+
 
 		// Local Locking
 		variables.lockName 		= variables._hash & "LoggerOperation";
@@ -85,9 +85,9 @@ component accessors="true"{
 
 	/**
 	 * Get an appender reference, if the appender does not exist it will throw an exception
-	 * 
+	 *
 	 * @name The appender's name
-	 * 
+	 *
 	 * @throws Logger.AppenderNotFound
 	 */
 	function getAppender( required name ){
@@ -104,7 +104,7 @@ component accessors="true"{
 
 	/**
 	 * Check if an appender exists
-	 * 
+	 *
 	 * @name The name of the appender
 	 */
 	boolean function appenderExists( required name ){
@@ -113,9 +113,9 @@ component accessors="true"{
 
 	/**
 	 * Add a new appender to the list of appenders for this logger. If the appender already exists, then it will not be added.
-	 * 
+	 *
 	 * @newAppender An appender object reference
-	 * 
+	 *
 	 * @throws Logger.InvalidAppenderNameException
 	 */
 	Logger function addAppender( required newAppender ){
@@ -126,7 +126,7 @@ component accessors="true"{
 				type    = "Logger.InvalidAppenderNameException"
 			);
 		}
-		
+
 		// Get name
 		var name = arguments.newAppender.getName();
 		if( ! appenderExists( name ) ){
@@ -185,9 +185,9 @@ component accessors="true"{
 
 	/**
 	 * Set the min level
-	 * 
+	 *
 	 * @levelMin the level to set
-	 * 
+	 *
 	 * @throws Logger.InvalidLogLevelException
 	 */
 	Logger function setLevelMin( required levelMin ){
@@ -197,7 +197,7 @@ component accessors="true"{
 		}
 		// Verify level
 		if( this.logLevels.isLevelValid( arguments.levelMin ) AND
-			arguments.levelMin lte getLevelMax() 
+			arguments.levelMin lte getLevelMax()
 		){
 			variables.levelMin = arguments.levelMin;
 		} else {
@@ -213,9 +213,9 @@ component accessors="true"{
 
 	/**
 	 * Set the max level
-	 * 
+	 *
 	 * @levelMax the level to set
-	 * 
+	 *
 	 * @throws Logger.InvalidLogLevelException
 	 */
 	Logger function setLevelMax( required levelMax ){
@@ -225,7 +225,7 @@ component accessors="true"{
 		}
 		// Verify level
 		if( this.logLevels.isLevelValid( arguments.levelMax ) AND
-			arguments.levelMax gte getLevelMin() 
+			arguments.levelMax gte getLevelMin()
 		){
 			variables.levelMax = arguments.levelMax;
 		} else {
@@ -241,10 +241,10 @@ component accessors="true"{
 
 	/**
 	 * Log a debug message
-	 * 
+	 *
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
-	 * 
+	 *
 	 * @return Logger
 	 */
 	function debug( required message, extraInfo="" ){
@@ -254,10 +254,10 @@ component accessors="true"{
 
 	/**
 	 * Log a info message
-	 * 
+	 *
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
-	 * 
+	 *
 	 * @return Logger
 	 */
 	function info( required message, extraInfo="" ){
@@ -267,10 +267,10 @@ component accessors="true"{
 
 	/**
 	 * Log a warn message
-	 * 
+	 *
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
-	 * 
+	 *
 	 * @return Logger
 	 */
 	function warn( required message, extraInfo="" ){
@@ -280,10 +280,10 @@ component accessors="true"{
 
 	/**
 	 * Log an error message
-	 * 
+	 *
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
-	 * 
+	 *
 	 * @return Logger
 	 */
 	function error( required message, extraInfo="" ){
@@ -293,10 +293,10 @@ component accessors="true"{
 
 	/**
 	 * Log a fatal message
-	 * 
+	 *
 	 * @message The message to log
 	 * @extraInfo Extra information to send to appenders
-	 * 
+	 *
 	 * @return Logger
 	 */
 	function fatal( required message, extraInfo="" ){
@@ -306,7 +306,7 @@ component accessors="true"{
 
 	/**
 	 * Write an entry into the loggers registered with this LogBox variables
-	 * 
+	 *
 	 * @message The message to log
 	 * @severity The severity level to log, if invalid, it will default to **Info**
 	 * @extraInfo Extra information to send to appenders
@@ -321,13 +321,13 @@ component accessors="true"{
 
 		// If message empty, just exit
 		arguments.message = trim( arguments.message );
-		if( NOT len( arguments.message ) ){ 
-			return this; 
+		if( NOT len( arguments.message ) ){
+			return this;
 		}
 
 		//Is Logging Enabled?
-		if( getLevelMin() eq this.logLevels.OFF ){ 
-			return this; 
+		if( getLevelMin() eq this.logLevels.OFF ){
+			return this;
 		}
 
 		// Can we log on target
@@ -340,30 +340,32 @@ component accessors="true"{
 			if( NOT hasAppenders() ){
 				target = getRootLogger();
 			}
-			// Get appenders
-			var appenders = target.getAppenders();
-			// Delegate Calls to appenders
-			for( var key in appenders ){
-				// Get Appender
-				var thisAppender = appenders[ key ];
-				// Log the message in the appender if the appender allows it
-				if( thisAppender.canLog( arguments.severity ) ){
-					// check to see if the async property was passed during definition
-					if( thisAppender.propertyExists( 'async' ) && thisAppender.getProperty( 'async' ) ) {
-						// prepare threading variables.
-						var threadName 	= "logMessage_#replace( createUUID(), "-", "", "all" )#";
-						// Are we in a thread already?
-						if( variables.util.inThread() ) {
-							thisAppender.logMessage( logEvent );
-						} else {
-							// Thread this puppy
-							thread action="run" name="#threadName#" logEvent="#logEvent#" thisAppender="#thisAppender#"{
-								attributes.thisAppender.logMessage( attributes.logEvent );
-							}
-						}
-					} else {
-						thisAppender.logMessage( logEvent );
+
+
+			// Process all appenders
+			var targetAppenders = target.getAppenders()
+				// Only go through appenders that can log
+				.filter( function( key, thisAppender ){
+					return thisAppender.canLog( severity );
+				} );
+
+			for( var key in targetAppenders ){
+				var thisAppender = targetAppenders[ key ];
+				// check to see if the async property was passed during definition and not in a thread already
+				if(
+					thisAppender.getProperty( 'async', false ) &&
+					!variables.util.inThread()
+				){
+					// Thread this puppy
+					thread action       = "run"
+						name         = "logMessage_#replace( createUUID(), "-", "", "all" )#"
+						logEvent     = "#logEvent#"
+						thisAppender = "#thisAppender#"
+					{
+						attributes.thisAppender.logMessage( attributes.logEvent );
 					}
+				} else {
+					thisAppender.logMessage( logEvent );
 				}
 			}
 		}
@@ -373,7 +375,7 @@ component accessors="true"{
 
 	/**
 	 * Checks wether a log can be made on this Logger using a passed in level
-	 * 
+	 *
 	 * @level The numeric or string level representation
 	 */
 	boolean function canLog( required level ){

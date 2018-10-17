@@ -40,8 +40,14 @@ component extends="coldbox.system.logging.AbstractAppender"{
 		} else {
 		  	entry = severityToString( logEvent.getseverity() ) & " " &
 		  		logEvent.getCategory() & " " &
-		  		logEvent.getmessage() & " ExtraInfo: " &
-		  		logEvent.getextraInfoAsString();
+		  		logEvent.getmessage();
+		  	
+		  	// Add extra info if it exists
+			var extraInfoAsString = logEvent.getextraInfoAsString();
+		  	if( len( extraInfoAsString ) ) {
+		  		entry &= " ExtraInfo: " &
+		  		extraInfoAsString;	
+		  	}
 		}
 		switch( logEvent.getSeverity() ){
 			// Fatal + Error go to error stream

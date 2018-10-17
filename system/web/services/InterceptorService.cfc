@@ -178,7 +178,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				return buffer.builder;
 			},
 			clear = function(){
-				buffer.get().clear();
+				buffer.get().setLength( 0 );
 				return buffer;
 			},
 			append = function( required str ){
@@ -315,12 +315,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 		// retrieve, build and wire from wirebox
 		var oInterceptor = wirebox.getInstance( "interceptor-" & arguments.interceptorName );
-
-		// check for virtual $super, if it does, pass new properties
-		if( structKeyExists( oInterceptor, "$super" ) ){
-			oInterceptor.$super.setProperties( arguments.interceptorProperties );
-		}
-
 		return oInterceptor;
 	}
 

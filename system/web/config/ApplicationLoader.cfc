@@ -330,6 +330,11 @@ component accessors="true"{
 		if ( not structKeyExists( configStruct, "jsonPayloadToRC" ) ){
 			configStruct[ "jsonPayloadToRC" ] = false;
 		}
+
+		// Auto Map Core Models, defaults to false in ColdBox 5, will default to true in ColdBox 6
+		if ( not structKeyExists( configStruct, "autoMapModels" ) ){
+			configStruct[ "autoMapModels" ] = false;
+		}
 	}
 
 	/**
@@ -709,12 +714,18 @@ component accessors="true"{
 		// Set default to production
 		configStruct.environment = "production";
 
-		// is detection is custom
+		// Check if they have a `detectEnvironment()` method
 		if( structKeyExists( arguments.oConfig, "detectEnvironment" ) ){
 			//detect custom environment
 			configStruct.environment = arguments.oConfig.detectEnvironment();
-		} else {
-			// loop over environments and do coldbox environment detection
+		}
+		// Check Environment Settings
+		else if( len( util.getSystemSetting( "ENVIRONMENT", "" ) ) ){
+			configStruct.environment = util.getSystemSetting( "ENVIRONMENT", "" );
+		}
+		// loop over environment struct and do coldbox environment detection via cgi scope.
+		else {
+
 			for( var key in environments ){
 				// loop over patterns
 				for( var i=1; i lte listLen( environments[ key ] ); i=i+1 ){

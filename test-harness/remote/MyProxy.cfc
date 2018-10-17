@@ -12,16 +12,20 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="MyProxy" output="false" extends="coldbox.system.remote.ColdboxProxy">
 
-	<cffunction name="yourRemoteCall" output="false" access="remote" returntype="YourType" hint="Your Hint">
+	<cffunction name="echo" output="false" access="remote" returnType="string">
+		<cfreturn "hello">
+	</cffunction>
+
+	<cffunction name="yourRemoteCall" output="false" access="remote" returntype="string" hint="Your Hint">
 		<cfset var results = "">
-		
+
 		<!--- Set the event to execute --->
 		<cfset arguments.event = "">
-		
+
 		<!--- Call to process a coldbox event cycle, always check the results as they might not exist. --->
 		<cfset results = super.process(argumentCollection=arguments)>
-		
+
 		<cfreturn results>
 	</cffunction>
-	
+
 </cfcomponent>

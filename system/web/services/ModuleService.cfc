@@ -444,7 +444,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		// If module not registered, throw exception
 		if( NOT structKeyExists( modules, arguments.moduleName ) ){
 			throw(
-				message = "Cannot activate module: #arguments.moduleName#",
+				message = "Cannot activate module: #arguments.moduleName#. Already processed #StructKeyList( modules )#",
 				detail 	= "The module has not been registered, register the module first and then activate it.",
 				type 	= "ModuleService.IllegalModuleState"
 			);
@@ -519,7 +519,7 @@ component extends="coldbox.system.web.services.BaseService"{
 			if( directoryExists( mconfig.modelsPhysicalPath ) and mConfig.autoMapModels ){
 
 				// Add as a mapped directory with module name as the namespace with correct mapping path
-				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" :  mConfig.modelsInvocationPath );
+				var packagePath = ( len( mConfig.cfmapping ) ? mConfig.cfmapping & ".#mConfig.conventions.modelsLocation#" : mConfig.modelsInvocationPath );
 				var binder 		= variables.wirebox.getBinder();
 
 				if( len( mConfig.modelNamespace ) ){
@@ -586,9 +586,15 @@ component extends="coldbox.system.web.services.BaseService"{
 					// Process as a Router.cfc with virtual inheritance
 					wirebox.registerNewInstance( name=mConfig.routerInvocationPath, instancePath=mConfig.routerInvocationPath )
 						.setVirtualInheritance( "coldbox.system.web.routing.Router" )
-						.setThreadSafe( true );
+						.setThreadSafe( true )
+						.addDIConstructorArgument( name="controller", value=controller );
 					// Create the Router back into the config
 					mConfig.router = wirebox.getInstance( mConfig.routerInvocationPath );
+					// Register the Config as an observable also.
+					interceptorService.registerInterceptor(
+						interceptorObject 	= mConfig.router,
+						interceptorName 	= "Router@#arguments.moduleName#"
+					);
 					// Process it
 					mConfig.router.configure();
 				}

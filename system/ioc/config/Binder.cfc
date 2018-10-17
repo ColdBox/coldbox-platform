@@ -311,7 +311,7 @@ Description :
 
 				<!--- Influence --->
 				<cfif structKeyExists( arguments, "influence" )>
-					<cfset arguments.influence( this, thisTargetPath )>
+					<cfset arguments.influence( this, thisTargetPath, currentMapping[ 1 ] )>
 				</cfif>
 
 				<!--- Do this right away so aliases are picked up before this mapping potentially gets overwritten

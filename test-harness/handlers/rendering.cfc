@@ -39,20 +39,33 @@ component output="false" singleton{
 		return renderView( view="simpleview" );
 	}
 
+
+	/**
+	* Render layout with arguments and passthrough
+	*/
+	function renderLayoutWithArguments( event, rc, prc ){
+		return renderLayout(
+			view = 'viewWithArgs',
+			layout = 'Simple',
+			args = { data : 'abc123' }
+		);
+	}
+
+
 	/**
 	* renderingRegions
 	*/
 	function renderingRegions( event, rc, prc ){
-		
+
 		// Normal Rendering
-		event.setView( 
+		event.setView(
 			view 	= "rendering/withargs",
 			args 	= { isWidget = true },
 			name 	= "hola"
 		);
 
 		// Module Rendering
-		event.setView( 
+		event.setView(
 			view 	= "home/index",
 			module 	= "inception",
 			name 	= "module"

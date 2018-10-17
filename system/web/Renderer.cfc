@@ -121,13 +121,15 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	 *
 	 * @view The name of the view to render
 	 * @module The name of the module this view comes from
+	 * @args The view/layout passthrough arguments
 	 *
 	 * @return Renderer
 	*/
-	function setExplicitView( required view, module="" ){
+	function setExplicitView( required view, module="", struct args={} ){
 		variables.explicitView = {
 			"view" 		: arguments.view,
-			"module" 	: arguments.module
+			"module" 	: arguments.module,
+			"args"		: arguments.args
 		};
 		return this;
 	}
@@ -153,7 +155,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	*/
 	function renderView(
 		view="",
-		struct args="#variables.event.getCurrentViewArgs()#",
+		struct args=variables.event.getCurrentViewArgs(),
 		module="",
 		boolean cache=false,
 		cacheTimeout="",
@@ -196,8 +198,11 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		if( NOT len( arguments.view ) ){
 			// Rendering an explicit Renderer view/layout combo?
 			if( !variables.explicitView.isEmpty() ){
-				arguments.view = variables.explicitView.view;
-				arguments.module = variables.explicitView.module;
+				// Populate from explicit notation
+				arguments.view 		= variables.explicitView.view;
+				arguments.module 	= variables.explicitView.module;
+				arguments.args.append( variables.explicitView.args, false );
+
 				// clear the explicit view now that it has been used
 				setExplicitView( {} );
 			}
@@ -441,7 +446,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	*/
     function renderExternalView(
     	required view,
-    	struct args=event.getCurrentViewArgs(),
+    	struct args=variables.event.getCurrentViewArgs(),
     	boolean cache=false,
     	cacheTimeout="",
     	cacheLastAccessTimeout="",
@@ -498,7 +503,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		layout,
 		module="",
 		view="",
-		struct args=event.getCurrentViewArgs(),
+		struct args=variables.event.getCurrentViewArgs(),
 		viewModule="",
 		boolean prePostExempt=false
 	){
@@ -521,7 +526,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			)
 		){
 			return controller.getRenderer()
-				.setExplicitView( arguments.view, arguments.viewModule )
+				.setExplicitView( arguments.view, arguments.viewModule, arguments.args )
 				.renderLayout( argumentCollection=arguments );
 		}
 
@@ -588,6 +593,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 				module         = arguments.module,
 				explicitModule = cbox_explicitModule
 			);
+
 			// RenderLayout
 			iData.renderedLayout = renderViewComposite(
 				view           = cbox_currentLayout,
@@ -855,7 +861,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		if( NOT len( event.getCurrentView() ) ){
 
 			// Implicit views
-			if( controller.getSetting( name="caseSensitiveImplicitViews", defaultValue=false ) ){
+			if( controller.getSetting( name="caseSensitiveImplicitViews", defaultValue=true ) ){
 				event.setView( replace( cEvent, ".", "/", "all" ) );
 			} else {
 				event.setView( lcase( replace( cEvent, ".", "/", "all" ) ) );

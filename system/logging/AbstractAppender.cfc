@@ -5,12 +5,12 @@
 * This component is used as a base for creating LogBox appenders
 **/
 component accessors="true"{
-	
+
 	/**
 	 * Min logging level
 	 */
 	property name="levelMin" type="numeric";
-	
+
 	/**
 	 * Max logging level
 	 */
@@ -46,7 +46,7 @@ component accessors="true"{
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @name The unique name for this appender.
 	 * @properties A map of configuration properties for the appender"
 	 * @layout The layout class to use in this appender for custom message rendering.
@@ -64,7 +64,7 @@ component accessors="true"{
 		variables._hash        = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
 		// Flag denoting if the appender is inited or not. This will be set by LogBox upon succesful creation and registration.
 		variables.initialized  = false;
-		
+
 		// Appender's Name
 		variables.name = REreplacenocase( arguments.name, "[^0-9a-z]", "", "ALL" );
 
@@ -82,7 +82,7 @@ component accessors="true"{
 		variables.levelMax = arguments.levelMax;
 
 		return this;
-	}	
+	}
 
 	/**
 	 * Runs after the appender has been created and registered. Implemented by Concrete appender
@@ -100,7 +100,7 @@ component accessors="true"{
 
 	/**
 	 * Setter for level min
-	 * 
+	 *
 	 * @throws AbstractAppender.InvalidLogLevelException
 	 */
 	AbstractAppender function setLevelMin( required levelMin ){
@@ -119,7 +119,7 @@ component accessors="true"{
 
 	/**
 	 * Setter for level max
-	 * 
+	 *
 	 * @throws AbstractAppender.InvalidLogLevelException
 	 */
 	AbstractAppender function setLevelMax( required levelMax ){
@@ -145,7 +145,7 @@ component accessors="true"{
 
 	/**
 	 * convert a severity to a string
-	 * 
+	 *
 	 * @severity The severity to convert to a string
 	 */
 	function severityToString( required numeric severity){
@@ -168,7 +168,7 @@ component accessors="true"{
 
 	/**
 	 * Write an entry into the appender. You must implement this method yourself.
-	 * 
+	 *
 	 * @logEvent The logging event to log
 	 */
 	AbstractAppender function logMessage( required coldbox.system.logging.LogEvent logEvent ){
@@ -177,7 +177,7 @@ component accessors="true"{
 
 	/**
 	 * Checks wether a log can be made on this appender using a passed in level
-	 * 
+	 *
 	 * @level The level to check
 	 */
 	boolean function canLog( required numeric level ){
@@ -186,16 +186,21 @@ component accessors="true"{
 
 	/**
 	 * Get a property from the `properties` struct
-	 * 
+	 *
 	 * @property The property key
+	 * @defaultValue The default value to use if not found.
 	 */
-	function getProperty( required property ){
-		return variables.properties[ arguments.property ];
+	function getProperty( required property, defaultValue ){
+		if( variables.properties.keyExists( arguments.property ) ){
+			return variables.properties[ arguments.property ];
+		} else if( !isNull( arguments.defaultValue ) ){
+			return arguments.defaultValue;
+		}
 	}
 
 	/**
 	 * Set a property from the `properties` struct
-	 * 
+	 *
 	 * @property The property key
 	 * @value The value of the property
 	 */
@@ -206,12 +211,12 @@ component accessors="true"{
 
 	/**
 	 * Validate a property from the `properties` struct
-	 * 
+	 *
 	 * @property The property key
 	 */
 	boolean function propertyExists( required property ){
 		return structKeyExists( variables.properties, arguments.property );
-	}	
+	}
 
 	/****************************************** PRIVATE *********************************************/
 
@@ -221,7 +226,7 @@ component accessors="true"{
 	private function getUtil(){
 		if( structKeyExists( variables, "util" ) ){ return variables.util; }
 		variables.util = new coldbox.system.core.util.Util();
-		return variables.util; 
+		return variables.util;
 	}
 
 	/**

@@ -8,13 +8,13 @@ notifications:
 env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
-    - COLDBOX_VERSION=5.1.4
+    - COLDBOX_VERSION=5.2.0
   matrix:
     - ENGINE=lucee@4.5 ANT_TARGET=build.all
     - ENGINE=lucee@5 ANT_TARGET=run-tests
     - ENGINE=adobe@11	ANT_TARGET=run-tests
     - ENGINE=adobe@2016	ANT_TARGET=run-tests
-    #- ENGINE=adobe@2018	ANT_TARGET=run-tests
+   # - ENGINE=adobe@2018	ANT_TARGET=run-tests
 
 branches:
   only:
