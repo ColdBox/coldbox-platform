@@ -43,9 +43,34 @@ component extends="coldbox.system.testing.BaseModelTest"{
 			});
 
 			story( "I want to group routes with common options", function(){
+
+
+				given( "a grouped route with handler and pattern only", function(){
+					then( "it should store the route with common options", function(){
+						router.group( { pattern="/api", handler="api" }, function( options ){
+							router
+							.route( '/CountiesByZip/:zip' )
+								.withAction( { get = "CountiesByZip", options = "returnOptions" } )
+								.end()
+							.route( '/UtcOffsetByZip/:zip' )
+								.toAction( { get = "UtcOffsetByZip", options = "returnOptions" } );
+						} );
+
+						var routes = router.getRoutes();
+						expect(	routes ).toHaveLength( 2 );
+
+						expect( routes[ 1 ].handler ).toBe( "api" );
+						expect( routes[ 1 ].pattern ).toBe( "api/CountiesByZip/:zip/" );
+						expect( routes[ 1 ].action ).toBe( { get = "CountiesByZip", options = "returnOptions" } );
+
+						expect( routes[ 2 ].handler ).toBe( "api" );
+						expect( routes[ 2 ].pattern ).toBe( "api/UtcOffsetByZip/:zip/" );
+						expect( routes[ 2 ].action ).toBe( { get = "UtcOffsetByZip", options = "returnOptions" } );
+					} );
+				});
+
 				given( "a grouped route with valid options", function(){
 					then( "it should store the route with common options", function(){
-
 						router.group( { target="api.", handler="api.", pattern="/api" }, function( options ){
 							router
 							.route( "/", "main.index" )
@@ -66,8 +91,6 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 						expect( routes[ 3 ].handler ).toBe( "api.users" );
 						expect( routes[ 3 ].pattern ).toBe( "api/users/:id/" );
-
-
 					});
 				});
 			});

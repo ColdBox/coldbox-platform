@@ -489,25 +489,24 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @return Router
 	 */
 	function processWith( required args ){
-		var w = variables.withClosure;
-
 		// only process arguments once per addRoute() call.
 		if( structKeyExists( arguments.args, "$$withProcessed" ) ){
 			return this;
 		}
 
-		w.filter( function( key, value ){
-			return !isNull( value );
-		} ).each( function( key, value ){
-			// Verify if the key does not exist in incoming but it does in with, so default it
-			if ( NOT structKeyExists( args, key ) ){
-				args[ key ] = value;
-			}
-			// If it does exist in the incoming arguments and simple value, then we prefix, complex values are ignored.
-			else if ( isSimpleValue( args[ key ] ) AND NOT isBoolean( args[ key ] ) ){
-				args[ key ] = value & args[ key ];
-			}
-		} );
+		variables.withClosure
+			.filter( function( key, value ){
+				return !isNull( value );
+			} ).each( function( key, value ){
+				// Verify if the key does not exist in incoming but it does in with, so default it
+				if ( NOT structKeyExists( args, key ) ){
+					args[ key ] = value;
+				}
+				// If it does exist in the incoming arguments and simple value, then we prefix, complex values are ignored.
+				else if ( isSimpleValue( args[ key ] ) AND NOT isBoolean( args[ key ] ) ){
+					args[ key ] = value & args[ key ];
+				}
+			} );
 
 		args.$$withProcessed = true;
 
@@ -1092,9 +1091,14 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			if( !variables.withClosure.isEmpty() ){
 				processWith( arguments );
 			}
+
 			// Store data and continue
 			variables.thisRoute.pattern = arguments.pattern;
 			variables.thisRoute.name 	= arguments.name;
+
+			// Add a Handler in if it exists
+			variables.thisRoute.handler = arguments.handler ?: "";
+
 			return this;
 		}
 	}
