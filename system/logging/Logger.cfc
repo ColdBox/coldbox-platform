@@ -341,31 +341,33 @@ component accessors="true"{
 				target = getRootLogger();
 			}
 
+
 			// Process all appenders
-			target.getAppenders()
+			var targetAppenders = target.getAppenders()
 				// Only go through appenders that can log
 				.filter( function( key, thisAppender ){
 					return thisAppender.canLog( severity );
-				} )
-				.each( function( key, thisAppender ){
-					// check to see if the async property was passed during definition and not in a thread already
-					if(
-						thisAppender.getProperty( 'async', false ) &&
-						!variables.util.inThread()
-					){
-						// Thread this puppy
-						thread
-							action       = "run"
-							name         = "logMessage_#replace( createUUID(), "-", "", "all" )#"
-							logEvent     = "#logEvent#"
-							thisAppender = "#thisAppender#"
-						{
-							attributes.thisAppender.logMessage( attributes.logEvent );
-						}
-					} else {
-						thisAppender.logMessage( logEvent );
+				} );
+
+			for( var key in targetAppenders ){
+				var thisAppender = targetAppenders[ key ];
+				// check to see if the async property was passed during definition and not in a thread already
+				if(
+					thisAppender.getProperty( 'async', false ) &&
+					!variables.util.inThread()
+				){
+					// Thread this puppy
+					thread action       = "run"
+						name         = "logMessage_#replace( createUUID(), "-", "", "all" )#"
+						logEvent     = "#logEvent#"
+						thisAppender = "#thisAppender#"
+					{
+						attributes.thisAppender.logMessage( attributes.logEvent );
 					}
-				});
+				} else {
+					thisAppender.logMessage( logEvent );
+				}
+			}
 		}
 
 		return this;
