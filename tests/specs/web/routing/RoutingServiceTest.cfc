@@ -1,7 +1,6 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness"{
 
 	function beforeAll() {
-		reset();
 		super.setup();
 		routingService = prepareMock( getController().getRoutingService() );
 	}
