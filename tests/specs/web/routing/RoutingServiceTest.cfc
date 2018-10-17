@@ -1,12 +1,23 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness"{
 
 	function beforeAll() {
+		reset();
 		super.setup();
 		routingService = prepareMock( getController().getRoutingService() );
 	}
 
 	function run() {
 		describe( "Routing Services", function(){
+
+
+			it( "can execute a route with a header mocked", function(){
+				prepareMock( getRequestContext() )
+					.$( "getHTTPHeader" )
+					.$args( "X-Api-Token" )
+					.$results( "valid-api-token" );
+
+				var event = execute( route = "/" ); // The RoutingService error will happen here.
+			});
 
 			it( "can clean incoming pathing", function(){
 

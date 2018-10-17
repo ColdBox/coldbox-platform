@@ -620,7 +620,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// check accepts headers for the best match
 		else{
 			// Process Accept Headers
-			var match = event.getHTTPHeader( "Accept", "" ).listToArray()
+			var acceptHeader = event.getHTTPHeader( "Accept", "" ) ?: "";
+			var match = acceptHeader.listToArray()
 				// Discover the matching extension
 				.reduce( function( previous, thisAccept ){
 					// If we found, just return
