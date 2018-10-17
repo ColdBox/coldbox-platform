@@ -590,6 +590,11 @@ component extends="coldbox.system.web.services.BaseService"{
 						.addDIConstructorArgument( name="controller", value=controller );
 					// Create the Router back into the config
 					mConfig.router = wirebox.getInstance( mConfig.routerInvocationPath );
+					// Register the Config as an observable also.
+					interceptorService.registerInterceptor(
+						interceptorObject 	= mConfig.router,
+						interceptorName 	= "Router@#arguments.moduleName#"
+					);
 					// Process it
 					mConfig.router.configure();
 				}

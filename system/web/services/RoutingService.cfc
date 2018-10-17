@@ -116,6 +116,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					.addDIConstructorArgument( name="controller", value=controller );
 				// Create the Router
 				variables.router = wirebox.getInstance( "router@coldbox" );
+				// Register the Router as an Interceptor as well.
+				variables.controller.getInterceptorService()
+					.registerInterceptor( interceptorObject = variables.router );
 				// Process it
 				variables.router.configure();
 				break;
