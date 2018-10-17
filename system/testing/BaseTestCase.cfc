@@ -350,7 +350,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         boolean withExceptionHandling = false
 	){
 		var handlerResults  = "";
-		var requestContext  = prepareMock( getRequestContext() );
+		var requestContext  = getRequestContext();
 		var relocationTypes = "TestController.relocate";
 		var cbController    = getController();
 		var renderData		= "";
@@ -395,6 +395,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			}
 
 			// Setup the request Context with setup FORM/URL variables set in the unit test.
+			cbController.getRequestService().setContext( requestContext );
 			setupRequest( arguments.event );
 
 			// App Start Handler
