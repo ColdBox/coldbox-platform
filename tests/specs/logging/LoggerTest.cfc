@@ -60,13 +60,14 @@
 	function testAppenderLoggingLevels(){
 		logger.setLevelMin(0);
 		logger.setLevelMax(4);
-		
+
 		//appender Add
 		newAppender = createEmptyMock( "coldbox.system.logging.appenders.ConsoleAppender" )
 			.$( "canLog",false)
 			.$( "getName","ConsoleAppender" )
 			.$( "isInitialized",true)
 			.$( "logMessage" )
+			.$( "getProperty", false)
 			.$( "propertyExists", false);
 
 		// register appender in logger
@@ -82,7 +83,7 @@
 
 		newAppender.$( "canLog", true );
 		logger.logMessage( "My Unit Test", 1 );
-		
+
 		assertEquals( 1,  arrayLen( newAppender.$callLog().logMessage ) );
 	}
 
