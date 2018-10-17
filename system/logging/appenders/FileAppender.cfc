@@ -212,11 +212,6 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			//out( "Listener needs to startup" );
 		}
 
-		// Check if we are in a thread already, if so, just skip
-		if( getUtil().inThread() ){
-			return;
-		}
-
 		thread  action="run" name="#variables.lockName#-#hash( createUUID() )#"{
 			// Activate listener
 			var isActivating = variables.lock( body=function(){
@@ -310,8 +305,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @message The target message
 	 */
 	private FileAppender function append( required message ){
-		// Ensure log listener
-		startLogListener();
+		// If we are not in a thread, then start the log listener, else queue it
+		if( !getUtil().inThread() ){
+			// Ensure log listener
+			startLogListener();
+		}
 
 		// queue message up
 		arrayAppend( variables.logListener.queue, arguments.message );
