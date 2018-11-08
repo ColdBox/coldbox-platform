@@ -4,7 +4,7 @@
 * ---
 * This object models an interception state
 */
-component accessors="true" extends="coldbox.system.core.events.EventPool"{
+component accessors="true" {
 
 
 	/**
@@ -26,8 +26,12 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 	 * @controller The ColdBox Controller
 	 */
 	function init( required state, required logbox, required controller ){
-		super.init( argumentCollection=arguments );
-
+		// instance pool
+		variables.pool     = [];
+		// pool size
+		variables.poolSize = 0;
+		// state
+		variables.state    = arguments.state;
 		// Controller
 		variables.controller  = arguments.controller;
 		// md ref map
@@ -50,9 +54,10 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 	 * @interceptorKey Pass a key and retrieve that interceptor's metadata map only
 	 */
 	function getMetadataMap( interceptorKey ){
-		if( !isNull( arguments.interceptorKey ) ){
+		if ( !IsNull( arguments.interceptorKey ) && StructKeyExists( arguments, "interceptorKey" ) ) {
 			return variables.metadataMap[ arguments.interceptorKey ];
 		}
+
 		return variables.metadataMap;
 	}
 
@@ -64,10 +69,9 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 	 * @interceptorMD The interceptor state metadata.
 	 */
 	function register( required interceptorKey, required interceptor, required interceptorMD ){
-		// Register interceptor object
-		super.register( arguments.interceptorKey, arguments.interceptor );
-		// Register interceptor metadata
-		variables.metadataMap[ arguments.interceptorKey ] = arguments.interceptorMD;
+		ArrayAppend( variables.pool, { key=arguments.interceptorKey, target=arguments.interceptor } );
+		variables.poolSize = ArrayLen( variables.pool );
+		variables.metadataMap[ arguments.interceptorKey ] = arguments.interceptorMd;
 
 		return this;
 	}
@@ -78,12 +82,19 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 	 * @interceptorKey The interceptor key class to register
 	 */
 	function unregister( required interceptorKey ){
-		// unregister object
-		var results = super.unregister( arguments.interceptorKey );
-		// unregister metadata map
-		structDelete( variables.metadataMap, arguments.interceptorKey );
+		var unregistered = false;
 
-		return results;
+		for( var i=variables.pool.len(); i>0; i-- ) {
+			if ( variables.pool[ i ].key == arguments.interceptorKey ) {
+				ArrayDeleteAt( variables.pool, i );
+				unregistered = true;
+			}
+		}
+
+		StructDelete( variables.metadataMap, arguments.interceptorKey );
+		variables.poolSize = ArrayLen( variables.pool );
+
+		return unregistered;
 	}
 
 	/**
@@ -92,7 +103,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 	 * @interceptorKey The interceptor key class to verify it exists
 	 */
 	function exists( required interceptorKey ){
-		return super.exists( arguments.interceptorKey );
+		return StructKeyExists( instance.metadataMap, arguments.interceptorKey );
 	}
 
 	/**
@@ -101,8 +112,18 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 	 * @interceptorKey The interceptor key class to retrieve
 	 */
 	function getInterceptor( required interceptorKey ){
-		return super.getObject( arguments.interceptorKey );
+		var i = 0;
+		for( i=1; i<=variables.poolSize; i++ ) {
+			if ( variables.pool[ i ].key == arguments.interceptorKey ) {
+				return variables.pool[ i ].target;
+			}
+		}
 	}
+
+	public string function getState() {
+		return instance.state;
+	}
+
 
 	/**
 	 * Process this state's interceptors. If you use the asynchronous facilities, you will get a thread structure report as a result
@@ -127,14 +148,14 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 		numeric asyncJoinTimeout=0,
 		required buffer
 	){
-		if( arguments.async AND !variables.utility.inThread() ){
+		if ( arguments.async && !variables.utility.inThread() ) {
 			return processAsync(
-				event         = arguments.event,
-				interceptData = arguments.interceptData,
-				asyncPriority = arguments.asyncPriority,
-				buffer        = arguments.buffer
+				  event         = arguments.event
+				, interceptData = arguments.interceptData
+				, asyncPriority = arguments.asyncPriority
+				, buffer        = arguments.buffer
 			);
-		} else if ( arguments.asyncAll  AND !variables.utility.inThread() ){
+		} else if ( arguments.asyncAll AND NOT variables.utility.inThread() ) {
 			return processAsyncAll( argumentCollection=arguments );
 		} else {
 			processSync( event=arguments.event, interceptData=arguments.interceptData, buffer=arguments.buffer );
@@ -155,28 +176,27 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 		string asyncPriority="NORMAL",
 		required buffer
 	){
-		var threadName = "cbox_ichain_#replace( variables.uuidHelper.randomUUID(), "-", "", "all" )#";
+		var threadName = "cbox_ichain_#replace( instance.uuidHelper.randomUUID(), "-", "", "all" )#";
 
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Threading interceptor chain: '#getState()#' with thread name: #threadName#, priority: #arguments.asyncPriority#" );
+		if ( instance.log.canDebug() ) {
+			instance.log.debug("Threading interceptor chain: '#getState()#' with thread name: #threadName#, priority: #arguments.asyncPriority#" );
 		}
 
-		thread 	name="#threadName#"
-				action="run"
-				priority="#arguments.asyncPriority#"
-				interceptData="#arguments.interceptData#"
-				threadName="#threadName#"
-				buffer="#arguments.buffer#"
-		{
+		thread name          = threadName
+		       action        = "run"
+		       priority      = arguments.asyncPriority
+		       interceptData = arguments.interceptData
+		       threadName    = threadName
+		       buffer        = arguments.buffer {
 
-			variables.processSync(
-				event 			= variables.controller.getRequestService().getContext(),
+		    variables.processSync(
+				event 			= instance.controller.getRequestService().getContext(),
 				interceptData	= attributes.interceptData,
 				buffer 			= attributes.buffer
 			);
 
-			if( variables.log.canDebug() ){
-				variables.log.debug( "Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#", thread );
+			if ( instance.log.canDebug() ) {
+				instance.log.debug( "Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#", thread );
 			}
 		}
 
@@ -201,66 +221,62 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 		numeric asyncJoinTimeout=0,
 		required buffer
 	){
-		var interceptors 	= getInterceptors();
-		var threadnames 	= [];
-		var key				= "";
-		var threadData		= {};
-		var threadIndex		= "";
+		var threadNames    = [];
+		var thisThreadName = "";
+		var key            = "";
+		var threadData     = {};
+		var threadIndex    = "";
+		var i              = 0;
 
-		if( variables.log.canDebug() ){
-			variables.log.debug("AsyncAll interceptor chain starting for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#" );
+		if ( instance.log.canDebug() ) {
+			instance.log.debug("AsyncAll interceptor chain starting for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#" );
 		}
 
-		for( var key in interceptors ){
-			var thisThreadName = "ichain_#key#_#replace( variables.uuidHelper.randomUUID(), "-", "", "all" )#";
-			threadNames.append( thisThreadName );
+		for( i=1; i<=poolSize; i++ ){
+			var key             = instance.pool[ i ].key;
 
-			thread 	name="#thisThreadName#"
-					action="run"
-					priority="#arguments.asyncPriority#"
-					interceptData="#arguments.interceptData#"
-					threadName="#thisThreadName#"
-					buffer="#arguments.buffer#"
-					key="#key#"
-			{
+			thisThreadName = "ichain_#key#_#replace( instance.uuidHelper.randomUUID(), "-", "", "all" )#";
+			ArrayAppend( threadNames, thisThreadName );
 
-				// Retrieve interceptor to fire and local context
-				var thisInterceptor = this.getInterceptors().get( attributes.key );
-				var event 			= variables.controller.getRequestService().getContext();
+			thread name          = thisThreadName
+			       action        = "run"
+			       priority      = arguments.asyncPriority
+			       interceptData = arguments.interceptData
+			       threadName    = thisThreadName
+			       buffer        = arguments.buffer
+			       key           = key {
 
-				// Check if we can execute this Interceptor
-				if( variables.isExecutable( thisInterceptor, event, attributes.key ) ){
-					// Invoke the execution point
+				var thisInterceptor = this.getInterceptor( attributes.key );
+
+				if( variables.isExecutable( thisInterceptor, attributes.event, attributes.key ) ){
 					variables.invoker(
 						interceptor 	= thisInterceptor,
-						event 			= event,
+						event 			= instance.controller.getRequestService().getContext(),
 						interceptData 	= attributes.interceptData,
 						interceptorKey 	= attributes.key,
 						buffer 			= attributes.buffer
 					);
 
-					// Debug interceptions
-					if( variables.log.canDebug() ){
-						variables.log.debug( "Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'" );
+					if( instance.log.canDebug() ){
+						instance.log.debug( "Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'" );
 					}
 				}
-
-			} // end thread
-
-		} // end for loop
-
-		if( arguments.asyncAllJoin ){
-			if( variables.log.canDebug() ){
-				variables.log.debug( "AsyncAll interceptor chain waiting for join: '#getState()#', timeout: #arguments.asyncJoinTimeout# " );
 			}
-			thread action="join" name="#arrayToList( threadNames )#" timeout="#arguments.asyncJoinTimeout#";
 		}
 
-		if( variables.log.canDebug() ){
-			variables.log.debug( "AsyncAll interceptor chain ended for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#" );
+		if ( arguments.asyncAllJoin ) {
+			if ( instance.log.canDebug() ) {
+				instance.log.debug("AsyncAll interceptor chain waiting for join: '#getState()#', timeout: #arguments.asyncJoinTimeout# " );
+			}
+
+			thread action="join" name=ArrayToList( threadNames ) timeout=arguments.asyncJoinTimeout;
 		}
 
-		for( var threadIndex in threadNames ){
+		if ( instance.log.canDebug() ) {
+			instance.log.debug("AsyncAll interceptor chain ended for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#" );
+		}
+
+		for( var threadIndex in threadNames ) {
 			threadData[ threadIndex ] = cfthread[ threadIndex ];
 		}
 
@@ -279,50 +295,41 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 		required interceptData,
 		required buffer
 	){
-		var interceptors = getInterceptors();
+		var i = 0;
 
-		// Debug interceptions
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Starting '#getState()#' chain with #structCount( interceptors )# interceptors" );
+		if ( instance.log.canDebug() ){
+			instance.log.debug( "Starting '#getState()#' chain with #structCount( interceptors )# interceptors" );
 		}
 
-		// Loop and execute each interceptor as registered in order
-		for( var key in interceptors ){
-			// Retreive interceptor
-			var thisInterceptor = interceptors.get( key );
+		for( i=1; i<=instance.poolSize; i++ ){
+			var key             = instance.pool[ i ].key;
+			var thisInterceptor = instance.pool[ i ].target;
 
-			// Check if we can execute this Interceptor
-			if( isExecutable( thisInterceptor, arguments.event, key ) ){
-
-				// Async Execution only if not in a thread already, no buffer sent for async calls
-				if( variables.metadataMap[ key ].async AND NOT variables.utility.inThread() ){
+			if( isExecutable( arguments.event, key ) ){
+				if ( instance.metadataMap[ key ].async && !instance.utility.inThread() ){
 					invokerAsync(
-						event 			= arguments.event,
-						interceptData 	= arguments.interceptData,
-						interceptorKey 	= key,
-						asyncPriority 	= variables.metadataMap[ key ].asyncPriority,
-						buffer			= arguments.buffer
+						  event          = arguments.event
+						, interceptData  = arguments.interceptData
+						, interceptorKey = key
+						, asyncPriority  = instance.metadataMap[ key ].asyncPriority
+						, buffer         = arguments.buffer
 					);
-				}
-				// Invoke the execution point synchronously
-				else if(
+				} else if(
 					invoker(
-						interceptor		= thisInterceptor,
-						event			= arguments.event,
-						interceptData	= arguments.interceptData,
-						interceptorKey	= key,
-						buffer			= arguments.buffer
+						  interceptor    = thisInterceptor
+						, event          = arguments.event
+						, interceptData  = arguments.interceptData
+						, interceptorKey = key
+						, buffer         = arguments.buffer
 					)
 				){
 					break;
 				}
 			}
-
 		}
 
-		// Debug interceptions
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Finished '#getState()#' execution chain" );
+		if( instance.log.canDebug() ){
+			instance.log.debug( "Finished '#getState()#' execution chain" );
 		}
 
 	}
@@ -360,7 +367,7 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 	 * Get the interceptors linked hash map
 	 */
 	function getInterceptors(){
-		return super.getPool();
+		return variables.pool;
 	}
 
 	/**
@@ -379,36 +386,34 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 		asyncPriority="NORMAL",
 		required buffer
 	){
-		var thisThreadName = "asyncInterceptor_#arguments.interceptorKey#_#replace( variables.uuidHelper.randomUUID(), "-", "", "all" )#";
+		var thisThreadName = "asyncInterceptor_#arguments.interceptorKey#_#replace( instance.uuidHelper.randomUUID(), "-", "", "all" )#";
 
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Async interception starting for: '#getState()#', interceptor: #arguments.interceptorKey#, priority: #arguments.asyncPriority#" );
+		if ( instance.log.canDebug() ) {
+			instance.log.debug("Async interception starting for: '#getState()#', interceptor: #arguments.interceptorKey#, priority: #arguments.asyncPriority#" );
 		}
 
-		thread 	name="#thisThreadName#"
-				action="run"
-				priority="#arguments.asyncPriority#"
-				event="#arguments.event#"
-				interceptData="#arguments.interceptData#"
-				threadName="#thisThreadName#"
-				key="#arguments.interceptorKey#"
-				buffer="#arguments.buffer#"
-		{
+		thread name          = thisThreadName
+		       action        = "run"
+		       priority      = arguments.asyncPriority
+		       event         = arguments.event
+		       interceptData = arguments.interceptData
+		       threadName    = thisThreadName
+		       key           = arguments.interceptorKey
+		       buffer        = arguments.buffer {
 
-			var args = {
-				"event" 		= attributes.event,
-				"interceptData" = attributes.interceptData,
-				"buffer" 		= attributes.buffer,
-				"rc" 			= attributes.event.getCollection(),
-				"prc" 			= attributes.event.getPrivateCollection()
-			};
+		    var interceptor = getInterceptor( attributes.interceptorKey );
 
-			invoke( this.getInterceptors().get( attributes.key ), this.getState(), args );
+		    interceptor[ this.getState() ](
+		    	  event         = attributes.event
+				, interceptData = attributes.interceptData
+				, buffer        = attributes.buffer
+				, rc            = attributes.event.getCollection()
+				, prc           = attributes.event.getPrivateCollection()
+		    );
 
-			if( variables.log.canDebug() ){
-				variables.log.debug( "Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#" );
+			if ( instance.log.canDebug() ) {
+				instance.log.debug( "Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#" );
 			}
-
 		}
 
 	}
@@ -430,30 +435,30 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 		required interceptorKey,
 		required buffer
 	){
+var refLocal = {};
 
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Interception started for: '#getState()#', key: #arguments.interceptorKey#" );
+		if ( instance.log.canDebug() ) {
+			instance.log.debug( "Interception started for: '#getState()#', key: #arguments.interceptorKey#" );
 		}
 
-		var args = {
-			"event" 		= arguments.event,
-			"interceptData" = arguments.interceptData,
-			"buffer" 		= arguments.buffer,
-			"rc" 			= arguments.event.getCollection(),
-			"prc" 			= arguments.event.getPrivateCollection()
-		};
+		refLocal.results = arguments.interceptor[ getState() ](
+			  event         = arguments.event
+			, interceptData = arguments.interceptData
+			, buffer        = arguments.buffer
+			, rc            = arguments.event.getCollection()
+			, prc           = arguments.event.getPrivateCollection()
+		);
 
-		var results = invoke( arguments.interceptor, getState(), args );
-
-		if( variables.log.canDebug() ){
-			variables.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
+		if ( instance.log.canDebug() ) {
+			instance.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
 		}
 
-		if( !isNull( results ) and isBoolean( results ) ){
-			return results;
-		} else {
-			return false;
+
+		if ( StructKeyExists( refLocal, "results" ) && IsBoolean( refLocal.results ) ) {
+			return refLocal.results;
 		}
+
+		return false;
 
 	}
 
