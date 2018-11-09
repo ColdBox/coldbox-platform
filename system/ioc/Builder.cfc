@@ -386,6 +386,12 @@
 
 			// ColdBox Context DSL
 			case "coldbox" : {
+				if( !variables.injector.isColdBoxLinked() ){
+					throw(
+						message	= "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",
+						type	= "Builder.IllegalDSLException"
+					);
+				}
 				refLocal.dependency = variables.coldboxDSL.process( argumentCollection=arguments );
 				break;
 			}
