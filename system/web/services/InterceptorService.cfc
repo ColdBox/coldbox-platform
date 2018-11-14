@@ -21,6 +21,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	property name="interceptorConfig" type="struct";
 
+	/**
+	 * Helpers for catching interceptors firing before finished registering
+	 */
+	property name="registeringInterceptors" type="boolean" default="false";
+	property name="currentRegisteringInterceptor" type="string" default="";
+
 	// Interceptor base class
 	INTERCEPTOR_BASE_CLASS = "coldbox.system.Interceptor";
 
@@ -92,6 +98,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return InterceptorService
 	 */
 	function registerInterceptors(){
+		// mark that we are in the process of registering interceptors
+		setRegisteringInterceptors( true );
+
 		// if simple, inflate
 		if( isSimpleValue( variables.interceptorConfig.customInterceptionPoints ) ){
 			variables.interceptorConfig.customInterceptionPoints = listToArray( variables.interceptorConfig.customInterceptionPoints );
@@ -115,6 +124,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				interceptorName       = variables.interceptorConfig.interceptors[ x ].name
 			);
 		}
+
+		// indicate that we are done registering interceptors
+		setRegisteringInterceptors( false );
 
 		return this;
 	}
@@ -143,6 +155,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		string asyncPriority='NORMAL',
 		numeric asyncJoinTimeout=0
 	){
+		// check that we are not still registering interceptors
+		processPreventionDuringRegistration( argumentCollection=arguments );
+
 		// Process The State if it exists, else just exit out
 		if( structKeyExists( variables.interceptionStates, arguments.state ) ){
 			arguments.event 	= controller.getRequestService().getContext();
@@ -213,6 +228,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		customPoints="",
 		interceptorName
 	){
+		// set the currently registering interceptor
+		if ( StructKeyExists( arguments, "interceptorClass" ) ) {
+			setCurrentRegisteringInterceptor( arguments.interceptorClass );
+		}
+
 		// determine registration names
 		var objectName		= "";
 		var oInterceptor 	= "";
@@ -533,6 +553,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		//return the interception points found
 		return pointsFound;
+	}
+
+	/**
+	 * I prevent interceptors from creating services that fire interceptors
+	 * on startup so that developers do not raise interception
+	 * events before the system has finished registering interceptors.
+	 */
+	private void function processPreventionDuringRegistration( required string state ) {
+		if ( getRegisteringInterceptors() ) {
+			var ignoreStates = [ "beforeinstanceinspection", "afterinstanceinspection", "beforeinstancecreation", "afterinstanceinitialized", "beforeinstanceautowire", "afterinstanceautowire", "afterinstancecreation" ];
+			if ( !ArrayFind( ignoreStates, LCase( arguments.state ) ) )	{
+				throw(
+					  type    = "coldbox.interceptor.panic"
+					, message = "An interception point, [#arguments.state#], was raised during the interceptor registration process and *before* all registered interceptor listeners have been instantiated. This occurred during the instatiation of the [#getCurrentRegisteringInterceptor()#] interceptor. This is a problem because not all interceptors have been registered and setup to listen for the [#arguments.state#] event and this may lead to unexpected behaviour. This issue is usually caused by injecting dependencies into your interceptor with wirebox and ommitting the 'provider:' DSL from the beginning of your inject attributes."
+				);
+			}
+		}
 	}
 
 }
