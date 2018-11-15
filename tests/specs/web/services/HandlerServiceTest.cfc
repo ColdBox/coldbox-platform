@@ -57,7 +57,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				handlerService.registerHandlers();
 
 				var actual = listToArray( mockController.$callLog().setSetting[ 1 ].value );
-				arraySort( actual, "textnocase" );
+				arraySort( actual, "textNoCase" );
 				expect( actual ).toBe( expected );
 			} );
 
