@@ -103,7 +103,7 @@ component accessors="true" {
 	 * @interceptorKey The interceptor key class to verify it exists
 	 */
 	function exists( required interceptorKey ){
-		return StructKeyExists( instance.metadataMap, arguments.interceptorKey );
+		return StructKeyExists( variables.metadataMap, arguments.interceptorKey );
 	}
 
 	/**
@@ -121,7 +121,7 @@ component accessors="true" {
 	}
 
 	public string function getState() {
-		return instance.state;
+		return variables.state;
 	}
 
 
@@ -176,10 +176,10 @@ component accessors="true" {
 		string asyncPriority="NORMAL",
 		required buffer
 	){
-		var threadName = "cbox_ichain_#replace( instance.uuidHelper.randomUUID(), "-", "", "all" )#";
+		var threadName = "cbox_ichain_#replace( variables.uuidHelper.randomUUID(), "-", "", "all" )#";
 
-		if ( instance.log.canDebug() ) {
-			instance.log.debug("Threading interceptor chain: '#getState()#' with thread name: #threadName#, priority: #arguments.asyncPriority#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug("Threading interceptor chain: '#getState()#' with thread name: #threadName#, priority: #arguments.asyncPriority#" );
 		}
 
 		thread name          = threadName
@@ -190,13 +190,13 @@ component accessors="true" {
 		       buffer        = arguments.buffer {
 
 		    variables.processSync(
-				event 			= instance.controller.getRequestService().getContext(),
+				event 			= variables.controller.getRequestService().getContext(),
 				interceptData	= attributes.interceptData,
 				buffer 			= attributes.buffer
 			);
 
-			if ( instance.log.canDebug() ) {
-				instance.log.debug( "Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#", thread );
+			if ( variables.log.canDebug() ) {
+				variables.log.debug( "Finished threaded interceptor chain: #getState()# with thread name: #attributes.threadName#", thread );
 			}
 		}
 
@@ -228,14 +228,14 @@ component accessors="true" {
 		var threadIndex    = "";
 		var i              = 0;
 
-		if ( instance.log.canDebug() ) {
-			instance.log.debug("AsyncAll interceptor chain starting for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug("AsyncAll interceptor chain starting for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#" );
 		}
 
 		for( i=1; i<=poolSize; i++ ){
-			var key             = instance.pool[ i ].key;
+			var key             = variables.pool[ i ].key;
 
-			thisThreadName = "ichain_#key#_#replace( instance.uuidHelper.randomUUID(), "-", "", "all" )#";
+			thisThreadName = "ichain_#key#_#replace( variables.uuidHelper.randomUUID(), "-", "", "all" )#";
 			ArrayAppend( threadNames, thisThreadName );
 
 			thread name          = thisThreadName
@@ -251,29 +251,29 @@ component accessors="true" {
 				if( variables.isExecutable( thisInterceptor, attributes.event, attributes.key ) ){
 					variables.invoker(
 						interceptor 	= thisInterceptor,
-						event 			= instance.controller.getRequestService().getContext(),
+						event 			= variables.controller.getRequestService().getContext(),
 						interceptData 	= attributes.interceptData,
 						interceptorKey 	= attributes.key,
 						buffer 			= attributes.buffer
 					);
 
-					if( instance.log.canDebug() ){
-						instance.log.debug( "Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'" );
+					if( variables.log.canDebug() ){
+						variables.log.debug( "Interceptor '#getMetadata( thisInterceptor ).name#' fired in asyncAll chain: '#this.getState()#'" );
 					}
 				}
 			}
 		}
 
 		if ( arguments.asyncAllJoin ) {
-			if ( instance.log.canDebug() ) {
-				instance.log.debug("AsyncAll interceptor chain waiting for join: '#getState()#', timeout: #arguments.asyncJoinTimeout# " );
+			if ( variables.log.canDebug() ) {
+				variables.log.debug("AsyncAll interceptor chain waiting for join: '#getState()#', timeout: #arguments.asyncJoinTimeout# " );
 			}
 
 			thread action="join" name=ArrayToList( threadNames ) timeout=arguments.asyncJoinTimeout;
 		}
 
-		if ( instance.log.canDebug() ) {
-			instance.log.debug("AsyncAll interceptor chain ended for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug("AsyncAll interceptor chain ended for: '#getState()#' with join: #arguments.asyncAllJoin#, priority: #arguments.asyncPriority#, timeout: #arguments.asyncJoinTimeout#" );
 		}
 
 		for( var threadIndex in threadNames ) {
@@ -297,21 +297,21 @@ component accessors="true" {
 	){
 		var i = 0;
 
-		if ( instance.log.canDebug() ){
-			instance.log.debug( "Starting '#getState()#' chain with #structCount( interceptors )# interceptors" );
+		if ( variables.log.canDebug() ){
+			variables.log.debug( "Starting '#getState()#' chain with #structCount( interceptors )# interceptors" );
 		}
 
-		for( i=1; i<=instance.poolSize; i++ ){
-			var key             = instance.pool[ i ].key;
-			var thisInterceptor = instance.pool[ i ].target;
+		for( i=1; i<=variables.poolSize; i++ ){
+			var key             = variables.pool[ i ].key;
+			var thisInterceptor = variables.pool[ i ].target;
 
-			if( isExecutable( arguments.event, key ) ){
-				if ( instance.metadataMap[ key ].async && !instance.utility.inThread() ){
+			if( isExecutable( thisInterceptor, arguments.event, key ) ){
+				if ( variables.metadataMap[ key ].async && !variables.utility.inThread() ){
 					invokerAsync(
 						  event          = arguments.event
 						, interceptData  = arguments.interceptData
 						, interceptorKey = key
-						, asyncPriority  = instance.metadataMap[ key ].asyncPriority
+						, asyncPriority  = variables.metadataMap[ key ].asyncPriority
 						, buffer         = arguments.buffer
 					);
 				} else if(
@@ -328,8 +328,8 @@ component accessors="true" {
 			}
 		}
 
-		if( instance.log.canDebug() ){
-			instance.log.debug( "Finished '#getState()#' execution chain" );
+		if( variables.log.canDebug() ){
+			variables.log.debug( "Finished '#getState()#' execution chain" );
 		}
 
 	}
@@ -386,10 +386,10 @@ component accessors="true" {
 		asyncPriority="NORMAL",
 		required buffer
 	){
-		var thisThreadName = "asyncInterceptor_#arguments.interceptorKey#_#replace( instance.uuidHelper.randomUUID(), "-", "", "all" )#";
+		var thisThreadName = "asyncInterceptor_#arguments.interceptorKey#_#replace( variables.uuidHelper.randomUUID(), "-", "", "all" )#";
 
-		if ( instance.log.canDebug() ) {
-			instance.log.debug("Async interception starting for: '#getState()#', interceptor: #arguments.interceptorKey#, priority: #arguments.asyncPriority#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug("Async interception starting for: '#getState()#', interceptor: #arguments.interceptorKey#, priority: #arguments.asyncPriority#" );
 		}
 
 		thread name          = thisThreadName
@@ -401,7 +401,7 @@ component accessors="true" {
 		       key           = arguments.interceptorKey
 		       buffer        = arguments.buffer {
 
-		    var interceptor = getInterceptor( attributes.interceptorKey );
+		    var interceptor = getInterceptor( attributes.key );
 
 		    interceptor[ this.getState() ](
 		    	  event         = attributes.event
@@ -411,8 +411,8 @@ component accessors="true" {
 				, prc           = attributes.event.getPrivateCollection()
 		    );
 
-			if ( instance.log.canDebug() ) {
-				instance.log.debug( "Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#" );
+			if ( variables.log.canDebug() ) {
+				variables.log.debug( "Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#" );
 			}
 		}
 
@@ -437,8 +437,8 @@ component accessors="true" {
 	){
 var refLocal = {};
 
-		if ( instance.log.canDebug() ) {
-			instance.log.debug( "Interception started for: '#getState()#', key: #arguments.interceptorKey#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug( "Interception started for: '#getState()#', key: #arguments.interceptorKey#" );
 		}
 
 		refLocal.results = arguments.interceptor[ getState() ](
@@ -449,8 +449,8 @@ var refLocal = {};
 			, prc           = arguments.event.getPrivateCollection()
 		);
 
-		if ( instance.log.canDebug() ) {
-			instance.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
+		if ( variables.log.canDebug() ) {
+			variables.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
 		}
 
 
