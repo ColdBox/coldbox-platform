@@ -618,9 +618,9 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	function locateLayout( required layout ){
 		// Default path is the conventions
 		var layoutPath 	  		= "/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#";
-		var extLayoutPath 		= "#variables.layoutsExternalLocation#/#arguments.layout#";
 		var moduleName 			= event.getCurrentModule();
 		var moduleLayoutPath 	= "";
+		var extLocation         = "";
 
 		// If layout exists in module and this is a module call, then use module layout.
 		if( len( moduleName ) ){
@@ -630,9 +630,13 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 			}
 		}
 
-		// Check if layout does not exists in Conventions, but in the ext location
-		if( NOT fileExists( expandPath( layoutPath ) ) AND fileExists( expandPath( extLayoutPath ) ) ){
-			return extLayoutPath;
+		// check external locations
+		if( !fileExists( expandPath( layoutPath ) ) ) {
+			for( extLocation in variables.LayoutsExternalLocation ) {
+				if ( fileExists( expandPath( "#extLocation#/#arguments.layout#" ) ) ){
+					return "#extLocation#/#arguments.layout#";
+				}
+			}
 		}
 
 		return layoutPath;

@@ -424,6 +424,7 @@ component accessors="true"{
 	function parseExternalLocations( required oConfig, required config ){
 		var configStruct = arguments.config;
 		var fwSettingsStruct = variables.coldboxSettings;
+		var i = 0;
 
 		// ViewsExternalLocation Setup
 		if( structKeyExists( configStruct,"ViewsExternalLocation" ) and len( configStruct[ "ViewsExternalLocation" ]) ){
@@ -443,20 +444,30 @@ component accessors="true"{
 		}
 
 		// LayoutsExternalLocation Setup
-		if( structKeyExists( configStruct,"LayoutsExternalLocation" ) and configStruct[ "LayoutsExternalLocation" ] neq "" ){
-			// Verify the locations, do relative to the app mapping first
-			if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct[ "LayoutsExternalLocation" ]) ){
-				configStruct[ "LayoutsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "LayoutsExternalLocation" ];
+		if( structKeyExists( configStruct,"LayoutsExternalLocation" ) ) {
+			if ( !IsArray( configStruct[ "LayoutsExternalLocation" ] ) ) {
+				if ( Len( Trim( configStruct[ "LayoutsExternalLocation" ] ) ) ) {
+					configStruct[ "LayoutsExternalLocation" ] = [ configStruct[ "LayoutsExternalLocation" ] ];
+				} else {
+					configStruct[ "LayoutsExternalLocation" ] = [];
+				}
 			}
-			else if( not directoryExists(expandPath( configStruct[ "LayoutsExternalLocation" ])) ){
-				throw( "LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
-			}
-			// Cleanup
-			if ( right( configStruct[ "LayoutsExternalLocation" ],1) eq "/" ){
-				 configStruct[ "LayoutsExternalLocation" ] = left( configStruct[ "LayoutsExternalLocation" ],len( configStruct[ "LayoutsExternalLocation" ])-1);
+
+			for( i=1; i<=ArrayLen( configStruct[ "LayoutsExternalLocation" ] ); i++ ) {
+				// Verify the locations, do relative to the app mapping first
+				if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct[ "LayoutsExternalLocation" ][ i ]) ){
+					configStruct[ "LayoutsExternalLocation" ][ i ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "LayoutsExternalLocation" ][ i ];
+				}
+				else if( not directoryExists(expandPath( configStruct[ "LayoutsExternalLocation" ][ i ])) ){
+					throw( "LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation'][ i ]#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
+				}
+				// Cleanup
+				if ( right( configStruct[ "LayoutsExternalLocation" ][ i ],1) eq "/" ){
+					 configStruct[ "LayoutsExternalLocation" ][ i ] = left( configStruct[ "LayoutsExternalLocation" ][ i ],len( configStruct[ "LayoutsExternalLocation" ][ i ])-1);
+				}
 			}
 		} else {
-			configStruct[ "LayoutsExternalLocation" ] = "";
+			configStruct[ "LayoutsExternalLocation" ] = [];
 		}
 	}
 
