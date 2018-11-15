@@ -211,7 +211,13 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * Return the flash scope instance in use by the framework.
 	 */
 	any function getFlashScope(){
-		return variables.flashScope;
+		var appSettings = getApplicationMetadata();
+
+		if ( IsBoolean( appSettings.sessionManagement ?: "" ) && appSettings.sessionManagement ) {
+			return variables.flashScope;
+		}
+
+		return variables.mockFlashScope;
 	}
 
 	/**
@@ -265,6 +271,7 @@ component extends="coldbox.system.web.services.BaseService"{
 
 		// Create Flash RAM object
 		variables.flashScope = createObject( "component", flashPath ).init( controller, variables.flashData );
+		variables.mockFlashScope = createObject( "component", "coldbox.system.web.flash.MockFlash" ).init( controller, variables.flashData );
 
 		return this;
 	}
