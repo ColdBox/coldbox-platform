@@ -608,17 +608,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	private array function getCfcMethods( required struct meta ) {
 		var methods = {};
 
-		if ( ( arguments.meta.extends ?: {} ).count() ) {
-			getCfcMethods( arguments.meta.extends ).each( function( method ){
+		if ( IsStruct( arguments.meta.extends ?: "" ) && StructCount( arguments.meta.extends ) ) {
+			for( var method in getCfcMethods( arguments.meta.extends ) ) {
 				methods[ method ] = true;
-			} );
+			};
 		}
-		var metaMethods = arguments.meta.functions ?: [];
-		for( var method in metaMethods ) {
-			methods[ method.name ] = true;
+		var metaMethods = arguments.meta.functions ?: "";
+		if ( IsArray( metaMethods ) ) {
+			for( var method in metaMethods ) {
+				methods[ method.name ] = true;
+			}
 		}
 
-		return methods.keyArray();
+		return StructKeyArray( methods );
 	}
 
 	private string function listHandlerNames( required array handlers ) {
