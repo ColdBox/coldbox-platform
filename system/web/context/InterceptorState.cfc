@@ -435,19 +435,20 @@ component accessors="true" {
 		required interceptorKey,
 		required buffer
 	){
-var refLocal = {};
+		var refLocal = {};
 
 		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Interception started for: '#getState()#', key: #arguments.interceptorKey#" );
 		}
 
-		refLocal.results = arguments.interceptor[ getState() ](
+
+		refLocal.results = invoke( arguments.interceptor, getState(), {
 			  event         = arguments.event
 			, interceptData = arguments.interceptData
 			, buffer        = arguments.buffer
 			, rc            = arguments.event.getCollection()
 			, prc           = arguments.event.getPrivateCollection()
-		);
+		} );
 
 		if ( variables.log.canDebug() ) {
 			variables.log.debug( "Interception ended for: '#getState()#', key: #arguments.interceptorKey#" );
