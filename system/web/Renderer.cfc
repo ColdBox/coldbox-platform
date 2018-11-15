@@ -890,6 +890,6 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 
 
 	private any function getThreadSafeInstanceOfThisService() {
-		return Duplicate( this, false );
+		return StructCopy( this );
 	}
 }
