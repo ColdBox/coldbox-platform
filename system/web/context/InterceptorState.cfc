@@ -401,17 +401,17 @@ component accessors="true" {
 		       key           = arguments.interceptorKey
 		       buffer        = arguments.buffer {
 
-		    var interceptor = getInterceptor( attributes.key );
+			var args = {
+				"event" 		= attributes.event,
+				"interceptData" = attributes.interceptData,
+				"buffer" 		= attributes.buffer,
+				"rc" 			= attributes.event.getCollection(),
+				"prc" 			= attributes.event.getPrivateCollection()
+			};
 
-		    interceptor[ this.getState() ](
-		    	  event         = attributes.event
-				, interceptData = attributes.interceptData
-				, buffer        = attributes.buffer
-				, rc            = attributes.event.getCollection()
-				, prc           = attributes.event.getPrivateCollection()
-		    );
+			invoke( this.getInterceptor( attributes.key ), this.getState(), args );
 
-			if ( variables.log.canDebug() ) {
+			if( variables.log.canDebug() ){
 				variables.log.debug( "Async interception ended for: '#this.getState()#', interceptor: #attributes.key#, threadName: #attributes.threadName#" );
 			}
 		}
