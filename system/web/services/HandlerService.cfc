@@ -434,9 +434,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 		for( i=1; i<=externalLocationCount; i++ ) {
-			if ( !directoryExists( handlersExternalLocations[ i ] ) ){
+			if ( !directoryExists( handlersExternalLocationPaths[ i ] ) ){
 				throw(
-					message = "The external handlers directory: #handlersExternalLocations[ i ]# does not exist please check your application structure.",
+					message = "The external handlers directory: #handlersExternalLocationPaths[ i ]# does not exist please check your application structure.",
 					type 	= "HandlersDirectoryNotFoundException"
 				);
 			}

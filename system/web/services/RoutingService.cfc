@@ -698,7 +698,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	private function packageResolver( required routingString, required routeParams, module="" ){
 		var root 			= variables.handlersPath;
-		var extRoot 		= variables.handlersExternalLocationPath;
+		var extRoots		= variables.handlersExternalLocationPath;
 		var x 				= 1;
 		var newEvent 		= "";
 		var thisFolder 		= "";
@@ -741,7 +741,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				// Check if package exists in convention OR external location
 				if( directoryExists(root & "/" & foundPaths & thisFolder)
 					OR
-				    ( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) )
+				    ( ArrayLen( extRoots ) AND directoryExistsInExternalRoots( extRoots, foundPaths & thisFolder ) )
 				){
 					// Save Found Paths
 					foundPaths = foundPaths & thisFolder & "/";
@@ -971,5 +971,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		return results;
 	}
 
-
+	private boolean function directoryExistsInExternalRoots( required array extRoots, required string subFolder ) {
+		var extRoot = "";
+		for( extRoot in extRoots ) {
+			if ( directoryExists( extRoot & "/" & subfolder ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
