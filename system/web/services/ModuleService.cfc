@@ -506,8 +506,9 @@ component extends="coldbox.system.web.services.BaseService"{
 			);
 
 			// Register handlers
-			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mconfig.handlerPhysicalPath );
-			mConfig.registeredHandlers = arrayToList( mConfig.registeredHandlers );
+			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mconfig.handlerPhysicalPath, mConfig.handlerInvocationPath ).reduce( function( value, handler ){
+				return value.listAppend( handler.name );
+			}, "" );
 
 			// Register the Config as an observable also.
 			interceptorService.registerInterceptor(
