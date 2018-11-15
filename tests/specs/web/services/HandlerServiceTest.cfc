@@ -51,12 +51,14 @@ component extends="coldbox.system.testing.BaseModelTest"{
 					.$( "setSetting" );
 
 				var handlers = [ {name="ehGeneral",actions=[ "index" ]}, {name="blog",actions=[ "index" ]} ];
-				var expected = "ehGeneral,blog";
+				var expected = [ "blog", "ehGeneral" ];
 				handlerService.$( "gethandlerListing", handlers );
 
 				handlerService.registerHandlers();
 
-				expect( mockController.$callLog().setSetting[ 1 ].value ).toBe( expected );
+				var actual = listToArray( mockController.$callLog().setSetting[ 1 ].value );
+				arraySort( actual, "textnocase" );
+				expect( actual ).toBe( expected );
 			} );
 
 			it( "can recurse handler listings", function(){
