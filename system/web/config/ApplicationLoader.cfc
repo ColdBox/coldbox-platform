@@ -427,33 +427,43 @@ component accessors="true"{
 		var i = 0;
 
 		// ViewsExternalLocation Setup
-		if( structKeyExists( configStruct,"ViewsExternalLocation" ) and len( configStruct[ "ViewsExternalLocation" ]) ){
-			// Verify the locations, do relative to the app mapping first
-			if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct[ "ViewsExternalLocation" ]) ){
-				configStruct[ "ViewsExternalLocation" ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "ViewsExternalLocation" ];
+		if( structKeyExists( configStruct,"ViewsExternalLocation" ) ){
+			if ( !isArray( configStruct[ "ViewsExternalLocation" ] ) ) {
+				if ( len( trim( configStruct[ "ViewsExternalLocation" ] ) ) ) {
+					configStruct[ "ViewsExternalLocation" ] = [ configStruct[ "ViewsExternalLocation" ] ];
+				} else {
+					configStruct[ "ViewsExternalLocation" ] = [];
+				}
 			}
-			else if( not directoryExists(expandPath( configStruct[ "ViewsExternalLocation" ])) ){
-				throw( "ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
-			}
-			// Cleanup
-			if ( right( configStruct[ "ViewsExternalLocation" ],1) eq "/" ){
-				 configStruct[ "ViewsExternalLocation" ] = left( configStruct[ "ViewsExternalLocation" ],len( configStruct[ "ViewsExternalLocation" ])-1);
+
+			for( i=1; i<=arrayLen( configStruct[ "ViewsExternalLocation" ] ); i++ ) {
+				// Verify the locations, do relative to the app mapping first
+				if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct[ "ViewsExternalLocation" ][ i ]) ){
+					configStruct[ "ViewsExternalLocation" ][ i ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "ViewsExternalLocation" ][ i ];
+				}
+				else if( not directoryExists(expandPath( configStruct[ "ViewsExternalLocation" ][ i ])) ){
+					throw( "ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation'][ i ]#. Please verify your setting.","XMLApplicationLoader.ConfigXMLParsingException" );
+				}
+				// Cleanup
+				if ( right( configStruct[ "ViewsExternalLocation" ][ i ],1) eq "/" ){
+					 configStruct[ "ViewsExternalLocation" ][ i ] = left( configStruct[ "ViewsExternalLocation" ][ i ],len( configStruct[ "ViewsExternalLocation" ][ i ])-1);
+				}
 			}
 		} else {
-			configStruct[ "ViewsExternalLocation" ] = "";
+			configStruct[ "ViewsExternalLocation" ] = [];
 		}
 
 		// LayoutsExternalLocation Setup
 		if( structKeyExists( configStruct,"LayoutsExternalLocation" ) ) {
-			if ( !IsArray( configStruct[ "LayoutsExternalLocation" ] ) ) {
-				if ( Len( Trim( configStruct[ "LayoutsExternalLocation" ] ) ) ) {
+			if ( !isArray( configStruct[ "LayoutsExternalLocation" ] ) ) {
+				if ( len( trim( configStruct[ "LayoutsExternalLocation" ] ) ) ) {
 					configStruct[ "LayoutsExternalLocation" ] = [ configStruct[ "LayoutsExternalLocation" ] ];
 				} else {
 					configStruct[ "LayoutsExternalLocation" ] = [];
 				}
 			}
 
-			for( i=1; i<=ArrayLen( configStruct[ "LayoutsExternalLocation" ] ); i++ ) {
+			for( i=1; i<=arrayLen( configStruct[ "LayoutsExternalLocation" ] ); i++ ) {
 				// Verify the locations, do relative to the app mapping first
 				if( directoryExists(fwSettingsStruct.ApplicationPath & configStruct[ "LayoutsExternalLocation" ][ i ]) ){
 					configStruct[ "LayoutsExternalLocation" ][ i ] = "/" & configStruct[ "AppMapping" ] & "/" & configStruct[ "LayoutsExternalLocation" ][ i ];

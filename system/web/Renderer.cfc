@@ -709,12 +709,18 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	*/
 	function locateView( required view ){
 		// Default path is the conventions
-		var viewPath 	= "/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#";
-		var extViewPath = "#variables.viewsExternalLocation#/#arguments.view#";
+		var viewPath 	    = "/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#";
+		var extViewLocation = "";
+		var extViewPath     = "";
 
-		// Check if view does not exists in Conventions
-		if( NOT fileExists( expandPath( viewPath & ".cfm" ) ) AND fileExists( expandPath( extViewPath & ".cfm" ) ) ){
-			return extViewPath;
+		// check external locations
+		if( !fileExists( expandPath( viewPath & ".cfm" ) ) ) {
+			for( extViewLocation in variables.viewsExternalLocation ) {
+				extViewPath = "#extViewLocation#/#arguments.view#";
+				if ( fileExists( expandPath( extViewPath & ".cfm" ) ) ) {
+					return extViewPath;
+				}
+			}
 		}
 
 		return viewPath;
