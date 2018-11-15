@@ -373,6 +373,7 @@ component accessors="true"{
 		var configStruct = arguments.config;
 		var fwSettingsStruct = variables.coldboxSettings;
 		var appMappingAsDots = "";
+		var i = 0;
 
 		// Handler Registration
 		configStruct[ "HandlersInvocationPath" ] = reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all" );
@@ -395,10 +396,15 @@ component accessors="true"{
 		}
 
 		//Set the Handlers External Configuration Paths
-		configStruct[ "HandlersExternalLocationPath" ] = "";
-		if( len( configStruct[ "HandlersExternalLocation" ]) ){
-			//Expand the external location to get a registration path
-			configStruct[ "HandlersExternalLocationPath" ] = ExpandPath( "/" & replace( configStruct[ "HandlersExternalLocation" ],".","/","all" ));
+		configStruct[ "HandlersExternalLocationPath" ] = [];
+		if ( !IsArray( configStruct[ "HandlersExternalLocation" ] ) ) {
+			configStruct[ "HandlersExternalLocation" ] = [ configStruct[ "HandlersExternalLocation" ] ];
+		}
+		for( i=1; i<=ArrayLen( configStruct[ "HandlersExternalLocation" ] ); i++ ) {
+			if( len( configStruct[ "HandlersExternalLocation" ][ i ] ) ){
+				//Expand the external location to get a registration path
+				ArrayAppend( configStruct[ "HandlersExternalLocationPath" ],  ExpandPath( "/" & replace( configStruct[ "HandlersExternalLocation" ][ i ],".","/","all" ) ) );
+			}
 		}
 
 		//Configure the modules locations for the conventions not the external ones.

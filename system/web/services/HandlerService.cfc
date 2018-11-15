@@ -57,7 +57,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Configuration data and dependencies
 		variables.registeredHandlers			= controller.getSetting( "RegisteredHandlers" );
-		variables.registeredExternalHandlers 	= controller.getSetting( "RegisteredExternalHandlers" );
 		variables.eventAction					= controller.getSetting( "EventAction", 1 );
 		variables.eventName						= controller.getSetting( "EventName" );
 		variables.invalidEventHandler			= controller.getSetting( "invalidEventHandler" );
@@ -223,67 +222,54 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 *
 	 * @return coldbox.system.web.context.EventHandlerBean
 	 */
-	function getHandlerBean( required string event ){
-		var handlersList 			= variables.registeredHandlers;
-		var handlersExternalList 	= variables.registeredExternalHandlers;
-		var oHandlerBean 			= new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
-		var moduleSettings 			= variables.modules;
+	public any function getHandlerBean( required string event ) {
+		var handlerBean     = new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
+		var handlerReceived = ListLast( ReReplace( arguments.event, "\.[^.]*$", "" ), ":" );
+		var methodReceived  = ListLast( arguments.event, "." );
+		var isModuleCall    = Find( ":", arguments.event );
+		var moduleSettings  = variables.modules;
+		var handlerIndex    = 0;
+		var moduleReceived  = "";
 
-		// Rip the handler and method
-		var handlerReceived = listLast( reReplace( arguments.event, "\.[^.]*$", "" ), ":" );
-		var methodReceived 	= listLast( arguments.event, "." );
+		if( !isModuleCall ){
+			for ( var handlerSource in variables.handlerMappings ) {
+				handlerIndex = getHandlerIndex( handlerSource.handlers, handlerReceived, methodReceived );
 
-		// Verify if this is a module call
-		if( find( ":", arguments.event ) ){
-			var moduleReceived = listFirst( arguments.event, ":" );
-			// Does this module exist?
-			if( structKeyExists( moduleSettings, moduleReceived ) ){
-				// Verify handler in module handlers
-				var handlerIndex = listFindNoCase( moduleSettings[ moduleReceived ].registeredHandlers, handlerReceived );
-				if( handlerIndex ){
-					return oHandlerBean
+				if ( handlerIndex ) {
+					return handlerBean
+						.setInvocationPath( handlerSource.invocationPath                )
+						.setHandler       ( handlerSource.handlers[ handlerIndex ].name )
+						.setMethod        ( methodReceived                              );
+				}
+			}
+		} else {
+			moduleReceived = listFirst( arguments.event, ":" );
+
+			if ( StructKeyExists( moduleSettings, moduleReceived ) ) {
+				handlerIndex = ListFindNoCase( moduleSettings[ moduleReceived ].registeredHandlers, handlerReceived );
+				if ( handlerIndex ) {
+					return handlerBean
 						.setInvocationPath( moduleSettings[ moduleReceived ].handlerInvocationPath )
-						.setHandler( listgetAt(moduleSettings[ moduleReceived ].registeredHandlers, handlerIndex ) )
+						.setHandler( ListgetAt( moduleSettings[ moduleReceived ].registeredHandlers, handlerIndex ) )
 						.setMethod( methodReceived )
 						.setModule( moduleReceived );
-				} else {
-					variables.log.error( "Invalid Module (#moduleReceived#) Handler: #handlerReceived#. Valid handlers are #moduleSettings[ moduleReceived ].registeredHandlers#" );
 				}
 			}
 
-			// Log Error
-			variables.log.error( "Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList( moduleSettings )#" );
-		} else {
-			// Try to do list localization in the registry for full event string.
-			var handlerIndex = listFindNoCase( handlersList, HandlerReceived );
-			// Check for conventions location
-			if ( handlerIndex ){
-				return oHandlerBean
-					.setHandler( listgetAt( handlersList, handlerIndex ) )
-					.setMethod( MethodReceived );
-			}
-
-			// Check for external location
-			handlerIndex = listFindNoCase( handlersExternalList, HandlerReceived );
-			if( handlerIndex ){
-				return oHandlerBean
-					.setInvocationPath( variables.handlersExternalLocation )
-					.setHandler( listgetAt( handlersExternalList, handlerIndex ) )
-					.setMethod( MethodReceived );
-			}
-		} //end else
-
-		// Do View Dispatch Check Procedures
-		if( isViewDispatch( arguments.event, oHandlerBean ) ){
-			return oHandlerBean;
+			variables.log.error( "Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList(moduleSettings)#" );
 		}
 
-		// Run invalid event procedures, handler not found as a module or in all lists
-		invalidEvent( arguments.event, oHandlerBean );
+		// Do View Dispatch Check Procedures
+		if ( isViewDispatch( arguments.event, handlerBean ) ) {
+			return handlerBean;
+		}
+
+		// Run invalid event procedures, handler not found
+		invalidEvent( arguments.event, handlerBean );
 
 		// If we get here, then invalid event handler is active and we need to
 		// return an event handler bean that matches it
-		return getHandlerBean( oHandlerBean.getFullEvent() );
+		return getHandlerBean( handlerBean.getFullEvent() );
 	}
 
 	/**
@@ -295,10 +281,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return HandlerService
 	 */
 	function defaultActionCheck( required event ){
-		var handlersList 			= variables.registeredHandlers;
-		var handlersExternalList 	= variables.registeredExternalHandlers;
-		var currentEvent 			= arguments.event.getCurrentEvent();
-		var modulesConfig 			= variables.modules;
+		var handlersList  = variables.registeredHandlers;
+		var currentEvent  = arguments.event.getCurrentEvent();
+		var modulesConfig = variables.modules;
 
 		// Module Check?
 		if( find( ":", currentEvent ) ){
@@ -316,10 +301,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Do a Default Action Test First, if default action desired.
-		if(
-			listFindNoCase( handlersList, currentEvent ) OR
-			listFindNoCase( handlersExternalList, currentEvent )
-		){
+		if( listFindNoCase( handlersList, currentEvent ) ){
 			// Append the default event action
 			currentEvent = currentEvent & "." & variables.eventAction;
 			// Save it as the current Event now with the default action
@@ -434,38 +416,49 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return HandlerService
 	 */
 	function registerHandlers(){
-		var handlersPath                 = controller.getSetting( "handlersPath" );
-		var handlersExternalLocationPath = controller.getSetting( "handlersExternalLocationPath" );
-		var handlersExternalArray        = [];
+		var handlersPath                  = controller.getSetting( "handlersPath" );
+		var handlersInvocationPath        = controller.getSetting( "HandlersInvocationPath" );
+		var handlersExternalLocations     = controller.getSetting( "handlersExternalLocation" );
+		var handlersExternalLocationPaths = controller.getSetting( "handlersExternalLocationPath" );
+		var externalLocationCount         = ArrayLen( handlersExternalLocations );
+		var externalLocationPath          = "";
+		var handlersExternalArray         = [];
+		var handlerMappings               = [];
+		var i                             = 0;
 
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
-
-		// Get recursive Array listing
-		var handlerArray = getHandlerListing( handlersPath );
-
-		// Set registered Handlers
-		variables.registeredHandlers = arrayToList( handlerArray );
-		controller.setSetting( name="registeredHandlers", value=variables.registeredHandlers );
+		ArrayAppend( handlerMappings, {
+			invocationPath = handlersInvocationPath,
+			handlers       = getHandlerListing( handlersPath, handlersInvocationPath )
+		} );
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
-
-		if( len( handlersExternalLocationPath ) ){
-
-			// Check for handlers Directory Location
-			if ( !directoryExists( handlersExternalLocationPath ) ){
+		for( i=1; i<=externalLocationCount; i++ ) {
+			if ( !directoryExists( handlersExternalLocations[ i ] ) ){
 				throw(
-					message = "The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.",
+					message = "The external handlers directory: #handlersExternalLocations[ i ]# does not exist please check your application structure.",
 					type 	= "HandlersDirectoryNotFoundException"
 				);
 			}
 
-			// Get recursive Array listing
-			handlersExternalArray = getHandlerListing( handlersExternalLocationPath );
+			ArrayAppend( handlerMappings, {
+				invocationPath = handlersExternalLocations[ i ],
+				handlers       = getHandlerListing( handlersExternalLocationPaths[ i ], handlersExternalLocations[ i ] )
+			} );
 		}
 
-		// Set registered External Handlers
-		variables.registeredExternalHandlers = arrayToList( handlersExternalArray );
-		controller.setSetting( name="registeredExternalHandlers", value=variables.registeredExternalHandlers );
+
+		/* ::::::::::::::::::::::::::::::::::::::::: GET UNIQUE AND REGISTER :::::::::::::::::::::::::::::::::::::::::::: */
+		variables.handlerMappings    = handlerMappings;
+		variables.registeredHandlers = {};
+		for( var i=1; i<=handlerMappings.len(); i++ ) {
+			for( var handlerName in listHandlerNames( handlerMappings[i].handlers ).listToArray() ) {
+				variables.registeredHandlers[ handlerName ] = 1;
+			}
+		}
+
+		variables.registeredHandlers = StructKeyList( variables.registeredHandlers );
+		controller.setSetting( name="RegisteredHandlers", value=variables.registeredHandlers );
 
 		return this;
 	}
@@ -498,27 +491,33 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 *
 	 * @directory The path to retrieve
 	 */
-	array function getHandlerListing( required directory ){
-		// Get listings
-		var files = directoryList( arguments.directory, true, "array", "*.cfc" );
+	public array function getHandlerListing( required string directory, string invocationPath ) {
+		var i                = 1;
+		var thisAbsolutePath = "";
+		var cleanHandler     = "";
+		var fileArray        = ArrayNew(1);
+		var files            = DirectoryList( arguments.directory, true, "query", "*.cfc" );
+		var actions          = "";
+
 		// Convert windows \ to java /
-		arguments.directory = replace( arguments.directory, "\","/", "all" );
+		arguments.directory = replace(arguments.directory,"\","/","all");
 
 		// Iterate, clean and register
-		var fileArray = [];
-		for( var file in files ){
+		for (i=1; i lte files.recordcount; i=i+1 ){
 
-			var thisAbsolutePath = replace( file, "\", "/", "all" );
-			var cleanHandler = replacenocase( thisAbsolutePath, arguments.directory, "", "all" );
+			thisAbsolutePath = replace(files.directory[i],"\","/","all") & "/";
+			cleanHandler = replacenocase(thisAbsolutePath,arguments.directory,"","all") & files.name[i];
 
 			// Clean OS separators to dot notation.
-			cleanHandler = removeChars( replacenocase( cleanHandler, "/", ".", "all" ), 1, 1 );
+			cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
 
 			//Clean Extension
-			cleanHandler = controller.getUtil().ripExtension( cleanhandler );
+			cleanHandler = controller.getUtil().ripExtension(cleanhandler);
 
 			//Add data to array
-			ArrayAppend( fileArray, cleanHandler );
+			actions = getCfcMethods( getComponentMetaData( ListAppend( arguments.invocationPath, cleanHandler, "." ) ) );
+
+			ArrayAppend( fileArray , { name=cleanHandler, actions=Duplicate( actions ) } );
 		}
 
 		return fileArray;
@@ -606,4 +605,38 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		return variables.eventCacheDictionary[ cacheKey ];
 	}
 
+	private array function getCfcMethods( required struct meta ) {
+		var methods = {};
+
+		if ( ( arguments.meta.extends ?: {} ).count() ) {
+			getCfcMethods( arguments.meta.extends ).each( function( method ){
+				methods[ method ] = true;
+			} );
+		}
+		var metaMethods = arguments.meta.functions ?: [];
+		for( var method in metaMethods ) {
+			methods[ method.name ] = true;
+		}
+
+		return methods.keyArray();
+	}
+
+	private string function listHandlerNames( required array handlers ) {
+		var names = [];
+
+		for( var handler in arguments.handlers ){
+			names.append( handler.name );
+		}
+
+		return names.toList();
+	}
+
+	private numeric function getHandlerIndex( required array handlers, required string handlerName, required string actionName ) {
+		for( var i=1; i <= arguments.handlers.len(); i++ ){
+			if ( arguments.handlers[i].name == arguments.handlerName && arguments.handlers[i].actions.findNoCase( arguments.actionName ) ) {
+				return i;
+			}
+		}
+		return 0;
+	}
 }
