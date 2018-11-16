@@ -888,13 +888,13 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	private any function getThreadSafeInstanceOfThisService() {
 		var isLucee = structKeyExists( server, "lucee" );
 
-  		if ( isLucee ) {
+		if ( isLucee ) {
 			return StructCopy( this );
-  		}
+		}
 
   		var threadSafeInstance = new Renderer( variables.controller, variables.html );
 
-  		threadSafeInstance.setTemplateCache( getTemplateCache() );
+  		threadSafeInstance.setTemplateCache( this.getTemplateCache() );
 
   		return threadSafeInstance;
 
