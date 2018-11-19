@@ -59,7 +59,7 @@ component singleton=true serializable=false extends="coldbox.system.FrameworkSup
 		if ( isLucee()  ) {
 			return cloneRenderer();
 		} else {
-			return newRenderer();
+			return newRenderer( true );
 		}
 	}
 
@@ -67,7 +67,7 @@ component singleton=true serializable=false extends="coldbox.system.FrameworkSup
 		return StructKeyExists( server, "lucee" );
 	}
 
-	private any function newRenderer() {
+	private any function newRenderer( boolean completeInit=false ) {
 		var renderer = createObject( "Renderer" ).fasterInit(
 			controller              = variables.controller,
 			logBox                  = variables.logBox,
@@ -88,17 +88,27 @@ component singleton=true serializable=false extends="coldbox.system.FrameworkSup
 			lockName                = variables.lockName
 		);
 
-		renderer.announceAfterRendererInit();
+		if ( arguments.completeInit ) {
+			var event = getRequestContext();
+
+			renderer.setEvent( event );
+			renderer.setRc( event.getCollection() );
+			renderer.setPrc( event.getCollection( private=true ) );
+
+			renderer.announceAfterRendererInit();
+		}
 
 		return renderer;
 	}
 
 	private any function cloneRenderer() {
 		var cloned = LuceeDuplicate( objectToDuplicate=variables.cloneableRenderer, full=false );
+		var event  = getRequestContext();
 
-		cloned.setEvent( getRequestContext() );
-		cloned.setRc( getRequestContext().getCollection() );
-		cloned.setPrc( getRequestContext().getCollection( private=true ) );
+		cloned.setEvent( event );
+		cloned.setRc( event.getCollection() );
+		cloned.setPrc( event.getCollection( private=true ) );
+
 		cloned.announceAfterRendererInit();
 
 		return cloned;

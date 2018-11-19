@@ -160,15 +160,6 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		// Template Cache & Caching Maps
 		variables.renderedHelpers	= {};
 
-		// Discovery caching
-
-		// Set event scope, we are not caching, so it is threadsafe.
-		variables.event = getRequestContext();
-
-		// Create View Scopes
-		variables.rc 	= event.getCollection();
-		variables.prc 	= event.getCollection( private=true );
-
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
 
