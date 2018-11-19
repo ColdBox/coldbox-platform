@@ -114,6 +114,67 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		return this;
 	}
 
+	/**
+	 * Special "faster" Constructor
+	 * for renderer factory
+	 */
+	function fasterInit(
+		required controller,
+		required logBox,
+		required log,
+		required flash,
+		required cacheBox,
+		required wireBox,
+		required layoutsConvention,
+		required viewsConvention,
+		required appMapping,
+		required viewsExternalLocation,
+		required layoutsExternalLocation,
+		required modulesConfig,
+		required viewsHelper,
+		required viewCaching,
+		required htmlHelper,
+		required templateCache
+	){
+		variables.controller              = arguments.controller;
+		variables.logBox                  = arguments.logBox;
+		variables.log                     = arguments.log;
+		variables.flash                   = arguments.flash;
+		variables.cacheBox                = arguments.cacheBox;
+		variables.wireBox                 = arguments.wireBox;
+		variables.layoutsConvention       = arguments.layoutsConvention;
+		variables.viewsConvention         = arguments.viewsConvention;
+		variables.appMapping              = arguments.appMapping;
+		variables.viewsExternalLocation   = arguments.viewsExternalLocation;
+		variables.layoutsExternalLocation = arguments.layoutsExternalLocation;
+		variables.modulesConfig           = arguments.modulesConfig;
+		variables.viewsHelper             = arguments.viewsHelper;
+		variables.viewCaching             = arguments.viewCaching;
+		variables.isDiscoveryCaching      = arguments.viewCaching;
+		variables.html                    = arguments.htmlHelper;
+		variables.templateCache           = arguments.templateCache;
+		variables.lockName                = arguments.lockName;
+		variables.isViewsHelperIncluded   = false;
+		variables.explicitView            = {};
+
+		// Template Cache & Caching Maps
+		variables.renderedHelpers	= {};
+
+		// Discovery caching
+
+		// Set event scope, we are not caching, so it is threadsafe.
+		variables.event = getRequestContext();
+
+		// Create View Scopes
+		variables.rc 	= event.getCollection();
+		variables.prc 	= event.getCollection( private=true );
+
+		// Load global UDF Libraries into target
+		loadApplicationHelpers();
+
+		return this;
+	}
+
 	/************************************** VIEW METHODS *********************************************/
 
 	/**
@@ -872,6 +933,10 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		}
 
 		return layout;
+	}
+
+	function announceAfterRendererInit() {
+		announceInterception( "afterRendererInit", { variables = variables, this = this } );
 	}
 
 }

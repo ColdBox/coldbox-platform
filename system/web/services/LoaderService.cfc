@@ -112,9 +112,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Map ColdBox Utility Objects
 		var binder = controller.getWireBox().getBinder();
 
-		// Map Renderer
+		// Map Renderer (for backward compatibility)
 		binder.map( "Renderer@coldbox" )
 			.to( "coldbox.system.web.Renderer" );
+		// Map Renderer Factory
+		binder.map( "RendererFactory@coldbox" )
+			.asSingleton()
+			.to( "coldbox.system.web.RendererFactory" );
 		// Map Data Marshaller
 		binder.map( "DataMarshaller@coldbox" )
 			.to( "coldbox.system.core.conversion.DataMarshaller" );
