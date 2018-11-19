@@ -5,7 +5,7 @@
 * The system web renderer
 * @author Luis Majano <lmajano@ortussolutions.com>
 */
-component accessors="true" singleton="true" serializable="false" extends="coldbox.system.FrameworkSupertype"{
+component accessors="true" serializable="false" extends="coldbox.system.FrameworkSupertype"{
 
 	/************************************** DI *********************************************/
 
@@ -32,6 +32,8 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	property name="viewsHelper";
 	// View helper include bit
 	property name="isViewsHelperIncluded" default="false" type="boolean";
+	// Are we rendering a layout+view combination
+	property name="explicitView";
 	// Rendered helpers metadata
 	property name="renderedHelpers" type="struct";
 	// Internal locking name
@@ -76,6 +78,7 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		variables.viewsHelper				= variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching				= variables.controller.getSetting( "viewCaching" );
 		variables.isViewsHelperIncluded		= false;
+		variables.explicitView 				= {};
 
 		// Verify View Helper Template extension + location
 		if( len( variables.viewsHelper ) ){
@@ -92,8 +95,15 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		// Discovery caching
 		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
 
+		// Set event scope, we are not caching, so it is threadsafe.
+		variables.event = getRequestContext();
+
+		// Create View Scopes
+		variables.rc 	= event.getCollection();
+		variables.prc 	= event.getCollection( private=true );
+
 		// HTML Helper
-		variables.html  = variables.wirebox.getInstance( dsl="@HTMLHelper" );
+		variables.html 	= variables.wirebox.getInstance( dsl="@HTMLHelper" );
 
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
@@ -116,25 +126,12 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	 * @return Renderer
 	*/
 	function setExplicitView( required view, module="", struct args={} ){
-		getRequestContext().setValue( name="_rendererExplicitView", private=true, value={
+		variables.explicitView = {
 			"view" 		: arguments.view,
 			"module" 	: arguments.module,
 			"args"		: arguments.args
-		} );
+		};
 		return this;
-	}
-
-	/**
-	 * gets the current explicit view
-	 *
-	 * @return Struct
-	*/
-	function getExplicitView(){
-		return getRequestContext().getValue(
-			name         = "_rendererExplicitView",
-			private      = true,
-			defaultValue = {}
-		);
 	}
 
 	/**
@@ -158,7 +155,7 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	*/
 	function renderView(
 		view="",
-		struct args=getRequestContext().getCurrentViewArgs(),
+		struct args=variables.event.getCurrentViewArgs(),
 		module="",
 		boolean cache=false,
 		cacheTimeout="",
@@ -179,7 +176,6 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		var iData 				= arguments;
 		var explicitModule 		= false;
 		var viewLocations		= "";
-		var event               = getRequestContext();
 
 		// Rendering Region call?
 		if( !isNull( arguments.name ) and len( arguments.name ) ){
@@ -200,12 +196,12 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 
 		// Rendering an explicit view or do we need to get the view from the context or explicit context?
 		if( NOT len( arguments.view ) ){
-			var explicitView = getExplicitView();
-			if( !explicitView.isEmpty() ){
+			// Rendering an explicit Renderer view/layout combo?
+			if( !variables.explicitView.isEmpty() ){
 				// Populate from explicit notation
-				arguments.view 		= explicitView.view;
-				arguments.module 	= explicitView.module;
-				arguments.args.append( explicitView.args, false );
+				arguments.view 		= variables.explicitView.view;
+				arguments.module 	= variables.explicitView.module;
+				arguments.args.append( variables.explicitView.args, false );
 
 				// clear the explicit view now that it has been used
 				setExplicitView( {} );
@@ -324,13 +320,6 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		var buffer 	= createObject( "java", "java.lang.StringBuilder" ).init();
 		var x 		= 1;
 		var recLen 	= 0;
-		var viewArgs = {
-			  view           = arguments.view
-			, viewpath       = arguments.viewpath
-			, viewHelperPath = arguments.viewHelperPath
-			, args           = arguments.args
-		};
-
 
 		// Determine the collectionAs key
 		if( NOT len( arguments.collectionAs ) ){
@@ -343,47 +332,61 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 			// is max rows passed?
 			if( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE recLen ){ recLen = arguments.collectionMaxRows; }
 			// Create local marker
-			viewArgs._items	= recLen;
+			variables._items	= recLen;
 			// iterate and present
 			for( x=arguments.collectionStartRow; x lte recLen; x++ ){
 				// setup local variables
-				viewArgs._counter  = x;
-				viewArgs[ arguments.collectionAs ] = arguments.collection[ x ];
+				variables._counter  = x;
+				variables[ arguments.collectionAs ] = arguments.collection[ x ];
 				// prepend the delim
 				if ( x NEQ arguments.collectionStartRow ) {
 					buffer.append( arguments.collectionDelim );
 				}
 				// render item composite
-				buffer.append( renderViewComposite( argumentCollection=viewArgs ) );
+				buffer.append(
+					renderViewComposite(
+						arguments.view,
+						arguments.viewPath,
+						arguments.viewHelperPath,
+						arguments.args
+					)
+				);
 			}
 			return buffer.toString();
 		}
 
 		// Query Rendering
-		viewArgs._items = arguments.collection.recordCount;
+		variables._items = arguments.collection.recordCount;
 		// Max Rows
 		if( arguments.collectionMaxRows NEQ 0 AND arguments.collectionMaxRows LTE arguments.collection.recordCount){
-			viewArgs._items = arguments.collectionMaxRows;
+			variables._items = arguments.collectionMaxRows;
 		}
 
 		//local counter when using startrow is greater than one and x values is reletive to lookup
 		var _localCounter = 1;
-		for( x=arguments.collectionStartRow; x lte ( arguments.collectionStartRow + viewArgs._items ) - 1; x++ ){
+		for( x=arguments.collectionStartRow; x lte ( arguments.collectionStartRow + variables._items ) - 1; x++ ){
 			// setup local cvariables
-			viewArgs._counter  = _localCounter;
+			variables._counter  = _localCounter;
 
 			var columnList = arguments.collection.columnList;
 			for( var j=1; j <= listLen( columnList ); j++){
-				viewArgs[ arguments.collectionAs ][ ListGetAt( columnList, j ) ] = arguments.collection[ ListGetAt( columnList, j ) ][ x ];
+				variables[ arguments.collectionAs ][ ListGetAt( columnList, j ) ] = arguments.collection[ ListGetAt( columnList, j ) ][ x ];
 			}
 
 			// prepend the delim
-			if ( viewArgs._counter NEQ 1 ) {
+			if ( variables._counter NEQ 1 ) {
 				buffer.append( arguments.collectionDelim );
 			}
 
 			// render item composite
-			buffer.append( renderViewComposite( argumentCollection=viewArgs ) );
+			buffer.append(
+				renderViewComposite(
+					arguments.view,
+					arguments.viewPath,
+					arguments.viewHelperPath,
+					arguments.args
+				)
+			);
 			_localCounter++;
 		}
 
@@ -402,20 +405,9 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
     	view,
     	viewPath,
     	viewHelperPath,
-    	args,
-    	boolean threadsafe = false
+    	args
     ){
-    	if ( !arguments.threadsafe ) {
-			return getThreadSafeInstanceOfThisService().renderViewComposite(
-				  argumentCollection = arguments
-				, threadsafe        = true
-			);
-		}
-
     	var cbox_renderedView = "";
-    	var event             = getRequestContext();
-		var rc                = event.getCollection();
-		var prc               = event.getCollection( private=true );
 
 		savecontent variable="cbox_renderedView"{
 			// global views helper
@@ -454,7 +446,7 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	*/
     function renderExternalView(
     	required view,
-    	struct args=getRequestContext().getCurrentViewArgs(),
+    	struct args=variables.event.getCurrentViewArgs(),
     	boolean cache=false,
     	cacheTimeout="",
     	cacheLastAccessTimeout="",
@@ -474,7 +466,7 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		if( arguments.cacheProvider neq "template" ){ cbox_cacheProvider = getCache( arguments.cacheProvider ); }
 		// Try to get from cache
 		cbox_renderedView 	= cbox_cacheProvider.get( cbox_cacheKey );
-		if( !isNull( local.cbox_renderedView ) ){
+		if( !isNull( cbox_renderedView ) ){
 			return cbox_renderedView;
 		}
 		// Not in cache, render it
@@ -511,7 +503,7 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		layout,
 		module="",
 		view="",
-		struct args=getRequestContext().getCurrentViewArgs(),
+		struct args=variables.event.getCurrentViewArgs(),
 		viewModule="",
 		boolean prePostExempt=false
 	){
@@ -523,23 +515,20 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		var cbox_layoutLocation		= "";
 		var iData 					= arguments;
 		var viewLocations			= "";
-		var event                   = getRequestContext();
-		var explicitView            = getExplicitView();
 
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
 		if(
 			arguments.view.trim().len() AND
 			(
-				!explicitView.keyExists( "view" )
+				!variables.explicitView.keyExists( "view" )
 				OR
-				explicitView.keyExists( "view" ) and arguments.view != explicitView.view
+				variables.explicitView.keyExists( "view" ) and arguments.view != variables.explicitView.view
 			)
 		){
-			return this
+			return controller.getRenderer()
 				.setExplicitView( arguments.view, arguments.viewModule, arguments.args )
 				.renderLayout( argumentCollection=arguments );
 		}
-
 
 		// If no passed layout, then get it from implicit values
 		if( not structKeyExists( arguments, "layout" ) ){
@@ -628,7 +617,6 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	*/
 	function locateLayout( required layout ){
 		// Default path is the conventions
-		var event               = getRequestContext();
 		var layoutPath 	  		= "/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#";
 		var extLayoutPath 		= "#variables.layoutsExternalLocation#/#arguments.layout#";
 		var moduleName 			= event.getCurrentModule();
@@ -661,7 +649,6 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		module="",
 		boolean explicitModule=false
 	){
-		var event                   = getRequestContext();
 		var parentModuleLayoutPath 	= "";
 		var parentCommonLayoutPath 	= "";
 		var moduleLayoutPath 		= "";
@@ -861,7 +848,6 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	* Checks if implicit views are turned on and if so, calculate view according to event.
 	*/
 	private function implicitViewChecks(){
-		var event  = getRequestContext();
 		var layout = event.getCurrentLayout();
 		var cEvent = event.getCurrentEvent();
 
@@ -888,8 +874,4 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		return layout;
 	}
 
-
-	private any function getThreadSafeInstanceOfThisService() {
-		return Duplicate( this, false );
-	}
 }
