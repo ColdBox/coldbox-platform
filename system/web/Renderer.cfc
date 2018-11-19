@@ -394,7 +394,7 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
      * @viewHelperPath The helpers for the view to load before it
      * @args The view arguments
      */
-    public function renderViewComposite(
+    private function renderViewComposite(
     	view,
     	viewPath,
     	viewHelperPath,
