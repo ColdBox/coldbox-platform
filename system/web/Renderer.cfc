@@ -14,7 +14,6 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	*/
 	property name="templateCache" 	inject="cachebox:template";
 
-
 	/************************************** PROPERTIES *********************************************/
 
 	// Location of layouts
@@ -40,15 +39,20 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 	// Discovery caching is tied to handlers for discovery.
 	property name="isDiscoveryCaching";
 
+	// View/Layout Properties
+	property name="event";
+	property name="rc";
+	property name="prc";
+	property name="html";
+
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**
 	* Constructor
 	* @controller The ColdBox main controller
 	* @controller.inject coldbox
-	* @htmlHelper.inject @htmlHelper
 	*/
-	function init( required controller, required htmlHelper ){
+	function init( required controller ){
 		// setup controller
 		variables.controller = arguments.controller;
 		// Register LogBox
@@ -89,7 +93,7 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
 
 		// HTML Helper
-		variables.html  = arguments.htmlHelper;
+		variables.html  = variables.wirebox.getInstance( dsl="@HTMLHelper" );
 
 		// Load global UDF Libraries into target
 		loadApplicationHelpers();
@@ -886,17 +890,6 @@ component accessors="true" singleton="true" serializable="false" extends="coldbo
 
 
 	private any function getThreadSafeInstanceOfThisService() {
-		var isLucee = structKeyExists( server, "lucee" );
-
-  		if ( isLucee ) {
-			return StructCopy( this );
-  		}
-
-  		var threadSafeInstance = new Renderer( variables.controller, variables.html );
-
-  		threadSafeInstance.setTemplateCache( getTemplateCache() );
-
-  		return threadSafeInstance;
-
+		return StructCopy( this );
 	}
 }
