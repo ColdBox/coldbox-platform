@@ -964,7 +964,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			if( arguments.append ){
 				getModuleRoutes( arguments.module ).append( thisRoute );
 			} else {
-				getModuleRoutes( arguments.module ).prePrend( thisRoute );
+				getModuleRoutes( arguments.module ).prePend( thisRoute );
 			}
 		}
 		// NAMESPACES
@@ -973,7 +973,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			if( arguments.append ){
 				getNamespaceRoutes( arguments.namespace ).append( thisRoute );
 			} else {
-				getNamespaceRoutes( arguments.namespace ).prePrend( thisRoute );
+				getNamespaceRoutes( arguments.namespace ).prePend( thisRoute );
 			}
 		}
 		// Default Routing Table
