@@ -64,6 +64,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	property name="fullRewrites" type="boolean" default="false";
 
 	/**
+	 * This flag denotes that the routing service will discover the incoming base URL from the host + ssl + environment.
+	 * If off, then it will use whatever the base URL was set in the router.
+	 */
+	property name="multiDomainDiscovery" type="boolean" default="true";
+
+
+	/**
 	 * ColdBox Controller
 	 */
 	property name="controller";
@@ -143,6 +150,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		}
 		// Are full rewrites enabled
 		variables.fullRewrites = false;
+		variables.multiDomainDiscovery = true;
 
 		return this;
 	}
@@ -266,6 +274,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	}
 	function getFullRewrites(){
 		return variables.fullRewrites;
+	}
+	function setMultiDomainDiscovery( boolean target ){
+		variables.multiDomainDiscovery = arguments.target;
+		return this;
+	}
+	function getMultiDomainDiscovery(){
+		return variables.multiDomainDiscovery;
 	}
 
 	/****************************************************************************************************************************/
