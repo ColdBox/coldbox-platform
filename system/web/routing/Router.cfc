@@ -164,7 +164,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			variables.baseURL &= "/index.cfm";
 		}
 		// Remove any double slashes
-		variables.baseURL = reReplace( variables.baseURL, "\/\/$", "/", "all" );
+		variables.baseURL = reReplace( variables.baseURL, "\/\/", "/", "all" );
 
 		// Save the base URL in the application settings
 		variables.controller.setSetting( 'SESBaseURL', variables.baseURL );
