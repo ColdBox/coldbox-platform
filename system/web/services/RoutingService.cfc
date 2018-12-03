@@ -171,10 +171,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			return;
 		}
 
+		// Enable SES
+		arguments.event.setSESEnabled( true );
+
 		// Activate and record the incoming URL for multi-domain hosting
 		if( variables.router.getMultiDomainDiscovery() ){
 			arguments.event
-				.setSESEnabled( true )
 				.setSESBaseURL(
 					"http" &
 					( event.isSSL() ? "s" : "" ) &
