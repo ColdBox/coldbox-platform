@@ -51,14 +51,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		for( var thisService in services ){
 			services[ thisService ].onConfigurationLoad();
 		}
-		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-		controller.setColdboxInitiated( true );
 		// Auto Map Root Models
 		if( controller.getSetting( "autoMapModels" ) ){
 			controller.getWireBox().getBinder().mapDirectory( controller.getSetting( "ModelsInvocationPath" ) );
 		}
 		// Activate All Modules
 		controller.getModuleService().activateAllModules();
+		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
+		controller.setColdboxInitiated( true );
 		// Execute afterConfigurationLoad
 		controller.getInterceptorService().processState( "afterConfigurationLoad" );
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
