@@ -266,7 +266,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		return variables.uniqueURLS;
 	}
 	function setValidExtensions( required extensions ){
-		variables.extensions = arguments.extensions;
+		variables.validExtensions = arguments.extensions;
 	}
 	function setFullRewrites( boolean target ){
 		variables.fullRewrites = arguments.target;
