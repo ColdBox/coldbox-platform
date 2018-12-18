@@ -345,7 +345,7 @@ component extends="coldbox.system.web.services.BaseService"{
 			// Register CFML Mapping if it exists, for loading purposes
 			if( len( trim( mConfig.cfMapping ) ) ){
 				controller.getUtil().addMapping( name=mConfig.cfMapping, path=mConfig.path );
-				variables.cfmappingRegistry[ mConfig.cfMapping ] = mConfig.path;
+				variables.cfmappingRegistry[ "/#mConfig.cfMapping#" ] = mConfig.path;
 			}
 			// Register Custom Interception Points
 			controller.getInterceptorService().appendInterceptionPoints( mConfig.interceptorSettings.customInterceptionPoints );
@@ -400,10 +400,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * Load all module mappings
 	 */
     function loadMappings(){
-		// Iterate through cfmapping registry and load them
-		for( var thisMapping in variables.cfmappingRegistry ){
-			controller.getUtil().addMapping( name=thisMapping, path=variables.cfmappingRegistry[ thisMapping ] );
-		}
+		controller.getUtil().addMapping( mappings = variables.cfmappingRegistry );
 		return this;
     }
 

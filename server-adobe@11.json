@@ -6,7 +6,7 @@
     "force":true,
     "openBrowser":false,
     "web":{
-		"directoryBrowsing" : true,
+        "directoryBrowsing":true,
         "http":{
             "port":"8599"
         },
