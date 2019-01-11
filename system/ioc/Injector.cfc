@@ -793,7 +793,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 private Injector function processMixins( required targetObject, required mapping ){
 		// If no length, kick out
 		if( !arguments.mapping.getMixins().len() ){
-			return false;
+			return this;
 		}
 
 		// Process
