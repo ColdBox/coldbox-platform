@@ -552,8 +552,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		variables.withClosure.append( arguments.options );
 		// Execute the body
 		arguments.body( arguments.options );
-		// Pivot out of the group
+
+		// Pivot out of the group and do cleanup
 		variables.onGroup = false;
+		variables.withClosure = {};
 
 		return this;
 	}

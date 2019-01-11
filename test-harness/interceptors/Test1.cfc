@@ -12,6 +12,10 @@ component extends="coldbox.system.Interceptor"{
 		flash.put( "name", "luis" );
 	}
 
+	function onRequestCapture( event, interceptData, rc, prc ){
+		log.info( "Executing request capture" );
+	}
+
 	void function onCustomState(event,struct interceptData, rc ){
 		var threadName = createObject("java","java.lang.Thread").currentThread().getThreadGroup().getName();
 		sleep(1000);
