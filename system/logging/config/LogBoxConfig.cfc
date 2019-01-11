@@ -259,36 +259,41 @@ component accessors="true"{
 	struct function getRoot(){
 		return instance.rootLogger;
 	}
-	
+
 	/**
 	 * Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception
-	 * 
+	 *
 	 * @name A unique name for the appender to register. Only unique names can be registered per instance
 	 * @levelMin The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN
 	 * @levelMax The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN
 	 * @appenders A list of appender names to configure this category with. By default it uses all the registered appenders
 	 */
-	LogBoxConfig function category( 
-		required name, 
+	LogBoxConfig function category(
+		required name,
 		levelMin=0,
 		levelMax=4,
 		appenders="*"
 	){
 		// Convert Levels
 		convertLevels( arguments );
-		
+
 		// Check levels
-		levelChecks( arguments.levelMin, arguments.levelMax );
-		
+        levelChecks( arguments.levelMin, arguments.levelMax );
+
+        // Check * all appenders
+        if( appenders eq "*" ){
+            appenders = structKeyList( getAllAppenders() );
+        }
+
 		// Add category registration
 		instance.categories[ arguments.name ] = arguments;
-		
+
 		return this;
 	}
-	
+
 	/**
 	 * Get a specified category definition
-	 * 
+	 *
 	 * @name The category name
 	 */
 	struct function getCategory( required name ){
