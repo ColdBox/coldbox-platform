@@ -388,11 +388,12 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 **/
 	function buildInstance( required mapping, struct initArguments = {} ){
 		var thisMap = arguments.mapping;
+
 		// before construction event
 		variables.eventManager.processState(
 			"beforeInstanceCreation",
 			{ mapping=arguments.mapping, injector=this }
-			);
+		);
 
 		var oModel	= "";
 		// determine construction type
