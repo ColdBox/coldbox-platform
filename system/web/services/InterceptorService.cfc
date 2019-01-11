@@ -81,6 +81,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return InterceptorService
 	 */
 	function onConfigurationLoad(){
+		// WireBox is loaded now, set it for performance.
+		variables.wirebox = controller.getWireBox();
 		// Register All Application Interceptors
 		registerInterceptors();
 		return this;
@@ -107,14 +109,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Loop over the Interceptor Array, to begin registration
-		var iLen = arrayLen( variables.interceptorConfig.interceptors );
-		for( var x=1; x lte iLen; x++ ){
-			registerInterceptor(
-				interceptorClass      = variables.interceptorConfig.interceptors[ x ].class,
-				interceptorProperties = variables.interceptorConfig.interceptors[ x ].properties,
-				interceptorName       = variables.interceptorConfig.interceptors[ x ].name
-			);
-		}
+		variables.interceptorConfig.interceptors
+			.each( function( item ){
+				registerInterceptor(
+					interceptorClass      = item.class,
+					interceptorProperties = item.properties,
+					interceptorName       = item.name
+				);
+			} );
 
 		return this;
 	}
@@ -167,6 +169,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * Produce a lazy buffer for performance considerations
+	 *
 	 * @return { get(), clear(), append(), length(), getString() }
 	 */
 	struct function getLazyBuffer(){
@@ -216,16 +219,21 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// determine registration names
 		var objectName		= "";
 		var oInterceptor 	= "";
-		if( structKeyExists( arguments, "interceptorClass" ) ){
+
+		// Do we have a class path?
+		if( !isNull( arguments.interceptorClass ) ){
 			objectName = listLast( arguments.interceptorClass, "." );
-			if( structKeyExists( arguments, "interceptorName" ) ){
+			if( !isNull( arguments.interceptorName ) ){
 				objectName = arguments.interceptorName;
 			}
 		}
-		else if( structKeyExists( arguments, "interceptorObject" ) ){
-			objectName = listLast( getMetaData( arguments.interceptorObject ).name, "." );
-			if( structKeyExists( arguments, "interceptorName" ) ){
+		// Else we have an object?
+		else if( !isNull( arguments.interceptorObject ) ){
+			// Determine object name
+			if( !isNull( arguments.interceptorName ) ){
 				objectName = arguments.interceptorName;
+			} else {
+				objectName = listLast( getMetaData( arguments.interceptorObject ).name, "." );
 			}
 			oInterceptor = arguments.interceptorObject;
 		} else {
@@ -242,7 +250,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				timeout="30"
 		{
 			// Did we send in a class to instantiate
-			if( structKeyExists( arguments, "interceptorClass" ) ){
+			if( !isNull( arguments.interceptorClass ) ){
 				// Create the Interceptor Class
 				try{
 					oInterceptor = createInterceptor( interceptorClass, objectName, interceptorProperties );
@@ -253,30 +261,27 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 				// Configure the Interceptor
 				oInterceptor.configure();
-
 			}//end if class is sent.
 
 			// Append Custom Points
 			appendInterceptionPoints( arguments.customPoints );
 
 			// Parse Interception Points
-			var interceptionPointsFound = {};
-			interceptionPointsFound 	= parseMetadata( getMetaData( oInterceptor ), interceptionPointsFound );
+			parseMetadata( getMetaData( oInterceptor ), {} )
+				.each( function( stateKey, stateValue ){
+					// Register the point
+					registerInterceptionPoint(
+						interceptorKey = objectName,
+						state          = stateKey,
+						oInterceptor   = oInterceptor,
+						interceptorMD  = stateValue
+					);
+					// Debug log
+					if( variables.log.canDebug() ){
+						variables.log.debug( "Registering #objectName# on '#stateKey#' interception point" );
+					}
+				} );
 
-			// Register this Interceptor's interception point with its appropriate interceptor state
-			for( var stateKey in interceptionPointsFound ){
-				// Register the point
-				registerInterceptionPoint(
-					interceptorKey = objectName,
-					state          = stateKey,
-					oInterceptor   = oInterceptor,
-					interceptorMD  = interceptionPointsFound[ stateKey ]
-				);
-				// Debug log
-				if( variables.log.canDebug() ){
-					variables.log.debug( "Registering #objectName# on '#statekey#' interception point" );
-				}
-			}
 		} // end lock
 
 		return this;
@@ -296,48 +301,34 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		required interceptorName,
 		struct interceptorProperties={}
 	){
-		var wirebox = controller.getWireBox();
 
 		// Check if interceptor mapped?
-		if( NOT wirebox.getBinder().mappingExists( "interceptor-" & arguments.interceptorName ) ){
+		if( NOT variables.wirebox.getBinder().mappingExists( "interceptor-" & arguments.interceptorName ) ){
 			// wirebox lazy load checks
 			wireboxSetup();
 			// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-			wirebox.registerNewInstance(
+			variables.wirebox.registerNewInstance(
 					name         = "interceptor-" & arguments.interceptorName,
 					instancePath = arguments.interceptorClass
 				)
-				.setScope( wirebox.getBinder().SCOPES.SINGLETON )
+				.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON )
 				.setThreadSafe( true )
 				.setVirtualInheritance( "coldbox.system.Interceptor" )
 				.addDIConstructorArgument( name="controller", value=controller )
 				.addDIConstructorArgument( name="properties", value=arguments.interceptorProperties );
 		}
+
 		// retrieve, build and wire from wirebox
-		var oInterceptor = wirebox.getInstance( "interceptor-" & arguments.interceptorName );
-		return oInterceptor;
+		return getInterceptor( arguments.interceptorName );
 	}
 
 	/**
 	 * Retrieve an interceptor from the system by name, if not found, this method will throw an exception
+	 *
 	 * @interceptorName The name to retrieve
 	 */
 	function getInterceptor( required interceptorName ){
-		var interceptorKey 	= arguments.interceptorName;
-		var states 			= variables.interceptionStates;
-
-		for( var key in states ){
-			var state = states[ key ];
-			if( state.exists( interceptorKey ) ){
-				return state.getInterceptor( interceptorKey );
-			}
-		}
-
-		// Throw Exception
-		throw(
-			message = "Interceptor: #arguments.interceptorName# not found in any state: #structKeyList( states )#.",
-			type    = "InterceptorService.InterceptorNotFound"
-		);
+		return variables.wirebox.getInstance( "interceptor-" & arguments.interceptorName );
 	}
 
 	/**
@@ -434,7 +425,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// Verify if the interceptor is already in the state
 		if( NOT oInterceptorState.exists( arguments.interceptorKey ) ){
-			//Register it
+			// Register it
 			oInterceptorState.register(
 				interceptorKey 	= arguments.interceptorKey,
 				interceptor 	= arguments.oInterceptor,
@@ -458,12 +449,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * Verifies the setup for interceptor classes is online
 	 */
 	private InterceptorService function wireboxSetup(){
-		var wirebox = controller.getWireBox();
-
 		// Check if handler mapped?
-		if( NOT wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ){
+		if( NOT variables.wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ){
 			// feed the base class
-			wirebox.registerNewInstance(
+			variables.wirebox.registerNewInstance(
 					name         = variables.INTERCEPTOR_BASE_CLASS,
 					instancePath = variables.INTERCEPTOR_BASE_CLASS
 				)
