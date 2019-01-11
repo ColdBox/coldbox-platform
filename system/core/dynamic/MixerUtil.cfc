@@ -14,21 +14,19 @@ Description :
 
 	<cffunction name="init" access="public" returntype="MixerUtil" output="false" hint="Constructor">
 		<cfscript>
-			instance = structnew();
-			instance.mixins = StructNew();
-
-			// Place our methods on the mixins struct
-			instance.mixins[ "removeMixin" ] 				= variables.removeMixin;
-			instance.mixins[ "injectMixin" ] 				= variables.injectMixin;
-			instance.mixins[ "invokerMixin" ] 				= variables.invokerMixin;
-			instance.mixins[ "injectPropertyMixin" ] 		= variables.injectPropertyMixin;
-			instance.mixins[ "removePropertyMixin" ] 		= variables.removePropertyMixin;
-			instance.mixins[ "populatePropertyMixin" ] 		= variables.populatePropertyMixin;
-			instance.mixins[ "includeitMixin" ] 			= variables.includeitMixin;
-			instance.mixins[ "getPropertyMixin" ]			= variables.getPropertyMixin;
-			instance.mixins[ "exposeMixin" ]				= variables.exposeMixin;
-			instance.mixins[ "methodProxy" ]				= variables.methodProxy;
-			instance.mixins[ "getVariablesMixin" ]			= variables.getVariablesMixin;
+			variables.mixins = {
+				"removeMixin"				= variables.removeMixin,
+				"injectMixin"				= variables.injectMixin,
+				"invokerMixin"				= variables.invokerMixin,
+				"injectPropertyMixin"		= variables.injectPropertyMixin,
+				"removePropertyMixin"		= variables.removePropertyMixin,
+				"populatePropertyMixin"		= variables.populatePropertyMixin,
+				"includeitMixin"			= variables.includeitMixin,
+				"getPropertyMixin"			= variables.getPropertyMixin,
+				"exposeMixin"				= variables.exposeMixin,
+				"methodProxy"				= variables.methodProxy,
+				"getVariablesMixin"			= variables.getVariablesMixin
+			};
 
 			return this;
 		</cfscript>
@@ -40,12 +38,7 @@ Description :
 	<cffunction name="start" hint="Start method injection set -> Injects: includeitMixin,injectMixin,removeMixin,invokerMixin,injectPropertyMixin,removePropertyMixin,getPropertyMixin,populatePropertyMixin" access="public" returntype="void" output="false">
 		<cfargument name="CFC" required="true" hint="The cfc to mixin">
 		<cfscript>
-			if ( NOT structKeyExists( arguments.CFC, "$mixed" ) ){
-				for( var thisUDF in instance.mixins ){
-					arguments.CFC[ thisUDF ] = instance.mixins[ thisUDF ];
-				}
-				arguments.CFC.$mixed = true;
-			}
+			structAppend( arguments.cfc, variables.mixins, true );
 		</cfscript>
 	</cffunction>
 
@@ -53,10 +46,9 @@ Description :
 	<cffunction name="stop" hint="stop injection block. Removes mixed in methods." access="public" returntype="void" output="false">
 		<cfargument name="CFC" hint="The cfc to inject the method into" type="any" required="Yes">
 		<cfscript>
-			for( var udf in instance.mixins ){
+			for( var udf in variables.mixins ){
 				structDelete( arguments.CFC, udf );
 			}
-			structDelete( arguments.CFC, "$mixed" );
 		</cfscript>
 	</cffunction>
 

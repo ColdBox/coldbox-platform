@@ -485,7 +485,7 @@ component serializable="false" accessors="true"{
 		if( structKeyExists( this, '$super' ) ) {
 			return this;
 		}
-		
+
 		// Inject global helpers
 		var helpers	= controller.getSetting( "applicationHelper" );
 

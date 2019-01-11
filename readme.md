@@ -95,6 +95,8 @@ We recommend you use [CommandBox](https://www.ortussolutions.com/products/comman
 
 `box install coldbox@be`
 
+Bleeding edge releases are updated automatically when code is committed.
+
 ## Collaboration
 
 If you want to develop and hack at the source, you will need to download [CommandBox](https://www.ortussolutions.com/products/commandbox) first.

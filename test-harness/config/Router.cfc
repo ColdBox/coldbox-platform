@@ -100,6 +100,17 @@ component{
 			.addRoute( pattern="/:id-numeric{2}/:num-numeric/:name/:month{3}?" )
 			.addRoute( pattern="/:id/:name{4}?")
 		.endWith();
+
+		// awn sync with contact manager
+		group( { pattern="/runAWNsync", handler="utilities.AWNsync" }, function( options ){
+			route( '/:user_id' ).withAction( { get = "runAWNsync", options = "returnOptions" } ).end();
+        } );
+
+		// health check route
+		route( "/health_check" )
+			.withAction( { get = "runCheck", options = "returnOptions" } )
+			.to( "utilities.HealthCheck" );
+
 	}
 
 }

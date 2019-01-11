@@ -107,6 +107,9 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		arguments.asset
 			.listToArray()
+			.map( function( item ){
+				return trim( item );
+			} )
 			.filter( function( item ){
 				// Only lead if not loaded
 				if( ! listFindNoCase( event.getPrivateValue( "cbox_assets" ), item ) ){
@@ -1669,7 +1672,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 				if( len( arguments.nameColumn ) ){
 					if( structKeyExists( val[ x ], arguments.nameColumn ) ){ thisName = val[ x ][nameColumn]; }
 				}
-				
+
 				// If thisName is still the default, use the content of thisValue as the name
 				if( thisName == "" ){
 					thisName = thisValue;
