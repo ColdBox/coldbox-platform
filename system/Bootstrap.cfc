@@ -451,6 +451,7 @@ component serializable="false" accessors="true"{
 			// Closure or UDF
 			if( isClosure( variables.COLDBOX_FAIL_FAST ) || isCustomFunction( variables.COLDBOX_FAIL_FAST ) ){
 				variables.COLDBOX_FAIL_FAST();
+				return false;
 			}
 			// Core Fail Fast Option
 			else if( isBoolean( variables.COLDBOX_FAIL_FAST ) && variables.COLDBOX_FAIL_FAST ){

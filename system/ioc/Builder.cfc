@@ -462,15 +462,15 @@
 
 		// was dependency required? If so, then throw exception
 		if( arguments.definition.required ){
-			
+
 			// Build human-readable description of the mapping
 			var depDesc = [];
 			if( !isNull( arguments.definition.name ) ) { depDesc.append( "Name of '#arguments.definition.name#'" ); }
 			if( !isNull( arguments.definition.DSL ) ) { depDesc.append( "DSL of '#arguments.definition.DSL#'" ); }
 			if( !isNull( arguments.definition.REF ) ) { depDesc.append( "REF of '#arguments.definition.REF#'" ); }
-			
+
 			var injectMessage = "The target '#arguments.targetID#' requested a missing dependency with a #depDesc.toList( ' and ' )#";
-			
+
 			// Logging
 			if( variables.log.canError() ){
 				variables.log.error( injectMessage, arguments.definition );
@@ -735,7 +735,7 @@
 			.each( function( propertyName, propertyValue ){
 				// inject the property/method now
 				if( !isNull( propertyValue ) ) {
-					target.injectPropertyMixin( propertyName, propertyValue );	
+					target.injectPropertyMixin( propertyName, propertyValue );
 				}
 				// Do we need to do automatic generic getter/setters
 				if( generateAccessors and baseProperties.keyExists( propertyName ) ){

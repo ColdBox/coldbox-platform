@@ -22,11 +22,8 @@ component accessors="true"{
 	 * @state The name of the pool
 	 */
 	function init( required state ){
-		var linkedHashMap = createObject( "java", "java.util.LinkedHashMap" ).init( 5 );
-		var collections   = createObject( "java", "java.util.Collections" );
-
 		// Create the event pool, start with 5 instead of 16 to save space
-		variables.pool 	= collections.synchronizedMap( linkedHashMap );
+		variables.pool 	= createObject( "java", "java.util.LinkedHashMap" ).init( 5 );
 		variables.state = arguments.state;
 
 		return this;

@@ -388,11 +388,12 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 **/
 	function buildInstance( required mapping, struct initArguments = {} ){
 		var thisMap = arguments.mapping;
+
 		// before construction event
 		variables.eventManager.processState(
 			"beforeInstanceCreation",
 			{ mapping=arguments.mapping, injector=this }
-			);
+		);
 
 		var oModel	= "";
 		// determine construction type
@@ -790,7 +791,13 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * @mapping The target mapping
 	 */
 	 private Injector function processMixins( required targetObject, required mapping ){
-		var mixin 	= new coldbox.system.ioc.config.Mixin().$init( arguments.mapping.getMixins() );
+		// If no length, kick out
+		if( !arguments.mapping.getMixins().len() ){
+			return this;
+		}
+
+		// Process
+		var mixin = new coldbox.system.ioc.config.Mixin().$init( arguments.mapping.getMixins() );
 
 		// iterate and mixin baby!
 		for( var key in mixin ){
@@ -838,7 +845,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	 * @DICompleteMethods The array of DI completion methods to call
 	 */
 	private Injector function processAfterCompleteDI(required targetObject, required DICompleteMethods) {
-		var DILen 		= arrayLen(arguments.DICompleteMethods);
+		var DILen = arrayLen( arguments.DICompleteMethods );
 
 		//  Check for convention first
 		if ( StructKeyExists( arguments.targetObject, "onDIComplete" ) ) {

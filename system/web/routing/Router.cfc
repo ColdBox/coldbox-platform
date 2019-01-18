@@ -64,6 +64,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	property name="fullRewrites" type="boolean" default="false";
 
 	/**
+	 * This flag denotes that the routing service will discover the incoming base URL from the host + ssl + environment.
+	 * If off, then it will use whatever the base URL was set in the router.
+	 */
+	property name="multiDomainDiscovery" type="boolean" default="true";
+
+
+	/**
 	 * ColdBox Controller
 	 */
 	property name="controller";
@@ -143,6 +150,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		}
 		// Are full rewrites enabled
 		variables.fullRewrites = false;
+		variables.multiDomainDiscovery = true;
 
 		return this;
 	}
@@ -258,7 +266,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		return variables.uniqueURLS;
 	}
 	function setValidExtensions( required extensions ){
-		variables.extensions = arguments.extensions;
+		variables.validExtensions = arguments.extensions;
 	}
 	function setFullRewrites( boolean target ){
 		variables.fullRewrites = arguments.target;
@@ -266,6 +274,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	}
 	function getFullRewrites(){
 		return variables.fullRewrites;
+	}
+	function setMultiDomainDiscovery( boolean target ){
+		variables.multiDomainDiscovery = arguments.target;
+		return this;
+	}
+	function getMultiDomainDiscovery(){
+		return variables.multiDomainDiscovery;
 	}
 
 	/****************************************************************************************************************************/
@@ -537,8 +552,10 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		variables.withClosure.append( arguments.options );
 		// Execute the body
 		arguments.body( arguments.options );
-		// Pivot out of the group
+
+		// Pivot out of the group and do cleanup
 		variables.onGroup = false;
+		variables.withClosure = {};
 
 		return this;
 	}
@@ -964,7 +981,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			if( arguments.append ){
 				getModuleRoutes( arguments.module ).append( thisRoute );
 			} else {
-				getModuleRoutes( arguments.module ).prePrend( thisRoute );
+				getModuleRoutes( arguments.module ).prePend( thisRoute );
 			}
 		}
 		// NAMESPACES
@@ -973,7 +990,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			if( arguments.append ){
 				getNamespaceRoutes( arguments.namespace ).append( thisRoute );
 			} else {
-				getNamespaceRoutes( arguments.namespace ).prePrend( thisRoute );
+				getNamespaceRoutes( arguments.namespace ).prePend( thisRoute );
 			}
 		}
 		// Default Routing Table
