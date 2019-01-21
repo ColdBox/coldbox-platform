@@ -1,10 +1,10 @@
 ﻿/*******************************************************************************
-*	Integration Test as BDD  
+*	Integration Test as BDD
 *
 *	Extends the integration class: coldbox.system.testing.BaseTestCase
 *
-*	so you can test your ColdBox application headlessly. The 'appMapping' points by default to 
-*	the '/root' mapping created in the test folder Application.cfc.  Please note that this 
+*	so you can test your ColdBox application headlessly. The 'appMapping' points by default to
+*	the '/root' mapping created in the test folder Application.cfc.  Please note that this
 *	Application.cfc must mimic the real one in your root, including ORM settings if needed.
 *
 *	The 'execute()' method is used to execute a ColdBox event, with the following arguments
@@ -15,7 +15,7 @@
 *	* renderResults : Render back the results of the event
 *******************************************************************************/
 component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness"{
-	
+
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
@@ -29,7 +29,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 	}
 
 /*********************************** BDD SUITES ***********************************/
-	
+
 	function run(){
 
 		describe( "Implicit Handlers", function(){
@@ -42,11 +42,28 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			it( "can handle invalid events", function(){
 				var event = execute( event="invalid:bogus.index", renderResults=true );
 				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "<h1>Invalid Page</h1>" );
-			});
-		
-		
+            });
+
+            it( "can handle invalid onInvalidEvent handlers", function() {
+                var originalInvalidEventHandler = getController().getSetting( "invalidEventHandler" );
+                getController().setSetting( "invalidEventHandler", "notEvenAnAction" );
+                getController().getHandlerService().onConfigurationLoad();
+                try {
+                    execute( event="invalid:bogus.index", renderResults=true );
+                    fail( "The event handler was invalid and should have thrown an exception" );
+                }
+                catch ( HandlerService.InvalidEventHandlerException e ) {
+                    expect( e.message ).toBe( "The invalidEventHandler event is also invalid" );
+                }
+                finally {
+                    getController().setSetting( "invalidEventHandler", originalInvalidEventHandler );
+                    getController().getHandlerService().onConfigurationLoad();
+                }
+            } );
+
+
 		});
 
 	}
-	
+
 }

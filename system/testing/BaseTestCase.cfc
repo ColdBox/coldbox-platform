@@ -125,7 +125,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			}
 			// remove context + reset headers
 			getController().getRequestService().removeContext();
-			getPageContextResponse().reset();
+            getPageContextResponse().reset();
+            request._lastInvalidEvent = "";
 		}
 	}
 
