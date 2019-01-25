@@ -1,6 +1,6 @@
 {
     "app":{
-        "cfengine":"adobe@2018"
+        "cfengine":"adobe@2018.0.2-beta.2"
     },
     "name":"coldbox-adobe@2018",
     "force":true,
