@@ -23,7 +23,7 @@ Description :
 		var fs = "/";
 		var dummyFile = getController().getSetting( "HandlersPath" ) & fs & "dummy.cfc";
 
-		createFile( dummyFile );
+		FileWrite( dummyFile, "component {}" );
 		getController().getHandlerService().registerHandlers();
 		AssertTrue( listFindNocase(getController().getSetting( "RegisteredHandlers" ), "dummy" ) );
 		removeFile( dummyFile );
