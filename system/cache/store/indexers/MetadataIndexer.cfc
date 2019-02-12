@@ -69,7 +69,7 @@ Description :
 	<!--- clear --->
     <cffunction name="clear" output="false" access="public" returntype="void" hint="Clear a metadata key">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfset structDelete( instance.poolMetadata, arguments.objectKey )>
+		<cfset instance.poolMetadata.remove( arguments.objectKey )>
     </cffunction>
 
 	<!--- getKeys --->
