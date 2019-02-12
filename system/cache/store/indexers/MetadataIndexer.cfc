@@ -101,8 +101,12 @@ Description :
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve, must exist in the binded fields or exception is thrown">
 
-		<cfset validateField( arguments.property )>
-		<cfreturn instance.poolMetadata[ arguments.objectKey ][ arguments.property ] >
+		<cfscript>
+			validateField( arguments.property );
+			var metadata = getObjectMetadata( arguments.objectKey );
+
+			return metadata[ arguments.property ];
+		</cfscript>
 	</cffunction>
 
 	<!--- setObjectMetadataProperty --->
@@ -111,9 +115,12 @@ Description :
 		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve">
 		<cfargument name="value"  	 type="any" required="true" hint="The value of the property">
 
-		<cfset validateField( arguments.property )>
-		<cfset instance.poolMetadata[ arguments.objectKey ][ arguments.property ] = arguments.value >
+		<cfscript>
+			validateField( arguments.property );
+			var metadata = getObjectMetadata( arguments.objectKey );
 
+			metadata[ arguments.property ] = arguments.value;
+		</cfscript>
 	</cffunction>
 
 	<!--- getSize --->
