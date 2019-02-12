@@ -93,7 +93,7 @@ Description :
 	<!--- objectExists --->
     <cffunction name="objectExists" output="false" access="public" returntype="any" hint="Check if the metadata entry exists for an object">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn structKeyExists( instance.poolMetadata, arguments.objectKey )>
+		<cfreturn instance.poolMetadata.containsKey( arguments.objectKey )>
     </cffunction>
 
 	<!--- getObjectMetadataProperty --->
