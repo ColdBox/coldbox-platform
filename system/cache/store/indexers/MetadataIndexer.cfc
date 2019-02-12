@@ -80,14 +80,14 @@ Description :
 	<!--- getObjectMetadata --->
 	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false" hint="Get a metadata entry for a specific entry. Exception if key not found">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn instance.poolMetadata[ arguments.objectKey ]>
+		<cfreturn instance.poolMetadata.get( arguments.objectKey )>
 	</cffunction>
 
 	<!--- setObjectMetadata --->
 	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false" hint="Set the metadata entry for a specific entry">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfargument name="metadata"  type="any" required="true" hint="The metadata structure to store for the cache entry">
-		<cfset instance.poolMetadata[ arguments.objectKey ] = arguments.metadata>
+		<cfset instance.poolMetadata.put( arguments.objectKey, arguments.metadata )>
 	</cffunction>
 
 	<!--- objectExists --->
