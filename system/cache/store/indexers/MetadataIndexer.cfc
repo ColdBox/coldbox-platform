@@ -125,7 +125,7 @@ Description :
 
 	<!--- getSize --->
     <cffunction name="getSize" output="false" access="public" returntype="any" hint="Get the size of the indexer">
-    	<cfreturn structCount( instance.poolMetadata )>
+    	<cfreturn instance.poolMetadata.size()>
     </cffunction>
 
 	<!--- getSortedKeys --->
