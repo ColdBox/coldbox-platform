@@ -1241,7 +1241,7 @@ component serializable=false accessors="true"{
 		}
 
 		//  Set content headers
-		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename='#arguments.name#.#extension#'" );
+		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename=""#arguments.name#.#extension#""" );
 		setHTTPHeader( name="content-length", value=fileSize );
 
 		//  Send file
