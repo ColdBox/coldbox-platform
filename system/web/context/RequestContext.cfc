@@ -1241,8 +1241,8 @@ component serializable=false accessors="true"{
 		}
 
 		// detect if extension is already included in name argument, if not add
-		if ( listlast(arguments.name,"." ) != arguments.extension ) {
-			arguments.name = arguments.name & "." & arguments.extension;
+		if ( listlast( arguments.name,"." ) != arguments.extension ) {
+			arguments.name = arguments.name =& ".#arguments.extension#";
 		}
 		//  Set content headers
 		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename=""#arguments.name#""" );
