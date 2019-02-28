@@ -1240,8 +1240,13 @@ component serializable=false accessors="true"{
 			);
 		}
 
+		// detect if extension is already included in name argument, if not add
+		if ( listLast( arguments.name,"." ) != arguments.extension ) {
+			arguments.name &= ".#arguments.extension#";
+		}
+
 		//  Set content headers
-		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename=#urlEncodedFormat( arguments.name & '.' & arguments.extension )#" );
+		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename=#urlEncodedFormat( arguments.name )#" );
 		setHTTPHeader( name="content-length", value=fileSize );
 
 		//  Send file
