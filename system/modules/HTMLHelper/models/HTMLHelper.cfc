@@ -2303,10 +2303,15 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		buildDirectory="build",
 		boolean sendToHeader=true,
 		boolean async=false,
-		boolean defer=false
+        boolean defer=false,
+        numeric version=3
 	){
 		addAsset(
-			elixirPath( arguments.fileName, arguments.buildDirectory ),
+			elixirPath(
+                fileName = arguments.fileName,
+                buildDirectory = arguments.buildDirectory,
+                version = arguments.version
+            ),
 			arguments.sendToHeader,
 			arguments.async,
 			arguments.defer
@@ -2324,26 +2329,46 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 	function elixirPath(
 		required fileName,
 		buildDirectory="build",
-		boolean useModuleRoot=false
+        boolean useModuleRoot=false,
+        numeric version=3
 	){
+		var templateCache       = getCache( "template" );
 		var includesLocation 	= controller.getSetting( "IncludesConvention", true );
 		var event 				= getRequestContext();
 		var mapping             = ( useModuleRoot && len( event.getCurrentModule() ) ) ?
 									event.getModuleRoot() :
 									controller.getSetting( "appMapping" );
-		var filePath 			= expandPath( "#mapping#/#includesLocation#/#arguments.buildDirectory#/rev-manifest.json" );
-		var href 				= "#mapping#/#includesLocation#/#arguments.fileName#";
+        var filePath 			= arguments.version == 3 ?
+            expandPath( "#mapping#/#includesLocation#/rev-manifest.json" ) :
+            expandPath( "#mapping#/#includesLocation#/#arguments.buildDirectory#/rev-manifest.json" );
+        var href 				= "#mapping#/#includesLocation#/#arguments.fileName#";
+
+        var key = right( href, len( href )-1 );
 
 		if ( ! fileExists( filePath ) ) {
 			return href;
 		}
 
-		var fileContents = fileRead( filePath );
+        var fileContents = templateCache.getOrSet(
+            "elixirManifest",
+            function(){
+                return fileRead( filePath );
+            }
+        );
+
 		if ( ! isJSON( fileContents ) ) {
 			return href;
 		}
 
-		var json = deserializeJSON( fileContents );
+        var json = deserializeJSON( fileContents );
+
+        if ( arguments.version == 3 ) {
+            if ( ! structKeyExists( json, key ) ) {
+                return href;
+            }
+            return "#json[ key ]#";
+        }
+
 		if ( ! structKeyExists( json, arguments.fileName ) ) {
 			return href;
 		}
