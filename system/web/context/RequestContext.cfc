@@ -1078,7 +1078,7 @@ component serializable=false accessors="true"{
 
 			// Translate link or plain
 			if( arguments.translate ){
-				arguments.to = replace( arguments.to, ".", "/", "all" );
+				arguments.to = replaceList( arguments.to, ".,:", "/,/" );
 				// QuqeryString Conversions
 				if( len( arguments.queryString ) ){
 					if( right( arguments.to, 1 ) neq  "/" ){

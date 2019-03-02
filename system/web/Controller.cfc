@@ -345,7 +345,7 @@ component serializable="false" accessors="true"{
 			// Default event relocations
 			case "SES" : {
 				// Route String start by converting event syntax to / syntax
-				routeString = replace( arguments.event, ".", "/", "all" );
+				routeString = replaceList( arguments.event, ".,:", "/,/" );
 				// Convert Query String to convention name value-pairs
 				if( len( trim( arguments.queryString ) ) ){
 					// If the routestring ends with '/' we do not want to
