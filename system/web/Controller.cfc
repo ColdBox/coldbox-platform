@@ -344,8 +344,16 @@ component serializable="false" accessors="true"{
 
 			// Default event relocations
 			case "SES" : {
+				// Convert module into proper entry point
+				if( listLen( arguments.event, ":" ) > 1 ) {
+					var mConfig = getSetting( "modules" );
+					var module = listFirst( arguments.event, ":" );
+					if( structKeyExists( mConfig, module ) ){
+						arguments.event = mConfig[ module ].inheritedEntryPoint & "/" & listRest( arguments.event, ":" );
+					}
+				}
 				// Route String start by converting event syntax to / syntax
-				routeString = replaceList( arguments.event, ".,:", "/,/" );
+				routeString = replace( arguments.event, ".", "/", "all" );
 				// Convert Query String to convention name value-pairs
 				if( len( trim( arguments.queryString ) ) ){
 					// If the routestring ends with '/' we do not want to
@@ -716,10 +724,7 @@ component serializable="false" accessors="true"{
 				}
 				// Around Handler Advice Check?
 				else if(
-					!arguments.prePostExempt
-					&&
-					oHandler._actionExists( "aroundHandler" )
-					&&
+					oHandler._actionExists( "aroundHandler" ) AND
 					validateAction( results.ehBean.getMethod(), oHandler.aroundHandler_only, oHandler.aroundHandler_except )
 				){
 					results.data = oHandler.aroundHandler(
