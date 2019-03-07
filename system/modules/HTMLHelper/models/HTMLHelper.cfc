@@ -22,6 +22,9 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		variables.controller 	= arguments.controller;
 		variables.settings 		= getModuleSettings( "htmlhelper" );
 
+		// Used for elixir discovery paths
+		variables.cachedPaths 	= {};
+
 		return this;
 	}
 
@@ -2297,6 +2300,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 	 * @sendToHeader Send to the header via htmlhead by default, else it returns the content
 	 * @async HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
 	 * @defer HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)
+	 * @version The elixir version to use, defaults to 3
 	 */
 	function elixir(
 		required fileName,
@@ -2306,7 +2310,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
         boolean defer=false,
         numeric version=3
 	){
-		addAsset(
+		return addAsset(
 			elixirPath(
                 fileName = arguments.fileName,
                 buildDirectory = arguments.buildDirectory,
@@ -2316,14 +2320,13 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 			arguments.async,
 			arguments.defer
 		);
-		return this;
 	}
 
 	/**
 	 * Adds the versioned path for an asset to the view using ColdBox Elixir
 	 *
-	 * @fileName The asset path to find relative to the includes convention directory
-	 * @buildDirectory The build directory inside the includes convention directory
+	 * @fileName The asset path to find relative to the `includes` convention directory
+	 * @buildDirectory The build directory inside the `includes` convention directory
 	 * @useModuleRoot If true, use the module root as the root of the file path
 	 */
 	function elixirPath(
@@ -2332,48 +2335,71 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
         boolean useModuleRoot=false,
         numeric version=3
 	){
+		// Cleanup
+		arguments.fileName = reReplace( arguments.fileName, "^/", "" );
+
+		// In local discovery cache?
+		if( variables.cachedPaths.keyExists( arguments.filename ) ){
+			return variables.cachedPaths[ arguments.filename ];
+		}
+
+		// Prepare state checks
 		var templateCache       = getCache( "template" );
 		var includesLocation 	= controller.getSetting( "IncludesConvention", true );
 		var event 				= getRequestContext();
-		var mapping             = ( useModuleRoot && len( event.getCurrentModule() ) ) ?
-									event.getModuleRoot() :
-									controller.getSetting( "appMapping" );
-        var filePath 			= arguments.version == 3 ?
-            expandPath( "#mapping#/#includesLocation#/rev-manifest.json" ) :
-            expandPath( "#mapping#/#includesLocation#/#arguments.buildDirectory#/rev-manifest.json" );
-        var href 				= "#mapping#/#includesLocation#/#arguments.fileName#";
+		var currentModule 		= event.getCurrentModule();
 
-        var key = right( href, len( href )-1 );
+		// Calculate app path depending on module or app
+		var appPath = ( arguments.useModuleRoot && len( currentModule ) ) ?
+						controller.getSettings( "modules" ).find( currentModule ).path & "/":
+						controller.getSetting( "applicationPath" );
+		var mapping = ( arguments.useModuleRoot && len( currentModule ) ) ?
+						event.getModuleRoot() :
+						controller.getSetting( "appMapping" );
 
-		if ( ! fileExists( filePath ) ) {
+		// Calculate manifest location
+		var manifestPath = 	arguments.version == 3 ?
+							"#appPath##includesLocation#/rev-manifest.json" :
+							"#appPath##includesLocation#/#arguments.buildDirectory#/rev-manifest.json";
+
+		// Calculat href for asset delivery via Browser
+		var href 	= "/#mapping#/#includesLocation#/#arguments.fileName#";
+		var key 	= reReplace( href, "^/", "" );
+
+		// Verify manifest
+		if ( ! fileExists( manifestPath ) ) {
+			variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
 			return href;
 		}
 
-        var fileContents = templateCache.getOrSet(
+		// Only read, parse and store once
+        var manifestDirectory = templateCache.getOrSet(
             "elixirManifest",
             function(){
-                return fileRead( filePath );
+				var contents = fileRead( manifestPath );
+				if( isJSON( contents ) ){
+					return deserializeJSON( contents );
+				}
+				return {};
             }
         );
 
-		if ( ! isJSON( fileContents ) ) {
-			return href;
-		}
-
-        var json = deserializeJSON( fileContents );
-
         if ( arguments.version == 3 ) {
-            if ( ! structKeyExists( json, key ) ) {
+			if ( ! structKeyExists( manifestDirectory, key ) ) {
+				variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
                 return href;
-            }
-            return "#json[ key ]#";
+			}
+			variables.cachedPaths[ arguments.fileName ] = manifestDirectory[ key ];
+            return "#manifestDirectory[ key ]#";
         }
 
-		if ( ! structKeyExists( json, arguments.fileName ) ) {
+		if ( ! structKeyExists( manifestDirectory, key ) ) {
+			variables.cachedPaths[ arguments.fileName ] = arguments.fileName;
 			return href;
 		}
 
-		return "#mapping#/#includesLocation#/#arguments.buildDirectory#/#json[ arguments.fileName ]#";
+		variables.cachedPaths[ arguments.fileName ] = "#mapping#/#includesLocation#/#arguments.buildDirectory#/#manifestDirectory[ key ]#";
+		return variables.cachedPaths[ arguments.fileName ];
 	}
 
 
