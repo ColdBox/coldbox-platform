@@ -538,6 +538,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	function locateInstance( required name ){
 		var scanLocations		= variables.binder.getScanLocations();
 		var CFCName				= replace( arguments.name, ".", "/", "all" ) & ".cfc";
+		CFCName					= replace( CFCName, ":", "/", "all" );
 
 		// Check Scan Locations In Order
 		for( var thisScanPath in scanLocations){
