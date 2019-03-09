@@ -542,7 +542,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		// Check Scan Locations In Order
 		for( var thisScanPath in scanLocations){
 			// Return false if the CFCName has a colon in it, as it is not a physical path
-			if( find( ":", CFCName ) return false;
+			if( find( ":", CFCName ) ) return false;
 			
 			// Check if located? If so, return instantiation path
 			if( fileExists( scanLocations[ thisScanPath ] & CFCName ) ){
