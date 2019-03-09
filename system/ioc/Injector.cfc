@@ -538,10 +538,12 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	function locateInstance( required name ){
 		var scanLocations		= variables.binder.getScanLocations();
 		var CFCName				= replace( arguments.name, ".", "/", "all" ) & ".cfc";
-		CFCName					= replace( CFCName, ":", "/", "all" );
 
 		// Check Scan Locations In Order
 		for( var thisScanPath in scanLocations){
+			// Return false if the CFCName has a colon in it, as it is not a physical path
+			if( find( ":", CFCName ) return false;
+			
 			// Check if located? If so, return instantiation path
 			if( fileExists( scanLocations[ thisScanPath ] & CFCName ) ){
 				if( variables.log.canDebug() ){ variables.log.debug( "Instance: #arguments.name# located in #thisScanPath#" ); }
