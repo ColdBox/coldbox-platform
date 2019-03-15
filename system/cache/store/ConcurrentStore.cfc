@@ -84,7 +84,7 @@ Description :
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 
 		<cfscript>
-			var refLocal = structnew()
+			var refLocal = structnew();
 			// retrieve from map
 			refLocal.results = instance.pool.get( arguments.objectKey );
 			if( !isNull( refLocal.results ) ){
