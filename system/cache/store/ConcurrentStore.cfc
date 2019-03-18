@@ -117,7 +117,7 @@ Description :
 	<cffunction name="expireObject" output="false" access="public" returntype="void" hint="Mark an object for expiration">
 		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
 
-		<cfset instance.indexer.setObjectMetadataProperty(arguments.objectKey,"isExpired", true)>
+		<cfset instance.indexer.setObjectMetadataProperty( arguments.objectKey, "isExpired", true )>
 	</cffunction>
 
 	<!--- isExpired --->

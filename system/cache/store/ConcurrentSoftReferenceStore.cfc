@@ -59,7 +59,7 @@ Description :
 				if( softRefLookup( reflocal.collected ) ){
 
 					// expire it
-					expireObject( getSoftRefKey(refLocal.collected) );
+					expireObject( getSoftRefKey( refLocal.collected ) );
 
 					// GC Collection Hit
 					instance.cacheProvider.getStats().gcHit();
@@ -183,7 +183,7 @@ Description :
 
 			// Removal of Soft Ref Lookup
 			if( !isNull( softRef ) && instance.indexer.getObjectMetadataProperty( arguments.objectKey, "isSoftReference" ) ){
-				instance.softRefKeyMap.remove( softRef );
+				instance.softRefKeyMap.remove( softRef.hashCode() );
 			}
 
 			return super.clear( arguments.objectKey );
@@ -203,16 +203,14 @@ Description :
 	<!--- softRefLookup --->
 	<cffunction name="softRefLookup" access="public" returntype="any" hint="See if the soft reference is in the reference key map" output="false" >
 		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
-		<cfreturn instance.softRefKeyMap.containsKey( arguments.softRef )>
+		<cfreturn instance.softRefKeyMap.containsKey( "hc-#arguments.softRef.hashCode()#" )>
 	</cffunction>
 
 	<!--- getSoftRefKey --->
 	<cffunction name="getSoftRefKey" access="public" returntype="any" hint="Get the soft reference's key from the soft reference lookback map" output="false" >
 		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
 		<cfscript>
-			if( instance.softRefKeyMap.containsKey( arguments.softRef ) ){
-				return instance.softRefKeyMap.get( arguments.softRef );
-			}
+			return instance.softRefKeyMap.get( "hc-#arguments.softRef.hashCode()#" );
 		</cfscript>
 	</cffunction>
 
@@ -223,13 +221,11 @@ Description :
 		<cfargument name="objectKey" type="any"  	required="true" hint="The value of the key pair">
 		<cfargument name="target"	 type="any" 	required="true" hint="The object to wrap">
 		<cfscript>
-
 			// Create Soft Reference Wrapper and register with Queue
-			var softRef 	= createObject( "java", "java.lang.ref.SoftReference" ).init( arguments.target, instance.referenceQueue );
+			var softRef = createObject( "java", "java.lang.ref.SoftReference" ).init( arguments.target, instance.referenceQueue );
 
 			// Create Reverse Mapping, using CF approach or ACF blows up.
-			//instance.softRefKeyMap.put( softRef, arguments.objectKey );
-			instance.softRefKeyMap[ softRef ] = arguments.objectKey;
+			instance.softRefKeyMap.put( "hc-#softRef.hashCode()#", javaCast( "string", arguments.objectKey ) );
 
 			return softRef;
 		</cfscript>
