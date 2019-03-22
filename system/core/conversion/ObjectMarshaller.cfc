@@ -1,28 +1,31 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* Allows you to serialize/deserialize objects
-*/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Allows you to serialize/deserialize objects
+ */
 component accessors="true"{
 
 	/**
-	* Constructor
-	*/
+	 * Constructor
+	 */
 	function init(){
 		return this;
 	}
 
 	/**
-	* Serialize an object and optionally save it into a file.
-	* @target The complex object, such as a query or CFC, that will be serialized.
-	* @filePath The path of the file in which to save the serialized data.
-	*/
+	 * Serialize an object and optionally save it into a file.
+	 *
+	 * @target The complex object, such as a query or CFC, that will be serialized.
+	 * @filePath The path of the file in which to save the serialized data.
+	 *
+	 * @return Binary data
+	 */
 	function serializeObject( required any target, string filePath ){
 		var binaryData = serializeWithObjectSave( arguments.target );
 
 		// Save to File?
-		if( structKeyExists( arguments,"filePath" ) ){
+		if( !isNull( arguments.filePath ) ){
 			fileWrite( arguments.filePath, binaryData );
 		}
 
@@ -31,17 +34,20 @@ component accessors="true"{
 
 
 	/**
-	* Deserialize an object using a binary object or a filepath
-	* @target The binary object to inflate
-	* @filePath The location of the file that has the binary object to inflate
-	*/
+	 * Deserialize an object using a binary object or a filepath
+	 *
+	 * @target The binary object to inflate
+	 * @filePath The location of the file that has the binary object to inflate
+	 *
+	 * @return Loaded Object
+	 */
 	function deserializeObject( any binaryObject, string filePath ){
 		// Read From File?
-		if( structKeyExists( arguments,"filePath" ) ){
+		if( !isNull( arguments.filePath ) ){
 			arguments.binaryObject = fileRead( arguments.filePath );
 		}
 
-		return deserializeWithObjectLoad(arguments.binaryObject);
+		return deserializeWithObjectLoad( arguments.binaryObject );
 	}
 
 	/**
@@ -53,9 +59,10 @@ component accessors="true"{
 	}
 
 	/**
-	* Deserialize via ObjectLoad
-	* @binaryObject The binary object to inflate
-	*/
+	 * Deserialize via ObjectLoad
+	 *
+	 * @binaryObject The binary object to inflate
+	 */
 	function deserializeWithObjectLoad( any binaryObject ){
 		// check if string
 		if( not isBinary( arguments.binaryObject ) ){ arguments.binaryObject = toBinary( arguments.binaryObject ); }
@@ -64,9 +71,10 @@ component accessors="true"{
 	}
 
 	/**
-	* Serialize via generic Java
-	* @target The binary object to inflate
-	*/
+	 * Serialize via generic Java
+	 *
+	 * @target The binary object to inflate
+	 */
 	function serializeGeneric( any target ){
 		var byteArrayOutput = createObject( "java", "java.io.ByteArrayOutputStream").init();
         var objectOutput    = createObject( "java", "java.io.ObjectOutputStream").init( byteArrayOutput );
@@ -79,9 +87,10 @@ component accessors="true"{
 	}
 
 	/**
-	* Serialize via generic Java
-	* @target The binary object to inflate
-	*/
+	 * Serialize via generic Java
+	 *
+	 * @target The binary object to inflate
+	 */
 	function deserializeGeneric( any binaryObject ){
 		var byteArrayInput = createObject( "java", "java.io.ByteArrayInputStream").init( toBinary( arguments.binaryObject ) );
 		var ObjectInput    = createObject( "java", "java.io.ObjectInputStream").init( byteArrayInput );

@@ -116,9 +116,6 @@
 			"code": "METHOD_ALLCAPS_NAME"
 		},
 		{
-			"code": "METHOD_IS_TEMPORARY"
-		},
-		{
 			"code": "NESTED_CFOUTPUT"
 		},
 		{

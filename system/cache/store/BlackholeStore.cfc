@@ -1,119 +1,162 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author 	    :	Luis Majano
-Description :
-	I am the fastest way to cache objects. I am so fast because I dont do anything. I'm really a tool to use when working on caching strategies. When I am in use nothing is cached. It just vanishes.
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * I am the fastest way to cache objects. I am so fast because I dont do anything. I'm really a tool to use when working on caching strategies. When I am in use nothing is cached. It just vanishes.
+ */
+component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 
------------------------------------------------------------------------>
-<cfcomponent hint="I am the fastest way to cache objects. I am so fast because I dont do anything. I'm really a tool to use when working on caching strategies. When I am in use nothing is cached. It just vanishes." output="false" implements="coldbox.system.cache.store.IObjectStore">
+	/**
+	 * The cache provider reference
+	 */
+	property name="cacheProvider" doc_generic="coldbox.system.cache.ICacheProvider";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	 * The human store name
+	 */
+	property name="storeID";
 
-	<!--- init --->
-	<cffunction name="init" access="public" output="false" returntype="BlackholeStore" hint="Constructor">
-		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider"/>
-		<cfscript>
-			// Store Fields
-			var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired,isSimple";
-			var config = arguments.cacheProvider.getConfiguration();
+	/**
+	 * Constructor
+	 *
+	 * @cacheProvider The associated cache provider as coldbox.system.cache.ICacheProvider
+	 * @cacheprovider.doc_generic coldbox.system.cache.ICacheProvider
+	 */
+	function init( required cacheProvider ){
+		// Store Fields
+        var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired,isSimple";
+        var config = arguments.cacheProvider.getConfiguration();
 
-			// Prepare instance
-			instance = {
-				cacheProvider   = arguments.cacheProvider,
-				storeID 		= 'blackhole'
-			};
+        // Prepare instance
+        variables.cacheProvider     = arguments.cacheProvider;
+        variables.storeID 		    = 'blackhole';
 
-			return this;
-		</cfscript>
-	</cffunction>
+        return this;
+	}
 
-<!------------------------------------------- INTERFACE PUBLIC METHODS ------------------------------------------->
+    /**
+     * Flush the store to a permanent storage
+     */
+    void function flush(){
+        return;
+	}
 
-	<!--- flush --->
-    <cffunction name="flush" output="false" access="public" returntype="void" hint="Pretends to flush the store to a permanent storage">
-    	<cfreturn />
-    </cffunction>
+	/**
+	 * Reap the storage
+	 */
+	void function reap(){
+		return;
+    }
 
-	<!--- reap --->
-    <cffunction name="reap" output="false" access="public" returntype="void" hint="Pretends to reap the storage, clean it from old stuff.">
-		<cfreturn />
-	</cffunction>
+	/**
+	 * Clear all the elements in the store
+	 */
+	void function clearAll(){
+        return;
+	}
 
-	<!--- getStoreID --->
-    <cffunction name="getStoreID" output="false" access="public" returntype="any" hint="Get this storage's ID">
-    	<cfreturn instance.storeID>
-    </cffunction>
+    /**
+     * Get the store's pool metadata indexer structure
+	 *
+	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
+     */
+    function getIndexer(){
+        return;
+    }
 
-	<!--- clearAll --->
-    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="No work to do. Everything is already in the blackhole.">
-		<cfreturn />
-	</cffunction>
+     /**
+     * Get all the store's object keys array
+	 *
+	 * @return array
+     */
+    function getKeys(){
+        return;
+    }
 
-	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="any" output="false" hint="No work to do. Everything is already in the blackhole.">
-		<cfreturn>
-	</cffunction>
+	/**
+	 * Check if an object is in the store
+	 *
+	 * @objectKey The key to lookup
+	 *
+	 * @return boolean
+	 */
+	function lookup( required objectKey ){
+		return false;
+	}
 
-	<!--- getKeys --->
-	<cffunction name="getKeys" output="false" access="public" returntype="any" hint="No work to do. Everything is already in the blackhole.">
-		<cfreturn>
-	</cffunction>
+	/**
+	 * Get an object from the store with metadata tracking
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function get( required objectKey ){
+		return;
+	}
 
-	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Returns false. No work to do. Everything is already in the blackhole.">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn false>
-	</cffunction>
+	/**
+	 * Get an object from cache with no metadata tracking
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function getQuiet( required objectKey ){
+		return;
+    }
 
-	<!--- get --->
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Returns null. This is a blackhole.">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn JavaCast('null','')>
-	</cffunction>
+    /**
+	 * Expire an object
+	 *
+	 * @objectKey The key to expire
+	 */
+	void function expireObject( required objectKey ){
+		return;
+    }
 
-	<!--- getQuiet --->
-	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Returns null. This is a blackhole.">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn JavaCast('null','')>
-	</cffunction>
+    /**
+	 * Expire check
+	 *
+	 * @objectKey The key to check
+	 *
+	 * @return boolean
+	 */
+	function isExpired( required objectKey ){
+		return;
+	}
 
-	<!--- expireObject --->
-	<cffunction name="expireObject" output="false" access="public" returntype="void" hint="Mark an object for expiration">
-		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfreturn />
-	</cffunction>
+	/**
+	 * Sets an object in the storage
+	 *
+	 * @objectKey The object key
+	 * @object The object to save
+	 * @timeout Timeout in minutes
+	 * @lastAccessTimeout Idle Timeout in minutes
+	 * @extras A map of extra name-value pairs to store alongside the object
+	 */
+	void function set(
+		required objectKey,
+		required object,
+		timeout=0,
+		lastAccessTimeout=0,
+		extras={}
+	){
+		return;
+	}
 
-	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not">
-    	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfreturn />
-    </cffunction>
+	/**
+	 * Clears an object from the storage
+	 *
+	 * @objectKey The object key to clear
+	 */
+	function clear( required objectKey ){
+        return;
+    }
 
-	<!--- Set an Object in the pool --->
-	<cffunction name="set" access="public" output="false" returntype="void" hint="Saves an object in a blackhole. You'll never see it again.">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
-		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
-		<cfargument name="timeout"				type="any"  required="false" default="" hint="Timeout in minutes">
-		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="" hint="Timeout in minutes">
-		<cfargument name="extras" 				type="any" default="#structnew()#" hint="A map of extra name-value pairs"/>
-		<!--- ************************************************************* --->
-		<cfdump var="Blackhole just cached '#arguments.objectKey#'. Good luck getting it out." output='console'>
-		<cfreturn />
-	</cffunction>
+    /**
+	 * Get the size of the store
+	 */
+	function getSize(){
+        return 0;
+	}
 
-	<!--- Clear an object from the pool --->
-	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool">
-		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
-		<cfreturn true />
-	</cffunction>
-
-	<!--- Get the size of the pool --->
-	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the cache's size in items">
-		<cfreturn 0>
-	</cffunction>
-
-</cfcomponent>
+}

@@ -1,234 +1,246 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author 	    :	Luis Majano
-Description :
-	I am a concurrent soft reference object store. In other words, I am fancy!
-	This store is case-sensitive
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * I am a concurrent soft reference object store. In other words, I am fancy!
+ * This store is case-sensitive
+ */
+component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 
------------------------------------------------------------------------>
-<cfcomponent hint="I am a concurrent soft reference object store. In other words, I am fancy!" output="false" extends="coldbox.system.cache.store.ConcurrentStore">
+	/**
+	 * The reverse lookup map for soft references
+	 */
+	property name="softRefKeymap";
 
-	<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	 * The Java soft reference queue used for reaps
+	 */
+	property name="referenceQueue";
 
-	<!--- init --->
-	<cffunction name="init" access="public" output="false" returntype="ConcurrentSoftReferenceStore" hint="Constructor">
-		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider"/>
-		<cfscript>
-			// Super size me
-			super.init( arguments.cacheProvider );
+	/**
+	 * Constructor
+	 *
+	 * @cacheProvider The associated cache provider as coldbox.system.cache.ICacheProvider
+	 * @cacheprovider.doc_generic coldbox.system.cache.ICacheProvider
+	 */
+	function init( required cacheProvider ){
+		// Super size me
+		super.init( arguments.cacheProvider );
 
-			// Override Fields
-			instance.indexer.setFields( instance.indexer.getFields() & ",isSoftReference" );
+		// Override Fields
+		variables.indexer.setFields( variables.indexer.getFields() & ",isSoftReference" );
 
-			// Prepare soft reference lookup maps
-			instance.softRefKeyMap	 = createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
-			instance.referenceQueue  = createObject( "java", "java.lang.ref.ReferenceQueue" ).init();
+		// Prepare soft reference lookup maps
+		variables.softRefKeyMap	 	= createObject( "java", "java.util.concurrent.ConcurrentHashMap" ).init();
+		variables.referenceQueue  	= createObject( "java", "java.lang.ref.ReferenceQueue" ).init();
 
-			return this;
-		</cfscript>
-	</cffunction>
+		return this;
+	}
 
-<!------------------------------------------- INTERFACE PUBLIC METHODS ------------------------------------------->
+	/**
+	 * Clear all the elements in the store
+	 */
+	void function clearAll(){
+		super.clearAll();
+		variables.softRefKeyMap.clear();
+	}
 
-	<!--- clearAll --->
-	<cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all elements of the store">
-		<cfscript>
-			super.clearAll();
-			instance.softRefKeyMap.clear();
-		</cfscript>
-	</cffunction>
-
-	<!--- reap --->
-	<cffunction name="reap" output="false" access="public" returntype="void" hint="Reap the storage, clean it from old stuff">
-
-		<cfset var refLocal = {}>
-
-		<cflock name="ConcurrentSoftReferenceStore.reap.#instance.storeID#" type="exclusive" timeout="20">
-		<cfscript>
+	/**
+	 * Reap the storage, clean it from old stuff
+	 */
+	void function reap(){
+		lock
+			name="ConcurrentSoftReferenceStore.reap.#variables.storeID#"
+			type="exclusive"
+			timeout="20"{
 
 			// Init Ref Key Vars
-			refLocal.collected = instance.referenceQueue.poll();
+			var collected = variables.referenceQueue.poll();
 
 			// Let's reap the garbage collected soft references
-			while( structKeyExists(reflocal, "collected") ){
+			while( !isNull( collected ) ){
 
 				// Clean if it still exists
-				if( softRefLookup( reflocal.collected ) ){
+				if( softRefLookup( collected ) ){
 
 					// expire it
-					expireObject( getSoftRefKey( refLocal.collected ) );
+					expireObject( getSoftRefKey( collected ) );
 
 					// GC Collection Hit
-					instance.cacheProvider.getStats().gcHit();
+					variables.cacheProvider.getStats().gcHit();
 				}
 
 				// Poll Again
-				reflocal.collected = instance.referenceQueue.poll();
+				collected = variables.referenceQueue.poll();
 			}
-		</cfscript>
-		</cflock>
+		}
+	}
 
-	</cffunction>
+	/**
+	 * Check if an object is in cache
+	 *
+	 * @objectKey The key to lookup
+	 *
+	 * @return boolean
+	 */
+	function lookup( required objectKey ){
+		// check existence via super, if not found, check as it might be a soft reference
+		if( NOT super.lookup( arguments.objectKey ) ){
+			return false;
+		}
 
-	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfscript>
-			// check existence via super, if not found, check as it might be a soft reference
-			if( NOT super.lookup( arguments.objectKey ) ){
-				return false;
-			}
+		// get quiet to test it as it might be a soft reference
+		if( isNull( getQuiet( arguments.objectKey ) ) ){
+			return false;
+		}
 
-			// get quiet to test it as it might be a soft reference
-			if( isNull( getQuiet( arguments.objectKey ) ) ){
-				return false;
-			}
+		// if we get here, it is found
+		return true;
+	}
 
-			// if we get here, it is found
-			return true;
-		</cfscript>
-	</cffunction>
+	/**
+	 * Get an object from cache. If its a soft reference object it might return a `null` value.
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function get( required objectKey ){
+		// Get via concurrent store
+		var target = super.get( arguments.objectKey );
+		if( !isNull( target ) ){
 
-	<!--- Get an object from the pool --->
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If its a soft reference object it might return a null value.">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfscript>
-			var refLocal = {};
-
-			// Get via concurrent store
-			refLocal.target = super.get( arguments.objectKey );
-			if( !isNull( refLocal.target ) ){
-
-				// Validate if SR or normal object
-				if( isInstanceOf(refLocal.target, "java.lang.ref.SoftReference") ){
-					return refLocal.target.get();
-				}
-
-				return refLocal.target;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- getQuiet --->
-	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from cache. If its a soft reference object it might return a null value.">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfscript>
-			var refLocal = {};
-
-			// Get via concurrent store
-			refLocal.target = super.getQuiet( arguments.objectKey );
-
-			if( !isNull( refLocal.target ) ){
-
-				// Validate if SR or normal object
-				if( isInstanceOf(refLocal.target, "java.lang.ref.SoftReference") ){
-					return refLocal.target.get();
-				}
-
-				return refLocal.target;
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- Set an Object in the pool --->
-	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in the storage.">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
-		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
-		<cfargument name="timeout"				type="any"  required="false" default="0" hint="Timeout in minutes">
-		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="0" hint="Idle Timeout in minutes">
-		<cfargument name="extras" 				type="any" default="#structnew()#" hint="A map of extra name-value pairs"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var target 	= 0;
-			var isSR	= ( arguments.timeout GT 0 );
-
-			// Check for eternal object
-			if( isSR ){
-				// Cache as soft reference not an eternal object
-				target = createSoftReference( arguments.objectKey, arguments.object );
-			} else {
-				target = arguments.object;
+			// Validate if SR or normal object
+			if( isInstanceOf( target, "java.lang.ref.SoftReference" ) ){
+				return target.get();
 			}
 
-			// Store it
-			super.set(
-				objectKey         = arguments.objectKey,
-				object            = target,
-				timeout           = arguments.timeout,
-				lastAccessTimeout = arguments.lastAccessTimeout,
-				extras            = arguments.extras
-			);
+			return target;
+		}
+	}
 
-			// Set extra md in indexer
-			instance.indexer.setObjectMetadataProperty( arguments.objectKey, "isSoftReference", isSR );
-		</cfscript>
-	</cffunction>
+	/**
+	 * Get an object from cache. If its a soft reference object it might return a null value
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function getQuiet( required objectKey ){
+		// Get via concurrent store
+		var target = super.getQuiet( arguments.objectKey );
+		if( !isNull( target ) ){
 
-	<!--- Clear an object from the pool --->
-	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool">
-		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfscript>
-
-			// Check if it exists
-			if( NOT instance.pool.containsKey( arguments.objectKey ) ){
-				return false;
+			// Validate if SR or normal object
+			if( isInstanceOf( target, "java.lang.ref.SoftReference" ) ){
+				return target.get();
 			}
 
-			// Is this a soft reference?
-			var softRef = instance.pool.get( arguments.objectKey );
+			return target;
+		}
+	}
 
-			// Removal of Soft Ref Lookup
-			if( !isNull( softRef ) && instance.indexer.getObjectMetadataProperty( arguments.objectKey, "isSoftReference" ) ){
-				instance.softRefKeyMap.remove( softRef.hashCode() );
-			}
+	/**
+	 * Sets an object in the storage
+	 *
+	 * @objectKey The object key"
+	 * @object The object to save"
+	 * @timeout Timeout in minutes"
+	 * @lastAccessTimeout Idle Timeout in minutes"
+	 * @extras A map of extra name-value pairs"
+	 */
+	void function set(
+		required objectKey,
+		required object,
+		timeout="",
+		lastAccessTimeout="",
+		extras={}
+	){
+		var target 	= 0;
+		var isSR	= ( arguments.timeout GT 0 );
 
-			return super.clear( arguments.objectKey );
-		</cfscript>
-	</cffunction>
+		// Check for eternal object
+		if( isSR ){
+			// Cache as soft reference not an eternal object
+			target = createSoftReference( arguments.objectKey, arguments.object );
+		} else {
+			target = arguments.object;
+		}
 
-	<!--- getReferenceQueue --->
-	<cffunction name="getReferenceQueue" access="public" output="false" returntype="any" hint="Get soft reference queue object">
-		<cfreturn instance.referenceQueue/>
-	</cffunction>
+		// Store it
+		super.set(
+			objectKey         = arguments.objectKey,
+			object            = target,
+			timeout           = arguments.timeout,
+			lastAccessTimeout = arguments.lastAccessTimeout,
+			extras            = arguments.extras
+		);
 
-	<!--- Get Soft Reference KeyMap --->
-	<cffunction name="getSoftRefKeyMap" access="public" output="false" returntype="any" hint="Get the soft reference key map">
-		<cfreturn instance.softRefKeyMap/>
-	</cffunction>
+		// Set extra md in indexer
+		variables.indexer.setObjectMetadataProperty( arguments.objectKey, "isSoftReference", isSR );
+	}
 
-	<!--- softRefLookup --->
-	<cffunction name="softRefLookup" access="public" returntype="any" hint="See if the soft reference is in the reference key map" output="false" >
-		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
-		<cfreturn instance.softRefKeyMap.containsKey( "hc-#arguments.softRef.hashCode()#" )>
-	</cffunction>
+	/**
+	 * Clears an object from the storage pool
+	 *
+	 * @objectKey The object key to clear
+	 */
+	function clear( required objectKey ){
+		// Check if it exists
+		if( NOT variables.pool.containsKey( arguments.objectKey ) ){
+			return false;
+		}
 
-	<!--- getSoftRefKey --->
-	<cffunction name="getSoftRefKey" access="public" returntype="any" hint="Get the soft reference's key from the soft reference lookback map" output="false" >
-		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
-		<cfscript>
-			return instance.softRefKeyMap.get( "hc-#arguments.softRef.hashCode()#" );
-		</cfscript>
-	</cffunction>
+		// Is this a soft reference?
+		var softRef = variables.pool.get( arguments.objectKey );
 
-<!------------------------------------------- PRIVATE ------------------------------------------->
+		// Removal of Soft Ref Lookup
+		if( !isNull( softRef ) && variables.indexer.getObjectMetadataProperty( arguments.objectKey, "isSoftReference" ) ){
+			variables.softRefKeyMap.remove( softRef.hashCode() );
+		}
 
-	<!--- Create a soft reference --->
-	<cffunction name="createSoftReference" access="private" returntype="any" hint="Create SR, register cached object and reference" output="false" >
-		<cfargument name="objectKey" type="any"  	required="true" hint="The value of the key pair">
-		<cfargument name="target"	 type="any" 	required="true" hint="The object to wrap">
-		<cfscript>
-			// Create Soft Reference Wrapper and register with Queue
-			var softRef = createObject( "java", "java.lang.ref.SoftReference" ).init( arguments.target, instance.referenceQueue );
+		return super.clear( arguments.objectKey );
+	}
 
-			// Create Reverse Mapping, using CF approach or ACF blows up.
-			instance.softRefKeyMap.put( "hc-#softRef.hashCode()#", javaCast( "string", arguments.objectKey ) );
+	/****************************************************************************************/
+	/*							EXTENSION METHODS 											*/
+	/****************************************************************************************/
 
-			return softRef;
-		</cfscript>
-	</cffunction>
+	/**
+	 * See if the soft reference is in the reference key map
+	 *
+	 * @softRef The soft reference to verify
+	 */
+	boolean function softRefLookup( required softRef ){
+		return variables.softRefKeyMap.containsKey( "hc-#arguments.softRef.hashCode()#" );
+	}
 
-</cfcomponent>
+	/**
+	 * Get the soft reference's key from the soft reference lookback map
+	 *
+	 * @softRef The soft reference to check
+	 *
+	 * @return The object key it points to
+	 */
+	function getSoftRefKey( required softRef ){
+		return variables.softRefKeyMap.get( "hc-#arguments.softRef.hashCode()#" );
+	}
+
+	/**
+	 * Create SR, register cached object and reference
+	 *
+	 * @objectKey The value of the key to store
+	 * @target The target to wrap
+	 *
+	 * @return A java soft reference `java.lang.ref.SoftReference`
+	 */
+	private function createSoftReference( required objectKey, required target ){
+		// Create Soft Reference Wrapper and register with Queue
+		var softRef = createObject( "java", "java.lang.ref.SoftReference" )
+			.init( arguments.target, variables.referenceQueue );
+
+		// Create Reverse Mapping, using CF approach or ACF blows up.
+		variables.softRefKeyMap.put( "hc-#softRef.hashCode()#", arguments.objectKey );
+
+		return softRef;
+	}
+
+}

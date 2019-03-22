@@ -9,6 +9,8 @@ component{
 	}
 
 	function index( event, rc, prc ){
+		queryExecute( "delete from users where user_id = '23423' ", {}, { result="local.q" } );
+		writeDump( var=q );abort;
 		prc.welcomeMessage = "Welcome to ColdBox!";
 		event.setView("main/index");
 	}

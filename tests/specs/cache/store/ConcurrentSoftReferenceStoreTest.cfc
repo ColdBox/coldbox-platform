@@ -1,20 +1,8 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-
-Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	object pool test
------------------------------------------------------------------------>
-<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest"{
 
 	function setup(){
 		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" );
-		store = createMock(className="coldbox.system.cache.store.ConcurrentSoftReferenceStore" ).init(mockProvider);
+		store = createMock( "coldbox.system.cache.store.ConcurrentSoftReferenceStore" ).init( mockProvider );
 	}
 
 	function testClearAll(){
@@ -29,7 +17,7 @@ Description :
 	}
 
 	function testGetKeys(){
-		assertEquals( arrayNew(1), store.getKeys() );
+		assertEquals( [], store.getKeys() );
 		store.set( "test", now() );
 		store.set( "test1", now() );
 		store.set( "test2", now() );
@@ -154,5 +142,4 @@ Description :
 		expect( store.getSoftRefKey( sr ) ).toBe( key );
 	}
 
-</cfscript>
-</cfcomponent>
+}

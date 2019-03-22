@@ -1,155 +1,177 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * This is a utility object that helps object stores keep their elements indexed and stored nicely.
+ * It is also a nice way to give back metadata results.
+ */
+component accessors="true"{
 
-Author     :	Luis Majano
-Date        :	11/14/2007
-Description :
-	This is a utility object that helps object stores keep their elements indexed
-	and stored nicely.  It is also a nice way to give back metadata results.
+	/**
+	 * The metadata pool
+	 */
+	property name="poolMetadata" doc_generic="java.util.concurrent.ConcurrentHashMap";
 
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="This is a utility object that helps object stores keep their items indexed and pretty">
+	/**
+	 * The human id of this indexer
+	 */
+	property name="indexID";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	 * The fields this indexer is tracking
+	 */
+	property name="fields";
 
-	<cffunction name="init" access="public" output="false" returntype="MetadataIndexer" hint="Constructor">
-		<cfargument name="fields" required="true" hint="The list or array of fields to bind this index on"/>
-		<cfscript>
-			instance = {
-				// Create metadata pool
-				poolMetadata = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init(),
-				// Index ID
-				indexID = createObject('java','java.lang.System').identityHashCode(this),
-				// Collections (for static .list() method)
-				collections = createObject('java','java.util.Collections')
-			};
+	/**
+	 * Constructor
+	 *
+	 * @fields The list or array of fields to bind this index on
+	 *
+	 */
+	function init( required fields ){
+		// Create metadata pool
+		variables.poolMetadata 	= createObject( "java","java.util.concurrent.ConcurrentHashMap" ).init();
+		// Index ID
+		variables.indexID 		= createObject( "java", "java.lang.System").identityHashCode( this );
+		// Collections (for static .list() method)
+		variables.collections 	= createObject( "java", "java.util.Collections" );
 
-			// Store Fields
-			setFields( arguments.fields );
+		setFields( arguments.fields );
 
-			return this;
-		</cfscript>
-	</cffunction>
+		return this;
+	}
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+	/**
+	 * Fancy setter for fields
+	 *
+	 * @fields The fields list or array
+	 */
+	MetadataIndexer function setFields( required fields ){
+		if( isArray( arguments.fields ) ){
+			arguments.fields = arrayToList( arguments.fields );
+		}
+		variables.fields = arguments.fields;
 
-	<!--- getFields --->
-	<cffunction name="getFields" access="public" returntype="any" output="false" hint="Get the bounded fields list">
-    	<cfreturn instance.fields>
-    </cffunction>
+		return this;
+	}
 
-	<!--- setFields --->
-    <cffunction name="setFields" output="false" access="public" returntype="void" hint="Override the constructed metadata fields this index is binded to">
-    	<cfargument name="fields" type="any" required="true" hint="The list or array of fields to bind this index on"/>
-		<cfscript>
-			// Normalize fields
-			if( isArray(arguments.fields) ){
-				arguments.fields = arrayToList( arguments.fields );
-			}
+	/**
+	 * Clear all the elements in the store
+	 */
+	MetadataIndexer function clearAll(){
+		variables.poolMetadata.clear();
+		return this;
+	}
 
-			// Store fields
-			instance.fields = arguments.fields;
-		</cfscript>
-    </cffunction>
+	/**
+	 * Clears an object from the storage
+	 *
+	 * @objectKey The object key to clear
+	 */
+	MetadataIndexer function clear( required objectKey ){
+		variables.poolMetadata.remove( arguments.objectKey );
+		return this;
+	}
 
+	/**
+     * Get all the store's object keys array
+	 *
+	 * @return array
+     */
+    array function getKeys(){
+		return variables.collections.list( variables.poolMetadata.keys() );
+	}
 
-	<!--- getPoolMetadata --->
-    <cffunction name="getPoolMetadata" output="false" access="public" returntype="any" hint="Get the entire pool reference">
-    	<cfreturn instance.poolMetadata>
-    </cffunction>
+	/**
+	 * Get a metadata entry for a specific entry. Exception if key not found
+	 *
+	 * @objectKey The key to get
+	 */
+	struct function getObjectMetadata( required objectKey ){
+		return variables.poolMetadata.get( arguments.objectKey );
+	}
 
-	<!--- clearAll --->
-    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear the entire metadata map">
-    	<cfset instance.poolMetadata.clear()>
-    </cffunction>
+	/**
+	 * Set the metadata entry for a specific entry
+	 *
+	 * @objectKey The key to get
+	 * @metadata The metadata struct to store
+	 */
+	MetadataIndexer function setObjectMetadata( required objectKey, required struct metadata ){
+		variables.poolMetadata.put( arguments.objectKey, arguments.metadata );
+		return this;
+	}
 
-	<!--- clear --->
-    <cffunction name="clear" output="false" access="public" returntype="void" hint="Clear a metadata key">
-    	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfset instance.poolMetadata.remove( arguments.objectKey )>
-    </cffunction>
+	/**
+	 * Check if the metadata entry exists for an object
+	 *
+	 * @objectKey The key to get
+	 */
+	boolean function objectExists( required objectKey ){
+		return variables.poolMetadata.containsKey( arguments.objectKey );
+	}
 
-	<!--- getKeys --->
-    <cffunction name="getKeys" output="false" access="public" returntype="any" hint="Returns an array of the keys stored in the index" doc_generic="array">
-    	<cfreturn instance.collections.list( instance.poolMetadata.keys() )>
-    </cffunction>
+	/**
+	 * Get a metadata entry for a specific entry. Exception if key not found
+	 *
+	 * @objectKey The key to get
+	 * @property The metadata property to get
+	 * @defaultValue The default value if property doesn't exist
+	 */
+	function getObjectMetadataProperty( required objectKey, required property, defaultValue ){
+		var metadata = getObjectMetadata( arguments.objectKey );
 
-	<!--- getObjectMetadata --->
-	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false" hint="Get a metadata entry for a specific entry. Exception if key not found">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn instance.poolMetadata.get( arguments.objectKey )>
-	</cffunction>
-
-	<!--- setObjectMetadata --->
-	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false" hint="Set the metadata entry for a specific entry">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfargument name="metadata"  type="any" required="true" hint="The metadata structure to store for the cache entry">
-		<cfset instance.poolMetadata.put( arguments.objectKey, arguments.metadata )>
-	</cffunction>
-
-	<!--- objectExists --->
-    <cffunction name="objectExists" output="false" access="public" returntype="any" hint="Check if the metadata entry exists for an object">
-    	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn instance.poolMetadata.containsKey( arguments.objectKey )>
-    </cffunction>
-
-	<!--- getObjectMetadataProperty --->
-	<cffunction name="getObjectMetadataProperty" access="public" returntype="any" output="false" hint="Get a specific metadata property for a specific entry">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve, must exist in the binded fields or exception is thrown">
-
-		<cfscript>
-			validateField( arguments.property );
-			var metadata = getObjectMetadata( arguments.objectKey );
-
+		if( metadata.keyExists( arguments.property ) ){
 			return metadata[ arguments.property ];
-		</cfscript>
-	</cffunction>
+		}
 
-	<!--- setObjectMetadataProperty --->
-	<cffunction name="setObjectMetadataProperty" access="public" returntype="void" output="false" hint="Set a metadata property for a specific entry">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve">
-		<cfargument name="value"  	 type="any" required="true" hint="The value of the property">
+		if( !isNull( arguments.defaultValue ) ){
+			return arguments.defaultValue;
+		}
 
-		<cfscript>
-			validateField( arguments.property );
-			var metadata = getObjectMetadata( arguments.objectKey );
+		throw(
+			type 		= "InvalidProperty",
+			message 	= "Invalid property requested: #arguments.property#",
+			detail 		= "Valid properties are: #structKeyList( metadata )#"
+		);
+	}
 
-			metadata[ arguments.property ] = arguments.value;
-		</cfscript>
-	</cffunction>
+	/**
+	 * Set a metadata property for a specific entry
+	 *
+	 * @objectKey The key to set
+	 * @property The metadata property to set
+	 * @value The value to set
+	 */
+	MetadataIndexer function setObjectMetadataProperty( required objectKey, required property, required value ){
+		getObjectMetadata( arguments.objectKey )
+			.insert( arguments.property, arguments.value, true );
+		return this;
+	}
 
-	<!--- getSize --->
-    <cffunction name="getSize" output="false" access="public" returntype="any" hint="Get the size of the indexer">
-    	<cfreturn instance.poolMetadata.size()>
-    </cffunction>
+	/**
+	 * Get the size of the store
+	 */
+	numeric function getSize(){
+		return variables.poolMetadata.size();
+	}
 
-	<!--- getSortedKeys --->
-    <cffunction name="getSortedKeys" output="false" access="public" returntype="any" hint="Get an array of sorted keys for this indexer according to parameters">
-    	<cfargument name="property"  type="any" required="true" hint="The property field to sort the index on. It must exist in the binded fields or exception"/>
-		<cfargument name="sortType"  type="any" required="false" default="text" hint="The sort ordering: numeric, text or textnocase"/>
-		<cfargument name="sortOrder" type="any" required="false" default="asc" hint="The sort order: asc or desc"/>
-		<cfscript>
-			validateField( arguments.property );
+	/**
+	 * Get an array of sorted keys for this indexer according to parameters
+	 *
+	 * @objectKey
+	 * @property
+	 * @value
+	 */
+	array function getSortedKeys( required property, sortType="text", sortOrder="asc" ){
+		return structSort(
+			variables.poolMetadata,
+			arguments.sortType,
+			arguments.sortOrder,
+			arguments.property
+		);
+	}
 
-			return structSort( instance.poolMetadata, arguments.sortType, arguments.sortOrder, arguments.property );
-		</cfscript>
-    </cffunction>
-
-<!------------------------------------------- PRIVATE ------------------------------------------>
-
-	<!--- validateField --->
-    <cffunction name="validateField" output="false" access="private" returntype="void" hint="Validate or thrown an exception on an invalid field">
-    	<cfargument name="target" type="any" required="true" hint="The target field to validate"/>
-		<cfif NOT listFindNoCase(instance.fields, arguments.target)>
-			<cfthrow message="Invalid index field property"
-					 detail="The property sent: #arguments.target# is not valid. Valid fields are #instance.fields#"
-					 type="MetadataIndexer.InvalidFieldException" >
-		</cfif>
-    </cffunction>
-
-</cfcomponent>
+}
