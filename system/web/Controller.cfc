@@ -798,11 +798,11 @@ component serializable="false" accessors="true"{
 		var foundPath 	= "";
 
 		//Check 1: Inside of App Root
-		if ( fileExists( variables.appRootPath & arguments.pathToCheck) ){
+		if ( !find( ':', arguments.pathToCheck) and fileExists( variables.appRootPath & arguments.pathToCheck) ){
 			foundPath = variables.appRootPath & arguments.pathToCheck;
 		}
 		//Check 2: Expand the Path
-		else if( fileExists( expandPath( arguments.pathToCheck ) ) ){
+		else if( !find( ':', arguments.pathToCheck) and fileExists( expandPath( arguments.pathToCheck ) ) ){
 			foundPath = expandPath( arguments.pathToCheck );
 		}
 		//Check 3: Absolute Path
