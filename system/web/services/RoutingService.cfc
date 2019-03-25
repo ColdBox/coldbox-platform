@@ -743,7 +743,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				thisFolder = listgetAt(rString,x,"/" );
 
 				// Check if package exists in convention OR external location
-				if( directoryExists(root & "/" & foundPaths & thisFolder)
+				if( !find( ':', foundPaths) and !find( ':', thisFolder ) and directoryExists(root & "/" & foundPaths & thisFolder)
 					OR
 				    ( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) )
 				){
