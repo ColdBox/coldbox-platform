@@ -127,6 +127,15 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	}
 
 	/**
+     * Get the store's pool metadata indexer structure
+	 *
+	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
+     */
+    function getIndexer(){
+        return variables.indexer;
+	}
+
+	/**
 	 * Clear all the elements in the store
 	 */
 	void function clearAll(){
