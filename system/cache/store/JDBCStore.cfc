@@ -168,7 +168,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 
 		return (
 			variables.isLucee ?
-			valueArray( qResults, "objectKey" ) :
+			queryColumnData( qResults, "objectKey" ) :
 			listToArray( valueList( qResults.objectKey ) )
 		);
 	}
