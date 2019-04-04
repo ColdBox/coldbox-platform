@@ -359,14 +359,14 @@ Properties
 				object = get( arguments.objectKey )
 			};
 			// Verify if it exists? if so, return it.
-			if( structKeyExists( refLocal, "object" ) ){ return refLocal.object; }
+			if( !isNull( refLocal.object ) ){ return refLocal.object; }
 			// else, produce it
 		</cfscript>
 		<cflock name="CacheBoxProvider.GetOrSet.#instance.cacheID#.#arguments.objectKey#" type="exclusive" timeout="#instance.lockTimeout#" throwonTimeout="true">
 			<cfscript>
 				// double lock
 				refLocal.object = get( arguments.objectKey );
-				if( not structKeyExists( refLocal, "object" ) ){
+				if( isNull( refLocal.object ) ){
 					// produce it
 					refLocal.object = arguments.produce();
 					// store it
