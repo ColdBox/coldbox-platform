@@ -23,7 +23,8 @@
     	logSQL 				= false,
     	flushAtRequestEnd 	= false,
     	autoManageSession 	= false,
-    	eventHandling 	  	=  false
+    	eventHandling 	  	=  false,
+    	dialect				= 'MySQL'
     };
 
 	private void function loadRuntimeProperties(){
