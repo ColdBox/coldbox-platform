@@ -304,13 +304,13 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 		};
 		
 		// Verify if it exists? if so, return it.
-		if( structKeyExists( refLocal, "object" ) ){ return refLocal.object; }
+		if( !isNull( refLocal.object ) ){ return refLocal.object; }
 		
 		// else, produce it
 		lock name="CacheBoxProvider.GetOrSet.#instance.cacheID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true"{
 			// double lock
 			refLocal.object = get( arguments.objectKey );
-			if( not structKeyExists( refLocal, "object" ) ){
+			if( isNull( refLocal.object ) ){
 				// produce it
 				refLocal.object = arguments.produce();
 				// store it
