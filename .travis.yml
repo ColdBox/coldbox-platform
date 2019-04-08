@@ -14,7 +14,7 @@ env:
     - ENGINE=lucee@5 ANT_TARGET=run-tests
     - ENGINE=adobe@11	ANT_TARGET=run-tests
     - ENGINE=adobe@2016	ANT_TARGET=run-tests
-   # - ENGINE=adobe@2018	ANT_TARGET=run-tests
+    - ENGINE=adobe@2018	ANT_TARGET=run-tests
 
 branches:
   only:
