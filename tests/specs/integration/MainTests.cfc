@@ -39,10 +39,8 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				setup();
 			});
 
-
 			it( "can render the cache panel", function(){
-				var event = GET( "main/cachePanel" );
-				//debug( event.getRenderedContent() );
+				var event = this.request( route="main/cachePanel" );
 				expect( event.getRenderedContent() ).toInclude( "cachebox_cacheContentReport_loader" );
 			});
 
