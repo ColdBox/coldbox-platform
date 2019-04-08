@@ -4,6 +4,10 @@ component{
 		"index" = "GET"
 	};
 
+	function cachePanel( event, rc, prc ){
+		event.setView( view="main/cachePanel", noLayout="true" );
+	}
+
 	function redirectTest( event, rc, prc ){
 		return "Redirected correctly";
 	}
