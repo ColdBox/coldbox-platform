@@ -70,6 +70,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		registerInterceptor(
 			interceptorObject 	= controller.getSetting( 'coldboxConfig' ),
 			interceptorName 	= "coldboxConfig"
+        );
+        // Register Interceptor Service Object.
+        // Interceptor INCEPTION!!
+		registerInterceptor(
+			interceptorObject = this,
+			interceptorName = "interceptorService"
 		);
 
 		return this;
@@ -522,6 +528,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		//return the interception points found
 		return pointsFound;
-	}
+    }
+
+    /**
+     * Try loading the interceptors again afterConfigurationLoad
+     * to catch interceptors that were relying on modules that
+     * appended interception points.
+     */
+    function afterConfigurationLoad() {
+        registerInterceptors();
+    }
 
 }
