@@ -1437,7 +1437,7 @@ component serializable=false accessors="true"{
 	* @header.name The header to get
 	* @defaultValue The default value if not found
 	*/
-	function getHTTPHeader( required header, defaultValue="" ){
+	function getHTTPHeader( required header, defaultValue ){
 		var headers = getHttpRequestData().headers;
 
 		if( structKeyExists( headers, arguments.header ) ){
