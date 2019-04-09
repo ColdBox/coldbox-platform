@@ -1,46 +1,55 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * The main interface for a CacheBox cache provider statistics object
+ */
+interface{
 
-Author 	    :	Luis Majano
-Description :
-	The main interface for a CacheBox cache provider statistics object
+	/**
+	 * Get the cache's performance ratio
+	 */
+	numeric function getCachePerformanceRatio();
 
------------------------------------------------------------------------>
-<cfinterface hint="The main interface for a CacheBox cache provider statistics object">
-	
-	<!--- Get Cache Performance --->
-	<cffunction name="getCachePerformanceRatio" access="public" output="false" returntype="any" hint="Get the cache's performance ratio" doc_generic="numeric">
-	</cffunction>
-	
-	<!--- Get Cache object count --->
-	<cffunction name="getObjectCount" access="public" output="false" returntype="any" hint="Get the associated cache's live object count" doc_generic="numeric">
-	</cffunction>
-	
-	<!--- clearStats --->
-	<cffunction name="clearStatistics" output="false" access="public" returntype="void" hint="Clear the stats">
-	</cffunction>	
-		
-	<!--- Get/Set Garbage Collections --->
-	<cffunction name="getGarbageCollections" access="public" output="false" returntype="any" hint="Get the total cache's garbage collections" doc_generic="numeric">
-	</cffunction>
-	
-	<!--- Eviction Count --->
-	<cffunction name="getEvictionCount" access="public" returntype="any" output="false" hint="Get the total cache's eviction count" doc_generic="numeric">
-	</cffunction>
-	
-	<!--- The hits --->
-	<cffunction name="getHits" access="public" returntype="any" output="false" hint="Get the total cache's hits" doc_generic="numeric">
-	</cffunction>
-	
-	<!--- The Misses --->
-	<cffunction name="getMisses" access="public" returntype="any" output="false" hint="Get the total cache's misses" doc_generic="numeric">
-	</cffunction>
-	
-	<!--- Last Reap Date Time --->
-	<cffunction name="getLastReapDatetime" access="public" returntype="any" output="false" hint="Get the date/time of the last reap the cache did">
-	</cffunction>
+	/**
+	 * Get the associated cache's live object count
+	 */
+	numeric function getObjectCount();
 
-</cfinterface>
+	/**
+	 * Clear the stats
+	 *
+	 * @return ICacheStats
+	 */
+	function clearStatistics();
+
+	/**
+	 * Get the total cache's garbage collections
+	 */
+	numeric function getGarbageCollections();
+
+	/**
+	 * Get the total cache's eviction count
+	 */
+	numeric function getEvictionCount();
+
+	/**
+	 * Get the total cache's hits
+	 */
+	numeric function getHits();
+
+	/**
+	 * Get the total cache's misses
+	 */
+	numeric function getMisses();
+
+	/**
+	 * Get the date/time of the last reap the cache did
+	 *
+	 * @return date/time or empty
+	 */
+	function getLastReapDatetime();
+
+}
