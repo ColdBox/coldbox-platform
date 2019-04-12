@@ -72,24 +72,44 @@
 		return this;
 	}
 
+	function getName(){
+		return variables.name;
+	}
+	void function setName( required name ){
+		variables.name = arguments.name;
+	}
 	/**
 	 * Returns a flag indicating if the cache is ready for operation
 	 */
-	boolean function isEnabled(){
+	function isEnabled(){
 		return variables.enabled;
 	}
-
 	/**
 	 * Returns a flag indicating if the cache has reporting enabled
 	 */
-	boolean function isReportingEnabled(){
+	function isReportingEnabled(){
 		return variables.reportingEnabled;
+	}
+	function getStats(){
+		return variables.stats;
+	}
+	function getConfiguration(){
+		return variables.configuration;
+	}
+	void function setConfiguration(required configuration ){
+		variables.configuration = arguments.configuration;
+	}
+	function getEventManager(){
+		return variables.eventManager;
+	}
+	void function setEventManager(required eventManager ){
+		variables.eventManager = arguments.eventManager;
 	}
 
 	/**
 	 * Clear the cache statistics
 	 */
-	AbstractCacheBoxProvider function clearStatistics(){
+	void function clearStatistics(){
 		variables.stats.clearStatistics();
 		return this;
 	}
