@@ -107,7 +107,7 @@
 	 * Set the cache factory reference for this cache
 	 * @cacheFactory.doc_Generic coldbox.system.cache.CacheFactory
 	 */
-	function setCacheFactory( required cacheFactory ){
+	void function setCacheFactory( required cacheFactory ){
 		variables.cacheFactory = arguments.cacheFactory;
 	}
 
