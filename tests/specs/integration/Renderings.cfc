@@ -19,6 +19,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
+		reset();
 		super.beforeAll();
 		// do your own stuff here
 	}

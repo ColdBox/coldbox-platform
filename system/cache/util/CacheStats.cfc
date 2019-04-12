@@ -16,7 +16,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	/**
 	 * Recording of last reap
 	 */
-	property name="lastReapDatetime";
+	property name="lastReapDateTime";
 	/**
 	 * Cache hits
 	 */

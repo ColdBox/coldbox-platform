@@ -42,7 +42,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			it( "can render the cache panel", function(){
 				// Why can't I just call GET() ACF, why do you make things hard!
 				var event = this.request( route="main/cachePanel" );
-				expect( event.getRenderedContent() ).toInclude( "cachebox_cacheContentReport_loader" );
+				expect( event.getRenderedContent() ).toInclude( "cachebox_cache" );
 			});
 
 			it( "can handle invalid events", function(){

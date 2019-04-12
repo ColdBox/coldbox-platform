@@ -20,6 +20,7 @@ Properties
 ----------------------------------------------------------------------->
 <cfcomponent hint="The coolest standalone CacheBox Provider ever built"
 			 output="false"
+			 accessors="true"
 			 extends="coldbox.system.cache.AbstractCacheBoxProvider"
 			 implements="coldbox.system.cache.ICacheProvider"
 			 serializable="false">
@@ -86,7 +87,7 @@ Properties
 		<cfset var evictionPolicy  	= "">
 		<cfset var objectStore		= "">
 
-		<cflock name="CacheBoxProvider.configure.#instance.cacheID#" type="exclusive" timeout="20" throwontimeout="true">
+		<cflock name="CacheBoxProvider.configure.#variables.cacheId#" type="exclusive" timeout="20" throwontimeout="true">
 		<cfscript>
 
 			// Prepare the logger
@@ -100,7 +101,7 @@ Properties
 			validateConfiguration();
 
 			// Prepare Statistics
-			instance.stats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
+			variables.stats = new coldbox.system.cache.util.CacheStats( this );
 
 			// Setup the eviction Policy to use
 			evictionPolicy 			= locateEvictionPolicy( cacheConfig.evictionPolicy );
@@ -362,7 +363,7 @@ Properties
 			if( !isNull( refLocal.object ) ){ return refLocal.object; }
 			// else, produce it
 		</cfscript>
-		<cflock name="CacheBoxProvider.GetOrSet.#instance.cacheID#.#arguments.objectKey#" type="exclusive" timeout="#instance.lockTimeout#" throwonTimeout="true">
+		<cflock name="CacheBoxProvider.GetOrSet.#variables.cacheId#.#arguments.objectKey#" type="exclusive" timeout="#instance.lockTimeout#" throwonTimeout="true">
 			<cfscript>
 				// double lock
 				refLocal.object = get( arguments.objectKey );
@@ -613,12 +614,12 @@ Properties
 		</cfscript>
 
 		<!--- Lock Reaping, so only one can be ran even if called manually, for concurrency protection --->
-		<cflock type="exclusive" name="CacheBoxProvider.reap.#instance.cacheID#" timeout="#instance.lockTimeout#">
+		<cflock type="exclusive" name="CacheBoxProvider.reap.#variables.cacheId#" timeout="#instance.lockTimeout#">
 		<cfscript>
 
 			// log it
 			if( instance.logger.canDebug() )
-				instance.logger.debug( "Starting to reap CacheBoxProvider: #getName()#, id: #instance.cacheID#" );
+				instance.logger.debug( "Starting to reap CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
 
 			// Run Storage reaping first, before our local algorithm
 			instance.objectStore.reap();
@@ -683,7 +684,7 @@ Properties
 
 			// log it
 			if( instance.logger.canDebug() )
-				instance.logger.debug( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #instance.cacheID#" );
+				instance.logger.debug( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
 		</cfscript>
 		</cflock>
 	</cffunction>
