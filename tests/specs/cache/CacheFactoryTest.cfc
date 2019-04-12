@@ -1,5 +1,4 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest"{
 
 	function setup(){
 		// init with defaults
@@ -43,7 +42,7 @@
 
 	function testGetCacheNames(){
 		caches = {test=1,luis=2,joe=3};
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 		data = cacheFactory.getCacheNames();
 		// debug(data);
 		assertEquals( structKeyArray(caches), data );
@@ -55,7 +54,7 @@
 			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 		caches.cache1.$( "expireAll" );
 		caches.cache2.$( "expireAll" );
 
@@ -70,7 +69,7 @@
 			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 		caches.cache1.$( "clearAll" );
 		caches.cache2.$( "clearAll" );
 
@@ -88,7 +87,7 @@
 		cache2.$( "getName","MockCache" );
 
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 
 		cacheFactory.replaceCache(caches.cache1, cache2);
 
@@ -102,7 +101,7 @@
 			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 
 		assertEquals( false, cacheFactory.cacheExists( "jose" ) );
 		assertEquals( true, cacheFactory.cacheExists( "cache1" ) );
@@ -117,7 +116,7 @@
 		caches.cache1.$( "shutdown" );
 		caches.cache2.$( "shutdown" );
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 
 		cacheFactory.removeAll();
 
@@ -133,7 +132,7 @@
 		};
 		caches.cache2.$( "shutdown" );
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 
 		results = cacheFactory.removeCache( "invalid" );
 		assertEquals( false, results );
@@ -152,7 +151,7 @@
 		caches.cache2.$( "shutdown" );
 
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables", caches );
 
 		cacheFactory.shutdown();
 
@@ -169,7 +168,7 @@
 		caches.cache2.$( "shutdown" );
 
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 
 		// cache invalid
 		cacheFactory.shutdownCache( "bogus" );
@@ -196,7 +195,7 @@
 			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches","variables",caches);
 		try{
 			results = cacheFactory.addDefaultCache('cache2');
 			fail( "this should fail" );
@@ -220,24 +219,23 @@
 	}
 
 	function testAddCache(){
-		mockCache = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
-		mockCache.$( "getName","helloCache" );
-		cacheFactory.$( "registerCache" );
+		mockCache = createMock( "coldbox.system.cache.providers.MockProvider" );
+		mockCache.$( "getName", "helloCache" );
 
-		results = cacheFactory.addCache(mockCache);
+		cacheFactory.addCache( mockCache );
 
-		assertEquals( 1, arrayLen(cacheFactory.$callLog().registerCache ) );
-		assertEquals( mockCache, cacheFactory.$callLog().registerCache[1][1] );
+		expect( cacheFactory.getCacheNames() ).toInclude( "helloCache" );
+
 	}
 
 	function testGetCache(){
-		caches = {
+		var caches = {
 			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
 			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
 		};
 
 		//mock caches
-		cacheFactory.$property( "caches","instance",caches);
+		cacheFactory.$property( "caches", "variables", caches);
 
 		try{
 			cacheFactory.getCache( "JOE" );fail( "cannot get here" );
@@ -251,15 +249,11 @@
 	}
 
 	function testCreateCache(){
-		makePublic(cacheFactory, "createCache" );
-		//mocks
-		cacheFactory.$( "registerCache" );
+		makePublic( cacheFactory, "createCache" );
 
-		results = cacheFactory.createCache( "Mock","coldbox.system.cache.providers.MockProvider",structNew());
+		var results = cacheFactory.createCache( "Mock", "coldbox.system.cache.providers.MockProvider", structNew() );
 
 		assertEquals( "Mock", results.getName() );
-		assertEquals(1, arrayLen(cacheFactory.$callLog().registerCache) );
 	}
 
-</cfscript>
-</cfcomponent>
+}

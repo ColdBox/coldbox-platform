@@ -111,7 +111,7 @@
 	 */
 	void function clearStatistics(){
 		variables.stats.clearStatistics();
-		return this;
+		//return this;
 	}
 
 	/**
