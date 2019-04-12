@@ -92,9 +92,6 @@
 			"code": "EXPLICIT_BOOLEAN_CHECK"
 		},
 		{
-			"code": "FUNCTION_TOO_COMPLEX"
-		},
-		{
 			"code": "FUNCTION_HINT_MISSING"
 		},
 		{
