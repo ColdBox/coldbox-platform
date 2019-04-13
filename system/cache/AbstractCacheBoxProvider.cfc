@@ -72,46 +72,112 @@
 		return this;
 	}
 
+	/**
+	 * Get the name of this cache
+	 */
 	function getName(){
 		return variables.name;
 	}
-	void function setName( required name ){
+
+	/**
+	 * Set the cache name
+	 *
+	 * @name The name to set
+	 *
+	 * @return ICacheProvider
+	 */
+	function setName( required name ){
 		variables.name = arguments.name;
+		return this;
 	}
+
 	/**
 	 * Returns a flag indicating if the cache is ready for operation
 	 */
-	function isEnabled(){
+	boolean function isEnabled(){
 		return variables.enabled;
 	}
 	/**
 	 * Returns a flag indicating if the cache has reporting enabled
 	 */
-	function isReportingEnabled(){
+	boolean function isReportingEnabled(){
 		return variables.reportingEnabled;
 	}
+
+	/**
+	 * Get the cache statistics object as coldbox.system.cache.util.ICacheStats
+	 *
+	 * @return coldbox.system.cache.util.ICacheStats
+	 */
 	function getStats(){
 		return variables.stats;
-	}
-	function getConfiguration(){
-		return variables.configuration;
-	}
-	void function setConfiguration(required configuration ){
-		variables.configuration = arguments.configuration;
-	}
-	function getEventManager(){
-		return variables.eventManager;
-	}
-	void function setEventManager(required eventManager ){
-		variables.eventManager = arguments.eventManager;
 	}
 
 	/**
 	 * Clear the cache statistics
+	 *
+	 * @return ICacheProvider
 	 */
-	void function clearStatistics(){
+	function clearStatistics(){
 		variables.stats.clearStatistics();
-		//return this;
+		return this;
+	}
+
+	/**
+	 * Get the structure of configuration parameters for the cache
+	 */
+	struct function getConfiguration(){
+		return variables.configuration;
+	}
+
+	/**
+	 * Set the entire configuration structure for this cache
+	 *
+	 * @configuration The cache configuration
+	 *
+	 * @return ICacheProvider
+	 */
+	function setConfiguration( required struct configuration ){
+		variables.configuration = arguments.configuration;
+		return this;
+	}
+
+	/**
+	 * Get the cache factory reference this cache provider belongs to
+	 */
+	coldbox.system.cache.CacheFactory function getCacheFactory(){
+		return variables.cacheFactory;
+	}
+
+	/**
+	 * Set the cache factory reference for this cache
+	 *
+	 * @cacheFactory The cache factory
+	 * @cacheFactory.doc_generic coldbox.system.cache.CacheFactory
+	 *
+	 * @return ICacheProvider
+	 */
+	function setCacheFactory( required cacheFactory ){
+		variables.cacheFactory = arguments.cacheFactory;
+		return this;
+	}
+
+	/**
+	 * Get this cache managers event listener manager
+	 */
+	function getEventManager(){
+		return variables.eventManager;
+	}
+
+	/**
+	 * Set the event manager for this cache
+	 *
+	 * @eventManager The event manager to set
+	 *
+	 * @return ICacheProvider
+	 */
+	function setEventManager( required eventManager ){
+		variables.eventManager = arguments.eventManager;
 	}
 
 	/**
@@ -123,13 +189,6 @@
 		} );
 	}
 
-	/**
-	 * Set the cache factory reference for this cache
-	 * @cacheFactory.doc_Generic coldbox.system.cache.CacheFactory
-	 */
-	void function setCacheFactory( required cacheFactory ){
-		variables.cacheFactory = arguments.cacheFactory;
-	}
 
 	/************************************ PRIVATE ************************************/
 
