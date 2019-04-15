@@ -55,7 +55,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
 		switch( DSLNamespace ){
-			case "coldbox" : { return getColdboxDSL( argumentCollection=arguments ); }
+			case "coldbox" : case "box" : { return getColdboxDSL( argumentCollection=arguments ); }
 		}
 
 		// else ignore not our DSL
@@ -111,6 +111,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 					case "router"				: { return variables.injector.getInstance( "router@coldbox" ); }
 					case "routingService"		: { return variables.coldbox.getRoutingService(); }
 					case "renderer"				: { return variables.coldbox.getRenderer(); }
+					case "moduleconfig"			: { return variables.coldbox.getSetting( "modules" ); }
 				} // end of services
 
 				break;
@@ -121,7 +122,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 				thisLocationType = getToken( thisType, 2, ":" );
 				thisLocationKey  = getToken( thisType, 3, ":" );
 				switch( thisLocationType ){
-					case "setting" 				: {
+					case "setting" : case "ConfigSettings" : {
 						// module setting?
 						if( find( "@", thisLocationKey ) ){
 							moduleSettings = variables.coldbox.getSetting( "modules" );
@@ -131,8 +132,12 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 								){
 								return moduleSettings[ listlast(thisLocationKey, "@" ) ].settings[ listFirst( thisLocationKey, "@" ) ];
 							}
-							else if( variables.log.canDebug() ){
-								variables.log.debug( "The module requested: #listlast( thisLocationKey, "@" )# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#" );
+							else {						
+								throw(
+									type 	= "ColdBoxDSL.InvalidDSL",
+									message = "The DSL provided was not valid: #arguments.definition.toString()#",
+									detail="The module requested: #listlast( thisLocationKey, "@" )# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#"
+								);
 							}
 						}
 						// just get setting
@@ -143,8 +148,12 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 						if( structKeyExists( moduleSettings, thisLocationKey ) ){
 							return moduleSettings[ thisLocationKey ].settings;
 						}
-						else if( variables.log.canDebug() ){
-							variables.log.debug( "The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#" );
+						else {
+							throw(
+								type 	= "ColdBoxDSL.InvalidDSL",
+								message = "The DSL provided was not valid: #arguments.definition.toString()#",
+								detail="The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#"
+							);
 						}
 					}
 					case "moduleconfig"		: {
@@ -152,8 +161,12 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 						if( structKeyExists( moduleSettings, thisLocationKey ) ){
 							return moduleSettings[ thisLocationKey ];
 						}
-						else if( variables.log.canDebug() ){
-							variables.log.debug( "The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#" );
+						else {					
+							throw(
+								type 	= "ColdBoxDSL.InvalidDSL",
+								message = "The DSL provided was not valid: #arguments.definition.toString()#",
+								detail="The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#"
+							);
 						}
 					}
 					case "fwSetting" 			: { return variables.coldbox.getSetting( thisLocationKey, true ); }
@@ -162,12 +175,45 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 
 				break;
 			}
+			//coldbox:{key}:{target}:{token}
+			case 4: {
+				thisLocationType = getToken(thisType,2,":");
+				thisLocationKey  = getToken(thisType,3,":");
+				thisLocationToken  = getToken(thisType,4,":");
+				switch(thisLocationType){
+					case "modulesettings"		: {
+						
+						moduleSettings = variables.coldbox.getSetting( "modules" );
+						if( structKeyExists( moduleSettings, thisLocationKey ) ){
+							if( structKeyExists( moduleSettings[ thisLocationKey ].settings, thisLocationToken  ) ) {
+								return moduleSettings[ thisLocationKey ].settings[ thisLocationToken];
+							} else {
+								throw(
+									type 	= "ColdBoxDSL.InvalidDSL",
+									message="ColdBox DSL cannot find dependency using definition: #arguments.definition.toString()#",
+									detail="The setting requested: #thisLocationToken# does not exist in this module. Loaded settings are #structKeyList(moduleSettings[ thisLocationKey ].settings)#"
+								);
+							}
+						}
+						else {
+							throw(
+								type 	= "ColdBoxDSL.InvalidDSL",
+								message = "The DSL provided was not valid: #arguments.definition.toString()#",
+								detail="The module requested: #thisLocationKey# does not exist in the loaded modules. Loaded modules are #structKeyList(moduleSettings)#"
+							);
+						}
+						
+					}
+				}
+				break;
+			}
 		}
 
 		// If we get here we have a problem.
 		throw(
 			type 	= "ColdBoxDSL.InvalidDSL",
-			message = "The DSL provided was not valid: #arguments.definition.toString()#"
+			message = "The DSL provided was not valid: #arguments.definition.toString()#",
+			detail="Unknown DSL"
 		);
 	}
 
