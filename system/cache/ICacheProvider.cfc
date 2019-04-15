@@ -169,7 +169,7 @@ interface{
 	boolean function lookupQuiet( required objectKey );
 
 	/**
-	 * sets an object in cache and returns true if set correctly, else false
+	 * Sets an object in the cache and returns an instance of itself
 	 *
 	 * @objectKey The object cache key
 	 * @object The object to cache
@@ -188,7 +188,7 @@ interface{
 	);
 
 	/**
-	 * sets an object in cache and returns true if set correctly, else false. With no statistic updates or listener updates
+	 * Sets an object in the cache with no event calls and returns an instance of itself
 	 *
 	 * @objectKey The object cache key
 	 * @object The object to cache

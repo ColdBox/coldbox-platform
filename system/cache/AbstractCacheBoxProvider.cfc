@@ -47,6 +47,15 @@
 	 * The internal cache Id
 	 */
 	property name="cacheId" default="";
+	/**
+	 * ColdBox Utility object
+	 * @doc_generic coldbox.system.core.util.Util
+	 */
+	property name="utility";
+	/**
+	 * A Java utility to generate UUIDs
+	 */
+	property name="uuidHelper";
 
 	/**
 	 * Constructor
@@ -68,6 +77,10 @@
 		variables.eventManager		= "";
 		// cache internal identifier
 		variables.cacheID			= createObject( 'java','java.lang.System' ).identityHashCode( this );
+		// ColdBox Utility
+		variables.utility			= new coldbox.system.core.util.Util();
+		// our UUID creation helper
+		variables.uuidHelper		= createobject( "java", "java.util.UUID" );
 
 		return this;
 	}
@@ -180,6 +193,15 @@
 		variables.eventManager = arguments.eventManager;
 	}
 
+	/************************************ UTILITIES ************************************/
+
+	/**
+	 * Produce a fast random UUID
+	 */
+	function randomUUID(){
+		return variables.uuidHelper.randomUUID();
+	}
+
 	/**
 	 * A quick snapshot of the state
 	 */
@@ -189,15 +211,15 @@
 		} );
 	}
 
+	/**
+	 * Verifies if the request is in the current thread or another spawned thread
+	 */
+	boolean function inThread(){
+		return variables.utility.inThread();
+	}
+
 
 	/************************************ PRIVATE ************************************/
-
-	/**
-	 * Get a utility reference
-	 */
-	private function getUtil(){
-		return new coldbox.system.core.util.Util();
-	}
 
 	/**
 	 * Check if the cache is operational, else throw exception
