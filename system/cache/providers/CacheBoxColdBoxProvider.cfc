@@ -1,124 +1,171 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * This CacheBox provider communicates with the built in CacheBox caches
+ */
+component
+	accessors="true"
+	serializable="false"
+	implements="coldbox.system.cache.IColdboxApplicationCache"
+	extends="coldbox.system.cache.providers.CacheBoxProvider"
+{
 
-Author 	    :	Luis Majano
-Description :
-	This is another implementation of the CacheBox provider so it can work
-	with ColdBox Applications.
------------------------------------------------------------------------>
-<cfcomponent output="false" extends="coldbox.system.cache.providers.CacheBoxProvider" implements="coldbox.system.cache.IColdboxApplicationCache">
+	// Cache Prefixes
+	this.VIEW_CACHEKEY_PREFIX 	= "cbox_view-";
+	this.EVENT_CACHEKEY_PREFIX 	= "cbox_event-";
 
-	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
-		<cfscript>
-			// superSize Me
-			super.init();
-		
-			// Prefixes
-			this.VIEW_CACHEKEY_PREFIX 			= "cbox_view-";
-			this.EVENT_CACHEKEY_PREFIX 			= "cbox_event-";
-			
-			// URL Facade Utility
-			instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
-			
-			// ColdBox linkage
-			instance.coldbox 			= "";
-					
-			return this;
-		</cfscript>
-	</cffunction>	
+	/**
+	 * Constructor
+	 */
+	function init(){
+		super.init();
 
-<!------------------------------------------- ColdBox Application Related Operations ------------------------------------------>
+		// URL Facade Utility
+		variables.eventURLFacade = new coldbox.system.cache.util.EventURLFacade( this );
 
-	<!--- getViewCacheKeyPrefix --->
-    <cffunction name="getViewCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the cached view key prefix">
-    	<cfreturn this.VIEW_CACHEKEY_PREFIX>
-    </cffunction>
+		return this;
+	}
 
-	<!--- getEventCacheKeyPrefix --->
-    <cffunction name="getEventCacheKeyPrefix" output="false" access="public" returntype="any" hint="Get the event cache key prefix">
-    	<cfreturn this.EVENT_CACHEKEY_PREFIX>
-    </cffunction>
+	/**
+	 * Get the cached view key prefix which is necessary for view caching
+	 */
+	function getViewCacheKeyPrefix(){
+		return this.VIEW_CACHEKEY_PREFIX;
+	};
 
-	<!--- getColdbox --->
-    <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox application reference as coldbox.system.web.Controller" doc_generic="coldbox.system.web.Controller">
-    	<cfreturn instance.coldbox>
-    </cffunction>
+	/**
+	 * Get the event cache key prefix which is necessary for event caching
+	 */
+	function getEventCacheKeyPrefix(){
+		return this.EVENT_CACHEKEY_PREFIX;
+	}
 
-	<!--- setColdbox --->
-    <cffunction name="setColdbox" output="false" access="public" returntype="void" hint="Set the coldbox application reference">
-    	<cfargument name="coldbox" type="any" required="true" hint="The coldbox application reference as coldbox.system.web.Controller" doc_generic="coldbox.system.web.Controller"/>
-    	<cfset instance.coldbox = arguments.coldbox>
-	</cffunction>
+	/**
+	 * Get the coldbox application reference as coldbox.system.web.Controller
+	 *
+	 * @return coldbox.system.web.Controller
+	 */
+	function getColdbox(){
+		return variables.coldbox;
+	}
 
-	<!--- getEventURLFacade --->
-    <cffunction name="getEventURLFacade" output="false" access="public" returntype="any" hint="Get the event caching URL facade utility">
-    	<cfreturn instance.eventURLFacade>
-    </cffunction>
+	/**
+	 * Set the ColdBox linkage into the provider
+	 *
+	 * @coldbox The ColdBox controller
+	 * @coldbox.doc_generic coldbox.system.web.Controller
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function setColdBox( required coldbox ){
+		variables.coldbox = arguments.coldbox;
+		return this;
+	}
 
-	<!--- Clear All the Events form the cache --->
-	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
-		<cfargument name="async" type="any" default="false" hint="Run command asynchronously or not"/>
-		
-		<cfset var threadName = "clearAllEvents_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
-		
-		<!--- check if async and not in thread --->
-		<cfif arguments.async AND NOT instance.utility.inThread()>
-			
-			<cfthread name="#threadName#">
-				<cfset instance.elementCleaner.clearAllEvents()>
-			</cfthread>
-		
-		<cfelse>
-			<cfset instance.elementCleaner.clearAllEvents()>
-		</cfif>
-	</cffunction>
-	
-	<!--- clearEvent --->
-	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
-		<cfargument name="eventsnippet" type="any" 	required="true"  hint="The event snippet to clear on. Can be partial or full">
-		<cfargument name="queryString" 	type="any" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
-		<cfset instance.elementCleaner.clearEvent(arguments.eventsnippet,arguments.queryString)>
-	</cffunction>
-	
-	<!--- Clear an event Multi --->
-	<cffunction name="clearEventMulti" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
-		<cfargument name="eventsnippets"    type="any"   	required="true"  hint="The comma-delimmitted list event snippet to clear on. Can be partial or full">
-		<cfargument name="queryString"      type="any"   required="false" default="" hint="The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in."/>
-    	<cfset instance.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString)>
-	</cffunction>
-	
-	<!--- clearView --->
-	<cffunction name="clearView" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
-		<cfargument name="viewSnippet"  required="true" type="any" hint="The view name snippet to purge from the cache">
-		<cfset instance.elementCleaner.clearView(arguments.viewSnippet)>
-	</cffunction>
-	
-	<!--- clearViewMulti --->
-	<cffunction name="clearViewMulti" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
-		<cfargument name="viewSnippets"    type="any"   required="true"  hint="The comma-delimmitted list or array of view snippet to clear on. Can be partial or full">
-		<cfset instance.elementCleaner.clearViewMulti(arguments.viewSnippets)>
-	</cffunction>
+	/**
+	 * Get the event caching URL facade utility that determines event caching
+	 *
+	 * @return coldbox.system.cache.util.EventURLFacade
+	 */
+	function getEventURLFacade(){
+		return variables.eventURLFacade;
+	}
 
-	<!--- Clear All The Views from the Cache. --->
-	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
-		<cfargument name="async" type="any" default="false" hint="Run command asynchronously or not"/>
-		
-		<cfset var threadName = "clearAllViews_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
-		
-		<!--- check if async and not in thread --->
-		<cfif arguments.async AND NOT instance.utility.inThread()>
-			
-			<cfthread name="#threadName#">
-				<cfset instance.elementCleaner.clearAllViews()>
-			</cfthread>
-		
-		<cfelse>
-			<cfset instance.elementCleaner.clearAllViews()>
-		</cfif>
-		
-	</cffunction>
+	/**
+	 * Clears all events from the cache.
+	 *
+	 * @async If implemented, determines async or sync clearing.
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearAllEvents( boolean async=false ){
+		var threadName = "clearAllEvents_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
 
-</cfcomponent>
+		// Async? IF so, do checks
+		if( arguments.async AND NOT variables.utility.inThread() ){
+			thread name="#threadName#"{
+				variables.elementCleaner.clearAllEvents();
+			}
+		}
+		else{
+			variables.elementCleaner.clearAllEvents();
+		}
+		return this;
+	}
+
+	/**
+	 * Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
+	 *
+	 * @eventSnippet The event snippet to clear on. Can be partial or full
+	 * @queryString If passed in, it will create a unique hash out of it. For purging purposes
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearEvent( required eventSnippet, queryString="" ){
+		variables.elementCleaner.clearEvent( arguments.eventsnippet, arguments.queryString );
+		return this;
+	}
+
+	/**
+	 * Clears all views from the cache.
+	 *
+	 * @async Run command asynchronously or not
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearAllViews( boolean async ){
+		var threadName = "clearAllViews_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
+
+		// Async? IF so, do checks
+		if( arguments.async AND NOT variables.utility.inThread() ){
+			thread name="#threadName#"{
+				variables.elementCleaner.clearAllViews();
+			}
+		}
+		else{
+			variables.elementCleaner.clearAllViews();
+		}
+		return this;
+	}
+
+	/**
+	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
+	 *
+	 * @eventSnippet The comma-delimmitted list event snippet to clear on. Can be partial or full
+	 * @queryString The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearEventMulti( required eventsnippets, queryString="" ){
+		variables.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
+		return this;
+	}
+
+	/**
+	 * Clears all view name permutations from the cache according to the view name
+	 *
+	 * @viewSnippet The view name snippet to purge from the cache
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearView( required viewSnippet ){
+		variables.elementCleaner.clearView(arguments.viewSnippet);
+		return this;
+	}
+
+	/**
+	 * Clears all view name permutations from the cache according to the view name.
+	 *
+	 * @viewSnippets The comma-delimmitted list or array of view snippet to clear on. Can be partial or full
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearViewMulti( required viewSnippets ){
+		variables.elementCleaner.clearView(arguments.viewsnippets);
+		return this;
+	}
+
+}
