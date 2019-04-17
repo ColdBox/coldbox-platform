@@ -385,7 +385,7 @@
 		switch( DSLNamespace ){
 
 			// ColdBox Context DSL
-			case "coldbox" : {
+			case "coldbox" : case "box" : {
 				if( !variables.injector.isColdBoxLinked() ){
 					throw(
 						message	= "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",
