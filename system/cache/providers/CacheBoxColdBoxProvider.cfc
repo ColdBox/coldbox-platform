@@ -116,7 +116,7 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearAllViews( boolean async ){
+	function clearAllViews( boolean async=false ){
 		var threadName = "clearAllViews_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
 
 		// Async? IF so, do checks

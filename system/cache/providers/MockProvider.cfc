@@ -313,7 +313,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearAllEvents( boolean async ){
+	function clearAllEvents( boolean async=false ){
 		return this;
 	}
 
@@ -368,7 +368,7 @@
 	 *
 	 * @return MockProvider
 	 */
-	function clearAllViews( boolean async ){
+	function clearAllViews( boolean async=false ){
 		return this;
 	}
 
