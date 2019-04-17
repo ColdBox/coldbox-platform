@@ -438,7 +438,7 @@
 	 **/
 	 private function validateConfiguration(){
 		// Add in settings not discovered
-	   structAppend( variables.configuration, variables.DEFAULTS );
+	   structAppend( variables.configuration, variables.DEFAULTS, false );
 	   // Validate configuration values, if they don't exist, then default them to DEFAULTS
 	   for( var key in variables.DEFAULTS ){
 		   if( NOT len( variables.configuration[ key ] ) ){
