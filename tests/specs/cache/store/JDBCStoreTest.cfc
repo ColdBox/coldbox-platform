@@ -15,9 +15,10 @@ Description :
 	function setup(){
 		config = {
 			dsn   = "coolblog",
-			table = "cacheBox"
+			table = "cacheBox",
+			resetTimeoutOnAccess = false
 		};
-		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" ).configure();
+		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure();
 		mockProvider.$( "getConfiguration", config);
 		store = createMock(className="coldbox.system.cache.store.JDBCStore" ).init(mockProvider);
 	}
