@@ -1,16 +1,4 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-
-Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	Request service Test
------------------------------------------------------------------------>
-<cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseTestCase" output="false">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseTestCase"{
 
 	this.loadColdBox = false;
 
@@ -262,7 +250,7 @@ Description :
 			key1 = now(),
 			key2 = {name="Pio", age="32", cool="beyond belief" }
 		};
-		cache.setMulti(test);
+		cache.setMulti( test );
 
 		cache.clearAll();
 
@@ -362,5 +350,4 @@ Description :
 
 	}
 
-</cfscript>
-</cfcomponent>
+}

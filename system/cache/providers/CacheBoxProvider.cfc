@@ -546,10 +546,10 @@ component
 		arguments.mapping.each( function( key, value ){
 			// Cache these puppies
 			set(
-				objectKey         = arguments.prefix & key,
-				object            = value,
-				timeout           = arguments.timeout,
-				lastAccessTimeout = arguments.lastAccessTimeout
+				objectKey         = prefix & arguments.key,
+				object            = arguments.value,
+				timeout           = timeout,
+				lastAccessTimeout = lastAccessTimeout
 			);
 		} );
 	}
@@ -683,7 +683,7 @@ component
 	 *
 	 * @struct {key:boolean}
 	 */
-	boolean function lookupMulti( required keys, prefix="" ){
+	struct function lookupMulti( required keys, prefix="" ){
 		if( isSimpleValue( arguments.keys ) ){
 			arguments.keys = listToArray( arguments.keys );
 		}
@@ -708,7 +708,7 @@ component
 	 *
 	 * @struct {key:boolean}
 	 */
-	boolean function getMulti( required keys, prefix="" ){
+	struct function getMulti( required keys, prefix="" ){
 		if( isSimpleValue( arguments.keys ) ){
 			arguments.keys = listToArray( arguments.keys );
 		}
