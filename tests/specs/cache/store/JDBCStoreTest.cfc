@@ -17,7 +17,7 @@ Description :
 			dsn   = "coolblog",
 			table = "cacheBox"
 		};
-		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" );
+		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" ).configure();
 		mockProvider.$( "getConfiguration", config);
 		store = createMock(className="coldbox.system.cache.store.JDBCStore" ).init(mockProvider);
 	}

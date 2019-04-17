@@ -18,6 +18,21 @@
 	 */
 	property name="cache" type="struct";
 
+	// CacheBox Provider Property Defaults
+	variables.DEFAULTS = {
+		objectDefaultTimeout           	= 60,
+		objectDefaultLastAccessTimeout 	= 30,
+		useLastAccessTimeouts          	= true,
+		reapFrequency                  	= 2,
+		freeMemoryPercentageThreshold  	= 0,
+		evictionPolicy                 	= "LRU",
+		evictCount                     	= 1,
+		maxObjects                     	= 200,
+		objectStore                    	= "ConcurrentStore",
+		coldboxEnabled                 	= false,
+		resetTimeoutOnAccess 			= false
+	};
+
 	/**
 	 * Constructor
 	 *
@@ -39,6 +54,8 @@
 		variables.cache 	 		= {};
 		variables.enabled 			= true;
 		variables.reportingEnabled 	= true;
+
+		validateConfiguration();
 
 		return this;
 	}

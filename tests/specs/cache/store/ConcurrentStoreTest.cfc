@@ -1,8 +1,8 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest"{
 
 	function setup(){
-		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" );
-		store = createMock(className="coldbox.system.cache.store.ConcurrentStore" ).init( mockProvider );
+		mockProvider = createMock( "coldbox.system.cache.providers.MockProvider" ).configure();
+		store = createMock( "coldbox.system.cache.store.ConcurrentStore" ).init( mockProvider );
 	}
 
 	function testClearAll(){

@@ -3,7 +3,7 @@
 	function setup(){
 		// init with defaults
 		cacheFactory = createMock( "coldbox.system.cache.CacheFactory" );
-		mockCache 	 = createMock( "coldbox.system.cache.providers.MockProvider" ).init();
+		mockCache 	 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure();
 
 		// init factory
 		cacheFactory.init();
@@ -35,7 +35,7 @@
 	}
 
 	function testgetDefaultCache(){
-		cacheFactory.$( "getCache", createEmptyMock( "coldbox.system.cache.providers.MockProvider" ) );
+		cacheFactory.$( "getCache", createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure() );
 		cacheFactory.getDefaultCache();
 		assertEquals( 1, arrayLen(cacheFactory.$callLog().getCache) );
 	}
@@ -50,8 +50,8 @@
 
 	function testExpireAll(){
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		//mock caches
 		cacheFactory.$property( "caches","variables",caches);
@@ -65,8 +65,8 @@
 
 	function testClearAll(){
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		//mock caches
 		cacheFactory.$property( "caches","variables",caches);
@@ -80,10 +80,10 @@
 
 	function testReplaceCacheWithInstance(){
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		caches.cache1.$( "getName","Cache1" );
-		cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
+		cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure();
 		cache2.$( "getName","MockCache" );
 
 		//mock caches
@@ -97,8 +97,8 @@
 
 	function testCacheExists(){
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		//mock caches
 		cacheFactory.$property( "caches","variables",caches);
@@ -110,8 +110,8 @@
 
 	function testRemoveAll(){
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		caches.cache1.$( "shutdown" );
 		caches.cache2.$( "shutdown" );
@@ -127,8 +127,8 @@
 
 	function testRemoveCache(){
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		caches.cache2.$( "shutdown" );
 		//mock caches
@@ -144,8 +144,8 @@
 
 	function testShutdown(){
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		caches.cache1.$( "shutdown" );
 		caches.cache2.$( "shutdown" );
@@ -161,8 +161,8 @@
 
 	function testShutdownCache(){
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		caches.cache1.$( "shutdown" );
 		caches.cache2.$( "shutdown" );
@@ -191,8 +191,8 @@
 		}
 
 		caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 		//mock caches
 		cacheFactory.$property( "caches","variables",caches);
@@ -208,7 +208,7 @@
 	}
 
 	function testAddDefaultCache(){
-		mockCache = createEmptyMock( "coldbox.system.cache.providers.MockProvider" );
+		mockCache = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure();
 		mockCache.$( "getName","helloCache" );
 		cacheFactory.$( "createCache", mockCache);
 
@@ -219,7 +219,7 @@
 	}
 
 	function testAddCache(){
-		mockCache = createMock( "coldbox.system.cache.providers.MockProvider" );
+		mockCache = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure();
 		mockCache.$( "getName", "helloCache" );
 
 		cacheFactory.addCache( mockCache );
@@ -230,8 +230,8 @@
 
 	function testGetCache(){
 		var caches = {
-			cache1 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" ),
-			cache2 = createEmptyMock( "coldbox.system.cache.providers.MockProvider" )
+			cache1 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure(),
+			cache2 = createMock( "coldbox.system.cache.providers.MockProvider" ).init().configure()
 		};
 
 		//mock caches
