@@ -44,9 +44,6 @@
 			"code": "ARGUMENT_ALLCAPS_NAME"
 		},
 		{
-			"code": "ARGUMENT_TOO_WORDY"
-		},
-		{
 			"code": "ARGUMENT_IS_TEMPORARY"
 		},
 		{
@@ -69,9 +66,6 @@
 		},
 		{
 			"code": "COMPONENT_TOO_LONG"
-		},
-		{
-			"code": "COMPONENT_TOO_WORDY"
 		},
 		{
 			"code": "COMPONENT_IS_TEMPORARY"
@@ -141,9 +135,6 @@
 		},
 		{
 			"code": "VAR_INVALID_NAME"
-		},
-		{
-			"code": "VAR_TOO_WORDY"
 		}
 	],
 	"inheritParent": false,
