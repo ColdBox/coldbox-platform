@@ -36,7 +36,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	 */
 	function init( required cacheProvider ){
 		// Indexing Fields
-		var fields = "hits,timeout,lastAccessTimeout,created,LastAccessed,isExpired";
+		var fields = "hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired";
 
 		// Prepare instance
 		variables.cacheProvider = arguments.cacheProvider;
@@ -121,9 +121,17 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 			);
 			variables.indexer.setObjectMetadataProperty(
 				arguments.objectKey,
-				"LastAccessed",
+				"lastAccessed",
 				now()
 			);
+			// Is resetTimeoutOnAccess enabled? If so, jump up the creation time to increase the timeout
+			if( variables.cacheProvider.getConfiguration().resetTimeoutOnAccess ){
+				variables.indexer.setObjectMetadataProperty(
+					arguments.objectKey,
+					"created",
+					now()
+				);
+			}
 
 			// return object
 			return results;

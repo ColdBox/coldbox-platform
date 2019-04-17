@@ -177,6 +177,14 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 					"LastAccessed",
 					now()
 				);
+				// Is resetTimeoutOnAccess enabled? If so, jump up the creation time to increase the timeout
+				if( variables.cacheProvider.getConfiguration().resetTimeoutOnAccess ){
+					variables.indexer.setObjectMetadataProperty(
+						arguments.objectKey,
+						"created",
+						now()
+					);
+				}
 
 				return getQuiet( arguments.objectKey );
 			}

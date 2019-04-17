@@ -53,16 +53,17 @@ component
 
 	// CacheBox Provider Property Defaults
 	variables.DEFAULTS = {
-		objectDefaultTimeout           = 60,
-		objectDefaultLastAccessTimeout = 30,
-		useLastAccessTimeouts          = true,
-		reapFrequency                  = 2,
-		freeMemoryPercentageThreshold  = 0,
-		evictionPolicy                 = "LRU",
-		evictCount                     = 1,
-		maxObjects                     = 200,
-		objectStore                    = "ConcurrentStore",
-		coldboxEnabled                 = false
+		objectDefaultTimeout           	= 60,
+		objectDefaultLastAccessTimeout 	= 30,
+		useLastAccessTimeouts          	= true,
+		reapFrequency                  	= 2,
+		freeMemoryPercentageThreshold  	= 0,
+		evictionPolicy                 	= "LRU",
+		evictCount                     	= 1,
+		maxObjects                     	= 200,
+		objectStore                    	= "ConcurrentStore",
+		coldboxEnabled                 	= false,
+		resetTimeoutOnAccess 			= false
 	};
 
 	/**
@@ -593,7 +594,7 @@ component
 						continue;
 					}
 
-					//Check for creation timeouts and clear
+					// Check for creation timeouts and clear
 					if ( dateDiff( "n", thisMD.created, now() ) GTE thisMD.timeout ){
 
 						// Clear the object from cache
@@ -604,9 +605,9 @@ component
 						continue;
 					}
 
-					//Check for last accessed timeouts. If object has not been accessed in the default span
+					// Check for last accessed timeouts. If object has not been accessed in the default span
 					if ( config.useLastAccessTimeouts AND
-					     dateDiff("n", thisMD.LastAccessed, now() ) gte thisMD.LastAccessTimeout ){
+					     dateDiff( "n", thisMD.lastAccessed, now() ) gte thisMD.lastAccessTimeout ){
 
 						// Clear the object from cache
 						if( clear( thisKey ) ){
