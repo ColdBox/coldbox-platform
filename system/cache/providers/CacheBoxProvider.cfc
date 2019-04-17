@@ -546,7 +546,7 @@ component
 	/**
 	 * Reap the cache, clear out everything that is dead.
 	 */
-	function _reap(){
+	private function _reap(){
 		var keyIndex 		= 1;
 		var cacheKeys 		= "";
 		var cacheKeysLen 	= 0;
@@ -588,18 +588,18 @@ component
 						// Clear the object from cache
 						if( clear( thisKey ) ){
 							// Announce Expiration only if removed, else maybe another thread cleaned it
-							announceExpiration(thisKey);
+							announceExpiration( thisKey );
 						}
 						continue;
 					}
 
 					//Check for creation timeouts and clear
-					if ( dateDiff("n", thisMD.created, now() ) GTE thisMD.timeout ){
+					if ( dateDiff( "n", thisMD.created, now() ) GTE thisMD.timeout ){
 
 						// Clear the object from cache
 						if( clear( thisKey ) ){
 							// Announce Expiration only if removed, else maybe another thread cleaned it
-							announceExpiration(thisKey);
+							announceExpiration( thisKey );
 						}
 						continue;
 					}
@@ -611,7 +611,7 @@ component
 						// Clear the object from cache
 						if( clear( thisKey ) ){
 							// Announce Expiration only if removed, else maybe another thread cleaned it
-							announceExpiration(thisKey);
+							announceExpiration( thisKey );
 						}
 						continue;
 					}
