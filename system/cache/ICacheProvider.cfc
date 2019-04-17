@@ -105,9 +105,9 @@ interface{
 	function shutdown();
 
 	/**
-	 * If the cache provider implements it, this returns the cache's object store as type: coldbox.system.cache.store.IObjectStore
+	 * If the cache provider implements it, this returns the cache's object store.
 	 *
-	 * @return coldbox.system.cache.store.IObjectStore
+	 * @return coldbox.system.cache.store.IObjectStore or any depending on the cache implementation
 	 */
 	function getObjectStore();
 

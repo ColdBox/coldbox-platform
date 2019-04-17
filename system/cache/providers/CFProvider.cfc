@@ -188,9 +188,11 @@ component
 	}
 
 	/**
-    * Returns the ehCache storage session according to configured cache name
-    */
-    any function getObjectStore() output=false{
+	 * If the cache provider implements it, this returns the cache's object store.
+	 *
+	 * @return coldbox.system.cache.store.IObjectStore or any depending on the cache implementation
+	 */
+	function getObjectStore(){
 		// get the cache session according to set name
 		var thisCacheName = getConfiguration().cacheName;
 		if ( thisCacheName == "object") {
@@ -505,30 +507,6 @@ component
 	boolean function clearQuiet( required objectKey ){
 		getObjectStore().removeQuiet( ucase( arguments.objectKey ) );
 		return true;
-	}
-
-	/**
-	 * Clear by key snippet
-	 *
-	 * @keySnippet The key snippet partial to clear out
-	 * @regex Wethere to use regex matching or not, defaults to false
-	 * @async To do this in async mode or sync mode, defaults to false
-	 *
-	 * @return LuceeProvider
-	 */
-	function clearByKeySnippet( required keySnippet, boolean regex=false, boolean async=false ){
-		var threadName = "clearByKeySnippet_#replace( randomUUID(), "-", "", "all" )#";
-
-		// Async? IF so, do checks
-		if( arguments.async AND NOT inThread() ){
-			thread name="#threadName#" keySnippet="#arguments.keySnippet#" regex="#arguments.regex#"{
-				variables.elementCleaner.clearByKeySnippet( attribues.keySnippet, attribues.regex );
-			}
-		} else{
-			variables.elementCleaner.clearByKeySnippet( arguments.keySnippet, arguments.regex );
-		}
-
-		return this;
 	}
 
 	/**

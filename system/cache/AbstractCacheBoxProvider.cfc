@@ -57,6 +57,9 @@
 	 */
 	property name="uuidHelper";
 
+	// Defaults static construct: implemented by caches
+	variables.DEFAULTS = {};
+
 	/**
 	 * Constructor
 	 */
@@ -196,6 +199,30 @@
 	/************************************ UTILITIES ************************************/
 
 	/**
+	 * Clear by key snippet
+	 *
+	 * @keySnippet The key snippet partial to clear out
+	 * @regex Wethere to use regex matching or not, defaults to false
+	 * @async To do this in async mode or sync mode, defaults to false
+	 *
+	 * @return LuceeProvider
+	 */
+	function clearByKeySnippet( required keySnippet, boolean regex=false, boolean async=false ){
+		var threadName = "clearByKeySnippet_#replace( randomUUID(), "-", "", "all" )#";
+
+		// Async? IF so, do checks
+		if( arguments.async AND NOT inThread() ){
+			thread name="#threadName#" keySnippet="#arguments.keySnippet#" regex="#arguments.regex#"{
+				variables.elementCleaner.clearByKeySnippet( attribues.keySnippet, attribues.regex );
+			}
+		} else{
+			variables.elementCleaner.clearByKeySnippet( arguments.keySnippet, arguments.regex );
+		}
+
+		return this;
+	}
+
+	/**
 	 * Produce a fast random UUID
 	 */
 	function randomUUID(){
@@ -235,5 +262,23 @@
 			);
 		}
 	}
+
+	/**
+	 * Validate the incoming configuration and make necessary defaults
+	 *
+	 * @return AbstractCacheProvider
+	 **/
+	 private function validateConfiguration(){
+		// Add in settings not discovered
+	   structAppend( variables.configuration, variables.DEFAULTS );
+	   // Validate configuration values, if they don't exist, then default them to DEFAULTS
+	   for( var key in variables.DEFAULTS ){
+		   if( NOT len( variables.configuration[ key ] ) ){
+			   variables.configuration[ key ] = variables.DEFAULTS[ key ];
+		   }
+	   }
+
+	   return this;
+   }
 
  }

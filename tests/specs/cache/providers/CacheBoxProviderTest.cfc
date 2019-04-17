@@ -5,13 +5,13 @@
 	function setup(){
 		super.setup();
 		//Mocks
-		mockFactory  		= createEmptyMock(className='coldbox.system.cache.CacheFactory');
-		mockEventManager  	= createEmptyMock(className='coldbox.system.core.events.EventPoolManager');
-		mockLogBox	 		= createEmptyMock( "coldbox.system.logging.LogBox" );
-		mockLogger	 		= createEmptyMock( "coldbox.system.logging.Logger" );
+		mockFactory  		= createMock( 'coldbox.system.cache.CacheFactory' );
+		mockEventManager  	= createMock( 'coldbox.system.core.events.EventPoolManager' );
+		mockLogBox	 		= createMock( "coldbox.system.logging.LogBox" );
+		mockLogger	 		= createMock( "coldbox.system.logging.Logger" );
 
 		// Mock Methods
-		mockFactory.$( "getLogBox",mockLogBox );
+		mockFactory.setLogBox( mockLogBox );
 		mockLogBox.$( "getLogger", mockLogger );
 		mockLogger
 			.$( "error", mockLogger )

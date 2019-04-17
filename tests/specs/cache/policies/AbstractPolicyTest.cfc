@@ -1,24 +1,25 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest"{
 
 	function setup(){
-		mockCM 		 = createEmptyMock( 'coldbox.system.cache.providers.MockProvider' );
-		mockFactory  = createEmptyMock( 'coldbox.system.cache.CacheFactory' );
-		mockLogBox	 = createEmptyMock( "coldbox.system.logging.LogBox" );
-		mockLogger	 = createEmptyMock( "coldbox.system.logging.Logger" );
-		mockPool 	 = createEmptyMock( 'coldbox.system.cache.store.ConcurrentStore' );
-		mockStats 	 = createEmptyMock( 'coldbox.system.cache.util.CacheStats' );
-		mockIndexer  = createEmptyMock( 'coldbox.system.cache.store.indexers.MetadataIndexer' );
+		mockCM 		 = createMock( 'coldbox.system.cache.providers.MockProvider' );
+		mockFactory  = createMock( 'coldbox.system.cache.CacheFactory' );
+		mockLogBox	 = createMock( "coldbox.system.logging.LogBox" );
+		mockLogger	 = createMock( "coldbox.system.logging.Logger" );
+		mockPool 	 = createMock( 'coldbox.system.cache.store.ConcurrentStore' );
+		mockStats 	 = createMock( 'coldbox.system.cache.util.CacheStats' );
+		mockIndexer  = createMock( 'coldbox.system.cache.store.indexers.MetadataIndexer' );
 
 		// Mocks
 		mockCM.$( "getCacheFactory", mockFactory )
 			.$('getStats', mockStats )
 			.$( "getName", "MockCache" )
 			.$( "getObjectStore", mockPool )
-			.$( "clear" );
+			.$( "clear", true );
 		mockPool.$( "getIndexer", mockIndexer );
- 		mockFactory.$( "getLogBox", mockLogBox );
+		mockFactory.setLogBox( mockLogBox );
 		mockLogBox.$( "getLogger", mockLogger );
 		mockLogger.$( "error" ).$( "debug" ).$( "info" ).$( "canDebug", true ).$( "canInfo", true );
+
 		mockStats.$( method='evictionHit', returns=mockStats, preserveReturnType=false );
 	}
 

@@ -88,7 +88,8 @@ component
 	}
 
     /**
-	 * Clear the cache statistics: Not enabled in this provider
+	 * Clear the cache statistics
+	 * THIS FUNCTION IS NOT IMPLEMENTED IN THIS PROVIDER
 	 *
 	 * @return ICacheProvider
 	 */
@@ -97,9 +98,11 @@ component
 	}
 
 	/**
-    * Returns the underlying cache engine: Not enabled in this provider
-    */
-    any function getObjectStore(){
+	 * If the cache provider implements it, this returns the cache's object store.
+	 *
+	 * @return coldbox.system.cache.store.IObjectStore or any depending on the cache implementation
+	 */
+	function getObjectStore(){
 		// not yet possible with lucee
 		//return cacheGetSession( getConfiguration().cacheName );
 	}
@@ -174,7 +177,6 @@ component
 	 * @objectKey The key to retrieve
      */
     function getQuiet( required objectKey ){
-		// not implemented by lucee yet
 		return get( arguments.objectKey );
 	}
 
@@ -406,7 +408,8 @@ component
 	}
 
 	/**
-	 * Expire all the elments in the cache (if supported by the provider):  Not implemented by this cache
+	 * Expire all the elments in the cache (if supported by the provider)
+	 * THIS FUNCTION IS NOT IMPLEMENTED IN THIS PROVIDER
 	 *
 	 * @return ICacheProvider
 	 */
@@ -415,38 +418,14 @@ component
 	}
 
 	/**
-	 * Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider) Not implemented by this cache
+	 * Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider)
+	 * THIS FUNCTION IS NOT IMPLEMENTED IN THIS PROVIDER
 	 *
 	 * @objectKey The object cache key
 	 *
 	 * @return ICacheProvider
 	 */
 	function expireObject( required objectKey ){
-		// not implemented
-		return this;
-	}
-
-	/**
-	 * Clear by key snippet
-	 *
-	 * @keySnippet The key snippet partial to clear out
-	 * @regex Wethere to use regex matching or not, defaults to false
-	 * @async To do this in async mode or sync mode, defaults to false
-	 *
-	 * @return LuceeProvider
-	 */
-	function clearByKeySnippet( required keySnippet, boolean regex=false, boolean async=false ){
-		var threadName = "clearByKeySnippet_#replace( randomUUID(), "-", "", "all" )#";
-
-		// Async? IF so, do checks
-		if( arguments.async AND NOT inThread() ){
-			thread name="#threadName#" keySnippet="#arguments.keySnippet#" regex="#arguments.regex#"{
-				variables.elementCleaner.clearByKeySnippet( attribues.keySnippet, attribues.regex );
-			}
-		} else{
-			variables.elementCleaner.clearByKeySnippet( arguments.keySnippet, arguments.regex );
-		}
-
 		return this;
 	}
 
