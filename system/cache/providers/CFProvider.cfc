@@ -287,32 +287,7 @@ component
 		any lastAccessTimeout="0",
 		any extra={}
 	){
-
-		// Verify if it exists? if so, return it.
-		var target = get( arguments.objectKey );
-		if( !isNull( target ) ){
-			return target;
-		}
-
-		// else, produce it
-		lock name="CacheBoxProvider.GetOrSet.#variables.cacheID#.#arguments.objectKey#" type="exclusive" timeout="45" throwonTimeout="true"{
-			// double lock, due to race conditions
-			var target = get( arguments.objectKey );
-			if( isNull( target ) ){
-				// produce it
-				target = arguments.produce();
-				// store it
-				set(
-					objectKey         = arguments.objectKey,
-					object            = target,
-					timeout           = arguments.timeout,
-					lastAccessTimeout = arguments.lastAccessTimeout,
-					extra             = arguments.extra
-				);
-			}
-		}
-
-		return target;
+		return super.getOrSet( argumentCollection=arguments );
 	}
 
 	/**
