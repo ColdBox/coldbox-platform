@@ -211,22 +211,22 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 			// Update stats if found
 			if( q.recordCount ){
 				// Setup SQL
-				var sql = "UPDATE #variables.table#
-							SET lastAccessed = :lastAccessed,
-								hits  = hits + 1
-						WHERE id = :id";
+				var targetSql = "UPDATE #variables.table#
+									SET lastAccessed = :lastAccessed,
+										hits  = hits + 1
+								  WHERE id = :id";
 
 				// Is resetTimeoutOnAccess enabled? If so, jump up the creation time to increase the timeout
 				if( variables.cacheProvider.getConfiguration().resetTimeoutOnAccess ){
-					var sql = "UPDATE #variables.table#
-								SET lastAccessed = :lastAccessed,
-									hits  = hits + 1,
-									created = :created
-							WHERE id = :id";
+					var targetSql = "UPDATE #variables.table#
+										SET lastAccessed = :lastAccessed,
+											hits  = hits + 1,
+											created = :created
+									  WHERE id = :id";
 				}
 
 				var qStats = queryExecute(
-					sql,
+					"#targetSQL#",
 					{
 						lastAccessed 	: { value="#now()#",		cfsqltype="timestamp" },
 						id 				: { value="#normalizedID#", cfsqltype="varchar" },
