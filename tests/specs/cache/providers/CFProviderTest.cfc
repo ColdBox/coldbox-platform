@@ -23,6 +23,7 @@
 
 		// Config
 		config = {
+			cacheName = "object"
 		};
 
 		// Create Provider
@@ -32,6 +33,10 @@
 		cache.setConfiguration( config );
 		cache.setCacheFactory( mockFactory );
 		cache.setEventManager( mockEventManager );
+
+		//writeDump( var=cacheGetSession( "object" ) );abort;
+		//writeDump( var=cache.getObjectStore() );abort;
+		//writeDump( var=cache.getObjectStore().getStatistics() );abort;
 
 		// Configure the provider
 		cache.configure();

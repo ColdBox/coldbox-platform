@@ -179,11 +179,17 @@ component
 
 	/**
 	 * Clear the cache statistics
+	 * NOT IMPLEMENTED FOR ACF 2016+
 	 *
 	 * @return ICacheProvider
 	 */
 	function clearStatistics(){
-		getObjectStore().clearStatistics();
+		if( server.coldfusion.productVersion.listFirst() == 11 ){
+			getObjectStore().clearStatistics();
+		} else {
+			// New version of ehcache removed this feature.
+		}
+
 		return this;
 	}
 
@@ -195,10 +201,10 @@ component
 	function getObjectStore(){
 		// get the cache session according to set name
 		var thisCacheName = getConfiguration().cacheName;
-		if ( thisCacheName == "object") {
+		if( thisCacheName == "object"){
 			return cacheGetSession( "object" );
 		} else {
-			return cacheGetSession( getConfiguration().cacheName, true );
+			return cacheGetSession( thisCacheName, true );
 		}
 	}
 
