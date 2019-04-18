@@ -455,8 +455,7 @@ component
 	 * @return ICacheProvider
 	 */
 	function expireByKeySnippet( required keySnippet, boolean regex=false, boolean async=false ){
-		getKeys()
-			.filter( function( item ){
+		arrayFilter( getKeys(), function( item ){
 				// Using Regex?
 				if( regex ){
 					return reFindnocase( keySnippet, item );
