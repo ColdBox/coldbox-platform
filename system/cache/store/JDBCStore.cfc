@@ -230,7 +230,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 					{
 						lastAccessed 	: { value="#now()#",		cfsqltype="timestamp" },
 						id 				: { value="#normalizedID#", cfsqltype="varchar" },
-						created 		: { value="#now()#",		cfsqltype="timestamp" },
+						created 		: { value="#now()#",		cfsqltype="timestamp" }
 					},
 					{
 						datsource 	= variables.dsn,
