@@ -58,11 +58,17 @@ component{
 
 		// More Routes
 		route( pattern="/complexParams/:id-numeric{2}/:name-regex(luis)", name="complexParams" )
-			.to( "main.index" );
+			.to( "main.main" );
 		route( pattern="/testroute/:id/:name", name="testRouteWithParams" )
-			.to( "main.index" );
+			.to( "main.main" );
 		route( pattern="/testroute", name="testRoute" )
-			.to( "main.index" );
+			.to( "main.main" );
+
+		// Names routes
+		route( pattern="/routeRunner/:id/:name", name="routeRunner" )
+			.to( "main.returnTest" );
+		route( pattern="/routeRunner/:id/:name", name="routeRunner" )
+			.to( "main.returnTest" );
 
 		// Should fire localized onInvalidHTTPMethod
 		route( pattern="invalid-restful" )

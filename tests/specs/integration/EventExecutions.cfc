@@ -19,6 +19,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
+		reset();
 		super.beforeAll();
 		// do your own stuff here
 	}
@@ -92,6 +93,24 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 					});
 				});
 			});
+
+			story( "I want to run named routes via runRoute()", function(){
+				given( "a valid route and params with no caching", function(){
+					then( "it should execute the route event", function(){
+						var event = execute( event="main.routeRunner", renderResults=true );
+						expect( event.getRenderedContent() ).toInclude( "unit test!" );
+					} );
+				} );
+				given( "a valid route and params with caching", function(){
+					then( "it should execute the route event", function(){
+						var cache = getCache( "template" );
+						cache.clearAll();
+						var event = execute( event="main.routeRunnerWithCaching", renderResults=true );
+						expect( event.getRenderedContent() ).toInclude( "unit test!" );
+						expect( cache.getSize() ).toBeGTE( 1 );
+					} );
+				} );
+			} );
 
 		});
 

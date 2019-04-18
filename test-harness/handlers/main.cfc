@@ -4,6 +4,18 @@ component{
 		"index" = "GET"
 	};
 
+	function routeRunner( event, rc, prc ){
+		return runRoute( "routeRunner", { id = 2, name="unit test" } );
+	}
+
+	function routeRunnerWithCaching( event, rc, prc ){
+		return runRoute( "routeRunner", { id = 2, name="unit test" }, true, 5 );
+	}
+
+	function returnTest( event, rc, prc, name="ColdBox" ){
+		return "<h1>Welcome to #arguments.name#!</h1>";
+	}
+
 	function cachePanel( event, rc, prc ){
 		event.setView( view="main/cachePanel", noLayout="true" );
 	}
@@ -12,8 +24,8 @@ component{
 		return "Redirected correctly";
 	}
 
-	function index( event, rc, prc ){
-		prc.welcomeMessage = "Welcome to ColdBox!";
+	function index( event, rc, prc, name="ColdBox" ){
+		prc.welcomeMessage = "Welcome to #arguments.name#!";
 		event.setView("main/index");
 	}
 
