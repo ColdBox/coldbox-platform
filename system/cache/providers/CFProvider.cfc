@@ -302,7 +302,7 @@ component
 	 * @objectKey The key to retrieve
      */
     function getQuiet( required objectKey ){
-		var element = getObjectStore().getQuiet( ucase( arguments.objectKey ) );
+		var element = getObjectStore().getQuiet( arguments.objectKey );
 		if( !isNull( element ) ){
 			return element.getValue();
 		}
@@ -486,8 +486,7 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		getObjectStore().removeQuiet( ucase( arguments.objectKey ) );
-		return true;
+		return getObjectStore().removeQuiet( arguments.objectKey );
 	}
 
 	/**

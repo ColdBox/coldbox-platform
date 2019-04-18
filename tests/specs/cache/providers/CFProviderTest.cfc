@@ -111,7 +111,7 @@
 		testVal = {name="luis", age=32};
 
 		cache.clearStatistics();
-		cache.set( "test",testVal,20);
+		cache.set( "test", testVal, 20 );
 
 		results = cache.getQuiet( "test" );
 		// debug(results);
