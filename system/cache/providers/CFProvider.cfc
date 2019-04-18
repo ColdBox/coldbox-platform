@@ -302,7 +302,13 @@ component
 	 * @objectKey The key to retrieve
      */
     function getQuiet( required objectKey ){
-		var element = getObjectStore().getQuiet( arguments.objectKey );
+
+		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+			var element = getObjectStore().getQuiet( arguments.objectKey );
+		} else {
+			var element = getObjectStore().getQuiet( ucase( arguments.objectKey ) );
+		}
+
 		if( !isNull( element ) ){
 			return element.getValue();
 		}
@@ -486,7 +492,11 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		return getObjectStore().removeQuiet( arguments.objectKey );
+		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+			return getObjectStore().removeQuiet( arguments.objectKey );
+		} else {
+			return getObjectStore().removeQuiet( ucase( arguments.objectKey ) );
+		}
 	}
 
 	/**
