@@ -978,7 +978,7 @@ component serializable=false accessors="true"{
 
 	/**
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
-	 * If you need a route from a module then append the module address: `@moduleName` in order to find the right route.
+	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routenName` in order to find the right route.
 	 *
 	 * @name The name of the route
 	 * @params The parameters of the route to replace
@@ -997,6 +997,12 @@ component serializable=false accessors="true"{
 			var targetModule 	= getToken( arguments.name, 2, "@" );
 			targetRoutes 		= router.getModuleRoutes( targetModule );
 			arguments.name 		= getToken( arguments.name, 1, "@" );
+			entryPoint 			= variables.modules[ targetmodule ].inheritedEntryPoint;
+		}
+		if( find( ":", arguments.name ) ){
+			var targetModule 	= getToken( arguments.name, 1, ":" );
+			targetRoutes 		= router.getModuleRoutes( targetModule );
+			arguments.name 		= getToken( arguments.name, 2, ":" );
 			entryPoint 			= variables.modules[ targetmodule ].inheritedEntryPoint;
 		}
 
