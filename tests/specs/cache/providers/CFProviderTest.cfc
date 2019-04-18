@@ -88,12 +88,9 @@
 
 		results = cache.get( "test" );
 		assertEquals( results, testval );
-		assertEquals( 0, cache.getStats().getMisses() );
-		assertEquals( 1, cache.getStats().getHits() );
 
 		results = cache.get( "test2" );
 		assertFalse( isDefined( "results" ) );
-		assertEquals( 1, cache.getStats().getMisses() );
 	}
 
 	function testGetOrSet(){
@@ -101,13 +98,9 @@
 
 		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
 		assertTrue( structKeyExists( results, "name" ) );
-		assertEquals( 2, cache.getStats().getMisses() );
-		assertEquals( 0, cache.getStats().getHits() );
 
 		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
 		assertTrue( structKeyExists( results, "name" ) );
-		assertEquals( 2, cache.getStats().getMisses() );
-		assertEquals( 1, cache.getStats().getHits() );
 	}
 
 	private function cacheProducer(){
@@ -123,8 +116,6 @@
 		results = cache.getQuiet( "test" );
 		// debug(results);
 		assertEquals( testVal, results );
-		assertEquals( 0, cache.getStats().getMisses() );
-		assertEquals( 0, cache.getStats().getHits() );
 	}
 
 	function testSet(){
