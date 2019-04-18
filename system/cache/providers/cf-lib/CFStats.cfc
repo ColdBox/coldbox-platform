@@ -41,7 +41,11 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	 * Get the associated cache's live object count
 	 */
 	numeric function getObjectCount(){
-		return getCacheStats().getObjectCount();
+		if( server.coldfusion.productVersion.listFirst() == 11 ){
+			return getCacheStats().getObjectCount();
+		} else {
+			return getCacheStats().getSize();
+		}
 	}
 
 	/**
@@ -50,7 +54,9 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	 * @return ICacheStats
 	 */
 	function clearStatistics(){
-		getCacheStats().clearStatistics();
+		if( server.coldfusion.productVersion.listFirst() == 11 ){
+			getCacheStats().clearStatistics();
+		}
 		return this;
 	}
 
@@ -65,21 +71,33 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	 * Get the total cache's eviction count
 	 */
 	numeric function getEvictionCount(){
-		return getCacheStats().getEvictionCount();
+		if( server.coldfusion.productVersion.listFirst() == 11 ){
+			return getCacheStats().getEvictionCount();
+		} else {
+			return getCacheStats().cacheEvictionCount();
+		}
 	}
 
 	/**
 	 * Get the total cache's hits
 	 */
 	numeric function getHits(){
-		return getCacheStats().getCacheHits();
+		if( server.coldfusion.productVersion.listFirst() == 11 ){
+			return getCacheStats().getCacheHits();
+		} else {
+			return getCacheStats().cacheHitCount();
+		}
 	}
 
 	/**
 	 * Get the total cache's misses
 	 */
 	numeric function getMisses(){
-		return getCacheStats().getCacheMisses();
+		if( server.coldfusion.productVersion.listFirst() == 11 ){
+			return getCacheStats().getCacheMisses();
+		} else {
+			return getCacheStats().cacheMissCount();
+		}
 	}
 
 	/**
@@ -96,8 +114,11 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	********************************************************/
 
 	any function getAverageGetTime(){
-		return getCacheStats().getAverageGetTime();
+		if( server.coldfusion.productVersion.listFirst() == 11 ){
+			return getCacheStats().getAverageGetTime();
+		} else {
+			return "";
+		}
 	}
 
 }
-
