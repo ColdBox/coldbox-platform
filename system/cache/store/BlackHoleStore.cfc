@@ -11,7 +11,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	/**
 	 * The cache provider reference
 	 */
-	property name="cacheProvider" doc_generic="coldbox.system.cache.ICacheProvider";
+	property name="cacheProvider" doc_generic="coldbox.system.cache.providers.ICacheProvider";
 
 	/**
 	 * The human store name
@@ -21,8 +21,8 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors=true{
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache provider as coldbox.system.cache.ICacheProvider
-	 * @cacheprovider.doc_generic coldbox.system.cache.ICacheProvider
+	 * @cacheProvider The associated cache provider as coldbox.system.cache.providers.ICacheProvider
+	 * @cacheprovider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
 		// Store Fields

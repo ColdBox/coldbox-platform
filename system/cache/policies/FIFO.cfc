@@ -13,7 +13,7 @@ component extends="coldbox.system.cache.policies.AbstractEvictionPolicy"{
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache provider of type: coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider
+	 * @cacheProvider The associated cache provider of type: coldbox.system.cache.providers.ICacheProvider" doc_generic="coldbox.system.cache.providers.ICacheProvider
  	 */
 	FIFO function init ( required any cacheProvider  ){
 		super.init( arguments.cacheProvider );

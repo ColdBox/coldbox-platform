@@ -13,9 +13,9 @@ interface{
 	void function execute();
 
 	/**
-	* Get the Associated Cache Provider of type: coldbox.system.cache.ICacheProvider
+	* Get the Associated Cache Provider of type: coldbox.system.cache.providers.ICacheProvider
 	*
-	* @return coldbox.system.cache.ICacheProvider
+	* @return coldbox.system.cache.providers.ICacheProvider
 	*/
 	any function getAssociatedCache();
 

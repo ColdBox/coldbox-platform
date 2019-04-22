@@ -9,7 +9,7 @@
 component
 	accessors="true"
 	serializable="false"
-	implements="coldbox.system.cache.IColdboxApplicationCache"
+	implements="coldbox.system.cache.providers.IColdBoxProvider"
 	extends="coldbox.system.cache.providers.CFProvider"
 {
 

@@ -136,7 +136,7 @@ component serializable="false" accessors="true"{
 	* Get a Cache provider from CacheBox
 	* @cacheName The name of the cache to retrieve, or it defaults to the 'default' cache.
 	*
-	* @return coldbox.system.cache.IColdboxApplicationCache
+	* @return coldbox.system.cache.providers.IColdBoxProvider
 	*/
 	function getCache( required cacheName='default' ){
 		return variables.cacheBox.getCache( arguments.cacheName );

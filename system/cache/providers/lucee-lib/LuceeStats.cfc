@@ -16,8 +16,8 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache manager/provider of type: coldbox.system.cache.ICacheProvider
-	 * @cacheProvider.doc_generic coldbox.system.cache.ICacheProvider
+	 * @cacheProvider The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
+	 * @cacheProvider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
 		setCacheProvider( arguments.cacheProvider );

@@ -19,7 +19,7 @@
 component
 	accessors="true"
 	serializable="false"
-	implements="coldbox.system.cache.ICacheProvider"
+	implements="coldbox.system.cache.providers.ICacheProvider"
 	extends="coldbox.system.cache.AbstractCacheBoxProvider"
 {
 

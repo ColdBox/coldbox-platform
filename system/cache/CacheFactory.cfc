@@ -221,12 +221,12 @@
 	/********************************* PUBLIC CACHE FACTORY OPERATIONS *********************************/
 
 	/**
-	 * Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception. Type: coldbox.system.cache.ICacheProvider
+	 * Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception. Type: coldbox.system.cache.providers.ICacheProvider
 	 *
 	 * @name The cache name to get
 	 *
 	 * @throws CacheFactory.CacheNotFoundException
-	 * @return coldbox.system.cache.ICacheProvider
+	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function getCache( required name ){
 		lock name="#variables.lockName#" type="readonly" timeout="20" throwontimeout="true"{
@@ -245,7 +245,7 @@
 	 * Register a new instantiated cache with this cache factory
 	 *
 	 * @cache The cache to register
-	 * @cache.doc_generic coldbox.system.cache.ICacheProvider
+	 * @cache.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	CacheFactory function addCache( required cache ){
 		registerCache( arguments.cache );
@@ -253,12 +253,12 @@
 	}
 
 	/**
-	 * Add a default named cache to our registry, create it, config it, register it and return it of type: coldbox.system.cache.ICacheProvider
+	 * Add a default named cache to our registry, create it, config it, register it and return it of type: coldbox.system.cache.providers.ICacheProvider
 	 *
 	 * @name The name of the default cache to create
 	 *
 	 * @throw CacheFactory.InvalidNameException,CacheFactory.CacheExistsException
-	 * @return coldbox.system.cache.ICacheProvider
+	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function addDefaultCache( required name ){
 		var defaultCacheConfig = variables.config.getDefaultCache();
@@ -495,9 +495,9 @@
 	 * Replace a registered named cache with a new decorated cache of the same name.
 	 *
 	 * @cache The name of the cache to replace or the actual instance of the cache to replace
-	 * @cache.doc_generic coldbox.system.cache.ICacheProvider or string
-	 * @decoratedCache The decorated cache manager instance to replace with of type coldbox.system.cache.ICacheProvider
-	 * @decoratedCache.doc_generic coldbox.system.cache.ICacheProvider
+	 * @cache.doc_generic coldbox.system.cache.providers.ICacheProvider or string
+	 * @decoratedCache The decorated cache manager instance to replace with of type coldbox.system.cache.providers.ICacheProvider
+	 * @decoratedCache.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	CacheFactory function replaceCache( required cache, required decoratedCache ){
 		// determine cache name
@@ -578,9 +578,9 @@
 	}
 
 	/**
-	 * Get the default cache provider of type coldbox.system.cache.ICacheProvider"
+	 * Get the default cache provider of type coldbox.system.cache.providers.ICacheProvider"
 	 *
-	 * @return coldbox.system.cache.ICacheProvider
+	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function getDefaultCache(){
 		return getCache( "default" );
@@ -594,13 +594,13 @@
 	}
 
 	/**
-	 * Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.ICacheProvider
+	 * Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.providers.ICacheProvider
 	 *
 	 * @name The name of the cache to create
 	 * @provider The provider class path of the cache to add
 	 * @properties The configuration properties of the cache
 	 *
-	 * @return coldbox.system.cache.ICacheProvider
+	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function createCache( required name, required provider, struct properties={} ){
 		// Create Cache
@@ -630,8 +630,8 @@
 	/**
 	 * Register a new cache on this cache factory
 	 *
-	 * @cache The cache instance to register with this factory of type: coldbox.system.cache.ICacheProvider
-	 * @cache.doc_generic coldbox.system.cache.ICacheProvider
+	 * @cache The cache instance to register with this factory of type: coldbox.system.cache.providers.ICacheProvider
+	 * @cache.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 *
 	 * @throws CacheFactory.CacheExistsException
 	 */

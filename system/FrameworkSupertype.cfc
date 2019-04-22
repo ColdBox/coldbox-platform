@@ -230,7 +230,7 @@ component serializable="false" accessors="true"{
 	* Get a named CacheBox Cache
 	* @name The name of the cache to retrieve, if not passed, it used the 'default' cache.
 	*
-	* @return coldbox.system.cache.IColdboxApplicationCache
+	* @return coldbox.system.cache.providers.IColdBoxProvider
 	*/
 	function getCache( name = "default" ){
 		return controller.getCache( arguments.name );

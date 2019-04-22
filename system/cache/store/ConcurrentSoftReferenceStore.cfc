@@ -22,8 +22,8 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache provider as coldbox.system.cache.ICacheProvider
-	 * @cacheprovider.doc_generic coldbox.system.cache.ICacheProvider
+	 * @cacheProvider The associated cache provider as coldbox.system.cache.providers.ICacheProvider
+	 * @cacheprovider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
 		// Super size me

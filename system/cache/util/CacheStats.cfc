@@ -9,9 +9,9 @@
 component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 
 	/**
-	 * The associated cache manager/provider of type: coldbox.system.cache.ICacheProvider
+	 * The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
 	 */
-	property name="cacheProvider" doc_generic="coldbox.system.cache.ICacheProvider";
+	property name="cacheProvider" doc_generic="coldbox.system.cache.providers.ICacheProvider";
 
 	/**
 	 * Recording of last reap
@@ -37,8 +37,8 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	/**
 	 * Constructor
 	 *
-	 * @cacheProvider The associated cache manager/provider of type: coldbox.system.cache.ICacheProvider
-	 * @cacheProvider.doc_generic coldbox.system.cache.ICacheProvider
+	 * @cacheProvider The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
+	 * @cacheProvider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	 */
 	function init( required cacheProvider ){
 
@@ -50,9 +50,9 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	}
 
 	/**
-	 * Get the associated cache provider/manager of type: coldbox.system.cache.ICacheProvider
+	 * Get the associated cache provider/manager of type: coldbox.system.cache.providers.ICacheProvider
 	 *
-	 * @return coldbox.system.cache.ICacheProvider
+	 * @return coldbox.system.cache.providers.ICacheProvider
 	 */
 	function getAssociatedCache(){
 		return variables.cacheProvider;

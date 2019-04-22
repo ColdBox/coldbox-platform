@@ -21,7 +21,7 @@ component serializable=false implements="coldbox.system.cache.policies.IEviction
 	/**
 	* Constructor
 	* @cacheProvider The associated cache provider
-	* @cacheProvider.doc_generic coldbox.system.cache.ICacheProvider
+	* @cacheProvider.doc_generic coldbox.system.cache.providers.ICacheProvider
 	*/
 	function init( required cacheProvider ){
 		// link associated cache
@@ -46,9 +46,9 @@ component serializable=false implements="coldbox.system.cache.policies.IEviction
 	}
 
 	/**
-	* Get the Associated Cache Provider of type: coldbox.system.cache.ICacheProvider
+	* Get the Associated Cache Provider of type: coldbox.system.cache.providers.ICacheProvider
 	*
-	* @return coldbox.system.cache.ICacheProvider
+	* @return coldbox.system.cache.providers.ICacheProvider
 	*/
 	any function getAssociatedCache(){
 		return variables.cacheProvider;
