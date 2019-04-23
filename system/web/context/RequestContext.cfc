@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* Models a ColdBox request, stores the incoming request collection (FORM/URL/REMOTE) and private request collection.
-* It is also used to determine metadata about a request and helps you build RESTFul responses.
-**/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Models a ColdBox request, stores the incoming request collection (FORM/URL/REMOTE) and private request collection.
+ * It is also used to determine metadata about a request and helps you build RESTFul responses.
+ **/
 component serializable=false accessors="true"{
 
 	/**
@@ -1422,10 +1422,11 @@ component serializable=false accessors="true"{
 	}
 
 	/**
-	* Get the raw HTTP content
-	* @json Try to return the content as deserialized json
-	* @xml Try to return the content as an XML object
-	*/
+	 * Get the raw HTTP body content with conversions if needed
+	 *
+	 * @json Try to return the content as deserialized json
+	 * @xml Try to return the content as an XML object
+	 */
 	any function getHTTPContent( boolean json=false, boolean xml=false ){
 		var content = getHTTPRequestData().content;
 
@@ -1439,23 +1440,19 @@ component serializable=false accessors="true"{
 	}
 
 	/**
-	* Get an HTTP header
-	* @header.name The header to get
-	* @defaultValue The default value if not found
-	*/
-	function getHTTPHeader( required header, defaultValue ){
+	 * Get an HTTP header. If the header doesn't exist the default value of empty string is returned.
+	 *
+	 * @header The header to get
+	 * @defaultValue The default value, if not found
+	 */
+	function getHTTPHeader( required header, defaultValue="" ){
 		var headers = getHttpRequestData().headers;
 
-		if( structKeyExists( headers, arguments.header ) ){
+		if( !isNull( headers[ arguments.header ] ) ){
 			return headers[ arguments.header ];
 		}
-		if( structKeyExists( arguments, "defaultValue" ) ){
-			return arguments.defaultValue;
-		}
 
-		throw( message="Header #arguments.header# not found in HTTP headers",
-			   detail="Headers found: #structKeyList( headers )#",
-			   type="RequestContext.InvalidHTTPHeader");
+		return arguments.defaultValue;
 	}
 
 	/**
