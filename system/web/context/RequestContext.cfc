@@ -1448,7 +1448,8 @@ component serializable=false accessors="true"{
 	function getHTTPHeader( required header, defaultValue="" ){
 		var headers = getHttpRequestData().headers;
 
-		if( !isNull( headers[ arguments.header ] ) ){
+		// ADOBE FIX YOUR ISNULL BS
+		if( headers.keyExists( arguments.header ) ){
 			return headers[ arguments.header ];
 		}
 
