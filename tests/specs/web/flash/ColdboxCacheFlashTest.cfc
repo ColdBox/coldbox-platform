@@ -1,5 +1,5 @@
 ﻿component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.web.flash.ColdboxCacheFlash"{
-		
+
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Cache Flash", function(){
@@ -28,7 +28,7 @@
 
 			it( "can clear the flash scope", function(){
 				flash.$( "flashExists", true );
-				mockCache.$( "clear" ).$( "get", testScope );
+				mockCache.$( "clear", true ).$( "get", testScope );
 				flash.clearFlash();
 				expect( arrayLen( mockCache.$callLog().clear ) ).toBeTrue();
 			});
@@ -53,5 +53,5 @@
 
 		});
 	}
-	
+
 }

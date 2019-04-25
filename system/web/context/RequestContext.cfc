@@ -1,10 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* Models a ColdBox request, stores the incoming request collection (FORM/URL/REMOTE) and private request collection.
-* It is also used to determine metadata about a request and helps you build RESTFul responses.
-**/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Models a ColdBox request, stores the incoming request collection (FORM/URL/REMOTE) and private request collection.
+ * It is also used to determine metadata about a request and helps you build RESTFul responses.
+ **/
 component serializable=false accessors="true"{
 
 	/**
@@ -978,7 +978,7 @@ component serializable=false accessors="true"{
 
 	/**
 	 * Builds links to named routes with or without parameters. If the named route is not found, this method will throw an `InvalidArgumentException`.
-	 * If you need a route from a module then append the module address: `@moduleName` in order to find the right route.
+	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routenName` in order to find the right route.
 	 *
 	 * @name The name of the route
 	 * @params The parameters of the route to replace
@@ -997,6 +997,12 @@ component serializable=false accessors="true"{
 			var targetModule 	= getToken( arguments.name, 2, "@" );
 			targetRoutes 		= router.getModuleRoutes( targetModule );
 			arguments.name 		= getToken( arguments.name, 1, "@" );
+			entryPoint 			= variables.modules[ targetmodule ].inheritedEntryPoint;
+		}
+		if( find( ":", arguments.name ) ){
+			var targetModule 	= getToken( arguments.name, 1, ":" );
+			targetRoutes 		= router.getModuleRoutes( targetModule );
+			arguments.name 		= getToken( arguments.name, 2, ":" );
 			entryPoint 			= variables.modules[ targetmodule ].inheritedEntryPoint;
 		}
 
@@ -1240,8 +1246,13 @@ component serializable=false accessors="true"{
 			);
 		}
 
+		// detect if extension is already included in name argument, if not add
+		if ( listLast( arguments.name,"." ) != arguments.extension ) {
+			arguments.name &= ".#arguments.extension#";
+		}
+
 		//  Set content headers
-		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename='#arguments.name#.#extension#'" );
+		setHTTPHeader( name="content-disposition", value="#arguments.disposition#; filename=#urlEncodedFormat( arguments.name )#" );
 		setHTTPHeader( name="content-length", value=fileSize );
 
 		//  Send file
@@ -1411,10 +1422,11 @@ component serializable=false accessors="true"{
 	}
 
 	/**
-	* Get the raw HTTP content
-	* @json Try to return the content as deserialized json
-	* @xml Try to return the content as an XML object
-	*/
+	 * Get the raw HTTP body content with conversions if needed
+	 *
+	 * @json Try to return the content as deserialized json
+	 * @xml Try to return the content as an XML object
+	 */
 	any function getHTTPContent( boolean json=false, boolean xml=false ){
 		var content = getHTTPRequestData().content;
 
@@ -1428,23 +1440,20 @@ component serializable=false accessors="true"{
 	}
 
 	/**
-	* Get an HTTP header
-	* @header.name The header to get
-	* @defaultValue The default value if not found
-	*/
+	 * Get an HTTP header. If the header doesn't exist the default value of empty string is returned.
+	 *
+	 * @header The header to get
+	 * @defaultValue The default value, if not found
+	 */
 	function getHTTPHeader( required header, defaultValue="" ){
 		var headers = getHttpRequestData().headers;
 
-		if( structKeyExists( headers, arguments.header ) ){
+		// ADOBE FIX YOUR ISNULL BS
+		if( headers.keyExists( arguments.header ) ){
 			return headers[ arguments.header ];
 		}
-		if( structKeyExists( arguments, "defaultValue" ) ){
-			return arguments.defaultValue;
-		}
 
-		throw( message="Header #arguments.header# not found in HTTP headers",
-			   detail="Headers found: #structKeyList( headers )#",
-			   type="RequestContext.InvalidHTTPHeader");
+		return arguments.defaultValue;
 	}
 
 	/**

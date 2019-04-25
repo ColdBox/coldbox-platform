@@ -119,9 +119,6 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		var message   = loge.getMessage();
 		var entry     = "";
 
-		// Ensure Log File
-		initLogLocation();
-
 		// Message Layout
 		if( hasCustomLayout() ){
 			entry = getCustomLayout().format( loge );
@@ -233,6 +230,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			var flushInterval = 1000; // 1 second
 			var sleepInterval = 50;
 			var count         = 0;
+
+			// Ensure Log File
+			initLogLocation();
+
 			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
 			var hasMessages   = false;
 

@@ -1,147 +1,70 @@
 ﻿/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author: Luis Majano
-Description:
-	
-This CacheBox provider communicates with the built in caches in
-the Adobe ColdFusion Engine.
-
-*/
-component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * This CacheBox provider communicates with the built in caches in the Adobe ColdFusion Engines
+ */
+component
+	accessors="true"
+	serializable="false"
+	implements="coldbox.system.cache.providers.ICacheProvider"
+	extends="coldbox.system.cache.AbstractCacheBoxProvider"
+{
 
 	/**
-    * Constructor
-    */
-	CFProvider function init() output=false{
-		// Setup Cache instance
-		instance = {
-			// cache name
-			name 				= "",
-			// enabled cache flag
-			enabled 			= false,
-			// reporting enabled flag
-			reportingEnabled 	= false,
-			// configuration structure
-			configuration 		= {},
-			// cache factory reference
-			cacheFactory 		= "",
-			// event manager reference
-			eventManager		= "",
-			// reference to underlying data store
-			store				= "",
-			// internal cache id
-			cacheID				= createObject('java','java.lang.System').identityHashCode(this),
-			// Element Cleaner Helper
-			elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this),
-			// Utilities
-			utility				= createObject("component","coldbox.system.core.util.Util"),
-			// uuid creation helper
-			uuidHelper			= createobject("java", "java.util.UUID")
-		};
-		
-		// Provider Property Defaults
-		instance.DEFAULTS = {
-			cacheName = "object"
-		};	
-		
+	 * The global element cleaner utility object
+	 */
+	property name="elementCleaner";
+
+	// Provider Property Defaults STATIC
+	variables.DEFAULTS = {
+		cacheName = "object"
+	};
+
+	/**
+     * Constructor
+     */
+	function init(){
+		super.init();
+
+		// Element Cleaner Helper
+		variables.elementCleaner = new coldbox.system.cache.util.ElementCleaner( this );
+
 		return this;
 	}
-	
+
 	/**
-    * get the cache name
-    */    
-	any function getName() output=false{
-		return instance.name;
-	}
-	
-	/**
-    * set the cache name
-    */    
-	void function setName(required name) output=false{
-		instance.name = arguments.name;
-	}
-	
-	/**
-    * set the event manager
-    */
-    void function setEventManager(required any EventManager) output=false{
-    	instance.eventManager = arguments.eventManager;
-    }
-	
-    /**
-    * get the event manager
-    */
-    any function getEventManager() output=false{
-    	return instance.eventManager;
-    }
-    
-	/**
-    * get the cache configuration structure
-    */
-    any function getConfiguration() output=false{
-		return instance.configuration;
-	}
-	
-	/**
-    * set the cache configuration structure
-    */
-    void function setConfiguration(required configuration) output=false{
-		instance.configuration = arguments.configuration;
-	}
-	
-	/**
-    * get the associated cache factory
-    */
-    any function getCacheFactory() output=false{
-		return instance.cacheFactory;
-	}
-	    
-	/**
-	* Validate the configuration
-	**/
-	private void function validateConfiguration(){
-		var cacheConfig = getConfiguration();
-		var key			= "";
-		
-		// Validate configuration values, if they don't exist, then default them to DEFAULTS
-		for(key in instance.DEFAULTS){
-			if( NOT structKeyExists(cacheConfig, key) OR NOT len(cacheConfig[key]) ){
-				cacheConfig[key] = instance.DEFAULTS[key];
-			}
-		}
-	}
-	
-	/**
-    * configure the cache for operation
-    */
-    void function configure() output=false{
+     * configure the cache for operation
+	 *
+	 * @return LuceeProvider
+     */
+    function configure(){
 		var config 	= getConfiguration();
 		var props	= [];
 
-		lock name="CFProvider.config.#instance.cacheID#" type="exclusive" throwontimeout="true" timeout="20"{
-		
+		lock name="CFProvider.config.#variables.cacheID#" type="exclusive" throwontimeout="true" timeout="30"{
+
 			// Prepare the logger
-			instance.logger = getCacheFactory().getLogBox().getLogger( this );
-			
-			if( instance.logger.canDebug() )
-				instance.logger.debug("Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#");
-			
+			variables.logger = getCacheFactory().getLogBox().getLogger( this );
+
+			if( variables.logger.canDebug() ){
+				variables.logger.debug( "Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#" );
+			}
+
 			// Validate the configuration
 			validateConfiguration();
 
-			// Merge configurations			
+			// Merge configurations
 			var thisCacheName = config.cacheName;
 			if ( thisCacheName == "object") {
 				props = cacheGetProperties();
-			} 
-			else {
-				
+			} else {
+
 				// this force CF to create the user defined cache if it doesn't exist
 				get("___invalid___");
-								
+
 				var cacheConfig = cacheGetSession( thisCacheName, true ).getCacheConfiguration();
 
 				// apply parameter configurations
@@ -150,206 +73,219 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 				}
 				if ( structKeyExists( config, "diskExpiryThreadIntervalSeconds") ) {
 					cacheConfig.setDiskExpiryThreadIntervalSeconds( config.diskExpiryThreadIntervalSeconds );
-				}				
+				}
 				if ( structKeyExists( config, "diskPersistent") ) {
 					cacheConfig.setDiskPersistent( config.diskPersistent );
-				}								
+				}
 				if ( structKeyExists( config, "diskSpoolBufferSizeMB") ) {
 					cacheConfig.setDiskSpoolBufferSizeMB( config.diskSpoolBufferSizeMB );
-				}	
+				}
 				if ( structKeyExists( config, "eternal") ) {
 					cacheConfig.setEternal( config.eternal );
-				}	
+				}
 				if ( structKeyExists( config, "maxElementsInMemory") ) {
 					cacheConfig.setMaxElementsInMemory( config.maxElementsInMemory );
-				}	
+				}
 				if ( structKeyExists( config, "maxElementsOnDisk") ) {
 					cacheConfig.setMaxElementsOnDisk( config.maxElementsOnDisk );
-				}									
+				}
 				if ( structKeyExists( config, "memoryEvictionPolicy") ) {
 					cacheConfig.setMemoryStoreEvictionPolicy( config.memoryEvictionPolicy );
 				}
 				if ( structKeyExists( config, "overflowToDisk") ) {
 					cacheConfig.setOverflowToDisk( config.overflowToDisk );
-				}																		
+				}
 				if ( structKeyExists( config, "timeToIdleSeconds") ) {
 					cacheConfig.setTimeToIdleSeconds( config.timeToIdleSeconds );
-				}							
+				}
 				if ( structKeyExists( config, "timeToLiveSeconds") ) {
 					cacheConfig.setTimeToLiveSeconds( config.timeToLiveSeconds );
-				}			
-				
+				}
+
 				props = [{
 					"objectType" = config.cacheName
 					, "clearOnFlush" = cacheConfig.isClearOnFlush()
-					, "diskExpiryThreadIntervalSeconds" = cacheConfig.getDiskExpiryThreadIntervalSeconds() 
+					, "diskExpiryThreadIntervalSeconds" = cacheConfig.getDiskExpiryThreadIntervalSeconds()
 					, "diskPersistent" = cacheConfig.isDiskPersistent()
 					, "diskSpoolBufferSizeMB" = cacheConfig.getDiskSpoolBufferSizeMB()
 					, "eternal" = cacheConfig.isEternal()
 					, "maxElementsInMemory" = cacheConfig.getMaxElementsInMemory()
-					, "maxElementsOnDisk" = cacheConfig.getMaxElementsOnDisk()  
+					, "maxElementsOnDisk" = cacheConfig.getMaxElementsOnDisk()
 					, "memoryEvictionPolicy" = cacheConfig.getMemoryStoreEvictionPolicy().toString()
 					, "overflowToDisk" = cacheConfig.isOverflowToDisk()
 					, "timeToIdleSeconds" = cacheConfig.getTimeToIdleSeconds()
 					, "timeToLiveSeconds" = cacheConfig.getTimeToLiveSeconds()
 				}];
 			}
-					
-			var key = "";
-			for(key in props){
-				config["ehcache_#key.objectType#"] = key;
+
+			for( var key in props ){
+				config[ "ehcache_#key.objectType#" ] = key;
 			}
-			
+
 			// enabled cache
-			instance.enabled = true;
-			instance.reportingEnabled = true;
-			
-			if( instance.logger.canDebug() )
-				instance.logger.debug( "Cache #getName()# started up successfully" );
+			variables.enabled = true;
+			variables.reportingEnabled = true;
+
+			if( variables.logger.canDebug() ){
+				variables.logger.debug( "Cache #getName()# started up successfully" );
+			}
 		}
+
+		return this;
 	}
-	
+
 	/**
-    * shutdown the cache
-    */
-    void function shutdown() output=false{
-		if( instance.logger.canDebug() )
-			instance.logger.debug( "CFProvider Cache: #getName()# has been shutdown." );
+     * Shutdown command issued when CacheBox is going through shutdown phase
+	 *
+	 * @return LuceeProvider
+     */
+    function shutdown(){
+		//nothing to shutdown
+		if( variables.logger.canDebug() ){
+			variables.logger.debug( "CFProvider Cache: #getName()# has been shutdown." );
+		}
+		return this;
 	}
-	
-	/*
-	* Indicates if cache is ready for operation
-	*/
-	any function isEnabled() output=false{
-		return instance.enabled;
-	} 
 
 	/*
-	* Indicates if cache is ready for operation
-	*/
-	any function isReportingEnabled() output=false{
-		return instance.reportingEnabled;
-	}
-	
-	/*
-	* Indicates if the cache is Terracota clustered
-	*/
-	any function isTerracotaClustered(){
+	 * Indicates if the cache is Terracota clustered
+	 */
+	boolean function isTerracotaClustered(){
 		return getObjectStore().isTerracottaClustered();
 	}
-	
+
 	/*
-	* Indicates if the cache node is coherent
-	*/
-	any function isNodeCoherent(){
+	 * Indicates if the cache node is coherent
+	 */
+	boolean function isNodeCoherent(){
 		return getObjectStore().isNodeCoherent();
 	}
-	
+
 	/*
-	* Returns true if the cache is in coherent mode cluster-wide.
-	*/
-	any function isClusterCoherent(){
+	 * Returns true if the cache is in coherent mode cluster-wide.
+	 */
+	boolean function isClusterCoherent(){
 		return getObjectStore().isClusterCoherent();
 	}
-	
-	/*
-	* Get the cache statistics object as coldbox.system.cache.util.ICacheStats
-	* @doc_generic coldbox.system.cache.util.ICacheStats
-	*/
-	any function getStats() output=false{
-		return CreateObject("component", "coldbox.system.cache.providers.cf-lib.CFStats").init( getObjectStore().getStatistics() );		
-	}
-	
+
 	/**
-    * clear the cache stats
-    */
-    void function clearStatistics() output=false{
-		getObjectStore().clearStatistics();
+	 * Get the cache statistics object as coldbox.system.cache.util.ICacheStats
+	 *
+	 * @return coldbox.system.cache.util.ICacheStats
+	 */
+	function getStats(){
+		return new "coldbox.system.cache.providers.cf-lib.CFStats"( getObjectStore().getStatistics() );
 	}
-	
+
 	/**
-    * Returns the ehCache storage session according to configured cache name
-    */
-    any function getObjectStore() output=false{
+	 * Clear the cache statistics
+	 * NOT IMPLEMENTED FOR ACF 2016+
+	 *
+	 * @return ICacheProvider
+	 */
+	function clearStatistics(){
+		if( server.coldfusion.productVersion.listFirst() == 11 ){
+			getObjectStore().clearStatistics();
+		} else {
+			// New version of ehcache removed this feature.
+		}
+
+		return this;
+	}
+
+	/**
+	 * If the cache provider implements it, this returns the cache's object store.
+	 *
+	 * @return coldbox.system.cache.store.IObjectStore or any depending on the cache implementation
+	 */
+	function getObjectStore(){
 		// get the cache session according to set name
 		var thisCacheName = getConfiguration().cacheName;
-		if ( thisCacheName == "object") {
+		if( thisCacheName == "object"){
 			return cacheGetSession( "object" );
 		} else {
-			return cacheGetSession( getConfiguration().cacheName, true ); 			
+			return cacheGetSession( thisCacheName, true );
 		}
 	}
-	
+
 	/**
-    * get the cache's metadata report
-    */
-    any function getStoreMetadataReport() output=false{ 
-		var md 		= {};
-		var keys 	= getKeys();
-		var item	= "";
-		
-		for(item in keys){
-			md[item] = getCachedObjectMetadata(item);
-		}
-		
-		return md;
+     * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
+     */
+    struct function getStoreMetadataReport(){
+		return getKeys()
+			.map( function( item ){
+				return getCachedObjectMetadata( item );
+			});
 	}
-	
+
 	/**
-	* Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports
-	*/
-	any function getStoreMetadataKeyMap() output="false"{
-		var keyMap = {
-				timeout = "timespan", hits = "hitcount", lastAccessTimeout = "idleTime",
-				created = "createdtime", LastAccessed = "lasthit"
-			};
-		return keymap;
+	 * Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports
+	 */
+	struct function getStoreMetadataKeyMap(){
+		return {
+			timeout           = "timespan",
+			hits              = "hitcount",
+			lastAccessTimeout = "idleTime",
+			created           = "createdtime",
+			lastAccessed      = "lasthit"
+		};
 	}
-	
+
 	/**
-    * get all the keys in this provider
-    */
-    any function getKeys() output=false{
+	 * Returns a list of all elements in the cache, whether or not they are expired
+	 */
+	array function getKeys(){
 	   try{
 	   	    var thisCacheName = getConfiguration().cacheName;
 			if ( thisCacheName == "object") {
 				return cacheGetAllIds();
 			}
 			return cacheGetAllIds( thisCacheName );
-		}
-		catch(Any e){
-			instance.logger.error( "Error retrieving all keys from cache: #e.message# #e.detail#", e.stacktrace );
+		} catch( Any e ) {
+			variables.logger.error( "Error retrieving all keys from cache: #e.message# #e.detail#", e.stacktrace );
 			return [ "Error retrieving keys from cache: #e.message#" ];
 		}
 	}
-	
+
 	/**
-    * get an object's cached metadata
-    */
-    any function getCachedObjectMetadata(required any objectKey) output=false{
+	 * Get a cache objects metadata about its performance. This value is a structure of name-value pairs of metadata.
+	 *
+	 * @objectKey The key to retrieve
+	 */
+    struct function getCachedObjectMetadata( required objectKey ){
 		var thisCacheName = getConfiguration().cacheName;
-    if ( thisCacheName == "object") {
+   		if ( thisCacheName == "object") {
 			return cacheGetMetadata( arguments.objectKey );
 		} else {
-			return;
+			return cacheGetMetadata( arguments.objectName, thisCacheName );
 		}
 	}
-	
+
 	/**
-    * get an item from cache
-    */
-    any function get(required any objectKey) output=false{
-			var thisCacheName = getConfiguration().cacheName;
+	 * Get an object from the cache
+	 *
+	 * @objectKey The key to retrieve
+	 */
+    function get( required objectKey ){
+		var thisCacheName = getConfiguration().cacheName;
 	    if ( thisCacheName == "object") {
-				return cacheGet( arguments.objectKey );
-			} else {
-				return cacheGet( arguments.objectKey, thisCacheName );
-			}
+			return cacheGet( arguments.objectKey );
+		} else {
+			return cacheGet( arguments.objectKey, thisCacheName );
+		}
 	}
-	
+
 	/**
-    * Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it
-    */
+     * Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it
+	 *
+	 * @objectKey The object cache key
+	 * @produce The producer closure/lambda
+	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
+	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 *
+	 * @return The cached or produced data/object
+     */
     any function getOrSet(
     	required any objectKey,
 		required any produce,
@@ -357,106 +293,112 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 		any lastAccessTimeout="0",
 		any extra={}
 	){
-		
-		var refLocal = {
-			object = get( arguments.objectKey )
-		};
-		
-		// Verify if it exists? if so, return it.
-		if( structKeyExists( refLocal, "object" ) ){ return refLocal.object; }
-		
-		// else, produce it
-		lock name="CacheBoxProvider.GetOrSet.#instance.cacheID#.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true"{
-			// double lock
-			refLocal.object = get( arguments.objectKey );
-			if( not structKeyExists( refLocal, "object" ) ){
-				// produce it
-				refLocal.object = arguments.produce();
-				// store it
-				set( objectKey=arguments.objectKey, 
-					 object=refLocal.object, 
-					 timeout=arguments.timeout,
-					 lastAccessTimeout=arguments.lastAccessTimeout,
-					 extra=arguments.extra );
-			}
-		}
-		
-		return refLocal.object;
+		return super.getOrSet( argumentCollection=arguments );
 	}
-	
+
 	/**
-    * get an item silently from cache, no stats advised
-    */
-    any function getQuiet(required any objectKey) output=false{
-		var element = getObjectStore().getQuiet( ucase(arguments.objectKey) );
-		if( NOT isNull(element) ){
+     * get an item silently from cache, no stats advised: Stats not available on lucee
+	 *
+	 * @objectKey The key to retrieve
+     */
+    function getQuiet( required objectKey ){
+
+		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+			var element = getObjectStore().getQuiet( arguments.objectKey );
+		} else {
+			var element = getObjectStore().getQuiet( ucase( arguments.objectKey ) );
+		}
+
+		if( !isNull( element ) ){
 			return element.getValue();
 		}
 	}
-	
+
 	/**
-    * Not implemented by this cache
-    */
-    any function isExpired(required any objectKey) output=false{
-		var element = getObjectStore().getQuiet( ucase(arguments.objectKey) );
-		if( NOT isNull(element) ){
-			return element.isExpired();
-		}
-		return true;
+	 * Has the object key expired in the cache: NOT IMPLEMENTED IN THIS CACHE
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function isExpired( required objectKey ){
+		return false;
 	}
-	 
+
 	/**
-    * check if object in cache
-    */
-    any function lookup(required any objectKey) output=false{
-		return lookupQuiet(arguments.objectKey);
+	 * Check if an object is in cache, if not found it records a miss.
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function lookup( required objectKey ){
+		return lookupQuiet( arguments.objectKey );
 	}
-	
+
 	/**
-    * check if object in cache with no stats
-    */
-    any function lookupQuiet(required any objectKey) output=false{
-			var thisCacheName = getConfiguration().cacheName;
+	 * Check if an object is in cache, no stats updated or listeners
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function lookupQuiet( required objectKey ){
+		var thisCacheName = getConfiguration().cacheName;
 	    if ( thisCacheName == "object") {
-				return !isNull ( cacheGet( arguments.objectKey ) );
-			} else {
-				return !isNull ( cacheGet( arguments.objectKey, thisCacheName ) );
-			}
+			return cacheIdExists( arguments.objectKey );
+		} else {
+			return cacheIdExists( arguments.objectKey, thisCacheName );
+		}
 	}
-	
+
 	/**
-    * set an object in cache
-    */
-    any function set(required any objectKey,
-					 required any object,
-					 any timeout="0",
-					 any lastAccessTimeout="0",
-					 any extra) output=false{
-		
-		setQuiet(argumentCollection=arguments);
-		
+	 * Sets an object in the cache and returns an instance of itself
+	 *
+	 * @objectKey The object cache key
+	 * @object The object to cache
+	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
+	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 *
+	 * @return ICacheProvider
+	 */
+	function set(
+		required objectKey,
+		required object,
+		timeout=0,
+		lastAccessTimeout=0,
+		struct extra
+	){
+
+		setQuiet( argumentCollection=arguments );
+
 		//ColdBox events
-		var iData = { 
+		var iData = {
 			cache				= this,
 			cacheObject			= arguments.object,
 			cacheObjectKey 		= arguments.objectKey,
 			cacheObjectTimeout 	= arguments.timeout,
 			cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
-		};		
-		getEventManager().processState("afterCacheElementInsert",iData);
-		
-		return true;
-	}	
-	
+		};
+		getEventManager().processState( "afterCacheElementInsert", iData );
+
+		return this;
+	}
+
 	/**
-    * set an object in cache with no stats
-    */
-    any function setQuiet(required any objectKey,
-						  required any object,
-						  any timeout="0",
-						  any lastAccessTimeout="0",
-						  any extra) output=false{
-    			
+	 * Sets an object in the cache with no event calls and returns an instance of itself
+	 *
+	 * @objectKey The object cache key
+	 * @object The object to cache
+	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
+	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 *
+	 * @return ICacheProvider
+	 */
+	function setQuiet(
+		required objectKey,
+		required object,
+		timeout=0,
+		lastAccessTimeout=0,
+		struct extra
+	){
+
 		// check if incoming timeout is a timespan or minute to convert to timespan, do also checks if empty strings
 		if( findnocase("string", arguments.timeout.getClass().getName() ) ){
 			if( len(arguments.timeout) ){ arguments.timeout = createTimeSpan(0,0,arguments.timeout,0); }
@@ -466,118 +408,146 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			if( len(arguments.lastAccessTimeout) ){ arguments.lastAccessTimeout = createTimeSpan(0,0,arguments.lastAccessTimeout,0); }
 			else{ arguments.lastAccessTimeout = 0; }
 		}
-		
-		var thisCacheName = getConfiguration().cacheName;
-		if ( thisCacheName == "object" ) {
-			
-			// if we passed object to the cache put CF would use a user defined custom "object" cache rather than the default
-			cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
-		
-		} else {
-			
-			cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout, thisCacheName);
-			
-		}
-		
-		return true;
-	}	
-	
-	/**
-    * get cache size
-    */
-    any function getSize() output=false{
-		return getObjectStore().getSize();
-	}
-	
-	/**
-    * Not implemented, let ehCache due its thang!
-    */
-    void function reap() output=false{
-		// Not implemented, let ehCache due its thang!		
-	}
-	
-	/**
-    * clear all elements from cache
-    */
-    void function clearAll() output=false{
-		var iData = {
-			cache	= this
-		};
-		
-		getObjectStore().removeAll();	
-		
-		// notify listeners		
-		getEventManager().processState("afterCacheClearAll",iData);
-	}
-	
-	/**
-    * clear an element from cache
-    */
-    any function clear(required any objectKey) output=false{
 
 		var thisCacheName = getConfiguration().cacheName;
-    if ( thisCacheName == "object") {
+		if ( thisCacheName == "object" ) {
+			// if we passed object to the cache put CF would use a user defined custom "object" cache rather than the default
+			cachePut(
+				arguments.objectKey,
+				arguments.object,
+				arguments.timeout,
+				arguments.lastAccessTimeout
+			);
+		} else {
+			cachePut(
+				arguments.objectKey,
+				arguments.object,
+				arguments.timeout,
+				arguments.lastAccessTimeout,
+				thisCacheName
+			);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Get the number of elements in the cache
+	 */
+	numeric function getSize(){
+		return getObjectStore().getSize();
+	}
+
+	/**
+	 * Send a reap or flush command to the cache: Not implemented by this provider
+	 *
+	 * @return ICacheProvider
+	 */
+	function reap(){
+		return this;
+	}
+
+	/**
+	 * Clear all the cache elements from the cache
+	 *
+	 * @return ICacheProvider
+	 */
+	function clearAll(){
+		var thisCacheName = getConfiguration().cacheName;
+   		if ( thisCacheName == "object") {
+			cacheRemoveAll();
+		} else {
+			cacheRemoveAll( thisCacheName );
+		}
+
+		// notify listeners
+		getEventManager().processState( "afterCacheClearAll", { cache = this } );
+	}
+
+	/**
+	 * Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore
+	 *
+	 * @objectKey The object cache key
+	 */
+	boolean function clear( required objectKey ){
+		var thisCacheName = getConfiguration().cacheName;
+   		if ( thisCacheName == "object") {
 			cacheRemove( arguments.objectKey, false );
 		} else {
 			cacheRemove( arguments.objectKey, false, thisCacheName );
 		}
-			
+
 		//ColdBox events
-		var iData = { 
+		getEventManager().processState( "afterCacheElementRemoved", {
 			cache				= this,
 			cacheObjectKey 		= arguments.objectKey
-		};		
-		getEventManager().processState("afterCacheElementRemoved",iData);
-		
+		} );
+
 		return true;
 	}
-	
+
 	/**
-    * clear with no stats
-    */
-    any function clearQuiet(required any objectKey) output=false{
-		getObjectStore().removeQuiet( ucase(arguments.objectKey) );
-		return true;
-	}
-	
-	/**
-	* Clear by key snippet
-	*/
-	void function clearByKeySnippet(required keySnippet,regex=false,async=false) output=false{
-		var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
-		
-		// Async? IF so, do checks
-		if( arguments.async AND NOT instance.utility.inThread() ){
-			thread name="#threadName#"{
-				instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
-			}
-		}
-		else{
-			instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
+	 * Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners
+	 *
+	 * @objectKey The object cache key
+	 */
+	boolean function clearQuiet( required objectKey ){
+		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+			return getObjectStore().removeQuiet( arguments.objectKey );
+		} else {
+			return getObjectStore().removeQuiet( ucase( arguments.objectKey ) );
 		}
 	}
-	
+
 	/**
-    * not implemented by cache
-    */
-    void function expireAll() output=false{ 
+	 * Expire all the elments in the cache (if supported by the provider):  Not implemented by this cache
+	 *
+	 * @return ICacheProvider
+	 */
+	function expireAll(){
 		// Just try to evict stuff, not a way to expire all elements.
 		getObjectStore().evictExpiredElements();
+		return this;
 	}
-	
+
 	/**
-    * not implemented by cache
-    */
-    void function expireObject(required any objectKey) output=false{
-		//not implemented
+	 * Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider) Not implemented by this cache
+	 *
+	 * @objectKey The object cache key
+	 *
+	 * @return ICacheProvider
+	 */
+	function expireObject( required objectKey ){
+		// not implemented
+		return this;
 	}
-	
+
+	/******************************** PRIVATE ********************************/
+
 	/**
-    * set the associated cache factory
-    */
-    void function setCacheFactory(required any cacheFactory) output=false{
-		instance.cacheFactory = arguments.cacheFactory;
+	 * Checks if the default cache is in use or another cache region
+	 */
+	private boolean function isDefaultCache(){
+		return  ( getConfiguration().cacheName EQ variables.DEFAULTS.cacheName );
+	}
+
+	/**
+	 * Validate the incoming configuration and make necessary defaults
+	 *
+	 * @return LuceeProvider
+	 **/
+	 private function validateConfiguration(){
+		 // Add in settings not discovered
+		structAppend( variables.configuration, variables.DEFAULTS );
+		// Validate configuration values, if they don't exist, then default them to DEFAULTS
+		for( var key in variables.DEFAULTS ){
+			if( NOT len( variables.configuration[ key ] ) ){
+				variables.configuration[ key ] = variables.DEFAULTS[ key ];
+			}
+		}
+
+		return this;
 	}
 
 }
-			 
+

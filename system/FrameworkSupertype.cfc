@@ -230,7 +230,7 @@ component serializable="false" accessors="true"{
 	* Get a named CacheBox Cache
 	* @name The name of the cache to retrieve, if not passed, it used the 'default' cache.
 	*
-	* @return coldbox.system.cache.IColdboxApplicationCache
+	* @return coldbox.system.cache.providers.IColdBoxProvider
 	*/
 	function getCache( name = "default" ){
 		return controller.getCache( arguments.name );
@@ -370,18 +370,50 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* Executes events with full life-cycle methods and returns the event results if any were returned.
-	* @event The event string to execute, if nothing is passed we will execute the application's default event.
-	* @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
-	* @private Execute a private event if set, else defaults to public events
-	* @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
-	* @eventArguments A collection of arguments to passthrough to the calling event handler method
-	* @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
-	* @cacheTimeout The time in minutes to cache the results
-	* @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
-	* @cacheSuffix The suffix to add into the cache entry for this event rendering
-	* @cacheProvider The provider to cache this event rendering in, defaults to 'template'
-	*/
+	 * Executes internal named routes with or without parameters. If the named route is not found or the route has no event to execute then this method will throw an `InvalidArgumentException`.
+	 * If you need a route from a module then append the module address: `@moduleName` or prefix it like in run event calls `moduleName:routeName` in order to find the right route.
+	 * The route params will be passed to events as action arguments much how eventArguments work.
+	 *
+	 * @name The name of the route
+	 * @params The parameters of the route to replace
+	 * @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	 * @cacheTimeout The time in minutes to cache the results
+	 * @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
+	 * @cacheSuffix The suffix to add into the cache entry for this event rendering
+	 * @cacheProvider The provider to cache this event rendering in, defaults to 'template'
+	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	any function runRoute(
+		required name,
+		struct params={},
+		boolean cache=false,
+		cacheTimeout="",
+		cacheLastAccessTimeout="",
+		cacheSuffix="",
+		cacheProvider="template",
+		boolean prePostExempt=false
+	){
+		return controller.runRoute( argumentCollection=arguments );
+	}
+
+	/**
+	 * Executes events with full life-cycle methods and returns the event results if any were returned.
+	 *
+	 * @event The event string to execute, if nothing is passed we will execute the application's default event.
+	 * @prePostExempt If true, pre/post handlers will not be fired. Defaults to false
+	 * @private Execute a private event if set, else defaults to public events
+	 * @defaultEvent The flag that let's this service now if it is the default event running or not. USED BY THE FRAMEWORK ONLY
+	 * @eventArguments A collection of arguments to passthrough to the calling event handler method
+	 * @cache Cached the output of the runnable execution, defaults to false. A unique key will be created according to event string + arguments.
+	 * @cacheTimeout The time in minutes to cache the results
+	 * @cacheLastAccessTimeout The time in minutes the results will be removed from cache if idle or requested
+	 * @cacheSuffix The suffix to add into the cache entry for this event rendering
+	 * @cacheProvider The provider to cache this event rendering in, defaults to 'template'
+	 *
+	 * @return null or any
+	 */
 	function runEvent(
 		event="",
 		boolean prePostExempt=false,

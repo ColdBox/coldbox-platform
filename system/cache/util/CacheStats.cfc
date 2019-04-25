@@ -1,131 +1,174 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * This is a cache statistics object.  We do not use internal method calls but leverage the properties directly so it is faster.
+ */
+component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 
-Author     :	Luis Majano
-Date        :	11/14/2007
-Description :
-	This is a cache statistics object.  We do not use internal method calls but
-	leverage the properties directly so it is faster.
------------------------------------------------------------------------>
-<cfcomponent output="false" hint="This object keeps the cache statistics" implements="coldbox.system.cache.util.ICacheStats">
+	/**
+	 * The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
+	 */
+	property name="cacheProvider" doc_generic="coldbox.system.cache.providers.ICacheProvider";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
-	<cffunction name="init" access="public" output="false" returntype="CacheStats" hint="Constructor">
-		<cfargument name="cacheProvider"required="true" hint="The associated cache manager/provider of type: coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider"/>
-		<cfscript>
-			instance = {
-				cacheProvider = arguments.cacheProvider
-			};
-			
-			// Init reap to right now
-			setLastReapDateTime(now());
-			
-			// Clear the stats to start fresh.
-			clearStatistics();
-			
-			return this;
-		</cfscript>
-	</cffunction>
-	
-<!------------------------------------------- PUBLIC ------------------------------------------->
-	
-	<!--- Get Associated Cache --->
-	<cffunction name="getAssociatedCache" access="public" output="false" returntype="any" hint="Get the associated cache provider/manager of type: coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider">
-		<cfreturn instance.cacheProvider>
-	</cffunction>
-	
-	<!--- Get Cache Performance --->
-	<cffunction name="getCachePerformanceRatio" access="public" output="false" returntype="any" hint="Get the cache's performance ratio">
-		<cfscript>
-		 	var requests = instance.hits + instance.misses;
-			
-		 	if ( requests eq 0){
-		 		return 0;
-			}
-			
-			return (instance.hits/requests) * 100;
-		</cfscript>
-	</cffunction>
-	
-	<!--- getObjectCount --->
-	<cffunction name="getObjectCount" access="public" output="false" returntype="any" hint="Get the associated cache's live object count">
-		<cfreturn getAssociatedCache().getSize()>
-	</cffunction>
-	
-	<!--- clear --->
-	<cffunction name="clearStatistics" output="false" access="public" returntype="void" hint="Clear the stats">
-		<cfscript>
-			instance.hits 					= 0;
-			instance.misses 				= 0;
-			instance.evictionCount 			= 0;
-			instance.garbageCollections 	= 0;
-		</cfscript>
-	</cffunction>	
+	/**
+	 * Recording of last reap
+	 */
+	property name="lastReapDateTime";
+	/**
+	 * Cache hits
+	 */
+	property name="hits" 				default="0";
+	/**
+	 * Cache misses
+	 */
+	property name="misses"				default="0";
+	/**
+	 * Eviction counts
+	 */
+	property name="evictionCount"		default="0";
+	/**
+	 * Garbage collection counts
+	 */
+	property name="garbageCollections" 	default="0";
 
-	<!--- Get/Set Garbage Collections --->
-	<cffunction name="getGarbageCollections" access="public" output="false" returntype="any" hint="Get the cache garbage collections">
-		<cfreturn instance.garbageCollections/>
-	</cffunction>	
-	
-	<!--- Eviction Count --->
-	<cffunction name="getEvictionCount" access="public" returntype="any" output="false" hint="Get the total cache eviction counts">
-		<cfreturn instance.evictionCount>
-	</cffunction>
-	
-	<!--- The hits --->
-	<cffunction name="getHits" access="public" returntype="any" output="false" hint="Get the cache hits">
-		<cfreturn instance.hits>
-	</cffunction>
-	
-	<!--- The Misses --->
-	<cffunction name="getMisses" access="public" returntype="any" output="false" hint="Get the cache misses">
-		<cfreturn instance.misses>
-	</cffunction>
-	
-	<!--- Last Reap Date Time --->
-	<cffunction name="getLastReapDatetime" access="public" returntype="any" output="false" hint="Get the last reaping date of the cache">
-		<cfreturn instance.lastReapDatetime>
-	</cffunction>
-	<cffunction name="setLastReapDatetime" access="public" returntype="void" output="false" hint="Set when the last reaping date of the cache was done">
-		<cfargument name="lastReapDatetime" type="string" required="true">
-		<cfset instance.lastReapDatetime = arguments.lastReapDatetime>
-	</cffunction>
-	
-	<!--- Record an eviction Hit --->
-	<cffunction name="evictionHit" access="public" output="false" returntype="void" hint="Record an eviction hit">
-		<cfscript>
-			instance.evictionCount++;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Record a GC Hit --->
-	<cffunction name="GCHit" access="public" output="false" returntype="void" hint="Record a garbage collection hit">
-		<cfscript>
-			instance.garbageCollections++;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Record a Hit --->
-	<cffunction name="hit" access="public" output="false" returntype="void" hint="Record a hit">
-		<cfscript>
-			instance.hits++;
-		</cfscript>
-	</cffunction>
+	/**
+	 * Constructor
+	 *
+	 * @cacheProvider The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
+	 * @cacheProvider.doc_generic coldbox.system.cache.providers.ICacheProvider
+	 */
+	function init( required cacheProvider ){
 
-	<!--- Record a Miss --->
-	<cffunction name="miss" access="public" output="false" returntype="void" hint="Record a miss">
-		<cfscript>
-			instance.misses++;
-		</cfscript>
-	</cffunction>
-	
-	<!--- getMemento --->
-	<cffunction name="getMemento" output="false" access="public" returntype="any" hint="Get the stats memento">
-		<cfreturn instance>
-	</cffunction>
+		variables.cacheProvider = arguments.cacheProvider;
+		// Clear the stats to start fresh.
+		clearStatistics();
 
-</cfcomponent>
+		return this;
+	}
+
+	/**
+	 * Get the associated cache provider/manager of type: coldbox.system.cache.providers.ICacheProvider
+	 *
+	 * @return coldbox.system.cache.providers.ICacheProvider
+	 */
+	function getAssociatedCache(){
+		return variables.cacheProvider;
+	}
+
+	/**
+	 * Get the cache's performance ratio
+	 */
+	numeric function getCachePerformanceRatio(){
+		var requests = variables.hits + variables.misses;
+
+		if ( requests eq 0 ){
+			return 0;
+		}
+
+		return ( variables.hits / requests ) * 100;
+	}
+
+	/**
+	 * Get the associated cache's live object count
+	 */
+	numeric function getObjectCount(){
+		return getAssociatedCache().getSize();
+	}
+
+	/**
+	 * Clear the stats
+	 *
+	 * @return ICacheStats
+	 */
+	function clearStatistics(){
+		variables.lastReapDatetime 		= now();
+		variables.hits 					= 0;
+		variables.misses 				= 0;
+		variables.evictionCount 		= 0;
+		variables.garbageCollections 	= 0;
+
+		return this;
+	}
+
+	/**
+	 * Get the total cache's garbage collections
+	 */
+	numeric function getGarbageCollections(){
+		return variables.garbageCollections;
+	}
+
+	/**
+	 * Get the total cache's eviction count
+	 */
+	numeric function getEvictionCount(){
+		return variables.evictionCount;
+	}
+
+	/**
+	 * Get the total cache's hits
+	 */
+	numeric function getHits(){
+		return variables.hits;
+	}
+
+	/**
+	 * Get the total cache's misses
+	 */
+	numeric function getMisses(){
+		return variables.misses;
+	}
+
+	/**
+	 * Get the date/time of the last reap the cache did
+	 *
+	 * @return date/time or empty
+	 */
+	function getLastReapDatetime(){
+		return variables.lastReapDatetime;
+	}
+
+	/**
+	 * Record an eviction hit
+	 */
+	CacheStats function evictionHit(){
+		variables.evictionCount++;
+		return this;
+	}
+
+	/**
+	 * Record an garbage collection hit
+	 */
+	CacheStats function GCHit(){
+		variables.garbageCollections++;
+		return this;
+	}
+
+	/**
+	 * Record an cache hit
+	 */
+	CacheStats function hit(){
+		variables.hits++;
+		return this;
+	}
+
+	/**
+	 * Record an cache miss
+	 */
+	CacheStats function miss(){
+		variables.misses++;
+		return this;
+	}
+
+	/**
+	 * A quick snapshot of the stats state
+	 */
+	struct function getMemento(){
+		return variables.filter( function( k, v ){
+			return ( !isCustomFunction( v ) && !isObject( v ) );
+		} );
+	}
+
+}

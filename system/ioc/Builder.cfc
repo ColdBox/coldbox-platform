@@ -385,7 +385,7 @@
 		switch( DSLNamespace ){
 
 			// ColdBox Context DSL
-			case "coldbox" : {
+			case "coldbox" : case "box" : {
 				if( !variables.injector.isColdBoxLinked() ){
 					throw(
 						message	= "The DSLNamespace: #DSLNamespace# cannot be used as it requires a ColdBox Context",
@@ -727,6 +727,8 @@
 			arguments.target.injectMixin( 'init', baseObject.init );
 		}
 
+		// local reference to arguments to use in closures below
+		var args = arguments;
 		baseObject.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ) {
@@ -735,17 +737,17 @@
 			.each( function( propertyName, propertyValue ){
 				// inject the property/method now
 				if( !isNull( propertyValue ) ) {
-					target.injectPropertyMixin( propertyName, propertyValue );
+					args.target.injectPropertyMixin( propertyName, propertyValue );
 				}
 				// Do we need to do automatic generic getter/setters
 				if( generateAccessors and baseProperties.keyExists( propertyName ) ){
 
-					if( ! structKeyExists( target, "get#propertyName#" ) ){
-						target.injectMixin( "get" & propertyName, variables.genericGetter );
+					if( ! structKeyExists( args.target, "get#propertyName#" ) ){
+						args.target.injectMixin( "get" & propertyName, variables.genericGetter );
 					}
 
-					if( ! structKeyExists( target, "set#propertyName#" ) ){
-						target.injectMixin( "set" & propertyName, variables.genericSetter );
+					if( ! structKeyExists( args.target, "set#propertyName#" ) ){
+						args.target.injectMixin( "set" & propertyName, variables.genericSetter );
 					}
 
 				}

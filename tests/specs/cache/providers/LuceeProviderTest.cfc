@@ -1,16 +1,4 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-
-Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	Request service Test
------------------------------------------------------------------------>
-<cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseTestCase" output="false" skip="isLucee">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseTestCase" skip="isLucee"{
 
 	this.loadColdBox = false;
 
@@ -21,16 +9,16 @@ Description :
 	function setup(){
 		super.setup();
 
-		//Mocks
-		mockFactory  = createEmptyMock(className='coldbox.system.cache.CacheFactory');
-		mockEventManager  = createEmptyMock(className='coldbox.system.core.events.EventPoolManager');
-		mockLogBox	 = createEmptyMock( "coldbox.system.logging.LogBox" );
-		mockLogger	 = createEmptyMock( "coldbox.system.logging.Logger" );
+		// Mocks
+		mockFactory       = createMock( 'coldbox.system.cache.CacheFactory' );
+		mockEventManager  = createMock( 'coldbox.system.core.events.EventPoolManager' );
+		mockLogBox	      = createMock( "coldbox.system.logging.LogBox" );
+		mockLogger	 	  = createMock( "coldbox.system.logging.Logger" );
 
 		// Mock Methods
-		mockFactory.$( "getLogBox",mockLogBox);
-		mockLogBox.$( "getLogger", mockLogger);
-		mockLogger.$( "error" ).$( "debug" ).$( "info" ).$( "canDebug", false);
+		mockFactory.setLogBox( mockLogBox );
+		mockLogBox.$( "getLogger", mockLogger );
+		mockLogger.$( "error" ).$( "debug" ).$( "info" ).$( "canDebug", false );
 		mockEventManager.$( "processState" );
 
 		// Config
@@ -186,5 +174,5 @@ Description :
 	private function cacheProducer(){
 		return { date=now(), name="luis majano", id = createUUID() };
 	}
-</cfscript>
-</cfcomponent>
+
+}

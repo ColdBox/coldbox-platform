@@ -5,7 +5,7 @@
 * A utility Facade to help in storing data in multiple CF Storages
 */
 component{
-	
+
 	// Static list of valid scopes
 	variables.SCOPES = "application|client|cookie|session|server|request";
 
@@ -54,10 +54,10 @@ component{
 		} else if ( structKeyExists( arguments, "defaultValue" ) ){
 			return arguments.defaultValue;
 		}
-		
+
 		throw(
 			type 	= "ScopeStorage.KeyNotFound",
-			message = "The key #arguments.key# does not exist in the #arguments.scope# scope."	
+			message = "The key #arguments.key# does not exist in the #arguments.scope# scope."
 		);
 	}
 
@@ -76,12 +76,14 @@ component{
 	 */
 	any function getScope( required scope ){
 		scopeCheck( arguments.scope );
-			
+
 		switch( arguments.scope ){
-			case "session" : { 
+			case "session" : {
 				return ( isDefined( "session" ) ? session : {} );
 			}
-			case "application"  : return application;
+			case "application"  : {
+				return ( isDefined( "application" ) ? application : {} );
+			};
 			case "server"  		: return server;
 			case "client"  		: return client;
 			case "cookie"  		: return cookie;

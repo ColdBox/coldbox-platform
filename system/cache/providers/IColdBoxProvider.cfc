@@ -4,53 +4,26 @@
  * ---
  * @author Luis Majano
  *
- * This CacheBox provider communicates with the built in CacheBox caches
+ * The main interface to produce a ColdBox Application cache.
  */
-component
-	accessors="true"
-	serializable="false"
-	implements="coldbox.system.cache.providers.IColdBoxProvider"
-	extends="coldbox.system.cache.providers.CacheBoxProvider"
-{
-
-	// Cache Prefixes
-	this.VIEW_CACHEKEY_PREFIX 	= "cbox_view-";
-	this.EVENT_CACHEKEY_PREFIX 	= "cbox_event-";
-
-	/**
-	 * Constructor
-	 */
-	function init(){
-		super.init();
-
-		// URL Facade Utility
-		variables.eventURLFacade = new coldbox.system.cache.util.EventURLFacade( this );
-
-		return this;
-	}
+interface extends="coldbox.system.cache.providers.ICacheProvider"{
 
 	/**
 	 * Get the cached view key prefix which is necessary for view caching
 	 */
-	function getViewCacheKeyPrefix(){
-		return this.VIEW_CACHEKEY_PREFIX;
-	};
+	function getViewCacheKeyPrefix();
 
 	/**
 	 * Get the event cache key prefix which is necessary for event caching
 	 */
-	function getEventCacheKeyPrefix(){
-		return this.EVENT_CACHEKEY_PREFIX;
-	}
+	function getEventCacheKeyPrefix();
 
 	/**
 	 * Get the coldbox application reference as coldbox.system.web.Controller
 	 *
 	 * @return coldbox.system.web.Controller
 	 */
-	function getColdbox(){
-		return variables.coldbox;
-	}
+	function getColdbox();
 
 	/**
 	 * Set the ColdBox linkage into the provider
@@ -60,19 +33,14 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function setColdBox( required coldbox ){
-		variables.coldbox = arguments.coldbox;
-		return this;
-	}
+	function setColdBox( required coldbox );
 
 	/**
 	 * Get the event caching URL facade utility that determines event caching
 	 *
 	 * @return coldbox.system.cache.util.EventURLFacade
 	 */
-	function getEventURLFacade(){
-		return variables.eventURLFacade;
-	}
+	function getEventURLFacade();
 
 	/**
 	 * Clears all events from the cache.
@@ -81,20 +49,7 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearAllEvents( boolean async=false ){
-		var threadName = "clearAllEvents_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
-
-		// Async? IF so, do checks
-		if( arguments.async AND NOT variables.utility.inThread() ){
-			thread name="#threadName#"{
-				variables.elementCleaner.clearAllEvents();
-			}
-		}
-		else{
-			variables.elementCleaner.clearAllEvents();
-		}
-		return this;
-	}
+	function clearAllEvents( boolean async );
 
 	/**
 	 * Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
@@ -104,32 +59,7 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEvent( required eventSnippet, queryString="" ){
-		variables.elementCleaner.clearEvent( arguments.eventsnippet, arguments.queryString );
-		return this;
-	}
-
-	/**
-	 * Clears all views from the cache.
-	 *
-	 * @async Run command asynchronously or not
-	 *
-	 * @return IColdboxApplicationCache
-	 */
-	function clearAllViews( boolean async=false ){
-		var threadName = "clearAllViews_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
-
-		// Async? IF so, do checks
-		if( arguments.async AND NOT variables.utility.inThread() ){
-			thread name="#threadName#"{
-				variables.elementCleaner.clearAllViews();
-			}
-		}
-		else{
-			variables.elementCleaner.clearAllViews();
-		}
-		return this;
-	}
+	function clearEvent( required eventSnippet, queryString="" );
 
 	/**
 	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
@@ -139,10 +69,7 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearEventMulti( required eventsnippets, queryString="" ){
-		variables.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
-		return this;
-	}
+	function clearEventMulti( required eventsnippets, queryString="" );
 
 	/**
 	 * Clears all view name permutations from the cache according to the view name
@@ -151,10 +78,7 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearView( required viewSnippet ){
-		variables.elementCleaner.clearView(arguments.viewSnippet);
-		return this;
-	}
+	function clearView( required viewSnippet );
 
 	/**
 	 * Clears all view name permutations from the cache according to the view name.
@@ -163,9 +87,15 @@ component
 	 *
 	 * @return IColdboxApplicationCache
 	 */
-	function clearViewMulti( required viewSnippets ){
-		variables.elementCleaner.clearView(arguments.viewsnippets);
-		return this;
-	}
+	function clearViewMulti( required viewSnippets );
+
+	/**
+	 * Clears all views from the cache.
+	 *
+	 * @async Run command asynchronously or not
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearAllViews( boolean async );
 
 }

@@ -168,7 +168,9 @@ component extends="coldbox.system.web.services.BaseService"{
 		if( len( arguments.invocationPath ) ){
 			// Check if passed module name is already registered
 			if( structKeyExists( variables.moduleRegistry, arguments.moduleName ) AND !arguments.force ){
-				variables.logger.warn( "The module #arguments.moduleName# has already been registered, so skipping registration" );
+				if( variables.logger.canDebug() ){
+					variables.logger.debug( "The module #arguments.moduleName# has already been registered, so skipping registration" );
+				}
 				return false;
 			}
 			// register new incoming location

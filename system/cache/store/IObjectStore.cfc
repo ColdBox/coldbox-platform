@@ -1,78 +1,109 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * The main interface for CacheBox object storages.
+ * A store is a physical counterpart to a cache, in which objects are kept, indexed and monitored.
+ */
+interface{
 
-Author 	    :	Luis Majano
-Description :
-	The main interface for CacheBox object storages.
-	A store is a physical counterpart to a cache, in which objects are kept, indexed and monitored.
+	/**
+     * Flush the store to a permanent storage
+     */
+    void function flush();
 
------------------------------------------------------------------------>
-<cfinterface hint="The main interface for CacheBox object storages.">
+	/**
+	 * Reap the storage
+	 */
+	void function reap();
 
-	<!--- flush --->
-    <cffunction name="flush" output="false" access="public" returntype="void" hint="Flush the store to a permanent storage">
-    </cffunction>
-	
-	<!--- reap --->
-    <cffunction name="reap" output="false" access="public" returntype="void" hint="Reap the storage, clean it from old stuff">
-    </cffunction>
-	
-	<!--- clearAll --->
-    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all elements of the store">
-    </cffunction>
-	
-	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="any" output="false" hint="Get the store's pool metadata indexer structure" doc_generic="coldbox.system.cache.store.indexers.MetadataIndexer">
-	</cffunction>
-	
-	<!--- getKeys --->
-	<cffunction name="getKeys" output="false" access="public" returntype="any" hint="Get all the store's object keys array" doc_generic="Array">
-	</cffunction>
-	
-	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in the store">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-	</cffunction>
-	
-	<!--- get --->
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from the store">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-	</cffunction>
-	
-	<!--- getQuiet --->
-	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from the store with no stat updates">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-	</cffunction>
-	
-	<!--- expireObject --->
-	<cffunction name="expireObject" output="false" access="public" returntype="void" hint="Mark an object for expiration">
-		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-	</cffunction>
-	
-	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not" doc_generic="Boolean">
-    	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-    </cffunction>
-	
-	<!--- Set an Object in the pool --->
-	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in the storage.">
-		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
-		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
-		<cfargument name="timeout"				type="any"  hint="Timeout in minutes">
-		<cfargument name="lastAccessTimeout"	type="any"  hint="Timeout in minutes">
-		<cfargument name="extras" 				type="any" 	hint="A map of extra name-value pairs"/>
-	</cffunction>
-	
-	<!--- Clear an object from the pool --->
-	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool" doc_generic="Boolean">
-		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-	</cffunction>
+	/**
+	 * Clear all the elements in the store
+	 */
+	void function clearAll();
 
-	<!--- Get the size of the pool --->
-	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the store's size" doc_generic="numeric">
-	</cffunction>
-	
-</cfinterface>
+	/**
+     * Get the store's pool metadata indexer structure
+	 *
+	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
+     */
+    function getIndexer();
+
+	 /**
+     * Get all the store's object keys array
+	 *
+	 * @return array
+     */
+    function getKeys();
+
+	/**
+	 * Check if an object is in the store
+	 *
+	 * @objectKey The key to lookup
+	 *
+	 * @return boolean
+	 */
+	function lookup( required objectKey );
+
+	/**
+	 * Get an object from the store with metadata tracking
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function get( required objectKey );
+
+	/**
+	 * Get an object from cache with no metadata tracking
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function getQuiet( required objectKey );
+
+    /**
+	 * Expire an object
+	 *
+	 * @objectKey The key to expire
+	 */
+	void function expireObject( required objectKey );
+
+    /**
+	 * Expire check
+	 *
+	 * @objectKey The key to check
+	 *
+	 * @return boolean
+	 */
+	function isExpired( required objectKey );
+
+	/**
+	 * Sets an object in the storage
+	 *
+	 * @objectKey The object key
+	 * @object The object to save
+	 * @timeout Timeout in minutes
+	 * @lastAccessTimeout Idle Timeout in minutes
+	 * @extras A map of extra name-value pairs to store alongside the object
+	 */
+	void function set(
+		required objectKey,
+		required object,
+		timeout,
+		lastAccessTimeout,
+		extras
+	);
+
+	/**
+	 * Clears an object from the storage
+	 *
+	 * @objectKey The object key to clear
+	 */
+	function clear( required objectKey );
+
+    /**
+	 * Get the size of the store
+	 */
+	function getSize();
+
+}

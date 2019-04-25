@@ -26,7 +26,7 @@ Description :
     <cffunction name="selfAutowire" output="false" access="private" hint="Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path.">
 		<cfscript>
 			var script_name = cgi.script_name;
-			// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists. 
+			// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists.
 			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' || !verifyColdBox( throwOnNotExist=false ) ) {
 				return;
 			}
@@ -99,10 +99,10 @@ Description :
 
 			// Test event Name in the arguemnts.
 			if( not structKeyExists( arguments, event.getEventName() ) ){
-				throw( 
+				throw(
 					message="Event not detected",
 					detail="The #event.geteventName()# variable does not exist in the arguments.",
-					type="ColdBoxProxy.NoEventDetected" 
+					type="ColdBoxProxy.NoEventDetected"
 				);
 			}
 
@@ -212,11 +212,11 @@ Description :
 	<cffunction name="verifyColdBox" output="false" access="private" returntype="boolean" hint="Verify the coldbox app">
 		<cfargument name="throwOnNotExist" default="true">
 		<cfscript>
-			
+
 			//Verify the coldbox app is ok, else throw
 			if ( not structKeyExists(application,COLDBOX_APP_KEY) ){
 				if( arguments.throwOnNotExist ) {
-					throw( message="ColdBox Controller Not Found", 
+					throw( message="ColdBox Controller Not Found",
 						   detail="The coldbox main controller has not been initialized",
 						   type="ColdBoxProxy.ControllerIllegalState");
 				} else {
@@ -303,7 +303,7 @@ Description :
 	</cffunction>
 
 	<!--- Get a CacheBox Cache --->
-	<cffunction name="getCache" access="private" output="false" returntype="any" hint="Get a CacheBox Cache Provider" doc_generic="coldbox.system.cache.IColdboxApplicationCache">
+	<cffunction name="getCache" access="private" output="false" returntype="any" hint="Get a CacheBox Cache Provider" doc_generic="coldbox.system.cache.providers.IColdBoxProvider">
 		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
 		<cfreturn getController().getCache( arguments.cacheName )/>
 	</cffunction>
