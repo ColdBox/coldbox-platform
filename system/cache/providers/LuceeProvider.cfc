@@ -79,9 +79,9 @@ component
 	}
 
 	/**
-	 * Get the cache statistics object as coldbox.system.cache.util.ICacheStats
+	 * Get the cache statistics object as coldbox.system.cache.util.IStats
 	 *
-	 * @return coldbox.system.cache.util.ICacheStats
+	 * @return coldbox.system.cache.util.IStats
 	 */
 	function getStats(){
 		return new "coldbox.system.cache.providers.lucee-lib.LuceeStats"( this );

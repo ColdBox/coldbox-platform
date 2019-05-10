@@ -6,7 +6,7 @@
  *
  * This is a cache statistics object.  We do not use internal method calls but leverage the properties directly so it is faster.
  */
-component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
+component implements="coldbox.system.cache.util.IStats" accessors="true"{
 
 	/**
 	 * The associated cache manager/provider of type: coldbox.system.cache.providers.ICacheProvider
@@ -81,7 +81,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	/**
 	 * Clear the stats
 	 *
-	 * @return ICacheStats
+	 * @return IStats
 	 */
 	function clearStatistics(){
 		variables.lastReapDatetime 		= now();

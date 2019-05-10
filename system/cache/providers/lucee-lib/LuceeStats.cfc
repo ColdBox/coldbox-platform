@@ -9,7 +9,7 @@ Description:
 A coldfusion statistics object that communicates with the lucee cache stats
 
 */
-component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
+component implements="coldbox.system.cache.util.IStats" accessors="true"{
 
 	property name="cacheProvider" serializable="false";
 
@@ -48,7 +48,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	/**
 	 * Clear the stats
 	 *
-	 * @return ICacheStats
+	 * @return IStats
 	 */
 	function clearStatistics(){
 		return this;
