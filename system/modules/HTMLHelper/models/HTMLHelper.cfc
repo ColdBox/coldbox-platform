@@ -2363,7 +2363,11 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 							"#appPath##includesLocation#/#arguments.buildDirectory#/rev-manifest.json";
 
 		// Calculat href for asset delivery via Browser
-		var href 	= "/#mapping#/#includesLocation#/#arguments.fileName#";
+		if( mapping.len() ){
+			var href 	= "/#mapping#/#includesLocation#/#arguments.fileName#";
+		} else {
+			var href 	= "/#includesLocation#/#arguments.fileName#";
+		}
 		var key 	= reReplace( href, "^/", "" );
 
 		// Verify manifest
