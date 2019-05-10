@@ -9,7 +9,7 @@ Description:
 A coldfusion statistics object that communicates with the CF ehCache stats
 
 */
-component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
+component implements="coldbox.system.cache.util.IStats" accessors="true"{
 
 	property name="cacheStats" serializable="false";
 
@@ -51,7 +51,7 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	/**
 	 * Clear the stats
 	 *
-	 * @return ICacheStats
+	 * @return IStats
 	 */
 	function clearStatistics(){
 		if( server.coldfusion.productVersion.listFirst() == 11 ){

@@ -634,6 +634,14 @@ component extends="coldbox.system.web.services.BaseService"{
 				variables.mConfigCache[ arguments.moduleName ].onLoad();
 			}
 
+			// Mark it as loaded as it is now activated
+			mConfig.activated = true;
+
+			// Now activate any children
+			mConfig.childModules.each( function( thisChild ){
+				activateModule( moduleName=thisChild );
+			} );
+
 			// postModuleLoad interception
 			interceptorService.processState(
 				"postModuleLoad",
@@ -643,14 +651,6 @@ component extends="coldbox.system.web.services.BaseService"{
 					moduleConfig   = mConfig
 				}
 			);
-
-			// Mark it as loaded as it is now activated
-			mConfig.activated = true;
-
-			// Now activate any children
-			mConfig.childModules.each( function( thisChild ){
-				activateModule( moduleName=thisChild );
-			} );
 
 			// Log it
 			if( variables.logger.canDebug() ){
