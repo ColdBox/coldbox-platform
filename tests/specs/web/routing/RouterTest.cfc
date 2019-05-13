@@ -43,8 +43,6 @@ component extends="coldbox.system.testing.BaseModelTest"{
 			});
 
 			story( "I want to group routes with common options", function(){
-
-
 				given( "a grouped route with handler and pattern only", function(){
 					then( "it should store the route with common options", function(){
 						router.group( { pattern="/api", handler="api" }, function( options ){
@@ -156,7 +154,25 @@ component extends="coldbox.system.testing.BaseModelTest"{
 							);
 						} );
 					} );
-				});
+                });
+
+                given( "different HTTP verbs for the same route", function(){
+                    then( "both verbs should be registered", function(){
+                        router.post( "photos/", "photos.create" );
+                        router.get( "photos/", "photos.index" );
+
+                        var routes = router.getRoutes();
+                        expect( routes ).toBeArray();
+                        expect( routes ).toHaveLength( 1, "One route should be registered" );
+                        expect( routes[ 1 ].pattern ).toBe( "photos/" );
+                        expect( routes[ 1 ].action ).toBeStruct();
+                        expect( routes[ 1 ].action ).toHaveLength( 2, "The registered route should have two actions" );
+                        expect( routes[ 1 ].action ).toBe( {
+                            "GET" = "photos.index",
+                            "POST" = "photos.create"
+                        } );
+                    });
+                });
 			} );
 
 			story( "I can register module routes", function(){
@@ -428,7 +444,32 @@ component extends="coldbox.system.testing.BaseModelTest"{
 				});
 			});
 
-
+            story( "I can register a suite of routes with resources", function() {
+                given( "I register a resource", function() {
+                    then( "I should have a suite of routes for that resource", function() {
+                        router.resources( "photos" );
+                        var routes = router.getRoutes();
+                        expect( routes ).toBeArray();
+                        expect( routes ).toHaveLength( 4 );
+                        expect( routes[ 1 ].pattern ).toBe( "photos/:id/edit/" );
+                        expect( routes[ 1 ].action ).toBe( { "GET" = "edit" } );
+                        expect( routes[ 2 ].pattern ).toBe( "photos/new/" );
+                        expect( routes[ 2 ].action ).toBe( { "GET" = "new" } );
+                        expect( routes[ 3 ].pattern ).toBe( "photos/:id/" );
+                        expect( routes[ 3 ].action ).toBe( {
+                            "GET" = "show",
+                            "PATCH" = "update",
+                            "PUT" = "update",
+                            "DELETE" = "delete"
+                        } );
+                        expect( routes[ 4 ].pattern ).toBe( "photos/" );
+                        expect( routes[ 4 ].action ).toBe( {
+                            "GET" = "index",
+                            "POST" = "create"
+                        } );
+                    } );
+                } );
+            } );
 		});
 	}
 
