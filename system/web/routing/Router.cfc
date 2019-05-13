@@ -761,7 +761,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 
         // Check for existing route matches
         var matchingRoutes = variables.routes.filter( function( route ) {
-            return route.pattern == thisRoute.pattern;
+            return route.pattern == thisRoute.pattern &&
+                route.domain == thisRoute.domain;
         } );
         if ( ! matchingRoutes.isEmpty() ) {
             var matchingRoute = matchingRoutes[ 1 ];
@@ -779,7 +780,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
             }
             matchingRoute.action = actions;
             matchingRoute.verbs = "";
-            return;
+            return this;
         }
 
 		// Check if we have optional args by looking for a ?
