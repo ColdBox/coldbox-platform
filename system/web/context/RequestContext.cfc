@@ -968,7 +968,7 @@ component serializable=false accessors="true"{
         return arrayToList( [
             isSSL() ? "https://" : "http://",
             CGI.SERVER_NAME,
-			listLen( variables.SESBaseURL, ':' ) == 3 ? ":" & CGI.SERVER_PORT : "",
+			listFind( "80,443", cgi.server_port ) ? "" : cgi.server_port,
             isSES() ? "" : "/index.cfm",
             CGI.PATH_INFO,
             CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
