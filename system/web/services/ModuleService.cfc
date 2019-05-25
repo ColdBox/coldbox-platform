@@ -268,6 +268,8 @@ component extends="coldbox.system.web.services.BaseService"{
 				modelNamespace		= modName,
 				// Auto map models flag
 				autoMapModels		= true,
+				// Auto process models for metadata and annotations, default is lazy loading now due to performance
+				autoProcessModels 	= false,
 				// when this registration ocurred
 				loadTime 			= now(),
 				// Flag that denotes if the module has been activated or not
@@ -522,10 +524,10 @@ component extends="coldbox.system.web.services.BaseService"{
 				var binder 		= variables.wirebox.getBinder();
 
 				if( len( mConfig.modelNamespace ) ){
-					binder.mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#" );
+					binder.mapDirectory( packagePath=packagePath, namespace="@#mConfig.modelNamespace#", process=mConfig.autoProcessModels );
 				} else {
 					// just register with no namespace
-					binder.mapDirectory( packagePath=packagePath );
+					binder.mapDirectory( packagePath=packagePath, process=mConfig.autoProcessModels );
 				}
 
 				// Register Default Module Export if it exists as @moduleName, so you can do getInstance( "@moduleName" )
