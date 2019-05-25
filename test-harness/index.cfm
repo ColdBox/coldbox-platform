@@ -10,7 +10,7 @@ Description :
 <cfoutput>
 	<div>
 		Total Request Time: #numberFormat( getTickCount() - request.fwRequestStart )#ms <br>
-		WireBox Mappings: #application.wirebox.getBinder().getMappings().len()#
+		WireBox Mappings: #structCount( application.wirebox.getBinder().getMappings() )#
 	</div>
 </cfoutput>
 <cfsetting enablecfoutputonly="no">

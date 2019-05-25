@@ -535,7 +535,7 @@ component extends="coldbox.system.web.services.BaseService"{
  				}
 
 				// Process mapped data
-				binder.processMappings();
+				//binder.processMappings();
 			}
 
 			// Register Interceptors with Announcement service
