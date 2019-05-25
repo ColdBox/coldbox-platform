@@ -48,6 +48,7 @@ component{
 
 	// request start
 	public boolean function onRequestStart(String targetPage){
+		request.fwRequestStart = getTickCount();
 
 		if( structKeyExists( url, "appstop" ) ){
 			applicationStop();abort;
