@@ -5,6 +5,7 @@
 <!--- Executes all tests in the 'specs' folder with simple reporter by default --->
 <cfparam name="url.reporter" 			default="simple">
 <cfparam name="url.directory" 			default="tests.specs">
+
 <!--- Regex list of exclusions --->
 <cfparam name="url.directoryExcludes" 	default="/(cache|ioc|logging)">
 <cfparam name="url.recurse" 			default="true" type="boolean">
@@ -13,6 +14,14 @@
 <cfparam name="url.reportpath" 			default="#expandPath( '/tests/results' )#">
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
+
+<cfparam name="url.coverageEnabled" default="true">
+<cfparam name="url.coverageSonarQubeXMLOutputPath" default="">
+<cfparam name="url.coveragePathToCapture" default="#expandPath( '/coldbox/system' )#">
+<cfparam name="url.coverageWhitelist" default="">
+<cfparam name="url.coverageBlacklist" default="/stubs/**">
+<cfparam name="url.coverageBrowserOutputDir" default="#expandPath( '/tests/results/coverageReport' )#">
+
 <cfscript>
 // Directory Filter: return true use, false do not process.
 function directoryFilter( required bundlePath ){
