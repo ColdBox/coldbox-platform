@@ -149,8 +149,11 @@ component accessors="true"{
 				}// end for discovery
 
 				// Log
-				if( variables.log.canDebug() ){
-					variables.log.debug( "Aspect class matching dictionary built for mapping: #mappingName#, aspects: #matchedAspects.toString()#" );
+				if( matchedAspects.len() && variables.log.canDebug() ){
+					var matchingAspects = matchedAspects.reduce( function( aggregator, thisAspect ) {
+						return aggregator.listAppend( thisAspect.aspects.toList() );
+					}, '' );
+					variables.log.debug( "Aspect class matching dictionary built for mapping: [#mappingName#], aspects: [#matchingAspects#]" );
 				}
 
 				// Store matched dictionary
