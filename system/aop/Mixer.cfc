@@ -151,7 +151,11 @@ component accessors="true"{
 				// Log
 				if( matchedAspects.len() && variables.log.canDebug() ){
 					var matchingAspects = matchedAspects.reduce( function( aggregator, thisAspect ) {
-						return aggregator.listAppend( thisAspect.aspects.toList() );
+						var aspectList = thisAspect.aspects;
+						if( isArray( aspectList ) ) {
+							aspectList = aspectList.toList();
+						} 
+						return aggregator.listAppend( aspectList );
 					}, '' );
 					variables.log.debug( "Aspect class matching dictionary built for mapping: [#mappingName#], aspects: [#matchingAspects#]" );
 				}
