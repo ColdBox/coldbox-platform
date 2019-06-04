@@ -1,6 +1,7 @@
 {
     "app":{
-        "cfengine":"adobe@11"
+        "cfengine":"adobe@11",
+        "serverHomeDirectory":".engine/adobe11"
     },
     "name":"coldbox-adobe@11",
     "force":true,
