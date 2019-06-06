@@ -2351,7 +2351,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		// Calculate app path depending on module or app
 		var appPath = ( arguments.useModuleRoot && len( currentModule ) ) ?
-						controller.getSettings( "modules" ).find( currentModule ).path & "/":
+						controller.getSetting( "modules" ).find( currentModule ).path & "/":
 						controller.getSetting( "applicationPath" );
 		var mapping = ( arguments.useModuleRoot && len( currentModule ) ) ?
 						event.getModuleRoot() :
