@@ -1026,7 +1026,10 @@ component serializable="false" accessors="true"{
 		struct argCollection={},
 		boolean private=false
 	){
-		return arguments.target._privateInvoker( method=arguments.method, argCollection=arguments.argCollection );
+		if( arguments.private ){
+			return arguments.target._privateInvoker( method=arguments.method, argCollection=arguments.argCollection );
+		}
+		return invoke( arguments.target, arguments.method, arguments.argCollection );
 	}
 
 	/**
