@@ -1,442 +1,558 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author 	    :	Luis Majano
-Description :
-	I am a cool cool JDBC Store for CacheBox
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * I am a cool cool JDBC Store for CacheBox
+ * You need to create the table first with the following columns
+ *
+ * id 					- varchar(100) PK
+ * objectKey 			- varchar(255)
+ * objectValue			- clob, longtext, etc
+ * hits					- integer
+ * timeout				- integer
+ * lastAccessTimeout 	- integer
+ * created				- datetime or timestamp
+ * lastAccessed			- datetime or timestamp
+ * isExpired			- tinyint or boolean
+ * isSimple				- tinyint or boolean
+ *
+ * We also recommend indexes for: hits, created, lastAccessed, timeout and isExpired columns.
+ *
+ * Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your DB.
+ */
+component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 
-You need to create the table first with the following columns
+	/**
+	 * The cache provider reference
+	 */
+	property name="cacheProvider" doc_generic="coldbox.system.cache.providers.ICacheProvider";
 
-id 					- varchar(100) PK
-objectKey 			- varchar(255)
-objectValue			- clob, longtext, etc
-hits				- integer
-timeout				- integer
-lastAccessTimeout 	- integer
-created				- datetime or timestamp
-lastAccessed		- datetime or timestamp
-isExpired			- tinyint or boolean
-isSimple			- tinyint or boolean
+	/**
+	 * The human store name
+	 */
+	property name="storeID";
 
-We also recommend indexes for: hits, created, lastAccessed, timeout and isExpired columns.
+	/**
+	 * The metadata indexer object
+	 */
+	property name="indexer" doc_generic="coldbox.system.cache.store.indexers.MetadataIndexer";
 
-Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your DB.
------------------------------------------------------------------------>
-<cfcomponent hint="I am a cool cool JDBC Store for CacheBox" output="false" implements="coldbox.system.cache.store.IObjectStore">
+	/**
+	 * The object serializer and deserializer utility
+	 */
+	property name="converter" doc_generic="coldbox.system.core.conversion.ObjectMarshaller";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	 * The datasource to use for the connection
+	 */
+	property name="dsn";
+	/**
+	 * The table to use for storage
+	 */
+	property name="table";
+	/**
+	 * The username to use for the connection, if any
+	 */
+	property name="dsnUsername";
+	/**
+	 * The password to use for the connection, if any
+	 */
+	property name="dsnPassword";
+	/**
+	 * Auto create the table or just use it
+	 */
+	property name="tableAutoCreate" type="boolean" default="true";
 
-	<!--- init --->
-	<cffunction name="init" access="public" output="false" returntype="JDBCStore" hint="Constructor">
-		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider"/>
-		<cfscript>
-			// Store Fields
-			var fields = "objectKey,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple";
-			var config = arguments.cacheProvider.getConfiguration();
+	/**
+	 * Constructor
+	 *
+	 * @cacheProvider The associated cache provider as coldbox.system.cache.providers.ICacheProvider
+	 * @cacheprovider.doc_generic coldbox.system.cache.providers.ICacheProvider
+	 */
+	function init( required cacheProvider ){
+		// Store Fields
+		var fields = "objectKey,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple";
+		var config = arguments.cacheProvider.getConfiguration();
 
-			// Prepare instance
-			instance = {
-				storeID 		= createObject('java','java.lang.System').identityHashCode( this ),
-				cacheProvider   = arguments.cacheProvider,
-				converter 		= createObject("component","coldbox.system.core.conversion.ObjectMarshaller").init()
-			};
+		// Prepare instance
+		variables.cacheProvider   	= arguments.cacheProvider;
+		variables.storeID 			= createObject( 'java', 'java.lang.System' ).identityHashCode( this );
+		variables.converter 		= new coldbox.system.core.conversion.ObjectMarshaller();
+		variables.indexer 			= new coldbox.system.cache.store.indexers.JDBCMetadataIndexer( fields, config, this );
 
-			// Get Extra config data
-			instance.dsn 	= config.dsn;
-			instance.table	= config.table;
+		// Get Extra config data
+		variables.dsn 	= config.dsn;
+		variables.table	= config.table;
 
-			// Check credentials
-			if( NOT structKeyExists(config, "dsnUsername") ){
-				config.dsnUsername = "";
+		// Check credentials
+		if( isNull( config.dsnUsername ) ){
+			config.dsnUsername = "";
+		}
+		if( isNull( config.dsnPassword ) ){
+			config.dsnPassword = "";
+		}
+		variables.dsnUsername = config.dsnUsername;
+		variables.dsnPassword = config.dsnPassword;
+
+		// Check autoCreate
+		if( isNull( config.tableAutoCreate ) ){
+			config.tableAutoCreate = true;
+		}
+		variables.tableAutoCreate = config.tableAutoCreate;
+
+		// ensure the table
+		if( variables.tableAutoCreate ){
+			ensureTable();
+		}
+
+		variables.isLucee = server.keyExists( "lucee" );
+
+		return this;
+	}
+
+	/**
+     * Flush the store to a permanent storage
+     */
+    void function flush(){
+        return;
+    }
+
+	/**
+	 * Reap the storage
+	 */
+	void function reap(){
+		return;
+	}
+
+	/**
+     * Get the store's pool metadata indexer structure
+	 *
+	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
+     */
+    function getIndexer(){
+        return variables.indexer;
+	}
+
+	/**
+	 * Clear all the elements in the store
+	 */
+	void function clearAll(){
+		queryExecute(
+			"TRUNCATE TABLE #variables.table#",
+			{},
+			{
+				datsource 	= variables.dsn,
+				username 	= variables.dsnUsername,
+				password 	= variables.dsnPassword
 			}
-			if( NOT structKeyExists(config, "dsnPassword") ){
-				config.dsnPassword = "";
+		);
+	}
+
+	/**
+     * Get all the store's object keys array
+	 *
+	 * @return array
+     */
+    function getKeys(){
+		var qResults = queryExecute(
+			"SELECT objectKey FROM #variables.table# ORDER BY objectKey ASC",
+			{},
+			{
+				datsource 	= variables.dsn,
+				username 	= variables.dsnUsername,
+				password 	= variables.dsnPassword
 			}
-			instance.dsnUsername = config.dsnUsername;
-			instance.dsnPassword = config.dsnPassword;
+		);
 
-			// Check autoCreate
-			if( NOT structKeyExists(config, "tableAutoCreate") ){
-				config.tableAutoCreate = true;
-			}
-			instance.tableAutoCreate = config.tableAutoCreate;
+		return (
+			variables.isLucee ?
+			queryColumnData( qResults, "objectKey" ) :
+			listToArray( valueList( qResults.objectKey ) )
+		);
+	}
 
-			// ensure the table
-			if( config.tableAutoCreate ){
-				ensureTable();
-			}
+	/**
+	 * Check if an object is in the store
+	 *
+	 * @objectKey The key to lookup
+	 *
+	 * @return boolean
+	 */
+	function lookup( required objectKey ){
+		var q = lookupQuery( arguments.objectKey );
+		return ( q.recordCount AND NOT q.isExpired ? true : false );
+	}
 
-			// Indexer
-			instance.indexer = createObject("component","coldbox.system.cache.store.indexers.JDBCMetadataIndexer").init(fields, config, this);
+	/**
+	 * Get an object from the store with metadata tracking, or null if not found
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function get( required objectKey ){
+		var normalizedID = getNormalizedID( arguments.objectKey );
 
-			return this;
-		</cfscript>
-	</cffunction>
+		transaction{
+			// select entry
+			var q = queryExecute(
+				"SELECT *
+				 FROM #variables.table#
+				 WHERE id = ?
+				",
+				[ normalizedID ],
+				{
+					datsource 	= variables.dsn,
+					username 	= variables.dsnUsername,
+					password 	= variables.dsnPassword
+				}
+			);
 
-<!------------------------------------------- INTERFACE PUBLIC METHODS ------------------------------------------->
-
-	<!--- flush --->
-    <cffunction name="flush" output="false" access="public" returntype="void" hint="Flush the store to a permanent storage">
-    </cffunction>
-
-	<!--- reap --->
-    <cffunction name="reap" output="false" access="public" returntype="void" hint="Reap the storage, clean it from old stuff">
-    </cffunction>
-
-	<!--- getStoreID --->
-    <cffunction name="getStoreID" output="false" access="public" returntype="any" hint="Get this storage's ID">
-    	<cfreturn instance.storeID>
-    </cffunction>
-
-	<!--- clearAll --->
-    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all elements of the store">
-		<cfset var q = "">
-
-		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-		TRUNCATE TABLE #instance.table#
-		</cfquery>
-
-    </cffunction>
-
-	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="any" output="false" hint="Get the store's pool metadata indexer structure">
-		<cfreturn instance.indexer >
-	</cffunction>
-
-	<!--- getKeys --->
-	<cffunction name="getKeys" output="false" access="public" returntype="any" hint="Get all the store's object keys">
-		<cfset var q = "">
-
-		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-		SELECT objectKey
-		  FROM #instance.table#
-		ORDER BY objectKey ASC
-		</cfquery>
-
-		<cfreturn listToArray( valueList( q.objectKey ) )>
-	</cffunction>
-
-	<!--- lookupQuery --->
-    <cffunction name="lookupQuery" output="false" access="private" returntype="any" hint="Get the lookup query">
-    	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-
-		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
-		<cfset var q 				= "">
-
-		<!--- db lookup --->
-		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-		SELECT id, isExpired
-		  FROM #instance.table#
-		 WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-		</cfquery>
-
-		<cfreturn q>
-    </cffunction>
-
-
-	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache.">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfscript>
-			var q = lookupQuery( arguments.objectKey );
-
-			// Check if object in pool
-			if( q.recordCount AND NOT q.isExpired){
-				return true;
-			}
-
-			return false;
-		</cfscript>
-	</cffunction>
-
-	<!--- get --->
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-
-		<cfset var q 			= "">
-		<cfset var qStats		= "">
-		<cfset var normalizedID = getNormalizedID( arguments.objectKey )>
-		<cfset var refLocal = {}>
-		
-		<cftransaction>
-			<!--- select entry --->
-			<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-			SELECT *
-			  FROM #instance.table#
-			 WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-			</cfquery>
-
-			<!--- Update Stats If Found --->
-			<cfif q.recordcount>
-				<cfquery name="qStats" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-				UPDATE #instance.table#
-				   SET lastAccessed = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-					    hits  = hits + 1
-				  WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-				</cfquery>
-			</cfif>
-		</cftransaction>
-
-		<!--- Object Check --->
-		<cfscript>
-			// Just return if records found, else null
+			// Update stats if found
 			if( q.recordCount ){
+				// Setup SQL
+				var targetSql = "UPDATE #variables.table#
+									SET lastAccessed = :lastAccessed,
+										hits  = hits + 1
+								  WHERE id = :id";
 
-				// if simple value, just return it
-				if( q.isSimple ){
-					return q.objectValue;
+				// Is resetTimeoutOnAccess enabled? If so, jump up the creation time to increase the timeout
+				if( variables.cacheProvider.getConfiguration().resetTimeoutOnAccess ){
+					var targetSql = "UPDATE #variables.table#
+										SET lastAccessed = :lastAccessed,
+											hits  = hits + 1,
+											created = :created
+									  WHERE id = :id";
 				}
 
-				//else we return deserialized
-				return instance.converter.deserializeObject(binaryObject=q.objectValue);
+				var qStats = queryExecute(
+					"#targetSQL#",
+					{
+						lastAccessed 	: { value="#now()#",		cfsqltype="timestamp" },
+						id 				: { value="#normalizedID#", cfsqltype="varchar" },
+						created 		: { value="#now()#",		cfsqltype="timestamp" }
+					},
+					{
+						datsource 	= variables.dsn,
+						username 	= variables.dsnUsername,
+						password 	= variables.dsnPassword
+					}
+				);
 			}
-		</cfscript>
-	</cffunction>
+		} // end transaction
 
-	<!--- getQuiet --->
-	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from cache with no stats">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		// Just return if records found, else null
+		if( q.recordCount ){
+			return ( q.isSimple ? q.objectValue : variables.converter.deserializeObject( binaryObject=q.objectValue ) );
+		}
+	}
 
-		<cfset var q 				= "">
-		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
+	/**
+	 * Get an object from cache with no metadata tracking
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	function getQuiet( required objectKey ){
+		// select entry
+		var q = queryExecute(
+			"SELECT *
+				FROM #variables.table#
+				WHERE id = ?
+			",
+			[ getNormalizedID( arguments.objectKey ) ],
+			{
+				datsource 	= variables.dsn,
+				username 	= variables.dsnUsername,
+				password 	= variables.dsnPassword
+			}
+		);
 
-		<!--- select entry --->
-		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-		SELECT *
-		  FROM #instance.table#
-		 WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-		</cfquery>
+		// Just return if records found, else null
+		if( q.recordCount ){
+			return ( q.isSimple ? q.objectValue : variables.converter.deserializeObject( binaryObject=q.objectValue ) );
+		}
+	}
 
-		<cfscript>
-			// Just return if records found, else null
-			if( q.recordCount ){
+	/**
+	 * Expire an object
+	 *
+	 * @objectKey The key to expire
+	 */
+	void function expireObject( required objectKey ){
+		// select entry
+		var q = queryExecute(
+			"UPDATE #variables.table#
+				SET isExpired = ?
+			  WHERE id = ?
+			",
+			[ 1, getNormalizedID( arguments.objectKey ) ],
+			{
+				datsource 	= variables.dsn,
+				username 	= variables.dsnUsername,
+				password 	= variables.dsnPassword
+			}
+		);
+	}
 
-				// if simple value, just return it
-				if( q.isSimple ){
-					return q.objectValue;
+	/**
+	 * Expire check
+	 *
+	 * @objectKey The key to check
+	 *
+	 * @return boolean
+	 */
+	function isExpired( required objectKey ){
+		// select entry
+		var q = queryExecute(
+			"SELECT isExpired
+			   FROM #variables.table#
+			  WHERE id = ?
+			",
+			[ getNormalizedID( arguments.objectKey ) ],
+			{
+				datsource 	= variables.dsn,
+				username 	= variables.dsnUsername,
+				password 	= variables.dsnPassword
+			}
+		);
+
+		return ( q.recordCount && q.isExpired ? true : false );
+	}
+
+	/**
+	 * Sets an object in the storage
+	 *
+	 * @objectKey The object key
+	 * @object The object to save
+	 * @timeout Timeout in minutes
+	 * @lastAccessTimeout Idle Timeout in minutes
+	 * @extras A map of extra name-value pairs to store alongside the object
+	 */
+	void function set(
+		required objectKey,
+		required object,
+		timeout="0",
+		lastAccessTimeout="0",
+		extras={}
+	){
+		var normalizedId 	= getNormalizedID( arguments.objectKey );
+		var isSimple		= true;
+
+		// Test if not simple to serialize
+		if( !isSimpleValue( arguments.object ) ){
+			isSimple = false;
+			arguments.object = variables.converter.serializeObject( arguments.object );
+		}
+
+		transaction{
+			if( !lookupQuery( arguments.objectKey ).recordCount ){
+				var q = queryExecute(
+					"INSERT INTO #variables.table# (id,objectKey,objectValue,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple)
+					VALUES (
+						:id,
+						:objectKey,
+						:objectValue,
+						:hits,
+						:timeout,
+						:lastAccessTimeout,
+						:now,
+						:now,
+						:isExpired,
+						:isSimple
+					)
+					",
+					{
+						id                	= { value="#normalizedId#",                	cfsqltype="varchar" },
+						objectKey         	= { value="#arguments.objectKey#",         	cfsqltype="varchar" },
+						objectValue       	= { value="#arguments.object#",            	cfsqltype="longvarchar" },
+						hits           		= { value="1",           					cfsqltype="integer" },
+						timeout           	= { value="#arguments.timeout#",           	cfsqltype="integer" },
+						lastAccessTimeout 	= { value="#arguments.lastAccessTimeout#", 	cfsqltype="integer" },
+						now               	= { value=now(),                           	cfsqltype="timestamp" },
+						now               	= { value=now(),                           	cfsqltype="timestamp" },
+						isExpired         	= { value="0",                    			cfsqltype="bit" },
+						isSimple          	= { value="#isSimple#",                    	cfsqltype="bit" }
+					},
+					{
+						datsource 	= variables.dsn,
+						username 	= variables.dsnUsername,
+						password 	= variables.dsnPassword
+					}
+				);
+
+				return;
+			}
+
+			var q = queryExecute(
+				"UPDATE #variables.table#
+					SET objectKey 			= :objectKey,
+						objectValue			= :objectValue,
+						hits				= :hits,
+						timeout				= :timeout,
+						lastAccessTimeout	= :lastAccessTimeout,
+						created				= :now,
+						lastAccessed		= :now,
+						isExpired			= :isExpired,
+						isSimple			= :isSimple
+					WHERE id = :id
+				",
+				{
+					id                	= { value="#normalizedId#",                	cfsqltype="varchar" },
+					objectKey         	= { value="#arguments.objectKey#",         	cfsqltype="varchar" },
+					objectValue       	= { value="#arguments.object#",            	cfsqltype="longvarchar" },
+					hits           		= { value="1",           					cfsqltype="integer" },
+					timeout           	= { value="#arguments.timeout#",           	cfsqltype="integer" },
+					lastAccessTimeout 	= { value="#arguments.lastAccessTimeout#", 	cfsqltype="integer" },
+					now               	= { value=now(),                           	cfsqltype="timestamp" },
+					now               	= { value=now(),                           	cfsqltype="timestamp" },
+					isExpired         	= { value="0",                    			cfsqltype="bit" },
+					isSimple          	= { value="#isSimple#",                    	cfsqltype="bit" }
+				},
+				{
+					datsource 	= variables.dsn,
+					username 	= variables.dsnUsername,
+					password 	= variables.dsnPassword
 				}
+			);
+		}
+	}
 
-				//else we return deserialized
-				return instance.converter.deserializeObject(binaryObject=q.objectValue);
+	/**
+	 * Clears an object from the storage
+	 *
+	 * @objectKey The object key to clear
+	 */
+	function clear( required objectKey ){
+		queryExecute(
+			"DELETE
+			   FROM #variables.table#
+			  WHERE id = ?
+			",
+			[ getNormalizedID( arguments.objectKey ) ],
+			{
+				datsource 	= variables.dsn,
+				username 	= variables.dsnUsername,
+				password 	= variables.dsnPassword,
+				result 		= "local.q"
 			}
-		</cfscript>
-	</cffunction>
+		);
 
-	<!--- expireObject --->
-	<cffunction name="expireObject" output="false" access="public" returntype="void" hint="Mark an object for expiration">
-		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
+		return ( q.recordCount ? true : false );
+	}
 
-		<cfset var q 				= "">
-		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
+	/**
+	 * Get the size of the store
+	 */
+	function getSize(){
+		var q = queryExecute(
+			"SELECT count( id ) as totalCount
+			   FROM #variables.table#
+			",
+			{},
+			{
+				datsource 	= variables.dsn,
+				username 	= variables.dsnUsername,
+				password 	= variables.dsnPassword
+			}
+		);
 
-		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-		UPDATE #instance.table#
-		   SET isExpired = <cfqueryparam cfsqltype="cf_sql_bit" value="1">
-		  WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-		</cfquery>
+		return q.totalCount;
+	}
 
-	</cffunction>
+	/**
+	 * Get the cached normalized id as we store it
+	 *
+	 * @objectKey The object key
+	 */
+	function getNormalizedId( required objectKey ){
+		return hash( arguments.objectKey );
+	}
 
-	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Test if an object in the store has expired or not, returns false if object not found">
-    	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
+	//********************************* PRIVATE ************************************//
 
-		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
-		<cfset var q 				= "">
+	/**
+	 * Get the id and isExpired from the object
+	 *
+	 * @objectKey The key of the object
+	 */
+	private query function lookupQuery( required objectKey ){
+		return queryExecute(
+			"SELECT id, isExpired
+			 FROM #variables.table#
+			 WHERE id = ?
+			",
+			[ getNormalizedID( arguments.objectKey ) ],
+			{
+				datsource 	= variables.dsn,
+				username 	= variables.dsnUsername,
+				password 	= variables.dsnPassword
+			}
+		);
+	}
 
-		<!--- db lookup --->
-		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-		SELECT isExpired
-		  FROM #instance.table#
-		 WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-		</cfquery>
+	/**
+	 * Create the caching table if necessary
+	 */
+	private function ensureTable(){
+		var qCreate 	= "";
+		var tableFound 	= false;
+		var create		= {
+			afterCreate = "",
+			afterLastProperty = ""
+		};
 
-		<!--- Check if expired --->
-		<cfif q.recordcount>
-			<cfreturn q.isExpired>
-		</cfif>
+		cfdbinfo( datasource="#variables.dsn#", name="local.qDBInfo", type="version" );
 
-		<cfreturn false>
-    </cffunction>
+		// Get Tables on this DSN
+		cfdbinfo( datasource="#variables.dsn#", name="local.qTables", type="tables" );
 
-	<!--- Set an Object in the pool --->
-	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in the storage.">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
-		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
-		<cfargument name="timeout"				type="any"  required="false" default="0" hint="Timeout in minutes">
-		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="0" hint="Timeout in minutes">
-		<cfargument name="extras" 				type="any" default="#structnew()#" hint="A map of extra name-value pairs"/>
-		<!--- ************************************************************* --->
-		<cfset var q 				= "">
-		<cfset var normalizedID 	= getNormalizedID( arguments.objectKey )>
-		<cfset var isSimple			= true>
+		// Choose Text Type
+		switch( qDBInfo.database_productName ){
+			case "PostgreSQL" : {
+				create.valueType	= "text";
+				create.timeType 	= "timestamp";
+				create.intType 		= "integer";
+				create.booleanType	= "boolean";
+				break;
+			}
+			case "MySQL" : {
+				create.valueType   			= "longtext";
+				create.afterCreate 			= "ENGINE=InnoDB DEFAULT CHARSET=utf8";
+				create.timeType 			= "datetime";
+				create.intType 	 			= "int";
+				create.booleanType 			= "tinyint";
+				create.afterLastProperty 	= "INDEX `hits` (`hits`),INDEX `created` (`created`),INDEX `lastAccessed` (`lastAccessed`),INDEX `timeout` (`timeout`),INDEX `isExpired` (`isExpired`)";
+				break;
+			}
+			case "Microsoft SQL Server" : {
+				create.valueType 	= "ntext";
+				create.timeType  	= "datetime";
+				create.intType 		= "int";
+				create.booleanType 	= "tinyint";
+				break;
+			}
+			case "Oracle" : {
+				create.valueType 	= "clob";
+				create.timeType 	= "timestamp";
+				create.intType 		= "int";
+				create.booleanType 	= "boolean";
+				break;
+			}
+			default : {
+				create.valueType 	= "text";
+				create.timeType 	= "timestamp";
+				create.intType 		= "integer";
+				create.booleanType 	= "tinyint";
+				break;
+			}
+		}
 
-		<!--- Test if simple --->
-		<cfif NOT isSimpleValue(arguments.object) >
-			<!---serialize it--->
-			<cfset arguments.object = instance.converter.serializeObject( arguments.object )>
-			<cfset isSimple = false>
-		</cfif>
-
-		<!--- Check if already in DB or not --->
-		<cftransaction>
-			<cfif NOT lookupQuery( arguments.objectKey ).recordcount>
-				<!--- store it --->
-				<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-				INSERT INTO #instance.table# (id,objectKey,objectValue,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple)
-				     VALUES (
-					 	<cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">,
-					 	<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectKey#">,
-					 	<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.object#">,
-					 	<cfqueryparam cfsqltype="cf_sql_integer" value="1">,
-						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.timeout#">,
-						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.lastAccessTimeout#">,
-						<cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-						<cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-						<cfqueryparam cfsqltype="cf_sql_bit" value="0">,
-						<cfqueryparam cfsqltype="cf_sql_bit" value="#isSimple#">
-					 )
-				</cfquery>
-				<!--- Just go back --->
-				<cfreturn>
-			</cfif>
-
-			<!--- Update it --->
-			<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-			UPDATE #instance.table#
-			   SET  objectKey 			= <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectKey#">,
-				 	objectValue			= <cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.object#">,
-				 	hits				= <cfqueryparam cfsqltype="cf_sql_integer" value="1">,
-					timeout				= <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.timeout#">,
-					lastAccessTimeout	= <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.lastAccessTimeout#">,
-					created				= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-					lastAccessed		= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-					isExpired			= <cfqueryparam cfsqltype="cf_sql_bit" value="0">,
-					isSimple			= <cfqueryparam cfsqltype="cf_sql_bit" value="#isSimple#">
-			  WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-			</cfquery>
-
-		</cftransaction>
-	</cffunction>
-
-	<!--- Clear an object from the pool --->
-	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the storage pool">
-		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
-
-		<cfset var normalizedID = getNormalizedID( arguments.objectKey )>
-		<cfset var q = "">
-
-		<!--- check if it exists --->
-		<cfif NOT lookupQuery( arguments.objectKey ).recordcount>
-			<cfreturn false>
-		</cfif>
-
-		<!--- clear it --->
-		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-		DELETE
-		  FROM #instance.table#
-		 WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
-		</cfquery>
-
-		<cfreturn true>
-	</cffunction>
-
-	<!--- Get the size of the pool --->
-	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the cache's size in items">
-		<cfset var q = "">
-
-		<!--- db lookup --->
-		<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-		SELECT count(id) as totalCount
-		  FROM #instance.table#
-		</cfquery>
-
-		<cfreturn q.totalCount>
-	</cffunction>
-
-	<!--- getNormalizedID --->
-    <cffunction name="getNormalizedID" output="false" access="public" returntype="any" hint="Get the cached normalized id">
-    	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfscript>
-			return hash( arguments.objectKey );
-		</cfscript>
-    </cffunction>
-
-<!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="any" hint="Create and return a util object">
-		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
-	</cffunction>
-
-	<!--- ensureTable --->
-	<cffunction name="ensureTable" output="false" access="private" returntype="void" hint="Create the caching table if necessary">
-		<cfset var qTables 		= 0>
-		<cfset var qCreate 		= "">
-		<cfset var qDBInfo		= "">
-		<cfset var tableFound 	= false>
-		<cfset var create		= {}>
-
-		<!--- Get DB Info --->
-		<cfdbinfo datasource="#instance.dsn#" name="qDBInfo" type="version" />
-
-		<!--- Get Tables on this DSN --->
-		<cfdbinfo datasource="#instance.dsn#" name="qTables" type="tables" />
-
-		<!--- Choose Text Type --->
-		<cfset create.afterCreate 	= "">
-		<cfset create.afterLastProperty = "">
-		<cfswitch expression="#qDBInfo.database_productName#">
-			<cfcase value="PostgreSQL">
-				<cfset create.valueType		= "text">
-				<cfset create.timeType 		= "timestamp">
-				<cfset create.intType 		= "integer">
-				<cfset create.booleanType	= "boolean">
-			</cfcase>
-			<cfcase value="MySQL">
-				<cfset create.valueType   = "longtext">
-				<cfset create.afterCreate = "ENGINE=InnoDB DEFAULT CHARSET=utf8">
-				<cfset create.timeType 	  = "datetime">
-				<cfset create.intType 	  = "int">
-				<cfset create.booleanType = "tinyint">
-				<cfset create.afterLastProperty = "INDEX `hits` (`hits`),INDEX `created` (`created`),INDEX `lastAccessed` (`lastAccessed`),INDEX `timeout` (`timeout`),INDEX `isExpired` (`isExpired`)">
-			</cfcase>
-			<cfcase value="Microsoft SQL Server">
-				<cfset create.valueType 	= "ntext">
-				<cfset create.timeType  	= "datetime">
-				<cfset create.intType 		= "int">
-				<cfset create.booleanType 	= "tinyint">
-			</cfcase>
-			<cfcase value="Oracle">
-				<cfset create.valueType 	= "clob">
-				<cfset create.timeType 		= "timestamp">
-				<cfset create.intType 		= "int">
-				<cfset create.booleanType 	= "boolean">
-			</cfcase>
-			<cfdefaultcase>
-				<cfset create.valueType 	= "text">
-				<cfset create.timeType 		= "timestamp">
-				<cfset create.intType 		= "integer">
-				<cfset create.booleanType 	= "tinyint">
-			</cfdefaultcase>
-		</cfswitch>
-
-		<!--- Verify it exists --->
-		<cfloop query="qTables">
-			<cfif qTables.table_name eq instance.table>
-				<cfset tableFound = true>
-				<cfbreak>
-			</cfif>
-		</cfloop>
-
-		<!--- AutoCreate Table? --->
-		<cfif NOT tableFound>
-			<!--- Try to Create Table  --->
-			<cfquery name="qCreate" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-				CREATE TABLE #instance.table# (
+		if(
+			listToArray( valueList( qTables.table_name ) )
+				.findNoCase( variables.table ) == 0
+		){
+			queryExecute(
+				"CREATE TABLE #variables.table# (
 					id VARCHAR(100) NOT NULL,
 					objectKey VARCHAR(255) NOT NULL,
 					objectValue #create.valueType# NOT NULL,
@@ -449,8 +565,15 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 					isSimple #create.booleanType# NOT NULL DEFAULT '0',
 					PRIMARY KEY (id)
 				) #create.afterCreate#
-			</cfquery>
-		</cfif>
-	</cffunction>
+				",
+				{},
+				{
+					datsource 	= variables.dsn,
+					username 	= variables.dsnUsername,
+					password 	= variables.dsnPassword
+				}
+			);
+		}
+	}
 
-</cfcomponent>
+}

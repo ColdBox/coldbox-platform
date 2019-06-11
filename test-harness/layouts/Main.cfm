@@ -11,8 +11,8 @@
 	<!---css --->
 	<link href="includes/css/bootstrap.min.css" rel="stylesheet">
 	<!---js --->
-    <script src="includes/js/jquery.js"></script>
-	<script src="includes/js/bootstrap.min.js"></script>
+	<script src="#html.elixirPath( "js/jquery.js" )#"></script>
+	<script src="#html.elixirPath( "js/bootstrap.min.js" )#"></script>
 	<style>
 	 /* Utility */
 	.centered { text-align: center !important; }

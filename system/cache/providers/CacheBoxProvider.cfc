@@ -1,627 +1,568 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * This CacheBox provider is our own enterprise cache implementation with many options and storage providers.
+ *
+ * Properties
+ * - name : The cache name
+ * - enabled : Boolean flag if cache is enabled
+ * - reportingEnabled: Boolean falg if cache can report
+ * - stats : The statistics object
+ * - configuration : The configuration structure
+ * - cacheFactory : The linkage to the cachebox factory
+ * - eventManager : The linkage to the event manager
+ * - cacheID : The unique identity code of this CFC
+ */
+component
+	accessors="true"
+	serializable="false"
+	implements="coldbox.system.cache.providers.ICacheProvider"
+	extends="coldbox.system.cache.AbstractCacheBoxProvider"
+{
 
-Author 	    :	Luis Majano
-Description :
-	The coolest standalone CacheBox Provider ever built.
+	/**
+	 * The global element cleaner utility object
+	 */
+	property name="elementCleaner";
 
-Properties
-- name : The cache name
-- enabled : Boolean flag if cache is enabled
-- reportingEnabled: Boolean falg if cache can report
-- stats : The statistics object
-- configuration : The configuration structure
-- cacheFactory : The linkage to the cachebox factory
-- eventManager : The linkage to the event manager
-- cacheID : The unique identity code of this CFC
------------------------------------------------------------------------>
-<cfcomponent hint="The coolest standalone CacheBox Provider ever built"
-			 output="false"
-			 extends="coldbox.system.cache.AbstractCacheBoxProvider"
-			 implements="coldbox.system.cache.ICacheProvider"
-			 serializable="false">
+	/**
+	 * The default lock timeout for reap operations: Defaults to 15 seconds
+	 */
+	property name="lockTimeout" type="numeric";
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	/**
+	 * The eviction policy to use on the cache storage: Defaults to LRU
+	 * @doc_generic coldbox.system.cache.policies.IEvictionPolicy
+	 */
+	property name="evictionPolicy";
 
-	<cffunction name="init" access="public" output="false" returntype="CacheBoxProvider" hint="Constructor">
-		<cfscript>
-			// super size me
-			super.init();
+	/**
+	 * The object storage object
+	 * @doc_generic coldbox.system.cache.store.IObjectStore
+	 */
+	property name="objectStore";
 
-			// Logger object
-			instance.logger = "";
-			// Runtime Java object
-			instance.javaRuntime = createObject("java", "java.lang.Runtime");
-			// Locking Timeout
-			instance.lockTimeout = "15";
-			// Eviction Policy
-			instance.evictionPolicy = "";
-			// Element Cleaner Helper
-			instance.elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this);
-			// Utilities
-			instance.utility			= createObject("component","coldbox.system.core.util.Util");
-			// UUID Helper
-			instance.uuidHelper			= createobject("java", "java.util.UUID");
+	/**
+	 * The cache stats object
+	 * @doc_generic coldbox.system.cache.util.CacheStats
+	 */
+	property name="stats";
 
-			// CacheBox Provider Property Defaults
-			instance.DEFAULTS = {
-				objectDefaultTimeout = 60,
-				objectDefaultLastAccessTimeout = 30,
-				useLastAccessTimeouts = true,
-				reapFrequency = 2,
-				freeMemoryPercentageThreshold = 0,
-				evictionPolicy = "LRU",
-				evictCount = 1,
-				maxObjects = 200,
-				objectStore = "ConcurrentStore",
-				coldboxEnabled = false
-			};
+	// CacheBox Provider Property Defaults
+	variables.DEFAULTS = {
+		objectDefaultTimeout           	= 60,
+		objectDefaultLastAccessTimeout 	= 30,
+		useLastAccessTimeouts          	= true,
+		reapFrequency                  	= 2,
+		freeMemoryPercentageThreshold  	= 0,
+		evictionPolicy                 	= "LRU",
+		evictCount                     	= 1,
+		maxObjects                     	= 200,
+		objectStore                    	= "ConcurrentStore",
+		coldboxEnabled                 	= false,
+		resetTimeoutOnAccess 			= false
+	};
 
-			return this;
-		</cfscript>
-	</cffunction>
+	/**
+     * Constructor
+     */
+	function init(){
+		// super size me
+		super.init();
+		// Element Cleaner Helper
+		variables.elementCleaner = new coldbox.system.cache.util.ElementCleaner( this );
+		// Runtime Java object
+		variables.javaRuntime = createObject( "java", "java.lang.Runtime" );
+		// Logger object
+		variables.logger = "";
+		// Locking Timeout
+		variables.lockTimeout = "15";
+		// Eviction Policy
+		variables.evictionPolicy = "";
+		// Stats
+		variables.stats = "";
+		// Object Store
+		variables.objectStore = "";
 
-	<!--- validateConfiguration --->
-    <cffunction name="validateConfiguration" output="false" access="private" returntype="void" hint="Validate incoming set configuration data">
-    	<cfscript>
-    		var cacheConfig = getConfiguration();
-			var key			= "";
+		return this;
+	}
 
-			// Validate configuration values, if they don't exist, then default them to DEFAULTS
-			for(key in instance.DEFAULTS){
-				if( NOT structKeyExists(cacheConfig, key) OR NOT len(cacheConfig[key]) ){
-					cacheConfig[key] = instance.DEFAULTS[key];
-				}
-			}
-		</cfscript>
-    </cffunction>
+	/**
+     * configure the cache for operation
+	 *
+	 * @return CacheBoxProvider
+     */
+    function configure(){
+		var cacheConfig	= getConfiguration();
 
-	<!--- Configure the Cache for Operation --->
-	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
-
-		<cfset var cacheConfig     	= getConfiguration()>
-		<cfset var evictionPolicy  	= "">
-		<cfset var objectStore		= "">
-
-		<cflock name="CacheBoxProvider.configure.#instance.cacheID#" type="exclusive" timeout="20" throwontimeout="true">
-		<cfscript>
-
+		lock name="CacheBoxProvider.configure.#variables.cacheId#" type="exclusive" timeout="30" throwontimeout="true"{
 			// Prepare the logger
-			instance.logger = getCacheFactory().getLogBox().getLogger( this );
+			variables.logger = getCacheFactory().getLogBox().getLogger( this );
 
-			if( instance.logger.canDebug() ){
-				instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
+			if( variables.logger.canDebug() ){
+				variables.logger.debug( "Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#" );
 			}
 
 			// Validate the configuration
 			validateConfiguration();
 
 			// Prepare Statistics
-			instance.stats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
+			variables.stats = new coldbox.system.cache.util.CacheStats( this );
 
 			// Setup the eviction Policy to use
-			evictionPolicy 			= locateEvictionPolicy( cacheConfig.evictionPolicy );
-			instance.evictionPolicy = CreateObject("component", evictionPolicy).init(this);
+			variables.evictionPolicy = createObject( "component", locateEvictionPolicy( cacheConfig.evictionPolicy ) ).init( this );
 
 			// Create the object store the configuration mandated
-			objectStore 			= locateObjectStore( cacheConfig.objectStore );
-			instance.objectStore 	= CreateObject("component", objectStore).init(this);
+			variables.objectStore 	= createObject("component",  locateObjectStore( cacheConfig.objectStore ) ).init( this );
 
 			// Enable cache
-			instance.enabled = true;
+			variables.enabled = true;
 			// Enable reporting
-			instance.reportingEnabled = true;
+			variables.reportingEnabled = true;
 
 			// startup message
-			if( instance.logger.canDebug() ){
-				instance.logger.debug( "CacheBox Cache: #getName()# has been initialized successfully for operation" );
+			if( variables.logger.canDebug() ){
+				variables.logger.debug( "CacheBox Cache: #getName()# has been initialized successfully for operation" );
 			}
-		</cfscript>
-		</cflock>
+		}
 
-	</cffunction>
+		return this;
+	}
 
-	<!--- shutdown --->
-    <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
-   		<cfscript>
-		   	if( instance.logger.canDebug() )
-   				instance.logger.debug("CacheBox Cache: #getName()# has been shutdown.");
-   		</cfscript>
-    </cffunction>
+	/**
+	 * If the cache provider implements it, this returns the cache's object store.
+	 *
+	 * @return coldbox.system.cache.store.IObjectStore
+	 */
+	function getObjectStore(){
+		return variables.objectStore;
+	}
 
-	<!--- locateEvictionPolicy --->
-    <cffunction name="locateEvictionPolicy" output="false" access="private" returntype="any" hint="Locate the eviction policy">
-    	<cfargument name="policy" type="string"/>
-    	<cfscript>
-    		if( fileExists( expandPath("/coldbox/system/cache/policies/#arguments.policy#.cfc") ) ){
-				return "coldbox.system.cache.policies.#arguments.policy#";
-			}
-			return arguments.policy;
-    	</cfscript>
-    </cffunction>
+	/**
+     * Shutdown command issued when CacheBox is going through shutdown phase
+	 *
+	 * @return LuceeProvider
+     */
+    function shutdown(){
+		//nothing to shutdown
+		if( variables.logger.canDebug() ){
+			variables.logger.debug( "CacheBox Cache: #getName()# has been shutdown." );
+		}
+		return this;
+	}
 
-	<!--- locateObjectStore --->
-    <cffunction name="locateObjectStore" output="false" access="private" returntype="any" hint="Locate the object store">
-    	<cfargument name="store" type="string"/>
-    	<cfscript>
-    		if( fileExists( expandPath("/coldbox/system/cache/store/#arguments.store#.cfc") ) ){
-				return "coldbox.system.cache.store.#arguments.store#";
-			}
-			return arguments.store;
-    	</cfscript>
-    </cffunction>
+	/**
+	 * Check if an object is in cache, if not found it records a miss.
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function lookup( required objectKey ){
+		if( lookupQuiet( arguments.objectKey ) ){
+			// record a hit
+			getStats().hit();
+			return true;
+		}
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+		// record a miss
+		getStats().miss();
 
-	<!--- Lookup Multiple Keys --->
-	<cffunction name="lookupMulti" access="public" output="false" returntype="any" hint="The returned value is a structure of name-value pairs of all the keys that where found or not." doc_generic="struct">
-		<cfargument name="keys" 	type="any" 	required="true" hint="The comma delimited list or an array of keys to lookup in the cache.">
-		<cfargument name="prefix" 	type="any" 	required="false" default="" hint="A prefix to prepend to the keys">
-		<cfscript>
-			var returnStruct 	= structnew();
-			var x 				= 1;
-			var thisKey 		= "";
+		return false;
+	}
 
-			// Normalize keys
-			if( isArray(arguments.keys) ){
-				arguments.keys = arrayToList( arguments.keys );
-			}
+	/**
+	 * Check if an object is in cache, no stats updated or listeners
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function lookupQuiet( required objectKey ){
+		// cleanup the key
+		arguments.objectKey = lcase( arguments.objectKey );
 
-			// Loop on Keys
-			for(x=1;x lte listLen(arguments.keys);x++){
-				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
-				returnStruct[thiskey] = lookup( thisKey );
-			}
+		return variables.objectStore.lookup( arguments.objectKey );
+	}
 
-			return returnStruct;
-		</cfscript>
-	</cffunction>
+	/**
+	 * Get an object from the cache
+	 *
+	 * @objectKey The key to retrieve
+	 */
+    function get( required objectKey ){
+		// cleanup the key
+		arguments.objectKey = lcase( arguments.objectKey );
 
-	<!--- lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="any" hint="Check if an object is in cache, if not found it records a miss." doc_generic="boolean">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
-		<cfscript>
-			if( lookupQuiet(arguments.objectKey) ){
-				// record a hit
-				getStats().hit();
-				return true;
-			}
+		// get quietly
+		var results = variables.objectStore.get( arguments.objectKey );
+		if( !isNull( results ) ){
+			getStats().hit();
+			return results;
+		}
+		getStats().miss();
+		// don't return anything = null
+	}
 
-			// record a miss
-			getStats().miss();
+	/**
+     * get an item silently from cache, no stats advised: Stats not available on lucee
+	 *
+	 * @objectKey The key to retrieve
+     */
+    function getQuiet( required objectKey ){
+		// cleanup the key
+		arguments.objectKey = lcase( arguments.objectKey );
 
-			return false;
-		</cfscript>
-	</cffunction>
+		// get object from store
+		var results = variables.objectStore.getQuiet( arguments.objectKey );
+		if( !isNull( results ) ){
+			return results;
+		}
+		// don't return anything = null
+	}
 
-	<!--- lookupQuiet --->
-	<cffunction name="lookupQuiet" access="public" output="false" returntype="any" hint="Check if an object is in cache quietly, advising nobody!" doc_generic="boolean">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
-		<cfscript>
-			// cleanup the key
-			arguments.objectKey = lcase(arguments.objectKey);
+	/**
+	 * Get a cache objects metadata about its performance. This value is a structure of name-value pairs of metadata.
+	 *
+	 * @objectKey The key to retrieve
+	 */
+    struct function getCachedObjectMetadata( required objectKey ){
+		// Cleanup the key
+		arguments.objectKey = lcase( arguments.objectKey );
 
-			return instance.objectStore.lookup( arguments.objectKey );
-		</cfscript>
-	</cffunction>
+		// Check if in the pool first
+		if( variables.objectStore.getIndexer().objectExists( arguments.objectKey ) ){
+			return variables.objectStore.getIndexer().getObjectMetadata( arguments.objectKey );
+		}
 
-	<!--- Get an object from the cache --->
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If object does not exist it returns null">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
-		<cfscript>
-			var refLocal = {};
-			// cleanup the key
-			arguments.objectKey = lcase( arguments.objectKey );
+		return {};
+	}
 
-			// get quietly
-			refLocal.results = instance.objectStore.get( arguments.objectKey );
-			if( !isNull( refLocal.results ) ){
-				getStats().hit();
-				return refLocal.results;
-			}
-			getStats().miss();
-			// don't return anything = null
-		</cfscript>
-	</cffunction>
+	/**
+	 * Sets an object in the cache and returns an instance of itself
+	 *
+	 * @objectKey The object cache key
+	 * @object The object to cache
+	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
+	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 *
+	 * @return ICacheProvider
+	 */
+	function set(
+		required objectKey,
+		required object,
+		timeout="",
+		lastAccessTimeout="",
+		struct extra={}
+	){
+		// Check if updating or not
+		var oldObject = getQuiet( arguments.objectKey );
 
+		// save object
+		setQuiet(
+			arguments.objectKey,
+			arguments.object,
+			arguments.timeout,
+			arguments.lastAccessTimeout,
+			arguments.extra
+		);
 
-	<!--- Get an object from the cache --->
-	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from cache. If object does not exist it returns null">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
-		<cfscript>
-			var refLocal = {};
-
-			// cleanup the key
-			arguments.objectKey = lcase( arguments.objectKey );
-
-			// get object from store
-			refLocal.results = instance.objectStore.getQuiet( arguments.objectKey );
-			if( structKeyExists(refLocal, "results") ){
-				return refLocal.results;
-			}
-
-			// don't return anything = null
-		</cfscript>
-	</cffunction>
-
-	<!--- Get multiple objects from the cache --->
-	<cffunction name="getMulti" access="public" output="false" returntype="any" hint="The returned value is a structure of name-value pairs of all the keys that where found. Not found values will not be returned" doc_generic="struct">
-		<!--- ************************************************************* --->
-		<cfargument name="keys" 		type="any" 		required="true" hint="The comma delimited list or array of keys to retrieve from the cache.">
-		<cfargument name="prefix"		type="any" 	required="false" default="" hint="A prefix to prepend to the keys">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var returnStruct = structnew();
-			var x = 1;
-			var thisKey = "";
-
-			// Normalize keys
-			if( isArray(arguments.keys) ){
-				arguments.keys = arrayToList( arguments.keys );
-			}
-
-			// Clear Prefix
-			arguments.prefix = trim(arguments.prefix);
-
-			// Loop keys
-			for(x=1;x lte listLen(arguments.keys);x=x+1){
-				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
-				if( lookup(thisKey) ){
-					returnStruct[thiskey] = get(thisKey);
-				}
-			}
-
-			return returnStruct;
-		</cfscript>
-	</cffunction>
-
-	<!--- getCachedObjectMetadata --->
-	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="any" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure." doc_generic="struct">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
-		<!--- ************************************************************* --->
-		<cfscript>
-			// Cleanup the key
-			arguments.objectKey = lcase(trim(arguments.objectKey));
-
-			// Check if in the pool first
-			if( instance.objectStore.getIndexer().objectExists(arguments.objectKey) ){
-				return instance.objectStore.getIndexer().getObjectMetadata(arguments.objectKey);
-			}
-
-			return structnew();
-		</cfscript>
-	</cffunction>
-
-	<!--- getCachedObjectMetadata --->
-	<cffunction name="getCachedObjectMetadataMulti" output="false" access="public" returntype="any" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure." doc_generic="struct">
-		<!--- ************************************************************* --->
-		<cfargument name="keys" 	type="any" required="true" hint="The comma delimited list or array of keys to retrieve from the cache.">
-		<cfargument name="prefix" 	type="any" required="false" default="" hint="A prefix to prepend to the keys">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var returnStruct = structnew();
-			var x = 1;
-			var thisKey = "";
-
-			// Normalize keys
-			if( isArray(arguments.keys) ){
-				arguments.keys = arrayToList( arguments.keys );
-			}
-
-			// Clear Prefix
-			arguments.prefix = trim(arguments.prefix);
-
-			// Loop on Keys
-			for(x=1;x lte listLen(arguments.keys);x=x+1){
-				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
-				returnStruct[thiskey] = getCachedObjectMetadata(thisKey);
-			}
-
-			return returnStruct;
-		</cfscript>
-	</cffunction>
-
-	<!--- Set Multi Object in the cache --->
-	<cffunction name="setMulti" access="public" output="false" returntype="void" hint="Sets Multiple Ojects in the cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
-		<!--- ************************************************************* --->
-		<cfargument name="mapping" 				type="any" 	required="true" hint="The structure of name value pairs to cache" doc_generic="struct">
-		<cfargument name="timeout"				type="any" 	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
-		<cfargument name="lastAccessTimeout"	type="any" 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="prefix" 				type="any" 	required="false" default="" hint="A prefix to prepend to the keys">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var key = 0;
-			// Clear Prefix
-			arguments.prefix = trim(arguments.prefix);
-			// Loop Over mappings
-			for(key in arguments.mapping){
-				// Cache theses puppies
-				set(objectKey=arguments.prefix & key,object=arguments.mapping[key],timeout=arguments.timeout,lastAccessTimeout=arguments.lastAccessTimeout);
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- getOrSet --->
-	<cffunction name="getOrSet" access="public" output="false" returntype="any" hint="Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it.">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
-		<cfargument name="produce"				type="any" 		required="true" hint="The closure/udf to produce the data if not found">
-		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
-		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="extra" 				type="any" 		required="false" default="#structNew()#" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation" doc_generic="struct"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var refLocal = {
-				object = get( arguments.objectKey )
-			};
-			// Verify if it exists? if so, return it.
-			if( structKeyExists( refLocal, "object" ) ){ return refLocal.object; }
-			// else, produce it
-		</cfscript>
-		<cflock name="CacheBoxProvider.GetOrSet.#instance.cacheID#.#arguments.objectKey#" type="exclusive" timeout="#instance.lockTimeout#" throwonTimeout="true">
-			<cfscript>
-				// double lock
-				refLocal.object = get( arguments.objectKey );
-				if( not structKeyExists( refLocal, "object" ) ){
-					// produce it
-					refLocal.object = arguments.produce();
-					// store it
-					set( objectKey=arguments.objectKey,
-						 object=refLocal.object,
-						 timeout=arguments.timeout,
-						 lastAccessTimeout=arguments.lastAccessTimeout,
-						 extra=arguments.extra );
-				}
-			</cfscript>
-		</cflock>
-
-		<cfreturn refLocal.object>
-	</cffunction>
-
-	<!--- Set an Object in the cache --->
-	<cffunction name="set" access="public" output="false" returntype="any" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later." doc_generic="boolean">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
-		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
-		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
-		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="extra" 				type="any" 		required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation" doc_generic="struct"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var iData = "";
-			// Check if updating or not
-			var refLocal = {
-				oldObject = getQuiet( arguments.objectKey )
-			};
-
-			// save object
-			setQuiet(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
-
-			// Announce update if it exists?
-			if( structKeyExists(refLocal,"oldObject") ){
-				// interception Data
-				iData = {
-					cache = this,
-					cacheObjectKey = arguments.objectKey,
-					cacheNewObject = arguments.object,
-					cacheOldObject = refLocal.oldObject
-				};
-
-				// announce it
-				getEventManager().processState("afterCacheElementUpdated", iData);
-			}
-
-			// interception Data
-			iData = {
-				cache = this,
-				cacheObject = arguments.object,
-				cacheObjectKey = arguments.objectKey,
-				cacheObjectTimeout = arguments.timeout,
-				cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
-			};
-
+		// Announce update if it exists?
+		if( !isNull( oldObject ) ){
 			// announce it
-			getEventManager().processState("afterCacheElementInsert", iData);
+			getEventManager().processState( "afterCacheElementUpdated", {
+				cache          = this,
+				cacheObjectKey = arguments.objectKey,
+				cacheNewObject = arguments.object,
+				cacheOldObject = oldObject
+			} );
+		}
 
-			return true;
-		</cfscript>
-	</cffunction>
+		// announce it
+		getEventManager().processState( "afterCacheElementInsert", {
+			cache                        = this,
+			cacheObject                  = arguments.object,
+			cacheObjectKey               = arguments.objectKey,
+			cacheObjectTimeout           = arguments.timeout,
+			cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
+		} );
 
-	<!--- Set an Object in the cache --->
-	<cffunction name="setQuiet" access="public" output="false" returntype="any" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later." doc_generic="boolean">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
-		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
-		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
-		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
-		<cfargument name="extra" 				type="any" 		required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"  doc_generic="struct">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var isJVMSafe 		= true;
-			var config 			= getConfiguration();
-			var iData 			= {};
+		return this;
+	}
 
-			// cleanup the key
-			arguments.objectKey = lcase(arguments.objectKey);
+	/**
+	 * Sets an object in the cache with no event calls and returns an instance of itself
+	 *
+	 * @objectKey The object cache key
+	 * @object The object to cache
+	 * @timeout The timeout to use on the object (if any, provider specific)
+	 * @lastAccessTimeout The idle timeout to use on the object (if any, provider specific)
+	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
+	 *
+	 * @return ICacheProvider
+	 */
+	function setQuiet(
+		required objectKey,
+		required object,
+		timeout="",
+		lastAccessTimeout="",
+		struct extra={}
+	){
 
-			// JVM Checks
-			if( config.freeMemoryPercentageThreshold NEQ 0 AND thresholdChecks(config.freeMemoryPercentageThreshold) EQ false){
-				// evict some stuff
-				instance.evictionPolicy.execute();
-			}
+		var isJVMSafe 		= true;
+		var config 			= getConfiguration();
+		var iData 			= {};
 
-			// Max objects check
-			if( config.maxObjects NEQ 0 AND getSize() GTE config.maxObjects ){
-				// evict some stuff
-				instance.evictionPolicy.execute();
-			}
+		// cleanup the key
+		arguments.objectKey = lcase( arguments.objectKey );
 
-			// Provider Default Timeout checks
-			if( NOT len(arguments.timeout) OR NOT isNumeric(arguments.timeout) ){
-				arguments.timeout = config.objectDefaultTimeout;
-			}
-			if( NOT len(arguments.lastAccessTimeout) OR NOT isNumeric(arguments.lastAccessTimeout) ){
-				arguments.lastAccessTimeout = config.objectDefaultLastAccessTimeout;
-			}
+		// JVM Checks
+		if( config.freeMemoryPercentageThreshold NEQ 0
+			AND
+			thresholdChecks( config.freeMemoryPercentageThreshold ) EQ false
+		){
+			// evict some stuff
+			variables.evictionPolicy.execute();
+		}
 
-			// save object
-			instance.objectStore.set(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
+		// Max objects check
+		if( config.maxObjects NEQ 0 AND getSize() GTE config.maxObjects ){
+			// evict some stuff
+			variables.evictionPolicy.execute();
+		}
 
-			return true;
-		</cfscript>
-	</cffunction>
+		// Provider Default Timeout checks
+		if( NOT len( arguments.timeout ) OR NOT isNumeric( arguments.timeout ) ){
+			arguments.timeout = config.objectDefaultTimeout;
+		}
+		if( NOT len( arguments.lastAccessTimeout ) OR NOT isNumeric( arguments.lastAccessTimeout ) ){
+			arguments.lastAccessTimeout = config.objectDefaultLastAccessTimeout;
+		}
 
-	<!--- Clear an object from the cache --->
-	<cffunction name="clearMulti" access="public" output="false" returntype="any" hint="Clears objects from the cache by using its cache key. The returned value is a structure of name-value pairs of all the keys that where removed from the operation." doc_generic="struct">
-		<!--- ************************************************************* --->
-		<cfargument name="keys" 		type="any" 	required="true" hint="The comma-delimmitted list or array of keys to remove.">
-		<cfargument name="prefix" 		type="any" 	required="false" default="" hint="A prefix to prepend to the keys">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var returnStruct = {};
-			var x = 1;
-			var thisKey = "";
+		// save object
+		variables.objectStore.set(
+			arguments.objectKey,
+			arguments.object,
+			arguments.timeout,
+			arguments.lastAccessTimeout,
+			arguments.extra
+		);
 
-			// Clear Prefix
-			arguments.prefix = trim(arguments.prefix);
+		return this;
+	}
 
-			// array?
-			if( isArray(arguments.keys) ){
-				arguments.keys = arrayToList( arguments.keys );
-			}
+	/**
+	 * Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners
+	 *
+	 * @objectKey The object cache key
+	 */
+	boolean function clearQuiet( required objectKey ){
+		// clean key
+		arguments.objectKey = lcase( arguments.objectKey );
 
-			// Loop on Keys
-			for(x=1;x lte listLen(arguments.keys); x++){
-				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
-				returnStruct[thiskey] = clear(thisKey);
-			}
+		// clear key
+		return variables.objectStore.clear( arguments.objectKey );
+	}
 
-			return returnStruct;
-		</cfscript>
-	</cffunction>
+	/**
+	 * Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore
+	 *
+	 * @objectKey The object cache key
+	 */
+	boolean function clear( required objectKey ){
+		var clearCheck = clearQuiet( arguments.objectKey );
 
-	<!--- Clear By Key Snippet --->
-	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
-		<cfargument name="keySnippet"  	type="any" required="true"  hint="the cache key snippet to use">
-		<cfargument name="regex" 		type="any" default="false" hint="Use regex or not" doc_generic="boolean">
-		<cfargument name="async" 		type="any" default="false" hint="Run command asynchronously or not" doc_generic="boolean"/>
-
-		<cfset var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
-
-		<!--- Async? --->
-		<cfif arguments.async AND NOT instance.utility.inThread()>
-			<cfthread name="#threadName#" keySnippet="#arguments.keySnippet#" regex="#arguments.regex#">
-				<cfset instance.elementCleaner.clearByKeySnippet(attributes.keySnippet,attributes.regex)>
-			</cfthread>
-		<cfelse>
-			<cfset instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex)>
-		</cfif>
-	</cffunction>
-
-	<!--- clearQuiet --->
-	<cffunction name="clearQuiet" access="public" output="false" returntype="any" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore" doc_generic="boolean">
-		<cfargument name="objectKey" type="any"  	required="true" hint="The object cache key">
-		<cfscript>
-			// clean key
-			arguments.objectKey = lcase(trim(arguments.objectKey));
-
-			// clear key
-			return instance.objectStore.clear( arguments.objectKey );
-		</cfscript>
-	</cffunction>
-
-	<!--- clear --->
-	<cffunction name="clear" access="public" output="false" returntype="any" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore" doc_generic="boolean">
-		<cfargument name="objectKey" type="any" required="true" hint="The object cache key">
-		<cfscript>
-			var clearCheck = clearQuiet( arguments.objectKey );
-			var iData = {
+		// If cleared notify listeners
+		if( clearCheck ){
+			getEventManager().processState( "afterCacheElementRemoved", {
 				cache = this,
 				cacheObjectKey 	= arguments.objectKey
-			};
+			} );
+		}
 
-			// If cleared notify listeners
-			if( clearCheck ){
-				getEventManager().processState("afterCacheElementRemoved",iData);
+		return clearCheck;
+	}
+
+	/**
+	 * Clear all the cache elements from the cache
+	 *
+	 * @return ICacheProvider
+	 */
+	function clearAll(){
+		variables.objectStore.clearAll();
+
+		// notify listeners
+		getEventManager().processState( "afterCacheClearAll", { cache = this } );
+
+		return this;
+	}
+
+	/**
+	 * Get the number of elements in the cache
+	 */
+	numeric function getSize(){
+		return variables.objectStore.getSize();
+	}
+
+	/**
+	 * Send a reap or flush command to the cache: Not implemented by this provider
+	 *
+	 * @return ICacheProvider
+	 */
+	function reap(){
+		var threadName = "CacheBoxProvider.reap_#replace( randomUUID(), "-", "", "all" )#";
+
+		// Reap only if in frequency
+		if( dateDiff( "n", getStats().getLastReapDatetime(), now() ) GTE getConfiguration().reapFrequency ){
+			if( !inThread() ){
+				thread name="#threadName#"{
+					variables._reap();
+				}
+			} else {
+				variables._reap();
+			}
+		}
+
+		return this;
+	}
+
+	/**
+	 * Expire all the elments in the cache (if supported by the provider):  Not implemented by this cache
+	 *
+	 * @return ICacheProvider
+	 */
+	function expireAll(){
+		return expireByKeySnippet( keySnippet=".*",regex=true );
+	}
+
+	/**
+	 * Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider) Not implemented by this cache
+	 *
+	 * @objectKey The object cache key
+	 *
+	 * @return ICacheProvider
+	 */
+	function expireObject( required objectKey ){
+		variables.objectStore.expireObject( lcase( arguments.objectKey ) );
+		return this;
+	}
+
+	/**
+	 * Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider) Not implemented by this cache
+	 *
+	 * @objectKey The object cache key
+	 *
+	 * @return ICacheProvider
+	 */
+	function expireByKeySnippet( required keySnippet, boolean regex=false, boolean async=false ){
+		arrayFilter( getKeys(), function( item ){
+				// Using Regex?
+				if( regex ){
+					return reFindnocase( keySnippet, item );
+				} else {
+					return findNoCase( keySnippet, item );
+				}
+			} )
+			.each( function( item ){
+				if(
+					variables.objectStore.lookup( item )
+					AND
+					getCachedObjectMetadata( item ).timeout GT 0
+				){
+					expireObject( item );
+				}
+			} );
+
+		return this;
+	}
+
+	/**
+	 * Has the object key expired in the cache: NOT IMPLEMENTED IN THIS CACHE
+	 *
+	 * @objectKey The key to retrieve
+	 */
+	boolean function isExpired( required objectKey ){
+		return variables.objectStore.isExpired( lcase( arguments.objectKey ) );
+	}
+
+	/**
+     * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
+     */
+    struct function getStoreMetadataReport(){
+		return variables.objectStore.getIndexer().getPoolMetadata();
+	}
+
+	/**
+	 * Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports
+	 */
+	struct function getStoreMetadataKeyMap(){
+		return {
+			timeout           = "timeout",
+			hits              = "hits",
+			lastAccessTimeout = "lastAccessTimeout",
+			created           = "created",
+			lastAccessed      = "LastAccessed",
+			isExpired 		  = "isExpired"
+		};
+	}
+
+	/**
+	 * Returns a list of all elements in the cache, whether or not they are expired
+	 */
+	array function getKeys(){
+		return variables.objectStore.getKeys();
+	}
+
+	/*************************************** NON-INTERFACE METHODS ****************************************************/
+
+	/**
+	 * Locate the eviction policy on disk
+	 *
+	 * @policy The policy on disk
+	 *
+	 * @return coldbox.system.cache.policies.IEvictionPolicy
+	 */
+	function locateEvictionPolicy( required policy ){
+		if( fileExists( expandPath( "/coldbox/system/cache/policies/#arguments.policy#.cfc" ) ) ){
+			return "coldbox.system.cache.policies.#arguments.policy#";
+		}
+		return arguments.policy;
+	}
+
+	/**
+	 * Locate the object storage
+	 *
+	 * @store The store to use
+	 *
+	 * @return coldbox.system.cache.store.IObjectStore
+	 */
+	function locateObjectStore( required store ){
+		if( fileExists( expandPath( "/coldbox/system/cache/store/#arguments.store#.cfc" ) ) ){
+			return "coldbox.system.cache.store.#arguments.store#";
+		}
+		return arguments.store;
+	}
+
+	/**
+	 * Reap the cache, clear out everything that is dead.
+	 */
+	private function _reap(){
+		var keyIndex 		= 1;
+		var cacheKeys 		= "";
+		var cacheKeysLen 	= 0;
+		var thisKey 		= "";
+		var thisMD 			= "";
+		var config 			= getConfiguration();
+		var sTime			= getTickCount();
+
+		lock type="exclusive" name="CacheBoxProvider.reap.#variables.cacheId#" timeout="#variables.lockTimeout#"{
+			// log it
+			if( variables.logger.canDebug() ){
+				variables.logger.debug( "Starting to reap CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
 			}
 
-			return clearCheck;
-		</cfscript>
-	</cffunction>
-
-	<!--- clearAll --->
-    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all the cache elements from the cache">
-    	<cfscript>
-			var iData = {
-				cache	= this
-			};
-
-			instance.objectStore.clearAll();
-
-			// notify listeners
-			getEventManager().processState("afterCacheClearAll",iData);
-		</cfscript>
-    </cffunction>
-
-	<!--- Clear an object from the cache --->
-	<cffunction name="clearKey" access="public" output="false" returntype="any" hint="Deprecated, please use clear()" doc_generic="boolean">
-		<cfargument name="objectKey" type="any"  	required="true" hint="The object cache key">
-		<cfreturn clear( arguments.objectKey )>
-	</cffunction>
-
-	<!--- Get the Cache Size --->
-	<cffunction name="getSize" access="public" output="false" returntype="any" hint="Get the cache's size in items" doc_generic="numeric">
-		<cfreturn instance.objectStore.getSize()>
-	</cffunction>
-
-	<!--- reap --->
-	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache, clear out everything that is dead.">
-		<cfset var threadName = "CacheBoxProvider.reap_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
-
-		<!--- Reap only if in frequency --->
-		<cfif dateDiff("n", getStats().getLastReapDatetime(), now() ) GTE getConfiguration().reapFrequency>
-
-			<!--- check if in thread already --->
-			<cfif NOT instance.utility.inThread()>
-
-				<cfthread name="#threadName#">
-					<cfset variables._reap()>
-				</cfthread>
-
-			<cfelse>
-				<cfset _reap()>
-			</cfif>
-
-		</cfif>
-
-	</cffunction>
-
-	<!--- _reap --->
-	<cffunction name="_reap" access="public" output="false" returntype="void" hint="Reap the cache, clear out everything that is dead.">
-		<cfscript>
-			var keyIndex 		= 1;
-			var cacheKeys 		= "";
-			var cacheKeysLen 	= 0;
-			var thisKey 		= "";
-			var thisMD 			= "";
-			var config 			= getConfiguration();
-			var sTime			= getTickCount();
-		</cfscript>
-
-		<!--- Lock Reaping, so only one can be ran even if called manually, for concurrency protection --->
-		<cflock type="exclusive" name="CacheBoxProvider.reap.#instance.cacheID#" timeout="#instance.lockTimeout#">
-		<cfscript>
-
-			// log it
-			if( instance.logger.canDebug() )
-				instance.logger.debug( "Starting to reap CacheBoxProvider: #getName()#, id: #instance.cacheID#" );
-
 			// Run Storage reaping first, before our local algorithm
-			instance.objectStore.reap();
+			variables.objectStore.reap();
 
 			// Let's Get our reaping vars ready, get a duplicate of the pool metadata so we can work on a good copy
 			cacheKeys 		= getKeys();
@@ -647,30 +588,30 @@ Properties
 						// Clear the object from cache
 						if( clear( thisKey ) ){
 							// Announce Expiration only if removed, else maybe another thread cleaned it
-							announceExpiration(thisKey);
+							announceExpiration( thisKey );
 						}
 						continue;
 					}
 
-					//Check for creation timeouts and clear
-					if ( dateDiff("n", thisMD.created, now() ) GTE thisMD.timeout ){
+					// Check for creation timeouts and clear
+					if ( dateDiff( "n", thisMD.created, now() ) GTE thisMD.timeout ){
 
 						// Clear the object from cache
 						if( clear( thisKey ) ){
 							// Announce Expiration only if removed, else maybe another thread cleaned it
-							announceExpiration(thisKey);
+							announceExpiration( thisKey );
 						}
 						continue;
 					}
 
-					//Check for last accessed timeouts. If object has not been accessed in the default span
+					// Check for last accessed timeouts. If object has not been accessed in the default span
 					if ( config.useLastAccessTimeouts AND
-					     dateDiff("n", thisMD.LastAccessed, now() ) gte thisMD.LastAccessTimeout ){
+					     dateDiff( "n", thisMD.lastAccessed, now() ) gte thisMD.lastAccessTimeout ){
 
 						// Clear the object from cache
 						if( clear( thisKey ) ){
 							// Announce Expiration only if removed, else maybe another thread cleaned it
-							announceExpiration(thisKey);
+							announceExpiration( thisKey );
 						}
 						continue;
 					}
@@ -682,135 +623,44 @@ Properties
 			getStats().setLastReapDatetime( now() );
 
 			// log it
-			if( instance.logger.canDebug() )
-				instance.logger.debug( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #instance.cacheID#" );
-		</cfscript>
-		</cflock>
-	</cffunction>
+			if( variables.logger.canDebug() )
+				variables.logger.debug( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
+		}
+	}
 
-	<!--- Expire All Objects --->
-	<cffunction name="expireAll" access="public" returntype="void" hint="Expire All Objects. Use this instead of clear() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
-		<cfscript>
-			expireByKeySnippet(keySnippet=".*",regex=true);
-		</cfscript>
-	</cffunction>
+	/******************************** PRIVATE ********************************/
 
-	<!--- Expire an Object --->
-	<cffunction name="expireObject" access="public" returntype="void" hint="Expire an Object. Use this instead of clearKey() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
-		<cfargument name="objectKey" type="any"	required="true" hint="The object cache key">
-		<cfscript>
-			instance.objectStore.expireObject( lcase(trim(arguments.objectKey)) );
-		</cfscript>
-	</cffunction>
+	/**
+	 * Announce a key expiration
+	 *
+	 * @objectKey The key target
+	 *
+	 * @result CacheBoxProvider
+	 */
+	private function announceExpiration( required objectKey ){
+		// Execute afterCacheElementExpired Interception
+		getEventManager().processState( "afterCacheElementExpired", {
+			cache = this,
+			cacheObjectKey = arguments.objectKey
+		} );
 
-	<!--- Expire an Object --->
-	<cffunction name="expireByKeySnippet" access="public" returntype="void" hint="Same as expireKey but can touch multiple objects depending on the keysnippet that is sent in." output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="keySnippet" type="any"  required="true" hint="The key snippet to use">
-		<cfargument name="regex" 	  type="any" required="false" default="false" hint="Use regex or not" doc_generic="boolean">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var keyIndex 		= 1;
-			var cacheKeys 		= getKeys();
-			var cacheKeysLen 	= arrayLen(cacheKeys);
-			var tester = 0;
+		return this;
+	}
 
-			// Loop Through Metadata
-			for (keyIndex=1; keyIndex LTE cacheKeysLen; keyIndex++){
+	/**
+	 * JVM Threshold checks
+	 *
+	 * @threshold The threshold to check
+	 */
+	private boolean function thresholdChecks( required threshold ){
+		try{
+			var jvmThreshold = ( ( variables.javaRuntime.getRuntime().freeMemory() / variables.javaRuntime.getRuntime().maxMemory() ) * 100 );
+			var check = ( arguments.threshold LT jvmThreshold );
+		} catch( any e ) {
+			var check = true;
+		}
 
-				// Using Regex?
-				if( arguments.regex ){
-					tester = reFindnocase(arguments.keySnippet, cacheKeys[keyIndex]);
-				}
-				else{
-					tester = findnocase(arguments.keySnippet, cacheKeys[keyIndex]);
-				}
+		return check;
+	}
 
-				// Check if object still exists
-				if( tester
-				    AND instance.objectStore.lookup( cacheKeys[keyIndex] )
-					AND getCachedObjectMetadata(cacheKeys[keyIndex]).timeout GT 0){
-
-					expireObject( cacheKeys[keyIndex] );
-
-				}
-			}//end key loops
-		</cfscript>
-	</cffunction>
-
-	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="any" hint="Has the object key expired in the cache" doc_generic="boolean">
-   		<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
-		<cfreturn instance.objectStore.isExpired( lcase(trim(arguments.objectKey)) )>
-   	</cffunction>
-
-	<!--- getObjectStore --->
-	<cffunction name="getObjectStore" output="false" access="public" returntype="any" hint="If the cache provider implements it, this returns the cache's object store as type: coldbox.system.cache.store.IObjectStore" doc_generic="coldbox.system.cache.store.IObjectStore">
-    	<cfreturn instance.objectStore>
-	</cffunction>
-
-	<!--- getStoreMetadataReport --->
-	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="any" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]" doc_generic="struct">
-		<cfscript>
-			var target = instance.objectStore.getIndexer().getPoolMetadata();
-
-			return target;
-		</cfscript>
-	</cffunction>
-
-	<!--- getStoreMetadataKeyMap --->
-	<cffunction name="getStoreMetadataKeyMap" output="false" access="public" returntype="any" hint="Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports" doc_generic="struct">
-		<cfscript>
-			var keyMap = {
-				timeout = "timeout", hits = "hits", lastAccessTimeout = "lastAccessTimeout",
-				created = "created", LastAccessed = "LastAccessed", isExpired="isExpired"
-			};
-			return keymap;
-		</cfscript>
-	</cffunction>
-
-	<!--- get Keys --->
-	<cffunction name="getKeys" access="public" returntype="any" output="false" hint="Get a listing of all the keys of the objects in the cache" doc_generic="array">
-		<cfreturn instance.objectStore.getKeys()>
-	</cffunction>
-
-	<!--- Get the Java Runtime --->
-	<cffunction name="getJavaRuntime" access="public" returntype="any" output="false" hint="Get the java runtime object for reporting purposes.">
-		<cfreturn instance.javaRuntime>
-	</cffunction>
-
-<!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<!--- announceExpiration --->
-	<cffunction name="announceExpiration" output="false" access="private" returntype="void" hint="Announce an Expiration">
-		<cfargument name="objectKey" type="any"	required="true" hint="The object cache key">
-		<cfscript>
-			var iData = {
-				cache = this,
-				cacheObjectKey = arguments.objectKey
-			};
-			// Execute afterCacheElementExpired Interception
-			getEventManager().processState("afterCacheElementExpired",iData);
-		</cfscript>
-	</cffunction>
-
-	<!--- Threshold JVM Checks --->
-	<cffunction name="thresholdChecks" access="private" output="false" returntype="boolean" hint="JVM Threshold checks">
-		<cfargument name="threshold" type="any" required="true" default="" hint="The threshold to check"/>
-		<cfscript>
-			var check		 = true;
-			var jvmThreshold = 0;
-
-			try{
-				jvmThreshold = ( (instance.javaRuntime.getRuntime().freeMemory() / instance.javaRuntime.getRuntime().maxMemory() ) * 100 );
-				check = arguments.threshold LT jvmThreshold;
-			}
-			catch(any e){
-				check = true;
-			}
-
-			return check;
-		</cfscript>
-	</cffunction>
-
-</cfcomponent>
+}

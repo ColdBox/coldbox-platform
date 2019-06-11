@@ -372,6 +372,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return HandlerService
 	 */
 	function invalidEvent( required string event, required ehBean ){
+        param request._lastInvalidEvent = variables.invalidEventHandler;
         controller.getRequestService().getContext().setHTTPHeader(
             statusCode = 404,
             statusText = "Not Found"
@@ -391,15 +392,18 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 		// If invalidEventHandler is registered, use it
 		if ( len( trim( variables.invalidEventHandler ) ) ){
-
-			// Test for invalid Event Error as well so we don't go in an endless error loop
-			if ( compareNoCase( variables.invalidEventHandler, arguments.event ) eq 0 ){
+            // Test for invalid Event Error as well so we don't go in an endless error loop
+			if ( compareNoCase( arguments.event, request._lastInvalidEvent ) eq 0 ){
 				throw(
 					message = "The invalidEventHandler event is also invalid",
 					detail  = "The invalidEventHandler setting is also invalid: #variables.invalidEventHandler#. Please check your settings",
 					type    = "HandlerService.InvalidEventHandlerException"
 				);
-			}
+            }
+
+            // we save off this event in case there is problem matching our invalidEventHandler.
+            // This way we can catch infinite loops instead of having a Stack Overflow error.
+            request._lastInvalidEvent = arguments.event;
 
 			// Store Invalid Event in PRC
 			controller.getRequestService().getContext().setPrivateValue( "invalidevent", arguments.event );

@@ -1,105 +1,171 @@
 ﻿/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author: Luis Majano
-Description:
-	
-This CacheBox provider communicates with the built in caches in
-the Lucee Engine for ColdBox applications.
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * @author Luis Majano
+ *
+ * This CacheBox provider communicates with the built in caches in the Lucee Engine for ColdBox Apps
+ */
+component
+	accessors="true"
+	serializable="false"
+	implements="coldbox.system.cache.providers.IColdBoxProvider"
+	extends="coldbox.system.cache.providers.LuceeProvider"
+{
 
-*/
-component serializable="false" extends="coldbox.system.cache.providers.LuceeProvider" implements="coldbox.system.cache.IColdboxApplicationCache"{
+	// Cache Prefixes
+	this.VIEW_CACHEKEY_PREFIX 	= "lucee_view-";
+	this.EVENT_CACHEKEY_PREFIX 	= "lucee_event-";
 
-	LuceeColdBoxProvider function init() output=false{
+	/**
+	 * Constructor
+	 */
+	LuceeColdBoxProvider function init(){
 		super.init();
-		
-		// Cache Prefixes
-		this.VIEW_CACHEKEY_PREFIX 	= "lucee_view-";
-		this.EVENT_CACHEKEY_PREFIX 	= "lucee_event-";
-		
+
 		// URL Facade Utility
-		instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
-		
+		variables.eventURLFacade = new coldbox.system.cache.util.EventURLFacade( this );
+
 		return this;
 	}
-	
-	// Cache Key prefixes
-	any function getViewCacheKeyPrefix() output=false{ return this.VIEW_CACHEKEY_PREFIX; }
-	any function getEventCacheKeyPrefix() output=false{ return this.EVENT_CACHEKEY_PREFIX; }
-	
-	// set the coldbox controller
-	void function setColdbox(required any coldbox) output=false{
+
+	/**
+	 * Get the cached view key prefix which is necessary for view caching
+	 */
+	function getViewCacheKeyPrefix(){
+		return this.VIEW_CACHEKEY_PREFIX;
+	};
+
+	/**
+	 * Get the event cache key prefix which is necessary for event caching
+	 */
+	function getEventCacheKeyPrefix(){
+		return this.EVENT_CACHEKEY_PREFIX;
+	}
+
+	/**
+	 * Get the coldbox application reference as coldbox.system.web.Controller
+	 *
+	 * @return coldbox.system.web.Controller
+	 */
+	function getColdbox(){
+		return variables.coldbox;
+	}
+
+	/**
+	 * Set the ColdBox linkage into the provider
+	 *
+	 * @coldbox The ColdBox controller
+	 * @coldbox.doc_generic coldbox.system.web.Controller
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function setColdBox( required coldbox ){
 		variables.coldbox = arguments.coldbox;
+		return this;
 	}
-	
-	// Get ColdBox
-	any function getColdbox() output=false{ return coldbox; }
-	
-	// Get Event URL Facade Tool
-	any function getEventURLFacade() output=false{ return instance.eventURLFacade; }
-	
+
 	/**
-	* Clear all events
-	*/
-	void function clearAllEvents(async=false) output=false{
-		var threadName = "clearAllEvents_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
-		
+	 * Get the event caching URL facade utility that determines event caching
+	 *
+	 * @return coldbox.system.cache.util.EventURLFacade
+	 */
+	function getEventURLFacade(){
+		return variables.eventURLFacade;
+	}
+
+	/**
+	 * Clears all events from the cache.
+	 *
+	 * @async If implemented, determines async or sync clearing.
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearAllEvents( boolean async=false ){
+		var threadName = "clearAllEvents_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
+
 		// Async? IF so, do checks
-		if( arguments.async AND NOT instance.utility.inThread() ){
+		if( arguments.async AND NOT variables.utility.inThread() ){
 			thread name="#threadName#"{
-				instance.elementCleaner.clearAllEvents();
+				variables.elementCleaner.clearAllEvents();
 			}
 		}
 		else{
-			instance.elementCleaner.clearAllEvents();
-		}		
+			variables.elementCleaner.clearAllEvents();
+		}
+		return this;
 	}
-	
+
 	/**
-	* Clear all views
-	*/
-	void function clearAllViews(async=false) output=false{
-		var threadName = "clearAllViews_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
-		
+	 * Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
+	 *
+	 * @eventSnippet The event snippet to clear on. Can be partial or full
+	 * @queryString If passed in, it will create a unique hash out of it. For purging purposes
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearEvent( required eventSnippet, queryString="" ){
+		variables.elementCleaner.clearEvent( arguments.eventsnippet, arguments.queryString );
+		return this;
+	}
+
+	/**
+	 * Clears all views from the cache.
+	 *
+	 * @async Run command asynchronously or not
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearAllViews( boolean async=false ){
+		var threadName = "clearAllViews_#replace(variables.uuidHelper.randomUUID(),"-","","all")#";
+
 		// Async? IF so, do checks
-		if( arguments.async AND NOT instance.utility.inThread() ){
+		if( arguments.async AND NOT variables.utility.inThread() ){
 			thread name="#threadName#"{
-				instance.elementCleaner.clearAllViews();
+				variables.elementCleaner.clearAllViews();
 			}
 		}
 		else{
-			instance.elementCleaner.clearAllViews();
+			variables.elementCleaner.clearAllViews();
 		}
+		return this;
 	}
-	
+
 	/**
-	* Clear event
-	*/
-	void function clearEvent(required eventsnippet, queryString="") output=false{
-		instance.elementCleaner.clearEvent(arguments.eventsnippet,arguments.queryString);
+	 * Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations
+	 *
+	 * @eventSnippet The comma-delimmitted list event snippet to clear on. Can be partial or full
+	 * @queryString The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearEventMulti( required eventsnippets, queryString="" ){
+		variables.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
+		return this;
 	}
-	
+
 	/**
-	* Clear multiple events
-	*/
-	void function clearEventMulti(required eventsnippets,queryString="") output=false{
-		instance.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
+	 * Clears all view name permutations from the cache according to the view name
+	 *
+	 * @viewSnippet The view name snippet to purge from the cache
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearView( required viewSnippet ){
+		variables.elementCleaner.clearView(arguments.viewSnippet);
+		return this;
 	}
-	
+
 	/**
-	* Clear view
-	*/
-	void function clearView(required viewSnippet) output=false{
-		instance.elementCleaner.clearView(arguments.viewSnippet);
+	 * Clears all view name permutations from the cache according to the view name.
+	 *
+	 * @viewSnippets The comma-delimmitted list or array of view snippet to clear on. Can be partial or full
+	 *
+	 * @return IColdboxApplicationCache
+	 */
+	function clearViewMulti( required viewSnippets ){
+		variables.elementCleaner.clearView(arguments.viewsnippets);
+		return this;
 	}
-	
-	/**
-	* Clear multiple view
-	*/
-	void function clearViewMulti(required viewsnippets) output=false{
-		instance.elementCleaner.clearView(arguments.viewsnippets);
-	}
-	
+
 }

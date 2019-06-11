@@ -1,5 +1,4 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest"{
 
 	function setup(){
 		cp = createMock( "coldbox.system.cache.providers.MockProvider" ).init();
@@ -21,6 +20,4 @@
 
 	}
 
-
-</cfscript>
-</cfcomponent>
+}

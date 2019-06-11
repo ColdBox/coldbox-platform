@@ -125,7 +125,8 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 			}
 			// remove context + reset headers
 			getController().getRequestService().removeContext();
-			getPageContextResponse().reset();
+            getPageContextResponse().reset();
+            request._lastInvalidEvent = "";
 		}
 	}
 
@@ -268,7 +269,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 	* Get the CacheBox reference from the running application
 	* @cacheName The cache name to retrieve or returns the 'default' cache by default.
 	*
-	* @return coldbox.system.cache.ICacheProvider
+	* @return coldbox.system.cache.providers.ICacheProvider
 	*/
 	function getCache( required cacheName="default" ){
 		return getController().getCache( arguments.cacheName );

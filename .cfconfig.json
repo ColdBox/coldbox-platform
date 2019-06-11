@@ -17,7 +17,7 @@
             "host": "localhost",
             "dbdriver": "MySQL",
             "password": "",
-            "dsn": "jdbc:mysql://localhost:3306/coolblog?tinyInt1isBit=false&",
+            "dsn": "jdbc:mysql://localhost:3306/coolblog?tinyInt1isBit=false&useSSL=false",
             "custom": "",
             "username": "root",
             "database": "coolblog",

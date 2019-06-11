@@ -1,5 +1,4 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest"{
 
 	function setup(){
 		cp = createMock( "coldbox.system.cache.AbstractCacheBoxProvider" ).init();
@@ -13,20 +12,20 @@
 
 	function testEnabled(){
 		assertFalse( cp.isEnabled() );
-		cp.$property( "enabled","instance",true);
+		cp.$property( "enabled", "variables" ,true);
 		assertTrue( cp.isEnabled() );
 	}
 
 	function testReportingEnabled(){
 		assertFalse( cp.isEnabled() );
-		cp.$property( "enabled","instance",true);
+		cp.$property( "enabled", "variables" ,true);
 		assertTrue( cp.isEnabled() );
 	}
 
 	function testClearStatistics(){
 		mockStats = createMock( "coldbox.system.cache.util.CacheStats" );
 		mockStats.$( "clearStatistics" );
-		cp.$property( "stats","instance",mockStats);
+		cp.$property( "stats", "variables" ,mockStats);
 		cp.clearStatistics();
 		asserttrue( arrayLen(mockStats.$callLog().clearStatistics) );
 		// debug( mockStats.$callLog() );
@@ -57,6 +56,4 @@
 		assertEquals( mockEventManager, cp.getEventManager() );
 	}
 
-
-</cfscript>
-</cfcomponent>
+}

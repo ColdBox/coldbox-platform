@@ -241,7 +241,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			}
 
 			// process mappings for metadata and initialization.
-			variables.binder.processMappings();
+			//variables.binder.processMappings();
 
 			// Announce To Listeners we are online
 			iData.injector = this;
@@ -539,6 +539,11 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		var scanLocations		= variables.binder.getScanLocations();
 		var CFCName				= replace( arguments.name, ".", "/", "all" ) & ".cfc";
 
+		// If we find a :, then avoid doing lookups on the i/o system.
+		if( find( ":", CFCName ) ){
+			return "";
+		}
+
 		// Check Scan Locations In Order
 		for( var thisScanPath in scanLocations){
 			// Check if located? If so, return instantiation path
@@ -556,6 +561,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 
 		// debug info, NADA found!
 		if( variables.log.canDebug() ){ variables.log.debug( "Instance: #arguments.name# was not located anywhere" ); }
+
 		return "";
 	}
 

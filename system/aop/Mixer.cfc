@@ -105,17 +105,17 @@ component accessors="true"{
 		var idCode		= variables.system.identityHashCode( target );
 
 		// Check if incoming mapping name is already class matched?
-		if( NOT structKeyExists( variables.classMatchDictionary, mappingName ) ){
+		if( NOT variables.classMatchDictionary.containsKey( mappingName ) ){
 			// Register this incoming mapping for class aspect matching
 			buildClassMatchDictionary( target, mapping, idCode );
 		}
 
 		// Now, we check if we have any aspects to apply to this class according to class matchers
-		if( arrayLen( variables.classMatchDictionary[ mappingName ] ) ){
+		if( arrayLen( variables.classMatchDictionary.get(mappingName) ) ){
 			AOPBuilder(
 				target 		= target,
 				mapping 	= mapping,
-				dictionary 	= variables.classMatchDictionary[ mappingName ],
+				dictionary 	= variables.classMatchDictionary.get(mappingName),
 				idCode 		= idCode
 			);
 		}
@@ -136,7 +136,7 @@ component accessors="true"{
 
     	lock name="aop.#variables.classID#.cmd.for.#arguments.idCode#" type="exclusive" timeout="30" throwontimeout="true"{
 			// check again, double lock
-			if( NOT structKeyExists( variables.classMatchDictionary, mappingName ) ){
+			if( NOT variables.classMatchDictionary.containsKey(mappingName) ){
 
 				// Discover matching for the class via all aspect bindings
 				for( var x=1; x LTE bindingsLen; x++ ){
@@ -149,12 +149,19 @@ component accessors="true"{
 				}// end for discovery
 
 				// Log
-				if( variables.log.canDebug() ){
-					variables.log.debug( "Aspect class matching dictionary built for mapping: #mappingName#, aspects: #matchedAspects.toString()#" );
+				if( matchedAspects.len() && variables.log.canDebug() ){
+					var matchingAspects = matchedAspects.reduce( function( aggregator, thisAspect ) {
+						var aspectList = thisAspect.aspects;
+						if( isArray( aspectList ) ) {
+							aspectList = aspectList.toList();
+						} 
+						return aggregator.listAppend( aspectList );
+					}, '' );
+					variables.log.debug( "Aspect class matching dictionary built for mapping: [#mappingName#], aspects: [#matchingAspects#]" );
 				}
 
 				// Store matched dictionary
-				variables.classMatchDictionary[ mappingName ] = matchedAspects;
+				variables.classMatchDictionary.put(mappingName, matchedAspects);
 
 			} // end if in dictionary
 		} // end lock
@@ -280,9 +287,9 @@ component accessors="true"{
 		var udfOut 			= createObject( "java","java.lang.StringBuilder" ).init( '' );
 		var lb				= "#chr( 13 )##chr( 10 )#";
 		var fncMD			= {
-			name       = "", 
-			access     = "public", 
-			output     ="false", 
+			name       = "",
+			access     = "public",
+			output     ="false",
 			returnType = "any"
 		};
 		var mappingName 	= arguments.mapping.getName();
@@ -290,14 +297,14 @@ component accessors="true"{
 
 		// MD proxy Defaults
 		fncMD.name = arguments.jointPointMD.name;
-		if( structKeyExists( arguments.jointPointMD, "access" ) ){ 
-			fncMD.access = arguments.jointPointMD.access; 
+		if( structKeyExists( arguments.jointPointMD, "access" ) ){
+			fncMD.access = arguments.jointPointMD.access;
 		}
-		if( structKeyExists( arguments.jointPointMD, "output" ) ){ 
-			fncMD.output = arguments.jointPointMD.output; 
+		if( structKeyExists( arguments.jointPointMD, "output" ) ){
+			fncMD.output = arguments.jointPointMD.output;
 		}
-		if( structKeyExists( arguments.jointPointMD, "returntype" ) ){ 
-			fncMD.returntype = arguments.jointPointMD.returnType; 
+		if( structKeyExists( arguments.jointPointMD, "returntype" ) ){
+			fncMD.returntype = arguments.jointPointMD.returnType;
 		}
 		// Create Original Method Proxy Signature
 		if( fncMD.access eq "public" ){
@@ -305,10 +312,10 @@ component accessors="true"{
 		}
 
 		var thisFNC = '
-		<:cffunction name="aop_#hash( arguments.jointpoint )#" 
-					access="#fncMD.access#" 
-					output="#fncMD.output#" 
-					returntype="#fncMD.returntype#" 
+		<:cffunction name="aop_#hash( arguments.jointpoint )#"
+					access="#fncMD.access#"
+					output="#fncMD.output#"
+					returntype="#fncMD.returntype#"
 					hint="WireBox AOP just rulez!"
 		>
 			<cfscript>
@@ -334,7 +341,7 @@ component accessors="true"{
 		// Do : replacement, due to inline compilation avoidances
 		thisFNC = replace( thisFNC, "<:", "<", "all" );
 		udfOut.append( thisFNC );
-		
+
 		// MD5 Content Checks
 		var codeSignature 	= hash( udfOUt.toString() );
 		var tmpFile 		= variables.properties.generationPath & "/" & codeSignature & ".cfm";
@@ -352,10 +359,10 @@ component accessors="true"{
 			arguments.target.$wbAOPRemove( arguments.jointpoint );
 			// Mix In generated aspect
 			arguments.target.$wbAOPInclude( tmpFile );
-			
+
 			// Remove Temp Aspect from disk
 			//variables.mixerUtil.removeAspect( expandedFile );
-			
+
 			// debug info
 			if( variables.log.canDebug() ){
 				variables.log.debug( "Target (#mappingName#) weaved with new (#arguments.jointpoint#) method and with the following aspects: #arguments.aspects.toString()#" );

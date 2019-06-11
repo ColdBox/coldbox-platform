@@ -54,6 +54,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.log = controller.getLogBox().getLogger( this );
 		// Setup Default Configuration
 		variables.interceptorConfig = {};
+		variables.onLoadInterceptionPointsHash = "";
 
 		return this;
 	}
@@ -85,8 +86,27 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.wirebox = controller.getWireBox();
 		// Register All Application Interceptors
 		registerInterceptors();
+		// Store hash of loaded points
+		variables.onLoadInterceptionPointsHash = hash( arrayToList( variables.interceptionPoints ) );
 		return this;
 	}
+
+	/**
+	 * Fired by the loader service in case modules registered interception points
+	 *
+	 * @return InterceptorService
+	 */
+	function rescanInterceptors(){
+		if( variables.onLoadInterceptionPointsHash != hash( arrayToList( variables.interceptionPoints ) ) ){
+			// Info log
+			if( variables.log.canInfo() ){
+				variables.log.info( "Re-scanning interceptors as modules have contributed interception points" );
+			}
+			registerInterceptors();
+		}
+		return this;
+	}
+
 
 	/**
 	 * Registers all the interceptors configured

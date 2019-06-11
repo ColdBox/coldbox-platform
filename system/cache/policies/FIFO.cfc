@@ -1,4 +1,4 @@
-/** 
+/**
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ----
@@ -10,33 +10,32 @@
 */
 component extends="coldbox.system.cache.policies.AbstractEvictionPolicy"{
 
-	/** 
-	* Constructor
-	* @cacheProvider The associated cache provider of type: coldbox.system.cache.ICacheProvider" doc_generic="coldbox.system.cache.ICacheProvider
-	*/
-	public FIFO function init ( required any cacheProvider  ){
+	/**
+	 * Constructor
+	 *
+	 * @cacheProvider The associated cache provider of type: coldbox.system.cache.providers.ICacheProvider" doc_generic="coldbox.system.cache.providers.ICacheProvider
+ 	 */
+	FIFO function init ( required any cacheProvider  ){
 		super.init( arguments.cacheProvider );
 
 		return this;
 	}
 
 	/**
-	* Execute the policy
-	*/
-	public void function execute (){
-		var index = "";
-		
+	 * Execute the policy
+	 */
+	void function execute (){
 		// Get searchable index
 		try{
-			index = getAssociatedCache()
+			var index = getAssociatedCache()
 				.getObjectStore()
 				.getIndexer()
 				.getSortedKeys( "created", "numeric", "asc" );
 			// process evictions
 			processEvictions( index );
-		} catch(Any e) {
+		} catch( Any e ) {
 			getLogger().error( "Error sorting via store indexer #e.message# #e.detail# #e.stackTrace#." );
-		}	
+		}
 	}
 
 }

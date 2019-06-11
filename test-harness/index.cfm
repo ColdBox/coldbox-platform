@@ -7,4 +7,10 @@ Date     :	October 15, 2005
 Description :
 	This is only a place holder since everything occurs in application.cfc now.
 ----------------------------------------------------------------------->
+<cfoutput>
+	<div>
+		Total Request Time: #numberFormat( getTickCount() - request.fwRequestStart )#ms <br>
+		WireBox Mappings: #structCount( application.wirebox.getBinder().getMappings() )#
+	</div>
+</cfoutput>
 <cfsetting enablecfoutputonly="no">

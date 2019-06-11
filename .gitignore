@@ -16,6 +16,7 @@ tests/automation/results
 tests/automation/results-*
 tests/logs
 tests/suites/loadtests/settings.xml
+logs/*
 
 # Build artifacts
 build-coldbox
