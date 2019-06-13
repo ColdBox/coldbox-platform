@@ -443,6 +443,36 @@ component serializable="false" accessors="true"{
 	/****************************************** UTILITY METHODS ******************************************/
 
 	/**
+	 * Retrieve a Java System property or env value by name. It looks at properties first then environment variables
+	 *
+	 * @key The name of the setting to look up.
+	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
+	 */
+	function getSystemSetting( required key, defaultValue ){
+		return controller.getUtil().getSystemSetting( argumentCollection=arguments );
+	}
+
+	/**
+	 * Retrieve a Java System property only!
+	 *
+	 * @key The name of the setting to look up.
+	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
+	 */
+	function getSystemProperty( required key, defaultValue ){
+		return controller.getUtil().getSystemProperty( argumentCollection=arguments );
+	}
+
+	/**
+	 * Retrieve a environment variable only
+	 *
+	 * @key The name of the setting to look up.
+	 * @defaultValue The default value to use if the key does not exist in the system properties or the env
+	 */
+	function getEnv( required key, defaultValue ){
+		return controller.getUtil().getEnv( argumentCollection=arguments );
+	}
+
+	/**
 	* Resolve a file to be either relative or absolute in your application
 	* @pathToCheck The file path to check
 	*/
