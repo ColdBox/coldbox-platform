@@ -817,10 +817,7 @@ component serializable="false" accessors="true"{
 				}
 				// Around Handler Advice Check?
 				else if(
-					!arguments.prePostExempt
-					&&
-					oHandler._actionExists( "aroundHandler" )
-					&&
+					oHandler._actionExists( "aroundHandler" ) AND
 					validateAction( results.ehBean.getMethod(), oHandler.aroundHandler_only, oHandler.aroundHandler_except )
 				){
 					results.data = oHandler.aroundHandler(
