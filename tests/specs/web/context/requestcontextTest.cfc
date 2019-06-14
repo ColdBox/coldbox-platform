@@ -12,12 +12,14 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		props.registeredLayouts = structnew();
 		props.modules           = {
 			test1 = {
-				mapping = "/coldbox/test-harness"
+				mapping = "/coldbox/test-harness",
+				inheritedEntryPoint = "test1"
 			}
 		};
 
 		/* Init it */
-		mockController = getMockController();
+		mockController = getMockController()
+			.$( "getSetting" ).$args( "modules" ).$results( props.modules );
 		prepareMock( mockController.getInterceptorService() );
 		prepareMock( mockController.getWireBox() );
 
@@ -386,8 +388,8 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 	function testBuildLink(){
 		var event = getRequestContext();
-		base = "http://www.luismajano.com/index.cfm";
-		basessl = "https://www.luismajano.com/index.cfm";
+		var base = "http://www.luismajano.com/index.cfm";
+		var basessl = "https://www.luismajano.com/index.cfm";
 
 		/* simple setup */
 		event.setSESEnabled(false);
@@ -438,6 +440,13 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		event.setsesBaseURL( base );
 		testurl = event.buildLink( to='general.index', queryString="name=luis&cool=false", translate=false, ssl=false );
 		AssertEquals( testurl, base & "/general.index?name=luis&cool=false" );
+
+		// SES Module Translations
+		event.setSESEnabled( true );
+		event.setsesBaseURL( base );
+		var testUrl = event.buildLink( to="test1:main.index", translate=true );
+		expect( testurl ).toBe( "http://www.luismajano.com/index.cfm/test1/main/index" );
+
 	}
 
 	function testRenderData(){

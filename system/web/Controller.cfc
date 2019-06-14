@@ -344,6 +344,14 @@ component serializable="false" accessors="true"{
 
 			// Default event relocations
 			case "SES" : {
+				// Convert module into proper entry point
+				if( listLen( arguments.event, ":" ) > 1 ) {
+					var mConfig = getSetting( "modules" );
+					var module = listFirst( arguments.event, ":" );
+					if( structKeyExists( mConfig, module ) ){
+						arguments.event = mConfig[ module ].inheritedEntryPoint & "/" & listRest( arguments.event, ":" );
+					}
+				}
 				// Route String start by converting event syntax to / syntax
 				routeString = replace( arguments.event, ".", "/", "all" );
 				// Convert Query String to convention name value-pairs
@@ -1026,7 +1034,10 @@ component serializable="false" accessors="true"{
 		struct argCollection={},
 		boolean private=false
 	){
-		return arguments.target._privateInvoker( method=arguments.method, argCollection=arguments.argCollection );
+		if( arguments.private ){
+			return arguments.target._privateInvoker( method=arguments.method, argCollection=arguments.argCollection );
+		}
+		return invoke( arguments.target, arguments.method, arguments.argCollection );
 	}
 
 	/**

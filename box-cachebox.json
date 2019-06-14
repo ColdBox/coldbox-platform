@@ -1,7 +1,7 @@
 {
 	"name" 				: "CacheBox",
 	"version"			: "@build.version@+@build.number@",
-	"location"  		: "http://downloads.ortussolutions.com/ortussolutions/cachebox/@build.version@/cachebox-@build.version@.zip",
+	"location"  		: "https://downloads.ortussolutions.com/ortussolutions/cachebox/@build.version@/cachebox-@build.version@.zip",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "cachebox",
 	"type"				: "caching",

@@ -968,6 +968,7 @@ component serializable=false accessors="true"{
         return arrayToList( [
             isSSL() ? "https://" : "http://",
             CGI.SERVER_NAME,
+			listFind( "80,443", cgi.server_port ) ? "" : cgi.server_port,
             isSES() ? "" : "/index.cfm",
             CGI.PATH_INFO,
             CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
@@ -1084,6 +1085,14 @@ component serializable=false accessors="true"{
 
 			// Translate link or plain
 			if( arguments.translate ){
+				// Convert module into proper entry point
+				if( listLen( arguments.to, ":" ) > 1 ) {
+					var mConfig = controller.getSetting( "modules" );
+					var module = listFirst( arguments.to, ":" );
+					if( structKeyExists( mConfig, module ) ){
+						arguments.to = mConfig[ module ].inheritedEntryPoint & "/" & listRest( arguments.to, ":" );
+					}
+				}
 				arguments.to = replace( arguments.to, ".", "/", "all" );
 				// QuqeryString Conversions
 				if( len( arguments.queryString ) ){

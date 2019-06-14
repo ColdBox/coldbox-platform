@@ -14,7 +14,54 @@
             beforeEach( function(){
                 router.$reset();
                 router.$( "addRoute" );
-            } );
+			} );
+
+
+			it( "can register nested resources", function(){
+				router.resources( resource="agents", pattern="/sites/:siteId/agents" );
+				var cl = router.$callLog().addRoute;
+
+				expect( cl[ 1 ] ).toBe(
+					{
+						pattern = "/sites/:siteId/agents/:id/edit",
+                        handler = "agents",
+                        action  = { GET = "edit" },
+                        module  = "",
+                        namespace = ""
+					},
+					"The route did not match.  Remember that order matters.  Add the most specific routes first."
+				);
+				expect( cl[ 2 ] ).toBe(
+                    {
+                        pattern = "/sites/:siteId/agents/new",
+                        handler = "agents",
+                        action  = { GET = "new" },
+                        module  = "",
+                        namespace = ""
+                    },
+                    "The route did not match.  Remember that order matters.  Add the most specific routes first."
+                );
+                expect( cl[ 3 ] ).toBe(
+                    {
+                        pattern = "/sites/:siteId/agents/:id",
+                        handler = "agents",
+                        action = { GET = "show", PUT = "update", PATCH = "update", POST = "create", DELETE = "delete" },
+                        module  = "",
+                        namespace = ""
+                    },
+                    "The route did not match.  Remember that order matters.  Add the most specific routes first."
+                );
+                expect( cl[ 4 ] ).toBe(
+                    {
+                        pattern = "/sites/:siteId/agents",
+                        handler = "agents",
+                        action  = { GET = "index", POST = "create" },
+                        module  = "",
+                        namespace = ""
+                    },
+                    "The route did not match.  Remember that order matters.  Add the most specific routes first."
+                );
+			});
 
             it( "can add RESTFul routes as a string list", function(){
                 router.resources( "photos,users" );

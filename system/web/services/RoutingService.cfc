@@ -658,9 +658,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	private any function renderResponse( required route, required event ){
 		var aRoute 			= arguments.route;
-		var replacements 	= "";
-		var thisReplacement = "";
-		var thisKey			= "";
 		var theResponse		= "";
 
 		// standardize status codes if not found.
@@ -672,9 +669,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			// setup default response
 			theResponse = aRoute.response;
 			// String replacements
-			replacements = reMatchNoCase( "{[^{]+?}", aRoute.response );
-			for( thisReplacement in replacements ){
-				thisKey = reReplaceNoCase( thisReplacement, "({|})", "", "all" );
+			var replacements = reMatchNoCase( "{[^{]+?}", aRoute.response );
+			for( var thisReplacement in replacements ){
+				var thisKey = reReplaceNoCase( thisReplacement, "({|})", "", "all" );
 				if( event.valueExists( thisKey ) ){
 					theResponse = replace( aRoute.response, thisReplacement, event.getValue( thisKey ), "all" );
 				}

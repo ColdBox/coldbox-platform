@@ -241,7 +241,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			}
 
 			// process mappings for metadata and initialization.
-			variables.binder.processMappings();
+			//variables.binder.processMappings();
 
 			// Announce To Listeners we are online
 			iData.injector = this;

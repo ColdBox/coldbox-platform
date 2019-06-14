@@ -8,7 +8,7 @@ notifications:
 env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
-    - COLDBOX_VERSION=5.4.1
+    - COLDBOX_VERSION=5.5.0
   matrix:
     - ENGINE=lucee@4.5 ANT_TARGET=build.all
     - ENGINE=lucee@5 ANT_TARGET=run-tests
@@ -35,7 +35,7 @@ addons:
 before_install:
   # CommandBox Keys
   - curl -fsSl https://downloads.ortussolutions.com/debs/gpg | sudo apt-key add -
-  - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
+  - sudo echo "deb https://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
     /etc/apt/sources.list.d/commandbox.list
 
 install:

@@ -1,6 +1,7 @@
 {
     "app":{
-        "cfengine":"lucee@4.5"
+		"cfengine":"lucee@4.5",
+		"serverHomeDirectory":".engine/lucee4"
     },
     "name":"coldbox-lucee@4.5",
     "force":true,

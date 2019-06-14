@@ -81,7 +81,7 @@ We recommend you use [CommandBox](https://www.ortussolutions.com/products/comman
 Unzip the download into a folder called `wirebox` in your webroot or place outside of the webroot and create a per-application mapping `/wirebox` that points to it.
 
 **Bleeding Edge Downloads**
-You can always leverage our bleeding edge artifacts server to download WireBox: http://downloads.ortussolutions.com/#/ortussolutions/wirebox/
+You can always leverage our bleeding edge artifacts server to download WireBox: https://downloads.ortussolutions.com/#/ortussolutions/wirebox/
 
 ---
 
