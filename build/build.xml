@@ -10,12 +10,6 @@
 
 	<!-- UPDATE ON EACH VERSION CYCLE -->
 	<property name="groupID"				value="ortussolutions" />
-
-	<!-- PASSED IN NOW
-	<property name="coldbox.version" 		value="5.1.3" />
-	-->
-	<property name="coldbox.stableversion" 	value="5.4.1" />
-
 	<property name="coldbox.slug"	 		value="coldbox"/>
 	<property name="cachebox.slug"	 		value="cachebox"/>
 	<property name="logbox.slug"	 		value="logbox"/>
@@ -37,9 +31,6 @@
 	</path>
 	<!-- Define Tasks -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
-
-	<!-- Import Box-Repo Tasks -->
-	<import><url url="https://raw.githubusercontent.com/Ortus-Solutions/box-tasks/master/box-repo.xml"/></import>
 
 	<!-- Init -->
 	<target name="init" description="Init the build" unless="src.isInit">
@@ -168,12 +159,6 @@
         	</fileset>
         </copy>
 
-		<!-- Move Install folder
-		<copy todir="${dir.build}/coldbox/install" encoding="UTF-8" overwrite="true">
-        	<fileset dir="install" />
-        </copy>
-		-->
-
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/coldbox/" encoding="UTF-8" overwrite="true">
 			<fileset file="license.txt" />
@@ -203,13 +188,6 @@
 			</else>
 		</if>
 
-		<!-- Execute IDE Dictionaries
-		<get 	dest="${dir.build}/coldbox/install/IDE Extras/CFBuilder Dictionary/coldbox.builder.xml"
-				src="${url.dictionaries}/builderDictionary.cfm?text=true"
-				verbose="true"
-		/>
-		-->
-
 		<!-- Execute Api Docs -->
 		<get 	dest="${dir.build}/docbox.html"
 				src="${url.coldbox.api}${coldbox.version}&amp;path=${dir.coldbox.apidocs}&amp;coldbox_root=${dir.build}/coldbox"
@@ -219,10 +197,6 @@
 
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-apidocs-${coldbox.version}.zip" basedir="${dir.coldbox.apidocs}" />
-
-		<!-- Zip IDE Extras
-		<zip destfile="${dir.coldbox.exports}/coldbox-ide-${coldbox.version}.zip" basedir="${dir.build}/coldbox/install/IDE Extras" />
-		-->
 
 		<!-- Zip ColdBox Bundle -->
 		<zip destfile="${dir.coldbox.exports}/coldbox-${coldbox.version}.zip" basedir="${dir.build}/coldbox" />
@@ -260,15 +234,6 @@
 			  tofile="${be.coldbox.exports}/${coldbox.slug}-be-standalone.zip"
 			  overwrite="true"
 			  encoding="UTF-8"/>
-
-		<!-- Create Box Repo From macrodef -->
-		<box-repo location="${dir.exports}/${coldbox.slug}"
-				  artifactID="${coldbox.slug}"
-				  buildID="${build.number}"
-				  groupID="${groupID}"
-				  latest="${coldbox.version}"
-				  stableVersion="${coldbox.stableversion}"
-				  classifiers="standalone,apidocs,ide"/>
     </target>
 
 	<!-- Build CacheBox Distribution -->
@@ -383,14 +348,6 @@
 			  tofile="${be.cachebox.exports}/${cachebox.slug}-be.zip"
 			  overwrite="true"
 			  encoding="UTF-8"/>
-
-		<!-- Create Box Repo From macrodef -->
-		<box-repo location="${dir.exports}/${cachebox.slug}"
-				  artifactID="${cachebox.slug}"
-				  groupID="${groupID}"
-				  buildID="${build.number}"
-				  latest="${coldbox.version}"
-				  classifiers="apidocs"/>
 	</target>
 
 	<!-- Build LogBox Distribution -->
@@ -501,14 +458,6 @@
 			  tofile="${be.logbox.exports}/${logbox.slug}-be.zip"
 			  overwrite="true"
 			  encoding="UTF-8"/>
-
-		<!-- Create Box Repo From macrodef -->
-		<box-repo location="${dir.exports}/${logbox.slug}"
-				  artifactID="${logbox.slug}"
-				  groupID="${groupID}"
-				  buildID="${build.number}"
-				  latest="${coldbox.version}"
-				  classifiers="apidocs"/>
 	</target>
 
 	<!-- Build WireBox Distribution -->
@@ -631,14 +580,6 @@
 			  tofile="${be.wirebox.exports}/${wirebox.slug}-be.zip"
 			  overwrite="true"
 			  encoding="UTF-8"/>
-
-		<!-- Create Box Repo From macrodef -->
-		<box-repo location="${dir.exports}/${wirebox.slug}"
-				  artifactID="${wirebox.slug}"
-				  groupID="${groupID}"
-				  buildID="${build.number}"
-				  latest="${coldbox.version}"
-				  classifiers="apidocs"/>
 	</target>
 
 	<!-- Get Dependencies -->
