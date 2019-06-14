@@ -4,6 +4,12 @@ component{
 		setUniqueURLs( false );
 		//setFullRewrites( false );
 
+		// Nested Resources
+		resources(
+			resource 	= "agents",
+			pattern 	= "/sites/:id/agents"
+		);
+
 		// Redirects
 		route( "/tempRoute" )
 			.toRedirect( "/main/redirectTest", 302 );
@@ -116,7 +122,6 @@ component{
 		route( "/health_check" )
 			.withAction( { get = "runCheck", options = "returnOptions" } )
 			.to( "utilities.HealthCheck" );
-
 	}
 
 }
