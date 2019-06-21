@@ -169,7 +169,11 @@ A reporting template about exceptions in your ColdBox Apps
 			   <td align="right" class="info"> Remote Address: </td>
 			   <td >#htmlEditFormat(cgi.remote_addr)#</td>
 			 </tr>
-			 <cfif isStruct(oException.getExceptionStruct()) >
+
+			 <cfif 
+			 	isStruct(oException.getExceptionStruct()) 
+			 	OR findNoCase('DatabaseQueryException', getMetadata(oException.getExceptionStruct()).getName())
+			 >
 
 			  <cfif findnocase("database", oException.getType() )>
 				  <tr >
