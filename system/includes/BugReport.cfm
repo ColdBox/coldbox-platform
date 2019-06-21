@@ -12,8 +12,8 @@ A reporting template about exceptions in your ColdBox Apps
 	catch ( any e ) {
 		local.sessionScopeExists = false;
 	}
-	try{ 
-		local.thisInetHost = createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName(); 
+	try{
+		local.thisInetHost = createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName();
 	}
 	catch( any e ){
 		local.thisInetHost = "localhost";
@@ -54,7 +54,7 @@ A reporting template about exceptions in your ColdBox Apps
 		<cfif oException.getType() neq "">
 			<strong>Type: </strong> #oException.gettype()# <br>
 		</cfif>
-	
+
 
 		<!--- Message + Details --->
 		<strong>Messages:</strong>
@@ -77,8 +77,8 @@ A reporting template about exceptions in your ColdBox Apps
 			  <cfset local.arrayTagContext = oException.getTagContext()>
 			  <cfloop from="1" to="#arrayLen( local.arrayTagContext )#" index="local.i">
 				  <!--- Don't clutter the screen with this information unless it's actually useful --->
-			  	  <cfif structKeyExists( local.arrayTagContext[ local.i ], "ID" ) and 
-			  	  		len( local.arrayTagContext[ local.i ].ID ) and 
+			  	  <cfif structKeyExists( local.arrayTagContext[ local.i ], "ID" ) and
+			  	  		len( local.arrayTagContext[ local.i ].ID ) and
 			  	  		local.arrayTagContext[ local.i ].ID neq "??"
 			  	  >
 			  <tr >
@@ -170,12 +170,12 @@ A reporting template about exceptions in your ColdBox Apps
 			   <td >#htmlEditFormat(cgi.remote_addr)#</td>
 			 </tr>
 
-			 <cfif 
-			 	isStruct(oException.getExceptionStruct()) 
-			 	OR findNoCase('DatabaseQueryException', getMetadata(oException.getExceptionStruct()).getName())
+			 <cfif
+			 	isStruct( oException.getExceptionStruct() )
+			 	OR findNoCase( "DatabaseQueryException", getMetadata( oException.getExceptionStruct() ).getName() )
 			 >
 
-			  <cfif findnocase("database", oException.getType() )>
+			  <cfif findnocase( "database", oException.getType() )>
 				  <tr >
 					<th colspan="2" >Database oException Information:</th>
 				  </tr>
