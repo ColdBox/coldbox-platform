@@ -41,7 +41,7 @@ A reporting template about exceptions in your ColdBox Apps
 		<strong>Event: </strong><cfif event.getCurrentEvent() neq "">#event.getCurrentEvent()#<cfelse>N/A</cfif>
 		<br>
 		<strong>Route: </strong><cfif event.getCurrentRoute() neq "">#event.getCurrentRoute()#<cfelse>N/A</cfif>
-			<cfif event.getCurrentRoutedModule() neq ""> from the "#event.getCurrentRoutedModule()#" module router.
+			<cfif event.getCurrentRoutedModule() neq ""> from the "#event.getCurrentRoutedModule()#" module router.</cfif>
 		<br>
 		<strong>Route Name: </strong><cfif event.getCurrentRouteName() neq "">#event.getCurrentRouteName()#<cfelse>N/A</cfif>
 		<br>
