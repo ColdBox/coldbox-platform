@@ -756,7 +756,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					}
 				}//end if folder found
 				// Module check second, if the module is in the URL
-				else if( structKeyExists(variables.modules, thisFolder) ){
+				else if( !isModule && structKeyExists( variables.modules, thisFolder ) ){
 					// Setup the module entry point
 					newEvent = thisFolder & ":";
 					// Change Physical Path to module now, module detected
