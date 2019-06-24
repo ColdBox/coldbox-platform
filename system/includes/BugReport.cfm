@@ -40,6 +40,12 @@ A reporting template about exceptions in your ColdBox Apps
 		<!--- Event --->
 		<strong>Event: </strong><cfif event.getCurrentEvent() neq "">#event.getCurrentEvent()#<cfelse>N/A</cfif>
 		<br>
+		<strong>Route: </strong><cfif event.getCurrentRoute() neq "">#event.getCurrentRoute()#<cfelse>N/A</cfif>
+		<br>
+		<strong>Route Name: </strong><cfif event.getCurrentRouteName() neq "">#event.getCurrentRouteName()#<cfelse>N/A</cfif>
+		<br>
+		<strong>Routed Namespace: </strong><cfif event.getCurrentRoutedNamespace() neq "">#event.getCurrentRoutedNamespace()#<cfelse>N/A</cfif>
+		<br>
 		<strong>Routed URL: </strong><cfif event.getCurrentRoutedURL() neq "">#event.getCurrentRoutedURL()#<cfelse>N/A</cfif>
 		<br>
 		<strong>Layout: </strong><cfif Event.getCurrentLayout() neq "">#Event.getCurrentLayout()#<cfelse>N/A</cfif> (Module: #event.getCurrentLayoutModule()#)
