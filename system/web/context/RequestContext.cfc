@@ -588,6 +588,13 @@ component serializable=false accessors="true"{
 	}
 
 	/**
+	* Get the current routed module that matched the SES route, if any
+	*/
+	string function getCurrentRoutedModule(){
+		return getPrivateValue( "currentRoutedModule", "" );
+	}
+
+	/**
 	* Gets the current incoming event
 	*/
 	string function getCurrentEvent(){

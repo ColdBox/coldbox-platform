@@ -517,10 +517,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 		}
 
-		// Save Found Route + Name
+		// Save current routed details in PRC
 		arguments.event
-			.setPrivateValue( "currentRoute", 		results.route.pattern )
-			.setPrivateValue( "currentRouteName",	results.route.name );
+			.setPrivateValue( "currentRoute", 			results.route.pattern )
+			.setPrivateValue( "currentRouteName",		results.route.name )
+			.setPrivateValue( "currentRoutedModule", 	results.route.module );
 
 		// Save Found URL if NOT Found already
 		if( NOT arguments.event.privateValueExists( "currentRoutedURL" ) ){
