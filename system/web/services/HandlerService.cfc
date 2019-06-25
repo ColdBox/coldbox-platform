@@ -183,7 +183,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		} //method check finalized.
 
 		// Store metadata in execution bean
-		if ( !arguments.ehBean.getMetadataLoaded() ) {
+		if ( !variables.handlerCaching || !arguments.ehBean.getMetadataLoaded() ) {
 			arguments.ehBean
 				.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
 				.setHandlerMetadata( getMetadata( oEventHandler ) )
