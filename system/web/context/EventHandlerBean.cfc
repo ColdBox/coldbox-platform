@@ -109,10 +109,6 @@ component accessors="true"{
 		variables.handlerMetadata = arguments.handlerMetadata;
 		return this;
 	}
-	function setMetadataLoaded( required metadataLoaded ){
-		variables.metadataLoaded = arguments.metadataLoaded;
-		return this;
-	}
 
 	/************************************** UTILITY METHODS *********************************************/
 
