@@ -98,11 +98,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return Handler Instance
 	 */
 	function newHandler( required invocationPath ){
-		var oHandler 	= "";
-		var binder		= "";
-		var attribs		= "";
-		var mapping		= "";
-
 		// Check if handler already mapped?
 		if( NOT wirebox.getBinder().mappingExists( arguments.invocationPath ) ){
 			// lazy load checks for wirebox
