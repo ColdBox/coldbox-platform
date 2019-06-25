@@ -244,11 +244,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		var moduleSettings 			= variables.modules;
 		var oHandlerBean 			= new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
 
-		// put bean in cache if enabled
-		if ( variables.handlerCaching ) {
-			handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
-		}
-
 		// Rip the handler and method
 		var handlerReceived = listLast( reReplace( arguments.event, "\.[^.]*$", "" ), ":" );
 		var methodReceived 	= listLast( arguments.event, "." );
@@ -261,11 +256,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				// Verify handler in module handlers
 				var handlerIndex = listFindNoCase( moduleSettings[ moduleReceived ].registeredHandlers, handlerReceived );
 				if( handlerIndex ){
-					return oHandlerBean
+					oHandlerBean
 						.setInvocationPath( moduleSettings[ moduleReceived ].handlerInvocationPath )
 						.setHandler( listgetAt(moduleSettings[ moduleReceived ].registeredHandlers, handlerIndex ) )
 						.setMethod( methodReceived )
 						.setModule( moduleReceived );
+
+					// put bean in cache if enabled
+					if ( variables.handlerCaching ) {
+						handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+					}
+					return oHandlerBean;
 				} else {
 					variables.log.error( "Invalid Module (#moduleReceived#) Handler: #handlerReceived#. Valid handlers are #moduleSettings[ moduleReceived ].registeredHandlers#" );
 				}
@@ -278,23 +279,39 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			var handlerIndex = listFindNoCase( handlersList, HandlerReceived );
 			// Check for conventions location
 			if ( handlerIndex ){
-				return oHandlerBean
+				oHandlerBean
 					.setHandler( listgetAt( handlersList, handlerIndex ) )
 					.setMethod( MethodReceived );
+
+				// put bean in cache if enabled
+				if ( variables.handlerCaching ) {
+					handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+				}
+				return oHandlerBean;
 			}
 
 			// Check for external location
 			handlerIndex = listFindNoCase( handlersExternalList, HandlerReceived );
 			if( handlerIndex ){
-				return oHandlerBean
+				oHandlerBean
 					.setInvocationPath( variables.handlersExternalLocation )
 					.setHandler( listgetAt( handlersExternalList, handlerIndex ) )
 					.setMethod( MethodReceived );
+
+				// put bean in cache if enabled
+				if ( variables.handlerCaching ) {
+					handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+				}
+				return oHandlerBean;
 			}
 		} //end else
 
 		// Do View Dispatch Check Procedures
 		if( isViewDispatch( arguments.event, oHandlerBean ) ){
+			// put bean in cache if enabled
+			if ( variables.handlerCaching ) {
+				handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+			}
 			return oHandlerBean;
 		}
 
