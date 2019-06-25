@@ -12,6 +12,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	property name="handlerCacheDictionary" type="struct";
 
 	/**
+	 * Handler bean cache dictionary
+	 */
+	property name="handlerBeanCacheDictionary" type="struct";
+
+	/**
 	 * Event caching metadata dictionary
 	 */
 	property name="eventCacheDictionary" type="struct";
@@ -39,6 +44,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.handlerCacheDictionary = {};
 		// Setup the Event Cache Dictionary
 		variables.eventCacheDictionary = {};
+		// Setup the Event Handler Bean Cache Dictionary
+		variables.handlerBeanCacheDictionary = {};
 		// Static base class
 		variables.HANDLER_BASE_CLASS = "coldbox.system.EventHandler";
 
@@ -176,9 +183,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		} //method check finalized.
 
 		// Store metadata in execution bean
-		arguments.ehBean
-			.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
-			.setHandlerMetadata( getMetadata( oEventHandler ) );
+		if ( !arguments.ehBean.getMetadataLoaded() ) {
+			arguments.ehBean
+				.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
+				.setHandlerMetadata( getMetadata( oEventHandler ) )
+				.setMetadataLoaded( true );
+		}
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -224,10 +234,20 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return coldbox.system.web.context.EventHandlerBean
 	 */
 	function getHandlerBean( required string event ){
+		// bean already in cache?
+		if ( variables.handlerCaching && structKeyExists( handlerBeanCacheDictionary, arguments.event ) ) {
+			return handlerBeanCacheDictionary[ arguments.event ];
+		}
+
 		var handlersList 			= variables.registeredHandlers;
 		var handlersExternalList 	= variables.registeredExternalHandlers;
-		var oHandlerBean 			= new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
 		var moduleSettings 			= variables.modules;
+		var oHandlerBean 			= new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
+
+		// put bean in cache if enabled
+		if ( variables.handlerCaching ) {
+			handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+		}
 
 		// Rip the handler and method
 		var handlerReceived = listLast( reReplace( arguments.event, "\.[^.]*$", "" ), ":" );
