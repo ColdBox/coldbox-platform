@@ -92,7 +92,7 @@ We recommend you use [CommandBox](http://www.ortussolutions.com/products/command
 Unzip the download into a folder called `logbox` in your webroot or place outside of the webroot and create a per-application mapping `/logbox` that points to it.
 
 **Bleeding Edge Downloads**
-You can always leverage our bleeding edge artifacts server to download LogBox: http://downloads.ortussolutions.com/#/ortussolutions/logbox/
+You can always leverage our bleeding edge artifacts server to download LogBox: https://downloads.ortussolutions.com/#/ortussolutions/logbox/
 
 ---
  

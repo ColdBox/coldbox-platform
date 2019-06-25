@@ -12,6 +12,7 @@ test-harness/test/logs
 test-harness/test/specs/integration/logs
 testing/cases/logging/tmp
 testing/resources/logs/*.log
+tests/results/**
 tests/automation/results
 tests/automation/results-*
 tests/logs

@@ -1,12 +1,13 @@
 {
     "app":{
-        "cfengine":"adobe@2016"
+        "cfengine":"adobe@2016",
+        "serverHomeDirectory":".engine/adobe2016"
     },
     "name":"coldbox-adobe@2016",
     "force":true,
     "openBrowser":false,
     "web":{
-		"directoryBrowsing" : true,
+        "directoryBrowsing":true,
         "http":{
             "port":"8599"
         },

@@ -106,8 +106,9 @@ component extends="coldbox.system.web.services.BaseService"{
      * Register all modules for the application. Usually called by framework to load{configuration data.
      */
 	ModuleService function registerAllModules(){
-		var foundModules   			= "";
-		var includeModules 			= controller.getSetting( "modulesInclude" );
+		var foundModules   	= "";
+		var includeModules 	= controller.getSetting( "modulesInclude" );
+		var totalTime 		= getTickCount();
 
 		// Register the initial empty module configuration holder structure
 		structClear( controller.getSetting( "modules" ) );
@@ -131,8 +132,18 @@ component extends="coldbox.system.web.services.BaseService"{
 		var aModules = structKeyArray( variables.moduleRegistry );
 		for( var thisModule in aModules ){
 			if( canLoad( thisModule ) ){
+				var sTime = getTickCount();
+
 				registerModule( thisModule );
+
+				if( variables.logger.canDebug() ){
+					variables.logger.debug( "===> Registered Module: #thisModule# in #getTickCount() - sTime# ms" );
+				}
 			}
+		}
+
+		if( variables.logger.canInfo() ){
+			variables.logger.info( "==> Registered All Modules in #numberFormat( getTickCount() - totalTime )# ms" );
 		}
 
 		// interception
@@ -174,8 +185,8 @@ component extends="coldbox.system.web.services.BaseService"{
 		if( len( arguments.invocationPath ) ){
 			// Check if passed module name is already registered
 			if( structKeyExists( variables.moduleRegistry, arguments.moduleName ) AND !arguments.force ){
-				if( variables.logger.canDebug() ){
-					variables.logger.debug( "The module #arguments.moduleName# has already been registered, so skipping registration" );
+				if( variables.logger.canInfo() ){
+					variables.logger.info( "The module #arguments.moduleName# has already been registered, so skipping registration" );
 				}
 				return false;
 			}
@@ -328,8 +339,8 @@ component extends="coldbox.system.web.services.BaseService"{
 			var oConfig = loadModuleConfiguration( mConfig, arguments.moduleName );
 			// Verify if module has been disabled
 			if( mConfig.disabled ){
-				if( variables.logger.canDebug() ){
-					variables.logger.debug( "Skipping module: #arguments.moduleName# as it has been disabled!" );
+				if( variables.logger.canInfo() ){
+					variables.logger.info( "Skipping module: #arguments.moduleName# as it has been disabled!" );
 				}
 				return false;
 			} else {
@@ -381,8 +392,8 @@ component extends="coldbox.system.web.services.BaseService"{
 								invocationPath 	= mConfig.invocationPath & "." & thisInceptionPath,
 								parent 			= modName
 							);
-						} else if( variables.logger.canDebug() ){
-							variables.logger.debug( "Inception Module #childName# does not have a valid ModuleConfig.cfc in its root, so skipping registration" );
+						} else if( variables.logger.canInfo() ){
+							variables.logger.info( "Inception Module #childName# does not have a valid ModuleConfig.cfc in its root, so skipping registration" );
 						}
 					}
 				}
@@ -398,8 +409,8 @@ component extends="coldbox.system.web.services.BaseService"{
 			);
 
 			// Log registration
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Module #arguments.moduleName# registered successfully." );
+			if( variables.logger.canInfo() ){
+				variables.logger.info( "Module #arguments.moduleName# registered successfully." );
 			}
 		} // end lock
 
@@ -418,29 +429,34 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * Go over all the loaded module configurations and activate them for usage within the{application
 	 */
 	function activateAllModules(){
-		var aModules = structKeyArray( variables.moduleRegistry );
+		var aModules 	= structKeyArray( variables.moduleRegistry );
+		var totalTime 	= getTickCount();
 
-		//var totalTime = getTickCount();
 		// Iterate through module configuration and activate each module
 		for( var moduleName in aModules ){
 			// Can we load module and has it been registered?
 			if( structKeyExists( variables.registeredModules, moduleName ) && canLoad( moduleName ) ){
-				//var sTime = getTickCount();
-				activateModule( moduleName );
-				//writeDump( var="===> Loading #moduleName# #getTickCount() - sTime# ms", output="console" );
+				var sTime = getTickCount();
+
+				this.activateModule( moduleName );
+
+				if( variables.logger.canDebug() ){
+					variables.logger.debug( "===> Activated #moduleName# in #getTickCount() - sTime# ms" );
+				}
 			}
 		}
-		//writeDump( var="===> Loading All Modules: #numberFormat( getTickCount() - totalTime )#", output="console" );
+
+		if( variables.logger.canInfo() ){
+			variables.logger.info( "==> Activated All Modules in #numberFormat( getTickCount() - totalTime )# ms" );
+		}
 
 		// interception
-		//var sTime = getTickCount();
 		variables.interceptorService.processState(
 			"afterModuleActivations",
 			{
 				moduleRegistry 	= variables.moduleRegistry
 			}
 		);
-		//writeDump( var="===> afterModuleActivations #getTickCount() - sTime# ms", output="console" );
 	}
 
 	/**
@@ -462,8 +478,8 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Check if module already activated
 		if( modules[ arguments.moduleName ].activated ){
 			// Log it
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Module #arguments.moduleName# already activated, skipping activation." );
+			if( variables.logger.canInfo() ){
+				variables.logger.info( "Module #arguments.moduleName# already activated, skipping activation." );
 			}
 			return this;
 		}
@@ -471,8 +487,8 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Check if module CAN be activated
 		if( !modules[ arguments.moduleName ].activate ){
 			// Log it
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Module #arguments.moduleName# cannot be activated as it is flagged to not activate, skipping activation." );
+			if( variables.logger.canInfo() ){
+				variables.logger.info( "Module #arguments.moduleName# cannot be activated as it is flagged to not activate, skipping activation." );
 			}
 			return this;
 		}
@@ -482,8 +498,8 @@ component extends="coldbox.system.web.services.BaseService"{
 
 		// Do we have dependencies to activate first
 		mConfig.dependencies.each( function( thisDependency ){
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Activating #moduleName# requests dependency activation: #thisDependency#" );
+			if( variables.logger.canInfo() ){
+				variables.logger.info( "Activating #moduleName# requests dependency activation: #thisDependency#" );
 			}
 			// Activate dependency first
 			activateModule( thisDependency );
@@ -492,8 +508,8 @@ component extends="coldbox.system.web.services.BaseService"{
 		// Check if activating one of this module's dependencies already activated this module
 		if( modules[ arguments.moduleName ].activated ){
 			// Log it
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Module #arguments.moduleName# already activated during dependecy activation, skipping activation." );
+			if( variables.logger.canInfo() ){
+				variables.logger.info( "Module #arguments.moduleName# already activated during dependecy activation, skipping activation." );
 			}
 			return this;
 		}
@@ -663,8 +679,8 @@ component extends="coldbox.system.web.services.BaseService"{
 			);
 
 			// Log it
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Module #arguments.moduleName# activated sucessfully." );
+			if( variables.logger.canInfo() ){
+				variables.logger.info( "Module #arguments.moduleName# activated sucessfully." );
 			}
 
 		} // end lock
@@ -794,8 +810,8 @@ component extends="coldbox.system.web.services.BaseService"{
 			);
 
 			// Log it
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Module #arguments.moduleName# unloaded successfully." );
+			if( variables.logger.canInfo() ){
+				variables.logger.info( "Module #arguments.moduleName# unloaded successfully." );
 			}
 
 			// Do we need to throw exception?

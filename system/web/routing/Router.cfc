@@ -579,6 +579,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
      * @except 			Exclude routes with an except list or array of actions, e.g. "show"
      * @module 			If passed, the module these resources will be attached to.
      * @namespace 		If passed, the namespace these resources will be attached to.
+	 * @pattern 		If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
      */
     function resources(
         required resource,
@@ -587,7 +588,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
         only=[],
         except=[],
         string module="",
-        string namespace=""
+		string namespace="",
+		string pattern=""
     ){
 		// Inflate incoming arguments if not arrays
         if ( ! isArray( arguments.only ) ) {
@@ -605,11 +607,14 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
         // Register all resources
         for( var thisResource in arguments.resource ){
 
+			// Default pattern or look at the incoming pattern sent?
+			var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#thisResource#" ) ;
+
 			// Edit Routes
 			actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
 			if ( ! structIsEmpty( actionSet ) ) {
 				addRoute(
-					pattern		= "/#thisResource#/:#arguments.parameterName#/edit",
+					pattern		= "#thisPattern#/:#arguments.parameterName#/edit",
 					handler		= arguments.handler,
 					action 		= actionSet,
 					module 		= arguments.module,
@@ -621,7 +626,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
 			if ( ! structIsEmpty( actionSet ) ) {
 				addRoute(
-					pattern		= "/#thisResource#/new",
+					pattern		= "#thisPattern#/new",
 					handler		= arguments.handler,
 					action		= actionSet,
 					module 		= arguments.module,
@@ -637,7 +642,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	        );
 	        if ( ! structIsEmpty( actionSet ) ) {
 	            addRoute(
-	            	pattern		= "/#thisResource#/:#arguments.parameterName#",
+	            	pattern		= "#thisPattern#/:#arguments.parameterName#",
 	            	handler		= arguments.handler,
 	            	action 		= actionSet,
 		            module 		= arguments.module,
@@ -649,7 +654,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	        actionSet = filterRouteActions( { GET = "index", POST = "create" }, arguments.only, arguments.except );
 	        if ( ! structIsEmpty( actionSet ) ) {
 	            addRoute(
-	            	pattern		= "/#thisResource#",
+	            	pattern		= "#thisPattern#",
 	            	handler		= arguments.handler,
 	            	action 		= actionSet,
 		            module 		= arguments.module,

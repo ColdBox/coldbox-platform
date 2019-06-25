@@ -5,6 +5,8 @@ component
 	function beforeAll(){
 		super.setup();
 
+		variables.hello = "Luis Majano";
+
 		// model constructor
 		model.init();
 	}
@@ -21,13 +23,15 @@ component
 				3 | anakin
 				4 | joe2" );
 
+				var innerValue = "InnerValue";
+
 				model
 					.setCollection( target )
 					.each( function( item ){
 						var threadName = createObject( "java", "java.lang.Thread" ).currentThread().getName();
 						sleep( randRange( 400, 600 ) );
 						createObject( "java", "java.lang.System" ).out
-							.println( "Processing #threadName# and #item.toString()#" );
+							.println( "Outer variables: #variables.hello# Inner: #innerValue# Processing #threadName# and #item.toString()#" );
 					} );
 			});
 

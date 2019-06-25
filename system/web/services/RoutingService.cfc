@@ -517,10 +517,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 		}
 
-		// Save Found Route + Name
+		// Save current routed details in PRC
 		arguments.event
-			.setPrivateValue( "currentRoute", 		results.route.pattern )
-			.setPrivateValue( "currentRouteName",	results.route.name );
+			.setPrivateValue( "currentRoute", 			results.route.pattern )
+			.setPrivateValue( "currentRouteName",		results.route.name )
+			.setPrivateValue( "currentRoutedModule", 	results.route.module );
 
 		// Save Found URL if NOT Found already
 		if( NOT arguments.event.privateValueExists( "currentRoutedURL" ) ){
@@ -658,9 +659,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	private any function renderResponse( required route, required event ){
 		var aRoute 			= arguments.route;
-		var replacements 	= "";
-		var thisReplacement = "";
-		var thisKey			= "";
 		var theResponse		= "";
 
 		// standardize status codes if not found.
@@ -672,9 +670,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			// setup default response
 			theResponse = aRoute.response;
 			// String replacements
-			replacements = reMatchNoCase( "{[^{]+?}", aRoute.response );
-			for( thisReplacement in replacements ){
-				thisKey = reReplaceNoCase( thisReplacement, "({|})", "", "all" );
+			var replacements = reMatchNoCase( "{[^{]+?}", aRoute.response );
+			for( var thisReplacement in replacements ){
+				var thisKey = reReplaceNoCase( thisReplacement, "({|})", "", "all" );
 				if( event.valueExists( thisKey ) ){
 					theResponse = replace( aRoute.response, thisReplacement, event.getValue( thisKey ), "all" );
 				}
@@ -759,7 +757,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					}
 				}//end if folder found
 				// Module check second, if the module is in the URL
-				else if( structKeyExists(variables.modules, thisFolder) ){
+				else if( !isModule && structKeyExists( variables.modules, thisFolder ) ){
 					// Setup the module entry point
 					newEvent = thisFolder & ":";
 					// Change Physical Path to module now, module detected
