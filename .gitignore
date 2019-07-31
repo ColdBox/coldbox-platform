@@ -25,6 +25,7 @@ build/build.number
 artifacts/*
 
 # Dependencies
+.engine/**
 testbox/*
 apidocs/docbox/*
 ApplicationTemplates/*

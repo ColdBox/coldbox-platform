@@ -100,5 +100,14 @@
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="testHandlerMetadata" access="public" returnType="void">
+		<cfscript>
+			expect( this.ehBean.isMetadataLoaded() ).toBe( false );
+			this.ehBean.setHandlerMetadata( getMetadata( this ) );
+			expect( this.ehBean.isMetadataLoaded() ).toBe( true );
+
+		</cfscript>
+	</cffunction>
+
 
 </cfcomponent>

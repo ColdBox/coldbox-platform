@@ -175,7 +175,7 @@ component extends="coldbox.system.web.services.BaseService"{
 	 * @return coldbox.system.web.context.RequestContext
 	 */
 	function getContext( string classPath = "coldbox.system.web.context.RequestContext" ){
-        return ( request.keyExists( "cb_requestContext" ) ?
+        return ( structKeyExists( request, "cb_requestContext" ) ?
             request[ "cb_requestContext" ] :
             createContext( classPath ) );
 	}
