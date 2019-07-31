@@ -111,7 +111,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	function get( required objectKey ){
 		// retrieve from map
 		var results = variables.pool.get( arguments.objectKey );
-		if( !isNull( results ) ){
+		if( !isNull( local.results ) ){
 
 			// Record Metadata Access
 			variables.indexer.setObjectMetadataProperty(
@@ -146,7 +146,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	function getQuiet( required objectKey ){
 		// retrieve from map
 		var results = variables.pool.get( arguments.objectKey );
-		if( !isNull( results ) ){
+		if( !isNull( local.results ) ){
 			return results;
 		}
 	}

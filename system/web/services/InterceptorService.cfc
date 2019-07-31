@@ -179,12 +179,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			if( arguments.buffer.keyExists( "builder" ) ) {
 				writeOutput( arguments.buffer.getString() );
 			}
+
+			// Any results
+			if( !isNull( local.results ) ){
+				return results;
+			}
 		}
 
-		// Any results
-		if( !isNull( results ) ){
-			return results;
-		}
 	}
 
 	/**

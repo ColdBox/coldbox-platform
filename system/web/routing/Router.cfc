@@ -511,7 +511,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 
 		variables.withClosure
 			.filter( function( key, value ){
-				return !isNull( value );
+				return !isNull( arguments.value );
 			} ).each( function( key, value ){
 				// Verify if the key does not exist in incoming but it does in with, so default it
 				if ( NOT structKeyExists( args, key ) ){

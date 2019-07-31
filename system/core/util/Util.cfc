@@ -27,10 +27,10 @@ Description :
 		<cfscript>
 			return arguments.in.reduce( function( result, item, index ){
 				var target = {};
-				if( !isNull( result ) ){
-					target = result;
+				if( !isNull( arguments.result ) ){
+					target = arguments.result;
 				}
-				target[ index ] = item;
+				target[ arguments.index ] = arguments.item;
 				return target;
 			} );
 		</cfscript>
@@ -142,12 +142,12 @@ Description :
 		<cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties or the env" />
 		<cfscript>
 			var value = getJavaSystem().getProperty( arguments.key );
-			if ( ! isNull( value ) ) {
+			if ( ! isNull( local.value ) ) {
 				return value;
 			}
 
 			value = getJavaSystem().getEnv( arguments.key );
-			if ( ! isNull( value ) ) {
+			if ( ! isNull( local.value ) ) {
 				return value;
 			}
 
@@ -168,7 +168,7 @@ Description :
         <cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the system properties" />
 		<cfscript>
 			var value = getJavaSystem().getProperty( arguments.key );
-			if ( ! isNull( value ) ) {
+			if ( ! isNull( local.value ) ) {
 				return value;
 			}
 
@@ -189,7 +189,7 @@ Description :
         <cfargument name="defaultValue" required="false" hint="The default value to use if the key does not exist in the env" />
 		<cfscript>
 			var value = getJavaSystem().getEnv( arguments.key );
-			if ( ! isNull( value ) ) {
+			if ( ! isNull( local.value ) ) {
 				return value;
 			}
 

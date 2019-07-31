@@ -195,7 +195,7 @@ component
 
 		// get quietly
 		var results = variables.objectStore.get( arguments.objectKey );
-		if( !isNull( results ) ){
+		if( !isNull( local.results ) ){
 			getStats().hit();
 			return results;
 		}
@@ -214,7 +214,7 @@ component
 
 		// get object from store
 		var results = variables.objectStore.getQuiet( arguments.objectKey );
-		if( !isNull( results ) ){
+		if( !isNull( local.results ) ){
 			return results;
 		}
 		// don't return anything = null
@@ -268,7 +268,7 @@ component
 		);
 
 		// Announce update if it exists?
-		if( !isNull( oldObject ) ){
+		if( !isNull( local.oldObject ) ){
 			// announce it
 			getEventManager().processState( "afterCacheElementUpdated", {
 				cache          = this,

@@ -736,7 +736,7 @@
 			} )
 			.each( function( propertyName, propertyValue ){
 				// inject the property/method now
-				if( !isNull( propertyValue ) ) {
+				if( !isNull( arguments.propertyValue ) ) {
 					args.target.injectPropertyMixin( propertyName, propertyValue );
 				}
 				// Do we need to do automatic generic getter/setters
