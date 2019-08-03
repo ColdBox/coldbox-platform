@@ -450,7 +450,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 			// Influence the creation of the instance
 			var result = influenceClosure( instance=oModel, injector=this );
 			// Allow the closure to override the entire instance if it wishes
-			if( !isNull( result ) ){
+			if( !isNull( local.result ) ){
 				oModel = result;
 			}
 		}

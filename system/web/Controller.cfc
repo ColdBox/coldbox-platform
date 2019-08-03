@@ -559,7 +559,7 @@ component serializable="false" accessors="true"{
 
 			// Test if entry found in cache, and return if found.
 			var data = oCache.get( cacheKey );
-			if( !isNull( data ) ){
+			if( !isNull( local.data ) ){
 				return data;
 			}
 		}

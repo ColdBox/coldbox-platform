@@ -309,7 +309,7 @@ component
 			var element = getObjectStore().getQuiet( ucase( arguments.objectKey ) );
 		}
 
-		if( !isNull( element ) ){
+		if( !isNull( local.element ) ){
 			return element.getValue();
 		}
 	}

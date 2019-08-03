@@ -2644,7 +2644,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 			// entity value
 			var entityValue = invoke( arguments.args.bind, "get#arguments.args.bindProperty#" );
 
-			if( isNull( entityValue ) ){
+			if( isNull( local.entityValue ) ){
 				entityValue = "";
 			}
 

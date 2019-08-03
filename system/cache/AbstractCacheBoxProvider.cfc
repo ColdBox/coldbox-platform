@@ -364,7 +364,7 @@
 
 		// Verify if it exists? if so, return it.
 		var target = get( arguments.objectKey );
-		if( !isNull( target ) ){
+		if( !isNull( local.target ) ){
 			return target;
 		}
 
@@ -372,7 +372,7 @@
 		lock name="GetOrSet.#variables.cacheID#.#arguments.objectKey#" type="exclusive" timeout="45" throwonTimeout="true"{
 			// double lock, due to race conditions
 			var target = get( arguments.objectKey );
-			if( isNull( target ) ){
+			if( isNull( local.target ) ){
 				// produce it
 				target = arguments.produce();
 				// store it
