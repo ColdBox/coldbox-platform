@@ -30,7 +30,7 @@ testbox/*
 apidocs/docbox/*
 ApplicationTemplates/*
 tests/suites/loadtests/logs
-test-harness/modules_app/route-visualizer
+test-harness/**/route-visualizer
 
 # Custom Settings
 test-harness/config/runtime.properties.cfm
