@@ -163,7 +163,7 @@ Modifications
 				<cfif arguments.useCDATA OR listFindNoCase(arguments.cDataColumns, col)>
 					<cfset value = "<![CDATA[" & value & "]]" & ">">
 				</cfif>
-				<cfset buffer.append("<#lcase(col)#>#value#</#lcase(col)#>")>
+				<cfset buffer.append("<#col#>#value#</#col#>")>
 
 				<cfcatch type="any"><cfdump var="#cfcatch#"><cfdump var="#arguments#"><cfdump var="#currentRow#"><cfdump var="#col#"><cfabort></cfcatch>
 				</cftry>
@@ -215,7 +215,7 @@ Modifications
 			else{
 				thisValue = safeText(target[key],arguments.useCDATA);
 			}
-			buffer.append("<#lcase(key)#>#thisValue#</#lcase(key)#>");
+			buffer.append("<#key#>#thisValue#</#key#>");
 		}
 
 		// End Root
@@ -233,7 +233,7 @@ Modifications
 		var target 			= isNull( arguments.data ) ? "NULL" : arguments.data;
 		var buffer 			= createObject("java","java.lang.StringBuilder").init('');
 		var md 				= getMetadata(target);
-		var rootElement		= lcase( safeText( listLast( md.name, "." ) ) );
+		var rootElement		= safeText( listLast( md.name, "." ) );
 		var thisName 		= "";
 		var thisValue 		= "";
 		var	x				= 0;
@@ -271,7 +271,7 @@ Modifications
 						thisValue = safeText(thisValue,arguments.useCDATA);
 					}
 
-					buffer.append("<#lcase(thisName)#>#thisValue#</#lcase(thisName)#>");
+					buffer.append("<#thisName#>#thisValue#</#thisName#>");
 
 				}//end if property has a name, else skip
 
