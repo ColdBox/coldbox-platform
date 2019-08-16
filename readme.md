@@ -107,7 +107,7 @@ Then you need to install some CommandBox modules in order to work with environme
 install commandbox-cfconfig,commandbox-dotenv
 ```
 
-Then in the root of this project, type `box install`.  This will download the necessary dependencies to develop and test the core.  You can then go ahead and start an embedded server `box server start` and start hacking around.
+Then in the root of this project, type `box install` to install the development dependencies.  Create a `.env` file according to the `.env.template` in the root and spice it up for your local database.  The import SQL for the database can be found in `/tests/resources/coolblog.sql`. You can then go ahead and start an embedded server `box server start` and start hacking around.
 
 For running our test suites you will need 2 more steps, so please refer to the [Readme](tests/readme.md) in the tests folder.
 
