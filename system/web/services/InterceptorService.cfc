@@ -36,8 +36,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			"afterConfigurationLoad", "afterAspectsLoad", "preReinit",
 			// On Actions
 			"onException", "onRequestCapture", "onInvalidEvent",
-			// After FW Object Creations
-			"afterHandlerCreation", "afterInstanceCreation",
 			// Life-cycle
 			"applicationEnd" , "sessionStart", "sessionEnd", "preProcess", "preEvent", "postEvent", "postProcess", "preProxyResults",
 			// Layout-View Events

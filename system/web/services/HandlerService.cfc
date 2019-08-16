@@ -79,24 +79,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	}
 
 	/**
-	* Called by wirebox once instances are autowired to re-fire to `afterHandlerCreation`
-	*/
-	function afterInstanceAutowire( event, interceptData ){
-		var attribs = interceptData.mapping.getExtraAttributes();
-		var iData 	= {};
-
-		// listen to handlers only
-		if( structKeyExists( attribs, "isHandler" ) ){
-			// Fill-up Intercepted metadata
-			iData.handlerPath 	= attribs.handlerPath;
-			iData.oHandler 		= interceptData.target;
-
-			// Re-Fire Interception
-			variables.interceptorService.processState( "afterHandlerCreation", iData );
-		}
-	}
-
-	/**
 	 * Asks wirebox for an instance of a handler.  It verifies that there is a mapping in Wirebox for the handler
 	 * if it does not exist, it maps it first and then retrieves it.
 	 *
