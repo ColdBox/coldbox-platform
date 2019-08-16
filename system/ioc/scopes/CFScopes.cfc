@@ -23,11 +23,11 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 	/**
 	 * Configure the scope for operation and returns itself
-	 * 
-	 * 
+	 *
+	 *
 	 * @injector The linked WireBox injector
 	 * @injector.doc_generic coldbox.system.ioc.Injector
-	 * 
+	 *
 	 * @return coldbox.system.ioc.scopes.IScope
 	 */
 	function init( required injector ){
@@ -39,8 +39,8 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 	/**
 	 * Retrieve an object from scope or create it if not found in scope
-	 * 
-	 * 
+	 *
+	 *
 	 * @mapping The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
 	 * @initArguments The constructor struct of arguments to passthrough to initialization
@@ -54,17 +54,17 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 		if( !variables.scopeStorage.exists( cacheKey, CFScope ) ){
 			// Lock it
 			lock	name="WireBox.#variables.injector.getInjectorID()#.#CFScope#.#cacheKey#"
-					type="exclusive" 
-					timeout="30" 
+					type="exclusive"
+					timeout="30"
 					throwontimeout="true"{
-				
+
 				if( !variables.scopeStorage.exists( cacheKey, CFScope ) ){
 
                     // some nice debug info.
 					if( variables.log.canDebug() ){
-						variables.log.debug( "Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beggining construction." );
+						variables.log.debug( "Object: (#arguments.mapping.getName()#) not found in CFScope (#CFScope#), beginning construction." );
 					}
-					
+
 					// construct the variables
 					var target = variables.injector.buildInstance( arguments.mapping, arguments.initArguments );
 
@@ -88,7 +88,7 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 					return target;
                 }
-				
+
 			}// end lock
 		}
 
@@ -98,16 +98,16 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 	/**
 	 * Indicates whether an object exists in scope
-	 * 
+	 *
 	 * @mapping The linked WireBox injector
 	 * @mapping.doc_generic coldbox.system.ioc.config.Mapping
-	 * 
+	 *
 	 * @return coldbox.system.ioc.scopes.IScope
 	 */
 	boolean function exists( required mapping ){
 		var cacheKey = "wirebox:#arguments.mapping.getName()#";
 		var CFScope  = arguments.mapping.getScope();
-		
+
 		return variables.scopeStorage.exists( cacheKey, CFScope );
 	}
 

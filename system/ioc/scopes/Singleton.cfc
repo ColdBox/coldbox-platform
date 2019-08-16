@@ -63,7 +63,7 @@ component implements="coldbox.system.ioc.scopes.IScope" accessors="true"{
 
 					// some nice debug info.
 					if( variables.log.canDebug() ){
-						variables.log.debug("Object: (#cacheKey#) not found in singleton cache, beggining construction.");
+						variables.log.debug("Object: (#cacheKey#) not found in singleton cache, beginning construction.");
 					}
 
 					// construct the singleton object
