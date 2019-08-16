@@ -34,3 +34,4 @@ test-harness/modules_app/route-visualizer
 
 # Custom Settings
 test-harness/config/runtime.properties.cfm
+.env
