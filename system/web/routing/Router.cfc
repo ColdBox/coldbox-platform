@@ -636,7 +636,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 
 	        // update, delete and show routes
 	        actionSet = filterRouteActions(
-	        	{ PUT = "update", PATCH = "update", POST = "create", DELETE = "delete", GET = "show" },
+	        	{ PUT = "update", PATCH = "update", DELETE = "delete", GET = "show" },
 	        	arguments.only,
 	        	arguments.except
 	        );
@@ -762,7 +762,31 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			if( thisRoute.pattern neq "/" ){
 				thisRoute.pattern = right( thisRoute.pattern, len( thisRoute.pattern ) - 1 );
 			}
-		}
+        }
+
+        // Check for existing route matches
+        var matchingRoutes = variables.routes.filter( function( route ) {
+            return route.pattern == thisRoute.pattern &&
+                route.domain == thisRoute.domain;
+        } );
+        if ( ! matchingRoutes.isEmpty() ) {
+            var matchingRoute = matchingRoutes[ 1 ];
+            // collect action:
+            var actions = {};
+            var matchingActions = isStruct( matchingRoute.action ) ? matchingRoute.action : {};
+            structAppend( actions, matchingActions, true );
+            for ( var verb in matchingRoute.verbs ) {
+                structInsert( actions, verb, matchingRoute.event );
+            }
+            var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
+            structAppend( actions, thisRouteActions, true );
+            for ( var verb in thisRoute.verbs ) {
+                structInsert( actions, verb, thisRoute.event );
+            }
+            matchingRoute.action = actions;
+            matchingRoute.verbs = "";
+            return this;
+        }
 
 		// Check if we have optional args by looking for a ?
 		if( findnocase( "?", thisRoute.pattern ) AND NOT findNoCase( "regex:", thisRoute.pattern ) ){
