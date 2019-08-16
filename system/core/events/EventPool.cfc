@@ -117,7 +117,7 @@ component accessors="true"{
 			{ interceptData = arguments.interceptData }
 		);
 
-		if( !isNull( results ) && isBoolean( results ) ){
+		if( !isNull( local.results ) && isBoolean( results ) ){
 			return results;
 		}
 

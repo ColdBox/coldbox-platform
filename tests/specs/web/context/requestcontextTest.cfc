@@ -659,4 +659,12 @@ component extends="coldbox.system.testing.BaseModelTest"{
             .toBe( { "name" = "Jane" } );
     }
 
+    function testGetFullUrl() {
+        var event = getRequestContext();
+        debug( event.getFullUrl() );
+        expect( event.getFullUrl() ).toBeTypeOf( "url" );
+        var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
+        expect( javaUrl.getPort() ).toBe( listFind( "80,443", cgi.server_port ) > 0 ? -1 : cgi.server_port );
+    }
+
 }

@@ -441,7 +441,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 					}
 					// If we have handler results save them in our context for assertions
 					else if (
-						!isNull( handlerResults )
+						!isNull( local.handlerResults )
 					){
                         // Store raw results
                         requestContext.setValue( "cbox_handler_results", handlerResults );

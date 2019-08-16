@@ -36,8 +36,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			"afterConfigurationLoad", "afterAspectsLoad", "preReinit",
 			// On Actions
 			"onException", "onRequestCapture", "onInvalidEvent",
-			// After FW Object Creations
-			"afterHandlerCreation", "afterInstanceCreation",
 			// Life-cycle
 			"applicationEnd" , "sessionStart", "sessionEnd", "preProcess", "preEvent", "postEvent", "postProcess", "preProxyResults",
 			// Layout-View Events
@@ -179,12 +177,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			if( arguments.buffer.keyExists( "builder" ) ) {
 				writeOutput( arguments.buffer.getString() );
 			}
+
+			// Any results
+			if( !isNull( local.results ) ){
+				return results;
+			}
 		}
 
-		// Any results
-		if( !isNull( results ) ){
-			return results;
-		}
 	}
 
 	/**

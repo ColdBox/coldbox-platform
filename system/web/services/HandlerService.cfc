@@ -27,6 +27,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	property name="eventCaching" type="boolean";
 
 	/**
+	 * Handler bean cache dictionary
+	 */
+	property name="handlerBeanCacheDictionary" type="struct";
+
+	/**
 	 * Constructor
 	 *
 	 * @controller ColdBox Controller
@@ -39,6 +44,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.handlerCacheDictionary = {};
 		// Setup the Event Cache Dictionary
 		variables.eventCacheDictionary = {};
+		// Setup the Handler Bean Cache Dictionary
+		variables.handlerBeanCacheDictionary = {};
 		// Static base class
 		variables.HANDLER_BASE_CLASS = "coldbox.system.EventHandler";
 
@@ -72,24 +79,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	}
 
 	/**
-	* Called by wirebox once instances are autowired to re-fire to `afterHandlerCreation`
-	*/
-	function afterInstanceAutowire( event, interceptData ){
-		var attribs = interceptData.mapping.getExtraAttributes();
-		var iData 	= {};
-
-		// listen to handlers only
-		if( structKeyExists( attribs, "isHandler" ) ){
-			// Fill-up Intercepted metadata
-			iData.handlerPath 	= attribs.handlerPath;
-			iData.oHandler 		= interceptData.target;
-
-			// Re-Fire Interception
-			variables.interceptorService.processState( "afterHandlerCreation", iData );
-		}
-	}
-
-	/**
 	 * Asks wirebox for an instance of a handler.  It verifies that there is a mapping in Wirebox for the handler
 	 * if it does not exist, it maps it first and then retrieves it.
 	 *
@@ -98,11 +87,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return Handler Instance
 	 */
 	function newHandler( required invocationPath ){
-		var oHandler 	= "";
-		var binder		= "";
-		var attribs		= "";
-		var mapping		= "";
-
 		// Check if handler already mapped?
 		if( NOT wirebox.getBinder().mappingExists( arguments.invocationPath ) ){
 			// lazy load checks for wirebox
@@ -176,9 +160,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		} //method check finalized.
 
 		// Store metadata in execution bean
-		arguments.ehBean
-			.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
-			.setHandlerMetadata( getMetadata( oEventHandler ) );
+		if ( !variables.handlerCaching || !arguments.ehBean.isMetadataLoaded() ) {
+			arguments.ehBean
+				.setActionMetadata( oEventHandler._actionMetadata( arguments.ehBean.getMethod() ) )
+				.setHandlerMetadata( getMetadata( oEventHandler ) );
+		}
 
 		/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -224,6 +210,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return coldbox.system.web.context.EventHandlerBean
 	 */
 	function getHandlerBean( required string event ){
+
+		// bean already in cache?
+		if ( variables.handlerCaching && structKeyExists( variables.handlerBeanCacheDictionary, arguments.event ) ) {
+			return variables.handlerBeanCacheDictionary[ arguments.event ];
+		}
+
+		// New event, prepare it
 		var handlersList 			= variables.registeredHandlers;
 		var handlersExternalList 	= variables.registeredExternalHandlers;
 		var oHandlerBean 			= new coldbox.system.web.context.EventHandlerBean( variables.handlersInvocationPath );
@@ -241,11 +234,20 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				// Verify handler in module handlers
 				var handlerIndex = listFindNoCase( moduleSettings[ moduleReceived ].registeredHandlers, handlerReceived );
 				if( handlerIndex ){
-					return oHandlerBean
+
+					// Prepare bean data
+					oHandlerBean
 						.setInvocationPath( moduleSettings[ moduleReceived ].handlerInvocationPath )
 						.setHandler( listgetAt(moduleSettings[ moduleReceived ].registeredHandlers, handlerIndex ) )
 						.setMethod( methodReceived )
 						.setModule( moduleReceived );
+
+					// put bean in cache if enabled
+					if ( variables.handlerCaching ) {
+						variables.handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+					}
+
+					return oHandlerBean;
 				} else {
 					variables.log.error( "Invalid Module (#moduleReceived#) Handler: #handlerReceived#. Valid handlers are #moduleSettings[ moduleReceived ].registeredHandlers#" );
 				}
@@ -255,26 +257,46 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			variables.log.error( "Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList( moduleSettings )#" );
 		} else {
 			// Try to do list localization in the registry for full event string.
-			var handlerIndex = listFindNoCase( handlersList, HandlerReceived );
+			var handlerIndex = listFindNoCase( handlersList, handlerReceived );
 			// Check for conventions location
 			if ( handlerIndex ){
-				return oHandlerBean
+				// Prepare bean data
+				oHandlerBean
 					.setHandler( listgetAt( handlersList, handlerIndex ) )
 					.setMethod( MethodReceived );
+
+				// put bean in cache if enabled
+				if ( variables.handlerCaching ) {
+					variables.handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+				}
+
+				return oHandlerBean;
 			}
 
 			// Check for external location
-			handlerIndex = listFindNoCase( handlersExternalList, HandlerReceived );
+			handlerIndex = listFindNoCase( handlersExternalList, handlerReceived );
 			if( handlerIndex ){
-				return oHandlerBean
+				// Prepare bean data
+				oHandlerBean
 					.setInvocationPath( variables.handlersExternalLocation )
 					.setHandler( listgetAt( handlersExternalList, handlerIndex ) )
 					.setMethod( MethodReceived );
+
+				// put bean in cache if enabled
+				if ( variables.handlerCaching ) {
+					variables.handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+				}
+
+				return oHandlerBean;
 			}
 		} //end else
 
 		// Do View Dispatch Check Procedures
 		if( isViewDispatch( arguments.event, oHandlerBean ) ){
+			// put bean in cache if enabled
+			if ( variables.handlerCaching ) {
+				variables.handlerBeanCacheDictionary[ arguments.event ] = oHandlerBean;
+			}
 			return oHandlerBean;
 		}
 
@@ -539,10 +561,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Check if handler mapped?
 		if( NOT wirebox.getBinder().mappingExists( variables.HANDLER_BASE_CLASS ) ){
 			// feed the base class
-			wirebox.registerNewInstance( name=variables.HANDLER_BASE_CLASS, instancePath=variables.HANDLER_BASE_CLASS )
+			wirebox
+				.registerNewInstance( name=variables.HANDLER_BASE_CLASS, instancePath=variables.HANDLER_BASE_CLASS )
 				.addDIConstructorArgument( name="controller", value=controller );
-			// register ourselves to listen for autowirings
-			variables.interceptorService.registerInterceptionPoint( "HandlerService", "afterInstanceAutowire", this );
 		}
 		return this;
 	}

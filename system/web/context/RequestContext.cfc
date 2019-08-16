@@ -588,6 +588,13 @@ component serializable=false accessors="true"{
 	}
 
 	/**
+	* Get the current routed module that matched the SES route, if any
+	*/
+	string function getCurrentRoutedModule(){
+		return getPrivateValue( "currentRoutedModule", "" );
+	}
+
+	/**
 	* Gets the current incoming event
 	*/
 	string function getCurrentEvent(){
@@ -968,7 +975,7 @@ component serializable=false accessors="true"{
         return arrayToList( [
             isSSL() ? "https://" : "http://",
             CGI.SERVER_NAME,
-			listFind( "80,443", cgi.server_port ) ? "" : cgi.server_port,
+			listFind( "80,443", cgi.server_port ) ? "" : ":" & cgi.server_port,
             isSES() ? "" : "/index.cfm",
             CGI.PATH_INFO,
             CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",

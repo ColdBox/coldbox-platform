@@ -206,7 +206,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		var discoveredEvent = processRoute( routeResults, event, rc, prc );
 
 		// Do we use the discovered event?
-		if( !isNull( discoveredEvent ) and discoveredEvent.len() ){
+		if( !isNull( local.discoveredEvent ) and discoveredEvent.len() ){
 			rc[ variables.eventName ] = discoveredEvent;
 		}
 	}
@@ -517,10 +517,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 		}
 
-		// Save Found Route + Name
+		// Save current routed details in PRC
 		arguments.event
-			.setPrivateValue( "currentRoute", 		results.route.pattern )
-			.setPrivateValue( "currentRouteName",	results.route.name );
+			.setPrivateValue( "currentRoute", 			results.route.pattern )
+			.setPrivateValue( "currentRouteName",		results.route.name )
+			.setPrivateValue( "currentRoutedModule", 	results.route.module );
 
 		// Save Found URL if NOT Found already
 		if( NOT arguments.event.privateValueExists( "currentRoutedURL" ) ){
@@ -756,7 +757,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					}
 				}//end if folder found
 				// Module check second, if the module is in the URL
-				else if( structKeyExists(variables.modules, thisFolder) ){
+				else if( !isModule && structKeyExists( variables.modules, thisFolder ) ){
 					// Setup the module entry point
 					newEvent = thisFolder & ":";
 					// Change Physical Path to module now, module detected

@@ -16,10 +16,10 @@
             "clientHostname": false,
             "host": "localhost",
             "dbdriver": "MySQL",
-            "password": "",
+            "password": "${DB_PASSWORD}",
             "dsn": "jdbc:mysql://localhost:3306/coolblog?tinyInt1isBit=false&useSSL=false",
             "custom": "",
-            "username": "root",
+            "username": "${DB_USER:root}",
             "database": "coolblog",
             "port": "3306"
         }

@@ -98,5 +98,5 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	function getLastReapDatetime(){
 		return "";
 	}
-}
 
+}

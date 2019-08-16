@@ -571,11 +571,6 @@ component extends="coldbox.system.web.services.BaseService"{
 					interceptorProperties 	= thisInterceptor.properties,
 					interceptorName 		= thisInterceptor.name & "@" & moduleName
 				);
-				// Loop over module interceptors to autowire them, I think this is legacy and not needed anymore
-				//variables.wirebox.autowire(
-				//	target 	 = interceptorService.getInterceptor( thisInterceptor.name & "@" & moduleName ),
-				//	targetID = thisInterceptor.class
-				//);
 			} );
 
 			// Register module routing entry point pre-pended to routes

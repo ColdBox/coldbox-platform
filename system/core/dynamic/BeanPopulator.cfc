@@ -17,9 +17,9 @@ component{
 
 	/**
 	 * Populate a named or instantiated instance from a Json string
-	 * 
+	 *
 	 * @target The target to populate
-	 * @JSONString The JSON string to populate the object with. It has to be valid JSON and also a structure with name-key value pairs. 
+	 * @JSONString The JSON string to populate the object with. It has to be valid JSON and also a structure with name-key value pairs.
 	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
 	 * @trustedSetter If set to true, the setter method will be called even if it does not exist in the bean
 	 * @include A list of keys to include in the population
@@ -28,7 +28,7 @@ component{
 	 * @nullEmptyInclude A list of keys to NULL when empty
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
-	 * 
+	 *
 	 * @return The target populated with the packet
 	 */
 	function populateFromJson(
@@ -52,7 +52,7 @@ component{
 
 	/**
 	 * Populate a named or instantiated instance from an XML Packet
-	 * 
+	 *
 	 * @target The target to populate
 	 * @xml The XML string or packet to populate the target with
 	 * @root The XML root element to start from, else defaults to XMLRoot
@@ -64,7 +64,7 @@ component{
 	 * @nullEmptyInclude A list of keys to NULL when empty
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
-	 * 
+	 *
 	 * @return The target populated with the packet
 	 */
 	function populateFromXML(
@@ -110,7 +110,7 @@ component{
 
 	/**
 	 * Populate a named or instantiated instance from a Query object
-	 * 
+	 *
 	 * @target The target to populate
 	 * @qry The query to populate the object with
 	 * @rowNumber The row number to use for population, defaults to 1
@@ -122,7 +122,7 @@ component{
 	 * @nullEmptyInclude A list of keys to NULL when empty
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
-	 * 
+	 *
 	 * @return The target populated with the packet
 	 */
 	function populateFromQuery(
@@ -150,7 +150,7 @@ component{
 
 	/**
 	 * Populate a named or instantiated instance from a Query object using a column prefix
-	 * 
+	 *
 	 * @target The target to populate
 	 * @qry The query to populate the object with
 	 * @prefix The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.
@@ -163,7 +163,7 @@ component{
 	 * @nullEmptyInclude A list of keys to NULL when empty
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
-	 * 
+	 *
 	 * @return The target populated with the packet
 	 */
 	function populateFromQueryWithPrefix(
@@ -198,7 +198,7 @@ component{
 
 	/**
 	 * Populate a named or instantiated instance from a struct object using a key prefix
-	 * 
+	 *
 	 * @target The target to populate
 	 * @memento The structure to populate the target with
 	 * @prefix The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.
@@ -210,7 +210,7 @@ component{
 	 * @nullEmptyInclude A list of keys to NULL when empty
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
-	 * 
+	 *
 	 * @return The target populated with the packet
 	 */
 	function populateFromStructWithPrefix(
@@ -228,7 +228,7 @@ component{
 	){
 		var prefixLength 	= len( arguments.prefix );
 		var newMemento 		= {};
-		
+
 		arguments.memento
 			.filter( function( key, value ){
 				return( left( key, prefixLength ) == prefix );
@@ -244,7 +244,7 @@ component{
 
 	/**
 	 * Populate a named or instantiated instance from a struct object using a key prefix
-	 * 
+	 *
 	 * @target The target to populate
 	 * @memento The structure to populate the target with
 	 * @scope Use scope injection instead of setters population. Ex: scope=variables.instance.
@@ -255,7 +255,7 @@ component{
 	 * @nullEmptyInclude A list of keys to NULL when empty
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from memento
-	 * 
+	 *
 	 * @return The target populated with the packet
 	 */
 	function populateFromStruct(
@@ -317,7 +317,7 @@ component{
 					pop = false;
 				}
 				// Ignore Empty? Check added for real Null value
-				if( arguments.ignoreEmpty and not IsNull(propertyValue) and isSimpleValue(arguments.memento[key]) and not len( trim( arguments.memento[key] ) ) ){
+				if( arguments.ignoreEmpty and not IsNull(local.propertyValue) and isSimpleValue(arguments.memento[key]) and not len( trim( arguments.memento[key] ) ) ){
 					pop = false;
 				}
 
@@ -346,7 +346,7 @@ component{
 						}
 						// Is value nullable (e.g., simple, empty string)? If so, set null...
 						// short circuit evealuaton of IsNull added, so it won't break IsSimpleValue with Real null values. Real nulls are already set.
-						if( !IsNull(propertyValue) && isSimpleValue( propertyValue ) && !len( trim( propertyValue ) ) && nullValue ) {
+						if( !IsNull(local.propertyValue) && isSimpleValue( propertyValue ) && !len( trim( propertyValue ) ) && nullValue ) {
 							propertyValue = JavaCast( "null", "" );
 						}
 
@@ -359,7 +359,7 @@ component{
 						};
 
 						// If property isn't null, try to compose the relationship
-						if( !isNull( propertyValue ) && composeRelationships && structKeyExists( relationalMeta, key ) ) {
+						if( !isNull( local.propertyValue ) && composeRelationships && structKeyExists( relationalMeta, key ) ) {
 							// get valid, known entity name list
 							var validEntityNames = getEntityMap();
 							var targetEntityName = "";
@@ -418,7 +418,7 @@ component{
 												var structKeyColumn = relationalMeta[ key ].structKeyColumn;
 												var keyValue = "";
 												// try to get struct key value from entity
-												if( !isNull( item ) ) {
+												if( !isNull( local.item ) ) {
 													try {
 														keyValue = invoke( item, "get#structKeyColumn#" );
 													}
@@ -448,7 +448,7 @@ component{
 							} // if target entity name found
 						}
 						// Populate the property as a null value
-						if( isNull( propertyValue ) ) {
+						if( isNull( local.propertyValue ) ) {
 							// Finally...set the value
 							invoke( beanInstance, "set#key#", [ JavaCast( 'null', '' ) ] );
 						}
@@ -464,7 +464,7 @@ component{
 			return beanInstance;
 		}
 		catch( Any e ){
-			if( isNull( propertyValue ) ) {
+			if( isNull( local.propertyValue ) ) {
 				arguments.keyTypeAsString = "NULL";
 			}
 			else if ( isObject( propertyValue ) OR isCustomFunction( propertyValue )){
@@ -495,8 +495,8 @@ component{
 			.getInheritedMetaData( arguments.target, stopRecursions )
 			.properties
 			.filter( function( item ){
-				return ( 
-					item.keyExists( "fieldType" ) && 
+				return (
+					item.keyExists( "fieldType" ) &&
 					item.keyExists( "name" ) &&
 					!listFindNoCase( "id,column", item.fieldtype )
 				);

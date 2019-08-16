@@ -293,7 +293,7 @@ component accessors="true"{
 				return target;
 			} );
 
-		return ( isNull( results ) ? structNew() : results );
+		return ( isNull( local.results ) ? structNew() : results );
 	}
 
 	/**

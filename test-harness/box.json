@@ -1,0 +1,8 @@
+{
+    "dependencies":{
+        "route-visualizer":"^1.2.0+4"
+    },
+    "installPaths":{
+        "route-visualizer":"modules/route-visualizer/"
+    }
+}

@@ -60,7 +60,7 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 			var collected = variables.referenceQueue.poll();
 
 			// Let's reap the garbage collected soft references
-			while( !isNull( collected ) ){
+			while( !isNull( local.collected ) ){
 
 				// Clean if it still exists
 				if( softRefLookup( collected ) ){
@@ -108,7 +108,7 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	function get( required objectKey ){
 		// Get via concurrent store
 		var target = super.get( arguments.objectKey );
-		if( !isNull( target ) ){
+		if( !isNull( local.target ) ){
 
 			// Validate if SR or normal object
 			if( isInstanceOf( target, "java.lang.ref.SoftReference" ) ){
@@ -127,7 +127,7 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 	function getQuiet( required objectKey ){
 		// Get via concurrent store
 		var target = super.getQuiet( arguments.objectKey );
-		if( !isNull( target ) ){
+		if( !isNull( local.target ) ){
 
 			// Validate if SR or normal object
 			if( isInstanceOf( target, "java.lang.ref.SoftReference" ) ){
@@ -193,7 +193,7 @@ component extends="coldbox.system.cache.store.ConcurrentStore" accessors=true{
 		var softRef = variables.pool.get( arguments.objectKey );
 
 		// Removal of Soft Ref Lookup
-		if( !isNull( softRef ) && variables.indexer.getObjectMetadataProperty( arguments.objectKey, "isSoftReference" ) ){
+		if( !isNull( local.softRef ) && variables.indexer.getObjectMetadataProperty( arguments.objectKey, "isSoftReference" ) ){
 			variables.softRefKeyMap.remove( softRef.hashCode() );
 		}
 

@@ -2252,7 +2252,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 						if( arguments.booleanSelect ){
 							args = {
 								name=prop.name, options=[true,false], label=prop.name, bind=arguments.entity, labelwrapper=arguments.labelWrapper, labelWrapperAttrs=arguments.labelWrapperAttrs, labelClass=arguments.labelClass,
-								wrapper=arguments.fieldwrapper, wrapperAttrs=arguments.wrapperAttrs, groupWrapper=arguments.groupWrapper, groupWrapperAttrs=arguments.groupWrapperAttrs, inputInsideLabel=arguments.inputInsideLabel
+								wrapper=arguments.fieldwrapper, wrapperAttrs=arguments.fieldWrapperAttrs, groupWrapper=arguments.groupWrapper, groupWrapperAttrs=arguments.groupWrapperAttrs, inputInsideLabel=arguments.inputInsideLabel
 							};
 							structAppend(args,arguments);
 							buffer.append( this.select(argumentCollection=args) );
@@ -2644,7 +2644,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 			// entity value
 			var entityValue = invoke( arguments.args.bind, "get#arguments.args.bindProperty#" );
 
-			if( isNull( entityValue ) ){
+			if( isNull( local.entityValue ) ){
 				entityValue = "";
 			}
 
