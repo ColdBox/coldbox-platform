@@ -561,10 +561,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Check if handler mapped?
 		if( NOT wirebox.getBinder().mappingExists( variables.HANDLER_BASE_CLASS ) ){
 			// feed the base class
-			wirebox.registerNewInstance( name=variables.HANDLER_BASE_CLASS, instancePath=variables.HANDLER_BASE_CLASS )
+			wirebox
+				.registerNewInstance( name=variables.HANDLER_BASE_CLASS, instancePath=variables.HANDLER_BASE_CLASS )
 				.addDIConstructorArgument( name="controller", value=controller );
-			// register ourselves to listen for autowirings
-			variables.interceptorService.registerInterceptionPoint( "HandlerService", "afterInstanceAutowire", this );
 		}
 		return this;
 	}
