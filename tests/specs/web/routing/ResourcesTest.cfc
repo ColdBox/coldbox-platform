@@ -45,7 +45,7 @@
                     {
                         pattern = "/sites/:siteId/agents/:id",
                         handler = "agents",
-                        action = { GET = "show", PUT = "update", PATCH = "update", POST = "create", DELETE = "delete" },
+                        action = { GET = "show", PUT = "update", PATCH = "update", DELETE = "delete" },
                         module  = "",
                         namespace = ""
                     },
