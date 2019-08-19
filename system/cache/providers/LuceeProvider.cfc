@@ -113,9 +113,9 @@ component
     struct function getStoreMetadataReport(){
 		return getKeys()
 			.reduce( function( item, result ){
-				result[item] = getCachedObjectMetadata( item );
+				result[ item ] = getCachedObjectMetadata( item );
 				return result;
-			},{});
+			}, {} );
 	}
 
 	/**
