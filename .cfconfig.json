@@ -17,7 +17,7 @@
             "host": "localhost",
             "dbdriver": "MySQL",
             "password": "${DB_PASSWORD}",
-            "dsn": "jdbc:mysql://localhost:3306/coolblog?tinyInt1isBit=false&useSSL=false",
+            "dsn": "${DB_CONNECTIONSTRING}",
             "custom": "",
             "username": "${DB_USER:root}",
             "database": "coolblog",
