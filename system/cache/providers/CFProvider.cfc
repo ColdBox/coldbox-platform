@@ -212,10 +212,13 @@ component
      * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
      */
     struct function getStoreMetadataReport(){
-		return getKeys()
-			.map( function( item ){
-				return getCachedObjectMetadata( item );
+		var result = {};
+		getKeys()
+			.each( function( item ){
+				result[item] = getCachedObjectMetadata( item );
 			});
+
+		return result;
 	}
 
 	/**
