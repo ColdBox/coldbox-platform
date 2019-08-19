@@ -71,7 +71,7 @@ component implements="coldbox.system.cache.util.IStats" accessors="true"{
 	/**
 	 * Get the total cache's hits
 	 */
-	numeric function getHits();
+	numeric function getHits() {
 		var props = cacheGetProperties( getCacheProvider().getConfiguration().cacheName );
 		if( arrayLen( props ) and structKeyExists( props[ 1 ], "hit_count" ) ){
 			return props[ 1 ].hit_count;
