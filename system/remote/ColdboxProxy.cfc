@@ -25,7 +25,7 @@ Description :
 	<!--- selfAutowire --->
     <cffunction name="selfAutowire" output="false" access="private" hint="Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path.">
 		<cfscript>
-			var script_name = cgi.script_name;
+			var script_name = CGI.SCRIPT_NAME;
 			// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists.
 			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' || !verifyColdBox( throwOnNotExist=false ) ) {
 				return;

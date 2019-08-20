@@ -296,7 +296,7 @@ component serializable="false" accessors="true"{
 		var relocationType  = "EVENT";
 		var relocationURL   = "";
 		var eventName	    = variables.configSettings[ "EventName" ];
-		var frontController = listlast( cgi.script_name, "/" );
+		var frontController = listlast( CGI.SCRIPT_NAME, "/" );
 		var oRequestContext = services.requestService.getContext();
 		var routeString     = 0;
 

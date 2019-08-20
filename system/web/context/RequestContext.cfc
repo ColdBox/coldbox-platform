@@ -670,10 +670,10 @@ component serializable=false accessors="true"{
 	}
 
 	/**
-	* Are we in SSL or not? This method looks at cgi.server_port_secure for indication
+	* Are we in SSL or not? This method looks at CGI.SERVER_PORT_SECURE for indication
 	*/
 	boolean function isSSL(){
-		if( isBoolean( cgi.server_port_secure ) AND cgi.server_port_secure ){
+		if( isBoolean( CGI.SERVER_PORT_SECURE ) AND CGI.SERVER_PORT_SECURE ){
 			return true;
 		}
 		// Add typical proxy headers for SSL
@@ -683,8 +683,8 @@ component serializable=false accessors="true"{
 		if( getHTTPHeader( "x-scheme", "http" ) eq "https" ){
 			return true;
 		}
-		// cgi.https
-		if( cgi.keyExists( "https" ) and cgi.https eq "on" ){
+		// CGI.HTTPS
+		if( CGI.keyExists( "HTTPS" ) and CGI.HTTPS eq "on" ){
 			return true;
 		}
 		return false;
@@ -975,7 +975,7 @@ component serializable=false accessors="true"{
         return arrayToList( [
             isSSL() ? "https://" : "http://",
             CGI.SERVER_NAME,
-			listFind( "80,443", cgi.server_port ) ? "" : ":" & cgi.server_port,
+			listFind( "80,443", CGI.SERVER_PORT ) ? "" : ":" & CGI.SERVER_PORT,
             isSES() ? "" : "/index.cfm",
             CGI.PATH_INFO,
             CGI.QUERY_STRING != "" && CGI.PATH_INFO == "" ? "/" : "",
@@ -1434,7 +1434,7 @@ component serializable=false accessors="true"{
 	* Get the HTTP Request Method Type
 	*/
 	string function getHTTPMethod(){
-		return getValue( "_method", cgi.REQUEST_METHOD );
+		return getValue( "_method", CGI.REQUEST_METHOD );
 	}
 
 	/**

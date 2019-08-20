@@ -85,30 +85,29 @@ A reporting template about exceptions in your ColdBox Apps
 		<cfif ArrayLen( oException.getTagContext() )>
 			  <cfset local.arrayTagContext = oException.getTagContext()>
 			  <cfloop from="1" to="#arrayLen( local.arrayTagContext )#" index="local.i">
-				  <!--- Don't clutter the screen with this information unless it's actually useful --->
-			  	  <cfif structKeyExists( local.arrayTagContext[ local.i ], "ID" ) and
+				<!--- Don't clutter the screen with this information unless it's actually useful --->
+			  	<cfif structKeyExists( local.arrayTagContext[ local.i ], "ID" ) and
 			  	  		len( local.arrayTagContext[ local.i ].ID ) and
-			  	  		local.arrayTagContext[ local.i ].ID neq "??"
-			  	  >
-			  <tr >
+			  	  		local.arrayTagContext[ local.i ].ID neq "??">
+			  		<tr>
 						<td align="right" class="info">Tag:</td>
 					    <td>#local.arrayTagContext[ local.i ].ID#</td>
-			  </tr>
-				  </cfif>
-			   <tr >
+			  		</tr>
+				</cfif>
+			   	<tr>
 					<td align="right" class="info">Template:</td>
 				    <td style="color:green;"><strong>#local.arrayTagContext[ local.i ].Template#</strong></td>
-				   </tr>
-			  	  <cfif structKeyExists( local.arrayTagContext[ local.i ], "codePrintHTML" )>
-					  <tr class="tablebreak">
-				<td align="right" class="info">LINE:</td>
+				</tr>
+			  	<cfif structKeyExists( local.arrayTagContext[ local.i ], "codePrintHTML" )>
+					<tr class="tablebreak">
+						<td align="right" class="info">LINE:</td>
 					    <td>#local.arrayTagContext[ local.i ].codePrintHTML#</td>
-			   </tr>
-				  <cfelse>
-			   <tr class="tablebreak">
+			   		</tr>
+				<cfelse>
+			   		<tr class="tablebreak">
 						<td align="right" class="info">Line:</td>
 					    <td ><strong>#local.arrayTagContext[ local.i ].LINE#</strong></td>
-			   </tr>
+			   		</tr>
 				  </cfif>
 			  </cfloop>
 		</cfif>
@@ -157,26 +156,26 @@ A reporting template about exceptions in your ColdBox Apps
 			 </tr>
 			 <tr>
 			   <td align="right" class="info"> Host &amp; Server: </td>
-			   <td >#htmlEditFormat(cgi.http_host)# #local.thisInetHost#</td>
+			   <td >#htmlEditFormat(CGI.HTTP_HOST)# #local.thisInetHost#</td>
 			 </tr>
 			 <tr>
 			   <td align="right" class="info">Query String: </td>
-			   <td >#htmlEditFormat(cgi.QUERY_STRING)#</td>
+			   <td >#htmlEditFormat(CGI.QUERY_STRING)#</td>
 			 </tr>
 
-			<cfif len(cgi.HTTP_REFERER)>
+			<cfif len(CGI.HTTP_REFERER)>
 			 <tr>
 			   <td align="right" class="info">Referrer:</td>
-			   <td >#htmlEditFormat(cgi.HTTP_REFERER)#</td>
+			   <td >#htmlEditFormat(CGI.HTTP_REFERER)#</td>
 			 </tr>
 			</cfif>
 			<tr>
 			   <td align="right" class="info">Browser:</td>
-			   <td >#htmlEditFormat(cgi.HTTP_USER_AGENT)#</td>
+			   <td >#htmlEditFormat(CGI.HTTP_USER_AGENT)#</td>
 			</tr>
 			<tr>
 			   <td align="right" class="info"> Remote Address: </td>
-			   <td >#htmlEditFormat(cgi.remote_addr)#</td>
+			   <td >#htmlEditFormat(CGI.REMOTE_ADDR)#</td>
 			 </tr>
 
 			 <cfif

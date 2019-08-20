@@ -16,7 +16,7 @@
 	addRoute( pattern="post/:postID-regex:([a-zA-Z]+?)/:userID-alpha/regex:(xml|json)", handler="ehGeneral", action="dumpRC" );
 
 	function ff(){
-		return ( findnocase( "Firefox", cgi.HTTP_USER_AGENT ) ? true : false );
+		return ( findnocase( "Firefox", CGI.HTTP_USER_AGENT ) ? true : false );
 	};
 
 	function fResponse(rc){

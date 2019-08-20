@@ -7,7 +7,7 @@
     <!---// find the where the filename starts (should be the last wherever the last period (".") is) //--->
     <cfset var sEndDir = reFind("/[^/]+#arguments.ext#$", sPath) />
 	<cfset sPath = left(sPath, sEndDir) />
-	<cfset returnURL = "http://" & cgi.http_host & sPath />
+	<cfset returnURL = "http://" & CGI.HTTP_HOST & sPath />
     <cfreturn returnURL />
 </cffunction>
 

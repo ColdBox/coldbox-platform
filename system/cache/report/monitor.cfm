@@ -11,7 +11,7 @@ Description :
 	
 ATTRIBUTES:
 - cacheBox : An instance reference to the cacheBox factory to report on
-- baseURL (optional='default') : An optional baseURL that will be used to post to this monitor on. Default is cgi.script_name
+- baseURL (optional='default') : An optional baseURL that will be used to post to this monitor on. Default is CGI.SCRIPT_NAME
 - skin (optional='default') : The skin to render the report in, it uses 'default' skin by default.
 ----------------------------------------------------------------------->
 
@@ -26,7 +26,7 @@ ATTRIBUTES:
 <!--- CacheBox Factory --->
 <cfparam name="attributes.cacheFactory" 	type="any" default="">
 <!--- BaseURL --->	
-<cfparam name="attributes.baseURL" 			type="string" default="#cgi.script_name#">
+<cfparam name="attributes.baseURL" 			type="string" default="#CGI.SCRIPT_NAME#">
 <!--- Skin To Use --->
 <cfparam name="attributes.skin"				type="string" default="default">
 <!--- Enable Monitor --->
