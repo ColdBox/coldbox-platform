@@ -443,7 +443,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		}
 
 		// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
-		variables.log.error( "Invalid Event detected: #arguments.event#. Path info: #cgi.path_info#, query string: #cgi.query_string#" );
+		variables.log.error( "Invalid Event detected: #arguments.event#. Path info: #CGI.PATH_INFO#, query string: #CGI.QUERY_STRING#" );
 
 		// Throw Exception
 		throw(

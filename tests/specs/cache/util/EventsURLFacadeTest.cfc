@@ -48,7 +48,7 @@ Description :
 			};
 			var target = {
 				"incomingHash" : hash( testargs.toString() ),
-				"cgihost" : cgi.http_host
+				"cgihost" : CGI.HTTP_HOST
 			};
 
 			expect( testHash ).toBe( hash( target.toString() ) );
