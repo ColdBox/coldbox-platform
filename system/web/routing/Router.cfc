@@ -765,29 +765,28 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
         }
 
         // Check for existing route matches
-        // var matchingRoutes = variables.routes.filter( function( route ) {
-        //     return route.pattern == thisRoute.pattern &&
-        //         route.domain == thisRoute.domain;
-		// } );
-        // if ( ! matchingRoutes.isEmpty() ) {
-		// 	writeDump( var=matchingRoutes );abort;
-        //     var matchingRoute = matchingRoutes[ 1 ];
-        //     // collect action:
-        //     var actions = {};
-        //     var matchingActions = isStruct( matchingRoute.action ) ? matchingRoute.action : {};
-        //     structAppend( actions, matchingActions, true );
-        //     for ( var verb in matchingRoute.verbs ) {
-        //         structInsert( actions, verb, matchingRoute.event );
-        //     }
-        //     var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
-        //     structAppend( actions, thisRouteActions, true );
-        //     for ( var verb in thisRoute.verbs ) {
-        //         structInsert( actions, verb, thisRoute.event );
-        //     }
-        //     matchingRoute.action = actions;
-        //     matchingRoute.verbs = "";
-        //     return this;
-        // }
+        var matchingRoutes = variables.routes.filter( function( route ) {
+            return route.pattern == thisRoute.pattern &&
+                route.domain == thisRoute.domain;
+		} );
+        if ( ! matchingRoutes.isEmpty() ) {
+            var matchingRoute = matchingRoutes[ 1 ];
+            // collect action:
+            var actions = {};
+            var matchingActions = isStruct( matchingRoute.action ) ? matchingRoute.action : {};
+            structAppend( actions, matchingActions, true );
+            for ( var verb in matchingRoute.verbs ) {
+                structInsert( actions, verb, matchingRoute.event );
+            }
+            var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
+            structAppend( actions, thisRouteActions, true );
+            for ( var verb in thisRoute.verbs ) {
+                structInsert( actions, verb, thisRoute.event );
+            }
+            matchingRoute.action = actions;
+            matchingRoute.verbs = "";
+            return this;
+        }
 
 		// Check if we have optional args by looking for a ?
 		if( findnocase( "?", thisRoute.pattern ) AND NOT findNoCase( "regex:", thisRoute.pattern ) ){

@@ -200,10 +200,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			action = cleanedPaths[ "pathInfo" ],
 			event  = arguments.event,
 			domain = cleanedPaths[ "domain" ]
-		);
+        );
 
 		// Process the route
-		var discoveredEvent = processRoute( routeResults, event, rc, prc );
+        var discoveredEvent = processRoute( routeResults, event, rc, prc );
 
 		// Do we use the discovered event?
 		if( !isNull( local.discoveredEvent ) and discoveredEvent.len() ){
@@ -318,7 +318,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			}
 
 			// Check if using HTTP method actions via struct
-			if( isStruct( routeResults.route.action ) ){
+			if( isStruct( routeResults.route.action ) && ! structIsEmpty( routeResults.route.action ) ){
 				// Verify HTTP method used is valid
 				if( structKeyExists( routeResults.route.action, httpMethod ) ){
 					discoveredEvent &= ".#routeResults.route.action[ httpMethod ]#";
