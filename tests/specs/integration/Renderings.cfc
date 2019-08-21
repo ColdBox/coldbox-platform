@@ -49,7 +49,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 			story( "ColdBox should render complex handler returns natively to JSON", function(){
 				given( "A complex return data from a handler", function(){
 					then( "it should render the data back in json", function(){
-						var e = execute( event="actionRendering.index", renderResults=true );
+						var e = execute( route="/actionRendering", renderResults=true );
 						expect(	e.getRenderedContent() )
 							.toBeJSON();
 					});

@@ -156,7 +156,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 					} );
                 });
 
-                xgiven( "different HTTP verbs for the same route", function(){
+                given( "different HTTP verbs for the same route", function(){
                     then( "both verbs should be registered", function(){
                         router.post( "photos/", "photos.create" );
                         router.get( "photos/", "photos.index" );
