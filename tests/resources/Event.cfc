@@ -1,4 +1,4 @@
-﻿<cfcomponent output="false">
+<cfcomponent output="false">
 <cfscript>
 	this.logs = arrayNew(1);
 	

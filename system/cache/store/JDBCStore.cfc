@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -22,7 +22,7 @@
  *
  * Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your DB.
  */
-component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
+component implements="coldbox.system.cache.store.IObjectStore" accessors="true" {
 
 	/**
 	 * The cache provider reference
@@ -77,33 +77,33 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 		var config = arguments.cacheProvider.getConfiguration();
 
 		// Prepare instance
-		variables.cacheProvider   	= arguments.cacheProvider;
-		variables.storeID 			= createObject( 'java', 'java.lang.System' ).identityHashCode( this );
-		variables.converter 		= new coldbox.system.core.conversion.ObjectMarshaller();
-		variables.indexer 			= new coldbox.system.cache.store.indexers.JDBCMetadataIndexer( fields, config, this );
+		variables.cacheProvider = arguments.cacheProvider;
+		variables.storeID = createObject( "java", "java.lang.System" ).identityHashCode( this );
+		variables.converter = new coldbox.system.core.conversion.ObjectMarshaller();
+		variables.indexer = new coldbox.system.cache.store.indexers.JDBCMetadataIndexer( fields, config, this );
 
 		// Get Extra config data
-		variables.dsn 	= config.dsn;
-		variables.table	= config.table;
+		variables.dsn = config.dsn;
+		variables.table = config.table;
 
 		// Check credentials
-		if( isNull( config.dsnUsername ) ){
+		if ( isNull( config.dsnUsername ) ) {
 			config.dsnUsername = "";
 		}
-		if( isNull( config.dsnPassword ) ){
+		if ( isNull( config.dsnPassword ) ) {
 			config.dsnPassword = "";
 		}
 		variables.dsnUsername = config.dsnUsername;
 		variables.dsnPassword = config.dsnPassword;
 
 		// Check autoCreate
-		if( isNull( config.tableAutoCreate ) ){
+		if ( isNull( config.tableAutoCreate ) ) {
 			config.tableAutoCreate = true;
 		}
 		variables.tableAutoCreate = config.tableAutoCreate;
 
 		// ensure the table
-		if( variables.tableAutoCreate ){
+		if ( variables.tableAutoCreate ) {
 			ensureTable();
 		}
 
@@ -113,11 +113,11 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	}
 
 	/**
-     * Flush the store to a permanent storage
-     */
-    void function flush(){
-        return;
-    }
+	 * Flush the store to a permanent storage
+	 */
+	void function flush(){
+		return;
+	}
 
 	/**
 	 * Reap the storage
@@ -127,12 +127,12 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	}
 
 	/**
-     * Get the store's pool metadata indexer structure
+	 * Get the store's pool metadata indexer structure
 	 *
 	 * @return coldbox.system.cache.store.indexers.MetadataIndexer
-     */
-    function getIndexer(){
-        return variables.indexer;
+	 */
+	function getIndexer(){
+		return variables.indexer;
 	}
 
 	/**
@@ -142,34 +142,26 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 		queryExecute(
 			"TRUNCATE TABLE #variables.table#",
 			{},
-			{
-				datsource 	= variables.dsn,
-				username 	= variables.dsnUsername,
-				password 	= variables.dsnPassword
-			}
+			{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 		);
 	}
 
 	/**
-     * Get all the store's object keys array
+	 * Get all the store's object keys array
 	 *
 	 * @return array
-     */
-    function getKeys(){
+	 */
+	function getKeys(){
 		var qResults = queryExecute(
 			"SELECT objectKey FROM #variables.table# ORDER BY objectKey ASC",
 			{},
-			{
-				datsource 	= variables.dsn,
-				username 	= variables.dsnUsername,
-				password 	= variables.dsnPassword
-			}
+			{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 		);
 
 		return (
-			variables.isLucee ?
-			queryColumnData( qResults, "objectKey" ) :
-			listToArray( valueList( qResults.objectKey ) )
+			variables.isLucee ? queryColumnData( qResults, "objectKey" ) : listToArray(
+				valueList( qResults.objectKey )
+			)
 		);
 	}
 
@@ -193,7 +185,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	function get( required objectKey ){
 		var normalizedID = getNormalizedID( arguments.objectKey );
 
-		transaction{
+		transaction {
 			// select entry
 			var q = queryExecute(
 				"SELECT *
@@ -201,15 +193,11 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 				 WHERE id = ?
 				",
 				[ normalizedID ],
-				{
-					datsource 	= variables.dsn,
-					username 	= variables.dsnUsername,
-					password 	= variables.dsnPassword
-				}
+				{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 			);
 
 			// Update stats if found
-			if( q.recordCount ){
+			if ( q.recordCount ) {
 				// Setup SQL
 				var targetSql = "UPDATE #variables.table#
 									SET lastAccessed = :lastAccessed,
@@ -217,7 +205,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 								  WHERE id = :id";
 
 				// Is resetTimeoutOnAccess enabled? If so, jump up the creation time to increase the timeout
-				if( variables.cacheProvider.getConfiguration().resetTimeoutOnAccess ){
+				if ( variables.cacheProvider.getConfiguration().resetTimeoutOnAccess ) {
 					var targetSql = "UPDATE #variables.table#
 										SET lastAccessed = :lastAccessed,
 											hits  = hits + 1,
@@ -228,22 +216,23 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 				var qStats = queryExecute(
 					"#targetSQL#",
 					{
-						lastAccessed 	: { value="#now()#",		cfsqltype="timestamp" },
-						id 				: { value="#normalizedID#", cfsqltype="varchar" },
-						created 		: { value="#now()#",		cfsqltype="timestamp" }
+						lastAccessed : { value : "#now()#", cfsqltype : "timestamp" },
+						id : { value : "#normalizedID#", cfsqltype : "varchar" },
+						created : { value : "#now()#", cfsqltype : "timestamp" }
 					},
-					{
-						datsource 	= variables.dsn,
-						username 	= variables.dsnUsername,
-						password 	= variables.dsnPassword
-					}
+					{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 				);
 			}
-		} // end transaction
+		}
+		// end transaction
 
 		// Just return if records found, else null
-		if( q.recordCount ){
-			return ( q.isSimple ? q.objectValue : variables.converter.deserializeObject( binaryObject=q.objectValue ) );
+		if ( q.recordCount ) {
+			return (
+				q.isSimple ? q.objectValue : variables.converter.deserializeObject(
+					binaryObject = q.objectValue
+				)
+			);
 		}
 	}
 
@@ -260,16 +249,16 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 				WHERE id = ?
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
-			{
-				datsource 	= variables.dsn,
-				username 	= variables.dsnUsername,
-				password 	= variables.dsnPassword
-			}
+			{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 		);
 
 		// Just return if records found, else null
-		if( q.recordCount ){
-			return ( q.isSimple ? q.objectValue : variables.converter.deserializeObject( binaryObject=q.objectValue ) );
+		if ( q.recordCount ) {
+			return (
+				q.isSimple ? q.objectValue : variables.converter.deserializeObject(
+					binaryObject = q.objectValue
+				)
+			);
 		}
 	}
 
@@ -286,11 +275,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 			  WHERE id = ?
 			",
 			[ 1, getNormalizedID( arguments.objectKey ) ],
-			{
-				datsource 	= variables.dsn,
-				username 	= variables.dsnUsername,
-				password 	= variables.dsnPassword
-			}
+			{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 		);
 	}
 
@@ -309,11 +294,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 			  WHERE id = ?
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
-			{
-				datsource 	= variables.dsn,
-				username 	= variables.dsnUsername,
-				password 	= variables.dsnPassword
-			}
+			{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 		);
 
 		return ( q.recordCount && q.isExpired ? true : false );
@@ -331,21 +312,21 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	void function set(
 		required objectKey,
 		required object,
-		timeout="0",
-		lastAccessTimeout="0",
-		extras={}
+		timeout = "0",
+		lastAccessTimeout = "0",
+		extras = {}
 	){
-		var normalizedId 	= getNormalizedID( arguments.objectKey );
-		var isSimple		= true;
+		var normalizedId = getNormalizedID( arguments.objectKey );
+		var isSimple = true;
 
 		// Test if not simple to serialize
-		if( !isSimpleValue( arguments.object ) ){
+		if ( !isSimpleValue( arguments.object ) ) {
 			isSimple = false;
 			arguments.object = variables.converter.serializeObject( arguments.object );
 		}
 
-		transaction{
-			if( !lookupQuery( arguments.objectKey ).recordCount ){
+		transaction {
+			if ( !lookupQuery( arguments.objectKey ).recordCount ) {
 				var q = queryExecute(
 					"INSERT INTO #variables.table# (id,objectKey,objectValue,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple)
 					VALUES (
@@ -362,22 +343,18 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 					)
 					",
 					{
-						id                	= { value="#normalizedId#",                	cfsqltype="varchar" },
-						objectKey         	= { value="#arguments.objectKey#",         	cfsqltype="varchar" },
-						objectValue       	= { value="#arguments.object#",            	cfsqltype="longvarchar" },
-						hits           		= { value="1",           					cfsqltype="integer" },
-						timeout           	= { value="#arguments.timeout#",           	cfsqltype="integer" },
-						lastAccessTimeout 	= { value="#arguments.lastAccessTimeout#", 	cfsqltype="integer" },
-						now               	= { value=now(),                           	cfsqltype="timestamp" },
-						now               	= { value=now(),                           	cfsqltype="timestamp" },
-						isExpired         	= { value="0",                    			cfsqltype="bit" },
-						isSimple          	= { value="#isSimple#",                    	cfsqltype="bit" }
+						id : { value : "#normalizedId#", cfsqltype : "varchar" },
+						objectKey : { value : "#arguments.objectKey#", cfsqltype : "varchar" },
+						objectValue : { value : "#arguments.object#", cfsqltype : "longvarchar" },
+						hits : { value : "1", cfsqltype : "integer" },
+						timeout : { value : "#arguments.timeout#", cfsqltype : "integer" },
+						lastAccessTimeout : { value : "#arguments.lastAccessTimeout#", cfsqltype : "integer" },
+						now : { value : now(), cfsqltype : "timestamp" },
+						now : { value : now(), cfsqltype : "timestamp" },
+						isExpired : { value : "0", cfsqltype : "bit" },
+						isSimple : { value : "#isSimple#", cfsqltype : "bit" }
 					},
-					{
-						datsource 	= variables.dsn,
-						username 	= variables.dsnUsername,
-						password 	= variables.dsnPassword
-					}
+					{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 				);
 
 				return;
@@ -397,22 +374,18 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 					WHERE id = :id
 				",
 				{
-					id                	= { value="#normalizedId#",                	cfsqltype="varchar" },
-					objectKey         	= { value="#arguments.objectKey#",         	cfsqltype="varchar" },
-					objectValue       	= { value="#arguments.object#",            	cfsqltype="longvarchar" },
-					hits           		= { value="1",           					cfsqltype="integer" },
-					timeout           	= { value="#arguments.timeout#",           	cfsqltype="integer" },
-					lastAccessTimeout 	= { value="#arguments.lastAccessTimeout#", 	cfsqltype="integer" },
-					now               	= { value=now(),                           	cfsqltype="timestamp" },
-					now               	= { value=now(),                           	cfsqltype="timestamp" },
-					isExpired         	= { value="0",                    			cfsqltype="bit" },
-					isSimple          	= { value="#isSimple#",                    	cfsqltype="bit" }
+					id : { value : "#normalizedId#", cfsqltype : "varchar" },
+					objectKey : { value : "#arguments.objectKey#", cfsqltype : "varchar" },
+					objectValue : { value : "#arguments.object#", cfsqltype : "longvarchar" },
+					hits : { value : "1", cfsqltype : "integer" },
+					timeout : { value : "#arguments.timeout#", cfsqltype : "integer" },
+					lastAccessTimeout : { value : "#arguments.lastAccessTimeout#", cfsqltype : "integer" },
+					now : { value : now(), cfsqltype : "timestamp" },
+					now : { value : now(), cfsqltype : "timestamp" },
+					isExpired : { value : "0", cfsqltype : "bit" },
+					isSimple : { value : "#isSimple#", cfsqltype : "bit" }
 				},
-				{
-					datsource 	= variables.dsn,
-					username 	= variables.dsnUsername,
-					password 	= variables.dsnPassword
-				}
+				{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 			);
 		}
 	}
@@ -430,10 +403,10 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
 			{
-				datsource 	= variables.dsn,
-				username 	= variables.dsnUsername,
-				password 	= variables.dsnPassword,
-				result 		= "local.q"
+				datsource : variables.dsn,
+				username : variables.dsnUsername,
+				password : variables.dsnPassword,
+				result : "local.q"
 			}
 		);
 
@@ -449,11 +422,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 			   FROM #variables.table#
 			",
 			{},
-			{
-				datsource 	= variables.dsn,
-				username 	= variables.dsnUsername,
-				password 	= variables.dsnPassword
-			}
+			{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 		);
 
 		return q.totalCount;
@@ -468,7 +437,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 		return hash( arguments.objectKey );
 	}
 
-	//********************************* PRIVATE ************************************//
+	// ********************************* PRIVATE ************************************//
 
 	/**
 	 * Get the id and isExpired from the object
@@ -482,11 +451,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 			 WHERE id = ?
 			",
 			[ getNormalizedID( arguments.objectKey ) ],
-			{
-				datsource 	= variables.dsn,
-				username 	= variables.dsnUsername,
-				password 	= variables.dsnPassword
-			}
+			{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 		);
 	}
 
@@ -494,63 +459,57 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 	 * Create the caching table if necessary
 	 */
 	private function ensureTable(){
-		var qCreate 	= "";
-		var tableFound 	= false;
-		var create		= {
-			afterCreate = "",
-			afterLastProperty = ""
-		};
+		var qCreate = "";
+		var tableFound = false;
+		var create = { afterCreate : "", afterLastProperty : "" };
 
-		cfdbinfo( datasource="#variables.dsn#", name="local.qDBInfo", type="version" );
+		cfdbinfo(datasource="#variables.dsn#", name="local.qDBInfo", type="version");
 
 		// Get Tables on this DSN
-		cfdbinfo( datasource="#variables.dsn#", name="local.qTables", type="tables" );
+		cfdbinfo(datasource="#variables.dsn#", name="local.qTables", type="tables");
 
 		// Choose Text Type
-		switch( qDBInfo.database_productName ){
-			case "PostgreSQL" : {
-				create.valueType	= "text";
-				create.timeType 	= "timestamp";
-				create.intType 		= "integer";
-				create.booleanType	= "boolean";
+		switch ( qDBInfo.database_productName ) {
+			case "PostgreSQL": {
+				create.valueType = "text";
+				create.timeType = "timestamp";
+				create.intType = "integer";
+				create.booleanType = "boolean";
 				break;
 			}
-			case "MySQL" : {
-				create.valueType   			= "longtext";
-				create.afterCreate 			= "ENGINE=InnoDB DEFAULT CHARSET=utf8";
-				create.timeType 			= "datetime";
-				create.intType 	 			= "int";
-				create.booleanType 			= "tinyint";
-				create.afterLastProperty 	= "INDEX `hits` (`hits`),INDEX `created` (`created`),INDEX `lastAccessed` (`lastAccessed`),INDEX `timeout` (`timeout`),INDEX `isExpired` (`isExpired`)";
+			case "MySQL": {
+				create.valueType = "longtext";
+				create.afterCreate = "ENGINE=InnoDB DEFAULT CHARSET=utf8";
+				create.timeType = "datetime";
+				create.intType = "int";
+				create.booleanType = "tinyint";
+				create.afterLastProperty = "INDEX `hits` (`hits`),INDEX `created` (`created`),INDEX `lastAccessed` (`lastAccessed`),INDEX `timeout` (`timeout`),INDEX `isExpired` (`isExpired`)";
 				break;
 			}
-			case "Microsoft SQL Server" : {
-				create.valueType 	= "ntext";
-				create.timeType  	= "datetime";
-				create.intType 		= "int";
-				create.booleanType 	= "tinyint";
+			case "Microsoft SQL Server": {
+				create.valueType = "ntext";
+				create.timeType = "datetime";
+				create.intType = "int";
+				create.booleanType = "tinyint";
 				break;
 			}
-			case "Oracle" : {
-				create.valueType 	= "clob";
-				create.timeType 	= "timestamp";
-				create.intType 		= "int";
-				create.booleanType 	= "boolean";
+			case "Oracle": {
+				create.valueType = "clob";
+				create.timeType = "timestamp";
+				create.intType = "int";
+				create.booleanType = "boolean";
 				break;
 			}
-			default : {
-				create.valueType 	= "text";
-				create.timeType 	= "timestamp";
-				create.intType 		= "integer";
-				create.booleanType 	= "tinyint";
+			default: {
+				create.valueType = "text";
+				create.timeType = "timestamp";
+				create.intType = "integer";
+				create.booleanType = "tinyint";
 				break;
 			}
 		}
 
-		if(
-			listToArray( valueList( qTables.table_name ) )
-				.findNoCase( variables.table ) == 0
-		){
+		if ( listToArray( valueList( qTables.table_name ) ).findNoCase( variables.table ) == 0 ) {
 			queryExecute(
 				"CREATE TABLE #variables.table# (
 					id VARCHAR(100) NOT NULL,
@@ -567,11 +526,7 @@ component implements="coldbox.system.cache.store.IObjectStore" accessors="true"{
 				) #create.afterCreate#
 				",
 				{},
-				{
-					datsource 	= variables.dsn,
-					username 	= variables.dsnUsername,
-					password 	= variables.dsnPassword
-				}
+				{ datsource : variables.dsn, username : variables.dsnUsername, password : variables.dsnPassword }
 			);
 		}
 	}

@@ -1,10 +1,10 @@
-﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This component is used as a base for creating LogBox appenders
-**/
-component accessors="true"{
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This component is used as a base for creating LogBox appenders
+ **/
+component accessors="true" {
 
 	/**
 	 * Min logging level
@@ -55,25 +55,30 @@ component accessors="true"{
 	 */
 	function init(
 		required name,
-		struct properties={},
-		layout="",
-		levelMin=0,
-		levelMax=4
+		struct properties = {},
+		layout = "",
+		levelMin = 0,
+		levelMax = 4
 	){
 		// Appender Unique ID */
-		variables._hash        = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
+		variables._hash = createObject( "java", "java.lang.System" ).identityHashCode( this );
 		// Flag denoting if the appender is inited or not. This will be set by LogBox upon succesful creation and registration.
-		variables.initialized  = false;
+		variables.initialized = false;
 
 		// Appender's Name
-		variables.name = REreplacenocase( arguments.name, "[^0-9a-z]", "", "ALL" );
+		variables.name = reReplaceNoCase(
+			arguments.name,
+			"[^0-9a-z]",
+			"",
+			"ALL"
+		);
 
 		// Set internal properties
 		variables.properties = arguments.properties;
 
 		// Custom Renderer For Messages
 		variables.customLayout = "";
-		if( len( trim( arguments.layout ) ) ){
+		if ( len( trim( arguments.layout ) ) ) {
 			variables.customLayout = createObject( "component", arguments.layout ).init( this );
 		}
 
@@ -105,14 +110,14 @@ component accessors="true"{
 	 */
 	AbstractAppender function setLevelMin( required levelMin ){
 		// Verify level
-		if( this.logLevels.isLevelValid( arguments.levelMin ) AND arguments.levelMin lte getLevelMax() ){
+		if ( this.logLevels.isLevelValid( arguments.levelMin ) AND arguments.levelMin lte getLevelMax() ) {
 			variables.levelMin = arguments.levelMin;
 			return this;
-		} else {
+		} else{
 			throw(
 				message = "Invalid Log Level",
-				detail  = "The log level #arguments.levelMin# is invalid or greater than the levelMax (#getLevelMax()#). Valid log levels are from 0 to 5",
-				type    = "AbstractAppender.InvalidLogLevelException"
+				detail = "The log level #arguments.levelMin# is invalid or greater than the levelMax (#getLevelMax()#). Valid log levels are from 0 to 5",
+				type = "AbstractAppender.InvalidLogLevelException"
 			);
 		}
 	}
@@ -124,14 +129,14 @@ component accessors="true"{
 	 */
 	AbstractAppender function setLevelMax( required levelMax ){
 		// Verify level
-		if( this.logLevels.isLevelValid( arguments.levelMax ) AND arguments.levelMax gte getLevelMin() ){
+		if ( this.logLevels.isLevelValid( arguments.levelMax ) AND arguments.levelMax gte getLevelMin() ) {
 			variables.levelMax = arguments.levelMax;
 			return this;
-		} else {
+		} else{
 			throw(
 				message = "Invalid Log Level",
-				detail  = "The log level #arguments.levelMax# is invalid or less than the levelMin (#getLevelMin()#). Valid log levels are from 0 to 5",
-				type    = "AbstractAppender.InvalidLogLevelException"
+				detail = "The log level #arguments.levelMax# is invalid or less than the levelMin (#getLevelMin()#). Valid log levels are from 0 to 5",
+				type = "AbstractAppender.InvalidLogLevelException"
 			);
 		}
 	}
@@ -148,7 +153,7 @@ component accessors="true"{
 	 *
 	 * @severity The severity to convert to a string
 	 */
-	function severityToString( required numeric severity){
+	function severityToString( required numeric severity ){
 		return this.logLevels.lookup( arguments.severity );
 	}
 
@@ -191,9 +196,9 @@ component accessors="true"{
 	 * @defaultValue The default value to use if not found.
 	 */
 	function getProperty( required property, defaultValue ){
-		if( variables.properties.keyExists( arguments.property ) ){
+		if ( variables.properties.keyExists( arguments.property ) ) {
 			return variables.properties[ arguments.property ];
-		} else if( !isNull( arguments.defaultValue ) ){
+		} else if ( !isNull( arguments.defaultValue ) ) {
 			return arguments.defaultValue;
 		}
 	}
@@ -224,7 +229,9 @@ component accessors="true"{
 	 * Get the ColdBox Utility object
 	 */
 	private function getUtil(){
-		if( structKeyExists( variables, "util" ) ){ return variables.util; }
+		if ( structKeyExists( variables, "util" ) ) {
+			return variables.util;
+		}
 		variables.util = new coldbox.system.core.util.Util();
 		return variables.util;
 	}
@@ -233,7 +240,7 @@ component accessors="true"{
 	 * Facade to internal ColdFusion logging facilities, just in case.
 	 */
 	private AbstractAppender function $log( required severity, required message ){
-		cflog( type=arguments.severity, file="LogBox", text=arguments.message );
+		cflog(type=arguments.severity, file="LogBox", text=arguments.message);
 		return this;
 	}
 
@@ -243,8 +250,8 @@ component accessors="true"{
 	 * @message Message to send
 	 * @addNewLine Add a line break or not, default is yes
 	 */
-	private function out( required message, boolean addNewLine=true ){
-		if( arguments.addNewLine ){
+	private function out( required message, boolean addNewLine = true ){
+		if ( arguments.addNewLine ) {
 			arguments.message &= chr( 13 ) & chr( 10 );
 		}
 		createObject( "java", "java.lang.System" ).out.println( arguments.message );

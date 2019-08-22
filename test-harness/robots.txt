@@ -1,4 +1,4 @@
-﻿
+
 User-agent: Slurp
 Crawl-delay: 100
 Disallow:

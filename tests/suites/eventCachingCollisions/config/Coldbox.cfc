@@ -1,4 +1,4 @@
-﻿<cfcomponent output="false" hint="My App Configuration">
+<cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
 structures/arrays to create for configuration

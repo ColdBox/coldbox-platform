@@ -1,4 +1,4 @@
-﻿<cfscript>
+<cfscript>
 	this.repeatThis = variables.repeatThis;
 	this.add 		= variables.add;
 	function repeatThis(str){ return arguments.str; }

@@ -1,4 +1,4 @@
-﻿<cfcomponent>
+<cfcomponent>
 
 	<cfproperty name="coolPizza" inject="provider:pizza" scope="this">
 

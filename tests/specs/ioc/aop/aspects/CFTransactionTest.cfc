@@ -1,10 +1,9 @@
 /**
-* My BDD Test
-*/
-component 	extends="coldbox.system.testing.BaseModelTest"
-			model="coldbox.system.aop.aspects.CFTransaction"{
-	
-/*********************************** LIFE CYCLE Methods ***********************************/
+ * My BDD Test
+ */
+component extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.aop.aspects.CFTransaction" {
+
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
@@ -24,36 +23,34 @@ component 	extends="coldbox.system.testing.BaseModelTest"
 		super.afterAll();
 	}
 
-/*********************************** BDD SUITES ***********************************/
+	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
 		// all your suites go here.
-		describe( "CF Transaction aspect", function(){
-
-			it( "can invoke with transaction on request", function(){
+		describe( "CF Transaction aspect", function() {
+			it( "can invoke with transaction on request", function() {
 				var mockInvocation = createEmptyMock( "coldbox.system.aop.MethodInvocation" )
 					.$( "getTargetName", "MyMock" )
 					.$( "getMethod", "execute" )
 					.$( "proceed", "called" );
 
-				request[  "cbox_aop_transaction" ] = true;
+				request[ "cbox_aop_transaction" ] = true;
 
 				var results = model.invokeMethod( mockInvocation );
-				expect(	results ).toBe( "called" );
-				expect(	mockLogger.$once( "debug" ) ).toBeTrue();
-			});
+				expect( results ).toBe( "called" );
+				expect( mockLogger.$once( "debug" ) ).toBeTrue();
+			} );
 
-			it( "can invoke with no transaction on request", function(){
+			it( "can invoke with no transaction on request", function() {
 				var mockInvocation = createEmptyMock( "coldbox.system.aop.MethodInvocation" )
 					.$( "getTargetName", "MyMock" )
 					.$( "getMethod", "execute" )
 					.$( "proceed", "called" );
 
 				var results = model.invokeMethod( mockInvocation );
-				expect(	results ).toBe( "called" );
-			});
-
-		});
+				expect( results ).toBe( "called" );
+			} );
+		} );
 	}
-	
+
 }

@@ -1,4 +1,4 @@
-﻿<cfscript>
+<cfscript>
  f = createObject("java","java.lang.ThreadLocal").init();
  f.set("test");
 

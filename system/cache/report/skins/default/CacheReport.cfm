@@ -1,4 +1,4 @@
-﻿<cfoutput>		
+<cfoutput>		
 <!--- Attributes In Use for this skin --->
 <cfparam name="attributes.contentReport"	type="boolean" default="true" >
    

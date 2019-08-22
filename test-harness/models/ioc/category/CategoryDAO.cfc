@@ -1,4 +1,4 @@
-﻿<cfcomponent name="CategoryDAO">
+<cfcomponent name="CategoryDAO">
 
 	<cffunction name="init" output="false" returntype="any">
 		<cfargument name="dsn" type="string" required="true"/>

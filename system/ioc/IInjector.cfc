@@ -1,10 +1,10 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
  * An interface that enables any CFC to act like a parent injector within WireBox.
  **/
- interface {
+interface {
 
 	/**
 	 * Link a parent Injector with this injector and return itself
@@ -31,7 +31,12 @@
 	 * @initArguments The constructor structure of arguments to passthrough when initializing the instance
 	 * @targetObject The object requesting the dependency, usually only used by DSL lookups
 	 */
-	function getInstance( name, dsl, struct initArguments, targetObject="" );
+	function getInstance(
+		name,
+		dsl,
+		struct initArguments,
+		targetObject = ""
+	);
 
 	/**
 	 * Checks if this injector can locate a model instance or not
@@ -47,4 +52,4 @@
 	 */
 	function shutdown();
 
- }
+}

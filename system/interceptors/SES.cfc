@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -14,7 +14,7 @@
  * property name="routingService" inject="coldbox:routingService"
  * </pre>
  */
-component extends="coldbox.system.Interceptor" accessors="true"{
+component extends="coldbox.system.Interceptor" accessors="true" {
 
 	/**
 	 * Constructor
@@ -33,12 +33,8 @@ component extends="coldbox.system.Interceptor" accessors="true"{
 	/**
 	 * Passthrough for legacy support. This will be removed in the next version.
 	 */
-	function onMissingMethod( missingMethodName, missingMethodArguments={} ){
-		return invoke(
-			variables.routingService,
-			arguments.missingMethodName,
-			arguments.missingMethodArguments
-		);
+	function onMissingMethod( missingMethodName, missingMethodArguments = {} ){
+		return invoke( variables.routingService, arguments.missingMethodName, arguments.missingMethodArguments );
 	}
 
 }

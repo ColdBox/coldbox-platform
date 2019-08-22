@@ -1,4 +1,4 @@
-﻿<cfoutput>
+<cfoutput>
 #html.doctype()#
 <html lang="en">
 <head>

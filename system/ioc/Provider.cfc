@@ -1,10 +1,10 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
  * A WireBox provider object that retrieves objects by using the provider pattern.
  **/
-component implements="coldbox.system.ioc.IProvider" accessors="true"{
+component implements="coldbox.system.ioc.IProvider" accessors="true" {
 
 	/**
 	 * The name of the mapping this provider is binded to, MUTEX with name
@@ -49,15 +49,19 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 		dsl,
 		required targetObject
 	){
-		variables.name              = "";
-		variables.dsl               = "";
+		variables.name = "";
+		variables.dsl = "";
 		variables.scopeRegistration = arguments.scopeRegistration;
-		variables.scopeStorage      = arguments.scopeStorage;
-		variables.targetObject      = arguments.targetObject;
+		variables.scopeStorage = arguments.scopeStorage;
+		variables.targetObject = arguments.targetObject;
 
 		// Verify incoming name or DSL
-		if( structKeyExists( arguments, "name" ) ){ variables.name = arguments.name; }
-		if( structKeyExists( arguments, "dsl" ) ){ variables.dsl = arguments.dsl; }
+		if ( structKeyExists( arguments, "name" ) ) {
+			variables.name = arguments.name;
+		}
+		if ( structKeyExists( arguments, "dsl" ) ) {
+			variables.dsl = arguments.dsl;
+		}
 
 		return this;
 	}
@@ -65,29 +69,29 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 	/**
 	 * Get the provided object
 	 */
-	any function get() {
+	any function get(){
 		var scopeInfo = variables.scopeRegistration;
 
 		// Return if scope exists, else throw exception
-		if( variables.scopeStorage.exists( scopeInfo.key, scopeInfo.scope ) ){
+		if ( variables.scopeStorage.exists( scopeInfo.key, scopeInfo.scope ) ) {
 			// retrieve by name or DSL
-			if( len( variables.name ) ){
+			if ( len( variables.name ) ) {
 				return variables.scopeStorage
 					.get( scopeInfo.key, scopeInfo.scope )
-					.getInstance( name=variables.name, targetObject=variables.targetObject );
+					.getInstance( name = variables.name, targetObject = variables.targetObject );
 			}
 
-			if( len( variables.dsl ) ){
+			if ( len( variables.dsl ) ) {
 				return variables.scopeStorage
 					.get( scopeInfo.key, scopeInfo.scope )
-					.getInstance( dsl=variables.dsl, targetObject=variables.targetObject );
+					.getInstance( dsl = variables.dsl, targetObject = variables.targetObject );
 			}
 		}
 
 		throw(
 			message = "Injector not found in scope registration information",
-			detail  = "Scope information: #scopeInfo.toString()#",
-			type    = "Provider.InjectorNotOnScope"
+			detail = "Scope information: #scopeInfo.toString()#",
+			type = "Provider.InjectorNotOnScope"
 		);
 	}
 
@@ -100,7 +104,7 @@ component implements="coldbox.system.ioc.IProvider" accessors="true"{
 	any function onMissingMethod( required missingMethodName, required missingMethodArguments ){
 		var results = invoke( get(), arguments.missingMethodName, arguments.missingMethodArguments );
 
-		if ( !isNull( local.results ) ){
+		if ( !isNull( local.results ) ) {
 			return results;
 		}
 	}

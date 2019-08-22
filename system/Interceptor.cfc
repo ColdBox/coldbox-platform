@@ -1,11 +1,11 @@
-﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* Base class for all interceptors
-* @author Luis Majano <lmajano@ortussolutions.com>
-*/
-component extends="coldbox.system.FrameworkSupertype" serializable="false" accessors="true"{
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Base class for all interceptors
+ * @author Luis Majano <lmajano@ortussolutions.com>
+ */
+component extends="coldbox.system.FrameworkSupertype" serializable="false" accessors="true" {
 
 	// Controller Reference
 	property name="controller";
@@ -20,18 +20,18 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	// WireBox Reference
 	property name="wirebox";
 	// The interceptor properties structure
-	property name="properties" 			type="struct";
+	property name="properties" type="struct";
 	// The interceptor service
-	property name="interceptorService" 	type="coldbox.system.services.InterceptorService";
+	property name="interceptorService" type="coldbox.system.services.InterceptorService";
 
 	/**
-	* Constructor
-	* @controller The ColdBox controller
-	* @properties The properties to init the Interceptor with
-	*
-	* @result Interceptor
-	*/
-	function init( required controller, struct properties={} ){
+	 * Constructor
+	 * @controller The ColdBox controller
+	 * @properties The properties to init the Interceptor with
+	 *
+	 * @result Interceptor
+	 */
+	function init( required controller, struct properties = {} ){
 		// Register Controller
 		variables.controller = arguments.controller;
 		// Register LogBox
@@ -55,65 +55,70 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	}
 
 	/**
-	* Configuration method for the interceptor
-	*/
-	void function configure(){}
-
-	/**
-	* Get an interceptor property
-	* @property The property to retrieve
-	* @defaultValue The default value to return if property does not exist
-	*/
-	any function getProperty( required property, defaultValue ){
-		return ( structKeyExists( variables.properties, arguments.property ) ? variables.properties[ arguments.property ] : arguments.defaultValue );
+	 * Configuration method for the interceptor
+	 */
+	void function configure(){
 	}
 
 	/**
-	* Get struct of properties
-	*/
+	 * Get an interceptor property
+	 * @property The property to retrieve
+	 * @defaultValue The default value to return if property does not exist
+	 */
+	any function getProperty( required property, defaultValue ){
+		return (
+			structKeyExists( variables.properties, arguments.property ) ? variables.properties[ arguments.property ] : arguments.defaultValue
+		);
+	}
+
+	/**
+	 * Get struct of properties
+	 */
 	any function getProperties(){
 		return variables.properties;
 	}
 
 	/**
-	* Store an interceptor property
-	* @property The property to store
-	* @value The value to store
-	*
-	* @return Interceptor instance
-	*/
+	 * Store an interceptor property
+	 * @property The property to store
+	 * @value The value to store
+	 *
+	 * @return Interceptor instance
+	 */
 	any function setProperty( required property, required value ){
 		variables.properties[ arguments.property ] = arguments.value;
 		return this;
 	}
 
 	/**
-	* Verify an interceptor property
-	* @property The property to check
-	*/
+	 * Verify an interceptor property
+	 * @property The property to check
+	 */
 	boolean function propertyExists( required property ){
 		return structKeyExists( variables.properties, arguments.property );
 	}
 
 	/**
-	* Unregister the interceptor
-	* @state The named state to unregister this interceptor from
-	*
-	* @return Interceptor
-	*/
+	 * Unregister the interceptor
+	 * @state The named state to unregister this interceptor from
+	 *
+	 * @return Interceptor
+	 */
 	function unregister( required state ){
 		var interceptorClass = listLast( getMetadata( this ).name, "." );
-		variables.controller.getInterceptorService().unregister( interceptorClass, arguments.state );
+		variables.controller
+			.getInterceptorService()
+			.unregister( interceptorClass, arguments.state );
 		return this;
 	}
 
 	/**************************************** BUFFER METHODS ****************************************/
 
 	/**
-	* Clear the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
-	* @deprecated
-	* @return Interceptor
-	*/
+	 * Clear the interceptor buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
+	 * @deprecated
+	 * @return Interceptor
+	 */
 	function clearBuffer(){
 		getBufferObject().clear();
 		return this;
@@ -133,9 +138,9 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	}
 
 	/**
-	* Get the string representation of the buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
-	* @deprecated Please use the incoming `buffer` argument instead
-	*/
+	 * Get the string representation of the buffer: Deprecated, please use incoming buffer arguements instead, this is not thread safe
+	 * @deprecated Please use the incoming `buffer` argument instead
+	 */
 	string function getBufferString(){
 		return getBufferObject().getString();
 	}
@@ -147,7 +152,7 @@ component extends="coldbox.system.FrameworkSupertype" serializable="false" acces
 	* @return struct
 	*/
 	function getBufferObject(){
-		if( !request.keyExists( "__cbox_buffer" ) ){
+		if ( !request.keyExists( "__cbox_buffer" ) ) {
 			request[ "__cbox_buffer" ] = variables.interceptorService.getLazyBuffer();
 		}
 		return request[ "__cbox_buffer" ];

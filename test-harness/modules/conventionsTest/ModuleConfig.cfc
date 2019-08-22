@@ -1,4 +1,4 @@
-﻿component{
+component{
 
 	// Module Properties
 	this.title 				= "My Test Conventions module";

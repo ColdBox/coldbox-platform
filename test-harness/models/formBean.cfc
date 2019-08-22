@@ -1,4 +1,4 @@
-﻿<cfcomponent name="formBean" hint="I model a simple form bean" output="false">
+<cfcomponent name="formBean" hint="I model a simple form bean" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfset variables.instance = structnew()>

@@ -4,7 +4,7 @@
  *
  * Please note this class is a <strong>Transient</strong> do not make it a singleton or bad things can happen
  */
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * Collection target
@@ -33,14 +33,16 @@ component accessors="true"{
 	 * @maxThreads How many concurrent threads to use
 	 * @priority The thread priority
 	 */
-	function init( target=[], numeric maxThreads=20, priority="normal" ){
-		variables.collection 	= arguments.target;
-		variables.maxThreads 	= arguments.maxThreads;
-		variables.priority 		= arguments.priority;
-		variables.util 		 	= new coldbox.system.core.util.Util();
-		variables.uuidHelper 	= createobject( "java", "java.util.UUID" );
-		variables.consumer 		= function(){};
-		variables.errorLogs 	= [];
+	function init( target = [], numeric maxThreads = 20, priority = "normal" ){
+		variables.collection = arguments.target;
+		variables.maxThreads = arguments.maxThreads;
+		variables.priority = arguments.priority;
+		variables.util = new coldbox.system.core.util.Util();
+		variables.uuidHelper = createObject( "java", "java.util.UUID" );
+		variables.consumer = function() {
+		}
+		;
+		variables.errorLogs = [];
 
 		return this;
 	}
@@ -52,11 +54,11 @@ component accessors="true"{
 	ConcurrentProcessor function each( required consumer ){
 		variables.consumer = arguments.consumer;
 
-		if( isStruct( variables.collection ) ){
+		if ( isStruct( variables.collection ) ) {
 			return _eachStruct();
-		} else if( isArray( variables.collection ) ){
+		} else if ( isArray( variables.collection ) ) {
 			return _eachArray();
-		} else {
+		} else{
 			// Queries
 			return _eachQuery();
 		}
@@ -68,12 +70,11 @@ component accessors="true"{
 	 * Process an array
 	 */
 	private function _eachArray(){
-		var threadList 	= [];
+		var threadList = [];
 
-		for( var x = 1; x lte arrayLen( variables.collection ); x++ ){
-
+		for ( var x = 1; x lte arrayLen( variables.collection ); x++ ) {
 			// Sync mode?
-			if( variables.util.inThread() || threadList.len() > variables.maxThreads ){
+			if ( variables.util.inThread() || threadList.len() > variables.maxThreads ) {
 				arguments.consumer( thisItem );
 				continue;
 			}
@@ -81,22 +82,15 @@ component accessors="true"{
 			var threadName = "$box_cp_#variables.uuidHelper.randomUUID()#";
 			threadList.append( threadName );
 
-			thread
-				action="run"
-				name="#threadName#"
-				priority="#variables.priority#"
-				threadName="#threadName#"
-				index=x{
-					try{
-						variables.consumer(
-							variables.collection[ attributes.index ]
-						);
-					}
-					catch( any e ){
-						variables.processError( e );
-					}
+			thread action="run" name="#threadName#" priority="#variables.priority#" threadName="#threadName#" index=x {
+				try{
+					variables.consumer( variables.collection[ attributes.index ] );
+				} catch ( any e ) {
+					variables.processError( e );
 				}
-		} // end for loop
+			}
+		}
+		// end for loop
 
 		// Wait for all threads to join
 		thread action="join" name="#threadList.toList()#";
@@ -108,12 +102,11 @@ component accessors="true"{
 	 * Process a struct
 	 */
 	private function _eachStruct(){
-		var threadList 	= [];
+		var threadList = [];
 
-		for( var thisKey in variables.collection ){
-
+		for ( var thisKey in variables.collection ) {
 			// Sync mode?
-			if( variables.util.inThread() || threadList.len() > variables.maxThreads ){
+			if ( variables.util.inThread() || threadList.len() > variables.maxThreads ) {
 				arguments.consumer( variables.collection[ thisKey ] );
 				continue;
 			}
@@ -121,22 +114,15 @@ component accessors="true"{
 			var threadName = "$box_cp_#variables.uuidHelper.randomUUID()#";
 			threadList.append( threadName );
 
-			thread
-				action="run"
-				name="#threadName#"
-				priority="#variables.priority#"
-				threadName="#threadName#"
-				key=thisKey{
-					try{
-						variables.consumer(
-							variables.collection[ attributes.key ]
-						);
-					}
-					catch( any e ){
-						variables.processError( e );
-					}
+			thread action="run" name="#threadName#" priority="#variables.priority#" threadName="#threadName#" key=thisKey {
+				try{
+					variables.consumer( variables.collection[ attributes.key ] );
+				} catch ( any e ) {
+					variables.processError( e );
 				}
-		} // end for loop
+			}
+		}
+		// end for loop
 
 		// Wait for all threads to join
 		thread action="join" name="#threadList.toList()#";
@@ -148,12 +134,11 @@ component accessors="true"{
 	 * Process a query
 	 */
 	private function _eachQuery(){
-		var threadList 	= [];
+		var threadList = [];
 
-		for( var x = 1; x lte variables.collection.recordCount; x++ ){
-
+		for ( var x = 1; x lte variables.collection.recordCount; x++ ) {
 			// Sync mode?
-			if( variables.util.inThread() || threadList.len() > variables.maxThreads ){
+			if ( variables.util.inThread() || threadList.len() > variables.maxThreads ) {
 				arguments.consumer( thisItem );
 				continue;
 			}
@@ -161,22 +146,15 @@ component accessors="true"{
 			var threadName = "$box_cp_#variables.uuidHelper.randomUUID()#";
 			threadList.append( threadName );
 
-			thread
-				action="run"
-				name="#threadName#"
-				priority="#variables.priority#"
-				threadName="#threadName#"
-				index=x{
-					try{
-						variables.consumer(
-							variables.collection.getRow( attributes.index )
-						);
-					}
-					catch( any e ){
-						variables.processError( e );
-					}
+			thread action="run" name="#threadName#" priority="#variables.priority#" threadName="#threadName#" index=x {
+				try{
+					variables.consumer( variables.collection.getRow( attributes.index ) );
+				} catch ( any e ) {
+					variables.processError( e );
 				}
-		} // end for loop
+			}
+		}
+		// end for loop
 
 		// Wait for all threads to join
 		thread action="join" name="#threadList.toList()#";
@@ -188,8 +166,8 @@ component accessors="true"{
 		var threadName = createObject( "java", "java.lang.Thread" ).currentThread().getName();
 		var threadLog = "Error running thread (#threadName#): #arguments.e.message# #arguments.e.detail#";
 		// Send them to console for debugging
-		writeDump( var=threadLog, output="console" );
-		writeDump( var=e.stackTrace, output="console" );
+		writeDump( var = threadLog, output = "console" );
+		writeDump( var = e.stackTrace, output = "console" );
 		// Send them to the error logs array
 		variables.errorLogs.append( threadLog );
 	}

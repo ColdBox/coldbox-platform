@@ -1,4 +1,4 @@
-﻿<cfoutput>
+<cfoutput>
 <div class="jumbotron">
 	<img src="includes/images/ColdBoxLogoSquare_125.png" class="pull-left margin10" alt="logo"/>
 	<h1>#prc.welcomeMessage#</h1>

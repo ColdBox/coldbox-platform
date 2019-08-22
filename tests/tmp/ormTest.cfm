@@ -1,4 +1,4 @@
-﻿<cfscript>
+<cfscript>
 
 test = entityLoad("Category","402881882814615e01282bb047fd001e",true);
 user = entityLoad("User","88B73A03-FEFA-935D-AD8036E1B7954B76",true);

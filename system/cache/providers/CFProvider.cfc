@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -6,7 +6,7 @@
  *
  * This CacheBox provider communicates with the built in caches in the Adobe ColdFusion Engines
  */
-component
+component 
 	accessors="true"
 	serializable="false"
 	implements="coldbox.system.cache.providers.ICacheProvider"
@@ -19,13 +19,11 @@ component
 	property name="elementCleaner";
 
 	// Provider Property Defaults STATIC
-	variables.DEFAULTS = {
-		cacheName = "object"
-	};
+	variables.DEFAULTS = { cacheName : "object" };
 
 	/**
-     * Constructor
-     */
+	 * Constructor
+	 */
 	function init(){
 		super.init();
 
@@ -36,21 +34,22 @@ component
 	}
 
 	/**
-     * configure the cache for operation
+	 * configure the cache for operation
 	 *
 	 * @return LuceeProvider
-     */
-    function configure(){
-		var config 	= getConfiguration();
-		var props	= [];
+	 */
+	function configure(){
+		var config = getConfiguration();
+		var props = [];
 
-		lock name="CFProvider.config.#variables.cacheID#" type="exclusive" throwontimeout="true" timeout="30"{
-
+		lock name="CFProvider.config.#variables.cacheID#" type="exclusive" throwontimeout="true" timeout="30" {
 			// Prepare the logger
 			variables.logger = getCacheFactory().getLogBox().getLogger( this );
 
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#" );
+			if ( variables.logger.canDebug() ) {
+				variables.logger.debug(
+					"Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#"
+				);
 			}
 
 			// Validate the configuration
@@ -58,67 +57,68 @@ component
 
 			// Merge configurations
 			var thisCacheName = config.cacheName;
-			if ( thisCacheName == "object") {
+			if ( thisCacheName == "object" ) {
 				props = cacheGetProperties();
-			} else {
-
+			} else{
 				// this force CF to create the user defined cache if it doesn't exist
-				get("___invalid___");
+				get( "___invalid___" );
 
 				var cacheConfig = cacheGetSession( thisCacheName, true ).getCacheConfiguration();
 
 				// apply parameter configurations
-				if ( structKeyExists( config, "clearOnFlush") ) {
+				if ( structKeyExists( config, "clearOnFlush" ) ) {
 					cacheConfig.setClearOnFlush( config.clearOnFlush );
 				}
-				if ( structKeyExists( config, "diskExpiryThreadIntervalSeconds") ) {
+				if ( structKeyExists( config, "diskExpiryThreadIntervalSeconds" ) ) {
 					cacheConfig.setDiskExpiryThreadIntervalSeconds( config.diskExpiryThreadIntervalSeconds );
 				}
-				if ( structKeyExists( config, "diskPersistent") ) {
+				if ( structKeyExists( config, "diskPersistent" ) ) {
 					cacheConfig.setDiskPersistent( config.diskPersistent );
 				}
-				if ( structKeyExists( config, "diskSpoolBufferSizeMB") ) {
+				if ( structKeyExists( config, "diskSpoolBufferSizeMB" ) ) {
 					cacheConfig.setDiskSpoolBufferSizeMB( config.diskSpoolBufferSizeMB );
 				}
-				if ( structKeyExists( config, "eternal") ) {
+				if ( structKeyExists( config, "eternal" ) ) {
 					cacheConfig.setEternal( config.eternal );
 				}
-				if ( structKeyExists( config, "maxElementsInMemory") ) {
+				if ( structKeyExists( config, "maxElementsInMemory" ) ) {
 					cacheConfig.setMaxElementsInMemory( config.maxElementsInMemory );
 				}
-				if ( structKeyExists( config, "maxElementsOnDisk") ) {
+				if ( structKeyExists( config, "maxElementsOnDisk" ) ) {
 					cacheConfig.setMaxElementsOnDisk( config.maxElementsOnDisk );
 				}
-				if ( structKeyExists( config, "memoryEvictionPolicy") ) {
+				if ( structKeyExists( config, "memoryEvictionPolicy" ) ) {
 					cacheConfig.setMemoryStoreEvictionPolicy( config.memoryEvictionPolicy );
 				}
-				if ( structKeyExists( config, "overflowToDisk") ) {
+				if ( structKeyExists( config, "overflowToDisk" ) ) {
 					cacheConfig.setOverflowToDisk( config.overflowToDisk );
 				}
-				if ( structKeyExists( config, "timeToIdleSeconds") ) {
+				if ( structKeyExists( config, "timeToIdleSeconds" ) ) {
 					cacheConfig.setTimeToIdleSeconds( config.timeToIdleSeconds );
 				}
-				if ( structKeyExists( config, "timeToLiveSeconds") ) {
+				if ( structKeyExists( config, "timeToLiveSeconds" ) ) {
 					cacheConfig.setTimeToLiveSeconds( config.timeToLiveSeconds );
 				}
 
-				props = [{
-					"objectType" = config.cacheName
-					, "clearOnFlush" = cacheConfig.isClearOnFlush()
-					, "diskExpiryThreadIntervalSeconds" = cacheConfig.getDiskExpiryThreadIntervalSeconds()
-					, "diskPersistent" = cacheConfig.isDiskPersistent()
-					, "diskSpoolBufferSizeMB" = cacheConfig.getDiskSpoolBufferSizeMB()
-					, "eternal" = cacheConfig.isEternal()
-					, "maxElementsInMemory" = cacheConfig.getMaxElementsInMemory()
-					, "maxElementsOnDisk" = cacheConfig.getMaxElementsOnDisk()
-					, "memoryEvictionPolicy" = cacheConfig.getMemoryStoreEvictionPolicy().toString()
-					, "overflowToDisk" = cacheConfig.isOverflowToDisk()
-					, "timeToIdleSeconds" = cacheConfig.getTimeToIdleSeconds()
-					, "timeToLiveSeconds" = cacheConfig.getTimeToLiveSeconds()
-				}];
+				props = [
+					{
+						"objectType" : config.cacheName,
+						"clearOnFlush" : cacheConfig.isClearOnFlush(),
+						"diskExpiryThreadIntervalSeconds" : cacheConfig.getDiskExpiryThreadIntervalSeconds(),
+						"diskPersistent" : cacheConfig.isDiskPersistent(),
+						"diskSpoolBufferSizeMB" : cacheConfig.getDiskSpoolBufferSizeMB(),
+						"eternal" : cacheConfig.isEternal(),
+						"maxElementsInMemory" : cacheConfig.getMaxElementsInMemory(),
+						"maxElementsOnDisk" : cacheConfig.getMaxElementsOnDisk(),
+						"memoryEvictionPolicy" : cacheConfig.getMemoryStoreEvictionPolicy().toString(),
+						"overflowToDisk" : cacheConfig.isOverflowToDisk(),
+						"timeToIdleSeconds" : cacheConfig.getTimeToIdleSeconds(),
+						"timeToLiveSeconds" : cacheConfig.getTimeToLiveSeconds()
+					}
+				];
 			}
 
-			for( var key in props ){
+			for ( var key in props ) {
 				config[ "ehcache_#key.objectType#" ] = key;
 			}
 
@@ -126,7 +126,7 @@ component
 			variables.enabled = true;
 			variables.reportingEnabled = true;
 
-			if( variables.logger.canDebug() ){
+			if ( variables.logger.canDebug() ) {
 				variables.logger.debug( "Cache #getName()# started up successfully" );
 			}
 		}
@@ -135,13 +135,13 @@ component
 	}
 
 	/**
-     * Shutdown command issued when CacheBox is going through shutdown phase
+	 * Shutdown command issued when CacheBox is going through shutdown phase
 	 *
 	 * @return LuceeProvider
-     */
-    function shutdown(){
-		//nothing to shutdown
-		if( variables.logger.canDebug() ){
+	 */
+	function shutdown(){
+		// nothing to shutdown
+		if ( variables.logger.canDebug() ) {
 			variables.logger.debug( "CFProvider Cache: #getName()# has been shutdown." );
 		}
 		return this;
@@ -184,9 +184,9 @@ component
 	 * @return ICacheProvider
 	 */
 	function clearStatistics(){
-		if( server.coldfusion.productVersion.listFirst() == 11 ){
+		if ( server.coldfusion.productVersion.listFirst() == 11 ) {
 			getObjectStore().clearStatistics();
-		} else {
+		} else{
 			// New version of ehcache removed this feature.
 		}
 
@@ -201,22 +201,21 @@ component
 	function getObjectStore(){
 		// get the cache session according to set name
 		var thisCacheName = getConfiguration().cacheName;
-		if( thisCacheName == "object"){
+		if ( thisCacheName == "object" ) {
 			return cacheGetSession( "object" );
-		} else {
+		} else{
 			return cacheGetSession( thisCacheName, true );
 		}
 	}
 
 	/**
-     * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
-     */
-    struct function getStoreMetadataReport(){
-		return getKeys()
-			.reduce( function( item, result ){
-				result[ item ] = getCachedObjectMetadata( item );
-				return result;
-			}, {} );
+	 * Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]
+	 */
+	struct function getStoreMetadataReport(){
+		return getKeys().reduce( function(item, result) {
+			result[ item ] = getCachedObjectMetadata( item );
+			return result;
+		}, {} );
 	}
 
 	/**
@@ -224,11 +223,11 @@ component
 	 */
 	struct function getStoreMetadataKeyMap(){
 		return {
-			timeout           = "timespan",
-			hits              = "hitcount",
-			lastAccessTimeout = "idleTime",
-			created           = "createdtime",
-			lastAccessed      = "lasthit"
+			timeout : "timespan",
+			hits : "hitcount",
+			lastAccessTimeout : "idleTime",
+			created : "createdtime",
+			lastAccessed : "lasthit"
 		};
 	}
 
@@ -236,14 +235,17 @@ component
 	 * Returns a list of all elements in the cache, whether or not they are expired
 	 */
 	array function getKeys(){
-	   try{
-	   	    var thisCacheName = getConfiguration().cacheName;
-			if ( thisCacheName == "object") {
+		try{
+			var thisCacheName = getConfiguration().cacheName;
+			if ( thisCacheName == "object" ) {
 				return cacheGetAllIds();
 			}
 			return cacheGetAllIds( thisCacheName );
-		} catch( Any e ) {
-			variables.logger.error( "Error retrieving all keys from cache: #e.message# #e.detail#", e.stacktrace );
+		} catch ( Any e ) {
+			variables.logger.error(
+				"Error retrieving all keys from cache: #e.message# #e.detail#",
+				e.stacktrace
+			);
 			return [ "Error retrieving keys from cache: #e.message#" ];
 		}
 	}
@@ -253,11 +255,11 @@ component
 	 *
 	 * @objectKey The key to retrieve
 	 */
-    struct function getCachedObjectMetadata( required objectKey ){
+	struct function getCachedObjectMetadata( required objectKey ){
 		var thisCacheName = getConfiguration().cacheName;
-   		if ( thisCacheName == "object") {
+		if ( thisCacheName == "object" ) {
 			return cacheGetMetadata( arguments.objectKey );
-		} else {
+		} else{
 			return cacheGetMetadata( arguments.objectName, thisCacheName );
 		}
 	}
@@ -267,17 +269,17 @@ component
 	 *
 	 * @objectKey The key to retrieve
 	 */
-    function get( required objectKey ){
+	function get( required objectKey ){
 		var thisCacheName = getConfiguration().cacheName;
-	    if ( thisCacheName == "object") {
+		if ( thisCacheName == "object" ) {
 			return cacheGet( arguments.objectKey );
-		} else {
+		} else{
 			return cacheGet( arguments.objectKey, thisCacheName );
 		}
 	}
 
 	/**
-     * Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it
+	 * Tries to get an object from the cache, if not found, it calls the 'produce' closure to produce the data and cache it
 	 *
 	 * @objectKey The object cache key
 	 * @produce The producer closure/lambda
@@ -286,31 +288,30 @@ component
 	 * @extra A map of name-value pairs to use as extra arguments to pass to a providers set operation
 	 *
 	 * @return The cached or produced data/object
-     */
-    any function getOrSet(
-    	required any objectKey,
+	 */
+	any function getOrSet(
+		required any objectKey,
 		required any produce,
-		any timeout="0",
-		any lastAccessTimeout="0",
-		any extra={}
+		any timeout = "0",
+		any lastAccessTimeout = "0",
+		any extra = {}
 	){
-		return super.getOrSet( argumentCollection=arguments );
+		return super.getOrSet( argumentCollection = arguments );
 	}
 
 	/**
-     * get an item silently from cache, no stats advised: Stats not available on lucee
+	 * get an item silently from cache, no stats advised: Stats not available on lucee
 	 *
 	 * @objectKey The key to retrieve
-     */
-    function getQuiet( required objectKey ){
-
-		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+	 */
+	function getQuiet( required objectKey ){
+		if ( server.coldfusion.productVersion.listFirst() == 2018 ) {
 			var element = getObjectStore().getQuiet( arguments.objectKey );
-		} else {
-			var element = getObjectStore().getQuiet( ucase( arguments.objectKey ) );
+		} else{
+			var element = getObjectStore().getQuiet( uCase( arguments.objectKey ) );
 		}
 
-		if( !isNull( local.element ) ){
+		if ( !isNull( local.element ) ) {
 			return element.getValue();
 		}
 	}
@@ -340,9 +341,9 @@ component
 	 */
 	boolean function lookupQuiet( required objectKey ){
 		var thisCacheName = getConfiguration().cacheName;
-	    if ( thisCacheName == "object") {
+		if ( thisCacheName == "object" ) {
 			return cacheIdExists( arguments.objectKey );
-		} else {
+		} else{
 			return cacheIdExists( arguments.objectKey, thisCacheName );
 		}
 	}
@@ -361,20 +362,19 @@ component
 	function set(
 		required objectKey,
 		required object,
-		timeout=0,
-		lastAccessTimeout=0,
+		timeout = 0,
+		lastAccessTimeout = 0,
 		struct extra
 	){
+		setQuiet( argumentCollection = arguments );
 
-		setQuiet( argumentCollection=arguments );
-
-		//ColdBox events
+		// ColdBox events
 		var iData = {
-			cache				= this,
-			cacheObject			= arguments.object,
-			cacheObjectKey 		= arguments.objectKey,
-			cacheObjectTimeout 	= arguments.timeout,
-			cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
+			cache : this,
+			cacheObject : arguments.object,
+			cacheObjectKey : arguments.objectKey,
+			cacheObjectTimeout : arguments.timeout,
+			cacheObjectLastAccessTimeout : arguments.lastAccessTimeout
 		};
 		getEventManager().processState( "afterCacheElementInsert", iData );
 
@@ -395,19 +395,24 @@ component
 	function setQuiet(
 		required objectKey,
 		required object,
-		timeout=0,
-		lastAccessTimeout=0,
+		timeout = 0,
+		lastAccessTimeout = 0,
 		struct extra
 	){
-
 		// check if incoming timeout is a timespan or minute to convert to timespan, do also checks if empty strings
-		if( findnocase("string", arguments.timeout.getClass().getName() ) ){
-			if( len(arguments.timeout) ){ arguments.timeout = createTimeSpan(0,0,arguments.timeout,0); }
-			else{ arguments.timeout = 0; }
+		if ( findNoCase( "string", arguments.timeout.getClass().getName() ) ) {
+			if ( len( arguments.timeout ) ) {
+				arguments.timeout = createTimespan( 0, 0, arguments.timeout, 0 );
+			} else{
+				arguments.timeout = 0;
+			}
 		}
-		if( findnocase("string", arguments.lastAccessTimeout.getClass().getName() ) ){
-			if( len(arguments.lastAccessTimeout) ){ arguments.lastAccessTimeout = createTimeSpan(0,0,arguments.lastAccessTimeout,0); }
-			else{ arguments.lastAccessTimeout = 0; }
+		if ( findNoCase( "string", arguments.lastAccessTimeout.getClass().getName() ) ) {
+			if ( len( arguments.lastAccessTimeout ) ) {
+				arguments.lastAccessTimeout = createTimespan( 0, 0, arguments.lastAccessTimeout, 0 );
+			} else{
+				arguments.lastAccessTimeout = 0;
+			}
 		}
 
 		var thisCacheName = getConfiguration().cacheName;
@@ -419,7 +424,7 @@ component
 				arguments.timeout,
 				arguments.lastAccessTimeout
 			);
-		} else {
+		} else{
 			cachePut(
 				arguments.objectKey,
 				arguments.object,
@@ -455,14 +460,14 @@ component
 	 */
 	function clearAll(){
 		var thisCacheName = getConfiguration().cacheName;
-   		if ( thisCacheName == "object") {
+		if ( thisCacheName == "object" ) {
 			cacheRemoveAll();
-		} else {
+		} else{
 			cacheRemoveAll( thisCacheName );
 		}
 
 		// notify listeners
-		getEventManager().processState( "afterCacheClearAll", { cache = this } );
+		getEventManager().processState( "afterCacheClearAll", { cache : this } );
 	}
 
 	/**
@@ -472,17 +477,17 @@ component
 	 */
 	boolean function clear( required objectKey ){
 		var thisCacheName = getConfiguration().cacheName;
-   		if ( thisCacheName == "object") {
+		if ( thisCacheName == "object" ) {
 			cacheRemove( arguments.objectKey, false );
-		} else {
+		} else{
 			cacheRemove( arguments.objectKey, false, thisCacheName );
 		}
 
-		//ColdBox events
-		getEventManager().processState( "afterCacheElementRemoved", {
-			cache				= this,
-			cacheObjectKey 		= arguments.objectKey
-		} );
+		// ColdBox events
+		getEventManager().processState(
+			"afterCacheElementRemoved",
+			{ cache : this, cacheObjectKey : arguments.objectKey }
+		);
 
 		return true;
 	}
@@ -493,10 +498,10 @@ component
 	 * @objectKey The object cache key
 	 */
 	boolean function clearQuiet( required objectKey ){
-		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+		if ( server.coldfusion.productVersion.listFirst() == 2018 ) {
 			return getObjectStore().removeQuiet( arguments.objectKey );
-		} else {
-			return getObjectStore().removeQuiet( ucase( arguments.objectKey ) );
+		} else{
+			return getObjectStore().removeQuiet( uCase( arguments.objectKey ) );
 		}
 	}
 
@@ -529,7 +534,7 @@ component
 	 * Checks if the default cache is in use or another cache region
 	 */
 	private boolean function isDefaultCache(){
-		return  ( getConfiguration().cacheName EQ variables.DEFAULTS.cacheName );
+		return ( getConfiguration().cacheName EQ variables.DEFAULTS.cacheName );
 	}
 
 	/**
@@ -537,8 +542,8 @@ component
 	 *
 	 * @return LuceeProvider
 	 **/
-	 private function validateConfiguration(){
-		 // Add in settings not discovered
+	private function validateConfiguration(){
+		// Add in settings not discovered
 		structAppend( variables.configuration, variables.DEFAULTS, false );
 		return this;
 	}

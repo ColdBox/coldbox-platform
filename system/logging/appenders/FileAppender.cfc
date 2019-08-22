@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -9,8 +9,8 @@
  * - autoExpand   : Whether to expand the file path or not. Defaults to true.
  * - filename     : The name of the file, if not defined, then it will use the name of this appender. Do not append an extension to it. We will append a .log to it.
  * - fileEncoding : The file encoding to use, by default we use ISO-8859-1;
-**/
-component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
+ **/
+component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 
 	/**
 	 * The log file location
@@ -32,7 +32,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	property name="logListener" type="struct";
 
-    /**
+	/**
 	 * Constructor
 	 *
 	 * @name The unique name for this appender.
@@ -45,94 +45,100 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	function init(
 		required name,
-		struct properties={},
-		layout="",
-		levelMin=0,
-		levelMax=4
+		struct properties = {},
+		layout = "",
+		levelMin = 0,
+		levelMax = 4
 	){
-		super.init( argumentCollection=arguments );
+		super.init( argumentCollection = arguments );
 
 		// Setup Properties
-		if( NOT propertyExists( "filepath" ) ){
-			throw(
-				message = "Filepath property not defined",
-				type    = "FileAppender.PropertyNotFound"
-			);
+		if ( NOT propertyExists( "filepath" ) ) {
+			throw( message = "Filepath property not defined", type = "FileAppender.PropertyNotFound" );
 		}
-		if( NOT propertyExists( "autoExpand" ) ){
+		if ( NOT propertyExists( "autoExpand" ) ) {
 			setProperty( "autoExpand", true );
 		}
-		if( NOT propertyExists( "filename" ) ){
+		if ( NOT propertyExists( "filename" ) ) {
 			setProperty( "filename", getName() );
 		}
-		if( NOT propertyExists( "fileEncoding" ) ){
+		if ( NOT propertyExists( "fileEncoding" ) ) {
 			setProperty( "fileEncoding", "ISO-8859-1" );
 		}
 		// Cleanup File Names
-		setProperty( "filename", REreplacenocase( getProperty( "filename" ), "[^0-9a-z]", "", "ALL" ) );
+		setProperty(
+			"filename",
+			reReplaceNoCase(
+				getProperty( "filename" ),
+				"[^0-9a-z]",
+				"",
+				"ALL"
+			)
+		);
 
 		// Setup the log file full path
 		variables.logFullpath = getProperty( "filePath" );
 		// Clean ending slash
-		variables.logFullPath = reReplacenocase( variables.logFullPath, "[/\\]$", "" );
+		variables.logFullPath = reReplaceNoCase( variables.logFullPath, "[/\\]$", "" );
 		// Concatenate Full Log path
 		variables.logFullPath = variables.logFullpath & "/" & getProperty( "filename" ) & ".log";
 
 		// Do we expand the path?
-		if( getProperty( "autoExpand" ) ){
+		if ( getProperty( "autoExpand" ) ) {
 			variables.logFullPath = expandPath( variables.logFullpath );
 		}
 
 		// lock information
-		variables.lockName 		= getHash() & getname() & "logOperation";
-		variables.lockTimeout 	= 25;
+		variables.lockName = getHash() & getname() & "logOperation";
+		variables.lockTimeout = 25;
 
 		// Activate Log Listener Queue
-		variables.logListener = {
-			active 	= false,
-			queue 	= []
-		};
+		variables.logListener = { active : false, queue : [] };
 
 		// Declare locking construct
-		variables.lock = function( type="exclusive", body ){
-			lock 	name="#getHash() & getName()#-logListener"
-					type=arguments.type
-					timeout="#variables.lockTimeout#"
-					throwOnTimeout=true{
-
+		variables.lock = function(type = "exclusive", body) {
+			lock name="#getHash() & getName()#-logListener"
+ 				type=arguments.type
+ 				timeout="#variables.lockTimeout#"
+ 				throwOnTimeout=true {
 				return arguments.body();
-
 			}
-		};
+		}
+		;
 
 		return this;
-    }
+	}
 
-    /**
+	/**
 	 * Write an entry into the appender. You must implement this method yourself.
 	 *
 	 * @logEvent The logging event to log
 	 */
 	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
-		var loge      = arguments.logEvent;
+		var loge = arguments.logEvent;
 		var timestamp = loge.getTimestamp();
-		var message   = loge.getMessage();
-		var entry     = "";
+		var message = loge.getMessage();
+		var entry = "";
 
 		// Message Layout
-		if( hasCustomLayout() ){
+		if ( hasCustomLayout() ) {
 			entry = getCustomLayout().format( loge );
-		} else {
+		} else{
 			// Cleanup main message
-			if( len( loge.getExtraInfoAsString() ) ){
+			if ( len( loge.getExtraInfoAsString() ) ) {
 				message = message & " " & loge.getExtraInfoAsString();
 			}
-			message = replace( message, '"', '""', "all" );
-			message = replace( message, "#chr(13)##chr(10)#", '  ', "all" );
-			message = replace( message, chr(13), '  ', "all" );
+			message = replace( message, """", """""", "all" );
+			message = replace(
+				message,
+				"#chr( 13 )##chr( 10 )#",
+				"  ",
+				"all"
+			);
+			message = replace( message, chr( 13 ), "  ", "all" );
 
 			// Entry string
-			entry = '"#severityToString( logEvent.getSeverity() )#","#getname()#","#dateformat( timestamp, "MM/DD/YYYY" )#","#timeformat( timestamp, "HH:MM:SS" )#","#loge.getCategory()#","#message#"';
+			entry = """#severityToString( logEvent.getSeverity() )#"",""#getname()#"",""#dateFormat( timestamp, "MM/DD/YYYY" )#"",""#timeFormat( timestamp, "HH:MM:SS" )#"",""#loge.getCategory()#"",""#message#""";
 		}
 
 		// Log it
@@ -155,15 +161,17 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Remove the log file for this appender
 	 */
 	FileAppender function removeLogFile(){
-		if( fileExists( variables.logFullPath ) ){
-
-			variables.lock( body=function(){
-				if( fileExists( variables.logFullPath ) ){
-					fileDelete( variables.logFullPath );
-				} // end double lock race condition
-			} );
-
-		} // end if
+		if ( fileExists( variables.logFullPath ) ) {
+			variables.lock(
+				body = function() {
+					if ( fileExists( variables.logFullPath ) ) {
+						fileDelete( variables.logFullPath );
+					}
+					// end double lock race condition
+				}
+			);
+		}
+		// end if
 
 		return this;
 	}
@@ -172,21 +180,24 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Initialize the file log location if it does not exist. Please note that if exceptions are detected, then we log them in the CF facilities
 	 */
 	FileAppender function initLogLocation(){
-		if( !fileExists( variables.logFullPath ) ){
-
-			variables.lock( body=function(){
-				if( !fileExists( variables.logFullPath ) ){
-					try{
-						// Default Log Directory
-						ensureDefaultLogDirectory();
-						// Create log file
-						append( '"Severity","Appender","Date","Time","Category","Message"' );
-					} catch( Any e ) {
-						$log( "ERROR", "Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#" );
+		if ( !fileExists( variables.logFullPath ) ) {
+			variables.lock(
+				body = function() {
+					if ( !fileExists( variables.logFullPath ) ) {
+						try{
+							// Default Log Directory
+							ensureDefaultLogDirectory();
+							// Create log file
+							append( """Severity"",""Appender"",""Date"",""Time"",""Category"",""Message""" );
+						} catch ( Any e ) {
+							$log(
+								"ERROR","Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#"
+							);
+						}
 					}
-				} // end double lock race condition
-			} );
-
+					// end double lock race condition
+				}
+			);
 		}
 
 		return this;
@@ -196,67 +207,67 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Start the log listener so we can queue up the logging to alleviate for disk operations
 	 */
 	function startLogListener(){
-
 		// Verify if listener has started.
-		var isActive = variables.lock( "readonly", function(){
+		var isActive = variables.lock( "readonly", function() {
 			return variables.logListener.active;
 		} );
 
-		if( isActive ){
-			//out( "Listener already active exiting startup..." );
+		if ( isActive ) {
+			// out( "Listener already active exiting startup..." );
 			return;
-		} else {
-			//out( "Listener needs to startup" );
+		} else{
+			// out( "Listener needs to startup" );
 		}
 
-		thread  action="run" name="#variables.lockName#-#hash( createUUID() )#"{
+		thread action="run" name="#variables.lockName#-#hash( createUUID() )#" {
 			// Activate listener
-			var isActivating = variables.lock( body=function(){
-				if( !variables.logListener.active ){
-					//out( "listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
-					variables.logListener.active = true;
-					return true;
-				} else {
-					//out( "listener was just marked as active, just existing lock" );
-					return false;
+			var isActivating = variables.lock(
+				body = function() {
+					if ( !variables.logListener.active ) {
+						// out( "listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
+						variables.logListener.active = true;
+						return true;
+					} else{
+						// out( "listener was just marked as active, just existing lock" );
+						return false;
+					}
 				}
-			} );
+			);
 
-			if( !isActivating ){ return; }
+			if ( !isActivating ) {
+				return;
+			}
 
-			var lastRun       = getTickCount();
-			var start         = lastRun;
-			var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
+			var lastRun = getTickCount();
+			var start = lastRun;
+			var maxIdle = 15000; // 15 seconds is how long the threads can live for.
 			var flushInterval = 1000; // 1 second
 			var sleepInterval = 50;
-			var count         = 0;
+			var count = 0;
 
 			// Ensure Log File
 			initLogLocation();
 
-			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
-			var hasMessages   = false;
+			var oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
+			var hasMessages = false;
 
 			try{
-				//out( "Starting #getName()# thread", true );
+				// out( "Starting #getName()# thread", true );
 
 				// Execute only if there are messages in the queue or the internal has been crossed
-				while(
-					variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
-				){
+				while ( variables.logListener.queue.len() || lastRun + maxIdle > getTickCount() ) {
+					// out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
 
-					//out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
-
-					if( variables.logListener.queue.len() ){
+					if ( variables.logListener.queue.len() ) {
 						// pop and dequeue
 						var thisMessage = variables.logListener.queue[ 1 ];
 						variables.logListener.queue.deleteAt( 1 );
 
-						if( isSimpleValue( oFile ) ){
+						if ( isSimpleValue( oFile ) ) {
 							oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
 						}
 
-						//out( "Wrote to file #thisMessage#" );
+						// out( "Wrote to file #thisMessage#" );
 
 						// Write to file
 						fileWriteLine( oFile, thisMessage );
@@ -266,36 +277,37 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 					}
 
 					// flush to disk every start + 1000ms
-					if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
-						//out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
+					if ( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ) {
+						// out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
 						fileClose( oFile );
 						oFile = "";
 						start = getTickCount();
 					}
 
-					//out( "Sleeping: lastRun #lastRun + maxIdle#" );
+					// out( "Sleeping: lastRun #lastRun + maxIdle#" );
 
 					sleep( sleepInterval ); // take a nap
 				}
-
-			} catch( Any e ){
-				$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
-				//out( "Error with listener thread for #getName()#" & e.message & e.detail );
-			} finally {
-				//out( "Stopping listener thread for #getName()#, we have done our job" );
+			} catch ( Any e ) {
+				$log( "ERROR","Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
+				// out( "Error with listener thread for #getName()#" & e.message & e.detail );
+			} finally{
+				// out( "Stopping listener thread for #getName()#, we have done our job" );
 
 				// Stop log listener
-				variables.lock( body=function(){
-					variables.logListener.active = false;
-				} );
+				variables.lock(
+					body = function() {
+						variables.logListener.active = false;
+					}
+				);
 
-				if( !isSimpleValue( oFile ) ){
+				if ( !isSimpleValue( oFile ) ) {
 					fileClose( oFile );
 					oFile = "";
 				}
 			}
-
-		} // end threading
+		}
+		// end threading
 	}
 
 	/************************************ PRIVATE ************************************/
@@ -307,7 +319,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 */
 	private FileAppender function append( required message ){
 		// If we are not in a thread, then start the log listener, else queue it
-		if( !getUtil().inThread() ){
+		if ( !getUtil().inThread() ) {
 			// Ensure log listener
 			startLogListener();
 		}
@@ -322,9 +334,9 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Ensures the log directory.
 	 */
 	private function ensureDefaultLogDirectory(){
-		var dirPath = getDirectoryFrompath( variables.logFullpath );
+		var dirPath = getDirectoryFromPath( variables.logFullpath );
 
-		if( !directoryExists( dirPath ) ){
+		if ( !directoryExists( dirPath ) ) {
 			directoryCreate( dirPath );
 		}
 

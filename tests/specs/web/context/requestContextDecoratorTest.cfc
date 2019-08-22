@@ -1,9 +1,9 @@
-﻿/**
-* Request Context Decorator
-*/
-component extends="coldbox.system.testing.BaseTestCase"{
-	
-/*********************************** LIFE CYCLE Methods ***********************************/
+/**
+ * Request Context Decorator
+ */
+component extends="coldbox.system.testing.BaseTestCase" {
+
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
@@ -13,27 +13,27 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	function afterAll(){
 	}
 
-/*********************************** BDD SUITES ***********************************/
+	/*********************************** BDD SUITES ***********************************/
 
 	function run( testResults, testBox ){
 		// all your suites go here.
-		describe( "Request context decorator", function(){
-			beforeEach(function( currentSpec ){
-				mockContext   	= getMockRequestContext();
-				mockController 	= getMockController();
+		describe( "Request context decorator", function() {
+			beforeEach( function(currentSpec) {
+				mockContext = getMockRequestContext();
+				mockController = getMockController();
 
 				mockDecorator = new coldbox.system.web.context.RequestContextDecorator( mockContext, mockController );
-			});
+			} );
 
-			it( "can be created", function(){
-				expect(	mockContext ).toBe( mockDecorator.getRequestContext() );
-			});
+			it( "can be created", function() {
+				expect( mockContext ).toBe( mockDecorator.getRequestContext() );
+			} );
 
-			it( "can have a reference to its controller", function(){
+			it( "can have a reference to its controller", function() {
 				makePublic( mockDecorator, "getController" );
 				expect( mockController ).toBe( mockDecorator.getController() );
-			});
-		});
+			} );
+		} );
 	}
-	
+
 }

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -7,7 +7,7 @@
  * The main interface for a CacheBox cache provider.  You need to implement all the methods in order for CacheBox to work correctly for the implementing cache provider.
  * Many of the methods return itself, so they are documented in the <pre>@return</pre> annotation since interfaces are very janky in acf11 and 2016
  */
-interface{
+interface {
 
 	/**
 	 * Get the name of this cache
@@ -179,7 +179,7 @@ interface{
 	 *
 	 * @return ICacheProvider
 	 */
- 	function set(
+	function set(
 		required objectKey,
 		required object,
 		timeout,

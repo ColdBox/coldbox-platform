@@ -1,17 +1,15 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-
 Author     :	Luis Majano
 Date        :	9/3/2007
 Description :
-	Request service Test
+Request service Test
 ----------------------------------------------------------------------->
 <cfcomponent name="cacheTest" extends="CFProviderTest" output="false" skip="isAdobe">
-<cfscript>
-
+	<cfscript>
 	function setup(){
 		super.setup();
 		// Mock Controller
@@ -31,12 +29,12 @@ Description :
 	}
 
 	function testPrefixes(){
-		assertTrue( len(cache.getEventCacheKeyPrefix()) );
-		assertTrue( len(cache.getViewCacheKeyPrefix()) );
+		assertTrue( len( cache.getEventCacheKeyPrefix() ) );
+		assertTrue( len( cache.getViewCacheKeyPrefix() ) );
 	}
 
 	function testgetEventURLFacade(){
-		assertEquals(true, isInstanceOf(cache.getEventURLFacade(),"coldbox.system.cache.util.EventURLFacade" ) );
+		assertEquals( true, isInstanceOf( cache.getEventURLFacade(), "coldbox.system.cache.util.EventURLFacade" ) );
 	}
 
 	function testClearAllEvents(){
@@ -46,7 +44,7 @@ Description :
 		cache.ClearAllViews();
 	}
 	function testclearByKeySnippet(){
-		cache.clearByKeySnippet( "test",false);
+		cache.clearByKeySnippet( "test", false );
 	}
 	function testclearEvent(){
 		cache.clearEvent( "test" );
@@ -60,5 +58,5 @@ Description :
 	function testclearView(){
 		cache.clearView( "test" );
 	}
-</cfscript>
+	</cfscript>
 </cfcomponent>

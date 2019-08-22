@@ -1,4 +1,4 @@
-﻿component{
+component{
 
 	/**
 	* Configure CacheBox, that's it!

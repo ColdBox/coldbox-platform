@@ -1,30 +1,28 @@
-﻿component extends="AbstractPolicyTest"{
+component extends="AbstractPolicyTest" {
 
 	function setup(){
 		super.setup();
 
-		config = {
-			evictCount = 2
-		};
+		config = { evictCount : 2 };
 
 		pool = {
-			obj1 = {
-				created = now(),
-				timeout = 5,
-				isExpired = false,
-				hits = 1
+			obj1 : {
+				created : now(),
+				timeout : 5,
+				isExpired : false,
+				hits : 1
 			},
-			obj2 = {
-				created = dateAdd( "n",-7,now()),
-				timeout = 10,
-				isExpired = false,
-				hits = 555
+			obj2 : {
+				created : dateAdd( "n", -7, now() ),
+				timeout : 10,
+				isExpired : false,
+				hits : 555
 			},
-			obj3 = {
-				created = dateAdd( "n",-6,now()),
-				timeout = 10,
-				isExpired = false,
-				hits = 2
+			obj3 : {
+				created : dateAdd( "n", -6, now() ),
+				timeout : 10,
+				isExpired : false,
+				hits : 2
 			}
 		};
 
@@ -39,7 +37,7 @@
 
 	function testPolicy(){
 		lfu.execute();
-		assertEquals( 2 , arrayLen( mockCM.$callLog().clear ) );
+		assertEquals( 2, arrayLen( mockCM.$callLog().clear ) );
 		assertEquals( "obj1", mockCM.$callLog().clear[ 1 ][ 1 ] );
 	}
 

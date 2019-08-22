@@ -1,4 +1,4 @@
-﻿component persistent="true" table="roles"{
+component persistent="true" table="roles"{
 
 	property name="roleID" column="roleID" fieldType="id" generator="native";
 	property name="role";

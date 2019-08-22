@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -6,7 +6,7 @@
  * will have to implement the IColdboxApplicationCache in order to retrieve the right
  * prefix keys.
  */
-component accessors="true"{
+component accessors="true" {
 
 	// Connected Provider
 	property name="cacheProvider";
@@ -27,16 +27,19 @@ component accessors="true"{
 	 */
 	string function getUniqueHash( required event ){
 		var incomingHash = hash(
-			arguments.event.getCollection().filter( function( key, value ){
-				// Remove event, not needed for hashing purposes
-				return ( key != "event" );
-			} ).toString()
+			arguments.event
+				.getCollection()
+				.filter( function(key, value) {
+					// Remove event, not needed for hashing purposes
+					return ( key != "event" );
+				} )
+				.toString()
 		);
-		var targetMixer	= {
+		var targetMixer = {
 			// Get the original incoming context hash
-			"incomingHash" 	= incomingHash,
+			"incomingHash" : incomingHash,
 			// Multi-Host support
-			"cgihost" 		= CGI.HTTP_HOST
+			"cgihost" : CGI.HTTP_HOST
 		};
 
 		// Incorporate Routed Structs
@@ -56,16 +59,16 @@ component accessors="true"{
 		var virtualRC = {};
 		arguments.args
 			.listToArray( "&" )
-			.each( function( item ){
+			.each( function(item) {
 				virtualRC[ item.getToken( 1, "=" ).trim() ] = urlDecode( item.getToken( 2, "=" ).trim() );
 			} );
 
-		//writeDump( var = "==> Hash Args Struct: #virtualRC.toString()#", output="console" );
+		// writeDump( var = "==> Hash Args Struct: #virtualRC.toString()#", output="console" );
 		var myStruct = {
 			// Get the original incoming context hash according to incoming arguments
-			"incomingHash" 	= hash( virtualRC.toString() ),
+			"incomingHash" : hash( virtualRC.toString() ),
 			// Multi-Host support
-			"cgihost" 		= CGI.HTTP_HOST
+			"cgihost" : CGI.HTTP_HOST
 		};
 
 		// return hash from cache key struct
@@ -80,7 +83,7 @@ component accessors="true"{
 	 * @targetContext The targeted request context object
 	 */
 	string function buildEventKey( required keySuffix, required targetEvent, required targetContext ){
-		return buildBasicCacheKey( argumentCollection=arguments ) & getUniqueHash( arguments.targetContext );
+		return buildBasicCacheKey( argumentCollection = arguments ) & getUniqueHash( arguments.targetContext );
 	}
 
 	/**
@@ -91,7 +94,7 @@ component accessors="true"{
 	 * @targetArgs A query string based argument collection like a query string
 	 */
 	string function buildEventKeyNoContext( required keySuffix, required targetEvent, required targetArgs ){
-		return buildBasicCacheKey( argumentCollection=arguments ) & buildHash( arguments.targetArgs );
+		return buildBasicCacheKey( argumentCollection = arguments ) & buildHash( arguments.targetArgs );
 	}
 
 	/**
@@ -102,6 +105,5 @@ component accessors="true"{
 	string function buildBasicCacheKey( required keySuffix, required targetEvent ){
 		return variables.cacheProvider.getEventCacheKeyPrefix() & arguments.targetEvent & "-" & arguments.keySuffix & "-";
 	}
-
 
 }

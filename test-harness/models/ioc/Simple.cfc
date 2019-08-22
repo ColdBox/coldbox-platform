@@ -1,4 +1,4 @@
-﻿component accessors="true" {
+component accessors="true" {
     
     function init(){
         return this;

@@ -6,7 +6,7 @@
  *
  * The main interface for a CacheBox cache provider statistics object
  */
-interface{
+interface {
 
 	/**
 	 * Get the cache's performance ratio

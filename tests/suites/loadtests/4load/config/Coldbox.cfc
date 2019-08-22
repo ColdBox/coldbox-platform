@@ -1,4 +1,4 @@
-﻿component{
+component{
 
 	// Configure ColdBox Application
 	function configure(){

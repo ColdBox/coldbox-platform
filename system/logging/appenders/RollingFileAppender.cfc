@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -12,10 +12,10 @@
  * - fileEncoding : The file encoding to use, by default we use UTF-8;
  * - fileMaxSize : The max file size for log files. Defaults to 2000 (2 MB)
  * - fileMaxArchives : The max number of archives to keep. Defaults to 2.
-**/
+ **/
 component accessors="true" extends="coldbox.system.logging.appenders.FileAppender" {
 
-    /**
+	/**
 	 * Constructor
 	 *
 	 * @name The unique name for this appender.
@@ -26,26 +26,26 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 	 */
 	function init(
 		required name,
-		struct properties={},
-		layout="",
-		levelMin=0,
-		levelMax=4
+		struct properties = {},
+		layout = "",
+		levelMin = 0,
+		levelMax = 4
 	){
-        super.init( argumentCollection=arguments );
+		super.init( argumentCollection = arguments );
 
-		if( NOT propertyExists( "fileMaxSize" ) OR NOT isNumeric( getProperty( "fileMaxSize" ) ) ){
+		if ( NOT propertyExists( "fileMaxSize" ) OR NOT isNumeric( getProperty( "fileMaxSize" ) ) ) {
 			setProperty( "fileMaxSize", "2000" );
 		}
-		if( NOT propertyExists( "fileMaxArchives" ) OR NOT isNumeric( getProperty( "fileMaxArchives" ) ) ){
+		if ( NOT propertyExists( "fileMaxArchives" ) OR NOT isNumeric( getProperty( "fileMaxArchives" ) ) ) {
 			setProperty( "fileMaxArchives", "2" );
 		}
 
 		variables.fileRotator = new coldbox.system.logging.util.FileRotator();
 
 		return this;
-    }
+	}
 
-    /**
+	/**
 	 * Write an entry into the appender. You must implement this method yourself.
 	 *
 	 * @logEvent The logging event to log
@@ -57,18 +57,20 @@ component accessors="true" extends="coldbox.system.logging.appenders.FileAppende
 		// Rotate
 		try{
 			// Verify if listener has started.
-			var isActive = variables.lock( "readonly", function(){
+			var isActive = variables.lock( "readonly", function() {
 				return variables.logListener.active;
 			} );
 
 			// Only process rotation if the log listener is disabled
-			if( !isActive ){
+			if ( !isActive ) {
 				// Lock so we can do rotation
-				variables.lock( body=function(){
-					variables.fileRotator.checkRotation( this );
-				} );
+				variables.lock(
+					body = function() {
+						variables.fileRotator.checkRotation( this );
+					}
+				);
 			}
-		} catch( Any e ) {
+		} catch ( Any e ) {
 			$log(
 				"ERROR",
 				"Could not zip and rotate log files in #getName()#. #e.message# #e.detail#"

@@ -1,4 +1,4 @@
-﻿<cfoutput>
+<cfoutput>
 <cfparam name="url.frequency" default="0">
 <cfif url.frequency neq 0>
 <script type="text/javascript">

@@ -1,4 +1,4 @@
-﻿<!--- No debug output and request timeout --->
+<!--- No debug output and request timeout --->
 <cfsetting requesttimeout="999999" >
 <cfsetting showDebugOutput="false">
 <cfsetting enablecfoutputonly="true">

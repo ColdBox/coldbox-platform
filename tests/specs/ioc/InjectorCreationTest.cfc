@@ -1,11 +1,12 @@
-﻿component extends="coldbox.system.testing.BaseTestCase"{
+component extends="coldbox.system.testing.BaseTestCase" {
 
 	this.loadColdBox = false;
 
 	function setup(){
 		// init with defaults
-		injector = createMock( "coldbox.system.ioc.Injector" )
-			.init( "coldbox.tests.specs.ioc.config.samples.InjectorCreationTestsBinder" );
+		injector = createMock( "coldbox.system.ioc.Injector" ).init(
+			"coldbox.tests.specs.ioc.config.samples.InjectorCreationTestsBinder"
+		);
 		application.wirebox = injector;
 		// mock logger
 		mockLogger = createEmptyMock( "coldbox.system.logging.Logger" )
@@ -37,82 +38,86 @@
 	function testLocateInstance(){
 		// Locate by package scan
 		var r = injector.locateInstance( "ioc.category.CategoryBean" );
-		assertEquals( "coldbox.test-harness.models.ioc.category.CategoryBean", r);
+		assertEquals( "coldbox.test-harness.models.ioc.category.CategoryBean", r );
 
 		// Locate Not Found
 		r = injector.locateInstance( "com.com.com.Whatever" );
-		assertEquals( "", r);
+		assertEquals( "", r );
 
 		// Locate by Full Path
 		r = injector.locateInstance( "coldbox.system.EventHandler" );
-		assertEquals( "coldbox.system.EventHandler", r);
+		assertEquals( "coldbox.system.EventHandler", r );
 	}
 
 	function testbuildInstance(){
-		//mapping
+		// mapping
 		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( "MyTest" );
 		// mocks
 		mockBuilder = createMock( "coldbox.system.ioc.Builder" ).init( injector );
-		injector.$property( "builder","variables",mockBuilder);
+		injector.$property( "builder", "variables", mockBuilder );
 		injector.getEventManager().$( "process" );
 		mockStub = createStub();
 
 		// CFC
 		mapping.setType( "cfc" );
-		mockBuilder.$( "buildCFC", mockStub);
+		mockBuilder.$( "buildCFC", mockStub );
 		val = injector.buildInstance( mapping );
-		assertEquals(mockStub, val);
+		assertEquals( mockStub, val );
 
 		// JAVA
 		mapping.setType( "java" );
-		mockBuilder.$( "buildJavaClass", mockStub);
+		mockBuilder.$( "buildJavaClass", mockStub );
 		val = injector.buildInstance( mapping );
-		assertEquals(mockStub, val);
+		assertEquals( mockStub, val );
 
 		// Webservice
 		mapping.setType( "webservice" );
-		mockBuilder.$( "buildWebService", mockStub);
+		mockBuilder.$( "buildWebService", mockStub );
 		val = injector.buildInstance( mapping );
-		assertEquals(mockStub, val);
+		assertEquals( mockStub, val );
 
 		// Feed
 		mapping.setType( "rss" );
-		mockBuilder.$( "buildFeed", mockStub);
+		mockBuilder.$( "buildFeed", mockStub );
 		val = injector.buildInstance( mapping );
-		assertEquals(mockStub, val);
+		assertEquals( mockStub, val );
 
 		// Constant
 		mapping.setType( "constant" ).setValue( "testbaby" );
 		val = injector.buildInstance( mapping );
-		assertEquals( "testbaby", val);
+		assertEquals( "testbaby", val );
 
 		// Provider
-		mockProvider = createEmptyMock( "coldbox.system.ioc.Provider" ).$( "get",mockStub);
+		mockProvider = createEmptyMock( "coldbox.system.ioc.Provider" ).$( "get", mockStub );
 		mapping.setType( "provider" ).setPath( "MyCoolProvider" );
-		injector.$( "getInstance" ).$args( "MyCoolProvider" ).$results(mockProvider);
+		injector
+			.$( "getInstance" )
+			.$args( "MyCoolProvider" )
+			.$results( mockProvider );
 		val = injector.buildInstance( mapping );
-		assertEquals(mockStub, val);
+		assertEquals( mockStub, val );
 		// Provider closure
 		mapping.setType( "provider" ).setPath( variables.providerUDF );
 		val = injector.buildInstance( mapping );
 		assertTrue( val.verify() );
-
 	}
 
 	function providerUDF(){
-		return new testbox.system.MockBox().createStub().$( "verify", true);
+		return new testbox.system.MockBox().createStub().$( "verify", true );
 	}
 
 	function testProviderMethods(){
 		// skip for lucee as they don"t have the context method
-		if( listFindNoCase( "Lucee", server.coldfusion.productname ) ){ return; }
+		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+			return;
+		}
 
 		providerTest = injector.getInstance( "ProviderTest" );
-		assertEquals( true, isObject(providerTest.getPizza()) );
-		assertEquals( true, structKeyExists(session,"wirebox:pizza" ) );
-		assertEquals( "coldbox.system.ioc.Provider", getMetadata(providerTest.coolPizza).name);
+		assertEquals( true, isObject( providerTest.getPizza() ) );
+		assertEquals( true, structKeyExists( session, "wirebox:pizza" ) );
+		assertEquals( "coldbox.system.ioc.Provider", getMetadata( providerTest.coolPizza ).name );
 		assertEquals( session[ "wirebox:pizza" ], providerTest.coolPizza.get() );
-		structclear(session);
+		structClear( session );
 	}
 
 	/*
@@ -126,20 +131,20 @@
 
 	function testJava(){
 		buffer = injector.getInstance( "stringBuffer" );
-		assertEquals( "java.lang.StringBuilder", getMetadata(buffer).name );
+		assertEquals( "java.lang.StringBuilder", getMetadata( buffer ).name );
 	}
 
 	function testConstant(){
 		prop = injector.getInstance( "jsonProperty" );
-		assertTrue( len(prop) );
+		assertTrue( len( prop ) );
 	}
 
 	function testWebService(){
 		ws = injector.getInstance( "coldboxWS" );
 
-		//
-		if( listFindNoCase( "Lucee", server.coldfusion.productname ) ){
-			expect(	getMetadata(ws).name  ).toMatch( "rpc" );
+		// 
+		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+			expect( getMetadata( ws ).name ).toMatch( "rpc" );
 		}
 		// adobe
 		else{
@@ -180,17 +185,15 @@
 	}
 
 	function testParentMappings(){
-		//debug( injector.getBinder().getMapping( "concreteService" ).getMemento() );
+		// debug( injector.getBinder().getMapping( "concreteService" ).getMemento() );
 		o = injector.getInstance( "concreteService" );
 		assertTrue( isObject( o.getSomeAlphaDAO() ) );
 		assertTrue( isObject( o.getSomeBravoDAO() ) );
 		assertTrue( isObject( o.getSomeCharlieDAO() ) );
 		assertTrue( isObject( o.getSomeDeltaDAO() ) );
-
 	}
 
 	function testScopes(){
-
 		r = injector.getInstance( "RequestCategoryBean" );
 		assertEquals( request[ "wirebox:RequestCategoryBean" ], r );
 		r = injector.getInstance( "SessionCategoryBean" );
@@ -203,24 +206,23 @@
 
 	function testInheritedMetadata(){
 		var r = injector.getInstance( "ConcreteMetadata" );
-		//debug( r.getData() );
+		// debug( r.getData() );
 		assertEquals( injector.getInstance( "WireBoxURL" ), r.getData() );
 	}
 
 	function testImplicitSetters(){
 		var c = injector.getInstance( "implicitTest" );
-		//debug( c );
+		// debug( c );
 	}
 
 	function testDSLCreation(){
-		var c = injector.getInstance(dsl="wirebox" );
-		expect(	getMetadata( c ).name ).toMatch( "Injector" );
+		var c = injector.getInstance( dsl = "wirebox" );
+		expect( getMetadata( c ).name ).toMatch( "Injector" );
 	}
 
 	function testVirtualInheritanceCreation(){
 		var c = injector.getInstance( "virtually-inherited-class" );
-		expect(	c.getData() ).toBe( "My Data" );
+		expect( c.getData() ).toBe( "My Data" );
 	}
-
 
 }

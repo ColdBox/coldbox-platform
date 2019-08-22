@@ -1,4 +1,4 @@
-﻿<cfcomponent output="false">
+<cfcomponent output="false">
 	
 	<cffunction name="bt1" returntype="void">
 		<cfset var myVal = "ColdBox Great Toolkit" />

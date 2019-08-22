@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -8,43 +8,42 @@
  *
  * By default, LogBox will log any warnings pertaining to itself in the CF logs
  * according to its name.
-*/
-component accessors="true"{
-
+ */
+component accessors="true" {
 
 	/**
-	* The LogBox unique ID
-	*/
+	 * The LogBox unique ID
+	 */
 	property name="logBoxID";
 
 	/**
-	* The LogBox operating version
-	*/
+	 * The LogBox operating version
+	 */
 	property name="version";
 
 	/**
-	* The appender registration map
-	*/
+	 * The appender registration map
+	 */
 	property name="appenderRegistry" type="struct";
 
 	/**
-	* The Logger registration map
-	*/
+	 * The Logger registration map
+	 */
 	property name="loggerRegistry" type="struct";
 
 	/**
-	* Category based appenders
-	*/
+	 * Category based appenders
+	 */
 	property name="categoryAppenders";
 
 	/**
-	* Configuration object
-	*/
+	 * Configuration object
+	 */
 	property name="config";
 
 	/**
-	* ColdBox linkage class
-	*/
+	 * ColdBox linkage class
+	 */
 	property name="coldbox";
 
 	// The log levels enum as a public property
@@ -56,17 +55,17 @@ component accessors="true"{
 	 * @config The LogBoxConfig object to use to configure this instance of LogBox
 	 * @coldbox A coldbox application that this instance of logbox can be linked to.
 	 */
-	function init( required coldbox.system.logging.config.LogBoxConfig config, coldbox="" ){
+	function init( required coldbox.system.logging.config.LogBoxConfig config, coldbox = "" ){
 		// LogBox Unique ID
-		variables.logboxID          = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
+		variables.logboxID = createObject( "java", "java.lang.System" ).identityHashCode( this );
 		// Appenders
-		variables.appenderRegistry  = structnew();
+		variables.appenderRegistry = structNew();
 		// Loggers
-		variables.loggerRegistry    = structnew();
+		variables.loggerRegistry = structNew();
 		// Category Appenders
 		variables.categoryAppenders = "";
 		// Version
-		variables.version           = "@build.version@+@build.number@";
+		variables.version = "@build.version@+@build.number@";
 
 		// Link incoming ColdBox argument
 		variables.coldbox = arguments.coldbox;
@@ -84,36 +83,34 @@ component accessors="true"{
 	 * @config.doc_generic coldbox.system.logging.config.LogBoxConfig
 	 */
 	function configure( required config ){
-		lock name="#variables.logBoxID#.logbox.config" type="exclusive" timeout="30" throwOnTimeout=true{
+		lock name="#variables.logBoxID#.logbox.config" type="exclusive" timeout="30" throwOnTimeout=true {
 			// Store config object with validation
 			variables.config = arguments.config.validate();
 
 			// Reset Registries
-			variables.appenderRegistry 	= structnew();
-			variables.loggerRegistry 	= structnew();
+			variables.appenderRegistry = structNew();
+			variables.loggerRegistry = structNew();
 
-			//Get appender definitions
+			// Get appender definitions
 			var appenders = variables.config.getAllAppenders();
 
 			// Register All Appenders configured
-			for( var key in appenders ){
-				registerAppender( argumentCollection=appenders[ key ] );
+			for ( var key in appenders ) {
+				registerAppender( argumentCollection = appenders[ key ] );
 			}
 
 			// Get Root def
 			var rootConfig = variables.config.getRoot();
 			// Create Root Logger
 			var args = {
-				category = "ROOT",
-				levelMin = rootConfig.levelMin,
-				levelMax = rootConfig.levelMax,
-				appenders = getAppendersMap( rootConfig.appenders )
+				category : "ROOT",
+				levelMin : rootConfig.levelMin,
+				levelMax : rootConfig.levelMax,
+				appenders : getAppendersMap( rootConfig.appenders )
 			};
 
-			//Save in Registry
-			variables.loggerRegistry = {
-				"ROOT" = new coldbox.system.logging.Logger( argumentCollection=args )
-			};
+			// Save in Registry
+			variables.loggerRegistry = { "ROOT" : new coldbox.system.logging.Logger( argumentCollection = args ) };
 		}
 	}
 
@@ -137,7 +134,7 @@ component accessors="true"{
 		var root = getRootLogger();
 
 		// is category object?
-		if( isObject( arguments.category ) ){
+		if ( isObject( arguments.category ) ) {
 			arguments.category = getMetadata( arguments.category ).name;
 		}
 
@@ -145,37 +142,36 @@ component accessors="true"{
 		arguments.category = trim( arguments.category );
 
 		// Is logger by category name created already?
-		if( structKeyExists( variables.loggerRegistry, arguments.category ) ){
+		if ( structKeyExists( variables.loggerRegistry, arguments.category ) ) {
 			return variables.loggerRegistry[ arguments.category ];
 		}
 
 		// Do we have a category definition, so we can build it?
 		var args = {};
-		if( variables.config.categoryExists( arguments.category ) ){
+		if ( variables.config.categoryExists( arguments.category ) ) {
 			var categoryConfig = variables.config.getCategory( arguments.category );
 			// Setup creation arguments
 			args = {
-				category 	= categoryConfig.name,
-				levelMin 	= categoryConfig.levelMin,
-				levelMax 	= categoryConfig.levelMax,
-				appenders 	= getAppendersMap( categoryConfig.appenders )
+				category : categoryConfig.name,
+				levelMin : categoryConfig.levelMin,
+				levelMax : categoryConfig.levelMax,
+				appenders : getAppendersMap( categoryConfig.appenders )
 			};
-		} else {
+		} else{
 			// Do Category Inheritance? or else just return the root logger.
 			root = locateCategoryParentLogger( arguments.category );
 			// Build it out as per Root logger
-			args = {
-				category = arguments.category,
-				levelMin = root.getLevelMin(),
-				levelMax = root.getLevelMax()
-			};
+			args = { category : arguments.category, levelMin : root.getLevelMin(), levelMax : root.getLevelMax() };
 		}
 
 		// Create it
-		lock name="#variables.logboxID#.logBox.logger.#arguments.category#" type="exclusive" throwontimeout="true" timeout="30"{
-			if( NOT structKeyExists( variables.loggerRegistry, arguments.category ) ){
+		lock name="#variables.logboxID#.logBox.logger.#arguments.category#"
+ 			type="exclusive"
+ 			throwontimeout="true"
+ 			timeout="30" {
+			if ( NOT structKeyExists( variables.loggerRegistry, arguments.category ) ) {
 				// Create logger
-				var oLogger = new coldbox.system.logging.Logger( argumentCollection=args );
+				var oLogger = new coldbox.system.logging.Logger( argumentCollection = args );
 				// Inject Root Logger
 				oLogger.setRootLogger( root );
 				// Store it
@@ -213,20 +209,16 @@ component accessors="true"{
 	function registerAppender(
 		required name,
 		required class,
-		struct properties={},
-		layout="",
-		numeric levelMin=0,
-		numeric levelMax=4
+		struct properties = {},
+		layout = "",
+		numeric levelMin = 0,
+		numeric levelMax = 4
 	){
-
-		if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
-
-			lock name="#variables.logboxID#.registerappender.#name#" type="exclusive" timeout="15" throwOnTimeout="true"{
-
-				if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
-
+		if ( !structKeyExists( variables.appenderRegistry, arguments.name ) ) {
+			lock name="#variables.logboxID#.registerappender.#name#" type="exclusive" timeout="15" throwOnTimeout="true" {
+				if ( !structKeyExists( variables.appenderRegistry, arguments.name ) ) {
 					// Create appender and linking
-					var oAppender = new "#arguments.class#"( argumentCollection=arguments );
+					var oAppender = new "#arguments.class#"( argumentCollection = arguments );
 					oAppender.setColdBox( variables.coldbox );
 					// run registration event
 					oAppender.onRegistration();
@@ -234,13 +226,10 @@ component accessors="true"{
 					oAppender.setInitialized( true );
 					// Store it
 					variables.appenderRegistry[ arguments.name ] = oAppender;
-
 				}
-
-			} // end lock
-
+			}
+			// end lock
 		}
-
 	}
 
 	/********************************************* PRIVATE *********************************************/
@@ -255,21 +244,21 @@ component accessors="true"{
 		var parentCategory = "";
 
 		// category len check
-		if( len( arguments.category ) ){
+		if ( len( arguments.category ) ) {
 			parentCategory = listDeleteAt( arguments.category, listLen( arguments.category, "." ), "." );
 		}
 
 		// Check if parent Category is empty
-		if( len( parentCategory ) EQ 0 ){
+		if ( len( parentCategory ) EQ 0 ) {
 			// Just return the root logger, nothing found.
 			return getRootLogger();
 		}
 		// Does it exist already in the instantiated loggers?
-		if( structKeyExists( variables.loggerRegistry, parentCategory ) ){
+		if ( structKeyExists( variables.loggerRegistry, parentCategory ) ) {
 			return variables.loggerRegistry[ parentCategory ];
 		}
 		// Do we need to create it, lazy loading?
-		if( variables.config.categoryExists( parentCategory ) ){
+		if ( variables.config.categoryExists( parentCategory ) ) {
 			return getLogger( parentCategory );
 		}
 		// Else, it was not located, recurse
@@ -284,9 +273,9 @@ component accessors="true"{
 	struct function getAppendersMap( required appenders ){
 		var results = arguments.appenders
 			.listToArray()
-			.reduce( function( result, item, index ){
+			.reduce( function(result, item, index) {
 				var target = {};
-				if( !isNull( arguments.result ) ){
+				if ( !isNull( arguments.result ) ) {
 					target = result;
 				}
 				target[ item ] = variables.appenderRegistry[ item ];

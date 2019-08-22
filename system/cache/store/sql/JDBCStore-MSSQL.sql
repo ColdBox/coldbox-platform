@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[cacheBox] (
+CREATE TABLE [dbo].[cacheBox] (
   [id] varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
   [objectKey] varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
   [objectValue] ntext COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,

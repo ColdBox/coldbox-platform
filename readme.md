@@ -1,4 +1,4 @@
-﻿[![Build Status](https://travis-ci.org/ColdBox/coldbox-platform.svg?branch=development)](https://travis-ci.org/ColdBox/coldbox-platform)
+[![Build Status](https://travis-ci.org/ColdBox/coldbox-platform.svg?branch=development)](https://travis-ci.org/ColdBox/coldbox-platform)
 
 ```
    ____      _     _ ____            

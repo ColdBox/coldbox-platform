@@ -1,123 +1,138 @@
-﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness"{
+component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarness" {
 
-	function beforeAll() {
+	function beforeAll(){
 		super.setup();
 		routingService = prepareMock( getController().getRoutingService() );
 	}
 
-	function run() {
-		describe( "Routing Services", function(){
-
-			it( "can clean incoming pathing", function(){
-
+	function run(){
+		describe( "Routing Services", function() {
+			it( "can clean incoming pathing", function() {
 				makePublic( routingService, "getCleanedPaths", "getCleanedPaths" );
 
-				var rc = {
-					someURLvar = 1,
-					index = "hello"
-				};
+				var rc = { someURLvar : 1, index : "hello" };
 
-				//test folder with index.cfm
+				// test folder with index.cfm
 				var path_info = "/somefolder/index.cfm?somrURLVar=yes";
-				routingService.$( "getCGIElement" ).$results( path_info, '', 'localhost' );
-				var results = routingService.getCleanedPaths(rc,'event');
+				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
+				var results = routingService.getCleanedPaths( rc, "event" );
 				expect( "/someFolder/index.cfm" ).toBe( results.pathInfo );
 
-				//test folder with leading index.cfm
+				// test folder with leading index.cfm
 				path_info = "/index.cfm/somefolder/index.cfm?somrURLVar=yes";
-				routingService.$( "getCGIElement" ).$results( path_info, '', 'localhost' );
-				results = routingService.getCleanedPaths(rc,'event');
+				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
+				results = routingService.getCleanedPaths( rc, "event" );
 				expect( "/someFolder/index.cfm" ).toBe( results.pathInfo );
 
-				//test folder wwith other .cfm
+				// test folder wwith other .cfm
 				path_info = "/somefolder/test.cfm?somrURLVar=yes";
-				routingService.$( "getCGIElement" ).$results( path_info, '', 'localhost' );
-				results = routingService.getCleanedPaths(rc,'event');
+				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
+				results = routingService.getCleanedPaths( rc, "event" );
 				expect( "/someFolder/test.cfm" ).toBe( results.pathInfo );
 
-				//test regular SES route
+				// test regular SES route
 				path_info = "/somefolder/test";
-				routingService.$( "getCGIElement" ).$results( path_info, '', 'localhost' );
-				results = routingService.getCleanedPaths(rc,'event');
+				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
+				results = routingService.getCleanedPaths( rc, "event" );
 				expect( "/somefolder/test" ).toBe( results.pathInfo );
 
-				//test regular SES route with index
+				// test regular SES route with index
 				path_info = "/somefolder/index";
-				routingService.$( "getCGIElement" ).$results( path_info, '', 'localhost' );
-				results = routingService.getCleanedPaths(rc,'event');
+				routingService.$( "getCGIElement" ).$results( path_info, "", "localhost" );
+				results = routingService.getCleanedPaths( rc, "event" );
 				expect( "/somefolder/index" ).toBe( results.pathInfo );
 			} );
 
-			describe( "Can have different format detections", function(){
-
-				beforeEach( function(){
+			describe( "Can have different format detections", function() {
+				beforeEach( function() {
 					// Mocks
-					mockEvent = createMock( "coldbox.system.web.context.RequestContext" )
-						.init(
-							controller = getController(),
-							properties = {
-								defaultLayout 	= "Main.cfm",
-								defaultView 	= "",
-								eventName 		= "event",
-								modules 		= {}
-							}
-						);
+					mockEvent = createMock( "coldbox.system.web.context.RequestContext" ).init(
+						controller = getController(),
+						properties = {
+							defaultLayout : "Main.cfm",
+							defaultView : "",
+							eventName : "event",
+							modules : {}
+						}
+					);
 					mockInterceptData = {};
 				} );
 
-				it( "can detect default formats", function(){
+				it( "can detect default formats", function() {
 					// default format
-					routingService.$( "getCleanedPaths", {
-						pathInfo   = "/Main/index",
-						scriptName = "",
-						domain     = "localhost"
-					} );
-					routingService.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
+					routingService.$(
+						"getCleanedPaths",
+						{ pathInfo : "/Main/index", scriptName : "", domain : "localhost" }
+					);
+					routingService.onRequestCapture(
+						mockEvent,
+						mockInterceptData,
+						mockEvent.getCollection(),
+						mockEvent.getPrivateCollection()
+					);
 					expect( mockEvent.valueExists( "format" ) ).toBeFalse();
 				} );
 
-				it( "can do extension detection", function(){
+				it( "can do extension detection", function() {
 					// extension detection
-					routingService.$( "getCleanedPaths", {
-						pathInfo   = "/Main/index.xml",
-						scriptName = "",
-						domain     = "localhost"
-					} );
-					routingService.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
+					routingService.$(
+						"getCleanedPaths",
+						{ pathInfo : "/Main/index.xml", scriptName : "", domain : "localhost" }
+					);
+					routingService.onRequestCapture(
+						mockEvent,
+						mockInterceptData,
+						mockEvent.getCollection(),
+						mockEvent.getPrivateCollection()
+					);
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
 					mockEvent.removeValue( "format" );
 				} );
 
-				it( "can do accept header detection", function(){
+				it( "can do accept header detection", function() {
 					// Accept header parsing
-					mockEvent.$( "getHTTPHeader" ).$args( "Accept" ).$results( "application/json" );
-					routingService.$( "getCleanedPaths", {
-						pathInfo   = "/Main/index",
-						scriptName = "",
-						domain     = "localhost"
-					} );
-					routingService.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
+					mockEvent
+						.$( "getHTTPHeader" )
+						.$args( "Accept" )
+						.$results( "application/json" );
+					routingService.$(
+						"getCleanedPaths",
+						{ pathInfo : "/Main/index", scriptName : "", domain : "localhost" }
+					);
+					routingService.onRequestCapture(
+						mockEvent,
+						mockInterceptData,
+						mockEvent.getCollection(),
+						mockEvent.getPrivateCollection()
+					);
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "json" );
 					mockEvent.removeValue( "format" );
 				} );
 
-				it( "can detect extension over headers", function(){
+				it( "can detect extension over headers", function() {
 					// uses extension over Accept header
-					mockEvent.$( "getHTTPHeader" ).$args( "Accept" ).$results( "application/json" );
-					routingService.$( "getCleanedPaths", {
-						pathInfo   = "/Main/index.xml",
-						scriptName = "",
-						domain     = "localhost"
-					} );
-					routingService.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
+					mockEvent
+						.$( "getHTTPHeader" )
+						.$args( "Accept" )
+						.$results( "application/json" );
+					routingService.$(
+						"getCleanedPaths",
+						{ pathInfo : "/Main/index.xml", scriptName : "", domain : "localhost" }
+					);
+					routingService.onRequestCapture(
+						mockEvent,
+						mockInterceptData,
+						mockEvent.getCollection(),
+						mockEvent.getPrivateCollection()
+					);
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
 					mockEvent.removeValue( "format" );
 				} );
-
 			} );
 		} );
 	}
+
 }

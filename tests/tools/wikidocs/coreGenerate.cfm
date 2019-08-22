@@ -1,4 +1,4 @@
-﻿<cfscript>
+<cfscript>
 tab 	= chr(9);
 br  	= chr(10);
 dq      = chr(34);

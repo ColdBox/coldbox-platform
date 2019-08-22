@@ -1,4 +1,4 @@
-﻿<cfset exception = event.getValue( name="exception", private=true )>
+<cfset exception = event.getValue( name="exception", private=true )>
 <h3>An Unhandled Exception Occurred</h3>
 <cfoutput>
 <table>

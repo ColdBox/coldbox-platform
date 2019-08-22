@@ -1,4 +1,4 @@
-﻿<cfsetting enablecfoutputonly="yes">
+<cfsetting enablecfoutputonly="yes">
 <!-----------------------------------------------------------------------
 Template :  index.cfm 
 Author 	 :	Luis Majano

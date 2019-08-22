@@ -1,4 +1,4 @@
-﻿component output="false" singleton{
+component output="false" singleton{
 
 	/**
 	* clear all event caching for tests.

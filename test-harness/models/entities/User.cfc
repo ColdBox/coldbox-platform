@@ -1,4 +1,4 @@
-﻿component persistent="true" table="users"{
+component persistent="true" table="users"{
 
 	property name="id" column="user_id" fieldType="id" generator="uuid";
 	/**

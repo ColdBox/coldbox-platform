@@ -44,5 +44,9 @@
     "installPaths":{
         "testbox":"testbox/"
     },
-    "scripts":{}
+    "scripts":{
+        "format": "cfformat system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
+        "format:watch": "cfformat system/**/*.cfc,tests/specs/**/*.cfc --watch",
+        "format:check": "cfformat system/**/*.cfc,tests/specs/**/*.cfc --check"
+    }
 }

@@ -1,4 +1,4 @@
-﻿<cfscript>
+<cfscript>
 
 /**
 * Sorts an array of structures based on a key in the structures.

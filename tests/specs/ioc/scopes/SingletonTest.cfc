@@ -1,11 +1,15 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.ioc.scopes.Singleton">
-<cfscript>
-
+<cfcomponent extends="coldbox.system.testing.BaseModelTest" model="coldbox.system.ioc.scopes.Singleton">
+	<cfscript>
 	function setup(){
-		mockLogger = createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug",true).$( "debug" ).$( "error" ).$( "canWarn",true).$( "warn" );
-		mockLogBox = createEmptyMock( "coldbox.system.logging.LogBox" ).$( "getLogger", mockLogger);
+		mockLogger = createEmptyMock( "coldbox.system.logging.Logger" )
+			.$( "canDebug", true )
+			.$( "debug" )
+			.$( "error" )
+			.$( "canWarn", true )
+			.$( "warn" );
+		mockLogBox = createEmptyMock( "coldbox.system.logging.LogBox" ).$( "getLogger", mockLogger );
 		mockInjector = createMock( "coldbox.system.ioc.Injector" )
-			.$( "getUtil", createMock( "coldbox.system.core.util.Util" ))
+			.$( "getUtil", createMock( "coldbox.system.core.util.Util" ) )
 			.setLogBox( mockLogBox )
 			.setInjectorID( createUUID() );
 		super.setup();
@@ -14,7 +18,7 @@
 	}
 
 	function testGetFromScopeExistsAlready(){
-		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init(name="SingletonTest" );
+		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "SingletonTest" );
 		var singletons = scope.getSingletons();
 		singletons[ "singletontest" ] = mockStub;
 		var o = scope.getFromScope( mapping, {} );
@@ -23,15 +27,15 @@
 
 	function testGetFromScope(){
 		// 1: Default construction
-		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init(name="singletontest" );
+		var mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "singletontest" );
 		mapping.setThreadSafe( true );
-		mockInjector.$( "buildInstance", mockStub).$( "autowire", mockStub);
+		mockInjector.$( "buildInstance", mockStub ).$( "autowire", mockStub );
 		var o = scope.getFromScope( mapping, {} );
 
 		// 2: ThreadSafe singleton creations
-		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init(name="singletontest" );
+		mapping = createMock( "coldbox.system.ioc.config.Mapping" ).init( name = "singletontest" );
 		mapping.setThreadSafe( true );
-		mockInjector.$( "buildInstance", mockStub).$( "autowire", mockStub);
+		mockInjector.$( "buildInstance", mockStub ).$( "autowire", mockStub );
 		o = scope.getFromScope( mapping, {} );
 	}
 
@@ -48,5 +52,5 @@
 		scope.clear();
 		assertTrue( structCount( scope.getSingletons() ) eq 0 );
 	}
-</cfscript>
+	</cfscript>
 </cfcomponent>

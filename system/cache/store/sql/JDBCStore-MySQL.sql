@@ -1,4 +1,4 @@
-﻿CREATE TABLE `cacheBox` (
+CREATE TABLE `cacheBox` (
   `id` varchar(100) NOT NULL,
   `objectKey` varchar(255) NOT NULL,
   `objectValue` longtext NOT NULL,

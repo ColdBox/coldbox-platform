@@ -1,4 +1,4 @@
-﻿<cfcomponent name="Category">
+<cfcomponent name="Category">
 	
 	<cfproperty name="categoryService" inject="model">
 	

@@ -1,4 +1,4 @@
-﻿<!--- -------------------------------------------
+<!--- -------------------------------------------
 	Configure your setup here...
 	This file is executed directly in the ses interceptor spawned from Adam Fortuna's ColdCourse.
 	Therefore, ALL methods related to a interceptor/handler are available, you

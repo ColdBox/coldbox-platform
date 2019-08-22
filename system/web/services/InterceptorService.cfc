@@ -1,10 +1,10 @@
-﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This service takes care of all events and interceptions in ColdBox
-*/
-component extends="coldbox.system.web.services.BaseService" accessors="true"{
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This service takes care of all events and interceptions in ColdBox
+ */
+component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 	/**
 	 * Interception Points which can be announced
@@ -33,17 +33,41 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Register the interception points ENUM
 		variables.interceptionPoints = [
 			// Application startup points
-			"afterConfigurationLoad", "afterAspectsLoad", "preReinit",
+			"afterConfigurationLoad",
+			"afterAspectsLoad",
+			"preReinit",
 			// On Actions
-			"onException", "onRequestCapture", "onInvalidEvent",
+			"onException",
+			"onRequestCapture",
+			"onInvalidEvent",
 			// Life-cycle
-			"applicationEnd" , "sessionStart", "sessionEnd", "preProcess", "preEvent", "postEvent", "postProcess", "preProxyResults",
+			"applicationEnd",
+			"sessionStart",
+			"sessionEnd",
+			"preProcess",
+			"preEvent",
+			"postEvent",
+			"postProcess",
+			"preProxyResults",
 			// Layout-View Events
-			"preLayout", "preRender", "postRender", "preViewRender", "postViewRender", "preLayoutRender", "postLayoutRender", "afterRendererInit",
+			"preLayout",
+			"preRender",
+			"postRender",
+			"preViewRender",
+			"postViewRender",
+			"preLayoutRender",
+			"postLayoutRender",
+			"afterRendererInit",
 			// Module Events
-			"preModuleLoad", "postModuleLoad", "preModuleUnload", "postModuleUnload", "preModuleRegistration", "postModuleRegistration",
+			"preModuleLoad",
+			"postModuleLoad",
+			"preModuleUnload",
+			"postModuleUnload",
+			"preModuleRegistration",
+			"postModuleRegistration",
 			// Module Global Events
-			"afterModuleRegistrations", "afterModuleActivations"
+			"afterModuleRegistrations",
+			"afterModuleActivations"
 		];
 
 		// Init Container of interception states
@@ -67,8 +91,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.interceptorConfig = controller.getSetting( "InterceptorConfig" );
 		// Register CFC Configuration Object
 		registerInterceptor(
-			interceptorObject 	= controller.getSetting( 'coldboxConfig' ),
-			interceptorName 	= "coldboxConfig"
+			interceptorObject = controller.getSetting( "coldboxConfig" ),
+			interceptorName = "coldboxConfig"
 		);
 
 		return this;
@@ -95,9 +119,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return InterceptorService
 	 */
 	function rescanInterceptors(){
-		if( variables.onLoadInterceptionPointsHash != hash( arrayToList( variables.interceptionPoints ) ) ){
+		if ( variables.onLoadInterceptionPointsHash != hash( arrayToList( variables.interceptionPoints ) ) ) {
 			// Info log
-			if( variables.log.canInfo() ){
+			if ( variables.log.canInfo() ) {
 				variables.log.info( "Re-scanning interceptors as modules have contributed interception points" );
 			}
 			registerInterceptors();
@@ -113,77 +137,79 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	function registerInterceptors(){
 		// if simple, inflate
-		if( isSimpleValue( variables.interceptorConfig.customInterceptionPoints ) ){
-			variables.interceptorConfig.customInterceptionPoints = listToArray( variables.interceptorConfig.customInterceptionPoints );
+		if ( isSimpleValue( variables.interceptorConfig.customInterceptionPoints ) ) {
+			variables.interceptorConfig.customInterceptionPoints = listToArray(
+				variables.interceptorConfig.customInterceptionPoints
+			);
 		}
 
 		// Check if we have custom interception points, and register them if we do
-		if( arrayLen( variables.interceptorConfig.customInterceptionPoints ) ){
+		if ( arrayLen( variables.interceptorConfig.customInterceptionPoints ) ) {
 			appendInterceptionPoints( variables.interceptorConfig.customInterceptionPoints );
 			// Debug log
-			if( variables.log.canDebug() ){
-				variables.log.debug( "Registering custom interception points: #variables.interceptorConfig.customInterceptionPoints.toString()#" );
+			if ( variables.log.canDebug() ) {
+				variables.log.debug(
+					"Registering custom interception points: #variables.interceptorConfig.customInterceptionPoints.toString()#"
+				);
 			}
 		}
 
 		// Loop over the Interceptor Array, to begin registration
-		variables.interceptorConfig.interceptors
-			.each( function( item ){
-				registerInterceptor(
-					interceptorClass      = item.class,
-					interceptorProperties = item.properties,
-					interceptorName       = item.name
-				);
-			} );
+		variables.interceptorConfig.interceptors.each( function(item) {
+			registerInterceptor(
+				interceptorClass = item.class,
+				interceptorProperties = item.properties,
+				interceptorName = item.name
+			);
+		} );
 
 		return this;
 	}
 
 	/**
-	* Process a State's Interceptors
-	* Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
-	*
-	* This is needed so interceptors can write to the page output buffer
-	* @output true
-	*
-	* @state An interception state to process
-	* @interceptData A data structure used to pass intercepted information.
-	* @async If true, the entire interception chain will be ran in a separate thread.
-	* @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
-	* @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
-	* @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
-	* @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout
-	*/
+	 * Process a State's Interceptors
+	 * Announce an interception to the system. If you use the asynchronous facilities, you will get a thread structure report as a result.
+	 *
+	 * This is needed so interceptors can write to the page output buffer
+	 * @output true
+	 *
+	 * @state An interception state to process
+	 * @interceptData A data structure used to pass intercepted information.
+	 * @async If true, the entire interception chain will be ran in a separate thread.
+	 * @asyncAll If true, each interceptor in the interception chain will be ran in a separate thread and then joined together at the end.
+	 * @asyncAllJoin If true, each interceptor in the interception chain will be ran in a separate thread and joined together at the end by default.  If you set this flag to false then there will be no joining and waiting for the threads to finalize.
+	 * @asyncPriority The thread priority to be used. Either LOW, NORMAL or HIGH. The default value is NORMAL
+	 * @asyncJoinTimeout The timeout in milliseconds for the join thread to wait for interceptor threads to finish.  By default there is no timeout
+	 */
 	public any function processState(
 		required any state,
-		any interceptData=structNew(),
-		boolean async=false,
-		boolean asyncAll=false,
-		boolean asyncAllJoin=true,
-		string asyncPriority='NORMAL',
-		numeric asyncJoinTimeout=0
+		any interceptData = structNew(),
+		boolean async = false,
+		boolean asyncAll = false,
+		boolean asyncAllJoin = true,
+		string asyncPriority = "NORMAL",
+		numeric asyncJoinTimeout = 0
 	){
 		// Process The State if it exists, else just exit out
-		if( structKeyExists( variables.interceptionStates, arguments.state ) ){
-			arguments.event 	= controller.getRequestService().getContext();
-			arguments.buffer 	= getLazyBuffer();
+		if ( structKeyExists( variables.interceptionStates, arguments.state ) ) {
+			arguments.event = controller.getRequestService().getContext();
+			arguments.buffer = getLazyBuffer();
 
 			// Execute Interception
 			var results = variables.interceptionStates
 				.find( arguments.state )
-				.process( argumentCollection=arguments );
+				.process( argumentCollection = arguments );
 
 			// If buffer has a builder, then content was lazyly produced, output it
-			if( arguments.buffer.keyExists( "builder" ) ) {
+			if ( arguments.buffer.keyExists( "builder" ) ) {
 				writeOutput( arguments.buffer.getString() );
 			}
 
 			// Any results
-			if( !isNull( local.results ) ){
+			if ( !isNull( local.results ) ) {
 				return results;
 			}
 		}
-
 	}
 
 	/**
@@ -193,24 +219,24 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	struct function getLazyBuffer(){
 		var buffer = {
-			get = function(){
-				if( !buffer.keyExists( 'builder' ) ){
-					buffer.builder = createObject( "java", "java.lang.StringBuilder" ).init( '' );
+			get =function() {
+				if ( !buffer.keyExists( "builder" ) ) {
+					buffer.builder = createObject( "java", "java.lang.StringBuilder" ).init( "" );
 				}
 				return buffer.builder;
 			},
-			clear = function(){
+			clear =function() {
 				buffer.get().setLength( 0 );
 				return buffer;
 			},
-			append = function( required str ){
+			append =function(required str) {
 				buffer.get().append( arguments.str );
 				return buffer;
 			},
-			length = function(){
+			length =function() {
 				return buffer.get().length();
 			},
-			getString = function(){
+			getString =function() {
 				return buffer.get().toString();
 			}
 		};
@@ -231,77 +257,79 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	function registerInterceptor(
 		interceptorClass,
 		interceptorObject,
-		struct interceptorProperties={},
-		customPoints="",
+		struct interceptorProperties = {},
+		customPoints = "",
 		interceptorName
 	){
 		// determine registration names
-		var objectName		= "";
-		var oInterceptor 	= "";
+		var objectName = "";
+		var oInterceptor = "";
 
 		// Do we have a class path?
-		if( !isNull( arguments.interceptorClass ) ){
+		if ( !isNull( arguments.interceptorClass ) ) {
 			objectName = listLast( arguments.interceptorClass, "." );
-			if( !isNull( arguments.interceptorName ) ){
+			if ( !isNull( arguments.interceptorName ) ) {
 				objectName = arguments.interceptorName;
 			}
 		}
 		// Else we have an object?
-		else if( !isNull( arguments.interceptorObject ) ){
+		else if ( !isNull( arguments.interceptorObject ) ) {
 			// Determine object name
-			if( !isNull( arguments.interceptorName ) ){
+			if ( !isNull( arguments.interceptorName ) ) {
 				objectName = arguments.interceptorName;
-			} else {
-				objectName = listLast( getMetaData( arguments.interceptorObject ).name, "." );
+			} else{
+				objectName = listLast( getMetadata( arguments.interceptorObject ).name, "." );
 			}
 			oInterceptor = arguments.interceptorObject;
-		} else {
+		} else{
 			throw(
 				message = "Invalid registration.",
-				detail  = "You did not send in an interceptorClass or interceptorObject argument for registration",
-				type    = "InterceptorService.InvalidRegistration"
+				detail = "You did not send in an interceptorClass or interceptorObject argument for registration",
+				type = "InterceptorService.InvalidRegistration"
 			);
 		}
 
-		lock 	name="interceptorService.#getController().getAppHash()#.registerInterceptor.#objectName#"
-				type="exclusive"
-				throwontimeout="true"
-				timeout="30"
-		{
+		lock name="interceptorService.#getController().getAppHash()#.registerInterceptor.#objectName#"
+ 			type="exclusive"
+ 			throwontimeout="true"
+ 			timeout="30" {
 			// Did we send in a class to instantiate
-			if( !isNull( arguments.interceptorClass ) ){
+			if ( !isNull( arguments.interceptorClass ) ) {
 				// Create the Interceptor Class
 				try{
 					oInterceptor = createInterceptor( interceptorClass, objectName, interceptorProperties );
-				} catch( Any e ){
-					variables.log.error( "Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#", e.tagContext );
+				} catch ( Any e ) {
+					variables.log.error(
+						"Error creating interceptor: #arguments.interceptorClass#. #e.detail# #e.message# #e.stackTrace#",
+						e.tagContext
+					);
 					rethrow;
 				}
 
 				// Configure the Interceptor
 				oInterceptor.configure();
-			}//end if class is sent.
+			}
+			// end if class is sent.
 
 			// Append Custom Points
 			appendInterceptionPoints( arguments.customPoints );
 
 			// Parse Interception Points
-			parseMetadata( getMetaData( oInterceptor ), {} )
-				.each( function( stateKey, stateValue ){
-					// Register the point
-					registerInterceptionPoint(
-						interceptorKey = objectName,
-						state          = stateKey,
-						oInterceptor   = oInterceptor,
-						interceptorMD  = stateValue
-					);
-					// Debug log
-					if( variables.log.canDebug() ){
-						variables.log.debug( "Registering #objectName# on '#stateKey#' interception point" );
-					}
-				} );
-
-		} // end lock
+			parseMetadata( getMetadata( oInterceptor ), {} ).each( function(stateKey, stateValue) {
+				// Register the point
+				registerInterceptionPoint(
+					interceptorKey = objectName,
+					state = stateKey,
+					oInterceptor = oInterceptor,
+					interceptorMD = stateValue
+				);
+				// Debug log
+				if ( variables.log.canDebug() ) {
+					variables.log.debug( "Registering #objectName# on '#stateKey#' interception point" );
+				}
+			} );
+		}
+		// end lock
 
 		return this;
 	}
@@ -318,23 +346,27 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	function createInterceptor(
 		required interceptorClass,
 		required interceptorName,
-		struct interceptorProperties={}
+		struct interceptorProperties = {}
 	){
-
 		// Check if interceptor mapped?
-		if( NOT variables.wirebox.getBinder().mappingExists( "interceptor-" & arguments.interceptorName ) ){
+		if (
+			NOT variables.wirebox
+				.getBinder()
+				.mappingExists( "interceptor-" & arguments.interceptorName )
+		) {
 			// wirebox lazy load checks
 			wireboxSetup();
 			// feed this interceptor to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
-			variables.wirebox.registerNewInstance(
-					name         = "interceptor-" & arguments.interceptorName,
+			variables.wirebox
+				.registerNewInstance(
+					name = "interceptor-" & arguments.interceptorName,
 					instancePath = arguments.interceptorClass
 				)
 				.setScope( variables.wirebox.getBinder().SCOPES.SINGLETON )
 				.setThreadSafe( true )
 				.setVirtualInheritance( "coldbox.system.Interceptor" )
-				.addDIConstructorArgument( name="controller", value=controller )
-				.addDIConstructorArgument( name="properties", value=arguments.interceptorProperties );
+				.addDIConstructorArgument( name = "controller", value = controller )
+				.addDIConstructorArgument( name = "properties", value = arguments.interceptorProperties );
 		}
 
 		// retrieve, build and wire from wirebox
@@ -358,14 +390,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @return  The current interception points
 	 */
 	array function appendInterceptionPoints( required customPoints ){
-
 		// Inflate custom points
-		if( isSimpleValue( arguments.customPoints ) ){
+		if ( isSimpleValue( arguments.customPoints ) ) {
 			arguments.customPoints = listToArray( arguments.customPoints );
 		}
 
-		for( var thisPoint in arguments.customPoints ){
-			if( !arrayFindNoCase( variables.interceptionPoints, thisPoint ) ){
+		for ( var thisPoint in arguments.customPoints ) {
+			if ( !arrayFindNoCase( variables.interceptionPoints, thisPoint ) ) {
 				variables.interceptionPoints.append( thisPoint );
 			}
 		}
@@ -379,8 +410,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @state The state to retrieve
 	 */
 	function getStateContainer( required state ){
-
-		if( structKeyExists( variables.interceptionStates, arguments.state ) ){
+		if ( structKeyExists( variables.interceptionStates, arguments.state ) ) {
 			return variables.interceptionStates[ arguments.state ];
 		}
 
@@ -392,17 +422,15 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @interceptorName The interceptor to unregister
 	 * @state The state to unregister from, if not, passed, then from all states
 	 */
-	boolean function unregister( required interceptorName, state="" ){
+	boolean function unregister( required interceptorName, state = "" ){
 		var unregistered = false;
 
 		// Else, unregister from all states
-		for( var thisState in variables.interceptionStates ){
-			if( !len( arguments.state ) OR arguments.state eq thisState ){
-				structFind( variables.interceptionStates, thisState )
-					.unregister( arguments.interceptorName );
+		for ( var thisState in variables.interceptionStates ) {
+			if ( !len( arguments.state ) OR arguments.state eq thisState ) {
+				structFind( variables.interceptionStates, thisState ).unregister( arguments.interceptorName );
 				unregistered = true;
 			}
-
 		}
 
 		return unregistered;
@@ -425,30 +453,30 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		var oInterceptorState = "";
 
 		// Init md if not passed
-		if( not structKeyExists( arguments, "interceptorMD") ){
+		if ( not structKeyExists( arguments, "interceptorMD" ) ) {
 			arguments.interceptorMD = newPointRecord();
 		}
 
 		// Verify if state doesn't exist, create it
-		if ( NOT structKeyExists( variables.interceptionStates, arguments.state ) ){
+		if ( NOT structKeyExists( variables.interceptionStates, arguments.state ) ) {
 			oInterceptorState = new coldbox.system.web.context.InterceptorState(
-				state 		= arguments.state,
-				logbox 		= controller.getLogBox(),
-				controller 	= controller
+				state = arguments.state,
+				logbox = controller.getLogBox(),
+				controller = controller
 			);
 			variables.interceptionStates[ arguments.state ] = oInterceptorState;
-		} else {
+		} else{
 			// Get the State we need to register in
-			oInterceptorState = variables.interceptionStates[  arguments.state ];
+			oInterceptorState = variables.interceptionStates[ arguments.state ];
 		}
 
 		// Verify if the interceptor is already in the state
-		if( NOT oInterceptorState.exists( arguments.interceptorKey ) ){
+		if ( NOT oInterceptorState.exists( arguments.interceptorKey ) ) {
 			// Register it
 			oInterceptorState.register(
-				interceptorKey 	= arguments.interceptorKey,
-				interceptor 	= arguments.oInterceptor,
-				interceptorMD 	= arguments.interceptorMD
+				interceptorKey = arguments.interceptorKey,
+				interceptor = arguments.oInterceptor,
+				interceptorMD = arguments.interceptorMD
 			);
 		}
 
@@ -461,7 +489,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * Create a new interception point record
 	 */
 	private struct function newPointRecord(){
-		return { async = false, asyncPriority = "normal", eventPattern = "" };
+		return { async : false, asyncPriority : "normal", eventPattern : "" };
 	}
 
 	/**
@@ -469,14 +497,19 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	private InterceptorService function wireboxSetup(){
 		// Check if handler mapped?
-		if( NOT variables.wirebox.getBinder().mappingExists( variables.INTERCEPTOR_BASE_CLASS ) ){
+		if (
+			NOT variables.wirebox
+				.getBinder()
+				.mappingExists( variables.INTERCEPTOR_BASE_CLASS )
+		) {
 			// feed the base class
-			variables.wirebox.registerNewInstance(
-					name         = variables.INTERCEPTOR_BASE_CLASS,
+			variables.wirebox
+				.registerNewInstance(
+					name = variables.INTERCEPTOR_BASE_CLASS,
 					instancePath = variables.INTERCEPTOR_BASE_CLASS
 				)
-				.addDIConstructorArgument( name="controller", value=controller )
-				.addDIConstructorArgument( name="properties", value={} )
+				.addDIConstructorArgument( name = "controller", value = controller )
+				.addDIConstructorArgument( name = "properties", value = {} )
 				.setAutowire( false );
 		}
 
@@ -487,59 +520,62 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * I get a components valid interception points
 	 */
 	private struct function parseMetadata( required metadata, required points ){
-		var x 			= 1;
+		var x = 1;
 		var pointsFound = arguments.points;
 		var currentList = arrayToList( variables.interceptionPoints );
 
 		// Register local functions only
-		if( structKeyExists( arguments.metadata, "functions" ) ){
-			var fncLen = ArrayLen( arguments.metadata.functions );
-			for( var x=1; x lte fncLen; x++ ){
-
+		if ( structKeyExists( arguments.metadata, "functions" ) ) {
+			var fncLen = arrayLen( arguments.metadata.functions );
+			for ( var x = 1; x lte fncLen; x++ ) {
 				// Verify the @interceptionPoint annotation so the function can be registered as an interception point
-				if( structKeyExists( arguments.metadata.functions[ x ], "interceptionPoint" ) ){
+				if ( structKeyExists( arguments.metadata.functions[ x ], "interceptionPoint" ) ) {
 					// Register the point by convention and annotation
 					currentList = arrayToList( appendInterceptionPoints( arguments.metadata.functions[ x ].name ) );
 				}
 
 				// verify its an interception point by comparing it to the local defined interception points
 				// Also verify it has not been found already
-				if ( listFindNoCase( currentList, arguments.metadata.functions[ x ].name ) AND
-					 NOT structKeyExists( pointsFound, arguments.metadata.functions[ x ].name ) ){
+				if (
+					listFindNoCase( currentList, arguments.metadata.functions[ x ].name ) AND
+					NOT structKeyExists( pointsFound, arguments.metadata.functions[ x ].name )
+				) {
 					// Create point record
 					var pointRecord = newPointRecord();
 
 					// Discover point information
-					if( structKeyExists( arguments.metadata.functions[ x ], "async" ) ){
+					if ( structKeyExists( arguments.metadata.functions[ x ], "async" ) ) {
 						pointRecord.async = true;
 					}
-					if( structKeyExists( arguments.metadata.functions[ x ], "asyncPriority" ) ){
+					if ( structKeyExists( arguments.metadata.functions[ x ], "asyncPriority" ) ) {
 						pointRecord.asyncPriority = arguments.metadata.functions[ x ].asyncPriority;
 					}
-					if( structKeyExists( arguments.metadata.functions[ x ], "eventPattern" ) ){
+					if ( structKeyExists( arguments.metadata.functions[ x ], "eventPattern" ) ) {
 						pointRecord.eventPattern = arguments.metadata.functions[ x ].eventPattern;
 					}
 
 					// Insert to metadata struct of points found
 					structInsert( pointsFound, arguments.metadata.functions[ x ].name, pointRecord );
 				}
-
-			}// loop over functions
+			}
+			// loop over functions
 		}
 
 		// Start Registering inheritances
-		if(
+		if (
 			structKeyExists( arguments.metadata, "extends" )
-			&&
-			( arguments.metadata.extends.name neq "coldbox.system.Interceptor"
-				&&
-			 arguments.metadata.extends.name neq "coldbox.system.EventHandler" )
-		){
+			 &&
+			(
+				arguments.metadata.extends.name neq "coldbox.system.Interceptor"
+				 &&
+				arguments.metadata.extends.name neq "coldbox.system.EventHandler"
+			)
+		) {
 			// Recursive lookup
 			parseMetadata( arguments.metadata.extends, pointsFound );
 		}
 
-		//return the interception points found
+		// return the interception points found
 		return pointsFound;
 	}
 

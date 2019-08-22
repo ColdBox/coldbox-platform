@@ -1,4 +1,4 @@
-﻿<cfscript>
+<cfscript>
 	// Allow unique URL or combination of URLs, we recommend both enabled
 	setUniqueURLS(false);
 	
