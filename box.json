@@ -39,7 +39,8 @@
         ]
     },
     "devDependencies":{
-        "testbox":"^3.0.0"
+        "testbox":"^3.0.0",
+        "commandbox-cfformat": "*"
     },
     "installPaths":{
         "testbox":"testbox/"
