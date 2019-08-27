@@ -315,10 +315,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				if( log.canDebug() ){
 					log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 				}
-			}
+            }
+
+            if ( isStruct( routeResults.route.action ) && structIsEmpty( routeResults.route.action ) ) {
+                routeResults.route.action = "";
+            }
 
 			// Check if using HTTP method actions via struct
-			if( isStruct( routeResults.route.action ) && ! structIsEmpty( routeResults.route.action ) ){
+			if( isStruct( routeResults.route.action ) ){
 				// Verify HTTP method used is valid
 				if( structKeyExists( routeResults.route.action, httpMethod ) ){
 					discoveredEvent &= ".#routeResults.route.action[ httpMethod ]#";
@@ -334,7 +338,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 						log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 					}
 				}
-			}
+            }
 			// Simple value action
 			else if( routeResults.route.action.len() ){
 				discoveredEvent &= ".#routeResults.route.action#";
