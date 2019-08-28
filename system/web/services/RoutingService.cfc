@@ -907,7 +907,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	private function findConventionNameValuePairs( required string requestString, required any match, required struct params ){
 		var leftOverLen = len( arguments.requestString ) - arguments.match.len[ 1 ];
-		if( leftOverLen gt 0 ){
+		if( leftOverLen GT 0 ){
 
 			// Process Name/Value Pairs
 			var currentKey = "";

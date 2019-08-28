@@ -533,7 +533,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		// If no passed layout, then get it from implicit values
 		if( not structKeyExists( arguments, "layout" ) ){
 			//Strip off the .cfm extension if it is set
-			if( len( cbox_implicitLayout ) gt 4 AND right( cbox_implicitLayout, 4 ) eq '.cfm' ){
+			if( len( cbox_implicitLayout ) GT 4 AND right( cbox_implicitLayout, 4 ) eq '.cfm' ){
 				cbox_implicitLayout = left( cbox_implicitLayout, len( cbox_implicitLayout ) - 4 );
 			}
 			arguments.layout = cbox_implicitLayout;
