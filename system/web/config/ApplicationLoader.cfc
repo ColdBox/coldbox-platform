@@ -167,7 +167,7 @@ component accessors="true"{
 
 		//Clean last /
 		if ( right(arguments.configStruct.AppMapping,1) eq "/" ){
-			if ( len(arguments.configStruct.AppMapping) -1 gt 0)
+			if ( len(arguments.configStruct.AppMapping) -1 GT 0)
 				arguments.configStruct.AppMapping = left(arguments.configStruct.AppMapping,len(arguments.configStruct.AppMapping)-1);
 			else
 				arguments.configStruct.AppMapping = "";
