@@ -15,57 +15,57 @@
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
 component
-	extends="coldbox.system.testing.BaseTestCase"
-	appMapping="/cbTestHarness"
+    extends="coldbox.system.testing.BaseTestCase"
+    appMapping="/cbTestHarness"
 {
 
-	/*********************************** LIFE CYCLE Methods ***********************************/
+    /*********************************** LIFE CYCLE Methods ***********************************/
 
-	function beforeAll(){
-		super.beforeAll();
-		// do your own stuff here
-	}
+    function beforeAll(){
+        super.beforeAll();
+        // do your own stuff here
+    }
 
-	function afterAll(){
-		// do your own stuff here
-		super.afterAll();
-	}
+    function afterAll(){
+        // do your own stuff here
+        super.afterAll();
+    }
 
-	/*********************************** BDD SUITES ***********************************/
+    /*********************************** BDD SUITES ***********************************/
 
-	function run(){
-		describe( "Implicit Handlers", function() {
-			beforeEach( function(currentSpec) {
-				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
-				setup();
-			} );
+    function run(){
+        describe( "Implicit Handlers", function(){
+            beforeEach( function(currentSpec){
+                // Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
+                setup();
+            } );
 
-			xit( "can render the cache panel", function() {
-				// Why can't I just call GET() ACF, why do you make things hard!
-				var event = this.request( route = "main/cachePanel" );
-				expect( event.getRenderedContent() ).toInclude( "cachebox_cache" );
-			} );
+            xit( "can render the cache panel", function(){
+                // Why can't I just call GET() ACF, why do you make things hard!
+                var event = this.request( route = "main/cachePanel" );
+                expect( event.getRenderedContent() ).toInclude( "cachebox_cache" );
+            } );
 
-			it( "can handle invalid events", function() {
-				var event = execute( event = "invalid:bogus.index", renderResults = true );
-				expect( event.getValue( "cbox_rendered_content" ) ).toBe( "<h1>Invalid Page</h1>" );
-			} );
+            it( "can handle invalid events", function(){
+                var event = execute( event = "invalid:bogus.index", renderResults = true );
+                expect( event.getValue( "cbox_rendered_content" ) ).toBe( "<h1>Invalid Page</h1>" );
+            } );
 
-			it( "can handle invalid onInvalidEvent handlers", function() {
-				var originalInvalidEventHandler = getController().getSetting( "invalidEventHandler" );
-				getController().setSetting( "invalidEventHandler", "notEvenAnAction" );
-				getController().getHandlerService().onConfigurationLoad();
-				try{
-					execute( event = "invalid:bogus.index", renderResults = true );
-					fail( "The event handler was invalid and should have thrown an exception" );
-				} catch ( HandlerService.InvalidEventHandlerException e ) {
-					expect( e.message ).toBe( "The invalidEventHandler event is also invalid" );
-				} finally{
-					getController().setSetting( "invalidEventHandler", originalInvalidEventHandler );
-					getController().getHandlerService().onConfigurationLoad();
-				}
-			} );
-		} );
-	}
+            it( "can handle invalid onInvalidEvent handlers", function(){
+                var originalInvalidEventHandler = getController().getSetting( "invalidEventHandler" );
+                getController().setSetting( "invalidEventHandler", "notEvenAnAction" );
+                getController().getHandlerService().onConfigurationLoad();
+                try{
+                    execute( event = "invalid:bogus.index", renderResults = true );
+                    fail( "The event handler was invalid and should have thrown an exception" );
+                }catch( HandlerService.InvalidEventHandlerException e ){
+                    expect( e.message ).toBe( "The invalidEventHandler event is also invalid" );
+                }finally{
+                    getController().setSetting( "invalidEventHandler", originalInvalidEventHandler );
+                    getController().getHandlerService().onConfigurationLoad();
+                }
+            } );
+        } );
+    }
 
 }

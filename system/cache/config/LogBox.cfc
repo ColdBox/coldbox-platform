@@ -8,16 +8,16 @@ information about logBox visit: http://wiki.coldbox.org/wiki/LogBox.cfm
 **/
 component {
 
-	/**
-	 *  Configure logBox
-	 */
-	function configure(){
-		variables.logBox = {
-			// Define Appenders
-			appenders : { console : { class : "coldbox.system.logging.appenders.ConsoleAppender" } },
-			// Root Logger
-			root : { levelmax : "INFO", appenders : "*" }
-		};
-	}
+    /**
+     *  Configure logBox
+     */
+    function configure(){
+        variables.logBox = {
+            // Define Appenders
+            appenders: { console: { class: "coldbox.system.logging.appenders.ConsoleAppender" } },
+            // Root Logger
+            root: { levelmax: "INFO", appenders: "*" }
+        };
+    }
 
 }

@@ -6,41 +6,41 @@
  */
 component {
 
-	// Release Metadata
-	this.codename = "ColdBox Perseverance";
-	this.author = "Ortus Solutions";
-	this.authorEmail = "info@ortussolutions.com";
-	this.authorWebsite = "https://www.ortussolutions.com";
-	this.suffix = "Joshua 1:9";
-	this.version = "@build.version@+@build.number@";
-	this.description = "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
+    // Release Metadata
+    this.codename = "ColdBox Perseverance";
+    this.author = "Ortus Solutions";
+    this.authorEmail = "info@ortussolutions.com";
+    this.authorWebsite = "https://www.ortussolutions.com";
+    this.suffix = "Joshua 1:9";
+    this.version = "@build.version@+@build.number@";
+    this.description = "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
-	// Operation Defaults
-	this.eventName = "event";
-	this.defaultEvent = "main.index";
-	this.defaultLayout = "Main.cfm";
+    // Operation Defaults
+    this.eventName = "event";
+    this.defaultEvent = "main.index";
+    this.defaultLayout = "Main.cfm";
 
-	// flash scope defaults
-	this.flash = {
-		scope : "session",
-		properties : {},
-		inflateToRC : true,
-		inflateToPRC : false,
-		autoPurge : true,
-		autoSave : true
-	};
+    // flash scope defaults
+    this.flash = {
+        scope: "session",
+        properties: {},
+        inflateToRC: true,
+        inflateToPRC: false,
+        autoPurge: true,
+        autoSave: true
+    };
 
-	// Conventions
-	this.handlersConvention = "handlers";
-	this.layoutsConvention = "layouts";
-	this.viewsConvention = "views";
-	this.eventAction = "index";
-	this.modelsConvention = "models";
-	this.configConvention = "config.Coldbox";
-	this.modulesConvention = "modules";
-	this.includesConvention = "includes";
+    // Conventions
+    this.handlersConvention = "handlers";
+    this.layoutsConvention = "layouts";
+    this.viewsConvention = "views";
+    this.eventAction = "index";
+    this.modelsConvention = "models";
+    this.configConvention = "config.Coldbox";
+    this.modulesConvention = "modules";
+    this.includesConvention = "includes";
 
-	function configure(){
-	}
+    function configure(){
+    }
 
 }

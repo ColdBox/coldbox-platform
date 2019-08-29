@@ -7,28 +7,28 @@
  */
 component {
 
-	function configure(){
-		var system = createObject( "java", "java.lang.System" );
-		var homeDir = expandPath( "/coldbox/tests" );
+    function configure(){
+        var system = createObject( "java", "java.lang.System" );
+        var homeDir = expandPath( "/coldbox/tests" );
 
-		logBox = {};
+        logBox = {};
 
 
-		// Define Appenders
-		logBox.appenders = {
-			fileAppender : {
-				class : "coldbox.system.logging.appenders.RollingFileAppender",
-				properties : {
-					fileMaxArchives : 5,
-					filename : "commandbox",
-					filepath : homeDir & "/logs",
-					async : true
-				}
-			}
-		};
+        // Define Appenders
+        logBox.appenders = {
+            fileAppender: {
+                class: "coldbox.system.logging.appenders.RollingFileAppender",
+                properties: {
+                    fileMaxArchives: 5,
+                    filename: "commandbox",
+                    filepath: homeDir & "/logs",
+                    async: true
+                }
+            }
+        };
 
-		// Root Logger
-		logBox.root = { levelmax : "INFO", levelMin : "FATAL", appenders : "fileAppender" };
-	}
+        // Root Logger
+        logBox.root = { levelmax: "INFO", levelMin: "FATAL", appenders: "fileAppender" };
+    }
 
 }

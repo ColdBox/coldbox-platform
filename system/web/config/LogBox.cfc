@@ -6,17 +6,17 @@
  */
 component {
 
-	/**
-	 * Configure LogBox, that's it!
-	 */
-	function configure(){
-		logBox = {};
+    /**
+     * Configure LogBox, that's it!
+     */
+    function configure(){
+        logBox = {};
 
-		// Define Appenders
-		logBox.appenders = { console : { class : "coldbox.system.logging.appenders.DummyAppender" } };
+        // Define Appenders
+        logBox.appenders = { console: { class: "coldbox.system.logging.appenders.DummyAppender" } };
 
-		// Root Logger
-		logBox.root = { levelmax : "OFF", levelMin : "OFF", appenders : "*" };
-	}
+        // Root Logger
+        logBox.root = { levelmax: "OFF", levelMin: "OFF", appenders: "*" };
+    }
 
 }

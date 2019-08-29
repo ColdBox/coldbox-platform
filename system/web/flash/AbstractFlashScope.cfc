@@ -16,464 +16,464 @@
  */
 component accessors="true" {
 
-	/**
-	 * ColdBox Controller
-	 */
-	property name="controller";
+    /**
+     * ColdBox Controller
+     */
+    property name="controller";
 
-	/**
-	 * Flash Defaults
-	 */
-	property name="defaults";
+    /**
+     * Flash Defaults
+     */
+    property name="defaults";
 
-	/**
-	 * Flash Properties
-	 */
-	property name="properties";
+    /**
+     * Flash Properties
+     */
+    property name="properties";
 
-	/**
-	 * Constructor
-	 * @controller.hint ColdBox Controller
-	 * @defaults.hint Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
-	 */
-	function init( required controller, required struct defaults = {} ){
-		variables.controller = arguments.controller;
-		variables.defaults = arguments.defaults;
+    /**
+     * Constructor
+     * @controller.hint ColdBox Controller
+     * @defaults.hint Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
+     */
+    function init( required controller, required struct defaults = {} ){
+        variables.controller = arguments.controller;
+        variables.defaults = arguments.defaults;
 
-		// Defaults checks, just in case
-		if ( !structKeyExists( variables.defaults, "inflateToRC" ) ) {
-			variables.defaults.inflateToRC = true;
-		}
-		if ( !structKeyExists( variables.defaults, "inflateToPRC" ) ) {
-			variables.defaults.inflateToPRC = false;
-		}
-		if ( !structKeyExists( variables.defaults, "autoPurge" ) ) {
-			variables.defaults.autoPurge = true;
-		}
+        // Defaults checks, just in case
+        if( !structKeyExists( variables.defaults, "inflateToRC" ) ){
+            variables.defaults.inflateToRC = true;
+        }
+        if( !structKeyExists( variables.defaults, "inflateToPRC" ) ){
+            variables.defaults.inflateToPRC = false;
+        }
+        if( !structKeyExists( variables.defaults, "autoPurge" ) ){
+            variables.defaults.autoPurge = true;
+        }
 
-		// check for properties
-		if ( structKeyExists( arguments.defaults, "properties" ) ) {
-			variables.properties = arguments.defaults.properties;
-		} else{
-			variables.properties = {};
-		}
+        // check for properties
+        if( structKeyExists( arguments.defaults, "properties" ) ){
+            variables.properties = arguments.defaults.properties;
+        }else{
+            variables.properties = {};
+        }
 
-		return this;
-	}
+        return this;
+    }
 
-	/************************ TO IMPLEMENT ****************************************/
+    /************************ TO IMPLEMENT ****************************************/
 
-	/**
-	 * Save the flash storage in preparing to go to the next request
-	 * @return SessionFlash
-	 */
-	function saveFlash(){
-	}
+    /**
+     * Save the flash storage in preparing to go to the next request
+     * @return SessionFlash
+     */
+    function saveFlash(){
+    }
 
-	/**
-	 * Checks if the flash storage exists and IT HAS DATA to inflate.
-	 */
-	boolean function flashExists(){
-	}
+    /**
+     * Checks if the flash storage exists and IT HAS DATA to inflate.
+     */
+    boolean function flashExists(){
+    }
 
-	/**
-	 * Get the flash storage structure to inflate it.
-	 */
-	struct function getFlash(){
-	}
+    /**
+     * Get the flash storage structure to inflate it.
+     */
+    struct function getFlash(){
+    }
 
-	/**
-	 * Remove the entire flash storage
-	 * @return SessionFlash
-	 */
-	function removeFlash(){
-	}
+    /**
+     * Remove the entire flash storage
+     * @return SessionFlash
+     */
+    function removeFlash(){
+    }
 
-	/************************ CONCRETE METHODS ****************************************/
+    /************************ CONCRETE METHODS ****************************************/
 
-	/**
-	 * Clear the flash storage
-	 * @return AbstractFlashScope
-	 */
-	function clearFlash(){
-		// Check if flash exists
-		if ( flashExists() ) {
-			var scope = getFlash();
+    /**
+     * Clear the flash storage
+     * @return AbstractFlashScope
+     */
+    function clearFlash(){
+        // Check if flash exists
+        if( flashExists() ){
+            var scope = getFlash();
 
-			scope
-				.filter( function(key, value) {
-					if ( value.keyExists( "autoPurge" ) ) {
-						return value.autoPurge;
-					}
-					return false;
-				} )
-				.keyArray()
-				.each( function(item) {
-					scope.delete( item );
-				} );
+            scope
+                .filter( function(key, value){
+                    if( value.keyExists( "autoPurge" ) ){
+                        return value.autoPurge;
+                    }
+                    return false;
+                } )
+                .keyArray()
+                .each( function(item){
+                    scope.delete( item );
+                } );
 
-			if ( scope.isEmpty() ) {
-				removeFlash();
-			}
-		}
+            if( scope.isEmpty() ){
+                removeFlash();
+            }
+        }
 
-		return this;
-	}
-
-
-	/**
-	 *
-	 * @return AbstractFlashScope
-	 */
-	function inflateFlash(){
-		var event = getController().getRequestService().getContext();
-		var keep = false;
-		var flash = getFlash();
-		var scopeKeys = listToArray( structKeyList( flash ) );
-		var scopeKeysLen = arrayLen( scopeKeys );
-
-		// Inflate only kept flash variables, other ones are marked for discard.
-		for ( var x = 1; x <= scopeKeysLen; x++ ) {
-			// check if key exists and inflating
-			if ( structKeyExists( flash, scopeKeys[ x ] ) && flash[ scopeKeys[ x ] ].keep ) {
-				var thisKey = flash[ scopeKeys[ x ] ];
-				// Keep = true if autoPurge is false, because we need to keep it around.
-				if ( !thisKey.autoPurge ) {
-					keep = true;
-				} else{
-					keep = false;
-				}
-				// Save and mark for cleaning if content exists
-				if ( structKeyExists( thisKey, "content" ) ) {
-					// Inflate into RC?
-					if ( thisKey.inflateToRC ) {
-						event.setValue( name = scopeKeys[ x ], value = thisKey.content );
-					}
-					// Inflate into PRC?
-					if ( thisKey.inflateToPRC ) {
-						event.setValue( name = scopeKeys[ x ], value = thisKey.content, private = true );
-					}
-					put(
-						name = scopeKeys[ x ],
-						value = thisKey.content,
-						keep = keep,
-						autoPurge = thisKey.autoPurge,
-						inflateToRC = thisKey.inflateToRC,
-						inflateToPRC = thisKey.inflateToPRC
-					);
-				}
-			}
-		}
-
-		// Clear Flash Storage
-		clearFlash();
-
-		return this;
-	}
-
-	/**
-	 * Get the flash temp request storage used throughout a request until flashed at the end of a request.
-	 */
-	struct function getScope(){
-		if ( !structKeyExists( request, "cbox_flash_temp_storage" ) ) {
-			request[ "cbox_flash_temp_storage" ] = structNew();
-		}
-
-		return request[ "cbox_flash_temp_storage" ];
-	}
-
-	/**
-	 * Get a list of all the objects in the temp flash scope
-	 */
-	string function getKeys(){
-		return structKeyList( getScope() );
-	}
-
-	/**
-	 * Clear the temp flash scope and remove all data
-	 * @return AbstractFlashScope
-	 */
-	function clear(){
-		structClear( getScope() );
-		return this;
-	}
-
-	/**
-	 * Keep all or a single flash temp variable alive for another relocation
-	 * @keys.hint The keys in the flash RAM that you want to mark to be kept until the next request
-	 *
-	 * @return AbstractFlashScope
-	 */
-	function keep( string keys = "" ){
-		statusMarks( arguments.keys, true );
-		saveFlash();
-		return this;
-	}
-
-	/**
-	 * Keep all or a single flash temp variable alive for another relocation
-	 * @keys.hint The keys in the flash RAM that you want to mark to be kept until the next request
-	 *
-	 * @return AbstractFlashScope
-	 */
-	function discard( string keys = "" ){
-		statusMarks( arguments.keys, false );
-		return this;
-	}
-
-	/**
-	 * Keep all or a single flash temp variable alive for another relocation
-	 * @name.hint The name of the value
-	 * @value.hint The value to store
-	 * @saveNow.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
-	 * @keep.hint Whether to mark the entry to be kept after saving to the flash storage.
-	 * @inflateToRC.hint Whether this flash variable is inflated to the Request Collection or not
-	 * @inflateToPRC.hint Whether this flash variable is inflated to the Private Request Collection or not
-	 * @autoPurge.hint Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
-	 *
-	 * @return AbstractFlashScope
-	 */
-	function put(
-		required string name,
-		required value,
-		boolean saveNow = false,
-		boolean keep = true,
-		boolean inflateToRC = "#variables.defaults.inflateToRC#",
-		boolean inflateToPRC = "#variables.defaults.inflateToPRC#",
-		boolean autoPurge = "#variables.defaults.autoPurge#"
-	){
-		var scope = getScope();
-		var entry = structNew();
-
-		// Create Flash Entry
-		entry.content = arguments.value;
-		entry.keep = arguments.keep;
-		entry.inflateToRC = arguments.inflateToRC;
-		entry.inflateToPRC = arguments.inflateToPRC;
-		entry.autoPurge = arguments.autoPurge;
-
-		// Save entry in temp storage
-		scope[ arguments.name ] = entry;
-
-		// Save to storage
-		if ( arguments.saveNow ) {
-			saveFlash();
-		}
-
-		return this;
-	}
-
-	/**
-	 * Put a map of name-value pairs into the flash scope
-	 * @map.hint The map of data to flash
-	 * @saveNow.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
-	 * @keep.hint Whether to mark the entry to be kept after saving to the flash storage.
-	 * @inflateToRC.hint Whether this flash variable is inflated to the Request Collection or not
-	 * @inflateToPRC.hint Whether this flash variable is inflated to the Private Request Collection or not
-	 * @autoPurge.hint Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
-	 *
-	 * @return AbstractFlashScope
-	 */
-	function putAll(
-		required struct map,
-		boolean saveNow = false,
-		boolean keep = true,
-		boolean inflateToRC = "#variables.defaults.inflateToRC#",
-		boolean inflateToPRC = "#variables.defaults.inflateToPRC#",
-		boolean autoPurge = "#variables.defaults.autoPurge#"
-	){
-		// Save all keys in map
-		for ( var key in arguments.map ) {
-			// Store value and key to pass
-			arguments.name = key;
-			arguments.value = arguments.map[ key ];
-			// place in put
-			put( argumentCollection = arguments );
-		}
-
-		// Save to Storage
-		if ( arguments.saveNow ) {
-			saveFlash();
-		}
-
-		return this;
-	}
-
-	/**
-	 * Remove an object from flash scope
-	 * @name.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
-	 * @saveNow.hint
-	 *
-	 * @return AbstractFlashScope
-	 */
-	function remove( required name, boolean saveNow = false ){
-		structDelete( getScope(), arguments.name );
-		if ( arguments.saveNow ) {
-			saveFlash();
-		}
-		return this;
-	}
-
-	/**
-	 * Check if an object exists in flash scope
-	 * @name.hint The name of the value
-	 */
-	boolean function exists( required name ){
-		return structKeyExists( getScope(), arguments.name );
-	}
-
-	/**
-	 * Get the size of the items in flash scope
-	 */
-	numeric function size(){
-		return structCount( getScope() );
-	}
-
-	/**
-	 * Check if the flash scope is empty or not
-	 */
-	boolean function isEmpty(){
-		return structIsEmpty( getScope() );
-	}
-
-	/**
-	 * Returns a struct of all the flash content values. If the value is null, we will return an empty value.
-	 */
-	struct function getAll(){
-		return getScope().map( function(key, value) {
-			return value.content;
-		} );
-	}
-
-	/**
-	 * Get an object from flash scope
-	 * @name.hint The name of the value
-	 * @defaultValue.hint The default value if the scope does not have the object"
-	 */
-	function get( required name, defaultValue ){
-		var scope = getScope();
-
-		if ( exists( arguments.name ) ) {
-			return scope[ arguments.name ].content;
-		}
-
-		if ( structKeyExists( arguments, "defaultValue" ) ) {
-			return arguments.defaultValue;
-		}
-
-		throw(
-			message = "#arguments.name# not found in flash scope. Valid keys are #getKeys()#.",
-			type = "#getMetadata( this ).name#.KeyNotFoundException"
-		);
-	}
-
-	/**
-	 * Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed
-	 * @include.hint MUTEX: A list of request collection keys you want to persist
-	 * @exclude.hint MUTEX: A list of request collection keys you want to exclude from persisting. If sent, then we inspect all rc keys.
-	 * @saveNow.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
-	 *
-	 * @return AbstractFlashScope
-	 */
-	function persistRC( include = "", exclude = "", boolean saveNow = false ){
-		var rc = getController()
-			.getRequestService()
-			.getContext()
-			.getCollection();
-		var somethingToSave = false;
-
-		// Cleanup
-		arguments.include = replace( arguments.include, " ", "", "all" );
-		arguments.exclude = replace( arguments.exclude, " ", "", "all" );
-
-		// Exclude?
-		if ( len( trim( arguments.exclude ) ) ) {
-			for ( var thisKey in rc ) {
-				// Only persist keys that are not Excluded.
-				if ( !listFindNoCase( arguments.exclude, thisKey ) ) {
-					put( thisKey, rc[ thisKey ] );
-					somethingToSave = true;
-				}
-			}
-		}
-
-		// Include?
-		if ( len( trim( arguments.include ) ) ) {
-			for ( var x = 1; x <= listLen( arguments.include ); x++ ) {
-				var thisKey = listGetAt( arguments.include, x );
-				// Check if key exists in RC
-				if ( structKeyExists( rc, thisKey ) ) {
-					put( thisKey, rc[ thisKey ] );
-					somethingToSave = true;
-				}
-			}
-		}
-
-		// Save Now?
-		if ( arguments.saveNow && somethingToSave ) {
-			saveFlash();
-		}
-
-		return this;
-	}
+        return this;
+    }
 
 
-	/**
-	 * Get a named property
-	 * @property.hint The property name
-	 */
-	function getProperty( required property ){
-		return variables.properties[ arguments.property ];
-	}
+    /**
+     *
+     * @return AbstractFlashScope
+     */
+    function inflateFlash(){
+        var event = getController().getRequestService().getContext();
+        var keep = false;
+        var flash = getFlash();
+        var scopeKeys = listToArray( structKeyList( flash ) );
+        var scopeKeysLen = arrayLen( scopeKeys );
 
-	/**
-	 * Set a named property
-	 * @property.hint The property name
-	 * @value.hint The value
-	 *
-	 * @return AbstractFlashScope
-	 */
-	function setProperty( required property, required value ){
-		variables.properties[ arguments.property ] = arguments.value;
-		return this;
-	}
+        // Inflate only kept flash variables, other ones are marked for discard.
+        for( var x = 1; x <= scopeKeysLen; x++ ){
+            // check if key exists and inflating
+            if( structKeyExists( flash, scopeKeys[ x ] ) && flash[ scopeKeys[ x ] ].keep ){
+                var thisKey = flash[ scopeKeys[ x ] ];
+                // Keep = true if autoPurge is false, because we need to keep it around.
+                if( !thisKey.autoPurge ){
+                    keep = true;
+                }else{
+                    keep = false;
+                }
+                // Save and mark for cleaning if content exists
+                if( structKeyExists( thisKey, "content" ) ){
+                    // Inflate into RC?
+                    if( thisKey.inflateToRC ){
+                        event.setValue( name = scopeKeys[ x ], value = thisKey.content );
+                    }
+                    // Inflate into PRC?
+                    if( thisKey.inflateToPRC ){
+                        event.setValue( name = scopeKeys[ x ], value = thisKey.content, private = true );
+                    }
+                    put(
+                        name = scopeKeys[ x ],
+                        value = thisKey.content,
+                        keep = keep,
+                        autoPurge = thisKey.autoPurge,
+                        inflateToRC = thisKey.inflateToRC,
+                        inflateToPRC = thisKey.inflateToPRC
+                    );
+                }
+            }
+        }
+
+        // Clear Flash Storage
+        clearFlash();
+
+        return this;
+    }
+
+    /**
+     * Get the flash temp request storage used throughout a request until flashed at the end of a request.
+     */
+    struct function getScope(){
+        if( !structKeyExists( request, "cbox_flash_temp_storage" ) ){
+            request[ "cbox_flash_temp_storage" ] = structNew();
+        }
+
+        return request[ "cbox_flash_temp_storage" ];
+    }
+
+    /**
+     * Get a list of all the objects in the temp flash scope
+     */
+    string function getKeys(){
+        return structKeyList( getScope() );
+    }
+
+    /**
+     * Clear the temp flash scope and remove all data
+     * @return AbstractFlashScope
+     */
+    function clear(){
+        structClear( getScope() );
+        return this;
+    }
+
+    /**
+     * Keep all or a single flash temp variable alive for another relocation
+     * @keys.hint The keys in the flash RAM that you want to mark to be kept until the next request
+     *
+     * @return AbstractFlashScope
+     */
+    function keep( string keys = "" ){
+        statusMarks( arguments.keys, true );
+        saveFlash();
+        return this;
+    }
+
+    /**
+     * Keep all or a single flash temp variable alive for another relocation
+     * @keys.hint The keys in the flash RAM that you want to mark to be kept until the next request
+     *
+     * @return AbstractFlashScope
+     */
+    function discard( string keys = "" ){
+        statusMarks( arguments.keys, false );
+        return this;
+    }
+
+    /**
+     * Keep all or a single flash temp variable alive for another relocation
+     * @name.hint The name of the value
+     * @value.hint The value to store
+     * @saveNow.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
+     * @keep.hint Whether to mark the entry to be kept after saving to the flash storage.
+     * @inflateToRC.hint Whether this flash variable is inflated to the Request Collection or not
+     * @inflateToPRC.hint Whether this flash variable is inflated to the Private Request Collection or not
+     * @autoPurge.hint Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
+     *
+     * @return AbstractFlashScope
+     */
+    function put(
+        required string name,
+        required value,
+        boolean saveNow = false,
+        boolean keep = true,
+        boolean inflateToRC = "#variables.defaults.inflateToRC#",
+        boolean inflateToPRC = "#variables.defaults.inflateToPRC#",
+        boolean autoPurge = "#variables.defaults.autoPurge#"
+    ){
+        var scope = getScope();
+        var entry = structNew();
+
+        // Create Flash Entry
+        entry.content = arguments.value;
+        entry.keep = arguments.keep;
+        entry.inflateToRC = arguments.inflateToRC;
+        entry.inflateToPRC = arguments.inflateToPRC;
+        entry.autoPurge = arguments.autoPurge;
+
+        // Save entry in temp storage
+        scope[ arguments.name ] = entry;
+
+        // Save to storage
+        if( arguments.saveNow ){
+            saveFlash();
+        }
+
+        return this;
+    }
+
+    /**
+     * Put a map of name-value pairs into the flash scope
+     * @map.hint The map of data to flash
+     * @saveNow.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
+     * @keep.hint Whether to mark the entry to be kept after saving to the flash storage.
+     * @inflateToRC.hint Whether this flash variable is inflated to the Request Collection or not
+     * @inflateToPRC.hint Whether this flash variable is inflated to the Private Request Collection or not
+     * @autoPurge.hint Flash memory auto purges variables for you. You can control this purging by saying false to autoPurge
+     *
+     * @return AbstractFlashScope
+     */
+    function putAll(
+        required struct map,
+        boolean saveNow = false,
+        boolean keep = true,
+        boolean inflateToRC = "#variables.defaults.inflateToRC#",
+        boolean inflateToPRC = "#variables.defaults.inflateToPRC#",
+        boolean autoPurge = "#variables.defaults.autoPurge#"
+    ){
+        // Save all keys in map
+        for( var key in arguments.map ){
+            // Store value and key to pass
+            arguments.name = key;
+            arguments.value = arguments.map[ key ];
+            // place in put
+            put( argumentCollection = arguments );
+        }
+
+        // Save to Storage
+        if( arguments.saveNow ){
+            saveFlash();
+        }
+
+        return this;
+    }
+
+    /**
+     * Remove an object from flash scope
+     * @name.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
+     * @saveNow.hint
+     *
+     * @return AbstractFlashScope
+     */
+    function remove( required name, boolean saveNow = false ){
+        structDelete( getScope(), arguments.name );
+        if( arguments.saveNow ){
+            saveFlash();
+        }
+        return this;
+    }
+
+    /**
+     * Check if an object exists in flash scope
+     * @name.hint The name of the value
+     */
+    boolean function exists( required name ){
+        return structKeyExists( getScope(), arguments.name );
+    }
+
+    /**
+     * Get the size of the items in flash scope
+     */
+    numeric function size(){
+        return structCount( getScope() );
+    }
+
+    /**
+     * Check if the flash scope is empty or not
+     */
+    boolean function isEmpty(){
+        return structIsEmpty( getScope() );
+    }
+
+    /**
+     * Returns a struct of all the flash content values. If the value is null, we will return an empty value.
+     */
+    struct function getAll(){
+        return getScope().map( function(key, value){
+            return value.content;
+        } );
+    }
+
+    /**
+     * Get an object from flash scope
+     * @name.hint The name of the value
+     * @defaultValue.hint The default value if the scope does not have the object"
+     */
+    function get( required name, defaultValue ){
+        var scope = getScope();
+
+        if( exists( arguments.name ) ){
+            return scope[ arguments.name ].content;
+        }
+
+        if( structKeyExists( arguments, "defaultValue" ) ){
+            return arguments.defaultValue;
+        }
+
+        throw(
+            message = "#arguments.name# not found in flash scope. Valid keys are #getKeys()#.",
+            type = "#getMetadata( this ).name#.KeyNotFoundException"
+        );
+    }
+
+    /**
+     * Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed
+     * @include.hint MUTEX: A list of request collection keys you want to persist
+     * @exclude.hint MUTEX: A list of request collection keys you want to exclude from persisting. If sent, then we inspect all rc keys.
+     * @saveNow.hint Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation
+     *
+     * @return AbstractFlashScope
+     */
+    function persistRC( include = "", exclude = "", boolean saveNow = false ){
+        var rc = getController()
+            .getRequestService()
+            .getContext()
+            .getCollection();
+        var somethingToSave = false;
+
+        // Cleanup
+        arguments.include = replace( arguments.include, " ", "", "all" );
+        arguments.exclude = replace( arguments.exclude, " ", "", "all" );
+
+        // Exclude?
+        if( len( trim( arguments.exclude ) ) ){
+            for( var thisKey in rc ){
+                // Only persist keys that are not Excluded.
+                if( !listFindNoCase( arguments.exclude, thisKey ) ){
+                    put( thisKey, rc[ thisKey ] );
+                    somethingToSave = true;
+                }
+            }
+        }
+
+        // Include?
+        if( len( trim( arguments.include ) ) ){
+            for( var x = 1; x <= listLen( arguments.include ); x++ ){
+                var thisKey = listGetAt( arguments.include, x );
+                // Check if key exists in RC
+                if( structKeyExists( rc, thisKey ) ){
+                    put( thisKey, rc[ thisKey ] );
+                    somethingToSave = true;
+                }
+            }
+        }
+
+        // Save Now?
+        if( arguments.saveNow && somethingToSave ){
+            saveFlash();
+        }
+
+        return this;
+    }
 
 
-	/**
-	 * Check a named property
-	 * @property.hint The property name
-	 */
-	function propertyExists( required property ){
-		return structKeyExists( variables.properties, arguments.property );
-	}
+    /**
+     * Get a named property
+     * @property.hint The property name
+     */
+    function getProperty( required property ){
+        return variables.properties[ arguments.property ];
+    }
 
-	/**
-	 * Change the status marks of the temp scope entries
-	 */
-	private function statusMarks( string keys = "", boolean keep = true ){
-		var scope = getScope();
-		var targetKeys = structKeyArray( scope );
+    /**
+     * Set a named property
+     * @property.hint The property name
+     * @value.hint The value
+     *
+     * @return AbstractFlashScope
+     */
+    function setProperty( required property, required value ){
+        variables.properties[ arguments.property ] = arguments.value;
+        return this;
+    }
 
-		// keys passed in?
-		if ( len( trim( arguments.keys ) ) ) {
-			targetKeys = listToArray( keys );
-		}
 
-		// Keep them if they exist
-		for ( var thisKey in targetkeys ) {
-			if ( structKeyExists( scope, thisKey ) ) {
-				scope[ thisKey ].keep = arguments.keep;
-			}
-		}
+    /**
+     * Check a named property
+     * @property.hint The property name
+     */
+    function propertyExists( required property ){
+        return structKeyExists( variables.properties, arguments.property );
+    }
 
-		return this;
-	}
+    /**
+     * Change the status marks of the temp scope entries
+     */
+    private function statusMarks( string keys = "", boolean keep = true ){
+        var scope = getScope();
+        var targetKeys = structKeyArray( scope );
 
-	/**
-	 * Get utility object
-	 */
-	private function getUtil(){
-		return controller.getUtil();
-	}
+        // keys passed in?
+        if( len( trim( arguments.keys ) ) ){
+            targetKeys = listToArray( keys );
+        }
+
+        // Keep them if they exist
+        for( var thisKey in targetkeys ){
+            if( structKeyExists( scope, thisKey ) ){
+                scope[ thisKey ].keep = arguments.keep;
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Get utility object
+     */
+    private function getUtil(){
+        return controller.getUtil();
+    }
 
 }

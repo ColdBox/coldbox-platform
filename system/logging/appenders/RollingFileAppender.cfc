@@ -15,69 +15,69 @@
  **/
 component accessors="true" extends="coldbox.system.logging.appenders.FileAppender" {
 
-	/**
-	 * Constructor
-	 *
-	 * @name The unique name for this appender.
-	 * @properties A map of configuration properties for the appender"
-	 * @layout The layout class to use in this appender for custom message rendering.
-	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
-	 * @levelMax The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
-	 */
-	function init(
-		required name,
-		struct properties = {},
-		layout = "",
-		levelMin = 0,
-		levelMax = 4
-	){
-		super.init( argumentCollection = arguments );
+    /**
+     * Constructor
+     *
+     * @name The unique name for this appender.
+     * @properties A map of configuration properties for the appender"
+     * @layout The layout class to use in this appender for custom message rendering.
+     * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
+     * @levelMax The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN
+     */
+    function init(
+        required name,
+        struct properties = {},
+        layout = "",
+        levelMin = 0,
+        levelMax = 4
+    ){
+        super.init( argumentCollection = arguments );
 
-		if ( NOT propertyExists( "fileMaxSize" ) OR NOT isNumeric( getProperty( "fileMaxSize" ) ) ) {
-			setProperty( "fileMaxSize", "2000" );
-		}
-		if ( NOT propertyExists( "fileMaxArchives" ) OR NOT isNumeric( getProperty( "fileMaxArchives" ) ) ) {
-			setProperty( "fileMaxArchives", "2" );
-		}
+        if( NOT propertyExists( "fileMaxSize" ) OR NOT isNumeric( getProperty( "fileMaxSize" ) ) ){
+            setProperty( "fileMaxSize", "2000" );
+        }
+        if( NOT propertyExists( "fileMaxArchives" ) OR NOT isNumeric( getProperty( "fileMaxArchives" ) ) ){
+            setProperty( "fileMaxArchives", "2" );
+        }
 
-		variables.fileRotator = new coldbox.system.logging.util.FileRotator();
+        variables.fileRotator = new coldbox.system.logging.util.FileRotator();
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Write an entry into the appender. You must implement this method yourself.
-	 *
-	 * @logEvent The logging event to log
-	 */
-	function logMessage( required coldbox.system.logging.LogEvent logEvent ){
-		// Log the message in the super class
-		super.logMessage( arguments.logEvent );
+    /**
+     * Write an entry into the appender. You must implement this method yourself.
+     *
+     * @logEvent The logging event to log
+     */
+    function logMessage( required coldbox.system.logging.LogEvent logEvent ){
+        // Log the message in the super class
+        super.logMessage( arguments.logEvent );
 
-		// Rotate
-		try{
-			// Verify if listener has started.
-			var isActive = variables.lock( "readonly", function() {
-				return variables.logListener.active;
-			} );
+        // Rotate
+        try{
+            // Verify if listener has started.
+            var isActive = variables.lock( "readonly", function(){
+                return variables.logListener.active;
+            } );
 
-			// Only process rotation if the log listener is disabled
-			if ( !isActive ) {
-				// Lock so we can do rotation
-				variables.lock(
-					body = function() {
-						variables.fileRotator.checkRotation( this );
-					}
-				);
-			}
-		} catch ( Any e ) {
-			$log(
-				"ERROR",
-				"Could not zip and rotate log files in #getName()#. #e.message# #e.detail#"
-			);
-		}
+            // Only process rotation if the log listener is disabled
+            if( !isActive ){
+                // Lock so we can do rotation
+                variables.lock(
+                    body = function(){
+                        variables.fileRotator.checkRotation( this );
+                    }
+                );
+            }
+        }catch( Any e ){
+            $log(
+                "ERROR",
+                "Could not zip and rotate log files in #getName()#. #e.message# #e.detail#"
+            );
+        }
 
-		return this;
-	}
+        return this;
+    }
 
 }

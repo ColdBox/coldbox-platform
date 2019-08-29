@@ -6,23 +6,23 @@
  */
 component accessors="true" {
 
-	/**
-	 * ColdBox Controller
-	 */
-	property name="controller";
+    /**
+     * ColdBox Controller
+     */
+    property name="controller";
 
-	// ************************ INTERNAL EVENTS ************************//
+    // ************************ INTERNAL EVENTS ************************//
 
-	/**
-	 * Once configuration file loads
-	 */
-	function onConfigurationLoad(){
-	}
+    /**
+     * Once configuration file loads
+     */
+    function onConfigurationLoad(){
+    }
 
-	/**
-	 * On framework shutdown
-	 */
-	function onShutdown(){
-	}
+    /**
+     * On framework shutdown
+     */
+    function onShutdown(){
+    }
 
 }

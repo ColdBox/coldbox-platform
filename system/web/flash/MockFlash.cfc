@@ -7,52 +7,52 @@
  */
 component extends="coldbox.system.web.flash.AbstractFlashScope" accessors="true" {
 
-	// The flash struct
-	property name="mockFlash";
+    // The flash struct
+    property name="mockFlash";
 
-	/**
-	 * Constructor
-	 * @controller.hint ColdBox Controller
-	 * @defaults.hint Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
-	 */
-	function init( required controller, required struct defaults = {} ){
-		super.init( argumentCollection = arguments );
+    /**
+     * Constructor
+     * @controller.hint ColdBox Controller
+     * @defaults.hint Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
+     */
+    function init( required controller, required struct defaults = {} ){
+        super.init( argumentCollection = arguments );
 
-		variables.mockFlash = {};
+        variables.mockFlash = {};
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Save the flash storage in preparing to go to the next request
-	 * @return MockFlash
-	 */
-	function saveFlash(){
-		variables.mockFlash = getScope();
-		return this;
-	}
+    /**
+     * Save the flash storage in preparing to go to the next request
+     * @return MockFlash
+     */
+    function saveFlash(){
+        variables.mockFlash = getScope();
+        return this;
+    }
 
-	/**
-	 * Checks if the flash storage exists and IT HAS DATA to inflate.
-	 */
-	boolean function flashExists(){
-		return ( structIsEmpty( variables.mockFlash ) ? false : true );
-	}
+    /**
+     * Checks if the flash storage exists and IT HAS DATA to inflate.
+     */
+    boolean function flashExists(){
+        return ( structIsEmpty( variables.mockFlash ) ? false : true );
+    }
 
-	/**
-	 * Get the flash storage structure to inflate it.
-	 */
-	struct function getFlash(){
-		return flashExists() ? variables.mockFlash : {};
-	}
+    /**
+     * Get the flash storage structure to inflate it.
+     */
+    struct function getFlash(){
+        return flashExists() ? variables.mockFlash : {};
+    }
 
-	/**
-	 * Remove the entire flash storage
-	 * @return MockFlash
-	 */
-	function removeFlash(){
-		structClear( variables.mockFlash );
-		return this;
-	}
+    /**
+     * Remove the entire flash storage
+     * @return MockFlash
+     */
+    function removeFlash(){
+        structClear( variables.mockFlash );
+        return this;
+    }
 
 }

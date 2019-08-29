@@ -6,9 +6,9 @@
  **/
 interface {
 
-	/**
-	 * Get the provided object
-	 */
-	public any function get();
+    /**
+     * Get the provided object
+     */
+    public any function get();
 
 }

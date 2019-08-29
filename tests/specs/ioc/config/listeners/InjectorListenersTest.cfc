@@ -1,19 +1,19 @@
 <cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
-	function setup(){
-		// init with defaults
-		injector = createMock( "coldbox.system.ioc.Injector" );
+    <cfscript>
+    function setup(){
+        // init with defaults
+        injector = createMock( "coldbox.system.ioc.Injector" );
 
-		// init factory
-		injector.init( binder = "coldbox.tests.specs.ioc.config.listeners.Config" );
-	}
+        // init factory
+        injector.init( binder = "coldbox.tests.specs.ioc.config.listeners.Config" );
+    }
 
-	function testRegisterListeners(){
-		eventContainers = injector.getEventManager().getEventPoolContainer();
+    function testRegisterListeners(){
+        eventContainers = injector.getEventManager().getEventPoolContainer();
 
-		assertEquals( true, structKeyExists( eventContainers, "afterInjectorConfiguration" ) );
-		assertEquals( true, structKeyExists( eventContainers, "afterInstanceCreation" ) );
-		assertEquals( true, structKeyExists( eventContainers, "beforeInstanceCreation" ) );
-	}
-	</cfscript>
+        assertEquals( true, structKeyExists( eventContainers, "afterInjectorConfiguration" ) );
+        assertEquals( true, structKeyExists( eventContainers, "afterInstanceCreation" ) );
+        assertEquals( true, structKeyExists( eventContainers, "beforeInstanceCreation" ) );
+    }
+    </cfscript>
 </cfcomponent>

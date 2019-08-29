@@ -13,31 +13,31 @@
  */
 component extends="coldbox.system.cache.policies.AbstractEvictionPolicy" {
 
-	/**
-	 * This is the constructor
-	 * @cacheProvider The associated cache provider of type: coldbox.system.cache.providers.ICacheProvider" doc_generic="coldbox.system.cache.providers.ICacheProvider
-	 */
-	LIFO function init( required any cacheProvider ){
-		super.init( arguments.cacheProvider );
+    /**
+     * This is the constructor
+     * @cacheProvider The associated cache provider of type: coldbox.system.cache.providers.ICacheProvider" doc_generic="coldbox.system.cache.providers.ICacheProvider
+     */
+    LIFO function init( required any cacheProvider ){
+        super.init( arguments.cacheProvider );
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Execute the policy
-	 */
-	void function execute(){
-		// Get searchable index
-		try{
-			var index = getAssociatedCache()
-				.getObjectStore()
-				.getIndexer()
-				.getSortedKeys( "Created", "numeric", "desc" );
-			// process evictions
-			processEvictions( index );
-		} catch ( Any e ) {
-			getLogger().error( "Error sorting via store indexer #e.message# #e.detail# #e.stackTrace#." );
-		}
-	}
+    /**
+     * Execute the policy
+     */
+    void function execute(){
+        // Get searchable index
+        try{
+            var index = getAssociatedCache()
+                .getObjectStore()
+                .getIndexer()
+                .getSortedKeys( "Created", "numeric", "desc" );
+            // process evictions
+            processEvictions( index );
+        }catch( Any e ){
+            getLogger().error( "Error sorting via store indexer #e.message# #e.detail# #e.stackTrace#." );
+        }
+    }
 
 }

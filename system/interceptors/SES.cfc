@@ -16,25 +16,25 @@
  */
 component extends="coldbox.system.Interceptor" accessors="true" {
 
-	/**
-	 * Constructor
-	 */
-	function configure(){
-		variables.routingService = variables.controller.getRoutingService();
-	}
+    /**
+     * Constructor
+     */
+    function configure(){
+        variables.routingService = variables.controller.getRoutingService();
+    }
 
-	/**
-	 * We need at least one interception point to listen to for compatibility mode.
-	 */
-	function afterConfigurationLoad(){
-		// Nothing here
-	}
+    /**
+     * We need at least one interception point to listen to for compatibility mode.
+     */
+    function afterConfigurationLoad(){
+        // Nothing here
+    }
 
-	/**
-	 * Passthrough for legacy support. This will be removed in the next version.
-	 */
-	function onMissingMethod( missingMethodName, missingMethodArguments = {} ){
-		return invoke( variables.routingService, arguments.missingMethodName, arguments.missingMethodArguments );
-	}
+    /**
+     * Passthrough for legacy support. This will be removed in the next version.
+     */
+    function onMissingMethod( missingMethodName, missingMethodArguments = {} ){
+        return invoke( variables.routingService, arguments.missingMethodName, arguments.missingMethodArguments );
+    }
 
 }

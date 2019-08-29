@@ -6,39 +6,39 @@
  */
 component extends="coldbox.system.web.Controller" accessors="true" serializable="false" {
 
-	// Original Controller
-	property name="originalController";
+    // Original Controller
+    property name="originalController";
 
-	/**
-	 * Constructor
-	 */
-	ControllerDecorator function init( required controller ){
-		// Store Original Controller
-		variables.originalController = arguments.controller;
+    /**
+     * Constructor
+     */
+    ControllerDecorator function init( required controller ){
+        // Store Original Controller
+        variables.originalController = arguments.controller;
 
-		// Store Original Controller Memento of instance data and services
-		var memento = arguments.controller.getMemento();
-		for ( var thisKey in memento.variables ) {
-			// Only load non-udfs
-			if ( !isCustomFunction( memento.variables[ thisKey ] ) ) {
-				variables[ thisKey ] = memento.variables[ thisKey ];
-			}
-		}
+        // Store Original Controller Memento of instance data and services
+        var memento = arguments.controller.getMemento();
+        for( var thisKey in memento.variables ){
+            // Only load non-udfs
+            if( !isCustomFunction( memento.variables[ thisKey ] ) ){
+                variables[ thisKey ] = memento.variables[ thisKey ];
+            }
+        }
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Override to provide a pseudo-constructor for your decorator
-	 */
-	function configure(){
-	}
+    /**
+     * Override to provide a pseudo-constructor for your decorator
+     */
+    function configure(){
+    }
 
-	/**
-	 * Get original controller
-	 */
-	function getController(){
-		return variables.originalController;
-	}
+    /**
+     * Get original controller
+     */
+    function getController(){
+        return variables.originalController;
+    }
 
 }

@@ -6,34 +6,34 @@
  */
 component extends="coldbox.system.web.context.RequestContext" accessors="true" serializable="false" {
 
-	// The original request context
-	property name="requestContext";
+    // The original request context
+    property name="requestContext";
 
-	/**
-	 * Constructor
-	 */
-	RequestContextDecorator function init( required oContext, required controller ){
-		// Set the memento state
-		setMemento( arguments.oContext.getMemento() );
-		// Set Controller
-		instance.controller = arguments.controller;
-		// Composite the original context
-		variables.requestContext = arguments.oContext;
+    /**
+     * Constructor
+     */
+    RequestContextDecorator function init( required oContext, required controller ){
+        // Set the memento state
+        setMemento( arguments.oContext.getMemento() );
+        // Set Controller
+        instance.controller = arguments.controller;
+        // Composite the original context
+        variables.requestContext = arguments.oContext;
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Override to provide a pseudo-constructor for your decorator
-	 */
-	function configure(){
-	}
+    /**
+     * Override to provide a pseudo-constructor for your decorator
+     */
+    function configure(){
+    }
 
-	/**
-	 * Get original controller
-	 */
-	function getController(){
-		return instance.controller;
-	}
+    /**
+     * Get original controller
+     */
+    function getController(){
+        return instance.controller;
+    }
 
 }

@@ -6,11 +6,11 @@
  */
 interface {
 
-	/**
-	 * Invoke an AOP method invocation
-	 * @invocation The invocation object
-	 * @invocation.doc_generic coldbox.system.aop.methodInvocation
-	 */
-	function invokeMethod( required invocation ) output="false";
+    /**
+     * Invoke an AOP method invocation
+     * @invocation The invocation object
+     * @invocation.doc_generic coldbox.system.aop.methodInvocation
+     */
+    function invokeMethod( required invocation ) output="false";
 
 }

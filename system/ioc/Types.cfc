@@ -6,14 +6,14 @@
  **/
 component {
 
-	// DECLARED WIREBOX INSTANTIATION TYPES
-	this.CFC = "cfc";
-	this.JAVA = "java";
-	this.WEBSERVICE = "webservice";
-	this.RSS = "rss";
-	this.DSL = "dsl";
-	this.CONSTANT = "constant";
-	this.FACTORY = "factory";
-	this.PROVIDER = "provider";
+    // DECLARED WIREBOX INSTANTIATION TYPES
+    this.CFC = "cfc";
+    this.JAVA = "java";
+    this.WEBSERVICE = "webservice";
+    this.RSS = "rss";
+    this.DSL = "dsl";
+    this.CONSTANT = "constant";
+    this.FACTORY = "factory";
+    this.PROVIDER = "provider";
 
 }

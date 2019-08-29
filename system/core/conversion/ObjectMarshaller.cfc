@@ -6,104 +6,104 @@
  */
 component accessors="true" {
 
-	/**
-	 * Constructor
-	 */
-	function init(){
-		return this;
-	}
+    /**
+     * Constructor
+     */
+    function init(){
+        return this;
+    }
 
-	/**
-	 * Serialize an object and optionally save it into a file.
-	 *
-	 * @target The complex object, such as a query or CFC, that will be serialized.
-	 * @filePath The path of the file in which to save the serialized data.
-	 *
-	 * @return Binary data
-	 */
-	function serializeObject( required any target, string filePath ){
-		var binaryData = serializeWithObjectSave( arguments.target );
+    /**
+     * Serialize an object and optionally save it into a file.
+     *
+     * @target The complex object, such as a query or CFC, that will be serialized.
+     * @filePath The path of the file in which to save the serialized data.
+     *
+     * @return Binary data
+     */
+    function serializeObject( required any target, string filePath ){
+        var binaryData = serializeWithObjectSave( arguments.target );
 
-		// Save to File?
-		if ( !isNull( arguments.filePath ) ) {
-			fileWrite( arguments.filePath, binaryData );
-		}
+        // Save to File?
+        if( !isNull( arguments.filePath ) ){
+            fileWrite( arguments.filePath, binaryData );
+        }
 
-		return binaryData;
-	}
+        return binaryData;
+    }
 
 
-	/**
-	 * Deserialize an object using a binary object or a filepath
-	 *
-	 * @target The binary object to inflate
-	 * @filePath The location of the file that has the binary object to inflate
-	 *
-	 * @return Loaded Object
-	 */
-	function deserializeObject( any binaryObject, string filePath ){
-		// Read From File?
-		if ( !isNull( arguments.filePath ) ) {
-			arguments.binaryObject = fileRead( arguments.filePath );
-		}
+    /**
+     * Deserialize an object using a binary object or a filepath
+     *
+     * @target The binary object to inflate
+     * @filePath The location of the file that has the binary object to inflate
+     *
+     * @return Loaded Object
+     */
+    function deserializeObject( any binaryObject, string filePath ){
+        // Read From File?
+        if( !isNull( arguments.filePath ) ){
+            arguments.binaryObject = fileRead( arguments.filePath );
+        }
 
-		return deserializeWithObjectLoad( arguments.binaryObject );
-	}
+        return deserializeWithObjectLoad( arguments.binaryObject );
+    }
 
-	/**
-	 * Serialize via objectSave()
-	 * @target The complex object, such as a query or CFC, that will be serialized.
-	 */
-	function serializeWithObjectSave( any target ){
-		return toBase64( objectSave( arguments.target ) );
-	}
+    /**
+     * Serialize via objectSave()
+     * @target The complex object, such as a query or CFC, that will be serialized.
+     */
+    function serializeWithObjectSave( any target ){
+        return toBase64( objectSave( arguments.target ) );
+    }
 
-	/**
-	 * Deserialize via ObjectLoad
-	 *
-	 * @binaryObject The binary object to inflate
-	 */
-	function deserializeWithObjectLoad( any binaryObject ){
-		// check if string
-		if ( not isBinary( arguments.binaryObject ) ) {
-			arguments.binaryObject = toBinary( arguments.binaryObject );
-		}
+    /**
+     * Deserialize via ObjectLoad
+     *
+     * @binaryObject The binary object to inflate
+     */
+    function deserializeWithObjectLoad( any binaryObject ){
+        // check if string
+        if( not isBinary( arguments.binaryObject ) ){
+            arguments.binaryObject = toBinary( arguments.binaryObject );
+        }
 
-		return objectLoad( arguments.binaryObject );
-	}
+        return objectLoad( arguments.binaryObject );
+    }
 
-	/**
-	 * Serialize via generic Java
-	 *
-	 * @target The binary object to inflate
-	 */
-	function serializeGeneric( any target ){
-		var byteArrayOutput = createObject( "java", "java.io.ByteArrayOutputStream" ).init();
-		var objectOutput = createObject( "java", "java.io.ObjectOutputStream" ).init( byteArrayOutput );
+    /**
+     * Serialize via generic Java
+     *
+     * @target The binary object to inflate
+     */
+    function serializeGeneric( any target ){
+        var byteArrayOutput = createObject( "java", "java.io.ByteArrayOutputStream" ).init();
+        var objectOutput = createObject( "java", "java.io.ObjectOutputStream" ).init( byteArrayOutput );
 
-		// Serialize the incoming object.
-		objectOutput.writeObject( arguments.target );
-		objectOutput.close();
+        // Serialize the incoming object.
+        objectOutput.writeObject( arguments.target );
+        objectOutput.close();
 
-		return toBase64( byteArrayOutput.toByteArray() );
-	}
+        return toBase64( byteArrayOutput.toByteArray() );
+    }
 
-	/**
-	 * Serialize via generic Java
-	 *
-	 * @target The binary object to inflate
-	 */
-	function deserializeGeneric( any binaryObject ){
-		var byteArrayInput = createObject( "java", "java.io.ByteArrayInputStream" ).init(
-			toBinary( arguments.binaryObject )
-		);
-		var ObjectInput = createObject( "java", "java.io.ObjectInputStream" ).init( byteArrayInput );
-		var obj = "";
+    /**
+     * Serialize via generic Java
+     *
+     * @target The binary object to inflate
+     */
+    function deserializeGeneric( any binaryObject ){
+        var byteArrayInput = createObject( "java", "java.io.ByteArrayInputStream" ).init(
+            toBinary( arguments.binaryObject )
+        );
+        var ObjectInput = createObject( "java", "java.io.ObjectInputStream" ).init( byteArrayInput );
+        var obj = "";
 
-		obj = objectInput.readObject();
-		objectInput.close();
+        obj = objectInput.readObject();
+        objectInput.close();
 
-		return obj;
-	}
+        return obj;
+    }
 
 }
