@@ -46,8 +46,8 @@
         "testbox":"testbox/"
     },
     "scripts":{
-        "format": "cfformat system/aop/aspects/*.cfc,system/aop/Matcher.cfc,system/aop/MethodInterceptor.cfc,system/aop/MethodInvocation.cfc,system/aop/MixerUtil.cfc,system/cache/**/*.cfc,system/core/**/*.cfc,system/includes/**/*.cfc,system/interceptors/**/*.cfc,system/ioc/**/*.cfc,system/logging/**/*.cfc,system/modules/**/*.cfc,system/remote/**/*.cfc,system/testing/**/*.cfc,system/web/**/*.cfc,system/*.cfc,tests/specs/**/*.cfc --overwrite",
-        "format:watch": "cfformat system/aop/aspects/*.cfc,system/aop/Matcher.cfc,system/aop/MethodInterceptor.cfc,system/aop/MethodInvocation.cfc,system/aop/MixerUtil.cfc,system/cache/**/*.cfc,system/core/**/*.cfc,system/includes/**/*.cfc,system/interceptors/**/*.cfc,system/ioc/**/*.cfc,system/logging/**/*.cfc,system/modules/**/*.cfc,system/remote/**/*.cfc,system/testing/**/*.cfc,system/web/**/*.cfc,system/*.cfc,tests/specs/**/*.cfc --watch",
-        "format:check": "cfformat system/aop/aspects/*.cfc,system/aop/Matcher.cfc,system/aop/MethodInterceptor.cfc,system/aop/MethodInvocation.cfc,system/aop/MixerUtil.cfc,system/cache/**/*.cfc,system/core/**/*.cfc,system/includes/**/*.cfc,system/interceptors/**/*.cfc,system/ioc/**/*.cfc,system/logging/**/*.cfc,system/modules/**/*.cfc,system/remote/**/*.cfc,system/testing/**/*.cfc,system/web/**/*.cfc,system/*.cfc,tests/specs/**/*.cfc --check"
+        "format": "cfformat system/**/*.cfc,tests/specs/**/*.cfc --overwrite",
+        "format:watch": "cfformat system/**/*.cfc,tests/specs/**/*.cfc --watch",
+        "format:check": "cfformat system/**/*.cfc,tests/specs/**/*.cfc --check"
     }
 }

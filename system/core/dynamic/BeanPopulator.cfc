@@ -363,8 +363,7 @@ component {
 							} else{
 								return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
 							}
-						}
-						;
+						};
 
 						// If property isn't null, try to compose the relationship
 						if (

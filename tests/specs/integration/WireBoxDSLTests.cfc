@@ -1,7 +1,7 @@
 /*******************************************************************************
  *	Test for custom WireBox DSLs
  *******************************************************************************/
-component 
+component
 	extends="coldbox.system.testing.BaseTestCase"
 	appMapping="/cbTestHarness"
 {

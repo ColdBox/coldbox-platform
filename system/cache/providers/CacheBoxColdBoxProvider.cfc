@@ -6,7 +6,7 @@
  *
  * This CacheBox provider communicates with the built in CacheBox caches
  */
-component 
+component
 	accessors="true"
 	serializable="false"
 	implements="coldbox.system.cache.providers.IColdBoxProvider"

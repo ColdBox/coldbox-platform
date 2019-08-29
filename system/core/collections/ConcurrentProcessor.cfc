@@ -40,8 +40,7 @@ component accessors="true" {
 		variables.util = new coldbox.system.core.util.Util();
 		variables.uuidHelper = createObject( "java", "java.util.UUID" );
 		variables.consumer = function() {
-		}
-		;
+		};
 		variables.errorLogs = [];
 
 		return this;

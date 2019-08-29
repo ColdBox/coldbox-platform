@@ -16,7 +16,7 @@
  * - eventManager : The linkage to the event manager
  * - cacheID : The unique identity code of this CFC
  */
-component 
+component
 	accessors="true"
 	serializable="false"
 	implements="coldbox.system.cache.providers.ICacheProvider"

@@ -103,8 +103,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
  				throwOnTimeout=true {
 				return arguments.body();
 			}
-		}
-		;
+		};
 
 		return this;
 	}

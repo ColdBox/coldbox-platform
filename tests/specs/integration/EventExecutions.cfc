@@ -14,7 +14,7 @@
  *	* eventArguments : The struct of args to pass to the event
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
-component 
+component
 	extends="coldbox.system.testing.BaseTestCase"
 	appMapping="/cbTestHarness"
 {

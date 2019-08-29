@@ -6,7 +6,7 @@
  *
  * A mock cache provider that keeps cache data in a simple map for testing and assertions
  **/
-component 
+component
 	accessors=true
 	serializable=false
 	implements="coldbox.system.cache.providers.IColdBoxProvider"

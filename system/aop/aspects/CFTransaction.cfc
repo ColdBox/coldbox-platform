@@ -4,7 +4,7 @@
  * ---
  * A simple ColdFusion transaction Aspect for WireBox
  */
-component 
+component
 	implements="coldbox.system.aop.MethodInterceptor"
 	classMatcher="any"
 	accessors="true"

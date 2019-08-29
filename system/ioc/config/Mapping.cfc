@@ -958,8 +958,7 @@ I model a WireBox object mapping in all of its glory and splendour
 						return injector
 							.getUtil()
 							.getInheritedMetaData( instance.path, binder.getStopRecursions() );
-					}
-					;
+					};
 
 					// Are we caching metadata?
 					if ( len( binder.getMetadataCache() ) ) {
