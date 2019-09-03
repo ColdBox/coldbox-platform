@@ -39,6 +39,11 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 				setup();
 			});
 
+			it( "can detect invalid module events", function(){
+				var event = execute( route="/refs:main/index", renderResults=true );
+				expect(	event.getValue( "cbox_rendered_content" ) ).toInclude( "Invalid Page" );
+			} );
+
 			it( "can load models in a namespace", function(){
 				var event = execute( event="test1:test.namespaceModel", renderResults=true );
 				expect(	event.getValue( "cbox_rendered_content" ) ).toBe( "Hola Brother!" );
