@@ -190,26 +190,26 @@ A reporting template about exceptions in your ColdBox Apps
 			 </tr>
 			 <tr>
 			   <td align="right" class="info"> Host &amp; Server: </td>
-			   <td >#encodeForHTML( cgi.http_host )# #encodeForHTML( local.thisInetHost )#</td>
+			   <td >#encodeForHTML( CGI.HTTP_HOST )# #encodeForHTML( local.thisInetHost )#</td>
 			 </tr>
 			 <tr>
 			   <td align="right" class="info">Query String: </td>
-			   <td >#encodeForHTML( cgi.QUERY_STRING )#</td>
+			   <td >#encodeForHTML( CGI.QUERY_STRING )#</td>
 			 </tr>
 
-			<cfif len(cgi.HTTP_REFERER)>
+			<cfif len(CGI.HTTP_REFERER)>
 			 <tr>
 			   <td align="right" class="info">Referrer:</td>
-			   <td >#encodeForHTML( cgi.HTTP_REFERER )#</td>
+			   <td >#encodeForHTML( CGI.HTTP_REFERER )#</td>
 			 </tr>
 			</cfif>
 			<tr>
 			   <td align="right" class="info">Browser:</td>
-			   <td >#encodeForHTML( cgi.HTTP_USER_AGENT )#</td>
+			   <td >#encodeForHTML( CGI.HTTP_USER_AGENT )#</td>
 			</tr>
 			<tr>
 			   <td align="right" class="info"> Remote Address: </td>
-			   <td >#encodeForHTML( cgi.remote_addr )#</td>
+			   <td >#encodeForHTML( CGI.REMOTE_ADDR )#</td>
 			 </tr>
 
 			 <cfif
