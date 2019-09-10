@@ -8,7 +8,7 @@ notifications:
 env:
   global:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
-    - COLDBOX_VERSION=5.7.0
+    - COLDBOX_VERSION=5.6.2
   matrix:
     - ENGINE=lucee@4.5 ANT_TARGET=build.all
     - ENGINE=lucee@5 ANT_TARGET=run-tests
