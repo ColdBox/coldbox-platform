@@ -569,7 +569,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * - `/photos` : `POST` -> `photos.create` Create a new photo
 	 * - `/photos/:id` : `GET` -> `photos.show` Display a specific photo
 	 * - `/photos/:id/edit` : `GET` -> `photos.edit` Return an HTML form for editing a photo
-	 * - `/photos/:id` : `POST/PUT/PATCH` -> `photos.update` Update a specific photo
+	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
 	 *
      * @resource 		The name of a single resource or a list of resources or an array of resources
