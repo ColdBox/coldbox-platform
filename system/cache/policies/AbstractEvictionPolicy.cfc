@@ -76,7 +76,7 @@ component serializable=false implements="coldbox.system.cache.policies.IEviction
 			var md = indexer.getObjectMetadata( item );
 
 			// Evict if not already marked for eviction or an eternal object.
-			if( md.timeout gt 0 AND NOT md.isExpired ){
+			if( md.timeout GT 0 AND NOT md.isExpired ){
 
 				// Evict The Object
 				variables.cacheProvider.clear( item );

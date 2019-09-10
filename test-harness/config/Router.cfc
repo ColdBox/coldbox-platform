@@ -36,7 +36,7 @@ component{
 		// Responses + Conditions
 		route( "/ff" )
 			.withCondition( function(){
-				return ( findnocase( "Firefox", cgi.HTTP_USER_AGENT ) ? true : false );
+				return ( findnocase( "Firefox", CGI.HTTP_USER_AGENT ) ? true : false );
 			} )
 			.toResponse( "Hello FireFox" );
 

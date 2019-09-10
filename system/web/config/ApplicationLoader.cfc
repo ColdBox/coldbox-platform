@@ -152,7 +152,7 @@ component accessors="true"{
 	 */
 	function calculateAppMapping( required configStruct ){
 		// Get the web path from CGI.
-		var	webPath = replacenocase( cgi.script_name,getFileFromPath( cgi.script_name),"" );
+		var	webPath = replacenocase( CGI.SCRIPT_NAME,getFileFromPath( CGI.SCRIPT_NAME),"" );
 		// Cleanup the template path
 		var localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all" ));
 		// Verify Path Location
@@ -167,7 +167,7 @@ component accessors="true"{
 
 		//Clean last /
 		if ( right(arguments.configStruct.AppMapping,1) eq "/" ){
-			if ( len(arguments.configStruct.AppMapping) -1 gt 0)
+			if ( len(arguments.configStruct.AppMapping) -1 GT 0)
 				arguments.configStruct.AppMapping = left(arguments.configStruct.AppMapping,len(arguments.configStruct.AppMapping)-1);
 			else
 				arguments.configStruct.AppMapping = "";
@@ -729,7 +729,7 @@ component accessors="true"{
 			for( var key in environments ){
 				// loop over patterns
 				for( var i=1; i lte listLen( environments[ key ] ); i=i+1 ){
-					if( reFindNoCase( listGetAt( environments[ key ], i ), cgi.http_host) ){
+					if( reFindNoCase( listGetAt( environments[ key ], i ), CGI.HTTP_HOST) ){
 						// set new environment
 						configStruct.environment = key;
 					}

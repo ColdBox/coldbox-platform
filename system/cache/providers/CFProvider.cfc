@@ -213,9 +213,10 @@ component
      */
     struct function getStoreMetadataReport(){
 		return getKeys()
-			.map( function( item ){
-				return getCachedObjectMetadata( item );
-			});
+			.reduce( function( item, result ){
+				result[ item ] = getCachedObjectMetadata( item );
+				return result;
+			}, {} );
 	}
 
 	/**
@@ -538,14 +539,7 @@ component
 	 **/
 	 private function validateConfiguration(){
 		 // Add in settings not discovered
-		structAppend( variables.configuration, variables.DEFAULTS );
-		// Validate configuration values, if they don't exist, then default them to DEFAULTS
-		for( var key in variables.DEFAULTS ){
-			if( NOT len( variables.configuration[ key ] ) ){
-				variables.configuration[ key ] = variables.DEFAULTS[ key ];
-			}
-		}
-
+		structAppend( variables.configuration, variables.DEFAULTS, false );
 		return this;
 	}
 

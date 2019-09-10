@@ -180,7 +180,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				.setSESBaseURL(
 					"http" &
 					( event.isSSL() ? "s" : "" ) &
-					"://#cgi.HTTP_HOST##variables.routingAppMapping#" &
+					"://#CGI.HTTP_HOST##variables.routingAppMapping#" &
 					( variables.router.getFullRewrites() ? "" : "index.cfm" )
 				);
 		}
@@ -268,10 +268,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Process SSL Redirects
 		if( routeResults.route.ssl AND NOT event.isSSL() ){
 			controller.relocate(
-				URL         = event.getSESBaseURL() & reReplace( cgi.path_info, "^\/", "" ),
+				URL         = event.getSESBaseURL() & reReplace( CGI.PATH_INFO, "^\/", "" ),
 				ssl         = true,
 				statusCode  = 302,
-				queryString = cgi.query_string
+				queryString = CGI.QUERY_STRING
 			);
 			return;
 		}
@@ -907,7 +907,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 */
 	private function findConventionNameValuePairs( required string requestString, required any match, required struct params ){
 		var leftOverLen = len( arguments.requestString ) - arguments.match.len[ 1 ];
-		if( leftOverLen gt 0 ){
+		if( leftOverLen GT 0 ){
 
 			// Process Name/Value Pairs
 			var currentKey = "";

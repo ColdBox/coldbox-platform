@@ -371,7 +371,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 				prepareMock( getController().getRoutingService() )
 					.$( "getCGIElement" ).$args( "path_info", requestContext ).$results( arguments.route )
 					.$( "getCGIElement" ).$args( "script_name", requestContext ).$results( "" )
-					.$( "getCGIElement" ).$args( "domain", requestContext ).$results( cgi.server_name );
+					.$( "getCGIElement" ).$args( "domain", requestContext ).$results( CGI.SERVER_NAME );
 				arguments.route = "";
         	}
             // if we were passed a route, parse it and prepare the SES interceptor for routing.
@@ -388,7 +388,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
 				prepareMock( getController().getRoutingService() )
 					.$( "getCGIElement" ).$args( "path_info", requestContext ).$results( routeParts.route )
 					.$( "getCGIElement" ).$args( "script_name", requestContext ).$results( "" )
-					.$( "getCGIElement" ).$args( "domain", requestContext ).$results( cgi.server_name );
+					.$( "getCGIElement" ).$args( "domain", requestContext ).$results( CGI.SERVER_NAME );
             }
             else{
                 // If we were passed just an event, remove routing since we don't need it

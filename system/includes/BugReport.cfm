@@ -27,54 +27,86 @@ A reporting template about exceptions in your ColdBox Apps
 <div class="cb-container">
 	<h1>
 		<cfif oException.geterrorCode() neq "" AND oException.getErrorCode() neq 0>
-			#oException.getErrorCode()# :
+			#encodeForHTML( oException.getErrorCode())# :
 		</cfif>
 		Oopsy! Something went wrong!</h1>
 
-	<div class="notice">
+	<div class="extended">
+		
 		<cfif oException.getExtraMessage() neq "">
-		<!--- CUSTOM SET MESSAGE --->
-		<h3>#oException.getExtramessage()#</h3>
+		<h3>#encodeForHTML( oException.getExtramessage() )#</h3>
 		</cfif>
-
-		<!--- Event --->
-		<strong>Event: </strong><cfif event.getCurrentEvent() neq "">#event.getCurrentEvent()#<cfelse>N/A</cfif>
-		<br>
-		<strong>Route: </strong><cfif event.getCurrentRoute() neq "">#event.getCurrentRoute()#<cfelse>N/A</cfif>
-			<cfif event.getCurrentRoutedModule() neq ""> from the "#event.getCurrentRoutedModule()#" module router.</cfif>
-		<br>
-		<strong>Route Name: </strong><cfif event.getCurrentRouteName() neq "">#event.getCurrentRouteName()#<cfelse>N/A</cfif>
-		<br>
-		<strong>Routed Module: </strong><cfif event.getCurrentRoutedModule() neq "">#event.getCurrentRoutedModule()#<cfelse>N/A</cfif>
-		<br>
-		<strong>Routed Namespace: </strong><cfif event.getCurrentRoutedNamespace() neq "">#event.getCurrentRoutedNamespace()#<cfelse>N/A</cfif>
-		<br>
-		<strong>Routed URL: </strong><cfif event.getCurrentRoutedURL() neq "">#event.getCurrentRoutedURL()#<cfelse>N/A</cfif>
-		<br>
-		<strong>Layout: </strong><cfif Event.getCurrentLayout() neq "">#Event.getCurrentLayout()#<cfelse>N/A</cfif> (Module: #event.getCurrentLayoutModule()#)
-		<br>
-		<strong>View: </strong><cfif Event.getCurrentView() neq "">#Event.getCurrentView()#<cfelse>N/A</cfif>
-		<br>
-		<strong>Timestamp: </strong>#dateformat(now(), "MM/DD/YYYY")# #timeformat(now(),"hh:MM:SS TT")#
-
-		<hr>
-
-		<!--- ERROR TYPE --->
-		<cfif oException.getType() neq "">
-			<strong>Type: </strong> #oException.gettype()# <br>
-		</cfif>
-
-
-		<!--- Message + Details --->
-		<strong>Messages:</strong>
-		#oException.getmessage()#
-		<cfif oException.getExtendedInfo() neq "">
-		#oException.getExtendedInfo()#<br />
-	 	</cfif>
-
-	 	<cfif len( oException.getDetail() ) neq 0>
-		 	#oException.getDetail()#
-		 </cfif>
+		
+		<table class="table" align="center">
+			 <tr >
+				<th colspan="2" >Error Details:</th>
+			 </tr>
+			<cfif oException.getType() neq "">
+				<tr>
+					<td align="right" class="info"><strong>Type: </strong></td>
+					<td>#encodeForHTML( oException.gettype() )# </td>
+				</tr>
+			</cfif>
+			<tr>
+				<td align="right" class="info"><strong>Message:</strong></td>
+				<!--- Using HTMLEditFormat() on purpose so my line breaks aren't encoded! --->
+				<td>#HTMLEditFormat( oException.getmessage() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
+			</tr>
+			<cfif oException.getExtendedInfo() neq "">
+				<tr>
+					<td align="right" class="info"><strong>Extended Info:</strong></td>
+					<td>#encodeForHTML( oException.getExtendedInfo() )#</td>
+				</tr>
+		 	</cfif>
+	
+		 	<cfif len( oException.getDetail() ) neq 0>	 		
+				<tr>
+					<td align="right" class="info"><strong>Detail:</strong></td>
+					<!--- Using HTMLEditFormat() on purpose so my line breaks aren't encoded! --->
+					<td>#HTMLEditFormat( oException.getDetail() ).listChangeDelims( '<br>', chr(13)&chr(10) )#</td>
+				</tr>			
+			 </cfif>
+			<tr>
+				<td align="right" class="info"><strong>Timestamp: </strong></td>
+				<td>#dateformat(now(), "MM/DD/YYYY")# #timeformat(now(),"hh:MM:SS TT")#</td>
+			</tr>
+			 <tr >
+				<th colspan="2" >Event Details:</th>
+			 </tr>
+			<tr>
+				<td align="right" class="info"><strong>Event: </strong></td>
+				<td><cfif event.getCurrentEvent() neq "">#encodeForHTML( event.getCurrentEvent() )#<cfelse>N/A</cfif></td>
+			</tr>
+			<tr>
+				<td align="right" class="info"><strong>Route: </strong></td>
+				<td><cfif event.getCurrentRoute() neq "">#encodeForHTML( event.getCurrentRoute() )#<cfelse>N/A</cfif>
+			<cfif event.getCurrentRoutedModule() neq ""> from the "#encodeForHTML( event.getCurrentRoutedModule() )#" module router.</cfif></td>
+			</tr>
+			<tr>
+				<td align="right" class="info"><strong>Route Name: </strong></td>
+				<td><cfif event.getCurrentRouteName() neq "">#encodeForHTML( event.getCurrentRouteName() )#<cfelse>N/A</cfif></td>
+			</tr>
+			<tr>
+				<td align="right" class="info"><strong>Routed Module: </strong></td>
+				<td><cfif event.getCurrentRoutedModule() neq "">#event.getCurrentRoutedModule()#<cfelse>N/A</cfif></td>
+			</tr>
+			<tr>
+				<td align="right" class="info"><strong>Routed Namespace: </strong></td>
+				<td><cfif event.getCurrentRoutedNamespace() neq "">#encodeForHTML( event.getCurrentRoutedNamespace() )#<cfelse>N/A</cfif></td>
+			</tr>
+			<tr>
+				<td align="right" class="info"><strong>Routed URL: </strong></td>
+				<td><cfif event.getCurrentRoutedURL() neq "">#encodeForHTML( event.getCurrentRoutedURL() )#<cfelse>N/A</cfif></td>
+			</tr>
+			<tr>
+				<td align="right" class="info"><strong>Layout: </strong></td>
+				<td><cfif Event.getCurrentLayout() neq "">#encodeForHTML( Event.getCurrentLayout() )#<cfelse>N/A</cfif> (Module: #encodeForHTML( event.getCurrentLayoutModule() )#)</td>
+			</tr>		
+			<tr>
+				<td align="right" class="info"><strong>View: </strong></td>
+				<td><cfif Event.getCurrentView() neq "">#encodeForHTML( Event.getCurrentView() )#<cfelse>N/A</cfif></td>
+			</tr>
+		</table>
 
 	</div>
 
@@ -92,22 +124,23 @@ A reporting template about exceptions in your ColdBox Apps
 			  	  >
 			  <tr >
 						<td align="right" class="info">Tag:</td>
-					    <td>#local.arrayTagContext[ local.i ].ID#</td>
+					    <td>#encodeForHTML( local.arrayTagContext[ local.i ].ID )#</td>
 			  </tr>
 				  </cfif>
 			   <tr >
 					<td align="right" class="info">Template:</td>
-				    <td style="color:green;"><strong>#local.arrayTagContext[ local.i ].Template#</strong></td>
+				    <td style="color:green;"><strong>#encodeForHTML( local.arrayTagContext[ local.i ].Template )#</strong></td>
 				   </tr>
 			  	  <cfif structKeyExists( local.arrayTagContext[ local.i ], "codePrintHTML" )>
 					  <tr class="tablebreak">
 				<td align="right" class="info">LINE:</td>
-					    <td>#local.arrayTagContext[ local.i ].codePrintHTML#</td>
+					<!--- Already encoded for safe HTML output --->
+				    <td><pre>#local.arrayTagContext[ local.i ].codePrintHTML#</pre></td>
 			   </tr>
 				  <cfelse>
 			   <tr class="tablebreak">
 						<td align="right" class="info">Line:</td>
-					    <td ><strong>#local.arrayTagContext[ local.i ].LINE#</strong></td>
+					    <td ><strong>#encodeForHTML( local.arrayTagContext[ local.i ].LINE )#</strong></td>
 			   </tr>
 				  </cfif>
 			  </cfloop>
@@ -130,17 +163,17 @@ A reporting template about exceptions in your ColdBox Apps
 			   <td >
 			   	<cfif local.sessionScopeExists>
 					<cfif isDefined("session") and structkeyExists(session, "cfid")>
-					CFID=#session.CFID# ;
+					CFID=#encodeForHTML( session.CFID)# ;
 					<cfelseif isDefined("client") and structkeyExists(client,"cfid")>
-					CFID=#client.CFID# ;
+					CFID=#encodeForHTML( client.CFID )# ;
 					</cfif>
 					<cfif isDefined("session") and structkeyExists(session,"CFToken")>
-					CFToken=#session.CFToken# ;
+					CFToken=#encodeForHTML( session.CFToken )# ;
 					<cfelseif isDefined("client") and structkeyExists(client,"CFToken")>
-					CFToken=#client.CFToken# ;
+					CFToken=#encodeForHTML( client.CFToken )# ;
 					</cfif>
 					<cfif isDefined("session") and structkeyExists(session,"sessionID")>
-					JSessionID=#session.sessionID#
+					JSessionID=#encodeForHTML( session.sessionID )#
 					</cfif>
 			   <cfelse>
 			   		Session Scope Not Enabled
@@ -149,34 +182,34 @@ A reporting template about exceptions in your ColdBox Apps
 			 </tr>
 			 <tr>
 			   <td align="right" class="info">Template Path : </td>
-			   <td >#htmlEditFormat(CGI.CF_TEMPLATE_PATH)#</td>
+			   <td >#encodeForHTML( CGI.CF_TEMPLATE_PATH )#</td>
 			 </tr>
 			  <tr>
 			   <td align="right" class="info">Path Info : </td>
-			   <td >#htmlEditFormat(CGI.PATH_INFO)#</td>
+			   <td >#encodeForHTML( CGI.PATH_INFO )#</td>
 			 </tr>
 			 <tr>
 			   <td align="right" class="info"> Host &amp; Server: </td>
-			   <td >#htmlEditFormat(cgi.http_host)# #local.thisInetHost#</td>
+			   <td >#encodeForHTML( CGI.HTTP_HOST )# #encodeForHTML( local.thisInetHost )#</td>
 			 </tr>
 			 <tr>
 			   <td align="right" class="info">Query String: </td>
-			   <td >#htmlEditFormat(cgi.QUERY_STRING)#</td>
+			   <td >#encodeForHTML( CGI.QUERY_STRING )#</td>
 			 </tr>
 
-			<cfif len(cgi.HTTP_REFERER)>
+			<cfif len(CGI.HTTP_REFERER)>
 			 <tr>
 			   <td align="right" class="info">Referrer:</td>
-			   <td >#htmlEditFormat(cgi.HTTP_REFERER)#</td>
+			   <td >#encodeForHTML( CGI.HTTP_REFERER )#</td>
 			 </tr>
 			</cfif>
 			<tr>
 			   <td align="right" class="info">Browser:</td>
-			   <td >#htmlEditFormat(cgi.HTTP_USER_AGENT)#</td>
+			   <td >#encodeForHTML( CGI.HTTP_USER_AGENT )#</td>
 			</tr>
 			<tr>
 			   <td align="right" class="info"> Remote Address: </td>
-			   <td >#htmlEditFormat(cgi.remote_addr)#</td>
+			   <td >#encodeForHTML( CGI.REMOTE_ADDR )#</td>
 			 </tr>
 
 			 <cfif
@@ -192,25 +225,25 @@ A reporting template about exceptions in your ColdBox Apps
 					<td colspan="2" class="info">NativeErrorCode & SQL State:</td>
 				  </tr>
 				  <tr>
-					<td colspan="2" >#oException.getNativeErrorCode()# : #oException.getSQLState()#</td>
+					<td colspan="2" >#encodeForHTML( oException.getNativeErrorCode() )# : #encodeForHTML( oException.getSQLState() )#</td>
 				  </tr>
 				  <tr >
 					<td colspan="2" class="info">SQL Sent:</td>
 				  </tr>
 				  <tr>
-					<td colspan="2" >#oException.getSQL()#</td>
+					<td colspan="2" >#encodeForHTML( oException.getSQL() )#</td>
 				  </tr>
 				  <tr >
 					<td colspan="2" class="info">Database Driver Error Message:</td>
 				  </tr>
 				  <tr>
-					<td colspan="2" >#oException.getqueryError()#</td>
+					<td colspan="2" >#encodeForHTML( oException.getqueryError() )#</td>
 				  </tr>
 				  <tr >
 					<td colspan="2" class="info">Name-Value Pairs:</td>
 				  </tr>
 				  <tr>
-					<td colspan="2" >#oException.getWhere()#</td>
+					<td colspan="2" >#encodeForHTML( oException.getWhere() )#</td>
 				  </tr>
 			  </cfif>
 			</cfif>
@@ -220,9 +253,9 @@ A reporting template about exceptions in your ColdBox Apps
 			 <cfloop collection="#form#" item="key">
 			 	<cfif key neq "fieldnames">
 				 <tr>
-				   <td align="right" class="info">#htmlEditFormat( key )#:</td>
+				   <td align="right" class="info">#encodeForHTML(  key )#:</td>
 				   <cfif isSimpleValue( form[ key ] )>
-				   <td>#htmlEditFormat( form[ key ] )#</td>
+				   <td>#encodeForHTML(  form[ key ] )#</td>
 				   <cfelse>
 				   <td><cfdump var="#form[ key ]#"></td>
 				   </cfif>
@@ -235,8 +268,8 @@ A reporting template about exceptions in your ColdBox Apps
 			 <cfif local.sessionScopeExists>
 				 <cfloop collection="#session#" item="key">
 				 <tr>
-				   <td align="right" class="info"> #key#: </td>
-				   <td><cfif isSimpleValue( session[ key ] )>#htmlEditFormat( session[ key ] )#<cfelse>#key# <cfdump var="#session[ key ]#"></cfif></td>
+				   <td align="right" class="info"> #encodeForHTML( key )#: </td>
+				   <td><cfif isSimpleValue( session[ key ] )>#encodeForHTML(  session[ key ] )#<cfelse>#encodeForHTML( key )# <cfdump var="#session[ key ]#"></cfif></td>
 				 </tr>
 				 </cfloop>
 			 <cfelse>
@@ -250,8 +283,8 @@ A reporting template about exceptions in your ColdBox Apps
 			 </tr>
 			 <cfloop collection="#cookie#" item="key">
 			 <tr>
-			   <td align="right" class="info"> #key#: </td>
-			   <td >#htmlEditFormat( cookie[ key ] )#</td>
+			   <td align="right" class="info"> #encodeForHTML( key )#: </td>
+			   <td >#encodeForHTML( cookie[ key ] )#</td>
 			 </tr>
 			 </cfloop>
 
@@ -262,7 +295,7 @@ A reporting template about exceptions in your ColdBox Apps
 			 <tr>
 			    <td colspan="2" >
 			    <cfif isSimpleValue( oException.getExtraInfo() )>
-			   		<cfif not len(oException.getExtraInfo())>[N/A]<cfelse>#oException.getExtraInfo()#</cfif>
+			   		<cfif not len(oException.getExtraInfo())>[N/A]<cfelse>#encodeForHTML( oException.getExtraInfo() )#</cfif>
 			   	<cfelse>
 			   		<cfdump var="#oException.getExtraInfo()#" expand="false">
 				</cfif>

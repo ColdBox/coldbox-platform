@@ -54,3 +54,7 @@ body{ margin: 0px; }
 .cb-container table tr.tablebreak td{
 	border-bottom:1px solid black;
 }
+
+.cb-container pre br {
+    display: none;
+}

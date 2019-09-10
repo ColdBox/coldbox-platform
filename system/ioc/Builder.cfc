@@ -159,10 +159,25 @@
 				// Invoke constructor
 				invoke( oModel, thisMap.getConstructor(), constructorArgs );
 			} catch( any e ){
+				
+				var reducedTagContext = e.tagContext.reduce( function(result, file) {
+						if( !result.done ) {
+							if( file.template.listLast( '/\' ) == 'Builder.cfc' ) {
+								result.done = true;
+							} else {
+								result.rows.append( '#file.template#:#file.line#' );
+							}
+						}
+						return result;
+					}, {rows:[],done:false} ).rows.toList( chr(13)&chr(10) );
+					
 				throw(
 					type    = "Builder.BuildCFCDependencyException",
-					message = "Error building: #thisMap.getName()# -> #e.message#.",
-					detail  = "DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#, Error Location: #e.tagContext[ 1 ].template#:#e.tagContext[ 1 ].line#"
+					message = "Error building: #thisMap.getName()# -> #e.message#
+					#e.detail#.",
+					detail  = "DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#, 
+					Error Location: 
+					#reducedTagContext#"
 				);
 			}
 		}
