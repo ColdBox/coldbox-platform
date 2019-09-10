@@ -2375,11 +2375,11 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		// Calculat href for asset delivery via Browser
 		if( mapping.len() ){
-			var href 	= "/#mapping#/#includesLocation#/#arguments.fileName#";
+			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
 		} else {
-			var href 	= "/#includesLocation#/#arguments.fileName#";
+			var href = "/#includesLocation#/#arguments.fileName#";
 		}
-		var key 	= reReplace( href, "^/", "" );
+		var key = reReplace( href, "^/", "" );
 
 		// Verify manifest
 		if ( ! fileExists( manifestPath ) ) {
@@ -2389,7 +2389,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		// Only read, parse and store once
         var manifestDirectory = templateCache.getOrSet(
-            "elixirManifest",
+            "elixirManifest-#hash( manifestPath )#",
             function(){
 				var contents = fileRead( manifestPath );
 				if( isJSON( contents ) ){
@@ -2397,7 +2397,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 				}
 				return {};
             }
-        );
+		);
 
         if ( arguments.version == 3 ) {
 			if ( ! structKeyExists( manifestDirectory, key ) ) {
