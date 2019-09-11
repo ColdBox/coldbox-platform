@@ -499,7 +499,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	/**
 	 * process a with closure
 	 *
-	 * @args The arugments to process
+	 * @args The arguments to process
 	 *
 	 * @return Router
 	 */
