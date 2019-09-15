@@ -10,6 +10,13 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The main ColdBox utility library filled with lots of nice goodies.">
 
+	<!--- constructor --->
+	<cffunction name="init" access="public" returntype="any" output="false">
+		<cfscript>
+			checkThreadWithinThreadSupport();
+		</cfscript>
+	</cffunction>
+
 	<!--- getMixerUtil --->
     <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" doc_generic="coldbox.system.core.dynamic.MixerUtil">
     	<cfscript>
@@ -92,6 +99,29 @@ Description :
 
 			return false;
 		</cfscript>
+	</cffunction>
+
+	<!--- threadWithinThreadSupported --->
+	<cffunction name="threadWithinThreadSupported" access="public" returntype="boolean" hint="I return whether or not the current engine allows spawning threads from child threads" output="false">
+		<cfreturn variables.threadWithinThreadSupported />
+	</cffunction>
+
+	<!--- checkThreadWithinThreadSupport --->
+	<cffunction name="checkThreadWithinThreadSupport" access="private" returntype="any" output="false" hint="A little test logic to check for thread within thread support">
+		<cfset variables.threadWithinThreadSupported = false/>
+		<cftry>
+			<cfthread name="#CreateUUId()#">
+				<cftry>
+					<cfthread name="#CreateUUId()#">
+						<cfset variables.threadWithinThreadSupported = true />
+					</cfthread>
+					<cfcatch>
+					</cfcatch>
+				</cftry>
+			</cfthread>
+			<cfcatch>
+			</cfcatch>
+		</cftry>
 	</cffunction>
 
 	<!--- placeHolderReplacer --->

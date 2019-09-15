@@ -306,8 +306,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @message The target message
 	 */
 	private FileAppender function append( required message ){
-		// If we are not in a thread, then start the log listener, else queue it
-		if( !getUtil().inThread() ){
+		var util = getUtil();
+
+		// if thread within thread not supported, check we're not already in child thread
+		if( util.threadWithinThreadSupported() || !util.inThread() ){
 			// Ensure log listener
 			startLogListener();
 		}
