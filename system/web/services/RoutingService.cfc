@@ -317,10 +317,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				}
             }
 
-            if ( isStruct( routeResults.route.action ) && structIsEmpty( routeResults.route.action ) ) {
-                routeResults.route.action = "";
-            }
-
 			// Check if using HTTP method actions via struct
 			if( isStruct( routeResults.route.action ) ){
 				// Verify HTTP method used is valid
@@ -340,7 +336,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				}
             }
 			// Simple value action
-			else if( routeResults.route.action.len() ){
+			else if( ! isStruct( routeREsults.route.action ) && routeResults.route.action.len() ) {
 				discoveredEvent &= ".#routeResults.route.action#";
 			}
 		} // end if handler exists
