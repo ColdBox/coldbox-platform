@@ -546,7 +546,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         boolean renderResults = true
     ) {
         arguments.method = "GET";
-        return request( argumentCollection = arguments );
+        return variables.request( argumentCollection = arguments );
     }
 
     /**
@@ -564,7 +564,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         boolean renderResults=true
     ) {
         arguments.method = "POST";
-        return request( argumentCollection = arguments );
+        return variables.request( argumentCollection = arguments );
     }
 
     /**
@@ -582,7 +582,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         boolean renderResults=true
     ) {
         arguments.method = "PUT";
-        return request( argumentCollection = arguments );
+        return variables.request( argumentCollection = arguments );
     }
 
     /**
@@ -600,7 +600,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         boolean renderResults=true
     ) {
         arguments.method = "PATCH";
-        return request( argumentCollection = arguments );
+        return variables.request( argumentCollection = arguments );
     }
 
     /**
@@ -618,7 +618,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         boolean renderResults=true
     ) {
         arguments.method = "DELETE";
-        return request( argumentCollection = arguments );
+        return variables.request( argumentCollection = arguments );
     }
 
     /**
