@@ -3,7 +3,7 @@
         "cfengine":"lucee@5",
         "serverHomeDirectory":".engine/lucee5"
     },
-    "name":"coldbox-lucee@5",
+    "name":"coldbox-lucee@5.3.2",
     "force":true,
     "openBrowser":false,
     "web":{
