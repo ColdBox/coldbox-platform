@@ -494,7 +494,16 @@
 			// Throw exception as DSL Dependency requested was not located
 			throw(
 				message = injectMessage,
-				detail  = arguments.definition.toString(),
+				// safe serialization that won't blow uo on complex values or do weird things with nulls (looking at you, Adobe)
+				detail  = serializeJSON ( arguments.definition.map( function(k,v){
+							if( isNull( v ) ) {
+								return;
+							} else if( !isSimpleValue( v ) ) {
+								return '[complex value]';
+							} else {
+								return v;
+							}
+						} ) ),
 				type    = "Builder.DSLDependencyNotFoundException"
 			);
 		}
