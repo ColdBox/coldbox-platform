@@ -317,6 +317,11 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				}
             }
 
+            // If the struct is empty, reset it to an empty string so it goes down the correct code path later on.
+            if ( isStruct( routeResults.route.action ) && structIsEmpty( routeResults.route.action ) ) {
+                routeResults.route.action = "";
+            }
+
 			// Check if using HTTP method actions via struct
 			if( isStruct( routeResults.route.action ) ){
 				// Verify HTTP method used is valid
