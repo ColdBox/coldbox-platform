@@ -835,6 +835,45 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         } else {
             return getPageContext().getResponse().getResponse();
         }
-	}
+    }
+
+    /**
+     * Swaps out WireBox mappings for corresponding mocks during a callback.
+     *
+     * @mappings                A struct of mappings to swap the given WireBox mapping
+     *                          for the given value, i.e. { "apiClient" = mockApiClient }
+     * @callback                The callback to execute with the swapped mappings.
+     * @verifyMappingsExists    Flag to first verify that the mapping exists before swapping it.
+     *                          Useful to ensure you have set the mapping for your application
+     *                          and not just your tests.
+     */
+    public void function whileSwapped(
+        struct mappings = {},
+        any callback,
+        boolean verifyMappingExists = true
+    ) {
+        var binder = getWireBox().getBinder();
+        var originalMappings = {};
+        mappings.each( function( mapping, component ) {
+            var exists = binder.mappingExists( mapping );
+            if ( verifyMappingExists && ! exists ) {
+                expect( exists ).toBeTrue( "No mapping [#mapping#] already configured in WireBox." );
+            }
+            if ( exists ) {
+                originalMappings[ mapping ] = binder.getMapping( mapping );
+            }
+            binder.map( alias = mapping, force = true ).toValue( component );
+        } );
+
+        try {
+            callback();
+        } catch ( any e ) {
+            rethrow;
+        } finally {
+            originalMappings.each( function( mapping, component ) {
+                binder.setMapping( mapping, component );
+            } );
+        }
+    }
 
 }
