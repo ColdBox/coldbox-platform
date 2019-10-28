@@ -184,7 +184,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				var eventCachingData = {};
 				structAppend( eventCachingData, eventDictionaryEntry, true );
 				if( len( eventCachingData.cacheTimeoutUdfInstance ) && len( eventCachingData.cacheTimeoutUdfMethod ) ){
-					eventCachingData.timeout = wirebox.getInstance( eventCachingData.cacheTimeoutUdfInstance )[ eventCachingData.cacheTimeoutUdfMethod ]();
+					eventCachingData.timeout = invoke( wirebox.getInstance( eventCachingData.cacheTimeoutUdfInstance ), eventCachingData.cacheTimeoutUdfMethod );
 				}
 				// Create the Cache Key to save
 				eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
