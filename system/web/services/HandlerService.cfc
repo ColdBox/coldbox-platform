@@ -183,7 +183,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				// Create caching data structure according to MD, as the cache key can be dynamic by execution.
 				var eventCachingData = {};
 				structAppend( eventCachingData, eventDictionaryEntry, true );
-
+				if( len( eventCachingData.cacheTimeoutUdfInstance ) && len( eventCachingData.cacheTimeoutUdfMethod ) ){
+					eventCachingData.timeout = wirebox.getInstance( eventCachingData.cacheTimeoutUdfInstance )[ eventCachingData.cacheTimeoutUdfMethod ]();
+				}
 				// Create the Cache Key to save
 				eventCachingData.cacheKey = oEventURLFacade.buildEventKey(
 					keySuffix 		= eventDictionaryEntry.suffix,
@@ -583,6 +585,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			"cacheable" 		    = false,
 			"timeout" 		        = "",
 			"lastAccessTimeout" 	= "",
+			"cacheTimeoutUdfInstance" = "",
+			"cacheTimeoutUdfMethod" = "",
 			"cacheKey"  		    = "",
 			"suffix" 			    = "",
 			"provider"				= "template"
@@ -617,6 +621,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 						mdEntry.timeout 			= arguments.ehBean.getActionMetadata( "cacheTimeout", "" );
 						mdEntry.lastAccessTimeout 	= arguments.ehBean.getActionMetadata( "cacheLastAccessTimeout", "" );
 						mdEntry.provider 		 	= arguments.ehBean.getActionMetadata( "cacheProvider", "template" );
+						mdEntry.cacheTimeoutUdfInstance = arguments.ehBean.getActionMetadata( "cacheTimeoutUdfInstance", "" );
+						mdEntry.cacheTimeoutUdfMethod = arguments.ehBean.getActionMetadata( "cacheTimeoutUdfMethod", "" );
 
 						// Handler Event Cache Key Suffix, this is global to the event
 						if( isClosure( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) || isCustomFunction( arguments.oEventHandler.EVENT_CACHE_SUFFIX ) ){
