@@ -13,9 +13,16 @@ component{
 	 * @path The path of the mapping
 	*/
 	LuceeMappingHelper function addMapping( required name, required path ) {
-		var mappings = getApplicationSettings().mappings;
+		var appSettings = getApplicationSettings();
+		var mappings = appSettings.mappings;
 		mappings[ arguments.name ] = arguments.path;
-		application action='update' mappings='#mappings#';
+				
+		// Workaround for Lucee reverting the sessionCluster, clientCluster, and cgiReadOnly settings to defaults
+		// https://luceeserver.atlassian.net/browse/LDEV-2555
+		appSettings.sessionCluster = appSettings.sessionCluster ?: false;
+		appSettings.clientCluster = appSettings.clientCluster ?: false;
+		appSettings.cgiReadOnly = appSettings.cgiReadOnly ?: true;
+		application action='update' mappings='#mappings#' sessionCluster="#appSettings.sessionCluster#" clientCluster="#appSettings.clientCluster#" cgiReadOnly="#appSettings.cgiReadOnly#";
 
 		return this;
 	}
@@ -26,9 +33,15 @@ component{
 	 * @mappings A struct of mappings to register
 	*/
 	LuceeMappingHelper function addMappings( required mappings ) {
-		var newMappings = getApplicationSettings().mappings.append( arguments.mappings );
-		application action='update' mappings='#newMappings#';
-
+		var appSettings = getApplicationSettings();
+		var newMappings = appSettings.mappings.append( arguments.mappings );
+		
+		// Workaround for Lucee reverting the sessionCluster, clientCluster, and cgiReadOnly settings to defaults
+		// https://luceeserver.atlassian.net/browse/LDEV-2555
+		appSettings.sessionCluster = appSettings.sessionCluster ?: false;
+		appSettings.clientCluster = appSettings.clientCluster ?: false;
+		appSettings.cgiReadOnly = appSettings.cgiReadOnly ?: true;
+		application action='update' mappings='#newMappings#' sessionCluster="#appSettings.sessionCluster#" clientCluster="#appSettings.clientCluster#" cgiReadOnly="#appSettings.cgiReadOnly#";
 		return this;
 	}
 
