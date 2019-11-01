@@ -2301,6 +2301,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 	 * @async HTML5 JavaScript argument: Specifies that the script is executed asynchronously (only for external scripts)
 	 * @defer HTML5 JavaScript argument: Specifies that the script is executed when the page has finished parsing (only for external scripts)
 	 * @version The elixir version to use, defaults to 3
+	 * @manifestRoot The root location in relative from the webroot where the `rev-manifest.json` file exists
 	 */
 	function elixir(
 		required fileName,
@@ -2308,13 +2309,15 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		boolean sendToHeader=true,
 		boolean async=false,
         boolean defer=false,
-        numeric version=3
+		numeric version=3,
+		manifestRoot=""
 	){
 		return addAsset(
 			elixirPath(
-                fileName = arguments.fileName,
-                buildDirectory = arguments.buildDirectory,
-                version = arguments.version
+                fileName 		= arguments.fileName,
+                buildDirectory 	= arguments.buildDirectory,
+				version 		= arguments.version,
+				manifestRoot 	= arguments.manifestRoot
             ),
 			arguments.sendToHeader,
 			arguments.async,
@@ -2328,12 +2331,15 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 	 * @fileName The asset path to find relative to the `includes` convention directory
 	 * @buildDirectory The build directory inside the `includes` convention directory
 	 * @useModuleRoot If true, use the module root as the root of the file path
+	 * @version The elixir version algorithm to use, version 3 is the latest
+	 * @manifestRoot The root location in relative from the webroot where the `rev-manifest.json` file exists
 	 */
 	function elixirPath(
 		required fileName,
 		buildDirectory="build",
         boolean useModuleRoot=false,
-        numeric version=3
+		numeric version=3,
+		manifestRoot=""
 	){
 		// Cleanup
 		arguments.fileName = reReplace( arguments.fileName, "^/", "" );
@@ -2362,13 +2368,18 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 							"#appPath##includesLocation#/rev-manifest.json" :
 							"#appPath##includesLocation#/#arguments.buildDirectory#/rev-manifest.json";
 
+		// Do we have a manifest override?
+		if( len( arguments.manifestRoot ) ){
+			manifestPath = controller.locateFilePath( "#arguments.manifestRoot#/rev-manifest.json" );
+		}
+
 		// Calculat href for asset delivery via Browser
 		if( mapping.len() ){
-			var href 	= "/#mapping#/#includesLocation#/#arguments.fileName#";
+			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
 		} else {
-			var href 	= "/#includesLocation#/#arguments.fileName#";
+			var href = "/#includesLocation#/#arguments.fileName#";
 		}
-		var key 	= reReplace( href, "^/", "" );
+		var key = reReplace( href, "^/", "" );
 
 		// Verify manifest
 		if ( ! fileExists( manifestPath ) ) {
@@ -2378,7 +2389,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		// Only read, parse and store once
         var manifestDirectory = templateCache.getOrSet(
-            "elixirManifest",
+            "elixirManifest-#hash( manifestPath )#",
             function(){
 				var contents = fileRead( manifestPath );
 				if( isJSON( contents ) ){
@@ -2386,7 +2397,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 				}
 				return {};
             }
-        );
+		);
 
         if ( arguments.version == 3 ) {
 			if ( ! structKeyExists( manifestDirectory, key ) ) {
