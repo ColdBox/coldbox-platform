@@ -80,7 +80,7 @@ Description :
 			};
 
 			// DI definition structure
-			DIDefinition = { name="", value=JavaCast( "null", "" ), dsl=JavaCast( "null", "" ), scope="variables", javaCast=JavaCast( "null", "" ), ref=JavaCast( "null", "" ), required=false, argName="", type="any" };
+			variables.DIDefinition = { name="", value=JavaCast( "null", "" ), dsl=JavaCast( "null", "" ), scope="variables", javaCast=JavaCast( "null", "" ), ref=JavaCast( "null", "" ), required=false, argName="", type="any" };
 
 			return this;
 		</cfscript>
@@ -88,7 +88,7 @@ Description :
 
 	<!--- getMemento --->
     <cffunction name="getMemento" output="false" access="public" returntype="any" hint="Get the instance memento structure" doc_generic="struct">
-    	<cfreturn instance>
+    	<cfreturn variables.instance>
     </cffunction>
 
 	<!--- processMemento --->
@@ -155,14 +155,14 @@ Description :
 					// process path
 					case "path" : {
 						// Only override if it doesn't exist or empty
-						if( !instance.keyExists( "path" ) OR !len( instance.path ) ){
-							instance[ "path" ] = arguments.memento[ "path" ];
+						if( !variables.instance.keyExists( "path" ) OR !len( variables.instance.path ) ){
+							variables.instance[ "path" ] = arguments.memento[ "path" ];
 						}
 						break;
 					}
 
 					default:{
-						instance[ key ] = arguments.memento[ key ];
+						variables.instance[ key ] = arguments.memento[ key ];
 						break;
 					}
 				}// end switch
@@ -175,64 +175,64 @@ Description :
 
 	<!--- Virtual Inheritance --->
 	<cffunction name="getVirtualInheritance" access="public" returntype="any" output="false" hint="Get the virtual inheritance mapping">
-    	<cfreturn instance.virtualInheritance>
+    	<cfreturn variables.instance.virtualInheritance>
     </cffunction>
     <cffunction name="setVirtualInheritance" access="public" returntype="any" output="false" hint="Set the virtual inheritance mapping">
     	<cfargument name="mapping" required="true">
-    	<cfset instance.virtualInheritance = arguments.mapping>
+    	<cfset variables.instance.virtualInheritance = arguments.mapping>
     	<cfreturn this>
     </cffunction>
     <cffunction name="isVirtualInheritance" access="public" returntype="boolean" output="false" hint="Checks if the mapping needs virtual inheritace or not">
-    	<cfreturn len( instance.virtualInheritance ) GT 0>
+    	<cfreturn len( variables.instance.virtualInheritance ) GT 0>
     </cffunction>
 
 	<!--- Name --->
 	<cffunction name="getName" access="public" returntype="any" output="false" hint="Get the mapping name">
-    	<cfreturn instance.name>
+    	<cfreturn variables.instance.name>
     </cffunction>
     <cffunction name="setName" access="public" returntype="any" output="false" hint="Name the mapping">
     	<cfargument name="name" required="true">
-    	<cfset instance.name = arguments.name>
+    	<cfset variables.instance.name = arguments.name>
     	<cfreturn this>
     </cffunction>
 
     <!--- Thread Safety for wiring --->
     <cffunction name="getThreadSafe" access="public" returntype="any" output="false" hint="Get the thread safety for wiring bit" coldstruct:generic="boolean">
-    	<cfreturn instance.threadSafe>
+    	<cfreturn variables.instance.threadSafe>
     </cffunction>
     <cffunction name="setThreadSafe" access="public" returntype="any" output="false" hint="Set the thread safety for wiring bit">
     	<cfargument name="threadSafe" type="boolean" required="true">
-    	<cfset instance.threadSafe = arguments.threadSafe>
+    	<cfset variables.instance.threadSafe = arguments.threadSafe>
 		<cfreturn this>
     </cffunction>
 
     <!--- Closure for influencing instance creation --->
     <cffunction name="getInfluenceClosure" access="public" returntype="any" output="false" hint="Get the influence closure. Empty string if not exists">
-    	<cfreturn instance.influenceClosure>
+    	<cfreturn variables.instance.influenceClosure>
     </cffunction>
     <cffunction name="setInfluenceClosure" access="public" returntype="any" output="false" hint="Set the influence closure.">
     	<cfargument name="influenceClosure" type="any" required="true">
-    	<cfset instance.influenceClosure = arguments.influenceClosure>
+    	<cfset variables.instance.influenceClosure = arguments.influenceClosure>
 		<cfreturn this>
     </cffunction>
 
     <!--- Mixins --->
 	<cffunction name="getMixins" access="public" returntype="any" output="false" hint="Get the mixins array list">
-    	<cfreturn instance.mixins>
+    	<cfreturn variables.instance.mixins>
     </cffunction>
     <cffunction name="setMixins" access="public" returntype="any" output="false" hint="Set the mixins array list">
     	<cfargument name="mixins" required="true">
-    	<cfset instance.mixins = arguments.mixins>
+    	<cfset variables.instance.mixins = arguments.mixins>
     	<cfreturn this>
     </cffunction>
 
     <!--- ExtraAttributes --->
 	<cffunction name="getExtraAttributes" access="public" returntype="any" output="false" hint="Get the mapping's extra attributes">
-    	<cfreturn instance.extraAttributes>
+    	<cfreturn variables.instance.extraAttributes>
     </cffunction>
     <cffunction name="setExtraAttributes" access="public" returntype="any" output="false" hint="Set the mapping's extra attributes">
     	<cfargument name="data" required="true">
-    	<cfset instance.extraAttributes = arguments.data>
+    	<cfset variables.instance.extraAttributes = arguments.data>
     	<cfreturn this>
     </cffunction>
 
@@ -242,121 +242,121 @@ Description :
     </cffunction>
     <cffunction name="setAlias" access="public" returntype="any" output="false" hint="Set the mapping aliases">
     	<cfargument name="alias" required="true" doc_generic="Array">
-    	<cfset instance.alias = arguments.alias>
+    	<cfset variables.instance.alias = arguments.alias>
     	<cfreturn this>
     </cffunction>
 
 	<!--- Path --->
 	<cffunction name="getPath" access="public" returntype="any" output="false" hint="Get the path to this mapping">
-    	<cfreturn instance.path>
+    	<cfreturn variables.instance.path>
     </cffunction>
     <cffunction name="setPath" access="public" returntype="any" output="false" hint="Set the path to this mapping">
     	<cfargument name="path" required="true">
-    	<cfset instance.path = arguments.path>
+    	<cfset variables.instance.path = arguments.path>
     	<cfreturn this>
     </cffunction>
 
 	<!--- method --->
 	<cffunction name="getMethod" access="public" returntype="any" output="false" hint="Get the method that this mapping needs to execute from a mapping factory">
-    	<cfreturn instance.method>
+    	<cfreturn variables.instance.method>
     </cffunction>
     <cffunction name="setMethod" access="public" returntype="any" output="false" hint="Set the method used for getting this mapping from a factory">
     	<cfargument name="method" required="true">
-    	<cfset instance.method = arguments.method>
+    	<cfset variables.instance.method = arguments.method>
     	<cfreturn this>
     </cffunction>
 
 	<!--- Type --->
 	<cffunction name="getType" access="public" returntype="any" output="false" hint="Get the mapping type">
-    	<cfreturn instance.type>
+    	<cfreturn variables.instance.type>
     </cffunction>
     <cffunction name="setType" access="public" returntype="any" output="false" hint="Set the mapping type">
     	<cfargument name="type" required="true">
-    	<cfset instance.type = arguments.type>
+    	<cfset variables.instance.type = arguments.type>
     	<cfreturn this>
     </cffunction>
 
 	<!--- Value --->
 	<cffunction name="getValue" access="public" returntype="any" output="false" hint="Get the mapping value (if any)">
-    	<cfreturn instance.value>
+    	<cfreturn variables.instance.value>
     </cffunction>
     <cffunction name="setValue" access="public" returntype="any" output="false" hint="Set the mapping value">
     	<cfargument name="value" required="true">
-    	<cfset instance.value = arguments.value>
+    	<cfset variables.instance.value = arguments.value>
     	<cfreturn this>
     </cffunction>
 
 	<!--- Constructor --->
 	<cffunction name="getConstructor" access="public" returntype="any" output="false" hint="Get the name of the constructor method">
-    	<cfreturn instance.constructor>
+    	<cfreturn variables.instance.constructor>
     </cffunction>
     <cffunction name="setConstructor" access="public" returntype="any" output="false" hint="Override the name of the constructor method">
     	<cfargument name="constructor" required="true">
-    	<cfset instance.constructor = arguments.constructor>
+    	<cfset variables.instance.constructor = arguments.constructor>
     	<cfreturn this>
     </cffunction>
 
 	<!--- isAutowire --->
     <cffunction name="isAutowire" output="false" access="public" returntype="any" hint="Flag describing if you are using autowire or not as Boolean" doc_generic="Boolean">
-    	<cfreturn instance.autowire>
+    	<cfreturn variables.instance.autowire>
     </cffunction>
     <cffunction name="setAutowire" access="public" returntype="any" output="false" hint="Set autowire property">
     	<cfargument name="autowire" required="true" doc_generic="Boolean">
-    	<cfset instance.autowire = arguments.autowire>
+    	<cfset variables.instance.autowire = arguments.autowire>
     	<cfreturn this>
     </cffunction>
 
     <!--- isAspect --->
     <cffunction name="isAspect" output="false" access="public" returntype="any" hint="Flag describing if this mapping is an AOP aspect or not" doc_generic="Boolean">
-    	<cfreturn instance.aspect>
+    	<cfreturn variables.instance.aspect>
     </cffunction>
     <cffunction name="setAspect" access="public" returntype="any" output="false" hint="Set aspect property">
     	<cfargument name="aspect" required="true" doc_generic="Boolean">
-    	<cfset instance.aspect = arguments.aspect>
+    	<cfset variables.instance.aspect = arguments.aspect>
     	<cfreturn this>
     </cffunction>
 
     <!--- isAspectAutoBinding --->
     <cffunction name="isAspectAutoBinding" output="false" access="public" returntype="any" hint="Is this mapping an auto aspect binding" doc_generic="Boolean">
-    	<cfreturn instance.autoAspectBinding>
+    	<cfreturn variables.instance.autoAspectBinding>
     </cffunction>
     <!--- setAspectAutoBinding --->
     <cffunction name="setAspectAutoBinding" output="false" access="public" returntype="any" hint="Set the aspect auto binding bit">
     	<cfargument name="autoBinding" required="true" doc_generic="Boolean">
-    	<cfset instance.autoAspectBinding = arguments.autoBinding>
+    	<cfset variables.instance.autoAspectBinding = arguments.autoBinding>
     	<cfreturn this>
     </cffunction>
 
 	<!--- isAutoInit --->
     <cffunction name="isAutoInit" output="false" access="public" returntype="any" hint="Using auto init of mapping target or not as boolean" doc_generic="Boolean">
-    	<cfreturn instance.autoInit>
+    	<cfreturn variables.instance.autoInit>
     </cffunction>
     <cffunction name="setAutoInit" access="public" returntype="any" output="false" hint="Set autoInit property">
     	<cfargument name="autoInit" required="true">
-    	<cfset instance.autoInit = arguments.autoInit>
+    	<cfset variables.instance.autoInit = arguments.autoInit>
     	<cfreturn this>
     </cffunction>
 
 	<!--- scope --->
 	<cffunction name="getScope" access="public" returntype="any" output="false" hint="Get the visibility scope">
-    	<cfreturn instance.scope>
+    	<cfreturn variables.instance.scope>
     </cffunction>
     <cffunction name="setScope" access="public" returntype="any" output="false" hint="Set the visibility scope">
     	<cfargument name="scope" type="any" required="true">
-    	<cfset instance.scope = arguments.scope>
+    	<cfset variables.instance.scope = arguments.scope>
     	<cfreturn this>
     </cffunction>
 
 	<!--- DSL --->
 	<cffunction name="isDSL" output="false" access="public" returntype="any" hint="Does this mapping have a DSL construction element or not as Boolean" doc_generic="boolean">
-		<cfreturn (len(instance.dsl) GT 0)>
+		<cfreturn (len(variables.instance.dsl) GT 0)>
     </cffunction>
     <cffunction name="getDSL" access="public" returntype="any" output="false" hint="Get the construction DSL">
-    	<cfreturn instance.dsl>
+    	<cfreturn variables.instance.dsl>
     </cffunction>
     <cffunction name="setDSL" access="public" returntype="any" output="false" hint="Set the construction DSL">
     	<cfargument name="dsl" required="true">
-    	<cfset instance.dsl = arguments.dsl>
+    	<cfset variables.instance.dsl = arguments.dsl>
     	<cfreturn this>
     </cffunction>
 
@@ -372,12 +372,12 @@ Description :
 		</cfscript>
     </cffunction>
     <cffunction name="getCacheProperties" output="false" access="public" returntype="any" hint="Get this mappings cache properties structure" doc_generic="struct">
-    	<cfreturn instance.cache>
+    	<cfreturn variables.instance.cache>
     </cffunction>
 
 	<!--- getDIConstructorArguments --->
     <cffunction name="getDIConstructorArguments" output="false" access="public" returntype="any" hint="Get all the constructor argument definitions array" doc_generic="array">
-    	<cfreturn instance.DIConstructorArgs>
+    	<cfreturn variables.instance.DIConstructorArgs>
     </cffunction>
 
 	<!--- addConstructorArgument --->
@@ -394,12 +394,12 @@ Description :
 			var x   = 1;
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DIConstructorArgs); x++){
-				if( structKeyExists( arguments, "name" ) AND structKeyExists( instance.DIConstructorArgs[ x ], "name" ) AND
-					instance.DIConstructorArgs[ x ].name eq arguments.name ){ return this;}
+				if( structKeyExists( arguments, "name" ) AND structKeyExists( variables.instance.DIConstructorArgs[ x ], "name" ) AND
+				variables.instance.DIConstructorArgs[ x ].name eq arguments.name ){ return this;}
 			}
 			// Register new constructor argument.
 			structAppend(def, arguments, true);
-			arrayAppend( instance.DIConstructorArgs, def );
+			arrayAppend( variables.instance.DIConstructorArgs, def );
 
 			return this;
     	</cfscript>
@@ -418,24 +418,24 @@ Description :
     		var def = getDIDefinition();
 			var x	= 1;
 			// check if already registered, if it is, just return
-			for(x=1; x lte arrayLen(instance.DIMethodArgs); x++){
-				if( structKeyExists(instance.DIMethodArgs[ x ],"name") AND
-					instance.DIMethodArgs[ x ].name eq arguments.name ){ return this;}
+			for(x=1; x lte arrayLen(variables.instance.DIMethodArgs); x++){
+				if( structKeyExists(variables.instance.DIMethodArgs[ x ],"name") AND
+				variables.instance.DIMethodArgs[ x ].name eq arguments.name ){ return this;}
 			}
 			structAppend(def, arguments, true);
-			arrayAppend( instance.DIMethodArgs, def );
+			arrayAppend( variables.instance.DIMethodArgs, def );
 			return this;
     	</cfscript>
     </cffunction>
 
 	<!--- getDIMethodArguments --->
     <cffunction name="getDIMethodArguments" output="false" access="public" returntype="any" hint="Get all the method argument definitions array" doc_generic="array">
-    	<cfreturn instance.DIMethodArgs>
+    	<cfreturn variables.instance.DIMethodArgs>
     </cffunction>
 
 	<!--- getProperties --->
     <cffunction name="getDIProperties" output="false" access="public" returntype="any" hint="Get all the DI property definitions array" doc_generic="Array">
-    	<cfreturn instance.DIProperties>
+    	<cfreturn variables.instance.DIProperties>
     </cffunction>
 
 	<!--- addDIProperty --->
@@ -452,18 +452,18 @@ Description :
     		var def = getDIDefinition();
 			var x	= 1;
 			// check if already registered, if it is, just return
-			for( x=1; x lte arrayLen( instance.DIProperties ); x++ ){
-				if( instance.DIProperties[ x ].name eq arguments.name ){ return this;}
+			for( x=1; x lte arrayLen( variables.instance.DIProperties ); x++ ){
+				if( variables.instance.DIProperties[ x ].name eq arguments.name ){ return this;}
 			}
 			structAppend( def, arguments, true );
-			arrayAppend( instance.DIProperties, def );
+			arrayAppend( variables.instance.DIProperties, def );
 			return this;
     	</cfscript>
     </cffunction>
 
     <!--- getDISetters --->
     <cffunction name="getDISetters" output="false" access="public" returntype="any" hint="Get all the DI setter definitions array" doc_generic="array">
-    	<cfreturn instance.DISetters>
+    	<cfreturn variables.instance.DISetters>
     </cffunction>
 
 	<!--- addDISetter --->
@@ -480,7 +480,7 @@ Description :
 
 			// check if already registered, if it is, just return
 			for(x=1; x lte arrayLen(instance.DISetters); x++){
-				if( instance.DISetters[ x ].name eq arguments.name ){ return this;}
+				if( variables.instance.DISetters[ x ].name eq arguments.name ){ return this;}
 			}
 			// Remove scope for setter injection
 			def.scope = "";
@@ -491,66 +491,66 @@ Description :
 			// save incoming params
 			structAppend(def, arguments, true);
 			// save new DI setter injection
-			arrayAppend( instance.DISetters, def );
+			arrayAppend( variables.instance.DISetters, def );
 			return this;
     	</cfscript>
     </cffunction>
 
 	<!--- onDIComplete --->
     <cffunction name="getOnDIComplete" output="false" access="public" returntype="any" hint="Get all the DI complete methods array" doc_generic="array">
-    	<cfreturn instance.onDIComplete>
+    	<cfreturn variables.instance.onDIComplete>
     </cffunction>
     <cffunction name="setOnDIComplete" output="false" access="public" returntype="any" hint="Set the DI Complete method array">
   		<cfargument name="DIComplete" required="true" hint="The method array to set"/>
-    	<cfset instance.onDIComplete = arguments.DIComplete>
+    	<cfset variables.instance.onDIComplete = arguments.DIComplete>
     	<cfreturn this>
     </cffunction>
 
 	<!--- isDiscovered --->
     <cffunction name="isDiscovered" output="false" access="public" returntype="any" hint="Checks if this mapping has already been processed or not" doc_generic="Boolean">
-    	<cfreturn instance.discovered>
+    	<cfreturn variables.instance.discovered>
     </cffunction>
 
 	<!--- setDiscovered --->
     <cffunction name="setDiscovered" output="false" access="public" returntype="any" hint="Flag this mapping as discovered">
-    	<cfset instance.discovered = true>
+    	<cfset variables.instance.discovered = true>
     	<cfreturn this>
     </cffunction>
 
 	<!--- getObjectMetadata --->
     <cffunction name="getObjectMetadata" output="false" access="public" returntype="any" hint="Get the internal mapping metadata of the object">
-    	<cfreturn instance.metadata>
+    	<cfreturn variables.instance.metadata>
     </cffunction>
 
 	<!--- setObjectMetadata --->
     <cffunction name="setObjectMetadata" output="false" access="public" returntype="any" hint="Set the mappings CFC target metadata">
     	<cfargument name="metadata" required="true" hint="Target CFC metadata"/>
-		<cfset instance.metadata = arguments.metadata>
+		<cfset variables.instance.metadata = arguments.metadata>
 		<cfreturn this>
     </cffunction>
 
 	<!--- isEagerInit --->
     <cffunction name="isEagerInit" output="false" access="public" returntype="any" hint="Is this mapping eager initialized or not as Boolean" doc_generic="Boolean">
-    	<cfreturn instance.eagerInit>
+    	<cfreturn variables.instance.eagerInit>
     </cffunction>
 
 	<!--- setEagerInit --->
     <cffunction name="setEagerInit" output="false" access="public" returntype="any" hint="Set the eager init flag">
     	<cfargument name="eagerInit" required="true" hint="Set the eager init flag"/>
-    	<cfset instance.eagerInit = arguments.eagerInit>
+    	<cfset variables.instance.eagerInit = arguments.eagerInit>
     	<cfreturn this>
 	</cffunction>
 
 	<!--- getProviderMethods --->
     <cffunction name="getProviderMethods" output="false" access="public" returntype="any" hint="Get the discovered provider methods array" doc_generic="Array">
-    	<cfreturn instance.providerMethods>
+    	<cfreturn variables.instance.providerMethods>
     </cffunction>
 
 	<!--- addProviderMethod --->
     <cffunction name="addProviderMethod" output="false" access="public" returntype="any" hint="Add a new provider method to this mapping">
     	<cfargument name="method" 	required="true" hint="The provided method to override as a provider"/>
 		<cfargument name="mapping" 	required="true" hint="The mapping to provide via the selected method"/>
-		<cfset arrayAppend( instance.providerMethods, arguments)>
+		<cfset arrayAppend( variables.instance.providerMethods, arguments)>
 		<cfreturn this>
     </cffunction>
 
@@ -578,19 +578,19 @@ Description :
 		<!--- Lock for discovery based on path location, only done once per instance of mapping. --->
 		<cflock name="Mapping.#arguments.injector.getInjectorID()#.MetadataProcessing.#lockToken#" type="exclusive" timeout="20" throwOnTimeout="true">
 		<cfscript>
-	    	if( NOT instance.discovered ){
+	    	if( NOT variables.instance.discovered ){
 				// announce inspection
 				iData = {mapping=this,binder=arguments.binder,injector=arguments.binder.getInjector()};
 				eventManager.processState("beforeInstanceInspection",iData);
 
 				// Processing only done for CFC's,rest just mark and return
-				if( instance.type neq arguments.binder.TYPES.CFC ){
-					if( NOT len(instance.scope) ){ instance.scope = "noscope"; }
-					if( NOT len(instance.autowire) ){ instance.autowire = true; }
-					if( NOT len(instance.eagerInit) ){ instance.eagerInit = false; }
-					if( NOT len(instance.threadSafe) ){ instance.threadSafe = false; }
+				if( variables.instance.type neq arguments.binder.TYPES.CFC ){
+					if( NOT len(variables.instance.scope) ){ variables.instance.scope = "noscope"; }
+					if( NOT len(variables.instance.autowire) ){ variables.instance.autowire = true; }
+					if( NOT len(variables.instance.eagerInit) ){ variables.instance.eagerInit = false; }
+					if( NOT len(variables.instance.threadSafe) ){ variables.instance.threadSafe = false; }
 					// finished processing mark as discovered
-					instance.discovered = true;
+					variables.instance.discovered = true;
 					// announce it
 					eventManager.processState("afterInstanceInspection",iData);
 					return;
@@ -607,7 +607,7 @@ Description :
 					if( len( binder.getMetadataCache() ) ) {
 						// Get from cache or produce on demand
 						md = injector.getCacheBox().getCache( binder.getMetadataCache() ).getOrSet(
-							instance.path,
+							variables.instance.path,
 							produceMetadataUDF
 						);
 					} else {
@@ -616,51 +616,51 @@ Description :
 				}
 
 				// Store Metadata
-				instance.metadata = md;
+				variables.instance.metadata = md;
 
 				// Process persistence if not set already by configuration as it takes precedence
-				if( NOT len(instance.scope) ){
+				if( NOT len(variables.instance.scope) ){
 					// Singleton Processing
-					if( structKeyExists(md,"singleton") ){ instance.scope = arguments.binder.SCOPES.SINGLETON; }
+					if( structKeyExists(md,"singleton") ){ variables.instance.scope = arguments.binder.SCOPES.SINGLETON; }
 					// Registered Scope Processing
-					if( structKeyExists(md,"scope") ){ instance.scope = md.scope; }
+					if( structKeyExists(md,"scope") ){ variables.instance.scope = md.scope; }
 					// CacheBox scope processing if cachebox annotation found, or cache annotation found
 					if( structKeyExists(md,"cacheBox") OR ( structKeyExists(md,"cache") AND isBoolean(md.cache) AND md.cache ) ){
-						instance.scope = arguments.binder.SCOPES.CACHEBOX;
+						variables.instance.scope = arguments.binder.SCOPES.CACHEBOX;
 					}
 
 					// check if scope found? If so, then set it to no scope.
-					if( NOT len(instance.scope) ){ instance.scope = "noscope"; }
+					if( NOT len(variables.instance.scope) ){ variables.instance.scope = "noscope"; }
 
 				} // end of persistence checks
 
 				// Cachebox Persistence Processing
-				if( instance.scope EQ arguments.binder.SCOPES.CACHEBOX ){
+				if( variables.instance.scope EQ arguments.binder.SCOPES.CACHEBOX ){
 					// Check if we already have a key, maybe added via configuration
-					if( NOT len( instance.cache.key ) ){
-						instance.cache.key = "wirebox-#instance.name#";
+					if( NOT len( variables.instance.cache.key ) ){
+						variables.instance.cache.key = "wirebox-#variables.instance.name#";
 					}
 					// Check the default provider now to see if set by configuration
-					if( NOT len( instance.cache.provider) ){
+					if( NOT len( variables.instance.cache.provider) ){
 						// default it first
-						instance.cache.provider = "default";
+						variables.instance.cache.provider = "default";
 						// Now check the annotations for the provider
 						if( structKeyExists(md,"cacheBox") AND len(md.cacheBox) ){
-							instance.cache.provider = md.cacheBox;
+							variables.instance.cache.provider = md.cacheBox;
 						}
 					}
 					// Check if timeouts set by configuration or discovery
-					if( NOT len( instance.cache.timeout ) ){
+					if( NOT len( variables.instance.cache.timeout ) ){
 						// Discovery by annocations
 						if( structKeyExists(md,"cachetimeout") AND isNumeric(md.cacheTimeout) ){
-							instance.cache.timeout = md.cacheTimeout;
+							variables.instance.cache.timeout = md.cacheTimeout;
 						}
 					}
 					// Check if lastAccessTimeout set by configuration or discovery
-					if( NOT len( instance.cache.lastAccessTimeout ) ){
+					if( NOT len( variables.instance.cache.lastAccessTimeout ) ){
 						// Discovery by annocations
 						if( structKeyExists(md,"cacheLastAccessTimeout") AND isNumeric(md.cacheLastAccessTimeout) ){
-							instance.cache.lastAccessTimeout = md.cacheLastAccessTimeout;
+							variables.instance.cache.lastAccessTimeout = md.cacheLastAccessTimeout;
 						}
 					}
 				}
@@ -668,7 +668,7 @@ Description :
 				// Alias annotations if found, then append them as aliases.
 				if( structKeyExists(md, "alias") ){
 					thisAliases = listToArray(md.alias);
-					instance.alias.addAll( thisAliases );
+					variables.instance.alias.addAll( thisAliases );
 					// register alias references on binder
 					for(x=1; x lte arrayLen(thisAliases); x++){
 						mappings[ thisAliases[ x ] ] = this;
@@ -676,46 +676,46 @@ Description :
 				}
 
 				// eagerInit annotation
-				if( NOT len(instance.eagerInit) ){
+				if( NOT len(variables.instance.eagerInit) ){
 					if( structKeyExists(md,"eagerInit") ){
-						instance.eagerInit = true;
+						variables.instance.eagerInit = true;
 					}
 					else{
 						// defaults to lazy loading
-						instance.eagerInit = false;
+						variables.instance.eagerInit = false;
 					}
 				}
 
 				// threadSafe wiring annotation
-				if( NOT len(instance.threadSafe) ){
+				if( NOT len(variables.instance.threadSafe) ){
 					if( structKeyExists(md,"threadSafe") AND NOT len(md.threadSafe)){
-						instance.threadSafe = true;
+						variables.instance.threadSafe = true;
 					}
 					else if( structKeyExists(md,"threadSafe") AND len(md.threadSafe) AND isBoolean(md.threadSafe) ){
-						instance.threadSafe = md.threadSafe;
+						variables.instance.threadSafe = md.threadSafe;
 					}
 					else{
 						// defaults to non thread safe wiring
-						instance.threadSafe = false;
+						variables.instance.threadSafe = false;
 					}
 				}
 
 				// mixins annotation only if not overriden
-				if( NOT arrayLen(instance.mixins) ){
+				if( NOT arrayLen(variables.instance.mixins) ){
 					if( structKeyExists(md,"mixins") ){
-						instance.mixins = listToArray( md.mixins );
+						variables.instance.mixins = listToArray( md.mixins );
 					}
 				}
 
 				// check if the autowire NOT set, so we can discover it.
-				if( NOT len(instance.autowire) ){
+				if( NOT len(variables.instance.autowire) ){
 					// Check if autowire annotation found or autowire already set
 					if( structKeyExists(md,"autowire") and isBoolean(md.autowire) ){
-						instance.autoWire = md.autowire;
+						variables.instance.autoWire = md.autowire;
 					}
 					else{
 						// default to true
-						instance.autoWire = true;
+						variables.instance.autoWire = true;
 					}
 				}
 
@@ -726,7 +726,7 @@ Description :
 				}
 
 				// Only process if autowiring
-				if( instance.autoWire ){
+				if( variables.instance.autoWire ){
 					// Process Methods, Constructors and Properties only if non autowire annotation check found on component.
 					processDIMetadata( arguments.binder, md );
 				}
@@ -737,7 +737,7 @@ Description :
 				}
 
 				// finished processing mark as discovered
-				instance.discovered = true;
+				variables.instance.discovered = true;
 
 				// announce it
 				eventManager.processState("afterInstanceInspection",iData);
@@ -870,7 +870,7 @@ Description :
 					}
 
 					// Constructor Processing if found
-					if( md.functions[ x ].name eq instance.constructor ){
+					if( md.functions[ x ].name eq variables.instance.constructor ){
 						// Loop Over Arguments to process them for dependencies
 						for(y=1;y lte arrayLen(md.functions[ x ].parameters); y++){
 

@@ -146,42 +146,42 @@ component serializable="false" accessors="true"{
 	* Get the loader service
 	*/
 	function getLoaderService(){
-		return services.loaderService;
+		return variables.services.loaderService;
 	}
 
 	/**
 	* Get the module service
 	*/
 	function getModuleService(){
-		return services.moduleService;
+		return variables.services.moduleService;
 	}
 
 	/**
 	* Get the interceptor service
 	*/
 	function getInterceptorService(){
-		return services.interceptorService;
+		return variables.services.interceptorService;
 	}
 
 	/**
 	* Get the handler service
 	*/
 	function getHandlerService(){
-		return services.handlerService;
+		return variables.services.handlerService;
 	}
 
 	/**
 	* Get the request service
 	*/
 	function getRequestService(){
-		return services.requestService;
+		return variables.services.requestService;
 	}
 
 	/**
 	* Get the routing service
 	*/
 	function getRoutingService(){
-		return services.routingService;
+		return variables.services.routingService;
 	}
 
 	/****************************************** SETTING METHODS *************************************************/

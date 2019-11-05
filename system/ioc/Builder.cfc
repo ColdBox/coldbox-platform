@@ -756,22 +756,22 @@
 		baseObject.getVariablesMixin()
 			// filter out overrides
 			.filter( function( key, value ) {
-				return ( !targetVariables.keyExists( key ) AND NOT listFindNoCase( excludedProperties, key ) );
+				return ( !variables.targetVariables.keyExists( arguments.key ) AND NOT listFindNoCase( variables.excludedProperties, arguments.key ) );
 			} )
 			.each( function( propertyName, propertyValue ){
 				// inject the property/method now
 				if( !isNull( arguments.propertyValue ) ) {
-					args.target.injectPropertyMixin( propertyName, propertyValue );
+					variables.args.target.injectPropertyMixin( arguments.propertyName, arguments.propertyValue );
 				}
 				// Do we need to do automatic generic getter/setters
-				if( generateAccessors and baseProperties.keyExists( propertyName ) ){
+				if( variables.generateAccessors and variables.baseProperties.keyExists( arguments.propertyName ) ){
 
-					if( ! structKeyExists( args.target, "get#propertyName#" ) ){
-						args.target.injectMixin( "get" & propertyName, variables.genericGetter );
+					if( ! structKeyExists( variables.args.target, "get#arguments.propertyName#" ) ){
+						variables.args.target.injectMixin( "get" & arguments.propertyName, variables.genericGetter );
 					}
 
-					if( ! structKeyExists( args.target, "set#propertyName#" ) ){
-						args.target.injectMixin( "set" & propertyName, variables.genericSetter );
+					if( ! structKeyExists( variables.args.target, "set#arguments.propertyName#" ) ){
+						variables.args.target.injectMixin( "set" & arguments.propertyName, variables.genericSetter );
 					}
 
 				}

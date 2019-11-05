@@ -165,7 +165,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	){
 		// Process The State if it exists, else just exit out
 		if( structKeyExists( variables.interceptionStates, arguments.state ) ){
-			arguments.event 	= controller.getRequestService().getContext();
+			arguments.event 	= variables.controller.getRequestService().getContext();
 			arguments.buffer 	= getLazyBuffer();
 
 			// Execute Interception

@@ -503,7 +503,7 @@ component serializable="false" accessors="true"{
 	* @return FrameworkSuperType
 	*/
 	any function includeUDF( required udflibrary ){
-		var appMapping		= controller.getSetting( "AppMapping" );
+		var appMapping		= variables.controller.getSetting( "AppMapping" );
 		var UDFFullPath 	= expandPath( arguments.udflibrary );
 		var UDFRelativePath = expandPath( "/" & appMapping & "/" & arguments.udflibrary );
 

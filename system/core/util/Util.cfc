@@ -283,7 +283,7 @@ Description :
 		<cfset var loc = {}>
 
 		<!--- First time through, get metaData of component.  --->
-		<cfif structIsEmpty( md )>
+		<cfif structIsEmpty( arguments.md )>
 			<cfif isObject( component )>
 				<cfset md = getMetaData( component )>
 			<cfelse>
@@ -293,7 +293,7 @@ Description :
 
 		<!--- If it has a parent, stop and calculate it first, unless of course, we've reached a class we shouldn't recurse into. --->
 
-		<cfif 	structKeyExists( md, "extends" ) AND
+		<cfif 	structKeyExists( arguments.md, "extends" ) AND
 				md.type eq "component" AND
 				stopClassRecursion( md.extends.name, arguments.stopRecursions ) EQ FALSE
 		>
@@ -305,14 +305,14 @@ Description :
 		</cfif>
 
 		<!--- Override ourselves into parent --->
-		<cfloop collection="#md#" item="loc.key">
+		<cfloop collection="#arguments.md#" item="loc.key">
 			<!--- Functions and properties are an array of structs keyed on name, so I can treat them the same --->
 			<cfif listFindNoCase( "functions,properties", loc.key )>
 				<cfif not structKeyExists( loc.parent, loc.key )>
 					<cfset loc.parent[ loc.key ] = []>
 				</cfif>
 				<!--- For each function/property in me... --->
-				<cfloop array="#md[ loc.key ]#" index="loc.item">
+				<cfloop array="#arguments.md[ loc.key ]#" index="loc.item">
 					<cfset loc.parentItemCounter = 0>
 					<cfset loc.foundInParent = false>
 					<!--- ...Look for an item of the same name in my parent... --->
@@ -331,7 +331,7 @@ Description :
 					</cfif>
 				</cfloop>
 			<cfelseif NOT listFindNoCase( "extends,implements", loc.key )>
-				<cfset loc.parent[ loc.key ] = md[ loc.key ]>
+				<cfset loc.parent[ loc.key ] = arguments.md[ loc.key ]>
 			</cfif>
 		</cfloop>
 		<cfset arrayPrePend( loc.parent.inheritanceTrail, loc.parent.name )>

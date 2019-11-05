@@ -911,7 +911,7 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 				}
 				// Inject dependency
 				injectTarget(
-					target         = targetObject,
+					target         = arguments.targetObject,
 					propertyName   = arguments.DIData[ x ].name,
 					propertyObject = refLocal.dependency,
 					scope          = refLocal.scope,

@@ -111,7 +111,7 @@ component accessors="true"{
 	 * Reset appender configuration
 	 */
 	LogBoxConfig function resetAppenders(){
-		instance.appenders = structNew();
+		variables.instance.appenders = structNew();
 		return this;
 	}
 
@@ -119,7 +119,7 @@ component accessors="true"{
 	 * Reset categories configuration
 	 */
 	LogBoxConfig function resetCategories(){
-		instance.categories = structNew();
+		variables.instance.categories = structNew();
 		return this;
 	}
 
@@ -127,7 +127,7 @@ component accessors="true"{
 	 * Reset root configuration
 	 */
 	LogBoxConfig function resetRoot(){
-		instance.rootLogger = structNew();
+		variables.instance.rootLogger = structNew();
 		return this;
 	}
 
@@ -135,7 +135,7 @@ component accessors="true"{
 	 * Get the instance memento
 	 */
 	struct function getMemento(){
-		return instance;
+		return variables.instance;
 	}
 
 	/**
@@ -145,22 +145,22 @@ component accessors="true"{
 	 */
 	LogBoxConfig function validate(){
 		// Check root logger definition
-		if( structIsEmpty( instance.rootLogger ) ){
+		if( structIsEmpty( variables.instance.rootLogger ) ){
 			// Auto register a root logger
 			root( appenders="*" );
 		}
 		
 		// All root appenders?
-		if( instance.rootLogger.appenders eq "*" ){
-			instance.rootLogger.appenders = structKeyList( getAllAppenders() );
+		if( variables.instance.rootLogger.appenders eq "*" ){
+			variables.instance.rootLogger.appenders = structKeyList( getAllAppenders() );
 		}
 
 		// Check root's appenders
-		for( var x=1; x lte listlen( instance.rootLogger.appenders ); x++ ){
-			if( NOT structKeyExists( instance.appenders, listGetAt( instance.rootLogger.appenders, x ) ) ){
+		for( var x=1; x lte listlen( variables.instance.rootLogger.appenders ); x++ ){
+			if( NOT structKeyExists( variables.instance.appenders, listGetAt( variables.instance.rootLogger.appenders, x ) ) ){
 				throw(
 					message = "Invalid appender in Root Logger",
-					detail  = "The appender #listGetAt( instance.rootLogger.appenders, x )# has not been defined yet. Please define it first.",
+					detail  = "The appender #listGetAt( variables.instance.rootLogger.appenders, x )# has not been defined yet. Please define it first.",
 					type    = "AppenderNotFound"
 				);
 			}
@@ -170,15 +170,15 @@ component accessors="true"{
 		for( var key in instance.categories ){
 			
 			// Check * all appenders
-			if( instance.categories[ key ].appenders eq "*" ){
-				instance.categories[ key ].appenders = structKeyList( getAllAppenders() );
+			if( variables.instance.categories[ key ].appenders eq "*" ){
+				variables.instance.categories[ key ].appenders = structKeyList( getAllAppenders() );
 			}
 			
-			for( var x=1; x lte listlen( instance.categories[ key ].appenders ); x++ ){
-				if( NOT structKeyExists( instance.appenders, listGetAt( instance.categories[ key ].appenders, x ) ) ){
+			for( var x=1; x lte listlen( variables.instance.categories[ key ].appenders ); x++ ){
+				if( NOT structKeyExists( variables.instance.appenders, listGetAt( variables.instance.categories[ key ].appenders, x ) ) ){
 					throw(
 						message = "Invalid appender in Category: #key#",
-						detail  = "The appender #listGetAt(instance.categories[key].appenders,x)# has not been defined yet. Please define it first.",
+						detail  = "The appender #listGetAt(variables.instance.categories[key].appenders,x)# has not been defined yet. Please define it first.",
 						type    = "AppenderNotFound"
 					);
 				}
@@ -213,7 +213,7 @@ component accessors="true"{
 		levelChecks( arguments.levelMin, arguments.levelMax );
 		
 		// Register appender
-		instance.appenders[ arguments.name ] = arguments;
+		variables.instance.appenders[ arguments.name ] = arguments;
 		
 		return this;
 	}
@@ -248,7 +248,7 @@ component accessors="true"{
 		}
 
 		// Add definition
-		instance.rootLogger = arguments;
+		variables.instance.rootLogger = arguments;
 		
 		return this;
 	}
@@ -257,7 +257,7 @@ component accessors="true"{
 	 * Get the root logger definition
 	 */
 	struct function getRoot(){
-		return instance.rootLogger;
+		return variables.instance.rootLogger;
 	}
 
 	/**
@@ -286,7 +286,7 @@ component accessors="true"{
         }
 
 		// Add category registration
-		instance.categories[ arguments.name ] = arguments;
+		variables.instance.categories[ arguments.name ] = arguments;
 
 		return this;
 	}
@@ -297,7 +297,7 @@ component accessors="true"{
 	 * @name The category name
 	 */
 	struct function getCategory( required name ){
-		return instance.categories[ arguments.name ];
+		return variables.instance.categories[ arguments.name ];
 	}
 
 	/**
@@ -306,21 +306,21 @@ component accessors="true"{
 	 * @name The category name
 	 */
 	boolean function categoryExists( required name ){
-		return structKeyExists( instance.categories, arguments.name );
+		return structKeyExists( variables.instance.categories, arguments.name );
 	}
 
 	/**
 	 * Get the configured categories
 	 */
 	struct function getAllCategories(){
-		return instance.categories;
+		return variables.instance.categories;
 	}
 
 	/**
 	 * Get all the configured appenders
 	 */
 	struct function getAllAppenders(){
-		return instance.appenders;
+		return variables.instance.appenders;
 	}
 
 	/**

@@ -205,13 +205,13 @@ Description :
     <cffunction name="getMapping" output="false" access="public" returntype="any" hint="Get a specific object mapping: coldbox.system.ioc.config.Mapping" doc_generic="coldbox.system.ioc.config.Mapping">
     	<cfargument name="name" required="true" hint="The name of the mapping to retrieve"/>
 
-		<cfif NOT structKeyExists(instance.mappings, arguments.name)>
+		<cfif NOT structKeyExists(variables.instance.mappings, arguments.name)>
     		<cfthrow message="Mapping #arguments.name# has not been registered"
 					 detail="Registered mappings are: #structKeyList(instance.mappings)#"
 					 type="Binder.MappingNotFoundException" >
     	</cfif>
 
-		<cfreturn instance.mappings[ arguments.name ]>
+		<cfreturn variables.instance.mappings[ arguments.name ]>
     </cffunction>
 
     <!--- setMapping --->
@@ -234,7 +234,7 @@ Description :
 	<!--- mappingExists --->
     <cffunction name="mappingExists" output="false" access="public" returntype="any" hint="Check if an object mapping exists" doc_generic="Boolean">
     	<cfargument name="name" required="true" hint="The name of the mapping to verify"/>
-    	<cfreturn structKeyExists(instance.mappings, arguments.name)>
+    	<cfreturn structKeyExists(variables.instance.mappings, arguments.name)>
     </cffunction>
 
 <!------------------------------------------- MAPPING DSL ------------------------------------------>
@@ -347,7 +347,7 @@ Description :
     	<cfargument name="force" required="false" default="false" hint="Forces the registration of the mapping in case it already exists"/>
 		<cfscript>
 			// Clear out any current mappings
-			currentMapping = [];
+			variables.currentMapping = [];
 
 			// generate mapping entry for this dude.
 			var name 	= "";
@@ -360,25 +360,25 @@ Description :
 			name = arguments.alias[1];
 
 			// check if mapping exists, if so, just use and return.
-			if( structKeyExists( instance.mappings, name) and !arguments.force ){
-				arrayAppend( currentMapping, instance.mappings[ name ] );
+			if( structKeyExists( variables.instance.mappings, name) and !arguments.force ){
+				arrayAppend( variables.currentMapping, variables.instance.mappings[ name ] );
 				return this;
 			}
 
 			// generate the mapping for the first name passed
-			instance.mappings[ name ] = createObject("component","coldbox.system.ioc.config.Mapping").init( name );
+			variables.instance.mappings[ name ] = createObject("component","coldbox.system.ioc.config.Mapping").init( name );
 
 			// set the current mapping
-			arrayAppend( currentMapping, instance.mappings[ name ] );
+			arrayAppend( variables.currentMapping, variables.instance.mappings[ name ] );
 
 			// Set aliases, scopes and types
-			instance.mappings[ name ]
+			variables.instance.mappings[ name ]
 				.setAlias( arguments.alias )
 				.setType( this.TYPES.CFC );
 
 			// Loop and create alias references
 			for(x=2;x lte arrayLen(arguments.alias); x++){
-				instance.mappings[ arguments.alias[x] ] = instance.mappings[ name ];
+				variables.instance.mappings[ arguments.alias[x] ] = variables.instance.mappings[ name ];
 			}
 
 			return this;
