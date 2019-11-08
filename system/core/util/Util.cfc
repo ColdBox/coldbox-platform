@@ -10,6 +10,35 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The main ColdBox utility library filled with lots of nice goodies.">
 
+	<cfscript>
+	/**
+	 * Builds the unique Session Key of a user request and returns it to you.
+	 */
+	string function getSessionIdentifier(){
+		// Check jsession id First
+		if( isDefined( "session" ) and structKeyExists( session, "sessionid" ) ){
+			return session.sessionid;
+		}
+		// Check normal cfid and cftoken in cookie
+		else if( structKeyExists( cookie, "CFID" ) AND structKeyExists( cookie,"CFTOKEN" ) ){
+			return hash( cookie.cfid & cookie.cftoken );
+		}
+		// Check normal cfid and cftoken in URL
+		else if( structKeyExists( URL, "CFID" ) AND structKeyExists( URL,"CFTOKEN" ) ){
+			return hash( URL.cfid & URL.cftoken );
+		}
+		// check session URL Token
+		else if( isDefined( "session" ) and structKeyExists( session, "URLToken" ) ){
+			return session.URLToken;
+		} else {
+			throw(
+				message = "Cannot find a jsessionid, URLToken or cfid/cftoken in any scope. Please verify",
+				type 	= "UniqueKeyException"
+			);
+		}
+	}
+	</cfscript>
+
 	<!--- getMixerUtil --->
     <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" doc_generic="coldbox.system.core.dynamic.MixerUtil">
     	<cfscript>
