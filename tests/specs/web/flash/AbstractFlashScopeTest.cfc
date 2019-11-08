@@ -9,9 +9,8 @@
 
 		mockController
 			.$( "getRequestService", mockRService )
-			.$( "getUtil", new coldbox.system.core.util.Util() );
+			.$( method="getUtil", returns=new coldbox.system.core.util.Util(), preserveReturnType=false );
 		mockRService.$( "getContext", mockEvent );
-
 
 		flash.init( mockController );
 
