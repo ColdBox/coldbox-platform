@@ -1,19 +1,18 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-<cfscript>
+	<cfscript>
 	this.loadColdBox = false;
 
 	function setup(){
-		flash = createMock( "coldbox.system.web.flash.MockFlash" );
-		mockController = createMock(className="coldbox.system.web.Controller" );
-		flash.init(mockController);
-		
-		//test scope
-		testscope = {
-			test={content="luis",autoPurge=true,keep=true},
-			date={content=now(),autoPurge=true,keep=true}
-		};
+		flash          = createMock( "coldbox.system.web.flash.MockFlash" );
+		mockController = createMock( className = "coldbox.system.web.Controller" );
+		flash.init( mockController );
 
-	}	
+		// test scope
+		testscope = {
+			test : { content : "luis", autoPurge : true, keep : true },
+			date : { content : now(), autoPurge : true, keep : true }
+		};
+	}
 
 	function teardown(){
 		flash.removeFlash();
@@ -25,8 +24,7 @@
 	}
 
 	function testSaveFlash(){
-
-		flash.$( "getScope",testscope);
+		flash.$( "getScope", testscope );
 		flash.saveFlash();
 
 		assertEquals( flash.getMockFlash(), testscope );
@@ -41,10 +39,10 @@
 	function testgetFlash(){
 		flash.removeFlash();
 		assertEquals( flash.getMockFlash(), structNew() );
-		
+
 		flash.$( "getScope", testscope );
 		flash.saveFlash();
-		assertEquals( flash.getMockFlash(), testScope);
+		assertEquals( flash.getMockFlash(), testScope );
 	}
-</cfscript>
+	</cfscript>
 </cfcomponent>
