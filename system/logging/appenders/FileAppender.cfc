@@ -203,99 +203,113 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		} );
 
 		if( isActive ){
-			//out( "Listener already active exiting startup..." );
+			out( "Listener already active exiting startup..." );
 			return;
 		} else {
-			//out( "Listener needs to startup" );
+			out( "Listener needs to startup" );
 		}
 
-		thread  action="run" name="#variables.lockName#-#hash( createUUID() )#"{
-			// Activate listener
-			var isActivating = variables.lock( body=function(){
-				if( !variables.logListener.active ){
-					//out( "listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
-					variables.logListener.active = true;
-					return true;
-				} else {
-					//out( "listener was just marked as active, just existing lock" );
-					return false;
-				}
-			} );
+		// Create a runnable closure proxy for the log monitor
+		var runnable = createObject( "java", "java.lang.Thread" ).init(
+			createDynamicProxy(
+				new coldbox.system.core.dynamic.Runnable( runnable=this, method="runLogListener", debug=true ),
+				[ "java.lang.Runnable" ]
+			),
+			"FileLogListener=>#getName()#"
+		);
 
-			if( !isActivating ){ return; }
+		// Start it up baby!
+		runnable.start();
+	}
 
-			var lastRun       = getTickCount();
-			var start         = lastRun;
-			var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
-			var flushInterval = 1000; // 1 second
-			var sleepInterval = 50;
-			var count         = 0;
+	/**
+	 * This function runs the log listener implementation, usually called async via a runnable class
+	 */
+	function runLogListener(){
+		// Activate listener
+		var isActivating = variables.lock( body=function(){
+			if( !variables.logListener.active ){
+				out( "listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
+				variables.logListener.active = true;
+				return true;
+			} else {
+				out( "listener was just marked as active, just existing lock" );
+				return false;
+			}
+		} );
 
-			// Ensure Log File
-			initLogLocation();
+		if( !isActivating ){ return; }
 
-			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
-			var hasMessages   = false;
+		var lastRun       = getTickCount();
+		var start         = lastRun;
+		var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
+		var flushInterval = 1000; // 1 second
+		var sleepInterval = 50;
+		var count         = 0;
 
-			try{
-				//out( "Starting #getName()# thread", true );
+		// Ensure Log File
+		initLogLocation();
 
-				// Execute only if there are messages in the queue or the internal has been crossed
-				while(
-					variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
-				){
+		var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
+		var hasMessages   = false;
 
-					//out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
+		try{
+			out( "Starting #getName()# thread", true );
 
-					if( variables.logListener.queue.len() ){
-						// pop and dequeue
-						var thisMessage = variables.logListener.queue[ 1 ];
-						variables.logListener.queue.deleteAt( 1 );
+			// Execute only if there are messages in the queue or the internal has been crossed
+			while(
+				variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
+			){
 
-						if( isSimpleValue( oFile ) ){
-							oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
-						}
+				out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
 
-						//out( "Wrote to file #thisMessage#" );
+				if( variables.logListener.queue.len() ){
+					// pop and dequeue
+					var thisMessage = variables.logListener.queue[ 1 ];
+					variables.logListener.queue.deleteAt( 1 );
 
-						// Write to file
-						fileWriteLine( oFile, thisMessage );
-
-						// Mark the last run
-						lastRun = getTickCount();
+					if( isSimpleValue( oFile ) ){
+						oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
 					}
 
-					// flush to disk every start + 1000ms
-					if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
-						//out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
-						fileClose( oFile );
-						oFile = "";
-						start = getTickCount();
-					}
+					out( "Wrote to file #thisMessage#" );
 
-					//out( "Sleeping: lastRun #lastRun + maxIdle#" );
+					// Write to file
+					fileWriteLine( oFile, thisMessage );
 
-					sleep( sleepInterval ); // take a nap
+					// Mark the last run
+					lastRun = getTickCount();
 				}
 
-			} catch( Any e ){
-				$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
-				//out( "Error with listener thread for #getName()#" & e.message & e.detail );
-			} finally {
-				//out( "Stopping listener thread for #getName()#, we have done our job" );
-
-				// Stop log listener
-				variables.lock( body=function(){
-					variables.logListener.active = false;
-				} );
-
-				if( !isSimpleValue( oFile ) ){
+				// flush to disk every start + 1000ms
+				if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
+					out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
 					fileClose( oFile );
 					oFile = "";
+					start = getTickCount();
 				}
+
+				out( "Sleeping: lastRun #lastRun + maxIdle#" );
+
+				sleep( sleepInterval ); // take a nap
 			}
 
-		} // end threading
+		} catch( Any e ){
+			$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
+			out( "Error with listener thread for #getName()#" & e.message & e.detail );
+		} finally {
+			out( "Stopping listener thread for #getName()#, we have done our job" );
+
+			// Stop log listener
+			variables.lock( body=function(){
+				variables.logListener.active = false;
+			} );
+
+			if( !isSimpleValue( oFile ) ){
+				fileClose( oFile );
+				oFile = "";
+			}
+		}
 	}
 
 	/************************************ PRIVATE ************************************/
@@ -306,11 +320,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * @message The target message
 	 */
 	private FileAppender function append( required message ){
-		// If we are not in a thread, then start the log listener, else queue it
-		if( !getUtil().inThread() ){
-			// Ensure log listener
-			startLogListener();
-		}
+		// Ensure log listener
+		startLogListener();
 
 		// queue message up
 		arrayAppend( variables.logListener.queue, arguments.message );
