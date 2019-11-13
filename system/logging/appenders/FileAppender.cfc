@@ -212,10 +212,15 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		// Create a runnable closure proxy for the log monitor
 		var runnable = createObject( "java", "java.lang.Thread" ).init(
 			createDynamicProxy(
-				new coldbox.system.core.dynamic.Runnable( runnable=this, method="runLogListener", debug=true ),
+				new coldbox.system.core.async.Runnable(
+					runnable=this,
+					method="runLogListener",
+					debug=true,
+					loadAppContext=true
+				),
 				[ "java.lang.Runnable" ]
 			),
-			"FileLogListener=>#getName()#"
+			"FileLogListener:#getName()#"
 		);
 
 		// Start it up baby!
@@ -242,7 +247,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 		var lastRun       = getTickCount();
 		var start         = lastRun;
-		var maxIdle       = 5000; // 15 seconds is how long the threads can live for.
+		var maxIdle       = 1000; // 10 seconds is how long the threads can live for.
 		var flushInterval = 1000; // 1 second
 		var sleepInterval = 50;
 		var count         = 0;
@@ -261,7 +266,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 				variables.logListener.queue.len() || lastRun + maxIdle > getTickCount()
 			){
 
-				out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
+				//out( "len: #variables.logListener.queue.len()# last run: #lastRun# idle: #maxIdle#" );
 
 				if( variables.logListener.queue.len() ){
 					// pop and dequeue

@@ -11,14 +11,15 @@ component extends="BaseRunnable"{
 	 * @runnable A CFC to execute async via Runnable interface in Java, this CFC must implement the `run()` function or bypass it via the method argument
 	 * @method The method to execute in the CFC async, defaults to `run()`
 	 * @debug Add debugging messages for monitoring
+	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
 	 */
-	function init( required runnable, method="run", boolean debug=false ){
+	function init( required runnable, method="run", boolean debug=false, boolean loadAppContext=true ){
 		// Store entities
 		variables.runnable 	= arguments.runnable;
 		variables.method 	= arguments.method;
 
 		// Super init
-		super.init( argumnentCollection=arguments );
+		super.init( argumentCollection=arguments );
 
 		return this;
 	}
@@ -27,25 +28,28 @@ component extends="BaseRunnable"{
 	 * Runnable execution
 	 */
 	function run(){
-		var threadname = createObject( "java", "java.lang.Thread" ).currentThread().getName();
+		var threadName = getThreadName();
 
 		if( variables.debug ){
-			out( "Starting to run runnable: " &  threadname );
+			out( "===> Starting to run runnable: " &  threadName );
 		}
 
 		// Load the CFML context
 		loadCfmlContext();
 
+		//out( "App Data: " );
+		out( getApplicationMetadata() );
+
 		try{
 			// Execute the runnable closure
 			invoke( variables.runnable, variables.method );
 		} catch( any e ){
-			out( "Error running runnable #threadname# : #e.message#" );
-			out( e );
+			err( "Error running runnable #threadName# : #e.message#" );
+			//out( e.stackTrace );
 		}
 
 		if( variables.debug ){
-			out( "Finished running runnable: " & threadname );
+			out( "===> Finished running runnable: " & threadName );
 		}
 	}
 
