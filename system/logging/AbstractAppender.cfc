@@ -1,9 +1,9 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This component is used as a base for creating LogBox appenders
-**/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This component is used as a base for creating LogBox appenders
+ */
 component accessors="true"{
 
 	/**
@@ -43,6 +43,8 @@ component accessors="true"{
 
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
+	// Java System
+	variables.System = createObject( "java", "java.lang.System" );
 
 	/**
 	 * Constructor
@@ -238,16 +240,21 @@ component accessors="true"{
 	}
 
 	/**
-	 * Utiliy to send to output to console.
+	 * Utiliy to send to output to the output stream.
 	 *
 	 * @message Message to send
-	 * @addNewLine Add a line break or not, default is yes
 	 */
-	private function out( required message, boolean addNewLine=true ){
-		if( arguments.addNewLine ){
-			arguments.message &= chr( 13 ) & chr( 10 );
-		}
-		createObject( "java", "java.lang.System" ).out.println( arguments.message );
+	private function out( required message ){
+		variables.System.out.println( arguments.message.toString() );
+	}
+
+	/**
+	 * Utiliy to send to output to the error stream.
+	 *
+	 * @message Message to send
+	 */
+	private function err( required message ){
+		variables.System.err.println( arguments.message.toString() );
 	}
 
 }

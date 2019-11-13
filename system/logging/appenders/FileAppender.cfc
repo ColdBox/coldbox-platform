@@ -203,10 +203,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		} );
 
 		if( isActive ){
-			out( "Listener already active exiting startup..." );
+			//out( "FileAppender Listener already loaded..." );
 			return;
 		} else {
-			out( "Listener needs to startup" );
+			out( "FileAppender Listener needs to be started..." );
 		}
 
 		// Create a runnable closure proxy for the log monitor
@@ -233,11 +233,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		// Activate listener
 		var isActivating = variables.lock( body=function(){
 			if( !variables.logListener.active ){
-				out( "listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
+				//out( "File Appender listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
 				variables.logListener.active = true;
 				return true;
 			} else {
-				out( "listener was just marked as active, just existing lock" );
+				//out( "File Appender listener was just marked as active, just existing lock" );
 				return false;
 			}
 		} );
@@ -248,7 +248,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		var start         = lastRun;
 		var maxIdle       = 10000; // 10 seconds is how long the threads can live for.
 		var flushInterval = 1000; // 1 second
-		var sleepInterval = 50;
+		var sleepInterval = 50; // 50 ms
 		var count         = 0;
 
 		// Ensure Log File
@@ -258,7 +258,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		var hasMessages   = false;
 
 		try{
-			//out( "Starting #getName()# thread", true );
+			out( "Starting #getName()# runnable", true );
 
 			// Execute only if there are messages in the queue or the internal has been crossed
 			while(
@@ -276,7 +276,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 						oFile = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
 					}
 
-					out( "Wrote to file #thisMessage#" );
+					//out( "Wrote to file #thisMessage#" );
 
 					// Write to file
 					fileWriteLine( oFile, thisMessage );
@@ -287,22 +287,23 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 				// flush to disk every start + 1000ms
 				if( start + flushInterval < getTickCount() && !isSimpleValue( oFile ) ){
-					out( "LogFile for #getName()# flushed at #start# + #flushInterval#", true );
+					out( "LogFile for #getName()# flushed to disk at #now()# using interval: #flushInterval#", true );
 					fileClose( oFile );
 					oFile = "";
 					start = getTickCount();
 				}
 
-				out( "Sleeping (#getTickCount()#): lastRun #lastRun + maxIdle#" );
+				//out( "Sleeping (#getTickCount()#): lastRun #lastRun + maxIdle#" );
 
 				sleep( sleepInterval ); // take a nap
 			}
 
 		} catch( Any e ){
 			$log( "ERROR", "Error processing log listener: #e.message# #e.detail# #e.stacktrace#" );
-			out( "Error with listener thread for #getName()#" & e.message & e.detail );
+			err( "Error with listener thread for #getName()#" & e.message & e.detail );
+			err( e.stackTrace );
 		} finally {
-			out( "Stopping listener thread for #getName()#, we have done our job" );
+			out( "Stopping FileAppender listener thread for #getName()#, it ran for #getTickCount() - start#ms!" );
 
 			// Stop log listener
 			variables.lock( body=function(){
