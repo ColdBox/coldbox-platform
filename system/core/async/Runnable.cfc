@@ -37,9 +37,6 @@ component extends="BaseRunnable"{
 		// Load the CFML context
 		loadCfmlContext();
 
-		//out( "App Data: " );
-		//out( getApplicationMetadata() );
-
 		try{
 			// Execute the runnable CFC and method
 			invoke( variables.runnable, variables.method );
@@ -47,6 +44,8 @@ component extends="BaseRunnable"{
 		} catch( any e ){
 			err( "Error running runnable #threadName# : #e.message#" );
 			err( e.stackTrace );
+		} finally{
+			releaseCfmlContext();
 		}
 
 		if( variables.debug ){

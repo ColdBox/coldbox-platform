@@ -219,8 +219,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 					loadAppContext=true
 				),
 				[ "java.lang.Runnable" ]
-			),
-			"FileLogListener:#getName()#"
+			)
 		);
 
 		// Start it up baby!
@@ -247,7 +246,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 		var lastRun       = getTickCount();
 		var start         = lastRun;
-		var maxIdle       = 1000; // 10 seconds is how long the threads can live for.
+		var maxIdle       = 10000; // 10 seconds is how long the threads can live for.
 		var flushInterval = 1000; // 1 second
 		var sleepInterval = 50;
 		var count         = 0;

@@ -40,11 +40,13 @@ component accessors="true"{
 		variables.debug 			= arguments.debug;
 		variables.oneHundredYears 	= ( 60 * 60 * 24 * 365 * 100 );
 		variables.loadAppContext 	= arguments.loadAppContext;
+		variables.contextRoot 		= expandPath( "/" );
+		variables.hostName 			= cgi.server_name;
 
 		if( arguments.loadAppContext ){
 			// Prepare Runnable for CF Contexts
 			if( server.keyExists( "lucee" ) ){
-
+				variables.cfContext = getCFMLContext().getApplicationContext();
 			} else {
 				// Get original fusion context
 				variables.cfContext = getCFMLContext().getFusionContext().clone();
@@ -89,7 +91,7 @@ component accessors="true"{
 		cfsetting( requesttimeout=oneHundredYears );
 
 		if( server.keyExists( "lucee" ) ){
-
+			getCFMLContext().setApplicationContext( variables.cfContext );
 		} else {
 			// Get Fusion Context loaded
 			getCFMLContext().getFusionContext().setCurrent( variables.cfContext );
@@ -99,6 +101,12 @@ component accessors="true"{
 		if( variables.debug ){
 			out( "===> Loaded CFML App Context for #getThreadName()#" );
 		}
+	}
+
+	/**
+	 * Call back to release a cfml page context, if any
+	 */
+	function releaseCfmlContext(){
 	}
 
 	/**
