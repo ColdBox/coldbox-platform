@@ -215,8 +215,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 				new coldbox.system.core.async.Runnable(
 					runnable=this,
 					method="runLogListener",
-					debug=true,
-					loadAppContext=true
+					debug=false,
+					loadAppContext=false
 				),
 				[ "java.lang.Runnable" ]
 			)

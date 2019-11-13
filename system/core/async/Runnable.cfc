@@ -40,7 +40,6 @@ component extends="BaseRunnable"{
 		try{
 			// Execute the runnable CFC and method
 			invoke( variables.runnable, variables.method );
-
 		} catch( any e ){
 			err( "Error running runnable #threadName# : #e.message#" );
 			err( e.stackTrace );
@@ -48,9 +47,6 @@ component extends="BaseRunnable"{
 			releaseCfmlContext();
 		}
 
-		if( variables.debug ){
-			out( "===> Finished running runnable: " & threadName );
-		}
 	}
 
 }
