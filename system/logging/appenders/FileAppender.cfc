@@ -242,7 +242,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 		var lastRun       = getTickCount();
 		var start         = lastRun;
-		var maxIdle       = 15000; // 15 seconds is how long the threads can live for.
+		var maxIdle       = 5000; // 15 seconds is how long the threads can live for.
 		var flushInterval = 1000; // 1 second
 		var sleepInterval = 50;
 		var count         = 0;
@@ -254,7 +254,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		var hasMessages   = false;
 
 		try{
-			out( "Starting #getName()# thread", true );
+			//out( "Starting #getName()# thread", true );
 
 			// Execute only if there are messages in the queue or the internal has been crossed
 			while(
@@ -289,7 +289,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 					start = getTickCount();
 				}
 
-				out( "Sleeping: lastRun #lastRun + maxIdle#" );
+				out( "Sleeping (#getTickCount()#): lastRun #lastRun + maxIdle#" );
 
 				sleep( sleepInterval ); // take a nap
 			}

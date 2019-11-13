@@ -13,8 +13,11 @@ component{
 	 */
 	function init( required runnable, boolean debug=false ){
 		variables.runnable 	= arguments.runnable;
-		variables.system 	= createObject( "java", "java.lang.System" );
 		variables.debug 	= arguments.debug;
+
+		// Super init
+		super.init( argumnentCollection=arguments );
+
 		return this;
 	}
 
