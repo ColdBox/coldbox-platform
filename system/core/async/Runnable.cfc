@@ -38,14 +38,15 @@ component extends="BaseRunnable"{
 		loadCfmlContext();
 
 		//out( "App Data: " );
-		out( getApplicationMetadata() );
+		//out( getApplicationMetadata() );
 
 		try{
-			// Execute the runnable closure
+			// Execute the runnable CFC and method
 			invoke( variables.runnable, variables.method );
+
 		} catch( any e ){
 			err( "Error running runnable #threadName# : #e.message#" );
-			//out( e.stackTrace );
+			err( e.stackTrace );
 		}
 
 		if( variables.debug ){

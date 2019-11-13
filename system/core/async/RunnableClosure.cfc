@@ -10,10 +10,10 @@ component extends="BaseRunnable"{
 	 *
 	 * @runnable A closure to execute async via Runnable interface in Java
 	 * @debug Add debugging messages for monitoring
+	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
 	 */
-	function init( required runnable, boolean debug=false ){
+	function init( required runnable, boolean debug=false, boolean loadAppContext=true ){
 		variables.runnable 	= arguments.runnable;
-		variables.debug 	= arguments.debug;
 
 		// Super init
 		super.init( argumnentCollection=arguments );
@@ -35,12 +35,13 @@ component extends="BaseRunnable"{
 		loadCfmlContext();
 
 		try{
+
 			// Execute the runnable closure
 			variables.runnable();
 
 		} catch( any e ){
 			out( "Error running runnable closure : #e.message#" );
-			out( e );
+			err( e.stackTrace );
 		}
 
 		if( variables.debug ){
