@@ -3,7 +3,7 @@
  *
  * @see https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html
  */
-component extends="BaseRunnable"{
+component extends="BaseRunnable" accessors="true"{
 
 	/**
 	 * Constructor
@@ -20,6 +20,8 @@ component extends="BaseRunnable"{
 
 		// Super init
 		super.init( argumentCollection=arguments );
+
+		requestScope = request;
 
 		return this;
 	}
@@ -39,10 +41,11 @@ component extends="BaseRunnable"{
 
 		try{
 			// Execute the runnable CFC and method
-			invoke( variables.runnable, variables.method );
+			requestScope[ threadName ]  = invoke( variables.runnable, variables.method );
 		} catch( any e ){
 			err( "Error running runnable #threadName# : #e.message#" );
 			err( e.stackTrace );
+			rethrow;
 		} finally{
 			releaseCfmlContext();
 		}

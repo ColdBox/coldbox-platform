@@ -15,7 +15,7 @@ component accessors="true"{
 	/**
 	 * java.lang.Thread
 	 */
-	property name="Tread";
+	property name="Thread";
 
 	/**
 	 * Debug Mode or not

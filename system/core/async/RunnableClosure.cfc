@@ -16,7 +16,9 @@ component extends="BaseRunnable"{
 		variables.runnable 	= arguments.runnable;
 
 		// Super init
-		super.init( argumnentCollection=arguments );
+		super.init( argumentCollection=arguments );
+
+		requestScope = request;
 
 		return this;
 	}
@@ -37,15 +39,14 @@ component extends="BaseRunnable"{
 		try{
 
 			// Execute the runnable closure
-			variables.runnable();
+			requestScope[ threadName ] = variables.runnable();
 
 		} catch( any e ){
-			out( "Error running runnable closure : #e.message#" );
+			err( "Error running runnable closure : #e.message#" );
 			err( e.stackTrace );
-		}
-
-		if( variables.debug ){
-			out( "Finished running runnable closure: " & threadName );
+			rethrow;
+		} finally {
+			releaseCfmlContext();
 		}
 	}
 
