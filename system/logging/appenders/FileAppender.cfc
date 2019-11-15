@@ -105,6 +105,9 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			}
 		};
 
+		// Async Manager
+		variables.asyncManager = new coldbox.system.core.async.AsyncManager();
+
 		return this;
     }
 
@@ -209,21 +212,13 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			out( "FileAppender Listener needs to be started..." );
 		}
 
-		// Create a runnable closure proxy for the log monitor
-		var runnable = createObject( "java", "java.lang.Thread" ).init(
-			createDynamicProxy(
-				new coldbox.system.core.async.Runnable(
-					runnable=this,
-					method="runLogListener",
-					debug=false,
-					loadAppContext=false
-				),
-				[ "java.lang.Runnable" ]
-			)
-		);
-
-		// Start it up baby!
-		runnable.start();
+		// Create the runnable Log Listener
+		variables.asyncManager.run(
+			runnable       = this,
+			method         = "runLogListener",
+			loadAppContext = false
+		)
+		.start(); // Start it up baby!
 	}
 
 	/**
