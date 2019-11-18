@@ -1,6 +1,19 @@
+/**
+ * The ColdBox Async Manager is in charge of creating runnable proxies based on
+ * components or closures that can be spawned as native Java Threads.
+ *
+ * Once the runnables are created you will get back a ColdBox Future object
+ * that can be used to interact with the running thread.
+ */
 component{
 
-	function init(){
+	/**
+	 * Constructor
+	 *
+	 * @debug Add debugging logs to System out, disabled by default
+	 */
+	function init( boolean debug=false ){
+		variables.debug = arguments.debug;
 		return this;
 	}
 
@@ -11,12 +24,14 @@ component{
 	 * @method If the runnable is a CFC, then it executes a method on the CFC asynchronously. Defaults to the `run()` method
 	 * @debug Add debugging outputs to the console
 	 * @loadAppContext By default it laods the entire CFML app environment to the threads. If you do not need it, then disable it
+	 * @autoStart If true, then we will start the thread in the background for you, else it's your job to call `start()`
 	 */
 	function run(
 		required runnable,
 		method="run",
-		boolean debug=false,
-		boolean loadAppContext=true
+		boolean debug=variables.debug,
+		boolean loadAppContext=true,
+		boolean autoStart=false
 	){
 		if( isClosure( arguments.runnable ) || isCustomFunction( arguments.runnable ) ){
 			var oThread = createRunnableClosure( argumentCollection=arguments );
@@ -25,9 +40,11 @@ component{
 		}
 
 		// Start the runnable Thread
-		//oThread.start();
+		if( arguments.autoStart ){
+			oThread.start();
+		}
 
-		// Return it as a Future wrapper, so you can start it
+		// Return it as a Future wrapper, so you can start it, use it or destroy it
 		return new Future( oThread );
 	}
 
@@ -42,7 +59,7 @@ component{
 	any function createRunnable(
 		required runnable,
 		method="run",
-		boolean debug=false,
+		boolean debug=variables.debug,
 		boolean loadAppContext=true
 	){
 		// Create the runnable proxy
@@ -69,7 +86,7 @@ component{
 	 */
 	any function createRunnableClosure(
 		required runnable,
-		boolean debug=false,
+		boolean debug=variables.debug,
 		boolean loadAppContext=true
 	){
 
