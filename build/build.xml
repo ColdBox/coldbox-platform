@@ -259,6 +259,9 @@
 		<!-- Copy src to cachebox namespace-->
       	<copy todir="${dir.build}/cachebox/system/cache" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/cache" />
+		</copy>
+		<copy todir="${dir.build}/cachebox/system/async" encoding="UTF-8" overwrite="true">
+        	<fileset dir="system/async" />
         </copy>
 		<copy todir="${dir.build}/cachebox/system/core" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/core">
@@ -373,6 +376,9 @@
 		<!-- Copy src to logbox namespace-->
       	<copy todir="${dir.build}/logbox/system/logging" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/logging" />
+		</copy>
+		<copy todir="${dir.build}/logbox/system/async" encoding="UTF-8" overwrite="true">
+        	<fileset dir="system/async" />
         </copy>
 		<copy todir="${dir.build}/logbox/system/core" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/core">
@@ -483,6 +489,9 @@
 		<!-- Copy src to WireBox namespace-->
       	<copy todir="${dir.build}/wirebox/system/ioc" encoding="UTF-8" overwrite="true">
         	<fileset dir="system/ioc" />
+		</copy>
+		<copy todir="${dir.build}/wirebox/system/async" encoding="UTF-8" overwrite="true">
+        	<fileset dir="system/async" />
         </copy>
 		<copy todir="${dir.build}/wirebox/system/aop" encoding="UTF-8" overwrite="true">
 			 <fileset dir="system/aop" />

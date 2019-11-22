@@ -106,7 +106,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		};
 
 		// Async Manager
-		variables.asyncManager = new coldbox.system.core.async.AsyncManager();
+		variables.asyncManager = new coldbox.system.async.AsyncManager();
 
 		return this;
     }
@@ -212,13 +212,12 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			out( "FileAppender Listener needs to be started..." );
 		}
 
-		// Create the runnable Log Listener
+		// Create the runnable Log Listener, Start it up baby!
 		variables.asyncManager.run(
 			runnable       = this,
 			method         = "runLogListener",
 			loadAppContext = false
-		)
-		.start(); // Start it up baby!
+		);
 	}
 
 	/**
