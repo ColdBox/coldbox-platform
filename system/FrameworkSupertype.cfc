@@ -558,12 +558,13 @@ component serializable="false" accessors="true"{
 		return this;
 	}
 
-	/**** REMOVE THE FOLLOWING: JUST LEFT UNTIL COMPLETELY REMOVED ****/
-	function getPlugin(){
-		throw( "This method has been deprecated, please use getInstance() instead" );
-	}
-	function getMyPlugin(){
-		throw( "This method has been deprecated, please use getInstance() instead" );
+	/**
+	 * Return the ColdBox Async Manager instance
+	 *
+	 * @return coldbox.system.async.AsyncManager
+	 */
+	any function async(){
+		return variables.wirebox.getInstance( "asyncManager@coldbox" );
 	}
 
 }

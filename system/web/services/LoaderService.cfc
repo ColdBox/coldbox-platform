@@ -126,7 +126,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Map Object Converter
 		binder.map( "ObjectMarshaller@coldbox" )
 			.to( "coldbox.system.core.conversion.ObjectMarshaller" );
-
+		// Map Async Manager
+		binder.map( "AsyncManager@coldbox" )
+			.to( "coldbox.system.async.AsyncManager" );
 		return this;
 	}
 

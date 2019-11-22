@@ -5,7 +5,7 @@
  * Once the runnables are created you will get back a ColdBox Future object
  * that can be used to interact with the running thread.
  */
-component{
+component singleton{
 
 	/**
 	 * Constructor
