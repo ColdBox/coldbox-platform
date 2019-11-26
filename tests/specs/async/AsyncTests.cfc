@@ -43,7 +43,7 @@ component extends="testbox.system.BaseSpec"{
 					return result & " loves threads, NOT!";
 				} );
 
-				writeDump( var=f.get() );
+				expect( f.get(), "Luis majano loves threads, NOT!" );
 			});
 
 		});
