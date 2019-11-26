@@ -51,10 +51,10 @@
 			<isset property="cfengine"/>
 		</condition>
 		<condition property="isTravis" else="false">
-		<isset property="isTravis"/>
+			<isset property="isTravis"/>
 		</condition>
 		<condition property="build.branch" else="development">
-		<isset property="build.branch"/>
+			<isset property="build.branch"/>
 		</condition>
 
 		<!-- Build Number -->
