@@ -10,9 +10,9 @@ env:
     # TARGET RELEASE VERSION: BUMP AS NEEDED
     - COLDBOX_VERSION=6.0.0
   matrix:
-    - ENGINE=lucee@5 ANT_TARGET=run-tests
-    - ENGINE=adobe@2016	ANT_TARGET=run-tests
-    - ENGINE=adobe@2018	ANT_TARGET=run-tests
+    - ENGINE=lucee@5 # Build Entire Frameworks
+    - ENGINE=adobe@2016	ANT_TARGET=run-tests #just run tests
+    - ENGINE=adobe@2018	ANT_TARGET=run-tests #just run tests
 
 branches:
   only:
@@ -60,7 +60,7 @@ before_script:
 script:
   # Execute build via ANT
   - ant -Dcoldbox.version=$COLDBOX_VERSION -DisTravis=true -Dbuild.branch=$TRAVIS_BRANCH -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml $ANT_TARGET
-  - ls -l $TRAVIS_BUILD_DIR
+  #- ls -l $TRAVIS_BUILD_DIR
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
@@ -70,7 +70,7 @@ after_failure:
   # Spit out our Commandbox log in case we need to debug
   - box server log name=$ENGINE
   - cat `box system-log`
-  - ls -l $TRAVIS_BUILD_DIR
+  - ls -lr $TRAVIS_BUILD_DIR
 
 deploy:
   # Binary Deployments
