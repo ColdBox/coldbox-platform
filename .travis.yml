@@ -84,7 +84,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "downloads.ortussolutions.com"
-    local-dir: artifacts
+    local-dir: $TRAVIS_BUILD_DIR/artifacts
     upload-dir: ortussolutions
     acl: public_read
   # API Docs Deployment
