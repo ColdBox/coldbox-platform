@@ -96,7 +96,7 @@ component accessors="true"{
 		}
 
 		throw(
-			message = "Appender #arguments.name# does not exist. The appenders registered are [#structKeyList( variables.appenders )#]",
+			message = "Appender #arguments.name# does not exist.",
 			detail  = "The appenders registered are #structKeyList( variables.appenders )#",
 			type    = "Logger.AppenderNotFound"
 		);
