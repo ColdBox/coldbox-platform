@@ -183,7 +183,8 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 						// Default Log Directory
 						ensureDefaultLogDirectory();
 						// Create log file
-						append( '"Severity","Appender","Date","Time","Category","Message"' );
+						fileWrite( variables.logFullPath, '"Severity","Appender","Date","Time","Category","Message"
+						' );
 					} catch( Any e ) {
 						$log( "ERROR", "Cannot create appender's: #getName()# log file. File #variables.logFullpath#. #e.message# #e.detail#" );
 					}
@@ -199,59 +200,49 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 	 * Start the log listener so we can queue up the logging to alleviate for disk operations
 	 */
 	function startLogListener(){
-
-		// Verify if listener has started.
+		// Double lock to ensure thread isn't already requested
 		var isActive = variables.lock( "readonly", function(){
 			return variables.logListener.active;
 		} );
 
-		if( isActive ){
-			//out( "FileAppender Listener already loaded..." );
-			return;
-		} else {
-			out( "FileAppender Listener needs to be started..." );
+		// if no thread is active, enter exclusive lock and start one.
+		if( !isActive ) {			
+			variables.lock( "exclusive", function(){
+				if( !variables.logListener.active ) {
+					out( "FileAppender Listener needs to be started..." );
+					// Create the runnable Log Listener, Start it up baby!
+					variables.asyncManager.run(
+						runnable       = this,
+						method         = "runLogListener",
+						loadAppContext = false
+					);
+					variables.logListener.active = true;
+				}
+			} );	
 		}
 
-		// Create the runnable Log Listener, Start it up baby!
-		variables.asyncManager.run(
-			runnable       = this,
-			method         = "runLogListener",
-			loadAppContext = false
-		);
+
 	}
 
 	/**
 	 * This function runs the log listener implementation, usually called async via a runnable class
 	 */
 	function runLogListener(){
-		// Activate listener
-		var isActivating = variables.lock( body=function(){
-			if( !variables.logListener.active ){
-				//out( "File Appender listener #getHash()# min: #getLevelMin()# max: #getLevelMax()# marked as active" );
-				variables.logListener.active = true;
-				return true;
-			} else {
-				//out( "File Appender listener was just marked as active, just existing lock" );
-				return false;
-			}
-		} );
-
-		if( !isActivating ){ return; }
-
-		var lastRun       = getTickCount();
-		var start         = lastRun;
-		var maxIdle       = 10000; // 10 seconds is how long the threads can live for.
-		var flushInterval = 1000; // 1 second
-		var sleepInterval = 50; // 50 ms
-		var count         = 0;
-
-		// Ensure Log File
-		initLogLocation();
-
-		var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
-		var hasMessages   = false;
-
 		try{
+
+			var lastRun       = getTickCount();
+			var start         = lastRun;
+			var maxIdle       = 5000; // 5 seconds is how long the threads can live for.
+			var flushInterval = 1000; // 1 second
+			var sleepInterval = 50; // 50 ms
+			var count         = 0;
+
+			// Ensure Log File
+			initLogLocation();
+	
+			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
+			var hasMessages   = false;
+
 			out( "Starting #getName()# runnable", true );
 
 			// Execute only if there are messages in the queue or the internal has been crossed
@@ -288,8 +279,11 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 				}
 
 				//out( "Sleeping (#getTickCount()#): lastRun #lastRun + maxIdle#" );
-
-				sleep( sleepInterval ); // take a nap
+				
+				// Only take a nap if we've nothing to do
+				if( !variables.logListener.queue.len() ) {					
+					sleep( sleepInterval ); // take a nap	
+				}
 			}
 
 		} catch( Any e ){
@@ -304,7 +298,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 				variables.logListener.active = false;
 			} );
 
-			if( !isSimpleValue( oFile ) ){
+			if( !isNull( oFile ) && !isSimpleValue( oFile ) ){
 				fileClose( oFile );
 				oFile = "";
 			}
