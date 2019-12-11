@@ -5,7 +5,7 @@
 * The system web renderer
 * @author Luis Majano <lmajano@ortussolutions.com>
 */
-component accessors="true" serializable="false" extends="coldbox.system.FrameworkSupertype"{
+component accessors="true" serializable="false" extends="coldbox.system.FrameworkSupertype" singleton {
 
 	/************************************** DI *********************************************/
 
@@ -32,8 +32,6 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	property name="viewsHelper";
 	// View helper include bit
 	property name="isViewsHelperIncluded" default="false" type="boolean";
-	// Are we rendering a layout+view combination
-	property name="explicitView";
 	// Rendered helpers metadata
 	property name="renderedHelpers" type="struct";
 	// Internal locking name
@@ -41,10 +39,6 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	// Discovery caching is tied to handlers for discovery.
 	property name="isDiscoveryCaching";
 
-	// View/Layout Properties
-	property name="event";
-	property name="rc";
-	property name="prc";
 	property name="html";
 
 	/************************************** CONSTRUCTOR *********************************************/
@@ -67,7 +61,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.cacheBox = arguments.controller.getCacheBox();
 		// Register WireBox
 		variables.wireBox = arguments.controller.getWireBox();
-
+		
 		// Set Conventions, Settings and Properties
 		variables.layoutsConvention 		= variables.controller.getSetting( "layoutsConvention", true );
 		variables.viewsConvention 			= variables.controller.getSetting( "viewsConvention", true );
@@ -78,7 +72,6 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.viewsHelper				= variables.controller.getSetting( "viewsHelper" );
 		variables.viewCaching				= variables.controller.getSetting( "viewCaching" );
 		variables.isViewsHelperIncluded		= false;
-		variables.explicitView 				= {};
 
 		// Verify View Helper Template extension + location
 		if( len( variables.viewsHelper ) ){
@@ -94,13 +87,6 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		// Discovery caching
 		variables.isDiscoveryCaching = controller.getSetting( "viewCaching" );
-
-		// Set event scope, we are not caching, so it is threadsafe.
-		variables.event = getRequestContext();
-
-		// Create View Scopes
-		variables.rc 	= event.getCollection();
-		variables.prc 	= event.getCollection( private=true );
 
 		// HTML Helper
 		variables.html 	= variables.wirebox.getInstance( dsl="@HTMLHelper" );
@@ -126,12 +112,19 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	 * @return Renderer
 	*/
 	function setExplicitView( required view, module="", struct args={} ){
-		variables.explicitView = {
+		getRequestContext().setPrivateValue( '_explicitView', {
 			"view" 		: arguments.view,
 			"module" 	: arguments.module,
 			"args"		: arguments.args
-		};
+		} );
 		return this;
+	}
+
+	/**
+	 * get the explicit view bit
+	*/
+	function getExplicitView(){
+		return getRequestContext().getPrivateValue( '_explicitView', {} );
 	}
 
 	/**
@@ -155,7 +148,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	*/
 	function renderView(
 		view="",
-		struct args=variables.event.getCurrentViewArgs(),
+		struct args=getRequestContext().getCurrentViewArgs(),
 		module="",
 		boolean cache=false,
 		cacheTimeout="",
@@ -170,6 +163,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		boolean prePostExempt=false,
 		name
 	){
+		var event 				= getRequestContext();		
 		var viewCacheKey 		= "";
 		var viewCacheEntry 		= "";
 		var viewCacheProvider 	= variables.templateCache;
@@ -196,12 +190,13 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		// Rendering an explicit view or do we need to get the view from the context or explicit context?
 		if( NOT len( arguments.view ) ){
+			var explicitView = getExplicitView();
 			// Rendering an explicit Renderer view/layout combo?
-			if( !variables.explicitView.isEmpty() ){
+			if( !explicitView.isEmpty() ){
 				// Populate from explicit notation
-				arguments.view 		= variables.explicitView.view;
-				arguments.module 	= variables.explicitView.module;
-				arguments.args.append( variables.explicitView.args, false );
+				arguments.view 		= explicitView.view;
+				arguments.module 	= explicitView.module;
+				arguments.args.append( explicitView.args, false );
 
 				// clear the explicit view now that it has been used
 				setExplicitView( {} );
@@ -283,6 +278,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		}
 		// Render simple composite view
 		else{
+			
 			iData.renderedView = renderViewComposite(
 				arguments.view,
 				viewLocations.viewPath,
@@ -408,27 +404,19 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
     	args
     ){
     	var cbox_renderedView = "";
+		var event = getRequestContext();
 
 		savecontent variable="cbox_renderedView"{
-			// global views helper
-			if( len( variables.viewsHelper ) AND ! variables.isViewsHelperIncluded  ){
-				include "#variables.viewsHelper#";
-				variables.isViewsHelperIncluded = true;
-			}
-
-			// view helpers ( directory + view + whatever )
-			if(
-				arguments.viewHelperPath.len() AND
-				NOT variables.renderedHelpers.keyExists( hash( arguments.viewHelperPath.toString() ) )
-			){
-				arguments.viewHelperPath.each( function( item ){
-					include "#arguments.item#";
-				} );
-				variables.renderedHelpers[ hash( arguments.viewHelperPath.toString() ) ] = true;
-			}
-
-			//writeOutput( include "#arguments.viewPath#.cfm" );
-			include "#arguments.viewPath#.cfm";
+			module
+				template="RendererEncapslator.cfm"
+				view=arguments.view,
+		    	viewPath=arguments.viewPath,
+		    	viewHelperPath=arguments.viewHelperPath,
+		    	args=arguments.args
+		    	rendererVariables=variables,
+				event = event,
+				rc 	= event.getCollection(),
+				prc = event.getPrivateCollection();			
 		}
 
     	return cbox_renderedView;
@@ -446,7 +434,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	*/
     function renderExternalView(
     	required view,
-    	struct args=variables.event.getCurrentViewArgs(),
+    	struct args=getRequestContext().getCurrentViewArgs(),
     	boolean cache=false,
     	cacheTimeout="",
     	cacheLastAccessTimeout="",
@@ -503,10 +491,11 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		layout,
 		module="",
 		view="",
-		struct args=variables.event.getCurrentViewArgs(),
+		struct args=getRequestContext().getCurrentViewArgs(),
 		viewModule="",
 		boolean prePostExempt=false
 	){
+		var event 					= getRequestContext();
 		var cbox_implicitLayout 	= implicitViewChecks();
 		var cbox_currentLayout 		= cbox_implicitLayout;
 		var cbox_locateUDF			= variables.locateLayout;
@@ -515,14 +504,15 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var cbox_layoutLocation		= "";
 		var iData 					= arguments;
 		var viewLocations			= "";
-
+		var explicitView 			= getExplicitView();
+		
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
 		if(
 			arguments.view.trim().len() AND
 			(
-				!variables.explicitView.keyExists( "view" )
+				!explicitView.keyExists( "view" )
 				OR
-				variables.explicitView.keyExists( "view" ) and arguments.view != variables.explicitView.view
+				explicitView.keyExists( "view" ) and arguments.view != explicitView.view
 			)
 		){
 			return controller.getRenderer()
@@ -617,6 +607,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	*/
 	function locateLayout( required layout ){
 		// Default path is the conventions
+		var event 				= getRequestContext();
 		var layoutPath 	  		= "/#variables.appMapping#/#variables.layoutsConvention#/#arguments.layout#";
 		var extLayoutPath 		= "#variables.layoutsExternalLocation#/#arguments.layout#";
 		var moduleName 			= event.getCurrentModule();
@@ -649,6 +640,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		module="",
 		boolean explicitModule=false
 	){
+		var event 					= getRequestContext();
 		var parentModuleLayoutPath 	= "";
 		var parentCommonLayoutPath 	= "";
 		var moduleLayoutPath 		= "";
@@ -703,7 +695,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* Locate a view in the conventions or external paths
 	* @view The view to locate
 	*/
-	function locateView( required view ){
+	function locateView( required view ){		
 		// Default path is the conventions
 		var viewPath 	= "/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#";
 		var extViewPath = "#variables.viewsExternalLocation#/#arguments.view#";
@@ -848,6 +840,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* Checks if implicit views are turned on and if so, calculate view according to event.
 	*/
 	private function implicitViewChecks(){
+		var event = getRequestContext();
 		var layout = event.getCurrentLayout();
 		var cEvent = event.getCurrentEvent();
 
