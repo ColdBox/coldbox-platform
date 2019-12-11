@@ -200,10 +200,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 			action = cleanedPaths[ "pathInfo" ],
 			event  = arguments.event,
 			domain = cleanedPaths[ "domain" ]
-		);
+        );
 
 		// Process the route
-		var discoveredEvent = processRoute( routeResults, event, rc, prc );
+        var discoveredEvent = processRoute( routeResults, event, rc, prc );
 
 		// Do we use the discovered event?
 		if( !isNull( local.discoveredEvent ) and discoveredEvent.len() ){
@@ -315,7 +315,12 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 				if( log.canDebug() ){
 					log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 				}
-			}
+            }
+
+            // If the struct is empty, reset it to an empty string so it goes down the correct code path later on.
+            if ( isStruct( routeResults.route.action ) && structIsEmpty( routeResults.route.action ) ) {
+                routeResults.route.action = "";
+            }
 
 			// Check if using HTTP method actions via struct
 			if( isStruct( routeResults.route.action ) ){
@@ -334,9 +339,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 						log.debug( "Invalid HTTP Method detected: #httpMethod#", routeResults.route );
 					}
 				}
-			}
+            }
 			// Simple value action
-			else if( routeResults.route.action.len() ){
+			else if( ! isStruct( routeREsults.route.action ) && routeResults.route.action.len() ) {
 				discoveredEvent &= ".#routeResults.route.action#";
 			}
 		} // end if handler exists
