@@ -352,12 +352,17 @@ component serializable="false" accessors="true"{
 					} // end event caching
 
 					// Render Data? With stupid CF whitespace stuff.
-					if( !structisEmpty( renderData ) ){/*
-						*/renderData.controller = cbController;renderDataSetup( argumentCollection=renderData );/*
+					if( !structisEmpty( renderData ) ){
+						renderData.controller = cbController;
+						renderDataSetup( argumentCollection=renderData );
 						// Binary
-						*/if( renderData.isBinary ){ cbController.getDataMarshaller().renderContent( type="#renderData.contentType#", variable="#renderedContent#" ); }/*
+						if( renderData.isBinary ){
+							cbController.getDataMarshaller().renderContent( type="#renderData.contentType#", variable="#renderedContent#" );
+						}
 						// Non Binary
-						*/else{ writeOutput( renderedContent ); }
+						else{
+							writeOutput( renderedContent );
+						}
 					} else {
 						writeOutput( renderedContent );
 					}
