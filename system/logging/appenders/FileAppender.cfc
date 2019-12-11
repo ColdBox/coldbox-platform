@@ -210,13 +210,13 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			variables.lock( "exclusive", function(){
 				if( !variables.logListener.active ) {
 					out( "FileAppender Listener needs to be started..." );
+					variables.logListener.active = true;
 					// Create the runnable Log Listener, Start it up baby!
 					variables.asyncManager.run(
 						runnable       = this,
 						method         = "runLogListener",
 						loadAppContext = false
 					);
-					variables.logListener.active = true;
 				}
 			} );	
 		}

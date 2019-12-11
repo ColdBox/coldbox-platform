@@ -58,6 +58,10 @@ component serializable="false" accessors="true"{
 	* The controller logger object
 	*/
 	property name="log";
+	/**
+	* The view/layout renderer
+	*/
+	property name="renderer";
 
 	/**
 	* Constructor
@@ -65,6 +69,9 @@ component serializable="false" accessors="true"{
 	* @appKey The application registered application key
 	*/
 	function init( required appRootPath, appKey="cbController" ){
+		// This will be lazy loaded on first use since the framework isn't ready to create it yet
+		variables.renderer		= "";
+		
 		// Create Utility
 		variables.util 			= new coldbox.system.core.util.Util();
 		// services scope
@@ -122,7 +129,11 @@ component serializable="false" accessors="true"{
 	* Get the system web renderer, you can also retreive it from wirebox via renderer@coldbox
 	*/
 	function getRenderer(){
-		return variables.wireBox.getInstance( "Renderer@coldbox" );
+		// Persist on first creation
+		if( isSimpleValue( variables.renderer ) ) {
+			variables.renderer = variables.wireBox.getInstance( "Renderer@coldbox" );
+		}
+		return variables.renderer;
 	}
 
 	/**
