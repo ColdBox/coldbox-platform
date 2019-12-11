@@ -96,7 +96,7 @@ component accessors="true"{
 		}
 
 		throw(
-			message = "Appender #arguments.name# does not exist.",
+			message = "Appender #arguments.name# does not exist. The appenders registered are [#structKeyList( variables.appenders )#]",
 			detail  = "The appenders registered are #structKeyList( variables.appenders )#",
 			type    = "Logger.AppenderNotFound"
 		);
@@ -334,7 +334,6 @@ component accessors="true"{
 		if( canLog( arguments.severity ) ){
 			// Create Logging Event
 			arguments.category = target.getCategory();
-			var logEvent = new coldbox.system.logging.LogEvent( argumentCollection=arguments );
 
 			// Do we have appenders locally? or go to root Logger
 			if( NOT hasAppenders() ){
@@ -359,12 +358,24 @@ component accessors="true"{
 					// Thread this puppy
 					thread action       = "run"
 						name         = "logMessage_#replace( createUUID(), "-", "", "all" )#"
-						logEvent     = "#logEvent#"
-						thisAppender = "#thisAppender#"
+						appenderName = "#key#"
+						message="#arguments.message#"
+						severity="#arguments.severity#"
+						extraInfo="#arguments.extraInfo#"
 					{
-						attributes.thisAppender.logMessage( attributes.logEvent );
+						var target = this;
+						if( !hasAppenders() ){
+							target = getRootLogger();
+						}
+						var thisAppender = target.getAppender( attributes.appenderName );
+						thread.logEvent = new coldbox.system.logging.LogEvent( message=attributes.message, severity=attributes.severity, extraInfo=attributes.extraInfo );
+						thisAppender.logMessage( thread.logEvent );
 					}
+					  
 				} else {
+					if( isNull( logEvent ) ) {
+						var logEvent = new coldbox.system.logging.LogEvent( argumentCollection=arguments );	
+					}
 					thisAppender.logMessage( logEvent );
 				}
 			}

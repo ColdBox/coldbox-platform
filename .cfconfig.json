@@ -26,5 +26,6 @@
     },
     "debuggingEnabled": false,
     "ajaxDebugWindowEnabled": false,
-    "debuggingReportExecutionTimes": false
+    "debuggingReportExecutionTimes": false,
+    "maxCFThreads":100
 }

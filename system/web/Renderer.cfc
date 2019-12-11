@@ -407,16 +407,16 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var event = getRequestContext();
 
 		savecontent variable="cbox_renderedView"{
-			module
-				template="RendererEncapslator.cfm"
+			cfmodule( 
+				template="RendererEncapslator.cfm",
 				view=arguments.view,
 		    	viewPath=arguments.viewPath,
 		    	viewHelperPath=arguments.viewHelperPath,
-		    	args=arguments.args
+		    	args=arguments.args,
 		    	rendererVariables=variables,
 				event = event,
 				rc 	= event.getCollection(),
-				prc = event.getPrivateCollection();			
+				prc = event.getPrivateCollection() );			
 		}
 
     	return cbox_renderedView;

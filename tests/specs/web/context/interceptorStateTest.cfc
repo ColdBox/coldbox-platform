@@ -132,7 +132,7 @@
 			makepublic( this.state, "invokerAsync" );
 			assertTrue( mockInterceptor.$never( "unittest" ) );
 			this.state.invokerAsync( getMockRequestContext(), {}, this.key, "high", mockBuffer );
-			sleep( 1000 );
+			sleep( 5000 );
 			assertTrue( mockInterceptor.$once( "unittest" ) );
 			// debug( cfthread );
 		</cfscript>

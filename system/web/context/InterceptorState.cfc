@@ -384,23 +384,22 @@ component accessors="true" extends="coldbox.system.core.events.EventPool"{
 		if( variables.log.canDebug() ){
 			variables.log.debug( "Async interception starting for: '#getState()#', interceptor: #arguments.interceptorKey#, priority: #arguments.asyncPriority#" );
 		}
-
 		thread 	name="#thisThreadName#"
 				action="run"
 				priority="#arguments.asyncPriority#"
-				event="#arguments.event#"
 				interceptData="#arguments.interceptData#"
 				threadName="#thisThreadName#"
 				key="#arguments.interceptorKey#"
 				buffer="#arguments.buffer#"
 		{
+			var event = variables.controller.getRequestService().getContext();
 
 			var args = {
-				"event" 		= attributes.event,
+				"event" 		= event,
 				"interceptData" = attributes.interceptData,
 				"buffer" 		= attributes.buffer,
-				"rc" 			= attributes.event.getCollection(),
-				"prc" 			= attributes.event.getPrivateCollection()
+				"rc" 			= event.getCollection(),
+				"prc" 			= event.getPrivateCollection()
 			};
 
 			invoke( this.getInterceptors().get( attributes.key ), this.getState(), args );
