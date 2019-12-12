@@ -267,25 +267,24 @@ component
 			arguments.extra
 		);
 
-		// Announce update if it exists?
 		if( !isNull( local.oldObject ) ){
-			// announce it
+			// Announce update if it exists
 			getEventManager().processState( "afterCacheElementUpdated", {
 				cache          = this,
 				cacheObjectKey = arguments.objectKey,
 				cacheNewObject = arguments.object,
 				cacheOldObject = oldObject
 			} );
+		} else {
+			// announce a fresh insert
+			getEventManager().processState( "afterCacheElementInsert", {
+				cache                        = this,
+				cacheObject                  = arguments.object,
+				cacheObjectKey               = arguments.objectKey,
+				cacheObjectTimeout           = arguments.timeout,
+				cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
+			} );
 		}
-
-		// announce it
-		getEventManager().processState( "afterCacheElementInsert", {
-			cache                        = this,
-			cacheObject                  = arguments.object,
-			cacheObjectKey               = arguments.objectKey,
-			cacheObjectTimeout           = arguments.timeout,
-			cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
-		} );
 
 		return this;
 	}
