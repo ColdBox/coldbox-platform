@@ -160,7 +160,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender" {
 	 */
 	function rotationCheck(){
 		// Verify if in rotation frequency
-		if( !variables.rotate OR ( isDate( variables.lastDBRotation ) AND dateDiff( "n",  variables.lastDBRotation, now() ) LTE getProperty( "rotationFrequency" ) ) ){
+		if( !getProperty( "rotate" ) OR ( isDate( variables.lastDBRotation ) AND dateDiff( "n",  variables.lastDBRotation, now() ) LTE getProperty( "rotationFrequency" ) ) ){
 			return;
 		}
 		
