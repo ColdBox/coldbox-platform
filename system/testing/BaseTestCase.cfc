@@ -486,10 +486,9 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         } catch( Any e ) {
 			// Are we doing exception handling?
             if ( withExceptionHandling ) {
-                processException( cbController, e );
-            }
-			// Exclude relocations so they can be asserted.
-			if( NOT listFindNoCase( relocationTypes, e.type ) ){
+                requestContext.setValue( "cbox_rendered_content", processException( cbController, e ) );
+            } else if( NOT listFindNoCase( relocationTypes, e.type ) ){
+                // Exclude relocations so they can be asserted.
 				rethrow;
 			}
 		}
@@ -645,7 +644,16 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @return cbox_statusCode or 200
     */
     function getStatusCode(){
-        return getValue( "cbox_statusCode", 200 );
+        return getValue(
+            "relocate_STATUSCODE",
+            getValue(
+                "setNextEvent_STATUSCODE",
+                getValue(
+                    "cbox_statusCode",
+                    200
+                )
+            )
+        );
     }
 
     /**
@@ -835,6 +843,32 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         } else {
             return getPageContext().getResponse().getResponse();
         }
+    }
+
+    /**
+	* Process Stack trace for errors
+	*/
+	private function processStackTrace( str ){
+		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
+		arguments.str = HTMLEditFormat( arguments.str );
+
+		var aMatches = REMatchNoCase( "\(([^\)]+)\)", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
+		}
+		var aMatches = REMatchNoCase( "\[([^\]]+)\]", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
+		}
+		var aMatches = REMatchNoCase( "\$([^(\(|\:)]+)(\:|\()", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='method'>#aString#</span>", "all" );
+		}
+		arguments.str = replace( arguments.str, chr( 13 ) & chr( 10 ), chr( 13 ) , 'all' );
+		arguments.str = replace( arguments.str, chr( 10 ), chr( 13 ) , 'all' );
+		arguments.str = replace( arguments.str, chr( 13 ), '<br>' , 'all' );
+		arguments.str = replaceNoCase( arguments.str, chr(9), repeatString( "&nbsp;", 4 ), "all" );
+		return arguments.str;
 	}
 
 }
