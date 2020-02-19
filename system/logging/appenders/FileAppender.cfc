@@ -93,23 +93,12 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			queue 	= []
 		};
 
-		// Declare locking construct
-		variables.lock = function( type="exclusive", body ){
-			lock 	name="#getHash() & getName()#-logListener"
-					type=arguments.type
-					timeout="#variables.lockTimeout#"
-					throwOnTimeout=true{
-
-				return arguments.body();
-
-			}
-		};
-
 		// Async Manager
 		variables.asyncManager = new coldbox.system.async.AsyncManager();
 
 		return this;
     }
+
 
     /**
 	 * Write an entry into the appender. You must implement this method yourself.
@@ -333,6 +322,23 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		}
 
 		return this;
+	}
+
+
+
+	/**
+	* Wraps the provided function with a locking tag.
+	*
+	* @type The lock type. Exclusive or readonly. Defaults to exclusive
+	* @body The function to wrap
+	*/
+	private function lock( type="exclusive", body){
+		lock 	name="#getHash() & getName()#-logListener"
+				type=arguments.type
+				timeout="#variables.lockTimeout#"
+				throwOnTimeout=true	{
+			return arguments.body();
+		}
 	}
 
 }
