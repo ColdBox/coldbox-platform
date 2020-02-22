@@ -134,32 +134,39 @@
 		var thisMap 	= arguments.mapping;
 		var oModel 		= createObject( "component", thisMap.getPath() );
 
-		// Do we have virtual inheritance?
-		if( arguments.mapping.isVirtualInheritance() ){
+        // Do we have virtual inheritance?
+        var constructorArgs = thisMap.getDIConstructorArguments();
+        var constructorArgNames = constructorArgs.map( function( arg ) { return arg.name; } );
+		if( thisMap.isVirtualInheritance() ){
 			// retrieve the VI mapping.
-			var viMapping = variables.injector.getBinder().getMapping( arguments.mapping.getVirtualInheritance() );
+			var viMapping = variables.injector.getBinder().getMapping( thisMap.getVirtualInheritance() );
 			// Does it match the family already?
 			if( NOT isInstanceOf( oModel, viMapping.getPath() ) ){
 				// Virtualize it.
-				toVirtualInheritance( viMapping, oModel, arguments.mapping );
+                toVirtualInheritance( viMapping, oModel, thisMap );
+
+                // Only add virtual inheritance constructor args if we don't already have one with that name.
+                arrayAppend( constructorArgs, viMapping.getDIConstructorArguments().filter( function( arg ) {
+                    return !arrayContainsNoCase( constructorArgNames, arg.name );
+                } ), true );
 			}
 		}
 
 		// Constructor initialization?
 		if( thisMap.isAutoInit() AND structKeyExists( oModel, thisMap.getConstructor() ) ){
-			// Get Arguments
-			var constructorArgs = buildArgumentCollection( thisMap, thisMap.getDIConstructorArguments(), oModel );
+            // Get Arguments
+			var constructorArgCollection = buildArgumentCollection( thisMap, constructorArgs, oModel );
 
 			// Do We have initArguments to override
 			if( NOT structIsEmpty( arguments.initArguments ) ){
-				structAppend( constructorArgs, arguments.initArguments, true );
+				structAppend( constructorArgCollection, arguments.initArguments, true );
 			}
 
 			try {
 				// Invoke constructor
-				invoke( oModel, thisMap.getConstructor(), constructorArgs );
+				invoke( oModel, thisMap.getConstructor(), constructorArgCollection );
 			} catch( any e ){
-				
+
 				var reducedTagContext = e.tagContext.reduce( function(result, file) {
 						if( !result.done ) {
 							if( file.template.listLast( '/\' ) == 'Builder.cfc' ) {
@@ -170,13 +177,13 @@
 						}
 						return result;
 					}, {rows:[],done:false} ).rows.toList( chr(13)&chr(10) );
-					
+
 				throw(
 					type    = "Builder.BuildCFCDependencyException",
 					message = "Error building: #thisMap.getName()# -> #e.message#
 					#e.detail#.",
-					detail  = "DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#, 
-					Error Location: 
+					detail  = "DSL: #thisMap.getDSL()#, Path: #thisMap.getPath()#,
+					Error Location:
 					#reducedTagContext#"
 				);
 			}
