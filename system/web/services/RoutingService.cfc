@@ -163,7 +163,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	/**
 	 * This is the route dispatcher called upon the request is captured.
 	 */
-	public void function onRequestCapture( event, interceptData, rc, prc, buffer ){
+	public void function requestCapture( event ) {
+        var rc = event.getCollection();
+        var prc = event.getPrivateCollection();
+
         var cleanedPaths = getCleanedPaths( rc, arguments.event );
 
 		// Check if disabled or in proxy mode, if it is, then exit out.

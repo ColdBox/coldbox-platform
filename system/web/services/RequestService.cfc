@@ -28,7 +28,8 @@ component extends="coldbox.system.web.services.BaseService"{
 		variables.log 					= controller.getLogBox().getLogger( this );
 		variables.eventName				= controller.getSetting( "eventName" );
 		variables.eventCaching			= controller.getSetting( "eventCaching" );
-		variables.interceptorService 	= controller.getInterceptorService();
+        variables.interceptorService 	= controller.getInterceptorService();
+        variables.routingService        = controller.getRoutingService();
 		variables.handlerService		= controller.getHandlerService();
 		variables.cacheBox				= controller.getCacheBox();
 		variables.cache					= controller.getCache();
@@ -71,6 +72,8 @@ component extends="coldbox.system.web.services.BaseService"{
 			context.configure();
 		}
 
+        // First, process the request through the RoutingService
+        variables.routingService.requestCapture( context );
 		// Execute onRequestCapture interceptionPoint
 		variables.interceptorService.processState( "onRequestCapture" );
 
