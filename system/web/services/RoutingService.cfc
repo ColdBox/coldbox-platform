@@ -156,10 +156,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		return this;
 	}
 
-	/****************************************************************************************************************************/
-	/* 													INTERCEPTION EVENT 														*/
-	/****************************************************************************************************************************/
-
 	/**
 	 * This is the route dispatcher called upon the request is captured.
 	 */
