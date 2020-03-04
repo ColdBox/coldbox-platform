@@ -72,7 +72,7 @@
 						scriptName = "",
 						domain     = "localhost"
 					} );
-					routingService.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
+					routingService.requestCapture( mockEvent );
 					expect( mockEvent.valueExists( "format" ) ).toBeFalse();
 				} );
 
@@ -83,7 +83,7 @@
 						scriptName = "",
 						domain     = "localhost"
 					} );
-					routingService.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
+					routingService.requestCapture( mockEvent );
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
 					mockEvent.removeValue( "format" );
@@ -97,7 +97,7 @@
 						scriptName = "",
 						domain     = "localhost"
 					} );
-					routingService.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
+					routingService.requestCapture( mockEvent );
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "json" );
 					mockEvent.removeValue( "format" );
@@ -111,7 +111,7 @@
 						scriptName = "",
 						domain     = "localhost"
 					} );
-					routingService.onRequestCapture( mockEvent, mockInterceptData, mockEvent.getCollection(), mockEvent.getPrivateCollection() );
+					routingService.requestCapture( mockEvent );
 					expect( mockEvent.valueExists( "format" ) ).toBeTrue();
 					expect( mockEvent.getValue( "format" ) ).toBe( "xml" );
 					mockEvent.removeValue( "format" );
