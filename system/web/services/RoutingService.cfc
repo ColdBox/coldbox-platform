@@ -158,8 +158,10 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 
 	/**
 	 * This is the route dispatcher called upon the request is captured.
+     *
+	 * @event The ColdBox Request context
 	 */
-	public void function requestCapture( event ) {
+	public void function requestCapture( required event ) {
         var rc = event.getCollection();
         var prc = event.getPrivateCollection();
 
