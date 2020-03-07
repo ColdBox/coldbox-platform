@@ -250,4 +250,20 @@ component accessors="true"{
 		createObject( "java", "java.lang.System" ).out.println( arguments.message );
 	}
 
+
+	/**
+	* Wraps the provided function with a locking tag.
+	*
+	* @type The lock type. Exclusive or readonly. Defaults to exclusive
+	* @body The function to wrap
+	*/
+	private function lock( type="exclusive", body){
+		lock 	name="#getHash() & getName()#-logListener"
+				type=arguments.type
+				timeout="#variables.lockTimeout#"
+				throwOnTimeout=true	{
+			return arguments.body();
+		}
+	}
+
 }
