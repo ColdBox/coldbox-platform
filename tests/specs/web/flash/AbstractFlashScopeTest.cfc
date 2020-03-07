@@ -9,7 +9,11 @@
 
 		mockController
 			.$( "getRequestService", mockRService )
-			.$( method="getUtil", returns=new coldbox.system.core.util.Util(), preserveReturnType=false );
+			.$(
+				method             = "getUtil",
+				returns            = new coldbox.system.core.util.Util(),
+				preserveReturnType = false
+			);
 		mockRService.$( "getContext", mockEvent );
 
 		flash.init( mockController );
@@ -98,30 +102,66 @@
 		flash.clear();
 
 		flash.persistRC();
-		assertEquals( flash.size(), 0, "Nothing persisted, flash shuold be empty." );
+		assertEquals(
+			flash.size(),
+			0,
+			"Nothing persisted, flash shuold be empty."
+		);
 
 		flash.persistRC( include = "name" );
-		assertEquals( flash.size(), 1, "Flash should contain only 'name', thus one item." );
+		assertEquals(
+			flash.size(),
+			1,
+			"Flash should contain only 'name', thus one item."
+		);
 
 		flash.clear();
 
 		flash.persistRC( include = "name,date" );
-		assertEquals( flash.size(), 2, "Flash should cotnain only 'name' and 'date', thus two items." );
+		assertEquals(
+			flash.size(),
+			2,
+			"Flash should cotnain only 'name' and 'date', thus two items."
+		);
 
 		flash.clear();
 
 		flash.persistRC( exclude = "name" );
-		assertEquals( flash.size(), 1, "After being cleared, flash should only contain 'name', thus one item." );
+		assertEquals(
+			flash.size(),
+			1,
+			"After being cleared, flash should only contain 'name', thus one item."
+		);
 	}
 
 	function testClearFlash(){
 		flash.$( "flashExists", true );
 		testScope = {
-			t1 : { content : createUUID(), keep : true, autoPurge : true },
-			t2 : { content : createUUID(), keep : true, autoPurge : true },
-			t3 : { content : createUUID(), keep : true, autoPurge : false },
-			t4 : { content : createUUID(), keep : true, autoPurge : true },
-			t5 : { content : createUUID(), keep : true, autoPurge : false }
+			t1 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t2 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t3 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : false
+			},
+			t4 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t5 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : false
+			}
 		};
 		flash.$( "getFlash", testScope );
 
@@ -133,11 +173,31 @@
 
 	function testGetKeys(){
 		var testScope = {
-			t1 : { content : createUUID(), keep : true, autoPurge : true },
-			t2 : { content : createUUID(), keep : true, autoPurge : true },
-			t3 : { content : createUUID(), keep : true, autoPurge : false },
-			t4 : { content : createUUID(), keep : true, autoPurge : true },
-			t5 : { content : createUUID(), keep : true, autoPurge : false }
+			t1 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t2 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t3 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : false
+			},
+			t4 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t5 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : false
+			}
 		};
 		flash.$( "getScope", testScope );
 
@@ -148,11 +208,31 @@
 
 	function testGetAll(){
 		var testScope = {
-			t1 : { content : createUUID(), keep : true, autoPurge : true },
-			t2 : { content : createUUID(), keep : true, autoPurge : true },
-			t3 : { content : createUUID(), keep : true, autoPurge : false },
-			t4 : { content : createUUID(), keep : true, autoPurge : true },
-			t5 : { content : createUUID(), keep : true, autoPurge : false }
+			t1 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t2 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t3 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : false
+			},
+			t4 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : true
+			},
+			t5 : {
+				content   : createUUID(),
+				keep      : true,
+				autoPurge : false
+			}
 		};
 		flash.$( "getScope", testScope );
 

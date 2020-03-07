@@ -1,29 +1,30 @@
-component extends="coldbox.system.testing.BaseModelTest"{
+component extends="coldbox.system.testing.BaseModelTest" {
 
 	function setUp(){
-
 		/* Properties */
 		props.defaultLayout     = "Main.cfm";
 		props.defaultView       = "";
-		props.folderLayouts     = structnew();
-		props.viewLayouts       = structnew();
+		props.folderLayouts     = structNew();
+		props.viewLayouts       = structNew();
 		props.eventName         = "event";
 		props.sesBaseURL        = "http://jfetmac/applications/coldbox/test-harness/index.cfm";
-		props.registeredLayouts = structnew();
+		props.registeredLayouts = structNew();
 		props.modules           = {
-			test1 = {
-				mapping = "/coldbox/test-harness",
-				inheritedEntryPoint = "test1"
+			test1 : {
+				mapping             : "/coldbox/test-harness",
+				inheritedEntryPoint : "test1"
 			}
 		};
 
 		/* Init it */
 		mockController = getMockController()
-			.$( "getSetting" ).$args( "modules" ).$results( props.modules );
+			.$( "getSetting" )
+			.$args( "modules" )
+			.$results( props.modules );
 		prepareMock( mockController.getInterceptorService() );
 		prepareMock( mockController.getWireBox() );
 
-		oRC =  new coldbox.system.web.context.RequestContext( props, mockController );
+		oRC = new coldbox.system.web.context.RequestContext( props, mockController );
 	}
 
 	function getRequestContext(){
@@ -32,24 +33,31 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 	function testValidRoutes(){
 		// Mocks
-		var mockRouter = createStub()
-			.$( "getRoutes", [ { name="contactus", pattern="contactus/" } ] );
+		var mockRouter = createStub().$(
+			"getRoutes",
+			[
+				{
+					name    : "contactus",
+					pattern : "contactus/"
+				}
+			]
+		);
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var event = getRequestContext().setSESEnabled( true );
-		var r = event.route( "contactus" );
-		//debug( r );
+		var r     = event.route( "contactus" );
+		// debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/contactus/" );
 	}
 
 	function testGetModuleEntryPoint(){
 		var event = getRequestContext()
 			.setSESEnabled( true )
-			.$property( "modules", "variables", {
-				myModule = {
-					inheritedEntryPoint = "mymodule/"
-				}
-			} );
+			.$property(
+				"modules",
+				"variables",
+				{ myModule : { inheritedEntryPoint : "mymodule/" } }
+			);
 		var r = event.getModuleEntryPoint( "myModule" );
 		expect( r ).toBe( "mymodule/" );
 	}
@@ -57,39 +65,36 @@ component extends="coldbox.system.testing.BaseModelTest"{
 	function testValidModuleRoutes(){
 		// Mocks
 		var mockRouter = createStub()
-			.$( "getModuleRoutes", [
-					{ name="home", pattern="home/" }
-				]
-			)
+			.$( "getModuleRoutes", [ { name : "home", pattern : "home/" } ] )
 			.$( "getRoutes", [] );
 		mockController.getWireBox().$( "getInstance", mockRouter );
 
 		var event = getRequestContext()
 			.setSESEnabled( true )
-			.$property( "modules", "variables", {
-				myModule = {
-					inheritedEntryPoint = "mymodule/"
-				}
-			} );
+			.$property(
+				"modules",
+				"variables",
+				{ myModule : { inheritedEntryPoint : "mymodule/" } }
+			);
 		var r = event.route( "home@mymodule" );
-		//debug( r );
+		// debug( r );
 		expect( r ).toBe( "http://jfetmac/applications/coldbox/test-harness/index.cfm/mymodule/home/" );
 	}
 
 	function testInvalidRoute(){
 		// Mocks
-		var mockSES = createStub()
-			.$( "getRoutes", [] );
+		var mockSES = createStub().$( "getRoutes", [] );
 		mockController.getInterceptorService().$( "getInterceptor", mockSES );
 
 		var event = getRequestContext().setSESEnabled( true );
-		expect( function(){ event.route( "invalid" ); } ).toThrow();
+		expect( function(){
+			event.route( "invalid" );
+		} ).toThrow();
 	}
 
 	function testGetHTMLBaseURL(){
 		var event = getRequestContext();
-		event.setSESEnabled( true )
-			.$( "isSSL", false );
+		event.setSESEnabled( true ).$( "isSSL", false );
 		expect( event.getHTMLBaseURL() ).toinclude( "http://jfetmac/applications/coldbox/test-harness" );
 
 		event.$( "isSSL", true );
@@ -99,90 +104,88 @@ component extends="coldbox.system.testing.BaseModelTest"{
 	function testgetCollection(){
 		var event = getRequestContext();
 
-		assertTrue( isStruct(event.getCollection()) );
+		assertTrue( isStruct( event.getCollection() ) );
 	}
 
 	function testclearCollection(){
 		var event = getRequestContext();
-		var test = {today=now()};
+		var test  = { today : now() };
 
-		event.collectionAppend( test);
+		event.collectionAppend( test );
 		event.clearCollection();
 
-		AssertEquals( structnew(), event.getCollection() );
+		assertEquals( structNew(), event.getCollection() );
 	}
 
 	function testcollectionAppend(){
-		var event = getRequestContext();
-		var test = structnew();
+		var event  = getRequestContext();
+		var test   = structNew();
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend( test);
+		event.collectionAppend( test );
 
-		AssertEquals( test, event.getCollection() );
+		assertEquals( test, event.getCollection() );
 	}
 
 	function testgetSize(){
-		var event = getRequestContext();
-		var test = structnew();
+		var event  = getRequestContext();
+		var test   = structNew();
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend( test);
+		event.collectionAppend( test );
 
-		AssertEquals( 1, event.getSize() );
+		assertEquals( 1, event.getSize() );
 	}
 
 	function testgetValue(){
-		var event = getRequestContext();
-		var test = structnew();
+		var event  = getRequestContext();
+		var test   = structNew();
 		test.today = now();
 
 		event.clearCollection();
-		event.collectionAppend( test);
+		event.collectionAppend( test );
 
-		assertEquals( test.today , event.getValue( "today" ) );
+		assertEquals( test.today, event.getValue( "today" ) );
 
 		assertEquals( "null", event.getValue( "invalidVar", "null" ) );
-
 	}
 
 	function testsetValue(){
-		var event = getRequestContext();
-		var test = structnew();
+		var event  = getRequestContext();
+		var test   = structNew();
 		test.today = now();
 
 		event.clearCollection();
 
-		event.setValue( "test", test.today);
+		event.setValue( "test", test.today );
 
 		assertEquals( test.today, event.getValue( "test" ) );
-
 	}
 
 	function testremoveValue(){
-		var event = getRequestContext();
-		var test = structnew();
+		var event  = getRequestContext();
+		var test   = structNew();
 		test.today = now();
 
 		event.clearCollection();
 
-		event.setValue( "test", test.today);
+		event.setValue( "test", test.today );
 		assertEquals( test.today, event.getValue( "test" ) );
 
 		event.removeValue( "test" );
-		assertEquals( false, event.getValue( "test", false) );
+		assertEquals( false, event.getValue( "test", false ) );
 	}
 
 	function testvalueExists(){
-		var event = getRequestContext();
-		var test = structnew();
+		var event  = getRequestContext();
+		var test   = structNew();
 		test.today = now();
 
 		event.clearCollection();
 
-		event.setValue( "test", test.today);
+		event.setValue( "test", test.today );
 		assertTrue( event.valueExists( "test" ) );
 
 		event.removeValue( "test" );
@@ -190,39 +193,45 @@ component extends="coldbox.system.testing.BaseModelTest"{
 	}
 
 	function testparamValue(){
-		var event = getRequestContext();
-		var test = structnew();
+		var event  = getRequestContext();
+		var test   = structNew();
 		test.today = now();
 
 		event.clearCollection();
 
-		AssertFalse( event.valueExists( "test" ) );
+		assertFalse( event.valueExists( "test" ) );
 
-		event.paramValue( "test", test.today);
+		event.paramValue( "test", test.today );
 
 		assertTrue( event.valueExists( "test" ) );
-
 	}
 
 	function testCurrentView(){
 		var event = getRequestContext();
-		var view = "vwHome";
+		var view  = "vwHome";
 
 		event.clearCollection();
 
-		event.setView( view=view );
+		event.setView( view = view );
 		assertEquals( view, event.getCurrentView() );
 
 		event.clearCollection();
 
-		event.setView(view=view, cache=true);
+		event.setView( view = view, cache = true );
 		assertEquals( view, event.getCurrentView() );
-		assertEquals( 'Main.cfm', event.getCurrentLayout() );
+		assertEquals( "Main.cfm", event.getCurrentLayout() );
 
 		// set view with caching
-		event.setView(view="home", cache="True", cacheProvider="luis", cacheTimeout="20", cacheLastAccessTimeout="1", cacheSuffix="test" );
+		event.setView(
+			view                   = "home",
+			cache                  = "True",
+			cacheProvider          = "luis",
+			cacheTimeout           = "20",
+			cacheLastAccessTimeout = "1",
+			cacheSuffix            = "test"
+		);
 		r = event.getViewCacheableEntry();
-		//debug( r );
+		// debug( r );
 
 		assertEquals( "home", r.view );
 		assertEquals( "20", r.timeout );
@@ -232,17 +241,17 @@ component extends="coldbox.system.testing.BaseModelTest"{
 	}
 
 	function testCurrentLayout(){
-		var event = getRequestContext();
+		var event  = getRequestContext();
 		var layout = "layout.pdf";
 
 		event.clearCollection();
 
-		event.setLayout(layout);
+		event.setLayout( layout );
 		assertEquals( layout & ".cfm", event.getCurrentLayout() );
 	}
 
 	function testGetCurrentHandlerWithModule(){
-		var event = getRequestContext();
+		var event        = getRequestContext();
 		var defaultEvent = "myModule:test.doSomething";
 
 		event.setValue( "event", defaultEvent );
@@ -253,10 +262,10 @@ component extends="coldbox.system.testing.BaseModelTest"{
 	}
 
 	function testgetCurrentEventHandlerAction(){
-		var event = getRequestContext();
+		var event        = getRequestContext();
 		var defaultEvent = "ehTest.doSomething";
 
-		event.setValue( "event", defaultEvent);
+		event.setValue( "event", defaultEvent );
 
 		assertEquals( defaultEvent, event.getCurrentEvent() );
 		assertEquals( "ehTest", event.getCurrentHandler() );
@@ -264,7 +273,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 		defaultEvent = "blog.content.doSomething";
 
-		event.setValue( "event", defaultEvent);
+		event.setValue( "event", defaultEvent );
 
 		assertEquals( defaultEvent, event.getCurrentEvent() );
 		assertEquals( "content", event.getCurrentHandler() );
@@ -272,103 +281,102 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 		defaultEvent = "blog.content.security.doSomething";
 
-		event.setValue( "event", defaultEvent);
+		event.setValue( "event", defaultEvent );
 
 		assertEquals( defaultEvent, event.getCurrentEvent() );
 		assertEquals( "security", event.getCurrentHandler() );
 		assertEquals( "doSomething", event.getCurrentAction() );
-
 	}
 
 	function testoverrideEvent(){
-		var event = getRequestContext();
+		var event    = getRequestContext();
 		var newEvent = "pio.yea";
 
 		event.clearCollection();
-		event.setValue( "event","blog.dspEntries" );
-		event.overrideEvent(newEvent);
+		event.setValue( "event", "blog.dspEntries" );
+		event.overrideEvent( newEvent );
 
-		assertEquals( newEvent , event.getCurrentEvent() );
+		assertEquals( newEvent, event.getCurrentEvent() );
 	}
 
 	function testProxyRequest(){
 		var event = getRequestContext();
 
-		AssertFalse( event.isProxyRequest() );
+		assertFalse( event.isProxyRequest() );
 
 		event.setProxyRequest();
-		AssertTrue( event.isProxyRequest() );
+		assertTrue( event.isProxyRequest() );
 	}
 
 	function testNoRender(){
 		var event = getRequestContext();
 
-		event.NoRender(remove=true);
-		AssertFalse( event.isNoRender() );
+		event.NoRender( remove = true );
+		assertFalse( event.isNoRender() );
 
-		event.NoRender(remove=false);
-		AssertTrue( event.isNoRender() );
+		event.NoRender( remove = false );
+		assertTrue( event.isNoRender() );
 	}
 
 	function testgetEventName(){
 		var event = getRequestContext();
-		var test = props.eventName;
+		var test  = props.eventName;
 
 		assertEquals( test, event.getEventName() );
 	}
 
 	function testgetSelf(){
 		var event = getRequestContext();
-		var test = props.eventname;
+		var test  = props.eventname;
 
 		assertEquals( "index.cfm?#test#=", event.getSelf() );
 	}
 
 	function testEventCacheableEntry(){
-		var event = getRequestContext();
-		var centry = structnew();
+		var event  = getRequestContext();
+		var centry = structNew();
 
-		AssertFalse( event.isEventCacheable(), "event cacheable" );
+		assertFalse( event.isEventCacheable(), "event cacheable" );
 
 		centry.cacheable = true;
-		centry.test = true;
+		centry.test      = true;
 
-		event.setEventCacheableEntry(centry);
-		AssertTrue( event.isEventCacheable(), "event cacheable 2" );
-		AssertEquals(centry, event.getEventCacheableEntry() );
+		event.setEventCacheableEntry( centry );
+		assertTrue( event.isEventCacheable(), "event cacheable 2" );
+		assertEquals( centry, event.getEventCacheableEntry() );
 	}
 
 	function testViewCacheableEntry(){
-		var event = getRequestContext();
-		var centry = structnew();
+		var event  = getRequestContext();
+		var centry = structNew();
 
-		AssertFalse( event.isViewCacheable(), "view cacheable" );
+		assertFalse( event.isViewCacheable(), "view cacheable" );
 
 		centry.cacheable = true;
-		centry.test = true;
+		centry.test      = true;
 
-		event.setViewCacheableEntry(centry);
-		AssertTrue( event.isViewCacheable(), "view cacheable 2" );
-		AssertEquals(centry, event.getViewCacheableEntry() );
+		event.setViewCacheableEntry( centry );
+		assertTrue( event.isViewCacheable(), "view cacheable 2" );
+		assertEquals( centry, event.getViewCacheableEntry() );
 	}
 
 	function testRoutedStruct(){
-		var event = getRequestContext();
-		var routedStruct = structnew();
+		var event        = getRequestContext();
+		var routedStruct = structNew();
 
 		routedStruct.page = "aboutus";
-		routedStruct.day = "13";
+		routedStruct.day  = "13";
 
-		event.setRoutedStruct(routedStruct);
+		event.setRoutedStruct( routedStruct );
 
-		AssertEquals(event.getRoutedStruct(),routedStruct);
+		assertEquals( event.getRoutedStruct(), routedStruct );
 	}
 
 	function testSES(){
 		var event = getRequestContext();
-		base = "http://www.luismajano.com/index.cfm";
+		base      = "http://www.luismajano.com/index.cfm";
 
-		event.setsesBaseURL(base);
+		event.setsesBaseURL( base );
 		assertEquals( event.getsesBaseURL(), base );
 
 		event.setSESEnabled( true );
@@ -387,75 +395,91 @@ component extends="coldbox.system.testing.BaseModelTest"{
 	}
 
 	function testBuildLink(){
-		var event = getRequestContext();
-		var base = "http://www.luismajano.com/index.cfm";
+		var event   = getRequestContext();
+		var base    = "http://www.luismajano.com/index.cfm";
 		var basessl = "https://www.luismajano.com/index.cfm";
 
 		/* simple setup */
-		event.setSESEnabled(false);
-		testurl = event.buildLink('general.index');
-		AssertEquals( testurl, "index.cfm?event=general.index" );
+		event.setSESEnabled( false );
+		testurl = event.buildLink( "general.index" );
+		assertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* simple qs */
-		event.setSESEnabled(false);
-		testurl = event.buildLink( to='general.index',queryString="page=2" );
-		AssertEquals( testurl, "index.cfm?event=general.index&page=2" );
+		event.setSESEnabled( false );
+		testurl = event.buildLink( to = "general.index", queryString = "page=2" );
+		assertEquals( testurl, "index.cfm?event=general.index&page=2" );
 
 		/* empty qs */
-		event.setSESEnabled(false);
-		testurl = event.buildLink( to='general.index',queryString="" );
-		AssertEquals( testurl, "index.cfm?event=general.index" );
+		event.setSESEnabled( false );
+		testurl = event.buildLink( to = "general.index", queryString = "" );
+		assertEquals( testurl, "index.cfm?event=general.index" );
 
 		/* ses test */
 		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( to='general/index', ssl=false );
-		AssertEquals( testurl, base & "/general/index" );
+		testurl = event.buildLink( to = "general/index", ssl = false );
+		assertEquals( testurl, base & "/general/index" );
 
 		/* query string transformation */
 		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( to='general/index', queryString="page=2&tests=4", ssl=false );
-		AssertEquals( testurl, base & "/general/index/page/2/tests/4" );
+		testurl = event.buildLink(
+			to          = "general/index",
+			queryString = "page=2&tests=4",
+			ssl         = false
+		);
+		assertEquals( testurl, base & "/general/index/page/2/tests/4" );
 
 		/* ssl test */
 		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( to='general/index', ssl=true );
-		AssertEquals( testurl, basessl & "/general/index" );
+		testurl = event.buildLink( to = "general/index", ssl = true );
+		assertEquals( testurl, basessl & "/general/index" );
 
 		// SSL OFF
 		event.setsesBaseURL( basessl );
-		testurl = event.buildLink( to='general/index', ssl=false, queryString="name=luis&cool=false" );
-		AssertEquals( testurl, base & "/general/index/name/luis/cool/false" );
+		testurl = event.buildLink(
+			to          = "general/index",
+			ssl         = false,
+			queryString = "name=luis&cool=false"
+		);
+		assertEquals( testurl, base & "/general/index/name/luis/cool/false" );
 
 		/* translate */
 		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( to='general.index', translate=false, ssl=false );
-		AssertEquals( testurl, base & "/general.index" );
+		testurl = event.buildLink(
+			to        = "general.index",
+			translate = false,
+			ssl       = false
+		);
+		assertEquals( testurl, base & "/general.index" );
 
 		/* translate with query string */
 		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
-		testurl = event.buildLink( to='general.index', queryString="name=luis&cool=false", translate=false, ssl=false );
-		AssertEquals( testurl, base & "/general.index?name=luis&cool=false" );
+		testurl = event.buildLink(
+			to          = "general.index",
+			queryString = "name=luis&cool=false",
+			translate   = false,
+			ssl         = false
+		);
+		assertEquals( testurl, base & "/general.index?name=luis&cool=false" );
 
 		// SES Module Translations
 		event.setSESEnabled( true );
 		event.setsesBaseURL( base );
-		var testUrl = event.buildLink( to="test1:main.index", translate=true );
+		var testUrl = event.buildLink( to = "test1:main.index", translate = true );
 		expect( testurl ).toBe( "http://www.luismajano.com/index.cfm/test1/main/index" );
-
 	}
 
 	function testRenderData(){
 		var event = getRequestContext();
 
-		AssertEquals( event.getRenderData(), structnew());
+		assertEquals( event.getRenderData(), structNew() );
 
 		// Test JSON
-		event.renderData( type='JSON',data="[1,2,3,4]" );
+		event.renderData( type = "JSON", data = "[1,2,3,4]" );
 		rd = event.getRenderData();
 		assertEquals( rd.contenttype, "application/json" );
 		assertEquals( rd.type, "json" );
@@ -464,30 +488,39 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		assertEquals( rd.statusText, "" );
 
 
-		event.renderData( type='JSON', data="[1,2,3,4]", jsonQueryFormat="array", jsonCase="upper" );
+		event.renderData(
+			type            = "JSON",
+			data            = "[1,2,3,4]",
+			jsonQueryFormat = "array",
+			jsonCase        = "upper"
+		);
 		rd = event.getRenderData();
 		assertEquals( rd.jsonQueryFormat, false );
 
-		//JSONP
-		event.renderData( type='JSONP',data="[1,2,3,4]",jsonCallback="testCallback" );
+		// JSONP
+		event.renderData(
+			type         = "JSONP",
+			data         = "[1,2,3,4]",
+			jsonCallback = "testCallback"
+		);
 		rd = event.getRenderData();
 		assertEquals( rd.type, "jsonp" );
-		assertEquals( rd.jsonCallback, 'testCallback');
+		assertEquals( rd.jsonCallback, "testCallback" );
 
 		// Test WDDX
-		event.renderData( type="WDDX",data=arrayNew(1));
+		event.renderData( type = "WDDX", data = arrayNew( 1 ) );
 		rd = event.getRenderData();
 		assertEquals( rd.contenttype, "text/xml" );
 		assertEquals( rd.type, "wddx" );
 
 		// Test PLAIN
-		event.renderData(data="Hello" );
+		event.renderData( data = "Hello" );
 		rd = event.getRenderData();
 		assertEquals( rd.type, "html" );
 		assertEquals( rd.contenttype, "text/html" );
 
 		// Test XML
-		event.renderData(data=structnew(),type="xml" );
+		event.renderData( data = structNew(), type = "xml" );
 		rd = event.getRenderData();
 		assertEquals( rd.type, "xml" );
 		assertEquals( rd.contenttype, "text/xml" );
@@ -495,13 +528,17 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		assertEquals( rd.xmlColumnList, "" );
 
 		// Test contenttype
-		event.renderData(data="Hello",contentType="application/ms-excel" );
+		event.renderData( data = "Hello", contentType = "application/ms-excel" );
 		rd = event.getRenderData();
 		assertEquals( rd.type, "html" );
 		assertEquals( rd.contenttype, "application/ms-excel" );
 
 		// Test StatusCodes
-		event.renderData(data="hello",statusCode="400",statusText="Invalid Call!" );
+		event.renderData(
+			data       = "hello",
+			statusCode = "400",
+			statusText = "Invalid Call!"
+		);
 		rd = event.getRenderData();
 		assertEquals( rd.statusCode, "400" );
 		assertEquals( rd.statusText, "Invalid Call!" );
@@ -509,22 +546,22 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 	function testNoExecution(){
 		var event = getRequestContext();
-		expect(	event.getIsNoExecution() ).toBeFalse();
+		expect( event.getIsNoExecution() ).toBeFalse();
 
 		event.noExecution();
-		expect(	event.getIsNoExecution() ).toBeTrue();
+		expect( event.getIsNoExecution() ).toBeTrue();
 	}
 
 	function testCurrentModule(){
 		var event = getRequestContext();
 
-		event.setValue( "event","myModule:test.home" );
+		event.setValue( "event", "myModule:test.home" );
 
-		//debug(event.getCurrentEVent());
-		assertEquals( "myModule", event.getCurrentModule());
+		// debug(event.getCurrentEVent());
+		assertEquals( "myModule", event.getCurrentModule() );
 
-		event.setValue( "event","test.home" );
-		assertEquals( "", event.getCurrentModule());
+		event.setValue( "event", "test.home" );
+		assertEquals( "", event.getCurrentModule() );
 	}
 
 
@@ -532,19 +569,19 @@ component extends="coldbox.system.testing.BaseModelTest"{
 		var event = getRequestContext();
 
 
-		//debug(event.getCurrentEVent());
-		assertEquals( "", event.getmoduleRoot());
-		event.setValue( "event","test1:test.home" );
-		assertEquals(props.modules.test1.mapping, event.getmoduleRoot());
+		// debug(event.getCurrentEVent());
+		assertEquals( "", event.getmoduleRoot() );
+		event.setValue( "event", "test1:test.home" );
+		assertEquals( props.modules.test1.mapping, event.getmoduleRoot() );
 	}
 
 
 	function testsetHTTPHeader(){
 		var event = getRequestContext();
 
-		event.setHTTPHeader(statusCode="200",statusText="Hello" );
+		event.setHTTPHeader( statusCode = "200", statusText = "Hello" );
 
-		event.setHTTPHeader(name="expires",value="#now()#" );
+		event.setHTTPHeader( name = "expires", value = "#now()#" );
 	}
 
 	function testGetHTTPConetnt(){
@@ -552,7 +589,7 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 		test = event.getHTTPContent();
 
-		assertTrue( isSimpleValue( test) );
+		assertTrue( isSimpleValue( test ) );
 	}
 
 	function testNoLayout(){
@@ -560,8 +597,8 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 		event.noLayout().setView( "test" );
 
-		//debug( event.getCollection(private=true) );
-		assertEquals( true, event.getValue( "layoutOverride",false,true) );
+		// debug( event.getCollection(private=true) );
+		assertEquals( true, event.getValue( "layoutOverride", false, true ) );
 	}
 
 	function testDoubleSlashInBuildLink(){
@@ -569,102 +606,138 @@ component extends="coldbox.system.testing.BaseModelTest"{
 
 		event.setSESEnabled( true );
 
-		link = event.buildLink( to='my/event/handler/', queryString='one=1&two=2' );
-		expect(	link ).toInclude( "test-harness/index.cfm/my/event/handler/one/1/two/2" );
+		link = event.buildLink( to = "my/event/handler/", queryString = "one=1&two=2" );
+		expect( link ).toInclude( "test-harness/index.cfm/my/event/handler/one/1/two/2" );
 
 		// debug( link );
 	}
 
-	function testOnlyArray() {
+	function testOnlyArray(){
 		var event = getRequestContext();
 		event.setValue( "name", "John" );
 		event.setValue( "email", "john@example.com" );
 		event.setValue( "hackedField", "hacked!" );
 
-		expect( event.getOnly( [ "name", "email", "field-that-does-not-exist" ] ) )
-			.toBe( { "name" = "John", "email" = "john@example.com" } );
+		expect(
+			event.getOnly( [
+				"name",
+				"email",
+				"field-that-does-not-exist"
+			] )
+		).toBe( {
+			"name"  : "John",
+			"email" : "john@example.com"
+		} );
 	}
 
-	function testOnlyList() {
+	function testOnlyList(){
 		var event = getRequestContext();
 		event.setValue( "name", "John" );
 		event.setValue( "email", "john@example.com" );
 		event.setValue( "hackedField", "hacked!" );
 
-		expect( event.getOnly( "name,email,field-that-does-not-exist" ) )
-			.toBe( { "name" = "John", "email" = "john@example.com" } );
+		expect( event.getOnly( "name,email,field-that-does-not-exist" ) ).toBe( {
+			"name"  : "John",
+			"email" : "john@example.com"
+		} );
 	}
 
-	function testPrivateOnlyFlag() {
+	function testPrivateOnlyFlag(){
 		var event = getRequestContext();
 		event.setValue( "name", "John" );
 		event.setValue( "hackedField", "hacked!" );
 		event.setValue( "name", "Jane", true );
-		event.setValue( "hackedField", "hacked as well!", true );
+		event.setValue(
+			"hackedField",
+			"hacked as well!",
+			true
+		);
 
-		expect( event.getOnly( keys = "name,field-that-does-not-exist", private = true ) )
-			.toBe( { "name" = "Jane" } );
-    }
-
-    function testPrivateOnlyMethod() {
-        var event = getRequestContext();
-        event.setValue( "name", "John" );
-        event.setValue( "hackedField", "hacked!" );
-        event.setValue( "name", "Jane", true );
-        event.setValue( "hackedField", "hacked as well!", true );
-
-        expect( event.getPrivateOnly( [ "name", "field-that-does-not-exist" ] ) )
-            .toBe( { "name" = "Jane" } );
-    }
-
-    function testExceptArray() {
-		var event = getRequestContext();
-		event.setValue( "name", "John" );
-		event.setValue( "email", "john@example.com" );
-		event.setValue( "hackedField", "hacked!" );
-
-		expect( event.getExcept( [ "hackedField", "field-that-does-not-exist" ] ) )
-			.toBe( { "name" = "John", "email" = "john@example.com" } );
+		expect( event.getOnly( keys = "name,field-that-does-not-exist", private = true ) ).toBe( { "name" : "Jane" } );
 	}
 
-	function testExceptList() {
-		var event = getRequestContext();
-		event.setValue( "name", "John" );
-		event.setValue( "email", "john@example.com" );
-		event.setValue( "hackedField", "hacked!" );
-
-		expect( event.getExcept( "hackedField,field-that-does-not-exist" ) )
-			.toBe( { "name" = "John", "email" = "john@example.com" } );
-    }
-
-    function testPrivateExceptFlag() {
+	function testPrivateOnlyMethod(){
 		var event = getRequestContext();
 		event.setValue( "name", "John" );
 		event.setValue( "hackedField", "hacked!" );
 		event.setValue( "name", "Jane", true );
-		event.setValue( "hackedField", "hacked as well!", true );
+		event.setValue(
+			"hackedField",
+			"hacked as well!",
+			true
+		);
 
-		expect( event.getExcept( keys = "hackedField,key-that-does-not-exist", private = true ) )
-			.toBe( { "name" = "Jane" } );
-    }
+		expect( event.getPrivateOnly( [ "name", "field-that-does-not-exist" ] ) ).toBe( { "name" : "Jane" } );
+	}
 
-    function testPrivateExceptMethod() {
-        var event = getRequestContext();
-        event.setValue( "name", "John" );
-        event.setValue( "hackedField", "hacked!" );
-        event.setValue( "name", "Jane", true );
-        event.setValue( "hackedField", "hacked as well!", true );
+	function testExceptArray(){
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "email", "john@example.com" );
+		event.setValue( "hackedField", "hacked!" );
 
-        expect( event.getPrivateExcept( [ "hackedField", "key-that-does-not-exist" ] ) )
-            .toBe( { "name" = "Jane" } );
-    }
+		expect(
+			event.getExcept( [
+				"hackedField",
+				"field-that-does-not-exist"
+			] )
+		).toBe( {
+			"name"  : "John",
+			"email" : "john@example.com"
+		} );
+	}
 
-    function testGetFullUrl() {
-        var event = getRequestContext();
-        debug( event.getFullUrl() );
-        expect( event.getFullUrl() ).toBeTypeOf( "url" );
-        var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
-        expect( javaUrl.getPort() ).toBe( listFind( "80,443", CGI.SERVER_PORT ) > 0 ? -1 : CGI.SERVER_PORT );
-    }
+	function testExceptList(){
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "email", "john@example.com" );
+		event.setValue( "hackedField", "hacked!" );
+
+		expect( event.getExcept( "hackedField,field-that-does-not-exist" ) ).toBe( {
+			"name"  : "John",
+			"email" : "john@example.com"
+		} );
+	}
+
+	function testPrivateExceptFlag(){
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "hackedField", "hacked!" );
+		event.setValue( "name", "Jane", true );
+		event.setValue(
+			"hackedField",
+			"hacked as well!",
+			true
+		);
+
+		expect( event.getExcept( keys = "hackedField,key-that-does-not-exist", private = true ) ).toBe( { "name" : "Jane" } );
+	}
+
+	function testPrivateExceptMethod(){
+		var event = getRequestContext();
+		event.setValue( "name", "John" );
+		event.setValue( "hackedField", "hacked!" );
+		event.setValue( "name", "Jane", true );
+		event.setValue(
+			"hackedField",
+			"hacked as well!",
+			true
+		);
+
+		expect(
+			event.getPrivateExcept( [
+				"hackedField",
+				"key-that-does-not-exist"
+			] )
+		).toBe( { "name" : "Jane" } );
+	}
+
+	function testGetFullUrl(){
+		var event = getRequestContext();
+		debug( event.getFullUrl() );
+		expect( event.getFullUrl() ).toBeTypeOf( "url" );
+		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
+		expect( javaUrl.getPort() ).toBe( listFind( "80,443", CGI.SERVER_PORT ) > 0 ? -1 : CGI.SERVER_PORT );
+	}
 
 }

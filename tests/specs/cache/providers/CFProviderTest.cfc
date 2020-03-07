@@ -1,5 +1,4 @@
-﻿component name="cacheTest" extends="coldbox.system.testing.BaseTestCase" output="false" skip="isAdobe"{
-
+﻿component name = "cacheTest" extends = "coldbox.system.testing.BaseTestCase" output = "false" skip = "isAdobe"{
 	this.loadColdBox = false;
 
 	boolean function isAdobe(){
@@ -10,21 +9,23 @@
 		super.setup();
 
 		// Mocks
-		mockFactory       = createMock( 'coldbox.system.cache.CacheFactory' );
-		mockEventManager  = createMock( 'coldbox.system.core.events.EventPoolManager' );
-		mockLogBox	      = createMock( "coldbox.system.logging.LogBox" );
-		mockLogger	 	  = createMock( "coldbox.system.logging.Logger" );
+		mockFactory      = createMock( "coldbox.system.cache.CacheFactory" );
+		mockEventManager = createMock( "coldbox.system.core.events.EventPoolManager" );
+		mockLogBox       = createMock( "coldbox.system.logging.LogBox" );
+		mockLogger       = createMock( "coldbox.system.logging.Logger" );
 
 		// Mock Methods
 		mockFactory.setLogBox( mockLogBox );
 		mockLogBox.$( "getLogger", mockLogger );
-		mockLogger.$( "error" ).$( "debug" ).$( "info" ).$( "canDebug", false );
+		mockLogger
+			.$( "error" )
+			.$( "debug" )
+			.$( "info" )
+			.$( "canDebug", false );
 		mockEventManager.$( "processState" );
 
 		// Config
-		config = {
-			cacheName = "object"
-		};
+		config = { cacheName : "object" };
 
 		// Create Provider
 		cache = createMock( "coldbox.system.cache.providers.CFProvider" ).init();
@@ -34,9 +35,9 @@
 		cache.setCacheFactory( mockFactory );
 		cache.setEventManager( mockEventManager );
 
-		//writeDump( var=cacheGetSession( "object" ) );abort;
-		//writeDump( var=cache.getObjectStore() );abort;
-		//writeDump( var=cache.getObjectStore().getStatistics() );abort;
+		// writeDump( var=cacheGetSession( "object" ) );abort;
+		// writeDump( var=cache.getObjectStore() );abort;
+		// writeDump( var=cache.getObjectStore().getStatistics() );abort;
 
 		// Configure the provider
 		cache.configure();
@@ -51,7 +52,7 @@
 	}
 
 	function testLookup(){
-		cache.set( "test",now(),20);
+		cache.set( "test", now(), 20 );
 		cache.clearStatistics();
 
 		assertEquals( false, cache.lookup( "invalid" ) );
@@ -59,7 +60,7 @@
 	}
 
 	function testLookupQuiet(){
-		cache.set( "test",now(),20);
+		cache.set( "test", now(), 20 );
 		cache.clearStatistics();
 
 		assertEquals( false, cache.lookupQuiet( "invalid" ) );
@@ -68,22 +69,22 @@
 
 	function testgetKeys(){
 		s = cacheGetSession( "object" ).removeAll();
-		cache.set( "test",now());
-		cache.set( "test2",now());
-		assertEquals( 2, arrayLen(cache.getKeys()) );
+		cache.set( "test", now() );
+		cache.set( "test2", now() );
+		assertEquals( 2, arrayLen( cache.getKeys() ) );
 	}
 
 	function testgetCachedObjectMetadata(){
-		cache.set( "test",now());
+		cache.set( "test", now() );
 		md = cache.getCachedObjectMetadata( "test" );
 		// debug(md);
-		assertEquals( false, structIsEmpty(md) );
+		assertEquals( false, structIsEmpty( md ) );
 	}
 
 	function testGet(){
-		testVal = {name="luis", age=32};
+		testVal = { name : "luis", age : 32 };
 
-		cache.set( "test",testVal,20);
+		cache.set( "test", testVal, 20 );
 		cache.clearStatistics();
 
 		results = cache.get( "test" );
@@ -96,19 +97,23 @@
 	function testGetOrSet(){
 		cache.clearStatistics();
 
-		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
+		results = cache.getOrSet( objectKey = "test", produce = cacheProducer );
 		assertTrue( structKeyExists( results, "name" ) );
 
-		results = cache.getOrSet( objectKey="test", produce=cacheProducer );
+		results = cache.getOrSet( objectKey = "test", produce = cacheProducer );
 		assertTrue( structKeyExists( results, "name" ) );
 	}
 
 	private function cacheProducer(){
-		return { date=now(), name="luis majano", id = createUUID() };
+		return {
+			date : now(),
+			name : "luis majano",
+			id   : createUUID()
+		};
 	}
 
 	function testGetQuiet(){
-		testVal = {name="luis", age=32};
+		testVal = { name : "luis", age : 32 };
 
 		cache.clearStatistics();
 		cache.set( "test", testVal, 20 );
@@ -119,60 +124,82 @@
 	}
 
 	function testSet(){
-		testVal = {name="luis", age=32};
+		testVal = { name : "luis", age : 32 };
 		cache.clearAll();
 
-		cache.set( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		cache.set(
+			"test",
+			testVal,
+			createTimespan( 0, 0, 2, 0 ),
+			createTimespan( 0, 0, 1, 0 )
+		);
 		assertEquals( testVal, cache.get( "test" ) );
 		md = cache.getCachedObjectMetadata( "test" );
 		assertEquals( 60, md.idleTime );
-		assertEquals( 120, md.timespan);
+		assertEquals( 120, md.timespan );
 		// debug(md);
 	}
 
 	function testSetQuiet(){
-		testVal = {name="luis", age=32};
+		testVal = { name : "luis", age : 32 };
 		cache.clearAll();
 
-		cache.setQuiet( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		cache.setQuiet(
+			"test",
+			testVal,
+			createTimespan( 0, 0, 2, 0 ),
+			createTimespan( 0, 0, 1, 0 )
+		);
 		assertEquals( testVal, cache.get( "test" ) );
 		md = cache.getCachedObjectMetadata( "test" );
 		assertEquals( 60, md.idleTime );
-		assertEquals( 120, md.timespan);
+		assertEquals( 120, md.timespan );
 		// debug(md);
 	}
 
 	function testGetSize(){
-		testVal = {name="luis", age=32};
+		testVal = { name : "luis", age : 32 };
 		cache.clearAll();
 
-		cache.setQuiet( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		cache.setQuiet(
+			"test",
+			testVal,
+			createTimespan( 0, 0, 2, 0 ),
+			createTimespan( 0, 0, 1, 0 )
+		);
 
-		assertEquals(1, cache.getSize() );
+		assertEquals( 1, cache.getSize() );
 	}
 
 	function testClear(){
-		testVal = {name="luis", age=32};
+		testVal = { name : "luis", age : 32 };
 		cache.clearAll();
 
-		cache.set( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		cache.set(
+			"test",
+			testVal,
+			createTimespan( 0, 0, 2, 0 ),
+			createTimespan( 0, 0, 1, 0 )
+		);
 
-		assertEquals(1, cache.getSize() );
+		assertEquals( 1, cache.getSize() );
 		cache.clear( "test" );
-		assertEquals(0, cache.getSize() );
-
+		assertEquals( 0, cache.getSize() );
 	}
 
 	function testClearQuiet(){
-		testVal = {name="luis", age=32};
+		testVal = { name : "luis", age : 32 };
 		cache.clearAll();
 
-		cache.set( "test", testVal ,createTimeSpan(0,0,2,0), createTimeSpan(0,0,1,0));
+		cache.set(
+			"test",
+			testVal,
+			createTimespan( 0, 0, 2, 0 ),
+			createTimespan( 0, 0, 1, 0 )
+		);
 
-		assertEquals(1, cache.getSize() );
+		assertEquals( 1, cache.getSize() );
 		cache.clearQuiet( "test" );
-		assertEquals(0, cache.getSize() );
-
+		assertEquals( 0, cache.getSize() );
 	}
-
 }

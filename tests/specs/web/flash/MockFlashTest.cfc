@@ -9,8 +9,16 @@
 
 		// test scope
 		testscope = {
-			test : { content : "luis", autoPurge : true, keep : true },
-			date : { content : now(), autoPurge : true, keep : true }
+			test : {
+				content   : "luis",
+				autoPurge : true,
+				keep      : true
+			},
+			date : {
+				content   : now(),
+				autoPurge : true,
+				keep      : true
+			}
 		};
 	}
 
