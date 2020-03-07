@@ -645,7 +645,16 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
     * @return cbox_statusCode or 200
     */
     function getStatusCode(){
-        return getValue( "cbox_statusCode", 200 );
+        return getValue(
+            "relocate_STATUSCODE",
+            getValue(
+                "setNextEvent_STATUSCODE",
+                getValue(
+                    "cbox_statusCode",
+                    200
+                )
+            )
+        );
     }
 
     /**
