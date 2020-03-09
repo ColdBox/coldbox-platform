@@ -14,14 +14,14 @@ A mock test DSL
 		access    ="public"
 		returntype="any"
 		hint      ="Configure the DSL for operation and returns itself"
-		colddoc   :generic="coldbox.system.ioc.dsl.IDSLBuilder"
+		doc_generic="coldbox.system.ioc.dsl.IDSLBuilder"
 	>
 		<cfargument
 			name    ="injector"
 			type    ="any"
 			required="true"
 			hint    ="The linked WireBox injector"
-			colddoc :generic="coldbox.system.ioc.Injector"
+			doc_generic="coldbox.system.ioc.Injector"
 		/>
 		<cfscript>
 		instance = { injector : arguments.injector };
