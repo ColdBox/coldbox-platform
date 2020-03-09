@@ -53,20 +53,9 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			queue 	= []
 		};
 
-		// Declare locking construct
-		variables.lock = function( type="exclusive", body ){
-			lock 	name="#getHash() & getName()#-logListener"
-					type=arguments.type
-					timeout="#variables.lockTimeout#"
-					throwOnTimeout=true{
-
-				return arguments.body();
-
-			}
-		};
-
 		return this;
     }
+
 
     /**
 	 * Write an entry into the appender.

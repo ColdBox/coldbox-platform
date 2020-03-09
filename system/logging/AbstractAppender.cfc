@@ -257,4 +257,20 @@ component accessors="true"{
 		variables.System.err.println( arguments.message.toString() );
 	}
 
+
+	/**
+	* Wraps the provided function with a locking tag.
+	*
+	* @type The lock type. Exclusive or readonly. Defaults to exclusive
+	* @body The function to wrap
+	*/
+	private function lock( type="exclusive", body){
+		lock 	name="#getHash() & getName()#-logListener"
+				type=arguments.type
+				timeout="#variables.lockTimeout#"
+				throwOnTimeout=true	{
+			return arguments.body();
+		}
+	}
+
 }
