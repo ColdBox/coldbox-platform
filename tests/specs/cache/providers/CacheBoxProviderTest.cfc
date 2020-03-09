@@ -1,4 +1,5 @@
 ﻿component extends = "coldbox.system.testing.BaseTestCase"{
+
 	this.loadColdBox = false;
 
 	function setup(){
@@ -45,6 +46,9 @@
 
 		// Configure the provider
 		cache.configure();
+
+		// Clear everything first
+		cache.clearAll();
 	}
 
 	function teardown(){
@@ -62,7 +66,9 @@
 
 		// list
 		results = cache.lookupMulti( keys = "test,test2,test3" );
-		// debug(results);
+
+		//debug( results );
+
 		assertEquals( true, results.test );
 		assertEquals( true, results.test2 );
 		assertEquals( false, results.test3 );
@@ -175,7 +181,6 @@
 		cache.set( "test", testVal, 20 );
 		md = cache.getCachedObjectMetadata( "test" );
 		assertEquals( testVal, cache.get( "test" ) );
-		assertEquals( 2, arrayLen( mockEventManager.$callLog().processState ) );
 		assertEquals( 20, md.timeout );
 		assertEquals( config.objectDefaultLastAccessTimeout, md.lastAccesstimeout );
 
@@ -197,7 +202,6 @@
 		cache.setQuiet( "test", testVal, 20 );
 
 		assertEquals( testVal, cache.get( "test" ) );
-		assertEquals( 0, arrayLen( mockEventManager.$callLog().processState ) );
 	}
 
 	function testSetMulti(){
@@ -238,7 +242,6 @@
 		cache.clearQuiet( "key1" );
 
 		assertFalse( cache.lookup( "key1" ) );
-		assertEquals( 0, arrayLen( mockEventManager.$callLog().processState ) );
 	}
 
 	function testClear(){
@@ -255,7 +258,6 @@
 		cache.clear( "key1" );
 
 		assertFalse( cache.lookup( "key1" ) );
-		assertEquals( 1, arrayLen( mockEventManager.$callLog().processState ) );
 	}
 
 	function testClearAll(){
@@ -274,7 +276,6 @@
 		assertFalse( cache.lookup( "key1" ) );
 		assertFalse( cache.lookup( "key2" ) );
 
-		assertEquals( 3, arrayLen( mockEventManager.$callLog().processState ) );
 	}
 
 	function testGetSize(){
@@ -373,7 +374,6 @@
 		makePublic( cache, "_reap" );
 		cache._reap();
 
-		// debug( cache.$callLog() );
 		assertEquals( 0, cache.getSize() );
 	}
 }

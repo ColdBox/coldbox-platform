@@ -1,15 +1,5 @@
-﻿<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author          :	Luis Majano
-Date               :	9/3/2007
-Description :
-Request service Test
------------------------------------------------------------------------>
-<cfcomponent name="cacheTest" extends="CFProviderTest" output="false" skip="isAdobe">
-	<cfscript>
+﻿component name="cacheTest" extends="CFProviderTest" output="false" skip="isAdobe"{
+
 	function setup(){
 		super.setup();
 		// Mock Controller
@@ -58,5 +48,5 @@ Request service Test
 	function testclearView(){
 		cache.clearView( "test" );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

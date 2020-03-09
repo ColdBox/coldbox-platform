@@ -1,4 +1,5 @@
 ﻿component name = "cacheTest" extends = "coldbox.system.testing.BaseTestCase" output = "false" skip = "isAdobe"{
+
 	this.loadColdBox = false;
 
 	boolean function isAdobe(){
