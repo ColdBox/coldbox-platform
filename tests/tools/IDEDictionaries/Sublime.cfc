@@ -9,13 +9,14 @@ component {
 	string function run(){
 		var out = createObject( "java", "java.lang.StringBuilder" )
 			.init( "{
-				""scope"": ""meta.name.interpolated.hash - string, source.cfscript - source.sql - text.html.cfm - string - meta - comment, source.cfscript.embedded.cfml - string, source.sql, text"",
+				""scope"": ""meta.name.interpolated.hash - string, source.cfscript - source.sql - text.html.cfm - string - meta - comment, source.cfscript.embedded.cfml - string, source.sql, text, source.cfml.script, embedding.cfml"",
 				""completions"":
 				[
 		" );
 
 		// Transpile Globals + Scopes
 		out.append( transpileGlobals() );
+		out.append( "," );
 		out.append( transpileScopes() );
 
 		// Close it out
@@ -47,7 +48,7 @@ component {
 					return
 						"{
 							""trigger"": ""#thisFunction.name#\tfn. (ColdBox #cfcName#)"",
-							""contents"": ""#thisFunction.name#( #processParams( thisFunction.parameters )# )""
+							""contents"": ""#thisFunction.name#(#processParams( thisFunction.parameters )# )""
 					}";
 				})
 				// Flatten transpilation
@@ -80,7 +81,6 @@ component {
 				} else {
 					out &= "${#thisIndex#:#thisType#}";
 				}
-
 				return out;
 			} )
 			.toList();
@@ -112,7 +112,7 @@ component {
 					return
 						"{
 							""trigger"": ""#thisScope#.#thisFunction.name#\tfn. (#fwName# #thisScope#)"",
-							""contents"": ""#thisScope#.#thisFunction.name#( #processParams( thisFunction.parameters )# )""
+							""contents"": ""#thisScope#.#thisFunction.name#(#processParams( thisFunction.parameters )# )""
 						}";
 				})
 				// Flatten transpilation
