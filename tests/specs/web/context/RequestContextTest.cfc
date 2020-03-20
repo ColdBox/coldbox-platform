@@ -599,7 +599,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		event.setHTTPHeader( name = "expires", value = "#now()#" );
 	}
 
-	function testGetHTTPConetnt(){
+	function testGetHTTPContent(){
 		var event = getRequestContext();
 
 		test = event.getHTTPContent();
@@ -753,6 +753,20 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		expect( event.getFullUrl() ).toBeTypeOf( "url" );
 		var javaUrl = createObject( "java", "java.net.URL" ).init( event.getFullUrl() );
 		expect( javaUrl.getPort() ).toBe( listFind( "80,443", CGI.SERVER_PORT ) > 0 ? -1 : CGI.SERVER_PORT );
+	}
+
+	function testUrlMatches(){
+		var event = getRequestContext();
+		event.setPrivateValue( "currentRoutedURL", "/foo/bar/baz" );
+		expect( event.getCurrentRoutedURL() ).toBe( "/foo/bar/baz" );
+		expect( event.urlMatches( "/foo/bar/baz" ) ).toBeTrue();
+		expect( event.urlMatches( "/foo/baz/bar" ) ).toBeFalse();
+		expect( event.urlMatches( "/bar/baz" ) ).toBeFalse();
+		expect( event.urlMatches( "/foo/bar" ) ).toBeTrue();
+		expect( event.urlMatches( "/foo" ) ).toBeTrue();
+		expect( event.urlMatches( "/" ) ).toBeTrue();
+		expect( event.urlMatches( path = "/foo/bar", exact = true ) ).toBeFalse();
+		expect( event.urlMatchesExact( "/foo/bar" ) ).toBeFalse();
 	}
 
 }
