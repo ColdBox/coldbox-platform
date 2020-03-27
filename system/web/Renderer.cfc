@@ -408,7 +408,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 
 		savecontent variable="cbox_renderedView"{
 			cfmodule(
-				template="RendererEncapuslator.cfm",
+				template="RendererEncapsulator.cfm",
 				view=arguments.view,
 		    	viewPath=arguments.viewPath,
 		    	viewHelperPath=arguments.viewHelperPath,
