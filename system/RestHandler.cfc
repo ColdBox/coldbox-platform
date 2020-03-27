@@ -42,20 +42,20 @@ component extends="EventHandler" {
 			// start a resource timer
 			var stime    = getTickCount();
 			// prepare our response object
-			prc.response = getModel( "Response@api" );
+			arguments.event.getResponse();
 			// prepare argument execution
-			var args     = {
+			var actionArgs     = {
 				event : arguments.event,
 				rc    : arguments.rc,
 				prc   : arguments.prc
 			};
-			structAppend( args, arguments.eventArguments );
+			structAppend( actionArgs, arguments.eventArguments );
 			// Incoming Format Detection
-			if ( !isNull( rc.format ) ) {
-				prc.response.setFormat( rc.format );
+			if ( !isNull( arguments.rc.format ) ) {
+				arguments.prc.response.setFormat( arguments.rc.format );
 			}
 			// Execute action
-			var actionResults = arguments.targetAction( argumentCollection = args );
+			var actionResults = arguments.targetAction( argumentCollection = actionArgs );
 		}
 		// Auth Issues
 		catch ( "InvalidCredentials" e ) {
@@ -67,80 +67,87 @@ component extends="EventHandler" {
 			this.onValidationException( argumentCollection = arguments );
 		}
 		// Entity Not Found Exceptions
-		catch ( "EntityNotFound,RecordNotFound" e ) {
+		catch ( "EntityNotFound" e ) {
+			arguments.exception = e;
+			this.onEntityNotFoundException( argumentCollection = arguments );
+		}
+		// Record Not Found
+		catch ( "RecordNotFound" e ) {
 			arguments.exception = e;
 			this.onEntityNotFoundException( argumentCollection = arguments );
 		} catch ( Any e ) {
 			// Log Locally
 			log.error(
-				"Error calling #event.getCurrentEvent()#: #e.message# #e.detail#",
+				"Error calling #arguments.event.getCurrentEvent()#: #e.message# #e.detail#",
 				{
 					"_stacktrace" : e.stacktrace,
 					"httpData"    : getHTTPRequestData()
 				}
 			);
 			// Setup General Error Response
-			prc.response
+			arguments.prc.response
 				.setError( true )
 				.addMessage( "General application error: #e.message#" )
-				.setStatusCode( STATUS.INTERNAL_ERROR )
+				.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
 				.setStatusText( "General application error" );
 
 			// Development additions
 			if ( getSetting( "environment" ) eq "development" ) {
-				prc.response
+				arguments.prc.response
 					.addMessage( "Detail: #e.detail#" )
 					.addMessage( "StackTrace: #e.stacktrace#" );
 			}
 		}
 
+
 		// Development additions
 		if ( getSetting( "environment" ) eq "development" ) {
-			prc.response
-				.addHeader( "x-current-route", event.getCurrentRoute() )
-				.addHeader( "x-current-routed-url", event.getCurrentRoutedURL() )
-				.addHeader( "x-current-routed-namespace", event.getCurrentRoutedNamespace() )
-				.addHeader( "x-current-event", event.getCurrentEvent() );
+			arguments.prc.response
+			.addHeader( "x-current-route", arguments.event.getCurrentRoute() )
+			.addHeader( "x-current-routed-url", arguments.event.getCurrentRoutedURL() )
+			.addHeader( "x-current-routed-namespace", arguments.event.getCurrentRoutedNamespace() )
+			.addHeader( "x-current-event", arguments.event.getCurrentEvent() );
 		}
 		// end timer
-		prc.response.setResponseTime( getTickCount() - stime );
+		arguments.prc.response.setResponseTime( getTickCount() - stime );
 
 		// Did the controllers set a view to be rendered? If not use renderdata, else just delegate to view.
 		if (
 			isNull( actionResults )
 			AND
-			!event.getCurrentView().len()
+			!arguments.event.getCurrentView().len()
 			AND
-			event.getRenderData().isEmpty()
+			arguments.event.getRenderData().isEmpty()
 		) {
-			// Get response data
-			var responseData = prc.response.getDataPacket();
-			// If we have an error flag, render our messages and omit any marshalled data
-			if ( prc.response.getError() ) {
-				responseData = prc.response.getDataPacket( reset = true );
-			}
+			// Get response data according to error flag
+			var responseData = (
+				arguments.prc.response.getError() ?
+				arguments.prc.response.getDataPacket( reset = true ) :
+				arguments.prc.response.getDataPacket()
+			);
+
 			// Magical renderings
 			event.renderData(
-				type            = prc.response.getFormat(),
+				type            = arguments.prc.response.getFormat(),
 				data            = responseData,
-				contentType     = prc.response.getContentType(),
-				statusCode      = prc.response.getStatusCode(),
-				statusText      = prc.response.getStatusText(),
-				location        = prc.response.getLocation(),
-				isBinary        = prc.response.getBinary(),
-				jsonCallback    = prc.response.getJsonCallback(),
-				jsonQueryFormat = prc.response.getJsonQueryFormat()
+				contentType     = arguments.prc.response.getContentType(),
+				statusCode      = arguments.prc.response.getStatusCode(),
+				statusText      = arguments.prc.response.getStatusText(),
+				location        = arguments.prc.response.getLocation(),
+				isBinary        = arguments.prc.response.getBinary(),
+				jsonCallback    = arguments.prc.response.getJsonCallback(),
+				jsonQueryFormat = arguments.prc.response.getJsonQueryFormat()
 			);
 		}
 
 		// Global Response Headers
-		prc.response
-			.addHeader( "x-response-time", prc.response.getResponseTime() )
-			.addHeader( "x-cached-response", prc.response.getCachedResponse() );
+		arguments.prc.response
+			.addHeader( "x-response-time", arguments.prc.response.getResponseTime() )
+			.addHeader( "x-cached-response", arguments.prc.response.getCachedResponse() );
 
-		// Response Headers
-		for ( var thisHeader in prc.response.getHeaders() ) {
-			event.setHTTPHeader( name = thisHeader.name, value = thisHeader.value );
+		// Output the response headers
+		for ( var thisHeader in arguments.prc.response.getHeaders() ) {
+			arguments.event.setHTTPHeader( name = thisHeader.name, value = thisHeader.value );
 		}
 
 		// If results detected, just return them, controllers requesting to return results
@@ -180,6 +187,7 @@ component extends="EventHandler" {
 		arguments.event
 			.getResponse()
 				.setError( true )
+				.setData( {} )
 				.addMessage( "Base Handler Application Error: #arguments.exception.message#" )
 				.setStatusCode( arguments.event.STATUS.INTERNAL_ERROR )
 				.setStatusText( "General application error" );
@@ -192,7 +200,7 @@ component extends="EventHandler" {
 		}
 
 		// If in development, then it will show full trace error template, else render data
-		if ( getSetting( "environment" ) neq "development" ) {
+		if ( getSetting( "environment" ) eq "development" ) {
 			// Render Error Out
 			event.renderData(
 				type        = prc.response.getFormat(),
@@ -227,7 +235,7 @@ component extends="EventHandler" {
 		if ( log.canDebug() ) {
 			log.debug(
 				"ValidationException Execution of (#arguments.event.getCurrentEvent()#)",
-				arguments.exception.extendedInfo
+				arguments.exception.extendedInfo ?: ""
 			);
 		}
 
@@ -235,7 +243,11 @@ component extends="EventHandler" {
 		arguments.event
 			.getResponse()
 				.setError( true )
-				.setData( deserializeJSON( arguments.exception.extendedInfo ) )
+				.setData(
+					isJson( arguments.exception.extendedInfo ) ?
+					deserializeJSON( arguments.exception.extendedInfo ) :
+					""
+				)
 				.addMessage( "Validation exceptions occurred, please see the data" )
 				.setStatusCode( arguments.event.STATUS.BAD_REQUEST )
 				.setStatusText( "Invalid Request" );

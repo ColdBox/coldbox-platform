@@ -52,11 +52,9 @@ component
 			story( "I want to execute a localized onInvalidHTTPMethod", function(){
 				given( "an invalid HTTP method", function(){
 					then( "it should fire the localized onInvalidHTTPMethod", function(){
-						// Mock to invalid HTTP method
-						prepareMock( getRequestContext() ).$( "getHTTPMethod", "GET" );
 						// Execute
-						var e = execute( event = "restful.index", renderResults = true );
-						expect( e.getRenderedContent() ).toInclude( "invalid http" );
+						var e = this.GET( "rendering.testHTTPMethod" );
+						expect( e.getRenderedContent() ).toInclude( "Yep, onInvalidHTTPMethod works!" );
 					} );
 				} );
 			} );

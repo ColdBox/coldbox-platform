@@ -501,7 +501,6 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         requestContext.getRenderedContent = variables.getRenderedContent;
         requestContext.getRenderData      = variables.getRenderData;
         requestContext.getStatusCode      = variables.getStatusCode;
-
 		return requestContext;
     }
 
@@ -528,7 +527,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         headers.keyArray().each( function( name ) {
             mockedEvent.$( "getHTTPHeader" ).$args( name ).$results( headers[ name ] );
         } );
-        return execute( argumentCollection = arguments );
+		return execute( argumentCollection = arguments );
     }
 
     /**
@@ -546,7 +545,7 @@ component extends="testbox.system.compat.framework.TestCase"  accessors="true"{
         boolean renderResults = true
     ) {
         arguments.method = "GET";
-        return variables.request( argumentCollection = arguments );
+		return variables.request( argumentCollection = arguments );
     }
 
     /**

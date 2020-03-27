@@ -15,23 +15,8 @@
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
 component
-	extends   ="coldbox.system.testing.BaseTestCase"
-	appMapping="/cbTestHarness"
+	extends   ="tests.resources.BaseIntegrationTest"
 {
-
-	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	function beforeAll(){
-		super.beforeAll();
-		// do your own stuff here
-	}
-
-	function afterAll(){
-		// do your own stuff here
-		super.afterAll();
-	}
-
-	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
 		describe( "ColdBox REST", function(){
@@ -42,17 +27,14 @@ component
 
 			it( "can handle allowed HTTP methods in action annotations", function(){
 				prepareMock( getRequestContext() ).$( "getHTTPMethod", "POST" );
-
 				var event = execute( event = "main.actionAllowedMethod", renderResults = true );
 				expect( event.getRenderedContent() ).toBe( "invalid http: main.actionAllowedMethod" );
 			} );
 
 			it( "can handle onInvalidHTTPMethod exceptions", function(){
-				prepareMock( getRequestContext() ).$( "getHTTPMethod", "GET" );
-				var event = execute( event = "rendering.testHTTPMethod", renderResults = true );
+				var event = this.GET( "rendering.testHTTPMethod" );
 				expect( event.getValue( "cbox_rendered_content" ) ).toBe( "Yep, onInvalidHTTPMethod works!" );
 			} );
-
 
 			var formats = [ "json" ];
 			// var formats = [ "json", "xml", "pdf", "wddx", "html" ];

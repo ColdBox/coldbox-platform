@@ -57,7 +57,7 @@
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the CGI.HTTP_HOST.
 		environments = {
-			development = "^cf.,^localhost,^127/.0/.0/.1"
+			development = "^cf.,^localhost,^127"
 		};
 
 		// Module Directives
