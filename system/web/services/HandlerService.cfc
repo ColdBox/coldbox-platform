@@ -46,8 +46,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		variables.eventCacheDictionary = {};
 		// Setup the Handler Bean Cache Dictionary
 		variables.handlerBeanCacheDictionary = {};
-		// Static base class
-		variables.HANDLER_BASE_CLASS = "coldbox.system.EventHandler";
 
 		return this;
 	}
@@ -91,11 +89,6 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		if( NOT wirebox.getBinder().mappingExists( arguments.invocationPath ) ){
 			// lazy load checks for wirebox
 			wireboxSetup();
-			// extra attributes added to mapping so they are relayed by events
-			var attribs = {
-				handlerPath = arguments.invocationPath,
-				isHandler	= true
-			};
 			// feed this handler to wirebox with virtual inheritance just in case, use registerNewInstance so its thread safe
 			var mapping = wirebox.registerNewInstance( name=arguments.invocationPath, instancePath=arguments.invocationPath )
 				.setVirtualInheritance( "coldbox.system.EventHandler" )
@@ -105,11 +98,33 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 					variables.handlerCaching ? wirebox.getBinder().SCOPES.SINGLETON : wirebox.getBinder().SCOPES.NOSCOPE
 				)
 				.setCacheProperties( key="handlers-#arguments.invocationPath#" )
-				.setExtraAttributes( attribs );
+				// extra attributes added to mapping so they are relayed by events
+				.setExtraAttributes( {
+					handlerPath = arguments.invocationPath,
+					isHandler	= true
+				} );
 		}
 
 		// retrieve, build and wire from wirebox
-		return wirebox.getInstance( arguments.invocationPath );
+		var handler = wirebox.getInstance( arguments.invocationPath );
+
+		// Is this a rest handler by annotation? If so, incorporate it's methods
+		if(
+			wirebox.getBinder().getMapping( arguments.invocationPath ).getObjectMetadata().keyExists( "restHandler" )
+			&&
+			! structKeyExists( handler, "restHandler" )
+		){
+			structEach(
+				wirebox.getInstance( "coldbox.system.RestHandler" ),
+				function( functionName, functionTarget ){
+					if( !structKeyExists( handler, functionName ) ){
+						handler[ functionName ] = functionTarget;
+					}
+				}
+			);
+		}
+
+		return handler;
 	}
 
 	/**
@@ -530,44 +545,36 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 * @directory The path to retrieve
 	 */
 	array function getHandlerListing( required directory ){
-		// Get listings
-		var files = directoryList( arguments.directory, true, "array", "*.cfc" );
 		// Convert windows \ to java /
 		arguments.directory = replace( arguments.directory, "\","/", "all" );
 
-		// Iterate, clean and register
-		var fileArray = [];
-		for( var file in files ){
-
-			var thisAbsolutePath = replace( file, "\", "/", "all" );
-			var cleanHandler = replacenocase( thisAbsolutePath, arguments.directory, "", "all" );
-
-			// Clean OS separators to dot notation.
-			cleanHandler = removeChars( replacenocase( cleanHandler, "/", ".", "all" ), 1, 1 );
-
-			//Clean Extension
-			cleanHandler = controller.getUtil().ripExtension( cleanhandler );
-
-			//Add data to array
-			ArrayAppend( fileArray, cleanHandler );
-		}
-
-		return fileArray;
+		return directoryList( arguments.directory, true, "array", "*.cfc" )
+			.map( function( item ) {
+				var thisAbsolutePath = replace( item, "\", "/", "all" );
+				var cleanHandler = replacenocase( thisAbsolutePath, directory, "", "all" );
+				// Clean OS separators to dot notation.
+				cleanHandler = removeChars( replacenocase( cleanHandler, "/", ".", "all" ), 1, 1 );
+				// Clean Extension
+				return controller.getUtil().ripExtension( cleanhandler );
+			} );
 	}
 
 	/************************************ PRIVATE ************************************/
 
 	/**
-	 * Verifies setup of base handler class in WireBox
+	 * Verifies setup of base handler classes in WireBox
 	 *
 	 * @return HandlerService
 	 */
 	private function wireboxSetup(){
-		// Check if handler mapped?
-		if( NOT wirebox.getBinder().mappingExists( variables.HANDLER_BASE_CLASS ) ){
-			// feed the base class
+		if( NOT wirebox.getBinder().mappingExists( "coldbox.system.EventHandler" ) ){
 			wirebox
-				.registerNewInstance( name=variables.HANDLER_BASE_CLASS, instancePath=variables.HANDLER_BASE_CLASS )
+				.registerNewInstance( name="coldbox.system.EventHandler", instancePath="coldbox.system.EventHandler" )
+				.addDIConstructorArgument( name="controller", value=controller );
+		}
+		if( NOT wirebox.getBinder().mappingExists( "coldbox.system.RestHandler" ) ){
+			wirebox
+				.registerNewInstance( name="coldbox.system.RestHandler", instancePath="coldbox.system.RestHandler" )
 				.addDIConstructorArgument( name="controller", value=controller );
 		}
 		return this;
@@ -578,7 +585,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 	 *
 	 * @return { cacheable:boolean, timeout, lastAccessTimeout, cacheKey, suffix }
 	 */
-	 private struct function getNewMDEntry(){
+	private struct function getNewMDEntry(){
 		return {
 			"cacheable" 		    = false,
 			"timeout" 		        = "",

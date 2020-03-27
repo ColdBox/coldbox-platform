@@ -8,6 +8,9 @@
  */
 component extends="EventHandler" {
 
+	// Rest handler marker
+	this.restHandler = true;
+
 	// Default REST Security for ColdBox Resources
 	this.allowedMethods = {
 		"index"  : "GET",
@@ -495,8 +498,6 @@ component extends="EventHandler" {
 				.addMessage( "The resource requested (#event.getCurrentRoutedURL()#) could not be found" );
 	}
 
-	/**************************** RESTFUL UTILITIES ************************/
-
 	/**
 	 * Utility method for when an expectation of the request fails ( e.g. an expected parameter is not provided )
 	 * - It will output a 417 status code (event.STATUS.EXPECTATION_FAILED)
@@ -510,7 +511,7 @@ component extends="EventHandler" {
 	 *
 	 * @returns 417:Expectation Failed
 	 */
-	private function onExpectationFailed(
+	function onExpectationFailed(
 		event = getRequestContext(),
 		rc    = getRequestCollection(),
 		prc   = getRequestCollection( private=true ),
