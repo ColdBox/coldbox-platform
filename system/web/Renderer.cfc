@@ -61,7 +61,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.cacheBox = arguments.controller.getCacheBox();
 		// Register WireBox
 		variables.wireBox = arguments.controller.getWireBox();
-		
+
 		// Set Conventions, Settings and Properties
 		variables.layoutsConvention 		= variables.controller.getSetting( "layoutsConvention", true );
 		variables.viewsConvention 			= variables.controller.getSetting( "viewsConvention", true );
@@ -163,7 +163,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		boolean prePostExempt=false,
 		name
 	){
-		var event 				= getRequestContext();		
+		var event 				= getRequestContext();
 		var viewCacheKey 		= "";
 		var viewCacheEntry 		= "";
 		var viewCacheProvider 	= variables.templateCache;
@@ -278,7 +278,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		}
 		// Render simple composite view
 		else{
-			
+
 			iData.renderedView = renderViewComposite(
 				arguments.view,
 				viewLocations.viewPath,
@@ -407,8 +407,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var event = getRequestContext();
 
 		savecontent variable="cbox_renderedView"{
-			cfmodule( 
-				template="RendererEncapslator.cfm",
+			cfmodule(
+				template="RendererEncapuslator.cfm",
 				view=arguments.view,
 		    	viewPath=arguments.viewPath,
 		    	viewHelperPath=arguments.viewHelperPath,
@@ -416,7 +416,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		    	rendererVariables=variables,
 				event = event,
 				rc 	= event.getCollection(),
-				prc = event.getPrivateCollection() );			
+				prc = event.getPrivateCollection() );
 		}
 
     	return cbox_renderedView;
@@ -505,7 +505,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		var iData 					= arguments;
 		var viewLocations			= "";
 		var explicitView 			= getExplicitView();
-		
+
 		// Are we doing a nested view/layout explicit combo or already in its rendering algorithm?
 		if(
 			arguments.view.trim().len() AND
@@ -695,7 +695,7 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 	* Locate a view in the conventions or external paths
 	* @view The view to locate
 	*/
-	function locateView( required view ){		
+	function locateView( required view ){
 		// Default path is the conventions
 		var viewPath 	= "/#variables.appMapping#/#variables.viewsConvention#/#arguments.view#";
 		var extViewPath = "#variables.viewsExternalLocation#/#arguments.view#";
