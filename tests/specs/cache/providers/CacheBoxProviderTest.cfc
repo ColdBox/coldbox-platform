@@ -1,5 +1,4 @@
 ﻿component extends = "coldbox.system.testing.BaseTestCase"{
-
 	this.loadColdBox = false;
 
 	function setup(){
@@ -67,7 +66,7 @@
 		// list
 		results = cache.lookupMulti( keys = "test,test2,test3" );
 
-		//debug( results );
+		// debug( results );
 
 		assertEquals( true, results.test );
 		assertEquals( true, results.test2 );
@@ -275,7 +274,6 @@
 
 		assertFalse( cache.lookup( "key1" ) );
 		assertFalse( cache.lookup( "key2" ) );
-
 	}
 
 	function testGetSize(){

@@ -3,7 +3,7 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Author      	 :	Luis Majano
+Author           	 :	Luis Majano
 Description :
 The default ColdBox CacheBox configuration object that is used when the
 cache factory is created

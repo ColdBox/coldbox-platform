@@ -3,24 +3,24 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Author      	    :	Luis Majano
+Author           	    :	Luis Majano
 Description :
 A mock test DSL
 ----------------------------------------------------------------------->
 <cfcomponent implements="coldbox.system.ioc.dsl.IDSLBuilder" output="false">
 	<!--- init --->
 	<cffunction
-		name      ="init"
-		access    ="public"
-		returntype="any"
-		hint      ="Configure the DSL for operation and returns itself"
+		name       ="init"
+		access     ="public"
+		returntype ="any"
+		hint       ="Configure the DSL for operation and returns itself"
 		doc_generic="coldbox.system.ioc.dsl.IDSLBuilder"
 	>
 		<cfargument
-			name    ="injector"
-			type    ="any"
-			required="true"
-			hint    ="The linked WireBox injector"
+			name       ="injector"
+			type       ="any"
+			required   ="true"
+			hint       ="The linked WireBox injector"
 			doc_generic="coldbox.system.ioc.Injector"
 		/>
 		<cfscript>

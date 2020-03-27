@@ -1,5 +1,4 @@
-﻿component name="cacheTest" extends="LuceeProviderTest" output="false" skip="isLucee"{
-
+﻿component name = "cacheTest" extends = "LuceeProviderTest" output = "false" skip = "isLucee"{
 	function setup(){
 		super.setup();
 		// Mock Controller
@@ -48,5 +47,4 @@
 	function testclearView(){
 		cache.clearView( "test" );
 	}
-
 }

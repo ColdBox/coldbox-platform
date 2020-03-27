@@ -1,5 +1,4 @@
 ﻿component extends = "coldbox.system.testing.BaseModelTest"{
-
 	function setup(){
 		cp = createMock( "coldbox.system.cache.providers.MockProvider" ).init();
 		cp.configure();
