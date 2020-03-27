@@ -1277,6 +1277,19 @@ component serializable="false" accessors="true" {
 	/************************************** RESTFUL *********************************************/
 
 	/**
+	 * Get the response object for the current request. If there is none, then return a new one
+	 * The response object lives in `prc.response`
+	 *
+	 * @return coldbox.system.web.context.Response
+	 */
+	function getResponse(){
+		if( isNull( variables.privateContext.response ) ){
+			variables.privateContext.response = new coldbox.system.web.context.Response();
+		}
+		return variables.privateContext.response;
+	}
+
+	/**
 	 * Get the routed structure of key-value pairs. What the ses interceptor could match.
 	 * @return RequestContext
 	 */

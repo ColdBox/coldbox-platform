@@ -201,10 +201,10 @@ component accessors="true" {
 	 */
 	struct function getDataPacket( boolean reset = false ){
 		var packet = {
-			"error"      : variables.error ? true : false,
-			"messages"   : variables.messages,
-			"data"       : variables.data,
-			"pagination" : variables.pagination
+			"error"      : getError() ? true : false,
+			"messages"   : getMessages(),
+			"data"       : getData(),
+			"pagination" : getPagination()
 		};
 
 		// Are we reseting the data packet
