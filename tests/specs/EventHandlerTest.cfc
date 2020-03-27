@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest" output="false">
-	<cfscript>
+﻿component extends="coldbox.system.testing.BaseModelTest"{
+
 	function setup(){
 		handler        = createMock( "coldbox.system.EventHandler" );
 		mockController = createMock( "coldbox.system.web.Controller" );
@@ -35,5 +35,5 @@
 		assertTrue( structKeyExists( handler, "repeatThis" ) );
 		assertTrue( structKeyExists( handler, "add" ) );
 	}
-	</cfscript>
-</cfcomponent>
+
+}

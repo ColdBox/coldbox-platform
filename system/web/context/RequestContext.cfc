@@ -1283,11 +1283,10 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.web.context.Response
 	 */
 	function getResponse(){
-		return (
-			isNull( variables.privateContext.response ) ?
-			new coldbox.system.web.context.Response() :
-			variables.privateContext.response
-		);
+		if( isNull( variables.privateContext.response ) ){
+			variables.privateContext.response = new coldbox.system.web.context.Response();
+		}
+		return variables.privateContext.response;
 	}
 
 	/**
