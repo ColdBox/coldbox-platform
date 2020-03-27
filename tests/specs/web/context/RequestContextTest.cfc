@@ -31,6 +31,21 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		return prepareMock( oRC );
 	}
 
+	function testGetResponseWhenNull(){
+		var r = getRequestContext().getResponse();
+		expect( r.getData() ).toBeEmpty();
+	}
+
+	function testGetResponseWhenItExists(){
+		getRequestContext()
+			.setPrivateValue( "response", getRequestContext().getResponse() )
+			.getResponse()
+				.setData( { name : "luis" } );
+
+		var r = getRequestContext().getResponse();
+		expect( r.getData().name ).toBe( "luis" );
+	}
+
 	function testValidRoutes(){
 		// Mocks
 		var mockRouter = createStub().$(
