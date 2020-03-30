@@ -6,6 +6,14 @@
 		xml = createMock( className = "coldbox.system.core.conversion.XMLConverter" ).init();
 	}
 
+	function testObjectToXML(){
+		test = new tests.resources.Test();
+
+		results = xml.objectToXML( data=test );
+
+		assertTrue( isXML( results ) );
+	}
+
 	function testArrayToXML(){
 		// 1: No nesting
 		test    = [ 1, 2, 3, 4 ];
