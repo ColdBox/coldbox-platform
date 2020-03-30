@@ -251,7 +251,7 @@ component serializable="false" accessors="true"{
 	* @fwSetting Retrieve from the config or fw settings, defaults to config
 	* @defaultValue If not found in config, default return value
 	*/
-	function getSetting( required name, boolean fwSetting=false, defaultValue ){
+	function getSetting( required name, any fwSetting=false, defaultValue ){
 		return controller.getSetting( argumentCollection=arguments );
 	}
 
