@@ -190,7 +190,13 @@ component accessors="true" {
 		numeric totalRecords = 0,
 		numeric totalPages   = 1
 	){
-		variables.pagination = arguments;
+		variables.pagination = {
+			"offset" 		: arguments.offset,
+			"maxRows" 		: arguments.maxRows,
+			"page" 			: arguments.page,
+			"totalRecords" 	: arguments.totalRecords,
+			"totalPages" 	: arguments.totalPages
+		};
 		return this;
 	}
 
