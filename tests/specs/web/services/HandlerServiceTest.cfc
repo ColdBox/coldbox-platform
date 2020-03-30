@@ -37,7 +37,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbTestHarne
 
 				var files = handlerService.getHandlerListing( path );
 				expect( files ).notToBeEmpty();
-				expect( files.len() ).toBe( 11 );
+				expect( files.len() ).toBeGT( 10 );
 			} );
 
 			describe( "Retrieve handler beans", function(){
