@@ -200,16 +200,10 @@ component serializable="false" accessors="true"{
 	/**
 	* Get a setting from a configuration structure
 	* @name The name of the setting
-	* @fwSetting Switch to get the coldbox or config settings, defaults to config settings
 	* @defaultValue The default value to use if setting does not exist
+	* @fwSetting Switch to get the coldbox or config settings, defaults to config settings
 	*/
-	function getSetting( required name, any fwSetting=false, defaultValue ){
-
-		// allow a position upgrade to the default
-		if( !isBoolean( arguments.fwSetting ) && arguments.keyExists( "defaultValue" ) ){
-			arguments.defaultValue = arguments.fwSetting;
-			arguments.fwSetting = false;
-		}
+	function getSetting( required name, defaultValue, boolean fwSetting=false ){
 
 		var target = variables.configSettings;
 
