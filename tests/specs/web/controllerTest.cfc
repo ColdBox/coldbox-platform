@@ -77,6 +77,10 @@
 		obj = "test_#createUUID()#";
 		controller.setSetting( obj, obj );
 		assertEquals( obj, controller.getSetting( obj ) );
+
+        // test the ability to provide a setting default as the second argument
+        obj = controller.getSetting( "foo", "bar" );
+        assertEquals( obj, "bar" );
 	}
 
 	function testColdboxInit(){
