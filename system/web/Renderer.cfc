@@ -63,8 +63,8 @@ component accessors="true" serializable="false" extends="coldbox.system.Framewor
 		variables.wireBox = arguments.controller.getWireBox();
 
 		// Set Conventions, Settings and Properties
-		variables.layoutsConvention 		= variables.controller.getSetting( "layoutsConvention", true );
-		variables.viewsConvention 			= variables.controller.getSetting( "viewsConvention", true );
+		variables.layoutsConvention 		= variables.controller.getSetting( name="layoutsConvention", fwSetting=true );
+		variables.viewsConvention 			= variables.controller.getSetting( name="viewsConvention", fwSetting=true );
 		variables.appMapping 				= variables.controller.getSetting( "AppMapping" );
 		variables.viewsExternalLocation 	= variables.controller.getSetting( "ViewsExternalLocation" );
 		variables.layoutsExternalLocation 	= variables.controller.getSetting( "LayoutsExternalLocation" );
