@@ -1,6 +1,5 @@
 # ColdBox Async Programming
 
-
 ## AsyncManager
 
 Our manager for integration into the ColdBox async programming aspects. The manager will be registered in WireBox as `AsyncManager@ColdBox`.

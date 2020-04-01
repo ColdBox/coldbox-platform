@@ -132,7 +132,7 @@
     </target>
 
 	<!-- Build All Releases -->
-	<target name="build.all" description="Builds ColdBox + Standalone Libraries" depends="build.coldbox,build.cachebox,build.wirebox,build.logbox">
+	<target name="build.all" description="Builds ColdBox + Standalone Libraries" depends="run-tests,build.coldbox,build.cachebox,build.wirebox,build.logbox">
 	</target>
 
 	<!-- Build ColdBox Distribution -->
