@@ -268,7 +268,7 @@
 							"contents": "getRequestContext( )"
 					},{
 							"trigger": "getSetting\tfn. (ColdBox FrameworkSuperType)",
-							"contents": "getSetting( name=${1:any}, fwSetting=${2:true,false}, defaultValue=${3:any} )"
+							"contents": "getSetting( name=${1:any}, defaultValue=${3:any}, fwSetting=${2:true,false} )"
 					},{
 							"trigger": "getSettingStructure\tfn. (ColdBox FrameworkSuperType)",
 							"contents": "getSettingStructure( fwSetting=${1:true,false}, deepCopy=${2:true,false} )"
@@ -1858,7 +1858,7 @@
 							"contents": "controller.getServices( )"
 						},{
 							"trigger": "controller.getSetting\tfn. (TestBox controller)",
-							"contents": "controller.getSetting( name=${1:any}, fwSetting=${2:true,false}, defaultValue=${3:any} )"
+							"contents": "controller.getSetting( name=${1:any}, defaultValue=${3:any}, fwSetting=${2:true,false} )"
 						},{
 							"trigger": "controller.getSettingStructure\tfn. (TestBox controller)",
 							"contents": "controller.getSettingStructure( fwSetting=${1:true,false}, deepCopyFlag=${2:true,false} )"

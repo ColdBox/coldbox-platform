@@ -63,7 +63,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true"{
 		// Configuration data and dependencies
 		variables.registeredHandlers			= controller.getSetting( "RegisteredHandlers" );
 		variables.registeredExternalHandlers 	= controller.getSetting( "RegisteredExternalHandlers" );
-		variables.eventAction					= controller.getSetting( "EventAction", 1 );
+		variables.eventAction					= controller.getSetting( name="EventAction", fwSetting=true );
 		variables.eventName						= controller.getSetting( "EventName" );
 		variables.invalidEventHandler			= controller.getSetting( "invalidEventHandler" );
 		variables.handlerCaching				= controller.getSetting( "HandlerCaching" );
