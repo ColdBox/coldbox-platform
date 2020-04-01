@@ -27,7 +27,6 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/cbtestharne
 			} );
 
 			it( "can render views with caching parameters", function(){
-			
 				var results = r.renderView(
 					view         = "simpleview",
 					cache        = true,
