@@ -208,7 +208,7 @@
 		};
 		mockColdBox
 			.$( "getSetting" )
-			.$args( "mySetting", true )
+			.$args( "mySetting", javacast( "null", 0 ), true )
 			.$results( "UnitTest" );
 		c = builder.getColdBoxDSL( def );
 		assertEquals( "unitTest", c );
