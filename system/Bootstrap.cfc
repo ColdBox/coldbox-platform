@@ -69,6 +69,7 @@ component serializable="false" accessors="true"{
 	*/
 	function loadColdBox(){
 		var appKey = locateAppKey();
+		var reinitKey = "fwreinit";
 
 		// Cleanup of old code, just in case
 		if( structkeyExists( application, appKey ) ){
@@ -108,9 +109,15 @@ component serializable="false" accessors="true"{
 			// abort it, something went really wrong.
 			abort;
 		}
+
+		// check if fwreinit variable name is defined 
+		if( len( application[ appKey].getSetting( "ReinitKey" ) ) ) {
+			reinitKey = application[ appKey].getSetting( "ReinitKey" );
+		}
+
 		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
-		if( structKeyExists( url, "fwreinit" ) ){
-			structDelete( url, "fwreinit" );
+		if( structKeyExists( url, reinitKey ) ){
+			structDelete( url, reinitKey );
 		}
 
 		return this;
@@ -400,6 +407,7 @@ component serializable="false" accessors="true"{
 	*/
 	boolean function isFWReinit(){
 		var appKey 	= locateAppKey();
+		var reinitKey = "fwreinit";
 
 		// CF Parm Structures just in case
 		param name="FORM" 	default="#structNew()#";
@@ -410,8 +418,13 @@ component serializable="false" accessors="true"{
 			return true;
 		}
 
+		// check if fwreinit variable name is defined 
+		if( len( application[ appKey].getSetting( "ReinitKey" ) ) ) {
+			reinitKey = application[ appKey].getSetting( "ReinitKey" );
+		}
+
 		// Verify the reinit key is passed
-		if ( structKeyExists( url, "fwreinit" ) or structKeyExists( form, "fwreinit" ) ){
+		if ( structKeyExists( url, reinitKey ) or structKeyExists( form, reinitKey ) ){
 
 			// Check if we have a reinit password at hand.
 			var reinitPass = application[ appKey ].getSetting( name="ReinitPassword", defaultValue="" );
