@@ -509,7 +509,7 @@ component extends="coldbox.system.web.services.BaseService"{
 		if( modules[ arguments.moduleName ].activated ){
 			// Log it
 			if( variables.logger.canInfo() ){
-				variables.logger.info( "Module #arguments.moduleName# already activated during dependecy activation, skipping activation." );
+				variables.logger.info( "Module #arguments.moduleName# already activated during dependency activation, skipping activation." );
 			}
 			return this;
 		}
