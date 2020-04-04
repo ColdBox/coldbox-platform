@@ -44,19 +44,23 @@ component singleton{
 		boolean debug=variables.debug,
 		boolean loadAppContext=true
 	){
-		return new Future().run( argumentCollection=arguments );
+		return new Future(
+				debug=arguments.debug,
+				loadAppContext=arguments.loadAppContext
+			)
+			.run( argumentCollection=arguments );
 	}
 
 	/****************************************************************
 	 * Creation Methods *
 	 ****************************************************************/
 
-	function newFuture(){
-		return new Future();
+	function newFuture( any value, boolean debug=false, boolean loadAppContext=true ){
+		return new Future( argumentCollection = arguments );
 	}
 
-	function newCompletedFuture( any value ){
-		return new Future( arguments.value );
+	function newCompletedFuture( required any value, boolean debug=false, boolean loadAppContext=true ){
+		return newFuture( argumentCollection=arguments );
 	}
 
 	function newExecutor( type, numeric threads=10 ){
