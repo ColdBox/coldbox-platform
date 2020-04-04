@@ -38,6 +38,15 @@ Modeled after `CompletableFuture`. Here are the CFML methods and which Java meth
 - `thenCompose( closure:CompletableFuture )` - Passes the result of the previous computation to the closure, which in turns MUST return a new ColdBox Future computation. The second computation depends on the initial one. Sequential computational chain or functional chain
 - `thenCombine( Future, (r1,r2) => {} )` - Used when you want two futures to run independently and do something after both complete. The second argument is a closure that accepts the results of both computations and you will return a single value from the computation. The callback function passed to thenCombine() will be called when both the Futures are complete.
 
+## WireBox Updates
+
+- Ability to annotate a function with `future` so it will wrap the result in a ColdBox completable future.  The return MUST be a closure.
+
+```java
+function getQuestionsFromGoogle() future{
+	return () => googleApi.get( "docs" );
+}
+```
 
 ### Thread Pools
 
