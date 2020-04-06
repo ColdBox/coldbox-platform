@@ -9,8 +9,19 @@ component accessors="true"{
 	 */
 	property name="executor";
 
+	/**
+	 * The time unit used in the schedule
+	 */
 	property name="timeUnit";
+
+	/**
+	 * The delay to use in the schedule
+	 */
 	property name="delay";
+
+	/**
+	 * The period of execution of the tasks in this schedule
+	 */
 	property name="period";
 
 	/**
@@ -68,9 +79,9 @@ component accessors="true"{
 	}
 
 	/**
-	 * Set a delay in the running of this schedule
+	 * Set a delay in the running of the task that will be registered with this schedule
 	 *
-	 * @delay The delay number
+	 * @delay The delay that will be used before executing the task
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
 	 */
 	function delay( numeric delay, timeUnit="seconds" ){
