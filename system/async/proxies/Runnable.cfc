@@ -7,23 +7,28 @@ component extends="BaseProxy"{
     /**
      * Constructor
      *
-     * @target The lambda or closure or CFC to be used as the runnable
+     * @target The lambda or closure that will be the task
+	 * @method An optional method in case the supplier is a CFC instead of a closure
+	 * @debug Add debugging or not
+	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
      */
-    function init( required target ){
-		super.init( arguments.target );
+	function init( required target, method="run", boolean debug=false, boolean loadAppContext=true ){
+		super.init( arguments.target, arguments.debug, arguments.loadAppContext );
+		variables.method = arguments.method;
         return this;
     }
 
     function run(){
 		loadContext();
+
 		try {
-	        if( isClosure( variables.target ) || isCustomFunction( variables.target ) ){
-				lock name='#getConcurrentEngineLockName()#' type="exclusive" timeout="60" {
-	            	variables.target();
-	            }
-	        } else{
-	            variables.target.run();
-	        }
+			lock name='#getConcurrentEngineLockName()#' type="exclusive" timeout="60" {
+				if( isClosure( variables.target ) || isCustomFunction( variables.target ) ){
+					variables.target();
+				} else {
+					invoke( variables.target, variables.method );
+				}
+        	}
         } finally {
         	unLoadContext();
         }

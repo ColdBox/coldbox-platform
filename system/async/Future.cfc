@@ -2,6 +2,7 @@
  * This is the ColdBox Future object modeled and backed by Java's CompletableFuture but with Dynamic Goodness!
  *
  * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html
+ * @see https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/CompletableFuture.html
  */
 component accessors="true"{
 
@@ -31,6 +32,7 @@ component accessors="true"{
 		variables.native 			= createObject( "java", "java.util.concurrent.CompletableFuture" );
 		variables.debug 			= arguments.debug;
 		variables.loadAppContext 	= arguments.loadAppContext;
+		variables.jTimeUnit 		= new TimeUnit();
 
 		if( !isNull( arguments.value ) ){
 			variables.native = variables.native.completedFuture( arguments.value );
@@ -87,23 +89,11 @@ component accessors="true"{
 	 * @throws CancellationException, ExecutionException, InterruptedException, TimeoutException
 	 */
 	any function get( numeric timeout=0, string timeUnit="seconds", defaultValue ){
-		var jTimeUnit = createObject( "java", "java.util.concurrent.TimeUnit" );
-
-		switch( arguments.timeUnit ){
-			case "days"         : { arguments.timeUnit = jTimeUnit.DAYS; break; }
-			case "hours"        : { arguments.timeUnit = jTimeUnit.HOURS; break; }
-			case "microseconds" : { arguments.timeUnit = jTimeUnit.MICROSECONDS; break; }
-			case "milliseconds" : { arguments.timeUnit = jTimeUnit.MILLISECONDS; break; }
-			case "minutes"      : { arguments.timeUnit = jTimeUnit.MINUTES; break; }
-			case "nanoseconds"  : { arguments.timeUnit = jTimeUnit.NANOSECONDS; break; }
-			case "seconds"      : { arguments.timeUnit = jTimeUnit.SECONDS; break; }
-		}
-
 		// Do we have a timeout?
 		if( arguments.timeout != 0 ){
 			var results = variables.native.get(
 				javaCast( "long", arguments.timeout ),
-				arguments.timeUnit
+				variables.jTimeUnit.getTimeUnit( arguments.timeUnit )
 			);
 		} else {
 			var results = variables.native.get();
@@ -165,28 +155,50 @@ component accessors="true"{
 	}
 
 	/**
-	 * Executes a runnable closure or component method via Java's CompletableFuture and gives you back a ColdBox Future
+	 * Executes a runnable closure or component method via Java's CompletableFuture and gives you back a ColdBox Future:
 	 *
-	 * @runnable A CFC instance or closure/lambda to execute async
-	 * @method If the runnable is a CFC, then it executes a method on the CFC for you. Defaults to the `run()` method
+	 * - This method calls `supplyAsync()` in the Java API
+	 * - This future is asynchronously completed by a task running in the ForkJoinPool.commonPool() with the value obtained by calling the given Supplier.
+	 *
+	 * @supplier A CFC instance or closure or lambda or udf to execute and return the value to be used in the future
+	 * @method If the supplier is a CFC, then it executes a method on the CFC for you. Defaults to the `run()` method
+	 * @executor An optional executor to use for asynchronous execution of the task
+	 *
+	 * @return The new completion stage (Future)
 	 */
 	Future function run(
-		required runnable,
-		method="run"
+		required supplier,
+		method="run",
+		any executor
 	){
-		var supplier = createDynamicProxy(
-			new proxies.Supplier( arguments.runnable, arguments.method, variables.debug, variables.loadAppContext ),
+		var jSupplier = createDynamicProxy(
+			new proxies.Supplier( arguments.supplier, arguments.method, variables.debug, variables.loadAppContext ),
 			[ "java.util.function.Supplier" ]
 		);
 
 		// Supply the future and start the task
-		variables.native = variables.native.supplyAsync( supplier );
+		variables.native = variables.native.supplyAsync( jSupplier );
 
 		return this;
 	}
 
 	/**
-	 * Executed once the computation has finalized and a result is passed in to the target.  The target can then run anything it likes and either return a value or not.
+	 * Executed once the computation has finalized and a result is passed in to the target:
+	 *
+	 * - The target can use the result, manipulate it and return a new result from the this completion stage
+	 * - The target can use the result and return void
+	 * - This stage executes in the calling thread
+	 *
+	 * <pre>
+	 * // Just use the result and not return anything
+	 * then( (result) => systemOutput( result ) )
+	 * // Get the result and manipulate it, much like a map() function
+	 * then( (result) => ucase( result ) );
+	 * </pre>
+	 *
+	 * @target The closure/lambda or udf that will receive the result
+	 *
+	 * @return The new completion stage (Future)
 	 */
 	Future function then( required target ){
 		var apply = createDynamicProxy(
@@ -195,6 +207,36 @@ component accessors="true"{
 		);
 
 		variables.native = variables.native.thenApply( apply );
+
+		return this;
+	}
+
+	/**
+	 * Executed once the computation has finalized and a result is passed in to the target but
+	 * this will execute in a separate thread. By default it uses the ForkJoin.commonPool() but you can
+	 * pass your own executor service.
+	 *
+	 * - The target can use the result, manipulate it and return a new result from the this completion stage
+	 * - The target can use the result and return void
+	 *
+	 * <pre>
+	 * // Just use the result and not return anything
+	 * then( (result) => systemOutput( result ) )
+	 * // Get the result and manipulate it, much like a map() function
+	 * then( (result) => ucase( result ) );
+	 * </pre>
+	 *
+	 * @target The closure/lambda or udf that will receive the result
+	 *
+	 * @return The new completion stage (Future)
+	 */
+	Future function thenAsync( required target, executor ){
+		var apply = createDynamicProxy(
+			new proxies.Function( arguments.target, variables.debug, variables.loadAppContext ),
+			[ "java.util.function.Function" ]
+		);
+
+		variables.native = variables.native.thenApplyAsync( apply );
 
 		return this;
 	}
