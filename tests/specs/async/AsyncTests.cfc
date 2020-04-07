@@ -117,8 +117,7 @@ component extends="testbox.system.BaseSpec" {
 					expect( future.get() ).toBe( "Who Knows!" );
 			});
 
-
-			it( "can combine two futures together", function(){
+			it( "can combine two futures together into a single result", function(){
 				var getCreditRating = function( user ){
 					return asyncManager.newFuture().supplyAsync( function(){
 						// I would use the user here :!

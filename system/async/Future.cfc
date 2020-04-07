@@ -300,10 +300,6 @@ component accessors="true" {
 		return this;
 	}
 
-	private function futureWrapper(){
-		return
-	}
-
 	/**
 	 * Alias to `then()` left to help Java devs feel at Home
 	 */
