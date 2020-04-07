@@ -15,7 +15,7 @@ component accessors="true" singleton{
 	property name="schedules" type="struct";
 
 	// Static Executors Factory Class
-	variables.executors = createObject( "java", "java.util.concurrent.Executors" );
+	this.executors = new Executors();
 
 	/**
 	 * Constructor
@@ -36,18 +36,17 @@ component accessors="true" singleton{
 	/**
 	 * Create and register a new ColdBox Scheduler task
 	 *
-	 * @name The name of the task
+	 * @name The name of the task, used for registration
 	 * @threads How many threads to assign to the thread scheduler
 	 *
 	 * @return The ColdBox Schedule class to work with the schedule
 	 */
-	Schedule function newSchedule( required name, int threads=1 ){
-		// Create the schedule executor
-		var executor = variables.executors.newScheduledThreadPool(
-			javacast( "int", arguments.threads )
-		);
+	Schedule function newSchedule( required name, numeric threads=this.executors.DEFAULT_THREADS ){
 		// Create the ColdBox Schedule and register it
-		variables.schedules[ arguments.name ] = new Schedule( executor );
+		variables.schedules[ arguments.name ] = new Schedule(
+			arguments.name,
+			this.executors.newScheduledThreadPool( arguments.threads )
+		);
 		// Return it
 		return variables.schedules[ arguments.name ];
 	}
@@ -65,9 +64,9 @@ component accessors="true" singleton{
 			return variables.schedules[ arguments.name ];
 		}
 		throw(
-			type="ScheduleNotFoundException",
-			message="The schedule you requested does not exist",
-			detail = "Registered schedules are: #variables.schedules.keyArray()#"
+			type    = "ScheduleNotFoundException",
+			message = "The schedule you requested does not exist",
+			detail  =  "Registered schedules are: #variables.schedules.keyList()#"
 		);
 	}
 
@@ -112,28 +111,25 @@ component accessors="true" singleton{
 	 * @return AsyncManager
 	 */
 	AsyncManager function shutdownAllSchedules( boolean force=false ){
-		variables.schedules.each( function( thisSchedule ) {
+		variables.schedules.each( function( key, schedule ) {
 			if( force ){
-				thisSchedule.shutdownNow();
+				arguments.schedule.shutdownNow();
 			} else {
-				thisSchedule.shutdown();
+				arguments.schedule.shutdown();
 			}
 		} );
 		return this;
 	}
 
 	/**
-	 * Returns a structure of status maps for every registered schedule in the manager
+	 * Returns a structure of status maps for every registered schedule in the
+	 * manager. This is composed of tons of stats about the schedule and its executor
 	 *
-	 * @return struct : { isTerminated:boolean, isShutdown: boolean, isRunning:boolean }
+	 * @return
 	 */
 	struct function getScheduleStatusMap(){
 		return variables.schedules.map( function( key, scheduler ){
-			return {
-				"isTerminated" : scheduler.isTerminated(),
-				"isShutdown" : scheduler.isShutdown(),
-				"isRunning"	: scheduler.isRunning()
-			};
+			return arguments.scheduler.getStats();
 		} );
 	}
 
@@ -149,37 +145,4 @@ component accessors="true" singleton{
 		return newFuture( argumentCollection=arguments );
 	}
 
-	/****************************************************************
-	 * Executor Service Creation Methods *
-	 ****************************************************************/
-
-	/**
-	 * Creates a thread pool that reuses a fixed number of threads operating off a shared unbounded queue.
-	 *
-	 * - https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
-	 *
-	 * @threads The number of threads in the pool, defaults to 20
-	 *
-	 * @return ExecutorService: The newly created thread pool
-	 */
-	function newFixedThreadPool( numeric threads=20 ){
-		return variables.executors.newFixedThreadPool(
-			javacast( "int", arguments.threads )
-		);
-	}
-
-	/**
-	 * Creates an Executor that uses a single worker thread operating off an
-	 * unbounded queue. (Note however that if this single thread terminates
-	 * due to a failure during execution prior to shutdown, a new one will
-	 * take its place if needed to execute subsequent tasks.)
-	 *
-	 * Tasks are guaranteed to execute sequentially, and no more than one
-	 * task will be active at any given time. Unlike the otherwise equivalent
-	 * newFixedThreadPool(1) the returned executor is guaranteed not to be
-	 * reconfigurable to use additional threads.
-	 */
-	function newSingleThreadPool(){
-		return variables.executors.newSingleThreadExecutor();
-	}
 }

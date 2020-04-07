@@ -5,6 +5,11 @@
 component accessors="true"{
 
 	/**
+	 * The human name of this scheduler
+	 */
+	property name="name";
+
+	/**
 	 * The Java executor class
 	 */
 	property name="executor";
@@ -27,9 +32,11 @@ component accessors="true"{
 	/**
 	 * Constructor
 	 *
+	 * @name The name of the scheduler
 	 * @executor The native executor
 	 */
-	Schedule function init( required executor ){
+	Schedule function init( required name, required executor ){
+		variables.name 			= arguments.name;
 		variables.executor 		= arguments.executor;
 		variables.jTimeUnit 	= new TimeUnit();
 
@@ -157,4 +164,103 @@ component accessors="true"{
 		variables.timeUnit = variables.jTimeUnit.get( "seconds" );
 		return this;
 	}
+
+	/****************************************************************
+	 * Executor Utility Methods *
+	 ****************************************************************/
+
+	boolean function isTerminated(){
+		return variables.executor.isTerminated();
+	}
+
+	boolean function isTerminating(){
+		return variables.executor.isTerminating();
+	}
+
+	boolean function isShutdown(){
+		return variables.executor.isShutdown();
+	}
+
+	/**
+	 * Undocumented function
+	 *
+	 * @timeout
+	 * @timeUnit
+	 *
+	 * @return true if all tasks have completed following shut down
+	 */
+	boolean function awaitTermination( required numeric timeout, timeUnit="seconds" ){
+		return variables.executor.awaitTermination(
+			javaCast( "long", arguments.timeout ),
+			variables.jTimeUnit.get( arguments.timeUnit )
+		);
+	}
+
+	Schedule function shutdown(){
+		variables.executor.shutdown();
+		return this;
+	}
+
+	Schedule function shutdownNow(){
+		variables.executor.shutdownNow();
+		return this;
+	}
+
+	any function getQueue(){
+		return variables.executor.getQueue();
+	}
+
+	numeric function getActiveCount(){
+		return variables.executor.getActiveCount();
+	}
+
+	numeric function getTaskCount(){
+		return variables.executor.getTaskCount();
+	}
+
+	numeric function getCompletedTaskCount(){
+		return variables.executor.getCompletedTaskCount();
+	}
+
+	numeric function getCorePoolSize(){
+		return variables.executor.getCorePoolSize();
+	}
+
+	numeric function getLargestPoolSize(){
+		return variables.executor.getLargestPoolSize();
+	}
+
+	numeric function getMaximumPoolSize(){
+		return variables.executor.getMaximumPoolSize();
+	}
+
+	numeric function getPoolSize(){
+		return variables.executor.getPoolSize();
+	}
+
+	/**
+	 * Our very own stats struct map to give you a holistic view of the schedule
+	 * and it's executor
+	 */
+	struct function getStats(){
+		return {
+			"name" : getName(),
+			"delay" : getDelay(),
+			"every" : getPeriod(),
+			"timeUnit" : getTimeUnit().toString(),
+			"poolSize" : getPoolSize(),
+			"maximumPoolSize" : getMaximumPoolSize(),
+			"largestPoolSize" : getLargestPoolSize(),
+			"corePoolSize" : getCorePoolSize(),
+			"completedTaskCount" : getCompletedTaskCount(),
+			"taskCount" : getTaskCount(),
+			"activeCount" : getActiveCount(),
+			"isTerminated" : isTerminated(),
+			"isTerminating" : isTerminating(),
+			"isShutdown" : isShutdown()
+		};
+	}
+
+
+
 }

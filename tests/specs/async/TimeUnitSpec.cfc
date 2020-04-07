@@ -40,11 +40,11 @@ component extends="testbox.system.BaseSpec" {
 				it(
 					title="can produce the #thisUnit# java unit",
 					body=function( data ){
-						var unit = timeUnit.getTimeUnit( data.unit );
+						var unit = timeUnit.get( data.unit );
 						expect( unit.toString() ).toInclude( data.unit );
 					},
 					data={ unit : thisUnit }
-				)
+				);
 			} );
 
 		} );
