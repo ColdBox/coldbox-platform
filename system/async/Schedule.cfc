@@ -34,7 +34,7 @@ component accessors="true"{
 		variables.jTimeUnit 	= new TimeUnit();
 
 		// Schedule Properties
-		variables.timeUnit 	= variables.jTimeUnit.getTimeUnit();
+		variables.timeUnit 	= variables.jTimeUnit.get();
 		variables.delay 	= 0;
 		variables.period 	= 0;
 
@@ -65,7 +65,7 @@ component accessors="true"{
 				jRunnable,
 				javaCast( "long", variables.delay ),
 				javaCast( "long", variables.period ),
-				variables.jTimeUnit
+				variables.timeUnit
 			);
 		}
 		// Just a simple schedule with a delay
@@ -73,7 +73,7 @@ component accessors="true"{
 			variables.executor.schedule(
 				jRunnable,
 				javaCast( "long", variables.delay ),
-				variables.jTimeUnit
+				variables.timeUnit
 			);
 		}
 	}
@@ -86,7 +86,7 @@ component accessors="true"{
 	 */
 	function delay( numeric delay, timeUnit="seconds" ){
 		variables.delay = arguments.delay;
-		variables.timeUnit = variables.jTimeUnit.getTimeUnit( arguments.timeUnit );
+		variables.timeUnit = variables.jTimeUnit.get( arguments.timeUnit );
 		return this;
 	}
 
@@ -98,7 +98,7 @@ component accessors="true"{
 	 */
 	function every( numeric period, timeUnit="seconds" ){
 		variables.period = arguments.period;
-		variables.timeUnit = variables.jTimeUnit.getTimeUnit( arguments.timeUnit );
+		variables.timeUnit = variables.jTimeUnit.get( arguments.timeUnit );
 		return this;
 	}
 
@@ -106,7 +106,7 @@ component accessors="true"{
 	 * Set the time unit in days
 	 */
 	Schedule function inDays(){
-		variables.timeUnit = variables.jTimeUnit.getTimeout( "days" );
+		variables.timeUnit = variables.jTimeUnit.get( "days" );
 		return this;
 	}
 
@@ -114,7 +114,7 @@ component accessors="true"{
 	 * Set the time unit in hours
 	 */
 	Schedule function inHours(){
-		variables.timeUnit = variables.jTimeUnit.getTimeout( "hours" );
+		variables.timeUnit = variables.jTimeUnit.get( "hours" );
 		return this;
 	}
 
@@ -122,7 +122,7 @@ component accessors="true"{
 	 * Set the time unit in microseconds
 	 */
 	Schedule function inMicroseconds(){
-		variables.timeUnit = variables.jTimeUnit.getTimeout( "microseconds" );
+		variables.timeUnit = variables.jTimeUnit.get( "microseconds" );
 		return this;
 	}
 
@@ -130,7 +130,7 @@ component accessors="true"{
 	 * Set the time unit in milliseconds
 	 */
 	Schedule function inMilliseconds(){
-		variables.timeUnit = variables.jTimeUnit.getTimeout( "milliseconds" );
+		variables.timeUnit = variables.jTimeUnit.get( "milliseconds" );
 		return this;
 	}
 
@@ -138,7 +138,7 @@ component accessors="true"{
 	 * Set the time unit in minutes
 	 */
 	Schedule function inMinutes(){
-		variables.timeUnit = variables.jTimeUnit.getTimeout( "minutes" );
+		variables.timeUnit = variables.jTimeUnit.get( "minutes" );
 		return this;
 	}
 
@@ -146,7 +146,7 @@ component accessors="true"{
 	 * Set the time unit in nanoseconds
 	 */
 	Schedule function inNanoseconds(){
-		variables.timeUnit = variables.jTimeUnit.getTimeout( "nanoseconds" );
+		variables.timeUnit = variables.jTimeUnit.get( "nanoseconds" );
 		return this;
 	}
 
@@ -154,7 +154,7 @@ component accessors="true"{
 	 * Set the time unit in seconds
 	 */
 	Schedule function inSeconds(){
-		variables.timeUnit = variables.jTimeUnit.getTimeout( "seconds" );
+		variables.timeUnit = variables.jTimeUnit.get( "seconds" );
 		return this;
 	}
 }

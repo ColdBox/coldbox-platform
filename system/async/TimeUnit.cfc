@@ -1,7 +1,7 @@
 /**
  * Static class to map ColdFusion string timeouts to Java Timeouts
  */
-component{
+component singleton{
 
 	// The static java class
 	variables.jTimeUnit = createObject( "java", "java.util.concurrent.TimeUnit" );
@@ -13,7 +13,7 @@ component{
 	 *
 	 * @return The Java time unit class
 	 */
-	function getTimeUnit( required timeUnit="seconds" ){
+	function get( required timeUnit="seconds" ){
 		switch( arguments.timeUnit ){
 			case "days"         : { return jTimeUnit.DAYS; }
 			case "hours"        : { return jTimeUnit.HOURS; }

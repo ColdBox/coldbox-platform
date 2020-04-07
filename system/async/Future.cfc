@@ -32,7 +32,7 @@ component accessors="true"{
 		variables.native 			= createObject( "java", "java.util.concurrent.CompletableFuture" );
 		variables.debug 			= arguments.debug;
 		variables.loadAppContext 	= arguments.loadAppContext;
-		variables.jTimeUnit 		= new TimeUnit();
+		variables.timeUnit	 		= new TimeUnit();
 
 		if( !isNull( arguments.value ) ){
 			variables.native = variables.native.completedFuture( arguments.value );
@@ -93,7 +93,7 @@ component accessors="true"{
 		if( arguments.timeout != 0 ){
 			var results = variables.native.get(
 				javaCast( "long", arguments.timeout ),
-				variables.jTimeUnit.getTimeUnit( arguments.timeUnit )
+				variables.timeUnit	.get( arguments.timeUnit )
 			);
 		} else {
 			var results = variables.native.get();
