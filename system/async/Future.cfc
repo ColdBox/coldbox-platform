@@ -300,6 +300,10 @@ component accessors="true" {
 		return this;
 	}
 
+	private function futureWrapper(){
+		return
+	}
+
 	/**
 	 * Alias to `then()` left to help Java devs feel at Home
 	 */
@@ -350,6 +354,27 @@ component accessors="true" {
 	 */
 	Future function thenApplyAsync(){
 		return thenAsync( argumentCollection=arguments );
+	}
+
+	/**
+	 * Returns a new CompletionStage that, when this stage completes normally, is executed with this stage as the argument to the supplied function.
+	 *
+	 * @fn the function returning a new CompletionStage
+	 *
+	 * @return the CompletionStage
+	 */
+	Future function thenCompose( required fn ){
+		variables.native = variables.native.thenCompose(
+			createDynamicProxy(
+				new proxies.FutureFunction(
+					arguments.fn,
+					variables.debug,
+					variables.loadAppContext
+				),
+				[ "java.util.function.Function" ]
+			)
+		);
+		return this;
 	}
 
 }

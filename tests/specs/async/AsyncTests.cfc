@@ -24,6 +24,7 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			it( "can run a cf closure with a then/get pipeline and custom executors", function(){
+				var singlePool = asyncManager.executors.newSingleThreadPool();
 				var f = asyncManager
 					.newFuture()
 					.runAsync( function(){
@@ -38,13 +39,13 @@ component extends="testbox.system.BaseSpec" {
 					} )
 					.then( function( result ){
 						debug( "then: " & getThreadName() );
-						return result & " majano";
+						return arguments.result & " majano";
 					} )
 					// Run this in a separate thread
 					.thenAsync( function( result ){
-						debug( "thenAsync: " &getThreadName() );
-						return result & " loves threads, NOT!";
-					}, asyncManager.executors.newSingleThreadPool() );
+						debug( "thenAsync: " & getThreadName() );
+						return arguments.result & " loves threads, NOT!";
+					}, singlePool );
 
 				expect( f.get(), "Luis majano loves threads, NOT!" );
 				expect( f.isDone() ).toBeTrue();
@@ -114,6 +115,28 @@ component extends="testbox.system.BaseSpec" {
 						return "Who Knows!";
 					} );
 					expect( future.get() ).toBe( "Who Knows!" );
+			});
+
+
+			it( "can combine two futures together", function(){
+				var getCreditRating = function( user ){
+					return asyncManager.newFuture().supplyAsync( function(){
+						// I would use the user here :!
+						return 800;
+					} );
+				};
+
+				var creditRating = asyncManager.newFuture()
+					.supplyAsync( function(){
+						// lookup user
+						return {
+							id : now(),
+							name : "luis majano"
+						};
+					} ).thenCompose( function( user ){
+						return getCreditRating( arguments.user );
+					} );
+				expect( creditRating.get() ).toBe( 800 );
 			});
 
 			story( "Ability to create and manage schedulers", function(){
