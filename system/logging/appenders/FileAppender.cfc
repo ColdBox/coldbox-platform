@@ -202,7 +202,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 					variables.logListener.active = true;
 					// Create the runnable Log Listener, Start it up baby!
 					variables.asyncManager.newFuture().run(
-						runnable       = this,
+						supplier       = this,
 						method         = "runLogListener",
 						loadAppContext = false
 					);
