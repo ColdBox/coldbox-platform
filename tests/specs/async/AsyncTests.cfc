@@ -18,11 +18,12 @@ component extends="testbox.system.BaseSpec" {
 	function run( testResults, testBox ){
 		// all your suites go here.
 		describe( "ColdBox Async Programming", function(){
+
 			beforeEach( function( currentSpec ){
 				asyncManager = new coldbox.system.async.AsyncManager( debug=true );
 			} );
 
-			it( "can run a closure with a ColdBox Future", function(){
+			it( "can run a cf closure with a then/get pipeline", function(){
 				var f = asyncManager
 					.newFuture()
 					.run( function(){
@@ -30,7 +31,7 @@ component extends="testbox.system.BaseSpec" {
 						createObject( "java", "java.lang.System" ).out.println( message );
 						debug( "Hello debugger" );
 
-						sleep( 1000 );
+						sleep( randRange( 1, 1000 ) );
 
 						return "Luis";
 					} )
@@ -42,9 +43,77 @@ component extends="testbox.system.BaseSpec" {
 					} );
 
 				expect( f.get(), "Luis majano loves threads, NOT!" );
+				expect( f.isDone() ).toBeTrue();
 			} );
 
-			story( "Ability to create schedulers", function(){
+			it( "can cancel a long-running future", function(){
+				var future = asyncManager.newFuture();
+				var results = future.run( function(){
+					sleep( 5000 );
+				}).cancel();
+				expect( results ).toBeTrue();
+				expect( future.isCancelled() ).toBeTrue();
+			});
+
+			it( "can complete a future explicitly", function(){
+				var f = asyncManager.newFuture();
+				f.complete( 100 );
+				expect(
+					f.get()
+				).toBe( 100 );
+
+				expect(
+					asyncManager.newCompletedFuture( 200 ).get()
+				).toBe( 200 );
+
+				expect(
+					asyncManager.newFuture().completedFuture( 400 ).get()
+				).toBe( 400 );
+			});
+
+			it( "can complete with a custom exception", function(){
+				var f = asyncManager.newFuture().completeExceptionally();
+				expect( function(){
+					f.get();
+				} ).toThrow( "java.lang.RuntimeException" );
+				expect( f.isCompletedExceptionally() ).toBeTrue();
+			});
+
+			it( "can get the results now", function(){
+				var future = asyncManager.newFuture().run( function(){
+					return 1;
+				});
+				sleep( 500 );
+				expect( future.getNow( 2 ) ).toBe( 1 );
+
+				var future = asyncManager.newFuture().run( function(){
+					sleep( 2000 );
+					return 1;
+				});
+				expect( future.getNow( 2 ) ).toBe( 2 );
+			});
+
+			it( "can register an exception handler ", function(){
+				var future = asyncManager.newFuture()
+					.supplyAsync( function(){
+						if( age < 0 ){
+							throw( type="IllegalArgumentException" );
+						}
+						if(age > 18) {
+							return "Adult";
+						} else {
+							return "Child";
+						}
+					} ).exceptionally( function( ex ){
+						//debug( ex);
+						debug( "Oops we have an exception: #ex.toString()#" );
+						return "Who Knows!";
+					} );
+
+					expect( future.get() ).toBe( "Who Knows!" );
+			});
+
+			story( "Ability to create and manage schedulers", function(){
 				it( "can create a vanilla schedule", function(){
 					var schedule = asyncManager.newSchedule( "unitTest" );
 					expect( schedule.getName() ).toBe( "unitTest" );
@@ -94,7 +163,7 @@ component extends="testbox.system.BaseSpec" {
 					var schedule1 = asyncManager.newSchedule( "unitTest1" );
 					var schedule2 = asyncManager.newSchedule( "unitTest2" );
 
-					var statusMap = asyncManager.getScheduleStatusMap()
+					var statusMap = asyncManager.getScheduleStatusMap();
 
 					expect( statusMap )
 						.toHaveKey( "unitTest1" )
@@ -102,6 +171,7 @@ component extends="testbox.system.BaseSpec" {
 				});
 
 			});
+
 		} );
 	}
 

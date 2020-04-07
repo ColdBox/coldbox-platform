@@ -28,7 +28,7 @@ component accessors="true" {
 		default="true";
 
 	/**
-	 * Constructor
+	 * Construct a new ColdBox Future
 	 *
 	 * @value Seed the future with a completed value if passed
 	 * @debug Add output debugging
@@ -68,21 +68,35 @@ component accessors="true" {
 	 *
 	 * @return true if this invocation caused this CompletableFuture to transition to a completed state, else false
 	 */
-	boolean function complete( value ){
+	boolean function complete( required value ){
 		return variables.native.complete( arguments.value );
 	}
 
 	/**
+	 * Returns a new ColdBox Future that is already completed with the given value.
+	 *
+	 * @value The value to set
+	 *
+	 * @return The ColdBox completed future
+	 */
+	Future function completedFuture( required value ){
+		variables.native = variables.native.completedFuture( arguments.value );
+		return this;
+	}
+
+	/**
 	 * If not already completed, causes invocations of get() and related methods to throw the given exception.
+	 * The exception type is of `java.lang.RuntimeException` and you can choose the message to throw with it.
 	 *
 	 * @message An optional message to add to the exception to be thrown.
 	 *
-	 * @returns true if this invocation caused this CompletableFuture to transition to a completed state, else false
+	 * @returns The same Future
 	 */
-	boolean function completeWithException( message = "Future operation completed with manual exception" ){
-		return variables.native.completeExceptionally(
+	Future function completeExceptionally( message = "Future operation completed with manual exception" ){
+		variables.native.completeExceptionally(
 			createObject( "java", "java.lang.RuntimeException" ).init( arguments.message )
 		);
+		return this;
 	}
 
 	/**
@@ -111,7 +125,6 @@ component accessors="true" {
 			var results = variables.native.get();
 		}
 
-
 		// If we have results, return them
 		if ( !isNull( results ) ) {
 			return results;
@@ -127,7 +140,7 @@ component accessors="true" {
 	/**
 	 * Returns the result value (or throws any encountered exception) if completed, else returns the given defaultValue.
 	 *
-	 * @defaultValue The value to return  if not completed
+	 * @defaultValue The value to return if not completed
 	 *
 	 * @returns The result value, if completed, else the given defaultValue
 	 *
@@ -147,7 +160,7 @@ component accessors="true" {
 	/**
 	 * Returns true if this Future completed exceptionally, in any way. Possible causes include cancellation, explicit invocation of completeWithException, and abrupt termination of a CompletionStage action.
 	 */
-	boolean function isCompletedWithException(){
+	boolean function isCompletedExceptionally(){
 		return variables.native.isCompletedExceptionally();
 	}
 
@@ -159,10 +172,35 @@ component accessors="true" {
 	}
 
 	/**
+	 * Register an event handler for any exceptions that happen before it is registered
+	 * in the future pipeline.  Whatever this function returns, will be used for the next
+	 * registered functions in the pipeline.
 	 *
-	 * @ex
+	 * The function takes in the exception that ocurred and can return a new value as well:
+	 *
+	 * <pre>
+	 * ( exception ) => newValue;
+	 * function( exception ) => {
+	 * 	  return newValue;
+	 * }
+	 * </pre>
+	 *
+	 * @target The function that will be called when the exception is triggered
+	 *
+	 * @return The future with the exception handler registered
 	 */
-	function onException( ex ){
+	Future function exceptionally( required target ){
+		variables.native = variables.native.exceptionally(
+			createDynamicProxy(
+				new proxies.Function(
+					arguments.target,
+					variables.debug,
+					variables.loadAppContext
+				),
+				[ "java.util.function.Function" ]
+			)
+		);
+		return this;
 	}
 
 	/**
@@ -196,6 +234,35 @@ component accessors="true" {
 		variables.native = variables.native.supplyAsync( jSupplier );
 
 		return this;
+	}
+
+	/**
+	 * Alias to the `run()` method but left here to help Java developers
+	 * feel at home. Since in our futures, everything becomes a supplier
+	 * of some sort.
+	 *
+	 * @supplier A CFC instance or closure or lambda or udf to execute and return the value to be used in the future
+	 * @executor An optional executor to use for asynchronous execution of the task
+	 *
+	 * @return The new completion stage (Future)
+	 */
+	Future function supplyAsync( required supplier, any executor ){
+		return run( argumentCollection=arguments );
+	}
+
+	/**
+	 * Alias to the `run()` method but left here to help Java developers
+	 * feel at home. Since in our futures, everything becomes a supplier
+	 * of some sort.
+	 *
+	 * @runnable A CFC instance or closure or lambda or udf to execute and return the value to be used in the future
+	 * @executor An optional executor to use for asynchronous execution of the task
+	 *
+	 * @return The new completion stage (Future)
+	 */
+	Future function supplyAsync( required runnable, any executor ){
+		arguments.supplier = arguments.runnable;
+		return run( argumentCollection=arguments );
 	}
 
 	/**
