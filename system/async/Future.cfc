@@ -206,6 +206,13 @@ component accessors="true" {
 	}
 
 	/**
+	 * Alias to exceptionally()
+	 */
+	function onException( required target ){
+		return exceptionally( argumentCollection=arguments );
+	}
+
+	/**
 	 * Executes a runnable closure or component method via Java's CompletableFuture and gives you back a ColdBox Future:
 	 *
 	 * - This method calls `supplyAsync()` in the Java API
@@ -353,7 +360,11 @@ component accessors="true" {
 	}
 
 	/**
-	 * Returns a new CompletionStage that, when this stage completes normally, is executed with this stage as the argument to the supplied function.
+	 * Returns a new CompletionStage that, when this stage completes normally,
+	 * is executed with this stage as the argument to the supplied function.
+	 *
+	 * Basically, this used to combine two Futures where one future is dependent on the other
+	 * If not, you return a future of a future
 	 *
 	 * @fn the function returning a new CompletionStage
 	 *
@@ -373,4 +384,25 @@ component accessors="true" {
 		return this;
 	}
 
+	/**
+	 * This used when you want two Futures to run independently and do something after
+	 * both are complete.
+	 *
+	 * @future The ColdBox Future to combine
+	 * @fn The closure that will combine them: ( r1, r2 ) =>
+	 */
+	Future function thenCombine( required future, fn ){
+		variables.native = variables.native.thenCombine(
+			arguments.future.getNative(),
+			createDynamicProxy(
+				new proxies.BiFunction(
+					arguments.fn,
+					variables.debug,
+					variables.loadAppContext
+				),
+				[ "java.util.function.BiFunction" ]
+			)
+		);
+		return this;
+	}
 }

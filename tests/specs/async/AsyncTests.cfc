@@ -144,6 +144,34 @@ component extends="testbox.system.BaseSpec" {
 				expect( creditFuture.get() ).toBe( 800 );
 			});
 
+
+			it( "can combine two futures for a single result", function(){
+				debug( "getting weight" );
+				var weightFuture = asyncManager.newFuture().run( function(){
+					sleep( 500 );
+					return 65;
+				});
+
+				debug( "getting height" );
+				var heightFuture = asyncManager.newFuture().run( function(){
+					sleep( randRange( 1, 1000 ) );
+					return 177.8;
+				});
+
+				debug( "calculating BMI" );
+				var combinedFuture = weightFuture.thenCombine(
+					heightFuture,
+					function( weight, height ){
+						var heightInMeters = arguments.height/100;
+						return arguments.weight / (heightInMeters * heightInMeters );
+					}
+				);
+
+				debug( "Your BMI is #combinedFuture.get()#" );
+				expect( combinedFuture.get() ).toBeGt( 20 );
+
+			});
+
 			story( "Ability to create and manage schedulers", function(){
 				it( "can create a vanilla schedule", function(){
 					var schedule = asyncManager.newSchedule( "unitTest" );
