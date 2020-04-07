@@ -34,8 +34,10 @@ component accessors="true" {
 	 *
 	 * @name The name of the scheduler
 	 * @executor The native executor
+	 * @debug Add output debugging
+	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 */
-	Schedule function init( required name, required executor ){
+	Schedule function init( required name, required executor, boolean debug=false, boolean loadAppContext=true ){
 		variables.name      = arguments.name;
 		variables.executor  = arguments.executor;
 		variables.jTimeUnit = new TimeUnit();
@@ -45,16 +47,56 @@ component accessors="true" {
 		variables.delay    = 0;
 		variables.period   = 0;
 
+		// Debugging + Contexzt
+		variables.debug = arguments.debug;
+		variables.loadAppContext = arguments.loadAppContext;
+
 		return this;
 	}
 
 	/**
-	 * Run the scheduler with the given closure/lambda or CFC
+	 * Submit a task into the scheduler which can return a result if any.  The result of this call
+	 * is a ColdBox Future.
+	 *
+	 * @callable THe callable closure/lambda/cfc
+	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
+	 * @result the result to return once the future completes
+	 *
+	 * @return A ColdBox Future
+	 */
+	Future function submit( required callable, method = "run", any result ){
+		var jCallable = createDynamicProxy(
+			new proxies.Callable(
+				arguments.callable,
+				arguments.method,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.function.Callable" ]
+		);
+
+		// Do we have a seeded result?
+		if( !isNull( arguments.result ) ){
+			return new Future().setNative(
+				variables.executor.submit( jCallable ),
+				arguments.result
+			);
+		}
+
+		// Basic future
+		return new Future().setNative(
+			variables.executor.submit( jCallable )
+		);
+	}
+
+	/**
+	 * Seed a runnable closure into this scheduler via the Java
+	 * `scheduleAtFixedRate()` or `schedule()` methods
 	 *
 	 * @runnable THe runnable closure/lambda/cfc
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
 	 */
-	function run( required runnable, method = "run" ){
+	function schedule( required runnable, method = "run" ){
 		// build out the java runnable
 		var jRunnable = createDynamicProxy(
 			new proxies.Runnable(
