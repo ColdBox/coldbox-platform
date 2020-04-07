@@ -15,28 +15,8 @@
  *	* renderResults : Render back the results of the event
  *******************************************************************************/
 component
-	extends   ="coldbox.system.testing.BaseTestCase"
-	appMapping="/cbTestHarness"
+	extends   ="tests.resources.BaseIntegrationTest"
 {
-
-	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	function beforeAll(){
-		super.beforeAll();
-		// do your own stuff here
-	}
-
-	function afterAll(){
-		// do your own stuff here
-		super.afterAll();
-	}
-
-	/**
-	 * after renderer init
-	 */
-	function afterRendererInit( event, interceptData ){
-		arguments.interceptData.this.bdd = this;
-	}
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -93,11 +73,24 @@ component
 			story( "I want to listen to when the renderer is created", function(){
 				given( "A new renderer", function(){
 					then( "I can listen to renderer creations", function(){
+						// Mock the listener
+						var mockListener = createStub();
+						mockListener[ "afterRendererInit" ] = variables.afterRendererInit;
+
+						// register it
 						getController()
 							.getInterceptorService()
-							.registerInterceptor( interceptorObject = this );
-						var renderer = getController().getRenderer();
-						expect( renderer ).toHaveKey( "bdd" );
+							.registerInterceptor( interceptorObject = mockListener, interceptorName="mockListener" );
+
+						try{
+							// Run it
+							var renderer = getController().getRenderer();
+							expect( renderer ).toHaveKey( "bdd" );
+						} finally {
+							getController()
+								.getInterceptorService()
+								.unregister( interceptorName="mockListener", state="afterRenderReinit" );
+						}
 					} );
 				} );
 			} );
@@ -139,6 +132,12 @@ component
 				} );
 			} );
 		} );
+	}
+
+	function afterRendererInit( event, interceptData ){
+		if( !isNull( arguments.interceptData.this ) ){
+			arguments.interceptData.this.bdd = true;
+		}
 	}
 
 }

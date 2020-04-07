@@ -1,4 +1,5 @@
 {
+	"adminPassword" : "coldbox",
     "caches": {
         "default": {
             "storage": "false",
