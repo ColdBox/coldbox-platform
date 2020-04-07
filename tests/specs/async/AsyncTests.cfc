@@ -23,10 +23,11 @@ component extends="testbox.system.BaseSpec" {
 				asyncManager = new coldbox.system.async.AsyncManager( debug=true );
 			} );
 
-			it( "can run a cf closure with a then/get pipeline", function(){
+			it( "can run a cf closure with a then/get pipeline and custom executors", function(){
 				var f = asyncManager
 					.newFuture()
-					.run( function(){
+					.runAsync( function(){
+						debug( "runAsync: " & getThreadName() );
 						var message = "hello from in closure land";
 						createObject( "java", "java.lang.System" ).out.println( message );
 						debug( "Hello debugger" );
@@ -36,11 +37,14 @@ component extends="testbox.system.BaseSpec" {
 						return "Luis";
 					} )
 					.then( function( result ){
+						debug( "then: " & getThreadName() );
 						return result & " majano";
 					} )
-					.then( function( result ){
+					// Run this in a separate thread
+					.thenAsync( function( result ){
+						debug( "thenAsync: " &getThreadName() );
 						return result & " loves threads, NOT!";
-					} );
+					}, asyncManager.executors.newSingleThreadPool() );
 
 				expect( f.get(), "Luis majano loves threads, NOT!" );
 				expect( f.isDone() ).toBeTrue();
@@ -75,7 +79,7 @@ component extends="testbox.system.BaseSpec" {
 				var f = asyncManager.newFuture().completeExceptionally();
 				expect( function(){
 					f.get();
-				} ).toThrow( "java.lang.RuntimeException" );
+				} ).toThrow();
 				expect( f.isCompletedExceptionally() ).toBeTrue();
 			});
 
@@ -109,7 +113,6 @@ component extends="testbox.system.BaseSpec" {
 						debug( "Oops we have an exception: #ex.toString()#" );
 						return "Who Knows!";
 					} );
-
 					expect( future.get() ).toBe( "Who Knows!" );
 			});
 
@@ -173,6 +176,20 @@ component extends="testbox.system.BaseSpec" {
 			});
 
 		} );
+	}
+
+	/**
+	 * Get the current thread name
+	 */
+	private function getThreadName(){
+		return getCurrentThread().getName();
+	}
+
+	/**
+	 * Get the current thread java object
+	 */
+	private function getCurrentThread(){
+		return createObject( "java", "java.lang.Thread" ).currentThread();
 	}
 
 }

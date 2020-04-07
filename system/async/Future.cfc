@@ -185,6 +185,8 @@ component accessors="true" {
 	 * }
 	 * </pre>
 	 *
+	 * Note that, the error will not be propagated further in the callback chain if you handle it once.
+	 *
 	 * @target The function that will be called when the exception is triggered
 	 *
 	 * @return The future with the exception handler registered
@@ -260,7 +262,7 @@ component accessors="true" {
 	 *
 	 * @return The new completion stage (Future)
 	 */
-	Future function supplyAsync( required runnable, any executor ){
+	Future function runAsync( required runnable, any executor ){
 		arguments.supplier = arguments.runnable;
 		return run( argumentCollection=arguments );
 	}
@@ -299,6 +301,13 @@ component accessors="true" {
 	}
 
 	/**
+	 * Alias to `then()` left to help Java devs feel at Home
+	 */
+	Future function thenApply(){
+		return then( argumentCollection=arguments );
+	}
+
+	/**
 	 * Executed once the computation has finalized and a result is passed in to the target but
 	 * this will execute in a separate thread. By default it uses the ForkJoin.commonPool() but you can
 	 * pass your own executor service.
@@ -327,9 +336,20 @@ component accessors="true" {
 			[ "java.util.function.Function" ]
 		);
 
-		variables.native = variables.native.thenApplyAsync( apply );
+		if( isNull( arguments.executor ) ){
+			variables.native = variables.native.thenApplyAsync( apply );
+		} else {
+			variables.native = variables.native.thenApplyAsync( apply, arguments.executor );
+		}
 
 		return this;
+	}
+
+	/**
+	 * Alias to `thenAsync()` left to help Java devs feel at Home
+	 */
+	Future function thenApplyAsync(){
+		return thenAsync( argumentCollection=arguments );
 	}
 
 }
