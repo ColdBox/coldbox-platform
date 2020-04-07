@@ -2,38 +2,49 @@
  * Functional Interface that maps to java.util.function.Function
  * See https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html
  */
-component extends="BaseProxy"{
+component extends="BaseProxy" {
 
-    /**
-     * Constructor
-     *
-     * @f The lambda or closure to be used in the <code>apply()</code> method
+	/**
+	 * Constructor
+	 *
+	 * @f The lambda or closure to be used in the <code>apply()</code> method
 	 * @debug Add debugging or not
 	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
-     */
-    function init( required f, boolean debug=false, boolean loadAppContext=true ){
-        super.init( arguments.f, arguments.debug, arguments.loadAppContext );
-        return this;
-    }
+	 */
+	function init(
+		required f,
+		boolean debug          = false,
+		boolean loadAppContext = true
+	){
+		super.init(
+			arguments.f,
+			arguments.debug,
+			arguments.loadAppContext
+		);
+		return this;
+	}
 
-    /**
-     * Represents a function that accepts one argument and produces a result.
-     */
-    function apply( t ){
+	/**
+	 * Represents a function that accepts one argument and produces a result.
+	 */
+	function apply( t ){
 		loadContext();
 		try {
-			lock name='#getConcurrentEngineLockName()#' type="exclusive" timeout="60" {
-	        	return variables.target( arguments.t );
-	        }
-        } finally {
-        	unLoadContext();
-        }
-    }
+			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
+				return variables.target( arguments.t );
+			}
+		} finally {
+			unLoadContext();
+		}
+	}
 
-    function andThen( after ){}
+	function andThen( after ){
+	}
 
-    function compose( before ){}
+	function compose( before ){
+	}
 
-    function identity(){}
+	function identity(){
+	}
 
 }

@@ -8,7 +8,7 @@
  *
  * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
  */
-component singleton{
+component singleton {
 
 	// Java core executors class
 	variables.jExecutors = createObject( "java", "java.util.concurrent.Executors" );
@@ -29,10 +29,8 @@ component singleton{
 	 *
 	 * @return ExecutorService: The newly created thread pool
 	 */
-	function newFixedThreadPool( numeric threads=this.DEFAULT_THREADS ){
-		return variables.jExecutors.newFixedThreadPool(
-			javacast( "int", arguments.threads )
-		);
+	function newFixedThreadPool( numeric threads = this.DEFAULT_THREADS ){
+		return variables.jExecutors.newFixedThreadPool( javacast( "int", arguments.threads ) );
 	}
 
 	/**
@@ -76,10 +74,8 @@ component singleton{
 	 *
 	 * @return ScheduledExecutorService: The newly created thread pool
 	 */
-	function newScheduledThreadPool( corePoolSize=this.DEFAULT_THREADS ){
-		return variables.jExecutors.newScheduledThreadPool(
-			javaCast( "int", arguments.corePoolSize )
-		);
+	function newScheduledThreadPool( corePoolSize = this.DEFAULT_THREADS ){
+		return variables.jExecutors.newScheduledThreadPool( javacast( "int", arguments.corePoolSize ) );
 	}
 
 }

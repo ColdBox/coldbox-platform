@@ -2,7 +2,7 @@
  * This is the ColdBox Scheduler class which connects your code to the Java
  * Scheduling services to execute tasks.
  */
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * The human name of this scheduler
@@ -36,14 +36,14 @@ component accessors="true"{
 	 * @executor The native executor
 	 */
 	Schedule function init( required name, required executor ){
-		variables.name 			= arguments.name;
-		variables.executor 		= arguments.executor;
-		variables.jTimeUnit 	= new TimeUnit();
+		variables.name      = arguments.name;
+		variables.executor  = arguments.executor;
+		variables.jTimeUnit = new TimeUnit();
 
 		// Schedule Properties
-		variables.timeUnit 	= variables.jTimeUnit.get();
-		variables.delay 	= 0;
-		variables.period 	= 0;
+		variables.timeUnit = variables.jTimeUnit.get();
+		variables.delay    = 0;
+		variables.period   = 0;
 
 		return this;
 	}
@@ -54,7 +54,7 @@ component accessors="true"{
 	 * @runnable THe runnable closure/lambda/cfc
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
 	 */
-	function run( required runnable, method="run" ){
+	function run( required runnable, method = "run" ){
 		// build out the java runnable
 		var jRunnable = createDynamicProxy(
 			new proxies.Runnable(
@@ -67,11 +67,11 @@ component accessors="true"{
 		);
 
 		// Build out a periodical schedule?
-		if( variables.period > 0 ){
+		if ( variables.period > 0 ) {
 			variables.executor.scheduleAtFixedRate(
 				jRunnable,
-				javaCast( "long", variables.delay ),
-				javaCast( "long", variables.period ),
+				javacast( "long", variables.delay ),
+				javacast( "long", variables.period ),
 				variables.timeUnit
 			);
 		}
@@ -79,7 +79,7 @@ component accessors="true"{
 		else {
 			variables.executor.schedule(
 				jRunnable,
-				javaCast( "long", variables.delay ),
+				javacast( "long", variables.delay ),
 				variables.timeUnit
 			);
 		}
@@ -91,8 +91,8 @@ component accessors="true"{
 	 * @delay The delay that will be used before executing the task
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
 	 */
-	function delay( numeric delay, timeUnit="seconds" ){
-		variables.delay = arguments.delay;
+	function delay( numeric delay, timeUnit = "seconds" ){
+		variables.delay    = arguments.delay;
 		variables.timeUnit = variables.jTimeUnit.get( arguments.timeUnit );
 		return this;
 	}
@@ -103,8 +103,8 @@ component accessors="true"{
 	 * @period The period of execution
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
 	 */
-	function every( numeric period, timeUnit="seconds" ){
-		variables.period = arguments.period;
+	function every( numeric period, timeUnit = "seconds" ){
+		variables.period   = arguments.period;
 		variables.timeUnit = variables.jTimeUnit.get( arguments.timeUnit );
 		return this;
 	}
@@ -169,71 +169,126 @@ component accessors="true"{
 	 * Executor Utility Methods *
 	 ****************************************************************/
 
+	/**
+	 * Returns true if all tasks have completed following shut down.
+	 */
 	boolean function isTerminated(){
 		return variables.executor.isTerminated();
 	}
 
+	/**
+	 * Returns true if this executor is in the process of terminating after shutdown() or shutdownNow() but has
+	 * not completely terminated.
+	 */
 	boolean function isTerminating(){
 		return variables.executor.isTerminating();
 	}
 
+	/**
+	 * Returns true if this executor has been shut down.
+	 */
 	boolean function isShutdown(){
 		return variables.executor.isShutdown();
 	}
 
 	/**
-	 * Undocumented function
+	 * Blocks until all tasks have completed execution after a shutdown request, or the timeout occurs, or
+	 * the current thread is interrupted, whichever happens first.
 	 *
-	 * @timeout
-	 * @timeUnit
+	 * @timeout The maximum time to wait
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 *
+	 * @throws InterruptedException - if interrupted while waiting
 	 *
 	 * @return true if all tasks have completed following shut down
 	 */
-	boolean function awaitTermination( required numeric timeout, timeUnit="seconds" ){
+	boolean function awaitTermination( required numeric timeout, timeUnit = "seconds" ){
 		return variables.executor.awaitTermination(
-			javaCast( "long", arguments.timeout ),
+			javacast( "long", arguments.timeout ),
 			variables.jTimeUnit.get( arguments.timeUnit )
 		);
 	}
 
+	/**
+	 * Initiates an orderly shutdown in which previously submitted tasks are executed, but no new tasks will be accepted.
+	 * Invocation has no additional effect if already shut down.
+	 *
+	 * This method does not wait for previously submitted tasks to complete execution. Use awaitTermination to do that.
+	 *
+	 */
 	Schedule function shutdown(){
 		variables.executor.shutdown();
 		return this;
 	}
 
-	Schedule function shutdownNow(){
-		variables.executor.shutdownNow();
-		return this;
+	/**
+	 * Attempts to stop all actively executing tasks, halts the processing of
+	 * waiting tasks, and returns a list of the tasks that were awaiting execution.
+	 *
+	 * This method does not wait for actively executing tasks to terminate. Use awaitTermination to do that.
+	 *
+	 * There are no guarantees beyond best-effort attempts to stop processing actively executing tasks.
+	 * This implementation cancels tasks via Thread.interrupt(), so any task that fails to respond to interrupts may never
+	 * terminate.
+	 *
+	 * @return list of tasks that never commenced execution
+	 */
+	any function shutdownNow(){
+		return variables.executor.shutdownNow();
 	}
 
+	/**
+	 * Returns the task queue used by this executor.
+	 */
 	any function getQueue(){
 		return variables.executor.getQueue();
 	}
 
+	/**
+	 * Returns the approximate number of threads that are actively executing tasks.
+	 */
 	numeric function getActiveCount(){
 		return variables.executor.getActiveCount();
 	}
 
+	/**
+	 * Returns the approximate total number of tasks that have ever been scheduled for execution.
+	 */
 	numeric function getTaskCount(){
 		return variables.executor.getTaskCount();
 	}
 
+	/**
+	 * Returns the approximate total number of tasks that have completed execution.
+	 */
 	numeric function getCompletedTaskCount(){
 		return variables.executor.getCompletedTaskCount();
 	}
 
+	/**
+	 * Returns the core number of threads.
+	 */
 	numeric function getCorePoolSize(){
 		return variables.executor.getCorePoolSize();
 	}
 
+	/**
+	 * Returns the largest number of threads that have ever simultaneously been in the pool.
+	 */
 	numeric function getLargestPoolSize(){
 		return variables.executor.getLargestPoolSize();
 	}
 
+	/**
+	 * Returns the maximum allowed number of threads.
+	 */
 	numeric function getMaximumPoolSize(){
 		return variables.executor.getMaximumPoolSize();
 	}
 
+	/**
+	 * Returns the current number of threads in the pool.
+	 */
 	numeric function getPoolSize(){
 		return variables.executor.getPoolSize();
 	}
@@ -241,26 +296,26 @@ component accessors="true"{
 	/**
 	 * Our very own stats struct map to give you a holistic view of the schedule
 	 * and it's executor
+	 *
+	 * @return struct of data about the executor and the schedule
 	 */
 	struct function getStats(){
 		return {
-			"name" : getName(),
-			"delay" : getDelay(),
-			"every" : getPeriod(),
-			"timeUnit" : getTimeUnit().toString(),
-			"poolSize" : getPoolSize(),
-			"maximumPoolSize" : getMaximumPoolSize(),
-			"largestPoolSize" : getLargestPoolSize(),
-			"corePoolSize" : getCorePoolSize(),
+			"name"               : getName(),
+			"delay"              : getDelay(),
+			"every"              : getPeriod(),
+			"timeUnit"           : getTimeUnit().toString(),
+			"poolSize"           : getPoolSize(),
+			"maximumPoolSize"    : getMaximumPoolSize(),
+			"largestPoolSize"    : getLargestPoolSize(),
+			"corePoolSize"       : getCorePoolSize(),
 			"completedTaskCount" : getCompletedTaskCount(),
-			"taskCount" : getTaskCount(),
-			"activeCount" : getActiveCount(),
-			"isTerminated" : isTerminated(),
-			"isTerminating" : isTerminating(),
-			"isShutdown" : isShutdown()
+			"taskCount"          : getTaskCount(),
+			"activeCount"        : getActiveCount(),
+			"isTerminated"       : isTerminated(),
+			"isTerminating"      : isTerminating(),
+			"isShutdown"         : isShutdown()
 		};
 	}
-
-
 
 }

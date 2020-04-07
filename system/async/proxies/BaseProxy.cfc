@@ -1,7 +1,7 @@
 /**
  * Functional interface base dynamically compiled via dynamic proxy
  */
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * java.lang.System
@@ -28,38 +28,41 @@ component accessors="true"{
 	 */
 	property name="target";
 
-    /**
-     * Constructor
-     *
-     * @target The target function to be applied via dynamic proxy to the required Java interface(s)
+	/**
+	 * Constructor
+	 *
+	 * @target The target function to be applied via dynamic proxy to the required Java interface(s)
 	 * @debug Add debugging messages for monitoring
 	 * @loadAppContext By default, we load the Application context into the running thread. If you don't need it, then don't load it.
-     */
-    function init( required target, boolean debug=false, boolean loadAppContext=true ){
-
-		variables.System 			= createObject( "java", "java.lang.System" );
-		variables.Thread 			= createObject( "java", "java.lang.Thread" );
-		variables.debug 			= arguments.debug;
-		variables.target 			= arguments.target;
-		variables.UUID 				= createUUID();
-		variables.oneHundredYears 	= ( 60 * 60 * 24 * 365 * 100 );
-		variables.loadAppContext 	= arguments.loadAppContext;
+	 */
+	function init(
+		required target,
+		boolean debug          = false,
+		boolean loadAppContext = true
+	){
+		variables.System          = createObject( "java", "java.lang.System" );
+		variables.Thread          = createObject( "java", "java.lang.Thread" );
+		variables.debug           = arguments.debug;
+		variables.target          = arguments.target;
+		variables.UUID            = createUUID();
+		variables.oneHundredYears = ( 60 * 60 * 24 * 365 * 100 );
+		variables.loadAppContext  = arguments.loadAppContext;
 
 		// If loading App context or not
-		if( arguments.loadAppContext ){
-			if( server.keyExists( "lucee" ) ){
-				variables.cfContext 	= getCFMLContext().getApplicationContext();
-				variables.pageContext 	= getCFMLContext();
+		if ( arguments.loadAppContext ) {
+			if ( server.keyExists( "lucee" ) ) {
+				variables.cfContext   = getCFMLContext().getApplicationContext();
+				variables.pageContext = getCFMLContext();
 			} else {
-				variables.fusionContextStatic 	= createObject( 'java', 'coldfusion.filter.FusionContext' );
+				variables.fusionContextStatic   = createObject( "java", "coldfusion.filter.FusionContext" );
 				variables.originalFusionContext = fusionContextStatic.getCurrent();
-				variables.originalPageContext 	= getCFMLContext();
-				variables.originalPage 			= variables.originalPageContext.getPage();
+				variables.originalPageContext   = getCFMLContext();
+				variables.originalPage          = variables.originalPageContext.getPage();
 			}
-			//out( "==> Storing contexts for thread: #getCurrentThread().toString()#." );
+			// out( "==> Storing contexts for thread: #getCurrentThread().toString()#." );
 		}
 
-        return this;
+		return this;
 	}
 
 	/**
@@ -89,27 +92,31 @@ component accessors="true"{
 	 */
 	function loadContext(){
 		// Are we loading the context or not?
-		if( !variables.loadAppContext ){
+		if ( !variables.loadAppContext ) {
 			return;
 		}
 
-		//out( "==> Context NOT loaded for thread: #getCurrentThread().toString()# loading it..." );
+		// out( "==> Context NOT loaded for thread: #getCurrentThread().toString()# loading it..." );
 
 		// Lucee vs Adobe Implementations
-		if( server.keyExists( "lucee" ) ){
+		if ( server.keyExists( "lucee" ) ) {
 			getCFMLContext().setApplicationContext( variables.cfContext );
 		} else {
-			var fusionContext 	= variables.originalFusionContext.clone();
-			var pageContext 	= variables.originalPageContext.clone();
+			var fusionContext = variables.originalFusionContext.clone();
+			var pageContext   = variables.originalPageContext.clone();
 			pageContext.resetLocalScopes();
-			var page = variables.originalPage._clone();
-			page.pageContext = pageContext;
+			var page             = variables.originalPage._clone();
+			page.pageContext     = pageContext;
 			fusionContext.parent = page;
 
 			variables.fusionContextStatic.setCurrent( fusionContext );
 			fusionContext.pageContext = pageContext;
 			pageContext.setFusionContext( fusionContext );
-			pageContext.initializeWith( page, pageContext, pageContext.getVariableScope() );
+			pageContext.initializeWith(
+				page,
+				pageContext,
+				pageContext.getVariableScope()
+			);
 		}
 	}
 
@@ -118,17 +125,17 @@ component accessors="true"{
 	 */
 	function unLoadContext(){
 		// Are we loading the context or not?
-		if( !variables.loadAppContext ){
+		if ( !variables.loadAppContext ) {
 			return;
 		}
 
-		//out( "==> Removing context for thread: #getCurrentThread().toString()#." );
+		// out( "==> Removing context for thread: #getCurrentThread().toString()#." );
 
 		// Lucee vs Adobe Implementations
-		if( server.keyExists( "lucee" ) ){
+		if ( server.keyExists( "lucee" ) ) {
 			// Nothing right now
 		} else {
-			variables.fusionContextStatic.setCurrent( javaCast( 'null', '' ) );
+			variables.fusionContextStatic.setCurrent( javacast( "null", "" ) );
 		}
 	}
 
@@ -157,7 +164,7 @@ component accessors="true"{
 	 * Ammend this check once Adobe fixes this in a later update
 	 */
 	function getConcurrentEngineLockName(){
-		if( server.keyExists( "lucee") ){
+		if ( server.keyExists( "lucee" ) ) {
 			return createUUID();
 		} else {
 			return variables.UUID;

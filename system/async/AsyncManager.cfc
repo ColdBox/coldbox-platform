@@ -7,7 +7,7 @@
  * thread pools according to your needs.  If not, the majority of the asynchronous
  * methods will use the ForkJoin.commonPool() implementation
  */
-component accessors="true" singleton{
+component accessors="true" singleton {
 
 	/**
 	 * A collection of Schedulers you can register in the async manager
@@ -22,8 +22,8 @@ component accessors="true" singleton{
 	 *
 	 * @debug Add debugging logs to System out, disabled by default
 	 */
-	function init( boolean debug=false ){
-		variables.debug = arguments.debug;
+	function init( boolean debug = false ){
+		variables.debug     = arguments.debug;
 		variables.schedules = {};
 
 		return this;
@@ -41,7 +41,7 @@ component accessors="true" singleton{
 	 *
 	 * @return The ColdBox Schedule class to work with the schedule
 	 */
-	Schedule function newSchedule( required name, numeric threads=this.executors.DEFAULT_THREADS ){
+	Schedule function newSchedule( required name, numeric threads = this.executors.DEFAULT_THREADS ){
 		// Create the ColdBox Schedule and register it
 		variables.schedules[ arguments.name ] = new Schedule(
 			arguments.name,
@@ -60,13 +60,13 @@ component accessors="true" singleton{
 	 * @return The scheduler object
 	 */
 	function getSchedule( required name ){
-		if( hasSchedule( arguments.name ) ){
+		if ( hasSchedule( arguments.name ) ) {
 			return variables.schedules[ arguments.name ];
 		}
 		throw(
 			type    = "ScheduleNotFoundException",
 			message = "The schedule you requested does not exist",
-			detail  =  "Registered schedules are: #variables.schedules.keyList()#"
+			detail  = "Registered schedules are: #variables.schedules.keyList()#"
 		);
 	}
 
@@ -94,8 +94,8 @@ component accessors="true" singleton{
 	 * @name The scheduler name
 	 */
 	AsyncManager function deleteSchedule( required name ){
-		if( hasSchedule( arguments.name ) ){
-			if( !variables.schedules[ arguments.name ].isShutdown() ){
+		if ( hasSchedule( arguments.name ) ) {
+			if ( !variables.schedules[ arguments.name ].isShutdown() ) {
 				variables.schedules[ arguments.name ].shutdownNow();
 			}
 			variables.schedules.delete( arguments.name );
@@ -110,9 +110,9 @@ component accessors="true" singleton{
 	 *
 	 * @return AsyncManager
 	 */
-	AsyncManager function shutdownAllSchedules( boolean force=false ){
-		variables.schedules.each( function( key, schedule ) {
-			if( force ){
+	AsyncManager function shutdownAllSchedules( boolean force = false ){
+		variables.schedules.each( function( key, schedule ){
+			if ( force ) {
 				arguments.schedule.shutdownNow();
 			} else {
 				arguments.schedule.shutdown();
@@ -137,12 +137,20 @@ component accessors="true" singleton{
 	 * Future Methods *
 	 ****************************************************************/
 
-	function newFuture( any value, boolean debug=false, boolean loadAppContext=true ){
+	function newFuture(
+		any value,
+		boolean debug          = false,
+		boolean loadAppContext = true
+	){
 		return new Future( argumentCollection = arguments );
 	}
 
-	function newCompletedFuture( required any value, boolean debug=false, boolean loadAppContext=true ){
-		return newFuture( argumentCollection=arguments );
+	function newCompletedFuture(
+		required any value,
+		boolean debug          = false,
+		boolean loadAppContext = true
+	){
+		return newFuture( argumentCollection = arguments );
 	}
 
 }
