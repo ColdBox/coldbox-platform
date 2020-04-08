@@ -140,7 +140,8 @@ component accessors="true" singleton {
 	/**
 	 * Create a new ColdBox future backed by a Java completable future
 	 *
-	 * @value The value to complete the future immediately
+	 * @value The actual closure/lambda/udf to run with or a completed value to seed the future with
+	 * @executor A custom executor to use with the future, else use the default
 	 * @debug Add debugging to system out or not, defaults is false
 	 * @loadAppContext Load the CFML engine context into the async threads or not, default is yes.
 	 *
@@ -148,6 +149,7 @@ component accessors="true" singleton {
 	 */
 	Future function newFuture(
 		any value,
+		any executor,
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
@@ -157,7 +159,7 @@ component accessors="true" singleton {
 	/**
 	 * Create a completed ColdBox future backed by a Java Completable Future
 	 *
-	 * @value The value to complete the future
+	 * @value The value to complete the future with
 	 * @debug Add debugging to system out or not, defaults is false
 	 * @loadAppContext Load the CFML engine context into the async threads or not, default is yes.
 	 *

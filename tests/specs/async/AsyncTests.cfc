@@ -229,6 +229,14 @@ component extends="testbox.system.BaseSpec" {
 				expect( fastestFuture.get() ).toBe( "world!" );
 			});
 
+
+			it( "can create a future by inlining the closure in the init()", function(){
+				var future = asyncManager.newFuture( function(){
+					return "hello";
+				} );
+				expect( future.get() ).toBe( "hello" );
+			});
+
 			story( "Ability to create and manage schedulers", function(){
 				it( "can create a vanilla schedule", function(){
 					var schedule = asyncManager.newSchedule( "unitTest" );

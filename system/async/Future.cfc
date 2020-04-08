@@ -12,6 +12,11 @@ component accessors="true" {
 	property name="native";
 
 	/**
+	 * The custom executor to use with the future execution, or it can be null
+	 */
+	property name="executor";
+
+	/**
 	 * Add debugging output to the thread management and operations. Defaults to false
 	 */
 	property
@@ -33,25 +38,37 @@ component accessors="true" {
 	 */
 	property name="futureTimeout" type="struct";
 
+	// Prepare the static time unit class
+	this.timeUnit = new TimeUnit();
+
 	/**
 	 * Construct a new ColdBox Future backed by a Java Completable Future
 	 *
-	 * @value Seed the future with a completed value if passed
+	 * @value The actual closure/lambda/udf to run with or a completed value to seed the future with
+	 * @executor A custom executor to use with the future, else use the default
 	 * @debug Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 */
 	Future function init(
 		value,
+		any executor,
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
-		variables.timeUnit       = new TimeUnit();
+		// Preapre the completable future
 		variables.native         = createObject( "java", "java.util.concurrent.CompletableFuture" );
 		variables.debug          = arguments.debug;
 		variables.loadAppContext = arguments.loadAppContext;
-		variables.futureTimeout		= { "timeout" : 0, "timeUnit" : "seconds" };
+		variables.executor 		 = ( isNull( arguments.executor ) ? "" : arguments.executor );
+		variables.futureTimeout	 = { "timeout" : 0, "timeUnit" : "seconds" };
 
+		// Verify incoming value type
 		if ( !isNull( arguments.value ) ) {
+			// If the incoming value is a closure/lambda/udf, seed the future with it
+			if( isClosure( arguments.value ) || isCustomFunction( arguments.value ) ){
+				return run( arguments.value );
+			}
+			// It is just a value to set as the completion
 			variables.native = variables.native.completedFuture( arguments.value );
 		}
 
@@ -126,7 +143,7 @@ component accessors="true" {
 		if ( arguments.timeout != 0 ) {
 			var results = variables.native.get(
 				javacast( "long", arguments.timeout ),
-				variables.timeUnit.get( arguments.timeUnit )
+				this.timeUnit.get( arguments.timeUnit )
 			);
 		} else {
 			var results = variables.native.get();
@@ -234,7 +251,7 @@ component accessors="true" {
 	Future function run(
 		required supplier,
 		method = "run",
-		any executor
+		any executor=variables.executor
 	){
 		var jSupplier = createDynamicProxy(
 			new proxies.Supplier(
@@ -247,7 +264,11 @@ component accessors="true" {
 		);
 
 		// Supply the future and start the task
-		variables.native = variables.native.supplyAsync( jSupplier );
+		if( isObject( variables.executor ) ){
+			variables.native = variables.native.supplyAsync( jSupplier, variables.executor );
+		} else {
+			variables.native = variables.native.supplyAsync( jSupplier );
+		}
 
 		return this;
 	}
@@ -430,7 +451,7 @@ component accessors="true" {
 		// Run them and wait for them!
 		variables.native.allOf( jFutures ).get(
 			javaCast( "long", variables.futureTimeout.timeout ),
-			variables.timeUnit.get( variables.futureTimeout.timeUnit )
+			this.timeUnit.get( variables.futureTimeout.timeUnit )
 		);
 
 		// return back the completed array results in the order they came in
