@@ -72,7 +72,7 @@ component accessors="true" {
 	 *
 	 * @return A ColdBox Future
 	 */
-	Future function submit( required callable, method = "run", any result ){
+	ScheduledFuture function submit( required callable, method = "run", any result ){
 		var jCallable = createDynamicProxy(
 			new proxies.Callable(
 				arguments.callable,
@@ -80,7 +80,7 @@ component accessors="true" {
 				variables.debug,
 				variables.loadAppContext
 			),
-			[ "java.util.function.Callable" ]
+			[ "java.util.concurrent.Callable" ]
 		);
 
 		// Do we have a seeded result?
@@ -91,18 +91,25 @@ component accessors="true" {
 			);
 		}
 
-		// Basic future
-		return new Future().setNative(
+		// Send for execution
+		return new ScheduledFuture(
 			variables.executor.submit( jCallable )
 		);
 	}
 
 	/**
-	 * Seed a closure into this scheduler via the Java
-	 * `scheduleAtFixedRate()` or `schedule()` methods
+	 * This method is used to register a runnable CFC, closure or lambda so it can
+	 * execute as a scheduled task according to the delay and period you have set
+	 * in the Schedule.
+	 *
+	 * The method will register the runnable and send it for execution, the result
+	 * is a ScheduledFuture.  Periodic tasks do NOT return a result, while normal delayed
+	 * tasks can.
 	 *
 	 * @runnable THe runnable closure/lambda/cfc
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
+	 *
+	 * @return The scheduled future for the task so you can monitor it
 	 */
 	ScheduledFuture function schedule( required runnable, method = "run" ){
 
@@ -112,62 +119,6 @@ component accessors="true" {
 		);
 
 		return new ScheduledFuture( jScheduledFuture );
-	}
-
-	/**
-	 * Build out a ScheduledFuture from the incoming function and/or method.
-	 *
-	 * @runnable THe runnable closure/lambda/cfc
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
-	 *
-	 * @return Java ScheduledFuture
-	 */
-	private function scheduleTask( required runnable, required method ){
-		// build out the java callable
-		var jCallable = createDynamicProxy(
-			new proxies.Callable(
-				arguments.runnable,
-				arguments.method,
-				variables.debug,
-				variables.loadAppContext
-			),
-			[ "java.util.concurrent.Callable" ]
-		);
-
-		return variables.executor.schedule(
-			jCallable,
-			javacast( "long", variables.delay ),
-			variables.timeUnit
-		);
-	}
-
-	/**
-	 * Build out a ScheduledFuture from the incoming function and/or method using
-	 * the Java period fixed rate function: scheduleAtFixedRate
-	 *
-	 * @runnable THe runnable closure/lambda/cfc
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
-	 *
-	 * @return Java ScheduledFuture
-	 */
-	private function schedulePeriodicTask( required runnable, required method ){
-		// build out the java callable
-		var jRunnable = createDynamicProxy(
-			new proxies.Runnable(
-				arguments.runnable,
-				arguments.method,
-				variables.debug,
-				variables.loadAppContext
-			),
-			[ "java.lang.Runnable" ]
-		);
-
-		return variables.executor.scheduleAtFixedRate(
-			jRunnable,
-			javacast( "long", variables.delay ),
-			javacast( "long", variables.period ),
-			variables.timeUnit
-		);
 	}
 
 	/**
@@ -401,6 +352,66 @@ component accessors="true" {
 			"isTerminating"      : isTerminating(),
 			"isShutdown"         : isShutdown()
 		};
+	}
+
+	/****************************************************************
+	 * Private Methods *
+	 ****************************************************************/
+
+	/**
+	 * Build out a ScheduledFuture from the incoming function and/or method.
+	 *
+	 * @runnable THe runnable closure/lambda/cfc
+	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
+	 *
+	 * @return Java ScheduledFuture
+	 */
+	private function scheduleTask( required runnable, required method ){
+		// build out the java callable
+		var jCallable = createDynamicProxy(
+			new proxies.Callable(
+				arguments.runnable,
+				arguments.method,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.concurrent.Callable" ]
+		);
+
+		return variables.executor.schedule(
+			jCallable,
+			javacast( "long", variables.delay ),
+			variables.timeUnit
+		);
+	}
+
+	/**
+	 * Build out a ScheduledFuture from the incoming function and/or method using
+	 * the Java period fixed rate function: scheduleAtFixedRate
+	 *
+	 * @runnable THe runnable closure/lambda/cfc
+	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
+	 *
+	 * @return Java ScheduledFuture
+	 */
+	private function schedulePeriodicTask( required runnable, required method ){
+		// build out the java callable
+		var jRunnable = createDynamicProxy(
+			new proxies.Runnable(
+				arguments.runnable,
+				arguments.method,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.lang.Runnable" ]
+		);
+
+		return variables.executor.scheduleAtFixedRate(
+			jRunnable,
+			javacast( "long", variables.delay ),
+			javacast( "long", variables.period ),
+			variables.timeUnit
+		);
 	}
 
 }

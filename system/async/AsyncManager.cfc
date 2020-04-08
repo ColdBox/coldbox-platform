@@ -34,22 +34,35 @@ component accessors="true" singleton {
 	 ****************************************************************/
 
 	/**
-	 * Create and register a new ColdBox Scheduler task
+	 * Creates a Scheduler according to the passed name and number of threads to leverage
+	 * using a ScheduledExecutorService. You can pass your own executor, but if the passed
+	 * executor does not support scheduling services, then it will just act as a
+	 * scheduling queue.
+	 *
+	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html
+	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
 	 *
 	 * @name The name of the task, used for registration
 	 * @threads How many threads to assign to the thread scheduler, default is 1
+	 * @executor Register the schedule with the passed executor, if not it uses a ScheduledExecutorService
 	 *
 	 * @return The ColdBox Schedule class to work with the schedule
 	 */
 	Schedule function newSchedule(
 		required name,
-		numeric threads = 1
+		numeric threads = 1,
+		executor
 	){
+		if( isNull( arguments.executor ) ){
+			arguments.executor = this.executors.newScheduledThreadPool( arguments.threads );
+		}
+
 		// Create the ColdBox Schedule and register it
 		variables.schedules[ arguments.name ] = new Schedule(
 			arguments.name,
-			this.executors.newScheduledThreadPool( arguments.threads )
+			arguments.executor
 		);
+
 		// Return it
 		return variables.schedules[ arguments.name ];
 	}

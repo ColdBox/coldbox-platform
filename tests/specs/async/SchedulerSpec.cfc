@@ -45,17 +45,63 @@ component extends="BaseAsyncSpec"{
 								var results = atomicLong.incrementAndGet();
 								toConsole( "running periodic task (#results#) from:#getThreadName()#" );
 							} );
+					try{
+						expect( sFuture.isPeriodic() ).toBeTrue();
+						for( var x=0; x lte 3; x++ ){
+							sleep( 750 );
+							toConsole( "atomic is " & atomicLong.get() );
+							expect( sFuture.isDone() ).toBeFalse();
+							expect( sFuture.isCancelled() ).toBeFalse();
+							toConsole( asyncManager.getSchedule( "unitTest" ).getStats() );
+						}
+					} finally {
+						toConsole( "xxxxx => shutting down task..." );
+						sFuture.cancel();
 
-					toConsole( "===> task scheduled..." );
-					for( var x=0; x lte 3; x++ ){
-						sleep( 750 );
-						toConsole( "atomic is " & atomicLong.get() );
+						expect( sFuture.isDone() ).toBeTrue();
+						expect( sFuture.isCancelled() ).toBeTrue();
+
+						asyncManager.deleteSchedule( "unitTest" );
+
+						toConsole( "xxxxx => task done" );
 					}
+				});
 
-					toConsole( "shutting down task" );
-					sFuture.cancel();
-					asyncManager.deleteSchedule( "unitTest" );
-					toConsole( "xxxxx => task done" );
+
+				fit( "can create a task scheduling queue", function(){
+					var queue = asyncManager.newSchedule( "unitQueue", 20 );
+					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
+					var results = [];
+					try{
+						// Submit 50 tasks
+						for( var x=0; x < 50; x++ ){
+							results.append(
+									queue.submit( function(){
+									var results = atomicLong.incrementAndGet();
+									toConsole( "running queue task (#results#) from:#getThreadName()#..." );
+									sleep( randRange( 300, 1000 ) );
+									//toConsole( "finished queue task (#results#) from:#getThreadName()#..." );
+									// process some data
+									return results;
+								} )
+							);
+						}
+
+						while( queue.getActiveCount() ){
+							toConsole( "===> Waiting for tasks to complete..." );
+							sleep( 500 );
+							toConsole( queue.getStats() );
+						}
+
+					} finally {
+						queue.shutdownNow();
+						toConsole( queue.getStats() );
+						toConsole(
+							results.map( function( item ){
+								return item.get();
+							} )
+						);
+					}
 				});
 
 			} );
