@@ -169,7 +169,64 @@ component extends="testbox.system.BaseSpec" {
 
 				debug( "Your BMI is #combinedFuture.get()#" );
 				expect( combinedFuture.get() ).toBeGt( 20 );
+			});
 
+			it( "can process multiple futures in parallel via the allOf() method", function(){
+				var f1 = asyncManager.newFuture().run( function(){
+					return "hello";
+				});
+				var f2 = asyncManager.newFuture().run( function(){
+					return "world!";
+				});
+
+				var aResults = asyncManager.newFuture()
+					.withTimeout( 5 )
+					.allOf( f1, f2 );
+				expect( aResults ).toBeArray();
+				expect( aResults.toString() )
+					.toInclude( "hello" )
+					.toInclude( "world" );
+			});
+
+			it( "can process multiple closures in parallel via the allOf() method", function(){
+				var f1 = function(){
+					return "hello";
+				};
+				var f2 = function(){
+					return "world!";
+				};
+
+				var aResults = asyncManager.newFuture()
+					.withTimeout( 5 )
+					.allOf( f1, f2 );
+				expect( aResults ).toBeArray();
+				expect( aResults.toString() )
+					.toInclude( "hello" )
+					.toInclude( "world" );
+			});
+
+			it( "can process multiple futures in parallel via the anyOf() method", function(){
+				var f1 = asyncManager.newFuture().run( function(){
+					sleep( 1000 );
+					return "hello";
+				});
+				var f2 = asyncManager.newFuture().run( function(){
+					return "world!";
+				});
+				var fastestFuture = asyncManager.newFuture().anyOf( f1, f2 );
+				expect( fastestFuture.get() ).toBe( "world!" );
+			});
+
+			it( "can process multiple closures in parallel via the anyOf() method", function(){
+				var f1 = function(){
+					sleep( 1000 );
+					return "hello";
+				};
+				var f2 = function(){
+					return "world!";
+				};
+				var fastestFuture = asyncManager.newFuture().anyOf( f1, f2 );
+				expect( fastestFuture.get() ).toBe( "world!" );
 			});
 
 			story( "Ability to create and manage schedulers", function(){

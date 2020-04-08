@@ -28,21 +28,28 @@ component accessors="true" {
 		default="true";
 
 	/**
-	 * Construct a new ColdBox Future
+	 * The timeout you can set on this future via the withTimeout() method
+	 * which is used in operations like allOf() and anyOf()
+	 */
+	property name="futureTimeout" type="struct";
+
+	/**
+	 * Construct a new ColdBox Future backed by a Java Completable Future
 	 *
 	 * @value Seed the future with a completed value if passed
 	 * @debug Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 */
-	function init(
+	Future function init(
 		value,
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
+		variables.timeUnit       = new TimeUnit();
 		variables.native         = createObject( "java", "java.util.concurrent.CompletableFuture" );
 		variables.debug          = arguments.debug;
 		variables.loadAppContext = arguments.loadAppContext;
-		variables.timeUnit       = new TimeUnit();
+		variables.futureTimeout		= { "timeout" : 0, "timeUnit" : "seconds" };
 
 		if ( !isNull( arguments.value ) ) {
 			variables.native = variables.native.completedFuture( arguments.value );
@@ -405,4 +412,91 @@ component accessors="true" {
 		);
 		return this;
 	}
+
+	/**
+	 * This method accepts an infinite amount of future objects or closures in order to execute them in parallel,
+	 * waits for them and then processes their combined results into an array of results.
+	 *
+	 * <pre>
+	 * results = allOf( f1, f2, f3 )
+	 * </pre>
+	 *
+	 * @result An array containing all of the collected results
+	 */
+	array function allOf(){
+		// Collect the java futures to send back into this one for parallel exec
+		var jFutures = futuresWrap( argumentCollection=arguments );
+
+		// Run them and wait for them!
+		variables.native.allOf( jFutures ).get(
+			javaCast( "long", variables.futureTimeout.timeout ),
+			variables.timeUnit.get( variables.futureTimeout.timeUnit )
+		);
+
+		// return back the completed array results in the order they came in
+		return jFutures.map( function( jFuture ){
+			return jFuture.get();
+		} );
+	}
+
+	/**
+	 * This method accepts an infinite amount of future objects or closures and will execute them in parallel.
+	 * However, instead of returning all of the results in an array like allOf(), this method will return
+	 * the future that executes the fastest!
+	 *
+	 * <pre>
+	 * // Let's say f2 executes the fastest!
+	 * f2 = anyOf( f1, f2, f3 )
+	 * </pre>
+	 *
+	 * @return The fastest executed future
+	 */
+	Future function anyOf(){
+		// Run the fastest future in the world!
+		variables.native = variables.native.anyOf(
+			futuresWrap( argumentCollection=arguments )
+		);
+
+		return this;
+	}
+
+	/**
+	 * This method seeds a timeout into this future that can be used by the following operations:
+	 *
+	 * - allOf()
+	 * - anyOf()
+	 *
+	 * @timeout The timeout value to use, defaults to forever
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 *
+	 * @returns This future
+	 */
+	Future function withTimeout(
+		numeric timeout = 0,
+		string timeUnit = "seconds"
+	){
+		variables.futureTimeout = arguments;
+		return this;
+	}
+
+	/**
+	 * This utility wraps in the coming futures or closures and makes sure the return
+	 * is an array of futures.
+	 */
+	private function futuresWrap(){
+		return arguments
+			// If the passed in argument is a closure/udf, convert to a future
+			.map( function( key, future ){
+				if( isClosure( arguments.future ) || isCustomFunction( arguments.future ) ){
+					return new Future().run( arguments.future );
+				}
+				return arguments.future;
+			} )
+			.reduce( function( results, key, future ){
+				// Now process it
+				results.append( arguments.future.getNative() );
+				return results;
+			}, [] );
+	}
+
 }

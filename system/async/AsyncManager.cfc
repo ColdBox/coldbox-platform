@@ -137,7 +137,16 @@ component accessors="true" singleton {
 	 * Future Methods *
 	 ****************************************************************/
 
-	function newFuture(
+	/**
+	 * Create a new ColdBox future backed by a Java completable future
+	 *
+	 * @value The value to complete the future immediately
+	 * @debug Add debugging to system out or not, defaults is false
+	 * @loadAppContext Load the CFML engine context into the async threads or not, default is yes.
+	 *
+	 * @return ColdBox Future completed or new
+	 */
+	Future function newFuture(
 		any value,
 		boolean debug          = false,
 		boolean loadAppContext = true
@@ -145,12 +154,21 @@ component accessors="true" singleton {
 		return new Future( argumentCollection = arguments );
 	}
 
-	function newCompletedFuture(
+	/**
+	 * Create a completed ColdBox future backed by a Java Completable Future
+	 *
+	 * @value The value to complete the future
+	 * @debug Add debugging to system out or not, defaults is false
+	 * @loadAppContext Load the CFML engine context into the async threads or not, default is yes.
+	 *
+	 * @return ColdBox Future completed
+	 */
+	Future function newCompletedFuture(
 		required any value,
 		boolean debug          = false,
 		boolean loadAppContext = true
 	){
-		return newFuture( argumentCollection = arguments );
+		return new Future( argumentCollection = arguments );
 	}
 
 }
