@@ -1,17 +1,7 @@
 /**
  * My BDD Test
  */
-component extends="testbox.system.BaseSpec" {
-
-	/*********************************** LIFE CYCLE Methods ***********************************/
-
-	// executes before all suites+specs in the run() method
-	function beforeAll(){
-	}
-
-	// executes after all suites+specs in the run() method
-	function afterAll(){
-	}
+component extends="BaseAsyncSpec"{
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -256,9 +246,6 @@ component extends="testbox.system.BaseSpec" {
 					createRecord( 4 ),
 					createRecord( 5 )
 				];
-				var ids = aItems.map( function( item ){
-					return item.getId();
-				} );
 
 				var results = asyncManager.allApply( aItems, function( item ){
 					createObject("java","java.lang.System").err.println(
@@ -278,80 +265,44 @@ component extends="testbox.system.BaseSpec" {
 				expect( results[ 5 ] ).toBeStruct();
 			});
 
-			story( "Ability to create and manage schedulers", function(){
-				it( "can create a vanilla schedule", function(){
-					var schedule = asyncManager.newSchedule( "unitTest" );
-					expect( schedule.getName() ).toBe( "unitTest" );
-				});
-				it( "can create a schedule with a custom name", function(){
-					var schedule = asyncManager.newSchedule( "unitTest", 10 );
-					expect( schedule.getName() ).toBe( "unitTest" );
-					expect( schedule.getExecutor().getCorePoolSize() ).toBe( 10 );
-				});
-				it( "can retrieve a created schedule", function(){
-					var schedule = asyncManager.newSchedule( "unitTest" );
-					expect( asyncManager.getSchedule( "unitTest" ) ).toBeComponent();
-				});
-				it( "will throw an exception when getting an invalid schedule", function(){
-					expect( function(){
-						asyncManager.getSchedule( "bogus" );
-					} ).toThrow( type="ScheduleNotFoundException" );
-				});
-				it( "can retrieve the schedule key names", function(){
-					expect( asyncManager.getScheduleNames() ).toBeEmpty();
-					var schedule = asyncManager.newSchedule( "unitTest" );
-					expect( asyncManager.getScheduleNames() ).toInclude( "unitTest" );
-				});
-				it( "can verify if a scheduler exists", function(){
-					expect( asyncManager.hasSchedule( "bogus" ) ).toBeFalse();
-					var schedule = asyncManager.newSchedule( "unitTest" );
-					expect( asyncManager.hasSchedule( "unitTest" ) ).toBeTrue();
-				});
-				it( "can delete an existing schedule", function(){
-					var schedule = asyncManager.newSchedule( "unitTest" );
-					asyncManager.deleteSchedule( "unitTest" );
-					expect( asyncManager.hasSchedule( "unitTest" ) ).toBeFalse();
-				});
-				it( "can delete a non-existing schedule", function(){
-					asyncManager.deleteSchedule( "bogusTest" );
-				});
-				it( "can shutdown all schedules", function(){
-					var schedule1 = asyncManager.newSchedule( "unitTest1" );
-					var schedule2 = asyncManager.newSchedule( "unitTest2" );
+			it( "can process an array of items with a special apply function for each and a custom executor", function(){
+				var createRecord = function( id ){
+					return createStub()
+						.$( "getId", arguments.id )
+						.$( "getMemento", {
+							id : arguments.id,
+							name : "test-#createUUID()#",
+							when : now(),
+							isActive : randRange( 0, 1 )
+						} );
+				};
+				var aItems = [
+					createRecord( 1 ),
+					createRecord( 2 ),
+					createRecord( 3 ),
+					createRecord( 4 ),
+					createRecord( 5 )
+				];
 
-					asyncManager.shutdownAllSchedules();
+				var results = asyncManager.allApply( aItems, function( item ){
+					createObject("java","java.lang.System").err.println(
+						"Processing #arguments.item.getId()# memento via #getThreadName()#"
+					);
+					sleep( randRange( 100, 1000 ) );
+					return arguments.item.getMemento();
+				}, asyncManager.executors.newCachedThreadPool() );
 
-					expect( schedule1.isShutdown() ).toBeTrue();
-					expect( schedule2.isShutdown() ).toBeTrue();
-				});
-				it( "can retrieve the schedule status map", function(){
-					var schedule1 = asyncManager.newSchedule( "unitTest1" );
-					var schedule2 = asyncManager.newSchedule( "unitTest2" );
+				debug( results );
 
-					var statusMap = asyncManager.getScheduleStatusMap();
-
-					expect( statusMap )
-						.toHaveKey( "unitTest1" )
-						.toHaveKey( "unitTest2" );
-				});
-
+				expect( results ).toBeArray();
+				expect( results[ 1 ] ).toBeStruct();
+				expect( results[ 2 ] ).toBeStruct();
+				expect( results[ 3 ] ).toBeStruct();
+				expect( results[ 4 ] ).toBeStruct();
+				expect( results[ 5 ] ).toBeStruct();
 			});
 
 		} );
-	}
-
-	/**
-	 * Get the current thread name
-	 */
-	private function getThreadName(){
-		return getCurrentThread().getName();
-	}
-
-	/**
-	 * Get the current thread java object
-	 */
-	private function getCurrentThread(){
-		return createObject( "java", "java.lang.Thread" ).currentThread();
 	}
 
 }

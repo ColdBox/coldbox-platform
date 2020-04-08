@@ -471,16 +471,23 @@ component accessors="true" {
 	 *
 	 * @items An array to process
 	 * @fn The function that will be applied to each of the array's items
+	 * @executor The custom executor to use if passed, else the forkJoin Pool
 	 *
 	 * @return An array with the items processed
 	 */
-	array function allApply( array items, required fn ){
+	array function allApply( array items, required fn, executor ){
 		return arguments.items
 			.map( function( thisItem ){
+				if( isObject( executor ) ){
+					return new Future( thisItem ).thenAsync( fn, executor );
+				}
 				return new Future( thisItem ).thenAsync( fn );
 			} )
 			.map( function( thisFuture ) {
-				return thisFuture.get();
+				return thisFuture.get(
+					javaCast( "long", variables.futureTimeout.timeout ),
+					this.timeUnit.get( variables.futureTimeout.timeUnit )
+				);
 			} );
 	}
 
@@ -509,7 +516,7 @@ component accessors="true" {
 	 * This method seeds a timeout into this future that can be used by the following operations:
 	 *
 	 * - allOf()
-	 * - anyOf()
+	 * - allApply()
 	 *
 	 * @timeout The timeout value to use, defaults to forever
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
@@ -523,6 +530,10 @@ component accessors="true" {
 		variables.futureTimeout = arguments;
 		return this;
 	}
+
+	/****************************************************************
+	 * Private Functions *
+	 ****************************************************************/
 
 	/**
 	 * This utility wraps in the coming futures or closures and makes sure the return
