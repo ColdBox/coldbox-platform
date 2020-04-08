@@ -109,7 +109,7 @@ component extends="testbox.system.BaseSpec" {
 						} else {
 							return "Child";
 						}
-					} ).exceptionally( function( ex ){
+					} ).onException( function( ex ){
 						//debug( ex);
 						debug( "Oops we have an exception: #ex.toString()#" );
 						return "Who Knows!";
@@ -235,6 +235,47 @@ component extends="testbox.system.BaseSpec" {
 					return "hello";
 				} );
 				expect( future.get() ).toBe( "hello" );
+			});
+
+
+			it( "can process an array of items with a special apply function for each", function(){
+				var createRecord = function( id ){
+					return createStub()
+						.$( "getId", arguments.id )
+						.$( "getMemento", {
+							id : arguments.id,
+							name : "test-#createUUID()#",
+							when : now(),
+							isActive : randRange( 0, 1 )
+						} );
+				};
+				var aItems = [
+					createRecord( 1 ),
+					createRecord( 2 ),
+					createRecord( 3 ),
+					createRecord( 4 ),
+					createRecord( 5 )
+				];
+				var ids = aItems.map( function( item ){
+					return item.getId();
+				} );
+
+				var results = asyncManager.allApply( aItems, function( item ){
+					createObject("java","java.lang.System").err.println(
+						"Processing #arguments.item.getId()# memento via #getThreadName()#"
+					);
+					sleep( randRange( 100, 1000 ) );
+					return arguments.item.getMemento();
+				} );
+
+				debug( results );
+
+				expect( results ).toBeArray();
+				expect( results[ 1 ] ).toBeStruct();
+				expect( results[ 2 ] ).toBeStruct();
+				expect( results[ 3 ] ).toBeStruct();
+				expect( results[ 4 ] ).toBeStruct();
+				expect( results[ 5 ] ).toBeStruct();
 			});
 
 			story( "Ability to create and manage schedulers", function(){

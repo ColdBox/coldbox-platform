@@ -461,6 +461,30 @@ component accessors="true" {
 	}
 
 	/**
+	 * This function can accept an array of items and apply a function
+	 * to each of the item's in parallel.  The `fn` argument receives the appropriate item
+	 * and must return a result.  Consider this a parallel map() operation
+	 *
+	 * <pre>
+	 * allApply( items, ( item ) => item.getMemento() )
+	 * </pre>
+	 *
+	 * @items An array to process
+	 * @fn The function that will be applied to each of the array's items
+	 *
+	 * @return An array with the items processed
+	 */
+	array function allApply( array items, required fn ){
+		return arguments.items
+			.map( function( thisItem ){
+				return new Future( thisItem ).thenAsync( fn );
+			} )
+			.map( function( thisFuture ) {
+				return thisFuture.get();
+			} );
+	}
+
+	/**
 	 * This method accepts an infinite amount of future objects or closures and will execute them in parallel.
 	 * However, instead of returning all of the results in an array like allOf(), this method will return
 	 * the future that executes the fastest!

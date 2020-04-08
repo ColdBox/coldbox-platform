@@ -173,4 +173,29 @@ component accessors="true" singleton {
 		return new Future( argumentCollection = arguments );
 	}
 
+	/****************************************************************
+	 * Future Shortcuts *
+	 ****************************************************************/
+
+	/**
+	 * Alias to newFuture().allOf()
+	 */
+	function allOf(){
+		return newFuture().allOf( argumentCollection=arguments );
+	}
+
+	/**
+	 * Alias to newFuture().allApply()
+	 */
+	function allApply(){
+		return newFuture().allApply( argumentCollection=arguments );
+	}
+
+	/**
+	 * Alias to newFuture().anyOf()
+	 */
+	function anyOf(){
+		return newFuture().anyOf( argumentCollection=arguments );
+	}
+
 }
