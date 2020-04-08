@@ -14,6 +14,14 @@ component extends="testbox.system.BaseSpec" skip="true"{
 	}
 
 	/**
+	 * Send output to the console
+	 */
+	private function toConsole( required var ){
+		writedump( var=arguments.var, output="console" );
+		return this;
+	}
+
+	/**
 	 * Get the current thread name
 	 */
 	private function getThreadName(){

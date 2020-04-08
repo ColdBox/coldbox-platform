@@ -10,44 +10,52 @@ component accessors="true" {
 	property name="name";
 
 	/**
-	 * The Java executor class
+	 * The Java executor class running the schedule
 	 */
 	property name="executor";
 
 	/**
-	 * The time unit used in the schedule
+	 * The Java time unit class used in the schedule
 	 */
 	property name="timeUnit";
 
 	/**
-	 * The delay to use in the schedule
+	 * The delay to use in the schedule execution
 	 */
-	property name="delay";
+	property name="delay" type="numeric";
 
 	/**
 	 * The period of execution of the tasks in this schedule
 	 */
-	property name="period";
+	property name="period" type="numeric";
+
+	// Prepare the static time unit class
+	this.jTimeUnit = new TimeUnit();
 
 	/**
 	 * Constructor
 	 *
 	 * @name The name of the scheduler
-	 * @executor The native executor
+	 * @executor The native executor attached to this schedule
 	 * @debug Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 */
-	Schedule function init( required name, required executor, boolean debug=false, boolean loadAppContext=true ){
+	Schedule function init(
+		required name,
+		required executor,
+		boolean debug=false,
+		boolean loadAppContext=true
+	){
+		// Seed name and executor
 		variables.name      = arguments.name;
 		variables.executor  = arguments.executor;
-		variables.jTimeUnit = new TimeUnit();
 
-		// Schedule Properties
-		variables.timeUnit = variables.jTimeUnit.get();
+		// Scheduling Property defaults, no delays and no periods
+		variables.timeUnit = this.jTimeUnit.get();
 		variables.delay    = 0;
 		variables.period   = 0;
 
-		// Debugging + Contexzt
+		// Debugging + Context
 		variables.debug = arguments.debug;
 		variables.loadAppContext = arguments.loadAppContext;
 
@@ -90,14 +98,60 @@ component accessors="true" {
 	}
 
 	/**
-	 * Seed a runnable closure into this scheduler via the Java
+	 * Seed a closure into this scheduler via the Java
 	 * `scheduleAtFixedRate()` or `schedule()` methods
 	 *
 	 * @runnable THe runnable closure/lambda/cfc
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
 	 */
-	function schedule( required runnable, method = "run" ){
-		// build out the java runnable
+	ScheduledFuture function schedule( required runnable, method = "run" ){
+
+		var jScheduledFuture = ( variables.period > 0 ?
+			schedulePeriodicTask( argumentCollection=arguments ) :
+			scheduleTask( argumentCollection=arguments )
+		);
+
+		return new ScheduledFuture( jScheduledFuture );
+	}
+
+	/**
+	 * Build out a ScheduledFuture from the incoming function and/or method.
+	 *
+	 * @runnable THe runnable closure/lambda/cfc
+	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
+	 *
+	 * @return Java ScheduledFuture
+	 */
+	private function scheduleTask( required runnable, required method ){
+		// build out the java callable
+		var jCallable = createDynamicProxy(
+			new proxies.Callable(
+				arguments.runnable,
+				arguments.method,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.concurrent.Callable" ]
+		);
+
+		return variables.executor.schedule(
+			jCallable,
+			javacast( "long", variables.delay ),
+			variables.timeUnit
+		);
+	}
+
+	/**
+	 * Build out a ScheduledFuture from the incoming function and/or method using
+	 * the Java period fixed rate function: scheduleAtFixedRate
+	 *
+	 * @runnable THe runnable closure/lambda/cfc
+	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
+	 *
+	 * @return Java ScheduledFuture
+	 */
+	private function schedulePeriodicTask( required runnable, required method ){
+		// build out the java callable
 		var jRunnable = createDynamicProxy(
 			new proxies.Runnable(
 				arguments.runnable,
@@ -105,26 +159,15 @@ component accessors="true" {
 				variables.debug,
 				variables.loadAppContext
 			),
-			[ "java.util.function.Runnable" ]
+			[ "java.lang.Runnable" ]
 		);
 
-		// Build out a periodical schedule?
-		if ( variables.period > 0 ) {
-			variables.executor.scheduleAtFixedRate(
-				jRunnable,
-				javacast( "long", variables.delay ),
-				javacast( "long", variables.period ),
-				variables.timeUnit
-			);
-		}
-		// Just a simple schedule with a delay
-		else {
-			variables.executor.schedule(
-				jRunnable,
-				javacast( "long", variables.delay ),
-				variables.timeUnit
-			);
-		}
+		return variables.executor.scheduleAtFixedRate(
+			jRunnable,
+			javacast( "long", variables.delay ),
+			javacast( "long", variables.period ),
+			variables.timeUnit
+		);
 	}
 
 	/**
@@ -135,7 +178,7 @@ component accessors="true" {
 	 */
 	function delay( numeric delay, timeUnit = "seconds" ){
 		variables.delay    = arguments.delay;
-		variables.timeUnit = variables.jTimeUnit.get( arguments.timeUnit );
+		variables.timeUnit = this.jTimeUnit.get( arguments.timeUnit );
 		return this;
 	}
 
@@ -147,7 +190,7 @@ component accessors="true" {
 	 */
 	function every( numeric period, timeUnit = "seconds" ){
 		variables.period   = arguments.period;
-		variables.timeUnit = variables.jTimeUnit.get( arguments.timeUnit );
+		variables.timeUnit = this.jTimeUnit.get( arguments.timeUnit );
 		return this;
 	}
 
@@ -155,7 +198,7 @@ component accessors="true" {
 	 * Set the time unit in days
 	 */
 	Schedule function inDays(){
-		variables.timeUnit = variables.jTimeUnit.get( "days" );
+		variables.timeUnit = this.jTimeUnit.get( "days" );
 		return this;
 	}
 
@@ -163,7 +206,7 @@ component accessors="true" {
 	 * Set the time unit in hours
 	 */
 	Schedule function inHours(){
-		variables.timeUnit = variables.jTimeUnit.get( "hours" );
+		variables.timeUnit = this.jTimeUnit.get( "hours" );
 		return this;
 	}
 
@@ -171,7 +214,7 @@ component accessors="true" {
 	 * Set the time unit in microseconds
 	 */
 	Schedule function inMicroseconds(){
-		variables.timeUnit = variables.jTimeUnit.get( "microseconds" );
+		variables.timeUnit = this.jTimeUnit.get( "microseconds" );
 		return this;
 	}
 
@@ -179,7 +222,7 @@ component accessors="true" {
 	 * Set the time unit in milliseconds
 	 */
 	Schedule function inMilliseconds(){
-		variables.timeUnit = variables.jTimeUnit.get( "milliseconds" );
+		variables.timeUnit = this.jTimeUnit.get( "milliseconds" );
 		return this;
 	}
 
@@ -187,7 +230,7 @@ component accessors="true" {
 	 * Set the time unit in minutes
 	 */
 	Schedule function inMinutes(){
-		variables.timeUnit = variables.jTimeUnit.get( "minutes" );
+		variables.timeUnit = this.jTimeUnit.get( "minutes" );
 		return this;
 	}
 
@@ -195,7 +238,7 @@ component accessors="true" {
 	 * Set the time unit in nanoseconds
 	 */
 	Schedule function inNanoseconds(){
-		variables.timeUnit = variables.jTimeUnit.get( "nanoseconds" );
+		variables.timeUnit = this.jTimeUnit.get( "nanoseconds" );
 		return this;
 	}
 
@@ -203,7 +246,7 @@ component accessors="true" {
 	 * Set the time unit in seconds
 	 */
 	Schedule function inSeconds(){
-		variables.timeUnit = variables.jTimeUnit.get( "seconds" );
+		variables.timeUnit = this.jTimeUnit.get( "seconds" );
 		return this;
 	}
 
@@ -247,7 +290,7 @@ component accessors="true" {
 	boolean function awaitTermination( required numeric timeout, timeUnit = "seconds" ){
 		return variables.executor.awaitTermination(
 			javacast( "long", arguments.timeout ),
-			variables.jTimeUnit.get( arguments.timeUnit )
+			this.jTimeUnit.get( arguments.timeUnit )
 		);
 	}
 

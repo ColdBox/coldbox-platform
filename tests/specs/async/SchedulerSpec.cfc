@@ -12,6 +12,54 @@ component extends="BaseAsyncSpec"{
 				asyncManager = new coldbox.system.async.AsyncManager();
 			} );
 
+			story( "Ability to create and execute different schedules", function(){
+
+				it( "can schedule with no options", function(){
+					var sFuture = asyncManager
+						.newSchedule( "unitTest" )
+							.schedule( function(){
+								toConsole( "running hello task from:#getThreadName()#" );
+								return "hello";
+							} );
+					expect( sFuture.get() ).toBe( "hello" );
+				});
+
+				it( "can schedule with a delay", function(){
+					var sFuture = asyncManager
+						.newSchedule( "unitTest" )
+							.delay( 500 )
+							.inMilliseconds()
+							.schedule( function(){
+								toConsole( "running hello task with delay from:#getThreadName()#" );
+								return "hello";
+							} );
+					expect( sFuture.get() ).toBe( "hello" );
+				});
+
+				it( "can schedule with a time period and be able to shutdown", function(){
+					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
+					var sFuture = asyncManager
+						.newSchedule( "unitTest" )
+							.every( 250, "milliseconds" )
+							.schedule( function(){
+								var results = atomicLong.incrementAndGet();
+								toConsole( "running periodic task (#results#) from:#getThreadName()#" );
+							} );
+
+					toConsole( "===> task scheduled..." );
+					for( var x=0; x lte 3; x++ ){
+						sleep( 750 );
+						toConsole( "atomic is " & atomicLong.get() );
+					}
+
+					toConsole( "shutting down task" );
+					sFuture.cancel();
+					asyncManager.deleteSchedule( "unitTest" );
+					toConsole( "xxxxx => task done" );
+				});
+
+			} );
+
 			story( "Ability to create and manage schedulers", function(){
 				it( "can create a vanilla schedule", function(){
 					var schedule = asyncManager.newSchedule( "unitTest" );

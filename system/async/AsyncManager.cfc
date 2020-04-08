@@ -37,11 +37,14 @@ component accessors="true" singleton {
 	 * Create and register a new ColdBox Scheduler task
 	 *
 	 * @name The name of the task, used for registration
-	 * @threads How many threads to assign to the thread scheduler
+	 * @threads How many threads to assign to the thread scheduler, default is 1
 	 *
 	 * @return The ColdBox Schedule class to work with the schedule
 	 */
-	Schedule function newSchedule( required name, numeric threads = this.executors.DEFAULT_THREADS ){
+	Schedule function newSchedule(
+		required name,
+		numeric threads = 1
+	){
 		// Create the ColdBox Schedule and register it
 		variables.schedules[ arguments.name ] = new Schedule(
 			arguments.name,
@@ -99,6 +102,22 @@ component accessors="true" singleton {
 				variables.schedules[ arguments.name ].shutdownNow();
 			}
 			variables.schedules.delete( arguments.name );
+		}
+		return this;
+	}
+
+	/**
+	 * Shutdown the schedule or force it to shutdown
+	 *
+	 * @force Use the shutdownNow() instead of the shutdown() method
+	 */
+	AsyncManager function shutdownSchedule( required name, boolean force=false ){
+		if ( hasSchedule( arguments.name ) ) {
+			if( arguments.force ){
+				variables.schedules[ arguments.name ].shutdownNow();
+			} else {
+				variables.schedules[ arguments.name ].shutdown();
+			}
 		}
 		return this;
 	}
