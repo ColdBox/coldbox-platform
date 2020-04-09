@@ -146,11 +146,77 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 							sleep( 100 );
 						}
 						expect( atomicLong.get() ).toBe( 1 );
-
+						toConsole( "task finalized" );
 					} finally {
+						asyncManager.deleteExecutor( "myExecutor" );
+						expect( sFuture.isDone() ).toBeTrue();
+						expect( sFuture.isCancelled() ).toBeFalse();
+					}
+				});
+				it( "can use the builder to schedule a periodic task", function(){
+					var scheduler = asyncManager.newScheduledExecutor( "myExecutor" );
+					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
+
+					var sFuture = scheduler
+						.newSchedule( function(){
+							var results = atomicLong.incrementAndGet();
+							toConsole( "running periodic task (#results#) from:#getThreadName()#" );
+						} )
+						.every( 50 ) // every 50 ms
+						.start();
+
+					try{
+
+						expect( sFuture.isPeriodic() ).toBeTrue();
+						for( var x=0; x lte 3; x++ ){
+							sleep( 750 );
+							toConsole( "atomic is " & atomicLong.get() );
+							expect( sFuture.isDone() ).toBeFalse();
+							expect( sFuture.isCancelled() ).toBeFalse();
+							toConsole( asyncManager.getExecutor( "myExecutor" ).getStats() );
+						}
+					} finally {
+						toConsole( "xxxxx => shutting down task..." );
+						sFuture.cancel();
+						asyncManager.deleteExecutor( "schedulerTest" );
+
 						expect( sFuture.isDone() ).toBeTrue();
 						expect( sFuture.isCancelled() ).toBeTrue();
-						asyncManager.deleteExecutor( "myExecutor" );
+
+						toConsole( "xxxxx => task done" );
+					}
+				});
+				it( "can use the builder to schedule a periodic task", function(){
+					var scheduler = asyncManager.newScheduledExecutor( "myExecutor" );
+					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
+
+					var sFuture = scheduler
+						.newSchedule( function(){
+							sleep( randRange( 25, 100 ) );
+							var results = atomicLong.incrementAndGet();
+							toConsole( "running spaced delayed task (#results#) from:#getThreadName()#" );
+						} )
+						.spacedDelay( 50 ) // every 50 ms after each task completes
+						.start();
+					try{
+
+						expect( sFuture.isPeriodic() ).toBeTrue();
+						for( var x=0; x lte 3; x++ ){
+							sleep( 750 );
+							toConsole( "atomic is " & atomicLong.get() );
+							expect( sFuture.isDone() ).toBeFalse();
+							expect( sFuture.isCancelled() ).toBeFalse();
+							toConsole( asyncManager.getExecutor( "myExecutor" ).getStats() );
+						}
+					} finally {
+						toConsole( "xxxxx => shutting down spaced delay task..." );
+						sFuture.cancel();
+						asyncManager.deleteExecutor( "schedulerTest" );
+
+						expect( sFuture.isDone() ).toBeTrue();
+						expect( sFuture.isCancelled() ).toBeTrue();
+
+						toConsole( "xxxxx => spaced delay task done" );
 					}
 				});
 

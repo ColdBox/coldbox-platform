@@ -51,11 +51,21 @@ component accessors="true"{
 
 	ScheduledFuture function start(){
 		if( variables.spacedDelay > 0 ){
-			writeDump( var='spaced' );
-			abort;
+			return variables.executor.scheduleWithFixedDelay(
+				task : variables.task,
+				spacedDelay : variables.spacedDelay,
+				delay : variables.delay,
+				timeUnit : variables.timeUnit,
+				method : variables.method
+			);
 		} else if( variables.period > 0 ){
-			writeDump( var='period' );
-			abort;
+			return variables.executor.scheduleAtFixedRate(
+				task : variables.task,
+				every : variables.period,
+				delay : variables.delay,
+				timeUnit : variables.timeUnit,
+				method : variables.method
+			);
 		} else {
 			return variables.executor.schedule(
 				task : variables.task,
