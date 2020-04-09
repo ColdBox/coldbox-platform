@@ -107,13 +107,13 @@ component accessors="true" singleton{
 	 * the current thread is interrupted, whichever happens first.
 	 *
 	 * @timeout The maximum time to wait
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 *
 	 * @throws InterruptedException - if interrupted while waiting
 	 *
 	 * @return true if all tasks have completed following shut down
 	 */
-	boolean function awaitTermination( required numeric timeout, timeUnit = "seconds" ){
+	boolean function awaitTermination( required numeric timeout, timeUnit = "milliseconds" ){
 		return variables.native.awaitTermination(
 			javacast( "long", arguments.timeout ),
 			this.$timeUnit.get( arguments.timeUnit )

@@ -14,6 +14,10 @@
  */
 component extends="Executor" accessors="true" singleton{
 
+	/****************************************************************
+	 * Scheduling Methods *
+	 ****************************************************************/
+
 	/**
 	 * This method is used to register a runnable CFC, closure or lambda so it can
 	 * execute as a scheduled task according to the delay and period you have set
@@ -25,7 +29,7 @@ component extends="Executor" accessors="true" singleton{
 	 *
 	 * @task The runnable task closure/lambda/cfc
 	 * @delay The time to delay the first execution
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
@@ -35,7 +39,7 @@ component extends="Executor" accessors="true" singleton{
 	ScheduledFuture function schedule(
 		required task,
 		numeric delay=0,
-		timeUnit="seconds",
+		timeUnit="milliseconds",
 		method = "run"
 	){
 		// build out the java callable
@@ -74,7 +78,7 @@ component extends="Executor" accessors="true" singleton{
 	 * @task The runnable task closure/lambda/cfc
 	 * @every The period between successive executions
 	 * @delay The time to delay the first execution
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
@@ -86,7 +90,7 @@ component extends="Executor" accessors="true" singleton{
 		required task,
 		required numeric every,
 		numeric delay=0,
-		timeUnit="seconds",
+		timeUnit="milliseconds",
 		method = "run"
 	){
 		// Schedule it
@@ -113,7 +117,7 @@ component extends="Executor" accessors="true" singleton{
 	 * @task The runnable task closure/lambda/cfc
 	 * @spacedDelay The delay between the termination of one execution and the commencement of the next
 	 * @delay The time to delay the first execution
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @throws RejectedExecutionException - if the task cannot be scheduled for execution
@@ -125,7 +129,7 @@ component extends="Executor" accessors="true" singleton{
 		required task,
 		required numeric spacedDelay,
 		numeric delay=0,
-		timeUnit="seconds",
+		timeUnit="milliseconds",
 		method = "run"
 	){
 		// Schedule it
@@ -138,6 +142,18 @@ component extends="Executor" accessors="true" singleton{
 
 		// Return the results
 		return new ScheduledFuture( jScheduledFuture );
+	}
+
+	/****************************************************************
+	 * Builder Methods *
+	 ****************************************************************/
+
+	ScheduledTask function newSchedule(
+		required task,
+		method="run"
+	){
+		arguments.executor = this;
+		return new ScheduledTask( argumentCollection=arguments );
 	}
 
 	/****************************************************************

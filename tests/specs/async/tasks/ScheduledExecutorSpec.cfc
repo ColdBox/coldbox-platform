@@ -27,7 +27,6 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 				});
 			});
 
-
 			story( "Ability to submit scheduled tasks", function(){
 
 				it( "can submit a task with no period and no delay", function(){
@@ -126,6 +125,36 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 
 			});
 
+
+			story( "Ability to use a builder to schedule tasks", function(){
+
+				it( "can use the builder to schedule a one-time task", function(){
+					var scheduler = asyncManager.newScheduledExecutor( "myExecutor" );
+					var atomicLong = createObject( "java", "java.util.concurrent.atomic.AtomicLong" ).init( 0 );
+
+					var sFuture = scheduler
+						.newSchedule( function(){
+							var results = atomicLong.incrementAndGet();
+							toConsole( "running periodic task (#results#) from:#getThreadName()#" );
+						} )
+						.delay( 500 )
+						.start();
+
+					try{
+						while( !sFuture.isDone() ){
+							toConsole( "Waiting for task to finish..." );
+							sleep( 100 );
+						}
+						expect( atomicLong.get() ).toBe( 1 );
+
+					} finally {
+						expect( sFuture.isDone() ).toBeTrue();
+						expect( sFuture.isCancelled() ).toBeTrue();
+						asyncManager.deleteExecutor( "myExecutor" );
+					}
+				});
+
+			});
 
 		} );
 	}

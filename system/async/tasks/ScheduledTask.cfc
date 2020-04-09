@@ -1,6 +1,5 @@
 component accessors="true"{
 
-
 	/**
 	 * The delay to use in the schedule execution
 	 */
@@ -12,14 +11,82 @@ component accessors="true"{
 	property name="period" type="numeric";
 
 	/**
+	 * The delay to use when using scheduleWithFixedDelay(), so tasks execute after this delay once completed
+	 */
+	property name="spacedDelay" type="numeric";
+
+	/**
+	 * The task to execute
+	 */
+	property name="task";
+
+	/**
+	 * The method to execute if any
+	 */
+	property name="method";
+
+	/**
+	 * Constructor
+	 *
+	 * @task
+	 * @method
+	 */
+	ScheduledTask function init(
+		required task,
+		required executor,
+		method="run"
+	){
+		variables.task = arguments.task;
+		variables.executor = arguments.executor;
+		variables.method = arguments.method;
+
+		// Init Properties
+		variables.period = 0;
+		variables.delay = 0;
+		variables.spacedDelay = 0;
+		variables.timeUnit = variables.executor.$timeUnit.get();
+
+		return this;
+	}
+
+	ScheduledFuture function start(){
+		if( variables.spacedDelay > 0 ){
+			writeDump( var='spaced' );
+			abort;
+		} else if( variables.period > 0 ){
+			writeDump( var='period' );
+			abort;
+		} else {
+			return variables.executor.schedule(
+				task : variables.task,
+				delay : variables.delay,
+				timeUnit : variables.timeUnit,
+				method : variables.method
+			);
+		}
+	}
+
+	/**
 	 * Set a delay in the running of the task that will be registered with this schedule
 	 *
 	 * @delay The delay that will be used before executing the task
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
-	function delay( numeric delay, timeUnit = "seconds" ){
+	Scheduledtask function delay( numeric delay, timeUnit = "milliseconds" ){
 		variables.delay    = arguments.delay;
-		variables.timeUnit = this.jTimeUnit.get( arguments.timeUnit );
+		variables.timeUnit = variables.executor.$timeUnit.get( arguments.timeUnit );
+		return this;
+	}
+
+	/**
+	 * Set the spaced delay between the executions of this scheduled task
+	 *
+	 * @delay The delay that will be used before executing the task
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
+	 */
+	Scheduledtask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
+		variables.spacedDelay    = arguments.spacedDelay;
+		variables.timeUnit = variables.executor.$timeUnit.get( arguments.timeUnit );
 		return this;
 	}
 
@@ -27,67 +94,67 @@ component accessors="true"{
 	 * Set the period of execution for the schedule
 	 *
 	 * @period The period of execution
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
-	function every( numeric period, timeUnit = "seconds" ){
+	Scheduledtask function every( numeric period, timeUnit = "milliseconds" ){
 		variables.period   = arguments.period;
-		variables.timeUnit = this.jTimeUnit.get( arguments.timeUnit );
+		variables.timeUnit = variables.executor.$timeUnit.get( arguments.timeUnit );
 		return this;
 	}
 
 	/**
 	 * Set the time unit in days
 	 */
-	Executor function inDays(){
-		variables.timeUnit = this.jTimeUnit.get( "days" );
+	Scheduledtask function inDays(){
+		variables.timeUnit = variables.executor.$timeUnit.get( "days" );
 		return this;
 	}
 
 	/**
 	 * Set the time unit in hours
 	 */
-	Executor function inHours(){
-		variables.timeUnit = this.jTimeUnit.get( "hours" );
+	Scheduledtask function inHours(){
+		variables.timeUnit = variables.executor.$timeUnit.get( "hours" );
 		return this;
 	}
 
 	/**
 	 * Set the time unit in microseconds
 	 */
-	Executor function inMicroseconds(){
-		variables.timeUnit = this.jTimeUnit.get( "microseconds" );
+	Scheduledtask function inMicroseconds(){
+		variables.timeUnit = variables.executor.$timeUnit.get( "microseconds" );
 		return this;
 	}
 
 	/**
 	 * Set the time unit in milliseconds
 	 */
-	Executor function inMilliseconds(){
-		variables.timeUnit = this.jTimeUnit.get( "milliseconds" );
+	Scheduledtask function inMilliseconds(){
+		variables.timeUnit = variables.executor.$timeUnit.get( "milliseconds" );
 		return this;
 	}
 
 	/**
 	 * Set the time unit in minutes
 	 */
-	Executor function inMinutes(){
-		variables.timeUnit = this.jTimeUnit.get( "minutes" );
+	Scheduledtask function inMinutes(){
+		variables.timeUnit = variables.executor.$timeUnit.get( "minutes" );
 		return this;
 	}
 
 	/**
 	 * Set the time unit in nanoseconds
 	 */
-	Executor function inNanoseconds(){
-		variables.timeUnit = this.jTimeUnit.get( "nanoseconds" );
+	Scheduledtask function inNanoseconds(){
+		variables.timeUnit = variables.executor.$timeUnit.get( "nanoseconds" );
 		return this;
 	}
 
 	/**
 	 * Set the time unit in seconds
 	 */
-	Executor function inSeconds(){
-		variables.timeUnit = this.jTimeUnit.get( "seconds" );
+	Scheduledtask function inSeconds(){
+		variables.timeUnit = variables.executor.$timeUnit.get( "seconds" );
 		return this;
 	}
 }

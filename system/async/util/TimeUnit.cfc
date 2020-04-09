@@ -9,11 +9,11 @@ component singleton {
 	/**
 	 * Get the appropriate Java timeunit class according to string conventions
 	 *
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 *
 	 * @return The Java time unit class
 	 */
-	function get( required timeUnit = "seconds" ){
+	function get( required timeUnit = "milliseconds" ){
 		switch ( arguments.timeUnit ) {
 			case "days": {
 				return jTimeUnit.DAYS;

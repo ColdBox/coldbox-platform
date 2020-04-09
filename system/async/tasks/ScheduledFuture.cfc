@@ -28,9 +28,9 @@ component accessors="true" extends="FutureTask" {
 	/**
 	 * Get the delay of the scheduled task in the given time unit
 	 *
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
-	numeric function getDelay( timeUnit="seconds" ){
+	numeric function getDelay( timeUnit="milliseconds" ){
 		return variables.native.getDelay(
 			this.$timeUnit.get( arguments.timeUnit )
 		);

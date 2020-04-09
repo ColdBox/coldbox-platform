@@ -43,7 +43,7 @@ component accessors="true" {
 	 * If the result is null, then you can pass the defaultValue argument to return it.
 	 *
 	 * @timeout The timeout value to use, defaults to forever
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 * @defaultValue If the Future did not produce a value, then it will return this default value.
 	 *
 	 * @returns The result value
@@ -51,7 +51,7 @@ component accessors="true" {
 	 */
 	any function get(
 		numeric timeout = 0,
-		string timeUnit = "seconds",
+		string timeUnit = "milliseconds",
 		defaultValue
 	){
 		// Do we have a timeout?
