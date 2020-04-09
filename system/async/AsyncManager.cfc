@@ -126,7 +126,7 @@ component accessors="true" singleton {
 		boolean debug=false,
 		boolean loadAppContext=true
 	){
-		arguments.type = "schedule";
+		arguments.type = "scheduled";
 		return newExecutor( argumentCollection=arguments );
 	}
 
