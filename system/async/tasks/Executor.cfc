@@ -50,18 +50,17 @@ component accessors="true" singleton{
 	 ****************************************************************/
 
 	/**
-	 * Submit a task into the scheduler which can return a result if any.  The result of this call
+	 * Submit a task into the executor which can return a result if any.  The result of this call
 	 * is a ColdBox Future.
 	 *
 	 * @callable THe callable closure/lambda/cfc
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
-	 * @result the result to return once the future completes
 	 *
-	 * @return A ColdBox Future
+	 * @return A ColdBox Future Task object
 	 */
-	ScheduledFuture function submit( required callable, method = "run", any result ){
+	FutureTask function submit( required callable, method = "run" ){
 		var jCallable = createDynamicProxy(
-			new proxies.Callable(
+			new coldbox.system.async.proxies.Callable(
 				arguments.callable,
 				arguments.method,
 				variables.debug,
@@ -70,16 +69,8 @@ component accessors="true" singleton{
 			[ "java.util.concurrent.Callable" ]
 		);
 
-		// Do we have a seeded result?
-		if( !isNull( arguments.result ) ){
-			return new Future().setNative(
-				variables.native.submit( jCallable ),
-				arguments.result
-			);
-		}
-
 		// Send for execution
-		return new ScheduledFuture(
+		return new FutureTask(
 			variables.native.submit( jCallable )
 		);
 	}
