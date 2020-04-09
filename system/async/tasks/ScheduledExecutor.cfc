@@ -1,12 +1,16 @@
 /**
- * This is the ColdBox Executor class which connects your code to the Java
- * Scheduling services to execute tasks on.
+ * This is a specialized executor that deals with scheduled tasks using
+ * the Java ScheduledExecutorService.  With it, you will be able to create
+ * different types of tasks:
  *
- * The native property models the injected Java executor which can be:
- * - Fixed
- * - Cached
- * - Single
- * - Scheduled
+ * - `submit()` : Submit tasks just like a normal executors (can return results)
+ * - `schedule()` : Schedule one-time executing tasks with or without delays (can return results)
+ * - `scheduleAtFixedRate()` : Schedule tasks that will execute on a specific frequency (do not return results)
+ * - `scheduleWithFixedDelay()` : Schedule tasks that will execute on a specific delayed schedule after each of them completes (do not return results)
+ *
+ * All of the scheduling methods will return a ScheduledFuture object that you can
+ * use to monitor and get results from the tasks at hand, if any.
+ *
  */
 component extends="Executor" accessors="true" singleton{
 
