@@ -14,7 +14,7 @@ component extends="BaseAsyncSpec"{
 			} );
 
 			it( "can run a cf closure with a then/get pipeline and custom executors", function(){
-				var singlePool = asyncManager.$executors.newSingleThreadPool();
+				var singlePool = asyncManager.$executors.newFixedThreadPool( 1 );
 				var f = asyncManager
 					.newFuture()
 					.runAsync( function(){

@@ -26,14 +26,14 @@ component extends="BaseAsyncSpec"{
 				it( "can create the a single executor", function(){
 					var executor = asyncManager.newExecutor( name:"unitTest", type: "single" );
 					expect( executor.getName() ).toBe( "unitTest" );
-					expect( executor.getNative().toString() ).toInclude( "FinalizableDelegatedExecutorService" );
+					expect( executor.getCorePoolSize() ).toBe( 1 );
 				});
 				it( "can create the a cached executor", function(){
 					var executor = asyncManager.newExecutor( name:"unitTest", type: "cached" );
 					expect( executor.getName() ).toBe( "unitTest" );
 					expect( executor.getPoolSize() ).toBe( 0 );
 				});
-				it( "can create a executord executor", function(){
+				it( "can create a scheduled executor", function(){
 					var executor = asyncManager.newExecutor( name:"unitTest", type: "scheduled" );
 					expect( executor.getName() ).toBe( "unitTest" );
 					expect( executor.getCorePoolSize() ).toBe( 20 );

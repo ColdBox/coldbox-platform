@@ -34,25 +34,6 @@ component singleton {
 	}
 
 	/**
-	 * Creates an Executor that uses a single worker thread operating off an
-	 * unbounded queue. (Note however that if this single thread terminates
-	 * due to a failure during execution prior to shutdown, a new one will
-	 * take its place if needed to execute subsequent tasks.)
-	 *
-	 * Tasks are guaranteed to execute sequentially, and no more than one
-	 * task will be active at any given time. Unlike the otherwise equivalent
-	 * newFixedThreadPool(1) the returned executor is guaranteed not to be
-	 * reconfigurable to use additional threads.
-	 *
-	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
-	 *
-	 * @return ExecutorService: The newly created thread pool
-	 */
-	function newSingleThreadPool(){
-		return variables.jExecutors.newSingleThreadExecutor();
-	}
-
-	/**
 	 * Creates a thread pool that creates new threads as needed, but will
 	 * reuse previously constructed threads when they are available.
 	 *

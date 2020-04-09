@@ -66,14 +66,55 @@ component accessors="true" singleton {
 	){
 		// Build it if not found
 		if( !variables.executors.keyExists( arguments.name ) ){
-			// Build the java executor
-			arguments.executor = buildExecutor( argumentCollection=arguments );
 			// Create the ColdBox executor and register it
-			variables.executors[ arguments.name ] = new tasks.Executor( argumentCollection=arguments );
+			variables.executors[ arguments.name ] = buildExecutor( argumentCollection=arguments );
 		}
 
 		// Return it
 		return variables.executors[ arguments.name ];
+	}
+
+	/**
+	 * Build a Java executor according to passed type and threads
+	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
+	 *
+	 * @type Available types are: fixed, cached, single, scheduled
+	 * @threads The number of threads to seed the executor with, if it allows it
+	 * @debug Add output debugging
+	 * @loadAppContext Load the CFML App contexts or not, disable if not used
+	 *
+	 * @return A Java ExecutorService: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
+	 */
+	private function buildExecutor(
+		required type,
+		numeric threads,
+		boolean debug=false,
+		boolean loadAppContext=true
+	){
+		// Factory to build the right executor
+		switch( arguments.type ){
+			case "fixed" : {
+				arguments.executor = this.$executors.newFixedThreadPool( arguments.threads );
+				return new tasks.Executor( argumentCollection=arguments );
+			}
+			case "cached" : {
+				arguments.executor = this.$executors.newCachedThreadPool();
+				return new tasks.Executor( argumentCollection=arguments );
+			}
+			case "single" : {
+				arguments.executor = this.$executors.newFixedThreadPool( 1 );
+				return new tasks.Executor( argumentCollection=arguments );
+			}
+			case "scheduled" : {
+				arguments.executor = this.$executors.newScheduledThreadPool( arguments.threads );
+				return new tasks.ScheduledExecutor( argumentCollection=arguments );
+			}
+		}
+		throw(
+			type = "InvalidExecutorType",
+			message= "The executor you requested :#arguments.type# does not exist.",
+			detail ="Valid executors are: fixed, cached, single, scheduled"
+		);
 	}
 
 	/**
@@ -90,11 +131,10 @@ component accessors="true" singleton {
 	}
 
 	/**
-	 * Shortcut to newExecutor( type: "single" )
+	 * Shortcut to newExecutor( type: "single", threads: 1 )
 	 */
 	Executor function newSingleExecutor(
 		required name,
-		numeric threads=this.$executors.DEFAULT_THREADS,
 		boolean debug=false,
 		boolean loadAppContext=true
 	){
@@ -113,37 +153,6 @@ component accessors="true" singleton {
 	){
 		arguments.type = "cached";
 		return newExecutor( argumentCollection=arguments );
-	}
-
-	/**
-	 * Build a Java executor according to passed type and threads
-	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
-	 *
-	 * @type Available types are: fixed, cached, single, scheduled
-	 * @threads The number of threads to seed the executor with, if it allows it
-	 *
-	 * @return A Java ExecutorService: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
-	 */
-	private function buildExecutor( required type, numeric threads ){
-		switch( arguments.type ){
-			case "fixed" : {
-				return this.$executors.newFixedThreadPool( arguments.threads );
-			}
-			case "cached" : {
-				return this.$executors.newCachedThreadPool();
-			}
-			case "single" : {
-				return this.$executors.newSingleThreadPool();
-			}
-			case "scheduled" : {
-				return this.$executors.newScheduledThreadPool( arguments.threads );
-			}
-		}
-		throw(
-			type = "InvalidExecutorType",
-			message= "The executor you requested :#arguments.type# does not exist.",
-			detail ="Valid executors are: fixed, cached, single, scheduled"
-		);
 	}
 
 	/**

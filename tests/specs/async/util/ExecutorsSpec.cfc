@@ -17,10 +17,6 @@ component extends="tests.specs.async.BaseAsyncSpec"{
 			});
 
 			story( "Ability to create different supported executors", function(){
-				it( "can create a single thread executor", function(){
-					var executor = executors.newSingleThreadPool();
-					expect( executor.isTerminated() ).toBeFalse();
-				});
 				it( "can create a fixed pool executor", function(){
 					var executor = executors.newFixedThreadPool( 10 );
 					expect( executor.isTerminated() ).toBeFalse();

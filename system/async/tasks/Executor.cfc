@@ -1,8 +1,14 @@
 /**
  * This is the ColdBox Executor class which connects your code to the Java
- * Scheduling services to execute tasks.
+ * Scheduling services to execute tasks on.
+ *
+ * The native property models the injected Java executor which can be:
+ * - Fixed
+ * - Cached
+ * - Single
+ * - Scheduled
  */
-component accessors="true" {
+component accessors="true" singleton{
 
 	/**
 	 * The human name of this executor
@@ -14,29 +20,14 @@ component accessors="true" {
 	 */
 	property name="native";
 
-	/**
-	 * The Java time unit class used in the schedule
-	 */
-	property name="timeUnit";
-
-	/**
-	 * The delay to use in the schedule execution
-	 */
-	property name="delay" type="numeric";
-
-	/**
-	 * The period of execution of the tasks in this schedule
-	 */
-	property name="period" type="numeric";
-
 	// Prepare the static time unit class
-	this.jTimeUnit = new coldbox.system.async.util.TimeUnit();
+	this.$timeUnit = new coldbox.system.async.util.TimeUnit();
 
 	/**
 	 * Constructor
 	 *
-	 * @name The name of the scheduler
-	 * @executor The native executor attached to this schedule
+	 * @name The name of the executor
+	 * @executor The native executor class
 	 * @debug Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 */
@@ -46,21 +37,17 @@ component accessors="true" {
 		boolean debug=false,
 		boolean loadAppContext=true
 	){
-		// Seed name and executor
-		variables.name      = arguments.name;
-		variables.native  	= arguments.executor;
-
-		// Scheduling Property defaults, no delays and no periods
-		variables.timeUnit = this.jTimeUnit.get();
-		variables.delay    = 0;
-		variables.period   = 0;
-
-		// Debugging + Context
-		variables.debug = arguments.debug;
-		variables.loadAppContext = arguments.loadAppContext;
+		variables.name      		= arguments.name;
+		variables.native  			= arguments.executor;
+		variables.debug 			= arguments.debug;
+		variables.loadAppContext 	= arguments.loadAppContext;
 
 		return this;
 	}
+
+	/****************************************************************
+	 * Executor Submit Tasks *
+	 ****************************************************************/
 
 	/**
 	 * Submit a task into the scheduler which can return a result if any.  The result of this call
@@ -95,110 +82,6 @@ component accessors="true" {
 		return new ScheduledFuture(
 			variables.native.submit( jCallable )
 		);
-	}
-
-	/**
-	 * This method is used to register a runnable CFC, closure or lambda so it can
-	 * execute as a scheduled task according to the delay and period you have set
-	 * in the Schedule.
-	 *
-	 * The method will register the runnable and send it for execution, the result
-	 * is a ScheduledFuture.  Periodic tasks do NOT return a result, while normal delayed
-	 * tasks can.
-	 *
-	 * @task The closure/lambda/cfc that will be used as the executable task
-	 * @method The default method to execute if the task is a CFC, defaults to `run()`
-	 *
-	 * @return The scheduled future for the task so you can monitor it
-	 */
-	ScheduledFuture function schedule( required task, method = "run" ){
-
-		var jScheduledFuture = ( variables.period > 0 ?
-			schedulePeriodicTask( argumentCollection=arguments ) :
-			scheduleTask( argumentCollection=arguments )
-		);
-
-		return new ScheduledFuture( jScheduledFuture );
-	}
-
-	/**
-	 * Set a delay in the running of the task that will be registered with this schedule
-	 *
-	 * @delay The delay that will be used before executing the task
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
-	 */
-	function delay( numeric delay, timeUnit = "seconds" ){
-		variables.delay    = arguments.delay;
-		variables.timeUnit = this.jTimeUnit.get( arguments.timeUnit );
-		return this;
-	}
-
-	/**
-	 * Set the period of execution for the schedule
-	 *
-	 * @period The period of execution
-	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is seconds
-	 */
-	function every( numeric period, timeUnit = "seconds" ){
-		variables.period   = arguments.period;
-		variables.timeUnit = this.jTimeUnit.get( arguments.timeUnit );
-		return this;
-	}
-
-	/**
-	 * Set the time unit in days
-	 */
-	Executor function inDays(){
-		variables.timeUnit = this.jTimeUnit.get( "days" );
-		return this;
-	}
-
-	/**
-	 * Set the time unit in hours
-	 */
-	Executor function inHours(){
-		variables.timeUnit = this.jTimeUnit.get( "hours" );
-		return this;
-	}
-
-	/**
-	 * Set the time unit in microseconds
-	 */
-	Executor function inMicroseconds(){
-		variables.timeUnit = this.jTimeUnit.get( "microseconds" );
-		return this;
-	}
-
-	/**
-	 * Set the time unit in milliseconds
-	 */
-	Executor function inMilliseconds(){
-		variables.timeUnit = this.jTimeUnit.get( "milliseconds" );
-		return this;
-	}
-
-	/**
-	 * Set the time unit in minutes
-	 */
-	Executor function inMinutes(){
-		variables.timeUnit = this.jTimeUnit.get( "minutes" );
-		return this;
-	}
-
-	/**
-	 * Set the time unit in nanoseconds
-	 */
-	Executor function inNanoseconds(){
-		variables.timeUnit = this.jTimeUnit.get( "nanoseconds" );
-		return this;
-	}
-
-	/**
-	 * Set the time unit in seconds
-	 */
-	Executor function inSeconds(){
-		variables.timeUnit = this.jTimeUnit.get( "seconds" );
-		return this;
 	}
 
 	/****************************************************************
@@ -241,7 +124,7 @@ component accessors="true" {
 	boolean function awaitTermination( required numeric timeout, timeUnit = "seconds" ){
 		return variables.native.awaitTermination(
 			javacast( "long", arguments.timeout ),
-			this.jTimeUnit.get( arguments.timeUnit )
+			this.$timeUnit.get( arguments.timeUnit )
 		);
 	}
 
@@ -338,9 +221,6 @@ component accessors="true" {
 	struct function getStats(){
 		return {
 			"name"               : getName(),
-			"delay"              : getDelay(),
-			"every"              : getPeriod(),
-			"timeUnit"           : getTimeUnit().toString(),
 			"poolSize"           : getPoolSize(),
 			"maximumPoolSize"    : getMaximumPoolSize(),
 			"largestPoolSize"    : getLargestPoolSize(),
@@ -352,66 +232,6 @@ component accessors="true" {
 			"isTerminating"      : isTerminating(),
 			"isShutdown"         : isShutdown()
 		};
-	}
-
-	/****************************************************************
-	 * Private Methods *
-	 ****************************************************************/
-
-	/**
-	 * Build out a ScheduledFuture from the incoming function and/or method.
-	 *
-	 * @runnable THe runnable closure/lambda/cfc
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
-	 *
-	 * @return Java ScheduledFuture
-	 */
-	private function scheduleTask( required runnable, required method ){
-		// build out the java callable
-		var jCallable = createDynamicProxy(
-			new proxies.Callable(
-				arguments.runnable,
-				arguments.method,
-				variables.debug,
-				variables.loadAppContext
-			),
-			[ "java.util.concurrent.Callable" ]
-		);
-
-		return variables.native.schedule(
-			jCallable,
-			javacast( "long", variables.delay ),
-			variables.timeUnit
-		);
-	}
-
-	/**
-	 * Build out a ScheduledFuture from the incoming function and/or method using
-	 * the Java period fixed rate function: scheduleAtFixedRate
-	 *
-	 * @runnable THe runnable closure/lambda/cfc
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
-	 *
-	 * @return Java ScheduledFuture
-	 */
-	private function schedulePeriodicTask( required runnable, required method ){
-		// build out the java callable
-		var jRunnable = createDynamicProxy(
-			new proxies.Runnable(
-				arguments.runnable,
-				arguments.method,
-				variables.debug,
-				variables.loadAppContext
-			),
-			[ "java.lang.Runnable" ]
-		);
-
-		return variables.native.scheduleAtFixedRate(
-			jRunnable,
-			javacast( "long", variables.delay ),
-			javacast( "long", variables.period ),
-			variables.timeUnit
-		);
 	}
 
 }
