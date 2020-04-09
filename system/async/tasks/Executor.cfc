@@ -50,10 +50,11 @@ component accessors="true" singleton{
 	 ****************************************************************/
 
 	/**
-	 * Submit a task into the executor which can return a result if any.  The result of this call
-	 * is a ColdBox Future.
+	 * Submit a task into the executor which can return a result if any.
+	 * The result of this call is a ColdBox FutureTask from which you can monitor,
+	 * cancel, or get the result of the  the executing task.
 	 *
-	 * @callable THe callable closure/lambda/cfc
+	 * @callable THe callable closure/lambda/cfc to execute
 	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
 	 *
 	 * @return A ColdBox Future Task object
