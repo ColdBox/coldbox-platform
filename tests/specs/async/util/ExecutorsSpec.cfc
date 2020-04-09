@@ -1,7 +1,7 @@
 /**
  * My BDD Test
  */
-component extends="BaseAsyncSpec"{
+component extends="tests.specs.async.BaseAsyncSpec"{
 
 	/*********************************** BDD SUITES ***********************************/
 
@@ -9,7 +9,7 @@ component extends="BaseAsyncSpec"{
 		// all your suites go here.
 		describe( "Executors", function(){
 			beforeEach( function( currentSpec ){
-				executors = new coldbox.system.async.Executors();
+				executors = new coldbox.system.async.util.Executors();
 			} );
 
 			it( "can be created", function(){

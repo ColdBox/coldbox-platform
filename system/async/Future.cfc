@@ -39,7 +39,7 @@ component accessors="true" {
 	property name="futureTimeout" type="struct";
 
 	// Prepare the static time unit class
-	this.timeUnit = new TimeUnit();
+	this.timeUnit = new util.TimeUnit();
 
 	/**
 	 * Construct a new ColdBox Future backed by a Java Completable Future

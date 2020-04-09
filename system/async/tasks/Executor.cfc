@@ -1,18 +1,18 @@
 /**
- * This is the ColdBox Scheduler class which connects your code to the Java
+ * This is the ColdBox Executor class which connects your code to the Java
  * Scheduling services to execute tasks.
  */
 component accessors="true" {
 
 	/**
-	 * The human name of this scheduler
+	 * The human name of this executor
 	 */
 	property name="name";
 
 	/**
-	 * The Java executor class running the schedule
+	 * The native Java executor class modeled in this executor
 	 */
-	property name="executor";
+	property name="native";
 
 	/**
 	 * The Java time unit class used in the schedule
@@ -30,7 +30,7 @@ component accessors="true" {
 	property name="period" type="numeric";
 
 	// Prepare the static time unit class
-	this.jTimeUnit = new TimeUnit();
+	this.jTimeUnit = new coldbox.system.async.util.TimeUnit();
 
 	/**
 	 * Constructor
@@ -40,7 +40,7 @@ component accessors="true" {
 	 * @debug Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 */
-	Schedule function init(
+	Executor function init(
 		required name,
 		required executor,
 		boolean debug=false,
@@ -48,7 +48,7 @@ component accessors="true" {
 	){
 		// Seed name and executor
 		variables.name      = arguments.name;
-		variables.executor  = arguments.executor;
+		variables.native  	= arguments.executor;
 
 		// Scheduling Property defaults, no delays and no periods
 		variables.timeUnit = this.jTimeUnit.get();
@@ -86,14 +86,14 @@ component accessors="true" {
 		// Do we have a seeded result?
 		if( !isNull( arguments.result ) ){
 			return new Future().setNative(
-				variables.executor.submit( jCallable ),
+				variables.native.submit( jCallable ),
 				arguments.result
 			);
 		}
 
 		// Send for execution
 		return new ScheduledFuture(
-			variables.executor.submit( jCallable )
+			variables.native.submit( jCallable )
 		);
 	}
 
@@ -106,12 +106,12 @@ component accessors="true" {
 	 * is a ScheduledFuture.  Periodic tasks do NOT return a result, while normal delayed
 	 * tasks can.
 	 *
-	 * @runnable THe runnable closure/lambda/cfc
-	 * @method The default method to execute if the runnable is a CFC, defaults to `run()`
+	 * @task The closure/lambda/cfc that will be used as the executable task
+	 * @method The default method to execute if the task is a CFC, defaults to `run()`
 	 *
 	 * @return The scheduled future for the task so you can monitor it
 	 */
-	ScheduledFuture function schedule( required runnable, method = "run" ){
+	ScheduledFuture function schedule( required task, method = "run" ){
 
 		var jScheduledFuture = ( variables.period > 0 ?
 			schedulePeriodicTask( argumentCollection=arguments ) :
@@ -148,7 +148,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in days
 	 */
-	Schedule function inDays(){
+	Executor function inDays(){
 		variables.timeUnit = this.jTimeUnit.get( "days" );
 		return this;
 	}
@@ -156,7 +156,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in hours
 	 */
-	Schedule function inHours(){
+	Executor function inHours(){
 		variables.timeUnit = this.jTimeUnit.get( "hours" );
 		return this;
 	}
@@ -164,7 +164,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in microseconds
 	 */
-	Schedule function inMicroseconds(){
+	Executor function inMicroseconds(){
 		variables.timeUnit = this.jTimeUnit.get( "microseconds" );
 		return this;
 	}
@@ -172,7 +172,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in milliseconds
 	 */
-	Schedule function inMilliseconds(){
+	Executor function inMilliseconds(){
 		variables.timeUnit = this.jTimeUnit.get( "milliseconds" );
 		return this;
 	}
@@ -180,7 +180,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in minutes
 	 */
-	Schedule function inMinutes(){
+	Executor function inMinutes(){
 		variables.timeUnit = this.jTimeUnit.get( "minutes" );
 		return this;
 	}
@@ -188,7 +188,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in nanoseconds
 	 */
-	Schedule function inNanoseconds(){
+	Executor function inNanoseconds(){
 		variables.timeUnit = this.jTimeUnit.get( "nanoseconds" );
 		return this;
 	}
@@ -196,7 +196,7 @@ component accessors="true" {
 	/**
 	 * Set the time unit in seconds
 	 */
-	Schedule function inSeconds(){
+	Executor function inSeconds(){
 		variables.timeUnit = this.jTimeUnit.get( "seconds" );
 		return this;
 	}
@@ -209,7 +209,7 @@ component accessors="true" {
 	 * Returns true if all tasks have completed following shut down.
 	 */
 	boolean function isTerminated(){
-		return variables.executor.isTerminated();
+		return variables.native.isTerminated();
 	}
 
 	/**
@@ -217,14 +217,14 @@ component accessors="true" {
 	 * not completely terminated.
 	 */
 	boolean function isTerminating(){
-		return variables.executor.isTerminating();
+		return variables.native.isTerminating();
 	}
 
 	/**
 	 * Returns true if this executor has been shut down.
 	 */
 	boolean function isShutdown(){
-		return variables.executor.isShutdown();
+		return variables.native.isShutdown();
 	}
 
 	/**
@@ -239,7 +239,7 @@ component accessors="true" {
 	 * @return true if all tasks have completed following shut down
 	 */
 	boolean function awaitTermination( required numeric timeout, timeUnit = "seconds" ){
-		return variables.executor.awaitTermination(
+		return variables.native.awaitTermination(
 			javacast( "long", arguments.timeout ),
 			this.jTimeUnit.get( arguments.timeUnit )
 		);
@@ -252,8 +252,8 @@ component accessors="true" {
 	 * This method does not wait for previously submitted tasks to complete execution. Use awaitTermination to do that.
 	 *
 	 */
-	Schedule function shutdown(){
-		variables.executor.shutdown();
+	Executor function shutdown(){
+		variables.native.shutdown();
 		return this;
 	}
 
@@ -270,63 +270,63 @@ component accessors="true" {
 	 * @return list of tasks that never commenced execution
 	 */
 	any function shutdownNow(){
-		return variables.executor.shutdownNow();
+		return variables.native.shutdownNow();
 	}
 
 	/**
 	 * Returns the task queue used by this executor.
 	 */
 	any function getQueue(){
-		return variables.executor.getQueue();
+		return variables.native.getQueue();
 	}
 
 	/**
 	 * Returns the approximate number of threads that are actively executing tasks.
 	 */
 	numeric function getActiveCount(){
-		return variables.executor.getActiveCount();
+		return variables.native.getActiveCount();
 	}
 
 	/**
 	 * Returns the approximate total number of tasks that have ever been scheduled for execution.
 	 */
 	numeric function getTaskCount(){
-		return variables.executor.getTaskCount();
+		return variables.native.getTaskCount();
 	}
 
 	/**
 	 * Returns the approximate total number of tasks that have completed execution.
 	 */
 	numeric function getCompletedTaskCount(){
-		return variables.executor.getCompletedTaskCount();
+		return variables.native.getCompletedTaskCount();
 	}
 
 	/**
 	 * Returns the core number of threads.
 	 */
 	numeric function getCorePoolSize(){
-		return variables.executor.getCorePoolSize();
+		return variables.native.getCorePoolSize();
 	}
 
 	/**
 	 * Returns the largest number of threads that have ever simultaneously been in the pool.
 	 */
 	numeric function getLargestPoolSize(){
-		return variables.executor.getLargestPoolSize();
+		return variables.native.getLargestPoolSize();
 	}
 
 	/**
 	 * Returns the maximum allowed number of threads.
 	 */
 	numeric function getMaximumPoolSize(){
-		return variables.executor.getMaximumPoolSize();
+		return variables.native.getMaximumPoolSize();
 	}
 
 	/**
 	 * Returns the current number of threads in the pool.
 	 */
 	numeric function getPoolSize(){
-		return variables.executor.getPoolSize();
+		return variables.native.getPoolSize();
 	}
 
 	/**
@@ -378,7 +378,7 @@ component accessors="true" {
 			[ "java.util.concurrent.Callable" ]
 		);
 
-		return variables.executor.schedule(
+		return variables.native.schedule(
 			jCallable,
 			javacast( "long", variables.delay ),
 			variables.timeUnit
@@ -406,7 +406,7 @@ component accessors="true" {
 			[ "java.lang.Runnable" ]
 		);
 
-		return variables.executor.scheduleAtFixedRate(
+		return variables.native.scheduleAtFixedRate(
 			jRunnable,
 			javacast( "long", variables.delay ),
 			javacast( "long", variables.period ),

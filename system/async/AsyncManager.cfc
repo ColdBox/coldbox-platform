@@ -10,140 +10,221 @@
 component accessors="true" singleton {
 
 	/**
-	 * A collection of Schedulers you can register in the async manager
+	 * A collection of executors you can register in the async manager
+	 * so you can run queues, tasks or even scheduled tasks
 	 */
-	property name="schedules" type="struct";
+	property name="executors" type="struct";
 
-	// Static Executors Factory Class
-	this.executors = new Executors();
+	// Static class to Executors: java.util.concurrent.Executors
+	this.$executors = new util.Executors();
 
 	/**
 	 * Constructor
 	 *
 	 * @debug Add debugging logs to System out, disabled by default
 	 */
-	function init( boolean debug = false ){
+	AsyncManager function init( boolean debug = false ){
 		variables.debug     = arguments.debug;
-		variables.schedules = {};
+		variables.executors = {};
 
 		return this;
 	}
 
 	/****************************************************************
-	 * Scheduler Methods *
+	 * Executor Methods *
 	 ****************************************************************/
 
 	/**
-	 * Creates a Scheduler according to the passed name and number of threads to leverage
-	 * using a ScheduledExecutorService. You can pass your own executor, but if the passed
-	 * executor does not support scheduling services, then it will just act as a
-	 * scheduling queue.
+	 * Creates and registers an Executor according to the passed name, type and options.
+	 * The allowed types are: fixed, cached, single, scheduled with fixed being the default.
 	 *
-	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html
+	 * You can then use this executor object to submit tasks for execution and if it's a
+	 * scheduled executor then actually execute scheduled tasks.
+	 *
+	 * Types of Executors:
+	 * - fixed : By default it will build one with 20 threads on it. Great for multiple task execution and worker processing
+	 * - single : A great way to control that submitted tasks will execute in the order of submission: FIFO
+	 * - cached : An unbounded pool where the number of threads will grow according to the tasks it needs to service. The threads are killed by a default 60 second timeout if not used and the pool shrinks back
+	 * - scheduled : A pool to use for scheduled tasks that can run one time or periodically
+	 *
 	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
 	 *
-	 * @name The name of the task, used for registration
-	 * @threads How many threads to assign to the thread scheduler, default is 1
-	 * @executor Register the schedule with the passed executor, if not it uses a ScheduledExecutorService
+	 * @name The name of the executor used for registration
+	 * @type The type of executor to build fixed, cached, single, scheduled
+	 * @threads How many threads to assign to the thread scheduler, default is 20
+	 * @debug Add output debugging
+	 * @loadAppContext Load the CFML App contexts or not, disable if not used
 	 *
-	 * @return The ColdBox Schedule class to work with the schedule
+	 * @return The ColdBox Schedule class to work with the schedule: coldbox.system.async.tasks.Executor
 	 */
-	Schedule function newSchedule(
+	Executor function newExecutor(
 		required name,
-		numeric threads = 1,
-		executor
+		type="fixed",
+		numeric threads=this.$executors.DEFAULT_THREADS,
+		boolean debug=false,
+		boolean loadAppContext=true
 	){
-		if( isNull( arguments.executor ) ){
-			arguments.executor = this.executors.newScheduledThreadPool( arguments.threads );
+		// Build it if not found
+		if( !variables.executors.keyExists( arguments.name ) ){
+			// Build the java executor
+			arguments.executor = buildExecutor( argumentCollection=arguments );
+			// Create the ColdBox executor and register it
+			variables.executors[ arguments.name ] = new tasks.Executor( argumentCollection=arguments );
 		}
-
-		// Create the ColdBox Schedule and register it
-		variables.schedules[ arguments.name ] = new Schedule(
-			arguments.name,
-			arguments.executor
-		);
 
 		// Return it
-		return variables.schedules[ arguments.name ];
+		return variables.executors[ arguments.name ];
 	}
 
 	/**
-	 * Get a registered schedule in this async manager
-	 *
-	 * @name The scheduler name
-	 *
-	 * @throws NotFoundException
-	 * @return The scheduler object
+	 * Shortcut to newExecutor( type: "scheduled" )
 	 */
-	function getSchedule( required name ){
-		if ( hasSchedule( arguments.name ) ) {
-			return variables.schedules[ arguments.name ];
+	Executor function newScheduledExecutor(
+		required name,
+		numeric threads=this.$executors.DEFAULT_THREADS,
+		boolean debug=false,
+		boolean loadAppContext=true
+	){
+		arguments.type = "schedule";
+		return newExecutor( argumentCollection=arguments );
+	}
+
+	/**
+	 * Shortcut to newExecutor( type: "single" )
+	 */
+	Executor function newSingleExecutor(
+		required name,
+		numeric threads=this.$executors.DEFAULT_THREADS,
+		boolean debug=false,
+		boolean loadAppContext=true
+	){
+		arguments.type = "single";
+		return newExecutor( argumentCollection=arguments );
+	}
+
+	/**
+	 * Shortcut to newExecutor( type: "cached" )
+	 */
+	Executor function newCachedExecutor(
+		required name,
+		numeric threads=this.$executors.DEFAULT_THREADS,
+		boolean debug=false,
+		boolean loadAppContext=true
+	){
+		arguments.type = "cached";
+		return newExecutor( argumentCollection=arguments );
+	}
+
+	/**
+	 * Build a Java executor according to passed type and threads
+	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
+	 *
+	 * @type Available types are: fixed, cached, single, scheduled
+	 * @threads The number of threads to seed the executor with, if it allows it
+	 *
+	 * @return A Java ExecutorService: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html
+	 */
+	private function buildExecutor( required type, numeric threads ){
+		switch( arguments.type ){
+			case "fixed" : {
+				return this.$executors.newFixedThreadPool( arguments.threads );
+			}
+			case "cached" : {
+				return this.$executors.newCachedThreadPool();
+			}
+			case "single" : {
+				return this.$executors.newSingleThreadPool();
+			}
+			case "scheduled" : {
+				return this.$executors.newScheduledThreadPool( arguments.threads );
+			}
 		}
 		throw(
-			type    = "ScheduleNotFoundException",
-			message = "The schedule you requested does not exist",
-			detail  = "Registered schedules are: #variables.schedules.keyList()#"
+			type = "InvalidExecutorType",
+			message= "The executor you requested :#arguments.type# does not exist.",
+			detail ="Valid executors are: fixed, cached, single, scheduled"
 		);
 	}
 
 	/**
-	 * Get the array of registered schedules in the system
+	 * Get a registered executor registerd in this async manager
+	 *
+	 * @name The executor name
+	 *
+	 * @throws ExecutorNotFoundException
+	 * @return The executor object: coldbox.system.async.tasks.Executor
+	 */
+	Executor function getExecutor( required name ){
+		if ( hasExecutor( arguments.name ) ) {
+			return variables.executors[ arguments.name ];
+		}
+		throw(
+			type    = "ExecutorNotFoundException",
+			message = "The schedule you requested does not exist",
+			detail  = "Registered schedules are: #variables.executors.keyList()#"
+		);
+	}
+
+	/**
+	 * Get the array of registered executors in the system
 	 *
 	 * @return Array of names
 	 */
-	array function getScheduleNames(){
-		return variables.schedules.keyArray();
+	array function getExecutorNames(){
+		return variables.executors.keyArray();
 	}
 
 	/**
-	 * Verify if a scheduler exists
+	 * Verify if an executor exists
 	 *
-	 * @name The scheduler name
+	 * @name The executor name
 	 */
-	boolean function hasSchedule( required name ){
-		return variables.schedules.keyExists( arguments.name );
+	boolean function hasExecutor( required name ){
+		return variables.executors.keyExists( arguments.name );
 	}
 
 	/**
-	 * Delete a schedule from the registry, if the schedule has not shutdown, it will shutdown the schedule for you
+	 * Delete an executor from the registry, if the executor has not shutdown, it will shutdown the executor for you
+	 * using the shutdownNow() event
 	 *
 	 * @name The scheduler name
 	 */
-	AsyncManager function deleteSchedule( required name ){
-		if ( hasSchedule( arguments.name ) ) {
-			if ( !variables.schedules[ arguments.name ].isShutdown() ) {
-				variables.schedules[ arguments.name ].shutdownNow();
+	AsyncManager function deleteExecutor( required name ){
+		if ( hasExecutor( arguments.name ) ) {
+			if ( !variables.executors[ arguments.name ].isShutdown() ) {
+				variables.executors[ arguments.name ].shutdownNow();
 			}
-			variables.schedules.delete( arguments.name );
+			variables.executors.delete( arguments.name );
 		}
 		return this;
 	}
 
 	/**
-	 * Shutdown the schedule or force it to shutdown
+	 * Shutdown an executor or force it to shutdown, you can also do this from the Executor themselves.
+	 * If an un-registered executor name is passed, it will ignore it
 	 *
 	 * @force Use the shutdownNow() instead of the shutdown() method
 	 */
-	AsyncManager function shutdownSchedule( required name, boolean force=false ){
-		if ( hasSchedule( arguments.name ) ) {
+	AsyncManager function shutdownExecutor( required name, boolean force=false ){
+		if ( hasExecutor( arguments.name ) ) {
 			if( arguments.force ){
-				variables.schedules[ arguments.name ].shutdownNow();
+				variables.executors[ arguments.name ].shutdownNow();
 			} else {
-				variables.schedules[ arguments.name ].shutdown();
+				variables.executors[ arguments.name ].shutdown();
 			}
 		}
 		return this;
 	}
 
 	/**
-	 * Shutdown all registered schedules in the system
+	 * Shutdown all registered executors in the system
 	 *
-	 * @force By default it gracefullly shuts them down, else uses the shutdownNow() methods
+	 * @force By default (false) it gracefullly shuts them down, else uses the shutdownNow() methods
 	 *
 	 * @return AsyncManager
 	 */
 	AsyncManager function shutdownAllSchedules( boolean force = false ){
-		variables.schedules.each( function( key, schedule ){
+		variables.executors.each( function( key, schedule ){
 			if ( force ) {
 				arguments.schedule.shutdownNow();
 			} else {
@@ -154,19 +235,26 @@ component accessors="true" singleton {
 	}
 
 	/**
-	 * Returns a structure of status maps for every registered schedule in the
-	 * manager. This is composed of tons of stats about the schedule and its executor
+	 * Returns a structure of status maps for every registered executor in the
+	 * manager. This is composed of tons of stats about the executor
 	 *
-	 * @return
+	 * @name The name of the executor to retrieve th status map ONLY!
+	 *
+	 * @return A struct of metadata about the executor or all executors
 	 */
-	struct function getScheduleStatusMap(){
-		return variables.schedules.map( function( key, scheduler ){
-			return arguments.scheduler.getStats();
+	struct function getExecutorStatusMap( name ){
+
+		if( !isNull( arguments.name ) ){
+			return getExecutor( arguments.name ).getStats();
+		}
+
+		return variables.executors.map( function( key, thisExecutor ){
+			return arguments.thisExecutor.getStats();
 		} );
 	}
 
 	/****************************************************************
-	 * Future Methods *
+	 * Future Creation Methods *
 	 ****************************************************************/
 
 	/**
@@ -206,7 +294,7 @@ component accessors="true" singleton {
 	}
 
 	/****************************************************************
-	 * Future Shortcuts *
+	 * Future Creation Shortcuts *
 	 ****************************************************************/
 
 	/**
