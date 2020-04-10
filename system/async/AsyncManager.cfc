@@ -1,11 +1,19 @@
 /**
  * The ColdBox Async Manager is in charge of creating runnable proxies based on
- * components or closures that can be spawned as native Java Completable future
+ * components or closures that can be spawned as native Java Completable futures
  * to support you with multi-threaded and asynchronous programming.
  *
- * The manager can also help you create executor services so you can define your own
+ * The manager can also help you create executor services (queues or work pools) so you can define your own
  * thread pools according to your needs.  If not, the majority of the asynchronous
- * methods will use the ForkJoin.commonPool() implementation
+ * methods will use the ForkJoin.commonPool() implementation.
+ *
+ * Every ColdBox application has a single AsyncManager loaded with 1 work queue created
+ * mostly for internal ColdBox operations: `coldbox-tasks` with 20 threads.
+ *
+ * However, you can define as many executor pools in your configuration file and ColdBox will
+ * manage them for you via this Async Manager.
+ *
+ * Welcome to the world of async and parallel programming!
  */
 component accessors="true" singleton {
 

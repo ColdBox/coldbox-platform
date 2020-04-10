@@ -36,6 +36,17 @@
 				} );
 			} );
 
+			story( "I want to register executors in my ModuleConfig", function(){
+				then( "it should register them upon startup", function(){
+						expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeTrue();
+				} );
+				then( "it should delete them upon unLoading", function(){
+					expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeTrue();
+					getController().getModuleService().unload( "resourcesTest" );
+					expect( getController().getAsyncManager().hasExecutor( "resourcesPool" ) ).toBeFalse();
+			} );
+			} );
+
 		} );
 	}
 
