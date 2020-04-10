@@ -13,12 +13,11 @@ component {
 		logBox = {};
 
 		// Define Appenders
-		logBox.appenders = { console : { class : "coldbox.system.logging.appenders.DummyAppender" } };
+		logBox.appenders = { console : { class : "coldbox.system.logging.appenders.ConsoleAppender" } };
 
 		// Root Logger
 		logBox.root = {
-			levelmax  : "OFF",
-			levelMin  : "OFF",
+			levelmax  : "INFO",
 			appenders : "*"
 		};
 	}
