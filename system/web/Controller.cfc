@@ -118,10 +118,15 @@ component serializable="false" accessors="true"{
 		services.routingService		= new coldbox.system.web.services.RoutingService( this );
 		services.moduleService 		= new coldbox.system.web.services.ModuleService( this );
 
-		// CacheBox Instance
+		variables.log.info( "All internal ColdBox services created" );
+
+		// CacheBox Instance Reference, no init just yet
 		variables.cacheBox 	= createObject( "component", "coldbox.system.cache.CacheFactory" );
-		// WireBox Instance
+		variables.log.info( "Controller CacheBox created successfully" );
+
+		// WireBox Instance Reference, no init just yet
 		variables.wireBox	= createObject( "component", "coldbox.system.ioc.Injector" );
+		variables.log.info( "Controller WireBox reference created" );
 
 		return this;
 	}
