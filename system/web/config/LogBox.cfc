@@ -13,7 +13,7 @@ component {
 		logBox = {};
 
 		// Define Appenders
-		logBox.appenders = { console : { class : "coldbox.system.logging.appenders.ConsoleAppender" } };
+		logBox.appenders = { console : { class : "ConsoleAppender" } };
 
 		// Root Logger
 		logBox.root = {

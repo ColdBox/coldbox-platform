@@ -88,6 +88,16 @@ component accessors="true"{
 		// Link incoming ColdBox instance
 		variables.coldbox = arguments.coldbox;
 
+		// Registered system appenders
+		variables.systemAppenders = directoryList(
+			expandPath( "/coldbox/system/logging/appenders" ),
+			false, // don't recurse
+			"name", // only names
+			"*.cfc" // only cfcs
+		).map( function( thisAppender ){
+			return listFirst( thisAppender, "." );
+		} );
+
 		// Register the task scheduler according to operating mode
 		if( !isObject( variables.coldbox ) ){
 			variables.asyncManager = new coldbox.system.async.AsyncManager();
@@ -244,7 +254,7 @@ component accessors="true"{
 	 * @levelMin The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN
 	 * @levelMax The default log level for this appender, by default it is 4. Optional. ex: LogBox.logLevels.WARN
 	 */
-	function registerAppender(
+	LogBox function registerAppender(
 		required name,
 		required class,
 		struct properties={},
@@ -259,14 +269,12 @@ component accessors="true"{
 
 				if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
 
-					// Create appender and linking
-					var oAppender = new "#arguments.class#"( argumentCollection=arguments )
+					// Create it and store it
+					variables.appenderRegistry[ arguments.name ] = new "#getLoggerClass( arguments.class )#"( argumentCollection=arguments )
 						.setLogBox( this )
 						.setColdBox( variables.coldbox )
 						.onRegistration()
 						.setInitialized( true );
-					// Store it
-					variables.appenderRegistry[ arguments.name ] = oAppender;
 
 				}
 
@@ -274,9 +282,29 @@ component accessors="true"{
 
 		}
 
+		return this;
 	}
 
-	/********************************************* PRIVATE *********************************************/
+	/****************************************************************
+	 * Private Methods *
+	 ****************************************************************/
+
+	/**
+	 * Figure out the correct logger class for the passed alias. If it's a
+	 * system appender then pre-prend it and return it, else return intact.
+	 *
+	 * @class The full class or the shortcut of the system appenders
+	 *
+	 * @return The full class path to instantiate
+	 */
+	private function getLoggerClass( required class ){
+		// is this a local class?
+		if( arrayFindNoCase( variables.systemAppenders, arguments.class ) ){
+			return "coldbox.system.logging.appenders.#arguments.class#";
+		}
+
+		return arguments.class;
+	}
 
 	/**
 	 * Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.

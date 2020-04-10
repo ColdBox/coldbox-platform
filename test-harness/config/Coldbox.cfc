@@ -74,8 +74,8 @@
 		logBox = {
 			// Define Appenders
 			appenders = {
-				myConsole     = { class="coldbox.system.logging.appenders.ConsoleAppender" },
-				fileAppender  = { class="coldbox.system.logging.appenders.RollingFileAppender",
+				myConsole     = { class="ConsoleAppender" },
+				fileAppender  = { class="RollingFileAppender",
 								  properties = {
 								  	async = true,
 								  	filePath="/cbTestHarness/logs", fileName=coldbox.appName, autoExpand=true, fileMaxSize="100"
