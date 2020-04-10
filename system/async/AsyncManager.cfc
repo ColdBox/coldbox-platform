@@ -59,15 +59,15 @@ component accessors="true" singleton {
 	 */
 	Executor function newExecutor(
 		required name,
-		type="fixed",
-		numeric threads=this.$executors.DEFAULT_THREADS,
-		boolean debug=false,
-		boolean loadAppContext=true
+		type                   = "fixed",
+		numeric threads        = this.$executors.DEFAULT_THREADS,
+		boolean debug          = false,
+		boolean loadAppContext = true
 	){
 		// Build it if not found
-		if( !variables.executors.keyExists( arguments.name ) ){
+		if ( !variables.executors.keyExists( arguments.name ) ) {
 			// Create the ColdBox executor and register it
-			variables.executors[ arguments.name ] = buildExecutor( argumentCollection=arguments );
+			variables.executors[ arguments.name ] = buildExecutor( argumentCollection = arguments );
 		}
 
 		// Return it
@@ -88,32 +88,32 @@ component accessors="true" singleton {
 	private function buildExecutor(
 		required type,
 		numeric threads,
-		boolean debug=false,
-		boolean loadAppContext=true
+		boolean debug          = false,
+		boolean loadAppContext = true
 	){
 		// Factory to build the right executor
-		switch( arguments.type ){
-			case "fixed" : {
+		switch ( arguments.type ) {
+			case "fixed": {
 				arguments.executor = this.$executors.newFixedThreadPool( arguments.threads );
-				return new tasks.Executor( argumentCollection=arguments );
+				return new tasks.Executor( argumentCollection = arguments );
 			}
-			case "cached" : {
+			case "cached": {
 				arguments.executor = this.$executors.newCachedThreadPool();
-				return new tasks.Executor( argumentCollection=arguments );
+				return new tasks.Executor( argumentCollection = arguments );
 			}
-			case "single" : {
+			case "single": {
 				arguments.executor = this.$executors.newFixedThreadPool( 1 );
-				return new tasks.Executor( argumentCollection=arguments );
+				return new tasks.Executor( argumentCollection = arguments );
 			}
-			case "scheduled" : {
+			case "scheduled": {
 				arguments.executor = this.$executors.newScheduledThreadPool( arguments.threads );
-				return new tasks.ScheduledExecutor( argumentCollection=arguments );
+				return new tasks.ScheduledExecutor( argumentCollection = arguments );
 			}
 		}
 		throw(
-			type = "InvalidExecutorType",
-			message= "The executor you requested :#arguments.type# does not exist.",
-			detail ="Valid executors are: fixed, cached, single, scheduled"
+			type    = "InvalidExecutorType",
+			message = "The executor you requested :#arguments.type# does not exist.",
+			detail  = "Valid executors are: fixed, cached, single, scheduled"
 		);
 	}
 
@@ -122,12 +122,12 @@ component accessors="true" singleton {
 	 */
 	Executor function newScheduledExecutor(
 		required name,
-		numeric threads=this.$executors.DEFAULT_THREADS,
-		boolean debug=false,
-		boolean loadAppContext=true
+		numeric threads        = this.$executors.DEFAULT_THREADS,
+		boolean debug          = false,
+		boolean loadAppContext = true
 	){
 		arguments.type = "scheduled";
-		return newExecutor( argumentCollection=arguments );
+		return newExecutor( argumentCollection = arguments );
 	}
 
 	/**
@@ -135,11 +135,11 @@ component accessors="true" singleton {
 	 */
 	Executor function newSingleExecutor(
 		required name,
-		boolean debug=false,
-		boolean loadAppContext=true
+		boolean debug          = false,
+		boolean loadAppContext = true
 	){
 		arguments.type = "single";
-		return newExecutor( argumentCollection=arguments );
+		return newExecutor( argumentCollection = arguments );
 	}
 
 	/**
@@ -147,12 +147,12 @@ component accessors="true" singleton {
 	 */
 	Executor function newCachedExecutor(
 		required name,
-		numeric threads=this.$executors.DEFAULT_THREADS,
-		boolean debug=false,
-		boolean loadAppContext=true
+		numeric threads        = this.$executors.DEFAULT_THREADS,
+		boolean debug          = false,
+		boolean loadAppContext = true
 	){
 		arguments.type = "cached";
-		return newExecutor( argumentCollection=arguments );
+		return newExecutor( argumentCollection = arguments );
 	}
 
 	/**
@@ -214,9 +214,9 @@ component accessors="true" singleton {
 	 *
 	 * @force Use the shutdownNow() instead of the shutdown() method
 	 */
-	AsyncManager function shutdownExecutor( required name, boolean force=false ){
+	AsyncManager function shutdownExecutor( required name, boolean force = false ){
 		if ( hasExecutor( arguments.name ) ) {
-			if( arguments.force ){
+			if ( arguments.force ) {
 				variables.executors[ arguments.name ].shutdownNow();
 			} else {
 				variables.executors[ arguments.name ].shutdown();
@@ -252,8 +252,7 @@ component accessors="true" singleton {
 	 * @return A struct of metadata about the executor or all executors
 	 */
 	struct function getExecutorStatusMap( name ){
-
-		if( !isNull( arguments.name ) ){
+		if ( !isNull( arguments.name ) ) {
 			return getExecutor( arguments.name ).getStats();
 		}
 
@@ -310,21 +309,21 @@ component accessors="true" singleton {
 	 * Alias to newFuture().allOf()
 	 */
 	function allOf(){
-		return newFuture().allOf( argumentCollection=arguments );
+		return newFuture().allOf( argumentCollection = arguments );
 	}
 
 	/**
 	 * Alias to newFuture().allApply()
 	 */
 	function allApply(){
-		return newFuture().allApply( argumentCollection=arguments );
+		return newFuture().allApply( argumentCollection = arguments );
 	}
 
 	/**
 	 * Alias to newFuture().anyOf()
 	 */
 	function anyOf(){
-		return newFuture().anyOf( argumentCollection=arguments );
+		return newFuture().anyOf( argumentCollection = arguments );
 	}
 
 }

@@ -8,7 +8,7 @@
  * - Single
  * - Scheduled
  */
-component accessors="true" singleton{
+component accessors="true" singleton {
 
 	/**
 	 * The human name of this executor
@@ -34,13 +34,13 @@ component accessors="true" singleton{
 	Executor function init(
 		required name,
 		required executor,
-		boolean debug=false,
-		boolean loadAppContext=true
+		boolean debug          = false,
+		boolean loadAppContext = true
 	){
-		variables.name      		= arguments.name;
-		variables.native  			= arguments.executor;
-		variables.debug 			= arguments.debug;
-		variables.loadAppContext 	= arguments.loadAppContext;
+		variables.name           = arguments.name;
+		variables.native         = arguments.executor;
+		variables.debug          = arguments.debug;
+		variables.loadAppContext = arguments.loadAppContext;
 
 		return this;
 	}
@@ -71,9 +71,7 @@ component accessors="true" singleton{
 		);
 
 		// Send for execution
-		return new FutureTask(
-			variables.native.submit( jCallable )
-		);
+		return new FutureTask( variables.native.submit( jCallable ) );
 	}
 
 	/****************************************************************

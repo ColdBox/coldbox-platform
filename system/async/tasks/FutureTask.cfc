@@ -21,7 +21,7 @@ component accessors="true" {
 	 * @native The native Future class we are wrapping
 	 */
 	FutureTask function init( native ){
-		if( isNull( arguments.native ) ){
+		if ( isNull( arguments.native ) ) {
 			arguments.native = createObject( "java", "java.util.concurrent.FutureTask" );
 		}
 		variables.native = arguments.native;
@@ -56,12 +56,12 @@ component accessors="true" {
 	){
 		// Do we have a timeout?
 		if ( arguments.timeout != 0 ) {
-			try{
+			try {
 				var results = variables.native.get(
 					javacast( "long", arguments.timeout ),
 					this.$timeUnit.get( arguments.timeUnit )
 				);
-			} catch( "java.util.concurrent.TimeoutException" e ){
+			} catch ( "java.util.concurrent.TimeoutException" e ) {
 				// Empty, because we will return a default value if passed
 			}
 		} else {

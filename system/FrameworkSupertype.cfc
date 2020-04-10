@@ -559,7 +559,7 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	 * Return the ColdBox Async Manager instance
+	 * Return the ColdBox Async Manager instance so you can do some async or parallel programming
 	 *
 	 * @return coldbox.system.async.AsyncManager
 	 */

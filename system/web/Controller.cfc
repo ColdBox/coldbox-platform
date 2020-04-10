@@ -71,7 +71,7 @@ component serializable="false" accessors="true"{
 	function init( required appRootPath, appKey="cbController" ){
 		// This will be lazy loaded on first use since the framework isn't ready to create it yet
 		variables.renderer		= "";
-		
+
 		// Create Utility
 		variables.util 			= new coldbox.system.core.util.Util();
 		// services scope
@@ -984,8 +984,8 @@ component serializable="false" accessors="true"{
 /****************************************** PRIVATE HELPERS *************************************************/
 
 	/**
-	* Load the internal ColdBox settings
-	*/
+	 * Load the internal ColdBox settings
+	 */
 	private function loadColdBoxSettings(){
 		// Setup metadata paths
 		variables.coldboxSettings[ "ApplicationPath" ] 		= getAppRootPath();

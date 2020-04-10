@@ -59,13 +59,16 @@ component accessors="true" {
 		variables.native         = createObject( "java", "java.util.concurrent.CompletableFuture" );
 		variables.debug          = arguments.debug;
 		variables.loadAppContext = arguments.loadAppContext;
-		variables.executor 		 = ( isNull( arguments.executor ) ? "" : arguments.executor );
-		variables.futureTimeout	 = { "timeout" : 0, "timeUnit" : "milliseconds" };
+		variables.executor       = ( isNull( arguments.executor ) ? "" : arguments.executor );
+		variables.futureTimeout  = {
+			"timeout"  : 0,
+			"timeUnit" : "milliseconds"
+		};
 
 		// Verify incoming value type
 		if ( !isNull( arguments.value ) ) {
 			// If the incoming value is a closure/lambda/udf, seed the future with it
-			if( isClosure( arguments.value ) || isCustomFunction( arguments.value ) ){
+			if ( isClosure( arguments.value ) || isCustomFunction( arguments.value ) ) {
 				return run( arguments.value );
 			}
 			// It is just a value to set as the completion
@@ -233,7 +236,7 @@ component accessors="true" {
 	 * Alias to exceptionally()
 	 */
 	function onException( required target ){
-		return exceptionally( argumentCollection=arguments );
+		return exceptionally( argumentCollection = arguments );
 	}
 
 	/**
@@ -250,8 +253,8 @@ component accessors="true" {
 	 */
 	Future function run(
 		required supplier,
-		method = "run",
-		any executor=variables.executor
+		method       = "run",
+		any executor = variables.executor
 	){
 		var jSupplier = createDynamicProxy(
 			new proxies.Supplier(
@@ -264,7 +267,7 @@ component accessors="true" {
 		);
 
 		// Supply the future and start the task
-		if( isObject( variables.executor ) ){
+		if ( isObject( variables.executor ) ) {
 			variables.native = variables.native.supplyAsync( jSupplier, variables.executor );
 		} else {
 			variables.native = variables.native.supplyAsync( jSupplier );
@@ -284,7 +287,7 @@ component accessors="true" {
 	 * @return The new completion stage (Future)
 	 */
 	Future function supplyAsync( required supplier, any executor ){
-		return run( argumentCollection=arguments );
+		return run( argumentCollection = arguments );
 	}
 
 	/**
@@ -299,7 +302,7 @@ component accessors="true" {
 	 */
 	Future function runAsync( required runnable, any executor ){
 		arguments.supplier = arguments.runnable;
-		return run( argumentCollection=arguments );
+		return run( argumentCollection = arguments );
 	}
 
 	/**
@@ -339,7 +342,7 @@ component accessors="true" {
 	 * Alias to `then()` left to help Java devs feel at Home
 	 */
 	Future function thenApply(){
-		return then( argumentCollection=arguments );
+		return then( argumentCollection = arguments );
 	}
 
 	/**
@@ -371,7 +374,7 @@ component accessors="true" {
 			[ "java.util.function.Function" ]
 		);
 
-		if( isNull( arguments.executor ) ){
+		if ( isNull( arguments.executor ) ) {
 			variables.native = variables.native.thenApplyAsync( apply );
 		} else {
 			variables.native = variables.native.thenApplyAsync( apply, arguments.executor );
@@ -384,7 +387,7 @@ component accessors="true" {
 	 * Alias to `thenAsync()` left to help Java devs feel at Home
 	 */
 	Future function thenApplyAsync(){
-		return thenAsync( argumentCollection=arguments );
+		return thenAsync( argumentCollection = arguments );
 	}
 
 	/**
@@ -446,13 +449,15 @@ component accessors="true" {
 	 */
 	array function allOf(){
 		// Collect the java futures to send back into this one for parallel exec
-		var jFutures = futuresWrap( argumentCollection=arguments );
+		var jFutures = futuresWrap( argumentCollection = arguments );
 
 		// Run them and wait for them!
-		variables.native.allOf( jFutures ).get(
-			javaCast( "long", variables.futureTimeout.timeout ),
-			this.timeUnit.get( variables.futureTimeout.timeUnit )
-		);
+		variables.native
+			.allOf( jFutures )
+			.get(
+				javacast( "long", variables.futureTimeout.timeout ),
+				this.timeUnit.get( variables.futureTimeout.timeUnit )
+			);
 
 		// return back the completed array results in the order they came in
 		return jFutures.map( function( jFuture ){
@@ -478,14 +483,14 @@ component accessors="true" {
 	array function allApply( array items, required fn, executor ){
 		return arguments.items
 			.map( function( thisItem ){
-				if( isObject( executor ) ){
+				if ( isObject( executor ) ) {
 					return new Future( thisItem ).thenAsync( fn, executor );
 				}
 				return new Future( thisItem ).thenAsync( fn );
 			} )
-			.map( function( thisFuture ) {
+			.map( function( thisFuture ){
 				return thisFuture.get(
-					javaCast( "long", variables.futureTimeout.timeout ),
+					javacast( "long", variables.futureTimeout.timeout ),
 					this.timeUnit.get( variables.futureTimeout.timeUnit )
 				);
 			} );
@@ -505,9 +510,7 @@ component accessors="true" {
 	 */
 	Future function anyOf(){
 		// Run the fastest future in the world!
-		variables.native = variables.native.anyOf(
-			futuresWrap( argumentCollection=arguments )
-		);
+		variables.native = variables.native.anyOf( futuresWrap( argumentCollection = arguments ) );
 
 		return this;
 	}
@@ -523,10 +526,7 @@ component accessors="true" {
 	 *
 	 * @returns This future
 	 */
-	Future function withTimeout(
-		numeric timeout = 0,
-		string timeUnit = "milliseconds"
-	){
+	Future function withTimeout( numeric timeout = 0, string timeUnit = "milliseconds" ){
 		variables.futureTimeout = arguments;
 		return this;
 	}
@@ -543,7 +543,7 @@ component accessors="true" {
 		return arguments
 			// If the passed in argument is a closure/udf, convert to a future
 			.map( function( key, future ){
-				if( isClosure( arguments.future ) || isCustomFunction( arguments.future ) ){
+				if ( isClosure( arguments.future ) || isCustomFunction( arguments.future ) ) {
 					return new Future().run( arguments.future );
 				}
 				return arguments.future;

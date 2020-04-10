@@ -11,8 +11,11 @@ component accessors="true" extends="FutureTask" {
 	 * @native The native ScheduledFuture class we are wrapping
 	 */
 	ScheduledFuture function init( native ){
-		if( isNull( arguments.native ) ){
-			arguments.native = createObject( "java", "java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask" );
+		if ( isNull( arguments.native ) ) {
+			arguments.native = createObject(
+				"java",
+				"java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask"
+			);
 		}
 		variables.native = arguments.native;
 		return this;
@@ -30,10 +33,8 @@ component accessors="true" extends="FutureTask" {
 	 *
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
-	numeric function getDelay( timeUnit="milliseconds" ){
-		return variables.native.getDelay(
-			this.$timeUnit.get( arguments.timeUnit )
-		);
+	numeric function getDelay( timeUnit = "milliseconds" ){
+		return variables.native.getDelay( this.$timeUnit.get( arguments.timeUnit ) );
 	}
 
 }

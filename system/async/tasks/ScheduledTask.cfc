@@ -1,4 +1,4 @@
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * The delay to use in the schedule execution
@@ -34,44 +34,44 @@ component accessors="true"{
 	ScheduledTask function init(
 		required task,
 		required executor,
-		method="run"
+		method = "run"
 	){
-		variables.task = arguments.task;
+		variables.task     = arguments.task;
 		variables.executor = arguments.executor;
-		variables.method = arguments.method;
+		variables.method   = arguments.method;
 
 		// Init Properties
-		variables.period = 0;
-		variables.delay = 0;
+		variables.period      = 0;
+		variables.delay       = 0;
 		variables.spacedDelay = 0;
-		variables.timeUnit = variables.executor.$timeUnit.get();
+		variables.timeUnit    = variables.executor.$timeUnit.get();
 
 		return this;
 	}
 
 	ScheduledFuture function start(){
-		if( variables.spacedDelay > 0 ){
+		if ( variables.spacedDelay > 0 ) {
 			return variables.executor.scheduleWithFixedDelay(
-				task : variables.task,
-				spacedDelay : variables.spacedDelay,
-				delay : variables.delay,
-				timeUnit : variables.timeUnit,
-				method : variables.method
+				task       : variables.task,
+				spacedDelay: variables.spacedDelay,
+				delay      : variables.delay,
+				timeUnit   : variables.timeUnit,
+				method     : variables.method
 			);
-		} else if( variables.period > 0 ){
+		} else if ( variables.period > 0 ) {
 			return variables.executor.scheduleAtFixedRate(
-				task : variables.task,
-				every : variables.period,
-				delay : variables.delay,
-				timeUnit : variables.timeUnit,
-				method : variables.method
+				task    : variables.task,
+				every   : variables.period,
+				delay   : variables.delay,
+				timeUnit: variables.timeUnit,
+				method  : variables.method
 			);
 		} else {
 			return variables.executor.schedule(
-				task : variables.task,
-				delay : variables.delay,
-				timeUnit : variables.timeUnit,
-				method : variables.method
+				task    : variables.task,
+				delay   : variables.delay,
+				timeUnit: variables.timeUnit,
+				method  : variables.method
 			);
 		}
 	}
@@ -95,8 +95,8 @@ component accessors="true"{
 	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
 	 */
 	Scheduledtask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
-		variables.spacedDelay    = arguments.spacedDelay;
-		variables.timeUnit = variables.executor.$timeUnit.get( arguments.timeUnit );
+		variables.spacedDelay = arguments.spacedDelay;
+		variables.timeUnit    = variables.executor.$timeUnit.get( arguments.timeUnit );
 		return this;
 	}
 
@@ -167,4 +167,5 @@ component accessors="true"{
 		variables.timeUnit = variables.executor.$timeUnit.get( "seconds" );
 		return this;
 	}
+
 }

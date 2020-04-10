@@ -12,7 +12,11 @@
  * use to monitor and get results from the tasks at hand, if any.
  *
  */
-component extends="Executor" accessors="true" singleton{
+component
+	extends  ="Executor"
+	accessors="true"
+	singleton
+{
 
 	/****************************************************************
 	 * Scheduling Methods *
@@ -38,9 +42,9 @@ component extends="Executor" accessors="true" singleton{
 	 */
 	ScheduledFuture function schedule(
 		required task,
-		numeric delay=0,
-		timeUnit="milliseconds",
-		method = "run"
+		numeric delay = 0,
+		timeUnit      = "milliseconds",
+		method        = "run"
 	){
 		// build out the java callable
 		var jCallable = createDynamicProxy(
@@ -89,13 +93,13 @@ component extends="Executor" accessors="true" singleton{
 	ScheduledFuture function scheduleAtFixedRate(
 		required task,
 		required numeric every,
-		numeric delay=0,
-		timeUnit="milliseconds",
-		method = "run"
+		numeric delay = 0,
+		timeUnit      = "milliseconds",
+		method        = "run"
 	){
 		// Schedule it
 		var jScheduledFuture = variables.native.scheduleAtFixedRate(
-			buildJavaRunnable( argumentCollection=arguments ),
+			buildJavaRunnable( argumentCollection = arguments ),
 			javacast( "long", arguments.delay ),
 			javacast( "long", arguments.every ),
 			this.$timeUnit.get( arguments.timeUnit )
@@ -128,13 +132,13 @@ component extends="Executor" accessors="true" singleton{
 	ScheduledFuture function scheduleWithFixedDelay(
 		required task,
 		required numeric spacedDelay,
-		numeric delay=0,
-		timeUnit="milliseconds",
-		method = "run"
+		numeric delay = 0,
+		timeUnit      = "milliseconds",
+		method        = "run"
 	){
 		// Schedule it
 		var jScheduledFuture = variables.native.scheduleWithFixedDelay(
-			buildJavaRunnable( argumentCollection=arguments ),
+			buildJavaRunnable( argumentCollection = arguments ),
 			javacast( "long", arguments.delay ),
 			javacast( "long", arguments.spacedDelay ),
 			this.$timeUnit.get( arguments.timeUnit )
@@ -148,12 +152,9 @@ component extends="Executor" accessors="true" singleton{
 	 * Builder Methods *
 	 ****************************************************************/
 
-	ScheduledTask function newSchedule(
-		required task,
-		method="run"
-	){
+	ScheduledTask function newSchedule( required task, method = "run" ){
 		arguments.executor = this;
-		return new ScheduledTask( argumentCollection=arguments );
+		return new ScheduledTask( argumentCollection = arguments );
 	}
 
 	/****************************************************************
