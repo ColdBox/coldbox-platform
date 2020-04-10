@@ -1,5 +1,5 @@
-component accessors="true"{
-	
+component accessors="true" {
+
 	property name="productService" inject="";
 
 }

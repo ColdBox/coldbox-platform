@@ -1,17 +1,17 @@
 /**
 Module Directives as public properties
-this.title 				= "Title of the module";
-this.author 			= "Author of the module";
-this.webURL 			= "Web URL for docs purposes";
-this.description 		= "Module description";
-this.version 			= "Module Version";
-this.viewParentLookup   = (true) [boolean] (Optional) // If true, checks for views in the parent first, then it the module.If false, then modules first, then parent.
+this.title              				= "Title of the module";
+this.author             			= "Author of the module";
+this.webURL             			= "Web URL for docs purposes";
+this.description        		= "Module description";
+this.version            			= "Module Version";
+this.viewParentLookup     = (true) [boolean] (Optional) // If true, checks for views in the parent first, then it the module.If false, then modules first, then parent.
 this.layoutParentLookup = (true) [boolean] (Optional) // If true, checks for layouts in the parent first, then it the module.If false, then modules first, then parent.
-this.entryPoint  		= "" (Optional) // If set, this is the default event (ex:forgebox:manager.index) or default route (/forgebox) the framework
+this.entryPoint          		= "" (Optional) // If set, this is the default event (ex:forgebox:manager.index) or default route (/forgebox) the framework
 									       will use to create an entry link to the module. Similar to a default event.
-this.cfmapping			= "The CF mapping to create";
+this.cfmapping     			= "The CF mapping to create";
 this.modelNamespace		= "The namespace to use for registered models, if blank it uses the name of the module."
-this.dependencies 		= "The array of dependencies for this module"
+this.dependencies   		= "The array of dependencies for this module"
 
 structures to create for configuration
 - parentSettings : struct (will append and override parent)
@@ -44,54 +44,47 @@ Optional Methods
 component {
 
 	// Module Properties
-	this.title 				= "resourcesTest";
-	this.author 			= "";
-	this.webURL 			= "";
-	this.description 		= "";
-	this.version			= "1.0.0";
+	this.title              = "resourcesTest";
+	this.author             = "";
+	this.webURL             = "";
+	this.description        = "";
+	this.version            = "1.0.0";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
-	this.viewParentLookup 	= true;
+	this.viewParentLookup   = true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
 	// Module Entry Point
-	this.entryPoint			= "resourcesTest";
+	this.entryPoint         = "resourcesTest";
 	// Model Namespace
-	this.modelNamespace		= "resourcesTest";
+	this.modelNamespace     = "resourcesTest";
 	// CF Mapping
-	this.cfmapping			= "resourcesTest";
+	this.cfmapping          = "resourcesTest";
 	// Auto-map models
-	this.autoMapModels		= true;
+	this.autoMapModels      = true;
 	// Module Dependencies
-	this.dependencies 		= [];
+	this.dependencies       = [];
 
 	function configure(){
-
 		// Custom Declared Points
-		interceptorSettings = {
-			customInterceptionPoints = ""
-		};
+		interceptorSettings = { customInterceptionPoints : "" };
 
 		// Custom Declared Interceptors
-		interceptors = [
-		];
+		interceptors = [];
 
 		// Binder Mappings
 		// binder.map("Alias").to("#moduleMapping#.model.MyService");
-
 	}
 
 	/**
-	* Fired when the module is registered and activated.
-	*/
+	 * Fired when the module is registered and activated.
+	 */
 	function onLoad(){
-
 	}
 
 	/**
-	* Fired when the module is unregistered and unloaded
-	*/
+	 * Fired when the module is unregistered and unloaded
+	 */
 	function onUnload(){
-
 	}
 
 }

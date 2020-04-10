@@ -1,17 +1,17 @@
 ﻿<cfcomponent output="false" hint="My Module Configuration">
-<cfscript>
-/**
+	<cfscript>
+	/**
 Module Directives as public properties
-this.title 				= "Title of the module";
-this.author 			= "Author of the module";
-this.webURL 			= "Web URL for docs purposes";
+this.title                                                             				= "Title of the module";
+this.author                                                   			= "Author of the module";
+this.webURL                                                   			= "Web URL for docs purposes";
 this.description 		= "Module description";
-this.version 			= "Module Version"
+this.version                                         			= "Module Version"
 
 Optional Properties
-this.viewParentLookup   = (true) [boolean] (Optional) // If true, checks for views in the parent first, then it the module.If false, then modules first, then parent.
+this.viewParentLookup                       = (true) [boolean] (Optional) // If true, checks for views in the parent first, then it the module.If false, then modules first, then parent.
 this.layoutParentLookup = (true) [boolean] (Optional) // If true, checks for layouts in the parent first, then it the module.If false, then modules first, then parent.
-this.entryPoint  		= "" (Optional) // If set, this is the default event (ex:forgebox:manager.index) or default route (/forgebox) the framework
+this.entryPoint                                                                                  		= "" (Optional) // If set, this is the default event (ex:forgebox:manager.index) or default route (/forgebox) the framework
 									       will use to create an entry link to the module. Similar to a default event.
 
 structures to create for configuration
@@ -41,64 +41,48 @@ Optional Methods
 */
 
 	// Module Properties
-	this.title 				= "mod1";
-	this.author 			= "Luis Majano";
-	this.webURL 			= "http://www.luismajano.com";
-	this.description 		= "Module 1";
-	this.version			= "1.0";
+	this.title              = "mod1";
+	this.author             = "Luis Majano";
+	this.webURL             = "http://www.luismajano.com";
+	this.description        = "Module 1";
+	this.version            = "1.0";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
-	this.viewParentLookup 	= true;
+	this.viewParentLookup   = true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
 	// Module Entry Point
-	this.entryPoint			= "mod1:home.index";
+	this.entryPoint         = "mod1:home.index";
 
 	function configure(){
-
 		// parent settings
-		parentSettings = {
-
-		};
+		parentSettings = {};
 
 		// module settings - stored in modules.name.settings
-		settings = {
-
-		};
+		settings = {};
 
 		// datasources
-		datasources = {
-
-		};
+		datasources = {};
 
 		// SES Routes
-		routes = [
-			//{pattern="/api-docs", handler="api",action="index"}
-		];
+		routes = [];
 
 		// Custom Declared Points
-		interceptorSettings = {
-			customInterceptionPoints = ""
-		};
+		interceptorSettings = { customInterceptionPoints : "" };
 
 		// Custom Declared Interceptors
-		interceptors = [
-		];
-
+		interceptors = [];
 	}
 
 	/**
-	* Fired when the module is registered and activated.
-	*/
+	 * Fired when the module is registered and activated.
+	 */
 	function onLoad(){
-
 	}
 
 	/**
-	* Fired when the module is unregistered and unloaded
-	*/
+	 * Fired when the module is unregistered and unloaded
+	 */
 	function onUnload(){
-
 	}
-
-</cfscript>
+	</cfscript>
 </cfcomponent>

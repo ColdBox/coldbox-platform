@@ -1,10 +1,9 @@
-﻿component accessors="true" {
-    
-    function init(){
-        return this;
-    }
+﻿component accessors = "true"{
+	function init(){
+		return this;
+	}
 
-    function getName(){
-        return "Simple";
-    }
+	function getName(){
+		return "Simple";
+	}
 }
