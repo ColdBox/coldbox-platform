@@ -62,6 +62,10 @@ component serializable="false" accessors="true"{
 	* The view/layout renderer
 	*/
 	property name="renderer";
+	/**
+	 * The Application's AsyncManager
+	 */
+	property name="asyncManager";
 
 	/**
 	* Constructor
@@ -91,6 +95,17 @@ component serializable="false" accessors="true"{
 		variables.configSettings 		= structNew();
 		variables.coldboxSettings		= structNew();
 
+		// Load up default ColdBox Settings
+		loadColdBoxSettings();
+
+		// Register the application's async manager
+		variables.asyncManager 		= new coldbox.system.async.AsyncManager();
+		// Create and register the ColdBox Async Scheduler Executor
+		variables.asyncManager.newScheduledExecutor(
+			name : "coldbox-tasks",
+			threads : variables.coldboxSettings.async.schedulerThreads
+		);
+
 		// LogBox Default Configuration & Creation
 		services.loaderService 		= new coldbox.system.web.services.LoaderService( this );
 		variables.logBox 			= services.loaderService.createDefaultLogBox();
@@ -107,9 +122,6 @@ component serializable="false" accessors="true"{
 		variables.cacheBox 	= createObject( "component", "coldbox.system.cache.CacheFactory" );
 		// WireBox Instance
 		variables.wireBox	= createObject( "component", "coldbox.system.ioc.Injector" );
-
-		// Load up default ColdBox Settings
-		loadColdBoxSettings();
 
 		return this;
 	}

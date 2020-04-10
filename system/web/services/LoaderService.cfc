@@ -56,23 +56,17 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Configure interceptors for operation from the configuration file
 		variables.controller.getInterceptorService().configure();
 
-		// Create CacheBox
-		createCacheBox();
 		// Create WireBox Container
 		createWireBox();
-
-		// Create and register the ColdBox Async Scheduler Executor
-		variables.controller
-			.getWireBox()
-			.getInstance( "AsyncManager@coldbox" )
-			.newScheduledExecutor( name: "coldbox-tasks", threads: coldboxSettings.async.schedulerThreads );
-		variables.log.info( "ColdBox Task Scheduler 'coldbox-tasks' registered in the AsyncManager using (#coldboxSettings.async.schedulerThreads#) threads" );
+		// Create CacheBox
+		createCacheBox();
 
 		// Execute onConfigurationLoad for coldbox internal services()
 		for ( var thisService in services ) {
 			services[ thisService ].onConfigurationLoad();
 			variables.log.info( "#thisService# configured" );
 		}
+
 		// Auto Map Root Models
 		if ( variables.controller.getSetting( "autoMapModels" ) ) {
 			variables.controller
@@ -81,19 +75,24 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				.mapDirectory( variables.controller.getSetting( "ModelsInvocationPath" ) );
 			variables.log.info( "Automatically mapped all root models" );
 		}
+
 		// Activate All Modules
 		variables.controller.getModuleService().activateAllModules();
+
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
 		variables.log.info( "ColdBox is ready to serve requests" );
+
 		// Execute afterConfigurationLoad
 		variables.controller
 			.getInterceptorService()
 			.processState( "afterConfigurationLoad" );
-		// Rescan interceptors in case modules had interception poitns to register
+
+			// Rescan interceptors in case modules had interception poitns to register
 		variables.controller.getInterceptorService().rescanInterceptors();
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
 		variables.controller.getRequestService().rebuildFlashScope();
+
 		// Execute afterAspectsLoad: all module interceptions are registered and flash rebuilt if needed
 		variables.controller
 			.getInterceptorService()
@@ -167,7 +166,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Map Object Converter
 		binder.map( "ObjectMarshaller@coldbox" ).to( "coldbox.system.core.conversion.ObjectMarshaller" );
 		// Map Async Manager
-		binder.map( "AsyncManager@coldbox" ).to( "coldbox.system.async.AsyncManager" );
+		binder.map( "AsyncManager@coldbox" ).toProvider( function(){
+			return variables.controller.getAsyncManager();
+		} );
 
 		variables.log.info( "ColdBox Global Classes registered in WireBox" );
 
