@@ -76,6 +76,9 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			variables.log.info( "Automatically mapped all root models" );
 		}
 
+		// Load up App Executors
+		createAppExecutors();
+
 		// Activate All Modules
 		variables.controller.getModuleService().activateAllModules();
 
@@ -99,6 +102,23 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 			.processState( "afterAspectsLoad" );
 
 		// We are now done, rock and roll!!
+		return this;
+	}
+
+	/**
+	 * Create and register the application's executors
+	 */
+	LoaderService function createAppExecutors(){
+		variables.log.info( "Registering Application Executors:" );
+
+		variables.controller.getSetting( "executors" )
+			.each( function( key, config ){
+				arguments.config.name = arguments.key;
+				variables.controller
+					.getAsyncManager()
+					.newExecutor( argumentCollection=arguments.config );
+				variables.log.info( "==> Registered App Executor: #arguments.key#" );
+			} );
 		return this;
 	}
 

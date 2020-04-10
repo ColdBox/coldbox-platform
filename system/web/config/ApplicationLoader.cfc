@@ -28,7 +28,7 @@ component accessors="true" {
 	 */
 	ApplicationLoader function loadConfiguration( string overrideAppMapping = "" ){
 		// Create Config Structure
-		var configStruct      = structNew();
+		var configStruct      = {};
 		var coldboxSettings   = variables.coldboxSettings;
 		var appRootPath       = variables.controller.getAppRootPath();
 		var configCFCLocation = coldboxSettings[ "ConfigFileLocation" ];
@@ -150,6 +150,9 @@ component accessors="true" {
 		/* ::::::::::::::::::::::::::::::::::::::::: Flash Scope Configuration :::::::::::::::::::::::::::::::::::::::::::: */
 		parseFlashScope( oConfig, configStruct );
 
+		/* ::::::::::::::::::::::::::::::::::::::::: Executors Config  :::::::::::::::::::::::::::::::::::::::::::: */
+		parseExecutors( oConfig, configStruct );
+
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = variables.util.fileLastModified( getMetadata( oConfig ).path );
 
@@ -215,14 +218,14 @@ component accessors="true" {
 	){
 		var configStruct     = arguments.config;
 		var fwSettingsStruct = variables.coldboxSettings;
-		var coldboxSettings  = arguments.oConfig.getPropertyMixin( "coldbox", "variables", structNew() );
+		var coldboxSettings  = arguments.oConfig.getPropertyMixin( "coldbox", "variables", {} );
 
 		// collection append
 		structAppend( configStruct, coldboxSettings, true );
 
 		// Common Structures
-		configStruct.layoutsRefMap = structNew();
-		configStruct.viewsRefMap   = structNew();
+		configStruct.layoutsRefMap = {};
+		configStruct.viewsRefMap   = {};
 
 		/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 
@@ -389,7 +392,7 @@ component accessors="true" {
 	 */
 	function parseYourSettings( required oConfig, required config ){
 		var configStruct = arguments.config;
-		var settings     = arguments.oConfig.getPropertyMixin( "settings", "variables", structNew() );
+		var settings     = arguments.oConfig.getPropertyMixin( "settings", "variables", {} );
 
 		// append it
 		structAppend( configStruct, settings, true );
@@ -404,7 +407,7 @@ component accessors="true" {
 		var conventions      = arguments.oConfig.getPropertyMixin(
 			"conventions",
 			"variables",
-			structNew()
+			{}
 		);
 
 		// Override conventions on a per found basis.
@@ -589,7 +592,7 @@ component accessors="true" {
 		var layoutSettings     = arguments.oConfig.getPropertyMixin(
 			"layoutSettings",
 			"variables",
-			structNew()
+			{}
 		);
 		var layouts          = arguments.oConfig.getPropertyMixin( "layouts", "variables", [] );
 		var thisLayout       = "";
@@ -599,7 +602,7 @@ component accessors="true" {
 		// defaults
 		configStruct.defaultLayout     = fwSettingsStruct.defaultLayout;
 		configStruct.defaultView       = "";
-		configStruct.registeredLayouts = structNew();
+		configStruct.registeredLayouts = {};
 
 		// Register layout settings
 		structAppend( configStruct, layoutSettings );
@@ -660,8 +663,8 @@ component accessors="true" {
 		var fwSettingsStruct = variables.coldboxSettings;
 
 		// CacheBox Defaults
-		configStruct.cacheBox            = structNew();
-		configStruct.cacheBox.dsl        = arguments.oConfig.getPropertyMixin( "cacheBox", "variables", structNew() );
+		configStruct.cacheBox            = {};
+		configStruct.cacheBox.dsl        = arguments.oConfig.getPropertyMixin( "cacheBox", "variables", {} );
 		configStruct.cacheBox.xml        = "";
 		configStruct.cacheBox.configFile = "";
 
@@ -690,12 +693,12 @@ component accessors="true" {
 		var interceptorSettings = arguments.oConfig.getPropertyMixin(
 			"interceptorSettings",
 			"variables",
-			structNew()
+			{}
 		);
 		var interceptors = arguments.oConfig.getPropertyMixin( "interceptors", "variables", [] );
 
 		// defaults
-		configStruct.interceptorConfig                          = structNew();
+		configStruct.interceptorConfig                          = {};
 		configStruct.interceptorConfig.interceptors             = [];
 		configStruct.interceptorConfig.customInterceptionPoints = "";
 
@@ -714,7 +717,7 @@ component accessors="true" {
 			}
 			// Properties check
 			if ( NOT structKeyExists( interceptors[ x ], "properties" ) ) {
-				interceptors[ x ].properties = structNew();
+				interceptors[ x ].properties = {};
 			}
 
 			// Register it
@@ -732,14 +735,14 @@ component accessors="true" {
 	){
 		var logBoxConfig  = variables.controller.getLogBox().getConfig();
 		var newConfigHash = hash( logBoxConfig.getMemento().toString() );
-		var logBoxDSL     = structNew();
+		var logBoxDSL     = {};
 		var key           = "";
 
 		// Default Config Structure
-		arguments.config[ "LogBoxConfig" ] = structNew();
+		arguments.config[ "LogBoxConfig" ] = {};
 
 		// Check if we have defined DSL first in application config
-		logBoxDSL = arguments.oConfig.getPropertyMixin( "logBox", "variables", structNew() );
+		logBoxDSL = arguments.oConfig.getPropertyMixin( "logBox", "variables", {} );
 		if ( NOT structIsEmpty( logBoxDSL ) ) {
 			// Reset Configuration we have declared a configuration DSL
 			logBoxConfig.reset();
@@ -772,17 +775,17 @@ component accessors="true" {
 	 * Parse WireBox
 	 */
 	function parseWireBox( required oConfig, required config ){
-		var wireBoxDSL = structNew();
+		var wireBoxDSL = {};
 
 		// Default Config Structure
-		arguments.config.wirebox                 = structNew();
+		arguments.config.wirebox                 = {};
 		arguments.config.wirebox.enabled         = true;
 		arguments.config.wirebox.binder          = "";
 		arguments.config.wirebox.binderPath      = "";
 		arguments.config.wirebox.singletonReload = false;
 
 		// Check if we have defined DSL first in application config
-		wireBoxDSL = arguments.oConfig.getPropertyMixin( "wireBox", "variables", structNew() );
+		wireBoxDSL = arguments.oConfig.getPropertyMixin( "wireBox", "variables", {} );
 
 		// Get Binder Paths
 		if ( structKeyExists( wireBoxDSL, "binder" ) ) {
@@ -806,14 +809,14 @@ component accessors="true" {
 	 * Parse Flash Scope
 	 */
 	function parseFlashScope( required oConfig, required config ){
-		var flashScopeDSL    = structNew();
+		var flashScopeDSL    = {};
 		var fwSettingsStruct = variables.coldboxSettings;
 
 		// Default Config Structure
 		arguments.config.flash = fwSettingsStruct.flash;
 
 		// Check if we have defined DSL first in application config
-		flashScopeDSL = arguments.oConfig.getPropertyMixin( "flash", "variables", structNew() );
+		flashScopeDSL = arguments.oConfig.getPropertyMixin( "flash", "variables", {} );
 
 		// check if empty or not, if not, then append and override
 		if ( NOT structIsEmpty( flashScopeDSL ) ) {
@@ -826,16 +829,30 @@ component accessors="true" {
 	}
 
 	/**
+	 * Parse Executors
+	 */
+	function parseExecutors( required oConfig, required config ){
+		// Default Config Structure
+		arguments.config.executors = {};
+		// Append it
+		structAppend(
+			arguments.config.executors,
+			arguments.oConfig.getPropertyMixin( "executors", "variables", {} ),
+			true
+		);
+	}
+
+	/**
 	 * Parse Modules
 	 */
 	function parseModules( required oConfig, required config ){
 		var configStruct = arguments.config;
-		var modules      = arguments.oConfig.getPropertyMixin( "modules", "variables", structNew() );
+		var modules      = arguments.oConfig.getPropertyMixin( "modules", "variables", {} );
 
 		// Defaults
 		configStruct.ModulesInclude = [];
 		configStruct.ModulesExclude = [];
-		configStruct.Modules        = structNew();
+		configStruct.Modules        = {};
 
 		if ( structKeyExists( modules, "include" ) ) {
 			configStruct.modulesInclude = modules.include;
@@ -854,7 +871,7 @@ component accessors="true" {
 		var environments = arguments.oConfig.getPropertyMixin(
 			"environments",
 			"variables",
-			structNew()
+			{}
 		);
 		var configStruct = arguments.config;
 

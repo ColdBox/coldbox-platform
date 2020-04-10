@@ -81,6 +81,16 @@
 			// ,debug = [ "coldbox.system" ]
 		};
 
+		// You can now register executors for your application
+		executors = {
+			"simpleTaskRunner" : {
+				type : "fixed"
+			},
+			"scheduledTasks" : {
+				type : "scheduled", threads : 50
+			}
+		};
+
 		// Layout Settings
 		layoutSettings = { defaultLayout : "", defaultView : "" };
 
