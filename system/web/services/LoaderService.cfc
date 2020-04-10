@@ -12,8 +12,8 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * @controller The controller instance to bind the service with
 	 */
 	function init( required controller ){
-		variables.controller 	= arguments.controller;
-		variables.log 			= "";
+		variables.controller = arguments.controller;
+		variables.log        = "";
 		return this;
 	}
 
@@ -64,7 +64,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Execute onConfigurationLoad for coldbox internal services()
 		for ( var thisService in services ) {
 			services[ thisService ].onConfigurationLoad();
-			variables.log.info( "#thisService# configured" );
+			variables.log.info( "√ #thisService# configured" );
 		}
 
 		// Auto Map Root Models
@@ -73,7 +73,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				.getWireBox()
 				.getBinder()
 				.mapDirectory( variables.controller.getSetting( "ModelsInvocationPath" ) );
-			variables.log.info( "Automatically mapped all root models" );
+			variables.log.info( "√ Automatically mapped all root models" );
 		}
 
 		// Load up App Executors
@@ -84,14 +84,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
-		variables.log.info( "ColdBox is ready to serve requests" );
+		variables.log.info( "††† ColdBox is ready to serve requests" );
 
 		// Execute afterConfigurationLoad
 		variables.controller
 			.getInterceptorService()
 			.processState( "afterConfigurationLoad" );
 
-			// Rescan interceptors in case modules had interception poitns to register
+		// Rescan interceptors in case modules had interception poitns to register
 		variables.controller.getInterceptorService().rescanInterceptors();
 		// Rebuild flash here just in case modules or afterConfigurationLoad changes settings.
 		variables.controller.getRequestService().rebuildFlashScope();
@@ -109,15 +109,14 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Create and register the application's executors
 	 */
 	LoaderService function createAppExecutors(){
-		variables.log.info( "Registering Application Executors:" );
-
-		variables.controller.getSetting( "executors" )
+		variables.controller
+			.getSetting( "executors" )
 			.each( function( key, config ){
 				arguments.config.name = arguments.key;
 				variables.controller
 					.getAsyncManager()
-					.newExecutor( argumentCollection=arguments.config );
-				variables.log.info( "==> Registered App Executor: #arguments.key#" );
+					.newExecutor( argumentCollection = arguments.config );
+				variables.log.info( "√ Registered App Executor: #arguments.key#" );
 			} );
 		return this;
 	}
@@ -152,9 +151,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 */
 	function createDefaultLogBox(){
 		return new coldbox.system.logging.LogBox(
-			new coldbox.system.logging.config.LogBoxConfig(
-				CFCConfigPath : "coldbox.system.web.config.LogBox"
-			),
+			new coldbox.system.logging.config.LogBoxConfig( CFCConfigPath: "coldbox.system.web.config.LogBox" ),
 			variables.controller
 		);
 	}
@@ -173,7 +170,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				variables.controller
 			);
 
-		variables.log.info( "Application's WireBox instance created" );
+		variables.log.info( "√ Application's WireBox configured" );
 
 		var binder = controller.getWireBox().getBinder();
 
@@ -186,11 +183,13 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Map Object Converter
 		binder.map( "ObjectMarshaller@coldbox" ).to( "coldbox.system.core.conversion.ObjectMarshaller" );
 		// Map Async Manager
-		binder.map( "AsyncManager@coldbox" ).toProvider( function(){
-			return variables.controller.getAsyncManager();
-		} );
+		binder
+			.map( "AsyncManager@coldbox" )
+			.toProvider( function(){
+				return variables.controller.getAsyncManager();
+			} );
 
-		variables.log.info( "ColdBox Global Classes registered in WireBox" );
+		variables.log.info( "√ ColdBox Global Classes registered" );
 
 		return this;
 	}
@@ -224,7 +223,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Create CacheBox
 		variables.controller.getCacheBox().init( config, variables.controller );
 
-		variables.log.info( "Application's CacheBox instance created" );
+		variables.log.info( "√ Application's CacheBox configured" );
 
 		return this;
 	}
@@ -233,33 +232,31 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 	 * Process the shutdown of the application
 	 */
 	LoaderService function processShutdown(){
-		variables.log.info( "Shutting down ColdBox..." );
+		variables.log.info( "† Shutting down ColdBox..." );
 
 		var wireBox = variables.controller.getWireBox();
 
 		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
-		variables.log.info( "Shutting down ColdBox Task Scheduler..." );
-		wirebox
-			.getInstance( "AsyncManager@coldbox" )
-			.shutdownAllSchedules( force=true );
+		variables.log.info( "† Shutting down ColdBox Task Scheduler..." );
+		wirebox.getInstance( "AsyncManager@coldbox" ).shutdownAllSchedules( force = true );
 
 		// Process services reinit
 		structEach( variables.controller.getServices(), function( key, thisService ){
-			variables.log.info( "Shutting down ColdBox #arguments.key# service..." );
+			variables.log.info( "† Shutting down ColdBox #arguments.key# service..." );
 			thisService.onShutdown();
 		} );
 
 		// Shutdown any services like cache engine, etc.
-		variables.log.info( "Shutting down CacheBox..." );
+		variables.log.info( "† Shutting down CacheBox..." );
 		variables.controller.getCacheBox().shutdown();
 
 		// Shutdown WireBox if it exists
 		if ( isObject( wirebox ) ) {
-			variables.log.info( "Shutting down WireBox..." );
+			variables.log.info( "† Shutting down WireBox..." );
 			wirebox.shutdown();
 		}
 
-		variables.log.info( "ColdBox shutdown gracefully..." );
+		variables.log.info( "† ColdBox shutdown gracefully..." );
 
 		return this;
 	}

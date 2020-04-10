@@ -14,7 +14,7 @@
  * method which will most likely be called by the saveFlash() method in order to persist the flashed map.
  * @author Luis Majano <lmajano@ortussolutions.com>
  */
-component accessors="true"{
+component accessors="true" {
 
 	/**
 	 * ColdBox Controller
@@ -36,23 +36,23 @@ component accessors="true"{
 	 * @controller ColdBox Controller
 	 * @defaults Default flash data packet for the flash RAM object=[scope,properties,inflateToRC,inflateToPRC,autoPurge,autoSave]
 	 */
-	function init( required controller, required struct defaults={} ){
+	function init( required controller, required struct defaults = {} ){
 		variables.controller = arguments.controller;
 		variables.defaults   = arguments.defaults;
 
 		// Defaults checks, just in case
-		if( ! structKeyExists( variables.defaults, "inflateToRC" ) ){
+		if ( !structKeyExists( variables.defaults, "inflateToRC" ) ) {
 			variables.defaults.inflateToRC = true;
 		}
-		if( ! structKeyExists( variables.defaults, "inflateToPRC" ) ){
+		if ( !structKeyExists( variables.defaults, "inflateToPRC" ) ) {
 			variables.defaults.inflateToPRC = false;
 		}
-		if( ! structKeyExists( variables.defaults, "autoPurge" ) ){
+		if ( !structKeyExists( variables.defaults, "autoPurge" ) ) {
 			variables.defaults.autoPurge = true;
 		}
 
 		// check for properties
-		if( structKeyExists( arguments.defaults, "properties" ) ){
+		if ( structKeyExists( arguments.defaults, "properties" ) ) {
 			variables.properties = arguments.defaults.properties;
 		} else {
 			variables.properties = {};
@@ -67,24 +67,28 @@ component accessors="true"{
 	 * Save the flash storage in preparing to go to the next request
 	 * @return SessionFlash
 	 */
-	function saveFlash(){}
+	function saveFlash(){
+	}
 
 	/**
 	 * Checks if the flash storage exists and IT HAS DATA to inflate.
 	 */
-	boolean function flashExists(){}
+	boolean function flashExists(){
+	}
 
 	/**
 	 * Get the flash storage structure to inflate it.
 	 */
-	struct function getFlash(){}
+	struct function getFlash(){
+	}
 
 	/**
 	 * Remove the entire flash storage
 	 *
 	 * @return SessionFlash
 	 */
-	function removeFlash(){}
+	function removeFlash(){
+	}
 
 	/************************ CONCRETE METHODS ****************************************/
 
@@ -95,12 +99,12 @@ component accessors="true"{
 	 */
 	function clearFlash(){
 		// Check if flash exists
-		if( flashExists() ){
+		if ( flashExists() ) {
 			var scope = getFlash();
 
 			scope
 				.filter( function( key, value ){
-					if( value.keyExists( "autoPurge" ) ){
+					if ( value.keyExists( "autoPurge" ) ) {
 						return value.autoPurge;
 					}
 					return false;
@@ -110,7 +114,7 @@ component accessors="true"{
 					scope.delete( item );
 				} );
 
-			if( scope.isEmpty() ){
+			if ( scope.isEmpty() ) {
 				removeFlash();
 			}
 		}
@@ -128,12 +132,7 @@ component accessors="true"{
 		var event = getController().getRequestService().getContext();
 
 		// Lock for race-conditions
-		lock
-			name="inflate.flash.#getUtil().getSessionIdentifier()#"
-			type="exclusive"
-			throwontimeout="true"
-			timeout="20"
-		{
+		lock name="inflate.flash.#getUtil().getSessionIdentifier()#" type="exclusive" throwontimeout="true" timeout="20" {
 			// Process Inflations
 			getFlash()
 				// Process only keys that are marked as keep and content exists
@@ -142,21 +141,21 @@ component accessors="true"{
 				} )
 				.each( function( key, value ){
 					// Inflate into RC?
-					if( arguments.value.inflateToRC ){
-						event.setValue( name=arguments.key, value=arguments.value.content );
+					if ( arguments.value.inflateToRC ) {
+						event.setValue( name = arguments.key, value = arguments.value.content );
 					}
 					// Inflate into PRC?
-					if( arguments.value.inflateToPRC ){
-						event.setPrivateValue( name=arguments.key, value=arguments.value.content );
+					if ( arguments.value.inflateToPRC ) {
+						event.setPrivateValue( name = arguments.key, value = arguments.value.content );
 					}
 					// Store it again
 					put(
-						name			= arguments.key,
-						value			= arguments.value.content,
-						keep			= ( arguments.value.autoPurge ? false : true ),
-						autoPurge		= arguments.value.autoPurge,
-						inflateToRC		= arguments.value.inflateToRC,
-						inflateToPRC	= arguments.value.inflateToPRC
+						name         = arguments.key,
+						value        = arguments.value.content,
+						keep         = ( arguments.value.autoPurge ? false : true ),
+						autoPurge    = arguments.value.autoPurge,
+						inflateToRC  = arguments.value.inflateToRC,
+						inflateToPRC = arguments.value.inflateToPRC
 					);
 				} );
 
@@ -171,8 +170,8 @@ component accessors="true"{
 	 * Get the flash temp request storage used throughout a request until flashed at the end of a request.
 	 */
 	struct function getScope(){
-		if( ! structKeyExists( request, "cbox_flash_temp_storage" ) ){
-			request[ "cbox_flash_temp_storage" ] = structnew();
+		if ( !structKeyExists( request, "cbox_flash_temp_storage" ) ) {
+			request[ "cbox_flash_temp_storage" ] = structNew();
 		}
 
 		return request[ "cbox_flash_temp_storage" ];
@@ -202,7 +201,7 @@ component accessors="true"{
 	 *
 	 * @return AbstractFlashScope
 	 */
-	function keep( string keys="" ){
+	function keep( string keys = "" ){
 		statusMarks( arguments.keys, true );
 		saveFlash();
 		return this;
@@ -215,7 +214,7 @@ component accessors="true"{
 	 *
 	 * @return AbstractFlashScope
 	 */
-	function discard( string keys="" ){
+	function discard( string keys = "" ){
 		statusMarks( arguments.keys, false );
 		return this;
 	}
@@ -236,27 +235,29 @@ component accessors="true"{
 	function put(
 		required string name,
 		required value,
-		boolean saveNow=false,
-		boolean keep=true,
-		boolean inflateToRC="#variables.defaults.inflateToRC#",
-		boolean inflateToPRC="#variables.defaults.inflateToPRC#",
-		boolean autoPurge="#variables.defaults.autoPurge#"
+		boolean saveNow      = false,
+		boolean keep         = true,
+		boolean inflateToRC  = "#variables.defaults.inflateToRC#",
+		boolean inflateToPRC = "#variables.defaults.inflateToPRC#",
+		boolean autoPurge    = "#variables.defaults.autoPurge#"
 	){
 		var scope = getScope();
-		var entry = structnew();
+		var entry = structNew();
 
 		// Create Flash Entry
-		entry.content 		= arguments.value;
-		entry.keep 			= arguments.keep;
-		entry.inflateToRC 	= arguments.inflateToRC;
-		entry.inflateToPRC 	= arguments.inflateToPRC;
-		entry.autoPurge		= arguments.autoPurge;
+		entry.content      = arguments.value;
+		entry.keep         = arguments.keep;
+		entry.inflateToRC  = arguments.inflateToRC;
+		entry.inflateToPRC = arguments.inflateToPRC;
+		entry.autoPurge    = arguments.autoPurge;
 
 		// Save entry in temp storage
 		scope[ arguments.name ] = entry;
 
 		// Save to storage
-		if( arguments.saveNow ){ saveFlash(); }
+		if ( arguments.saveNow ) {
+			saveFlash();
+		}
 
 		return this;
 	}
@@ -275,23 +276,25 @@ component accessors="true"{
 	 */
 	function putAll(
 		required struct map,
-		boolean saveNow=false,
-		boolean keep=true,
-		boolean inflateToRC="#variables.defaults.inflateToRC#",
-		boolean inflateToPRC="#variables.defaults.inflateToPRC#",
-		boolean autoPurge="#variables.defaults.autoPurge#"
+		boolean saveNow      = false,
+		boolean keep         = true,
+		boolean inflateToRC  = "#variables.defaults.inflateToRC#",
+		boolean inflateToPRC = "#variables.defaults.inflateToPRC#",
+		boolean autoPurge    = "#variables.defaults.autoPurge#"
 	){
 		// Save all keys in map
-		for( var key in arguments.map ){
+		for ( var key in arguments.map ) {
 			// Store value and key to pass
 			arguments.name  = key;
-			arguments.value = arguments.map[key];
+			arguments.value = arguments.map[ key ];
 			// place in put
-			put( argumentCollection=arguments );
+			put( argumentCollection = arguments );
 		}
 
 		// Save to Storage
-		if( arguments.saveNow ){ saveFlash(); }
+		if ( arguments.saveNow ) {
+			saveFlash();
+		}
 
 		return this;
 	}
@@ -304,9 +307,11 @@ component accessors="true"{
 	 *
 	 * @return AbstractFlashScope
 	 */
-	function remove( required name, boolean saveNow=false ){
+	function remove( required name, boolean saveNow = false ){
 		structDelete( getScope(), arguments.name );
-		if( arguments.saveNow ){ saveFlash(); }
+		if ( arguments.saveNow ) {
+			saveFlash();
+		}
 		return this;
 	}
 
@@ -351,15 +356,18 @@ component accessors="true"{
 	function get( required name, defaultValue ){
 		var scope = getScope();
 
-		if( exists( arguments.name ) ){
+		if ( exists( arguments.name ) ) {
 			return scope[ arguments.name ].content;
 		}
 
-		if( structKeyExists( arguments, "defaultValue" ) ){
+		if ( structKeyExists( arguments, "defaultValue" ) ) {
 			return arguments.defaultValue;
 		}
 
-		throw( message="#arguments.name# not found in flash scope. Valid keys are #getKeys()#.", type="#getMetadata(this).name#.KeyNotFoundException" );
+		throw(
+			message = "#arguments.name# not found in flash scope. Valid keys are #getKeys()#.",
+			type    = "#getMetadata( this ).name#.KeyNotFoundException"
+		);
 	}
 
 	/**
@@ -371,8 +379,15 @@ component accessors="true"{
 	 *
 	 * @return AbstractFlashScope
 	 */
-	function persistRC( include="", exclude="", boolean saveNow=false ){
-		var rc 	= getController().getRequestService().getContext().getCollection();
+	function persistRC(
+		include         = "",
+		exclude         = "",
+		boolean saveNow = false
+	){
+		var rc = getController()
+			.getRequestService()
+			.getContext()
+			.getCollection();
 		var somethingToSave = false;
 
 		// Cleanup
@@ -380,10 +395,10 @@ component accessors="true"{
 		arguments.exclude = replace( arguments.exclude, " ", "", "all" );
 
 		// Exclude?
-		if( len( trim( arguments.exclude ) ) ){
-			for( var thisKey in rc ){
+		if ( len( trim( arguments.exclude ) ) ) {
+			for ( var thisKey in rc ) {
 				// Only persist keys that are not Excluded.
-				if( ! listFindNoCase( arguments.exclude, thisKey ) ){
+				if ( !listFindNoCase( arguments.exclude, thisKey ) ) {
 					put( thisKey, rc[ thisKey ] );
 					somethingToSave = true;
 				}
@@ -391,11 +406,11 @@ component accessors="true"{
 		}
 
 		// Include?
-		if( len( trim( arguments.include ) ) ){
-			for(var x=1; x <= listLen( arguments.include ); x++){
+		if ( len( trim( arguments.include ) ) ) {
+			for ( var x = 1; x <= listLen( arguments.include ); x++ ) {
 				var thisKey = listGetAt( arguments.include, x );
 				// Check if key exists in RC
-				if( structKeyExists( rc, thisKey ) ){
+				if ( structKeyExists( rc, thisKey ) ) {
 					put( thisKey, rc[ thisKey ] );
 					somethingToSave = true;
 				}
@@ -403,7 +418,9 @@ component accessors="true"{
 		}
 
 		// Save Now?
-		if( arguments.saveNow && somethingToSave ){ saveFlash(); }
+		if ( arguments.saveNow && somethingToSave ) {
+			saveFlash();
+		}
 
 		return this;
 	}
@@ -444,18 +461,18 @@ component accessors="true"{
 	/**
 	 * Change the status marks of the temp scope entries
 	 */
-	private function statusMarks( string keys="", boolean keep=true ){
-		var scope		= getScope();
-		var targetKeys 	= structKeyArray( scope );
+	private function statusMarks( string keys = "", boolean keep = true ){
+		var scope      = getScope();
+		var targetKeys = structKeyArray( scope );
 
 		// keys passed in?
-		if( len( trim( arguments.keys ) ) ){
+		if ( len( trim( arguments.keys ) ) ) {
 			targetKeys = listToArray( keys );
 		}
 
 		// Keep them if they exist
-		for( var thisKey in targetkeys ){
-			if( structKeyExists( scope, thisKey ) ){
+		for ( var thisKey in targetkeys ) {
+			if ( structKeyExists( scope, thisKey ) ) {
 				scope[ thisKey ].keep = arguments.keep;
 			}
 		}

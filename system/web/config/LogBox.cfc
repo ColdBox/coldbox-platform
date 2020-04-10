@@ -16,10 +16,7 @@ component {
 		logBox.appenders = { console : { class : "ConsoleAppender" } };
 
 		// Root Logger
-		logBox.root = {
-			levelmax  : "INFO",
-			appenders : "*"
-		};
+		logBox.root = { levelmax : "INFO", appenders : "*" };
 	}
 
 }

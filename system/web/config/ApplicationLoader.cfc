@@ -404,11 +404,7 @@ component accessors="true" {
 	function parseConventions( required oConfig, required config ){
 		var configStruct     = arguments.config;
 		var fwSettingsStruct = variables.coldboxSettings;
-		var conventions      = arguments.oConfig.getPropertyMixin(
-			"conventions",
-			"variables",
-			{}
-		);
+		var conventions      = arguments.oConfig.getPropertyMixin( "conventions", "variables", {} );
 
 		// Override conventions on a per found basis.
 		if ( structKeyExists( conventions, "handlersLocation" ) ) {
@@ -589,15 +585,11 @@ component accessors="true" {
 		var configStruct       = arguments.config;
 		var	LayoutViewStruct   = createObject( "java", "java.util.LinkedHashMap" ).init();
 		var	LayoutFolderStruct = createObject( "java", "java.util.LinkedHashMap" ).init();
-		var layoutSettings     = arguments.oConfig.getPropertyMixin(
-			"layoutSettings",
-			"variables",
-			{}
-		);
-		var layouts          = arguments.oConfig.getPropertyMixin( "layouts", "variables", [] );
-		var thisLayout       = "";
-		var layoutsArray     = [];
-		var fwSettingsStruct = variables.coldboxSettings;
+		var layoutSettings     = arguments.oConfig.getPropertyMixin( "layoutSettings", "variables", {} );
+		var layouts            = arguments.oConfig.getPropertyMixin( "layouts", "variables", [] );
+		var thisLayout         = "";
+		var layoutsArray       = [];
+		var fwSettingsStruct   = variables.coldboxSettings;
 
 		// defaults
 		configStruct.defaultLayout     = fwSettingsStruct.defaultLayout;
@@ -868,11 +860,7 @@ component accessors="true" {
 	 * Detect the running environment and return the name
 	 */
 	private function detectEnvironment( required oConfig, required config ){
-		var environments = arguments.oConfig.getPropertyMixin(
-			"environments",
-			"variables",
-			{}
-		);
+		var environments = arguments.oConfig.getPropertyMixin( "environments", "variables", {} );
 		var configStruct = arguments.config;
 
 		// Set default to production

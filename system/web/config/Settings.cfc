@@ -43,7 +43,4 @@ component {
 	// Async Configs
 	this.async = { "schedulerThreads" : 20 };
 
-	function configure(){
-	}
-
 }

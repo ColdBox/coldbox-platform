@@ -237,15 +237,6 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-	* DEPRECATED: Get all the settings structure
-	* @fwsetting Retrieve from the config or fw settings, defaults to config
-	* @deepCopy Do a deep or shallow copy, shallow is default
-	*/
-	function getSettingStructure( boolean fwSetting=false, boolean deepCopy=false ){
-		return controller.getSettingStructure( argumentCollection=arguments );
-	}
-
-	/**
 	* Get a setting from the system
 	* @name The key of the setting
 	* @fwSetting Retrieve from the config or fw settings, defaults to config
