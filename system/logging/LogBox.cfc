@@ -47,6 +47,18 @@ component accessors="true"{
 	*/
 	property name="coldbox";
 
+	/**
+	 * The Global AsyncManager
+	 * @see coldbox.system.async.AsyncManager
+	 */
+	property name="asyncManager";
+
+	/**
+	 * The logBox task scheduler executor
+	 * @see coldbox.system.async.tasks.ScheduledExecutor
+	 */
+	property name="taskScheduler";
+
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
 
@@ -55,6 +67,8 @@ component accessors="true"{
 	 *
 	 * @config The LogBoxConfig object to use to configure this instance of LogBox
 	 * @coldbox A coldbox application that this instance of logbox can be linked to.
+	 *
+	 * @return A configured and loaded LogBox instance
 	 */
 	function init( required coldbox.system.logging.config.LogBoxConfig config, coldbox="" ){
 		// LogBox Unique ID
@@ -68,8 +82,17 @@ component accessors="true"{
 		// Version
 		variables.version           = "@build.version@+@build.number@";
 
-		// Link incoming ColdBox argument
+		// Link incoming ColdBox instance
 		variables.coldbox = arguments.coldbox;
+
+		// Register the task scheduler according to operating mode
+		if( !isObject( variables.coldbox ) ){
+			variables.asyncManager = new coldbox.system.async.AsyncManager();
+			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "logbox-tasks", threads : 20 );
+		} else {
+			variables.asyncManager = variables.coldbox.getAsyncManager();
+			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
+		}
 
 		// Configure LogBox
 		configure( arguments.config );
@@ -226,12 +249,11 @@ component accessors="true"{
 				if( !structKeyExists( variables.appenderRegistry, arguments.name ) ){
 
 					// Create appender and linking
-					var oAppender = new "#arguments.class#"( argumentCollection=arguments );
-					oAppender.setColdBox( variables.coldbox );
-					// run registration event
-					oAppender.onRegistration();
-					// set initialized
-					oAppender.setInitialized( true );
+					var oAppender = new "#arguments.class#"( argumentCollection=arguments )
+						.setLogBox( this )
+						.setColdBox( variables.coldbox )
+						.onRegistration()
+						.setInitialized( true );
 					// Store it
 					variables.appenderRegistry[ arguments.name ] = oAppender;
 
