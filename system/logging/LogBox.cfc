@@ -65,12 +65,15 @@ component accessors="true"{
 	/**
 	 * Constructor
 	 *
-	 * @config The LogBoxConfig object to use to configure this instance of LogBox
+	 * @config The LogBoxConfig object to use to configure this instance of LogBox or a path to your configuration object
 	 * @coldbox A coldbox application that this instance of logbox can be linked to.
 	 *
 	 * @return A configured and loaded LogBox instance
 	 */
-	function init( required coldbox.system.logging.config.LogBoxConfig config, coldbox="" ){
+	function init(
+		config="coldbox.system.logging.config.DefaultConfig",
+		coldbox=""
+	){
 		// LogBox Unique ID
 		variables.logboxID          = createObject( 'java', 'java.lang.System' ).identityHashCode( this );
 		// Appenders
@@ -103,11 +106,19 @@ component accessors="true"{
 	/**
 	 * Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories
 	 *
-	 * @config The LogBoxConfig object to use to configure this instance of LogBox: coldbox.system.logging.config.LogBoxConfig
+	 * @config The LogBoxConfig object to use to configure this instance of LogBox or the path to your configuration object
 	 * @config.doc_generic coldbox.system.logging.config.LogBoxConfig
 	 */
 	function configure( required config ){
 		lock name="#variables.logBoxID#.logbox.config" type="exclusive" timeout="30" throwOnTimeout=true{
+
+			// Do we need to build the config object?
+			if( isSimpleValue( arguments.config ) ){
+				arguments.config = new coldbox.system.logging.config.LogBoxConfig(
+					CFCConfigPath : arguments.config
+				);
+			}
+
 			// Store config object with validation
 			variables.config = arguments.config.validate();
 

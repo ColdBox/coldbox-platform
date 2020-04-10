@@ -37,14 +37,28 @@
 	 * The Event Manager object linkage
 	 */
 	property name="eventManager";
+
 	/**
 	 * The array of events this factory registers
 	 */
 	property name="eventStates" type="array";
+
 	/**
 	 * The registered caches this factory keeps track of
 	 */
 	property name="caches" type="struct";
+
+	/**
+	 * The Global AsyncManager
+	 * @see coldbox.system.async.AsyncManager
+	 */
+	property name="asyncManager";
+
+	/**
+	 * The logBox task scheduler executor
+	 * @see coldbox.system.async.tasks.ScheduledExecutor
+	 */
+	property name="taskScheduler";
 
 	/**
 	 * Constructor
@@ -121,7 +135,13 @@
 			variables.eventManager = variables.coldbox.getInterceptorService();
 			// Link Interception States
 			variables.coldbox.getInterceptorService().appendInterceptionPoints( variables.eventStates );
+			// Link async manager and scheduler
+			variables.asyncManager = variables.coldbox.getAsyncManager();
+			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
 		} else {
+			// Register an async manager and scheduler
+			variables.asyncManager = new coldbox.system.async.AsyncManager();
+			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "cachebox-tasks", threads : 20 );
 			// Running standalone, so create our own logging first
 			configureLogBox( arguments.config.getLogBoxConfig() );
 			// Running standalone, so create our own event manager

@@ -1,15 +1,15 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends = "coldbox.system.testing.BaseModelTest"{
 	this.loadColdBox = false;
 
 	function setup(){
-		props = {
+		logBox = new coldbox.system.logging.LogBox();
+		props  = {
 			dsn        : "coolblog",
 			table      : "logs",
 			autocreate : "true"
 		};
 		db = createMock( className = "coldbox.system.logging.appenders.DBAppender" );
-		db.init( "UnitTest", props );
+		db.init( "UnitTest", props ).setLogBox( logBox );
 
 		loge = createMock( className = "coldbox.system.logging.LogEvent" );
 		loge.init(
@@ -80,5 +80,4 @@
 
 		db.logMessage( loge );
 	}
-	</cfscript>
-</cfcomponent>
+}

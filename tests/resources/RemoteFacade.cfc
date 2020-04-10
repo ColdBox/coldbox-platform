@@ -1,2 +1,1 @@
-﻿<cfcomponent extends="mxunit.framework.RemoteFacade" wsversion="1"> 
-</cfcomponent> 
+﻿<cfcomponent extends="mxunit.framework.RemoteFacade" wsversion="1"></cfcomponent>

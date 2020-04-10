@@ -1,8 +1,8 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends = "coldbox.system.testing.BaseModelTest"{
 	function setup(){
+		logBox  = new coldbox.system.logging.LogBox();
 		console = createMock( className = "coldbox.system.logging.appenders.ConsoleAppender" );
-		console.init( "MyConsoleAppender" );
+		console.init( "MyConsoleAppender" ).setLogBox( logBox );
 
 		loge = createMock( className = "coldbox.system.logging.LogEvent" );
 		loge.init(
@@ -30,5 +30,4 @@
 			console.logMessage( loge );
 		}
 	}
-	</cfscript>
-</cfcomponent>
+}

@@ -1,9 +1,9 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends = "coldbox.system.testing.BaseModelTest"{
 	function setup(){
-		prop  = { limit : 2 };
-		scope = createMock( className = "coldbox.system.logging.appenders.ScopeAppender" );
-		scope.init( "MyScopeLogger", prop );
+		logBox = new coldbox.system.logging.LogBox();
+		prop   = { limit : 2 };
+		scope  = createMock( className = "coldbox.system.logging.appenders.ScopeAppender" );
+		scope.init( "MyScopeLogger", prop ).setLogBox( logBox );
 
 		loge = createMock( className = "coldbox.system.logging.LogEvent" );
 		loge.init(
@@ -22,5 +22,4 @@
 		// debug(request);
 		assertEquals( arrayLen( request[ "MyScopeLogger" ] ), 2 );
 	}
-	</cfscript>
-</cfcomponent>
+}

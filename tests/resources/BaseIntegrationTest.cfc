@@ -19,7 +19,7 @@ component
 	appMapping="/cbTestHarness"
 {
 
-/*********************************** LIFE CYCLE Methods ***********************************/
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
 		super.beforeAll();
