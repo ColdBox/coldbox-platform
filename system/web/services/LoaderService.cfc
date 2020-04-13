@@ -84,7 +84,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		variables.controller.setColdboxInitiated( true );
-		variables.log.info( "††† ColdBox is ready to serve requests" );
+		variables.log.info( "+++ ColdBox is ready to serve requests" );
 
 		// Execute afterConfigurationLoad
 		variables.controller
