@@ -91,7 +91,7 @@ component
 	}
 
 	/**
-     * configure the cache for operation
+     * Configure the cache for operation
 	 *
 	 * @return CacheBoxProvider
      */
@@ -111,22 +111,24 @@ component
 
 			// Prepare Statistics
 			variables.stats = new coldbox.system.cache.util.CacheStats( this );
-
 			// Setup the eviction Policy to use
 			variables.evictionPolicy = createObject( "component", locateEvictionPolicy( cacheConfig.evictionPolicy ) ).init( this );
-
 			// Create the object store the configuration mandated
 			variables.objectStore 	= createObject("component",  locateObjectStore( cacheConfig.objectStore ) ).init( this );
-
 			// Enable cache
 			variables.enabled = true;
 			// Enable reporting
 			variables.reportingEnabled = true;
+			// Configure the reaping scheduled task
+			variables.cacheFactory.getTaskScheduler()
+				.newSchedule( this, "reap" )
+					.spacedDelay( getConfiguration().reapFrequency ) // Runs again, after this spaced delay once each reap finalizes
+					.inMinutes()
+					.start();
+			variables.logger.info( "Reaping scheduled task started for #getName()# cache." );
 
 			// startup message
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "CacheBox Cache: #getName()# has been initialized successfully for operation" );
-			}
+			variables.logger.info( "CacheBox Cache: #getName()# has been initialized successfully for operation" );
 		}
 
 		return this;
@@ -404,28 +406,6 @@ component
 	}
 
 	/**
-	 * Send a reap or flush command to the cache: Not implemented by this provider
-	 *
-	 * @return ICacheProvider
-	 */
-	function reap(){
-		var threadName = "CacheBoxProvider.reap_#replace( randomUUID(), "-", "", "all" )#";
-
-		// Reap only if in frequency
-		if( dateDiff( "n", getStats().getLastReapDatetime(), now() ) GTE getConfiguration().reapFrequency ){
-			if( !inThread() ){
-				thread name="#threadName#"{
-					variables._reap();
-				}
-			} else {
-				variables._reap();
-			}
-		}
-
-		return this;
-	}
-
-	/**
 	 * Expire all the elments in the cache (if supported by the provider):  Not implemented by this cache
 	 *
 	 * @return ICacheProvider
@@ -543,9 +523,9 @@ component
 	}
 
 	/**
-	 * Reap the cache, clear out everything that is dead.
+	 * Reap the cache, clear out everything that is dead in a synchronous manner
 	 */
-	private function _reap(){
+	any function reap(){
 		var keyIndex 		= 1;
 		var cacheKeys 		= "";
 		var cacheKeysLen 	= 0;
@@ -556,19 +536,17 @@ component
 
 		lock type="exclusive" name="CacheBoxProvider.reap.#variables.cacheId#" timeout="#variables.lockTimeout#"{
 			// log it
-			if( variables.logger.canDebug() ){
-				variables.logger.debug( "Starting to reap CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
-			}
+			variables.logger.info( "Starting to reap CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
 
 			// Run Storage reaping first, before our local algorithm
 			variables.objectStore.reap();
 
 			// Let's Get our reaping vars ready, get a duplicate of the pool metadata so we can work on a good copy
 			cacheKeys 		= getKeys();
-			cacheKeysLen 	= ArrayLen(cacheKeys);
+			cacheKeysLen 	= ArrayLen( cacheKeys );
 
 			//Loop through keys
-			for (keyIndex=1; keyIndex LTE cacheKeysLen; keyIndex++){
+			for ( keyIndex=1; keyIndex LTE cacheKeysLen; keyIndex++ ){
 
 				//The Key to check
 				thisKey = cacheKeys[keyIndex];
@@ -604,9 +582,7 @@ component
 					}
 
 					// Check for last accessed timeouts. If object has not been accessed in the default span
-					if ( config.useLastAccessTimeouts AND
-					     dateDiff( "n", thisMD.lastAccessed, now() ) gte thisMD.lastAccessTimeout ){
-
+					if ( config.useLastAccessTimeouts AND dateDiff( "n", thisMD.lastAccessed, now() ) gte thisMD.lastAccessTimeout ){
 						// Clear the object from cache
 						if( clear( thisKey ) ){
 							// Announce Expiration only if removed, else maybe another thread cleaned it
@@ -620,11 +596,12 @@ component
 
 			//Reaping about to end, set new reaping date.
 			getStats().setLastReapDatetime( now() );
-
-			// log it
-			if( variables.logger.canDebug() )
-				variables.logger.debug( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
 		}
+
+		// log it
+		variables.logger.info( "Finished reap in #getTickCount()-sTime#ms for CacheBoxProvider: #getName()#, id: #variables.cacheId#" );
+
+		return this;
 	}
 
 	/******************************** PRIVATE ********************************/
