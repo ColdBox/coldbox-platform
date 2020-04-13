@@ -50,6 +50,9 @@
         "format:check": "cfformat check system/**/*.cfc,tests/specs/**/*.cfc",
 		"start:lucee" : "server start serverConfigFile='server-lucee@5.json'",
 		"start:2016" : "server start serverConfigFile='server-adobe@2016.json'",
-		"start:2018" : "server start serverConfigFile='server-adobe@2018.json'"
+		"start:2018" : "server start serverConfigFile='server-adobe@2018.json'",
+		"logs:lucee" : "server logs serverConfigFile='server-lucee@5.json' --follow",
+		"logs:2016" : "server logs serverConfigFile='server-adobe@2016.json --follow'",
+		"logs:2018" : "server logs serverConfigFile='server-adobe@2018.json --follow'"
 	}
 }
