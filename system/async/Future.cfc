@@ -540,12 +540,20 @@ component accessors="true" {
 	 * is an array of futures.
 	 */
 	private function futuresWrap(){
+
+		// Is the first element an array? Then use that as the builder for workloads
+		if( !isNull( arguments[ 1 ] ) && isArray( arguments[ 1 ] ) ){
+			return futuresWrap( argumentCollection=arguments[ 1 ] );
+		}
+
 		return arguments
 			// If the passed in argument is a closure/udf, convert to a future
 			.map( function( key, future ){
+				// Is this a closure/lambda/udf? Then inflate to a future
 				if ( isClosure( arguments.future ) || isCustomFunction( arguments.future ) ) {
 					return new Future().run( arguments.future );
 				}
+				// Return it
 				return arguments.future;
 			} )
 			.reduce( function( results, key, future ){

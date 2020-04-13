@@ -195,6 +195,39 @@ component extends="BaseAsyncSpec"{
 					.toInclude( "world" );
 			});
 
+			it( "can process multiple closures in parallel via the allOf() method by passing an array of closures", function(){
+				var f1 = function(){
+					return "hello";
+				};
+				var f2 = function(){
+					return "world!";
+				};
+				var aResults = asyncManager.newFuture()
+					.withTimeout( 5 )
+					.allOf( [ f1, f2 ] );
+				expect( aResults ).toBeArray();
+				expect( aResults.toString() )
+					.toInclude( "hello" )
+					.toInclude( "world" );
+			});
+
+			it( "can process multiple futures in parallel via the allOf() method by passing an array of futures", function(){
+				var f1 = asyncManager.newFuture().run( function(){
+					return "hello";
+				});
+				var f2 = asyncManager.newFuture().run( function(){
+					return "world!";
+				});
+
+				var aResults = asyncManager.newFuture()
+					.withTimeout( 5 )
+					.allOf( [ f1, f2 ] );
+				expect( aResults ).toBeArray();
+				expect( aResults.toString() )
+					.toInclude( "hello" )
+					.toInclude( "world" );
+			});
+
 			it( "can process multiple futures in parallel via the anyOf() method", function(){
 				var f1 = asyncManager.newFuture().run( function(){
 					sleep( 1000 );
