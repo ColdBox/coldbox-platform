@@ -96,9 +96,6 @@ component extends="coldbox.system.web.services.BaseService" {
 			variables.flashScope.inflateFlash();
 		}
 
-		// Object Caching Garbage Collector
-		variables.cacheBox.reapAll();
-
 		// Default Event Determination
 		if ( NOT structKeyExists( rc, variables.eventName ) ) {
 			rc[ variables.eventName ] = controller.getSetting( "DefaultEvent" );
