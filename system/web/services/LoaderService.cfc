@@ -238,7 +238,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 
 		// Shutdown all ColdBox Scheduler Tasks, no need to delete them as WireBox will be nuked!
 		variables.log.info( "† Shutting down ColdBox Task Scheduler..." );
-		wirebox.getInstance( "AsyncManager@coldbox" ).shutdownAllSchedules( force = true );
+		wirebox.getInstance( "AsyncManager@coldbox" ).shutdownAllExecutors( force = true );
 
 		// Process services reinit
 		structEach( variables.controller.getServices(), function( key, thisService ){

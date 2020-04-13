@@ -97,7 +97,7 @@ component extends="BaseAsyncSpec"{
 					var executor1 = asyncManager.newExecutor( "unitTest1" );
 					var executor2 = asyncManager.newExecutor( "unitTest2" );
 
-					asyncManager.shutdownAllSchedules();
+					asyncManager.shutdownAllExecutors();
 
 					expect( executor1.isShutdown() ).toBeTrue();
 					expect( executor2.isShutdown() ).toBeTrue();

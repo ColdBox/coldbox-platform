@@ -240,7 +240,7 @@ component accessors="true" singleton {
 	 *
 	 * @return AsyncManager
 	 */
-	AsyncManager function shutdownAllSchedules( boolean force = false ){
+	AsyncManager function shutdownAllExecutors( boolean force = false ){
 		variables.executors.each( function( key, schedule ){
 			if ( force ) {
 				arguments.schedule.shutdownNow();
