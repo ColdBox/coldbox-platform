@@ -122,6 +122,7 @@ component
 			// Configure the reaping scheduled task
 			variables.cacheFactory.getTaskScheduler()
 				.newSchedule( this, "reap" )
+					.delay( getConfiguration().reapFrequency ) // Don't start immediately, give it a breathing room
 					.spacedDelay( getConfiguration().reapFrequency ) // Runs again, after this spaced delay once each reap finalizes
 					.inMinutes()
 					.start();
