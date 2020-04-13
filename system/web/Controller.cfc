@@ -112,7 +112,7 @@ component serializable="false" accessors="true" {
 		variables.logBox       = services.loaderService.createDefaultLogBox();
 		variables.log          = variables.logBox.getLogger( this );
 
-		variables.log.info( "√ LogBox created" );
+		variables.log.info( "+ LogBox created" );
 
 		// Setup the ColdBox Services
 		services.requestService     = new coldbox.system.web.services.RequestService( this );
@@ -121,15 +121,15 @@ component serializable="false" accessors="true" {
 		services.routingService     = new coldbox.system.web.services.RoutingService( this );
 		services.moduleService      = new coldbox.system.web.services.ModuleService( this );
 
-		variables.log.info( "√ ColdBox services created" );
+		variables.log.info( "+ ColdBox services created" );
 
 		// CacheBox Instance Reference, no init just yet
 		variables.cacheBox = createObject( "component", "coldbox.system.cache.CacheFactory" );
-		variables.log.info( "√ Controller CacheBox created" );
+		variables.log.info( "+ Controller CacheBox created" );
 
 		// WireBox Instance Reference, no init just yet
 		variables.wireBox = createObject( "component", "coldbox.system.ioc.Injector" );
-		variables.log.info( "√ Controller WireBox created" );
+		variables.log.info( "+ Controller WireBox created" );
 
 		return this;
 	}

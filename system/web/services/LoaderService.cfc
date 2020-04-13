@@ -64,7 +64,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Execute onConfigurationLoad for coldbox internal services()
 		for ( var thisService in services ) {
 			services[ thisService ].onConfigurationLoad();
-			variables.log.info( "√ #thisService# configured" );
+			variables.log.info( "+ #thisService# configured" );
 		}
 
 		// Auto Map Root Models
@@ -73,7 +73,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				.getWireBox()
 				.getBinder()
 				.mapDirectory( variables.controller.getSetting( "ModelsInvocationPath" ) );
-			variables.log.info( "√ Automatically mapped all root models" );
+			variables.log.info( "+ Automatically mapped all root models" );
 		}
 
 		// Load up App Executors
@@ -116,7 +116,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				variables.controller
 					.getAsyncManager()
 					.newExecutor( argumentCollection = arguments.config );
-				variables.log.info( "√ Registered App Executor: #arguments.key#" );
+				variables.log.info( "+ Registered App Executor: #arguments.key#" );
 			} );
 		return this;
 	}
@@ -170,7 +170,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				variables.controller
 			);
 
-		variables.log.info( "√ Application's WireBox configured" );
+		variables.log.info( "+ Application's WireBox configured" );
 
 		var binder = controller.getWireBox().getBinder();
 
@@ -189,7 +189,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 				return variables.controller.getAsyncManager();
 			} );
 
-		variables.log.info( "√ ColdBox Global Classes registered" );
+		variables.log.info( "+ ColdBox Global Classes registered" );
 
 		return this;
 	}
@@ -223,7 +223,7 @@ component extends="coldbox.system.web.services.BaseService" accessors="true" {
 		// Create CacheBox
 		variables.controller.getCacheBox().init( config, variables.controller );
 
-		variables.log.info( "√ Application's CacheBox configured" );
+		variables.log.info( "+ Application's CacheBox configured" );
 
 		return this;
 	}
