@@ -438,31 +438,35 @@ component accessors="true" {
 	}
 
 	/**
-	 * This method accepts an infinite amount of future objects or closures in order to execute them in parallel,
-	 * waits for them and then processes their combined results into an array of results.
+	 * This method accepts an infinite amount of future objects, closures or an array of future objects/closures
+	 * in order to execute them in parallel.  It will return back to you a future that will return back an array
+	 * of results from every future that was executed. This way you can further attach processing and pipelining
+	 * on the constructed array of values.
 	 *
 	 * <pre>
-	 * results = allOf( f1, f2, f3 )
+	 * results = all( f1, f2, f3 ).get()
+	 * all( f1, f2, f3 ).then( (values) => logResults( values ) );
 	 * </pre>
 	 *
-	 * @result An array containing all of the collected results
+	 * @result A future that will return the results in an array
 	 */
-	array function allOf(){
+	Future function all(){
 		// Collect the java futures to send back into this one for parallel exec
 		var jFutures = futuresWrap( argumentCollection = arguments );
 
-		// Run them and wait for them!
-		variables.native
-			.allOf( jFutures )
-			.get(
-				javacast( "long", variables.futureTimeout.timeout ),
-				this.timeUnit.get( variables.futureTimeout.timeUnit )
-			);
+		// Split implementation cause ACF sucks on closure pointer references
+		variables.native = variables.native.allOf( jFutures );
 
-		// return back the completed array results in the order they came in
-		return jFutures.map( function( jFuture ){
-			return jFuture.get();
+		// Return a future that will process the results back into an array
+		// once it completes
+		return this.thenAsync( function(){
+			// return back the completed array results
+			return jFutures.map( function( jFuture ){
+				//writeDump( var=arguments.jFuture.get(), output="console" );
+				return arguments.jFuture.get();
+			} );
 		} );
+
 	}
 
 	/**
@@ -518,7 +522,6 @@ component accessors="true" {
 	/**
 	 * This method seeds a timeout into this future that can be used by the following operations:
 	 *
-	 * - allOf()
 	 * - allApply()
 	 *
 	 * @timeout The timeout value to use, defaults to forever
@@ -540,27 +543,30 @@ component accessors="true" {
 	 * is an array of futures.
 	 */
 	private function futuresWrap(){
+		var target = arguments;
 
 		// Is the first element an array? Then use that as the builder for workloads
 		if( !isNull( arguments[ 1 ] ) && isArray( arguments[ 1 ] ) ){
-			return futuresWrap( argumentCollection=arguments[ 1 ] );
+			target = arguments[ 1 ];
 		}
 
-		return arguments
-			// If the passed in argument is a closure/udf, convert to a future
-			.map( function( key, future ){
+		// I have to use arrayMap() if not lucee does not use array notation
+		// but struct notation and order get's lost
+		return arrayMap(
+			target,
+			function( future ){
 				// Is this a closure/lambda/udf? Then inflate to a future
 				if ( isClosure( arguments.future ) || isCustomFunction( arguments.future ) ) {
 					return new Future().run( arguments.future );
 				}
 				// Return it
 				return arguments.future;
-			} )
-			.reduce( function( results, key, future ){
-				// Now process it
-				results.append( arguments.future.getNative() );
-				return results;
-			}, [] );
+			}
+		).reduce( function( results, future ){
+			// Now process it
+			results.append( arguments.future.getNative() );
+			return results;
+		}, [] );
 	}
 
 }

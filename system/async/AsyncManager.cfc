@@ -86,7 +86,7 @@ component accessors="true" singleton {
 	 * Build a Java executor according to passed type and threads
 	 * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html
 	 *
-	 * @type Available types are: fixed, cached, single, scheduled
+	 * @type Available types are: fixed, cached, single, scheduled, {WireBoxID}
 	 * @threads The number of threads to seed the executor with, if it allows it
 	 * @debug Add output debugging
 	 * @loadAppContext Load the CFML App contexts or not, disable if not used
@@ -116,6 +116,9 @@ component accessors="true" singleton {
 			case "scheduled": {
 				arguments.executor = this.$executors.newScheduledThreadPool( arguments.threads );
 				return new tasks.ScheduledExecutor( argumentCollection = arguments );
+			}
+			default : {
+
 			}
 		}
 		throw(
@@ -314,10 +317,10 @@ component accessors="true" singleton {
 	 ****************************************************************/
 
 	/**
-	 * Alias to newFuture().allOf()
+	 * Alias to newFuture().all()
 	 */
-	function allOf(){
-		return newFuture().allOf( argumentCollection = arguments );
+	Future function all(){
+		return newFuture().all( argumentCollection = arguments );
 	}
 
 	/**
@@ -330,7 +333,7 @@ component accessors="true" singleton {
 	/**
 	 * Alias to newFuture().anyOf()
 	 */
-	function anyOf(){
+	Future function anyOf(){
 		return newFuture().anyOf( argumentCollection = arguments );
 	}
 

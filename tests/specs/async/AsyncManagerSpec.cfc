@@ -134,7 +134,6 @@ component extends="BaseAsyncSpec"{
 				expect( creditFuture.get() ).toBe( 800 );
 			});
 
-
 			it( "can combine two futures for a single result", function(){
 				debug( "getting weight" );
 				var weightFuture = asyncManager.newFuture().run( function(){
@@ -161,24 +160,23 @@ component extends="BaseAsyncSpec"{
 				expect( combinedFuture.get() ).toBeGt( 20 );
 			});
 
-			it( "can process multiple futures in parallel via the allOf() method", function(){
+			it( "can process multiple futures in parallel via the all() method", function(){
 				var f1 = asyncManager.newFuture().run( function(){
+					sleep( randRange( 100, 1000 ) );
 					return "hello";
 				});
 				var f2 = asyncManager.newFuture().run( function(){
-					return "world!";
+					sleep( 1000 );
+					return "world";
 				});
 
-				var aResults = asyncManager.newFuture()
-					.withTimeout( 5 )
-					.allOf( f1, f2 );
-				expect( aResults ).toBeArray();
-				expect( aResults.toString() )
+				var fResult = asyncManager.newFuture().all( f1, f2 );
+				expect( fResult.get().toString() )
 					.toInclude( "hello" )
 					.toInclude( "world" );
 			});
 
-			it( "can process multiple closures in parallel via the allOf() method", function(){
+			it( "can process multiple closures in parallel via the all() method", function(){
 				var f1 = function(){
 					return "hello";
 				};
@@ -186,16 +184,14 @@ component extends="BaseAsyncSpec"{
 					return "world!";
 				};
 
-				var aResults = asyncManager.newFuture()
-					.withTimeout( 5 )
-					.allOf( f1, f2 );
+				var aResults = asyncManager.newFuture().all( f1, f2 ).get();
 				expect( aResults ).toBeArray();
 				expect( aResults.toString() )
 					.toInclude( "hello" )
 					.toInclude( "world" );
 			});
 
-			it( "can process multiple closures in parallel via the allOf() method by passing an array of closures", function(){
+			it( "can process multiple closures in parallel via the all() method by passing an array of closures", function(){
 				var f1 = function(){
 					return "hello";
 				};
@@ -203,27 +199,25 @@ component extends="BaseAsyncSpec"{
 					return "world!";
 				};
 				var aResults = asyncManager.newFuture()
-					.withTimeout( 5 )
-					.allOf( [ f1, f2 ] );
-				expect( aResults ).toBeArray();
-				expect( aResults.toString() )
+					.all( [ f1, f2 ] );
+				expect( aResults.get() ).toBeArray();
+				expect( aResults.get().toString() )
 					.toInclude( "hello" )
 					.toInclude( "world" );
 			});
 
-			it( "can process multiple futures in parallel via the allOf() method by passing an array of futures", function(){
-				var f1 = asyncManager.newFuture().run( function(){
+			it( "can process multiple futures in parallel via the all() method by passing an array of futures", function(){
+				var f1 = asyncManager.newFuture( function(){
 					return "hello";
-				});
-				var f2 = asyncManager.newFuture().run( function(){
+				} );
+				var f2 = asyncManager.newFuture( function(){
 					return "world!";
-				});
+				} );
 
 				var aResults = asyncManager.newFuture()
-					.withTimeout( 5 )
-					.allOf( [ f1, f2 ] );
-				expect( aResults ).toBeArray();
-				expect( aResults.toString() )
+					.all( [ f1, f2 ] );
+				expect( aResults.get() ).toBeArray();
+				expect( aResults.get().toString() )
 					.toInclude( "hello" )
 					.toInclude( "world" );
 			});

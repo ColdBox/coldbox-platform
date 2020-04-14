@@ -31,6 +31,9 @@ component extends="BaseProxy" {
 		loadContext();
 		try {
 			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
+				if( isNull( arguments.t ) ){
+					return variables.target();
+				}
 				return variables.target( arguments.t );
 			}
 		} finally {
