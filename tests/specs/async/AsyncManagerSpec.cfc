@@ -256,16 +256,6 @@ component extends="BaseAsyncSpec"{
 
 
 			it( "can process an array of items with a special apply function for each", function(){
-				var createRecord = function( id ){
-					return createStub()
-						.$( "getId", arguments.id )
-						.$( "getMemento", {
-							id : arguments.id,
-							name : "test-#createUUID()#",
-							when : now(),
-							isActive : randRange( 0, 1 )
-						} );
-				};
 				var aItems = [
 					createRecord( 1 ),
 					createRecord( 2 ),
@@ -275,14 +265,15 @@ component extends="BaseAsyncSpec"{
 				];
 
 				var results = asyncManager.allApply( aItems, function( item ){
-					createObject("java","java.lang.System").err.println(
-						"Processing #arguments.item.getId()# memento via #getThreadName()#"
+					writeDump(
+						var : "Processing #arguments.item.getId()# memento via #getThreadName()#",
+						output : "console"
 					);
 					sleep( randRange( 100, 1000 ) );
 					return arguments.item.getMemento();
 				} );
 
-				debug( results );
+				//debug( results );
 
 				expect( results ).toBeArray();
 				expect( results[ 1 ] ).toBeStruct();
@@ -293,16 +284,6 @@ component extends="BaseAsyncSpec"{
 			});
 
 			it( "can process an array of items with a special apply function for each and a custom executor", function(){
-				var createRecord = function( id ){
-					return createStub()
-						.$( "getId", arguments.id )
-						.$( "getMemento", {
-							id : arguments.id,
-							name : "test-#createUUID()#",
-							when : now(),
-							isActive : randRange( 0, 1 )
-						} );
-				};
 				var aItems = [
 					createRecord( 1 ),
 					createRecord( 2 ),
@@ -312,14 +293,15 @@ component extends="BaseAsyncSpec"{
 				];
 
 				var results = asyncManager.allApply( aItems, function( item ){
-					createObject("java","java.lang.System").err.println(
-						"Processing #arguments.item.getId()# memento via #getThreadName()#"
+					writeDump(
+						var : "Processing #arguments.item.getId()# memento via #getThreadName()#",
+						output : "console"
 					);
 					sleep( randRange( 100, 1000 ) );
 					return arguments.item.getMemento();
 				}, asyncManager.$executors.newCachedThreadPool() );
 
-				debug( results );
+				//debug( results );
 
 				expect( results ).toBeArray();
 				expect( results[ 1 ] ).toBeStruct();
@@ -329,7 +311,38 @@ component extends="BaseAsyncSpec"{
 				expect( results[ 5 ] ).toBeStruct();
 			});
 
+			it( "can process a struct with via allApply()", function(){
+				var myStruct = {
+					1 : createRecord( 1 ),
+					2 : createRecord( 2 ),
+					3 : createRecord( 3 ),
+					4 : createRecord( 4 )
+				};
+
+				var results = asyncManager.allApply( myStruct, function( result ){
+					writeDump(
+						var : "Processing #arguments.result.key# memento via #getThreadName()#",
+						output : "console"
+					);
+					sleep( randRange( 100, 1000 ) );
+					return arguments.result.value.getMemento();
+				} );
+
+				debug( results );
+			});
+
 		} );
+	}
+
+	private function createRecord( id ){
+		return createStub()
+			.$( "getId", arguments.id )
+			.$( "getMemento", {
+				id : arguments.id,
+				name : "test-#createUUID()#",
+				when : now(),
+				isActive : randRange( 0, 1 )
+			} );
 	}
 
 }

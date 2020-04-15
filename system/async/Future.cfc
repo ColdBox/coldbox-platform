@@ -39,7 +39,7 @@ component accessors="true" {
 	property name="futureTimeout" type="struct";
 
 	// Prepare the static time unit class
-	this.timeUnit = new util.TimeUnit();
+	this.$timeUnit = new util.TimeUnit();
 
 	/**
 	 * Construct a new ColdBox Future backed by a Java Completable Future
@@ -146,7 +146,7 @@ component accessors="true" {
 		if ( arguments.timeout != 0 ) {
 			var results = variables.native.get(
 				javacast( "long", arguments.timeout ),
-				this.timeUnit.get( arguments.timeUnit )
+				this.$timeUnit.get( arguments.timeUnit )
 			);
 		} else {
 			var results = variables.native.get();
@@ -470,12 +470,15 @@ component accessors="true" {
 	}
 
 	/**
-	 * This function can accept an array of items and apply a function
+	 * This function can accept an array of items or a struct and apply a function
 	 * to each of the item's in parallel.  The `fn` argument receives the appropriate item
 	 * and must return a result.  Consider this a parallel map() operation
 	 *
 	 * <pre>
+	 * // Array
 	 * allApply( items, ( item ) => item.getMemento() )
+	 * // Struct: The result object is a struct of `key` and `value`
+	 * allApply( data, ( item ) => item.key & item.value.toString() )
 	 * </pre>
 	 *
 	 * @items An array to process
@@ -484,20 +487,48 @@ component accessors="true" {
 	 *
 	 * @return An array with the items processed
 	 */
-	array function allApply( array items, required fn, executor ){
-		return arguments.items
-			.map( function( thisItem ){
-				if ( isObject( executor ) ) {
-					return new Future( thisItem ).thenAsync( fn, executor );
-				}
-				return new Future( thisItem ).thenAsync( fn );
-			} )
-			.map( function( thisFuture ){
-				return thisFuture.get(
-					javacast( "long", variables.futureTimeout.timeout ),
-					this.timeUnit.get( variables.futureTimeout.timeUnit )
-				);
-			} );
+	any function allApply( any items, required fn, executor ){
+		var incomingExecutor = arguments.executor ?: "";
+
+		// Array Processing
+		if( isArray( arguments.items ) ){
+			return arguments.items
+				.map( function( thisItem ){
+					if ( isObject( incomingExecutor ) ) {
+						return new Future( thisItem ).thenAsync( fn, incomingExecutor );
+					}
+					return new Future( thisItem ).thenAsync( fn );
+				} )
+				.map( function( thisFuture ){
+					return arguments.thisFuture.get(
+						javacast( "long", variables.futureTimeout.timeout ),
+						arguments.thisFuture.$timeUnit.get( variables.futureTimeout.timeUnit )
+					);
+				} );
+		}
+		// Struct Processing
+		else if( isStruct( arguments.items ) ){
+			return arguments.items
+				.map( function( key, value ){
+					if ( isObject( incomingExecutor ) ) {
+						return new Future( {
+							"key" : arguments.key,
+							"value" : arguments.value
+						} ).thenAsync( fn, incomingExecutor );
+					}
+					return new Future( {
+						"key" : arguments.key,
+						"value" : arguments.value
+					} ).thenAsync( fn );
+				} )
+				.map( function( key, thisFuture ){
+					return arguments.thisFuture.get(
+						javacast( "long", variables.futureTimeout.timeout ),
+						arguments.thisFuture.$timeUnit.get( variables.futureTimeout.timeUnit )
+					);
+				} );
+		}
+
 	}
 
 	/**

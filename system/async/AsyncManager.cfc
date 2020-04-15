@@ -326,7 +326,7 @@ component accessors="true" singleton {
 	/**
 	 * Alias to newFuture().allApply()
 	 */
-	function allApply(){
+	any function allApply(){
 		return newFuture().allApply( argumentCollection = arguments );
 	}
 
