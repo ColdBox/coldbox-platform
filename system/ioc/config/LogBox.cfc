@@ -7,7 +7,7 @@
 * information about logBox visit: https://logbox.ortusbooks.com
 **/
 component{
-	
+
 	/**
 	 *  Configure logBox
 	 */
@@ -15,8 +15,8 @@ component{
 		logBox = {
 			// Define Appenders
 			appenders = {
-				console = { 
-					class="coldbox.system.logging.appenders.ConsoleAppender"
+				console = {
+					class="ConsoleAppender"
 				}
 				/**,
 				cflogs = {

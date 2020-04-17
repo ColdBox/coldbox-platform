@@ -1,4 +1,4 @@
-component{
+component {
 
 	function init(){
 		return this;
@@ -7,5 +7,5 @@ component{
 	function sayHello(){
 		return "Hola Brother!";
 	}
-	
+
 }

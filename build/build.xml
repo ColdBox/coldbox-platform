@@ -129,10 +129,15 @@
     	<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-wirebox.cfm' verbose=false" />
 		</exec>
+
+		<!-- Run for Async -->
+		<exec executable="box" dir="${basedir}" failonerror="true">
+			<arg line="testbox run runner='http://localhost:${server.port}/tests/runner-async.cfm' verbose=false" />
+		</exec>
     </target>
 
 	<!-- Build All Releases -->
-	<target name="build.all" description="Builds ColdBox + Standalone Libraries" depends="build.coldbox,build.cachebox,build.wirebox,build.logbox">
+	<target name="build.all" description="Builds ColdBox + Standalone Libraries" depends="run-tests,build.coldbox,build.cachebox,build.wirebox,build.logbox">
 	</target>
 
 	<!-- Build ColdBox Distribution -->

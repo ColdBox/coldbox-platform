@@ -44,6 +44,7 @@
 	"max_columns": 120,
 	"metadata.multiline.element_count": 3,
 	"metadata.multiline.min_length": 40,
+	"newline":"\n",
 	"property.multiline.element_count": 3,
 	"property.multiline.min_length": 40,
 	"parentheses.padding": true,

@@ -1,8 +1,8 @@
-component output="false"{
+component output="false" {
 
 	function index( event, rc, prc ){
 		// testing coldbox exception bean, this line will throw error
-		event.getValuesss("random");
+		event.getValuesss( "random" );
 		return;
 	}
 
@@ -10,4 +10,4 @@ component output="false"{
 		event.setView( "testerror/expression" );
 	}
 
-}	
+}

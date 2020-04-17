@@ -1,14 +1,14 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends = "coldbox.system.testing.BaseModelTest"{
 	function setup(){
-		props = {
+		logBox = new coldbox.system.logging.LogBox();
+		props  = {
 			to      : "info@coldboxframework.com,automation@coldbox.org",
 			from    : "info@coldboxframework.com",
 			subject : "Email Appender Test"
 		};
 
 		email = createMock( className = "coldbox.system.logging.appenders.EmailAppender" );
-		email.init( "MyEmailAppender", props );
+		email.init( "MyEmailAppender", props ).setLogBox( logBox );
 
 		loge = createMock( className = "coldbox.system.logging.LogEvent" );
 		loge.init(
@@ -26,5 +26,4 @@
 			email.logMessage( loge );
 		}
 	}
-	</cfscript>
-</cfcomponent>
+}

@@ -21,7 +21,8 @@ component extends="coldbox.system.testing.BaseModelTest" {
 		// all your suites go here.
 		describe( "Rolling File Appender", function(){
 			beforeEach( function( currentSpec ){
-				props = {
+				logBox = new coldbox.system.logging.LogBox();
+				props  = {
 					filePath        : expandPath( "/tests/logs" ),
 					autoExpand      : false,
 					fileMaxArchives : 1,
@@ -29,7 +30,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				};
 
 				// debug(props);
-				fileappender = createMock( "coldbox.system.logging.appenders.RollingFileAppender" );
+				fileappender = createMock( "coldbox.system.logging.appenders.RollingFileAppender" ).setLogBox( logBox );
 
 				// mock LogBox
 				logBox              = createMock( classname = "coldbox.system.logging.LogBox", clearMethod = true );

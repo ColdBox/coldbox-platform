@@ -96,6 +96,18 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 	property name="injectorID";
 
 	/**
+	 * The Global AsyncManager
+	 * @see coldbox.system.async.AsyncManager
+	 */
+	property name="asyncManager";
+
+	/**
+	 * The logBox task scheduler executor
+	 * @see coldbox.system.async.tasks.ScheduledExecutor
+	 */
+	property name="taskScheduler";
+
+	/**
 	 * Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder
 	 *
 	 * @binder The WireBox binder or data CFC instance or instantiation path to configure this injector with
@@ -164,6 +176,15 @@ component serializable="false" accessors="true" implements="coldbox.system.ioc.I
 		variables.lockName = "WireBox.Injector.#variables.injectorID#";
 		// Link ColdBox Context if passed
 		variables.coldbox = arguments.coldbox;
+
+		// Register the task scheduler according to operating mode
+		if( !isObject( variables.coldbox ) ){
+			variables.asyncManager = new coldbox.system.async.AsyncManager();
+			variables.taskScheduler = variables.asyncManager.newScheduledExecutor( name : "wirebox-tasks", threads : 20 );
+		} else {
+			variables.asyncManager = variables.coldbox.getAsyncManager();
+			variables.taskScheduler = variables.asyncManager.getExecutor( "coldbox-tasks" );
+		}
 
 		// Configure the injector for operation
 		configure( arguments.binder, arguments.properties );

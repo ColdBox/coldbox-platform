@@ -1,32 +1,35 @@
-component{
+component {
 
-	this.allowedMethods = {
-		"index" = "GET"
-	};
+	this.allowedMethods = { "index" : "GET" };
 
 	function routeRunner( event, rc, prc ){
-		return runRoute( "routeRunner", { id = 2, name="unit test" } );
+		return runRoute( "routeRunner", { id : 2, name : "unit test" } );
 	}
 
 	function routeRunnerWithCaching( event, rc, prc ){
-		return runRoute( "routeRunner", { id = 2, name="unit test" }, true, 5 );
+		return runRoute(
+			"routeRunner",
+			{ id : 2, name : "unit test" },
+			true,
+			5
+		);
 	}
 
-	function returnTest( event, rc, prc, name="ColdBox" ){
+	function returnTest( event, rc, prc, name = "ColdBox" ){
 		return "<h1>Welcome to #arguments.name#!</h1>";
 	}
 
 	function cachePanel( event, rc, prc ){
-		event.setView( view="main/cachePanel", noLayout="true" );
+		event.setView( view = "main/cachePanel", noLayout = "true" );
 	}
 
 	function redirectTest( event, rc, prc ){
 		return "Redirected correctly";
 	}
 
-	function index( event, rc, prc, name="ColdBox" ){
+	function index( event, rc, prc, name = "ColdBox" ){
 		prc.welcomeMessage = "Welcome to #arguments.name#!";
-		event.setView("main/index");
+		event.setView( "main/index" );
 	}
 
 	function routes( event, rc, prc ){
@@ -42,11 +45,11 @@ component{
 	function testUnload( event, rc, prc ){
 		controller.getModuleService().unload( "conventionsTest" );
 		return "unloaded conventions";
-    }
+	}
 
-    function throwException( event, rc, prc ) {
-        throw( "Whoops!" );
-    }
+	function throwException( event, rc, prc ){
+		throw( "Whoops!" );
+	}
 
 	/**
 	 * Global invalid http method handler
@@ -56,15 +59,15 @@ component{
 	}
 
 	/**
-	* actionAllowedMethod
-	*/
+	 * actionAllowedMethod
+	 */
 	function actionAllowedMethod( event, rc, prc ) allowedMethods="GET"{
 		return "Executed!";
 	}
 
 	// Do something
 	function doSomething( event, rc, prc ){
-		relocate("main.index");
+		relocate( "main.index" );
 	}
 
 	function testPrivateActions( event, rc, prc ){
@@ -73,48 +76,42 @@ component{
 
 	/************************************** PRIVATE ACTIONS *********************************************/
 
- 	private function privateInfo( event, rc, prc ){
+	private function privateInfo( event, rc, prc ){
 		prc.someinfo = "private actions rule";
- 	}
+	}
 
 	/************************************** IMPLICIT ACTIONS *********************************************/
 
 	function onAppInit( event, rc, prc ){
-
 	}
 
 	function onInvalidEvent( event, rc, prc ){
-		event.renderData( data="<h1>Invalid Page</h1>", statusCode = 404 );
+		event.renderData( data = "<h1>Invalid Page</h1>", statusCode = 404 );
 	}
 
 	function onRequestStart( event, rc, prc ){
-
 	}
 
 	function onRequestEnd( event, rc, prc ){
-
 	}
 
 	function onSessionStart( event, rc, prc ){
-
 	}
 
 	function onSessionEnd( event, rc, prc ){
-		var sessionScope = event.getValue("sessionReference");
-		var applicationScope = event.getValue("applicationReference");
+		var sessionScope     = event.getValue( "sessionReference" );
+		var applicationScope = event.getValue( "applicationReference" );
 	}
 
 	function onException( event, rc, prc ){
-		//Grab Exception From request collection, placed by ColdBox
-		var exceptionBean = event.getValue( name="exception", private=true );
-		//Place exception handler below:
-
+		// Grab Exception From request collection, placed by ColdBox
+		var exceptionBean = event.getValue( name = "exception", private = true );
+		// Place exception handler below:
 	}
 
 	function onMissingTemplate( event, rc, prc ){
-		//Grab missingTemplate From request collection, placed by ColdBox
-		var missingTemplate = event.getValue("missingTemplate");
-
+		// Grab missingTemplate From request collection, placed by ColdBox
+		var missingTemplate = event.getValue( "missingTemplate" );
 	}
 
 }

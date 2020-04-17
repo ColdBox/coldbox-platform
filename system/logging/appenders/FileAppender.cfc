@@ -93,12 +93,18 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 			queue 	= []
 		};
 
-		// Async Manager
-		variables.asyncManager = new coldbox.system.async.AsyncManager();
+		return this;
+	}
+
+	/**
+	 * Called upon registration
+	 */
+	FileAppender function onRegistration(){
+		// Init the log location
+		initLogLocation();
 
 		return this;
-    }
-
+	}
 
     /**
 	 * Write an entry into the appender. You must implement this method yourself.
@@ -129,16 +135,6 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 		// Log it
 		append( entry );
-
-		return this;
-	}
-
-	/**
-	 * Called upon registration
-	 */
-	FileAppender function onRegistration(){
-		// Init the log location
-		initLogLocation();
 
 		return this;
 	}
@@ -195,19 +191,20 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 		} );
 
 		// if no thread is active, enter exclusive lock and start one.
-		if( !isActive ) {			
+		if( !isActive ) {
 			variables.lock( "exclusive", function(){
 				if( !variables.logListener.active ) {
-					out( "FileAppender Listener needs to be started..." );
+					out( "FileAppender ScheduleTask needs to be started..." );
 					variables.logListener.active = true;
 					// Create the runnable Log Listener, Start it up baby!
-					variables.asyncManager.run(
-						runnable       = this,
+					variables.logBox.getTaskScheduler().schedule(
+						task       = this,
 						method         = "runLogListener",
 						loadAppContext = false
 					);
+					out( "FileAppender ScheduleTask started" );
 				}
-			} );	
+			} );
 		}
 
 
@@ -228,7 +225,7 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 
 			// Ensure Log File
 			initLogLocation();
-	
+
 			var oFile         = fileOpen( variables.logFullPath, "append", this.getProperty( "fileEncoding" ) );
 			var hasMessages   = false;
 
@@ -268,10 +265,10 @@ component accessors="true" extends="coldbox.system.logging.AbstractAppender"{
 				}
 
 				//out( "Sleeping (#getTickCount()#): lastRun #lastRun + maxIdle#" );
-				
+
 				// Only take a nap if we've nothing to do
-				if( !variables.logListener.queue.len() ) {					
-					sleep( sleepInterval ); // take a nap	
+				if( !variables.logListener.queue.len() ) {
+					sleep( sleepInterval ); // take a nap
 				}
 			}
 

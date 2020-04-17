@@ -1,6 +1,6 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends = "coldbox.system.testing.BaseModelTest"{
 	function setup(){
+		logBox    = new coldbox.system.logging.LogBox();
 		localPort = getRandomPort();
 		var prop  = {
 			host              : "localhost",
@@ -9,10 +9,9 @@
 			persistConnection : false
 		};
 
-		socketAppender = createMock( className = "coldbox.system.logging.appenders.SocketAppender" ).init(
-			"MyScoketAppender",
-			prop
-		);
+		socketAppender = createMock( className = "coldbox.system.logging.appenders.SocketAppender" )
+			.init( "MyScoketAppender", prop )
+			.setLogBox( logBox );
 
 		loge = createMock( "coldbox.system.logging.LogEvent" ).init(
 			"Unit Test Sample",
@@ -59,5 +58,4 @@
 		nextAvail.close();
 		return portNumber;
 	}
-	</cfscript>
-</cfcomponent>
+}

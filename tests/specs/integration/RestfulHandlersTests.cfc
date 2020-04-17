@@ -19,7 +19,6 @@ component
 {
 
 	function beforeAll(){
-		reset();
 		super.beforeAll();
 	}
 

@@ -1,8 +1,8 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseModelTest">
-	<cfscript>
+﻿component extends = "coldbox.system.testing.BaseModelTest"{
 	function setup(){
+		logBox = new coldbox.system.logging.LogBox();
 		tracer = createMock( className = "coldbox.system.logging.appenders.TracerAppender" );
-		tracer.init( "MyCFTracer" );
+		tracer.init( "MyCFTracer" ).setLogBox( logBox );
 
 		loge = createMock( className = "coldbox.system.logging.LogEvent" );
 		loge.init(
@@ -21,5 +21,4 @@
 			tracer.logMessage( loge );
 		}
 	}
-	</cfscript>
-</cfcomponent>
+}

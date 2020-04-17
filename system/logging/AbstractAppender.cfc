@@ -41,10 +41,23 @@ component accessors="true"{
 	 */
 	property name="coldbox";
 
+	/**
+	 * Reference back to the running LogBox instance
+	 */
+	property name="logBox";
+
+	/****************************************************************
+	 * Static Variables *
+	 ****************************************************************/
+
 	// The log levels enum as a public property
 	this.logLevels = new coldbox.system.logging.LogLevels();
 	// Java System
-	variables.System = createObject( "java", "java.lang.System" );
+	variables.system = createObject( "java", "java.lang.System" );
+
+	/****************************************************************
+	 * Methods *
+	 ****************************************************************/
 
 	/**
 	 * Constructor

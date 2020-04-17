@@ -36,18 +36,6 @@
 
 		obj = controller.getConfigSettings();
 		assertFalse( structIsEmpty( obj ), "Structure populated" );
-
-		obj = controller.getsettingStructure();
-		assertFalse( structIsEmpty( obj ), "Config Structure populated" );
-
-		obj = controller.getsettingStructure( false, true );
-		assertFalse( structIsEmpty( obj ), "Config Structure populated, deep copy" );
-
-		obj = controller.getsettingStructure( true );
-		assertFalse( structIsEmpty( obj ), "FW Structure populated" );
-
-		obj = controller.getsettingStructure( true, false );
-		assertFalse( structIsEmpty( obj ), "FW Structure populated, deep copy" );
 	}
 
 	function testSettingProcedures(){

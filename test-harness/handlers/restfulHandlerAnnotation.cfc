@@ -1,9 +1,7 @@
-component resthandler{
+component resthandler {
 
 	function index( event, rc, prc ){
-		event
-			.getResponse()
-			.setData( "hello" );
+		event.getResponse().setData( "hello" );
 	}
 
 	function returnData( event, rc, prc ){
@@ -11,7 +9,7 @@ component resthandler{
 	}
 
 	function renderData( event, rc, prc ){
-		event.renderData( type="json", data=["luis majano"] );
+		event.renderData( type = "json", data = [ "luis majano" ] );
 	}
 
 	function setView( event, rc, prc ){
@@ -19,19 +17,19 @@ component resthandler{
 	}
 
 	function invalidCredentials( event, rc, prc ){
-		throw( type="InvalidCredentials" );
+		throw( type = "InvalidCredentials" );
 	}
 
 	function ValidationException( event, rc, prc ){
-		throw( type="ValidationException" );
+		throw( type = "ValidationException" );
 	}
 
 	function EntityNotFound( event, rc, prc ){
-		throw( type="EntityNotFound" );
+		throw( type = "EntityNotFound" );
 	}
 
 	function RecordNotFound( event, rc, prc ){
-		throw( type="RecordNotFound" );
+		throw( type = "RecordNotFound" );
 	}
 
 }

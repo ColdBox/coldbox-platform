@@ -1,4 +1,7 @@
 {
+	"systemErr":"System",
+    "systemOut":"System",
+	"adminPassword" : "coldbox",
     "caches": {
         "default": {
             "storage": "false",

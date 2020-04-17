@@ -418,6 +418,13 @@
 				break;
 			}
 
+			// Executor
+			case "executor" : {
+				// retrieve it
+				refLocal.dependency = getExecutorDSl( argumentCollection=arguments );
+				break;
+			}
+
 			// CacheBox Context DSL
 			case "cacheBox"			 : {
 				// check if linked
@@ -573,6 +580,40 @@
 				}
 				break;
 			} // end level 3 main DSL
+		}
+	}
+
+	/**
+	 * Get executors
+	 *
+	 * @definition The dependency definition structure: name, dsl as keys
+	 * @targetObject The target object we are building the DSL dependency for
+	 */
+	private any function getExecutorDSl( required definition, targetObject ){
+		var asyncManager 		= variables.injector.getAsyncManager();
+		var thisType 			= arguments.definition.dsl;
+		var thisTypeLen 		= listLen( thisType, ":" );
+		var executorName 		= "";
+
+		// DSL stages
+		switch( thisTypeLen ){
+			// property name='myExecutorService' inject="executor";
+			case 1 : {
+				executorName = arguments.definition.name;
+				break;
+			}
+			// executor:{alias} stage
+			case 2 : {
+				executorName = getToken( thisType, 2, ":" );
+				break;
+			}
+		}
+
+		// Check if executor Exists
+		if( asyncManager.hasExecutor( executorName ) ){
+			return asyncManager.getExecutor( executorName );
+		} else if ( variables.log.canDebug() ){
+			variables.log.debug( "X getExecutorDsl() cannot find executor #executorName# using definition #arguments.definition.toString()#" );
 		}
 	}
 

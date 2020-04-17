@@ -1283,7 +1283,7 @@ component serializable="false" accessors="true" {
 	 * @return coldbox.system.web.context.Response
 	 */
 	function getResponse(){
-		if( isNull( variables.privateContext.response ) ){
+		if ( isNull( variables.privateContext.response ) ) {
 			variables.privateContext.response = new coldbox.system.web.context.Response();
 		}
 		return variables.privateContext.response;
@@ -1375,9 +1375,13 @@ component serializable="false" accessors="true" {
 
 		//  Send file
 		if ( isBinary( arguments.file ) ) {
-			cfcontent(variable=arguments.file, type=arguments.mimetype);
+			cfcontent( variable=arguments.file, type=arguments.mimetype );
 		} else {
-			cfcontent(deletefile=arguments.deleteFile, file=arguments.file, type=arguments.mimetype);
+			cfcontent(
+				deletefile=arguments.deleteFile,
+				file      =arguments.file,
+				type      =arguments.mimetype
+			);
 		}
 
 		//  Abort further processing?

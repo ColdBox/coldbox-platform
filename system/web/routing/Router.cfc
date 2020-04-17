@@ -5,7 +5,11 @@
  * Manages all the routing definitions for the application and exposes the
  * ColdBox Routing DSL
  */
-component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsafe{
+component
+	accessors="true"
+	extends  ="coldbox.system.FrameworkSupertype"
+	threadsafe
+{
 
 	/**
 	 * The routing table
@@ -25,32 +29,50 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	/**
 	 * Flag to enable unique or not URLs
 	 */
-	property name="uniqueURLS" type="boolean" default="false";
+	property
+		name   ="uniqueURLS"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * Flag to enable/disable routing
 	 */
-	property name="enabled" type="boolean" default="true";
+	property
+		name   ="enabled"
+		type   ="boolean"
+		default="true";
 
 	/**
 	 * Loose matching flag for regex matches
 	 */
-	property name="looseMatching" type="boolean" default="false";
+	property
+		name   ="looseMatching"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * Detect extensions flag, so it can place a 'format' variable on the rc
 	 */
-	property name="extensionDetection" type="boolean" default="true";
+	property
+		name   ="extensionDetection"
+		type   ="boolean"
+		default="true";
 
 	/**
 	 * Throw an exception when extension detection is invalid or not
 	 */
-	property name="throwOnInvalidExtension" type="boolean" default="false";
+	property
+		name   ="throwOnInvalidExtension"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * Initialize the valid extensions to detect
 	 */
-	property name="validExtensions" type="string" default="json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
+	property
+		name   ="validExtensions"
+		type   ="string"
+		default="json,jsont,xml,cfm,cfml,html,htm,rss,pdf";
 
 	/**
 	 * Base routing URL
@@ -61,13 +83,19 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * This flag denotes if full URL rewrites are enabled or not. Meaning if the `index.cfm` is in the path of the rewriter or not.
 	 * The default value is **false**.
 	 */
-	property name="fullRewrites" type="boolean" default="false";
+	property
+		name   ="fullRewrites"
+		type   ="boolean"
+		default="false";
 
 	/**
 	 * This flag denotes that the routing service will discover the incoming base URL from the host + ssl + environment.
 	 * If off, then it will use whatever the base URL was set in the router.
 	 */
-	property name="multiDomainDiscovery" type="boolean" default="true";
+	property
+		name   ="multiDomainDiscovery"
+		type   ="boolean"
+		default="true";
 
 
 	/**
@@ -97,25 +125,24 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @controller.inject coldbox
 	 */
 	function init( required controller ){
-
 		// Setup Internal Work Objects
-		variables.controller 	= arguments.controller;
-		variables.wirebox 		= arguments.controller.getWireBox();
-		variables.cachebox 		= arguments.controller.getCacheBox();
-		variables.logBox 		= arguments.controller.getLogBox();
-		variables.log 			= variables.logBox.getLogger( this );
-		variables.flash 		= arguments.controller.getRequestService().getFlashScope();
+		variables.controller = arguments.controller;
+		variables.wirebox    = arguments.controller.getWireBox();
+		variables.cachebox   = arguments.controller.getCacheBox();
+		variables.logBox     = arguments.controller.getLogBox();
+		variables.log        = variables.logBox.getLogger( this );
+		variables.flash      = arguments.controller.getRequestService().getFlashScope();
 
 		/************************************** FLUENT CONSTRUCTS *********************************************/
 
 		// With closure
 		variables.withClosure = {};
 		// Module closure
-		variables.thisModule = "";
+		variables.thisModule  = "";
 		// Groupt Pivot
-		variables.onGroup = false;
+		variables.onGroup     = false;
 		// Routing pointer
-		variables.thisRoute = initRouteDefinition();
+		variables.thisRoute   = initRouteDefinition();
 
 		/************************************** CONSTANTS *********************************************/
 
@@ -125,31 +152,31 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		/************************************** ROUTING DEFAULTS: Due to ACF11 Bugs on Properties *********************************************/
 
 		// Main routes Routing Table
-		variables.routes = [];
+		variables.routes                  = [];
 		// Module Routing Table
-		variables.moduleRoutingTable = {};
+		variables.moduleRoutingTable      = {};
 		// Namespaces Routing Table
-		variables.namespaceRoutingTable = {};
+		variables.namespaceRoutingTable   = {};
 		// Loose matching flag for regex matches
-		variables.looseMatching = false;
+		variables.looseMatching           = false;
 		// Flag to enable unique or not URLs
-		variables.uniqueURLs = false;
+		variables.uniqueURLs              = false;
 		// Enable the interceptor by default
-		variables.enabled = true;
+		variables.enabled                 = true;
 		// Detect extensions flag, so it can place a 'format' variable on the rc
-		variables.extensionDetection = true;
+		variables.extensionDetection      = true;
 		// Throw an exception when extension detection is invalid or not
 		variables.throwOnInvalidExtension = false;
 		// Initialize the valid extensions to detect
-		variables.validExtensions = variables.VALID_EXTENSIONS;
+		variables.validExtensions         = variables.VALID_EXTENSIONS;
 		// Base Routing URL, defaults to the domain and app mapping defined by the routing services
-		if( len( controller.getSetting( "RoutingAppMapping" ) ) lte 1 ){
+		if ( len( controller.getSetting( "RoutingAppMapping" ) ) lte 1 ) {
 			variables.baseURL = "http://#CGI.HTTP_HOST#";
 		} else {
 			variables.baseURL = "http://#CGI.HTTP_HOST##controller.getSetting( "RoutingAppMapping" )#";
 		}
 		// Are full rewrites enabled
-		variables.fullRewrites = false;
+		variables.fullRewrites         = false;
 		variables.multiDomainDiscovery = true;
 
 		return this;
@@ -160,7 +187,8 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * This method is to be implemented by the application router you create.
 	 * This is where you will define all your routing.
 	 */
-	function configure(){}
+	function configure(){
+	}
 
 	/**
 	 * This method is called by the Routing Services to make sure the router is ready for operation.
@@ -168,18 +196,28 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function startup(){
 		// Check if rewrites turned off. If so, append the `index.cfm` to it.
-		if( !variables.fullRewrites AND !findNoCase( "index.cfm", variables.baseURL ) ){
+		if ( !variables.fullRewrites AND !findNoCase( "index.cfm", variables.baseURL ) ) {
 			variables.baseURL &= "/index.cfm";
 		}
 		// Remove any double slashes
-		variables.baseURL = reReplace( variables.baseURL, "\/\/$", "/", "all" );
+		variables.baseURL = reReplace(
+			variables.baseURL,
+			"\/\/$",
+			"/",
+			"all"
+		);
 
 		// Save the base URL in the application settings
-		variables.controller.setSetting( 'SESBaseURL', variables.baseURL );
-		variables.controller.setSetting( 'HTMLBaseURL', replaceNoCase( variables.baseURL, "index.cfm", "" ) );
+		variables.controller.setSetting( "SESBaseURL", variables.baseURL );
+		variables.controller.setSetting(
+			"HTMLBaseURL",
+			replaceNoCase( variables.baseURL, "index.cfm", "" )
+		);
 
 		// Configure Context that we are enabled and with the base URL for routing
-		variables.controller.getRequestService().getContext()
+		variables.controller
+			.getRequestService()
+			.getContext()
 			.setSESEnabled( variables.enabled )
 			.setSESBaseURL( variables.baseURL );
 	}
@@ -223,18 +261,18 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function includeRoutes( required location ){
 		// verify .cfm or not
-		if( listLast( arguments.location, "." ) NEQ "cfm" ){
+		if ( listLast( arguments.location, "." ) NEQ "cfm" ) {
 			arguments.location &= ".cfm";
 		}
 
 		// We are ready to roll
-		try{
+		try {
 			// Try to remove pathInfoProvider, just in case
-			structdelete( variables, "pathInfoProvider" );
-			structdelete( this, "pathInfoProvider" );
+			structDelete( variables, "pathInfoProvider" );
+			structDelete( this, "pathInfoProvider" );
 			// Import configuration
 			include arguments.location;
-		} catch ( Any e ){
+		} catch ( Any e ) {
 			throw(
 				message = "Error importing routes configuration file: #e.message# #e.detail#",
 				detail  = e.tagContext.toString(),
@@ -244,8 +282,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		return this;
 	}
 
-	function setAutoReload(){}
-	function getAutoReload(){ return false; }
+	function setAutoReload(){
+	}
+	function getAutoReload(){
+		return false;
+	}
 
 	/****************************************************************************************************************************/
 	// CF-11/2016 include .cfm template can't access the methods which are only declare as property... (hack) have to create setter/getter methods
@@ -295,20 +336,24 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 *
 	 * @return Router
 	 */
-	function addModuleRoutes( required pattern, required module, boolean append=true ){
+	function addModuleRoutes(
+		required pattern,
+		required module,
+		boolean append = true
+	){
 		var mConfig = variables.controller.getSetting( "modules" );
 
 		// Verify module exists and loaded
-		if( NOT structKeyExists( mConfig, arguments.module ) ){
+		if ( NOT structKeyExists( mConfig, arguments.module ) ) {
 			throw(
-				message	= "Error loading module routes as the module requested '#arguments.module#' is not loaded.",
-				detail	= "The loaded modules are: #structKeyList( mConfig )#",
-				type	= "SES.InvalidModuleName"
+				message = "Error loading module routes as the module requested '#arguments.module#' is not loaded.",
+				detail  = "The loaded modules are: #structKeyList( mConfig )#",
+				type    = "SES.InvalidModuleName"
 			);
 		}
 
 		// Create the module routes container if it does not exist already
-		if( NOT structKeyExists( variables.moduleRoutingTable, arguments.module ) ){
+		if ( NOT structKeyExists( variables.moduleRoutingTable, arguments.module ) ) {
 			variables.moduleRoutingTable[ arguments.module ] = [];
 		}
 
@@ -320,25 +365,31 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		);
 
 		// Process module resources
-		mConfig.find( arguments.module ).resources.each( function( item ){
+		mConfig
+			.find( arguments.module )
+			.resources
+			.each( function( item ){
 				item.module = module;
-				resources( argumentCollection=item );
-		} );
+				resources( argumentCollection = item );
+			} );
 
 		// Process module routes
-		mConfig.find( arguments.module ).routes.each( function( item ){
-			if( isSimpleValue( item ) ){
-				// prepare module pivot
-				variables.thisModule = module;
-				// Include it via conventions using declared route
-				includeRoutes( location=mConfig[ module ].mapping & "/" & item );
-				// Remove pivot
-				variables.thisModule = "";
-			} else {
-				item.module = module;
-				addRoute( argumentCollection=item );
-			}
-		} );
+		mConfig
+			.find( arguments.module )
+			.routes
+			.each( function( item ){
+				if ( isSimpleValue( item ) ) {
+					// prepare module pivot
+					variables.thisModule = module;
+					// Include it via conventions using declared route
+					includeRoutes( location = mConfig[ module ].mapping & "/" & item );
+					// Remove pivot
+					variables.thisModule = "";
+				} else {
+					item.module = module;
+					addRoute( argumentCollection = item );
+				}
+			} );
 
 		return this;
 	}
@@ -365,13 +416,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @module The module to get
 	 */
 	array function getModuleRoutes( required module ){
-		if( structKeyExists( variables.moduleRoutingTable, arguments.module ) ){
+		if ( structKeyExists( variables.moduleRoutingTable, arguments.module ) ) {
 			return variables.moduleRoutingTable[ arguments.module ];
 		}
 		throw(
 			message = "Module routes for #arguments.module# do not exists",
-			detail 	= "Loaded module routes are #structKeyList( variables.moduleRoutingTable )#",
-			type 	= "SES.InvalidModuleException"
+			detail  = "Loaded module routes are #structKeyList( variables.moduleRoutingTable )#",
+			type    = "SES.InvalidModuleException"
 		);
 	}
 
@@ -383,17 +434,21 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 *
 	 * @return Router
 	 */
-	function addNamespace( required pattern, required namespace, boolean append="true" ){
+	function addNamespace(
+		required pattern,
+		required namespace,
+		boolean append = "true"
+	){
 		// Create the namespace routes container if it does not exist already, as we could create many patterns that point to the same namespace
-		if( NOT structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ){
+		if ( NOT structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ) {
 			variables.namespaceRoutingTable[ arguments.namespace ] = [];
 		}
 
 		// Store the entry point for the namespace
 		addRoute(
-			pattern 			= arguments.pattern,
-			namespaceRouting 	= arguments.namespace,
-			append 				= arguments.append
+			pattern          = arguments.pattern,
+			namespaceRouting = arguments.namespace,
+			append           = arguments.append
 		);
 
 		return this;
@@ -404,14 +459,14 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @namespace The namespace to get
 	 */
 	array function getNamespaceRoutes( required namespace ){
-		if( structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ){
+		if ( structKeyExists( variables.namespaceRoutingTable, arguments.namespace ) ) {
 			return variables.namespaceRoutingTable[ arguments.namespace ];
 		}
 
 		throw(
 			message = "Namespace routes for #arguments.namespace# do not exists",
-			detail 	= "Loaded namespace routes are #structKeyList( variables.namespaceRoutingTable )#",
-			type 	= "SES.InvalidNamespaceException"
+			detail  = "Loaded namespace routes are #structKeyList( variables.namespaceRoutingTable )#",
+			type    = "SES.InvalidNamespaceException"
 		);
 	}
 
@@ -505,20 +560,21 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function processWith( required args ){
 		// only process arguments once per addRoute() call.
-		if( structKeyExists( arguments.args, "$$withProcessed" ) ){
+		if ( structKeyExists( arguments.args, "$$withProcessed" ) ) {
 			return this;
 		}
 
 		variables.withClosure
 			.filter( function( key, value ){
 				return !isNull( arguments.value );
-			} ).each( function( key, value ){
+			} )
+			.each( function( key, value ){
 				// Verify if the key does not exist in incoming but it does in with, so default it
-				if ( NOT structKeyExists( args, key ) ){
+				if ( NOT structKeyExists( args, key ) ) {
 					args[ key ] = value;
 				}
 				// If it does exist in the incoming arguments and simple value, then we prefix, complex values are ignored.
-				else if ( isSimpleValue( args[ key ] ) AND NOT isBoolean( args[ key ] ) ){
+				else if ( isSimpleValue( args[ key ] ) AND NOT isBoolean( args[ key ] ) ) {
 					args[ key ] = value & args[ key ];
 				}
 			} );
@@ -544,7 +600,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @options The route options that match routing, look at the <code>addRoute()</code> method
 	 * @body The closure or lambda to contain all the routing methods to be grouped with the options data.
 	 */
-	function group( struct options={}, body ){
+	function group( struct options = {}, body ){
 		// Mark the group
 		variables.onGroup = true;
 
@@ -554,15 +610,15 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		arguments.body( arguments.options );
 
 		// Pivot out of the group and do cleanup
-		variables.onGroup = false;
+		variables.onGroup     = false;
 		variables.withClosure = {};
 
 		return this;
 	}
 
-    /**
-     * Create all RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
-     * By convention, the name of the resource maps to the name of the event handler.
+	/**
+	 * Create all RESTful routes for a resource. It will provide automagic mappings between HTTP verbs and URLs to event handlers and actions.
+	 * By convention, the name of the resource maps to the name of the event handler.
 	 * Example: `resource = photos` Then we will create the following routes:
 	 * - `/photos` : `GET` -> `photos.index` Display a list of photos
 	 * - `/photos/new` : `GET` -> `photos.new` Returns an HTML form for creating a new photo
@@ -572,99 +628,115 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * - `/photos/:id` : `PUT/PATCH` -> `photos.update` Update a specific photo
 	 * - `/photos/:id` : `DELETE` -> `photos.delete` Delete a specific photo
 	 *
-     * @resource 		The name of a single resource or a list of resources or an array of resources
-     * @handler 		The handler for the route. Defaults to the resource name.
-     * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
-     * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
-     * @except 			Exclude routes with an except list or array of actions, e.g. "show"
-     * @module 			If passed, the module these resources will be attached to.
-     * @namespace 		If passed, the namespace these resources will be attached to.
+	 * @resource 		The name of a single resource or a list of resources or an array of resources
+	 * @handler 		The handler for the route. Defaults to the resource name.
+	 * @parameterName 	The name of the id/parameter for the resource. Defaults to `id`.
+	 * @only 			Limit routes created with only this list or array of actions, e.g. "index,show"
+	 * @except 			Exclude routes with an except list or array of actions, e.g. "show"
+	 * @module 			If passed, the module these resources will be attached to.
+	 * @namespace 		If passed, the namespace these resources will be attached to.
 	 * @pattern 		If passed, the actual URL pattern to use, else it defaults to `/#arguments.resource#` the name of the resource.
-     */
-    function resources(
-        required resource,
-        handler=arguments.resource,
-        parameterName="id",
-        only=[],
-        except=[],
-        string module="",
-		string namespace="",
-		string pattern=""
-    ){
+	 */
+	function resources(
+		required resource,
+		handler          = arguments.resource,
+		parameterName    = "id",
+		only             = [],
+		except           = [],
+		string module    = "",
+		string namespace = "",
+		string pattern   = ""
+	){
 		// Inflate incoming arguments if not arrays
-        if ( ! isArray( arguments.only ) ) {
-            arguments.only = listToArray( arguments.only );
-        }
-        if ( ! isArray( arguments.except ) ) {
-            arguments.except = listToArray( arguments.except );
-        }
-        if( isSimpleValue( arguments.resource ) ){
-        	arguments.resource = listToArray( arguments.resource );
-        }
+		if ( !isArray( arguments.only ) ) {
+			arguments.only = listToArray( arguments.only );
+		}
+		if ( !isArray( arguments.except ) ) {
+			arguments.except = listToArray( arguments.except );
+		}
+		if ( isSimpleValue( arguments.resource ) ) {
+			arguments.resource = listToArray( arguments.resource );
+		}
 
-        var actionSet = {};
+		var actionSet = {};
 
-        // Register all resources
-        for( var thisResource in arguments.resource ){
-
+		// Register all resources
+		for ( var thisResource in arguments.resource ) {
 			// Default pattern or look at the incoming pattern sent?
-			var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#thisResource#" ) ;
+			var thisPattern = ( len( arguments.pattern ) ? arguments.pattern : "/#thisResource#" );
 
 			// Edit Routes
-			actionSet = filterRouteActions( { GET = "edit" }, arguments.only, arguments.except );
-			if ( ! structIsEmpty( actionSet ) ) {
+			actionSet = filterRouteActions(
+				{ GET : "edit" },
+				arguments.only,
+				arguments.except
+			);
+			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
-					pattern		= "#thisPattern#/:#arguments.parameterName#/edit",
-					handler		= arguments.handler,
-					action 		= actionSet,
-					module 		= arguments.module,
-					namespace	= arguments.namespace
+					pattern   = "#thisPattern#/:#arguments.parameterName#/edit",
+					handler   = arguments.handler,
+					action    = actionSet,
+					module    = arguments.module,
+					namespace = arguments.namespace
 				);
 			}
 
-	        // New Routes
-			actionSet = filterRouteActions( { GET = "new" }, arguments.only, arguments.except );
-			if ( ! structIsEmpty( actionSet ) ) {
+			// New Routes
+			actionSet = filterRouteActions(
+				{ GET : "new" },
+				arguments.only,
+				arguments.except
+			);
+			if ( !structIsEmpty( actionSet ) ) {
 				addRoute(
-					pattern		= "#thisPattern#/new",
-					handler		= arguments.handler,
-					action		= actionSet,
-					module 		= arguments.module,
-					namespace	= arguments.namespace
+					pattern   = "#thisPattern#/new",
+					handler   = arguments.handler,
+					action    = actionSet,
+					module    = arguments.module,
+					namespace = arguments.namespace
 				);
 			}
 
-	        // update, delete and show routes
-	        actionSet = filterRouteActions(
-	        	{ PUT = "update", PATCH = "update", DELETE = "delete", GET = "show" },
-	        	arguments.only,
-	        	arguments.except
-	        );
-	        if ( ! structIsEmpty( actionSet ) ) {
-	            addRoute(
-	            	pattern		= "#thisPattern#/:#arguments.parameterName#",
-	            	handler		= arguments.handler,
-	            	action 		= actionSet,
-		            module 		= arguments.module,
-		            namespace	= arguments.namespace
-	            );
+			// update, delete and show routes
+			actionSet = filterRouteActions(
+				{
+					PUT    : "update",
+					PATCH  : "update",
+					DELETE : "delete",
+					GET    : "show"
+				},
+				arguments.only,
+				arguments.except
+			);
+			if ( !structIsEmpty( actionSet ) ) {
+				addRoute(
+					pattern   = "#thisPattern#/:#arguments.parameterName#",
+					handler   = arguments.handler,
+					action    = actionSet,
+					module    = arguments.module,
+					namespace = arguments.namespace
+				);
 			}
 
-	        // Index + Creation
-	        actionSet = filterRouteActions( { GET = "index", POST = "create" }, arguments.only, arguments.except );
-	        if ( ! structIsEmpty( actionSet ) ) {
-	            addRoute(
-	            	pattern		= "#thisPattern#",
-	            	handler		= arguments.handler,
-	            	action 		= actionSet,
-		            module 		= arguments.module,
-		            namespace	= arguments.namespace
-	            );
-	        }
-        }
+			// Index + Creation
+			actionSet = filterRouteActions(
+				{ GET : "index", POST : "create" },
+				arguments.only,
+				arguments.except
+			);
+			if ( !structIsEmpty( actionSet ) ) {
+				addRoute(
+					pattern   = "#thisPattern#",
+					handler   = arguments.handler,
+					action    = actionSet,
+					module    = arguments.module,
+					namespace = arguments.namespace
+				);
+			}
+		}
 
-        return this;
-    }
+		return this;
+	}
 
 	/**
 	 * Adds a route to dispatch and returns itself.
@@ -689,7 +761,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @statusText Explains the HTTP status code sent to the browser response.
 	 * @condition A closure or UDF to execute that MUST return true to use route if matched or false and continue.
 	 * @name The name of the route
-     * @domain The domain to match, including wildcards
+	 * @domain The domain to match, including wildcards
 	 * @redirect If used, then the route will dispatch a relocation to this value as the new route using the `statuCode` default of 301 (Permanent) or if you define a `statusCode` we will use that.
 	 * @event The event to execute if route matches
 	 * @verbs The allowed HTTP Verbs for the route
@@ -704,48 +776,48 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function addRoute(
 		required string pattern,
-		string handler="",
-		any action="",
-		boolean packageResolverExempt="false",
-		string matchVariables="",
-		string view="",
-		boolean viewNoLayout="false",
-		boolean valuePairTranslation="true",
-		any constraints=structnew(),
-		string module="",
-		string moduleRouting="",
-		string namespace="",
-		string namespaceRouting="",
-		boolean ssl="false",
-		boolean append="true",
-		any response="",
-		numeric statusCode=200,
-		string statusText="",
-		any condition="",
-        string name="",
-		string domain="",
-		string redirect="",
-		string event="",
-		string verbs="",
-		string layout="",
-		struct headers = {},
-		struct rc = {},
-		struct prc = {},
-		string viewModule = "",
-		string layoutModule = ""
+		string handler                = "",
+		any action                    = "",
+		boolean packageResolverExempt = "false",
+		string matchVariables         = "",
+		string view                   = "",
+		boolean viewNoLayout          = "false",
+		boolean valuePairTranslation  = "true",
+		any constraints               = structNew(),
+		string module                 = "",
+		string moduleRouting          = "",
+		string namespace              = "",
+		string namespaceRouting       = "",
+		boolean ssl                   = "false",
+		boolean append                = "true",
+		any response                  = "",
+		numeric statusCode            = 200,
+		string statusText             = "",
+		any condition                 = "",
+		string name                   = "",
+		string domain                 = "",
+		string redirect               = "",
+		string event                  = "",
+		string verbs                  = "",
+		string layout                 = "",
+		struct headers                = {},
+		struct rc                     = {},
+		struct prc                    = {},
+		string viewModule             = "",
+		string layoutModule           = ""
 	){
 		// The route construct we will save
-		var thisRoute        = {};
-		var thisRegex        = 0;
+		var thisRoute = {};
+		var thisRegex = 0;
 
 
 		// process a with closure if not empty
-		if( ! variables.withClosure.isEmpty() && ! variables.onGroup ){
+		if ( !variables.withClosure.isEmpty() && !variables.onGroup ) {
 			processWith( arguments );
 		}
 
 		// module pivot point
-		if( len( variables.thisModule ) ){
+		if ( len( variables.thisModule ) ) {
 			arguments.module = variables.thisModule;
 		}
 
@@ -753,109 +825,118 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 		thisRoute.append( arguments );
 
 		// Cleanup Route: Add trailing / to make it easier to parse
-		if( right( thisRoute.pattern, 1 ) IS NOT "/" ){
+		if ( right( thisRoute.pattern, 1 ) IS NOT "/" ) {
 			thisRoute.pattern = thisRoute.pattern & "/";
 		}
 
 		// Cleanup initial /, not needed if found.
-		if( left( thisRoute.pattern, 1 ) IS "/" ){
-			if( thisRoute.pattern neq "/" ){
+		if ( left( thisRoute.pattern, 1 ) IS "/" ) {
+			if ( thisRoute.pattern neq "/" ) {
 				thisRoute.pattern = right( thisRoute.pattern, len( thisRoute.pattern ) - 1 );
 			}
-        }
+		}
 
-        // Check for existing route matches
-        var matchingRoutes = variables.routes.filter( function( route ) {
-            return route.pattern == thisRoute.pattern &&
-                route.domain == thisRoute.domain;
+		// Check for existing route matches
+		var matchingRoutes = variables.routes.filter( function( route ){
+			return route.pattern == thisRoute.pattern &&
+			route.domain == thisRoute.domain;
 		} );
-        if ( ! matchingRoutes.isEmpty() ) {
-            var matchingRoute = matchingRoutes[ 1 ];
-            // collect action:
-            var actions = {};
-            var matchingActions = isStruct( matchingRoute.action ) ? matchingRoute.action : {};
-            structAppend( actions, matchingActions, true );
-            for ( var verb in matchingRoute.verbs ) {
-                structInsert( actions, verb, matchingRoute.event );
-            }
-            var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
-            structAppend( actions, thisRouteActions, true );
-            for ( var verb in thisRoute.verbs ) {
-                structInsert( actions, verb, thisRoute.event );
-            }
-            matchingRoute.action = actions;
-            matchingRoute.verbs = "";
-            return this;
-        }
+		if ( !matchingRoutes.isEmpty() ) {
+			var matchingRoute   = matchingRoutes[ 1 ];
+			// collect action:
+			var actions         = {};
+			var matchingActions = isStruct( matchingRoute.action ) ? matchingRoute.action : {};
+			structAppend( actions, matchingActions, true );
+			for ( var verb in matchingRoute.verbs ) {
+				structInsert( actions, verb, matchingRoute.event );
+			}
+			var thisRouteActions = isStruct( thisRoute.action ) ? thisRoute.action : {};
+			structAppend( actions, thisRouteActions, true );
+			for ( var verb in thisRoute.verbs ) {
+				structInsert( actions, verb, thisRoute.event );
+			}
+			matchingRoute.action = actions;
+			matchingRoute.verbs  = "";
+			return this;
+		}
 
 		// Check if we have optional args by looking for a ?
-		if( findnocase( "?", thisRoute.pattern ) AND NOT findNoCase( "regex:", thisRoute.pattern ) ){
+		if ( findNoCase( "?", thisRoute.pattern ) AND NOT findNoCase( "regex:", thisRoute.pattern ) ) {
 			processRouteOptionals( thisRoute );
 			return this;
 		}
 
 		// Init the matching variables and pattern parameters
-		thisRoute.regexPattern 	= "";
+		thisRoute.regexPattern  = "";
 		thisRoute.patternParams = [];
 
 		// Check for / pattern
-		if( len( thisRoute.pattern ) eq 1 ){
+		if ( len( thisRoute.pattern ) eq 1 ) {
 			thisRoute.regexPattern = "/";
 		}
 
 		// Process the route as a regex pattern
-		for( var x=1; x lte listLen( thisRoute.pattern, "/" ); x++ ){
-
+		for ( var x = 1; x lte listLen( thisRoute.pattern, "/" ); x++ ) {
 			// Pattern and Pattern Param
-			var thisPattern 		= listGetAt( thisRoute.pattern, x, "/" );
-			var thisPatternParam 	= replace( listFirst( thisPattern, "-" ), ":", "" );
+			var thisPattern      = listGetAt( thisRoute.pattern, x, "/" );
+			var thisPatternParam = replace(
+				listFirst( thisPattern, "-" ),
+				":",
+				""
+			);
 
 			// Detect Optional Types
 			var patternType = "alphanumeric";
-			if( findnoCase( "-numeric", thisPattern ) ){
+			if ( findNoCase( "-numeric", thisPattern ) ) {
 				patternType = "numeric";
 			}
-			if( findnoCase( "-alpha", thisPattern ) ){
+			if ( findNoCase( "-alpha", thisPattern ) ) {
 				patternType = "alpha";
 			}
-			if( findNoCase( "-regex:", thisPattern ) ){
+			if ( findNoCase( "-regex:", thisPattern ) ) {
 				patternType = "regexParam";
-			} else if ( findNoCase( "regex:", thisPattern ) ){
+			} else if ( findNoCase( "regex:", thisPattern ) ) {
 				patternType = "regex";
 			}
 
 			// Pattern Type Regex
-			switch( patternType ){
-
+			switch ( patternType ) {
 				// CUSTOM REGEX for static route parts
-				case "regex" : {
-					thisRegex = replacenocase( thisPattern, "regex:", "" );
+				case "regex": {
+					thisRegex = replaceNoCase( thisPattern, "regex:", "" );
 					break;
 				}
 
 				// CUSTOM REGEX for route param
-				case "regexParam" : {
+				case "regexParam": {
 					// Pull out Regex Pattern
-					thisRegex = REReplace( thisPattern, ":.*?-regex:", "" );
+					thisRegex = reReplace( thisPattern, ":.*?-regex:", "" );
 					// Add Route Param
 					arrayAppend( thisRoute.patternParams, thisPatternParam );
 					break;
 				}
 
 				// ALPHANUMERICAL OPTIONAL
-				case "alphanumeric" : {
-					if( find( ":", thisPattern ) ){
-						thisRegex = "(" & REReplace( thisPattern, ":(.[^-]*)","[^/]" );
+				case "alphanumeric": {
+					if ( find( ":", thisPattern ) ) {
+						thisRegex = "(" & reReplace( thisPattern, ":(.[^-]*)", "[^/]" );
 						// Check Digits Repetions
-						if( find( "{", thisPattern ) ){
+						if ( find( "{", thisPattern ) ) {
 							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
-							arrayAppend( thisRoute.patternParams, replace( listFirst( thisPattern, "{" ), ":", "" ) );
+							arrayAppend(
+								thisRoute.patternParams,
+								replace(
+									listFirst( thisPattern, "{" ),
+									":",
+									""
+								)
+							);
 						} else {
 							thisRegex = thisRegex & "+?)";
 							arrayAppend( thisRoute.patternParams, thisPatternParam );
 						}
 						// Override Constraints with your own REGEX
-						if( structKeyExists( thisRoute.constraints, thisPatternParam ) ){
+						if ( structKeyExists( thisRoute.constraints, thisPatternParam ) ) {
 							thisRegex = thisRoute.constraints[ thisPatternParam ];
 						}
 					} else {
@@ -865,11 +946,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 				}
 
 				// NUMERICAL OPTIONAL
-				case "numeric" : {
+				case "numeric": {
 					// Convert to Regex Pattern
-					thisRegex = "(" & REReplace(thisPattern, ":.*?-numeric", "[0-9]" );
+					thisRegex = "(" & reReplace( thisPattern, ":.*?-numeric", "[0-9]" );
 					// Check Digits
-					if( find("{",thisPattern) ){
+					if ( find( "{", thisPattern ) ) {
 						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
 					} else {
 						thisRegex = thisRegex & "+?)";
@@ -880,12 +961,16 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 				}
 
 				// ALPHA OPTIONAL
-				case "alpha" : {
+				case "alpha": {
 					// Convert to Regex Pattern
-					thisRegex = "(" & REReplace( thisPattern, ":.*?-alpha", "[a-zA-Z]" );
+					thisRegex = "(" & reReplace(
+						thisPattern,
+						":.*?-alpha",
+						"[a-zA-Z]"
+					);
 					// Check Digits
-					if( find("{",thisPattern) ){
-						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern,"{" )#)";
+					if ( find( "{", thisPattern ) ) {
+						thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisPattern, "{" )#)";
 					} else {
 						thisRegex = thisRegex & "+?)";
 					}
@@ -893,139 +978,151 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 					arrayAppend( thisRoute.patternParams, thisPatternParam );
 					break;
 				}
-			} //end pattern type detection switch
+			}
+			// end pattern type detection switch
 
 			// Add Regex Created To Pattern
 			thisRoute.regexPattern = thisRoute.regexPattern & thisRegex & "/";
-
-		} // end looping of pattern optionals
+		}
+		// end looping of pattern optionals
 
 		// Process Sub-Domain Routing
-        thisRoute.domainParams 	= [];
-        thisRoute.regexDomain 	= "^";
-        if ( structKeyExists( thisRoute, "domain" ) ) {
-            // Process the route as a regex pattern
-            for( var x=1; x lte listLen( thisRoute.domain, "." ); x++ ){
+		thisRoute.domainParams = [];
+		thisRoute.regexDomain  = "^";
+		if ( structKeyExists( thisRoute, "domain" ) ) {
+			// Process the route as a regex pattern
+			for ( var x = 1; x lte listLen( thisRoute.domain, "." ); x++ ) {
+				// Pattern and Pattern Param
+				var thisDomain      = listGetAt( thisRoute.domain, x, "." );
+				var thisDomainParam = replace(
+					listFirst( thisDomain, "-" ),
+					":",
+					""
+				);
 
-                // Pattern and Pattern Param
-                var thisDomain      = listGetAt( thisRoute.domain, x, "." );
-               	var thisDomainParam = replace( listFirst( thisDomain, "-" ), ":", "" );
-
-                // Detect Optional Types
-                patternType = "alphanumeric";
-                if( findnoCase( "-numeric", thisDomain ) ){
+				// Detect Optional Types
+				patternType = "alphanumeric";
+				if ( findNoCase( "-numeric", thisDomain ) ) {
 					patternType = "numeric";
 				}
-                if( findnoCase( "-alpha", thisDomain ) ){
+				if ( findNoCase( "-alpha", thisDomain ) ) {
 					patternType = "alpha";
 				}
-                // This is a prefix like above to match a param (creates rc variable)
-                if( findNoCase( "-regex:", thisDomain ) ){
+				// This is a prefix like above to match a param (creates rc variable)
+				if ( findNoCase( "-regex:", thisDomain ) ) {
 					patternType = "regexParam";
 				}
-                // This is a placeholder for static text in the route
-                else if( findNoCase( "regex:", thisDomain ) ){
+				// This is a placeholder for static text in the route
+				else if ( findNoCase( "regex:", thisDomain ) ) {
 					patternType = "regex";
 				}
 
-                // Pattern Type Regex
-                switch( patternType ){
-                    // CUSTOM REGEX for static route parts
-                    case "regex" : {
-                        thisRegex = replacenocase( thisDomain, "regex:", "" );
-                        break;
-                    }
-                    // CUSTOM REGEX for route param
-                    case "regexParam" : {
-                        // Pull out Regex Pattern
-                        thisRegex = REReplace( thisDomain, ":.*?-regex:", "" );
-                        // Add Route Param
-                        arrayAppend( thisRoute.domainParams, thisDomainParam );
-                        break;
-                    }
-                    // ALPHANUMERICAL OPTIONAL
-                    case "alphanumeric" : {
-                        if( find( ":", thisDomain ) ){
-                            thisRegex = "(" & REReplace( thisDomain, ":(.[^-]*)", "[^\/\.]" );
-                            // Check Digits Repetions
-                            if( find( "{", thisDomain ) ){
-                                thisRegex = listFirst( thisRegex,"{") & "{#listLast( thisDomain, "{" )#)";
-                                arrayAppend( thisRoute.domainParams, replace( listFirst( thisDomain,"{" ), ":", "" ) );
-                            } else {
-                                thisRegex = thisRegex & "+?)";
-                                arrayAppend( thisRoute.domainParams, thisDomainParam );
-                            }
-                            // Override Constraints with your own REGEX
-                            if( structKeyExists( thisRoute.constraints, thisDomainParam ) ){
-                                thisRegex = thisRoute.constraints[ thisDomainParam ];
-                            }
-                        } else {
-                            thisRegex = thisDomain;
-                        }
-                        break;
-                    }
-                    // NUMERICAL OPTIONAL
-                    case "numeric" : {
-                        // Convert to Regex Pattern
-                        thisRegex = "(" & REReplace( thisDomain, ":.*?-numeric", "[0-9]" );
-                        // Check Digits
-                        if( find("{",thisDomain) ){
-                            thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
-                        } else {
-                            thisRegex = thisRegex & "+?)";
-                        }
-                        // Add Route Param
-                        arrayAppend( thisRoute.domainParams, thisDomainParam );
-                        break;
-                    }
-                    // ALPHA OPTIONAL
-                    case "alpha" : {
-                        // Convert to Regex Pattern
-                        thisRegex = "(" & REReplace( thisDomain, ":.*?-alpha", "[a-zA-Z]" );
-                        // Check Digits
-                        if( find( "{", thisDomain ) ){
-                            thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
-                        } else {
-                            thisRegex = thisRegex & "+?)";
-                        }
-                        // Add Route Param
-                        arrayAppend( thisRoute.domainParams,thisDomainParam );
-                        break;
-                    }
-                } //end pattern type detection switch
+				// Pattern Type Regex
+				switch ( patternType ) {
+					// CUSTOM REGEX for static route parts
+					case "regex": {
+						thisRegex = replaceNoCase( thisDomain, "regex:", "" );
+						break;
+					}
+					// CUSTOM REGEX for route param
+					case "regexParam": {
+						// Pull out Regex Pattern
+						thisRegex = reReplace( thisDomain, ":.*?-regex:", "" );
+						// Add Route Param
+						arrayAppend( thisRoute.domainParams, thisDomainParam );
+						break;
+					}
+					// ALPHANUMERICAL OPTIONAL
+					case "alphanumeric": {
+						if ( find( ":", thisDomain ) ) {
+							thisRegex = "(" & reReplace( thisDomain, ":(.[^-]*)", "[^\/\.]" );
+							// Check Digits Repetions
+							if ( find( "{", thisDomain ) ) {
+								thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
+								arrayAppend(
+									thisRoute.domainParams,
+									replace(
+										listFirst( thisDomain, "{" ),
+										":",
+										""
+									)
+								);
+							} else {
+								thisRegex = thisRegex & "+?)";
+								arrayAppend( thisRoute.domainParams, thisDomainParam );
+							}
+							// Override Constraints with your own REGEX
+							if ( structKeyExists( thisRoute.constraints, thisDomainParam ) ) {
+								thisRegex = thisRoute.constraints[ thisDomainParam ];
+							}
+						} else {
+							thisRegex = thisDomain;
+						}
+						break;
+					}
+					// NUMERICAL OPTIONAL
+					case "numeric": {
+						// Convert to Regex Pattern
+						thisRegex = "(" & reReplace( thisDomain, ":.*?-numeric", "[0-9]" );
+						// Check Digits
+						if ( find( "{", thisDomain ) ) {
+							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
+						} else {
+							thisRegex = thisRegex & "+?)";
+						}
+						// Add Route Param
+						arrayAppend( thisRoute.domainParams, thisDomainParam );
+						break;
+					}
+					// ALPHA OPTIONAL
+					case "alpha": {
+						// Convert to Regex Pattern
+						thisRegex = "(" & reReplace( thisDomain, ":.*?-alpha", "[a-zA-Z]" );
+						// Check Digits
+						if ( find( "{", thisDomain ) ) {
+							thisRegex = listFirst( thisRegex, "{" ) & "{#listLast( thisDomain, "{" )#)";
+						} else {
+							thisRegex = thisRegex & "+?)";
+						}
+						// Add Route Param
+						arrayAppend( thisRoute.domainParams, thisDomainParam );
+						break;
+					}
+				}
+				// end pattern type detection switch
 
-                // Add Regex Created To Pattern
-                thisRoute.regexDomain = thisRoute.regexDomain & thisRegex & ".";
-
-            } // end looping of pattern optionals
-            if( right( thisRoute.regexDomain, 1 ) == "." ) {
-                thisRoute.regexDomain = left( thisRoute.regexDomain, len( thisRoute.regexDomain ) - 1 );
-            }
-        }
+				// Add Regex Created To Pattern
+				thisRoute.regexDomain = thisRoute.regexDomain & thisRegex & ".";
+			}
+			// end looping of pattern optionals
+			if ( right( thisRoute.regexDomain, 1 ) == "." ) {
+				thisRoute.regexDomain = left( thisRoute.regexDomain, len( thisRoute.regexDomain ) - 1 );
+			}
+		}
 
 		// Add it to the corresponding routing table
 		// MODULES
-		if( len( arguments.module ) ){
+		if ( len( arguments.module ) ) {
 			// Append or PrePend
-			if( arguments.append ){
+			if ( arguments.append ) {
 				getModuleRoutes( arguments.module ).append( thisRoute );
 			} else {
 				getModuleRoutes( arguments.module ).prePend( thisRoute );
 			}
 		}
 		// NAMESPACES
-		else if( len( arguments.namespace ) ){
+		else if ( len( arguments.namespace ) ) {
 			// Append or PrePend
-			if( arguments.append ){
+			if ( arguments.append ) {
 				getNamespaceRoutes( arguments.namespace ).append( thisRoute );
 			} else {
 				getNamespaceRoutes( arguments.namespace ).prePend( thisRoute );
 			}
 		}
 		// Default Routing Table
-		else{
+		else {
 			// Append or PrePend
-			if( arguments.append ){
+			if ( arguments.append ) {
 				variables.routes.append( thisRoute );
 			} else {
 				variables.routes.prePend( thisRoute );
@@ -1044,40 +1141,40 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	private struct function initRouteDefinition(){
 		// Reset a group with closure
-		if( !variables.onGroup ){
-			variables.withClosure 		= {};
+		if ( !variables.onGroup ) {
+			variables.withClosure = {};
 		}
 		// Return a new route definition
 		return {
-			pattern               	=  "",
-			handler               	=  "",
-			action                	=  "",
-			packageResolverExempt 	= false,
-			view                  	=  "",
-			layout                	=  "",
-			viewNoLayout          	= false,
-			viewModule 				= "",
-			layoutModule 			= "",
-			valuePairTranslation  	= true,
-			constraints           	= {},
-			module                	= "",
-			moduleRouting         	= "",
-			namespace             	= "",
-			namespaceRouting      	= "",
-			ssl                   	= false,
-			append                	= true,
-			response              	= "",
-			statusCode            	= 200,
-			statusText            	= "Ok",
-			condition             	= "",
-			name                  	= "",
-			domain                	= "",
-			redirect              	= "",
-			event 					= "",
-			verbs 					= "",
-			headers 				= {},
-			rc 						= {},
-			prc 					= {}
+			pattern               : "",
+			handler               : "",
+			action                : "",
+			packageResolverExempt : false,
+			view                  : "",
+			layout                : "",
+			viewNoLayout          : false,
+			viewModule            : "",
+			layoutModule          : "",
+			valuePairTranslation  : true,
+			constraints           : {},
+			module                : "",
+			moduleRouting         : "",
+			namespace             : "",
+			namespaceRouting      : "",
+			ssl                   : false,
+			append                : true,
+			response              : "",
+			statusCode            : 200,
+			statusText            : "Ok",
+			condition             : "",
+			name                  : "",
+			domain                : "",
+			redirect              : "",
+			event                 : "",
+			verbs                 : "",
+			headers               : {},
+			rc                    : {},
+			prc                   : {}
 		};
 	}
 
@@ -1100,31 +1197,31 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @target A response closure/lambda or an event string to execute
 	 * @name The name of the route
 	 */
-	function route( required pattern, target, name="" ){
+	function route( required pattern, target, name = "" ){
 		// inline termination
-		if( !isNull( arguments.target ) ){
+		if ( !isNull( arguments.target ) ) {
 			// process a with closure if not empty
-			if( !variables.withClosure.isEmpty() ){
+			if ( !variables.withClosure.isEmpty() ) {
 				processWith( arguments );
 			}
 			// Prepare Routing Structure
 			var args = {};
 			// Simple => Event
-			if( isSimpleValue( arguments.target ) ){
+			if ( isSimpleValue( arguments.target ) ) {
 				args = {
-					pattern = arguments.pattern,
-					event   = arguments.target,
-					verbs   = ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
-					name 	= arguments.name
+					pattern : arguments.pattern,
+					event   : arguments.target,
+					verbs   : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
+					name    : arguments.name
 				};
 			}
 			// Closure/Lambda => Response
 			else {
 				args = {
-					pattern  = arguments.pattern,
-					response = arguments.target,
-					verbs 	 = ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
-					name 	 = arguments.name
+					pattern  : arguments.pattern,
+					response : arguments.target,
+					verbs    : ( variables.thisRoute.keyExists( "verbs" ) ? variables.thisRoute.verbs : "" ),
+					name     : arguments.name
 				};
 			}
 
@@ -1134,13 +1231,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 			return this;
 		} else {
 			// process a with closure if not empty
-			if( !variables.withClosure.isEmpty() ){
+			if ( !variables.withClosure.isEmpty() ) {
 				processWith( arguments );
 			}
 
 			// Store data and continue
 			variables.thisRoute.pattern = arguments.pattern;
-			variables.thisRoute.name 	= arguments.name;
+			variables.thisRoute.name    = arguments.name;
 
 			// Add a Handler in if it exists
 			variables.thisRoute.handler = arguments.handler ?: "";
@@ -1247,9 +1344,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @value The header value
 	 * @overwrite Overwrite if already defined
 	 */
-	function header( required name, required value, boolean overwrite=true ){
+	function header(
+		required name,
+		required value,
+		boolean overwrite = true
+	){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 
@@ -1270,9 +1371,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @map The structure of headers to issue
 	 * @overwrite Overwrite the elements
 	 */
-	function headers( required map, boolean overwrite=true ){
+	function headers( required map, boolean overwrite = true ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.headers.append( arguments.map, arguments.overwrite );
@@ -1289,7 +1390,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function as( required name ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.name = arguments.name;
@@ -1306,9 +1407,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @value The value
 	 * @overwrite Overwrite the value
 	 */
-	function rc( required name, required value, boolean overwrite=true ){
+	function rc(
+		required name,
+		required value,
+		boolean overwrite = true
+	){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.rc.insert(
@@ -1328,9 +1433,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @map The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
-	function rcAppend( required map, boolean overwrite=true ){
+	function rcAppend( required map, boolean overwrite = true ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.rc.append( arguments.map, arguments.overwrite );
@@ -1347,9 +1452,13 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @value The value
 	 * @overwrite Overwrite the value
 	 */
-	function prc( required name, required value, boolean overwrite=true ){
+	function prc(
+		required name,
+		required value,
+		boolean overwrite = true
+	){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.prc.insert(
@@ -1369,9 +1478,9 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @map The structure to append
 	 * @overwrite Overwrite elements, default behavior
 	 */
-	function prcAppend( required map, boolean overwrite=true ){
+	function prcAppend( required map, boolean overwrite = true ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.prc.append( arguments.map, arguments.overwrite );
@@ -1407,7 +1516,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function withHandler( required handler ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.handler = arguments.handler;
@@ -1421,7 +1530,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * <br>
 	 * Please see examples below:
 	 * <pre>
-		* route( "api/user" ).\withAction( { get : "index", delete : "delete" } ).toHandler( "User" );
+	 * route( "api/user" ).\withAction( { get : "index", delete : "delete" } ).toHandler( "User" );
 	 * route( "api/user/details" ).withAction( "details" ).toHandler( "User" );
 	 * route( "api/:handler" ).withAction( "index" ).end();
 	 * </pre>
@@ -1429,7 +1538,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @action The action string or the action struct of HTTP verbs matching an action
 	 */
 	function withAction( required action ){
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.action = arguments.action;
@@ -1446,7 +1555,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function withModule( required name ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.module = arguments.name;
@@ -1463,7 +1572,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function withNamespace( required name ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.namespace = arguments.name;
@@ -1478,7 +1587,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function withSSL(){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.ssl = true;
@@ -1496,7 +1605,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function withCondition( required condition ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.condition = arguments.condition;
@@ -1513,7 +1622,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function withDomain( required domain ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.domain = arguments.domain;
@@ -1578,7 +1687,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function withVerbs( required verbs ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		variables.thisRoute.verbs = arguments.verbs;
@@ -1619,23 +1728,26 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function toView(
 		required view,
-		layout="",
-		boolean noLayout=false,
-		viewModule="",
-		layoutModule=""
+		layout           = "",
+		boolean noLayout = false,
+		viewModule       = "",
+		layoutModule     = ""
 	){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		// Construct Arguments
-		variables.thisRoute.append( {
-			view     		: arguments.view,
-			layout   		: arguments.layout,
-			viewNoLayout 	: arguments.nolayout,
-			viewModule 		: arguments.viewModule,
-			layoutModule 	: arguments.layoutModule
-		}, true );
+		variables.thisRoute.append(
+			{
+				view         : arguments.view,
+				layout       : arguments.layout,
+				viewNoLayout : arguments.nolayout,
+				viewModule   : arguments.viewModule,
+				layoutModule : arguments.layoutModule
+			},
+			true
+		);
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
 		// reinit
@@ -1654,16 +1766,19 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @target The target URI
 	 * @statusCode The statusCode to use, defaults to 301
 	 */
-	function toRedirect( required target, statusCode=301 ){
+	function toRedirect( required target, statusCode = 301 ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		// Construct arguments
-		variables.thisRoute.append( {
-			redirect     : arguments.target,
-			statusCode   : arguments.statusCode
-		}, true );
+		variables.thisRoute.append(
+			{
+				redirect   : arguments.target,
+				statusCode : arguments.statusCode
+			},
+			true
+		);
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
 		// reinit
@@ -1683,7 +1798,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function to( required event ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		// Store event
@@ -1707,7 +1822,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function toHandler( required handler ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		// Store handler
@@ -1730,7 +1845,7 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function toAction( required action ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		// Store action
@@ -1755,17 +1870,24 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @statusCode The status code to use, defaults to 200
 	 * @statusText The status text to use, defaults to 'OK'
 	 */
-	function toResponse( required body, numeric statusCode = 200, statusText = "Ok" ){
+	function toResponse(
+		required body,
+		numeric statusCode = 200,
+		statusText         = "Ok"
+	){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		// Construct arguments
-		variables.thisRoute.append( {
-			response    : arguments.body,
-			statusCode  : arguments.statusCode,
-			statusText	: arguments.statusText
-		}, true );
+		variables.thisRoute.append(
+			{
+				response   : arguments.body,
+				statusCode : arguments.statusCode,
+				statusText : arguments.statusText
+			},
+			true
+		);
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
 		// reinit
@@ -1783,13 +1905,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function toModuleRouting( required module ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		// Construct arguments
-		variables.thisRoute.append( {
-			moduleRouting	: arguments.module
-		}, true );
+		variables.thisRoute.append( { moduleRouting : arguments.module }, true );
 		// register the route
 		addRoute( argumentCollection = variables.thisRoute );
 		// reinit
@@ -1807,14 +1927,11 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 */
 	function toNamespaceRouting( required namespace ){
 		// process a with closure if not empty
-		if( !variables.withClosure.isEmpty() ){
+		if ( !variables.withClosure.isEmpty() ) {
 			processWith( arguments );
 		}
 		// Register route to namespace
-		addNamespace(
-			pattern 	= variables.thisRoute.pattern,
-			namespace 	= arguments.namespace
-		);
+		addNamespace( pattern = variables.thisRoute.pattern, namespace = arguments.namespace );
 
 		// reinit
 		variables.thisRoute = initRouteDefinition();
@@ -1826,38 +1943,42 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	/*****************************************************************************************/
 
 	/**
-     * Get the correct route actions based on only and except lists
-     * @initial The initial set of route actions
-     * @only 	Limit actions with only
-     * @except 	Exclude actions with except
-     */
-    private struct function filterRouteActions( required struct initial, array only = [], array except = [] ) {
-        var actionSet = arguments.initial;
+	 * Get the correct route actions based on only and except lists
+	 * @initial The initial set of route actions
+	 * @only 	Limit actions with only
+	 * @except 	Exclude actions with except
+	 */
+	private struct function filterRouteActions(
+		required struct initial,
+		array only   = [],
+		array except = []
+	){
+		var actionSet = arguments.initial;
 
-        if ( structKeyExists( arguments, "only" ) && ! isNull( arguments.only ) && ! arrayIsEmpty( arguments.only ) ) {
-            actionSet = {};
-            for( var HTTPVerb in arguments.initial ){
-                var methodName = arguments.initial[ HTTPVerb ];
-                for( var onlyAction in arguments.only ){
-                    if ( compareNoCase( methodName, onlyAction ) == 0 ) {
-                        structInsert( actionSet, HTTPVerb, onlyAction );
-                    }
-                }
-            }
-        }
+		if ( structKeyExists( arguments, "only" ) && !isNull( arguments.only ) && !arrayIsEmpty( arguments.only ) ) {
+			actionSet = {};
+			for ( var HTTPVerb in arguments.initial ) {
+				var methodName = arguments.initial[ HTTPVerb ];
+				for ( var onlyAction in arguments.only ) {
+					if ( compareNoCase( methodName, onlyAction ) == 0 ) {
+						structInsert( actionSet, HTTPVerb, onlyAction );
+					}
+				}
+			}
+		}
 
-        if ( structKeyExists( arguments, "except" ) && ! isNull( arguments.except ) && ! arrayIsEmpty( arguments.except ) ) {
-            for( var HTTPVerb in arguments.initial ){
-                var methodName = arguments.initial[ HTTPVerb ];
-                for( var exceptAction in arguments.except ){
-                    if ( compareNoCase( methodName, exceptAction ) == 0 ) {
-                        structDelete( actionSet, HTTPVerb );
-                    }
-                }
-            }
-        }
+		if ( structKeyExists( arguments, "except" ) && !isNull( arguments.except ) && !arrayIsEmpty( arguments.except ) ) {
+			for ( var HTTPVerb in arguments.initial ) {
+				var methodName = arguments.initial[ HTTPVerb ];
+				for ( var exceptAction in arguments.except ) {
+					if ( compareNoCase( methodName, exceptAction ) == 0 ) {
+						structDelete( actionSet, HTTPVerb );
+					}
+				}
+			}
+		}
 
-        return actionSet;
+		return actionSet;
 	}
 
 	/**
@@ -1866,36 +1987,42 @@ component accessors="true" extends="coldbox.system.FrameworkSupertype" threadsaf
 	 * @thisRoute The route structure
 	 */
 	private function processRouteOptionals( required struct thisRoute ){
-		var base 		= "";
-		var optionals 	= "";
+		var base      = "";
+		var optionals = "";
 
 		// Parse our base & optionals strings
-		arguments.thisRoute.pattern.listToArray( "/" )
+		arguments.thisRoute.pattern
+			.listToArray( "/" )
 			.each( function( item ){
 				// Check for ?
-				if( not findnocase( "?", item ) ){
+				if ( not findNoCase( "?", item ) ) {
 					base = base & item & "/";
 				} else {
-					optionals = optionals & replacenocase( item, "?", "", "all" ) & "/";
+					optionals = optionals & replaceNoCase( item, "?", "", "all" ) & "/";
 				}
 			} );
 
 		// Register our optionals
 		var routeList = base & optionals;
-		optionals.listToArray( "/" )
+		optionals
+			.listToArray( "/" )
 			.each( function( item ){
 				// Create new route
 				thisRoute.pattern = routeList;
 				// Register route
-				addRoute( argumentCollection=thisRoute );
+				addRoute( argumentCollection = thisRoute );
 				// Remove last bit
-				routeList = listDeleteat( routeList, listlen( routeList, "/" ), "/" );
+				routeList = listDeleteAt(
+					routeList,
+					listLen( routeList, "/" ),
+					"/"
+				);
 			} );
 
-			// Setup the base route again
+		// Setup the base route again
 		arguments.thisRoute.pattern = base;
 		// Register the final route
-		addRoute( argumentCollection=arguments.thisRoute );
+		addRoute( argumentCollection = arguments.thisRoute );
 	}
 
 }

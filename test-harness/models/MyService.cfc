@@ -1,4 +1,4 @@
-component{
+component {
 
 	function init(){
 		return this;
@@ -7,4 +7,5 @@ component{
 	function isLogin(){
 		return false;
 	}
+
 }

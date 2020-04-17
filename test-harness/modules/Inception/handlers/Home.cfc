@@ -1,10 +1,10 @@
 /**
-* A normal ColdBox Event Handler
-*/
-component{
+ * A normal ColdBox Event Handler
+ */
+component {
 
-	function index(event,rc,prc){
-		event.setView("home/index");
+	function index( event, rc, prc ){
+		event.setView( "home/index" );
 	}
 
 }
