@@ -10,7 +10,7 @@
     </thead>
 
     <tbody>
-    <cfloop array="#args.routes#" item="thisRoute">
+    <cfloop array="#args.routes#" index="thisRoute">
         <tr>
             <td>
                 #thisRoute.pattern#
