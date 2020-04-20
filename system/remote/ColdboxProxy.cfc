@@ -25,38 +25,40 @@ Description :
 	<!--- selfAutowire --->
     <cffunction name="selfAutowire" output="false" access="private" hint="Autowire the proxy on creation. This references the super class only, we use cgi information to get the actual proxy component path.">
 		<cfscript>
-			var script_name = CGI.SCRIPT_NAME;
+			var scriptName = CGI.SCRIPT_NAME;
 			// Only process this logic if hitting a remote proxy CFC directly and if ColdBox exists.
-			if( len( script_name ) < 5 || right( script_name, 4 ) != '.cfc' || !verifyColdBox( throwOnNotExist=false ) ) {
+			if (len(scriptName) < 5 || right(scriptName, 4) != '.cfc' || !verifyColdBox(throwOnNotExist = false)) {
 				return;
 			}
 
 			// Find the path of the proxy component being called
-			var componentpath = replaceNoCase(mid( script_name, 2, len( script_name ) -5 ),'/','.');
+			var contextRoot = getContextRoot();
+			var componentPath = replaceNoCase(mid(scriptName, len(contextRoot) + 2, len(scriptName) - len(contextRoot) - 5), "/", ".", "all");
+
 			var injector = getWirebox();
 			var binder = injector.getBinder();
 			var mapping = '';
 
 			// Prevent recursive object creation in Lucee
-			if( !structKeyExists( request, 'proxyAutowire' ) ){
+			if (!structKeyExists(request, 'proxyAutowire')) {
 				request.proxyAutowire = true;
 
 				// If a mapping for this proxy doesn't exist, create it.
-				if( !binder.mappingExists( componentpath ) ) {
+				if (!binder.mappingExists(componentPath)) {
 					// First one only, please
-					lock name="ColdBoxProxy.createMapping.#hash( componentpath )#" type="exclusive" timeout="20" {
+					lock name ="ColdBoxProxy.createMapping.#hash(componentPath)#" type="exclusive" timeout="20" {
 						// Double check
-						if( !binder.mappingExists( componentpath ) ) {
+						if (!binder.mappingExists(componentPath)) {
 
 							// Get its metadata
-							var md = getUtil().getInheritedMetaData( componentpath );
+							var md = getUtil().getInheritedMetaData(componentPath);
 
 							// register new mapping instance
-							injector.registerNewInstance( componentpath, componentpath );
+							injector.registerNewInstance(componentPath, componentPath);
 							// get Mapping created
-							mapping = binder.getMapping( componentpath );
+							mapping = binder.getMapping(componentPath);
 							// process it with the correct metadata
-							mapping.process( binder=binder, injector=injector, metadata=md );
+							mapping.process(binder = binder, injector = injector, metadata = md);
 
 						}
 
@@ -64,10 +66,10 @@ Description :
 				} // End outer exists check
 
 				// Guaranteed to exist now
-				mapping = binder.getMapping( componentpath );
+				mapping = binder.getMapping(componentPath);
 
 				// Autowire ourself based on the mapping
-				getWirebox().autowire(target=this, mapping=mapping, annotationCheck=true);
+				getWirebox().autowire(target = this, mapping = mapping, annotationCheck = true);
 			}
 		</cfscript>
 
