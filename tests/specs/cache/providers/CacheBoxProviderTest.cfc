@@ -3,14 +3,21 @@
 
 	function setup(){
 		super.setup();
+
 		// Mocks
 		mockFactory      = createMock( "coldbox.system.cache.CacheFactory" );
 		mockEventManager = createMock( "coldbox.system.core.events.EventPoolManager" );
 		mockLogBox       = createMock( "coldbox.system.logging.LogBox" );
 		mockLogger       = createMock( "coldbox.system.logging.Logger" );
+		mockAsyncManager = createMock( "coldbox.system.async.AsyncManager" ).init();
+		mockExecutor 	 = prepareMock( mockAsyncManager.newScheduledExecutor( name : "cachebox-tasks", threads : 1 ) );
 
 		// Mock Methods
-		mockFactory.setLogBox( mockLogBox );
+		mockFactory
+			.setLogBox( mockLogBox )
+			.setAsyncManager( mockAsyncManager )
+			.setTaskScheduler( mockExecutor );
+
 		mockLogBox.$( "getLogger", mockLogger );
 		mockLogger
 			.$( "error", mockLogger )
@@ -42,6 +49,14 @@
 		cache.setConfiguration( config );
 		cache.setCacheFactory( mockFactory );
 		cache.setEventManager( mockEventManager );
+
+		// Mock The Scheduler, we don't need any reaping async
+		var mockSchedule = prepareMock(
+			mockExecutor.newSchedule( function(){
+				debug( "In Mock Executor" )
+			} )
+		);
+		mockExecutor.$( "newSchedule", mockSchedule );
 
 		// Configure the provider
 		cache.configure();
@@ -369,8 +384,7 @@
 
 		cache.expireAll();
 
-		makePublic( cache, "_reap" );
-		cache._reap();
+		cache.reap();
 
 		assertEquals( 0, cache.getSize() );
 	}
