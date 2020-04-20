@@ -53,7 +53,7 @@
 		// Mock The Scheduler, we don't need any reaping async
 		var mockSchedule = prepareMock(
 			mockExecutor.newSchedule( function(){
-				debug( "In Mock Executor" )
+				debug( "In Mock Executor" );
 			} )
 		);
 		mockExecutor.$( "newSchedule", mockSchedule );
