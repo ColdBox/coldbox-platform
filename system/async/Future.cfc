@@ -62,7 +62,7 @@ component accessors="true" {
 		variables.executor       = ( isNull( arguments.executor ) ? "" : arguments.executor );
 
 		// Are we using a Java or CFML executor?
-		if( structKeyExists( variables.executor, "getnative" ) ){
+		if( isObject( variables.executor ) && structKeyExists( variables.executor, "getNative" ) ){
 			variables.executor = variables.executor.getNative();
 		}
 
