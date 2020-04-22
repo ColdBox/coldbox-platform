@@ -41,6 +41,19 @@ component extends="BaseAsyncSpec"{
 				expect( f.isDone() ).toBeTrue();
 			} );
 
+
+			it( "can create a future with a custom CFML executor", function(){
+				var f = asyncManager.newFuture( function(){
+						return 2;
+					},
+					asyncManager.newExecutor( name : "unitTest", threads : "1" )
+				);
+
+				sleep( 500 );
+
+				expect( f.get() ).toBe( 2 );
+			});
+
 			it( "can cancel a long-running future", function(){
 				var future = asyncManager.newFuture();
 				var results = future.run( function(){
