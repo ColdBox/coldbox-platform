@@ -60,6 +60,13 @@ component accessors="true" {
 		variables.debug          = arguments.debug;
 		variables.loadAppContext = arguments.loadAppContext;
 		variables.executor       = ( isNull( arguments.executor ) ? "" : arguments.executor );
+
+		// Are we using a Java or CFML executor?
+		if( structKeyExists( variables.executor, "getnative" ) ){
+			variables.executor = variables.executor.getNative();
+		}
+
+		// Prepare initial timeouts
 		variables.futureTimeout  = {
 			"timeout"  : 0,
 			"timeUnit" : "milliseconds"
