@@ -337,4 +337,25 @@ component accessors="true" singleton {
 		return newFuture().anyOf( argumentCollection = arguments );
 	}
 
+	/****************************************************************
+	 * Utilities *
+	 ****************************************************************/
+
+	/**
+	 * Build an array out of a range of numbers
+	 *
+	 * @from The initial index, defaults to 1
+	 * @to The last index item
+	 */
+	array function arrayRange( numeric from=1, numeric to ){
+		if( arguments.to < arguments.from ){
+			arguments.to = arguments.from;
+		}
+		var data = [];
+		while( arguments.from <= arguments.to ){
+			data.append( arguments.from++ );
+		}
+		return data;
+	}
+
 }
