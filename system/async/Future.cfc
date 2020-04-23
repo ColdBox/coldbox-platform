@@ -219,11 +219,21 @@ component accessors="true" {
 	){
 		// Do we have a timeout?
 		if ( arguments.timeout != 0 ) {
-			var results = variables.native.get(
-				javacast( "long", arguments.timeout ),
-				this.$timeUnit.get( arguments.timeUnit )
-			);
-		} else {
+			try{
+				var results = variables.native.get(
+					javacast( "long", arguments.timeout ),
+					this.$timeUnit.get( arguments.timeUnit )
+				);
+			} catch( "java.util.concurrent.TimeoutException" e ){
+				// If we have a result, return it, else rethrow
+				if ( !isNull( arguments.defaultValue ) ) {
+					return arguments.defaultValue;
+				}
+				rethrow;
+			}
+		}
+		// No timeout, just block until done
+		else {
 			var results = variables.native.get();
 		}
 
