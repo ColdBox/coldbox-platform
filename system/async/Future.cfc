@@ -134,6 +134,26 @@ component accessors="true" {
 	}
 
 	/**
+	 * Returns the result value when complete, or throws an (unchecked) exception if completed exceptionally.
+	 * To better conform with the use of common functional forms, if a computation involved in the completion of this CompletableFuture
+	 * threw an exception, this method throws an (unchecked) CompletionException with the underlying exception as its cause.
+	 *
+	 * @defaultValue If the returned value is null, then we can pass a default value to return
+	 *
+	 * @throws CompletionException - if this future completed exceptionally or a completion computation threw an exception
+	 * @throws CancellationException - if the computation was cancelled
+	 *
+	 * @return The result value
+	 */
+	any function join( defaultValue ){
+		var results = variables.native.join();
+
+		if( isNull( results ) && !isNull( arguments.defaultValue ) ){
+			return arguments.defaultValue;
+		}
+	}
+
+	/**
 	 * Waits if necessary for at most the given time for this future to complete, and then returns its result, if available.
 	 * If the result is null, then you can pass the defaultValue argument to return it.
 	 *
