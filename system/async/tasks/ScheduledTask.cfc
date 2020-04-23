@@ -44,7 +44,7 @@ component accessors="true" {
 		variables.period      = 0;
 		variables.delay       = 0;
 		variables.spacedDelay = 0;
-		variables.timeUnit    = variables.executor.$timeUnit.get();
+		variables.timeUnit    = "milliseconds";
 
 		return this;
 	}
@@ -84,7 +84,7 @@ component accessors="true" {
 	 */
 	Scheduledtask function delay( numeric delay, timeUnit = "milliseconds" ){
 		variables.delay    = arguments.delay;
-		variables.timeUnit = variables.executor.$timeUnit.get( arguments.timeUnit );
+		variables.timeUnit = arguments.timeUnit;
 		return this;
 	}
 
@@ -96,7 +96,7 @@ component accessors="true" {
 	 */
 	Scheduledtask function spacedDelay( numeric spacedDelay, timeUnit = "milliseconds" ){
 		variables.spacedDelay = arguments.spacedDelay;
-		variables.timeUnit    = variables.executor.$timeUnit.get( arguments.timeUnit );
+		variables.timeUnit    = arguments.timeUnit;
 		return this;
 	}
 
@@ -108,7 +108,7 @@ component accessors="true" {
 	 */
 	Scheduledtask function every( numeric period, timeUnit = "milliseconds" ){
 		variables.period   = arguments.period;
-		variables.timeUnit = variables.executor.$timeUnit.get( arguments.timeUnit );
+		variables.timeUnit = arguments.timeUnit;
 		return this;
 	}
 
@@ -116,7 +116,7 @@ component accessors="true" {
 	 * Set the time unit in days
 	 */
 	Scheduledtask function inDays(){
-		variables.timeUnit = variables.executor.$timeUnit.get( "days" );
+		variables.timeUnit = "days";
 		return this;
 	}
 
@@ -124,7 +124,7 @@ component accessors="true" {
 	 * Set the time unit in hours
 	 */
 	Scheduledtask function inHours(){
-		variables.timeUnit = variables.executor.$timeUnit.get( "hours" );
+		variables.timeUnit = "hours";
 		return this;
 	}
 
@@ -132,7 +132,7 @@ component accessors="true" {
 	 * Set the time unit in microseconds
 	 */
 	Scheduledtask function inMicroseconds(){
-		variables.timeUnit = variables.executor.$timeUnit.get( "microseconds" );
+		variables.timeUnit = "microseconds";
 		return this;
 	}
 
@@ -140,7 +140,7 @@ component accessors="true" {
 	 * Set the time unit in milliseconds
 	 */
 	Scheduledtask function inMilliseconds(){
-		variables.timeUnit = variables.executor.$timeUnit.get( "milliseconds" );
+		variables.timeUnit = "milliseconds";
 		return this;
 	}
 
@@ -148,7 +148,7 @@ component accessors="true" {
 	 * Set the time unit in minutes
 	 */
 	Scheduledtask function inMinutes(){
-		variables.timeUnit = variables.executor.$timeUnit.get( "minutes" );
+		variables.timeUnit = "minutes";
 		return this;
 	}
 
@@ -156,7 +156,7 @@ component accessors="true" {
 	 * Set the time unit in nanoseconds
 	 */
 	Scheduledtask function inNanoseconds(){
-		variables.timeUnit = variables.executor.$timeUnit.get( "nanoseconds" );
+		variables.timeUnit = "nanoseconds";
 		return this;
 	}
 
@@ -164,7 +164,7 @@ component accessors="true" {
 	 * Set the time unit in seconds
 	 */
 	Scheduledtask function inSeconds(){
-		variables.timeUnit = variables.executor.$timeUnit.get( "seconds" );
+		variables.timeUnit = "seconds";
 		return this;
 	}
 
