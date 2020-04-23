@@ -333,6 +333,81 @@ component accessors="true" {
 	}
 
 	/**
+	 * Returns a new CompletionStage that, when this stage completes either normally or exceptionally, is executed with this stage's result
+	 * and exception as arguments to the supplied function.
+	 *
+	 * When this stage is complete, the given function is invoked with the result (or null if none) and the exception (or null if none) of
+	 * this stage as arguments, and the function's result is used to complete the returned stage.
+	 *
+	 * The action is a closure/udf with the incoming input (if any) or an exception (if any) and returns a new result if you want
+	 *
+	 * <pre>
+	 * handle( (input, exception) => {} )
+	 * handle( function( input, exception ){} )
+	 * </pre>
+	 *
+	 * @action the function to use to compute the value of the returned CompletionStage
+	 *
+	 * @return The new completion stage
+	 */
+	Future function handle( required action ){
+		var biFunction = createDynamicProxy(
+			new proxies.BiFunction(
+				arguments.action,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.function.BiFunction" ]
+		);
+
+		variables.native = variables.native.handle( biFunction );
+
+		return this;
+	}
+
+	/**
+	 * Returns a new CompletionStage that, when this stage completes either normally or exceptionally,
+	 * is executed using this stage's default asynchronous execution facility, with this stage's result
+	 *  and exception as arguments to the supplied function.
+	 *
+	 * When this stage is complete, the given function is invoked with the result (or null if none) and
+	 * the exception (or null if none) of this stage as arguments, and the function's result is used to
+	 * complete the returned stage.
+	 *
+	 *  The action is a closure/udf with the incoming input (if any) or an exception (if any) and returns a new result if you want
+	 *
+	 * <pre>
+	 * handleAsync( (input, exception) => {} )
+	 * handleAsync( function( input, exception ){} )
+	 *
+	 * handleAsync( (input, exception) => {}, asyncManager.$executors.newFixedThreadPool() )
+	 * </pre>
+	 *
+	 * @action the function to use to compute the value of the returned CompletionStage
+	 * @executor the java executor to use for asynchronous execution, can be empty
+	 *
+	 * @return The new completion stage
+	 */
+	Future function handleAsync( required action, executor ){
+		var biFunction = createDynamicProxy(
+			new proxies.BiFunction(
+				arguments.action,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.function.BiFunction" ]
+		);
+
+		if( !isNull( arguments.executor ) ){
+			variables.native = variables.native.handleAsync( biFunction, arguments.executor );
+		} else {
+			variables.native = variables.native.handleAsync( biFunction );
+		}
+
+		return this;
+	}
+
+	/**
 	 * Returns a new CompletionStage with the same result or exception as this stage, that executes the given action when this stage completes.
 	 *
 	 * When this stage is complete, the given action is invoked with the result (or null if none) and the exception (or null if none) of this stage as arguments.
