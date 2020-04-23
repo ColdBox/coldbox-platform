@@ -18,11 +18,14 @@ component extends="BaseProxy" {
 	 * Functional interface for the apply functional interface
 	 * See https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html#apply-T-U-
 	 */
-	function apply( required previous, required item ){
+	function apply( t, u ){
 		loadContext();
 		try {
 			lock name="#getConcurrentEngineLockName()#" type="exclusive" timeout="60" {
-				return variables.target( arguments.previous, arguments.item );
+				return variables.target(
+					arguments.t ?: javaCast( "null", "" ),
+					arguments.u ?: javaCast( "null", "" )
+				);
 			}
 		} finally {
 			unLoadContext();
