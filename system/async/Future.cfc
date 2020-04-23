@@ -333,6 +333,80 @@ component accessors="true" {
 	}
 
 	/**
+	 * Returns a new CompletionStage with the same result or exception as this stage, that executes the given action when this stage completes.
+	 *
+	 * When this stage is complete, the given action is invoked with the result (or null if none) and the exception (or null if none) of this stage as arguments.
+	 * The returned stage is completed when the action returns. If the supplied action itself encounters an exception, then the returned stage exceptionally completes
+	 * with this exception unless this stage also completed exceptionally.
+	 *
+	 * The action is a closure/udf with the incoming input (if any) or an exception (if any) and returns void.
+	 *
+	 * <pre>
+	 * whenComplete( (input, exception) => {} )
+	 * whenComplete( function( input, exception ){} )
+	 * </pre>
+	 *
+	 * @action the action to perform
+	 *
+	 * @return The new completion stage
+	 */
+	Future function whenComplete( required action ){
+		var biConsumer = createDynamicProxy(
+			new proxies.BiConsumer(
+				arguments.action,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.function.BiConsumer" ]
+		);
+
+		variables.native = variables.native.whenComplete( biConsumer );
+
+		return this;
+	}
+
+	/**
+	 * Returns a new CompletionStage with the same result or exception as this stage, that executes the given action using this stage's
+	 * default asynchronous execution facility when this stage completes.
+	 *
+	 * When this stage is complete, the given action is invoked with the result (or null if none) and the exception (or null if none) of this stage as arguments.
+	 * The returned stage is completed when the action returns. If the supplied action itself encounters an exception, then the returned stage exceptionally completes
+	 * with this exception unless this stage also completed exceptionally.
+	 *
+	 * The action is a closure/udf with the incoming input (if any) or an exception (if any) and returns void.
+	 *
+	 * <pre>
+	 * whenCompleteAsync( (input, exception) => {} )
+	 * whenCompleteAsync( function( input, exception ){} )
+	 *
+	 * whenCompleteAsync( (input, exception) => {}, asyncManager.$executors.newFixedThreadPool() )
+	 * </pre>
+	 *
+	 * @action the action to perform
+	 * @executor the java executor to use for asynchronous execution, can be empty
+	 *
+	 * @return The new completion stage
+	 */
+	Future function whenCompleteAsync( required action, executor ){
+		var biConsumer = createDynamicProxy(
+			new proxies.BiConsumer(
+				arguments.action,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.function.BiConsumer" ]
+		);
+
+		if( !isNull( arguments.executor ) ){
+			variables.native = variables.native.whenCompleteAsync( biConsumer, arguments.executor );
+		} else {
+			variables.native = variables.native.whenCompleteAsync( biConsumer );
+		}
+
+		return this;
+	}
+
+	/**
 	 * Executed once the computation has finalized and a result is passed in to the target:
 	 *
 	 * - The target can use the result, manipulate it and return a new result from the this completion stage
