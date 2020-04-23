@@ -72,8 +72,13 @@ component accessors="true" {
 			"timeUnit" : "milliseconds"
 		};
 
+		// Default the future to be empty
+		variables.isEmptyFuture = true;
+
 		// Verify incoming value type
 		if ( !isNull( arguments.value ) ) {
+			// Mark as not empty
+			variables.isEmptyFuture = false;
 			// If the incoming value is a closure/lambda/udf, seed the future with it
 			if ( isClosure( arguments.value ) || isCustomFunction( arguments.value ) ) {
 				return run( arguments.value );
@@ -509,7 +514,11 @@ component accessors="true" {
 			[ "java.util.function.Function" ]
 		);
 
-		variables.native = variables.native.thenApply( apply );
+		if( variables.isEmptyFuture ){
+			variables.native.thenApply( apply );
+		} else {
+			variables.native = variables.native.thenApply( apply );
+		}
 
 		return this;
 	}
