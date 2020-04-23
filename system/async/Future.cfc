@@ -153,6 +153,10 @@ component accessors="true" {
 	any function join( defaultValue ){
 		var results = variables.native.join();
 
+		if( !isNull( results ) ){
+			return results;
+		}
+
 		if( isNull( results ) && !isNull( arguments.defaultValue ) ){
 			return arguments.defaultValue;
 		}
