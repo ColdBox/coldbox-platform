@@ -568,6 +568,8 @@ component accessors="true" {
 
 	/**
 	 * Alias to `then()` left to help Java devs feel at Home
+	 * Remember, the closure accepts the data and MUST return the data if not the next stage
+	 * could be receiving a null result.
 	 */
 	Future function thenApply(){
 		return then( argumentCollection = arguments );
@@ -616,6 +618,91 @@ component accessors="true" {
 	 */
 	Future function thenApplyAsync(){
 		return thenAsync( argumentCollection = arguments );
+	}
+
+	/**
+	 * Returns a new CompletionStage that, when this stage completes normally, is executed with this
+	 * stage's result as the argument to the supplied action. See the CompletionStage documentation
+	 * for rules covering exceptional completion.
+	 *
+	 * - The target can use the result and return void
+	 * - This stage executes in the calling thread
+	 *
+	 * <pre>
+	 * // Just use the result and not return anything
+	 * thenRun( (result) => systemOutput( result ) )
+	 * </pre>
+	 *
+	 * @target The action to perform before completing the returned CompletionStage
+	 *
+	 * @return The new completion stage (Future)
+	 */
+	Future function thenRun( required target ){
+		var fConsumer = createDynamicProxy(
+			new proxies.Consumer(
+				arguments.target,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.function.Consumer" ]
+		);
+
+		variables.native.thenAccept( fConsumer );
+
+		return this;
+	}
+
+	/**
+	 * Alias to thenRun()
+	 */
+	Future function thenAccept(){
+		return thenRun( argumentCollection=arguments );
+	}
+
+	/**
+	 * Returns a new CompletionStage that, when this stage completes normally,
+	 * is executed using this stage's default asynchronous execution facility,
+	 *  with this stage's result as the argument to the supplied action.
+	 *  See the CompletionStage documentation for rules covering exceptional completion.
+	 *
+	 * - The target can use the result and return void
+	 * - This stage executes in the passed executor or the stage's executor facility
+	 *
+	 * <pre>
+	 * // Just use the result and not return anything
+	 * thenRunAsync( (result) => systemOutput( result ) )
+	 * thenRunAsync( (result) => systemOutput( result ), myExecutor )
+	 * </pre>
+	 *
+	 * @target The action to perform before completing the returned CompletionStage
+	 * @executor If passed, the executor to use to run the target
+	 *
+	 * @return The new completion stage (Future)
+	 */
+	Future function thenRunAsync( required target, executor ){
+		var fConsumer = createDynamicProxy(
+			new proxies.Consumer(
+				arguments.target,
+				variables.debug,
+				variables.loadAppContext
+			),
+			[ "java.util.function.Consumer" ]
+		);
+
+		if( !isNull( arguments.executor ) ){
+			variables.native.thenAcceptAsync( fConsumer, arguments.executor );
+		} else {
+			variables.native.thenAcceptAsync( fConsumer );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Alias to thenRunAsync()
+	 */
+	Future function thenAcceptAsync(){
+		return thenRunAsync( argumentCollection=arguments );
 	}
 
 	/**
