@@ -112,6 +112,36 @@ component accessors="true" {
 	}
 
 	/**
+	 * Completes this CompletableFuture with the given value if not otherwise completed before the given timeout.
+	 *
+	 * @value The value to use upon timeout
+	 * @timeout how long to wait before completing normally with the given value, in units of unit
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
+	 */
+	Future function completeOnTimeout( required value, required timeout, timeUnit = "milliseconds" ){
+		variables.native = variables.native.completeOnTimeout(
+			arguments.value,
+			javaCast( "long", arguments.timeout ),
+			this.$timeUnit.get( arguments.timeUnit )
+		);
+		return this;
+	}
+
+	/**
+	 * Exceptionally completes this CompletableFuture with a TimeoutException if not otherwise completed before the given timeout.
+	 *
+	 * @timeout how long to wait before completing normally with the given value, in units of unit
+	 * @timeUnit The time unit to use, available units are: days, hours, microseconds, milliseconds, minutes, nanoseconds, and seconds. The default is milliseconds
+	 */
+	Future function orTimeout( required timeout, timeUnit = "milliseconds" ){
+		variables.native = variables.native.orTimeout(
+			javaCast( "long", arguments.timeout ),
+			this.$timeUnit.get( arguments.timeUnit )
+		);
+		return this;
+	}
+
+	/**
 	 * Returns a new ColdBox Future that is already completed with the given value.
 	 *
 	 * @value The value to set
@@ -136,6 +166,15 @@ component accessors="true" {
 			createObject( "java", "java.lang.RuntimeException" ).init( arguments.message )
 		);
 		return this;
+	}
+
+	/**
+	 * Alias to completeExceptionally
+	 *
+	 * @defaultValue
+	 */
+	Future function completeWithException(){
+		return completeExceptionally( argumentCollection=arguments );
 	}
 
 	/**
