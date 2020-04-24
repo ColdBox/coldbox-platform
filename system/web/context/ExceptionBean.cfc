@@ -285,4 +285,87 @@ component accessors="true" {
 		return buffer.toString();
 	}
 
+	/**
+	 * Process Stack trace for errors
+	 *
+	 * @str The stacktrace to process
+	 *
+	 * @return The nicer trace
+	 */
+	function processStackTrace( required str ){
+		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
+		arguments.str = HTMLEditFormat( arguments.str );
+
+		var aMatches = REMatchNoCase( "\(([^\)]+)\)", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
+		}
+		var aMatches = REMatchNoCase( "\[([^\]]+)\]", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
+		}
+		var aMatches = REMatchNoCase( "\$([^(\(|\:)]+)(\:|\()", arguments.str );
+		for( var aString in aMatches ){
+			arguments.str = replacenocase( arguments.str, aString, "<span class='method'>#aString#</span>", "all" );
+		}
+		arguments.str = replace( arguments.str, chr( 13 ) & chr( 10 ), chr( 13 ) , 'all' );
+		arguments.str = replace( arguments.str, chr( 10 ), chr( 13 ) , 'all' );
+		arguments.str = replace( arguments.str, chr( 13 ), '<br>' , 'all' );
+		arguments.str = replaceNoCase( arguments.str, chr(9), repeatString( "&nbsp;", 4 ), "all" );
+
+		return arguments.str;
+	}
+
+	function displayScope (scope) {
+        var list = '<table class="data-table"><tbody>';
+        var orderedArr = scope;
+        if(structKeyExists(scope,'itemorder')) orderedArr = scope.itemorder;
+
+        for( var i in orderedArr ){
+            list &= '<tr>';
+            if(isDate(scope[i])){
+                list &= '<td width="250">' & i & '</td>';
+                list &= '<td class="overflow-scroll">' & dateformat(scope[i], "mm/dd/yyyy") & " " & timeformat(scope[i], "HH:mm:ss") & '</td>';
+            } else if(isSimpleValue(scope[i])){
+                list &= '<td width="250">' & i & '</td>';
+                list &= '<td class="overflow-scroll">' & (scope[i]) & '</td>';
+            } else {
+                savecontent variable="myContent" {
+                 writeDump( var = scope[i], format= "html", top=2, expand=false)
+                }
+                list &= '<td width="250">' & i & '</td>';
+                list &= '<td class="overflow-scroll">' & myContent & '</td>';
+                //list &= '<td>' & serializeJSON(scope[i]) & '</td>';
+            }
+            list &= '</tr>';
+        }
+        list &= '</tbody></table>';
+        return list;
+    }
+
+    function openInEditorURL( required event, required struct instance ) {
+        var editor = event.getController().getUtil().getSystemSetting( "WHOOPS_EDITOR", "vscode" );
+        switch( editor ) {
+            case "vscode":
+                return "vscode://file/#instance.template#:#instance.line#";
+            case "vscode-insiders":
+                return "vscode-insiders://file/#instance.template#:#instance.line#";
+            case "sublime":
+                return "subl://open?url=file://#instance.template#&line=#instance.line#";
+            case "textmate":
+                return "txmt://open?url=file://#instance.template#&line=#instance.line#";
+            case "emacs":
+                return "emacs://open?url=file://#instance.template#&line=#instance.line#";
+            case "macvim":
+                return "mvim://open/?url=file://#instance.template#&line=#instance.line#";
+            case "idea":
+                return "idea://open?file=#instance.template#&line=#instance.line#";
+            case "atom":
+                return "atom://core/open/file?filename=#instance.template#&line=#instance.line#";
+            case "espresso":
+                return "x-espresso://open?filepath=#instance.template#&lines=#instance.line#";
+            default:
+                return "";
+        }
+    }
 }
