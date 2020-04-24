@@ -8,6 +8,7 @@
 			eventName               : "event",
 			// Development Settings
 			reinitPassword          : "",
+			reinitKey 				: "fwreinit",
 			handlersIndexAutoReload : true,
 			// Implicit Events
 			defaultEvent            : "",

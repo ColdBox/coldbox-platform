@@ -210,6 +210,10 @@ component accessors="true" {
 
 	/**
 	 * Parse ColdBox Settings
+	 *
+	 * @oConfig The config cfc
+	 * @config The config struct
+	 * @overrideAppMapping The override mapping string
 	 */
 	function parseColdboxSettings(
 		required oConfig,
@@ -217,153 +221,66 @@ component accessors="true" {
 		overrideAppMapping = ""
 	){
 		var configStruct     = arguments.config;
-		var fwSettingsStruct = variables.coldboxSettings;
+		var fwSettingsStruct = variables.coldboxSettings.coldbox;
 		var coldboxSettings  = arguments.oConfig.getPropertyMixin( "coldbox", "variables", {} );
 
-		// collection append
+		// Incorporate fw defaults into the app settings
+		structAppend( configStruct, fwSettingsStruct, false );
+		// Incorporate their config.cfc settings and override
 		structAppend( configStruct, coldboxSettings, true );
 
-		// Common Structures
-		configStruct.layoutsRefMap = {};
-		configStruct.viewsRefMap   = {};
+		// Common Structures for layouts and views
+		configStruct[ "layoutsRefMap" ] = {};
+		configStruct[ "viewsRefMap" ]   = {};
 
 		/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 
-		// Check for AppName
-		if ( not structKeyExists( configStruct, "AppName" ) ) {
-			configStruct[ "AppName" ] = application.applicationName;
+		// Check the defaultEvent, if no length, default it
+		if ( !len( configStruct[ "DefaultEvent" ] ) ) {
+			configStruct[ "DefaultEvent" ] = fwSettingsStruct.defaultEvent;
 		}
-		// Check for Default Event
-		if ( not structKeyExists( configStruct, "DefaultEvent" ) OR NOT len( configStruct[ "DefaultEvent" ] ) ) {
-			configStruct[ "DefaultEvent" ] = fwSettingsStruct[ "DefaultEvent" ];
-		}
-		// Check for Event Name
-		if ( not structKeyExists( configStruct, "EventName" ) ) {
-			configStruct[ "EventName" ] = fwSettingsStruct[ "EventName" ];
-		}
-		// Check for Application Start Handler
-		if ( not structKeyExists( configStruct, "ApplicationStartHandler" ) ) {
-			configStruct[ "ApplicationStartHandler" ] = "";
-		}
-		// Check for Application End Handler
-		if ( not structKeyExists( configStruct, "ApplicationEndHandler" ) ) {
-			configStruct[ "applicationEndHandler" ] = "";
-		}
-		// Check for Request End Handler
-		if ( not structKeyExists( configStruct, "RequestStartHandler" ) ) {
-			configStruct[ "RequestStartHandler" ] = "";
-		}
-		// Check for Application Start Handler
-		if ( not structKeyExists( configStruct, "RequestEndHandler" ) ) {
-			configStruct[ "RequestEndHandler" ] = "";
-		}
-		// Check for Session Start Handler
-		if ( not structKeyExists( configStruct, "SessionStartHandler" ) ) {
-			configStruct[ "SessionStartHandler" ] = "";
-		}
-		// Check for Session End Handler
-		if ( not structKeyExists( configStruct, "SessionEndHandler" ) ) {
-			configStruct[ "SessionEndHandler" ] = "";
-		}
-		// Check for InvalidEventHandler
-		if ( not structKeyExists( configStruct, "InvalidEventHandler" ) ) {
-			configStruct[ "InvalidEventHandler" ] = "";
-		}
-		// TODO: Deprecated setting, remove in older version of the framework
-		if ( structKeyExists( configStruct, "onInvalidEvent" ) ) {
-			configStruct[ "InvalidEventHandler" ] = configStruct.onInvalidEvent;
-		}
+
 		// Check for Implicit Views
-		if ( not structKeyExists( configStruct, "ImplicitViews" ) OR not isBoolean( configStruct.implicitViews ) ) {
-			configStruct[ "ImplicitViews" ] = true;
+		if ( !isBoolean( configStruct.implicitViews ) ) {
+			configStruct[ "ImplicitViews" ] = fwSettingsStruct.implicitViews;
 		}
-		// Check for ReinitPassword
-		if ( not structKeyExists( configStruct, "ReinitPassword" ) ) {
-			configStruct[ "ReinitPassword" ] = hash( createUUID() );
-		} else if ( len( configStruct[ "ReinitPassword" ] ) ) {
+
+		// Check for ReinitPassword and hash it if declared
+		if ( len( configStruct[ "ReinitPassword" ] ) ) {
 			configStruct[ "ReinitPassword" ] = hash( configStruct[ "ReinitPassword" ] );
 		}
-		// Check For ApplicationHelper
-		if ( not structKeyExists( configStruct, "applicationHelper" ) ) {
-			configStruct[ "applicationHelper" ] = [];
-		}
+
 		// inflate if needed to array
 		if ( isSimpleValue( configStruct[ "applicationHelper" ] ) ) {
 			configStruct[ "applicationHelper" ] = listToArray( configStruct[ "applicationHelper" ] );
 		}
-		// Check For viewsHelper
-		if ( not structKeyExists( configStruct, "viewsHelper" ) ) {
-			configStruct[ "viewsHelper" ] = "";
-		}
-		// Check For CustomErrorTemplate
-		if ( not structKeyExists( configStruct, "CustomErrorTemplate" ) ) {
-			configStruct[ "CustomErrorTemplate" ] = "";
-		}
+
 		// Check for HandlersIndexAutoReload, default = false
-		if (
-			not structKeyExists( configStruct, "HandlersIndexAutoReload" ) or not isBoolean(
-				configStruct.HandlersIndexAutoReload
-			)
-		) {
-			configStruct[ "HandlersIndexAutoReload" ] = false;
+		if ( !isBoolean( configStruct.HandlersIndexAutoReload ) ) {
+			configStruct[ "HandlersIndexAutoReload" ] = fwSettingsStruct.handlersIndexAutoReload;
 		}
-		// Check for ExceptionHandler if found
-		if ( not structKeyExists( configStruct, "ExceptionHandler" ) ) {
-			configStruct[ "ExceptionHandler" ] = "";
+
+		// type check Handler Caching
+		if ( !isBoolean( configStruct.HandlerCaching ) ) {
+			configStruct[ "HandlerCaching" ] = fwSettingsStruct.HandlerCaching;
 		}
-		// Check for Handler Caching
-		if ( not structKeyExists( configStruct, "HandlerCaching" ) or not isBoolean( configStruct.HandlerCaching ) ) {
-			configStruct[ "HandlerCaching" ] = true;
+		// type check Event Caching
+		if ( !isBoolean( configStruct.eventCaching ) ) {
+			configStruct[ "eventCaching" ] = fwSettingsStruct.eventCaching;
 		}
-		// Check for Event Caching
-		if ( not structKeyExists( configStruct, "eventCaching" ) or not isBoolean( configStruct.eventCaching ) ) {
-			configStruct[ "eventCaching" ] = true;
+		// type check View Caching
+		if ( !isBoolean( configStruct.viewCaching ) ) {
+			configStruct[ "viewCaching" ] = fwSettingsStruct.viewCaching;
 		}
-		// Check for View Caching
-		if ( not structKeyExists( configStruct, "viewCaching" ) or not isBoolean( configStruct.viewCaching ) ) {
-			configStruct[ "viewCaching" ] = true;
+		// Type check for ProxyReturnCollection
+		if ( !isBoolean( configStruct.ProxyReturnCollection ) ) {
+			configStruct[ "ProxyReturnCollection" ] = fwSettingsStruct.ProxyReturnCollection;
 		}
-		// RequestContextDecorator
-		if (
-			not structKeyExists( configStruct, "RequestContextDecorator" ) or len(
-				configStruct[ "RequestContextDecorator" ]
-			) eq 0
-		) {
-			configStruct[ "RequestContextDecorator" ] = "";
-		}
-		// ControllerDecorator
-		if (
-			not structKeyExists( configStruct, "ControllerDecorator" ) or len( configStruct[ "ControllerDecorator" ] ) eq 0
-		) {
-			configStruct[ "ControllerDecorator" ] = "";
-		}
-		// Check for ProxyReturnCollection
-		if (
-			not structKeyExists( configStruct, "ProxyReturnCollection" ) or not isBoolean(
-				configStruct.ProxyReturnCollection
-			)
-		) {
-			configStruct[ "ProxyReturnCollection" ] = false;
-		}
-		// Check for External Handlers Location
-		if (
-			not structKeyExists( configStruct, "HandlersExternalLocation" ) or len(
-				configStruct[ "HandlersExternalLocation" ]
-			) eq 0
-		) {
-			configStruct[ "HandlersExternalLocation" ] = "";
-		}
-		// Check for Missing Template Handler
-		if ( not structKeyExists( configStruct, "MissingTemplateHandler" ) ) {
-			configStruct[ "MissingTemplateHandler" ] = "";
-		}
-		// Modules External Locations
-		if ( not structKeyExists( configStruct, "ModulesExternalLocation" ) ) {
-			configStruct.ModulesExternalLocation = [];
-		}
+		// Type checks
 		if ( isSimpleValue( configStruct.ModulesExternalLocation ) ) {
 			configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
 		}
+
 		// Prepend Convention of modules_app according to location
 		if ( len( configStruct.appMapping ) ) {
 			arrayPrepend( configStruct.ModulesExternalLocation, "/#configStruct.appMapping#/modules_app" );
@@ -371,35 +288,28 @@ component accessors="true" {
 			arrayPrepend( configStruct.ModulesExternalLocation, "/modules_app" );
 		}
 
-		// Check for invalidHTTPMethodHandler
-		if ( not structKeyExists( configStruct, "invalidHTTPMethodHandler" ) ) {
-			configStruct[ "invalidHTTPMethodHandler" ] = "";
-		}
-
-		// JSON Payload To RC
-		if ( not structKeyExists( configStruct, "jsonPayloadToRC" ) ) {
-			configStruct[ "jsonPayloadToRC" ] = false;
-		}
-
-		// Auto Map Core Models, defaults to false in ColdBox 5, will default to true in ColdBox 6
-		if ( not structKeyExists( configStruct, "autoMapModels" ) ) {
-			configStruct[ "autoMapModels" ] = false;
-		}
 	}
 
 	/**
 	 * Parse Your Settings
+	 *
+	 * @oConfig The config cfc
+	 * @config The config struct
 	 */
 	function parseYourSettings( required oConfig, required config ){
-		var configStruct = arguments.config;
-		var settings     = arguments.oConfig.getPropertyMixin( "settings", "variables", {} );
-
 		// append it
-		structAppend( configStruct, settings, true );
+		structAppend(
+			arguments.config,
+			arguments.oConfig.getPropertyMixin( "settings", "variables", {} ),
+			true
+		);
 	}
 
 	/**
 	 * Parse Your Conventions
+	 *
+	 * @oConfig The config cfc
+	 * @config The config struct
 	 */
 	function parseConventions( required oConfig, required config ){
 		var configStruct     = arguments.config;
@@ -583,8 +493,8 @@ component accessors="true" {
 	 */
 	function parseLayoutsViews( required oConfig, required config ){
 		var configStruct       = arguments.config;
-		var	LayoutViewStruct   = createObject( "java", "java.util.LinkedHashMap" ).init();
-		var	LayoutFolderStruct = createObject( "java", "java.util.LinkedHashMap" ).init();
+		var	layoutViewStruct   = structNew( "ordered" );
+		var	layoutFolderStruct = structNew( "ordered" );
 		var layoutSettings     = arguments.oConfig.getPropertyMixin( "layoutSettings", "variables", {} );
 		var layouts            = arguments.oConfig.getPropertyMixin( "layouts", "variables", [] );
 		var thisLayout         = "";
@@ -592,7 +502,7 @@ component accessors="true" {
 		var fwSettingsStruct   = variables.coldboxSettings;
 
 		// defaults
-		configStruct.defaultLayout     = fwSettingsStruct.defaultLayout;
+		configStruct.defaultLayout     = fwSettingsStruct.coldbox.defaultLayout;
 		configStruct.defaultView       = "";
 		configStruct.registeredLayouts = {};
 
@@ -601,7 +511,7 @@ component accessors="true" {
 
 		// Check blank defaultLayout
 		if ( !len( trim( configStruct.defaultLayout ) ) ) {
-			configStruct.defaultLayout = fwSettingsStruct.defaultLayout;
+			configStruct.defaultLayout = fwSettingsStruct.coldbox.defaultLayout;
 		}
 
 		// registered layouts
@@ -842,9 +752,9 @@ component accessors="true" {
 		var modules      = arguments.oConfig.getPropertyMixin( "modules", "variables", {} );
 
 		// Defaults
-		configStruct.ModulesInclude = [];
-		configStruct.ModulesExclude = [];
-		configStruct.Modules        = {};
+		configStruct.modulesInclude = [];
+		configStruct.modulesExclude = [];
+		configStruct.modules        = {};
 
 		if ( structKeyExists( modules, "include" ) ) {
 			configStruct.modulesInclude = modules.include;
@@ -864,7 +774,7 @@ component accessors="true" {
 		var configStruct = arguments.config;
 
 		// Set default to production
-		configStruct.environment = "production";
+		configStruct[ "environment" ] = "production";
 
 		// Check if they have a `detectEnvironment()` method
 		if ( structKeyExists( arguments.oConfig, "detectEnvironment" ) ) {

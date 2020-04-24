@@ -15,10 +15,57 @@ component {
 	this.version       = "@build.version@+@build.number@";
 	this.description   = "This is the ColdBox Platform for ColdFusion Powered Web Applications.";
 
-	// Operation Defaults
-	this.eventName     = "event";
-	this.defaultEvent  = "main.index";
-	this.defaultLayout = "Main.cfm";
+	// ColdBox Operational Defaults
+	this.coldbox = {
+		// Global Settings
+		"appName"		= application.applicationName,
+		"eventName"     = "event",
+		"reinitPassword"= hash( createUUID() ),
+		"reinitKey"		= "fwreinit",
+		"proxyReturnCollection" = false,
+		"jsonPayloadToRC" = true,
+		"autoMapModels" = true,
+		"environment" 	= "production",
+
+		// Caching
+		"handlersIndexAutoReload" = false,
+		"handlerCaching" = true,
+		"eventCaching" = true,
+		"viewCaching"=true,
+
+		// Default Operations
+		"defaultEvent"  = "main.index",
+		"defaultLayout" = "Main.cfm",
+		"defaultView"	= "",
+
+		// Implicit Events
+		"applicationStartHandler" = "",
+		"applicationEndHandler" = "",
+		"requestStartHandler" = "",
+		"requestEndHandler" = "",
+		"sessionStartHandler" = "",
+		"sessionEndHandler" = "",
+		"missingTemplateHandler" = "",
+		"invalidHTTPMethodHandler" = "",
+
+		// Exception Handling
+		"invalidEventHandler" = "",
+		"exceptionHandler"="",
+		"customErrorTemplate" = "",
+
+		// Helpers and Rendering Settings
+		"implicitViews" = true,
+		"applicationHelper" = [],
+		"viewsHelper" = "",
+
+		// Extensions
+		"requestContextDecorator" = "",
+		"controllerDecorator" = "",
+		"handlersExternalLocation" = "",
+		"viewsExternalLocation" = "",
+		"layoutsExternalLocation" = "",
+		"modulesExternalLocation" = []
+	};
 
 	// flash scope defaults
 	this.flash = {

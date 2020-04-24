@@ -96,6 +96,7 @@ component serializable="false" accessors="true"{
 		application[ appKey ] = new coldbox.system.web.Controller( COLDBOX_APP_ROOT_PATH, appKey );
 		// Setup the Framework And Application
 		application[ appKey ].getLoaderService().loadApplication( COLDBOX_CONFIG_FILE, COLDBOX_APP_MAPPING );
+		// Get the reinit key
 		// Application Start Handler
 		try {
 			if ( len( application[ appKey ].getSetting( "ApplicationStartHandler" ) ) ){
@@ -108,9 +109,11 @@ component serializable="false" accessors="true"{
 			// abort it, something went really wrong.
 			abort;
 		}
+
 		// Check if fwreinit is sent, if sent, ignore it, we are loading the framework
-		if( structKeyExists( url, "fwreinit" ) ){
-			structDelete( url, "fwreinit" );
+		var reinitKey = application[ appKey ].getSetting( "reinitKey" );
+		if( structKeyExists( url, reinitKey ) ){
+			structDelete( url, reinitKey );
 		}
 
 		return this;
@@ -396,8 +399,8 @@ component serializable="false" accessors="true"{
 
 
 	/**
-	* Verify if a reinit is sent
-	*/
+	 * Verify if a reinit is sent
+	 */
 	boolean function isFWReinit(){
 		var appKey 	= locateAppKey();
 
@@ -411,10 +414,11 @@ component serializable="false" accessors="true"{
 		}
 
 		// Verify the reinit key is passed
-		if ( structKeyExists( url, "fwreinit" ) or structKeyExists( form, "fwreinit" ) ){
+		var reinitKey = application[ appKey ].getSetting( "reinitKey" );
+		if ( structKeyExists( url, reinitKey ) or structKeyExists( form, reinitKey ) ){
 
 			// Check if we have a reinit password at hand.
-			var reinitPass = application[ appKey ].getSetting( name="ReinitPassword", defaultValue="" );
+			var reinitPass = application[ appKey ].getSetting( name="reinitPassword", defaultValue="" );
 
 			// pass Checks
 			if ( NOT len( reinitPass ) ){
@@ -423,7 +427,7 @@ component serializable="false" accessors="true"{
 
 			// Get the incoming pass from form or url
 			var incomingPass 	= "";
-			if( structKeyExists( form, "fwreinit" ) ){
+			if( structKeyExists( form, reinitKey ) ){
 				incomingPass = form.fwreinit;
 			} else {
 				incomingPass = url.fwreinit;
@@ -659,7 +663,7 @@ component serializable="false" accessors="true"{
 	private function processStackTrace( str ){
 		// Not using encodeForHTML() as it is too destructive and ruins whitespace chars and other stuff
 		arguments.str = HTMLEditFormat( arguments.str );
-		
+
 		var aMatches = REMatchNoCase( "\(([^\)]+)\)", arguments.str );
 		for( var aString in aMatches ){
 			arguments.str = replacenocase( arguments.str, aString, "<span class='highlight'>#aString#</span>", "all" );
