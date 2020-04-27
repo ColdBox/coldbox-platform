@@ -2356,9 +2356,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 		var currentModule 		= event.getCurrentModule();
 
 		// Calculate app path depending on module or app
-		var appPath = ( arguments.useModuleRoot && len( currentModule ) ) ?
-						controller.getSetting( "modules" ).find( currentModule ).path & "/":
-						controller.getSetting( "applicationPath" );
+		var appPath = controller.getSetting( "applicationPath" );
 		var mapping = ( arguments.useModuleRoot && len( currentModule ) ) ?
 						event.getModuleRoot() :
 						controller.getSetting( "appMapping" );
@@ -2375,7 +2373,7 @@ component extends="coldbox.system.FrameworkSupertype" accessors=true singleton{
 
 		// Calculat href for asset delivery via Browser
 		if( mapping.len() ){
-			var href = "/#mapping#/#includesLocation#/#arguments.fileName#";
+			var href = "#mapping#/#includesLocation#/#arguments.fileName#";
 		} else {
 			var href = "/#includesLocation#/#arguments.fileName#";
 		}
