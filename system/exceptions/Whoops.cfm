@@ -174,7 +174,7 @@
 											#replace( instance.template, root, "" )#:<span class="stacktrace__line-number">#instance.line#</span>
 										</h3>
 
-										<cfif structKeyExists( instance, "codePrintPlain" ) && local.eventDetails.environment == local.safeEnvironment>
+										<cfif structKeyExists( instance, "codePrintPlain" ) && local.eventDetails.environment eq local.safeEnvironment>
 											<cfset codesnippet = instance.codePrintPlain>
 											<cfset codesnippet = reReplace( codesnippet, "\n\t", " ", "All" )>
 											<cfset codesnippet = htmlEditFormat( codesnippet )>
@@ -220,7 +220,7 @@
 					<!----------------------------------------------------------------------------------------->
 					<!--- Code Container --->
 					<!----------------------------------------------------------------------------------------->
-					<cfif stackFrames gt 0 AND local.eventDetails.environment == local.safeEnvironment>
+					<cfif stackFrames gt 0 AND local.eventDetails.environment eq local.safeEnvironment>
 						<div class="code-preview">
 							<cfset instance = local.e.TagContext[ 1 ]/>
 							<div id="code-container"></div>
@@ -236,7 +236,7 @@
 						<!--- Slide UP Button --->
 						<!----------------------------------------------------------------------------------------->
 
-						<cfif stackFrames gt 0 AND local.eventDetails.environment == local.safeEnvironment>
+						<cfif stackFrames gt 0 AND local.eventDetails.environment eq local.safeEnvironment>
 							<div class="slideup_row">
 								<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
 									<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
@@ -339,7 +339,7 @@
 			<!----------------------------------------------------------------------------------------->
 
 			<!--- Make sure we are in Development only --->
-			<cfif local.eventDetails.environment == local.safeEnvironment>
+			<cfif local.eventDetails.environment eq local.safeEnvironment>
 				<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
 					<cfset instance = local.e.TagContext[ i ]/>
 					<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>

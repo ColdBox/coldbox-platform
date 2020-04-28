@@ -376,7 +376,7 @@ component accessors="true" {
             list &= '</tr>';
 		}
 
-		if( !len( orderedArr ) ){
+		if( !structCount( arguments.scope ) ){
 			list &= "<tr>
 				<td>
 					<em>No details found!</em>
