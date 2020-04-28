@@ -1,22 +1,13 @@
 <cfscript>
-	if ( !structKeyExists( variables, "strLimit" ) ) {
-		variables.strLimit = function( str, limit, ending = "..." ){
-			if ( len( str ) <= limit ) {
-				return str;
-			}
-			return mid( str, 1, limit ) & ending;
-		};
-	}
-
 	// Detect Session Scope
 	local.sessionScopeExists = getApplicationMetadata().sessionManagement;
-
+	// Detect host
 	try {
 		local.thisInetHost = createObject( "java", "java.net.InetAddress" ).getLocalHost().getHostName();
 	} catch ( any e ) {
 		local.thisInetHost = "localhost";
 	}
-
+	// Build event details
 	local.eventDetails = {
 		"Error Code"    : ( oException.getErrorCode() != 0 ) ? oException.getErrorCode() : "",
 		"Type"          : oException.gettype(),
@@ -54,6 +45,7 @@
 		]
 	};
 
+	// Build framework snapshot
 	local.frameworkSnapshot = {
 		"Coldfusion ID"  : "Session Scope Not Enabled",
 		"Template Path"  : CGI.CF_TEMPLATE_PATH,
@@ -77,6 +69,7 @@
 		]
 	};
 
+	// Build ID
 	if ( local.sessionScopeExists ) {
 		local.fwString = "";
 		if ( isDefined( "client" ) ) {
@@ -91,6 +84,7 @@
 		frameworkSnapshot[ "Coldfusion ID" ] = fwString;
 	}
 
+	// Database Info
 	local.databaseInfo = {};
 	if (
 		(
@@ -106,11 +100,11 @@
 			"Name-Value Pairs"     : oException.getWhere()
 		};
 	}
-	</cfscript>
 
-	<cfset local.e = oException.getExceptionStruct()/>
-	<cfset stackFrames = arrayLen( local.e.TagContext )/>
-
+	local.e = oException.getExceptionStruct();
+	stackFrames = arrayLen( local.e.TagContext );
+	local.safeEnvironment = "test";
+</cfscript>
 <cfoutput>
 	<html>
 		<head>
@@ -180,7 +174,7 @@
 											#replace( instance.template, root, "" )#:<span class="stacktrace__line-number">#instance.line#</span>
 										</h3>
 
-										<cfif structKeyExists( instance, "codePrintPlain" ) && controller.getSetting( "Environment" ) == "development">
+										<cfif structKeyExists( instance, "codePrintPlain" ) && local.eventDetails.environment == local.safeEnvironment>
 											<cfset codesnippet = instance.codePrintPlain>
 											<cfset codesnippet = reReplace( codesnippet, "\n\t", " ", "All" )>
 											<cfset codesnippet = htmlEditFormat( codesnippet )>
@@ -193,7 +187,7 @@
 											<cfset splitLines = listToArray( codesnippet, "#chr( 10 )#" )>
 											<h4 class="stacktrace__code" style="margin-top:-10px;">
 												<cfloop array="#splitLines#" index="codeline">
-													#strLimit( codeline, 60 )#<br>
+													#oException.stringLimit( codeline, 60 )#<br>
 												</cfloop>
 											</h4>
 										</cfif>
@@ -226,7 +220,7 @@
 					<!----------------------------------------------------------------------------------------->
 					<!--- Code Container --->
 					<!----------------------------------------------------------------------------------------->
-					<cfif stackFrames gt 0 AND controller.getSetting( "environment" ) == "development">
+					<cfif stackFrames gt 0 AND local.eventDetails.environment == local.safeEnvironment>
 						<div class="code-preview">
 							<cfset instance = local.e.TagContext[ 1 ]/>
 							<div id="code-container"></div>
@@ -242,7 +236,7 @@
 						<!--- Slide UP Button --->
 						<!----------------------------------------------------------------------------------------->
 
-						<cfif stackFrames gt 0 AND controller.getSetting( "environment" ) == "development">
+						<cfif stackFrames gt 0 AND local.eventDetails.environment == local.safeEnvironment>
 							<div class="slideup_row">
 								<a href="javascript:void(0);" onclick="toggleCodePreview()" class="button button-icononly">
 									<i id="codetoggle-up" data-eva="arrowhead-up-outline"></i>
@@ -345,7 +339,7 @@
 			<!----------------------------------------------------------------------------------------->
 
 			<!--- Make sure we are in Development only --->
-			<cfif controller.getSetting( "environment" ) == "development">
+			<cfif local.eventDetails.environment == local.safeEnvironment>
 				<cfloop from="1" to="#arrayLen( local.e.TagContext )#" index="i">
 					<cfset instance = local.e.TagContext[ i ]/>
 					<cfset highlighter = ( listLast( instance.template, "." ) eq "cfm" ? "cf" : "js" )/>

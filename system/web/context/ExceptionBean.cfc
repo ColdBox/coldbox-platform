@@ -329,6 +329,27 @@ component accessors="true" {
 		return arguments.str;
 	}
 
+	/**
+	 * String limiting utility
+	 *
+	 * @str The target
+	 * @limit The limiting number
+	 * @ending The postfix
+	 */
+	function stringLimit(  str, limit, ending = "..." ){
+		if ( len( arguments.str ) <= arguments.limit ) {
+			return arguments.str;
+		}
+		return mid( arguments.str, 1, arguments.limit ) & arguments.ending;
+	}
+
+	/**
+	 * Build a table for a specific scope to be displayed
+	 *
+	 * @scope The scope to display
+	 *
+	 * @return The HTML of the scope data
+	 */
 	function displayScope( required scope ) {
         var list = '<table class="data-table"><tbody>';
 		var orderedArr = arguments.scope;
@@ -368,9 +389,17 @@ component accessors="true" {
 		return list;
     }
 
+	/**
+	 * Compose a screen for a file to open in an editor
+	 *
+	 * @event The request context
+	 * @instance An instance of a tag context array
+	 *
+	 * @return The string for the IDE
+	 */
     function openInEditorURL( required event, required struct instance ) {
 		// TODO: Move to ColdBox Setting
-        var editor = arguments.event.getController().getUtil().getSystemSetting( "WHOOPS_EDITOR", "vscode" );
+        var editor = arguments.event.getController().getSetting( name : "exceptionEditor", defaultValue : "vscode" );
         switch( editor ) {
             case "vscode":
                 return "vscode://file/#arguments.instance.template#:#arguments.instance.line#";
