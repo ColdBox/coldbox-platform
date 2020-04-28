@@ -100,11 +100,6 @@
 
 		// Register interceptors as an array, we need order
 		interceptors = [
-			// SES
-			{
-				class      : "coldbox.system.interceptors.SES",
-				properties : {}
-			},
 			{ class : "#appMapping#.interceptors.Test1" },
 			{ class : "#appMapping#.interceptors.Test2" }
 		];

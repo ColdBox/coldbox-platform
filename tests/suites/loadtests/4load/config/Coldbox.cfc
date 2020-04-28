@@ -60,8 +60,6 @@
 
 		//Register interceptors as an array, we need order
 		interceptors = [
-			 //SES
-			 { class="coldbox.system.interceptors.SES" }
 		];
 
 	}

@@ -17,7 +17,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 					.root( appenders = "luis,luis2" )
 					// Sample categories
 					.OFF( "coldbox.system" )
-					.debug( "coldbox.system.interceptors" );
+					.debug( "coldbox.system.async" );
 
 				// init logBox
 				logBox.init( config );
@@ -45,9 +45,9 @@ component extends="coldbox.system.testing.BaseModelTest" {
 
 				given( "A valid category inheritance trail", function(){
 					then( "it will retrieve the inherited category", function(){
-						var logger = logBox.getLogger( "coldbox.system.interceptors.SES" );
+						var logger = logBox.getLogger( "coldbox.system.async.AsyncManager" );
 						expect( logger.getLevelMax() ).toBe( logger.logLevels.DEBUG );
-						expect( logger.getRootLogger().getCategory() ).toBe( "coldbox.system.interceptors" );
+						expect( logger.getRootLogger().getCategory() ).toBe( "coldbox.system.async" );
 					} );
 				} );
 			} );
@@ -63,7 +63,7 @@ component extends="coldbox.system.testing.BaseModelTest" {
 				expect( logBox.locateCategoryParentLogger( "invalid" ) ).toBe( logBox.getRootLogger() );
 
 				// 2: Expecting a logger with debug levels only
-				var logger = logBox.locateCategoryParentLogger( "coldbox.system.interceptors.SES" );
+				var logger = logBox.locateCategoryParentLogger( "coldbox.system.async.AsyncManager" );
 				expect( logger.getLevelMax(), logger.logLevels.DEBUG );
 
 				// 3: Expecting an OFF logger

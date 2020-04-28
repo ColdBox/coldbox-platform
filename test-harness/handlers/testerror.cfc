@@ -7,7 +7,7 @@
 				"/coldbox/system/includes/BugReport.cfm"
 			);
 		}
-		if( rc.new ?: false ){
+		if( rc.new ?: true ){
 			setSetting(
 				"customErrorTemplate",
 				"/coldbox/system/includes/Whoops.cfm"

@@ -50,11 +50,6 @@
 			customInterceptionPoints : [ "myCustom" ],
 			interceptors             : [
 				{
-					class      : "coldbox.system.interceptors.SES",
-					properties : {},
-					name       : "MySES"
-				},
-				{
 					class      : "coldbox.system.interceptors.Custom",
 					properties : { n : 1 },
 					name       : "Custom"
@@ -71,7 +66,7 @@
 
 		iService.registerInterceptors();
 
-		assertTrue( iService.$count( 2, "registerInterceptor" ) );
+		assertTrue( iService.$count( 1, "registerInterceptor" ) );
 	}
 
 	function testInterceptionPoints(){
