@@ -228,7 +228,11 @@ body {
 	padding: 10px;
 	font-size: 12px;
 	display: flex;
-	justify-content: space-around;
+	align-items: center;
+}
+
+.data-filter .button{
+	margin: 0px 3px;
 }
 
 .hidden {
