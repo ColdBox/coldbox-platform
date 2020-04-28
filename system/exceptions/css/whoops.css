@@ -69,7 +69,7 @@ body {
 
 .exception__logo span{
 	color: white;
-	font-size: 2em;
+	font-size: 1.5em;
 }
 
 .exception__timestamp {
@@ -92,9 +92,12 @@ body {
 
 .exception__message {
     color: white;
-	font-size: 1.5em;
+	font-size: 1.2em;
 	border: 1px solid #7ac1d6;
 	padding: 10px;
+	letter-spacing: 1px;
+	line-height: 27px;
+
 }
 
 .highlight{
@@ -180,7 +183,7 @@ body {
 .code-preview {
     flex: 2;
 	font-family: 'Fira Mono', monospace;
-	font-size: 0.8em;
+	font-size: 0.9em;
 	background-color: #002b36;
     color: #E9E4E5;
     overflow: scroll;
